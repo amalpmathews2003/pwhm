@@ -144,7 +144,6 @@ int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey) {
     }
 
 typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, char* params);
-#define HDLR_OFFSET(hdlr) offsetof(wld_wpaCtrl_evtHandlers_cb, hdlr)
 
 // Call interface handler protected against null interface and null handler
 #define CALL_INTF(pIntf, fName, ...) \
@@ -152,10 +151,20 @@ typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, ch
         SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name, __VA_ARGS__); \
     }
 
+#define CALL_MGR(pIntf, fName, ...) \
+    if(pIntf != NULL) { \
+        SWL_CALL(pIntf->pMgr->handlers.fName, pIntf->pMgr->userData, pIntf->name, __VA_ARGS__); \
+    }
+
 // Call interface handler protected against null interface and null handler. Don't add args
 #define CALL_INTF_NA(pIntf, fName) \
     if(pIntf != NULL) { \
         SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name); \
+    }
+
+#define CALL_MGR_NA(pIntf, fName) \
+    if(pIntf != NULL) { \
+        SWL_CALL(pIntf->pMgr->handlers.fName, pIntf->pMgr->userData, pIntf->name); \
     }
 
 static void s_cancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
@@ -216,6 +225,30 @@ static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fBtmReplyCb, &mac, replyCode);
 }
 
+static void s_chanSwitchEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: CTRL-EVENT-CHANNEL-SWITCH freq=2427 ht_enabled=0 ch_offset=0 ch_width=20 MHz (no HT) cf1=2427 cf2=0 dfs=0
+    swl_chanspec_t chanSpec;
+
+    uint32_t centralFreq = wld_wpaCtrl_getValueInt(params, "cf1");
+    swl_chanspec_channelFromMHz(&chanSpec, centralFreq);
+
+    SAH_TRACEZ_INFO(ME, "%s: channel=%d width=%d band=%d", pInterface->name, chanSpec.channel,
+                    chanSpec.bandwidth, chanSpec.band);
+
+    CALL_MGR(pInterface, fChanSwitchCb, &chanSpec);
+}
+
+static void s_apCsaFinishedEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: AP-CSA-FINISHED freq=2427 dfs=0
+    swl_chanspec_t chanSpec;
+    uint32_t freq = wld_wpaCtrl_getValueInt(params, "freq");
+    swl_chanspec_channelFromMHz(&chanSpec, freq);
+
+    SAH_TRACEZ_INFO(ME, "%s: channel=%d", pInterface->name, chanSpec.channel);
+
+    CALL_MGR(pInterface, fApCsaFinishedCb, &chanSpec);
+}
+
 SWL_TABLE(sWpaCtrlEvents,
           ARR(char* evtName; void* evtParser; ),
           ARR(swl_type_charPtr, swl_type_voidPtr),
@@ -225,7 +258,9 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-REG-SUCCESS", &s_wpsSuccess},
               {"AP-STA-CONNECTED", &s_stationConnected},
               {"AP-STA-DISCONNECTED", &s_stationDisconnected},
-              {"BSS-TM-RESP", &s_btmResponse}
+              {"BSS-TM-RESP", &s_btmResponse},
+              {"CTRL-EVENT-CHANNEL-SWITCH", &s_chanSwitchEvtCb},
+              {"AP-CSA-FINISHED", &s_apCsaFinishedEvtCb}
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

@@ -68,7 +68,6 @@
 
 typedef void (* wld_wpaCtrl_processMsgCb_f)(void* userData, char* ifName, char* msgData);
 
-
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
 typedef void (* wld_wpaCtrl_wpsTimeoutMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCancelMsg_f)(void* userData, char* ifName);
@@ -76,7 +75,7 @@ typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifNam
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status);
 
 /*
- * @brief structure of event handlers
+ * @brief structure of AP/EP event handlers
  */
 typedef struct {
     wld_wpaCtrl_processMsgCb_f fProcEvtMsg; // Basic handler of received wpa ctrl event
@@ -87,6 +86,18 @@ typedef struct {
     wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
 } wld_wpaCtrl_evtHandlers_cb;
+
+typedef void (* wld_wpaCtrl_chanSwitchCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+typedef void (* wld_wpaCtrl_apCsaFinishedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+
+/*
+ * @brief structure of Radio event handlers
+ */
+typedef struct {
+    wld_wpaCtrl_processMsgCb_f fProcEvtMsg; // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_chanSwitchCb_f fChanSwitchCb;
+    wld_wpaCtrl_apCsaFinishedCb_f fApCsaFinishedCb;
+} wld_wpaCtrl_radioEvtHandlers_cb;
 
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);
 int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey);

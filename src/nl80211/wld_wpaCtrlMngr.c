@@ -137,7 +137,7 @@ bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr) {
     return true;
 }
 
-bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers) {
+bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
     pMgr->userData = userdata;
     if(pHandlers) {

@@ -75,7 +75,7 @@ struct wld_wpaCtrlMngr {
     uint8_t wpaCtrlConnectAttempts;
     void* userData;
     swl_unLiList_t ifaces; //list of wpa_ctrl interfaces, handled by the manager
-    wld_wpaCtrl_evtHandlers_cb handlers;
+    wld_wpaCtrl_radioEvtHandlers_cb handlers;
 };
 
 #endif /* __WLD_WPA_CTRL_MNGR_PRIV_H__ */

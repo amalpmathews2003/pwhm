@@ -68,14 +68,33 @@
 #include "wld/wld_wps.h"
 #include "wld/wld_assocdev.h"
 #include "wld/wld_util.h"
-
+#include "wld/wld_radio.h"
 #define ME "genEvt"
+
+static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    SAH_TRACEZ_WARNING(ME, "%s: channel switch event central_chan=%d bandwidth=%d band=%d", pRad->Name,
+                       chanSpec->channel, chanSpec->bandwidth, chanSpec->band);
+}
+
+static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: csa finished cur_chan=%d new_chan=%d", pRad->Name, pRad->channel, chanSpec->channel);
+    if(pRad->channel != chanSpec->channel) {
+        pRad->channel = chanSpec->channel;
+    }
+    wld_rad_updateState(pRad, false);
+}
 
 static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Radio* pRad) {
     ASSERT_NOT_NULL(wpaCtrlMngr, SWL_RC_INVALID_PARAM, ME, "NULL");
-    wld_wpaCtrl_evtHandlers_cb wpaCtrlRadEvthandlers;
+    wld_wpaCtrl_radioEvtHandlers_cb wpaCtrlRadEvthandlers;
     memset(&wpaCtrlRadEvthandlers, 0, sizeof(wpaCtrlRadEvthandlers));
     //Set here the wpa_ctrl RAD event handlers
+    wpaCtrlRadEvthandlers.fChanSwitchCb = s_chanSwitchCb;
+    wpaCtrlRadEvthandlers.fApCsaFinishedCb = s_csaFinishedCb;
     wld_wpaCtrlMngr_setEvtHandlers(wpaCtrlMngr, pRad, &wpaCtrlRadEvthandlers);
     return SWL_RC_OK;
 }
