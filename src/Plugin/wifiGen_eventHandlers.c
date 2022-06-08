@@ -69,6 +69,8 @@
 #include "wld/wld_assocdev.h"
 #include "wld/wld_util.h"
 #include "wld/wld_radio.h"
+#include "swl/swl_hex.h"
+#include "swl/swl_ieee802_1x_defs.h"
 #define ME "genEvt"
 
 static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
@@ -179,6 +181,23 @@ static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* m
     wld_ap_bss_done(pAP, (const unsigned char*) mac->cMac, (int) replyCode);
 }
 
+static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t stype, char* data) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: Received frame %d", pAP->alias, stype);
+    if((stype == SWL_IEEE80211_FC_STYPE_ASSOC_REQ) || (stype == SWL_IEEE80211_FC_STYPE_REASSOC_REQ)) {
+        // save last assoc frame
+        char buf[12] = {0};
+        memcpy(buf, &data[24], 12);
+
+        swl_macBin_t mac;
+        swl_hex_toBytes(mac.bMac, SWL_MAC_BIN_LEN, buf, 12);
+        swl_timeReal_t timestamp = swl_time_getRealSec();
+        wld_vap_assocTableStruct_t tuple = {mac, data, timestamp, stype};
+        swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
+        SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(mac.bMac));
+    }
+}
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -192,6 +211,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
     wpaCtrlVapEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
+    wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
 
     ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),
                 SWL_RC_ERROR, ME, "%s: fail to set interface wpa evt handlers", pAP->alias);

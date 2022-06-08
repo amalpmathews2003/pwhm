@@ -2819,6 +2819,16 @@ define rrm_t{
 		 */
 		bool sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint32 class, %in uint32 channel, %in uint32 timeout, %in string ssid);
 
+		/**
+		 * get the last assoc request sent by a station to a vap
+		 * @param mac : format xx:xx:xx:xx:xx:xx
+		 * @return
+		 * a variant map containing ASSOC_REQ or REASSOC_REQ frames
+		 * Otherwise an error is returned
+		 * @version 11.1
+		 */
+		bool getLastAssocReq(%in string mac);
+
 		/** Indicates the status of this access point. Enumeration of:
 		*  <ul>
 		*    <li>Disabled</li>

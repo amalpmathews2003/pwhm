@@ -249,6 +249,17 @@ static void s_apCsaFinishedEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event
     CALL_MGR(pInterface, fApCsaFinishedCb, &chanSpec);
 }
 
+static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: <3>AP-MGMT-FRAME-RECEIVED buf=b0003c0000000000001012d4159a59e7000000000010a082000001000000
+    char frameControl[4];
+    int fc;
+    memcpy(frameControl, &params[4], 4);
+    sscanf(frameControl, "%x", &fc);
+    uint16_t stype = (fc & 0xF000) >> 12;
+    SAH_TRACEZ_INFO(ME, "%s MGMT-FRAME stype=%x", pInterface->name, stype);
+    CALL_INTF(pInterface, fMgtFrameReceivedCb, stype, params);
+}
+
 SWL_TABLE(sWpaCtrlEvents,
           ARR(char* evtName; void* evtParser; ),
           ARR(swl_type_charPtr, swl_type_voidPtr),
@@ -260,7 +271,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"AP-STA-DISCONNECTED", &s_stationDisconnected},
               {"BSS-TM-RESP", &s_btmResponse},
               {"CTRL-EVENT-CHANNEL-SWITCH", &s_chanSwitchEvtCb},
-              {"AP-CSA-FINISHED", &s_apCsaFinishedEvtCb}
+              {"AP-CSA-FINISHED", &s_apCsaFinishedEvtCb},
+              {"AP-MGMT-FRAME-RECEIVED", &s_mgtFrameEvt}
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

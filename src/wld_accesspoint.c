@@ -111,6 +111,8 @@ const char* wld_vendorIe_frameType_str[] = {"Beacon", "ProbeResp", "AssocResp", 
 
 const char* g_str_wld_ap_dm[] = {"Default", "Disabled", "RNR", "UPR", "FILSDiscovery"};
 
+SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_charPtr, swl_type_timeReal, swl_type_uint16))
+
 static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
     ASSERT_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
     T_SSID* pSSID = NULL;
@@ -2071,6 +2073,8 @@ int wld_ap_init(T_AccessPoint* pAP) {
     wld_ap_rssiMonInit(pAP);
     wld_assocDev_initAp(pAP);
 
+    swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
+
     if((ret = pR->pFA->mfn_wvap_create_hook(pAP))) {
         SAH_TRACEZ_ERROR(ME, "%s: VAP create hook failed %d", pAP->alias, ret);
     }
@@ -2092,6 +2096,8 @@ void wld_ap_destroy(T_AccessPoint* pAP) {
 
     wld_assocDev_cleanAp(pAP);
     wld_ap_rssiMonDestroy(pAP);
+
+    swl_circTable_destroy(&(pAP->lastAssocReq));
 
     /* Try to delete the requested interface by calling the HW function */
     pR->pFA->mfn_wrad_delvapif(pR, pAP->name);
@@ -2679,6 +2685,68 @@ amxd_status_t _wld_ap_setDriverConfig_owf(amxd_object_t* object) {
         params |= M_WLD_VAP_DRIVER_CFG_CHANGE_BSS_MAX_IDLE_PERIOD;
     }
     pAP->pFA->mfn_wvap_set_config_driver(pAP, params);
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
+/**
+ * @brief return the last assoc/reassoc frame sent by a station to a vap
+ * @param pAP the accesspoint receiving the assoc/reassoc frame
+ * @param macStation the station mac address
+ * @param data contains the last assoc/reassoc tuple associated to macStation if found
+ * @return - SWL_RC_OK: if the last assoc/reassoc frame is found for the given station
+ *         - SWL_RC_INVALID_PARAM if pAP = NULL or macStation = NULL or data = NULL
+ *         - SWL_RC_ERROR if no assoc/reassoc tuple associated to macStation is found
+ */
+
+swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld_vap_assocTableStruct_t** data) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(macStation, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(data, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_macBin_t bMac;
+    SWL_MAC_CHAR_TO_BIN(&bMac, macStation);
+
+    *data = swl_circTable_getMatchingTuple(&(pAP->lastAssocReq), 0, &bMac);
+    ASSERT_NOT_NULL(*data, SWL_RC_ERROR, ME, "NULL");
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief return the last assoc/reassoc frame sent by a station to a vap
+ * @param pAP the accesspoint receiving the assoc/reassoc frame
+ * @param mac the station mac address
+ * @return - a variant map containing the sent assoc/reassoc frame by a station
+ *         - Otherwise
+ *              - amxd_status_parameter_not_found if mac is missing
+ *              - amxd_status_unknown_error if no assoc/reassoc frame associated to mac is found
+ */
+amxd_status_t _AccessPoint_getLastAssocReq(amxd_object_t* object,
+                                           amxd_function_t* func _UNUSED,
+                                           amxc_var_t* args,
+                                           amxc_var_t* retval) {
+
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = amxd_status_ok;
+    T_AccessPoint* pAP = object->priv;
+
+    const char* macStation = GET_CHAR(args, "mac");
+    ASSERT_NOT_NULL(macStation, amxd_status_parameter_not_found, ME, "No mac station given");
+
+    wld_vap_assocTableStruct_t* tuple = NULL;
+    swl_rc_ne ret = wld_ap_getLastAssocReq(pAP, macStation, &tuple);
+    ASSERT_TRUE(swl_rc_isOk(ret), amxd_status_unknown_error, ME, "Error during execution");
+
+    amxc_var_init(retval);
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    char* names[4] = {"mac", "frame", "timestamp", "request"};
+    for(size_t i = 0; i < assocTable.nrTypes; i++) {
+        swl_type_t* type = assocTable.types[i];
+        swl_typeData_t* tmpValue = swl_tupleType_getValue(&assocTable, tuple, i);
+        amxc_var_t* tmpVar = amxc_var_add_new_key(retval, names[i]);
+        swl_type_toVariant(type, tmpVar, tmpValue);
+    }
+
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }

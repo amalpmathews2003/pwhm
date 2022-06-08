@@ -65,6 +65,7 @@
 #include <components.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <swl/swl_common.h>
 #include <swl/swl_commonLib.h>
 #include <swl/swl_uuid.h>
 #include <swl/swl_radioStandards.h>
@@ -100,6 +101,7 @@
 #include "swl/swl_table.h"
 #include "swl/swl_assert.h"
 #include "swl/swl_tupleType.h"
+#include "swl/swl_circTable.h"
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
 #include "wld_hostapd_cfgManager.h"
@@ -1709,7 +1711,16 @@ struct S_ACCESSPOINT {
     wld_nl80211_listener_t* nl80211Listener;  /* nl80211 events listener */
     wld_wpaCtrlInterface_t* wpaCtrlInterface; /* wpaCtrlInterface to hostapd interface */
     bool clientIsolationEnable;
+    swl_circTable_t lastAssocReq;             /* (mac,assoc/reassoc frame, timestamp,assocType) where station mac format: xx:xx:xx:xx:xx:xx */
 };
+
+typedef struct SWL_PACKED {
+    swl_macBin_t mac;
+    char* frame;
+    swl_timeReal_t timestamp;
+    uint16_t stype;
+} wld_vap_assocTableStruct_t;
+
 
 typedef struct {
     T_AccessPoint* vap;

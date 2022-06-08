@@ -132,5 +132,6 @@ typedef struct {
     uint32_t staToKick;
 } wld_banlist_t;
 void wld_apMacFilter_getBanList(T_AccessPoint* pAP, wld_banlist_t* banlist, bool includePf);
+swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld_vap_assocTableStruct_t** data);
 
 #endif /* __WLD_ACCESSPOINT_H__ */
