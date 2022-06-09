@@ -1,15 +1,27 @@
-# include components.config
--include $(STAGINGDIR)/components.config
+include ../makefile.inc
+
+# build destination directories
+OBJDIR = ../output/$(MACHINE)
+
+# TARGETS
+TARGET_SO = $(OBJDIR)/$(COMPONENT).so
+
+# directories
+# source directories
+SRCDIR = .
+INCDIR_PRIV = ../include_priv
+INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include/libnl3)
+STAGING_LIBDIR = $(if $(STAGINGDIR), -L$(STAGINGDIR)/lib) $(if $(STAGINGDIR), -L$(STAGINGDIR)/usr/lib)
 
 CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra  \
 		-I. \
 		-I../include_priv/ChannelManagement/ \
 		-I../include_priv/VendorModule/ \
-		-I../include/wld/ -I$(STAGINGDIR)/include \
+		-I../include/wld/ $(addprefix -I ,$(INCDIRS)) \
 		-I../include_priv/nl80211/ \
-		$(shell pkg-config --cflags sahtrace swla libnl-3.0)
+		-DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 CFLAGS += -Wimplicit-function-declaration -Wl,--no-undefined -Wno-unused-variable
-LDFLAGS += -L$(STAGINGDIR)/lib $(shell pkg-config --libs sahtrace swla openssl libnl-genl-3.0) -lrt -lm -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd -ldl
+LDFLAGS += $(STAGING_LIBDIR) -lsahtrace -lswlc -lswla -lcrypto -lssl -lnl-3 -lnl-genl-3 -lrt -lm -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd -ldl
 
 ifeq ($(COVERAGE),y)
 CFLAGS +=-fprofile-arcs -ftest-coverage

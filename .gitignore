@@ -4,4 +4,3 @@
 *.gcda
 *.gcno
 test/*/test.*
-odl/wld_definitions.odl

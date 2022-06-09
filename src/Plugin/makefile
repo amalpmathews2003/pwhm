@@ -1,16 +1,12 @@
-# include components.config
--include $(STAGINGDIR)/components.config
+include ../../makefile.inc
 
 CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra -Wno-unused-but-set-variable -I../../include/ -I$(STAGINGDIR)/include -I../../include_priv/Plugin
 CFLAGS += -Wimplicit-function-declaration -Wl,--no-undefined
-CFLAGS += $(shell pkg-config --cflags sahtrace swla)
+CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 
 LDFLAGS += -L.. -L$(STAGINGDIR)/lib -L$(STAGINGDIR)/usr/lib
 LDFLAGS += -Wl,-rpath,$(STAGINGDIR)/lib -Wl,-rpath,$(STAGINGDIR)/usr/lib -Wl,-rpath,$(STAGINGDIR)/usr/lib/wld
-LDFLAGS += $(shell pkg-config --libs sahtrace swla) -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
-
-INSTALL ?= install
-STRIP ?= strip
+LDFLAGS += -lsahtrace -lswlc -lswla -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
 
 OBJS-wld.so = wld_plugin.o \
 		  wifiGen.o \
