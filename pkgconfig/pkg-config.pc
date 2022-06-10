@@ -1,0 +1,7 @@
+prefix=/
+libdir=${prefix}/usr/lib
+
+Name: wld
+Description: The wld library
+Libs: -L${libdir}/wld -lwld
+Version: 0.0.0

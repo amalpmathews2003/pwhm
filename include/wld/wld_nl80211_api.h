@@ -1,0 +1,281 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+/*
+ * This file includes nl80211 api (requests) definitions
+ */
+
+#ifndef INCLUDE_WLD_WLD_NL80211_API_H_
+#define INCLUDE_WLD_WLD_NL80211_API_H_
+
+#include "wld_nl80211_core.h"
+#include "wld_nl80211_types.h"
+
+/*
+ * @brief return registered handlers table, defining wld implementation for nl80211
+ *
+ * @return pointer to function table
+ *         or NULL if nl80211 implementation was not registered
+ */
+const T_CWLD_FUNC_TABLE* wld_nl80211_getVendorTable();
+
+/*
+ * @brief create wld implementation for nl80211, with provided function table
+ *
+ * @return pointer to nl80211 vendor context
+ */
+vendor_t* wld_nl80211_registerVendor(T_CWLD_FUNC_TABLE* fta);
+
+/*
+ * @brief get all available nl80211 interfaces sorted per wiphy, and by increasing net dev index, in 2D array per wiphy
+ * (Synchronous api)
+ *
+ * @param nWiphyMax max wiphy value to fetch (i.e max radios)
+ * @param nWifaceMax max number of interfaces per wiphy (i.e max AP/EP per radio)
+ * @param wlIfaces (output) 2D array of interfaces, sorted per wiphy/ifIndex
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nWiphyMax, const uint32_t nWifaceMax,
+                                    wld_nl80211_ifaceInfo_t wlIfaces[nWiphyMax][nWifaceMax]);
+
+/*
+ * @brief get current nl80211 interface info
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex interface net dev index
+ * @param ifName optional interface name, used when ifIndex is null or invalid
+ * @param pIfaceInfo (output) interface info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getInterfaceInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
+ * @brief create a new virtual interface (AP or EP) on top of wiphy (radio)
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex physical interface net dev index (i.e wiphy / radio iface)
+ * @param ifName new virtual interface name
+ * @param pMac pointer to bin mac of the new interface
+ *        If null pointer, or null address or broadcast address, then mac is assigned by the driver.
+ * @param isAp flag to set AccessPoint type for the new interface
+ * @param isSta flag to set Station type for the new interface
+ *        One at least of isAp or isSta must be true.
+ * @param pIfaceInfo (output)(optional) resulting info of the newly created interface.
+ *        It will indicate the assigned ifIndex for the new interface, and the used mac address
+ *        (shall be the one provided as argument, if mac can be set on interface creation)
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t IfIndex, const char* ifName,
+                                   const swl_macBin_t* pMac, bool isAp, bool isSta,
+                                   wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
+ * @brief delete a virtual interface (AP or EP)
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex interface net dev index
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_delInterface(wld_nl80211_state_t* state, uint32_t ifIndex);
+
+/*
+ * @brief configure interface as AccessPoint or Station
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex interface net dev index
+ * @param isAP flag for AP mode
+ * @param isSta flag for STA mode
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setInterfaceType(wld_nl80211_state_t* state, uint32_t ifIndex, bool isAp, bool isSta);
+
+/*
+ * @brief configure interface to user 4MAC mode
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex interface net dev index
+ * @param use4Mac flag to use 4MAC mode
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setInterfaceUse4Mac(wld_nl80211_state_t* state, uint32_t ifIndex, bool use4Mac);
+
+/*
+ * @brief get wiphy (radio) info: radio caps, supported bands/chans, dfs status, operStds, ...)
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param pWiphyInfo (output) wiphy info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_wiphyInfo_t* pWiphyInfo);
+
+/*
+ * @brief get station info: rx/tx bytes, rx/tx packets, rssi, ...
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex station index
+ * @param pMac pointer to station mac adress
+ * @param pSationInfo (output) station info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getStationInfo(wld_nl80211_state_t* state, uint32_t ifIndex, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pSationInfo);
+
+/*
+ * @brief get radio noise
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex radio index
+ * @param noise pointer to noise
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getNoise(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* noise);
+
+/*
+ * @brief configure tx/rx antennas
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param txMapAnt Bitmap of allowed antennas for transmitting
+ * @param rxMapAnt Bitmap of allowed antennas for receiving
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setWiphyAntennas(wld_nl80211_state_t* state, uint32_t ifIndex, uint32_t txMapAnt, uint32_t rxMapAnt);
+
+/*
+ * @brief configure automatic transmit power level
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setTxPowerAuto(wld_nl80211_state_t* state, uint32_t ifIndex);
+
+/*
+ * @brief configure fixed transmit power level
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param mbm transmit power level where mbm = (dbm * 100)
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setTxPowerFixed(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t mbm);
+
+/*
+ * @brief configure limited transmit power level
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param mbm transmit power level where mbm = (dbm * 100)
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t mbm);
+
+/*
+ * @brief get transmit power level
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param dbm current tx power in dbm
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* dbm);
+#endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

@@ -1,0 +1,159 @@
+%populate {
+    object WiFi {
+        object AutoCommitMgr {
+            parameter Enable = true;
+            parameter DelayTime = 1000;
+        }
+        object Radio {
+            instance add ("wifi0") {
+                parameter Enable = 1;
+                parameter OperatingFrequencyBand = "2.4GHz";
+                parameter AutoChannelEnable = 0;
+                parameter Channel = 1;
+                parameter RegulatoryDomain = "DE";
+                parameter AP_Mode = 1;
+                parameter AirtimeFairnessEnabled = 1;
+                parameter IntelligentAirtimeSchedulingEnable = 1;
+                parameter RxPowerSaveEnabled = 1;
+                parameter RetryLimit = 7;
+                parameter TargetWakeTimeEnable = 1;
+                parameter RxBeamformingCapsEnabled = "DEFAULT";
+                parameter TxBeamformingCapsEnabled = "DEFAULT";
+                parameter ObssCoexistenceEnable = 1;
+                parameter ProbeRequestNotify = "AlwaysRSSI";
+                parameter OperatingStandards = "auto";
+                parameter OperatingChannelBandwidth = "20MHz";
+                object MACConfig {
+                    parameter UseBaseMacOffset = 1;
+                    parameter BaseMacOffset = 1;
+                }
+            }
+            instance add ("wifi1") {
+                parameter Enable = 1;
+                parameter OperatingFrequencyBand = "5GHz";
+                parameter AutoChannelEnable = 0;
+                parameter Channel = 36;
+                parameter RegulatoryDomain = "DE";
+                parameter AP_Mode = 1;
+                parameter WDS_Mode = 1;
+                parameter AirtimeFairnessEnabled = 1;
+                parameter IntelligentAirtimeSchedulingEnable = 1;
+                parameter MultiUserMIMOEnabled = 1;
+                parameter RxPowerSaveEnabled = 1;
+                parameter RetryLimit = 7;
+                parameter TargetWakeTimeEnable = 1;
+                parameter RxBeamformingCapsEnabled = "DEFAULT";
+                parameter TxBeamformingCapsEnabled = "DEFAULT";
+                parameter MCS = -1;
+                object RadCaps {
+                    parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
+                }
+                parameter ProbeRequestNotify = "AlwaysRSSI";
+                parameter OperatingStandards = "auto";
+            }
+        }
+        object SSID {
+            instance add ("wlan0") {
+                parameter LowerLayers = "WiFi.Radio.wifi0";
+                parameter SSID = "prplMesh-WHM-24g";
+                parameter Enable = 1;
+            }
+            instance add ("wlan1") {
+                parameter LowerLayers = "WiFi.Radio.wifi1";
+                parameter SSID = "prplMesh-WHM-5g";
+                parameter Enable = 1;
+            }
+        }
+        object AccessPoint {
+            instance add ("wlan0") {
+                parameter SSIDReference = "WiFi.SSID.wlan0";
+                parameter Enable = 1;
+                parameter RetryLimit = 0;
+                parameter WMMEnable = 0;
+                parameter UAPSDEnable = 0;
+                parameter MCEnable = 0;
+                parameter DefaultDeviceType = "Data";
+                parameter BridgeInterface = "br-lan";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 1;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "prplMesh";
+                    parameter RekeyingInterval = 0;
+                    parameter OWETransitionInterface = "";
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter SHA256Enable = 0;
+                    parameter RadiusServerIPAddr = "";
+                    parameter RadiusServerPort = 1812;
+                    parameter RadiusSecret = "";
+                    parameter RadiusDefaultSessionTimeout = 0;
+                    parameter RadiusNASIdentifier = "";
+                    parameter RadiusCalledStationId = "";
+                    parameter RadiusChargeableUserId = 0;
+                    parameter ModeEnabled = "WPA2-Personal";
+                    parameter SPPAmsdu = 0;
+                    parameter TransitionDisable = "";
+                }
+                object WPS {
+                    parameter Enable = 1;
+                    parameter RelayCredentialsEnable = 0;
+                    parameter RestartOnRequest = 0;
+                }
+                object DriverConfig {
+                    parameter BssMaxIdlePeriod = -1;
+                }
+            }
+            instance add ("wlan1") {
+                parameter SSIDReference = "WiFi.SSID.wlan1";
+                parameter Enable = 1;
+                parameter RetryLimit = 3;
+                parameter WMMEnable = 0;
+                parameter UAPSDEnable = 0;
+                parameter MCEnable = 0;
+                parameter DefaultDeviceType = "Data";
+                parameter BridgeInterface = "br-lan";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 0;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "prplMesh";
+                    parameter RekeyingInterval = 0;
+                    parameter OWETransitionInterface = "";
+                    parameter TransitionDisable = "0";
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter SHA256Enable = 0;
+                    parameter RadiusServerIPAddr = "";
+                    parameter RadiusServerPort = 1812;
+                    parameter RadiusSecret = "";
+                    parameter RadiusDefaultSessionTimeout = 0;
+                    parameter RadiusNASIdentifier = "";
+                    parameter RadiusCalledStationId = "";
+                    parameter RadiusChargeableUserId = 0;
+                    parameter ModeEnabled = "WPA2-Personal";
+                }
+                object WPS {
+                    parameter Enable = 1;
+                    parameter RelayCredentialsEnable = 0;
+                    parameter RestartOnRequest = 0;
+                }
+                object DriverConfig {
+                    parameter BssMaxIdlePeriod = -1;
+                }
+            }
+        }
+    }
+}

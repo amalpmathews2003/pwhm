@@ -1,0 +1,5349 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+
+m4_dnl
+m4_dnl Include the build system config symbols, they will be
+m4_dnl available as CONFIG_*. 
+m4_dnl
+m4_include(STAGINGDIR/components.config_m4.m4)
+
+/*
+Leave uncommented: define is broken in the odl parser!
+define spectruminfo_channel_t {
+	int32   channel;
+	int32   bandwidth;
+	int32   availability;
+	int32   noiselevel;
+	int32   accesspoints;
+}
+
+define scanresult_t {
+	string  SSID;
+	string  BSSID;
+	int32   SignalNoiseRatio;
+	int32   Noise;
+	int32   RSSI;
+	int32   Channel;		// The primary channel
+	int32   CentreChannel;	// The centre channel
+	int32   Bandwidth;
+	string	SecurityModeEnabled;
+	string	WPSConfigMethodsSupported;
+	int32   SignalStrength; // Signal and RSSI are different units of measurement that both represent the same thing: signal strength.
+							// The difference is that RSSI is a relative index, while dBm is an absolute number representing power levels in mW (milliwatts).
+	string	EncryptionMode;
+}
+
+//Specify the airstat struct.
+//Note that all time indication is driver specific, and ranges are
+//currently reported as given by driver. As such they can vary from plugin to plugin.
+define airstat_t {
+	uint16	Load; // Percentage of load. Range: [0,100]
+	int32	Noise; // Noise reading in db: [-100,0]
+	uint16	TxTime; // Time spent transmitting
+	uint16	RxTime; // Time spent receiving from stations in the bss
+	uint16	IntTime; // Interference time: both receiving data from other AP's on the channel, or interference from other sources
+	uint16	FreeTime; // Time available for sending
+	// Short preamble interference level detected on the radio.
+	// Value is between 0-100 and is a representation of the interference level on the radio.
+	// Short preamble interference could be non Wi-Fi related.
+	// 0 : no interference.
+	// 100 : high interference.
+	uint8	ShortPreambleErrorPercentage;
+	// Long preamble interference level detected on the radio.
+	// Value is between 0-100 and is a representation of the interference level on the radio.
+	// Long preamble interference will be related to Wi-Fi frame corruptions.
+	// 0 : no interference.
+	// 100 : high interference.
+	uint8	LongPreambleErrorPercentage;
+}
+
+define probeinfo_t{
+	string MacAddress; // colon seperatated MAC address of the station which corresponds to the probe info element
+	int32 RSSI; // the received signal strenght of the probe request.
+	datetime TimeStamp; // the UTC time when this probe request was received.
+}
+
+define probelist_t{
+	// The UTC timestamp when this probelist was generated. All probe info elements will be
+	// either before or at this timestamp
+	datetime TimeStamp;
+	// The UTC timestamp of the minimal time when this timestamp was taken.
+	// all probe info elements will either be after or at this timestamp.
+	datetime FromTime;
+	// The list of probe info elements. List of type probeinfo_t
+	list StaList;
+}
+
+//Structure containing a remote measurement reply
+define rrm_t{
+	// The BSSID that was measured
+	string BSSID;
+	// Channel that the BSSID was observed on
+	uint32 Channel;
+	// Received channel power indicator
+	uint8 RCPI;
+	// Received Signal Noise Indicator
+	uint8 RSNI;
+}
+*/
+
+/**
+   WIFI object is generated plugin based to tr181-Issue2 spec.
+   On some places we've add extra config parameters (extra data
+   fields for driver or GUI). This WIFI object provides global
+   access to the WiFi driver and is split in 4 separate objects.
+   \n<B>RADIO</B>
+   \n<B>AccessPoint</B>
+   \n<B>SSID</B>
+   \n<B>EndPoint</B>
+*/
+%define {
+%persistent object WiFi {
+	/* Functions - used in NeMo for creating and deleting VAP interfaces (USE WITH CARE) */
+
+	/**
+	 * Creates a VAP interface on the RADIO and updates the
+	 * AccessPoint and SSID object fields.
+	 * @param vap Name of the VAP interface that will be created
+	 *        (wl0,wl1,...)
+	 * @param radio Name of the RADIO interface that derrives the
+	 *        vap interface. (wifi0, wifi1,...)
+	 * @return Success if &gt;=0, the value represents the
+	 *         NETFINDEX. When 0 it's representing an error number.
+	 */
+	uint32 addVAPIntf(%in mandatory string vap, %in mandatory string radio); /* use WIFI_addVAPIntf */
+	/**
+	 * Delete a VAP interface from the physical radio interface.
+	 * Update also AccessPoint and SSID object fields. Before this
+	 * can be done, the (deleted) interface must be down. You don't
+	 * need to know which Radio object it's attached.
+	 * @param vap Name of the VAP interface that will be removed
+	 *        from the system.
+	 * @return If &lt;0 it's representing an error.
+	 * &gt;=0 is success.
+	 */
+	uint32 delVAPIntf(%in mandatory string vap);               /* use WIFI_delVAPIntf */
+
+	/**
+	 * Creates an EndPoint interface on the RADIO and updates the
+	 * EndPoint and SSID object fields.
+	 * @param radio Name of the RADIO interface that derrives the
+	 *        endpoint interface. (wifi0, wifi1,...)
+	 * @param endpoint Name of the EndPoint interface that will be created
+	 *        (wl0,wl1,...)
+	 * @return Success if &gt;=0, the value represents the
+	 *         NETFINDEX. When 0 it's representing an error number.
+	 * @version 6.1
+	 */
+	uint32 addEndPointIntf(%in mandatory string radio, %in mandatory string endpoint);
+	/**
+	 * Delete an EndPoint interface from the physical radio interface.
+	 * Update also EndPoint and SSID object fields. Before this
+	 * can be done, the (deleted) interface must be down. You don't
+	 * need to know which Radio object it's attached.
+	 * @param endpoint Name of the EndPoint interface that will be removed
+	 *        from the system.
+	 * @return If &lt;0 it's representing an error.
+	 * &gt;=0 is success.
+	 * @version 6.1
+	 */
+	uint32 delEndPointIntf(%in mandatory string endpoint);
+
+
+	/**
+	 * <b>For debug use only... VALUES ARE BIT OFFSETS (1 &lt;&lt;
+	 * bitnr). List of current 'bitnr':</b>
+	 * <li>00 - Disable the VAP interface</li>
+	 * <li>01 - Get IWList info? - Not needed!</li>
+	 * <li>02 - Get IWPriv info? - Not needed!</li>
+	 * <li>03 - Get IWConfig info? - Not needed!</li>
+	 * <li>04 - Get current VAP SSID from driver</li>
+	 * <li>05 - Current WPS state (if WPS enabled)</li>
+	 * <li>06 - Set SSID (also hide SSID)</li>
+	 * <li>07 - Stops HostAPD</li>
+	 * <li>08 - Set AutoChannel (BCM does it differently)</li>
+	 * <li>09 - Set a FIX Channel</li>
+	 * <li>10 - Set the security mode (WEP/WPA(2)/Mixed)</li>
+	 * <li>11 - Set WPS mode (PBC/Client/Self-Pin)</li>
+	 * <li>12 - Set a IWPriv command? - Not Needed!</li>
+	 * <li>13 - Change the security key (WEP/WPA(2)/Mixed)</li>
+	 * <li>14 - Change WMM parameters</li>
+	 * <li>15 - Set a different BAND (also Channel related)</li>
+	 * <li>16 - Reconfigure HostAPD parameters</li>
+	 * <li>17 - Start HostAPD (This needs also a HostAPD_STOP)</li>
+	 * <li>18 - Reconfigure HostAPD</li>
+	 * <li>19 - Set VAP interface inline with enable state</li>
+	 * <li>20 - Get the Channel</li>
+	 * <li>21 - Trigger WPS button</li>
+	 */
+	uint32 FSM_Start(%in string vap, %in uint32 bitnr);  /* use WIFI_FSM_Start (DEBUG) */
+
+	/**
+	 *  <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+	 *  Enable/Disable a VAP interface
+	 *  @param vap Name of the VAP interface that will updated. Required input field.
+	 *  @param state 1 or 0, active or disable state. Use -1 for getting the current state.
+	 *  The other states: Unknown, Dormant, NotPresent, LowerLayerDown or Error
+	 *  can't be set with this function.
+	 *  @return It will return the current state after the action.
+	 */
+//	bool activateVAPIntf(%in string vap, %in bool state);
+
+	/**
+	 *  <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+	 *  Enable/Disable a Radio interface, note this will disable also the upper VAPs
+	 *  @param radio Name of the Radio interface that will updated. Required input field.
+	 *  @param state 1 or 0, active or disable state. Use -1 for getting the current state.
+	 *  The other states: Unknown, Dormant, NotPresent, LowerLayerDown or Error
+	 *  can't be set with this function.
+	 *  @return It will return the current state after the action.
+	 */
+//	bool activateRADIOIntf(%in string radio, %in bool state);
+
+	/* For the WEB GUI ((Better NOT)) --> GUI guys must talk with (practical) DRIES or Theory (Wouter)!!! */
+	/*
+		NeMo will take care of the configuration, so it's NeMo that will save the config
+		Those functions can be used (debug). But in the future they will be obsolete.
+	*/
+	/**
+	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+	 * Gets data from a registered VAP interface and updates the
+	 * requested fields with AccessPoint and SSID object data.
+	 * @param vap - Name of the VAP interface that will be read.
+	 *  	  (wl0,wl1,...) Required input field.
+	 * @param enable after the call this will be updated with the current 'enable' state
+	 * of the vap.
+	 * @param ssid after the call this will be updated with the current 'SSID' name
+	 * of the VAP. (copied from SSID.&#123;vap&#125; object.
+	 * @param hideSSID after the call this will be updated with the current
+	 * 'SSIDAdvertisementEnabled' value.
+	 * @param secKey after the call this will be updated with the security key used.
+	 * Attention, when the secMode is WEP, it will contain the WEP key.
+	 * When it's WPA(2) it can be the passphrase or TKIP key.
+	 * It's an empty string when security is set on none.
+	 * @param secMode after the call this will be updated with the selected security mode.
+	 * (None, WEP-64, WEP-128, WPA-Personal, WPA2-Personal, WPA-WPA2-Personal, WPA-Enterprise,
+	 * WPA2-Enterprise or WPA-WPA2-Enterprise.
+	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+	 */
+//	bool getWebVAPData(string vap, bool enable, string ssid, bool hideSSID, string secKey, string secMode, string encrypMode);
+
+	/**
+	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+	 * Sets data on a registered VAP interface and updates the
+	 * requested fields in the object AccessPoint and SSID data.
+	 * @param vap - Name of the VAP interface that will be updated.
+	 *  	  (wl0,wl1,...) Required input field.
+	 * @param enable after the call the active vap will be updated with the requested 'enable' state.
+	 * @param ssid after the call, the vap SSID will be updated with the requested SSID.
+	 * @param hideSSID after the call the SSID will be actively broadcasted or not.
+	 * @param secKey after the call this will be updated with the security key used.
+	 * Attention, this is based on the given secMode value. When this is WEP,
+	 * it must contain a valid WEP key.  When it's WPA(2) it must contain a passphrase
+	 * or TKIP key. When 'none' the value isn't taken.
+	 * @param secMode after the call the security mode will be updated. Possible values:.
+	 * (None, WEP-64, WEP-128, WPA-Personal, WPA2-Personal, WPA-WPA2-Personal, WPA-Enterprise,
+	 * WPA2-Enterprise or WPA-WPA2-Enterprise).
+	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+	 */
+//	bool setWebVAPData(%in string vap, %in bool enable, %in string ssid, %in bool hideSSID, %in string secKey, %in string secMode, %in string encrypMode);
+
+	/**
+	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+	 * Gets main Radio data
+	 * @param radio Name of the Radio interface that will be read. Needed input field.
+	 * @param After the call this will contain Current 'Enable' state of
+	 * the selected Radio interface (Up/Down).
+	 * @param selectchannel After the call this will contain the cached channel.
+	 * In case this is 0 it means Auto Channel selection.
+	 * @param channel After the call this will contain the used channel by the Radio.
+	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+	*/
+//	bool getWebRadioData(%in string radio, %in string mode, %in uint16 selectchannel, %in uint16 channel);
+
+	/**
+	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+	 * Sets main Radio data
+	 * @param radio Name of the Radio interface that will be read. Needed input field.
+	 * @param mode After the call this will set Current 'Enable' state of
+	 * the selected Radio interface (Up/Down).
+	 * @param selectchannel After the call this will set the current channel.
+	 * In case this is 0 it means Auto Channel selection.
+	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+	*/
+//	bool setWebRadioData(%in string radio, %in string mode, %in uint16 selectchannel);
+
+// bool getWebWPSData(%in string vap, %in bool enable, %in string wpsMode, %in string wpsClientPin, %in string wpsSelfPin);
+// bool setWebWPSData(%in string vap, %in bool enable, %in string wpsMode, %in string wpsClientPin);
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////// */
+
+	/**
+	 * Verifies WPS PIN Checksum. Stips out Dash and Whitespace before checking.
+	 * @param StrVal string representing the PIN
+	 * @return True if PIN OK, False if any error occours
+	 */
+	bool checkWPSPIN(%in string PIN);
+
+	/**
+	   Global WPS system string parameters (Used in IE of the Beacon
+	   and Response frame). These fields are filled in at startup
+	   time and taken from the _ENV.&lt; Vendor / software / version
+	   / ...&gt; board settings.
+	*/
+	object wps_DefParam{         /* Some used driver defines copied on all active WPS intf */
+		/** 8-digit format WPS pin (Self PIN) */
+		string DefaultPin;
+		/** Device name */
+		string DevName;
+		/** Device OUI */
+		string OUI;
+		/** Device friendly name */
+		string FriendlyName;
+		/** Manufacture Name  */
+		string Manufacturer;
+		/** Manufacture URL link */
+		string ManufacturerUrl;
+		/** Full model description */
+		string ModelDescription;
+		/** Vendor name  */
+		string ModelName;
+		/** Vendor number */
+		string ModelNumber;
+		/** Vendor URL link */
+		string ModelUrl;
+		/** OS version ID (A.B.C.D) */
+		string OsVersion;
+		/** Serial number (partly) */
+		string SerialNumber;
+		/** WPS UUID */
+		string UUID;
+		/** WPS Supported Version */
+		int32 wpsSupVer;
+		/** Share WPS UUID at vendor plugin */
+		int32 wpsUUIDShared;
+
+		/** <B>DEBUG</B> Generate a new SelfPIN and update the
+		 *  DefaultPin field */
+		uint32 wps_GenSelfPIN();
+	}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////// */
+
+	/**
+	 * Auto commit manager.
+	 * This component will manage the auto commit feature, where changes in the data model
+	 * will automatically cause a commit to happen.
+	 *
+	 * @version 10.2
+	 */
+	%persistent object AutoCommitMgr{
+	
+		/**
+		 * Whether auto committing should be enabled
+		 */
+		%persistent bool Enable{
+			default 0;
+			on action write call wld_autoCommitMgt_setEnable_pwf;
+		}
+		
+		/**
+		 * The time in milliseconds between when the first change happens that triggers the fsm,
+		 * and triggering the commit.
+		 * Note that due to timer restrictions, timers less then 100ms will be rounded up to 100ms.
+		 */
+		%persistent uint32 DelayTime{
+			default 250;
+			on action write call wld_autoCommitMgt_setDelayTime_pwf;
+		}
+		
+		/**
+		 * Ensure that first commit will only happen BootDelayTime ms after
+		 * the component got initialized, to avoid potential clashes.
+		 */
+		%persistent uint32 BootDelayTime{
+			default 4000;
+			on action write call wld_autoCommitMgt_setBootDelayTime_pwf;
+		}
+	}
+
+	/**
+	   This object models an 802.11 wireless radio on a device (a
+	   stackable interface object as described in [section
+	   4.2/TR-181i2]).
+	   If the device can establish more than one connection
+	   simultaneously (e.g. a dual radio device), a separate Radio
+	   instance MUST be used for each physical radio of the device.
+	   Note: A dual-band single-radio device can be configured to
+	   operate at 2.4 or 5 GHz frequency bands but only a single
+	   frequency band is used to transmit/receive at a given time.
+	   Therefore, a single Radio instance is used even for a
+	   dual-band radio.
+	   W.o.w. This object handles the RADIO data/parameters for
+	   every physical wireless card. Note it's only the WLD
+	   plugin that will create the RADIO interface when started and
+	   destroy it when the plugin stops.
+	    */
+	%persistent object Radio[] {
+		/**
+		 * getSpectrumInfo() returns a list of channels the radio
+		 * supports, along with quality parameters
+		 * @param update Set to true to force a spectrum scan (WARNING:
+		 * this will interfere with the communication on the Radio!)
+		 */
+		void getSpectrumInfo(%in bool update);
+		/**
+		 * edit() is used for blocking the STATE-Machine to be started on Enable event.
+		 * When set, the registered actions are commited from the moment commit() is called.
+		 * The goal of this is to update the configuration of the full Radio (including
+		 * also the VAP changes) at once. When TR69 or TR98 mode is used, a toggle on the
+		 * object Enable fields is OK.
+		 */
+		bool edit();
+		/**
+		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+		 * <p> Real function <b>bool verify(...)</b></p>
+		 * Verify 'all' or 'selected' the Radio-object parameters
+		 * @param Radio Name of the Radio interface that will be verified.
+		 * @param &lt;user param&gt; In case empty, the current given parameters are verified.
+		 * If the parameter is filled in (strin=value) it must be one of the Radio object strings:
+		 * Alias, LastChange, OperatingFrequencyBand, OperatingStandards, Channel,
+		 * AutoChannelEnable, AutoChannelRefreshPeriod, OperatingChannelBandwidth,
+		 * ExtensionChannel, GuardInterval, MCS, TransmitPower, IEEE80211hEnabled,
+		 * RegulatoryDomain, Enable
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		 */
+		bool verify();
+
+		/**
+		 * <p> Real function <b>bool commit(...)</b></p>
+		 * The function will start the RADIO state machine to configure all registered data.
+		 * No extra parameters are needed anymore. The return value is returned when the full
+		 * config is done on this physical Radio device (including also all the attached VAP's).
+		 * It will also un-mark the edit lock.
+		 * @param cm Commit mode, Or'ed value of following bit fields:
+			SET(1), NO_COMMIT(2), DIRECT(4). Note SET is set by default!
+		 * @param &lt;user param&gt; In case empty, the current parameters are re-parsed.
+		 * If the parameter is filled in (string=value) it must be one of the Radio object strings:
+		 * Alias, LastChange, OperatingFrequencyBand, OperatingStandards, Channel,
+		 * AutoChannelEnable, AutoChannelRefreshPeriod, OperatingChannelBandwidth,
+		 * ExtensionChannel, GuardInterval, MCS, TransmitPower, IEEE80211hEnabled,
+		 * RegulatoryDomain, Enable
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		*/
+		bool commit();
+
+		/**
+		 * <p> Real function <b>startACS(...)</b></p>
+		 * The function will start an Autochannel sequence when autochannel is enabled!
+		 */
+		bool startACS();
+
+		/**
+		 * Start a scan all possible channels of the radio is configured for
+		 * This function returns immediately, the results must be retrieved manually.
+		 * 1. By default all possible channels of the radio will be scanned.
+		 * 2. if SSID is specified: Scan the SSID in the spectrum the radio is configured for.
+		 * 3. if channel is specified: scan only the channel in the spectrum.
+		 * All channels must be part of the PossibleChannels list.
+		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param channels: optional comma seperated list of channels.
+		 * @param scanReason: optional string indicates the scan reason.
+		 * Default scan reason is "Ssid".
+		 * @return a list of scanresult_t.
+		 * @version 10.3
+		 * @error function_exec_error "Invalid Channels in the List" if list contains a channels otherthan PossibleChannels list.
+		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
+		 * @error function_exec_error "A scan is already running" if a scan is already active.
+		 */
+		void startScan(%in string SSID, %in string channels, %in string scanReason, %in bool forceFast, %in bool updateUsage);
+
+		/**
+		 * Stop a running scan for SSID's.
+		 * @version 7.0
+		 */
+		void stopScan();
+		/**
+		 * Start a scan based on all possible channels of the radio or specified ssid/channel list.
+		 * 1. By default all possible channels of the radio will be scanned.
+		 * 2. if SSID is specified: Scan the SSID in the spectrum the radio is configured for.
+		 * 3. if channel is specified: scan only the channel in the spectrum.
+		 * All Channels must be part of the PossibleChannels list.
+		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param channels: optional comma seperated list of channels.
+		 * @version 9.2
+		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
+		 * @version 10.0
+		 * @param scanReason: optional string indicates the scan reason.
+		 * Default scan reason is "Ssid".
+		 * @version 10.3
+		 * @return a list of scanresult_t.
+		 * @error function_exec_error "Invalid Channels in the List" if list contains a channels otherthan PossibleChannels list.
+		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
+		 * @error function_exec_error "A scan is already running" if a scan is already active.
+		 */
+		void scan(%in string SSID, %in string channels, %in int32 min_rssi, %in string scanReason);
+
+		/**
+		 * Return a list scanresult_t describing the accesspoints discovered
+		 * during the previous scan
+		 * @version 7.0
+		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
+		 * @version 10.0
+		 */
+		void getScanResults(%in int32 min_rssi, %in out variant results);
+
+		/* event ScanComplete is sent on the radio instance when scan results are received */
+		/* event NOTIFY_SCAN_DONE name = "ScanComplete"
+		{
+			//no parameters
+		}
+		*/
+
+		/**
+		 * Request a re-send of all previous ProbeRequest notifications.
+		 * This is useful for a newly (re)started or re-configured BandSteering
+		 * daemon.
+		 * @version 7.0
+		 */
+		void refreshProbeRequests();
+
+		/**
+		 * Retrieve the probe requests since a given timestamp.
+		 * If no timestamp is given, all probe requests are returned.
+		 * Returns an object of the probelist_t type.
+		 * All timestamps will be in UTC time.
+		 */
+		 void getProbeRequests(%in datetime fromTime);
+
+		/**
+		 * Air quality statistics for this interface.
+		 */
+		void getRadioAirStats();
+
+		/**
+		 * Packets statistics for this interface.
+		 */
+		void getRadioStats();
+
+		/**
+		 * Get the RSSI value per antenna for the radio, and test for radio defect.
+		 */
+		void getPerAntennaRssi();
+
+		/**
+		 * Get the latest TX Power value for each antenna of the radio.
+		 */
+		void getLatestPower();
+
+		/**
+		* The current operational state of the radio (see [Section 4.2.2/TR-181i2]).
+		* <p>Enumeration of:</p>
+		<ul>
+			<li>Up</li>
+			<li>Down</li>
+			<li>Unknown</li>
+			<li>Dormant</li>
+			<li>NotPresent</li>
+			<li>LowerLayerDown</li>
+			<li>Error (OPTIONAL)</li>
+		</ul>
+		* <p>When Enable is false then Status SHOULD normally be Down (or
+		* NotPresent or Error if there is a fault condition on the
+		* interface). </p>
+		* <p>When Enable is changed to true then Status SHOULD change to Up
+		* if and only if the interface is able to transmit and receive
+		* network traffic; it SHOULD change to Dormant if and only if the
+		* interface is operable but is waiting for external actions
+		* before it can transmit and receive network traffic (and
+		* subsequently change to Up if still operable when the expected
+		* actions have completed); it SHOULD change to LowerLayerDown if
+		* and only if the interface is prevented from entering the Up
+		* state because one or more of the interfaces beneath it is down;
+		* it SHOULD remain in the Error state if there is an error or
+		* other fault condition detected on the interface; it SHOULD
+		* remain in the NotPresent state if the interface has missing
+		* (typically hardware) components; it SHOULD change to Unknown if
+		* the state of the interface can not be determined for some
+		* reason. This parameter is based on ifOperStatus from [RFC2863]. </p>
+		*/
+		read-only string Status{
+			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
+			default "Down";
+		}
+		/** <p>SoftAtHome parameter. This is used for configuring a
+		 *  MAC address on thr RADIO interface. It's important to know
+		 *  that it can only be used before the VAP's are created! </p>*/
+		string BaseMACAddress {
+			default "$(WAN_ADDR)";
+		}
+		/** <p>A non-volatile handle used to reference this instance.
+		 *  Alias provides a mechanism for an ACS to label this
+		 *  instance for future reference. An initial unique value
+		 *  MUST be assigned when the CPE creates an instance of this
+		 *  object.</p> */
+		string Alias;
+		/**
+		 *  <p>The textual name of the radio as assigned by
+		 *  the CPE.</p> Internal vendor string (<B>DEBUG</B>)   */
+		read-only string Name;
+		/**
+		 * <p>Vendor PCI Signature value.(<B>DEBUG</B>) This is the only
+		 * way to find out what kind of vendor driver is used for this
+		 * RADIO interface.
+		 * </p>
+		 */
+		read-only string VendorPCISig;
+		/**
+		 * <p>The accumulated time in seconds since the radio entered
+		 * its current operational state.</p>
+		 */
+		/*uint32 LastChange;*/
+		/* string LowerLayers;            / * -- See NeMo! Guess this isn't needed here? FIX ME */
+
+		/**
+		 * (<B>DEBUG</B>) Contains the NETFINDEX value of the interface.
+		 */
+		read-only uint32 Index;
+
+		/**
+		 * <p>Indicates whether the interface points towards the Internet
+		 * (true) or towards End Devices (false).</p>
+		 * For example:
+		 * For an Internet Gateway Device, Upstream will be true for all
+		 * WAN interfaces and false for all LAN interfaces. For a
+		 * standalone WiFi Access Point that is connected via Ethernet
+		 * to an Internet Gateway Device, Upstream will be true for the
+		 * Ethernet interface and false for the WiFi Radio interface.
+		 * For an End Device, Upstream will be true for all interfaces.
+		 */
+		read-only bool Upstream;
+
+		/**
+		 * <p> Indicates wheter the RADIO is in AP mode </p>
+		 */
+		%persistent bool AP_Mode {
+			on action write call wld_rad_setAPMode_pwf;
+			default true;
+		}
+
+		/**
+		 * <p> Indicates wheter the RADIO is in STATION mode </p>
+		 */
+		%persistent bool STA_Mode {
+			on action write call wld_rad_setSTAMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Indicates wheter the RADIO is in WDS support mode </p>
+		 */
+		%persistent bool WDS_Mode {
+			on action write call wld_rad_setWDSMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Indicates wheter the RADIO is in WET support mode </p>
+		 */
+		%persistent bool WET_Mode {
+			on action write call wld_rad_setWETMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Indicates wheter STATION mode is supported on this RADIO </p>
+		 */
+		%persistent bool STASupported_Mode {
+			on action write call wld_rad_setStaSupMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Set WPS Enrollee mode when STA is active </p>
+		 */
+		%persistent bool WPS_Enrollee_Mode {
+			on action write call wld_rad_setWPSEnrolMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Kick a station, when it roams between AP's of the same radio.
+		 * This will cause a station, when it associates to a given vap of a radio,
+		 * that it will be kicked from all other vaps on the same radio. </p>
+		 */
+		%persistent bool KickRoamingStation = true {
+			on action write call wld_rad_setKickRoamSta_pwf;
+		}
+
+		/**
+		 * <p>The maximum PHY bit rate supported by this interface
+		 * (expressed in Mbps).</p>
+		 */
+		read-only uint32 MaxBitRate;
+
+		/**
+		*  Comma-separated list of strings.
+		*  List items indicate the frequency bands at which the radio
+		*  can operate. Each list item is an enumeration of:
+		*  <ul>
+		*   <li>2.4GHz</li>
+		*   <li>5GHz</li>
+		*   <li>6GHz</li>
+		*  </ul>
+		*/
+		/**
+		 * <p>The value MUST be a member of the list reported by the
+		 * SupportedFrequencyBands  parameter. Indicates the frequency
+		 * band at which the radio is operating. </p>
+		 * <p>If the radio supports multiple bands, and
+		 * OperatingFrequencyBand is changed, then all parameters whose
+		 * value is not valid for the new frequency band (e.g. Channel)
+		 * MUST be set to a valid value (according to some CPE
+		 * vendor-specific behavior).</p>
+		 */
+		%persistent string OperatingFrequencyBand{
+			on action write call wld_rad_setOperatingFrequencyBand_pwf;
+		}
+		/**
+		 * <p>Comma-separated list of strings. List items indicate which
+		 * IEEE 802.11 standards this Radio  instance can support
+		 * simultaneously, in the frequency band specified by
+		 * OperatingFrequencyBand. Each list item is an enumeration
+		 * of:</p>
+		 * <ul>
+		 *  <li>a ([802.11a-1999])</li>
+		 *  <li>b ([802.11b-1999])</li>
+		 *  <li>g ([802.11g-2003])</li>
+		 *  <li>n ([802.11n-2009])</li>
+		 *  <li>ac ([802.11ac-2013])</li>
+		 *  <li>ax ([802.11ax])</li>
+		 * </ul>
+		 * <p>Each value indicates support for the indicated standard.
+		 * If OperatingFrequencyBand is set to 2.4GHz, only values b, g,
+		 * n, ax are allowed. If OperatingFrequencyBand is set to 5GHz, only
+		 * values a, n, ac, ax are allowed.</p>
+		 * <p>Diverging from the TR-181 standard, if OperatingStandardsFormat is Legacy,
+		 * then list items can also be: "bg", "gn", "bgn", "an", and "abgn".</p>
+ 		 */
+		read-only string SupportedStandards;
+		
+		/**
+		   <p>Comma-separated list of strings. Each list item MUST be a
+		   member of the list reported by the SupportedStandards
+		   parameter. List items indicate which IEEE 802.11 standard
+		   this Radio  instance is configured for. Each value indicates
+		   support for the indicated standard.</p>
+		   <p>If OperatingFrequencyBand is set to 2.4GHz, only values b,
+		   g, n, ac, ax are allowed.</p>
+		   <p>If OperatingFrequencyBand is set to 5GHz, only values a, n,
+		   ac, ax are allowed.</p>
+		   <p>For example, a value of "g,b" (or "b,g" - order is not
+		   important) means that the 802.11g standard [802.11g-2003] is
+		   used with a backwards-compatible mode for 802.11b
+		   [802.11b-1999]. A value of "g" means that only the 802.11g
+		   standard can be used.</p>
+		   <p>Diverging from the TR-181 standard, the value "auto"
+		   can be used as well.</p>
+		   <p>Diverging from the TR-181 standard, when
+		   OperatingStandardsFormat is "Legacy", then "ac" and "ax"
+		   are interpreted differently and for some combinations no comma is written
+		   -- see documentation of OperatingStandardsFormat.
+		   </p>
+		   <p>Diverging from the TR-181 standard described above, we currently only support
+		   the following combinations (were "ax" means "ax"-only and "ac" "ac-only"):
+		   "a", "b", "g", "n", "b,g", "g,n", "b,g,n", "a,n", "a,b,g,n", "a,n,ac",
+		   "a,b,g,n,ac,ax", "n,ac", "ac", "ax", "a,n,ac,ax",
+		   "b,g,n,ax".
+		   </p>
+		 */
+		%persistent string OperatingStandards = "auto" {
+			on action write call wld_rad_setOperatingStandards_pwf;
+		}
+		
+		/**
+		 * Format used to interpret the OperatingStandards string.
+		 *
+		 * If "Legacy", then for OperatingStandards 
+		 * "ac" will be interpreted as 802.11ac plus 802.11a if supported plus 802.11n if supported
+		 * (according to the SupportedStandards string);
+		 * and "ax" as 802.11ax plus all lower supported standards (802.11a,b,g,n,ac).
+		 * For the following combinations, no commas are written between radio standards:
+		 * "bg", "gn", "bgn", "an", and "abgn" (no other order, so no "gb").
+		 * 
+		 * If "Standard", the value of OperatingStandards will be interpreted according to
+		 * the TR-181 standard, i.e. enable the standards mentioned in the value and disable
+		 * all other radio standards, and use commas between radio standards without
+		 * particular ordering (e.g. "b,g,n" or "g,b,n").
+ 		 * 
+ 		 * Independently of the value of OperatingStandardsFormat, one can write to
+ 		 * OperatingStandars in either Legacy or Standard Format. Only the value "ax" and
+ 		 * "ac" will be interpreted differently depending on OperatingStandardsFormat.
+		 * When setting OperatingStandardsFormat, the value of OperatingStandards is parsed
+		 * again with the new Format.
+		 * So the meaning is the same when you first write to OperatingStandards and then to
+		 * OperatingStandardsFormat or the other way around.
+		 *
+		 * OperatingStandardsFormat also impacts SupportedStandards, see its documentation.
+		 *
+		 * This field is not supposed to (be) change(d) after startup.
+ 		 */
+		%persistent string OperatingStandardsFormat = "Legacy" {
+			on action write call wld_rad_setOperatingStandardsFormat_pwf;
+			on action validate call check_enum ["Legacy", "Standard"];
+		}
+		
+		/**
+		 * <p>Comma-separated list (maximum length 1024) of strings. List
+		 * items represent possible radio channels for the wireless
+		 * standard (a, b, g, n) and the regulatory domain.
+		 * Ranges in the form "n-m" are permitted. For example, for
+		 * 802.11b and North America, would be "1-11". <b>NOT SUPPORTED
+		 * YET</b> </p>
+		 */
+		read-only string PossibleChannels;
+
+		/**
+		 * The operating class of this radio.
+		 */
+		read-only uint32 OperatingClass {
+			default 0;
+		}
+
+		/**
+		 * <p>Comma-separated list (maximum length 1024) of strings. List
+		 * items represent channels that the radio determines to be
+		 * currently in use (including any that it is using itself).
+		 * Ranges in the form "n-m" are permitted. </p>
+		 */
+		string ChannelsInUse;
+
+		/**
+		 * <p>Indicates whether automatic channel selection is supported
+		 * by this radio. If false, then AutoChannelEnable  MUST be
+		 * false. </p> */
+		read-only bool AutoChannelSupported;
+
+		/**
+		 * <p>Enable or disable automatic channel selection. Set to
+		 * false to disable the automatic channel selection procedure,
+		 * in which case the currently selected channel remains
+		 * selected. Set to true to enable the automatic channel
+		 * selection procedure. This procedure MUST automatically select
+		 * the channel, and MAY also change it subsequently.
+		 * AutoChannelEnable MUST automatically change to false whenever
+		 * the channel is manually selected, i.e. whenever the Channel
+		 * parameter is written. Whenever AutoChannelEnable is true, the
+		 * value of the Channel parameter MUST be the channel selected
+		 * by the automatic channel selection procedure. </p>
+		 */
+		%persistent bool AutoChannelEnable{
+			on action write call wld_rad_setAutoChannelEnable_pwf;
+			default true;
+		}
+		
+		/**
+		 * <p>The time period in seconds between two consecutive
+		 * automatic channel selections. A value of 0 means that the
+		 * automatic channel selection is done only at boot time. This
+		 * parameter is significant only if AutoChannelEnable is set to
+		 * true. </p> */
+		%persistent uint32 AutoChannelRefreshPeriod;
+
+		/**
+		 * <p>Rerun auto channel selection explicitly, if it was enabled. </p>
+		 */
+		void startAutoChannelSelection();
+
+		/** <p>The current radio channel used by the connection. To
+			 request automatic channel selection, set AutoChannelEnable
+			 to true. Whenever AutoChannelEnable is true, the value of
+			 the Channel parameter MUST be the channel selected by the
+			 automatic channel selection procedure.</p>
+			 <p>Note: Valid Channel values depend on the
+			 OperatingFrequencyBand and RegulatoryDomain values
+			 specified.</p>
+			 # For Atomic write... set channel after autochannel!
+		*/
+		%persistent uint32 Channel = 6 {
+			on action validate call check_range { min = 1, max = 255 };
+			on action write call wld_rad_setChannel_pwf;
+		}
+
+		/**
+		 * <p>The desired channel bandwidth (applicable to 802.11n specifications
+		 * only). Enumeration of: </p>
+		 * <ul>
+		 * <li>20MHz</li>
+		 * <li>40MHz (wide mode)</li>
+		 * <li>80MHz (802.11ac only) </li>
+		 * <li>160MHz (802.11ac only) </li>
+		 * <li>Auto</li>
+		 * </ul>
+		 */
+		%persistent string OperatingChannelBandwidth{   /* Selected by channel */
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+			default "Auto";
+			on action write call wld_rad_setOperatingChannelBandwidth_pwf;      /* Set Radio ChannelBandwidth (if supported) */
+		}
+
+		/**
+		 * The channel bandwidth currently in use. Enumeration of:
+		 * <ul>
+		 * <li>20MHz</li>
+		 * <li>40MHz (wide mode)</li>
+		 * <li>80MHz</li>
+		 * <li>160MHz</li>
+		 * </ul>
+		 * @version 9.1
+		 */
+		read-only string CurrentOperatingChannelBandwidth{
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+			default "20MHz";
+		}
+
+		/**
+		* Last channel's bandwidth change reason on this radio.
+		*/
+		read-only string ChannelBandwidthChangeReason;
+
+		/**
+		 * The maximum supported channel bandwidth. Enumeration of:
+		 * <ul>
+		 * <li>20MHz</li>
+		 * <li>40MHz (wide mode)</li>
+		 * <li>80MHz</li>
+		 * <li>160MHz</li>
+		 * </ul>
+		 * @version 9.1
+		 */
+		read-only string MaxChannelBandwidth{
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+			default "20MHz";
+		}
+
+		/**
+		 * Mode used for the targeted bandwidth when the user selects a fixed channel and OperatingChannelBandwidth is set to Auto.
+		 * Possible values:
+		 * MaxAvailable. The targeted bandwidth is the MaxChannelBandwidth
+		 * MaxCleared. The targeted bandwidth is the MaxChannelBandwidth if it is cleared and available.
+		 * Default. In other cases when autochannel is disabled, targeted bandwidth is 80MHz for 5GHz.
+		 * @version 10.0
+		 */
+		string AutoBandwidthSelectMode {
+			on action validate call check_enum ["MaxAvailable","MaxCleared","Default"];
+			default "Default";
+			on action write call wld_rad_setAutoBandwidthSelectMode_pwf;
+		}
+
+		/**
+		 * <p>The secondary extension channel position, applicable when
+		 * operating in wide channel mode (i.e. when
+		 * OperatingChannelBandwidth  is set to 40MHz  or Auto).
+		 * Enumeration of: </p>
+		 * <ul>
+		 *  <li> AboveControlChannel </li>
+		 *  <li> BelowControlChannel </li>
+		 *  <li> Auto </li>
+		 * </ul>
+		 */
+		%persistent string ExtensionChannel{
+			on action validate call check_enum ["AboveControlChannel","BelowControlChannel","Auto"];
+			default "Auto";
+			on action write call wld_rad_setExtensionChannel_pwf;      /* Set Radio ExtensionChannel (if supported) */
+		}
+
+		/**
+		 * <p>Enable or disable the coexistence Channel Bandwidth
+		 * set to true allow the change of bandwidth following the environment
+		 * Only applicable on 2.4GHz </p>
+		 */
+		%persistent bool ObssCoexistenceEnable{
+			on action write call wld_rad_setObssCoexistenceEnable_pwf;
+			default false;
+		}
+
+		/**
+		 * <p>The guard interval value between OFDM symbols (applicable
+		 * to 802.11n specifications only). Enumeration of: </p>
+		 * <ul>
+		 * <li> 400nsec </li>
+		 * <li> 800nsec </li>
+		 * <li> Auto </li>
+		 * </ul>
+		 */
+		%persistent string GuardInterval{
+			on action validate call check_enum ["400nsec","800nsec","Auto"];
+			default "Auto";
+			on action write call wld_rad_setGuardInterval_pwf;
+		}
+
+		/**
+		 * <p>The Modulation Coding Scheme index (applicable to 802.11n
+		 * specifications only). Values from 0 to 15 MUST be supported
+		 * ([802.11n-2009]). A value of -1 indicates automatic selection
+		 * of the MCS index. </p>
+		 */
+		%persistent int32 MCS{
+			on action validate call check_range { min = -1, max = 31 };
+		}
+
+		/**
+		 * <p>Comma-separated list (maximum length 64) of integers
+		 * (value
+		 * -1 to 100). List items represent supported transmit power
+		 *  levels as percentage  of full power. For example,
+		 *  "0,25,50,75,100".</p>
+		 *  <p>A -1 item indicates auto mode (automatic decision by
+		 *  CPE). Auto mode allows the Radio to adjust transmit power
+		 *  accordingly. For example, this can be useful for power-save
+		 *  modes such as EU-CoC, where the Radio can adjust power
+		 *  according to activity in the CPE.</p>
+		 */
+		read-only string TransmitPowerSupported;/* Updated by Radio_Init() */
+
+		/**
+		 * <p>Indicates the current transmit power level as a percentage
+		 * of full power. The value MUST be one of the values reported
+		 * by the TransmitPowerSupported  parameter. A value of -1
+		 * indicates auto mode (automatic decision by CPE). </p>
+		 */
+		%persistent int32 TransmitPower = -1 {
+			on action write call wld_rad_setTxPower_pwf;      /* Set transmit power - FIX Me, we disable this on driver */
+		}
+
+		/**
+		 * <p>Indicates a bit pattern of the current of active transmit/receive
+		 * antennas. The value MUST be in range of supported driver. Based on 2th wave
+		 * of 11AC targets the MAX is set on 8 Antennas == 255. The PLUGIN default is -1
+		 * and will be translated by driver default. Note that if RxChainCtrl or TxChainCtrl is set,
+		 * the value set here will be overwritten by the specific controls</p>
+		 */
+		%persistent int32 ActiveAntennaCtrl{
+			on action validate call check_range { min = -1, max = 255 };       /* Max support for 8 antennas (2th wave of 11AC) */
+			on action write call wld_rad_setAntennaCtrl_pwf;  /* Direct dirver interaction for antennas control */
+			default -1;
+		}
+
+		/**
+		 * Bit pattern of the current of active receive antennas.
+		 * The value MUST be in range of supported driver. Based on 2th wave
+		 * of 11AC targets the MAX is set on 8 Antennas == 255. Set to -1 to allow default
+		 * or setting by ActiveAntennaCtrl.
+		 * @version 9.2
+		 */
+		%persistent int32 RxChainCtrl{
+			on action validate call check_range { min = -1, max = 255 };
+			default -1;
+			on action write call wld_rad_setRxChainCtrl_pwf;
+		}
+		
+		/**
+		 * Bit pattern of the current of active transmit antennas.
+		 * The value MUST be in range of supported driver. Based on 2th wave
+		 * of 11AC targets the MAX is set on 8 Antennas == 255. Set to -1 to allow default
+		 * or setting by ActiveAntennaCtrl.
+		 * @version 9.2
+		 */
+		%persistent int32 TxChainCtrl{
+			on action validate call check_range { min = -1, max = 255 };
+			default -1;
+			on action write call wld_rad_setTxChainCtrl_pwf;
+		}
+		
+		/**
+		* Retry Limit
+		* The maximum number of retransmissions of a short packet
+		* i.e. a packet that is no longer than the RTSThreshold.
+		* This corresponds to IEEE 802.11 parameter dot11ShortRetryLimit [802.11-2012].
+		* @version 9.1
+		*/
+		%persistent uint8 RetryLimit{
+			default 15;
+			on action write call wld_rad_setRetryLimit_pwf;  /* Set Retry Limit */
+		}
+
+		/**
+		* Long Retry Limit
+		* This indicates the maximum number of transmission attempts of a frame,
+		* the length of which is greater than RTSThreshold,
+		* that will be made before a failure condition is indicated.
+		* This parameter is based on dot11LongRetryLimit from [802.11-2012].
+		* @version 9.1
+		*/
+		%persistent uint8 LongRetryLimit{
+			default 6;
+			on action write call wld_rad_setLongRetryLimit_pwf;  /* Set Long Retry Limit */
+		}
+
+		/**
+		* Time interval between transmitting beacons (expressed in milliseconds).
+		* This parameter is based on dot11BeaconPeriod from [802.11-2012].
+		*
+		* @version 9.2
+		*/
+		%persistent uint32 BeaconPeriod{
+			default 100;
+			on action write call wld_rad_setBeaconPeriod_pwf;
+		}
+
+		/**
+		* This specifies the number of beacon intervals that elapse between transmission
+		* of Beacon frames containing a TIM element whose DTIM Count field is 0. This parameter
+		* is based on dot11DTIMPeriod from [802.11-2012].
+		*
+		* @version 9.2
+		*/
+		%persistent uint32 DTIMPeriod{
+			default 3;
+			on action write call wld_rad_setDtimPeriod_pwf;
+		}
+
+		/**
+		 * Target Wake Time is an 11ax feature that allows the AP to
+		 * communicate with stations when and how often they will need
+		 * to send and receive data to increase battery life.
+		 *
+		 * @version 9.1
+		 */
+		%persistent bool TargetWakeTimeEnable{
+			default false;
+			on action write call wld_rad_setTargetWakeTimeEnable_pwf;
+		}
+
+		/**
+		 * This indicates whether the 11ax feature Orthogonal frequency-division
+		 * multiple access is enabled.
+		 */
+		%persistent bool OfdmaEnable{
+			default true;
+			on action write call wld_rad_setOfdmaEnable_pwf;
+		}
+
+		/**
+		 * Comma-separated list of strings containing which 11AX HE features are supported.
+		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
+		 */
+		read-only string HeCapsSupported;
+
+		/**
+		 * Comma-separated list of strings containing which 11AX HE features are enabled.
+		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
+		 */
+		%persistent string HeCapsEnabled{
+			on action write call wld_rad_setHeCaps_pwf;
+		}
+
+		/**
+		 * <p>Indicates whether IEEE 802.11h functionality is supported
+		 * by this radio. The value can be true only if the 802.11a or
+		 * the 802.11n at 5GHz standard is supported (i.e.
+		 * SupportedFrequencyBands  includes 5GHz  and
+		 * SupportedStandards includes a and/or n). </p>
+		 */
+		read-only bool IEEE80211hSupported;
+
+		/**
+		 * <p>Indicates whether IEEE 802.11h functionality is enabled on
+		 * this radio. The value can be true only if the 802.11a or the
+		 * 802.11n at 5GHz standard is supported and enabled (i.e.
+		 * OperatingFrequencyBand  is 5GHz  and OperatingStandards
+		 * includes a  and/or n). </p>
+		 */
+		bool IEEE80211hEnabled{
+			on action write call wld_rad_set80211hEnable_pwf; /* Spectrum Managed 802.11a DFS/TPC */
+		}
+
+		/**
+		 * Indicates whether IEEE 802.11k functionality is supported
+		 * by this radio.
+		 * @version 9.0
+		 */
+		read-only bool IEEE80211kSupported;
+
+		/**
+		 * Indicates whether IEEE 802.11r functionality is supported
+		 * by this radio.
+		 * @version 9.1
+		 */
+		read-only bool IEEE80211rSupported;
+
+		/**
+		 * Supported IEEE 1905 types, coma separated.
+		 * @version 9.2
+		 * Supported options are : "FronthaulBSS", "BackhaulBSS", "BackhaulSTA".
+		 */
+		read-only string MultiAPTypesSupported;
+
+		/** <p>The 802.11d Regulatory Domain. First two octets are
+		 * two-character country code. The third octet is either " "
+		 * (space) (all environments), "O" (outside) or "I" (inside).
+		 * Possible patterns: </p>
+		 * <li>[A-Z][A-Z][ OI]</li>
+		 */
+		%persistent string RegulatoryDomain{
+			on action write call wld_rad_setCountryCode_pwf;   /* Set the country code - Fix set   */
+		}
+
+		/** <p>Indicates if implicit beam forming is supported by this
+		 * hardware. This feature is also known as 'AnyBeam' on
+		 * Broadcom hardware.</p>
+		 * @version 6.1
+		 */
+		read-only bool ImplicitBeamFormingSupported;
+
+		/** <p>Indicates if implicit beam forming is enabled on this
+ 		 * radio. </p>
+		 * @version 6.1
+		 */
+		%persistent bool ImplicitBeamFormingEnabled {
+			default true;
+			on action write call wld_rad_setImplicitBeamForming_pwf;
+		}
+
+		/** <p> Indicates if explicit beam forming is supported by this
+		 * hardware.</p>
+		 * @version 6.1
+		 */
+		read-only bool ExplicitBeamFormingSupported;
+
+		/** <p> Indicates if explicit beam forming is enabled on this
+ 		 * radio. </p>
+		 * @version 6.1
+		 */
+		%persistent bool ExplicitBeamFormingEnabled {
+			default false;
+			on action write call wld_rad_setExplicitBeamForming_pwf;
+		}
+		
+		/**
+		 * Receive beamforming capabilities available. List of
+		 * Possible values are: 
+		 * * VHT_SU_BF : single user beamforming for VTH
+		 * * VHT_MU_BF : multi user beamforming for VTH
+		 * * HE_SU_BF : single user beamforming for HE
+		 * * HE_MU_BF : multi user beamforming for HE
+		 * * HE_CQI_BF : Channel Quality Information
+		 * @version 10.0
+		 */
+		read-only string RxBeamformingCapsAvailable;
+		
+		/**
+		 * Receive beamforming capabilities enabled. List of strings
+		 * as defined in RxBeamformingCapsAvailable.
+		 * A special value of this is "DEFAULT" which will just use
+		 * whatever the default configuration is.
+		 * Note that for MU features, MultiUserMIMOEnabled must be true,
+		 * and for HE Features, the relevant HE caps must be enabled.
+		 * @version 10.0
+		 */
+		string RxBeamformingCapsEnabled{
+			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF";
+			on action write call wld_rad_setRxBfCapsEnabled_pwf;
+		}
+		
+		/**
+		 * Transmit beamforming capabilities available. List of
+		 * Possible values are: 
+		 * * VHT_SU_BF : single user beamforming for VTH
+		 * * VHT_MU_BF : multi user beamforming for VTH
+		 * * HE_SU_BF : single user beamforming for HE
+		 * * HE_MU_BF : multi user beamforming for HE
+		 * * HE_CQI_BF : Channel Quality Information
+		 * @version 10.0
+		 */
+		read-only string TxBeamformingCapsAvailable;
+		
+		/**
+		 * Transmit beamforming capabilities enabled. List of strings
+		 * as defined in RxBeamformingCapsAvailable. 
+		 * A special value of this is "DEFAULT" which will just use
+		 * whatever the driver has enabled by default.
+		 * Note that for MU features, MultiUserMIMOEnabled must be true,
+		 * and for HE Features, the relevant HE caps must be enabled.
+		 * @version 10.0
+		 */
+		string TxBeamformingCapsEnabled{
+			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF,HE_CQI_BF";
+			on action write call wld_rad_setTxBfCapsEnabled_pwf;
+		}
+		
+		/** <p> Indicates if Reduced Interframe Space is enabled.</p>
+		 * Default = keep the current mode
+		 * Auto = let the driver to manage the RIFS
+		 * Off = disable the RIFS
+		 * On = enable the RIFS
+		 * @version 10.0
+		 */
+		string RIFSEnabled {
+			on action validate call check_enum ["Default", "Auto", "Off", "On"];
+			default "Default";
+			on action write call wld_rad_setRIFS_pwf;
+		}
+
+		/** <p> Indicates if Air Time Fairness is enabled.</p>
+		 * @version 7.0
+		 */
+		%persistent bool AirtimeFairnessEnabled {
+			default false;
+			on action write call wld_rad_setAirTimeFairness_pwf;
+		}
+
+		/**
+		 * Indicates if receive chain power save is enabled. Note that
+		 * this will be overruled by RxPowerSaveRepeaterEnable when there is an Enabled repeater on this radio.
+		 * @version 8.0
+		 */
+		bool RxPowerSaveEnabled {
+			default false;
+			on action write call wld_rad_setRxPowerSave_pwf;
+		}
+
+		/**
+		 * Indicates if receive chain power save should be enabled while in repeater mode, i.e. when there is an Enabled
+		 * Repeater present on this interface.
+		 * @version 9.3
+		 */
+		bool RxPowerSaveRepeaterEnable {
+			default false;
+			on action write call wld_rad_setRxPowerSaveRepeater_pwf;
+		}
+
+		/** Indicates if Multi-User MIMO is supported.
+		 * @version 7.0
+		 */
+		read-only bool MultiUserMIMOSupported;
+
+		/** <p> Indicates if Multi-User MIMO is enabled.</p>
+		 * @version 7.0
+		 */
+		%persistent bool MultiUserMIMOEnabled {
+			default false;
+			on action write call wld_rad_setMultiUserMIMO_pwf;
+		}
+
+		/** <p> Automation Testing - Force a DFS radar trigger in the driver </p> */
+		int32 DFS_drvdbg(%in string dbg_action);
+
+		/** <p> DFS channel change event counter on this radio. </p>
+		 * @version 6.1
+		*/
+		read-only uint32 DFSChannelChangeEventCounter=0;
+
+		/** <p> DFS channel change timestamp on this radio. </p>
+		 * @version 6.1
+		 */
+		read-only datetime DFSChannelChangeEventTimestamp;
+
+		/** <p> Last channel change reason on this radio. </p>
+		 * @version 6.1
+		 */
+		read-only string ChannelChangeReason;
+
+		/**
+		 * Object representing radar detection events log.
+		 * @version 9.1
+		 */
+		%persistent object DFS {
+			/* Event instance created when radar detected */
+			object Event[] {
+				/* Timestamp of detected radar */
+				read-only datetime TimeStamp;
+				/* Channel of detected radar */
+				read-only uint32 Channel;
+				/* Bandwidth of detected radar */
+				read-only string Bandwidth{
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					default "Auto";
+				}
+				/* Detected radar's zone */
+				read-only string RadarZone{
+					constraint enum["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
+					default "NONE";
+				}
+				/* Detected radar's index */
+				read-only uint8 RadarIndex;
+			}
+			/** The maximum number of detected radar events kept in
+			 * dfsEvents log file.
+			 */
+			%persistent uint8 FileLogLimit {
+				default 4;
+				on action write call wld_rad_setFileLogLimit_pwf;
+				on action validate call check_range { min = 0, max = 20 };
+			}
+			/** The maximum number of detected radar events kept in
+			 * data model as Event object instances.
+			 */
+			%persistent uint8 EventLogLimit {
+				default 4;
+				on action write call wld_rad_setEventLogLimit_pwf;
+				on action validate call check_range { min = 0, max = 20 };
+			}
+		}
+
+		/**
+		 * <B>DEBUG</B> Contains the string that shows the supported
+		 * capabilities of the driver. It's a comma separated list of
+		 * (IEEE802.11) tokens:
+		 * <ul>
+		 * "WEP","TKIP","AES","AES_CCM","CKIP","FF","TURBOP","IBSS","PMGT","HOSTAP",
+		 * "AHDEMO","SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE","MONITOR","TKIPMIC",
+		 * "WPA1","WPA2","BURST","WME","WDS","WME_TKIPMIC","BGSCAN","UAPSD","FASTCC"
+		 * </ul>
+		 */
+		read-only string IEEE80211_Caps;     /* Supported vendor caps */
+
+		/**
+		 * The noti
+		 */
+		%persistent string ProbeRequestNotify = "FirstRSSI" {
+			on action validate call check_enum ["NoUpdate","First","FirstRSSI","Always","AlwaysRSSI"];
+			on action write call wld_prbReq_setNotify_pwf;
+		}
+
+		/**
+		 * After receiving a Probe Request in AlwaysRSSI mode,
+		 * define the number of milliseconds before send out all recently received Probe Requests.
+		 * @version 9.1
+		 */
+		%persistent uint32 ProbeRequestAggregationTimer{
+			on action write call wld_prbReq_setNotifyAggregationTimer_pwf;
+			default 1000;
+		}
+
+		/**
+		 * The maximum number of devices that can simultaneously be connected to the radio.
+		 *
+		 * value of 0 means that there is no specific limit.
+		 * @version 9.1
+		 */
+		%persistent uint32 MaxAssociatedDevices{
+			default 64;
+			on action write call wld_rad_setMaxStations_pwf;
+		}
+
+		/**
+		 * The number of devices currently connected to this radio.
+		 * @version 9.1
+		 */
+		read-only uint32 ActiveAssociatedDevices;
+
+		/**
+		 * <B>DEBUG</B>
+		 *  Enable extra debugging output by vendor deamon applications
+		 *  The content of this one is for developpers only and not meant to export for clients.
+		 */
+		int32 dbgRADEnable{
+			default 0;
+			on action write call wld_rad_setDbgEnable_pwf;
+		}
+		string dbgRADFile{
+			on action write call wld_rad_setDbgFile_pwf;
+		}
+
+		/**
+		 * <p>Throughput statistics for this interface.
+		 * The CPE MUST reset the interface's Stats parameters (unless
+		 * otherwise stated in individual object or parameter
+		 * descriptions) either when the interface becomes operationally
+		 * down due to a previous administrative down (i.e. the
+		 * interface's Status parameter transitions to a down state
+		 * after the interface is disabled) or when the interface
+		 * becomes administratively up (i.e. the interface's Enable
+		 * parameter transitions from false to true). Administrative and
+		 * operational interface status is discussed in [Section
+		 * 4.2.2/TR-181i2]. </p>
+		 */
+		object Stats{		
+													   
+			/** The total number of bytes transmitted out of the
+			 *  interface, including framing characters. */
+			read-only uint64 BytesSent;
+
+			/**The total number of bytes received on the interface,
+			 * including framing characters. */
+			read-only uint64 BytesReceived;
+
+			/**The total number of packets transmitted out of the
+			 * interface.  */
+			read-only uint64 PacketsSent;
+
+			/** The total number of packets received on the interface.  */
+			read-only uint64 PacketsReceived;
+
+			/** The total number of outbound packets that could not
+			 *  be transmitted because of errors. */
+			read-only uint32 ErrorsSent;
+
+			/** The total number of transmitted packets which were retransmissions. 
+			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
+			read-only uint32 RetransCount;
+
+			/** The total number of inbound packets that contained errors
+			 * preventing them from being delivered to a higher-layer
+			 * protocol.*/
+			read-only uint32 ErrorsReceived;
+
+			/** The total number of outbound packets which were chosen to
+			 * be discarded even though no errors had been detected to
+			 * prevent their being transmitted. One possible reason for
+			 * discarding such a packet could be to free up buffer space.*/
+			read-only uint32 DiscardPacketsSent;
+
+			/** The total number of inbound packets which were chosen to be
+			 *  discarded even though no errors had been detected to prevent
+			 *  their being delivered. One possible reason for discarding
+			 *  such a packet could be to free up buffer space. */
+			read-only uint32 DiscardPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  multicast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			read-only uint32 UnicastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were not addressed to a
+			 *  multicast or broadcast address at this layer.*/
+			read-only uint32 UnicastPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  multicast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			read-only uint32 MulticastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  multicast address at this layer.*/
+			read-only uint32 MulticastPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  broadcast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			read-only uint32 BroadcastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  broadcast address at this layer. */
+			read-only uint32 BroadcastPacketsReceived;
+
+			/** The number of packets that were not transmitted successfully
+			 *  due to the number of retransmission attempts
+			 *  exceeding an 802.11 retry limit.*/
+			read-only uint32 FailedRetransCount;
+
+			/** The number of packets that were successfully transmitted after one or more retransmissions*/
+			read-only uint32 RetryCount;
+
+			/** The number of packets that were successfully transmitted after more than one retransmission*/
+			read-only uint32 MultipleRetryCount;
+			
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			read-only object WmmPacketsSent {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			read-only object WmmFailedSent {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface ordered by wmm category*/
+			read-only object WmmPacketsReceived {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			read-only object WmmFailedReceived {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			read-only object WmmBytesSent {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			read-only object WmmFailedbytesSent {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes received on this interface ordered by wmm category*/
+			read-only object WmmBytesReceived {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+			
+			/** The total number of bytes received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			read-only object WmmFailedBytesReceived {
+				read-only uint32 AC_BE;
+				read-only uint32 AC_BK;
+				read-only uint32 AC_VO;
+				read-only uint32 AC_VI;
+			}
+
+			/** 
+			 * The chip's temperature(degrees Celsius).
+			 * As per TR-181, value should not be less than -274. 
+			 * Default value is -274 which is INVALID value.
+			 */
+			read-only int32 Temperature{
+				default -274;
+				constraint minvalue -274;
+			}
+		}
+
+		/**
+		 * Vendor specific data for the radio
+		 * Vendor plugins can add fields to this object to allow vendor specific
+		 * data and configuration to be made available.
+		 * Triggers a callback in the vendor plugin
+		 */
+		object Vendor{
+			on action write call wld_rad_setVendorData_owf;
+		}
+
+		/**
+		 * Percentage of time that the channel is unavailable for sending. This can be
+		 * either because we are sending, are receiving data from other stations,
+		 * or due to interference. Updated on getRadioAirStats().
+		 * range [0,100]
+		 */
+		read-only uint16 ChannelLoad;
+
+		/**
+		 * Percentage of time that the channel is unavailable due to outside factors.
+		 * This can be other accesspoints / bssid's sending or receiving, or other atmospheric
+		 * interferences. Updated on getReadioAirStats()
+		 * range [0,100]
+		 */
+		read-only uint16 Interference;
+
+		/**
+		 * Radio noise level in dB. Updated on getReadioAirStats()
+		 */
+		read-only int32 Noise;
+
+		/**
+		 * Object representing the results of an accesspoint scan
+		 */
+		object ScanResults{
+
+			/**
+			 * The amount of accesspoints that are currently on the same channel as we are
+			 */
+			read-only uint16 NrCoChannelAP;
+
+			/**
+			 * Accesspoints from the scan are grouped per channel
+			 */
+			object SurroundingChannels[]{
+
+				/**
+				 * The channel on which all the accesspoints in this object operate.
+				 */
+				read-only uint16 Channel;
+
+				/**
+				 * Resulting accesspoint from the scan. Multiple BSSID's from the same accesspoint
+				 * should be grouped under this accesspoints. To group bssids, we check that they only
+				 * differ in 1 byte, and that their RSSI values are the same, and broadcast on the same channel.
+				 */
+				object Accesspoint[]{
+
+					/**
+					 * The first observed BSSID of this accesspoint. Other bssid's are compared against this
+					 * bssid to check if they are potentially the same accesspoint
+					 */
+					read-only string BSSID;
+
+					/**
+					 * The received signal strength indicator of this access point.
+					 * Range [-100,-1]
+					 */
+					read-only int16 RSSI;
+
+					/**
+					 * An SSID broadcasted by this access point
+					 */
+					object SSID[]{
+
+						/**
+						 * The name if this ssid
+						 */
+						read-only string SSID;
+
+						/**
+						 * The bandwidth of this ssid
+						 */
+						read-only uint16 Bandwidth;
+
+						/**
+						 * The bssid identifier.
+						 */
+						read-only string BSSID;
+					}
+				}
+
+			}
+		}
+
+		/**
+		 * <p>Enable the intelligent airtime scheduling, where stations
+		 * are scheduled based on their device type. </p>
+		 */
+		%persistent bool IntelligentAirtimeSchedulingEnable{
+			default false;
+			on action write call wld_rad_setIntelligentAirtime_pwf;
+		}
+
+		/** Enables or Disables the radio */
+		%persistent bool Enable{
+			default false;
+			on action write call wld_rad_setEnable_pwf;
+		}
+
+		/**
+		 * Time in seconds while BSS broadcast should be delayed during Wi-Fi configuration
+		 * after radio goes from down to up.
+		 * APs will be kept down for this duration, untill the timer expires, or the function
+		 * wld_rad_delayMgr_apDelayUpDone is called
+		 *
+		 * @version 10.0
+		 */
+		%persistent uint32 DelayApUpPeriod {
+			default 10;
+			on action write call wld_rad_delayMgr_setDelayApUpPeriod_pwf;
+		}
+
+		/**
+		 * Abort timer of DelayApUpPeriod triggered by DelayApUp mechanism
+		 */
+		void apDelayUpDone();
+
+		/**
+		 * Object containing the capabilities of this radio.
+		 * Each radio may have different capabilities, depending on the vendor which implements the radio,
+		 * and the type of radio. The radio capabilities shows which capabilities are available for the radio
+		 * and allows the dynamic enabling and disabling of these capabilities.
+		 *
+		 * @version 8.0
+		 **/
+		%persistent object RadCaps{
+
+			/**
+			 * A list of strings, which encode which capabilities are currently being offered by this radio.
+			 * This list may differ from radio to radio. Vendor feature names may differ from vendor to vendor
+			 * while offering similar functionality.
+			 * Encoded as space separated string list.
+			 */
+			read-only string Available{
+			  default "";
+			}
+
+			/**
+			 * A list of space separated strings, which shows which capabilities
+			 * are currenlty being requested to be enabled.
+			 * While being requested it does not mean that those feature are actually currently active.
+			 * To check if a feature is active, see status field.
+			 * The enable field is allowed to contain strings which do not match a capability of the radio.
+			 * These strings will be ignored.
+			 */
+			%persistent string Enabled{
+			  default "";
+			  on action write call wld_rad_capability_setEnable;
+			}
+
+			/**
+			 * A list of strings, showing which capabilities are currently active on the radio.
+			 */
+			read-only string Status{
+			  default "";
+			}
+
+			/**
+			 * Enable a capability. This will append the enable string with the capability requested.
+			 * The enable string will be rewritten to only contain those capabilities which are enabled and
+			 * available.
+			 */
+			void Enable(%in string Capability);
+
+			/**
+			 * Disable a capability. This will remove all occurences of the given capability string
+			 * from the enable string.
+			 * The enable string will be rewritten to only contain those capabilities which are enabled and
+			 * available.
+			 */
+			void Disable(%in string Capability);
+		} /* object RadCaps */
+
+		/**
+		 * Object encapsulating non associated device statistics system.
+		 * @version V9.0
+		 */
+		%persistent object NaStaMonitor {
+			/** Update the statistics in of the NonAssociatedDevice[] objects in the datamodel,
+			 * @return list of variant maps with the NonAssociatedDevice values
+			 * @version 9.0
+			*/
+			void getNaStationStats();
+
+			/**
+			 * <b>createNonAssociatedDevice</b>
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			 * <p> Create a new entry in NonAssociatedDevice table </p>
+			*/
+			void createNonAssociatedDevice(%in string macaddress);
+
+			/**
+			 * <b>deleteNonAssociatedDevice</b>
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			 * <p> Delete an entry in NonAssociatedDevice table </p>
+			*/
+			void deleteNonAssociatedDevice(%in string macaddress);
+
+			/**
+			 * <p> Clear all non associated devices</p>
+			*/
+			void clearNonAssociatedDevices();
+
+
+			/** Update the statistics of MonitorDevice[] objects in the datamodel,
+			 * @return list of variant maps with latest MonitorDevice values
+			 * @version 9.2
+			*/
+			void getMonitorDeviceStats();
+
+			/**
+			 * Create a new entry in MonitorDevice table
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			*/
+			void createMonitorDevice(%in string macaddress);
+
+			/**
+			 * Delete an entry in MonitorDevice table
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			*/
+			void deleteMonitorDevice(%in string macaddress);
+
+			/**
+			 * Clear all non associated devices
+			*/
+			void clearMonitorDevices();
+
+			/**
+			 * Enable non associated station statistics retrieval.
+			 */
+			%persistent bool Enable {
+				default true;
+				on action write call wld_radStaMon_setEnable_pwf;
+			}
+
+			/**
+			 * <p> A table of the devices currently monitored with the accesspoint.</p>
+			 * @version 9.0
+			*/
+			object NonAssociatedDevice[]{
+
+				on action del-inst call wld_rad_deleteNaSta_odf;
+				on action add-inst call wld_rad_addNaSta_ocf;
+
+				/**
+				 * [MACAddress] The MAC address of an monitored device.
+				 * @version 9.0
+				 */
+				read-only string MACAddress;
+
+				/**
+				 * An indicator of radio signal strength of the uplink from the
+				 * monitored device to the access point, measured in dBm.
+				 * device.
+				 * @version 9.0
+				 */
+				read-only int32 SignalStrength{
+					on action validate call check_range { min = -200, max = 0 };
+				}
+
+				/**
+				 * The timestamp when the last update occurred
+				 * @version 9.0
+				 */
+				read-only datetime TimeStamp;
+			}
+
+			/**
+			 * A table of the high priority devices currently monitored with the accesspoint.
+			 * Devices in this list will gain priority over non associated devices list.
+			 * Probe requests received of these devices will be immediately broadcasted.
+			 * @version 9.2
+			*/
+			object MonitorDevice[]{
+				on action del-inst call wld_rad_delete_nastaMonDev;
+				on action add-inst call wld_rad_add_nastaMonDev;
+				/**
+				 * [MACAddress] The MAC address of an monitored device.
+				 * @version 9.2
+				 */
+				read-only string MACAddress;
+
+				/**
+				 * An indicator of radio signal strength of the uplink from the
+				 * monitored device to the access point, measured in dBm.
+				 * device.
+				 * @version 9.2
+				 */
+				read-only int32 SignalStrength{
+					on action validate call check_range { min = -200, max = 0 };
+				}
+
+				/**
+				 * The timestamp when the last update occurred
+				 * @version 9.2
+				 */
+				read-only datetime TimeStamp;
+			}
+
+			/**
+			 * Perform event based RSSi Monitoring. When a significant "step" has been detected
+			 * compared to the previous value, an event is sent out.
+			 * This way, upper layers can be notified within very few seconds when significant changes
+			 * of rssi have taken place
+			 */
+			%persistent object RssiEventing{
+
+				on action write call wld_radStaMon_setRssiEventing_owf;
+
+				/**
+				 * Enable the rssi eventing
+				 */
+				%persistent bool Enable{
+					on action write call mon_enableWriteHandler;
+					default false;
+				}
+
+				/**
+				 * The minimal level of difference required before an event is sent out.
+				 * Expressed in dbm.
+				 */
+				%persistent uint32 RssiInterval{
+					constraint minvalue 1;
+					default 10;
+				}
+
+				/**
+				 * The system shall average out measurements, to avoid spikes in the data.
+				 * Upon measurement, newval is calculated as follows:
+				 * NewValue = (OldValue * (1000 - AveragingFactor) + AveragingFactor * Measurement) / 1000
+				 *
+				 * A value of 1000 would always take the latest value.
+				 */
+				uint32 AveragingFactor{
+					on action validate call check_range { min = 1, max = 1000 };
+					default 500;
+				}
+
+				/**
+				 * The interval with which the monitor will call the underlying layer to retrieve
+				 * the latest Rssi measurement.
+				 * Expressed in milliseconds.
+				 */
+				uint32 Interval{
+					default 1000;
+					on action write call mon_intervalWriteHandler;
+					constraint minvalue 100;
+				}
+			}
+		}
+
+		/**
+		 * List of event counters.
+		 * This list aims will track the number of events that happen
+		 * Either inside the WLD, or in the Vendor plugin.
+		 * These counters are mostly aimed at generic and vendor specific error event counters
+		 * @version 9.1
+		 */
+		read-only object EventCounter[] {
+
+			/**
+			 * The key name of the radio event counter.
+			 * @version 9.1
+			 */
+			read-only string Key;
+
+			/**
+			 * The value of the radio event counter.
+			 * @version 9.1
+			 */
+			read-only uint32 Value;
+
+			/**
+			 * The last time this event happened
+			 * @version 9.1
+			 */
+			read-only datetime LastOccurrence;
+
+			/**
+			 * Extra information given by counter. Must be interpreted on per counter basis.
+			 * @version 9.1
+			 */
+			read-only string Info;
+		}
+
+		void Radio_debug();
+		
+		/**
+		 * List of fields for advanced driver config. Ensure that
+		 * for all these fields "No change from default" is the default.
+		 * @version 9.2
+		 */
+		%persistent object DriverConfig{
+			on action write call wld_rad_setDriverConfig_owf;
+			
+			/**
+			 * Enable / disable tx bursting. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 TxBurst{
+				default -1;
+			}
+			
+			
+			/**
+			 * Enable / disable amsdu. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 Amsdu{
+				default -1;
+			}
+			
+			/**
+			 * Enable / disable ampdu. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 Ampdu{
+				default -1;
+			}
+			
+			/**
+			 * Configure fragmentation threshold. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 FragmentationThreshold{
+				default -1;
+			}
+			
+			/**
+			 * Configure request to send threshold. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 RtsThreshold{
+				default -1;
+			}
+
+			/**
+			 * Configure Tx Beamforming options
+			 * -1 : driver default
+			 * 0 : force beamforming always off
+			 * 1 : automatic beamforming
+			 * 2 : force beamforming on
+			 * @version 9.2
+			 */
+			%persistent int32 TxBeamforming{
+				default -1;
+			}
+			
+			/**
+			 * Enable or disable the Operating Mode Notification frames
+			 * in the driver. These frames are used to notify stations that
+			 * the HGW is temporarily running with reduced tx and rx chains 
+			 * potentially due to background DFS clearing.
+			 */
+			%persistent int32 VhtOmnEnabled{
+				default 1;
+			}
+			
+			/**
+			 * Configure the driver to broadcast the maximum bandwidth capability
+			 * in beacons. e.g. if driver is 160MHz capable, radio should broadcast
+			 * that 160MHz capable, even though it may only be configured to use 80MHz.
+			 * Note that if this is disabled, changing bandwidth will likely require radio toggle.
+			 * Set to -1 to allow driver default.
+			 */
+			%persistent int32 BroadcastMaxBwCapability{
+				default -1;
+			}
+
+			/**
+			 * Transmit Power Control management
+			 * It is the capability to reduce the power of the AP and/or the STA
+			 * Auto = let the driver to manage this part (do nothing if set)
+			 * Off = disable the transmit power control
+			 * Ap = Enable the AP to set itself to a lower transmit power
+			 * Sta = Ask the station to set to a lower transmit power
+			 * ApSta = combination of both previous behaviour
+			 * @version 10.0
+			 */
+			%persistent string TPCMode{
+				on action validate call check_enum ["Auto", "Off", "Ap", "Sta", "ApSta"];
+				default "Auto";
+			}
+		}
+		
+		/**
+		 * Configuration regarding how MAC Addresses should be generated for this radio.
+		 * Note that this shall only be updated if currently no APs were created on this
+		 * radio.
+		 * @version 10.0
+		 */
+		%persistent object MACConfig{
+			on action write call wld_rad_writeMACConfig_owf;
+		
+			/**
+			 * The number of BSS required for this radio. This allows certain checks to be done
+			 * ensuring proper ofsetting of base MAC when needed.
+			 * Set to 0 to disable offsetting.
+			 * Will also allow to move multi radio BSSIDs closer together when possible.
+			 */
+			%persistent uint32 NrBssRequired{
+				default 0;
+			}
+	
+			/**
+			 * Whether to use a simple base mac offset to set the MAC of this radio.
+			 * If enabled, the base mac shall just be determined based on the base offset.
+			 * No other calculation should be done, so offset must adhere to MAC Assignment rules.
+			 * If not enabled, then potential driver specific logic may apply, and
+			 * by default the Radio Base MAC Addr will be WAN_ADDR + Radio Index.
+			 */
+			%persistent bool UseBaseMacOffset{
+				default false;
+			}
+			
+			/**
+			 * Offset that the radio base mac addr should have from the WAN Address.
+			 * Enable UseBaseMacOffset to have this enacted in compatible drivers.
+			 */
+			%persistent int64 BaseMacOffset{
+				default 0;
+			}
+			
+			/**
+			 * Whether to generate guest BSSIDs with the local bit set.
+			 * When set, these BSSIDs may overlap, so it is 
+			 */
+			%persistent bool UseLocalBitForGuest{
+				default false;
+			}
+			
+			/**
+			 * Additional offset for the guest mac, per radio index + 1.
+			 * So the guest MACS will go on RadioBaseMac + LogalGuestMacOffset for the first radio.
+			 * and to RadioBaseMac + 2 * LocalGuestMaccOfset for the second radio.
+			 * When configuring radio's of different vendors, please ensure non overlapping
+			 * offsets.
+			 */
+			%persistent int64 LocalGuestMacOffset{
+				default 256;
+			}
+		}
+		
+		/**
+		 * Information with regards to radio driver capabilities and status.
+		 * @version 10.0
+		 */
+		object DriverStatus{
+			/**
+			 * The number of available antenna for tx on this radio.
+			 * -1 means data unavailable.
+			 */
+			read-only int32 NrTxAntenna{
+				default -1;
+			}
+
+			/**
+			 * The number of available antenna for rx on this radio.
+			 * -1 means data unavailable.
+			 */
+			read-only int32 NrRxAntenna{
+				default -1;
+			}
+
+			/**
+			 * The number of antenna actively used.
+			 * -1 means data unavailable.
+			 */
+			read-only int32 NrActiveTxAntenna{
+				default -1;
+			}
+
+			/**
+			 * The number of rx antenna actively used.
+			 * -1 means data unavailable.
+			 */
+			read-only int32 NrActiveRxAntenna{
+				default -1;
+			}
+		}
+
+		/**
+		 * Scan config
+		 * @version 10.0
+		 */
+		%persistent object ScanConfig{
+			on action write call wld_rad_writeScanConfig;
+
+			/**
+			 * Number of channels sent to the driver per scan request when stations are not present.
+			 * -1 means default config from driver.
+			 * @version 10.2
+			 */
+			%persistent int32 MaxChannelsPerScan{
+				default -1;
+			}
+			/**
+			 * Number of channels sent to the driver per scan request when stations are present.
+			 * -1 means default config from driver.
+			 * @version 10.2
+			 */
+			%persistent int32 ScanChannelCount{
+				default -1;
+			}
+			/**
+			 * Time interval between two scan requests to driver when stations are present.
+			 * -1 means default config from driver.
+			 * @version 10.2
+			 */
+			%persistent int32 ScanRequestInterval{
+				default -1;
+			}
+			/**
+			 * Time spent on current channel.
+			 * -1 means default config from driver.
+			 * @version 10.0
+			 */
+			%persistent int32 HomeTime{
+				default -1;
+			}
+
+			/**
+			 * Time spent sending probe request on channels.
+			 * -1 means default config from driver.
+			 * @version 10.0
+			 */
+			%persistent int32 ActiveChannelTime{
+				default -1;
+			}
+
+			/**
+			 * Time spent listening for beacons on channels.
+			 * -1 means default config from driver.
+			 * @version 10.0
+			 */
+			%persistent int32 PassiveChannelTime{
+				default -1;
+			}
+
+			/**
+			 * Block scan feature configuration
+			 * Disable : never block scan.
+			 * Prio : block scan if prio traffic is busy.
+			 * All : block scan if either prio or normal traffic is busy.
+			 * @version 10.0
+			 */
+			%persistent string BlockScanMode{
+				on action validate call check_enum ["Disable","Prio","All"];
+				default "Disable";
+			}
+			
+			/**
+			 * When scans started for these reasons, the scan will be 
+			 * forced as fast, so any "slow scan" interruption mitigation will be disabled.
+			 *
+			 * Entered as a list of scan reason strings. Default a standard scan requested through the bus will be 
+			 * run as fast.
+			 *
+			 * @version 10.0
+			 */
+			%persistent string FastScanReasons{
+				default "Ssid";
+			}
+		}
+
+		/**
+		 * Scan statistics
+		 * @version 10.0
+		 */
+		object ScanStats{
+			/**
+			 * Number of scans requested to the driver.
+			 * @version 10.0
+			 */
+			read-only uint32 NrScanRequested{
+				default 0;
+			}
+			/**
+			 * Number of scans done reported by the driver.
+			 * @version 10.0
+			 */
+			read-only uint32 NrScanDone{
+				default 0;
+			}
+			/**
+			 * Number of scans not being triggered because of errors.
+			 * @version 10.0
+			 */
+			read-only uint32 NrScanError{
+				default 0;
+			}
+			/**
+			 * Number of scans not being triggered because of internal protections.
+			 * @version 10.0
+			 */
+			read-only uint32 NrScanBlocked{
+				default 0;
+			}
+
+			object ScanReason[]{
+				/* Name of the ScanReason, This be a string for which reason scan is triggered.
+				 * @version 10.3
+				 */
+				read-only string Name{
+					default "";
+				}
+				/**
+				 * Number of scans triggered for the scan Reason.
+				 * @version 10.3
+				 */
+				read-only uint32 NrScanRequested{
+					default 0;
+				}
+				/**
+				 * Number of scans done for the scan Reason.
+				 * @version 10.3
+				 */
+				read-only uint32 NrScanDone{
+					default 0;
+				}
+			}
+		}
+
+	} /* object Radio */
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////// */
+
+	/**
+	SSID configuration. Here we config the VAP interface. Name id,
+	MAC address make SSID visible.
+
+	<p>WiFi SSID table (a stackable interface object as described in
+	[Section 4.2/TR-181i2]), where table entries model the MAC
+	layer. A WiFi SSID entry is typically stacked on top of a Radio
+	object. WiFi SSID is also a multiplexing layer, i.e. more than
+	one SSID can be stacked above a single Radio. At most one entry
+	in this table (regardless of whether or not it is enabled) can
+	exist with a given value for Alias, or with a given value for
+	Name. On creation of a new table entry, the CPE MUST choose
+	initial values for Alias and Name such that the new entry does
+	not conflict with any existing entries.
+	At most one enabled entry in this table can exist with a given
+	value for SSID, or with a given value for BSSID. </p>
+	*/
+	%persistent object SSID[]{
+		on action add-inst call wld_ssid_addInstance_ocf;
+		on action del-inst call wld_ssid_delInstance_odf;
+		
+		/**
+		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+		 * <p> Real function <b>bool VerifySSID(string SSID, ...)</b></p>
+		 * Verify 'all' or 'selected' the SSID-object parameters
+		 * @param SSID Name of the SSID interface that will be verified.
+		 * @param &lt;user param&gt; In case empty, the current given parameters are verified.
+		 * If the parameter is filled in (strin=value) it must be one of the SSID object strings:
+		 * Alias, LastChange, LowerLayers, BSSID, SSID or Enable.
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		 */
+		bool VerifySSID();
+		/**
+		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+		 * <p> Real function <b>bool CommitSSID(string SSID, uint32_t cm, ...)</b></p>
+		 * Sets main SSID data. The function can only be used for setting DATA (not get)!
+		 * @param SSID Name of the SSID interface that will be modified. Needed input field.
+		 * @param cm Commit mode, Or'ed value of following bit fields:
+			SET(1), NO_COMMIT(2), DIRECT(4). Noet SET is set by default!
+		 * @param ... A sequence of the SSID object parameters.
+			If nothing is set the current SSID-object config is reparsed.
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		*/
+		bool CommitSSID(%in uint32 cm);
+
+		/**
+		 * <p>The current operational state of the SSID entry (see
+		 * [Section 4.2.2/TR-181i2]). Enumeration of: </p>
+		 * <ul>
+		 *     <li> Up</li>
+		 *     <li> Down</li>
+		 *     <li> Unknown</li>
+		 *     <li> Dormant</li>
+		 *     <li> NotPresent</li>
+		 *     <li> LowerLayerDown</li>
+		 *     <li> Error(OPTIONAL)</li>
+		 * </ul>
+		 * <p>When Enable is false then Status SHOULD normally be Down
+		 * (or NotPresent or Error if there is a fault condition on the
+		 * interface). When Enable is changed to true then Status SHOULD
+		 * change to Up if and only if the interface is able to transmit
+		 * and receive network traffic; it SHOULD change to Dormant if
+		 * and only if the interface is operable but is waiting for
+		 * external actions before it can transmit and receive network
+		 * traffic (and subsequently change to Up if still operable when
+		 * the expected actions have completed); it SHOULD change to
+		 * LowerLayerDown if and only if the interface is prevented from
+		 * entering the Up state because one or more of the interfaces
+		 * beneath it is down; it SHOULD remain in the Error state if
+		 * there is an error or other fault condition detected on the
+		 * interface; it SHOULD remain in the NotPresent state if the
+		 * interface has missing (typically hardware) components; it
+		 * SHOULD change to Unknown if the state of the interface can
+		 * not be determined for some reason. </p>
+		 */
+		read-only string Status{
+			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
+			default "Down";
+		}
+		/**
+		 * <p>A non-volatile handle used to reference this instance.
+		 * Alias provides a mechanism for an ACS to label this
+		 * instance for future reference. An initial unique value MUST
+		 * be assigned when the CPE creates an instance of this
+		 * object.</p> */
+		string Alias;
+		/**
+		 * <p> The textual name of the SSID entry as assigned by the
+		 * CPE.</p> */
+		read-only string Name;
+		
+		/**
+		 * <p>The accumulated time in seconds since the SSID entered
+		 * its current operational state.</p> */
+		/* uint32 LastChange; */
+		/**
+		 * <p> Comma-separated list (maximum length 1024) of strings.
+		 * Each list item MUST be the path name of an interface object
+		 * that is stacked immediately below this interface object. If
+		 * the referenced object is deleted, the corresponding item MUST
+		 * be removed from the list.</p> */
+		%persistent string LowerLayers{
+			on action write call wld_ssid_setLowerLayers_pwf;
+		}
+		read-only uint32 Index;      /* (DEBUG) Index in the SSID tree                     */
+		/**
+		 * <p>[MACAddress] The Basic Service Set ID.</p>
+		 * <p>This is the MAC address of the access point, which can
+		 * either be local (when this instance models an access point
+		 * SSID) or remote (when this instance models an end point
+		 * SSID). </p> */
+		%persistent read-only string BSSID;
+		/**
+		 * <p>[MACAddress] The MAC address of this interface.</p>
+		 * <p>If this instance models an access point SSID, MACAddress is
+		 * the same as MACAddress. Note: This is not necessarily the
+		 * same as the Ethernet header source or destination MAC
+		 * address, which is associated with the IP interface and is
+		 * modeled via the Ethernet.Link.{i}.MACAddress parameter. </p>
+		 */
+		%persistent string MACAddress{
+			on action write call wld_ssid_setMacAddress_pwf;
+		}
+		/**
+		 *  <p> The current service set identifier in use by the
+		 *  connection. The SSID is an identifier that is attached to
+		 *  packets sent over the wireless LAN that functions as an ID
+		 *  for joining a particular radio network (BSS).</p>
+		 */
+		%persistent string SSID{
+			on action validate call wld_ssid_validateSSID_pwf;
+			on action write call wld_ssid_setSSID_pwf;
+			default "SSID_NOT_SET";
+		}
+
+		object Stats{
+
+			/** The total number of bytes transmitted out of the
+			 *  interface, including framing characters. */
+			volatile read-only uint64 BytesSent;
+
+			/** The total number of bytes received on the interface,
+			 *  including framing characters. */
+			volatile read-only uint64 BytesReceived;
+
+			/** The total number of packets transmitted out of the
+			 *  interface. */
+			volatile read-only uint64 PacketsSent;
+
+			/** The total number of packets received on the interface. */
+			volatile read-only uint64 PacketsReceived;
+			/** The total number of outbound packets that could not be
+			 *  transmitted because of errors. */
+			volatile read-only uint32 ErrorsSent;
+
+			/** The total number of transmitted packets which were retransmissions. 
+			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
+			read-only uint32 RetransCount;
+
+			/** The total number of inbound packets that contained errors
+			 *  preventing them from being delivered to a higher-layer
+			 *  protocol.*/
+			volatile read-only uint32 ErrorsReceived;
+
+			/** The total number of packets requested for transmission which
+			 *  were not addressed to a multicast or broadcast address at
+			 *  this layer, including those that were discarded or not
+			 *  sent.*/
+			volatile read-only uint32 DiscardPacketsSent;
+
+			/** The total number of inbound packets which were chosen to be
+			 *  discarded even though no errors had been detected to prevent
+			 *  their being delivered. One possible reason for discarding
+			 *  such a packet could be to free up buffer space.*/
+			volatile read-only uint32 DiscardPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  multicast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			volatile read-only uint32 UnicastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were not addressed to a
+			 *  multicast or broadcast address at this layer.*/
+			volatile read-only uint32 UnicastPacketsReceived;
+			
+			/** The total number of outbound packets which were chosen to be
+			 *  discarded even though no errors had been detected to prevent
+			 *  their being transmitted. One possible reason for discarding
+			 *  such a packet could be to free up buffer space.*/
+			volatile read-only uint32 MulticastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  multicast address at this layer.*/
+			volatile read-only uint32 MulticastPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  broadcast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			volatile read-only uint32 BroadcastPacketsSent;
+			
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  broadcast address at this layer. */
+			volatile read-only uint32 BroadcastPacketsReceived;
+
+			/** The total number of packets received via the interface which
+			 *  were discarded because of an unknown or unsupported
+			 *  protocol.*/
+			volatile read-only uint32 UnknownProtoPacketsReceived;
+
+			/** The number of packets that were not transmitted successfully
+			 *  due to the number of retransmission attempts
+			 *  exceeding an 802.11 retry limit.*/
+			volatile read-only uint32 FailedRetransCount;
+
+			/** The number of packets that were successfully transmitted after one or more retransmissions*/
+			volatile read-only uint32 RetryCount;
+
+			/** The number of packets that were successfully transmitted after more than one retransmission*/
+			volatile read-only uint32 MultipleRetryCount;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			volatile read-only object WmmPacketsSent {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			volatile read-only object WmmFailedSent {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface ordered by wmm category*/
+			volatile read-only object WmmPacketsReceived {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			volatile read-only object WmmFailedReceived {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			volatile read-only object WmmBytesSent {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			volatile read-only object WmmFailedbytesSent {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes received on this interface ordered by wmm category*/
+			volatile read-only object WmmBytesReceived {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			volatile read-only object WmmFailedBytesReceived {
+				volatile read-only uint32 AC_BE;
+				volatile read-only uint32 AC_BK;
+				volatile read-only uint32 AC_VO;
+				volatile read-only uint32 AC_VI;
+			}
+		}
+
+		/**
+		 *  Packets statistics per SSID
+		 */
+		void getSSIDStats();
+
+		/**
+		 * Enables or disables the SSID entry.  */
+		%persistent bool Enable{
+			default false;
+			on action write call wld_ssid_setEnable_pwf;
+		}
+	} /* object SSID */
+	
+	
+	/** <p>This object models an 802.11 connection from the
+	 *  perspective of a wireless access point. Each AccessPoint
+	 *  entry is associated with a particular SSID  interface
+	 *  instance via the SSIDReference  parameter.</p>
+	 *  <p>For enabled table entries, if SSIDReference is not a valid
+	 *  reference then the table entry is inoperable and the CPE
+	 *  MUST set Status to Error_Misconfigured.</p>
+	 *  <p>Note: The AccessPoint table includes a unique key
+	 *  parameter that is a strong reference. If a strongly
+	 *  referenced object is deleted, the CPE will set the
+	 *  referencing parameter to an empty string. However, doing so
+	 *  under these circumstances might cause the updated
+	 *  AccessPoint row to then violate the table's unique key
+	 *  constraint; if this occurs, the CPE MUST set Status to
+	 *  Error_Misconfigured and disable the offending AccessPoint
+	 *  row.</p>
+	 *  <p>At most one entry in this table (regardless of whether or
+	 *  not it is enabled) can exist with a given value for Alias.
+	 *  On creation of a new table entry, the CPE MUST choose an
+	 *  initial value for Alias such that the new entry does not
+	 *  conflict with any existing entries. At most one enabled
+	 *  entry in this table can exist with a given value for
+	 *  SSIDReference.</p>*/
+	%persistent object AccessPoint[]{
+		on action add-inst call wld_ap_addInstance_ocf;
+
+		/**
+		 * <b>kickStation</b>
+		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+		 * <p> Disassociation of a station with given MAC address </p>
+		*/
+		bool kickStation(%in string macaddress);
+
+		/**
+		 * <b>kickStationReason</b>
+		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+		 * <p> Disassociation of a station with given MAC address with given reason code </p>
+		*/
+		bool kickStationReason(%in string macaddress, %in int32 reason);
+
+		/**
+		 * <b>cleanStation</b>
+		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+		 * <p> Station will be removed from driver without sending a deauth. </p>
+		 * @version 9.2
+		*/
+		bool cleanStation(%in string macaddress);
+
+		/**
+		 * <b>sendBssTransferRequest</b>
+		 *
+		 * @param mac : format xx:xx:xx:xx:xx:xx
+		 * @param target : target bss: format xx:xx:xx:xx:xx:xx
+		 * @param class : operating class of target AP
+		 * @param channel : channel of target AP
+		 * @param wait : time to wait before sending a retry or giving up, in milliseconds
+		 * @param retries : number of retries before giving up. Default 0.
+		 * @param validity : timer of the bss request validity.
+		 * @param disassoc : timer before device disassociation.
+		 * @param bssidInfo : BSSID Info data.
+		 * @param transitionReason : MBO Transtion reason.
+		 * @return
+		 * function returns -1 if wait (1+retries) ms has expired without receiving a bss transfer reply.
+		 * If wait was equal to 0, -1 is returned immediately.
+		 * If a bss transfer reply is received, the reply code in the transfer
+		 * reply will be the reply code of this function. The reply code is always greater or equal to 0.
+		 *
+		 * <p>Note: Timers are specified in TBTT (Target Beacon Transmission Time) units,
+		 * which is the interval time between every beacon. By default every beacon is sent every 100ms,
+		 * so by default 1 TBTT = 100ms. Timers =  X TBTT/10 = x seconds.</p>
+		 *
+		 * <p> send a Bss transfer request to the given bssid. The function will wait for given amount
+		 * of time before sending a retry, or giving up. If the wait time has expired without receiving an answer
+		 * a reply of -1 is returned.</p>
+		 *
+		 */
+		bool sendBssTransferRequest(%in string mac, %in string target, %in int32 class, %in int32 channel, %in int32 wait, %in int32 retries, %in int32 validity, %in int32 disassoc, %in uint32 bssidInfo, %in int32 transitionReason);
+
+		/**
+		 * send a 802.11k remote measurement request
+		 * @param mac : format xx:xx:xx:xx:xx:xx
+		 * @param bssid : optional bssid arguement. Default wildcard ff:ff:ff:ff:ff:ff.
+		 * @param class : optional class to scan. Default 0.
+		 * @param channel : optional channel to scan. Default 0.
+		 * @param timeout : optional time to wait in milliseconds. Default 1000.
+		 * @param ssid : optional ssid. Default empty.
+		 * @return
+		 * a variant list containing rrm_t entries.
+		 * If no measurement report was received, or the timeout was 0, then an empty list is returned.
+		 * @version 9.0
+		 */
+		bool sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint32 class, %in uint32 channel, %in uint32 timeout, %in string ssid);
+
+		/** Indicates the status of this access point. Enumeration of:
+		*  <ul>
+		*    <li>Disabled</li>
+		*    <li>Enabled</li>
+		*    <li>Error_Misconfigured</li>
+		*    <li>Error (OPTIONAL)</li>
+		*  </ul>
+		*  The Error_Misconfigured value indicates that a necessary
+		*  configuration value is undefined or invalid. The Error value
+		*  MAY be used by the CPE to indicate a locally defined error
+		*  condition.*/
+		read-only string Status;
+/*		{
+			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
+			default "Disabled";
+		}
+*/
+		/** A non-volatile handle used to reference this instance. Alias
+		 *  provides a mechanism for an ACS to label this instance for
+		 *  future reference. An initial unique value MUST be assigned
+		 *  when the CPE creates an instance of this object.*/
+		string Alias;
+		/** Index in the AccessPoint tree (also for the SSID tree,
+		 *  both are inline) */
+		read-only uint32 Index;
+
+		/* The name of the Radio used by this AccessPoint */
+		read-only string RadioReference;
+
+		/** The value MUST be the path name of a row in the SSID table.
+		 *  If the referenced object is deleted, the parameter value
+		 *  MUST be set to an empty string.  */
+		%persistent string SSIDReference{
+			on action write call wld_ap_setSSIDRef_pwf;
+		}
+		/** Indicates whether or not beacons include the SSID name. */
+		%persistent bool SSIDAdvertisementEnabled{
+			on action write call wld_ap_setCommonParam_pwf;
+			default true;
+		}
+		/** The maximum number of retransmission for a packet. This
+		 *  corresponds to IEEE 802.11 parameter
+		 *  dot11ShortRetryLimit. */
+		%persistent uint32 RetryLimit{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+		/** Indicates whether this access point supports WiFi
+		 *  Multimedia (WMM) Access Categories (AC).  */
+		read-only bool WMMCapability;
+		/** <p>Indicates whether this access point supports WMM
+		 *  Unscheduled Automatic Power Save Delivery (U-APSD).</p>
+		 *  Note: U-APSD support implies WMM support.*/
+		read-only bool UAPSDCapability;
+		/** Whether WMM support is currently enabled. When enabled,
+		 *  this is indicated in beacon frames.*/
+		%persistent bool WMMEnable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+		/** <p>Whether U-APSD support is currently enabled. When
+		 *  enabled, this is indicated in beacon frames.</p> Note:
+		 *  U-APSD can only be enabled if WMM is also enabled. */
+		%persistent bool UAPSDEnable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** <p>Enable / Disable the MultiCast feature on the interface
+		On a 5GHz by default enabled </p>
+		*/
+		%persistent bool MCEnable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** <p>APBridgeDisable Disable the Bridged traffic of
+		STA connected on the same VAP. </p>
+		*/
+		%persistent bool APBridgeDisable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** <p> Name of the bridge interface used with this VAP.
+		Some vendor deamons depend on this so we can track it.</p>
+		 */
+		%persistent string BridgeInterface{
+			on action write call wld_ap_setBridgeInterface_pwf;
+		}
+
+		/**
+		 * The wlan device type which will be assigned to devices connecting to this vap.
+		 * Setting the type will only be enacted on future devices connecting. It will not
+		 * change the type of devices allready connected.
+		 */
+		%persistent string DefaultDeviceType{
+			on action validate call check_enum ["Video","Data","Guest"];
+			default "Data";
+			on action write call wld_ap_setDefaultDeviceType_pwf;
+		}
+
+		/**
+		 * Indicates whether IEEE 802.11k functionality is supported
+		 * on this accesspoint. It must be supported by the radio of this accesspoint.
+		 * @version 9.0
+		 */
+		%persistent bool IEEE80211kEnabled{
+			on action write call wld_ap_set80211kEnabled_pwf;
+			default false;
+		}
+
+		/** Enables or disables this access point.*/
+		%persistent bool Enable{
+			default false;
+			on action write call wld_ap_setEnable_pwf;
+		}
+
+		/**
+		 * Enables or disables Wireless Distribution System- 4MAC mode
+		 * @version 9.2
+		 */
+		%persistent bool WDSEnable{
+			default false;
+			on action write call wld_ap_setWDSEnable_pwf;
+		}
+
+		/**
+		 * Enable Multi Band Operation functionality
+		 * @version 9.3
+		 */
+		%persistent bool MBOEnable{
+			default false;
+			on action write call wld_ap_setMBOEnable_pwf;
+		}
+
+		/**
+		 * Comma-separated list of strings. List items indicate which IEEE 1905
+		 * Multi-AP type is used for this Access Point.
+		 * Supported options are : "Off", "FronthaulBSS", "BackhaulBSS".
+		 * @version 9.2
+		 */
+		%persistent string MultiAPType {
+			default "Off";
+			on action write call wld_ap_setMultiAPType_pwf;
+		}
+
+		/**
+		 * Define in which role AccessPoint will be used, IE in the Beacon will be added.
+		 * Off : undefined role, no additional IE.
+		 * Main: everyone should be able to connect.
+		 * Relay: only other repeaters should connect.
+		 * Remote: only non-repeaters should connect.
+		 * @version 9.2
+		 */
+		%persistent string ApRole {
+			default "Off";
+			on action write call wld_ap_setRole_pwf;
+			on action validate call check_enum ["Off","Main","Relay","Remote"];
+		}
+
+		/**
+		 * List of MAC Addresses allowed or blocked on the current AP depending of the mode.
+		 * @version 9.3
+		 */
+		string MACFilterAddressList{
+			on action write call wld_apMacFilter_setAddressList_pwf;
+		}
+
+		/**
+		 * Object encapsulating IEEE 802.11r configuration parameters.
+		 * @version 9.1
+		 */
+		%persistent object IEEE80211r {
+			/**
+			 * Indicates whether IEEE 802.11r functionality is enabled
+			 * on this accesspoint. It must be supported by the radio of this accesspoint.
+			 * @version 9.1
+			 */
+			%persistent bool Enabled{
+				on action write call wld_ap_set80211rEnabled_pwf;
+				default false;
+			}
+
+			/**
+			 * Indicates whether IEEE 802.11r FT Over DS functionality is enabled
+			 * If disable, FT Over the Air only will be enabled.
+			 * @version 10.0
+			 */
+			%persistent bool FTOverDSEnable{
+				on action write call wld_ap_setFTOverDSEnable_pwf;
+				default false;
+			}
+
+			/**
+			* The Network Access Server Identifier, which must be unique for each access point.
+			* @version 9.1
+			*/
+			read-only string NASIdentifier;
+
+			/**
+			* The R0 key use by the AP.
+			* @version 10.0
+			*/
+			read-only string R0KHKey;
+
+			/**
+			* The mobility domain of the home network. This domain must be set to the same value for all APs inside the same ESS.
+			* @version 9.1
+			*/
+			%persistent uint16 MobilityDomain{
+				on action validate call check_range { min = 0, max = 65535 };
+				on action write call wld_ap_setMobilityDomain_pwf;
+				default 0;
+			}
+		}
+
+		/**
+		 * Object encapsulating IEEE 802.11u configuration parameters.
+		 * @version 10.0
+		 */
+		%persistent object IEEE80211u {
+			/**
+			 * Indicates whether IEEE 802.11u interworking feature is enabled
+			 * @version 10.0
+			 */
+			%persistent bool InterworkingEnable{
+				on action write call wld_ap_setInterworkingEnable_pwf;
+				default false;
+			}
+
+			/**
+			 * QoS Map Set configuration
+			 * Comma delimited QoS Map Set in decimal values
+			 * (see IEEE Std 802.11-2012, 8.4.2.97)
+			 * format:
+			 * [<DSCP Exceptions[DSCP,UP]>,]<UP 0 range[low,high]>,...<UP 7 range[low,high]>
+			 * @version 10.0
+			 */
+			%persistent string QoSMapSet {
+				on action write call wld_ap_setQosMapSet_pwf;
+			}
+		}
+
+		/**
+		 * The maximum number of devices that can simultaneously be connected to the access point.
+		 *
+		 * value of 0 means that there is no specific limit.
+		 * @version 9.1
+		 */
+		uint32 MaxAssociatedDevices{
+			default 32;
+			on action write call wld_ap_setMaxStations_pwf;
+		}
+
+		/** 
+		 * Enable or disable device isolation.
+		 * A value of true means that the devices connected to the Access Point are isolated from 
+		 * all other devices within the home network (as is typically the case for a Wireless Hotspot).
+		 * @version 11.1
+		 */
+		%persistent bool IsolationEnable{
+			default false;
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** This object contains security related parameters that apply
+		 * to a CPE acting as an Access Point */
+		%persistent object Security{
+			/** <p>Comma-separated list of strings. Indicates which security
+			 *  modes this AccessPoint  instance is capable of supporting.
+			 *  Each list item is an enumeration of:</p>
+			 *  <ul>
+			 *    <li>None</li>
+			 *    <li>OWE</li>
+			 *    <li>WEP-64</li>
+			 *    <li>WEP-128</li>
+			 *    <li>WPA-Personal</li>
+			 *    <li>WPA2-Personal</li>
+			 *    <li>WPA-WPA2-Personal</li>
+			 *    <li>WPA3-Personal</li>
+			 *    <li>WPA2-WPA3-Personal</li>
+			 *    <li>WPA-Enterprise</li>
+			 *    <li>WPA2-Enterprise</li>
+			 *    <li>WPA-WPA2-Enterprise</li>
+			 *    <li>WPA3-Enterprise</li>
+			 *    <li>WPA2-WPA3-Enterprise</li>
+			 *  </ul>
+			 *  */
+			read-only string ModesSupported;
+			/** <p>Comma-separated list of strings. Indicates which security
+			 *  modes this AccessPoint instance is allowed to use.
+			 *  Each list item is an enumeration of:</p>
+			 *  <ul>
+			 *    <li>None</li>
+			 *    <li>OWE</li>
+			 *    <li>WEP-64</li>
+			 *    <li>WEP-128</li>
+			 *    <li>WPA-Personal</li>
+			 *    <li>WPA2-Personal</li>
+			 *    <li>WPA-WPA2-Personal</li>
+			 *    <li>WPA3-Personal</li>
+			 *    <li>WPA2-WPA3-Personal</li>
+			 *    <li>WPA-Enterprise</li>
+			 *    <li>WPA2-Enterprise</li>
+			 *    <li>WPA-WPA2-Enterprise</li>
+			 *    <li>WPA3-Enterprise</li>
+			 *    <li>WPA2-WPA3-Enterprise</li>
+			 *  </ul>
+			 * @version 9.2
+			 *  */
+			%persistent string ModesAvailable{
+				on action write call wld_ap_setModesAvailable_pwf;
+			}
+			/**A WEP key expressed as a hexadecimal string.
+			 * WEPKey is used only if ModeEnabled is set to WEP-64 or
+			 * WEP-128.
+			 * <p>A 5 byte WEPKey corresponds to security mode WEP-64 and a
+			 * 13 byte WEPKey corresponds to security mode WEP-128. <B>A 16
+			 * byte WEPKey corresponds to security mode WEP-128iv.</B> </p>
+			 * <i>When read, this parameter returns an empty string,
+			 * regardless of the actual value.</i>*/
+			%persistent string WEPKey{  /* Must be hexbinary? */
+				default "123456789ABCD";
+				on action write call wld_ap_setWEPKey_pwf;
+			}
+
+			/** <p>A literal PreSharedKey (PSK) expressed as a hexadecimal
+			    string. PreSharedKey is only used if ModeEnabled is set to
+			    WPA-Personal or WPA2-Personal or WPA-WPA2-Personal.
+			    If KeyPassPhrase is written, then PreSharedKey is
+			    immediately generated. The ACS SHOULD NOT set both the
+			    KeyPassPhrase and the PreSharedKey directly (the result of
+			    doing this is undefined).</p>
+			    <i>When read, this parameter returns an empty string,
+			    regardless of the actual value.</i>*/
+			%persistent string PreSharedKey{
+				on action write call wld_ap_setPreSharedKey_pwf;
+			}
+			/** <p>A passphrase from which the PreSharedKey  is to be
+			 *  generated, for WPA-Personal  or WPA2-Personal  or
+			 *  WPA-WPA2-Personal  security modes. If KeyPassPhrase is
+			 *  written, then PreSharedKey is immediately generated. The ACS
+			 *  SHOULD NOT set both the KeyPassPhrase and the PreSharedKey
+			 *  directly (the result of doing this is undefined). The key is
+			 *  generated as specified by WPA, which uses PBKDF2 from PKCS
+			 *  #5: Password-based Cryptography Specification Version 2.0</p>
+			 * <i> When read, this parameter returns an empty string,
+			 * regardless of the actual value.</i>
+			 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
+			 * or 256 bit secret, entered as a 64 characters hex key.*/
+			%persistent string KeyPassPhrase = "password" {
+				on action write call wld_ap_setKeyPassPhrase_pwf;
+			}
+			/**  <p>The interval (expressed in seconds) in which the keys are
+			 *   re-generated. This is applicable to WPA, WPA2 and Mixed
+			 *   (WPA-WPA2) modes in Personal or Enterprise mode (i.e.
+			 *   when ModeEnabled is set to a value other than None or
+			 *   WEP-64 WEP-128 or WEP-128uv.</p>*/
+			%persistent uint32 RekeyingInterval = 3600 {
+				on action write call wld_ap_setRekeyInterval_pwf;
+			}
+			/** Transition interface for OWE Transition Mode
+			 *  Link current VAP to the other VAP needed for transition
+			 *  with OWE security mode
+			 *
+			 *  @version 10.0
+			 */
+			%persistent string OWETransitionInterface{
+				on action write call wld_ap_setOweTransitionIntf_pwf;
+			}
+			/** Transition Disable indication
+			 *  The AP can notify authenticated stations to disable transition mode in their
+			 *  network profiles when the network has completed transition steps, i.e., once
+			 *  sufficiently large number of APs in the ESS have been updated to support the
+			 *  more secure alternative. When this indication is used, the stations are
+			 *  expected to automatically disable transition mode and less secure security
+			 *  options. This includes use of WEP, TKIP (including use of TKIP as the group
+			 *  cipher), and connections without PMF.
+			 *  Options :
+			 *  - WPA3-Personal (i.e., disable WPA2-Personal = WPA-PSK and only allow SAE to be used)
+			 *  - SAE-PK (disable SAE without use of SAE-PK)
+			 *  - WPA3-Enterprise (move to requiring PMF)
+			 *  - Enhanced Open (disable use of open network; require OWE)
+			 *  - "" : Default does not include Transition Disable KDE
+			 *
+			 *  It is a comma-seperated list of strings. It can be one or more options of
+			 *  the following: "", "WPA3-Personal", "SAE-PK", "WPA3-Enterprise", "EnhancedOpen",
+			 *
+			 *  @version 10.0
+			 */
+			%persistent string TransitionDisable{
+				on action write call wld_ap_setTransitionDisable_pwf;
+				default "";
+			}
+			/**  A passphrase for WPA3-Personal or WPA2-WPA3-Personal 
+			 *   security modes.
+			 *
+			 *   NOTE: this parameter is for WPA3. WPA2 PreSharedKey is generated
+			 *   from KeyPassphrase.
+			 *
+			 *   If SAEPassphrase is not set, KeyPassPhrase field will be used
+			 *   for WPA3 and WPA2/WPA3 connection.
+			 *   This behavior should be fased out and SAEPassphrase should be set
+			 *   if WPA3 is enabled
+			 *
+			 *   @version 10.0
+			 */
+			%persistent string SAEPassphrase{
+				on action write call wld_ap_setSaePassphrase_pwf;
+				default "";
+			}
+			/**  <p>WPA-key encryption Mode</p>*/
+			%persistent string EncryptionMode = "Default" {
+				on action write call wld_ap_setEncryptionMode_pwf;
+				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+			}
+			/**  <p>Enable extra WPA-key encryption protection..</p>*/
+			%persistent bool SHA256Enable{
+				on action write call wld_ap_setSHA256Enable_pwf;
+				default false;
+			}
+			/** <p>[IPAddress] The IP Address of the RADIUS server used for
+			 *  WLAN security. RadiusServerIPAddr  is only applicable when
+			 *  ModeEnabled  is an Enterprise type (i.e. WPA-Enterprise,
+			 *  WPA2-Enterprise  or
+			 *  WPA-WPA2-Enterprise).</p>*/
+			%persistent string RadiusServerIPAddr{
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+			/** <p> The port number of the RADIUS server used for WLAN
+			 *  security. RadiusServerPort is only applicable when
+			 *  ModeEnabled  is an Enterprise type (i.e. WPA-Enterprise,
+			 *  WPA2-Enterprise  or WPA-WPA2-Enterprise). </p> */
+			%persistent uint32 RadiusServerPort = 1812 {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+			/** <p> The secret used for handshaking with the RADIUS
+			 *  server </p> <i>When read, this parameter returns an empty
+			 *  string, regardless of the actual value.</i>*/
+			%persistent string RadiusSecret{
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** Default Session-Timeout (expressed in seconds). If set, it will be used
+			 *  as the default Session-Timeout if no timeout is set by the radius server.
+			 *  RadiusDefaultSessionTimeout is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent uint32 RadiusDefaultSessionTimeout {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** IP address to use for NAS-IP-Address or NAS-IPv6-Address.
+			 *  If set, it will overrule the address of the interface.
+			 *  RadiusOwnIPAddress is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			string RadiusOwnIPAddress {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** Optional NAS-Identifier string for RADIUS messages.
+			 *  RadiusNASIdentifier is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent string RadiusNASIdentifier {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** If set, it will override Called-Station-Id in the radius messages.
+			 *  RadiusCalledStationId is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent string RadiusCalledStationId {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** Request Chargeable-User-Identity (RFC 4372)
+			 *  RadiusChargeableUserId is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent bool RadiusChargeableUserId {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/**The value MUST be a member of the list reported by the
+			 * ModesSupported  parameter. Indicates which security mode is
+			 * enabled. We put this at the end because we expect that the
+			 * selected mode got a correct key. In case the key isn't filled in
+			 * the action is ignored.
+			 */
+			%persistent string ModeEnabled = "WPA2-Personal" {
+				on action write call wld_ap_setModeEnabled_pwf;
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"E-None",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise", "Unknown"];
+			}
+
+			/** Management Frame Protection configuration applicable when ModeEnabled is set
+			 * to WPA2-Personal or WPA2-Enterprise. Enumeration of:
+			 *     * Disabled
+			 *     * Optional
+			 *     * Required
+			 */
+			string MFPConfig = "Disabled" {
+				on action write call wld_ap_setMFPConfig_pwf;
+				on action validate call check_enum ["Disabled",
+						"Optional",
+						"Required"];
+			}
+
+			/**
+			 * Signaling Payload Protection AMSDU (SPP AMSDU) capability in order to protect
+			 * AMSDU frames from fragmentation attacks. It is applicable when WPA2 and/or WPA3
+			 * is enabled in ModeEnabled. Possible values are :
+			 *	- -1: apply vendor default
+			 *	-  0: disabled
+			 *	-  1: capable
+			 *	-  2: required
+			 *
+			 * @version 10.0
+			 */
+			int32 SPPAmsdu {
+				default -1;
+			}
+		}
+
+		/** This object contains parameters related to MAC-address based filtering for this access point.  */
+		%persistent object MACFiltering {
+			on action write call wld_ap_setMACFiltering_owf;
+			/** The MAC-address based filtering mode. Enumeration of:
+			  * <ul>
+			  *   <li><b>Off</b> All MAC-addresses are allowed.</li>
+			  *   <li><b>WhiteList</b> Access is granted only for MAC-addresses occurring in the Entry table. </li>
+			  *   <li><b>BlackList</b> Access is granted for all MAC-addresses except for the ones occurring in the Entry table. </li>
+			  * </ul>
+			  * This only specifies how the entries in the Entry list should be handled. The
+			  * temp entry list is independent of this mode setting.
+			  */
+			%persistent string Mode {
+				on action validate call check_enum [ "Off", "WhiteList", "BlackList"];
+				default "Off";
+			}
+
+			/** This is the list of MAC-addresses to be allowed/denied depending on the MAC-filtering mode. */
+			%persistent object Entry[] {
+				on action write call wld_ap_setMACFilteringEntry_owf;
+				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
+				/** The MAC-address of this table entry. */
+				string MACAddress;
+			}
+
+			/**
+			 * This boolean enables temporary blacklisting. If mode is disabled, these entries should still be
+			 * blacklisted. The mode above is only relevant for the %persistent entry mode
+			 * If mode is blacklist, the union of the two lists shall be blacklisted.
+			 * If mode is whitelist, all entries in the %persistent entry lists, which are not in the
+			 * temp entry list will be whitelisted.
+			 */
+			%persistent bool TempBlacklistEnable{
+				default true;
+			}
+
+			/**
+			 * This is the list of MAC-addresses to be temporarily denied only, if temp blacklisting is enabled.
+			 * The temp entries will always be blacklisted only, and have priority on the entries in the
+			 * entry list. These entries should NOT be boot %persistent, nor back-up restored, and are runtime
+			 * only.
+			 **/
+			object TempEntry[] {
+				on action write call wld_ap_setMACFilteringEntry_owf;
+				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
+				string MACAddress;
+			}
+
+			/**
+			 * <b>addEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Add a MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void addEntry(%in string mac);
+
+			/**
+			 * <b>delEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Remove a MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void delEntry(%in string mac);
+
+			/**
+			 * <b>addTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Add a temporary MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void addTempEntry(%in string mac);
+
+			/**
+			 * <b>delTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Remove a temporary MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void delTempEntry(%in string mac);
+		}
+
+		/**
+		 * This object contains parameters related to MAC-address based filtering for this access point.
+		 * @version 9.1
+		 */
+		object ProbeFiltering {
+			/**
+			 * This is the list of MAC-addresses to be temporarily denied only.
+			 * @param MACAddress (format xx:xx:xx:xx:xx:xx)
+			 * @version 9.1
+			 **/
+			object TempEntry[] {
+				on action write call wld_ap_setProbeFilteringEntry_owf;
+				on action del-inst call wld_ap_deleteProbeFilteringEntry_odf;
+				string MACAddress;
+			}
+
+			/**
+			 * <b>addTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Add a temporary ProbeFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 9.1
+			 */
+			void addTempEntry(%in string mac);
+
+			/**
+			 * <b>delTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Remove a temporary ProbeFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 9.1
+			 */
+			void delTempEntry(%in string mac);
+		}
+
+		/** This object contains parameters related to Wi-Fi Protected
+		 *  Setup [WPSv1.0] for this access point.*/
+		%persistent object WPS{
+			/** Enables or disables WPS functionality for this access
+			 *  point. Note only one VAP/Radio can enable WPS. For this by
+			 *  design the default is disable. */
+			%persistent bool Enable{
+				default false;
+				on action write call wld_ap_setWPSEnable_pwf;
+			}
+			/** Keeps track of current (real) WPS activation status.
+			 *  Some configurations modes disable WPS!
+			 *  Still 'the intention of the user' that is tracked in the enable field is backuped. */
+			read-only string Status;
+			/** <p>Comma-separated list of strings. Indicates WPS
+			 *  configuration methods supported by the device. Each list
+			 *  item is an enumeration of:</p>
+			 *  <ul>
+			 *    <li>USBFlashDrive</li>
+			 *    <li>Ethernet</li>
+			 *    <li>Label</li>
+			 *    <li>Display</li>
+			 *    <li>ExternalNFCToken</li>
+			 *    <li>IntegratedNFCToken</li>
+			 *    <li>NFCInterface</li>
+			 *    <li>PushButton</li>
+			 *    <li>PIN</li>
+			 *    <li>PhysicalPushButton</li>
+			 *    <li>PhysicalDisplay</li>
+			 *    <li>VirtualPushButton</li>
+			 *    <li>VirtualDisplay</li>
+			 *  </ul>
+			 *  This parameter corresponds directly to the "Config
+			 *  Methods" attribute of the WPS specification [WPSv2.0].
+			 *  The USBFlashDrive and Ethernet are only applicable in WPS 1.0 and are deprecated in WPS 2.x.
+			 *  The PhysicalPushButton, VirtualPushButton, PhysicalDisplay and VirtualDisplay are applicable to WPS 2.x only.
+			 *  The PushButton and PIN methods MUST be supported.
+			 *  S@H comments: PIN covers LABEL, DISPLAY and KEYPAD bit pattern.
+			 *  Note combination KEYPAD and PushButton is forbidden
+			 */
+			read-only string ConfigMethodsSupported;
+			/** Comma-separated list of strings. Each list item MUST
+			 *  be a member of the list reported by the
+			 *  ConfigMethodsSupported  parameter. Indicates WPS
+			 *  configuration methods enabled on the device.*/
+			%persistent string ConfigMethodsEnabled{
+				on action write call wld_ap_setWpsConfigMethodsEnabled_pwf;
+			}
+
+			bool CertModeEnable{
+				on action write call wld_ap_setWpsCertModeEnable_pwf;
+				default false;
+			}
+
+			/*{
+			NEED VALIDATOR FUNCTION FOR THIS!!!
+				on action validate call check_enum ["USB","Ethernet","Label","Display",
+									  "ExternalNFCToken","InternalNFCToken","NFCInterface","PushButton",
+									  "Keypad",
+									  "PIN"];
+				default "PushButton";
+			}*/
+
+			/**
+			Randomly generated PIN-code, to be entered in client devices to connect to the HGW.
+			This code can be regenerated with generateSelfPIN().
+			However, the wlan implementation is free to regenerate this PIN code
+			whenever needed so it is not guaranteed to be constant between two consecutive
+			generateSelfPIN()-calls. */
+			string SelfPIN{
+			on action write call wld_ap_setWpsSelfPIN_pwf;
+			}
+
+			bool setCompatibilityWPS(%in string supVerWPS);
+			/**
+			string generateSelfPIN()
+			Regenerate the SelfPIN.
+			It's not specified at this level whether the generated PIN-code should be
+			a 4-digit or an 8-digit WPS PIN code, but this should be configurable somehow
+			in an implementation specific way. The newly generated PIN-code should be stored
+			in SelfPIN and it should be applied, meaning that devices can connect using this PIN-code.
+			During the ACTIVE registrar period (2 min).
+			The return value indicates that the registrar is started or not.
+			*/
+			string generateSelfPIN();
+
+			/**
+			 * Not in the spec!
+			 * We need something to toggle WPS in unconfigured mode.
+			 */
+			bool Configured{
+				on action write call wld_ap_setWpsConfigured_pwf;
+				default true;
+			}
+
+			/**
+			Indicates whether WPS pairing is busy.
+			This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
+			*/
+			bool PairingInProgress;
+			
+			/**
+			 * UUID used during WPS pairing.
+			 *
+			 * This is visible in the beacon frames.
+			 *
+			 * UUID is written in hex format, e.g. "12345678-9abc-def0-1234-56789abcdef0".
+			 *
+			 * @version 10.0
+			 */
+			string UUID {
+				on action write call wld_wps_setUUID;
+				default "00000000-0000-0000-0000-000000000000";
+			}
+
+			/**
+			 * If enable, credentials of the relay interface will be forwarded inside the WPS session.
+			 * Relay interface must be on the same radio as this AP.
+			 * @version 10.0
+			 */
+			%persistent bool RelayCredentialsEnable {
+				on action write call wld_ap_setWpsRelayCredentialsEnable_pwf;
+				default false;
+			}
+
+			/**
+			 * This parameter allow to restart wps within a wps session
+			 * If RestartOnRequest is true then the calling to startPairing again will cancel the previous pairing, and start a new pairing sessions.
+			 * If false, the call will get ignored
+			 * @version 10.0
+			 */
+			 %persistent bool RestartOnRequest {
+				on action write call wld_ap_setWpsRestartOnRequest_pwf;
+				default false;
+			}
+		}
+
+		/**
+		 * Object which contains the association counters.
+		 * The association counters keep track of the amount of successful and failed connection attempts.
+		 */
+		object AssociationCount {
+
+			/**
+			 * The amount of successful connection attempts since last reset.
+			 */
+			read-only uint32 Success;
+
+			/**
+			 * The amount of failed connection attempts since last reset, due to unknown reasons.
+			 */
+			read-only uint32 Fail;
+
+			/**
+			 * The amount of failed connection attempts since last reset, due to security reasons.
+			 * Likely cause is that the user was using an invalid password.
+			 */
+			read-only uint32 FailSecurity;
+
+			/**
+			 * The number of fast reconnects observed. A fast reconnect is if a station
+			 * disconnects and then reconnects within a configured time frame.
+			 * @version 10.0
+			 */
+			read-only uint32 FastReconnects;
+			
+			/**
+			 * Specific classifications of fast reconnects. Currently supported ones are
+			 * reconnections on state change (e.g. DFS), and on scan. By default 
+			 * reconnects get classified as the other type.
+			 * @version 10.0
+			 */
+			object FastReconnectTypes[] {
+				/**
+				 * The type of fast reconnection. Current types are "OnStateChange", "OnScan", "Default"
+				 * @version 10.0
+				 */
+				read-only string Type;
+				/**
+				 * The number of fast reconnections observed of this type.
+				 * @version 10.0
+				 */
+				read-only uint32 Count;
+			}
+
+			/**
+			 * IGD doesn't support function support.
+			 * This param does a reset of AssociationCounts params when TRUE.
+			 * But is visibly always FALSE!
+			 */
+			bool ResetCounters{
+				on action write call doAssociationCountReset;
+			}
+		}
+
+		/** Update the statistics in of the AssociatedDevice[] objects in the datamodel,
+		 * @return list of variant maps with the AssociatedDevice values
+		 * @version 6.0
+		*/
+		void getStationStats();
+
+		/** The number of active entries in the AssociatedDevice  table.  */
+		read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
+
+		/** <p> A table of the devices currently associated with the
+		    accesspoint. At most one entry in this table can exist with
+		    a given value for MACAddress.</p>
+		    @version 6.0
+		  */
+		read-only object AssociatedDevice[]{
+			/** CUI based on Chargeable-User-Identity attribute in Access-Accept
+			 * @version 6.0  */
+			read-only string ChargeableUserId;
+
+			/**[MACAddress] The MAC address of an associated device.
+			 * @version 6.0
+			*/
+			read-only string MACAddress;
+			/** Whether an associated device has authenticated (true) or
+			 * not (false).
+			 * @version 6.0
+			 */
+			read-only bool AuthenticationState;
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the access point to the associated
+			 *  device.
+			 * @version 6.0
+			 */
+			read-only uint32 LastDataDownlinkRate;
+
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the associated device to the access
+			 *  point.
+			 * @version 6.0
+			 */
+			read-only uint32 LastDataUplinkRate;
+
+			/** An indicator of radio signal strength of the uplink from the
+			 *  associated device to the access point, measured in dBm, as
+			 *  an average of the last 100 packets received from the
+			 *  device.
+			 *  The value is the highest value accross all SignalStrengthByChain values. If not available, the value is the one reported by the driver.
+			 * @version 6.0
+			 */
+			read-only int32 SignalStrength{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+
+			/** An indicator of radio Min,Max,Mean(Linear),Mean(Exp) signal strength of the uplink from the
+			 *  associated device to the access point, measured in dBm since last association.
+			 *  format is comma separated string of integers, example : -11,-33
+			 * @version 10.0
+			 */
+			read-only string SignalStrengthHistory;
+
+			/**
+			* List of radio signal strength per antennas of the uplink from the
+			* associated device to the access point, float values with one decimal,
+			* measured in dBm, separated by a comma.
+			* Example : -58.5,-58.2,-57.4,-58.1
+			 * @version 9.1
+			*/
+			read-only string SignalStrengthByChain;
+			/**
+			 * An indicator of radio signal strength of the uplink from the
+			 * associated device to the access point, measured in dBm, as
+			 * an average over all antennas.
+			 * @version 9.2
+			 */
+			read-only int32 AvgSignalStrengthByChain{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+			/**
+			 * An indicator of radio signal strength of the uplink from the
+			 * associated device to the access point, measured in dBm.
+			 * Reported as measured by the RssiMonitor
+			 * @version 6.0
+			 */
+			read-only int32 AvgSignalStrength{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+
+			/** The number of packets that had to be re-transmitted recently.
+			 * Official spec requires this to be a value in range [0,100], representing the amount
+			 * of retransmissions done in the last 100 packets.
+			 * However, due to drivers not offering this value, this value will present the percentage
+			 * of tx retransmissions vs actual transmissions since the last time statistics were taken.
+			 * This will also be a value between 0 and 100.
+			 * @version 6.0
+			 */
+			read-only uint32 Retransmissions;
+
+			/** <p>Whether or not this node is currently present in the WiFi
+			 *  AccessPoint network.</p>
+			 *  <p>The ability to list inactive nodes is OPTIONAL. If the CPE
+			 *  includes inactive nodes in this table, Active MUST be set
+			 *  to false for each inactive node. The length of time an
+			 *  inactive node remains listed in this table is a local
+			 *  matter to the CPE.</p>
+			 * @version 6.0
+			 */
+			read-only bool Active;
+
+			/** Signal to noise ratio in dB
+			 * @version 6.0
+			 */
+			read-only int32 SignalNoiseRatio;
+			/** Radio noise level in dB
+			 * @version 6.0
+			*/
+			read-only int32 Noise;
+			/** The time elapsed since the station was last active, in seconds
+			 * @version 6.0
+			*/
+			read-only uint32 Inactive;
+			/** Number of packets received by the station
+			 * @version 6.0
+			*/
+			read-only uint32 RxPacketCount;
+
+			/** Number of packets sent by the station
+			 * @version 6.0
+			*/
+			read-only uint32 TxPacketCount;
+
+			/** 
+                         * Number of unicast packets received by the station
+			 * @version 9.2 
+			*/
+                        read-only uint32 RxUnicastPacketCount;
+
+
+			/** 
+                         * Number of unicast packets sent by the station
+			 * @version 9.2 
+			*/
+			read-only uint32 TxUnicastPacketCount;
+
+
+			/** 
+                         * Number of Multicast packets received by the station
+			 * @version 9.2 
+			*/
+			read-only uint32 RxMulticastPacketCount;
+
+
+			/** 
+                         * Number of Multicast packets sent by the station
+			 * @version 9.2 
+			*/
+			read-only uint32 TxMulticastPacketCount;
+
+			/** Number of bytes sent by the station
+			 * @version 6.0
+			*/
+			read-only uint64 TxBytes;
+
+			/** Number of bytes received by the station
+			 * @version 6.0
+			*/
+			read-only uint64 RxBytes;
+
+			/** Number of packets errors
+			 * @version 9.0
+			*/
+			read-only uint32 TxErrors;
+
+			/** Number of received retransmissions.
+			 * @version 6.0
+			*/
+			read-only uint32 Rx_Retransmissions;
+
+			/** Number of retransmissions we sent out ourselves.
+			 * @version 6.0
+			*/
+			read-only uint32 Tx_Retransmissions;
+
+			/** Number of failed retransmissions.
+			 * @version 9.0
+			*/
+			read-only uint32 Tx_RetransmissionsFailed;
+
+			/** MCS Id of the station's uplink */
+			read-only uint32 UplinkMCS;
+
+			/** Indicates channel bandwidth is used as uplink */
+			read-only uint32 UplinkBandwidth;
+
+			/** Short guarding interval is applied for uplink */
+			read-only bool UplinkShortGuard;
+
+			/** MCS Id of the station's downlink */
+			read-only uint32 DownlinkMCS;
+
+			/** Indicates channel bandwidth is used as downlink */
+			read-only uint32 DownlinkBandwidth;
+
+			/** Short guarding interval is applied for downlink */
+			read-only bool DownlinkShortGuard;
+
+			/* Maximum number of Rx spatial streams supported */
+			read-only uint16 MaxRxSpatialStreamsSupported;
+
+			/* Maximum number of Tx spatial streams supported */
+			read-only uint16 MaxTxSpatialStreamsSupported;
+
+			/* Maximum DownlinkRate supported in Kbps */
+			read-only uint32 MaxDownlinkRateSupported;
+
+			/* Maximum Downlink physical rate reached in Kbps */
+			read-only uint32 MaxDownlinkRateReached;
+
+			/* Maximum UplinkRate supported in Kbps */
+			read-only uint32 MaxUplinkRateSupported;
+
+			/* Maximum Uplink physical rate reached in Kbps */
+			read-only uint32 MaxUplinkRateReached;
+
+			/* Maximum bandwidth supported */
+			read-only string MaxBandwidthSupported {
+				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+				default "Unknown";
+			}
+
+			/** Mode of the connected station : deprecated: please use tr-181 field operatingStandard */
+			read-only string Mode{
+				on action validate call check_enum ["a","an","b","bg","bgn","ac","ax","Unknown"];
+				default "Unknown";
+			}
+			
+			/**
+			 * The operating standard that this associated device is connected with. Enumeration of:
+			 * * a ([802.11a-1999])
+			 * * b ([802.11b-1999])
+			 * * g ([802.11g-2003])
+			 * * n ([802.11n-2009])
+			 * * ac ([802.11ac-2013])
+			 * * ax ([802.11ax]) 
+			 * @version 10.0
+			 */
+			read-only string OperatingStandard{
+				on action validate call check_enum ["a","b","g","n","ac","ax","Unknown"];
+				default "Unknown";
+			}
+
+			/** Station is in power save mode */
+			read-only bool PowerSave;
+
+			/**
+			 * Station Capabilities
+			 * Comma-separated list of strings. Indicates the capabilities supported by the station
+			 * List item: "RRM", "BTM"
+			 * RRM = Radio Resource Management 802.11k
+			 * BTM = BSS Transition Management 802.11v
+			 * @version 9.0
+			*/
+			read-only string Capabilities{
+				default "";
+			}
+
+			/**
+			 * Connection Duration in seconds
+			 * @version 9.0
+			*/
+			read-only uint32 ConnectionDuration;
+
+			/**
+			 * The type of device.
+			 */
+			string DeviceType{
+				on action validate call check_enum ["Video","Data","Guest"];
+				default "Data";
+				on action write call updateAssocDev;
+			}
+
+			/**
+			 * The priority of the device in the wireless network.
+			 */
+			uint32 DevicePriority{
+				default 1;
+				on action write call updateAssocDev;
+			}
+
+			/**
+			 * The timestamp when the device changes active state.
+			 * Expressed in UTC time.
+			 */
+			read-only datetime LastStateChange;
+
+			/**
+			 * Date and time in UTC when the device was associated.
+			 * @version 9.1
+			 */
+			read-only datetime AssociationTime;
+			
+			/**
+			 * Current device's MultiUser MIMO assigned Group ID.
+			 * Group  IDs  1 to 62 are assigned to STAs for VHT MU-MIMO communication.
+			 * Group ID (0) indicates SU transmission.
+			 * @version 9.2
+			 */
+			read-only uint32 MUGroupId;
+
+			/**
+			 * Current device's MU User position ID.
+			 * Within one group, four possible User Position may be assigned (1-4).
+			 * Value 0 indicates undefined position. 
+			 * @version 9.2
+			 */
+			read-only uint32 MUUserPositionId;
+			
+			/**
+			 * Instant count of packets sent as MU to the device. 
+			 * @version 9.2
+			 */
+			read-only uint32 MUMimoTxPktsCount;
+			
+			/**
+			 * Instant percentage of packets sent as MU to the device. 
+			 * @version 9.2
+			 */
+			read-only uint32 MUMimoTxPktsPercentage;
+
+			/**
+			 * list of HT modulation and coding scheme (MCS) supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 9.2
+			 */
+			read-only string SupportedMCS;
+
+			/**
+			 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			read-only string SupportedVhtMCS;
+
+			/**
+			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			read-only string SupportedHeMCS;
+
+			/**
+			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * for 160MHz bandwidth supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			read-only string SupportedHe160MCS;
+
+			/**
+			 * Vendor OUI of the associated device.
+			 * format: AA:BB:CC,DD:EE:FF,....
+			 * @version 9.2
+			 */
+			read-only string VendorOUI;
+
+			/**
+			 * Indicates which security mode is enabled.
+			 * @version 9.2
+			 */
+			read-only string SecurityModeEnabled{
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"E-None",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+				default "None";
+			}
+
+			/**
+			 * The link bandwidth of the associated device.
+			 * @version 9.2
+			 */
+			read-only string LinkBandwidth{
+				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","None"];
+				default "None";
+			}
+
+			/**
+			 * Encryption Mode
+			 * @version 9.2
+			 */
+			read-only string EncryptionMode{
+				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+				default "Default";
+			}
+
+			/**
+			 * HT Capabilities of the associated device.
+			 * It can be a single or combination of following values:
+			 * "40MHz", "SGI20", "SGI40"
+			 * @version 9.2
+			 */
+			read-only string HtCapabilities;
+
+			/**
+			 * VHT Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
+			 * @version 9.2
+			 */
+			read-only string VhtCapabilities;
+
+			/**
+			 * HE Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
+			 * @version 9.2
+			 */
+			read-only string HeCapabilities;
+
+			/**
+			 * Frequency Capabilities
+			 * Comma-separated list of strings.
+			 * It can be a single or combination of following values:
+			 * "2.4GHz","5GHz","6GHz",
+			 * @version 10.0
+			 */
+			read-only string FrequencyCapabilities;
+
+			/**
+			 * UNIIBands Capabilities
+			 * Comma-separated list of strings.
+			 * It can be a single or combination of following values:
+			 * "U-NII-1","U-NII-2C","U-NII-2A","U-NII-3","U-NII-5","U-NII-6","U-NII-7","U-NII-8"
+			 * @version 10.0
+			 */
+			read-only string UNIIBandsCapabilities;
+
+			/**
+			 * Capabilities seen per associated device inside a probe request
+			 * @version 9.2
+			 */
+			read-only object ProbeReqCaps{
+				/**
+				 * list of modulation and coding scheme (MCS) supported by the associated device.
+				 * Format is comma separated list of integers.
+				 * @version 9.2
+				 */
+				read-only string SupportedMCS;
+
+				/**
+				 * Vendor OUI of the associated device.
+				 * format: AA:BB:CC,DD:EE:FF,....
+				 * @version 9.2
+				 */
+				read-only string VendorOUI;
+
+				/**
+				 * Indicates which security mode is enabled.
+				 * @version 9.2
+				 */
+				read-only string SecurityModeEnabled{
+					on action validate call check_enum ["None", "OWE",
+							"WEP-64","WEP-128","WEP-128iv",
+							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+							"WPA3-Personal","WPA2-WPA3-Personal",
+							"E-None",
+							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+							"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+					default "None";
+				}
+
+				/**
+				 * The link bandwidth of the associated device.
+				 * @version 9.2
+				 */
+				read-only string LinkBandwidth{
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","None"];
+					default "None";
+				}
+
+				/**
+				 * Encryption Mode
+				 * @version 9.2
+				 */
+				read-only string EncryptionMode{
+					on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+					default "Default";
+				}
+
+				/**
+				 * HT Capabilities of the associated device.
+				 * It can be a single or combination of following values:
+				 * "40MHz", "SGI20", "SGI40"
+				 * @version 9.2
+				 */
+				read-only string HtCapabilities;
+
+				/**
+				 * VHT Capabilities of the associated device
+				 * It can be a single or combination of following values:
+				 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
+				 * @version 9.2
+				 */
+				read-only string VhtCapabilities;
+
+				/**
+				 * HE Capabilities of the associated device
+				 * It can be a single or combination of following values:
+				 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
+				 * @version 9.2
+				 */
+				read-only string HeCapabilities;
+
+				/**
+				 * Frequency Capabilities
+				 * Comma-separated list of strings.
+				 * It can be a single or combination of following values:
+				 * "2.4GHz","5GHz","6GHz",
+				 * @version 10.0
+				 */
+				read-only string FrequencyCapabilities;
+			}
+		}
+
+		/**
+		 * Extra vendor IEs broadcasted in capabilities frames (eg. beacon, probe req/resp,
+		 * assoc req, resp, etc...)
+		 * @version 10.0
+		 */
+		%persistent object VendorIEs {
+			/**
+			 * Enable or disable the vendor IEs support
+			 * @version 10.0
+			 */
+			%persistent bool Enable {
+				on action write call enableVendorIEs;
+				default false;
+			}
+
+			/**
+			 * Add a specific vendor IE with the given OUI and the given
+			 * data. This IE will be broadcasted through the given frame type
+			 * that can be one or more of these frames : Beacon, ProbeReq, ProbeResp,
+			 * AssocReq, AssocResp, AuthReq, AuthResp
+			 * @version 10.0
+			 */
+			void createVendorIE(%in string oui, %in string data, %in string frame_type);
+
+			/**
+			 * Delete a specific vendor IE with the given OUI and the given
+			 * data. This IE will be broadcasted through the given frame type
+			 * that can be one or more of these frames : Beacon, ProbeReq, ProbeResp,
+			 * AssocReq, AssocResp, AuthReq, AuthResp
+			 * @version 10.0
+			 */
+			void deleteVendorIE(%in string oui, %in string data);
+
+			/**
+			 * Customized vendor IE object containing OUI and data
+			 * and broadcasted in specific frame types
+			 * @version 10.0
+			 */
+			%persistent object VendorIE[]{
+				on action add-inst call wld_ap_addVendorIE_ocf;
+				on action write call wld_ap_setVendorIE_owf;
+				on action del-inst call wld_ap_delVendorIE_odf;
+
+				/**
+				 * Vendor OUI
+				 * Format must be 3 bytes separated by a colon: "xx:xx:xx"
+				 * @version 10.0
+				 */
+				%persistent string OUI;
+
+				/**
+				 * Data broadcasted in the IE
+				 * Format must be in hexadecimal, multiple of bytes
+				 * @version 10.0
+				 */
+				%persistent string Data;
+
+				/**
+				 * The list of frame types that include the vendor IE:
+				 * It's comma separated list of strings whose valid entries are:
+				 * "Beacon", "ProbeReq", "ProbeResp", "AuthReq", "AuthResp",
+				 * "AssocReq", "AssocResp"
+				 * @version 10.0
+				 */
+				%persistent string FrameType;
+			}
+		}
+
+		/* This object contains parameters for HotSpot2.0 */
+		%persistent object HotSpot2 {
+			/**
+			# Enable Hotspot 2.0 support
+			*/
+			%persistent bool Enable{
+				default false;
+				on action write call wld_ap_setHotSpotEnable_pwf;
+			}
+
+			/**
+			Disable Downstream Group-Addressed Forwarding (DGAF) This can be used to
+			configure a network where no group-addressed frames are allowed. The AP will not
+			forward any group-address frames to the stations and random GTKs are issued for
+			each station to prevent associated stations from forging such frames to other
+			stations in the BSS.
+			*/
+			%persistent bool DgafDisable {
+				default false;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			/**
+			 Connection Capability  [multiple entries separated by ';']
+			 This can be used to advertise what type of IP traffic can be sent through the
+			 hotspot (e.g., due to firewall allowing/blocking protocols/ports).
+			 format: &lt;IP Protocol&gt;:&lt;Port Number&gt;:&lt;Status&gt; IP Protocol: 1 =
+			 ICMP, 6 = TCP, 17 = UDP Port Number: 0..65535 Status: 0 = Closed, 1 = Open, 2 =
+			 Unknown Each hs20_conn_capab line is added to the list of advertised tuples.
+			 ex: hs20_conn_capab=17:5060:0
+			*/
+			%persistent string L2TrafficInspect {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			 * Don't find anything on this?
+			 */
+			%persistent bool IcmpV4Echo {
+				default true;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+			/**
+			# Access Network Type
+			# 0 = Private network
+			# 1 = Private network with guest access
+			# 2 = Chargeable public network
+			# 3 = Free public network
+			# 4 = Personal device network
+			# 5 = Emergency services only network
+			# 14 = Test or experimental
+			# 15 = Wildcard
+			*/
+			%persistent uint32 Interworking {
+				default 1;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 15 };
+			}
+
+			/**
+			# Whether the network provides connectivity to the Internet
+			# 0 = Unspecified
+			# 1 = Network provides connectivity to the Internet
+			*/
+			%persistent bool Internet {
+				default false;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			/**
+			# Additional Step Required for Access
+			# Note: This is only used with open network, i.e., ASRA shall ne set to 0 if
+			# RSN is used. (Hotspot 2.0 Release 1 doesn't allow an open network)
+			*/
+			%persistent uint32 Additional {
+				default 0;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			/** Doesn't sound logic? */
+			%persistent bool Hs2Ie {
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+			/**
+			# P2P Device management, allow cross connection
+			*/
+			%persistent bool P2PEnable {
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			%persistent int32 GasDelay {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			%persistent uint8 AccessNetworkType {
+				default 2;
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Venue Info (optional)
+			# The available values are defined in IEEE Std 802.11u-2011, 7.3.1.34.
+			# Example values (group,type):
+			# 0,0 = Unspecified
+			# 1,7 = Convention Center
+			# 1,13 = Coffee Shop
+			# 2,0 = Unspecified Business
+			# 7,1 Private Residence
+			# (Mandatory to support this according to the testplan although the setting is optional)
+			*/
+			%persistent uint8 VenueType {
+				default 8;
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+			%persistent uint8 VenueGroup {
+				default 2;
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Venue Name information
+			# This parameter can be used to configure one or more Venue Name Duples for
+			# Venue Name ANQP information. Each entry has a two or three character language
+			# code (ISO-639) separated by colon from the venue name string.
+			# Note that venue_group and venue_type have to be set for Venue Name
+			# information to be complete.
+			#venue_name=eng:Example venue
+			#venue_name=fin:Esimerkkipaikka
+			# Alternative format for language:value strings:
+			# (double quoted string, printf-escaped string)
+			#venue_name=P"eng:Example\nvenue"
+			*/
+			%persistent string VenueName {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+			/**
+			# Homogeneous ESS identifier (optional; dot11HESSID)
+			# If set, this shall be identifical to one of the BSSIDs in the homogeneous
+			# ESS and this shall be set to the same value across all BSSs in homogeneous
+			# ESS. (Mandatory to support this according to the testplan although the setting is optional)
+			# (Can be set to our own BSSID, this is also what the test does)
+			*/
+			%persistent string HeSSID {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Roaming Consortium List &lt;multiple entries separated by ';'&gt; # Arbitrary
+			number of Roaming Consortium OIs can be configured with each line # adding a new
+			OI to the list. The first three entries are available through # Beacon and Probe
+			Response frames. Any additional entry will be available only # through ANQP
+			queries. Each OI is between 3 and 15 octets and is configured as # a hexstring.
+			# (Mandatory to support this according to the testplan although the setting is optional)
+			*/
+			%persistent string RoamingConsortium {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Domain Name
+			# format: &lt;variable-octet str&gt;[,&lt;variable-octet str&gt;]
+			*/
+			%persistent string DomainName {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# 3GPP Ce"PRIu64"lar Network information
+			# format: &lt;MCC1,MNC1&gt;[;&lt;MCC2,MNC2&gt;][;...]
+			*/
+			string Anqp3gpp_CellNet {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			WAN Metrics
+			format: &lt;WAN Info&gt;:&lt;DL Speed&gt;:&lt;UL Speed&gt;:&lt;DL Load&gt;:&lt;UL
+			Load&gt;:&lt;LMD&gt; WAN Info: B0-B1: Link Status, B2: Symmetric Link, B3: At
+			Capabity (encoded as two hex digits) # Link Status: 1 = Link up, 2 = Link
+			down, 3 = Link in test state Downlink Speed: Estimate of WAN backhaul link
+			current downlink speed in kbps; 1..4294967295; 0 = unknown # Uplink Speed:
+			Estimate of WAN backhaul link current uplink speed in kbps 1..4294967295; 0 =
+			unknown  Downlink Load: Current load of downlink WAN connection (scaled to 255
+			= 100%)  Uplink Load: Current load of uplink WAN connection (scaled to 255 =
+			100%)  Load Measurement Duration: Duration for measuring downlink/uplink load
+			in  tenths of a second (1..65535); 0 if load cannot be determined
+			*/
+			read-only string WanMetrics;
+
+			/**
+			# Operating Class Indication
+			# List of operating classes the BSSes in this ESS use. The Global operating
+			# classes in Table E-4 of IEEE Std 802.11-2012 Annex E define the values that
+			# can be used in this.
+			# format: hexdump of operating class octets
+			# for example, operating classes 81 (2.4 GHz channels 1-13) and 115 (5 GHz
+			# channels 36-48):
+			# hs20_operating_class=5173
+			*/
+			string OperatingClass{
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+		}
+
+		/**
+		 * List of fields for advanced driver config
+		 * @version 10.0
+		 */
+		%persistent object DriverConfig {
+		on action write call wld_ap_setDriverConfig_owf;
+			/**
+			 * The BSS Max Idle period is the time frame during which an access point (AP) does not disassociate a client
+			 * due to non-receipt of frames from the connectedclient.
+			 * -1 = Auto, 0 = Disabled
+			 * @version 10.0
+			 */
+			%persistent int32 BssMaxIdlePeriod{
+				on action validate call check_range { min = -1, max = 65535 };
+				default -1;
+			}
+		}
+
+		/**
+		 * Add or set a neighbour accesspoint with a given BSSID, Information, OperatingClass, Channel and Phytype.
+		 * If currently no neighbour with the given BSSID exists, then a new BSSID object will be created.
+		 * BSSID is the mandatory arguement, other arguements are optional, and will be left default if not set.
+		 *
+		 * If a neighbour with a given BSSID exists, then this function will update the neighbour with the given
+		 * BSSID with the fields that differ from zero.
+		 * @param BSSID : bssid of the neighbour to add format xx:xx:xx:xx:xx:xx
+		 * @param Information : the information int32 field, as defined in 802.11 standard.
+		 * @param OperatingClass : the operating class of the Neighbour as defined in 802.11 standard.
+		 * @param Channel : the control channel on which the Neighbour is broadcasting.
+		 * @param PhyType : the phy type of the Neighbour, as defined in 802.11 standard.
+		 * @param NASIdentifier : the NASIdentifier of the Neighbour.
+		 * @param R0KHKey : the R0kHKey of the Neighbour.
+		 * @return no return
+		 * @version 9.0
+		 */
+		void setNeighbourAP(
+			string BSSID,
+			int32 Information,
+			int32 OperatingClass,
+			int32 Channel,
+			int32 PhyType,
+			string NASIdentifier,
+			string R0KHKey);
+
+		/**
+		 * Delete the neighbour accesspoint with the given BSSID.
+		 * @param BSSID : bssid of the neighbour to delete. format xx:xx:xx:xx:xx:xx
+		 * @return no return
+		 * @version 9.0
+		 */
+		void delNeighbourAP(string BSSID);
+
+		/**
+		 * The list of neighbour access points. All the accesspoints listed here should belong to the
+		 * same extended service set (ESS).
+		 * @version 9.0
+		 */
+		%persistent object Neighbour[]{
+
+			on action del-inst call wld_ap_delete_neigh;
+			on action write call wld_ap_update_neigh;
+			on action add-inst call wld_ap_add_neigh;
+
+			/**
+			 * The BSSID of the neighbour accesspoint.
+			 */
+			string BSSID;
+			/**
+			 * The BSSID Information field.
+			 */
+			int32 Information;
+			/**
+			 * The neighbour accesspoint operating class.
+			 */
+			int32 OperatingClass;
+			/**
+			 * The current channel of the neighbour accesspoint
+			 */
+			int32 Channel;
+			/**
+			 * The phy type of the neighbour accesspoint.
+			 */
+			int32 PhyType;
+			/**
+			 * The NAS Identifier of the neighbour accesspoint.
+			 */
+			string NASIdentifier;
+			/**
+			 * The R0KHKey of the neighbour accesspoint.
+			 */
+			string R0KHKey;
+		}
+
+		/**
+		 * In band discovery methods enabled (mandatory for 6GHz). It is a comma-seperated
+         * list of strings. It can be one or more options of the following:
+		 * - Default value from driver: "Default"
+		 * - Disabled: "Disabled"
+         * - Reduced Neigbor Report: "RNR"
+		 * - Unsolicited Probe Response (6GHz only): "UPR"
+		 * - FILS Discovery: "FILSDiscovery"
+		 * @version 10.0
+		 */
+		%persistent string DiscoveryMethodEnabled{
+			default "Default";
+			on action write call wld_ap_setDiscoveryMethod_pwf;
+		}
+
+			/**
+			 * Perform event based RSSi Monitoring. When a significant "step" has been detected
+			 * compared to the previous value, an event is sent out.
+			 * This way, upper layers can be notified within very few seconds when significant changes
+			 * of rssi have taken place
+			 */
+			%persistent object RssiEventing{
+
+				on action write call wld_ap_setRssiEventing_owf;
+
+				/**
+				 * Getting the history statistics for a specific station or for all stations connected to the AP.
+				 * @param : optional mac address of the connected station (format xx:xx:xx:xx:xx:xx)
+				 * @return
+				 * variant list of the history data for all station of the AP if no given mac address.
+				 * variant map of the history data for a specific station of the AP given by mac param.
+				 * @version 10.1
+				 */
+				void getShortHistoryStats();
+
+				/**
+				 * Enable the rssi eventing
+				 */
+				bool Enable{
+					on action write call mon_enableWriteHandler;
+					default false;
+				}
+
+				/**
+				 * The minimal level of difference required before an event is sent out.
+				 * Expressed in dbm.
+				 */
+				uint32 RssiInterval{
+					constraint minvalue 1;
+					default 10;
+				}
+
+				/**
+				 * The system shall average out measurements, to avoid spikes in the data.
+				 * Upon measurement, newval is calculated as follows:
+				 * NewValue = (OldValue * (1000 - AveragingFactor) + AveragingFactor * Measurement) / 1000
+				 *
+				 * A value of 1000 would always take the latest value.
+				 */
+				uint32 AveragingFactor{
+					on action validate call check_range { min = 1, max = 1000 };
+					default 500;
+				}
+
+				/**
+				 * The interval with which the monitor will call the underlying layer to retrieve
+				 * the latest Rssi measurement.
+				 * Expressed in milliseconds.
+				 */
+				uint32 Interval{
+					default 1000;
+					on action write call mon_intervalWriteHandler;
+					constraint minvalue 100;
+				}
+
+				/**
+				 * Enable the historys gathering.
+				 * @version 10.1
+				 */
+				%persistent bool HistoryEnable{
+					default true;
+				}
+
+				/**
+				 * The number of values saved in the history (the history length).
+				 * @version 10.1
+				 */
+				%persistent uint32 HistoryLen{
+					constraint minvalue 1;
+					default 10;
+				}
+
+				/**
+				 * HistoryIntervalCoeff configures the interval with which the stats are saved in the history
+				 * and also the interval necessary to get a full history.
+				 * This parameter is a positive integer that is used to calculate the interval of history filling
+				 * according to the following formula :
+				 *        History filling interval = HistoryIntervalCoeff x RssiMonitorInterval.
+				 * Every HistoryIntervalCoeff RssiMonitor readings, a separate reading is saved in the history.
+				 * e.g.   HistoryIntervalCoeff = 3
+				 *        RssiMonitorInterval = 1000 (1s)
+				 *        HistoryLen = 5
+				 *        The interval between to history consecutive samples :
+				 *              HistoryIntervalCoeff x RssiMonitorInterval = 3s
+				 *        The interval needed to fill completely the history :
+				 *              HistoryIntervalCoeff x RssiMonitorInterval x HistoryLen = 15s
+				 * @version 10.1
+				 */
+				%persistent uint32 HistoryIntervalCoeff{
+					constraint minvalue 1;
+					default 1;
+				}
+
+				/**
+				 * Enable periodic event sending of history data.
+				 * A single event with the history of all stations connected to the AP is sent
+				 * every "RssiMonitorInterval x HistoryIntervalCoeff x HistoryLen" (seconds).
+				 * @version 10.1
+				 */
+				%persistent bool SendPeriodicEvent{
+					default false;
+				}
+
+				/**
+				 * Send a history event containing single station data
+				 * after one full history monitoring interval.
+				 * Only applies if the station was associated and authorized.
+				 * @version 10.1
+				 */
+				%persistent bool SendEventOnAssoc{
+					default true;
+				}
+
+				/**
+				 * Send a history event when station disconnects containing
+				 * most recent data for that station.
+				 * Only applies if the station was authorized.
+				 * @version 10.1
+				 */
+				%persistent bool SendEventOnDisassoc{
+					default true;
+				}
+
+			}
+
+		/**
+		 * DEBUG SUPPORT
+		 */
+
+		/**
+		 * <B>DEBUG </B>
+		 *  Enable extra debugging output by vendor deamon applications
+		 *  The content of this one is for developpers only and not meant to export for clients.
+		 */
+		int32 dbgAPEnable{
+			default 0;
+			on action write call wld_ap_setDbgEnable_pwf;
+		}
+		string dbgAPFile{
+			on action write call wld_ap_setDbgFile_pwf;
+		}
+
+		void dbgClearInactiveEntries();
+
+		void AccessPoint_debug();
+
+
+	} /* object AccessPoint */
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////// */
+
+
+	/** <p>This object models an 802.11 connection from the
+		perspective of a wireless end point. Each EndPoint entry is
+		associated with a particular SSID  interface instance via
+		the SSIDReference  parameter, and an associated active
+		Profile  instance via the ProfileReference  parameter. The
+		active profile is responsible for specifying the actual SSID
+		and security settings used by the end point.</p>
+		<p>For enabled table entries, if SSIDReference or
+		ProfileReference is not a valid reference then the table
+		entry is inoperable and the CPE MUST set Status to
+		Error_Misconfigured. Note: The EndPoint table includes a
+		unique key parameter that is a strong reference. If a
+		strongly referenced object is deleted, the CPE will set the
+		referencing parameter to an empty string. However, doing so
+		under these circumstances might cause the updated EndPoint
+		row to then violate the table's unique key constraint; if
+		this occurs, the CPE MUST set Status to Error_Misconfigured
+		and disable the offending EndPoint row.</p>
+		<p>At most one entry in this table (regardless of whether or
+		not it is enabled) can exist with a given value for Alias.
+		On creation of a new table entry, the CPE MUST choose an
+		initial value for Alias such that the new entry does not
+		conflict with any existing entries. At most one enabled
+		entry in this table can exist with a given value for
+		SSIDReference.</p>*/
+	%persistent read-only object EndPoint[]{
+		/** <p>Indicates the status of this end point. Enumeration
+		*   of:</p>
+		*   <ul>
+		*     <li> Disabled </li>
+		*     <li> Enabled </li>
+		*     <li> Error_Misconfigured </li>
+		*     <li> Error (OPTIONAL) </li>
+		*   </ul>
+		*   The Error_Misconfigured value indicates that a necessary
+		*   configuration value is undefined or invalid. The Error
+		*   value MAY be used by the CPE to indicate a locally defined
+		*   error condition.*/
+		read-only string Status{
+			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
+			default "Disabled";
+		}
+
+		/** <p>Indicates the state of the endpoint's connection.</p>*/
+		read-only string ConnectionStatus {
+			on action validate call check_enum ["Disabled", "Idle", "Discovering", "Connecting", "WPS_Pairing", "WPS_PairingDone", "WPS_Timeout", "Connected", "Disconnected", "Error", "Error_Misconfigured"];
+			default "Disabled";
+		}
+
+		/** <p>The last error that occurred</p> */
+		read-only string LastError {
+			on action validate call check_enum ["None", "SSID_Not_Found", "Invalid_PassPhrase", "SecurityMethod_Unsupported", "WPS_Timeout", "WPS_Canceled", "Error_Misconfigured", "Association_Timeout"];
+			default "None";
+		}
+
+		/**
+		 * Time before try to connect
+		 */
+		uint32 ReconnectDelay {
+			default 15;
+			on action write call wld_endpoint_setReconnectDelay_pwf;
+		}
+
+		/**
+		 * If fail to reconnect, time before try again
+		 */
+		uint32 ReconnectInterval {
+			default 15;
+			on action write call wld_endpoint_setReconnectInterval_pwf;
+		}
+
+		/**
+		 * Enable IEEE 1905 BackhaulSTA extension.
+		 * @version 9.2
+		 */
+		%persistent bool MultiAPEnable {
+			on action write call wld_endpoint_setMultiAPEnable_pwf;
+			default false;
+		}
+
+		/**
+		 * The threshold for the number of reconnects at which we perform a radio toggle
+		 * Set to 0 to disable.
+		 */
+		uint32 ReconnectRadioToggleThreshold {
+			default 8;
+			on action write call wld_endpoint_setRadToggleThreshold_pwf;
+		}
+
+
+		/** A non-volatile handle used to reference this instance. Alias
+		 *  provides a mechanism for an ACS to label this instance for
+		 *  future reference. An initial unique value MUST be assigned
+		 *  when the CPE creates an instance of this object. */
+		string Alias;
+		/** Index in the EndPoint object tree */
+		read-only uint32 Index;
+		/** The value MUST be the path name of a row in the Profile
+		 *  table. If the referenced object is deleted, the parameter
+		 *  value MUST be set to an empty string. This is the currently
+		 *  active profile, which specifies the SSID and security
+		 *  settings to be used by the end point.*/
+		%persistent string ProfileReference {
+			default "";
+			on action write call wld_endpoint_setProfileReference_pwf;
+		}
+		/** The value MUST be the path name of a row in the SSID table.
+		 *  If the referenced object is deleted, the parameter value
+		 *  MUST be set to an empty string. SSIDReference is determined
+		 *  based on the Profile.{i}.SSID  within the associated Profile
+		 *  Reference) endpoint profile. SSIDReference MUST be an empty
+		 *  string if ProfileReference  is an empty string (i.e. only
+		 *  when an active profile is assigned can the associated SSID
+		 *  interface be determined).*/
+		string SSIDReference;
+
+		/* The name of the Radio used by this endpoint */
+		read-only string RadioReference;
+
+		/* The name of the underlying interface of this endpoint */
+		read-only string IntfName;
+
+		/** Unused in this version of wld */
+		%persistent string BridgeInterface{
+			on action write call wld_endpoint_setBridgeInterface_pwf;
+		}
+
+		/**
+		 * Connect to specific accesspoint.
+		 *
+		 * Tries 'tries' times to connect to the accesspoint with BSSID 'bssid'. If
+		 * they all fail, attempts a "normal" connect to any accesspoint in the network.
+		 *
+		 * @param bssid: bssid of accesspoint to connect to, in "XX:XX:XX:XX:XX:XX" format.
+		 * @param tries: How many times to try to roam. Must be at least 1. Default: 1.
+		 * @param timeoutInSec: Number of seconds after an attempt has started but not
+		 *   succeeded yet, to try again or give up. Must be at least 5, default 60.
+		 *
+		 * @return After roam has succeeded, or all attempts have failed or timed out, a
+		 *   map is returned with the following keys:
+		 *   - Result: uint32: zero on success, non-zero on errors or after all roam
+		 *             attempts timed out.
+		 */
+		variant roamTo(%in mandatory string bssid, %in int32 tries, %in int32 timeoutInSec);
+
+		/** Throughput statistics for this end point.  <b>Not
+		 *  clear how we can handle this? ToBe Defined!!!</b> */
+		object Stats{
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the access point to the end point
+			 *  device.*/
+			read-only uint32 LastDataDownlinkRate;
+
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the end point to the access point
+			 *  device.*/
+			read-only uint32 LastDataUplinkRate;
+
+			/** An indicator of radio signal strength of the downlink from
+			 *  the access point to the end point, measured in dBm, as an
+			 *  average of the last 100 packets received from the device.*/
+			read-only int32 SignalStrength{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+			/** Signal to noise ratio in dB
+			 * @version 6.1
+			 */
+			read-only int32 SignalNoiseRatio;
+			/** Radio noise level in dBm
+			 * @version 6.1
+			*/
+			read-only int32 Noise;
+
+			/** Received signal strength indicator in percent
+			 * @version 6.1
+			*/
+			read-only int32 RSSI;
+
+			/** The number of packets that had to be re-transmitted, from
+			 *  the last 100 packets sent to the access point.
+			 *  Multiple re-transmissions of the same packet count as
+			 *  one.*/
+			read-only uint32 Retransmissions{
+				on action validate call check_range { min = 0, max = 100 };
+			}
+
+			/**
+			 * Number of packets received by the endpoint.
+			 * @version 9.1
+			 */
+			read-only uint32 RxPacketCount;
+
+			/*
+			 * Number of packets sent by the endpoint.
+			 * @version 9.1
+			 */
+			read-only uint32 TxPacketCount;
+
+			/*
+			 * Number of bytes sent by the endpoint.
+			 * @version 9.1
+			 */
+			read-only uint64 TxBytes;
+
+			/*
+			 * Number of bytes received by the endpoint.
+			 * @version 9.1
+			 */
+			read-only uint64 RxBytes;
+
+			/** Number of received retransmissions.
+			 * @version 9.1
+			 */
+			read-only uint32 Rx_Retransmissions;
+
+			/** Number of sent retransmissions.
+			 * @version 9.1
+			 */
+			read-only uint32 Tx_Retransmissions;
+			
+			/**
+			 * The link bandwidth of the current link
+			 * @version 10.0
+			 */
+			read-only string LinkBandwidth{
+				on action validate call check_enum ["Unknown","20MHz","40MHz","80MHz","160MHz"];
+				default "Unknown";
+			}
+			
+			/**
+			 * The operating standard that this endpoint is connected with. Enumeration of:
+			 * * a ([802.11a-1999])
+			 * * b ([802.11b-1999])
+			 * * g ([802.11g-2003])
+			 * * n ([802.11n-2009])
+			 * * ac ([802.11ac-2013])
+			 * * ax ([802.11ax]) 
+			 * @version 10.0
+			 */
+			read-only string OperatingStandard{
+				on action validate call check_enum ["Unknown","a","b","g","n","ac","ax"];
+				default "Unknown";
+			}
+			
+			/**
+			 * list of modulation and coding scheme (MCS) supported by the associated device,
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			read-only string SupportedMCS;
+
+			/**
+			 * Vendor OUI of the associated device.
+			 * format: AA:BB:CC,DD:EE:FF,....
+			 * @version 10.0
+			 */
+			read-only string VendorOUI;
+			
+			/**
+			 * The security mode of the current link.
+			 * @version 10.0
+			 */
+			read-only string SecurityModeEnabled{
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"E-None",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+				default "None";
+			}
+			
+			/**
+			 * The encryption mode of the current link.
+			 * @version 10.0
+			 */
+			read-only string EncryptionMode{
+				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+				default "Default";
+			}
+			
+			/**
+			 * HT Capabilities of the associated device.
+			 * It can be a single or combination of following values:
+			 * "40MHz", "SGI20", "SGI40"
+			 * @version 10.0
+			 */
+			read-only string HtCapabilities;
+
+			/**
+			 * VHT Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
+			 * @version 10.0
+			 */
+			read-only string VhtCapabilities;
+
+			/**
+			 * HE Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
+			 * @version 10.0
+			 */
+			read-only string HeCapabilities;
+			
+			/**
+			 * The maximum number of receive spatial streams available on this link
+			 * @version 10.0
+			 */
+			read-only uint32 MaxRxSpatialStreamsSupported;
+			
+			/**
+			 * The maximum number of transmit spatial streams available on this link
+			 * @version 10.0
+			 */
+			read-only uint32 MaxTxSpatialStreamsSupported;
+		}
+		/**
+		 * Retrieve the stats from the driver and update datamodel
+		 * @version 6.1
+		 */
+		void getStats();
+
+		/**This object contains security related parameters that apply
+		 * to a WiFi end point.  */
+		%persistent object Security{
+			/**
+			 *  <p>Comma-separated list of strings. Indicates which security
+			 *  modes this EndPoint  instance is capable of supporting. Each
+			*   list item is an enumeration of:</p>
+			*   <ul>
+			*     <li> None </li>
+			*     <li> WEP-64 </li>
+			*     <li> WEP-128 </li>
+			*     <li> <b>WEP-128iv</b> </li>
+			*     <li> WPA-Personal </li>
+			*     <li> WPA2-Personal </li>
+			*     <li> WPA-WPA2-Personal </li>
+			*     <li> WPA-Enterprise </li>
+			*     <li> WPA2-Enterprise </li>
+			*     <li> WPA-WPA2-Enterprise </li>
+			*   </ul>
+			*   */
+			read-only string ModesSupported {
+				default "";
+			}
+			/*
+			 * Indicates which security mode is enabled.
+			 * Usefull in case Auto detection is active
+			 * @version 6.1
+			 */
+			%persistent read-only string ModeEnabled {
+				default "";
+			}
+		}
+		/** EndPoint Profile table.
+		 *  At most one entry in this table (regardless of whether or
+		 *  not it is enabled) can exist with a given value for Alias.
+		 *  On creation of a new table entry, the CPE MUST choose an
+		 *  initial value for Alias such that the new entry does not
+		 *  conflict with any existing entries.
+		 *  At most one enabled entry in this table can exist with all
+		 *  the same values for SSID, Location and Priority.*/
+		%persistent object Profile[]{
+			on action write call wld_endpoint_setProfile_owf;
+			on action del-inst call wld_endpoint_deleteProfileInstance_odf;
+			on action add-inst call wld_endpoint_addProfileInstance_ocf;
+
+			/** Enables or disables this Profile.
+			 *  <p>When there are multiple WiFi EndPoint Profiles, e.g. each
+			 *  instance supports a different SSID and/or different
+			 *  security configuration, this parameter can be used to
+			 *  control which of the instances are currently enabled.</p>*/
+			%persistent bool Enable;
+			/**  Indicates the status of this Profile. Enumeration of:
+			*   <ul>
+			*     <li> Active </li>
+			*     <li> Available </li>
+			*     <li> Error (OPTIONAL) </li>
+			*     <li> Disabled  </li>
+			*   </ul>
+			*   The Active value is reserved for the instance that is
+			*   actively connected. The Available value represents an
+			*   instance that is not currently active, but is also not
+			*   disabled or in error. The Error value MAY be used by the
+			*   CPE to indicate a locally defined error condition.*/
+			string Status{
+				on action validate call check_enum ["Active","Available","Error","Disabled"];
+				default "Disabled";
+			}
+			/** A non-volatile handle used to reference this instance. Alias
+			 *  provides a mechanism for an ACS to label this instance for
+			 *  future reference. An initial unique value MUST be assigned
+			 *  when the CPE creates an instance of this object.*/
+			%persistent string Alias;
+			/** The profile identifier in use by the connection. The SSID is
+			 *  an identifier that is attached to packets sent over the
+			 *  wireless LAN that functions as an ID for joining a
+			 *  particular radio network (BSS).*/
+			%persistent string SSID;
+			/**
+			 * Specify the MAC address of the AccessPoint to connect to
+			 */
+			string ForceBSSID;
+			/** Location of the profile. This value serves as a reminder
+			 *  from the user, describing the location of the profile. For
+			 *  example: "Home", "Office", "Neighbor House", "Airport",
+			 *  etc. An empty string is also valid.*/
+			%persistent string Location;
+			/** The profile Priority defines one of the criteria used by the
+			 *  End Point to automatically select the "best" AP when several
+			 *  APs with known profiles are simultaneously available for
+			 *  association. In this situation, the End Point has to select
+			 *  the AP with the higher priority in its profile. If there are
+			 *  several APs with the same priority, providing different SSID
+			 *  or the same SSID, then the wireless end point has to select
+			 *  the APs according to other criteria like signal quality,
+			 *  SNR, etc. <p>0 is the highest priority.</p>*/
+			%persistent uint32 Priority{
+				on action validate call check_range { min = 0, max = 255 };
+				default 0;
+			}
+
+			/**
+			 * Profile connection type identifier
+			 */
+			string ConnectionType {
+				on action validate call check_enum ["Normal", "WPS"];
+				default "Normal";
+			}
+			/** This object contains security related parameters that apply
+			 *  to a WiFi End Point profile.*/
+			%persistent object Security{
+				on action write call wld_endpoint_setProfileSecurity_owf;
+				/** The value MUST be a member of the list reported by the
+				 *  Security.ModesSupported  parameter. Indicates which
+				 *  security mode is enabled.*/
+				%persistent string ModeEnabled {
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"E-None",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+					default "None";
+				}
+
+				/** A WEP key expressed as a hexadecimal string.
+				 *  WEPKey is used only if ModeEnabled is set to WEP-64 or
+				 *  WEP-128. A 5 byte WEPKey corresponds to security mode WEP-64
+				 *  and a 13 byte WEPKey corresponds to security mode WEP-128.
+				 *  When read, this parameter returns an empty string,
+				 *  regardless of the actual value.*/
+				%persistent string WEPKey;
+				/** A literal PreSharedKey (PSK) expressed as a hexadecimal
+				 *  string. PreSharedKey is only used if ModeEnabled is set to
+				 *  WPA-Personal or WPA2-Personal or WPA-WPA2-Personal. If
+				 *  KeyPassPhrase is written, then PreSharedKey is immediately
+				 *  generated. The ACS SHOULD NOT set both the KeyPassPhrase and
+				 *  the PreSharedKey directly (the result of doing this is
+				 *  undefined). When read, this parameter returns an empty
+				 *  string, regardless of the actual value.*/
+				%persistent string PreSharedKey;
+				
+				/** 
+				 * A passphrase from which the PreSharedKey  is to be
+				 * generated, for WPA-Personal  or WPA2-Personal  or
+				 * WPA-WPA2-Personal  security modes. If KeyPassPhrase is
+				 * written, then PreSharedKey is immediately generated. The ACS
+				 * SHOULD NOT set both the KeyPassPhrase and the PreSharedKey
+				 * directly (the result of doing this is undefined). The key is
+				 * generated as specified by WPA, which uses PBKDF2 from PKCS
+				 * #5: Password-based Cryptography Specification Version 2.0
+				 * [RFC2898]. When read, this parameter returns an empty
+				 * string, regardless of the actual value.
+				 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
+				 * or 256 bit secret, entered as a 64 characters hex key.*/
+				%persistent string KeyPassPhrase;
+
+				/** Management Frame Protection configuration applicable when ModeEnabled is set
+				 * to WPA2-Personal or WPA2-Enterprise. Enumeration of:
+				 *     * Disabled
+				 *     * Optional
+				 *     * Required
+				 */
+				string MFPConfig{
+					on action validate call check_enum ["Disabled",
+							"Optional",
+							"Required"];
+					default "Disabled";
+				}
+			}
+		}
+
+		/** This object contains parameters related to Wi-Fi
+		 *  Protected Setup [WPSv1.0] for this end point. */
+		object WPS{
+			/** Enables or disables WPS functionality for this endpoint. */
+			%persistent bool Enable{
+				default false;
+				on action write call wld_endpoint_setWPSEnable_pwf;
+			}
+			/** Comma-separated list of strings. Indicates the WPS
+			 *  configuration methods supported by the device. Each list
+			 *   item is an enumeration of:
+			 *  <ul>
+			 *    <li>USBFlashDrive</li>
+			 *    <li>Ethernet</li>
+			 *    <li>Label</li>
+			 *    <li>Display</li>
+			 *    <li>ExternalNFCToken</li>
+			 *    <li>IntegratedNFCToken</li>
+			 *    <li>NFCInterface</li>
+			 *    <li>PushButton</li>
+			 *    <li>PIN</li>
+			 *    <li>PhysicalPushButton</li>
+			 *    <li>PhysicalDisplay</li>
+			 *    <li>VirtualPushButton</li>
+			 *    <li>VirtualDisplay</li>
+			 *  </ul>
+			 *   This parameter corresponds directly to the "Config
+			 *   Methods" attribute of the WPS specification [WPSv2.0].
+			 *   The USBFlashDrive and Ethernet are only applicable in WPS 1.0 and are deprecated in WPS 2.x.
+			 *   The PhysicalPushButton, VirtualPushButton, PhysicalDisplay and VirtualDisplay are applicable to WPS 2.x only.
+			 */
+			read-only string ConfigMethodsSupported;
+			/*
+				on action validate call check_enum ["USB","Ethernet","Label","Display",
+				                 "ExternalNFCToken","InternalNFCToken","NFCInterface","PushButton",
+				                 "PIN"];
+			*/
+			/** Comma-separated list of strings. Each list item MUST be a
+			 *  member of the list reported by the ConfigMethodsSupported
+			 *  parameter. Indicates the WPS configuration methods enabled
+			 *  on the device.*/
+			%persistent string ConfigMethodsEnabled {
+				on action write call wld_endpoint_setWPSConfigMethodsEnabled_pwf;
+			}
+
+			/**
+			* Indicates whether WPS pairing is busy.
+			* This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
+			*/
+			read-only bool PairingInProgress;
+		}
+		
+		/**
+		 * Assocation statistics.
+		 * @version 10.0
+		 */
+		object AssocStats{
+			/**
+			 * The number of times the endpoint attempted to association.
+			 * @version 10.0
+			 */
+			read-only uint32 NrAssocAttempts;
+			
+			/**
+			 * The number of times the endpoint attempted to association since the last disconnection.
+			 * @version 10.0
+			 */
+			read-only uint32 NrAssocAttempsSinceDc;
+			
+			/**
+			 * The number of times the endpoint successfully associated.
+			 * @version 10.0
+			 */
+			read-only uint32 NrAssociations;
+			
+			/**
+			 * The number of seconds after boot that the endpoint last associated.
+			 * This is expressed in seconds after boot, as time sync
+			 * is not available at time of association.
+			 * @version 10.0
+			 */
+			read-only uint32 AssocTime;
+			
+			/**
+			 * The number of seconds after boot that the endpoint last disassociated.
+			 * This is expressed in seconds after boot, to allow comparison with AssocTime.
+			 * @version 10.0
+			 */
+			read-only uint32 DisassocTime;
+		}
+
+		/** When this is toggled, we must check for updating the full
+		 *  config!
+		 *  <p>Enables or disables this Profile.
+		 *  When there are multiple WiFi EndPoint Profiles, e.g. each
+		 *  instance supports a different SSID and/or different
+		 *  security configuration, this parameter can be used to
+		 *  control which of the instances are currently enabled.</p> */
+		bool Enable{
+			default false;
+			on action write call wld_endpoint_setEnable_pwf;
+		}
+
+		/**
+		 * Retrieve a debug hashmap containing the internal state
+		 * @version 9.1
+		 */
+		void getDebug();
+
+		/**
+		 * Perform debug commands to check internal state.
+		 */
+		void EndPoint_debug();
+	} /* object EndPoint */
+}
+}
+
+/** @location sah_lib_wld /wld.odl */
