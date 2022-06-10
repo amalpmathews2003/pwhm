@@ -171,6 +171,60 @@ static const char* Rad_RIFS_MODE[RIFS_MODE_MAX] = {"Default", "Auto", "Off", "On
 
 amxc_llist_t g_radios = { NULL, NULL };
 
+const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
+    "0",
+    "0",
+    "",
+};
+
+static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBandExt_e band) {
+    ASSERT_NOT_NULL(pRadioObj, amxd_status_unknown_error, ME, "NULL");
+    T_Radio* pRad = wld_getUinitRadioByBand(band);
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "pRad not found for frequency %s", swl_freqBandExt_str[band]);
+
+    ASSERT_NULL(pRadioObj->priv, amxd_status_unknown_error, ME, "pRadioObj->priv not NULL %s", pRad->Name);
+
+    const char* instanceName = amxd_object_get_path(pRadioObj, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_WARNING(ME, "Mapping new Radio instance [%s:%s]", pRad->Name, instanceName);
+
+    snprintf(pRad->instanceName, IFNAMSIZ, "%s", instanceName);
+
+    /* General initializations */
+    pRadioObj->priv = pRad;
+    pRad->pBus = pRadioObj;
+
+    wld_rad_init_counters(pRad, &pRad->genericCounters, radCounterDefaults);
+    wld_radStaMon_init(pRad);
+    syncData_VendorWPS2OBJ(NULL, pRad, GET);
+    syncData_Radio2OBJ(pRadioObj, pRad, SET | NO_COMMIT);
+    amxd_object_t* dfsObj = amxd_object_get(pRadioObj, "DFS");
+    if(dfsObj == NULL) {
+        SAH_TRACEZ_ERROR(ME, "cannot found DFS object on %s", pRad->Name);
+    } else {
+        pRad->dfsEventLogLimit = amxd_object_get_uint8_t(dfsObj, "EventLogLimit", NULL);
+        pRad->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
+    }
+    return amxd_status_ok;
+}
+
+amxd_status_t _wld_radio_addInstance_ocf(amxd_object_t* object,
+                                         amxd_param_t* param,
+                                         amxd_action_t reason,
+                                         const amxc_var_t* const args,
+                                         amxc_var_t* const retval,
+                                         void* priv) {
+    amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+    SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
+                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), amxd_object_get_path(object, AMXD_OBJECT_NAMED));
+    if(instance == NULL) {
+        amxd_status_t status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
+        ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
+        instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+    }
+    ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
+    return amxd_status_ok;
+}
+
 /*
     This function will update the read-only field based on the
     driver info.
@@ -2081,14 +2135,20 @@ amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
         return rv;
     }
 
-    T_Radio* pR = object->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
-
     const char* OFB = amxc_var_constcast(cstring_t, args);
     ASSERTW_STR(OFB, amxd_status_unknown_error, ME, "Missing param");
 
     swl_freqBandExt_e band = swl_conv_charToEnum(OFB, Rad_SupFreqBands, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_2_4GHZ);
+
+    /* Link radio/object */
+    if(object->priv == NULL) {
+        _linkFirstUinitRadio(object, band);
+    }
+
+    T_Radio* pR = object->priv;
+    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
+    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
+
     pR->operatingFrequencyBand = band;
 
     SAH_TRACEZ_INFO(ME, "set OperatingFrequencyBand %p %s %d", parameter, OFB, band);
@@ -2159,6 +2219,10 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         /* update saved radio base mac address: matching primary interface (first endpoint/vap) */
         char macStr[SWL_MAC_CHAR_LEN] = {0};
         SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
+
+        amxd_object_set_cstring_t(object, "VendorPCISig", pR->vendor->name);
+        amxd_object_set_cstring_t(object, "Name", pR->Name);
+
         amxd_object_set_cstring_t(object, "BaseMACAddress", macStr);
         /* 'Status' The current operational state of the radio */
         amxd_object_set_cstring_t(object, "Status", Rad_SupStatus[pR->status]);

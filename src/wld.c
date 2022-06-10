@@ -283,37 +283,12 @@ void wld_unregisterAllVendors() {
     }
 }
 
-static void load_vendor_data(const char* name, const vendor_t* vendor) {
-    if(WLD_BUG_ON(!name) || WLD_BUG_ON(!vendor)) {
-        return;
-    }
-
-    char filename[128] = {0};
-
-    wldu_getLocalFile(filename, sizeof(filename), "/usr/lib/wld", "%s/wld-%s-%s-def.odl", vendor->name, vendor->name, name);
-
-    SAH_TRACEZ_INFO(ME, "%s: load vendor specific data from %s", name, filename);
-
-    /** No action on error because:
-     *  - The file might not exist (i.e. when no overrides are required).
-     *  - There might be entries for radios we haven't added yet.
-     **/
-    //Load vendor definitions
-}
-
 const char* radCounterNames[WLD_RAD_EV_MAX] = {
     "FsmCommit",
     "FsmReset",
     "DoubleAssoc",
     "EpAssocFail",
 };
-
-const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
-    "0",
-    "0",
-    "",
-};
-
 
 int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     char macStr[SWL_MAC_CHAR_LEN] = {0};
@@ -332,26 +307,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     memcpy(pR->MACAddr, &wld_getWanAddr()->bMac, SWL_MAC_BIN_LEN);
     swl_mac_binAddVal((swl_macBin_t*) pR->MACAddr, idx, -1);
 
-    amxd_object_t* radios = amxd_object_get(wifi, "Radio");
-    snprintf(pR->instanceName, IFNAMSIZ, "wifi%d", idx);
-    amxd_object_t* radio = amxd_object_get_instance(radios, pR->instanceName, 0);
-    if(radio == NULL) {
-        int ret = amxd_object_new_instance(&radio, radios, pR->instanceName, idx + 1, NULL);
-        if(radio == NULL) {
-            SAH_TRACEZ_ERROR(ME, "amxd_object_new_instance() failed %d", ret);
-            free(pR);
-            return -1;
-        }
-    }
-    SAH_TRACEZ_ERROR(ME, "Creating new Radio instance [%s]", pR->instanceName);
-
-    /* General initializations */
-    amxd_object_set_cstring_t(radio, "VendorPCISig", vendor->name);
-    amxd_object_set_cstring_t(radio, "Name", name);
-
     /* Attach T_Radio to object*/
-    radio->priv = pR;
-    pR->pBus = radio;
     pR->debug = RAD_POINTER;
     pR->pFA = &vendor->fta;                         // Attach our vendor function table on it!
     wldu_copyStr(pR->Name, name, sizeof(pR->Name)); // Name of the RADIO!
@@ -372,8 +328,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->nrActiveAntenna[COM_DIR_TRANSMIT] = -1;
     pR->nrActiveAntenna[COM_DIR_RECEIVE] = -1;
 
-    wld_rad_init_counters(pR, &pR->genericCounters, radCounterDefaults);
-    wld_radStaMon_init(pR);
+    SAH_TRACEZ_WARNING(ME, "Creating new Radio context [%s]", pR->Name);
+
     wld_prbReq_init(pR);
     wld_autoCommitMgr_init(pR);
 
@@ -383,12 +339,9 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
         return -1;
     }
 
-    /* Load Vendor overrule odl data */
-    load_vendor_data(pR->instanceName, vendor);
-
     /* Get our default WPS data */
     pR->wpsConst = &g_wpsConst;
-    syncData_VendorWPS2OBJ(NULL, pR, GET);
+
     /* Generate Common WPS Self-PIN */
     wpsPinGen(pR->wpsConst->DefaultPin);
 
@@ -432,27 +385,13 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     amxc_llist_init(&pR->scanState.stats.extendedStat);
 
-    syncData_Radio2OBJ(radio, pR, SET | NO_COMMIT);
-
     amxc_llist_append(&g_radios, &pR->it);
-
-    if(!(radio)) {
-        SAH_TRACEZ_ERROR(ME, "(%s) failed", pR->instanceName);
-    }
 
     // Apply the MAC address on the radio, update if needed inside vendor
     SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
     pR->pFA->mfn_wvap_bssid(pR, NULL, (unsigned char*) macStr, SWL_MAC_CHAR_LEN, SET);
     // update macStr as macBin may be shifted inside vendor
     SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
-
-    amxd_object_t* dfsObj = amxd_object_get(radio, "DFS");
-    if(!dfsObj) {
-        SAH_TRACEZ_ERROR(ME, "cannot found DFS object on %s", pR->Name);
-    } else {
-        pR->dfsEventLogLimit = amxd_object_get_uint8_t(dfsObj, "EventLogLimit", NULL);
-        pR->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
-    }
 
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u, baseMac %s", name, vendor->name, idx, macStr);
 
@@ -541,6 +480,16 @@ T_Radio* wld_getRadioByName(const char* name) {
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
         if(swl_str_matches(pRad->Name, name)) {
+            return pRad;
+        }
+    }
+    return NULL;
+}
+
+T_Radio* wld_getUinitRadioByBand(swl_freqBandExt_e band) {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        if((pRad->operatingFrequencyBand == band) && (pRad->pBus == NULL)) {
             return pRad;
         }
     }

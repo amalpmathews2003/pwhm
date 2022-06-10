@@ -440,6 +440,7 @@ define rrm_t{
 	   destroy it when the plugin stops.
 	    */
 	%persistent object Radio[] {
+		on action add-inst call wld_radio_addInstance_ocf;
 		/**
 		 * getSpectrumInfo() returns a list of channels the radio
 		 * supports, along with quality parameters
@@ -4778,7 +4779,6 @@ define rrm_t{
 		entry in this table can exist with a given value for
 		SSIDReference.</p>*/
 		%persistent object EndPoint[]{
-		on action add-inst call wld_ep_addInstance_ocf;
 		/** <p>Indicates the status of this end point. Enumeration
 		*   of:</p>
 		*   <ul>
