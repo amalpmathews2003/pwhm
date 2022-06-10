@@ -1365,7 +1365,7 @@ struct WLD_RADIO {
     wld_rad_bwSelectMode_e autoBwSelectMode;                /* channel bandwidth pushed for a fixed channel */
     bool obssCoexistenceEnabled;                            /* Enable the coexistence Bandwidth */
     bool obssCoexistenceActive;                             /* Obss coexistence activated */
-    int operatingClass;                                     /* operating class as read from driver */
+    uint32_t operatingClass;
     int extensionChannel;
     int guardInterval;
     int MCS;                                    /* Modulation Coding Scheme index */

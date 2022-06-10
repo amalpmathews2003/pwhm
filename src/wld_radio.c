@@ -2705,7 +2705,7 @@ T_DEBUG_OBJ_STR VerifyRadio[] = {
     {TPH_STR, "SupportedStandards", TPH_INT32, offsetof(T_Radio, supportedStandards)},
     {TPH_STR, "OperatingStandards", TPH_INT32, offsetof(T_Radio, operatingStandards)},
     {TPH_STR, "OperatingStandardsFormat", TPH_INT32, offsetof(T_Radio, operatingStandardsFormat)},
-    {TPH_INT32, "OperatingClass", TPH_INT32, offsetof(T_Radio, operatingClass)},
+    {TPH_UINT32, "OperatingClass", TPH_UINT32, offsetof(T_Radio, operatingClass)},
     {TPH_STR, "ChannelsInUse", TPH_STR, offsetof(T_Radio, channelsInUse)},
     {TPH_BOOL, "AutoChannelSupported", TPH_INT32, offsetof(T_Radio, autoChannelSupported)},
     {TPH_BOOL, "AutoChannelEnable", TPH_BOOL, offsetof(T_Radio, autoChannelEnable)},
@@ -4108,9 +4108,26 @@ void wld_rad_chan_update_model(T_Radio* pRad) {
     amxc_string_t operatingStandardsText = swl_radStd_toStr(pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
     amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", operatingStandardsText.buffer);
     amxc_string_clean(&operatingStandardsText);
-    amxd_object_set_uint32_t(pRad->pBus, "OperatingClass", pRad->operatingClass);
     amxd_object_set_cstring_t(pRad->pBus, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
 
+}
+
+void wld_rad_updateOperatingClass(T_Radio* pRad) {
+    swl_chanspec_t chanspec = wld_rad_getSwlChanspec(pRad);
+    pRad->operatingClass = wld_channel_getOperatingClass(chanspec);
+    amxd_object_set_uint32_t(pRad->pBus, "OperatingClass", pRad->operatingClass);
+    SAH_TRACEZ_INFO(ME, "%s: set operatingClass to %d", pRad->Name, pRad->operatingClass);
+}
+
+void _wld_rad_setOperatingClass(const char* const sig_name _UNUSED,
+                                const amxc_var_t* const data,
+                                void* const priv _UNUSED) {
+    amxd_object_t* object = amxd_dm_signal_get_object(get_wld_plugin_dm(), data);
+    ASSERTS_NOT_NULL(object, , ME, "NULL");
+    T_Radio* pRad = (T_Radio*) object->priv;
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
+    wld_rad_updateOperatingClass(pRad);
 }
 
 void wld_rad_chan_notification(T_Radio* pRad, int newChannelValue, int newBandwidthValue) {

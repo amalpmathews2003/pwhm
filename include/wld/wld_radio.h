@@ -203,7 +203,7 @@ void wld_rad_updateActiveDevices(T_Radio* pRad);
 T_Radio* wld_rad_get_radio(const char* ifname);
 void wld_rad_chan_update_model(T_Radio* pRad);
 void wld_rad_chan_notification(T_Radio* pRad, int newChannelValue, int newBandwidthValue);
-
+void wld_rad_updateOperatingClass(T_Radio* pRad);
 
 void wld_rad_init_counters(T_Radio* pRad, T_EventCounterList* counters, const char** defaults);
 void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint32_t counterIndex, const char* info);

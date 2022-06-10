@@ -432,6 +432,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
         pR->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
     }
 
+    wld_rad_updateOperatingClass(pR);
+
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u, baseMac %s", name, vendor->name, idx, macStr);
 
     return 0;
