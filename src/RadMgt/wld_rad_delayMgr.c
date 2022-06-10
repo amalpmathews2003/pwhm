@@ -130,13 +130,12 @@ amxd_status_t _wld_rad_delayMgr_setDelayApUpPeriod_pwf(amxd_object_t* object _UN
                                                        amxc_var_t* const retval _UNUSED,
                                                        void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiRad = object;
     if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
         return rv;
     }
     T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }

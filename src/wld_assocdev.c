@@ -813,12 +813,12 @@ amxd_status_t _doAssociationCountReset(amxd_object_t* object _UNUSED,
                                        void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }

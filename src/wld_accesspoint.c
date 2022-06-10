@@ -178,14 +178,13 @@ amxd_status_t _wld_ap_addInstance_ocf(amxd_object_t* object,
                                       const amxc_var_t* const args,
                                       amxc_var_t* const retval,
                                       void* priv) {
-    SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), amxd_object_get_path(object, AMXD_OBJECT_NAMED));
+    SAH_TRACEZ_INFO(ME, "add instance object(%p:%s)", object, amxd_object_get_name(object, AMXD_OBJECT_NAMED));
     amxd_status_t status = amxd_status_ok;
     status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
     amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
     ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
-    amxd_object_t* pSsidObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "WiFi.SSID.%s", amxd_object_get_name(instance, AMXD_OBJECT_NAMED));
+    amxd_object_t* pSsidObj = amxd_object_findf(get_wld_object(), "SSID.%s", amxd_object_get_name(instance, AMXD_OBJECT_NAMED));
     status = _linkApSsid(instance, pSsidObj);
     return status;
 }
@@ -266,12 +265,12 @@ amxd_status_t _wld_ap_setMaxStations_pwf(amxd_object_t* object _UNUSED,
     amxc_var_init(&Nvalue);
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -297,7 +296,7 @@ amxd_status_t _wld_ap_setMaxStations_pwf(amxd_object_t* object _UNUSED,
  * The function is used to map an interface on a bridge. Some vendor deamons
  * depends on it for proper functionallity.
  */
-amxd_status_t _wld_ap_setBridgeInterface_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ap_setBridgeInterface_pwf(amxd_object_t* object,
                                              amxd_param_t* parameter _UNUSED,
                                              amxd_action_t reason _UNUSED,
                                              const amxc_var_t* const args _UNUSED,
@@ -305,12 +304,12 @@ amxd_status_t _wld_ap_setBridgeInterface_pwf(amxd_object_t* object _UNUSED,
                                              void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -336,19 +335,19 @@ amxd_status_t _wld_ap_setBridgeInterface_pwf(amxd_object_t* object _UNUSED,
  * The value of the defaultDeviceType will only affect future devices connecting to the AP.
  * It will NOT be retroactively set to all connected devices.
  */
-amxd_status_t _wld_ap_setDefaultDeviceType_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ap_setDefaultDeviceType_pwf(amxd_object_t* object,
                                                amxd_param_t* parameter _UNUSED,
                                                amxd_action_t reason _UNUSED,
                                                const amxc_var_t* const args _UNUSED,
                                                amxc_var_t* const retval _UNUSED,
                                                void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -385,12 +384,12 @@ amxd_status_t _wld_ap_setDbgEnable_pwf(amxd_object_t* object _UNUSED,
                                        void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -416,7 +415,7 @@ amxd_status_t _wld_ap_setDbgFile_pwf(amxd_object_t* object _UNUSED,
                                      void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
@@ -453,7 +452,7 @@ amxd_status_t _wld_ap_set80211kEnabled_pwf(amxd_object_t* object _UNUSED,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
@@ -481,19 +480,19 @@ amxd_status_t _validateIEEE80211rEnabled(amxd_param_t* parameter _UNUSED, void* 
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_set80211rEnabled_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ap_set80211rEnabled_pwf(amxd_object_t* object,
                                            amxd_param_t* parameter _UNUSED,
                                            amxd_action_t reason _UNUSED,
                                            const amxc_var_t* const args _UNUSED,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -519,12 +518,12 @@ amxd_status_t _wld_ap_setFTOverDSEnable_pwf(amxd_object_t* object _UNUSED,
                                             amxc_var_t* const retval _UNUSED,
                                             void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -549,12 +548,12 @@ amxd_status_t _wld_ap_setMobilityDomain_pwf(amxd_object_t* object _UNUSED,
                                             amxc_var_t* const retval _UNUSED,
                                             void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -580,12 +579,12 @@ amxd_status_t _wld_ap_setInterworkingEnable_pwf(amxd_object_t* object _UNUSED,
                                                 void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -612,12 +611,12 @@ amxd_status_t _wld_ap_setQosMapSet_pwf(amxd_object_t* object _UNUSED,
                                        void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -657,12 +656,12 @@ amxd_status_t _wld_ap_setCommonParam_pwf(amxd_object_t* object _UNUSED,
 
     int idx = 0;
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -711,12 +710,12 @@ amxd_status_t _wld_ap_setWPSEnable_pwf(amxd_object_t* object _UNUSED,
                                        void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -743,12 +742,12 @@ amxd_status_t _wld_ap_setWpsConfigMethodsEnabled_pwf(amxd_object_t* object _UNUS
 
     uint32_t nv;
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -779,12 +778,12 @@ amxd_status_t _wld_ap_setWpsCertModeEnable_pwf(amxd_object_t* object _UNUSED,
                                                void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -807,12 +806,12 @@ amxd_status_t _wld_ap_setWpsConfigured_pwf(amxd_object_t* object _UNUSED,
                                            void* priv _UNUSED) {
     ASSERT_NOT_NULL(parameter, amxd_status_ok, ME, "NULL");
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1332,12 +1331,12 @@ amxd_status_t _wld_ap_setWDSEnable_pwf(amxd_object_t* object _UNUSED,
                                        void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1362,12 +1361,12 @@ amxd_status_t _wld_ap_setMBOEnable_pwf(amxd_object_t* object _UNUSED,
                                        amxc_var_t* const retval _UNUSED,
                                        void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1392,12 +1391,12 @@ amxd_status_t _wld_ap_setMultiAPType_pwf(amxd_object_t* object _UNUSED,
                                          amxc_var_t* const retval _UNUSED,
                                          void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1428,12 +1427,12 @@ amxd_status_t _wld_ap_setRole_pwf(amxd_object_t* object _UNUSED,
                                   amxc_var_t* const retval _UNUSED,
                                   void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1452,21 +1451,20 @@ amxd_status_t _wld_ap_setRole_pwf(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
-amxd_status_t _enableVendorIEs(amxd_object_t* object _UNUSED,
-                               amxd_param_t* parameter _UNUSED,
-                               amxd_action_t reason _UNUSED,
-                               const amxc_var_t* const args _UNUSED,
-                               amxc_var_t* const retval _UNUSED,
-                               void* priv _UNUSED) {
+amxd_status_t _wld_ap_enableVendorIEs(amxd_object_t* object _UNUSED,
+                                      amxd_param_t* parameter _UNUSED,
+                                      amxd_action_t reason _UNUSED,
+                                      const amxc_var_t* const args _UNUSED,
+                                      amxc_var_t* const retval _UNUSED,
+                                      void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* obj = amxd_param_get_owner(parameter);
-    amxd_object_t* wifiVap = amxd_object_get_parent(obj);
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1685,12 +1683,12 @@ amxd_status_t _wld_ap_setHotSpotEnable_pwf(amxd_object_t* object _UNUSED,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1790,12 +1788,12 @@ amxd_status_t _wld_ap_configHotSpot_pwf(amxd_object_t* object _UNUSED,
 
     int idx = 0;
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1890,12 +1888,12 @@ amxd_status_t _wld_ap_setDiscoveryMethod_pwf(amxd_object_t* object _UNUSED,
                                              amxc_var_t* const retval _UNUSED,
                                              void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -1931,12 +1929,12 @@ amxd_status_t _wld_ap_setEnable_pwf(amxd_object_t* object _UNUSED,
                                     void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
+    amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
@@ -2113,20 +2111,20 @@ void wld_ap_destroy(T_AccessPoint* pAP) {
  *
  * Success or failure of plugin call is ignored.
  */
-amxd_status_t _updateAssocDev(amxd_object_t* object _UNUSED,
-                              amxd_param_t* parameter _UNUSED,
-                              amxd_action_t reason _UNUSED,
-                              const amxc_var_t* const args _UNUSED,
-                              amxc_var_t* const retval _UNUSED,
-                              void* priv _UNUSED) {
+amxd_status_t _wld_ap_updateAssocDev(amxd_object_t* object _UNUSED,
+                                     amxd_param_t* parameter _UNUSED,
+                                     amxd_action_t reason _UNUSED,
+                                     const amxc_var_t* const args _UNUSED,
+                                     amxc_var_t* const retval _UNUSED,
+                                     void* priv _UNUSED) {
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* station = amxd_param_get_owner(parameter);
+    amxd_object_t* station = object;
     amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(station));
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
 
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }

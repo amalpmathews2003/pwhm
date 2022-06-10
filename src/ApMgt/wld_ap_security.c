@@ -106,7 +106,7 @@ void wld_ap_sec_doSync(T_AccessPoint* pAP) {
 /**
  * Check that the security settings are valid.
  **/
-amxd_status_t _validateSecurity(amxd_object_t* obj, void* validationData) {
+amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
     _UNUSED_(validationData);
     amxd_param_t* pModeParam = NULL;
     amxd_param_t* pParam = NULL;
@@ -327,61 +327,67 @@ amxd_status_t _validateSecurity(amxd_object_t* obj, void* validationData) {
     return amxd_status_unknown_error;
 }
 
+amxd_status_t _wld_ap_validateWEPKey_pvf(amxd_object_t* object _UNUSED,
+                                         amxd_param_t* param,
+                                         amxd_action_t reason _UNUSED,
+                                         const amxc_var_t* const args,
+                                         amxc_var_t* const retval _UNUSED,
+                                         void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* current_value = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(current_value, status, ME, "NULL");
+    const char* new_value = amxc_var_constcast(cstring_t, args);
+    if(swl_str_matches(current_value, new_value) || isValidWEPKey(new_value)) {
+        return amxd_status_ok;
+    }
+    SAH_TRACEZ_ERROR(ME, "invalid WEPKey (%s)", new_value);
+    return status;
+}
+
 amxd_status_t _wld_ap_setWEPKey_pwf(amxd_object_t* object _UNUSED,
                                     amxd_param_t* parameter,
                                     amxd_action_t reason _UNUSED,
                                     const amxc_var_t* const args _UNUSED,
                                     amxc_var_t* const retval _UNUSED,
                                     void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-
-    const char* pname = amxc_var_constcast(cstring_t, args); // Get the Key
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
-    int ret = isValidWEPKey(pname);                          // Check if valid
-    SAH_TRACEZ_INFO(ME, "WEPKey %s -  %d", pname, ret);
-    ASSERTI_TRUE(ret != 0, false, ME, "%s : invalid WEP key %s", pAP->alias, pname);
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
+    const char* new_value = amxc_var_constcast(cstring_t, args); // Get the Key
+    ASSERT_NOT_NULL(new_value, rv, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: WEPKey (%s)", pAP->alias, new_value);
 
     /* We got as return the correct WEP key format used... */
-    wldu_copyStr(pAP->WEPKey, pname, sizeof(pAP->WEPKey));
+    swl_str_copy(pAP->WEPKey, sizeof(pAP->WEPKey), new_value);
 
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setMFPConfig_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ap_setMFPConfig_pwf(amxd_object_t* object,
                                        amxd_param_t* parameter,
                                        amxd_action_t reason _UNUSED,
                                        const amxc_var_t* const args _UNUSED,
                                        amxc_var_t* const retval _UNUSED,
                                        void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* mfpStr = amxc_var_constcast(cstring_t, args);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
     pAP->mfpConfig = conv_strToEnum(wld_mfpConfig_str, mfpStr, WLD_MFP_MAX, WLD_MFP_DISABLED);
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
@@ -391,129 +397,122 @@ amxd_status_t _wld_ap_setModesAvailable_pwf(amxd_object_t* object _UNUSED,
                                             const amxc_var_t* const args _UNUSED,
                                             amxc_var_t* const retval _UNUSED,
                                             void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* modesAvailable = amxc_var_constcast(cstring_t, args);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
     if(modesAvailable && modesAvailable[0]) {
         pAP->secModesAvailable = swl_conv_charToMask(modesAvailable, cstr_AP_ModesSupported, APMSI_MAX);
     } else {
         pAP->secModesAvailable = pAP->secModesSupported;
     }
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setModeEnabled_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ap_setModeEnabled_pwf(amxd_object_t* object,
                                          amxd_param_t* parameter,
                                          amxd_action_t reason _UNUSED,
                                          const amxc_var_t* const args _UNUSED,
                                          amxc_var_t* const retval _UNUSED,
                                          void* priv _UNUSED) {
-    int ret = 0;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
     SAH_TRACEZ_IN(ME);
-    const char* pname = amxc_var_constcast(cstring_t, args);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
 
-    wld_securityMode_e idx = conv_strToEnum(cstr_AP_ModesSupported, pname, APMSI_MAX, APMSI_UNKNOWN);
-
+    const char* mode = amxc_var_constcast(cstring_t, args);
+    wld_securityMode_e idx = conv_strToEnum(cstr_AP_ModesSupported, mode, APMSI_MAX, APMSI_UNKNOWN);
     switch(idx) {
     case APMSI_NONE:
     case APMSI_OWE:
-        pAP->secModeEnabled = idx;  // If this is what the user wants?
-        ret = true;
-        SAH_TRACEZ_INFO(ME, "%s %d", idx == APMSI_OWE ? "OWE" : "None", ret);
         /* If we must enable MAC filter... it must be here */
         break;
     case APMSI_WEP64:    /* 5/10 */
     case APMSI_WEP128:   /* 13/26 */
     case APMSI_WEP128IV: /* 16/32 */
         /* Before changing... check if we've a valid WEP key */
-        ret = isValidWEPKey(pAP->WEPKey);
-        if(ret) {
-            pAP->secModeEnabled = ret;
-        }
-        SAH_TRACEZ_INFO(ME, "WEP %d", ret);
+        ASSERT_TRUE(isValidWEPKey(pAP->WEPKey), amxd_status_unknown_error, ME, "Invalid WEPKey(%s) in WEP mode", pAP->WEPKey);
         break;
     case APMSI_WPA_P:
-        ret = isValidPSKKey(pAP->preSharedKey);
-        if(!ret) {
-            ret = (isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) ? idx : 0;
+        if((!isValidPSKKey(pAP->preSharedKey)) &&
+           (!isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1))) {
+            SAH_TRACEZ_ERROR(ME, "No valid PSK(%s) KeyPP(%s) in WPA-TKIP mode", pAP->preSharedKey, pAP->keyPassPhrase);
+            return amxd_status_unknown_error;
         }
-        if(ret) {
-            pAP->secModeEnabled = ret;
-        }
-        SAH_TRACEZ_INFO(ME, "WPA-TKIP %d", ret);
         break;
     case APMSI_WPA2_P:
     case APMSI_WPA_WPA2_P:
     case APMSI_WPA2_WPA3_P:
-        ret = isValidAESKey((char*) pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
-        if(ret) {
-            pAP->secModeEnabled = idx;
-        }
-        SAH_TRACEZ_INFO(ME, "WPA(x)-AES %d", ret);
+        ASSERT_TRUE(isValidAESKey((char*) pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1), amxd_status_unknown_error,
+                    ME, "Invalid AESKey(%s) in WPA(x)-AES mode", pAP->keyPassPhrase);
         break;
     case APMSI_WPA3_P:
-        if(swl_str_matches(pAP->saePassphrase, "")) {
-            ret = isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
+        if(swl_str_isEmpty(pAP->saePassphrase)) {
+            ASSERT_TRUE(isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1), amxd_status_unknown_error,
+                        ME, "Invalid AESKey(%s) in WPA3 mode", pAP->keyPassPhrase);
         } else {
-            ret = isValidAESKey(pAP->saePassphrase, SAE_KEY_SIZE_LEN);
+            ASSERT_TRUE(isValidAESKey(pAP->saePassphrase, SAE_KEY_SIZE_LEN), amxd_status_unknown_error,
+                        ME, "Invalid SAE PassPhrase(%s) in WPA3 mode", pAP->saePassphrase);
         }
-        SAH_TRACEZ_INFO(ME, "WPA3 %d", ret);
         break;
     case APMSI_WPA_E:
-        ret = isValidPSKKey(pAP->radiusSecret);
-        if(!ret) {
-            ret = isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
+        if((!isValidPSKKey(pAP->radiusSecret)) &&
+           (!isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1))) {
+            SAH_TRACEZ_ERROR(ME, "No valid RadSecret(%s) KeyPP(%s) in WPA-Enterprise mode", pAP->radiusSecret, pAP->keyPassPhrase);
+            return amxd_status_unknown_error;
         }
-        if(ret) {
-            pAP->secModeEnabled = idx;
-        }
-        SAH_TRACEZ_INFO(ME, "WPA-TKIP  %d", ret);
         break;
     case APMSI_NONE_E:
     case APMSI_WPA2_E:
     case APMSI_WPA_WPA2_E:
     case APMSI_WPA3_E:
     case APMSI_WPA2_WPA3_E:
-        ret = strlen(pAP->radiusSecret);
-        if((ret >= 8) && (ret < 64)) {
-            pAP->secModeEnabled = idx;
-        }
+    {
+        int radSecLen = strlen(pAP->radiusSecret);
+        ASSERT_TRUE((radSecLen >= 8) && (radSecLen < 64), amxd_status_unknown_error,
+                    ME, "Invalid radius secret (%s) length(8-63) in WPAx-Enterprise mode", pAP->radiusSecret);
         break;
+    }
     case APMSI_UNKNOWN:
-        SAH_TRACEZ_ERROR(ME, "%s : unknown security mode %s", pAP->alias, pname);
-        break;
     default:
+        SAH_TRACEZ_ERROR(ME, "%s : unknown security mode %s", pAP->alias, mode);
+        return amxd_status_unknown_error;
         break;
     }
 
-    if(ret) {
-        wld_ap_sec_doSync(pAP);
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
+    pAP->secModeEnabled = idx;
+    SAH_TRACEZ_INFO(ME, "Security Mode Enable %s %d", mode, idx);
+
+    wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
+amxd_status_t _wld_ap_validatePreSharedKey_pvf(amxd_object_t* object _UNUSED,
+                                               amxd_param_t* param,
+                                               amxd_action_t reason _UNUSED,
+                                               const amxc_var_t* const args,
+                                               amxc_var_t* const retval _UNUSED,
+                                               void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* current_value = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(current_value, status, ME, "NULL");
+    const char* new_value = amxc_var_constcast(cstring_t, args);
+    if(swl_str_matches(current_value, new_value) || isValidPSKKey(new_value)) {
         return amxd_status_ok;
-    } else {
-        return amxd_status_unknown_error;
     }
+    SAH_TRACEZ_ERROR(ME, "invalid PreSharedKey (%s)", new_value);
+    return status;
 }
 
 amxd_status_t _wld_ap_setPreSharedKey_pwf(amxd_object_t* object _UNUSED,
@@ -522,111 +521,106 @@ amxd_status_t _wld_ap_setPreSharedKey_pwf(amxd_object_t* object _UNUSED,
                                           const amxc_var_t* const args _UNUSED,
                                           amxc_var_t* const retval _UNUSED,
                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    const char* pname = amxc_var_constcast(cstring_t, args);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
-    int ret = isValidPSKKey(pname);                // Check if valid
-    ASSERTI_TRUE(ret != 0, false, ME, "PreSharedKey %s Not VALID", (char*) pname);
-
-    SAH_TRACEZ_INFO(ME, "WPA-TKIP %s -  %d", pname, ret);
-    /* We got as return the correct WPA key format used... */
-    wldu_copyStr(pAP->preSharedKey, pname, sizeof(pAP->preSharedKey));
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
+    const char* psk = amxc_var_constcast(cstring_t, args);
+    SAH_TRACEZ_INFO(ME, "WPA-TKIP Psk(%s)", psk);
+    swl_str_copy(pAP->preSharedKey, sizeof(pAP->preSharedKey), psk);
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
-static amxd_status_t _setApPassphrase(amxd_param_t* parameter,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv, bool isSae) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
+amxd_status_t _wld_ap_validateKeyPassPhrase_pvf(amxd_object_t* object _UNUSED,
+                                                amxd_param_t* param,
+                                                amxd_action_t reason _UNUSED,
+                                                const amxc_var_t* const args,
+                                                amxc_var_t* const retval _UNUSED,
+                                                void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* current_value = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(current_value, status, ME, "NULL");
+    const char* new_value = amxc_var_constcast(cstring_t, args);
+    if(swl_str_matches(current_value, new_value)) {
+        return amxd_status_ok;
     }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    ASSERT_TRUE(isValidAESKey(new_value, PSK_KEY_SIZE_LEN - 1), amxd_status_ok,
+                ME, "Invalid AES Key (%s)", new_value);
+    return amxd_status_ok;
+}
 
+amxd_status_t _wld_ap_setKeyPassPhrase_pwf(amxd_object_t* object,
+                                           amxd_param_t* parameter,
+                                           amxd_action_t reason _UNUSED,
+                                           const amxc_var_t* const args _UNUSED,
+                                           amxc_var_t* const retval _UNUSED,
+                                           void* priv) {
     SAH_TRACEZ_IN(ME);
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* newPassphrase = amxc_var_constcast(cstring_t, args);
-
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
-    ASSERTS_NOT_NULL(newPassphrase, amxd_status_unknown_error, ME, "NULL");
-    bool sanitized = false;
-    if(isSae) {
-        sanitized = isValidAESKey(newPassphrase, SAE_KEY_SIZE_LEN);
-    } else {
-        sanitized = isValidAESKey(newPassphrase, PSK_KEY_SIZE_LEN - 1);
-    }
-
-    SAH_TRACEZ_INFO(ME, "WPA-AES %s -  %u", newPassphrase, sanitized);
-
-    if(!sanitized) {
-        if((pAP->secModeEnabled != APMSI_NONE) && !isSae) {
-            SAH_TRACEZ_ERROR(ME, "%s : set unsanitized PSK %u %u", pAP->alias, sanitized, pAP->secModeEnabled);
-        } else {
-            SAH_TRACEZ_INFO(ME, "%s : set unsanitized PSK %u %u %u", pAP->alias, sanitized, pAP->secModeEnabled, isSae);
-        }
-        return amxd_status_unknown_error;
-    }
-
+    SAH_TRACEZ_INFO(ME, "%s: WPA-AES %s", pAP->alias, newPassphrase);
     T_SSID* pSSID = pAP->pSSID;
-    bool needSync = true;
-    bool passUpdated = false;
-    if(isSae) {
-        passUpdated = pSSID && !wldu_key_matches(pSSID->SSID, newPassphrase, pAP->saePassphrase);
-    } else {
-        passUpdated = pSSID && !wldu_key_matches(pSSID->SSID, newPassphrase, pAP->keyPassPhrase);
-    }
-    if(!passUpdated) {
-        needSync = false;
-        SAH_TRACEZ_INFO(ME, "Same key is used, no need to sync %s", newPassphrase);
-    }
-    if(isSae) {
-        wldu_copyStr(pAP->saePassphrase, newPassphrase, sizeof(pAP->saePassphrase));
-    } else {
-        wldu_copyStr(pAP->keyPassPhrase, newPassphrase, sizeof(pAP->keyPassPhrase));
-    }
-
-    if(needSync) {
-        wld_ap_sec_doSync(pAP);
-    }
+    bool passUpdated = (pSSID && !wldu_key_matches(pSSID->SSID, newPassphrase, pAP->keyPassPhrase));
+    swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), newPassphrase);
+    ASSERTI_TRUE(passUpdated, rv, ME, "Same key is used, no need to sync %s", newPassphrase);
+    wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
-
 }
 
-amxd_status_t _wld_ap_setKeyPassPhrase_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ap_validateSaePassphrase_pvf(amxd_object_t* object _UNUSED,
+                                                amxd_param_t* param,
+                                                amxd_action_t reason _UNUSED,
+                                                const amxc_var_t* const args,
+                                                amxc_var_t* const retval _UNUSED,
+                                                void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* current_value = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(current_value, status, ME, "NULL");
+    const char* new_value = amxc_var_constcast(cstring_t, args);
+    if(swl_str_matches(current_value, new_value)) {
+        return amxd_status_ok;
+    }
+    ASSERT_TRUE(isValidAESKey(new_value, SAE_KEY_SIZE_LEN), amxd_status_ok,
+                ME, "Invalid SAE Key (%s)", new_value);
+    return amxd_status_ok;
+}
+
+amxd_status_t _wld_ap_setSaePassphrase_pwf(amxd_object_t* object,
                                            amxd_param_t* parameter,
                                            amxd_action_t reason _UNUSED,
                                            const amxc_var_t* const args _UNUSED,
                                            amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    return _setApPassphrase(parameter, reason, args, retval, priv, false);
-}
-
-amxd_status_t _wld_ap_setSaePassphrase_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    return _setApPassphrase(parameter, reason, args, retval, priv, true);
+                                           void* priv) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
+    const char* newPassphrase = amxc_var_constcast(cstring_t, args);
+    SAH_TRACEZ_INFO(ME, "%s: WPA-AES %s", pAP->alias, newPassphrase);
+    T_SSID* pSSID = pAP->pSSID;
+    bool passUpdated = (pSSID && !wldu_key_matches(pSSID->SSID, newPassphrase, pAP->saePassphrase));
+    swl_str_copy(pAP->saePassphrase, sizeof(pAP->saePassphrase), newPassphrase);
+    ASSERTI_TRUE(passUpdated, rv, ME, "Same key is used, no need to sync %s", newPassphrase);
+    wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
 }
 
 amxd_status_t _wld_ap_setEncryptionMode_pwf(amxd_object_t* object _UNUSED,
@@ -635,26 +629,18 @@ amxd_status_t _wld_ap_setEncryptionMode_pwf(amxd_object_t* object _UNUSED,
                                             const amxc_var_t* const args _UNUSED,
                                             amxc_var_t* const retval _UNUSED,
                                             void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
-
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* newMode = amxc_var_constcast(cstring_t, args);
-
     pAP->encryptionModeEnabled = conv_strToEnum(cstr_AP_EncryptionMode, newMode, APEMI_MAX, APEMI_DEFAULT);
-
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
@@ -664,21 +650,18 @@ amxd_status_t _wld_ap_setRekeyInterval_pwf(amxd_object_t* object _UNUSED,
                                            const amxc_var_t* const args _UNUSED,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
+
     // They are handled in SyncData_AP2OBJ()
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
@@ -688,22 +671,17 @@ amxd_status_t _wld_ap_setRadiusInfo_pwf(amxd_object_t* object _UNUSED,
                                         const amxc_var_t* const args _UNUSED,
                                         amxc_var_t* const retval _UNUSED,
                                         void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     // They are handled in SyncData_AP2OBJ()
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
@@ -713,22 +691,17 @@ amxd_status_t _wld_ap_setSHA256Enable_pwf(amxd_object_t* object _UNUSED,
                                           const amxc_var_t* const args _UNUSED,
                                           amxc_var_t* const retval _UNUSED,
                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     pAP->SHA256Enable = amxc_var_dyncast(bool, args);
-
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
@@ -738,24 +711,18 @@ amxd_status_t _wld_ap_setOweTransitionIntf_pwf(amxd_object_t* object _UNUSED,
                                                const amxc_var_t* const args _UNUSED,
                                                amxc_var_t* const retval _UNUSED,
                                                void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
-
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* oweTransIntf = amxc_var_constcast(cstring_t, args);
-
     swl_str_copy(pAP->oweTransModeIntf, sizeof(pAP->oweTransModeIntf), oweTransIntf);
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
@@ -765,26 +732,19 @@ amxd_status_t _wld_ap_setTransitionDisable_pwf(amxd_object_t* object _UNUSED,
                                                const amxc_var_t* const args _UNUSED,
                                                amxc_var_t* const retval _UNUSED,
                                                void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "INVALID");
-
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiVap = amxd_object_get_parent(object);
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* tdStr = amxc_var_constcast(cstring_t, args);
-
     wld_ap_td_m transitionDisable = swl_conv_charToMask(tdStr, g_str_wld_ap_td, AP_TD_MAX);
-    ASSERTI_NOT_EQUALS(transitionDisable, pAP->transitionDisable, amxd_status_unknown_error, ME, "%s: no change", pAP->alias);
+    ASSERTI_NOT_EQUALS(transitionDisable, pAP->transitionDisable, amxd_status_ok, ME, "%s: no change", pAP->alias);
     pAP->transitionDisable = transitionDisable;
     wld_ap_sec_doSync(pAP);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }

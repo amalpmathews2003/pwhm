@@ -2186,7 +2186,6 @@ define rrm_t{
 		 * @version 10.0
 		 */
 		%persistent object MACConfig{
-			on action write call wld_rad_writeMACConfig_owf;
 		
 			/**
 			 * The number of BSS required for this radio. This allows certain checks to be done
@@ -2195,6 +2194,7 @@ define rrm_t{
 			 * Will also allow to move multi radio BSSIDs closer together when possible.
 			 */
 			%persistent uint32 NrBssRequired{
+				on action write call wld_rad_setMACConfig_pwf;
 				default 0;
 			}
 	
@@ -2206,6 +2206,7 @@ define rrm_t{
 			 * by default the Radio Base MAC Addr will be WAN_ADDR + Radio Index.
 			 */
 			%persistent bool UseBaseMacOffset{
+				on action write call wld_rad_setMACConfig_pwf;
 				default false;
 			}
 			
@@ -2214,6 +2215,7 @@ define rrm_t{
 			 * Enable UseBaseMacOffset to have this enacted in compatible drivers.
 			 */
 			%persistent int64 BaseMacOffset{
+				on action write call wld_rad_setMACConfig_pwf;
 				default 0;
 			}
 			
@@ -2222,6 +2224,7 @@ define rrm_t{
 			 * When set, these BSSIDs may overlap, so it is 
 			 */
 			%persistent bool UseLocalBitForGuest{
+				on action write call wld_rad_setMACConfig_pwf;
 				default false;
 			}
 			
@@ -2233,6 +2236,7 @@ define rrm_t{
 			 * offsets.
 			 */
 			%persistent int64 LocalGuestMacOffset{
+				on action write call wld_rad_setMACConfig_pwf;
 				default 256;
 			}
 		}
@@ -3140,6 +3144,7 @@ define rrm_t{
 			 * regardless of the actual value.</i>*/
 			%persistent string WEPKey{  /* Must be hexbinary? */
 				default "123456789ABCD";
+				on action validate call wld_ap_validateWEPKey_pvf;
 				on action write call wld_ap_setWEPKey_pwf;
 			}
 
@@ -3153,6 +3158,7 @@ define rrm_t{
 			    <i>When read, this parameter returns an empty string,
 			    regardless of the actual value.</i>*/
 			%persistent string PreSharedKey{
+				on action validate call wld_ap_validatePreSharedKey_pvf;
 				on action write call wld_ap_setPreSharedKey_pwf;
 			}
 			/** <p>A passphrase from which the PreSharedKey  is to be
@@ -3168,6 +3174,7 @@ define rrm_t{
 			 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
 			 * or 256 bit secret, entered as a 64 characters hex key.*/
 			%persistent string KeyPassPhrase = "password" {
+				on action validate call wld_ap_validateKeyPassPhrase_pvf;
 				on action write call wld_ap_setKeyPassPhrase_pwf;
 			}
 			/**  <p>The interval (expressed in seconds) in which the keys are
@@ -3225,13 +3232,14 @@ define rrm_t{
 			 *   @version 10.0
 			 */
 			%persistent string SAEPassphrase{
+				on action validate call wld_ap_validateSaePassphrase_pvf;
 				on action write call wld_ap_setSaePassphrase_pwf;
 				default "";
 			}
 			/**  <p>WPA-key encryption Mode</p>*/
 			%persistent string EncryptionMode = "Default" {
-				on action write call wld_ap_setEncryptionMode_pwf;
 				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+				on action write call wld_ap_setEncryptionMode_pwf;
 			}
 			/**  <p>Enable extra WPA-key encryption protection..</p>*/
 			%persistent bool SHA256Enable{
@@ -3309,7 +3317,6 @@ define rrm_t{
 			 * the action is ignored.
 			 */
 			%persistent string ModeEnabled = "WPA2-Personal" {
-				on action write call wld_ap_setModeEnabled_pwf;
 				on action validate call check_enum ["None", "OWE",
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
@@ -3317,6 +3324,7 @@ define rrm_t{
 						"E-None",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise", "Unknown"];
+				on action write call wld_ap_setModeEnabled_pwf;
 			}
 
 			/** Management Frame Protection configuration applicable when ModeEnabled is set
@@ -3326,10 +3334,10 @@ define rrm_t{
 			 *     * Required
 			 */
 			string MFPConfig = "Disabled" {
-				on action write call wld_ap_setMFPConfig_pwf;
 				on action validate call check_enum ["Disabled",
 						"Optional",
 						"Required"];
+				on action write call wld_ap_setMFPConfig_pwf;
 			}
 
 			/**
@@ -3934,7 +3942,7 @@ define rrm_t{
 			string DeviceType{
 				on action validate call check_enum ["Video","Data","Guest"];
 				default "Data";
-				on action write call updateAssocDev;
+				on action write call wld_ap_updateAssocDev;
 			}
 
 			/**
@@ -3942,7 +3950,7 @@ define rrm_t{
 			 */
 			uint32 DevicePriority{
 				default 1;
-				on action write call updateAssocDev;
+				on action write call wld_ap_updateAssocDev;
 			}
 
 			/**
@@ -4196,7 +4204,7 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			%persistent bool Enable {
-				on action write call enableVendorIEs;
+				on action write call wld_ap_enableVendorIEs;
 				default false;
 			}
 

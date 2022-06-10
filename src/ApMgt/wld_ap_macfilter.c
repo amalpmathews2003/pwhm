@@ -356,36 +356,33 @@ static void delay_sync_mf_addressList(amxp_timer_t* timer, void* userdata) {
     amxp_timer_delete(&timer);
 }
 
-amxd_status_t _wld_apMacFilter_setAddressList_pwf(amxd_object_t* wifiVap,
+amxd_status_t _wld_apMacFilter_setAddressList_pwf(amxd_object_t* object,
                                                   amxd_param_t* parameter,
                                                   amxd_action_t reason _UNUSED,
                                                   const amxc_var_t* const args _UNUSED,
                                                   amxc_var_t* const retval _UNUSED,
                                                   void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
+    amxd_object_t* wifiVap = object;
+    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
     T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    ASSERTS_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
 
     const char* newMACFilterAddressList_param = amxc_var_constcast(cstring_t, args);
     ASSERTS_NOT_NULL(newMACFilterAddressList_param, amxd_status_unknown_error, ME, "NULL");
 
-    if(pAP->MF_AddressList && !strcmp(pAP->MF_AddressList, newMACFilterAddressList_param)) {
+    if(swl_str_matches(pAP->MF_AddressList, newMACFilterAddressList_param)) {
         SAH_TRACEZ_INFO(ME, "Same MACFilterAddressList");
-        return amxd_status_unknown_error;
+        return amxd_status_ok;
     }
-    int len = strlen(newMACFilterAddressList_param);
-    if(len == 0) {
+    if(swl_str_isEmpty(newMACFilterAddressList_param)) {
         wld_ap_macfilter_cleanupMACFilterAddressList(pAP);
-        return amxd_status_unknown_error;
+        return amxd_status_ok;
     }
-    pAP->MF_AddressList = strdup(newMACFilterAddressList_param);
+    swl_str_copyMalloc(&pAP->MF_AddressList, newMACFilterAddressList_param);
     SAH_TRACEZ_INFO(ME, "%s: Set new MF_AddressList %s", pAP->alias, pAP->MF_AddressList);
     /* delay syncing mf addressList string with mf obj entries list
      * to give time for nemo to push its entries to plugin side.
@@ -394,6 +391,7 @@ amxd_status_t _wld_apMacFilter_setAddressList_pwf(amxd_object_t* wifiVap,
     amxp_timer_t* timer;
     amxp_timer_new(&timer, delay_sync_mf_addressList, pAP);
     amxp_timer_start(timer, 0);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 

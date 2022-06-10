@@ -286,7 +286,7 @@ amxd_status_t _wld_rad_capability_setEnable(amxd_object_t* wifi_cap,
     if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
         return rv;
     }
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
+    rv = amxd_action_param_write(wifi_cap, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }

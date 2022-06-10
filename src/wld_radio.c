@@ -946,23 +946,34 @@ amxd_status_t _wld_rad_setDriverConfig_owf(amxd_object_t* object) {
     return amxd_status_ok;
 }
 
-
-amxd_status_t _wld_rad_writeMACConfig_owf(amxd_object_t* object) {
+amxd_status_t _wld_rad_setMACConfig_pwf(amxd_object_t* object,
+                                        amxd_param_t* param,
+                                        amxd_action_t reason,
+                                        const amxc_var_t* const args,
+                                        amxc_var_t* const retval,
+                                        void* priv) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = amxd_action_param_write(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "ERR");
     amxd_object_t* radObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(radObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-
+    ASSERTI_EQUALS(amxd_object_get_type(radObject), amxd_object_instance, amxd_status_ok, ME, "template");
     T_Radio* pRad = (T_Radio*) radObject->priv;
     ASSERTI_TRUE(debugIsRadPointer(pRad), amxd_status_unknown_error, ME, "Radio Object is NULL");
-    SAH_TRACEZ_INFO(ME, "%s update mac config", pRad->Name);
-
-    pRad->macCfg.useBaseMacOffset = amxd_object_get_bool(object, "UseBaseMacOffset", NULL);
-    pRad->macCfg.useLocalBitForGuest = amxd_object_get_bool(object, "UseLocalBitForGuest", NULL);
-    pRad->macCfg.baseMacOffset = amxd_object_get_int64_t(object, "BaseMacOffset", NULL);
-    pRad->macCfg.localGuestMacOffset = amxd_object_get_int64_t(object, "LocalGuestMacOffset", NULL);
-    pRad->macCfg.nrBssRequired = amxd_object_get_uint32_t(object, "NrBssRequired", NULL);
-    return amxd_status_ok;
+    const char* pname = param->name;
+    if(swl_str_matches(pname, "UseBaseMacOffset")) {
+        pRad->macCfg.useBaseMacOffset = amxc_var_dyncast(bool, args);
+    } else if(swl_str_matches(pname, "UseLocalBitForGuest")) {
+        pRad->macCfg.useLocalBitForGuest = amxc_var_dyncast(bool, args);
+    } else if(swl_str_matches(pname, "BaseMacOffset")) {
+        pRad->macCfg.baseMacOffset = amxc_var_dyncast(int64_t, args);
+    } else if(swl_str_matches(pname, "LocalGuestMacOffset")) {
+        pRad->macCfg.localGuestMacOffset = amxc_var_dyncast(int64_t, args);
+    } else if(swl_str_matches(pname, "NrBssRequired")) {
+        pRad->macCfg.nrBssRequired = amxc_var_dyncast(int64_t, args);
+    }
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
-
 
 amxd_status_t _wld_rad_setRxChainCtrl_pwf(amxd_object_t* object _UNUSED,
                                           amxd_param_t* parameter _UNUSED,
@@ -2435,51 +2446,23 @@ void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             ** Parameters are comming from the DeviceInfo!
             ** Be sure that the plugin is running before we're passing here.
             */
-            int ret = amxb_get(get_wld_plugin_bus(), "DeviceInfo.Manufacturer", INT32_MAX, &getVar, 5);
+            int ret = amxb_get(get_wld_plugin_bus(), "DeviceInfo.", 0, &getVar, 1);
             if(ret == AMXB_STATUS_OK) {
-                wldu_copyStr(pCWPS->Manufacturer,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->Manufacturer));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.Manufacturer", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->ManufacturerUrl,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->ManufacturerUrl));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.ManufacturerOUI", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->OUI,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->OUI));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.DeviceName", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->DevName,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->DevName));
-
-            #if CONFIG_USE_SAH_WPS_DEVICE_NAME
-                wldu_copyStr(pCWPS->DevName, CONFIG_SAH_WPS_DEVICE_NAME, sizeof(pCWPS->DevName));
-            #endif
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.FriendlyName", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->FriendlyName,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->FriendlyName));
-            #if CONFIG_USE_SAH_WPS_FRIENDLY_NAME
-                wldu_copyStr(pCWPS->FriendlyName, CONFIG_SAH_WPS_FRIENDLY_NAME, sizeof(pCWPS->FriendlyName));
-            #endif
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.Description", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->ModelDescription,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->ModelDescription));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.SoftwareVersion", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->OsVersion,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->OsVersion));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.SerialNumber", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->SerialNumber,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->SerialNumber));
+                amxc_var_t* devInfo = amxc_var_get_first(GET_ARG(&getVar, "0"));
+                swl_str_copy(pCWPS->Manufacturer, sizeof(pCWPS->Manufacturer), GET_CHAR(devInfo, "Manufacturer"));
+                swl_str_copy(pCWPS->ManufacturerUrl, sizeof(pCWPS->ManufacturerUrl), GET_CHAR(devInfo, "Manufacturer"));
+                swl_str_copy(pCWPS->OUI, sizeof(pCWPS->OUI), GET_CHAR(devInfo, "ManufacturerOUI"));
+                swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), GET_CHAR(devInfo, "DeviceName"));
+#if CONFIG_USE_SAH_WPS_DEVICE_NAME
+                swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), CONFIG_SAH_WPS_DEVICE_NAME);
+#endif
+                swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), GET_CHAR(devInfo, "FriendlyName"));
+#if CONFIG_USE_SAH_WPS_FRIENDLY_NAME
+                swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), CONFIG_SAH_WPS_FRIENDLY_NAME);
+#endif
+                swl_str_copy(pCWPS->ModelDescription, sizeof(pCWPS->ModelDescription), GET_CHAR(devInfo, "Description"));
+                swl_str_copy(pCWPS->OsVersion, sizeof(pCWPS->OsVersion), GET_CHAR(devInfo, "SoftwareVersion"));
+                swl_str_copy(pCWPS->SerialNumber, sizeof(pCWPS->SerialNumber), GET_CHAR(devInfo, "SerialNumber"));
 #if !CONFIG_SAH_WPS_IE_SERIAL_DEFAULT
 #if CONFIG_SAH_WPS_IE_SERIAL_FT_REQ
                 /* Only take a part of the serial key for security reasons! */
@@ -2504,31 +2487,20 @@ void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
                 SAH_TRACEZ_ERROR(ME, "No WPS IE configured");
 #endif
 #endif
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.ModelName", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->ModelName,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->ModelName));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.HardwareVersion", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->ModelNumber,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->ModelNumber));
-
-                amxb_get(get_wld_plugin_bus(), "DeviceInfo.VendorURL", INT32_MAX, &getVar, 5);
-                wldu_copyStr(pCWPS->ModelUrl,
-                             amxc_var_get_cstring_t(&getVar),
-                             sizeof(pCWPS->ModelUrl));
+                swl_str_copy(pCWPS->ModelName, sizeof(pCWPS->ModelName), GET_CHAR(devInfo, "ModelName"));
+                swl_str_copy(pCWPS->ModelNumber, sizeof(pCWPS->ModelNumber), GET_CHAR(devInfo, "ModelNumber"));
+                swl_str_copy(pCWPS->ModelUrl, sizeof(pCWPS->ModelUrl), GET_CHAR(devInfo, "VendorURL"));
             } else {
                 // Normally we're not passing here but in case generic build... we've some SAH data ;-)
                 GETENV(pCWPS->DevName, "DevName");
-            #if CONFIG_USE_SAH_WPS_DEVICE_NAME
-                wldu_copyStr(pCWPS->DevName, CONFIG_SAH_WPS_DEVICE_NAME, sizeof(pCWPS->DevName));
-            #endif
+#if CONFIG_USE_SAH_WPS_DEVICE_NAME
+                swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), CONFIG_SAH_WPS_DEVICE_NAME);
+#endif
                 GETENV(pCWPS->OUI, "MANUFACTURER_OUI");
                 GETENV(pCWPS->FriendlyName, "FRIENDLY_NAME");
-            #if CONFIG_USE_SAH_WPS_FRIENDLY_NAME
-                wldu_copyStr(pCWPS->FriendlyName, CONFIG_SAH_WPS_FRIENDLY_NAME, sizeof(pCWPS->FriendlyName));
-            #endif
+#if CONFIG_USE_SAH_WPS_FRIENDLY_NAME
+                swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), CONFIG_SAH_WPS_FRIENDLY_NAME);
+#endif
                 GETENV(pCWPS->Manufacturer, "MANUFACTURER");
                 GETENV(pCWPS->ManufacturerUrl, "MANUFACTURER_URL");
 
