@@ -602,3 +602,14 @@ int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards) {
     return 1;
 }
 
+int wifiGen_rad_ochbw(T_Radio* pRad, int val, int set) {
+    if(set & SET) {
+        pRad->operatingChannelBandwidth = val;
+        wld_rad_get_update_running_bandwidth(pRad);
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+    } else {
+        return pRad->operatingChannelBandwidth;
+    }
+    SAH_TRACEZ_INFO(ME, "%p %.8x %d", pRad, val, set);
+    return 0;
+}

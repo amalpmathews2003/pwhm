@@ -73,6 +73,8 @@ const char* wld_hostapd_wpsConfigMethods[] = { "usba", "ethernet", "label", "dis
     "nfc_interface", "push_button", "keypad", "virtual_display", "physical_display", "virtual_push_button",
     "physical_push_button", "PIN",
     0};
+
+
 /**
  * @brief set the radio parameters
  *
@@ -83,6 +85,7 @@ const char* wld_hostapd_wpsConfigMethods[] = { "usba", "ethernet", "label", "dis
  */
 static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
     char buffer[256] = {0};
+
     T_AccessPoint* firstVap = wld_rad_getFirstVap(pRad);
     swl_mapChar_t* interfaceConfigMap = wld_hostapd_getConfigMap(config, firstVap->alias);
     swl_mapChar_add(interfaceConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
@@ -97,23 +100,26 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
     snprintf(buffer, sizeof(buffer), "%d", pRad->beaconPeriod);
     swl_mapChar_add(interfaceConfigMap, "beacon_int", buffer);
 
-    if(pRad->operatingStandards & M_SWL_RADSTD_N) {
+    if(pRad->supportedStandards & M_SWL_RADSTD_N) {
         swl_mapChar_add(interfaceConfigMap, "ieee80211n", "1");
         memset(buffer, 0, sizeof(buffer));
         snprintf(buffer, sizeof(buffer), "%s", "[HT40+][LDPC][SHORT-GI-20][SHORT-GI-40][TX-STBC][RX-STBC1][MAX-AMSDU-7935][DSSS_CCK-40]");
         swl_mapChar_add(interfaceConfigMap, "ht_capab", buffer);
     }
-    if(pRad->operatingStandards & M_SWL_RADSTD_AC) {
+    if(pRad->supportedStandards & M_SWL_RADSTD_AC) {
         swl_mapChar_add(interfaceConfigMap, "ieee80211ac", "1");
 
-        if((pRad->operatingChannelBandwidth == SWL_BW_40MHZ) || (pRad->operatingChannelBandwidth == SWL_BW_20MHZ)) {
+        if((pRad->runningChannelBandwidth == SWL_BW_20MHZ) ||
+           (pRad->runningChannelBandwidth == SWL_BW_40MHZ)) {
+
             swl_mapChar_add(interfaceConfigMap, "vht_oper_chwidth", "0");
-        } else if(pRad->operatingChannelBandwidth == SWL_BW_80MHZ) {
+
+        } else if(pRad->runningChannelBandwidth == SWL_BW_80MHZ) {
             swl_mapChar_add(interfaceConfigMap, "vht_oper_chwidth", "1");
 
             swl_chanspec_t chanspec = {
                 .channel = pRad->channel,
-                .bandwidth = pRad->operatingChannelBandwidth,
+                .bandwidth = pRad->runningChannelBandwidth,
                 .band = pRad->operatingFrequencyBand
             };
 
