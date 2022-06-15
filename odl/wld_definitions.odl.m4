@@ -2542,9 +2542,7 @@ define rrm_t{
 		 * address, which is associated with the IP interface and is
 		 * modeled via the Ethernet.Link.{i}.MACAddress parameter. </p>
 		 */
-		%persistent string MACAddress{
-			on action write call wld_ssid_setMacAddress_pwf;
-		}
+		%persistent string MACAddress;
 		/**
 		 *  <p> The current service set identifier in use by the
 		 *  connection. The SSID is an identifier that is attached to
@@ -2553,7 +2551,6 @@ define rrm_t{
 		 */
 		%persistent string SSID{
 			on action validate call wld_ssid_validateSSID_pwf;
-			on action write call wld_ssid_setSSID_pwf;
 			default "SSID_NOT_SET";
 		}
 
@@ -2727,7 +2724,6 @@ define rrm_t{
 		 * Enables or disables the SSID entry.  */
 		%persistent bool Enable{
 			default false;
-			on action write call wld_ssid_setEnable_pwf;
 		}
 	} /* object SSID */
 	
@@ -5344,6 +5340,18 @@ define rrm_t{
 		void EndPoint_debug();
 	} /* object EndPoint */
 }
+}
+
+%populate {
+	on event "dm:object-changed" call wld_ssid_setSSID_ehf
+		filter 'path matches "WiFi\.SSID\.[a-zA-Z0-9_-]\." && 
+				contains("parameters.SSID")';
+	on event "dm:object-changed" call wld_ssid_setEnable_ehf
+		filter 'path matches "WiFi\.SSID\.[a-zA-Z0-9_-]\." && 
+				contains("parameters.Enable")';
+	on event "dm:object-changed" call wifi_ssid_setMacAddress_ehf
+		filter 'path matches "WiFi\.SSID\.[a-zA-Z0-9_-]\." && 
+				contains("parameters.MACAddress")';
 }
 
 /** @location sah_lib_wld /wld.odl */
