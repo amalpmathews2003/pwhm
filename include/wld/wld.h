@@ -338,11 +338,6 @@ typedef enum {
 } wld_rad_bwSelectMode_e;
 
 extern const char* Rad_SupCExt[];
-enum {
-    REXT_AUTO,
-    REXT_ABOVE_CC,
-    REXT_BELOW_CC
-};
 
 extern const char* Rad_SupGI[];
 enum {
@@ -1364,7 +1359,7 @@ struct WLD_RADIO {
     bool obssCoexistenceEnabled;                            /* Enable the coexistence Bandwidth */
     bool obssCoexistenceActive;                             /* Obss coexistence activated */
     uint32_t operatingClass;
-    int extensionChannel;
+    wld_channel_extensionPos_e extensionChannel;
     int guardInterval;
     int MCS;                                    /* Modulation Coding Scheme index */
     int8_t transmitPowerSupported[64];          /* Steps that can be set */

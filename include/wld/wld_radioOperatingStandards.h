@@ -70,4 +70,16 @@
 
 void wld_rad_update_operating_standard(T_Radio* pRad);
 
+/*
+ * @brief: checks wither a specific radio standard is enabled
+ * in the user's operating standards selection
+ *
+ * @param pRad pointer to radio context
+ * @param radStd radio standard to be checked
+ *
+ * @return true if radio standard is enabled
+ *         false otherwise
+ */
+bool wld_rad_checkEnabledRadStd(T_Radio* pRad, swl_radStd_e radStd);
+
 #endif /* __WLD_RADIOOPERATINGSTANDARDS_H__ */

@@ -68,6 +68,21 @@
 #include "swl/swl_chanspec.h"
 #include "swl/swl_time.h"
 
+typedef enum {
+    WLD_CHANNEL_EXTENTION_POS_AUTO,
+    WLD_CHANNEL_EXTENTION_POS_ABOVE,
+    WLD_CHANNEL_EXTENTION_POS_BELOW,
+    WLD_CHANNEL_EXTENTION_POS_NONE,
+    WLD_CHANNEL_EXTENTION_POS_MAX,
+} wld_channel_extensionPos_e;
+
+/**
+ * Obsolete channel extension position definitions, please use enum
+ */
+#define REXT_AUTO WLD_CHANNEL_EXTENTION_POS_AUTO
+#define REXT_ABOVE_CC WLD_CHANNEL_EXTENTION_POS_ABOVE
+#define REXT_BELOW_CC WLD_CHANNEL_EXTENTION_POS_BELOW
+
 /**
  * Obsolete radio bandwidth definitions, please use SWL notation
  */

@@ -164,6 +164,8 @@ bool wld_rad_hasWeatherChannels(T_Radio* pRad);
 bool wld_rad_hasChannel(T_Radio* pRad, int chan);
 void do_updateOperatingChannelBandwidth5GHz(T_Radio* pRad);
 char* getChannelsInUseStr(T_Radio* pRad);
+bool wld_rad_hasChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW);
+wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad);
 
 bool wld_rad_hasEnabledEp(T_Radio* pRad);
 bool wld_rad_hasConnectedEp(T_Radio* pRad);

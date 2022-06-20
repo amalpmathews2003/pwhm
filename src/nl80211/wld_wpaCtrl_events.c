@@ -225,12 +225,30 @@ static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fBtmReplyCb, &mac, replyCode);
 }
 
+SWL_TABLE(sChWidthDescMaps,
+          ARR(char* chWidthDesc; swl_bandwidth_e swlBw; ),
+          ARR(swl_type_charPtr, swl_type_int32, ),
+          ARR({"20 MHz (no HT)", SWL_BW_20MHZ},
+              {"20 MHz", SWL_BW_20MHZ},
+              {"40 MHz", SWL_BW_40MHZ},
+              {"80 MHz", SWL_BW_80MHZ},
+              {"80+80 MHz", SWL_BW_160MHZ},
+              {"160 MHz", SWL_BW_160MHZ},
+              ));
+
 static void s_chanSwitchEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: CTRL-EVENT-CHANNEL-SWITCH freq=2427 ht_enabled=0 ch_offset=0 ch_width=20 MHz (no HT) cf1=2427 cf2=0 dfs=0
     swl_chanspec_t chanSpec;
 
-    uint32_t centralFreq = wld_wpaCtrl_getValueInt(params, "cf1");
-    swl_chanspec_channelFromMHz(&chanSpec, centralFreq);
+    uint32_t ctrlFreq = wld_wpaCtrl_getValueInt(params, "freq");
+    swl_rc_ne rc = swl_chanspec_channelFromMHz(&chanSpec, ctrlFreq);
+    ASSERT_FALSE(rc < SWL_RC_OK, , ME, "fail to get chanspec for freq(%d)", ctrlFreq);
+    char chWidthStr[64] = {0};
+    wld_wpaCtrl_getValueStr(params, "ch_width", chWidthStr, sizeof(chWidthStr));
+    swl_bandwidth_e* pBwEnu = (swl_bandwidth_e*) swl_table_getMatchingValue(&sChWidthDescMaps, 1, 0, chWidthStr);
+    if(pBwEnu) {
+        chanSpec.bandwidth = *pBwEnu;
+    }
 
     SAH_TRACEZ_INFO(ME, "%s: channel=%d width=%d band=%d", pInterface->name, chanSpec.channel,
                     chanSpec.bandwidth, chanSpec.band);

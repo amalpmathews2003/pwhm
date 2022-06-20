@@ -220,3 +220,9 @@ void wld_rad_update_operating_standard(T_Radio* pRad) {
     SAH_TRACEZ_OUT(ME);
 }
 
+bool wld_rad_checkEnabledRadStd(T_Radio* pRad, swl_radStd_e radStd) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    return ((SWL_BIT_IS_SET(pRad->operatingStandards, radStd)) ||
+            ((pRad->operatingStandards == M_SWL_RADSTD_AUTO) && (SWL_BIT_IS_SET(pRad->supportedStandards, radStd))));
+}
+

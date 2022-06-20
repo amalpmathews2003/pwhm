@@ -922,6 +922,7 @@ define rrm_t{
 		*/
 		%persistent uint32 Channel = 6 {
 			on action validate call check_range { min = 1, max = 255 };
+			on action validate call wld_rad_validateChannel_pvf;
 			on action write call wld_rad_setChannel_pwf;
 		}
 

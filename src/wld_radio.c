@@ -278,6 +278,24 @@ amxd_status_t _getSupportedFrequencyBands(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
+amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
+                                           amxd_param_t* param,
+                                           amxd_action_t reason _UNUSED,
+                                           const amxc_var_t* const args,
+                                           amxc_var_t* const retval _UNUSED,
+                                           void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    T_Radio* pRad = (T_Radio*) object->priv;
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    uint32_t currentValue = amxc_var_dyncast(uint32_t, &param->value);
+    uint32_t newValue = amxc_var_dyncast(uint32_t, args);
+    if((currentValue == newValue) || (wld_rad_hasChannel(pRad, newValue))) {
+        return amxd_status_ok;
+    }
+    SAH_TRACEZ_ERROR(ME, "%s: invalid channel %d", pRad->Name, newValue);
+    return amxd_status_invalid_value;
+}
+
 amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
                                       amxd_param_t* parameter _UNUSED,
                                       amxd_action_t reason _UNUSED,
@@ -2189,6 +2207,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             wld_rad_chan_update_model(pR);
             wld_rad_updateOperatingClass(pR);
         }
+        wld_rad_get_update_running_bandwidth(pR);
         /* 'AutoChannelSupported' Indicates whether automatic
          *  channel selection is supported by this  radio. IF false,
          *  then AutoChannelEnable MUST be FALSE! */
@@ -3565,6 +3584,28 @@ bool wld_rad_hasChannel(T_Radio* pRad, int chan) {
         }
     }
     return FALSE;
+}
+
+bool wld_rad_hasChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    return (swl_chanspec_bwToInt(pRad->runningChannelBandwidth) >= swl_chanspec_bwToInt(chW));
+}
+
+wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad) {
+    ASSERTI_TRUE(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_40MHZ), WLD_CHANNEL_EXTENTION_POS_NONE, ME, "not supported");
+    if(pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_2_4GHZ) {
+        if((pRad->channel / 4) % 2) {
+            return WLD_CHANNEL_EXTENTION_POS_ABOVE;
+        }
+        return WLD_CHANNEL_EXTENTION_POS_BELOW;
+    }
+    if(pRad->extensionChannel == WLD_CHANNEL_EXTENTION_POS_AUTO) {
+        if(pRad->channel < 7) {
+            return WLD_CHANNEL_EXTENTION_POS_ABOVE;
+        }
+        return WLD_CHANNEL_EXTENTION_POS_BELOW;
+    }
+    return pRad->extensionChannel;
 }
 
 bool wld_rad_hasEnabledEp(T_Radio* pRad) {
