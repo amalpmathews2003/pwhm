@@ -82,6 +82,7 @@ int wld_ad_remove_assocdev_from_bridge(T_AccessPoint* pAP, T_AssociatedDevice* p
 
 T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress);
 T_AssociatedDevice* wld_vap_find_asociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress);
+T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress);
 
 void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index);
 bool wld_ad_has_far_station(T_AccessPoint* pAP, int threshold);

@@ -96,7 +96,6 @@ amxd_status_t _AccessPoint_CommitAccessPoint(amxd_object_t* object, amxd_functio
 void wld_destroy_associatedDevice(T_AccessPoint* pAP, int index);
 T_AssociatedDevice* wld_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t* MacAddress);
 T_AssociatedDevice* wld_vap_get_existing_station(T_AccessPoint* pAP, swl_macBin_t* macAddress);
-T_AssociatedDevice* wld_vap_station_move_to_end_of_list(T_AccessPoint* pAP, swl_macBin_t* macAddress);
 bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP);
 bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid, int len);
 

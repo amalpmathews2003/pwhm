@@ -198,7 +198,7 @@ void wld_ad_init_oui(wld_assocDev_capabilities_t* caps) {
     ASSERTS_NOT_NULL(caps, , ME, "NULL");
     size_t i = 0;
     for(i = 0; i < WLD_MAX_OUI_NUM; i++) {
-        memset(&caps->vendorOUI.oui[i], 0, sizeof(uint8_t) * OUI_BYTE_LEN);
+        memset(&caps->vendorOUI.oui[i], 0, sizeof(uint8_t) * SWL_OUI_BYTE_LEN);
     }
     caps->vendorOUI.count = 0;
 }
@@ -206,8 +206,7 @@ void wld_ad_init_oui(wld_assocDev_capabilities_t* caps) {
 /* create T_AssociatedDevice and populate MACAddress and Name fields */
 T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
     T_AssociatedDevice* pAD;
-
-    SAH_TRACEZ_IN(ME);
+    SAH_TRACEZ_INFO(ME, "%s: create sta " SWL_MAC_FMT, pAP->name, SWL_MAC_ARG(macAddress->bMac));
 
     if(pAP->AssociatedDeviceNumberOfEntries >= MAXNROF_STAENTRY) {
         SAH_TRACEZ_ERROR(ME, "Maximum number of associated devices reached! (%d)", MAXNROF_STAENTRY);
@@ -233,7 +232,7 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
     pAP->AssociatedDevice[pAP->AssociatedDeviceNumberOfEntries] = pAD;
     pAP->AssociatedDeviceNumberOfEntries++;
     pAD->latestStateChangeTime = swl_time_getRealSec();
-    pAD->associationTime = time(NULL);
+    pAD->associationTime = swl_time_getMonoSec();
     pAD->MaxDownlinkRateReached = 0;
     pAD->MaxUplinkRateReached = 0;
     pAD->minSignalStrength = 0;
@@ -255,7 +254,6 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
 
     wld_apRssiMon_createStaHistory(pAD, pAP->rssiEventing.historyLen);
 
-    SAH_TRACEZ_OUT(ME);
     return pAD;
 }
 
@@ -321,43 +319,12 @@ T_AssociatedDevice* wld_vap_find_asociatedDevice(T_AccessPoint* pAP, swl_macBin_
     return NULL;
 }
 
-/* Move the Station with given MAC to the end of T_AccessPoint.AssociatedDevice[] */
-T_AssociatedDevice* wld_vap_station_move_to_end_of_list(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
-    int i;
-    T_AssociatedDevice* pAD;
-    int entryWithMatchingMac = -1;
-    T_AssociatedDevice* stationWithMatchingMac = NULL;
-
-    SAH_TRACEZ_IN(ME);
-
-    for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
-        pAD = pAP->AssociatedDevice[i];
-        if(!pAD) {
-            SAH_TRACEZ_ERROR(ME, "AssociatedDevice[%d]==0!", i);
-            SAH_TRACEZ_OUT(ME);
-            return NULL;
-        }
-
-        if(!memcmp(macAddress->bMac, pAD->MACAddress, ETHER_ADDR_LEN)) {
-            entryWithMatchingMac = i;
-            stationWithMatchingMac = pAD;
-            break;
-        }
+T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
+    if(pAD != NULL) {
+        return pAD;
     }
-
-    if(entryWithMatchingMac < 0) {
-        SAH_TRACEZ_INFO(ME, "no matching mac found!");
-        SAH_TRACEZ_OUT(ME);
-        return NULL;
-    }
-
-    for(i = entryWithMatchingMac; i < (pAP->AssociatedDeviceNumberOfEntries - 1); i++) {
-        pAP->AssociatedDevice[i] = pAP->AssociatedDevice[i + 1];
-    }
-    pAP->AssociatedDevice[pAP->AssociatedDeviceNumberOfEntries - 1] = stationWithMatchingMac;
-
-    SAH_TRACEZ_OUT(ME);
-    return stationWithMatchingMac;
+    return wld_ad_create_associatedDevice(pAP, macAddress);
 }
 
 static void wld_update_station_stats(T_AccessPoint* pAP) {
@@ -721,7 +688,7 @@ void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     //kick from all other AP's
     wld_ad_checkRoamSta(pAP, pAD);
 
-    time(&pAD->associationTime);
+    pAD->associationTime = swl_time_getMonoSec();
     wld_vap_sync_assoclist(pAP);
 }
 
@@ -744,7 +711,7 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         }
         log->dcTime = swl_time_getMonoSec();
     }
-
+    pAD->disassociationTime = swl_time_getMonoSec();
     pAD->AuthenticationState = 0;
     pAD->Active = 0;
     pAD->Inactive = 0;
@@ -847,21 +814,12 @@ amxd_status_t _doAssociationCountReset(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
-static void s_getOUIValue(amxc_string_t* output, wld_sta_vendorOUI_t* vendorOui) {
+static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
     ASSERTI_TRUE(vendorOui->count != 0, , ME, "No OUI Vendor");
-    int i;
-    size_t currentLength = 0;
-    size_t newLength = 0;
-    for(i = 0; i < vendorOui->count && i < WLD_MAX_OUI_NUM; i++) {
-        newLength = amxc_string_appendf(output, "%s%02X:%02X:%02X",
-                                        (amxc_string_is_empty(output) ? "" : ","),
-                                        vendorOui->oui[i][0], vendorOui->oui[i][1], vendorOui->oui[i][2]);
-        if(newLength == currentLength) {
-            SAH_TRACEZ_ERROR(ME, "length %d stays for '%s'", (int) currentLength, output->buffer);
-            return;
-        }
-        currentLength = newLength;
-    }
+    char buffer[SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM];
+    memset(buffer, 0, sizeof(buffer));
+    swl_typeOui_arrayToChar(buffer, SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM, vendorOui->oui, vendorOui->count);
+    amxc_string_set(output, buffer);
 }
 
 void wld_ad_syncCapabilities(amxd_object_t* object, wld_assocDev_capabilities_t* caps) {

@@ -71,6 +71,8 @@
 #include "wld/wld_radio.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
+
+#include "wifiGen_staCapHandler.h"
 #define ME "genEvt"
 
 static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
@@ -150,7 +152,7 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAdd
 
     SAH_TRACEZ_INFO(ME, "%s: connecting station "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
 
-    T_AssociatedDevice* pAD = wld_vap_station_move_to_end_of_list(pAP, macAddress);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
     if(pAD == NULL) {
         pAD = wld_create_associatedDevice(pAP, macAddress);
         ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
@@ -168,7 +170,7 @@ static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* mac
 
     SAH_TRACEZ_INFO(ME, "%s: disconnecting station "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
 
-    T_AssociatedDevice* pAD = wld_vap_station_move_to_end_of_list(pAP, macAddress);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
 
     wld_ad_add_disconnection(pAP, pAD);
@@ -195,7 +197,17 @@ static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t
         swl_timeReal_t timestamp = swl_time_getRealSec();
         wld_vap_assocTableStruct_t tuple = {mac, data, timestamp, stype};
         swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
-        SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(mac.bMac));
+        SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "SWL_MAC_FMT, pAP->alias,
+                        SWL_MAC_ARG(mac.bMac));
+
+
+        T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &mac);
+        ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(mac.bMac));
+
+
+        wld_ad_add_connection_try(pAP, pAD);
+
+        wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, data);
     }
 }
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {

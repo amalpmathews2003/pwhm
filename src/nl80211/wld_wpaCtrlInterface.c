@@ -218,7 +218,7 @@ static void s_readCtrl(int fd, void* priv _UNUSED) {
     const char* srvPath = s_getConnSrvPath(pConn);
     SAH_TRACEZ_INFO(ME, "received data(%s) from (%s)", msgData, srvPath);
     ASSERTS_NOT_NULL(pConn, , ME, "NULL");
-    wld_wpaCtrl_processMsg(pConn->pInterface, msgData);
+    wld_wpaCtrl_processMsg(pConn->pInterface, msgData, msgDataLen);
     SAH_TRACEZ_OUT(ME);
 }
 

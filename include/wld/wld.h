@@ -71,6 +71,7 @@
 #include <swl/swl_radioStandards.h>
 #include <swl/swl_time.h>
 #include <swl/swl_time_spec.h>
+#include <swl/swl_oui.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -528,8 +529,6 @@ enum {
 };
 
 #define WLD_MAX_OUI_NUM     6
-#define OUI_BYTE_LEN        3
-#define OUI_STR_LEN         9
 
 extern const char* cstr_AP_EncryptionMode[];
 typedef enum {
@@ -802,11 +801,6 @@ typedef enum {
 #define M_HE_CAP_SU_AND_MU_BFE  (1 << HE_CAPI_SU_AND_MU_BFE)
 #define M_HE_CAP_MU_BFR         (1 << HE_CAPI_MU_BFR)
 
-typedef struct {
-    uint8_t count;
-    uint8_t oui[WLD_MAX_OUI_NUM][OUI_BYTE_LEN];
-} wld_sta_vendorOUI_t;
-
 #define WLD_MAX_MCS 128
 #define WLD_MAX_NSS 8
 
@@ -846,7 +840,7 @@ typedef struct {
     wld_sta_supMCS_adv_t supportedHeMCS;
     wld_sta_supMCS_adv_t supportedHe160MCS;
 
-    wld_sta_vendorOUI_t vendorOUI;
+    swl_oui_list_t vendorOUI;
 
     wld_securityMode_e currentSecurity;
     wld_enc_modes_e encryptMode;
@@ -905,6 +899,7 @@ typedef struct {
 typedef struct {
     char Name[32];                            /* Name tag.*/
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* MAC address of station */
+    amxd_object_t* object;
     char Radius_CUID[256];                    /* Chargeable-User-Identity attribute in Radius Access-Accept */
     int AuthenticationState;                  /* Associate STA or device authenticated? */
     long LastDataDownlinkRate;
@@ -976,7 +971,8 @@ typedef struct {
     int32_t rssiLevel;                    /* Latest RSSi event */
     swl_staCap_m capabilities;            /* Capabilities of the station */
     uint32_t connectionDuration;          /* duration of connexion (seconds) */
-    swl_timeReal_t associationTime;       /* Timestamp of the last time the sta associate, in real time */
+    swl_timeMono_t associationTime;       /* Timestamp of the last time the sta associate, in real time */
+    swl_timeMono_t disassociationTime;    /* Timestamp of the last time the sta disassociate, in real time */
     bool hadSecFailure;                   /* Number of security failures of this station */
     wld_sta_muMimoInfo_t staMuMimoInfo;
     wld_assocDev_history_t* staHistory;
@@ -1571,7 +1567,7 @@ typedef uint32_t wld_vendorIeFrame_m;
 
 typedef struct {
     amxc_llist_it_t it;
-    char oui[OUI_STR_LEN];           /* XX:XX:XX\0 string format */
+    char oui[SWL_OUI_STR_LEN];       /* XX:XX:XX\0 string format */
     char data[WLD_VENDORIE_T_DATA_SIZE];
     wld_vendorIeFrame_m frame_type;  /* Types of frame that sent vendor IE */
     amxd_object_t* object;

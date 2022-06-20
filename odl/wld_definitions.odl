@@ -3973,6 +3973,12 @@ define rrm_t{
 			read-only datetime AssociationTime;
 			
 			/**
+			 * Date and time in UTC when the device was disassociated.
+			 * @version 10.1
+			 */
+			read-only datetime DisassociationTime;
+			
+			/**
 			 * Current device's MultiUser MIMO assigned Group ID.
 			 * Group  IDs  1 to 62 are assigned to STAs for VHT MU-MIMO communication.
 			 * Group ID (0) indicates SU transmission.

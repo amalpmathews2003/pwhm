@@ -1483,7 +1483,7 @@ amxd_status_t _wld_ap_enableVendorIEs(amxd_object_t* object _UNUSED,
 }
 
 static bool isVendorIEValid(const char* oui, const char* data) {
-    if(!oui || (strlen(oui) != OUI_STR_LEN - 1)) {
+    if(!oui || (strlen(oui) != SWL_OUI_STR_LEN - 1)) {
         SAH_TRACEZ_ERROR(ME, "OUI is invalid (null or wrong length)");
         return false;
     }
@@ -1571,7 +1571,7 @@ amxd_status_t _wld_ap_setVendorIE_owf(amxd_object_t* instance_object) {
     ASSERT_TRUE(isVendorIEValid(oui, data), amxd_status_unknown_error, ME, "Input are invalid");
     frame_type = conv_strToMaskSep(frame_type_var, wld_vendorIe_frameType_str, VENDOR_IE_MAX, ',');
 
-    swl_str_copy(vendor_ie->oui, OUI_STR_LEN, oui);
+    swl_str_copy(vendor_ie->oui, SWL_OUI_STR_LEN, oui);
     swl_str_copy(vendor_ie->data, WLD_VENDORIE_T_DATA_SIZE, data);
     vendor_ie->frame_type = frame_type;
     pAP->pFA->mfn_wvap_add_vendor_ie(pAP, vendor_ie);
@@ -2257,49 +2257,38 @@ amxd_status_t __CommitAccessPoint(amxd_object_t* object _UNUSED,
 /* update the datamodel with the T_AccessPoint.AssociatedDevice[] */
 bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
     amxd_object_t* templateObject = NULL;
-    amxd_object_t* object = NULL;
-    amxd_object_t* child = NULL;
     int i;
     T_AssociatedDevice* pAD = NULL;
 
-    SAH_TRACEZ_IN(ME);
+
+    SAH_TRACEZ_INFO(ME, "%s: sync, there are %d devices", pAP->alias, pAP->AssociatedDeviceNumberOfEntries);
 
     templateObject = amxd_object_get(pAP->pBus, "AssociatedDevice");
     if(!templateObject) {
-        SAH_TRACEZ_ERROR(ME, "Could not get template: %p", templateObject);
-        SAH_TRACEZ_OUT(ME);
+        SAH_TRACEZ_ERROR(ME, "%s: Could not get template: %p", pAP->alias, templateObject);
         return false;
     }
 
-    SAH_TRACEZ_INFO(ME, "There are %d devices", pAP->AssociatedDeviceNumberOfEntries);
     int active = 0;
     for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
         pAD = pAP->AssociatedDevice[i];
-        if(!pAD) {
-            SAH_TRACEZ_ERROR(ME, "AssociatedDevice[%d]==null", i);
-            SAH_TRACEZ_OUT(ME);
-            return false;
-        }
+        ASSERT_NOT_NULL(pAD, false, ME, "%s: AssociatedDevice[%d]==null", pAP->alias, i);
 
-        object = NULL;
-        // Find matching object
-        amxd_object_for_each(child, it, templateObject) {
-            if((child != NULL) && (child->priv == pAD)) {
-                object = child;
-            }
-        }
 
         if(pAD->obsolete) {
-            if(object) {
+            if(pAD->object) {
                 amxc_var_t value;
                 amxc_var_init(&value);
-                amxd_param_get_value(amxd_object_get_param_def(object, "MACAddress"), &value);
-                const char* macStr = amxc_var_get_cstring_t(&value);
-                SAH_TRACEZ_INFO(ME, "removing object: %p, name=%s",
-                                object,
+                amxd_param_get_value(amxd_object_get_param_def(pAD->object, "MACAddress"), &value);
+                char* macStr = amxc_var_dyncast(cstring_t, &value);
+                SAH_TRACEZ_INFO(ME, "%s: removing object: %p, name=%s",
+                                pAP->alias,
+                                pAD->object,
                                 macStr);
-                amxd_object_delete(&object);
+                amxd_object_delete(&pAD->object);
                 amxc_var_clean(&value);
+                pAD->object = NULL;
+                free(macStr);
             } else {
                 SAH_TRACEZ_INFO(ME, "object for %s did not exist!", pAD->Name);
             }
@@ -2311,18 +2300,19 @@ bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
         }
 
 
-        if(!object) {
+
+        if(pAD->object == NULL) {
             SAH_TRACEZ_INFO(ME, "Creating template object for mac %s", pAD->Name);
-            amxd_object_new_instance(&object, templateObject, pAD->Name, 0, NULL);
-            if(!object) {
-                SAH_TRACEZ_ERROR(ME, "Could not create template object");
-                SAH_TRACEZ_OUT(ME);
+            amxd_status_t result = amxd_object_new_instance(&pAD->object, templateObject, NULL, 0, NULL);
+            if((result != amxd_status_ok) || (pAD->object == NULL)) {
+                SAH_TRACEZ_ERROR(ME, "%s: Could not create template object %u", pAP->alias, result);
                 return false;
             }
-            object->priv = (void*) pAD;
-            amxd_object_set_cstring_t(object, "MACAddress", pAD->Name);
+            pAD->object->priv = (void*) pAD;
+            amxd_object_set_cstring_t(pAD->object, "MACAddress", pAD->Name);
         }
 
+        amxd_object_t* object = pAD->object;
         amxd_object_set_cstring_t(object, "ChargeableUserId", pAD->Radius_CUID);
         amxd_object_set_bool(object, "AuthenticationState", pAD->AuthenticationState);
         amxd_object_set_int32_t(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
@@ -2394,7 +2384,8 @@ bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
         amxd_object_set_cstring_t(object, "Capabilities", buffer);
         amxd_object_set_uint32_t(object, "ConnectionDuration", pAD->connectionDuration);
         swl_time_objectParamSetReal(object, "LastStateChange", pAD->latestStateChangeTime);
-        swl_time_objectParamSetReal(object, "AssociationTime", pAD->associationTime);
+        swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
+        swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
         amxd_object_set_bool(object, "PowerSave", pAD->powerSave);
         amxd_object_set_cstring_t(object, "Mode", wld_ad_getMode(pAP, pAD));
         amxd_object_set_cstring_t(object, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
@@ -2417,7 +2408,7 @@ bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
 
     wld_rad_updateActiveDevices((T_Radio*) pAP->pRadio);
 
-    SAH_TRACEZ_OUT(ME);
+    SAH_TRACEZ_INFO(ME, "%s: done", pAP->alias);
     return true;
 }
 
@@ -2464,59 +2455,39 @@ T_AssociatedDevice* wld_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t
 
 /* clean up stations who failed authentication */
 bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
-    T_AssociatedDevice* pAD = NULL;
-    int AssociatedDeviceIdx;
-    T_AssociatedDevice* OldestNotAuthenticated = NULL;
-    int NotAuthenticatedCount = 0;
+    T_AssociatedDevice* oldestInactive = NULL;
+    uint32_t inactiveCount = 0;
+    SAH_TRACEZ_INFO(ME, "%s: clean", pAP->alias);
 
-    SAH_TRACEZ_IN(ME);
+    // Find ad that was dc's longest ago
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+        T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
+        ASSERT_NOT_NULL(pAD, false, ME, "%s: AssociatedDevice[%d]==0!", pAP->alias, i);
 
-
-    /* Allow two devices with Authenticationstate==false
-     * The first is one to keep around (to diagnose failed connection attempts)
-     * The second is necessary to allow a client to go through
-     * AuthenticationState==false => AuthenticationState==true when connecting */
-
-    for(AssociatedDeviceIdx = 0; AssociatedDeviceIdx < pAP->AssociatedDeviceNumberOfEntries; AssociatedDeviceIdx++) {
-        pAD = pAP->AssociatedDevice[AssociatedDeviceIdx];
-        if(!pAD) {
-            SAH_TRACEZ_ERROR(ME, "AssociatedDevice[%d]==0!", AssociatedDeviceIdx);
-            SAH_TRACEZ_OUT(ME);
-            return false;
-        }
-        if(pAD->obsolete) {
-            // don't count already obsoleted entries
+        if(pAD->obsolete || pAD->Active) {
             continue;
         }
-
-        if(!pAD->Active) {
-            if(pAP->secModeEnabled == APMSI_NONE) {
-                // If no security, any inactive station can be considered obsolete
-                pAD->obsolete = 1;
-            } else {
-                if(NotAuthenticatedCount == 0) {
-                    OldestNotAuthenticated = pAD;
-                }
-                NotAuthenticatedCount++;
-            }
+        inactiveCount++;
+        if((oldestInactive == NULL)
+           || (oldestInactive->disassociationTime > pAD->disassociationTime)) {
+            oldestInactive = pAD;
         }
-
     }
 
-    if(NotAuthenticatedCount > (NR_OF_STICKY_UNAUTHORIZED_STATIONS)) {
-        SAH_TRACEZ_INFO(ME, "Marking oldest failed-auth entry (%s) out of %d obsolete",
-                        OldestNotAuthenticated->Name,
-                        NotAuthenticatedCount);
-        OldestNotAuthenticated->obsolete = 1;
+    if(inactiveCount > (NR_OF_STICKY_UNAUTHORIZED_STATIONS)) {
+        SAH_TRACEZ_INFO(ME, " * Marking oldest failed-auth entry (%s) out of %d obsolete",
+                        oldestInactive->Name,
+                        inactiveCount);
+        oldestInactive->obsolete = 1;
     }
 
-    SAH_TRACEZ_OUT(ME);
+    SAH_TRACEZ_INFO(ME, "%s: done clean", pAP->alias);
     return true;
 }
 
 bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid, int len _UNUSED) {
 
-    T_AssociatedDevice* pAD = wld_vap_station_move_to_end_of_list(pAP, mac);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, mac);
     ASSERT_NOT_NULL(pAD, false, ME, "NULL");
 
     memset(pAD->Radius_CUID, 0, sizeof(pAD->Radius_CUID));

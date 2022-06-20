@@ -59,15 +59,13 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#ifndef SRC_INCLUDE_PRIV_PLUGIN_WIFIGEN_STACAPHANDLER_H_
+#define SRC_INCLUDE_PRIV_PLUGIN_WIFIGEN_STACAPHANDLER_H_
 
-#ifndef __WLD_WPA_CTRL_API_H__
-#define __WLD_WPA_CTRL_API_H__
+#include "wld/wld.h"
+#include "swl/swl_common.h"
 
-#include "wld_wpaCtrlInterface.h"
+void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* data);
 
-bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd);
-bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len);
-bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse);
-void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
 
-#endif /* __WLD_WPA_CTRL_API_H__ */
+#endif /* SRC_INCLUDE_PRIV_PLUGIN_WIFIGEN_STACAPHANDLER_H_ */
