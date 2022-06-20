@@ -206,7 +206,6 @@ DEF_TRAP_int(T_Radio, mfn_wrad_bgdfs_start);
 DEF_TRAP(T_Radio, mfn_wrad_bgdfs_stop);
 DEF_TRAP(T_Radio, mfn_wrad_delayApUpDone);
 
-DEF_TRAP(T_AccessPoint, mfn_wvap_get_station_stats);
 DEF_TRAP(T_AccessPoint, mfn_wvap_update_rssi_stats);
 DEF_TRAP(T_AccessPoint, mfn_wvap_status);
 DEF_TRAP(T_AccessPoint, mfn_wvap_fsm_state);
@@ -238,6 +237,10 @@ DEF_TRAP(T_AccessPoint, mfn_wvap_set_discovery_method);
 DEF_TRAP(T_EndPoint, mfn_wendpoint_multiap_enable);
 DEF_TRAP(T_EndPoint, mfn_wendpoint_set_mac_address);
 
+static swl_rc_ne TRAP_mfn_wvap_get_station_stats(T_AccessPoint* ap) {
+    _UNUSED_(ap);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
 
 static int TRAP_mfn_wrad_bgdfs_start_ext(T_Radio* rad, wld_startBgdfsArgs_t* args) {
     _UNUSED_(rad);

@@ -351,7 +351,7 @@ static void wld_update_station_stats(T_AccessPoint* pAP) {
     }
 }
 
-static void wld_station_stats_addValues(T_AccessPoint* pAP, int ret, uint64_t call_id _UNUSED, amxc_var_t* retval _UNUSED) {
+static void s_addStaStatsValues(T_AccessPoint* pAP, int ret, amxc_var_t* retval) {
     T_Radio* pRad = pAP->pRadio;
     if(!pAP->enable || !pRad->enable || (ret < 0)) {
         //remove all stations if AP or Radio is disabled or station stats returns error
@@ -361,9 +361,28 @@ static void wld_station_stats_addValues(T_AccessPoint* pAP, int ret, uint64_t ca
     wld_update_station_stats(pAP);
 
     wld_vap_sync_assoclist(pAP);
+
+    amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
+
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+        T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
+        if((pAD == NULL) || (pAD->object == NULL)) {
+            SAH_TRACEZ_ERROR(ME, "%s: invalid sta %u", pAP->alias, i);
+            continue;
+        }
+
+        amxc_var_t tmpVar;
+        amxc_var_init(&tmpVar);
+        amxd_object_get_params(pAD->object, &tmpVar, amxd_dm_access_private);
+
+        amxc_var_add_new_amxc_htable_t(retval, &tmpVar.data.vm);
+
+        amxc_var_clean(&tmpVar);
+    }
+
 }
 
-static void wld_station_stats_done_finish_fcall(T_AccessPoint* pAP, bool success) {
+static void s_staStatsDoneHandler(T_AccessPoint* pAP, bool success) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_EQUALS(pAP->stationsStatsState.call_id, 0, , ME, "%s no fcall", pAP->alias);
     ASSERT_TRUE(pAP->stationsStatsState.running, , ME, "%s no fcall", pAP->alias);
@@ -371,7 +390,12 @@ static void wld_station_stats_done_finish_fcall(T_AccessPoint* pAP, bool success
     amxc_var_t values;
     amxc_var_init(&values);
 
-    wld_station_stats_addValues(pAP, success, pAP->stationsStatsState.call_id, &values);
+    s_addStaStatsValues(pAP, success, &values);
+
+    amxd_function_deferred_done(pAP->stationsStatsState.call_id,
+                                success ? amxd_status_ok : amxd_status_unknown_error,
+                                NULL,
+                                &values);
 
     amxc_var_clean(&values);
     pAP->stationsStatsState.call_id = 0;
@@ -379,20 +403,30 @@ static void wld_station_stats_done_finish_fcall(T_AccessPoint* pAP, bool success
 
 void wld_station_stats_done(T_AccessPoint* pAP, bool success) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
-
     ASSERTS_TRUE(pAP->stationsStatsState.running, , ME, "Stations stats not on going");
 
     if(pAP->stationsStatsState.call_id != 0) {
-        wld_station_stats_done_finish_fcall(pAP, success);
+        s_staStatsDoneHandler(pAP, success);
+    }
+    if(pAP->stationsStatsState.timer != NULL) {
+        amxp_timer_delete(&pAP->stationsStatsState.timer);
     }
 
     pAP->stationsStatsState.running = false;
 }
 
-static void station_stats_timeout(amxp_timer_t* timer, void* userdata) {
-    T_AccessPoint* pAP = (T_AccessPoint*) userdata;
+static void s_staStatsTimeout(amxp_timer_t* timer _UNUSED, void* priv) {
+    T_AccessPoint* pAP = (T_AccessPoint*) priv;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
     wld_station_stats_done(pAP, false);
-    amxp_timer_delete(&timer);
+
+}
+
+static void s_staStatsCancel(uint64_t call_id _UNUSED, void* priv) {
+    T_AccessPoint* pAP = (T_AccessPoint*) priv;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    pAP->stationsStatsState.call_id = 0;
+    wld_station_stats_done(pAP, false);
 }
 
 amxd_status_t _getStationStats(amxd_object_t* obj_AP,
@@ -403,7 +437,6 @@ amxd_status_t _getStationStats(amxd_object_t* obj_AP,
     SAH_TRACEZ_IN(ME);
     /* Check our input data */
     T_AccessPoint* pAP = obj_AP->priv;
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
 
     if(!debugIsVapPointer(pAP)) {
         SAH_TRACEZ_OUT(ME);
@@ -413,24 +446,27 @@ amxd_status_t _getStationStats(amxd_object_t* obj_AP,
     SAH_TRACEZ_INFO(ME, "pAP = %p", pAP);
 
     if(pAP->stationsStatsState.running) {
-        SAH_TRACEZ_ERROR(ME, "A getStationStats is already running");
+        SAH_TRACEZ_ERROR(ME, "%s: getStationStats is already running", pAP->alias);
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
     }
 
-    int ret = pAP->pFA->mfn_wvap_get_station_stats(pAP);
+    swl_rc_ne ret = pAP->pFA->mfn_wvap_get_station_stats(pAP);
     SAH_TRACEZ_INFO(ME, "%s: sta stats %i", pAP->alias, ret);
-    if(ret == amxd_status_deferred) {
+    if(ret == SWL_RC_CONTINUE) {
         pAP->stationsStatsState.running = true;
-        pAP->stationsStatsState.call_id = call_id;
         amxp_timer_t* timer = NULL;
-        amxp_timer_new(&timer, station_stats_timeout, pAP);
+        amxp_timer_new(&timer, s_staStatsTimeout, pAP);
         amxp_timer_start(timer, STATIONS_STATS_TIMEOUT);
+
+        pAP->stationsStatsState.timer = timer;
+
+        amxd_function_defer(func, &pAP->stationsStatsState.call_id, retval, s_staStatsCancel, pAP);
         SAH_TRACEZ_OUT(ME);
         return amxd_status_deferred;
     }
 
-    wld_station_stats_addValues(pAP, ret, call_id, retval);
+    s_addStaStatsValues(pAP, ret, retval);
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -677,7 +713,8 @@ void wld_ad_checkRoamSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     (void) pAP;
     if(!pAD->Active) {
-        SAH_TRACEZ_INFO(ME, "%s : Try %s", pAP->alias, pAD->Name);
+        SAH_TRACEZ_WARNING(ME, "%s: assoc sta %s", pAP->alias, pAD->Name);
+
         pAD->Active = 1;
         pAD->AuthenticationState = 0;
         pAD->Inactive = 0;
@@ -711,19 +748,27 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         }
         log->dcTime = swl_time_getMonoSec();
     }
-    pAD->disassociationTime = swl_time_getMonoSec();
+    if(pAD->Active) {
+        uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
+        SAH_TRACEZ_WARNING(ME, "%s: disassoc sta %s - assoc @ %s - active %u sec - SNR %i",
+                           pAP->alias, pAD->Name, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
+                           timeOnline, pAD->SignalNoiseRatio);
+        pAD->latestStateChangeTime = swl_time_getRealSec();
+        pAD->disassociationTime = swl_time_getMonoSec();
+
+        wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
+        if(log == NULL) {
+            log = swl_unLiList_allocElement(&pAP->staDcList.list);
+        }
+        log->dcTime = swl_time_getMonoSec();
+        memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
+    }
     pAD->AuthenticationState = 0;
     pAD->Active = 0;
     pAD->Inactive = 0;
-    pAD->latestStateChangeTime = swl_time_getRealSec();
     wld_ad_remove_assocdev_from_bridge(pAP, pAD);
 
-    wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
-    if(log == NULL) {
-        log = swl_unLiList_allocElement(&pAP->staDcList.list);
-    }
-    log->dcTime = swl_time_getMonoSec();
-    memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
+
 }
 
 /**
@@ -733,7 +778,9 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
  */
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     if(!pAD->AuthenticationState) {
-        SAH_TRACEZ_INFO(ME, "%s : Success %s", pAP->alias, pAD->Name);
+        SAH_TRACEZ_WARNING(ME, "%s: auth sta %s",
+                           pAP->alias, pAD->Name);
+
         pAD->AuthenticationState = 1;
         pAD->Active = 1;
         pAD->Inactive = 0;

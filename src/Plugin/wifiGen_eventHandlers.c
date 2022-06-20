@@ -161,6 +161,7 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAdd
 
     wld_ad_add_connection_try(pAP, pAD);
     wld_ad_add_connection_success(pAP, pAD);
+    wld_vap_sync_assoclist(pAP);
 }
 
 static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {

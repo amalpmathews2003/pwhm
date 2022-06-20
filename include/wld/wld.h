@@ -1186,6 +1186,7 @@ typedef struct {
 typedef struct {
     bool running;
     uint64_t call_id;
+    amxp_timer_t* timer;
 } wld_fcallState_t;
 
 typedef struct {
@@ -1996,7 +1997,7 @@ typedef int (APIENTRY* PFN_WRAD_DELAY_AP_UP_DONE)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WVAP_CREATE_HOOK)(T_AccessPoint* vap);
 typedef void (APIENTRY* PFN_WVAP_DESTROY_HOOK)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_VAP_STATUS)(T_AccessPoint* vap);
-typedef int (APIENTRY* PFN_WVAP_VAP_UPDATE_ADL)(T_AccessPoint* vap);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_VAP_UPDATE_ADL)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_VAP_ENABLE)(T_AccessPoint* vap, int enable, int set);
 typedef int (APIENTRY* PFN_WVAP_VAP_ENABLE_WMM)(T_AccessPoint* vap, int enable, int set);
 typedef int (APIENTRY* PFN_WVAP_VAP_ENABLE_UAPSD)(T_AccessPoint* vap, int enable, int set);
@@ -2131,7 +2132,10 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;                   /**< VAP constructor hook */
     PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;                 /**< VAP destructor hook */
     PFN_WVAP_VAP_STATUS mfn_wvap_status;                         /**< Get ReadOnly VAP states */
-    PFN_WVAP_VAP_UPDATE_ADL mfn_wvap_get_station_stats;          /**< Update list of associated devices */
+
+    /**< Update list of associated device statistics */
+    swl_rc_ne (* mfn_wvap_get_station_stats)(T_AccessPoint* pAP);
+
     PFN_WVAP_VAP_UPDATE_ADL mfn_wvap_update_rssi_stats;          /**< Update rssi of associated devices */
     PFN_WVAP_UPDATE_AP_STATS mfn_wvap_update_ap_stats;           /**< Update the stats counters of Radio or req SSID */
 
