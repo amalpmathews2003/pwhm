@@ -174,7 +174,7 @@ amxc_llist_t g_radios = { NULL, NULL };
     This function will update the read-only field based on the
     driver info.
  */
-amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* wifiRad,
                                      amxd_param_t* parameter _UNUSED,
                                      amxd_action_t reason _UNUSED,
                                      const amxc_var_t* const args _UNUSED,
@@ -182,33 +182,28 @@ amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* object _UNUSED,
                                      void* priv _UNUSED) {
 
     amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+
+    ASSERTS_EQUALS(amxd_object_get_type(wifiRad), amxd_object_instance, rv, ME, "TEMPLATE");
 
     rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    ASSERTS_EQUALS(rv, amxd_status_ok, rv, ME, "STATUS NOK");
 
     T_Radio* pR = (T_Radio*) wifiRad->priv;
     ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
+    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "INVALID");
 
     SAH_TRACEZ_IN(ME);
     bool flag = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set Enable %p %p %d", pR, wifiRad, flag);
 
-    if(pR && debugIsRadPointer(pR)) {
-        SAH_TRACEZ_INFO(ME, "1 - %s: %d --> %d", pR->Name, pR->enable, flag);
-        pR->pFA->mfn_wrad_enable(pR, flag, SET | DIRECT);   // Fix Bug 20729
+    SAH_TRACEZ_INFO(ME, "set Enable - %s: %d --> %d", pR->Name, pR->enable, flag);
+    pR->pFA->mfn_wrad_enable(pR, flag, SET | DIRECT);   // Fix Bug 20729
 
-        if(flag) {
-            wld_rad_doCommitIfUnblocked(pR);
-        }
+    if(flag) {
+        wld_rad_doCommitIfUnblocked(pR);
     } else {
-        rv = amxd_status_unknown_error;
+        wld_autoCommitMgr_notifyRadEdit(pR);
     }
+
 
     SAH_TRACEZ_OUT(ME);
     return rv;
