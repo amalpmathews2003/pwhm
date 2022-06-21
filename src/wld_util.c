@@ -1041,6 +1041,7 @@ bool isModeWPA3Personal(wld_securityMode_e mode) {
  * * APMSI_WEP128IV
  */
 wld_securityMode_e isValidWEPKey (const char* key) {
+    ASSERTS_NOT_NULL(key, false, ME, "NULL");
     int len = strlen(key);
     int i;
 
@@ -1134,6 +1135,7 @@ char* convHex_WEPKey(const char* key, char* out, int sizeout) {
  * Check for a correct PSK key.
  */
 bool isValidPSKKey(const char* key) {
+    ASSERTS_NOT_NULL(key, false, ME, "NULL");
     int len = strlen(key);
     int i;
     char* CapKey = NULL;
@@ -1155,6 +1157,7 @@ bool isValidPSKKey(const char* key) {
  * Check for \n and \r in KeyPassPhrase.
  */
 bool isSanitized (const char* pname) {
+    ASSERTS_NOT_NULL(pname, false, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "Checking KeyPassPhrase validity %s", pname);
     int i = 0;
     while(pname[i]) {
@@ -1170,9 +1173,9 @@ bool isSanitized (const char* pname) {
  * Check for a correct AES key.
  */
 bool isValidAESKey(const char* key, int maxLen) {
-    int len = 0;
+    ASSERTS_NOT_NULL(key, false, ME, "NULL");
     bool sanitized = isSanitized(key);
-    len = strlen(key);
+    int len = strlen(key);
     if(!sanitized) {
         return false;
     }
