@@ -293,12 +293,13 @@ amxd_status_t _wld_ssid_validateSSID_pwf(amxd_object_t* object _UNUSED,
                                          void* priv _UNUSED) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_status_invalid_value;
-    const char* current_value = amxc_var_constcast(cstring_t, &param->value);
-    ASSERT_NOT_NULL(current_value, status, ME, "NULL");
-    const char* new_value = amxc_var_constcast(cstring_t, args);
-    if(swl_str_matches(current_value, new_value) || isValidSSID(new_value)) {
+    const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    if(swl_str_matches(currentValue, newValue) || isValidSSID(newValue)) {
         status = amxd_status_ok;
     }
+    free(newValue);
     SAH_TRACEZ_OUT(ME);
     return status;
 }

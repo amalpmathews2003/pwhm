@@ -1202,18 +1202,12 @@ bool isValidAESKey(const char* key, int maxLen) {
  * Check for a correct SSID name.
  */
 bool isValidSSID(const char* ssid) {
-    int i = 0;
-
     // ssid may not be empty!
-    ASSERTI_TRUE(ssid && ssid[0], false, ME, "empty");
+    ASSERTI_STR(ssid, false, ME, "empty");
 
     // Smaller then 33 chars?
-    i = strlen(ssid);
-    if(i > 32) {
-        return false;
-    }
-
-    return true;
+    int i = strlen(ssid);
+    return (i <= 32);
 }
 
 /**
