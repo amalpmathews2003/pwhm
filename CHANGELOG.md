@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.2 - 2022-06-22(13:06:03 +0000)
+
+### Other
+
+- - [amx] SSID can't be modified when having a numrical value
+
 ## Release v1.4.1 - 2022-06-22(12:13:58 +0000)
 
 ### Other
