@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.3 - 2022-06-23(08:40:52 +0000)
+
+### Other
+
+- - AutoCommitMgr not triggered on enable 0
+
 ## Release v1.4.2 - 2022-06-22(13:06:03 +0000)
 
 ### Other
