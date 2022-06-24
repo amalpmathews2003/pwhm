@@ -285,7 +285,7 @@ amxd_status_t _SSID_getSSIDStats(amxd_object_t* object,
  * check the SSID object block on wrong input.
  * Currently only SSID is checked. (All other are accept by default).
  */
-amxd_status_t _wld_ssid_validateSSID_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_ssid_validateSSID_pvf(amxd_object_t* object _UNUSED,
                                          amxd_param_t* param,
                                          amxd_action_t reason _UNUSED,
                                          const amxc_var_t* const args,
@@ -296,25 +296,39 @@ amxd_status_t _wld_ssid_validateSSID_pwf(amxd_object_t* object _UNUSED,
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
     if(swl_str_matches(currentValue, newValue) || isValidSSID(newValue)) {
         status = amxd_status_ok;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "invalid SSID(%s)", newValue);
     }
     free(newValue);
     SAH_TRACEZ_OUT(ME);
     return status;
 }
 
-void _wld_ssid_setSSID_ehf(const char* const event_name _UNUSED,
-                           const amxc_var_t* const event_data,
-                           void* const priv _UNUSED) {
-    amxd_object_t* wifiSsid = amxd_dm_signal_get_object(get_wld_plugin_dm(), event_data);
-    SAH_TRACEZ_IN(ME);
-    T_SSID* pSSID = (T_SSID*) wifiSsid->priv;
-    ASSERTW_NOT_NULL(pSSID, , ME, "No SSID Ctx");
-    ASSERT_TRUE(debugIsSsidPointer(pSSID), , ME, "Invalid SSID Ctx");
+amxd_status_t _wld_ssid_setSSID_pwf(amxd_object_t* object _UNUSED,
+                                    amxd_param_t* parameter _UNUSED,
+                                    amxd_action_t reason _UNUSED,
+                                    const amxc_var_t* const args _UNUSED,
+                                    amxc_var_t* const retval _UNUSED,
+                                    void* priv _UNUSED) {
 
-    const char* SSID = GETP_CHAR(event_data, "parameters.SSID.to");
-    ASSERT_NOT_NULL(SSID, , ME, "NULL");
+    amxd_status_t rv = amxd_status_ok;
+    if(amxd_object_get_type(object) != amxd_object_instance) {
+        return rv;
+    }
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    if(rv != amxd_status_ok) {
+        return rv;
+    }
+    SAH_TRACEZ_IN(ME);
+    T_SSID* pSSID = (T_SSID*) object->priv;
+    ASSERT_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
+    ASSERT_TRUE(debugIsSsidPointer(pSSID), amxd_status_unknown_error, ME, "Invalid SSID Ctx");
+
+    char* SSID = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(SSID, amxd_status_invalid_value, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "set SSID %s", SSID);
 
     T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
@@ -323,9 +337,11 @@ void _wld_ssid_setSSID_ehf(const char* const event_name _UNUSED,
         pAP->pFA->mfn_wvap_ssid(pAP, (char*) SSID, strlen(SSID), SET);
         wld_autoCommitMgr_notifyVapEdit(pAP);
     }
+    free(SSID);
     //Setting endpoint ssid should only be done internally => no change necessary here.
 
     SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
 }
 
 void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
@@ -388,6 +404,18 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         }
 
         amxd_object_set_cstring_t(object, "BSSID", TBuf);
+        amxd_object_set_cstring_t(object, "Name", pS->Name);
+        TBuf[0] = 0;
+        int32_t ifIndex = 0;
+        if(pAP != NULL) {
+            swl_str_copy(TBuf, sizeof(TBuf), pAP->alias);
+            ifIndex = pAP->index;
+        } else if(pEP != NULL) {
+            swl_str_copy(TBuf, sizeof(TBuf), pEP->alias);
+            ifIndex = pEP->index;
+        }
+        amxd_object_set_cstring_t(pS->pBus, "Alias", TBuf);
+        amxd_object_set_int32_t(pS->pBus, "Index", ifIndex);
 
         if(!(set & NO_COMMIT)) {
             if(!(object)) {
@@ -441,39 +469,44 @@ amxd_status_t _SSID_CommitSSID(amxd_object_t* object _UNUSED,
  *
  * Success or failure of plugin call is ignored.
  */
-void _wifi_ssid_setMacAddress_ehf(const char* const event_name _UNUSED,
-                                  const amxc_var_t* const event_data,
-                                  void* const priv _UNUSED) {
-
-    amxd_object_t* wifiSsid = amxd_dm_signal_get_object(get_wld_plugin_dm(), event_data);
-    T_SSID* pSSID = (T_SSID*) wifiSsid->priv;
+amxd_status_t _wld_ssid_setMacAddress_pwf(amxd_object_t* object _UNUSED,
+                                          amxd_param_t* parameter _UNUSED,
+                                          amxd_action_t reason _UNUSED,
+                                          const amxc_var_t* const args _UNUSED,
+                                          amxc_var_t* const retval _UNUSED,
+                                          void* priv _UNUSED) {
 
     SAH_TRACEZ_IN(ME);
-    const char* pMacAddr = GETP_CHAR(event_data, "parameters.MACAddress.to");
-    ASSERT_NOT_NULL(pMacAddr, , ME, "Mac address null");
-    ASSERTW_FALSE(swl_str_matches(pMacAddr, WLD_EMPTY_MAC_ADDRESS), , ME, "MAC address not valid !");
-    ASSERTI_NOT_NULL(pSSID, , ME, "SSID Object is NULL");
-    T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
-    T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
-    int32_t ret = 0;
-    if(debugIsEpPointer(pEP) && (pEP->pSSID == pSSID)) {
-        SAH_TRACEZ_INFO(ME, "[%s] Endpoint Mac Address : %s", pEP->Name, pMacAddr);
-        ret = convStr2Mac(pSSID->MACAddress, ETHER_ADDR_LEN, (unsigned char*) pMacAddr, ETHER_ADDR_STR_LEN);
-        ASSERTI_NOT_EQUALS(ret, 0, , ME, "INVALID [%s]", pMacAddr);
-        pEP->pFA->mfn_wendpoint_set_mac_address(pEP);
-        SAH_TRACEZ_OUT(ME);
-        return;
-    } else if(debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
-        SAH_TRACEZ_INFO(ME, "[%s] Accesspoint Mac Address : %s", pAP->alias, pMacAddr);
-        ret = convStr2Mac(pSSID->BSSID, ETHER_ADDR_LEN, (unsigned char*) pMacAddr, ETHER_ADDR_STR_LEN);
-        memcpy(pSSID->MACAddress, pSSID->BSSID, ETHER_ADDR_LEN);
-        ASSERTI_NOT_EQUALS(ret, 0, , ME, "INVALID [%s]", pMacAddr);
-        pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) pMacAddr, ETHER_ADDR_STR_LEN, SET);
-        SAH_TRACEZ_OUT(ME);
-        return;
-    }
+    amxd_status_t rv = amxd_status_ok;
+    amxd_object_t* wifiSsid = object;
+    ASSERTI_EQUALS(amxd_object_get_type(wifiSsid), amxd_object_instance, rv, ME, "Not instance");
+    T_SSID* pSSID = (T_SSID*) wifiSsid->priv;
+    ASSERT_TRUE(debugIsSsidPointer(pSSID), amxd_status_unknown_error, ME, "Invalid SSID Ctx");
+    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
 
-    SAH_TRACEZ_WARNING(ME, "Handler error !");
+    char* pMacStr = amxc_var_dyncast(cstring_t, args);
+    ASSERT_STR(pMacStr, amxd_status_unknown_error, ME, "Mac address empty");
+    swl_macBin_t mac = SWL_MAC_BIN_NEW();
+    if(!SWL_MAC_CHAR_TO_BIN(&mac, pMacStr) || swl_mac_binIsNull(&mac)) {
+        SAH_TRACEZ_ERROR(ME, "Invalid mac address (%s)", pMacStr);
+        rv = amxd_status_invalid_value;
+    } else if(!SWL_MAC_BIN_MATCHES(pSSID->MACAddress, &mac)) {
+        memcpy(pSSID->MACAddress, mac.bMac, ETHER_ADDR_LEN);
+        T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
+        T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
+        if((pAP != NULL) && debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
+            SAH_TRACEZ_INFO(ME, "[%s] Accesspoint Mac Address : %s", pAP->alias, pMacStr);
+            memcpy(pSSID->BSSID, mac.bMac, ETHER_ADDR_LEN);
+            pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) pMacStr, ETHER_ADDR_STR_LEN, SET);
+        } else if((pEP != NULL) && debugIsEpPointer(pEP) && (pEP->pSSID == pSSID)) {
+            SAH_TRACEZ_INFO(ME, "[%s] Endpoint Mac Address : %s", pEP->Name, pMacStr);
+            pEP->pFA->mfn_wendpoint_set_mac_address(pEP);
+        }
+        rv = amxd_status_ok;
+    }
+    free(pMacStr);
+    return rv;
 }
 
 T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP) {
@@ -498,8 +531,6 @@ int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object) {
     swl_str_copy(pSSID->Name, sizeof(pSSID->Name), pSSID->AP_HOOK->name);
 
     instance_object->priv = pSSID;
-    amxd_object_set_cstring_t(instance_object, "Name", pSSID->AP_HOOK->name);
-    amxd_object_set_cstring_t(instance_object, "Alias", pSSID->AP_HOOK->alias);
     pSSID->pBus = instance_object;
     return WLD_OK;
 }

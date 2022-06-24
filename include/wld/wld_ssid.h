@@ -78,17 +78,4 @@ amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
                                amxc_var_t* args,
                                amxc_var_t* retval);
 
-/* on event handlers */
-void _wld_ssid_setSSID_ehf(const char* const event_name _UNUSED,
-                           const amxc_var_t* const event_data,
-                           void* const priv _UNUSED);
-
-void _wld_ssid_setEnable_ehf(const char* const event_name _UNUSED,
-                             const amxc_var_t* const event_data,
-                             void* const priv _UNUSED);
-
-void _wifi_ssid_setMacAddress_ehf(const char* const event_name _UNUSED,
-                                  const amxc_var_t* const event_data,
-                                  void* const priv _UNUSED);
-
 #endif /* __WLD_SSID_H__ */

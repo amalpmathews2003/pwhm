@@ -166,6 +166,7 @@ bool wld_plugin_start() {
 }
 
 bool wld_plugin_loadDmConf() {
+    SAH_TRACEZ_IN(ME);
     // Defaults or saved odl will be loaded here:
     // This makes sure that the events for the defaults are only called when the plugin is started
     int rv = amxo_parser_parse_string(wld_plugin_parser, "?include '${odl.directory}/${name}.odl':'${defaults_file}';", amxd_dm_get_root(wld_plugin_dm));
@@ -175,6 +176,27 @@ bool wld_plugin_loadDmConf() {
                          amxo_parser_get_message(wld_plugin_parser));
         return false;
     }
+    /* Fill DM with learned values */
+    SAH_TRACEZ_WARNING(ME, "Syncing Objects RAD/SSID/AP/EP");
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pAP;
+        T_SSID* pSSID;
+        syncData_Radio2OBJ(pRad->pBus, pRad, SET);
+        wld_rad_forEachAp(pAP, pRad) {
+            pSSID = (T_SSID*) pAP->pSSID;
+            pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
+            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+        }
+        T_EndPoint* pEP;
+        wld_rad_forEachEp(pEP, pRad) {
+            pSSID = (T_SSID*) pEP->pSSID;
+            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+        }
+    }
+    syncData_VendorWPS2OBJ(amxd_object_get(get_wld_object(), "wps_DefParam"), wld_firstRad(), SET);
+    SAH_TRACEZ_WARNING(ME, "Syncing Done");
+    SAH_TRACEZ_OUT(ME);
     return true;
 }
 
@@ -431,8 +453,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
         pR->dfsEventLogLimit = amxd_object_get_uint8_t(dfsObj, "EventLogLimit", NULL);
         pR->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
     }
-
-    wld_rad_updateOperatingClass(pR);
 
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u, baseMac %s", name, vendor->name, idx, macStr);
 

@@ -163,14 +163,8 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     /* Get defined paramater values from the default instance */
     syncData_SSID2OBJ(pSsidObj, pSSID, GET);
     SyncData_AP2OBJ(pAP->pBus, pAP, GET);
-    /* Fill other default values */
-    syncData_SSID2OBJ(pSsidObj, pSSID, SET | NO_COMMIT);
-    SyncData_AP2OBJ(pAP->pBus, pAP, SET | NO_COMMIT);
-    amxd_object_t* wifiWpsDefObj = amxd_object_get(get_wld_object(), "wps_DefParam");
-    if(wifiWpsDefObj != NULL) {
-        syncData_VendorWPS2OBJ(NULL, pRad, GET); // init WPS
-        syncData_VendorWPS2OBJ(wifiWpsDefObj, pRad, SET | NO_COMMIT);
-    }
+    syncData_VendorWPS2OBJ(NULL, pRad, GET); // init WPS
+    /* DM will be synced with internal Ctxs later (on event or after dm load completed) */
     return amxd_status_ok;
 }
 
@@ -887,8 +881,16 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         /** 'SSIDReference' The value MUST be the path name of a row in
          *  the SSID table. If the referenced object is deleted, the
          *  parameter value MUST be set to an empty string. */
-        sprintf(TBuf, "%s.%s", "SSID", pAP->alias);
+        TBuf[0] = 0;
+        if(pAP->pSSID) {
+            swl_str_copy(TBuf, sizeof(TBuf), amxd_object_get_path(pAP->pSSID->pBus, AMXD_OBJECT_NAMED));
+        }
         amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
+        TBuf[0] = 0;
+        if(pAP->pRadio) {
+            swl_str_copy(TBuf, sizeof(TBuf), amxd_object_get_path(pAP->pRadio->pBus, AMXD_OBJECT_NAMED));
+        }
+        amxd_object_set_cstring_t(object, "RadioReference", TBuf);
         /** 'RetryLimit' The maximum number of retransmission for a
          *  packet. This corresponds to IEEE 802.11 parameter
          *  do11ShortRetryLimit [0..127] */
@@ -1039,7 +1041,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         /** 'Enable' Enables or disables WPS functionality for this
          *  accesspoint. */
         amxd_object_set_int32_t(wpsObj, "Enable", pAP->WPS_Enable);
-        amxd_object_set_cstring_t(wpsObj, "SelfPIN", ((T_Radio*) pAP->pRadio)->wpsConst->DefaultPin);
+        amxd_object_set_cstring_t(wpsObj, "SelfPIN", g_wpsConst.DefaultPin);
 
         /** 'ConfigMethodsSupported' Comma-separated list of strings.
          *  Indicates WPS configuration methods supported by the
@@ -1070,7 +1072,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
          */
         amxd_object_set_int32_t(wpsObj, "Configured", pAP->WPS_Configured);
 
-        amxd_object_set_cstring_t(wpsObj, "UUID", ((T_Radio*) pAP->pRadio)->wpsConst->UUID);
+        amxd_object_set_cstring_t(wpsObj, "UUID", g_wpsConst.UUID);
 
         amxc_string_clean(&TBufStr);
     } else {

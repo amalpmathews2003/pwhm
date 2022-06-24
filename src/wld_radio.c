@@ -2186,6 +2186,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
          *  procedure. The channel is valid when not 0. (0==auto channel) */
         if(pR->channel) {
             amxd_object_set_int32_t(object, "Channel", pR->channel);
+            wld_rad_chan_update_model(pR);
+            wld_rad_updateOperatingClass(pR);
         }
         /* 'AutoChannelSupported' Indicates whether automatic
          *  channel selection is supported by this  radio. IF false,
@@ -2407,142 +2409,138 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 /* Set our WPS data. This is usual fix at compiler time */
 /** the object must point to an WIFI.wps_DefParam object !*/
 void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
+    ASSERT_TRUE(debugIsRadPointer(pR), , ME, "Invalid rad ctx");
     T_CONST_WPS* pCWPS = pR->wpsConst;
+    ASSERT_NOT_NULL(pCWPS, , ME, "NULL");
+    SAH_TRACEZ_IN(ME);
 
     /* WPS stuff */
-    if(pCWPS) {
-        if((set & SET) && object) {
-            amxd_object_set_cstring_t(object, "DefaultPin", pCWPS->DefaultPin);
-            amxd_object_set_cstring_t(object, "DevName", pCWPS->DevName);
-            amxd_object_set_cstring_t(object, "OUI", pCWPS->OUI);
-            amxd_object_set_cstring_t(object, "FriendlyName", pCWPS->FriendlyName);
-            amxd_object_set_cstring_t(object, "Manufacturer", pCWPS->Manufacturer);
-            amxd_object_set_cstring_t(object, "ManufacturerUrl", pCWPS->ManufacturerUrl);
-            amxd_object_set_cstring_t(object, "ModelDescription", pCWPS->ModelDescription);
-            amxd_object_set_cstring_t(object, "ModelName", pCWPS->ModelName);
-            amxd_object_set_cstring_t(object, "ModelNumber", pCWPS->ModelNumber);
-            amxd_object_set_cstring_t(object, "ModelUrl", pCWPS->ModelUrl);
-            amxd_object_set_cstring_t(object, "OsVersion", pCWPS->OsVersion);
-            amxd_object_set_cstring_t(object, "SerialNumber", pCWPS->SerialNumber);
-            amxd_object_set_cstring_t(object, "UUID", pCWPS->UUID);
-            amxd_object_set_int32_t(object, "wpsSupVer", pCWPS->wpsSupVer);
-            amxd_object_set_int32_t(object, "wpsUUIDShared", pCWPS->wpsUUIDShared);
-
-            /* Maybe we must reverse the logic here? */
-            if(!(set & NO_COMMIT)) {
-                if(!(object)) {
-                    SAH_TRACEZ_ERROR(ME, "Failed to commit");
-                }
-            }
-        } else { /* Get! */
-            amxc_var_t getVar;
-            amxc_var_init(&getVar);
-            /*
-            ** Parameters are comming from the DeviceInfo!
-            ** Be sure that the plugin is running before we're passing here.
-            */
-            int ret = amxb_get(get_wld_plugin_bus(), "DeviceInfo.", 0, &getVar, 1);
-            if(ret == AMXB_STATUS_OK) {
-                amxc_var_t* devInfo = amxc_var_get_first(GET_ARG(&getVar, "0"));
-                swl_str_copy(pCWPS->Manufacturer, sizeof(pCWPS->Manufacturer), GET_CHAR(devInfo, "Manufacturer"));
-                swl_str_copy(pCWPS->ManufacturerUrl, sizeof(pCWPS->ManufacturerUrl), GET_CHAR(devInfo, "Manufacturer"));
-                swl_str_copy(pCWPS->OUI, sizeof(pCWPS->OUI), GET_CHAR(devInfo, "ManufacturerOUI"));
-                swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), GET_CHAR(devInfo, "DeviceName"));
+    if((set & SET)) {
+        ASSERT_NOT_NULL(object, , ME, "NULL");
+        amxd_object_set_cstring_t(object, "DefaultPin", pCWPS->DefaultPin);
+        amxd_object_set_cstring_t(object, "DevName", pCWPS->DevName);
+        amxd_object_set_cstring_t(object, "OUI", pCWPS->OUI);
+        amxd_object_set_cstring_t(object, "FriendlyName", pCWPS->FriendlyName);
+        amxd_object_set_cstring_t(object, "Manufacturer", pCWPS->Manufacturer);
+        amxd_object_set_cstring_t(object, "ManufacturerUrl", pCWPS->ManufacturerUrl);
+        amxd_object_set_cstring_t(object, "ModelDescription", pCWPS->ModelDescription);
+        amxd_object_set_cstring_t(object, "ModelName", pCWPS->ModelName);
+        amxd_object_set_cstring_t(object, "ModelNumber", pCWPS->ModelNumber);
+        amxd_object_set_cstring_t(object, "ModelUrl", pCWPS->ModelUrl);
+        amxd_object_set_cstring_t(object, "OsVersion", pCWPS->OsVersion);
+        amxd_object_set_cstring_t(object, "SerialNumber", pCWPS->SerialNumber);
+        amxd_object_set_cstring_t(object, "UUID", pCWPS->UUID);
+        amxd_object_set_int32_t(object, "wpsSupVer", pCWPS->wpsSupVer);
+        amxd_object_set_int32_t(object, "wpsUUIDShared", pCWPS->wpsUUIDShared);
+    } else { /* Get! */
+        amxc_var_t getVar;
+        amxc_var_init(&getVar);
+        /*
+        ** Parameters are comming from the DeviceInfo!
+        ** Be sure that the plugin is running before we're passing here.
+        */
+        int ret = amxb_get(get_wld_plugin_bus(), "DeviceInfo.", 0, &getVar, 1);
+        if(ret == AMXB_STATUS_OK) {
+            SAH_TRACEZ_INFO(ME, "Getting WPS Desc from DeviceInfo");
+            amxc_var_t* devInfo = amxc_var_get_first(GET_ARG(&getVar, "0"));
+            swl_str_copy(pCWPS->Manufacturer, sizeof(pCWPS->Manufacturer), GET_CHAR(devInfo, "Manufacturer"));
+            swl_str_copy(pCWPS->ManufacturerUrl, sizeof(pCWPS->ManufacturerUrl), GET_CHAR(devInfo, "Manufacturer"));
+            swl_str_copy(pCWPS->OUI, sizeof(pCWPS->OUI), GET_CHAR(devInfo, "ManufacturerOUI"));
+            swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), GET_CHAR(devInfo, "DeviceName"));
 #if CONFIG_USE_SAH_WPS_DEVICE_NAME
-                swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), CONFIG_SAH_WPS_DEVICE_NAME);
+            swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), CONFIG_SAH_WPS_DEVICE_NAME);
 #endif
-                swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), GET_CHAR(devInfo, "FriendlyName"));
+            swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), GET_CHAR(devInfo, "FriendlyName"));
 #if CONFIG_USE_SAH_WPS_FRIENDLY_NAME
-                swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), CONFIG_SAH_WPS_FRIENDLY_NAME);
+            swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), CONFIG_SAH_WPS_FRIENDLY_NAME);
 #endif
-                swl_str_copy(pCWPS->ModelDescription, sizeof(pCWPS->ModelDescription), GET_CHAR(devInfo, "Description"));
-                swl_str_copy(pCWPS->OsVersion, sizeof(pCWPS->OsVersion), GET_CHAR(devInfo, "SoftwareVersion"));
-                swl_str_copy(pCWPS->SerialNumber, sizeof(pCWPS->SerialNumber), GET_CHAR(devInfo, "SerialNumber"));
+            swl_str_copy(pCWPS->ModelDescription, sizeof(pCWPS->ModelDescription), GET_CHAR(devInfo, "Description"));
+            swl_str_copy(pCWPS->OsVersion, sizeof(pCWPS->OsVersion), GET_CHAR(devInfo, "SoftwareVersion"));
+            swl_str_copy(pCWPS->SerialNumber, sizeof(pCWPS->SerialNumber), GET_CHAR(devInfo, "SerialNumber"));
 #if !CONFIG_SAH_WPS_IE_SERIAL_DEFAULT
 #if CONFIG_SAH_WPS_IE_SERIAL_FT_REQ
-                /* Only take a part of the serial key for security reasons! */
-                int i;
-                i = strlen(pCWPS->SerialNumber) / 2;
-                pCWPS->SerialNumber[i++] = 'F';
-                pCWPS->SerialNumber[i++] = 'F';
-                pCWPS->SerialNumber[i] = '\0';
+            /* Only take a part of the serial key for security reasons! */
+            int i;
+            i = strlen(pCWPS->SerialNumber) / 2;
+            pCWPS->SerialNumber[i++] = 'F';
+            pCWPS->SerialNumber[i++] = 'F';
+            pCWPS->SerialNumber[i] = '\0';
 #elif CONFIG_SAH_WPS_IE_RANDOM_SERIAL
-                /* Not really random, we're making use of the STACK address for RND start.*/
-                int ch, i;
-                i = strlen(pCWPS->SerialNumber);
-                pCWPS->SerialNumber[i] = '\0';
-                for(--i; i >= 0; i--) {
-                    get_random((unsigned char*) &ch, sizeof(int));
-                    // Now make a ASCII string of it..
-                    // 0-9 = Digit; 10-36 = A...Z; 36-62 = a..z; 62,63 = '*','-'
-                    pCWPS->SerialNumber[i] =
-                        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz*-"[(ch & 0x3f)];
-                }
+            /* Not really random, we're making use of the STACK address for RND start.*/
+            int ch, i;
+            i = strlen(pCWPS->SerialNumber);
+            pCWPS->SerialNumber[i] = '\0';
+            for(--i; i >= 0; i--) {
+                get_random((unsigned char*) &ch, sizeof(int));
+                // Now make a ASCII string of it..
+                // 0-9 = Digit; 10-36 = A...Z; 36-62 = a..z; 62,63 = '*','-'
+                pCWPS->SerialNumber[i] =
+                    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz*-"[(ch & 0x3f)];
+            }
 #else
-                SAH_TRACEZ_ERROR(ME, "No WPS IE configured");
+            SAH_TRACEZ_ERROR(ME, "No WPS IE configured");
 #endif
 #endif
-                swl_str_copy(pCWPS->ModelName, sizeof(pCWPS->ModelName), GET_CHAR(devInfo, "ModelName"));
-                swl_str_copy(pCWPS->ModelNumber, sizeof(pCWPS->ModelNumber), GET_CHAR(devInfo, "ModelNumber"));
-                swl_str_copy(pCWPS->ModelUrl, sizeof(pCWPS->ModelUrl), GET_CHAR(devInfo, "VendorURL"));
-            } else {
-                // Normally we're not passing here but in case generic build... we've some SAH data ;-)
-                GETENV(pCWPS->DevName, "DevName");
+            swl_str_copy(pCWPS->ModelName, sizeof(pCWPS->ModelName), GET_CHAR(devInfo, "ModelName"));
+            swl_str_copy(pCWPS->ModelNumber, sizeof(pCWPS->ModelNumber), GET_CHAR(devInfo, "ModelNumber"));
+            swl_str_copy(pCWPS->ModelUrl, sizeof(pCWPS->ModelUrl), GET_CHAR(devInfo, "VendorURL"));
+        } else {
+            SAH_TRACEZ_INFO(ME, "Getting WPS Desc from Environment");
+            // Normally we're not passing here but in case generic build... we've some SAH data ;-)
+            GETENV(pCWPS->DevName, "DevName");
 #if CONFIG_USE_SAH_WPS_DEVICE_NAME
-                swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), CONFIG_SAH_WPS_DEVICE_NAME);
+            swl_str_copy(pCWPS->DevName, sizeof(pCWPS->DevName), CONFIG_SAH_WPS_DEVICE_NAME);
 #endif
-                GETENV(pCWPS->OUI, "MANUFACTURER_OUI");
-                GETENV(pCWPS->FriendlyName, "FRIENDLY_NAME");
+            GETENV(pCWPS->OUI, "MANUFACTURER_OUI");
+            GETENV(pCWPS->FriendlyName, "FRIENDLY_NAME");
 #if CONFIG_USE_SAH_WPS_FRIENDLY_NAME
-                swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), CONFIG_SAH_WPS_FRIENDLY_NAME);
+            swl_str_copy(pCWPS->FriendlyName, sizeof(pCWPS->FriendlyName), CONFIG_SAH_WPS_FRIENDLY_NAME);
 #endif
-                GETENV(pCWPS->Manufacturer, "MANUFACTURER");
-                GETENV(pCWPS->ManufacturerUrl, "MANUFACTURER_URL");
+            GETENV(pCWPS->Manufacturer, "MANUFACTURER");
+            GETENV(pCWPS->ManufacturerUrl, "MANUFACTURER_URL");
 
-                snprintf(pCWPS->ModelDescription, sizeof(pCWPS->ModelDescription),
-                         "%s %s", (getenv("MODELNAME")) ? : "", (getenv("MANUFACTURER")) ? : "");
+            snprintf(pCWPS->ModelDescription, sizeof(pCWPS->ModelDescription),
+                     "%s %s", (getenv("MODELNAME")) ? : "", (getenv("MANUFACTURER")) ? : "");
 
-                GETENV(pCWPS->ModelName, "MODELNAME");
-                GETENV(pCWPS->ModelNumber, "PRODUCT_CLASS");
-                GETENV(pCWPS->ModelUrl, "MANUFACTURER_URL");
-                GETENV(pCWPS->OsVersion, "OSVERSION");
-                GETENV(pCWPS->SerialNumber, "SERIAL_NUMBER");
-            }
-
-            // WPS UUID not filled in? Do this only for each vendor!
-            if(!pCWPS->UUID[0]) {
-
-                char uuid[50] = {0};
-                swl_uuid_t uuid_i = {{0}};
-                char MACaddr[18] = {0};
-
-                GETENV(MACaddr, "WAN_ADDR");
-
-                uint8_t offset;
-#ifdef CONFIG_USE_SAH_WPS_FORCE_EQUAL_WL_UUID
-                offset = 0;
-#else
-                offset = if_nametoindex(pR->Name);
-#endif
-                if((MACaddr[0] != 0) &&
-                   (swl_uuid_fromMacAddress(&uuid_i, MACaddr, offset) && swl_uuid_toChar(uuid, sizeof(uuid), &uuid_i))
-                   ) {     // MC Tricky
-#ifdef CONFIG_USE_SAH_WPS_FORCE_EQUAL_WL_UUID
-                    pCWPS->wpsUUIDShared = 1;
-#else
-                    pCWPS->wpsUUIDShared = 0;
-#endif
-                    swl_str_copy(pCWPS->UUID, sizeof(pCWPS->UUID), uuid);
-                } else {
-                    swl_str_copy(pCWPS->UUID, sizeof(pCWPS->UUID), "efe83912-97f4-4dcf-8a3f-8e5b27cddb9e");
-                    SAH_TRACEZ_ERROR(ME, "Could not create a valid UUID (uuid:'%s;), so we set a hardcoded valid UUID!!!!", uuid);
-                }
-                SAH_TRACEZ_INFO(ME, "UUID=%s", pCWPS->UUID);
-            }
+            GETENV(pCWPS->ModelName, "MODELNAME");
+            GETENV(pCWPS->ModelNumber, "PRODUCT_CLASS");
+            GETENV(pCWPS->ModelUrl, "MANUFACTURER_URL");
+            GETENV(pCWPS->OsVersion, "OSVERSION");
+            GETENV(pCWPS->SerialNumber, "SERIAL_NUMBER");
         }
-    } else {
-        SAH_TRACEZ_ERROR(ME, "NULL pointer 'object' or 'pCWPS'!");
+
+        // WPS UUID not filled in? Do this only for each vendor!
+        if(!pCWPS->UUID[0]) {
+
+            char uuid[50] = {0};
+            swl_uuid_t uuid_i = {{0}};
+            char MACaddr[18] = {0};
+
+            GETENV(MACaddr, "WAN_ADDR");
+
+            uint8_t offset;
+#ifdef CONFIG_USE_SAH_WPS_FORCE_EQUAL_WL_UUID
+            offset = 0;
+#else
+            offset = pR->index;
+#endif
+            if((MACaddr[0] != 0) &&
+               (swl_uuid_fromMacAddress(&uuid_i, MACaddr, offset) && swl_uuid_toChar(uuid, sizeof(uuid), &uuid_i))
+               ) {     // MC Tricky
+#ifdef CONFIG_USE_SAH_WPS_FORCE_EQUAL_WL_UUID
+                pCWPS->wpsUUIDShared = 1;
+#else
+                pCWPS->wpsUUIDShared = 0;
+#endif
+                swl_str_copy(pCWPS->UUID, sizeof(pCWPS->UUID), uuid);
+            } else {
+                swl_str_copy(pCWPS->UUID, sizeof(pCWPS->UUID), "efe83912-97f4-4dcf-8a3f-8e5b27cddb9e");
+                SAH_TRACEZ_ERROR(ME, "Could not create a valid UUID (uuid:'%s;), so we set a hardcoded valid UUID!!!!", uuid);
+            }
+            SAH_TRACEZ_INFO(ME, "UUID=%s", pCWPS->UUID);
+        }
     }
+    SAH_TRACEZ_OUT(ME);
 }
 
 amxd_status_t _FSM_Start(amxd_object_t* wifi,
