@@ -116,7 +116,7 @@ static void s_autoCommit_th(amxp_timer_t* timer _UNUSED, void* userdata) {
 
 static void s_radInit(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERT_NULL(pRad->autoCommitData.timer, , ME, "NOT NULL");
+    ASSERTS_NULL(pRad->autoCommitData.timer, , ME, "NOT NULL");
     amxp_timer_new(&pRad->autoCommitData.timer, s_autoCommit_th, pRad);
 }
 
@@ -164,6 +164,23 @@ void wld_autoCommitMgr_destroy(T_Radio* pRad) {
 
 }
 
+static void s_initAutoCommit() {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        s_radInit(pRad);
+        //stop potentially started timer to allow reconfiguring delay
+        amxp_timer_stop(pRad->autoCommitData.timer);
+        wld_autoCommitMgr_notifyRadEdit(pRad);
+    }
+}
+
+static void s_cleanAutoCommit() {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        s_radDestroy(pRad);
+    }
+}
+
 amxd_status_t _wld_autoCommitMgt_setEnable_pwf(amxd_object_t* object,
                                                amxd_param_t* parameter,
                                                amxd_action_t reason,
@@ -180,16 +197,10 @@ amxd_status_t _wld_autoCommitMgt_setEnable_pwf(amxd_object_t* object,
     SAH_TRACEZ_INFO(ME, "Update enable %u to %u", s_mgr.enable, newEnable);
     s_mgr.enable = newEnable;
 
-    T_Radio* pRad;
     if(newEnable) {
-        wld_for_eachRad(pRad) {
-            s_radInit(pRad);
-            wld_autoCommitMgr_notifyRadEdit(pRad);
-        }
+        s_initAutoCommit();
     } else {
-        wld_for_eachRad(pRad) {
-            s_radDestroy(pRad);
-        }
+        s_cleanAutoCommit();
     }
     return amxd_status_ok;
 }
@@ -209,6 +220,9 @@ amxd_status_t _wld_autoCommitMgt_setDelayTime_pwf(amxd_object_t* object _UNUSED,
     ASSERTI_NOT_EQUALS(newDelay, s_mgr.delay, amxd_status_ok, ME, "EQUAL");
     SAH_TRACEZ_INFO(ME, "Update delay %u to %u", s_mgr.delay, newDelay);
     s_mgr.delay = newDelay;
+    if(s_mgr.enable) {
+        s_initAutoCommit();
+    }
     return amxd_status_ok;
 }
 
@@ -223,9 +237,12 @@ amxd_status_t _wld_autoCommitMgt_setBootDelayTime_pwf(amxd_object_t* object,
     if(rv != amxd_status_ok) {
         return rv;
     }
-    ASSERTI_NOT_EQUALS(newDelay, s_mgr.bootDelay, amxd_status_unknown_error, ME, "EQUAL");
-    SAH_TRACEZ_INFO(ME, "Update delay %u to %u", s_mgr.bootDelay, newDelay);
+    ASSERTI_NOT_EQUALS(newDelay, s_mgr.bootDelay, amxd_status_ok, ME, "EQUAL");
+    SAH_TRACEZ_INFO(ME, "Update BootDelay %u to %u", s_mgr.bootDelay, newDelay);
     s_mgr.bootDelay = newDelay;
+    if(s_mgr.enable) {
+        s_initAutoCommit();
+    }
     return amxd_status_ok;
 }
 

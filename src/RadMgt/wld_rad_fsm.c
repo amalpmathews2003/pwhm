@@ -329,7 +329,7 @@ int wld_rad_fsm(T_Radio* rad) {
             }
             if(rad->fsmRad.timer) {
                 /* In case we don't have the lock keep trying...(if timer runs) */
-                rad->fsmRad.timeout_msec = 1000;     // Go for it ASAP!
+                rad->fsmRad.timeout_msec = 100;     // Go for it ASAP!
                 SAH_TRACEZ_INFO(ME, "amxp_timer_start %s %p %d", rad->Name, rad->fsmRad.timer, rad->fsmRad.timeout_msec);
                 /* We've created our timer - check if we can go to WAIT State? */
                 if((rad->fsm_radio_st == FSM_IDLE) &&

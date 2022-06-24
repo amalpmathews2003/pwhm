@@ -398,8 +398,8 @@ define rrm_t{
 		 * Whether auto committing should be enabled
 		 */
 		%persistent bool Enable{
-			default 0;
 			on action write call wld_autoCommitMgt_setEnable_pwf;
+			default 0;
 		}
 		
 		/**
@@ -408,8 +408,8 @@ define rrm_t{
 		 * Note that due to timer restrictions, timers less then 100ms will be rounded up to 100ms.
 		 */
 		%persistent uint32 DelayTime{
-			default 250;
 			on action write call wld_autoCommitMgt_setDelayTime_pwf;
+			default 250;
 		}
 		
 		/**
@@ -417,8 +417,8 @@ define rrm_t{
 		 * the component got initialized, to avoid potential clashes.
 		 */
 		%persistent uint32 BootDelayTime{
-			default 4000;
 			on action write call wld_autoCommitMgt_setBootDelayTime_pwf;
+			default 4000;
 		}
 	}
 
