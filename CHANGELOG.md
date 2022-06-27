@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.0 - 2022-06-27(13:30:11 +0000)
+
+### Other
+
+- - add IEEE80211 frame parsing
+
 ## Release v1.4.6 - 2022-06-27(09:29:28 +0000)
 
 ### Other
