@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.6 - 2022-06-27(09:29:28 +0000)
+
+### Other
+
+- BSSID and Alias DM params remain empty after boot
+
 ## Release v1.4.5 - 2022-06-27(08:47:01 +0000)
 
 ### Other
