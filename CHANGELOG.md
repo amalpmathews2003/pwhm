@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.5 - 2022-06-27(08:47:01 +0000)
+
+### Other
+
+- wld does not start automatically after reboot
+
 ## Release v1.4.4 - 2022-06-24(08:49:48 +0000)
 
 ### Other
