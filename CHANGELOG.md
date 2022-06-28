@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.1 - 2022-06-28(16:23:52 +0000)
+
+### Other
+
+- fix amxc_string_clean crash at boot on wnc
+
 ## Release v1.5.0 - 2022-06-27(13:30:11 +0000)
 
 ### Other
