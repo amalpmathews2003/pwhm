@@ -102,6 +102,7 @@ swl_rc_ne wld_nl80211_dumpIfaceInfo(wld_nl80211_ifaceInfo_t* pIfaceInfo, amxc_va
     swl_mac_binToChar(&macChar, &pIfaceInfo->mac);
     amxc_var_add_key(cstring_t, pMap, "mac", macChar.cMac);
     amxc_string_t typeStr;
+    amxc_string_init(&typeStr, 0);
     amxc_string_append(&typeStr, (pIfaceInfo->isMain ? "main" : "virtual"), amxc_string_buffer_length(&typeStr));
     amxc_string_append(&typeStr, (pIfaceInfo->isAp ? "AP" : ""), amxc_string_buffer_length(&typeStr));
     amxc_string_append(&typeStr, (pIfaceInfo->isSta ? "STA" : ""), amxc_string_buffer_length(&typeStr));
@@ -145,6 +146,7 @@ swl_rc_ne wld_nl80211_dumpWiphyInfo(wld_nl80211_wiphyInfo_t* pWiphyInfo, amxc_va
     amxc_var_t* cipherSuitesList = amxc_var_add_key(amxc_llist_t, pMap, "suppCiphers", NULL);
 
     amxc_string_t cipherStr;
+    amxc_string_init(&cipherStr, 0);
     for(uint32_t i = 0; i < pWiphyInfo->nCipherSuites; i++) {
         amxc_string_clean(&cipherStr);
         amxc_string_appendf(&cipherStr, "%08x", pWiphyInfo->cipherSuites[i]);

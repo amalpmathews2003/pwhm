@@ -492,6 +492,7 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) 
     swl_mapChar_add(vapConfigMap, "os_version", buffer);
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
     amxc_string_t configMethodsStr;
+    amxc_string_init(&configMethodsStr, 0);
     bitmask_to_string(&configMethodsStr, wld_hostapd_wpsConfigMethods, ' ', pAP->WPS_ConfigMethodsEnabled);
     swl_mapChar_add(vapConfigMap, "config_methods", (char*) configMethodsStr.buffer);
     amxc_string_clean(&configMethodsStr);
