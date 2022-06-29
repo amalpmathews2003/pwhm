@@ -234,8 +234,7 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
             W_SWL_BIT_SET(pRad->supportedFrequencyBands, pRad->operatingFrequencyBand);
         }
         if(pIfaceInfo->chanSpec.chanWidth > 0) {
-            pRad->operatingChannelBandwidth = swl_chanspec_intToBw(pIfaceInfo->chanSpec.chanWidth);
-            pRad->runningChannelBandwidth = pRad->operatingChannelBandwidth;
+            pRad->runningChannelBandwidth = swl_chanspec_intToBw(pIfaceInfo->chanSpec.chanWidth);
         }
     }
     if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_NONE) {
@@ -259,20 +258,17 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     if(pOperBand->chanWidthMask > 0) {
         pRad->maxChannelBandwidth = swl_bit32_getHighest(pOperBand->chanWidthMask);
         if(pRad->runningChannelBandwidth == SWL_BW_AUTO) {
-            pRad->runningChannelBandwidth = pRad->operatingChannelBandwidth = pRad->maxChannelBandwidth;
+            pRad->runningChannelBandwidth = pRad->maxChannelBandwidth;
         }
     } else if(pRad->runningChannelBandwidth == SWL_BW_AUTO) {
         switch(pRad->operatingFrequencyBand) {
         case SWL_FREQ_BAND_EXT_5GHZ:
-            pRad->operatingChannelBandwidth = SWL_BW_80MHZ;
             pRad->runningChannelBandwidth = SWL_BW_80MHZ;
             break;
         case SWL_FREQ_BAND_EXT_6GHZ:
-            pRad->operatingChannelBandwidth = SWL_BW_80MHZ;
             pRad->runningChannelBandwidth = SWL_BW_160MHZ;
             break;
         default:
-            pRad->operatingChannelBandwidth = SWL_BW_AUTO;
             pRad->runningChannelBandwidth = SWL_BW_20MHZ;
             break;
         }

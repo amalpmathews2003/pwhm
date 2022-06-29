@@ -622,7 +622,7 @@ define rrm_t{
 		* the state of the interface can not be determined for some
 		* reason. This parameter is based on ifOperStatus from [RFC2863]. </p>
 		*/
-		read-only string Status{
+		%read-only string Status{
 			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
 			default "Down";
 		}
@@ -641,14 +641,14 @@ define rrm_t{
 		/**
 		 *  <p>The textual name of the radio as assigned by
 		 *  the CPE.</p> Internal vendor string (<B>DEBUG</B>)   */
-		read-only string Name;
+		%read-only string Name;
 		/**
 		 * <p>Vendor PCI Signature value.(<B>DEBUG</B>) This is the only
 		 * way to find out what kind of vendor driver is used for this
 		 * RADIO interface.
 		 * </p>
 		 */
-		read-only string VendorPCISig;
+		%read-only string VendorPCISig;
 		/**
 		 * <p>The accumulated time in seconds since the radio entered
 		 * its current operational state.</p>
@@ -659,7 +659,7 @@ define rrm_t{
 		/**
 		 * (<B>DEBUG</B>) Contains the NETFINDEX value of the interface.
 		 */
-		read-only uint32 Index;
+		%read-only uint32 Index;
 
 		/**
 		 * <p>Indicates whether the interface points towards the Internet
@@ -672,7 +672,7 @@ define rrm_t{
 		 * Ethernet interface and false for the WiFi Radio interface.
 		 * For an End Device, Upstream will be true for all interfaces.
 		 */
-		read-only bool Upstream;
+		%read-only bool Upstream;
 
 		/**
 		 * <p> Indicates wheter the RADIO is in AP mode </p>
@@ -735,7 +735,7 @@ define rrm_t{
 		 * <p>The maximum PHY bit rate supported by this interface
 		 * (expressed in Mbps).</p>
 		 */
-		read-only uint32 MaxBitRate;
+		%read-only uint32 MaxBitRate;
 
 		/**
 		*  Comma-separated list of strings.
@@ -781,7 +781,7 @@ define rrm_t{
 		 * <p>Diverging from the TR-181 standard, if OperatingStandardsFormat is Legacy,
 		 * then list items can also be: "bg", "gn", "bgn", "an", and "abgn".</p>
  		 */
-		read-only string SupportedStandards;
+		%read-only string SupportedStandards;
 		
 		/**
 		   <p>Comma-separated list of strings. Each list item MUST be a
@@ -856,12 +856,12 @@ define rrm_t{
 		 * 802.11b and North America, would be "1-11". <b>NOT SUPPORTED
 		 * YET</b> </p>
 		 */
-		read-only string PossibleChannels;
+		%read-only string PossibleChannels;
 
 		/**
 		 * The operating class of this radio.
 		 */
-		read-only uint32 OperatingClass {
+		%read-only uint32 OperatingClass {
 			default 0;
 		}
 
@@ -877,7 +877,7 @@ define rrm_t{
 		 * <p>Indicates whether automatic channel selection is supported
 		 * by this radio. If false, then AutoChannelEnable  MUST be
 		 * false. </p> */
-		read-only bool AutoChannelSupported;
+		%read-only bool AutoChannelSupported;
 
 		/**
 		 * <p>Enable or disable automatic channel selection. Set to
@@ -953,7 +953,7 @@ define rrm_t{
 		 * </ul>
 		 * @version 9.1
 		 */
-		read-only string CurrentOperatingChannelBandwidth{
+		%read-only string CurrentOperatingChannelBandwidth{
 			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
 			default "20MHz";
 		}
@@ -961,7 +961,7 @@ define rrm_t{
 		/**
 		* Last channel's bandwidth change reason on this radio.
 		*/
-		read-only string ChannelBandwidthChangeReason;
+		%read-only string ChannelBandwidthChangeReason;
 
 		/**
 		 * The maximum supported channel bandwidth. Enumeration of:
@@ -973,7 +973,7 @@ define rrm_t{
 		 * </ul>
 		 * @version 9.1
 		 */
-		read-only string MaxChannelBandwidth{
+		%read-only string MaxChannelBandwidth{
 			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
 			default "20MHz";
 		}
@@ -1056,7 +1056,7 @@ define rrm_t{
 		 *  modes such as EU-CoC, where the Radio can adjust power
 		 *  according to activity in the CPE.</p>
 		 */
-		read-only string TransmitPowerSupported;/* Updated by Radio_Init() */
+		%read-only string TransmitPowerSupported;/* Updated by Radio_Init() */
 
 		/**
 		 * <p>Indicates the current transmit power level as a percentage
@@ -1115,8 +1115,8 @@ define rrm_t{
 		* @version 9.1
 		*/
 		%persistent uint8 RetryLimit{
-			default 15;
 			on action write call wld_rad_setRetryLimit_pwf;  /* Set Retry Limit */
+			default 15;
 		}
 
 		/**
@@ -1128,8 +1128,8 @@ define rrm_t{
 		* @version 9.1
 		*/
 		%persistent uint8 LongRetryLimit{
-			default 6;
 			on action write call wld_rad_setLongRetryLimit_pwf;  /* Set Long Retry Limit */
+			default 6;
 		}
 
 		/**
@@ -1139,8 +1139,8 @@ define rrm_t{
 		* @version 9.2
 		*/
 		%persistent uint32 BeaconPeriod{
-			default 100;
 			on action write call wld_rad_setBeaconPeriod_pwf;
+			default 100;
 		}
 
 		/**
@@ -1151,8 +1151,8 @@ define rrm_t{
 		* @version 9.2
 		*/
 		%persistent uint32 DTIMPeriod{
-			default 3;
 			on action write call wld_rad_setDtimPeriod_pwf;
+			default 3;
 		}
 
 		/**
@@ -1180,7 +1180,7 @@ define rrm_t{
 		 * Comma-separated list of strings containing which 11AX HE features are supported.
 		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
 		 */
-		read-only string HeCapsSupported;
+		%read-only string HeCapsSupported;
 
 		/**
 		 * Comma-separated list of strings containing which 11AX HE features are enabled.
@@ -1197,7 +1197,7 @@ define rrm_t{
 		 * SupportedFrequencyBands  includes 5GHz  and
 		 * SupportedStandards includes a and/or n). </p>
 		 */
-		read-only bool IEEE80211hSupported;
+		%read-only bool IEEE80211hSupported;
 
 		/**
 		 * <p>Indicates whether IEEE 802.11h functionality is enabled on
@@ -1215,21 +1215,21 @@ define rrm_t{
 		 * by this radio.
 		 * @version 9.0
 		 */
-		read-only bool IEEE80211kSupported;
+		%read-only bool IEEE80211kSupported;
 
 		/**
 		 * Indicates whether IEEE 802.11r functionality is supported
 		 * by this radio.
 		 * @version 9.1
 		 */
-		read-only bool IEEE80211rSupported;
+		%read-only bool IEEE80211rSupported;
 
 		/**
 		 * Supported IEEE 1905 types, coma separated.
 		 * @version 9.2
 		 * Supported options are : "FronthaulBSS", "BackhaulBSS", "BackhaulSTA".
 		 */
-		read-only string MultiAPTypesSupported;
+		%read-only string MultiAPTypesSupported;
 
 		/** <p>The 802.11d Regulatory Domain. First two octets are
 		 * two-character country code. The third octet is either " "
@@ -1246,7 +1246,7 @@ define rrm_t{
 		 * Broadcom hardware.</p>
 		 * @version 6.1
 		 */
-		read-only bool ImplicitBeamFormingSupported;
+		%read-only bool ImplicitBeamFormingSupported;
 
 		/** <p>Indicates if implicit beam forming is enabled on this
  		 * radio. </p>
@@ -1261,7 +1261,7 @@ define rrm_t{
 		 * hardware.</p>
 		 * @version 6.1
 		 */
-		read-only bool ExplicitBeamFormingSupported;
+		%read-only bool ExplicitBeamFormingSupported;
 
 		/** <p> Indicates if explicit beam forming is enabled on this
  		 * radio. </p>
@@ -1282,7 +1282,7 @@ define rrm_t{
 		 * * HE_CQI_BF : Channel Quality Information
 		 * @version 10.0
 		 */
-		read-only string RxBeamformingCapsAvailable;
+		%read-only string RxBeamformingCapsAvailable;
 		
 		/**
 		 * Receive beamforming capabilities enabled. List of strings
@@ -1308,7 +1308,7 @@ define rrm_t{
 		 * * HE_CQI_BF : Channel Quality Information
 		 * @version 10.0
 		 */
-		read-only string TxBeamformingCapsAvailable;
+		%read-only string TxBeamformingCapsAvailable;
 		
 		/**
 		 * Transmit beamforming capabilities enabled. List of strings
@@ -1368,7 +1368,7 @@ define rrm_t{
 		/** Indicates if Multi-User MIMO is supported.
 		 * @version 7.0
 		 */
-		read-only bool MultiUserMIMOSupported;
+		%read-only bool MultiUserMIMOSupported;
 
 		/** <p> Indicates if Multi-User MIMO is enabled.</p>
 		 * @version 7.0
@@ -1384,17 +1384,17 @@ define rrm_t{
 		/** <p> DFS channel change event counter on this radio. </p>
 		 * @version 6.1
 		*/
-		read-only uint32 DFSChannelChangeEventCounter=0;
+		%read-only uint32 DFSChannelChangeEventCounter=0;
 
 		/** <p> DFS channel change timestamp on this radio. </p>
 		 * @version 6.1
 		 */
-		read-only datetime DFSChannelChangeEventTimestamp;
+		%read-only datetime DFSChannelChangeEventTimestamp;
 
 		/** <p> Last channel change reason on this radio. </p>
 		 * @version 6.1
 		 */
-		read-only string ChannelChangeReason;
+		%read-only string ChannelChangeReason;
 
 		/**
 		 * Object representing radar detection events log.
@@ -1404,21 +1404,21 @@ define rrm_t{
 			/* Event instance created when radar detected */
 			object Event[] {
 				/* Timestamp of detected radar */
-				read-only datetime TimeStamp;
+				%read-only datetime TimeStamp;
 				/* Channel of detected radar */
-				read-only uint32 Channel;
+				%read-only uint32 Channel;
 				/* Bandwidth of detected radar */
-				read-only string Bandwidth{
+				%read-only string Bandwidth{
 					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
 					default "Auto";
 				}
 				/* Detected radar's zone */
-				read-only string RadarZone{
+				%read-only string RadarZone{
 					constraint enum["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
 					default "NONE";
 				}
 				/* Detected radar's index */
-				read-only uint8 RadarIndex;
+				%read-only uint8 RadarIndex;
 			}
 			/** The maximum number of detected radar events kept in
 			 * dfsEvents log file.
@@ -1448,7 +1448,7 @@ define rrm_t{
 		 * "WPA1","WPA2","BURST","WME","WDS","WME_TKIPMIC","BGSCAN","UAPSD","FASTCC"
 		 * </ul>
 		 */
-		read-only string IEEE80211_Caps;     /* Supported vendor caps */
+		%read-only string IEEE80211_Caps;     /* Supported vendor caps */
 
 		/**
 		 * The noti
@@ -1483,7 +1483,7 @@ define rrm_t{
 		 * The number of devices currently connected to this radio.
 		 * @version 9.1
 		 */
-		read-only uint32 ActiveAssociatedDevices;
+		%read-only uint32 ActiveAssociatedDevices;
 
 		/**
 		 * <B>DEBUG</B>
@@ -1511,160 +1511,160 @@ define rrm_t{
 		 * operational interface status is discussed in [Section
 		 * 4.2.2/TR-181i2]. </p>
 		 */
-		object Stats{		
+		%read-only object Stats{		
 													   
 			/** The total number of bytes transmitted out of the
 			 *  interface, including framing characters. */
-			read-only uint64 BytesSent;
+			%read-only uint64 BytesSent;
 
 			/**The total number of bytes received on the interface,
 			 * including framing characters. */
-			read-only uint64 BytesReceived;
+			%read-only uint64 BytesReceived;
 
 			/**The total number of packets transmitted out of the
 			 * interface.  */
-			read-only uint64 PacketsSent;
+			%read-only uint64 PacketsSent;
 
 			/** The total number of packets received on the interface.  */
-			read-only uint64 PacketsReceived;
+			%read-only uint64 PacketsReceived;
 
 			/** The total number of outbound packets that could not
 			 *  be transmitted because of errors. */
-			read-only uint32 ErrorsSent;
+			%read-only uint32 ErrorsSent;
 
 			/** The total number of transmitted packets which were retransmissions. 
 			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
-			read-only uint32 RetransCount;
+			%read-only uint32 RetransCount;
 
 			/** The total number of inbound packets that contained errors
 			 * preventing them from being delivered to a higher-layer
 			 * protocol.*/
-			read-only uint32 ErrorsReceived;
+			%read-only uint32 ErrorsReceived;
 
 			/** The total number of outbound packets which were chosen to
 			 * be discarded even though no errors had been detected to
 			 * prevent their being transmitted. One possible reason for
 			 * discarding such a packet could be to free up buffer space.*/
-			read-only uint32 DiscardPacketsSent;
+			%read-only uint32 DiscardPacketsSent;
 
 			/** The total number of inbound packets which were chosen to be
 			 *  discarded even though no errors had been detected to prevent
 			 *  their being delivered. One possible reason for discarding
 			 *  such a packet could be to free up buffer space. */
-			read-only uint32 DiscardPacketsReceived;
+			%read-only uint32 DiscardPacketsReceived;
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission and which were addressed to a
 			 *  multicast address at this layer, including those that were
 			 *  discarded or not sent.*/
-			read-only uint32 UnicastPacketsSent;
+			%read-only uint32 UnicastPacketsSent;
 
 			/** The total number of received packets, delivered by this
 			 *  layer to a higher layer, which were not addressed to a
 			 *  multicast or broadcast address at this layer.*/
-			read-only uint32 UnicastPacketsReceived;
+			%read-only uint32 UnicastPacketsReceived;
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission and which were addressed to a
 			 *  multicast address at this layer, including those that were
 			 *  discarded or not sent.*/
-			read-only uint32 MulticastPacketsSent;
+			%read-only uint32 MulticastPacketsSent;
 
 			/** The total number of received packets, delivered by this
 			 *  layer to a higher layer, which were addressed to a
 			 *  multicast address at this layer.*/
-			read-only uint32 MulticastPacketsReceived;
+			%read-only uint32 MulticastPacketsReceived;
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission and which were addressed to a
 			 *  broadcast address at this layer, including those that were
 			 *  discarded or not sent.*/
-			read-only uint32 BroadcastPacketsSent;
+			%read-only uint32 BroadcastPacketsSent;
 
 			/** The total number of received packets, delivered by this
 			 *  layer to a higher layer, which were addressed to a
 			 *  broadcast address at this layer. */
-			read-only uint32 BroadcastPacketsReceived;
+			%read-only uint32 BroadcastPacketsReceived;
 
 			/** The number of packets that were not transmitted successfully
 			 *  due to the number of retransmission attempts
 			 *  exceeding an 802.11 retry limit.*/
-			read-only uint32 FailedRetransCount;
+			%read-only uint32 FailedRetransCount;
 
 			/** The number of packets that were successfully transmitted after one or more retransmissions*/
-			read-only uint32 RetryCount;
+			%read-only uint32 RetryCount;
 
 			/** The number of packets that were successfully transmitted after more than one retransmission*/
-			read-only uint32 MultipleRetryCount;
+			%read-only uint32 MultipleRetryCount;
 			
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission ordered by wmm category*/
-			read-only object WmmPacketsSent {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmPacketsSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission, but failed to be sent ordered by wmm category*/
-			read-only object WmmFailedSent {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmFailedSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** The total number of packets received on this interface ordered by wmm category*/
-			read-only object WmmPacketsReceived {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmPacketsReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** The total number of packets received on this interface, but failed to be sent to the
 					higher layers, ordered by wmm category*/
-			read-only object WmmFailedReceived {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmFailedReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes that higher-level protocols
 			 *  requested for transmission ordered by wmm category*/
-			read-only object WmmBytesSent {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmBytesSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes that higher-level protocols
 			 *  requested for transmission, but failed to be sent ordered by wmm category*/
-			read-only object WmmFailedbytesSent {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmFailedbytesSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes received on this interface ordered by wmm category*/
-			read-only object WmmBytesReceived {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmBytesReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 			
 			/** The total number of bytes received on this interface, but failed to be sent to the
 					higher layers, ordered by wmm category*/
-			read-only object WmmFailedBytesReceived {
-				read-only uint32 AC_BE;
-				read-only uint32 AC_BK;
-				read-only uint32 AC_VO;
-				read-only uint32 AC_VI;
+			%read-only object WmmFailedBytesReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
 			}
 
 			/** 
@@ -1672,7 +1672,7 @@ define rrm_t{
 			 * As per TR-181, value should not be less than -274. 
 			 * Default value is -274 which is INVALID value.
 			 */
-			read-only int32 Temperature{
+			%read-only int32 Temperature{
 				default -274;
 				constraint minvalue -274;
 			}
@@ -1694,7 +1694,7 @@ define rrm_t{
 		 * or due to interference. Updated on getRadioAirStats().
 		 * range [0,100]
 		 */
-		read-only uint16 ChannelLoad;
+		%read-only uint16 ChannelLoad;
 
 		/**
 		 * Percentage of time that the channel is unavailable due to outside factors.
@@ -1702,22 +1702,22 @@ define rrm_t{
 		 * interferences. Updated on getReadioAirStats()
 		 * range [0,100]
 		 */
-		read-only uint16 Interference;
+		%read-only uint16 Interference;
 
 		/**
 		 * Radio noise level in dB. Updated on getReadioAirStats()
 		 */
-		read-only int32 Noise;
+		%read-only int32 Noise;
 
 		/**
 		 * Object representing the results of an accesspoint scan
 		 */
-		object ScanResults{
+		%read-only object ScanResults{
 
 			/**
 			 * The amount of accesspoints that are currently on the same channel as we are
 			 */
-			read-only uint16 NrCoChannelAP;
+			%read-only uint16 NrCoChannelAP;
 
 			/**
 			 * Accesspoints from the scan are grouped per channel
@@ -1727,46 +1727,46 @@ define rrm_t{
 				/**
 				 * The channel on which all the accesspoints in this object operate.
 				 */
-				read-only uint16 Channel;
+				%read-only uint16 Channel;
 
 				/**
 				 * Resulting accesspoint from the scan. Multiple BSSID's from the same accesspoint
 				 * should be grouped under this accesspoints. To group bssids, we check that they only
 				 * differ in 1 byte, and that their RSSI values are the same, and broadcast on the same channel.
 				 */
-				object Accesspoint[]{
+				%read-only object Accesspoint[]{
 
 					/**
 					 * The first observed BSSID of this accesspoint. Other bssid's are compared against this
 					 * bssid to check if they are potentially the same accesspoint
 					 */
-					read-only string BSSID;
+					%read-only string BSSID;
 
 					/**
 					 * The received signal strength indicator of this access point.
 					 * Range [-100,-1]
 					 */
-					read-only int16 RSSI;
+					%read-only int16 RSSI;
 
 					/**
 					 * An SSID broadcasted by this access point
 					 */
-					object SSID[]{
+					%read-only object SSID[]{
 
 						/**
 						 * The name if this ssid
 						 */
-						read-only string SSID;
+						%read-only string SSID;
 
 						/**
 						 * The bandwidth of this ssid
 						 */
-						read-only uint16 Bandwidth;
+						%read-only uint16 Bandwidth;
 
 						/**
 						 * The bssid identifier.
 						 */
-						read-only string BSSID;
+						%read-only string BSSID;
 					}
 				}
 
@@ -1822,7 +1822,7 @@ define rrm_t{
 			 * while offering similar functionality.
 			 * Encoded as space separated string list.
 			 */
-			read-only string Available{
+			%read-only string Available{
 			  default "";
 			}
 
@@ -1842,7 +1842,7 @@ define rrm_t{
 			/**
 			 * A list of strings, showing which capabilities are currently active on the radio.
 			 */
-			read-only string Status{
+			%read-only string Status{
 			  default "";
 			}
 
@@ -1928,7 +1928,7 @@ define rrm_t{
 			 * <p> A table of the devices currently monitored with the accesspoint.</p>
 			 * @version 9.0
 			*/
-			object NonAssociatedDevice[]{
+			%read-only object NonAssociatedDevice[]{
 
 				on action del-inst call wld_rad_deleteNaSta_odf;
 				on action add-inst call wld_rad_addNaSta_ocf;
@@ -1937,7 +1937,7 @@ define rrm_t{
 				 * [MACAddress] The MAC address of an monitored device.
 				 * @version 9.0
 				 */
-				read-only string MACAddress;
+				%read-only string MACAddress;
 
 				/**
 				 * An indicator of radio signal strength of the uplink from the
@@ -1945,7 +1945,7 @@ define rrm_t{
 				 * device.
 				 * @version 9.0
 				 */
-				read-only int32 SignalStrength{
+				%read-only int32 SignalStrength{
 					on action validate call check_range { min = -200, max = 0 };
 				}
 
@@ -1953,7 +1953,7 @@ define rrm_t{
 				 * The timestamp when the last update occurred
 				 * @version 9.0
 				 */
-				read-only datetime TimeStamp;
+				%read-only datetime TimeStamp;
 			}
 
 			/**
@@ -1962,14 +1962,14 @@ define rrm_t{
 			 * Probe requests received of these devices will be immediately broadcasted.
 			 * @version 9.2
 			*/
-			object MonitorDevice[]{
+			%read-only object MonitorDevice[]{
 				on action del-inst call wld_rad_delete_nastaMonDev;
 				on action add-inst call wld_rad_add_nastaMonDev;
 				/**
 				 * [MACAddress] The MAC address of an monitored device.
 				 * @version 9.2
 				 */
-				read-only string MACAddress;
+				%read-only string MACAddress;
 
 				/**
 				 * An indicator of radio signal strength of the uplink from the
@@ -1977,7 +1977,7 @@ define rrm_t{
 				 * device.
 				 * @version 9.2
 				 */
-				read-only int32 SignalStrength{
+				%read-only int32 SignalStrength{
 					on action validate call check_range { min = -200, max = 0 };
 				}
 
@@ -1985,7 +1985,7 @@ define rrm_t{
 				 * The timestamp when the last update occurred
 				 * @version 9.2
 				 */
-				read-only datetime TimeStamp;
+				%read-only datetime TimeStamp;
 			}
 
 			/**
@@ -2047,31 +2047,31 @@ define rrm_t{
 		 * These counters are mostly aimed at generic and vendor specific error event counters
 		 * @version 9.1
 		 */
-		read-only object EventCounter[] {
+		%read-only object EventCounter[] {
 
 			/**
 			 * The key name of the radio event counter.
 			 * @version 9.1
 			 */
-			read-only string Key;
+			%read-only string Key;
 
 			/**
 			 * The value of the radio event counter.
 			 * @version 9.1
 			 */
-			read-only uint32 Value;
+			%read-only uint32 Value;
 
 			/**
 			 * The last time this event happened
 			 * @version 9.1
 			 */
-			read-only datetime LastOccurrence;
+			%read-only datetime LastOccurrence;
 
 			/**
 			 * Extra information given by counter. Must be interpreted on per counter basis.
 			 * @version 9.1
 			 */
-			read-only string Info;
+			%read-only string Info;
 		}
 
 		void Radio_debug();
@@ -2240,12 +2240,12 @@ define rrm_t{
 		 * Information with regards to radio driver capabilities and status.
 		 * @version 10.0
 		 */
-		object DriverStatus{
+		%read-only object DriverStatus{
 			/**
 			 * The number of available antenna for tx on this radio.
 			 * -1 means data unavailable.
 			 */
-			read-only int32 NrTxAntenna{
+			%read-only int32 NrTxAntenna{
 				default -1;
 			}
 
@@ -2253,7 +2253,7 @@ define rrm_t{
 			 * The number of available antenna for rx on this radio.
 			 * -1 means data unavailable.
 			 */
-			read-only int32 NrRxAntenna{
+			%read-only int32 NrRxAntenna{
 				default -1;
 			}
 
@@ -2261,7 +2261,7 @@ define rrm_t{
 			 * The number of antenna actively used.
 			 * -1 means data unavailable.
 			 */
-			read-only int32 NrActiveTxAntenna{
+			%read-only int32 NrActiveTxAntenna{
 				default -1;
 			}
 
@@ -2269,7 +2269,7 @@ define rrm_t{
 			 * The number of rx antenna actively used.
 			 * -1 means data unavailable.
 			 */
-			read-only int32 NrActiveRxAntenna{
+			%read-only int32 NrActiveRxAntenna{
 				default -1;
 			}
 		}
@@ -2362,55 +2362,55 @@ define rrm_t{
 		 * Scan statistics
 		 * @version 10.0
 		 */
-		object ScanStats{
+		%read-only object ScanStats{
 			/**
 			 * Number of scans requested to the driver.
 			 * @version 10.0
 			 */
-			read-only uint32 NrScanRequested{
+			%read-only uint32 NrScanRequested{
 				default 0;
 			}
 			/**
 			 * Number of scans done reported by the driver.
 			 * @version 10.0
 			 */
-			read-only uint32 NrScanDone{
+			%read-only uint32 NrScanDone{
 				default 0;
 			}
 			/**
 			 * Number of scans not being triggered because of errors.
 			 * @version 10.0
 			 */
-			read-only uint32 NrScanError{
+			%read-only uint32 NrScanError{
 				default 0;
 			}
 			/**
 			 * Number of scans not being triggered because of internal protections.
 			 * @version 10.0
 			 */
-			read-only uint32 NrScanBlocked{
+			%read-only uint32 NrScanBlocked{
 				default 0;
 			}
 
-			object ScanReason[]{
+			%read-only object ScanReason[]{
 				/* Name of the ScanReason, This be a string for which reason scan is triggered.
 				 * @version 10.3
 				 */
-				read-only string Name{
+				%read-only string Name{
 					default "";
 				}
 				/**
 				 * Number of scans triggered for the scan Reason.
 				 * @version 10.3
 				 */
-				read-only uint32 NrScanRequested{
+				%read-only uint32 NrScanRequested{
 					default 0;
 				}
 				/**
 				 * Number of scans done for the scan Reason.
 				 * @version 10.3
 				 */
-				read-only uint32 NrScanDone{
+				%read-only uint32 NrScanDone{
 					default 0;
 				}
 			}
@@ -2496,7 +2496,7 @@ define rrm_t{
 		 * SHOULD change to Unknown if the state of the interface can
 		 * not be determined for some reason. </p>
 		 */
-		read-only string Status{
+		%read-only string Status{
 			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
 			default "Down";
 		}
@@ -2510,7 +2510,7 @@ define rrm_t{
 		/**
 		 * <p> The textual name of the SSID entry as assigned by the
 		 * CPE.</p> */
-		read-only string Name;
+		%read-only string Name;
 		
 		/**
 		 * <p>The accumulated time in seconds since the SSID entered
@@ -2525,14 +2525,14 @@ define rrm_t{
 		%persistent string LowerLayers{
 			on action write call wld_ssid_setLowerLayers_pwf;
 		}
-		read-only uint32 Index;      /* (DEBUG) Index in the SSID tree                     */
+		%read-only uint32 Index;      /* (DEBUG) Index in the SSID tree                     */
 		/**
 		 * <p>[MACAddress] The Basic Service Set ID.</p>
 		 * <p>This is the MAC address of the access point, which can
 		 * either be local (when this instance models an access point
 		 * SSID) or remote (when this instance models an end point
 		 * SSID). </p> */
-		%persistent read-only string BSSID;
+		%persistent %read-only string BSSID;
 		/**
 		 * <p>[MACAddress] The MAC address of this interface.</p>
 		 * <p>If this instance models an access point SSID, MACAddress is
@@ -2556,164 +2556,164 @@ define rrm_t{
 			default "SSID_NOT_SET";
 		}
 
-		object Stats{
+		%read-only object Stats{
 
 			/** The total number of bytes transmitted out of the
 			 *  interface, including framing characters. */
-			volatile read-only uint64 BytesSent;
+			%volatile %read-only uint64 BytesSent;
 
 			/** The total number of bytes received on the interface,
 			 *  including framing characters. */
-			volatile read-only uint64 BytesReceived;
+			%volatile %read-only uint64 BytesReceived;
 
 			/** The total number of packets transmitted out of the
 			 *  interface. */
-			volatile read-only uint64 PacketsSent;
+			%volatile %read-only uint64 PacketsSent;
 
 			/** The total number of packets received on the interface. */
-			volatile read-only uint64 PacketsReceived;
+			%volatile %read-only uint64 PacketsReceived;
 			/** The total number of outbound packets that could not be
 			 *  transmitted because of errors. */
-			volatile read-only uint32 ErrorsSent;
+			%volatile %read-only uint32 ErrorsSent;
 
 			/** The total number of transmitted packets which were retransmissions. 
 			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
-			read-only uint32 RetransCount;
+			%read-only uint32 RetransCount;
 
 			/** The total number of inbound packets that contained errors
 			 *  preventing them from being delivered to a higher-layer
 			 *  protocol.*/
-			volatile read-only uint32 ErrorsReceived;
+			%volatile %read-only uint32 ErrorsReceived;
 
 			/** The total number of packets requested for transmission which
 			 *  were not addressed to a multicast or broadcast address at
 			 *  this layer, including those that were discarded or not
 			 *  sent.*/
-			volatile read-only uint32 DiscardPacketsSent;
+			%volatile %read-only uint32 DiscardPacketsSent;
 
 			/** The total number of inbound packets which were chosen to be
 			 *  discarded even though no errors had been detected to prevent
 			 *  their being delivered. One possible reason for discarding
 			 *  such a packet could be to free up buffer space.*/
-			volatile read-only uint32 DiscardPacketsReceived;
+			%volatile %read-only uint32 DiscardPacketsReceived;
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission and which were addressed to a
 			 *  multicast address at this layer, including those that were
 			 *  discarded or not sent.*/
-			volatile read-only uint32 UnicastPacketsSent;
+			%volatile %read-only uint32 UnicastPacketsSent;
 
 			/** The total number of received packets, delivered by this
 			 *  layer to a higher layer, which were not addressed to a
 			 *  multicast or broadcast address at this layer.*/
-			volatile read-only uint32 UnicastPacketsReceived;
+			%volatile %read-only uint32 UnicastPacketsReceived;
 			
 			/** The total number of outbound packets which were chosen to be
 			 *  discarded even though no errors had been detected to prevent
 			 *  their being transmitted. One possible reason for discarding
 			 *  such a packet could be to free up buffer space.*/
-			volatile read-only uint32 MulticastPacketsSent;
+			%volatile %read-only uint32 MulticastPacketsSent;
 
 			/** The total number of received packets, delivered by this
 			 *  layer to a higher layer, which were addressed to a
 			 *  multicast address at this layer.*/
-			volatile read-only uint32 MulticastPacketsReceived;
+			%volatile %read-only uint32 MulticastPacketsReceived;
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission and which were addressed to a
 			 *  broadcast address at this layer, including those that were
 			 *  discarded or not sent.*/
-			volatile read-only uint32 BroadcastPacketsSent;
+			%volatile %read-only uint32 BroadcastPacketsSent;
 			
 			/** The total number of received packets, delivered by this
 			 *  layer to a higher layer, which were addressed to a
 			 *  broadcast address at this layer. */
-			volatile read-only uint32 BroadcastPacketsReceived;
+			%volatile %read-only uint32 BroadcastPacketsReceived;
 
 			/** The total number of packets received via the interface which
 			 *  were discarded because of an unknown or unsupported
 			 *  protocol.*/
-			volatile read-only uint32 UnknownProtoPacketsReceived;
+			%volatile %read-only uint32 UnknownProtoPacketsReceived;
 
 			/** The number of packets that were not transmitted successfully
 			 *  due to the number of retransmission attempts
 			 *  exceeding an 802.11 retry limit.*/
-			volatile read-only uint32 FailedRetransCount;
+			%volatile %read-only uint32 FailedRetransCount;
 
 			/** The number of packets that were successfully transmitted after one or more retransmissions*/
-			volatile read-only uint32 RetryCount;
+			%volatile %read-only uint32 RetryCount;
 
 			/** The number of packets that were successfully transmitted after more than one retransmission*/
-			volatile read-only uint32 MultipleRetryCount;
+			%volatile %read-only uint32 MultipleRetryCount;
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission ordered by wmm category*/
-			volatile read-only object WmmPacketsSent {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmPacketsSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission, but failed to be sent ordered by wmm category*/
-			volatile read-only object WmmFailedSent {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmFailedSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of packets received on this interface ordered by wmm category*/
-			volatile read-only object WmmPacketsReceived {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmPacketsReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of packets received on this interface, but failed to be sent to the
 					higher layers, ordered by wmm category*/
-			volatile read-only object WmmFailedReceived {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmFailedReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes that higher-level protocols
 			 *  requested for transmission ordered by wmm category*/
-			volatile read-only object WmmBytesSent {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmBytesSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes that higher-level protocols
 			 *  requested for transmission, but failed to be sent ordered by wmm category*/
-			volatile read-only object WmmFailedbytesSent {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmFailedbytesSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes received on this interface ordered by wmm category*/
-			volatile read-only object WmmBytesReceived {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmBytesReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 
 			/** The total number of bytes received on this interface, but failed to be sent to the
 					higher layers, ordered by wmm category*/
-			volatile read-only object WmmFailedBytesReceived {
-				volatile read-only uint32 AC_BE;
-				volatile read-only uint32 AC_BK;
-				volatile read-only uint32 AC_VO;
-				volatile read-only uint32 AC_VI;
+			%volatile %read-only object WmmFailedBytesReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
 			}
 		}
 
@@ -2844,7 +2844,7 @@ define rrm_t{
 		*  configuration value is undefined or invalid. The Error value
 		*  MAY be used by the CPE to indicate a locally defined error
 		*  condition.*/
-		read-only string Status;
+		%read-only string Status;
 /*		{
 			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
 			default "Disabled";
@@ -2857,10 +2857,10 @@ define rrm_t{
 		string Alias;
 		/** Index in the AccessPoint tree (also for the SSID tree,
 		 *  both are inline) */
-		read-only uint32 Index;
+		%read-only uint32 Index;
 
 		/* The name of the Radio used by this AccessPoint */
-		read-only string RadioReference;
+		%read-only string RadioReference;
 
 		/** The value MUST be the path name of a row in the SSID table.
 		 *  If the referenced object is deleted, the parameter value
@@ -2881,11 +2881,11 @@ define rrm_t{
 		}
 		/** Indicates whether this access point supports WiFi
 		 *  Multimedia (WMM) Access Categories (AC).  */
-		read-only bool WMMCapability;
+		%read-only bool WMMCapability;
 		/** <p>Indicates whether this access point supports WMM
 		 *  Unscheduled Automatic Power Save Delivery (U-APSD).</p>
 		 *  Note: U-APSD support implies WMM support.*/
-		read-only bool UAPSDCapability;
+		%read-only bool UAPSDCapability;
 		/** Whether WMM support is currently enabled. When enabled,
 		 *  this is indicated in beacon frames.*/
 		%persistent bool WMMEnable{
@@ -3026,13 +3026,13 @@ define rrm_t{
 			* The Network Access Server Identifier, which must be unique for each access point.
 			* @version 9.1
 			*/
-			read-only string NASIdentifier;
+			%read-only string NASIdentifier;
 
 			/**
 			* The R0 key use by the AP.
 			* @version 10.0
 			*/
-			read-only string R0KHKey;
+			%read-only string R0KHKey;
 
 			/**
 			* The mobility domain of the home network. This domain must be set to the same value for all APs inside the same ESS.
@@ -3117,7 +3117,7 @@ define rrm_t{
 			 *    <li>WPA2-WPA3-Enterprise</li>
 			 *  </ul>
 			 *  */
-			read-only string ModesSupported;
+			%read-only string ModesSupported;
 			/** <p>Comma-separated list of strings. Indicates which security
 			 *  modes this AccessPoint instance is allowed to use.
 			 *  Each list item is an enumeration of:</p>
@@ -3491,7 +3491,7 @@ define rrm_t{
 			/** Keeps track of current (real) WPS activation status.
 			 *  Some configurations modes disable WPS!
 			 *  Still 'the intention of the user' that is tracked in the enable field is backuped. */
-			read-only string Status;
+			%read-only string Status;
 			/** <p>Comma-separated list of strings. Indicates WPS
 			 *  configuration methods supported by the device. Each list
 			 *  item is an enumeration of:</p>
@@ -3518,7 +3518,7 @@ define rrm_t{
 			 *  S@H comments: PIN covers LABEL, DISPLAY and KEYPAD bit pattern.
 			 *  Note combination KEYPAD and PushButton is forbidden
 			 */
-			read-only string ConfigMethodsSupported;
+			%read-only string ConfigMethodsSupported;
 			/** Comma-separated list of strings. Each list item MUST
 			 *  be a member of the list reported by the
 			 *  ConfigMethodsSupported  parameter. Indicates WPS
@@ -3624,25 +3624,25 @@ define rrm_t{
 			/**
 			 * The amount of successful connection attempts since last reset.
 			 */
-			read-only uint32 Success;
+			%read-only uint32 Success;
 
 			/**
 			 * The amount of failed connection attempts since last reset, due to unknown reasons.
 			 */
-			read-only uint32 Fail;
+			%read-only uint32 Fail;
 
 			/**
 			 * The amount of failed connection attempts since last reset, due to security reasons.
 			 * Likely cause is that the user was using an invalid password.
 			 */
-			read-only uint32 FailSecurity;
+			%read-only uint32 FailSecurity;
 
 			/**
 			 * The number of fast reconnects observed. A fast reconnect is if a station
 			 * disconnects and then reconnects within a configured time frame.
 			 * @version 10.0
 			 */
-			read-only uint32 FastReconnects;
+			%read-only uint32 FastReconnects;
 			
 			/**
 			 * Specific classifications of fast reconnects. Currently supported ones are
@@ -3650,17 +3650,17 @@ define rrm_t{
 			 * reconnects get classified as the other type.
 			 * @version 10.0
 			 */
-			object FastReconnectTypes[] {
+			%read-only object FastReconnectTypes[] {
 				/**
 				 * The type of fast reconnection. Current types are "OnStateChange", "OnScan", "Default"
 				 * @version 10.0
 				 */
-				read-only string Type;
+				%read-only string Type;
 				/**
 				 * The number of fast reconnections observed of this type.
 				 * @version 10.0
 				 */
-				read-only uint32 Count;
+				%read-only uint32 Count;
 			}
 
 			/**
@@ -3680,40 +3680,40 @@ define rrm_t{
 		void getStationStats();
 
 		/** The number of active entries in the AssociatedDevice  table.  */
-		read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
+		%read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
 
 		/** <p> A table of the devices currently associated with the
 		    accesspoint. At most one entry in this table can exist with
 		    a given value for MACAddress.</p>
 		    @version 6.0
 		  */
-		read-only object AssociatedDevice[]{
+		%read-only object AssociatedDevice[]{
 			/** CUI based on Chargeable-User-Identity attribute in Access-Accept
 			 * @version 6.0  */
-			read-only string ChargeableUserId;
+			%read-only string ChargeableUserId;
 
 			/**[MACAddress] The MAC address of an associated device.
 			 * @version 6.0
 			*/
-			read-only string MACAddress;
+			%read-only string MACAddress;
 			/** Whether an associated device has authenticated (true) or
 			 * not (false).
 			 * @version 6.0
 			 */
-			read-only bool AuthenticationState;
+			%read-only bool AuthenticationState;
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the access point to the associated
 			 *  device.
 			 * @version 6.0
 			 */
-			read-only uint32 LastDataDownlinkRate;
+			%read-only uint32 LastDataDownlinkRate;
 
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the associated device to the access
 			 *  point.
 			 * @version 6.0
 			 */
-			read-only uint32 LastDataUplinkRate;
+			%read-only uint32 LastDataUplinkRate;
 
 			/** An indicator of radio signal strength of the uplink from the
 			 *  associated device to the access point, measured in dBm, as
@@ -3722,7 +3722,7 @@ define rrm_t{
 			 *  The value is the highest value accross all SignalStrengthByChain values. If not available, the value is the one reported by the driver.
 			 * @version 6.0
 			 */
-			read-only int32 SignalStrength{
+			%read-only int32 SignalStrength{
 				on action validate call check_range { min = -200, max = 0 };
 			}
 
@@ -3731,7 +3731,7 @@ define rrm_t{
 			 *  format is comma separated string of integers, example : -11,-33
 			 * @version 10.0
 			 */
-			read-only string SignalStrengthHistory;
+			%read-only string SignalStrengthHistory;
 
 			/**
 			* List of radio signal strength per antennas of the uplink from the
@@ -3740,14 +3740,14 @@ define rrm_t{
 			* Example : -58.5,-58.2,-57.4,-58.1
 			 * @version 9.1
 			*/
-			read-only string SignalStrengthByChain;
+			%read-only string SignalStrengthByChain;
 			/**
 			 * An indicator of radio signal strength of the uplink from the
 			 * associated device to the access point, measured in dBm, as
 			 * an average over all antennas.
 			 * @version 9.2
 			 */
-			read-only int32 AvgSignalStrengthByChain{
+			%read-only int32 AvgSignalStrengthByChain{
 				on action validate call check_range { min = -200, max = 0 };
 			}
 			/**
@@ -3756,7 +3756,7 @@ define rrm_t{
 			 * Reported as measured by the RssiMonitor
 			 * @version 6.0
 			 */
-			read-only int32 AvgSignalStrength{
+			%read-only int32 AvgSignalStrength{
 				on action validate call check_range { min = -200, max = 0 };
 			}
 
@@ -3768,7 +3768,7 @@ define rrm_t{
 			 * This will also be a value between 0 and 100.
 			 * @version 6.0
 			 */
-			read-only uint32 Retransmissions;
+			%read-only uint32 Retransmissions;
 
 			/** <p>Whether or not this node is currently present in the WiFi
 			 *  AccessPoint network.</p>
@@ -3779,131 +3779,131 @@ define rrm_t{
 			 *  matter to the CPE.</p>
 			 * @version 6.0
 			 */
-			read-only bool Active;
+			%read-only bool Active;
 
 			/** Signal to noise ratio in dB
 			 * @version 6.0
 			 */
-			read-only int32 SignalNoiseRatio;
+			%read-only int32 SignalNoiseRatio;
 			/** Radio noise level in dB
 			 * @version 6.0
 			*/
-			read-only int32 Noise;
+			%read-only int32 Noise;
 			/** The time elapsed since the station was last active, in seconds
 			 * @version 6.0
 			*/
-			read-only uint32 Inactive;
+			%read-only uint32 Inactive;
 			/** Number of packets received by the station
 			 * @version 6.0
 			*/
-			read-only uint32 RxPacketCount;
+			%read-only uint32 RxPacketCount;
 
 			/** Number of packets sent by the station
 			 * @version 6.0
 			*/
-			read-only uint32 TxPacketCount;
+			%read-only uint32 TxPacketCount;
 
 			/** 
                          * Number of unicast packets received by the station
 			 * @version 9.2 
 			*/
-                        read-only uint32 RxUnicastPacketCount;
+                        %read-only uint32 RxUnicastPacketCount;
 
 
 			/** 
                          * Number of unicast packets sent by the station
 			 * @version 9.2 
 			*/
-			read-only uint32 TxUnicastPacketCount;
+			%read-only uint32 TxUnicastPacketCount;
 
 
 			/** 
                          * Number of Multicast packets received by the station
 			 * @version 9.2 
 			*/
-			read-only uint32 RxMulticastPacketCount;
+			%read-only uint32 RxMulticastPacketCount;
 
 
 			/** 
                          * Number of Multicast packets sent by the station
 			 * @version 9.2 
 			*/
-			read-only uint32 TxMulticastPacketCount;
+			%read-only uint32 TxMulticastPacketCount;
 
 			/** Number of bytes sent by the station
 			 * @version 6.0
 			*/
-			read-only uint64 TxBytes;
+			%read-only uint64 TxBytes;
 
 			/** Number of bytes received by the station
 			 * @version 6.0
 			*/
-			read-only uint64 RxBytes;
+			%read-only uint64 RxBytes;
 
 			/** Number of packets errors
 			 * @version 9.0
 			*/
-			read-only uint32 TxErrors;
+			%read-only uint32 TxErrors;
 
 			/** Number of received retransmissions.
 			 * @version 6.0
 			*/
-			read-only uint32 Rx_Retransmissions;
+			%read-only uint32 Rx_Retransmissions;
 
 			/** Number of retransmissions we sent out ourselves.
 			 * @version 6.0
 			*/
-			read-only uint32 Tx_Retransmissions;
+			%read-only uint32 Tx_Retransmissions;
 
 			/** Number of failed retransmissions.
 			 * @version 9.0
 			*/
-			read-only uint32 Tx_RetransmissionsFailed;
+			%read-only uint32 Tx_RetransmissionsFailed;
 
 			/** MCS Id of the station's uplink */
-			read-only uint32 UplinkMCS;
+			%read-only uint32 UplinkMCS;
 
 			/** Indicates channel bandwidth is used as uplink */
-			read-only uint32 UplinkBandwidth;
+			%read-only uint32 UplinkBandwidth;
 
 			/** Short guarding interval is applied for uplink */
-			read-only bool UplinkShortGuard;
+			%read-only bool UplinkShortGuard;
 
 			/** MCS Id of the station's downlink */
-			read-only uint32 DownlinkMCS;
+			%read-only uint32 DownlinkMCS;
 
 			/** Indicates channel bandwidth is used as downlink */
-			read-only uint32 DownlinkBandwidth;
+			%read-only uint32 DownlinkBandwidth;
 
 			/** Short guarding interval is applied for downlink */
-			read-only bool DownlinkShortGuard;
+			%read-only bool DownlinkShortGuard;
 
 			/* Maximum number of Rx spatial streams supported */
-			read-only uint16 MaxRxSpatialStreamsSupported;
+			%read-only uint16 MaxRxSpatialStreamsSupported;
 
 			/* Maximum number of Tx spatial streams supported */
-			read-only uint16 MaxTxSpatialStreamsSupported;
+			%read-only uint16 MaxTxSpatialStreamsSupported;
 
 			/* Maximum DownlinkRate supported in Kbps */
-			read-only uint32 MaxDownlinkRateSupported;
+			%read-only uint32 MaxDownlinkRateSupported;
 
 			/* Maximum Downlink physical rate reached in Kbps */
-			read-only uint32 MaxDownlinkRateReached;
+			%read-only uint32 MaxDownlinkRateReached;
 
 			/* Maximum UplinkRate supported in Kbps */
-			read-only uint32 MaxUplinkRateSupported;
+			%read-only uint32 MaxUplinkRateSupported;
 
 			/* Maximum Uplink physical rate reached in Kbps */
-			read-only uint32 MaxUplinkRateReached;
+			%read-only uint32 MaxUplinkRateReached;
 
 			/* Maximum bandwidth supported */
-			read-only string MaxBandwidthSupported {
+			%read-only string MaxBandwidthSupported {
 				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
 				default "Unknown";
 			}
 
 			/** Mode of the connected station : deprecated: please use tr-181 field operatingStandard */
-			read-only string Mode{
+			%read-only string Mode{
 				on action validate call check_enum ["a","an","b","bg","bgn","ac","ax","Unknown"];
 				default "Unknown";
 			}
@@ -3918,13 +3918,13 @@ define rrm_t{
 			 * * ax ([802.11ax]) 
 			 * @version 10.0
 			 */
-			read-only string OperatingStandard{
+			%read-only string OperatingStandard{
 				on action validate call check_enum ["a","b","g","n","ac","ax","Unknown"];
 				default "Unknown";
 			}
 
 			/** Station is in power save mode */
-			read-only bool PowerSave;
+			%read-only bool PowerSave;
 
 			/**
 			 * Station Capabilities
@@ -3934,7 +3934,7 @@ define rrm_t{
 			 * BTM = BSS Transition Management 802.11v
 			 * @version 9.0
 			*/
-			read-only string Capabilities{
+			%read-only string Capabilities{
 				default "";
 			}
 
@@ -3942,7 +3942,7 @@ define rrm_t{
 			 * Connection Duration in seconds
 			 * @version 9.0
 			*/
-			read-only uint32 ConnectionDuration;
+			%read-only uint32 ConnectionDuration;
 
 			/**
 			 * The type of device.
@@ -3965,19 +3965,19 @@ define rrm_t{
 			 * The timestamp when the device changes active state.
 			 * Expressed in UTC time.
 			 */
-			read-only datetime LastStateChange;
+			%read-only datetime LastStateChange;
 
 			/**
 			 * Date and time in UTC when the device was associated.
 			 * @version 9.1
 			 */
-			read-only datetime AssociationTime;
+			%read-only datetime AssociationTime;
 			
 			/**
 			 * Date and time in UTC when the device was disassociated.
 			 * @version 10.1
 			 */
-			read-only datetime DisassociationTime;
+			%read-only datetime DisassociationTime;
 			
 			/**
 			 * Current device's MultiUser MIMO assigned Group ID.
@@ -3985,7 +3985,7 @@ define rrm_t{
 			 * Group ID (0) indicates SU transmission.
 			 * @version 9.2
 			 */
-			read-only uint32 MUGroupId;
+			%read-only uint32 MUGroupId;
 
 			/**
 			 * Current device's MU User position ID.
@@ -3993,26 +3993,26 @@ define rrm_t{
 			 * Value 0 indicates undefined position. 
 			 * @version 9.2
 			 */
-			read-only uint32 MUUserPositionId;
+			%read-only uint32 MUUserPositionId;
 			
 			/**
 			 * Instant count of packets sent as MU to the device. 
 			 * @version 9.2
 			 */
-			read-only uint32 MUMimoTxPktsCount;
+			%read-only uint32 MUMimoTxPktsCount;
 			
 			/**
 			 * Instant percentage of packets sent as MU to the device. 
 			 * @version 9.2
 			 */
-			read-only uint32 MUMimoTxPktsPercentage;
+			%read-only uint32 MUMimoTxPktsPercentage;
 
 			/**
 			 * list of HT modulation and coding scheme (MCS) supported by the associated device.
 			 * Format is comma separated list of integers.
 			 * @version 9.2
 			 */
-			read-only string SupportedMCS;
+			%read-only string SupportedMCS;
 
 			/**
 			 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
@@ -4020,7 +4020,7 @@ define rrm_t{
 			 * Format is comma separated list of integers.
 			 * @version 10.0
 			 */
-			read-only string SupportedVhtMCS;
+			%read-only string SupportedVhtMCS;
 
 			/**
 			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
@@ -4028,7 +4028,7 @@ define rrm_t{
 			 * Format is comma separated list of integers.
 			 * @version 10.0
 			 */
-			read-only string SupportedHeMCS;
+			%read-only string SupportedHeMCS;
 
 			/**
 			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
@@ -4036,20 +4036,20 @@ define rrm_t{
 			 * Format is comma separated list of integers.
 			 * @version 10.0
 			 */
-			read-only string SupportedHe160MCS;
+			%read-only string SupportedHe160MCS;
 
 			/**
 			 * Vendor OUI of the associated device.
 			 * format: AA:BB:CC,DD:EE:FF,....
 			 * @version 9.2
 			 */
-			read-only string VendorOUI;
+			%read-only string VendorOUI;
 
 			/**
 			 * Indicates which security mode is enabled.
 			 * @version 9.2
 			 */
-			read-only string SecurityModeEnabled{
+			%read-only string SecurityModeEnabled{
 				on action validate call check_enum ["None", "OWE",
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
@@ -4064,7 +4064,7 @@ define rrm_t{
 			 * The link bandwidth of the associated device.
 			 * @version 9.2
 			 */
-			read-only string LinkBandwidth{
+			%read-only string LinkBandwidth{
 				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","None"];
 				default "None";
 			}
@@ -4073,7 +4073,7 @@ define rrm_t{
 			 * Encryption Mode
 			 * @version 9.2
 			 */
-			read-only string EncryptionMode{
+			%read-only string EncryptionMode{
 				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
 				default "Default";
 			}
@@ -4084,7 +4084,7 @@ define rrm_t{
 			 * "40MHz", "SGI20", "SGI40"
 			 * @version 9.2
 			 */
-			read-only string HtCapabilities;
+			%read-only string HtCapabilities;
 
 			/**
 			 * VHT Capabilities of the associated device
@@ -4092,7 +4092,7 @@ define rrm_t{
 			 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
 			 * @version 9.2
 			 */
-			read-only string VhtCapabilities;
+			%read-only string VhtCapabilities;
 
 			/**
 			 * HE Capabilities of the associated device
@@ -4100,7 +4100,7 @@ define rrm_t{
 			 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
 			 * @version 9.2
 			 */
-			read-only string HeCapabilities;
+			%read-only string HeCapabilities;
 
 			/**
 			 * Frequency Capabilities
@@ -4109,7 +4109,7 @@ define rrm_t{
 			 * "2.4GHz","5GHz","6GHz",
 			 * @version 10.0
 			 */
-			read-only string FrequencyCapabilities;
+			%read-only string FrequencyCapabilities;
 
 			/**
 			 * UNIIBands Capabilities
@@ -4118,32 +4118,32 @@ define rrm_t{
 			 * "U-NII-1","U-NII-2C","U-NII-2A","U-NII-3","U-NII-5","U-NII-6","U-NII-7","U-NII-8"
 			 * @version 10.0
 			 */
-			read-only string UNIIBandsCapabilities;
+			%read-only string UNIIBandsCapabilities;
 
 			/**
 			 * Capabilities seen per associated device inside a probe request
 			 * @version 9.2
 			 */
-			read-only object ProbeReqCaps{
+			%read-only object ProbeReqCaps{
 				/**
 				 * list of modulation and coding scheme (MCS) supported by the associated device.
 				 * Format is comma separated list of integers.
 				 * @version 9.2
 				 */
-				read-only string SupportedMCS;
+				%read-only string SupportedMCS;
 
 				/**
 				 * Vendor OUI of the associated device.
 				 * format: AA:BB:CC,DD:EE:FF,....
 				 * @version 9.2
 				 */
-				read-only string VendorOUI;
+				%read-only string VendorOUI;
 
 				/**
 				 * Indicates which security mode is enabled.
 				 * @version 9.2
 				 */
-				read-only string SecurityModeEnabled{
+				%read-only string SecurityModeEnabled{
 					on action validate call check_enum ["None", "OWE",
 							"WEP-64","WEP-128","WEP-128iv",
 							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
@@ -4158,7 +4158,7 @@ define rrm_t{
 				 * The link bandwidth of the associated device.
 				 * @version 9.2
 				 */
-				read-only string LinkBandwidth{
+				%read-only string LinkBandwidth{
 					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","None"];
 					default "None";
 				}
@@ -4167,7 +4167,7 @@ define rrm_t{
 				 * Encryption Mode
 				 * @version 9.2
 				 */
-				read-only string EncryptionMode{
+				%read-only string EncryptionMode{
 					on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
 					default "Default";
 				}
@@ -4178,7 +4178,7 @@ define rrm_t{
 				 * "40MHz", "SGI20", "SGI40"
 				 * @version 9.2
 				 */
-				read-only string HtCapabilities;
+				%read-only string HtCapabilities;
 
 				/**
 				 * VHT Capabilities of the associated device
@@ -4186,7 +4186,7 @@ define rrm_t{
 				 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
 				 * @version 9.2
 				 */
-				read-only string VhtCapabilities;
+				%read-only string VhtCapabilities;
 
 				/**
 				 * HE Capabilities of the associated device
@@ -4194,7 +4194,7 @@ define rrm_t{
 				 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
 				 * @version 9.2
 				 */
-				read-only string HeCapabilities;
+				%read-only string HeCapabilities;
 
 				/**
 				 * Frequency Capabilities
@@ -4203,7 +4203,7 @@ define rrm_t{
 				 * "2.4GHz","5GHz","6GHz",
 				 * @version 10.0
 				 */
-				read-only string FrequencyCapabilities;
+				%read-only string FrequencyCapabilities;
 			}
 		}
 
@@ -4468,7 +4468,7 @@ define rrm_t{
 			100%)  Load Measurement Duration: Duration for measuring downlink/uplink load
 			in  tenths of a second (1..65535); 0 if load cannot be determined
 			*/
-			read-only string WanMetrics;
+			%read-only string WanMetrics;
 
 			/**
 			# Operating Class Indication
@@ -4776,7 +4776,7 @@ define rrm_t{
 		conflict with any existing entries. At most one enabled
 		entry in this table can exist with a given value for
 		SSIDReference.</p>*/
-	%persistent read-only object EndPoint[]{
+		%persistent %read-only object EndPoint[]{
 		/** <p>Indicates the status of this end point. Enumeration
 		*   of:</p>
 		*   <ul>
@@ -4789,19 +4789,19 @@ define rrm_t{
 		*   configuration value is undefined or invalid. The Error
 		*   value MAY be used by the CPE to indicate a locally defined
 		*   error condition.*/
-		read-only string Status{
+		%read-only string Status{
 			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
 			default "Disabled";
 		}
 
 		/** <p>Indicates the state of the endpoint's connection.</p>*/
-		read-only string ConnectionStatus {
+		%read-only string ConnectionStatus {
 			on action validate call check_enum ["Disabled", "Idle", "Discovering", "Connecting", "WPS_Pairing", "WPS_PairingDone", "WPS_Timeout", "Connected", "Disconnected", "Error", "Error_Misconfigured"];
 			default "Disabled";
 		}
 
 		/** <p>The last error that occurred</p> */
-		read-only string LastError {
+		%read-only string LastError {
 			on action validate call check_enum ["None", "SSID_Not_Found", "Invalid_PassPhrase", "SecurityMethod_Unsupported", "WPS_Timeout", "WPS_Canceled", "Error_Misconfigured", "Association_Timeout"];
 			default "None";
 		}
@@ -4847,7 +4847,7 @@ define rrm_t{
 		 *  when the CPE creates an instance of this object. */
 		string Alias;
 		/** Index in the EndPoint object tree */
-		read-only uint32 Index;
+		%read-only uint32 Index;
 		/** The value MUST be the path name of a row in the Profile
 		 *  table. If the referenced object is deleted, the parameter
 		 *  value MUST be set to an empty string. This is the currently
@@ -4868,10 +4868,10 @@ define rrm_t{
 		string SSIDReference;
 
 		/* The name of the Radio used by this endpoint */
-		read-only string RadioReference;
+		%read-only string RadioReference;
 
 		/* The name of the underlying interface of this endpoint */
-		read-only string IntfName;
+		%read-only string IntfName;
 
 		/** Unused in this version of wld */
 		%persistent string BridgeInterface{
@@ -4898,42 +4898,42 @@ define rrm_t{
 
 		/** Throughput statistics for this end point.  <b>Not
 		 *  clear how we can handle this? ToBe Defined!!!</b> */
-		object Stats{
+		%read-only object Stats{
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the access point to the end point
 			 *  device.*/
-			read-only uint32 LastDataDownlinkRate;
+			%read-only uint32 LastDataDownlinkRate;
 
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the end point to the access point
 			 *  device.*/
-			read-only uint32 LastDataUplinkRate;
+			%read-only uint32 LastDataUplinkRate;
 
 			/** An indicator of radio signal strength of the downlink from
 			 *  the access point to the end point, measured in dBm, as an
 			 *  average of the last 100 packets received from the device.*/
-			read-only int32 SignalStrength{
+			%read-only int32 SignalStrength{
 				on action validate call check_range { min = -200, max = 0 };
 			}
 			/** Signal to noise ratio in dB
 			 * @version 6.1
 			 */
-			read-only int32 SignalNoiseRatio;
+			%read-only int32 SignalNoiseRatio;
 			/** Radio noise level in dBm
 			 * @version 6.1
 			*/
-			read-only int32 Noise;
+			%read-only int32 Noise;
 
 			/** Received signal strength indicator in percent
 			 * @version 6.1
 			*/
-			read-only int32 RSSI;
+			%read-only int32 RSSI;
 
 			/** The number of packets that had to be re-transmitted, from
 			 *  the last 100 packets sent to the access point.
 			 *  Multiple re-transmissions of the same packet count as
 			 *  one.*/
-			read-only uint32 Retransmissions{
+			%read-only uint32 Retransmissions{
 				on action validate call check_range { min = 0, max = 100 };
 			}
 
@@ -4941,41 +4941,41 @@ define rrm_t{
 			 * Number of packets received by the endpoint.
 			 * @version 9.1
 			 */
-			read-only uint32 RxPacketCount;
+			%read-only uint32 RxPacketCount;
 
 			/*
 			 * Number of packets sent by the endpoint.
 			 * @version 9.1
 			 */
-			read-only uint32 TxPacketCount;
+			%read-only uint32 TxPacketCount;
 
 			/*
 			 * Number of bytes sent by the endpoint.
 			 * @version 9.1
 			 */
-			read-only uint64 TxBytes;
+			%read-only uint64 TxBytes;
 
 			/*
 			 * Number of bytes received by the endpoint.
 			 * @version 9.1
 			 */
-			read-only uint64 RxBytes;
+			%read-only uint64 RxBytes;
 
 			/** Number of received retransmissions.
 			 * @version 9.1
 			 */
-			read-only uint32 Rx_Retransmissions;
+			%read-only uint32 Rx_Retransmissions;
 
 			/** Number of sent retransmissions.
 			 * @version 9.1
 			 */
-			read-only uint32 Tx_Retransmissions;
+			%read-only uint32 Tx_Retransmissions;
 			
 			/**
 			 * The link bandwidth of the current link
 			 * @version 10.0
 			 */
-			read-only string LinkBandwidth{
+			%read-only string LinkBandwidth{
 				on action validate call check_enum ["Unknown","20MHz","40MHz","80MHz","160MHz"];
 				default "Unknown";
 			}
@@ -4990,7 +4990,7 @@ define rrm_t{
 			 * * ax ([802.11ax]) 
 			 * @version 10.0
 			 */
-			read-only string OperatingStandard{
+			%read-only string OperatingStandard{
 				on action validate call check_enum ["Unknown","a","b","g","n","ac","ax"];
 				default "Unknown";
 			}
@@ -5000,20 +5000,20 @@ define rrm_t{
 			 * Format is comma separated list of integers.
 			 * @version 10.0
 			 */
-			read-only string SupportedMCS;
+			%read-only string SupportedMCS;
 
 			/**
 			 * Vendor OUI of the associated device.
 			 * format: AA:BB:CC,DD:EE:FF,....
 			 * @version 10.0
 			 */
-			read-only string VendorOUI;
+			%read-only string VendorOUI;
 			
 			/**
 			 * The security mode of the current link.
 			 * @version 10.0
 			 */
-			read-only string SecurityModeEnabled{
+			%read-only string SecurityModeEnabled{
 				on action validate call check_enum ["None", "OWE",
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
@@ -5028,7 +5028,7 @@ define rrm_t{
 			 * The encryption mode of the current link.
 			 * @version 10.0
 			 */
-			read-only string EncryptionMode{
+			%read-only string EncryptionMode{
 				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
 				default "Default";
 			}
@@ -5039,7 +5039,7 @@ define rrm_t{
 			 * "40MHz", "SGI20", "SGI40"
 			 * @version 10.0
 			 */
-			read-only string HtCapabilities;
+			%read-only string HtCapabilities;
 
 			/**
 			 * VHT Capabilities of the associated device
@@ -5047,7 +5047,7 @@ define rrm_t{
 			 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
 			 * @version 10.0
 			 */
-			read-only string VhtCapabilities;
+			%read-only string VhtCapabilities;
 
 			/**
 			 * HE Capabilities of the associated device
@@ -5055,19 +5055,19 @@ define rrm_t{
 			 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
 			 * @version 10.0
 			 */
-			read-only string HeCapabilities;
+			%read-only string HeCapabilities;
 			
 			/**
 			 * The maximum number of receive spatial streams available on this link
 			 * @version 10.0
 			 */
-			read-only uint32 MaxRxSpatialStreamsSupported;
+			%read-only uint32 MaxRxSpatialStreamsSupported;
 			
 			/**
 			 * The maximum number of transmit spatial streams available on this link
 			 * @version 10.0
 			 */
-			read-only uint32 MaxTxSpatialStreamsSupported;
+			%read-only uint32 MaxTxSpatialStreamsSupported;
 		}
 		/**
 		 * Retrieve the stats from the driver and update datamodel
@@ -5095,7 +5095,7 @@ define rrm_t{
 			*     <li> WPA-WPA2-Enterprise </li>
 			*   </ul>
 			*   */
-			read-only string ModesSupported {
+			%read-only string ModesSupported {
 				default "";
 			}
 			/*
@@ -5103,7 +5103,7 @@ define rrm_t{
 			 * Usefull in case Auto detection is active
 			 * @version 6.1
 			 */
-			%persistent read-only string ModeEnabled {
+			%persistent %read-only string ModeEnabled {
 				default "";
 			}
 		}
@@ -5278,7 +5278,7 @@ define rrm_t{
 			 *   The USBFlashDrive and Ethernet are only applicable in WPS 1.0 and are deprecated in WPS 2.x.
 			 *   The PhysicalPushButton, VirtualPushButton, PhysicalDisplay and VirtualDisplay are applicable to WPS 2.x only.
 			 */
-			read-only string ConfigMethodsSupported;
+			%read-only string ConfigMethodsSupported;
 			/*
 				on action validate call check_enum ["USB","Ethernet","Label","Display",
 				                 "ExternalNFCToken","InternalNFCToken","NFCInterface","PushButton",
@@ -5296,31 +5296,31 @@ define rrm_t{
 			* Indicates whether WPS pairing is busy.
 			* This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
 			*/
-			read-only bool PairingInProgress;
+			%read-only bool PairingInProgress;
 		}
 		
 		/**
 		 * Assocation statistics.
 		 * @version 10.0
 		 */
-		object AssocStats{
+		%read-only object AssocStats{
 			/**
 			 * The number of times the endpoint attempted to association.
 			 * @version 10.0
 			 */
-			read-only uint32 NrAssocAttempts;
+			%read-only uint32 NrAssocAttempts;
 			
 			/**
 			 * The number of times the endpoint attempted to association since the last disconnection.
 			 * @version 10.0
 			 */
-			read-only uint32 NrAssocAttempsSinceDc;
+			%read-only uint32 NrAssocAttempsSinceDc;
 			
 			/**
 			 * The number of times the endpoint successfully associated.
 			 * @version 10.0
 			 */
-			read-only uint32 NrAssociations;
+			%read-only uint32 NrAssociations;
 			
 			/**
 			 * The number of seconds after boot that the endpoint last associated.
@@ -5328,14 +5328,14 @@ define rrm_t{
 			 * is not available at time of association.
 			 * @version 10.0
 			 */
-			read-only uint32 AssocTime;
+			%read-only uint32 AssocTime;
 			
 			/**
 			 * The number of seconds after boot that the endpoint last disassociated.
 			 * This is expressed in seconds after boot, to allow comparison with AssocTime.
 			 * @version 10.0
 			 */
-			read-only uint32 DisassocTime;
+			%read-only uint32 DisassocTime;
 		}
 
 		/** When this is toggled, we must check for updating the full

@@ -223,7 +223,7 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
 
     memcpy(pAD->MACAddress, macAddress->bMac, ETHER_ADDR_LEN);
 
-    mac2str(pAD->Name, (unsigned char*) pAD->MACAddress, sizeof(pAD->Name));
+    SWL_MAC_BIN_TO_CHAR(pAD->Name, pAD->MACAddress);
     pAD->deviceType = pAP->defaultDeviceType;
     pAD->devicePriority = 1;
     pAD->Active = 0;
@@ -423,7 +423,7 @@ amxd_status_t _getStationStats(amxd_object_t* obj_AP,
     if(ret == amxd_status_deferred) {
         pAP->stationsStatsState.running = true;
         pAP->stationsStatsState.call_id = call_id;
-        amxp_timer_t* timer;
+        amxp_timer_t* timer = NULL;
         amxp_timer_new(&timer, station_stats_timeout, pAP);
         amxp_timer_start(timer, STATIONS_STATS_TIMEOUT);
         SAH_TRACEZ_OUT(ME);

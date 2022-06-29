@@ -400,7 +400,7 @@ amxd_status_t _scan(amxd_object_t* object,
                     amxc_var_t* retval) {
 
     T_Radio* pR = object->priv;
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
+    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
 
     amxd_status_t res = _startScan(object, func, args, retval);
     if(res != amxd_status_deferred) {
@@ -591,7 +591,7 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
     bool update = GET_BOOL(args, "update");
 
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
+    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
     amxd_status_t retVal = pR->pFA->mfn_wrad_getspectruminfo(pR, update, call_id, retval);
     if(retVal != amxd_status_deferred) {
         return retVal;

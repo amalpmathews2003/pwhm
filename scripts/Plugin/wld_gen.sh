@@ -7,7 +7,7 @@ get_base_wan_address()
         set -a
         . /etc/environment 2> /dev/null
         if [ -n "$WAN_ADDR" ]; then
-            exit
+            return
         fi
     fi
     export WAN_ADDR=$(cat /sys/class/net/br-lan/address 2> /dev/null)
@@ -18,7 +18,7 @@ case $1 in
         export LD_LIBRARY_PATH=/usr/lib/amx/wld
         get_base_wan_address
         mkdir -p /var/lib/wld
-        amxrt -D /etc/amx/wld/wld.odl
+        amxrt /etc/amx/wld/wld.odl &
         ;;
     stop)
         if [ -f /var/run/wld.pid ]; then

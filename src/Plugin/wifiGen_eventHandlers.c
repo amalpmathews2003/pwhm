@@ -176,6 +176,7 @@ static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* mac
     wld_ad_add_disconnection(pAP, pAD);
     // clean up stations who failed authentication
     wld_vap_cleanup_stationlist(pAP);
+    wld_vap_sync_assoclist(pAP);
 }
 
 static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode) {

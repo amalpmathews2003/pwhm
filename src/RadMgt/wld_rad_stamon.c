@@ -261,9 +261,9 @@ amxd_status_t getDeviceStats(amxd_object_t* obj,
         return amxd_status_unknown_error;
     }
 
-    amxd_object_t* instance = NULL;
     amxd_object_t* object = amxd_object_get(pRad->pBus, path);
     amxd_object_for_each(instance, it, object) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
         if(instance == NULL) {
             continue;
         }
@@ -296,7 +296,7 @@ amxd_status_t _getNaStationStats(amxd_object_t* obj,
                                  amxd_function_t* func _UNUSED,
                                  amxc_var_t* args _UNUSED,
                                  amxc_var_t* retval) {
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
+    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
     return getDeviceStats(obj, call_id, retval, "NaStaMonitor.NonAssociatedDevice");
 }
 
@@ -500,7 +500,7 @@ amxd_status_t _getMonitorDeviceStats(amxd_object_t* obj,
                                      amxd_function_t* func _UNUSED,
                                      amxc_var_t* args _UNUSED,
                                      amxc_var_t* retval) {
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
+    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
     return getDeviceStats(obj, call_id, retval, "NaStaMonitor.MonitorDevice");
 }
 

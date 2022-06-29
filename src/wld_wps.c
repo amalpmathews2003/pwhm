@@ -124,7 +124,7 @@ const char* wld_wps_ConfigMethod_to_string(const int value) {
 bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const uint32_t ConfigMethods) {
     if(ConfigMethods == 0) {
         amxc_string_clean(output);
-        amxc_string_append(output, "None", amxc_string_buffer_length(output));
+        amxc_string_appendf(output, "None");
         return true;
     }
     return bitmask_to_string(output, cstr_AP_WPS_CM_Supported, ',', ConfigMethods);
@@ -489,8 +489,9 @@ amxd_status_t _wld_wps_setUUID(amxd_object_t* object _UNUSED,
     ASSERTI_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
     ASSERTI_TRUE(debugIsSsidPointer(pAP->pSSID), amxd_status_ok, ME, "NULL");
 
-    const char* uuid = amxc_var_constcast(cstring_t, args);
+    char* uuid = amxc_var_dyncast(cstring_t, args);
     bool ok = s_updateUUID(uuid, pAP);
+    free(uuid);
 
     return ok ? amxd_status_ok : amxd_status_unknown_error;
 }

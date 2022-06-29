@@ -1054,7 +1054,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         /* If all PIN scenario's are set (Label,Display and KeyPad), we can use the PIN string */
         if((pAP->WPS_ConfigMethodsSupported & APWPSCMS_PIN) == APWPSCMS_PIN) {
-            amxc_string_append(&TBufStr, "PIN", amxc_string_buffer_length(&TBufStr));
+            amxc_string_appendf(&TBufStr, "PIN");
         }
         amxd_object_set_cstring_t(wpsObj, "ConfigMethodsSupported", TBufStr.buffer);
 

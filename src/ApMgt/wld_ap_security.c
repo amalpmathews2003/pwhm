@@ -337,7 +337,7 @@ amxd_status_t _wld_ap_validateWEPKey_pvf(amxd_object_t* object _UNUSED,
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
-    if(swl_str_matches(currentValue, newValue) || isValidWEPKey(newValue)) {
+    if(swl_str_matches(currentValue, newValue) || (isValidWEPKey(newValue) != APMSI_UNKNOWN)) {
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "invalid WEPKey (%s)", newValue);

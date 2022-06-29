@@ -235,7 +235,7 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
         wait_item->timer->priv = wait_item;
         amxp_timer_start(wait_item->timer, ms_wait_time);
         amxc_llist_append(&bss_wait_list, &(wait_item->it));
-        wait_item->call_id = amxc_var_constcast(uint64_t, ret);
+        wait_item->call_id = amxc_var_dyncast(uint64_t, ret);
         amxd_function_defer(func, &wait_item->call_id, ret, NULL, NULL);
         status = amxd_status_deferred;
     } else {

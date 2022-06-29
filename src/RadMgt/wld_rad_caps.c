@@ -297,13 +297,14 @@ amxd_status_t _wld_rad_capability_setEnable(amxd_object_t* wifi_cap,
 
     SAH_TRACEZ_IN(ME);
 
-    const char* capabilities = amxc_var_constcast(cstring_t, args);
+    char* capabilities = amxc_var_dyncast(cstring_t, args);
     ASSERT_NOT_NULL(capabilities, amxd_status_unknown_error, ME, "NULL");
 
     SAH_TRACEZ_INFO(ME, "Setting capabilities [%s] on radio [%s]", capabilities, pR->Name);
 
     char* capabilityList[1 + pR->nrCapabilities];
-    int nrValues = wld_rad_parseList((char*) capabilities, capabilityList, pR->nrCapabilities);
+    int nrValues = wld_rad_parseList(capabilities, capabilityList, pR->nrCapabilities);
+    free(capabilities);
     if(nrValues < 0) {
         //can't parse all caps, still continuing
         SAH_TRACEZ_WARNING(ME, "Failed to parse all caps");

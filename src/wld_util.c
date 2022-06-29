@@ -2128,7 +2128,7 @@ bool bitmask_to_string(amxc_string_t* output, const char** strings, const char s
     size_t currentLength = 0;
     size_t newLength = 0;
 
-    amxc_string_clean(output);
+    amxc_string_reset(output);
 
     if(!output || !strings) {
         SAH_TRACEZ_ERROR(ME, "argument is NULL");
@@ -2138,12 +2138,13 @@ bool bitmask_to_string(amxc_string_t* output, const char** strings, const char s
     for(i = 0; strings[i]; i++) {
         bit = 1 << i;
         if(bitmask & bit) {
+            int ret = 0;
             if(amxc_string_is_empty(output) || (separator == '\0')) {
-                newLength = amxc_string_append(output, strings[i], amxc_string_buffer_length(output));
+                ret = amxc_string_append(output, strings[i], strlen(strings[i]));
             } else {
-                newLength = amxc_string_appendf(output, "%c%s", separator, strings[i]);
+                ret = amxc_string_appendf(output, "%c%s", separator, strings[i]);
             }
-            if(newLength == currentLength) {
+            if((ret != 0) || ((newLength = amxc_string_text_length(output)) == currentLength)) {
                 SAH_TRACEZ_ERROR(ME, "length %d stays for '%s' + '%s'", (int) currentLength, output->buffer, strings[i]);
                 return false;
             }

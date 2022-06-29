@@ -103,9 +103,9 @@ swl_rc_ne wld_nl80211_dumpIfaceInfo(wld_nl80211_ifaceInfo_t* pIfaceInfo, amxc_va
     amxc_var_add_key(cstring_t, pMap, "mac", macChar.cMac);
     amxc_string_t typeStr;
     amxc_string_init(&typeStr, 0);
-    amxc_string_append(&typeStr, (pIfaceInfo->isMain ? "main" : "virtual"), amxc_string_buffer_length(&typeStr));
-    amxc_string_append(&typeStr, (pIfaceInfo->isAp ? "AP" : ""), amxc_string_buffer_length(&typeStr));
-    amxc_string_append(&typeStr, (pIfaceInfo->isSta ? "STA" : ""), amxc_string_buffer_length(&typeStr));
+    amxc_string_appendf(&typeStr, "%s", (pIfaceInfo->isMain ? "main" : "virtual"));
+    amxc_string_appendf(&typeStr, "%s", (pIfaceInfo->isAp ? "AP" : ""));
+    amxc_string_appendf(&typeStr, "%s", (pIfaceInfo->isSta ? "STA" : ""));
     amxc_var_add_key(cstring_t, pMap, "type", amxc_string_get(&typeStr, 0));
     amxc_string_clean(&typeStr);
     amxc_var_add_key(uint32_t, pMap, "freq", pIfaceInfo->chanSpec.ctrlFreq);

@@ -71,7 +71,7 @@
 #define ME "tyRoam"
 
 static void s_writeReply(amxc_var_t* retval, wld_tinyRoam_roamResult_e roamResult) {
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
+    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
 
     amxc_var_t retvalMap;
     amxc_var_init(&retvalMap);

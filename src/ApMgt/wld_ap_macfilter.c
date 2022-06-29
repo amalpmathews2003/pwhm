@@ -104,11 +104,11 @@ static bool sync_changes(amxd_object_t* mf, const char* objectName, unsigned cha
     unsigned char macbin[ETHER_ADDR_LEN];
     amxd_object_t* templateObj = amxd_object_get(mf, objectName);
 
-    amxd_object_for_each(child, it, templateObj) {
+    amxd_object_for_each(instance, it, templateObj) {
         if(idx >= maxentries) {
             break;
         }
-        amxd_object_t* mfentry = amxc_llist_it_get_data(it, amxd_object_t, it);
+        amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
         const char* macstr = amxd_object_get_cstring_t(mfentry, "MACAddress", NULL);
         if(convStr2Mac(macbin, ETHER_ADDR_LEN, (unsigned char*) (macstr ? : ""), strlen(macstr ? : ""))) {
             if(memcmp(macbin, maclist[idx], ETHER_ADDR_LEN)) {
@@ -191,7 +191,7 @@ static void syncMACFiltering(amxd_object_t* object) {
 
         if(prev_WPS_Enable != pAP->WPS_Enable) {
             /* Update the data model *after* this commit finishes */
-            amxp_timer_t* timer;
+            amxp_timer_t* timer = NULL;
             amxp_timer_new(&timer, delay_WPS_disable, object);
             amxp_timer_start(timer, 0);
         }
@@ -245,8 +245,8 @@ void wld_ap_macfilter_deleteAllEntries(T_AccessPoint* pAP, char* listname) {
     SAH_TRACEZ_INFO(ME, "Deleting all object entries");
     pAP->MF_AddressListBlockSync = true;
     amxd_object_t* templateObj = amxd_object_get(mfObject, listname);
-    amxd_object_for_each(child, it, templateObj) {
-        amxd_object_t* mfentry = amxc_llist_it_get_data(it, amxd_object_t, it);
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
         amxd_object_delete(&mfentry);
     }
     pAP->MF_AddressListBlockSync = false;
@@ -272,8 +272,8 @@ bool wld_ap_macfilter_entry_exist(T_AccessPoint* pAP, char* listname, char* macS
     amxd_object_t* mfObject = amxd_object_get(pAP->pBus, "MACFiltering");
     ASSERTS_NOT_NULL(mfObject, false, ME, "NULL");
     amxd_object_t* templateObj = amxd_object_get(mfObject, listname);
-    amxd_object_for_each(child, it, templateObj) {
-        amxd_object_t* mf_entry = amxc_llist_it_get_data(it, amxd_object_t, it);
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* mf_entry = amxc_container_of(it, amxd_object_t, it);
         const char* entry_str = amxd_object_get_cstring_t(mf_entry, "MACAddress", NULL);
         if(strncasecmp(macStr, entry_str, ETHER_ADDR_STR_LEN) == 0) {
             SAH_TRACEZ_INFO(ME, "Entry exist %s", macStr);
@@ -286,9 +286,9 @@ bool wld_ap_macfilter_entry_exist(T_AccessPoint* pAP, char* listname, char* macS
 void wld_ap_macfilter_delete_unused_entry(T_AccessPoint* pAP, char* listname) {
     amxd_object_t* mfObject = amxd_object_get(pAP->pBus, "MACFiltering");
     ASSERTS_NOT_NULL(mfObject, , ME, "NULL");
-    amxd_object_t* mf_entry = NULL;
     amxd_object_t* templateObj = amxd_object_get(mfObject, listname);
-    amxd_object_for_each(child, it, templateObj) {
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* mf_entry = amxc_container_of(it, amxd_object_t, it);
         const char* entry_str = amxd_object_get_cstring_t(mf_entry, "MACAddress", NULL);
         if(pAP->MF_AddressList && !strcasestr(pAP->MF_AddressList, entry_str)) {
             SAH_TRACEZ_INFO(ME, "Deleting entry %s", entry_str);
@@ -371,26 +371,25 @@ amxd_status_t _wld_apMacFilter_setAddressList_pwf(amxd_object_t* object,
     rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
 
-    const char* newMACFilterAddressList_param = amxc_var_constcast(cstring_t, args);
+    char* newMACFilterAddressList_param = amxc_var_dyncast(cstring_t, args);
     ASSERTS_NOT_NULL(newMACFilterAddressList_param, amxd_status_unknown_error, ME, "NULL");
 
     if(swl_str_matches(pAP->MF_AddressList, newMACFilterAddressList_param)) {
         SAH_TRACEZ_INFO(ME, "Same MACFilterAddressList");
-        return amxd_status_ok;
-    }
-    if(swl_str_isEmpty(newMACFilterAddressList_param)) {
+    } else if(swl_str_isEmpty(newMACFilterAddressList_param)) {
         wld_ap_macfilter_cleanupMACFilterAddressList(pAP);
-        return amxd_status_ok;
+    } else {
+        swl_str_copyMalloc(&pAP->MF_AddressList, newMACFilterAddressList_param);
+        SAH_TRACEZ_INFO(ME, "%s: Set new MF_AddressList %s", pAP->alias, pAP->MF_AddressList);
+        /* delay syncing mf addressList string with mf obj entries list
+         * to give time for nemo to push its entries to plugin side.
+         * This avoid duplicating MF entries.
+         */
+        amxp_timer_t* timer = NULL;
+        amxp_timer_new(&timer, delay_sync_mf_addressList, pAP);
+        amxp_timer_start(timer, 0);
     }
-    swl_str_copyMalloc(&pAP->MF_AddressList, newMACFilterAddressList_param);
-    SAH_TRACEZ_INFO(ME, "%s: Set new MF_AddressList %s", pAP->alias, pAP->MF_AddressList);
-    /* delay syncing mf addressList string with mf obj entries list
-     * to give time for nemo to push its entries to plugin side.
-     * This avoid duplicating MF entries.
-     */
-    amxp_timer_t* timer;
-    amxp_timer_new(&timer, delay_sync_mf_addressList, pAP);
-    amxp_timer_start(timer, 0);
+    free(newMACFilterAddressList_param);
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -477,8 +476,8 @@ static bool delEntry(
     }
 
     amxd_object_t* entry_obj = NULL;
-    amxd_object_for_each(child, it, template_obj) {
-        amxd_object_t* mfentry = amxc_llist_it_get_data(it, amxd_object_t, it);
+    amxd_object_for_each(instance, it, template_obj) {
+        amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
         const char* entry_str = amxd_object_get_cstring_t(mfentry, "MACAddress", NULL);
         if(strncmp(macStr, entry_str, ETHER_ADDR_STR_LEN) == 0) {
             entry_obj = mfentry;
