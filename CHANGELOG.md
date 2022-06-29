@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.2 - 2022-06-29(12:09:15 +0000)
+
+### Other
+
+- 2.4 GHz out of order after changing the channel
+
 ## Release v1.5.1 - 2022-06-28(16:23:52 +0000)
 
 ### Other
