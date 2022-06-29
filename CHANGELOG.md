@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.4 - 2022-06-29(16:56:45 +0000)
+
+### Other
+
+- fix stability issues with pwhm amx on wnc board
+
 ## Release v1.5.3 - 2022-06-29(12:47:29 +0000)
 
 ### Other
