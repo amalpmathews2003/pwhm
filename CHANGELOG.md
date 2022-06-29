@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.3 - 2022-06-29(12:47:29 +0000)
+
+### Other
+
+- : Wrong disassoc value in BTM
+
 ## Release v1.5.2 - 2022-06-29(12:09:15 +0000)
 
 ### Other
