@@ -187,7 +187,7 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     params.validity = (validity == NULL) ? 0 : amxc_var_dyncast(int32_t, validity);
 
     amxc_var_t* disassoc = amxc_var_get_key(args, "disassoc", AMXC_VAR_FLAG_DEFAULT);
-    params.validity = (disassoc == NULL) ? 15 : amxc_var_dyncast(int32_t, disassoc);
+    params.disassoc = (disassoc == NULL) ? 15 : amxc_var_dyncast(int32_t, disassoc);
 
     amxc_var_t* bssidInfo = amxc_var_get_key(args, "bssidInfo", AMXC_VAR_FLAG_DEFAULT);
     params.bssidInfo = (bssidInfo == NULL) ? 0 : amxc_var_dyncast(uint32_t, bssidInfo);
