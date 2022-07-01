@@ -77,7 +77,7 @@
 #include "wld/wld_endpoint.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
-
+#include <amxc/amxc.h>
 #include "wifiGen_staCapHandler.h"
 #include <errno.h>
 #define ME "genEvt"
@@ -384,6 +384,34 @@ static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t
         W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
     }
 }
+
+static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+
+    swl_macChar_t cStation;
+    swl_macChar_t cBssid;
+    SWL_MAC_BIN_TO_CHAR(&cStation, station);
+    SWL_MAC_BIN_TO_CHAR(&cBssid, &(rrmBeaconResponse->bssid));
+
+
+    SAH_TRACEZ_INFO(ME, "%s: RRM reply received station:%s bssid:%s", pAP->alias, cStation.cMac, cBssid.cMac);
+
+    SAH_TRACEZ_INFO(ME, "%s: opclass: %d channel: %d, duration: %d, frame info: %d, rcpi: %d, rsni: %d, antenna id: %d, parent tsf: %u\n",
+                    pAP->alias, rrmBeaconResponse->opclass, rrmBeaconResponse->channel, rrmBeaconResponse->duration, rrmBeaconResponse->frameInfo,
+                    rrmBeaconResponse->rcpi, rrmBeaconResponse->rsni, rrmBeaconResponse->antennaId, rrmBeaconResponse->parentTsf);
+
+    amxc_var_t retval;
+    amxc_var_init(&retval);
+    amxc_var_set_type(&retval, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &retval, "BSSID", (char*) cBssid.cMac);
+    amxc_var_add_key(uint8_t, &retval, "Channel", rrmBeaconResponse->channel);
+    amxc_var_add_key(uint8_t, &retval, "RCPI", rrmBeaconResponse->rcpi);
+    amxc_var_add_key(uint8_t, &retval, "RSNI", rrmBeaconResponse->rsni);
+    wld_ap_rrm_item(pAP, (const unsigned char*) cStation.cMac, &retval);
+    amxc_var_clean(&retval);
+}
+
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -400,6 +428,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
+    wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
 
     ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),
                 SWL_RC_ERROR, ME, "%s: fail to set interface wpa evt handlers", pAP->alias);

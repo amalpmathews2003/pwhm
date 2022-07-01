@@ -298,6 +298,25 @@ static void s_parsRsn(T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pDev, wld_
     }
 }
 
+static void s_parseRmCap(T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap _UNUSED,
+                         swl_80211_elId_ne elId _UNUSED, uint8_t len _UNUSED, uint8_t* frm) {
+    ASSERTS_NOT_NULL(frm, , ME, "NULL");
+    ASSERTS_NOT_NULL(pDev, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "Parsing RM Enable Capabilities %p", frm);
+    /*
+     * see Table 9-210—RM Enabled Capabilities definition
+     * frm[0] =       bit0        |        bit1       |        bit2       |        bit3       |        bit4       |        bit5        |       bit6        |    bit7
+     *          Link Measurement    Neighbor Report     Parallel            Repeated            Beacon Passive      Beacon Active        Beacon Table        Beacon Measurement
+     *          Capability Enabled  Capability Enabled  Measurements        Measurements        Measurement         Measurement          Measurement         Reporting Conditions
+     *                                                  Capability Enabled  Capability Enabled  Capability Enabled  Capability Enabled   Capability Enabled  Capability Enabled
+     *
+     */
+    // check bit4 (Beacon Passive Measurement Capability Enabled)and bit5 (Beacon Active Measurement Capability Enabled)
+    if(SWL_BIT_IS_SET(frm[0], 4) || SWL_BIT_IS_SET(frm[0], 5) || SWL_BIT_IS_SET(frm[0], 6)) {
+        pDev->capabilities |= M_SWL_STACAP_RRM;
+    }
+}
+
 SWL_TABLE(ieParseTable,
           ARR(uint8_t index; void* val; ),
           ARR(swl_type_uint8, swl_type_voidPtr),
@@ -309,7 +328,9 @@ SWL_TABLE(ieParseTable,
               {SWL_80211_EL_ID_SUP_CHAN, (void*) s_parseSupChan},
               {SWL_80211_EL_ID_SUP_OP_CLASS, (void*) s_parseRegClass},
               {SWL_80211_EL_ID_RSN, (void*) s_parsRsn},
-              {SWL_80211_EL_ID_EXT, (void*) s_parseExt}, )
+              {SWL_80211_EL_ID_EXT, (void*) s_parseExt},
+              {SWL_80211_EL_ID_RM_ENAB_CAP, (void*) s_parseRmCap},
+              )
           );
 
 typedef void (* elementParseFun_f) (T_AccessPoint* pAP, T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_80211_elId_ne elId, uint8_t len, swl_bit8_t* frm);
@@ -363,5 +384,6 @@ void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevic
     size_t len = swl_str_len(pkt);
 
     SAH_TRACEZ_INFO(ME, "PKT sta:"SWL_MAC_FMT " len:%zu", SWL_MAC_ARG(pAD->MACAddress), len);
+    pAD->capabilities = 0;
     s_processAssocFrame(pAP, pAD, pkt, len);
 }

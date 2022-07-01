@@ -59,6 +59,7 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include <arpa/inet.h>
 #include "wld.h"
 #include "wld_util.h"
 #include "wld_hostapd_cfgFile.h"
@@ -908,3 +909,49 @@ swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
     return SWL_RC_OK;
 }
 
+/**
+ * @brief send RRM beacon Request
+ * @param pAP accesspoint
+ * @param sta mac address
+ * @param operClass (optional) class to scan
+ * @param channel (optional) channel to scan
+ * @param timeout (optional) time to wait in milliseconds
+ * @param bssid (optional) bssid argument
+ * @param ssid (optional) ssid
+ */
+swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_t* sta, uint8_t reqMode, uint8_t operClass, swl_channel_t channel,
+                                          uint16_t randomInterval, uint16_t measurementDuration, uint8_t measurementMode, const swl_macChar_t* bssid, const char* ssid) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(sta, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
+    char cmd[256] = {'\0'};
+    swl_macBin_t bMac;
+    SWL_MAC_CHAR_TO_BIN(&bMac, bssid);
+    snprintf(cmd, sizeof(cmd), "REQ_BEACON %s "
+             "req_mode=%.2x "
+             "%.2x"
+             "%.2x"
+             "%.4x"
+             "%.4x"
+             "%.2x"
+             "%.2x%.2x%.2x%.2x%.2x%.2x",
+             sta->cMac, reqMode, operClass, channel, htons(randomInterval), htons(measurementDuration), measurementMode, MAC_PRINT_ARG(bMac.bMac));
+    if(ssid != NULL) {
+        size_t cmdLen = swl_str_len(cmd);
+        size_t ssidLen = swl_str_len(ssid);
+        snprintf(cmd + cmdLen, sizeof(cmd) - cmdLen, "00%.2x", (unsigned int) ssidLen);
+        char* ptr = cmd + cmdLen + 4;
+        for(size_t i = 0; i < ssidLen; i++) {
+            ptr += sprintf(ptr, "%.2x", ssid[i]);
+        }
+    }
+
+    char reply[8] = {0};
+    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, cmd, reply, sizeof(reply));
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail to send %s : ret %u", pAP->alias, cmd, ret);
+    int32_t token;
+    swl_typeInt32_fromChar(&token, reply);
+    ASSERT_TRUE(token >= 0, SWL_RC_ERROR, ME, "%s: Bad response %s : token %u", pAP->alias, cmd, token);
+    return SWL_RC_OK;
+}

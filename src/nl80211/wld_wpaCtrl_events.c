@@ -61,6 +61,7 @@
 ****************************************************************************/
 #include "swl/swl_table.h"
 #include "swl/swl_string.h"
+#include "swl/swl_hex.h"
 #include "wld_channel.h"
 #include "wld_wpaCtrlInterface_priv.h"
 #include "wld_wpaCtrlMngr_priv.h"
@@ -478,6 +479,37 @@ static void s_stationScanFailed(wld_wpaCtrlInterface_t* pInterface, char* event 
 }
 
 
+static void s_beaconResponseEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: BEACON-RESP-RX be:e9:46:09:57:8a 1 00 00010000000000000000640002bb00d47bb0bf73f00048dc020001b28741084de2000000640011150017536f66744174486f6d652d314332392d4d53637265656e010882848b962430486c0301010504000300000706455520010d1420010023020f002a010432040c12186030140100000fac040100000fac040100000fac020c000b0501008d0000460532000000002d1aad0117ffffff00000000000000000000000000000000000000003d16010804000000000000000000000000000000000000007f080400000000000040
+    // Example: <3>BEACON-RESP-RX 8c:7c:92:68:a8:13 1 00
+    char buf[SWL_MAC_CHAR_LEN] = {0};
+    swl_macBin_t station;
+    memcpy(buf, params, SWL_MAC_CHAR_LEN - 1);
+    swl_mac_charToBin(&station, (swl_macChar_t*) buf);
+    // skip The measurement token and measurement report mode
+    char* data = strstr(params, " ");
+    ASSERTS_NOT_NULL(data, , ME, "NULL");
+    data = strstr(data + 1, " ");
+    ASSERTS_NOT_NULL(data, , ME, "NULL");
+    data = strstr(data + 1, " ");
+    ASSERTS_NOT_NULL(data, , ME, "NULL");
+
+    wld_wpaCtrl_rrmBeaconRsp_t rrmBeaconResponse;
+    memset(&rrmBeaconResponse, 0, sizeof(wld_wpaCtrl_rrmBeaconRsp_t));
+    if(*(++data) != '\0') {
+        size_t dataLen = swl_str_len(data);
+        size_t binLen = dataLen / 2;
+        swl_bit8_t binData[binLen];
+        bool success = swl_hex_toBytes(binData, binLen, data, dataLen);
+        ASSERT_TRUE(success, , ME, "HEX CONVERT FAIL");
+        ASSERT_TRUE(binLen >= sizeof(rrmBeaconResponse), , ME, "Too short report");
+        // !!!! please check copy for big endian targets
+        memcpy(&rrmBeaconResponse, binData, sizeof(rrmBeaconResponse));
+    }
+
+    CALL_INTF(pInterface, fBeaconResponseCb, &station, &rrmBeaconResponse);
+}
+
 SWL_TABLE(sWpaCtrlEvents,
           ARR(char* evtName; void* evtParser; ),
           ARR(swl_type_charPtr, swl_type_voidPtr),
@@ -506,6 +538,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"CTRL-EVENT-DISCONNECTED", &s_stationDisconnected},
               {"CTRL-EVENT-CONNECTED", &s_stationConnected},
               {"CTRL-EVENT-SCAN-FAILED", &s_stationScanFailed},
+              {"BEACON-RESP-RX", &s_beaconResponseEvt},
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

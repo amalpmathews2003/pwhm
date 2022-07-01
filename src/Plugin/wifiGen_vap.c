@@ -79,6 +79,12 @@
 
 #define ME "genVap"
 
+#define RRM_BEACON_REPORT_MODE_ACTIVE 0x01
+#define RRM_DEFAULT_REQ_MODE 0x00
+#define RRM_DEFAULT_RANDOM_INTERVAL 0x0000
+#define RRM_DEFAULT_MEASUREMENT_DURATION 0x0004
+#define RRM_DEFAULT_MEASUREMENT_MODE RRM_BEACON_REPORT_MODE_ACTIVE
+
 int wifiGen_vap_createHook(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     return SWL_RC_OK;
@@ -417,4 +423,10 @@ swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad _UNUSED, T_AccessPoint* pAP) {
         ret = SWL_RC_ERROR;
     }
     return ret;
+}
+
+swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, int operClass, swl_channel_t channel, const swl_macChar_t* bssid, const char* ssid) {
+    SAH_TRACEZ_INFO(ME, "%s: send rrm to %s %u/%u %s %s", pAP->alias, sta->cMac, operClass, channel, bssid->cMac, ssid);
+    return wld_ap_hostapd_requestRRMReport(pAP, sta, RRM_DEFAULT_REQ_MODE, (uint8_t) operClass, channel, RRM_DEFAULT_RANDOM_INTERVAL,
+                                           RRM_DEFAULT_MEASUREMENT_DURATION, RRM_DEFAULT_MEASUREMENT_MODE, bssid, ssid);
 }

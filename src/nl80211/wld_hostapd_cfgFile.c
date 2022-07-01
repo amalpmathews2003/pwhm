@@ -587,6 +587,12 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(pAP->transitionDisable != 0) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "transition_disable", pAP->transitionDisable);
     }
+
+    bool isIEEE80211k = pAP->IEEE80211kEnable && pRad->IEEE80211kSupported;
+    // Enable neighbor report via radio measurements
+    swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_neighbor_report", isIEEE80211k);
+    // Enable beacon report via radio measurements
+    swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_beacon_report", isIEEE80211k);
 }
 
 /**

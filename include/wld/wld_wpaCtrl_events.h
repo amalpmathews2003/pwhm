@@ -67,6 +67,19 @@
 #include "swl/swl_mac.h"
 #include "swl/swl_ieee802_1x_defs.h"
 
+typedef struct {
+    uint8_t opclass;
+    uint8_t channel;
+    uint64_t startTime;
+    uint16_t duration;
+    uint8_t frameInfo;
+    uint8_t rcpi;
+    uint8_t rsni;
+    uint8_t bssid[6];
+    uint8_t antennaId;
+    uint32_t parentTsf;
+} __attribute__((packed)) wld_wpaCtrl_rrmBeaconRsp_t;
+
 typedef void (* wld_wpaCtrl_processMsgCb_f)(void* userData, char* ifName, char* msgData);
 
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
@@ -79,6 +92,7 @@ typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macC
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, uint16_t stype, char* data);
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
 typedef void (* wld_wpaCtrl_stationScanFailedCb_f)(void* userData, char* ifName, int error);
+typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse);
 
 /*
  * @brief structure of AP/EP event handlers
@@ -97,6 +111,7 @@ typedef struct {
     wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationConnectedCb;
     wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;
+    wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);

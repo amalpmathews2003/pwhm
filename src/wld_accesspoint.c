@@ -435,11 +435,6 @@ amxd_status_t _wld_ap_setDbgFile_pwf(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
-amxd_status_t _validateIEEE80211kEnabled(amxd_param_t* parameter _UNUSED, void* validationData _UNUSED) {
-    _UNUSED_(validationData);
-    return amxd_status_ok;
-}
-
 amxd_status_t _wld_ap_set80211kEnabled_pwf(amxd_object_t* object _UNUSED,
                                            amxd_param_t* parameter _UNUSED,
                                            amxd_action_t reason _UNUSED,
@@ -457,8 +452,6 @@ amxd_status_t _wld_ap_set80211kEnabled_pwf(amxd_object_t* object _UNUSED,
         return rv;
     }
 
-    SAH_TRACEZ_IN(ME);
-
     bool new_value = amxc_var_dyncast(bool, args);
     SAH_TRACEZ_INFO(ME, "setAp80211kEnable %d", new_value);
 
@@ -467,7 +460,6 @@ amxd_status_t _wld_ap_set80211kEnabled_pwf(amxd_object_t* object _UNUSED,
         wld_ap_doSync(pAP);
     }
 
-    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 

@@ -125,6 +125,7 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
                                           amxc_var_t* ret) {
     T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
     ASSERT_NOT_NULL(pAP, amxd_status_ok, ME, "NULL");
+    ASSERT_TRUE(pAP->IEEE80211kEnable, amxd_status_invalid_value, ME, "IEEE802.11k not enabled");
 
     SAH_TRACEZ_IN(ME);
 
@@ -148,15 +149,16 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
 
     amxd_status_t status = amxd_status_ok;
 
-    int cmdRetval = pAP->pFA->mfn_wvap_request_rrm_report(pAP, macStr, operClass, channel, bssid, ssid);
+    swl_macChar_t cBssid;
+    swl_macChar_t cStation;
+    swl_mac_charToStandard(&cBssid, bssid);
+    swl_mac_charToStandard(&cStation, macStr);
+    swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_request_rrm_report(pAP, &cStation, operClass, (swl_channel_t) channel, &cBssid, ssid);
 
-    if(cmdRetval == WLD_ERROR_NOT_IMPLEMENTED) {
+    if(cmdRetval == SWL_RC_NOT_IMPLEMENTED) {
         SAH_TRACEZ_ERROR(ME, "Function not supported");
         status = amxd_status_function_not_implemented;
-    } else if(cmdRetval == WLD_ERROR_INVALID_STATE) {
-        SAH_TRACEZ_ERROR(ME, "IEEE802.11k not enabled");
-        status = amxd_status_invalid_value;
-    } else if(cmdRetval < 0) {
+    } else if(cmdRetval < SWL_RC_OK) {
         SAH_TRACEZ_ERROR(ME, "Error during execution");
         status = amxd_status_unknown_error;
     } else if(timeout > 0) {
@@ -172,9 +174,9 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
 
         amxp_timer_new(&wait_item->timer, rrm_timeout_handler, wait_item);
         wait_item->timer->priv = wait_item;
+        amxd_function_defer(func, &wait_item->call_id, ret, NULL, NULL);
         amxp_timer_start(wait_item->timer, timeout);
 
-        wait_item->call_id = amxc_var_dyncast(uint64_t, ret);
         amxc_llist_append(&rrm_wait_list, &(wait_item->it));
 
         status = amxd_status_deferred;

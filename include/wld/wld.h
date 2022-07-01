@@ -1986,7 +1986,7 @@ typedef int (APIENTRY* PFN_WVAP_KICK_STA)(T_AccessPoint* vap, char* buf, int buf
 typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, int bufsize, int reason);
 typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA)(T_AccessPoint* vap, char* sta, char* bssid, int operClass, int channel);
 typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA_EXT)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
-typedef int (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const char* sta, int operClass, int channel, const char* bssid, const char* ssid);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, int operClass, swl_channel_t channel, const swl_macChar_t* bssid, const char* ssid);
 typedef int (APIENTRY* PFN_WVAP_SEND_PUBLIC_ACTION)(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data);
 typedef int (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);

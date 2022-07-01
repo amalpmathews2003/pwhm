@@ -333,9 +333,9 @@ static int TRAP_mfn_wvap_sendPublicAction(T_AccessPoint* vap, swl_macBin_t* sta,
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap _UNUSED, const char* sta _UNUSED, int operClass _UNUSED, int channel _UNUSED, const char* bssid _UNUSED, const char* ssid _UNUSED) {
-    SAH_TRACEZ_NOTICE(ME, "%p %s", vap, sta);
-    return WLD_ERROR_NOT_IMPLEMENTED;
+static swl_rc_ne TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap, const swl_macChar_t* sta, int operClass _UNUSED, swl_channel_t channel _UNUSED, const swl_macChar_t* bssid _UNUSED, const char* ssid _UNUSED) {
+    SAH_TRACEZ_NOTICE(ME, "%p %p", vap, sta);
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wvap_bssid(T_Radio* rad, T_AccessPoint* vap, unsigned char* buf, int bufsize, int set) {

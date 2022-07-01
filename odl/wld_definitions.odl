@@ -2852,7 +2852,7 @@ define rrm_t{
 		 * If no measurement report was received, or the timeout was 0, then an empty list is returned.
 		 * @version 9.0
 		 */
-		bool sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint32 class, %in uint32 channel, %in uint32 timeout, %in string ssid);
+		list sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint32 class, %in uint32 channel, %in uint32 timeout, %in string ssid);
 
 		/**
 		 * get the last assoc request sent by a station to a vap
