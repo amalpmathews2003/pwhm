@@ -195,6 +195,23 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
                 swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_oper_centr_freq_seg0_idx", centerChan);
             }
         }
+        /*
+            !!Note:!!
+
+            This is a temporary solution in order to have the 6GHz radio up with its private vap
+            Lowest supported values are used for these parameters, waiting for proper 6ghz caps parsing to improve configuration
+            he_6ghz_max_mpdu=0 => 3895 octets (default is 2=>11454 octets)
+            he_6ghz_max_ampdu_len_exp=0 => AMPDU length of 8k (default is 7=>AMPDU length of 1048k)
+            he_6ghz_rx_ant_pat=0 => Rx antenna pattern might change during the lifetime of an association (default 1)
+            he_6ghz_tx_ant_pat=0 => Tx antenna pattern might change during the lifetime of an association (default 1)
+         */
+        if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+            SAH_TRACEZ_INFO(ME, "%s: Adding 6GHz HE Caps parameters", pRad->Name);
+            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_max_mpdu", 0);          // corresponds to HE_6GHZ_BAND_CAP_MAX_MPDU_LEN
+            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_max_ampdu_len_exp", 0); // corresponds to HE_6GHZ_BAND_CAP_MAX_AMPDU_LEN_EXP
+            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_rx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_RX_ANTPAT_CONS
+            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_tx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_TX_ANTPAT_CONS
+        }
     }
 }
 
