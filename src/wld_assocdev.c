@@ -100,14 +100,18 @@ SWL_TABLE(modeToStandard,
 
 #define ME "ad"
 
+#define FAST_RECONNECT_TIMEOUT 20
+#define FAST_RECONNECT_EVENT_TIMEOUT 30
+#define FAST_RECONNECT_USER_MIN_TIME_MS 1500
+
 typedef struct {
     swl_macBin_t macAddress;
-    swl_timeMono_t dcTime;
+    swl_timeSpecMono_t dcTime;
 } wld_ad_dcLog_t;
 char* tupleNames[] = {"macAddress", "dcTime"};
 SWL_TUPLE_TYPE(wld_ad_dcLog, ARR(swl_type_macBin, swl_type_timeMono));
 
-const char* fastReconnectTypes[WLD_FAST_RECONNECT_MAX] = {"Default", "OnStateChange", "OnScan"};
+const char* fastReconnectTypes[WLD_FAST_RECONNECT_MAX] = {"Default", "OnStateChange", "OnScan", "User"};
 
 static void s_incrementObjCounter(amxd_object_t* obj, char* counterName) {
     uint32_t val = amxd_object_get_uint32_t(obj, counterName, NULL);
@@ -120,7 +124,16 @@ static void s_incrementAssocCounter(T_AccessPoint* pAP, char* counterName) {
     s_incrementObjCounter(counter, counterName);
 }
 
+static void s_incrementFastReconnectType(T_AccessPoint* pAP, wld_fastReconnectType_e type) {
+    char path[128] = {0};
+    snprintf(path, sizeof(path), "AssociationCount.FastReconnectTypes.%s", fastReconnectTypes[type]);
+    amxd_object_t* counter = amxd_object_findf(pAP->pBus, "%s", path);
+    ASSERT_NOT_NULL(counter, , ME, "NULL");
+    s_incrementObjCounter(counter, "Count");
+}
+
 static wld_ad_dcLog_t* s_findDcEntry(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
+    SAH_TRACEZ_INFO(ME, "%s: search %u", pAP->alias, swl_unLiList_size(&pAP->staDcList.list));
     swl_unLiListIt_t listIt;
     swl_unLiList_for_each(listIt, &pAP->staDcList.list) {
         wld_ad_dcLog_t* dcEntry = listIt.data;
@@ -129,6 +142,44 @@ static wld_ad_dcLog_t* s_findDcEntry(T_AccessPoint* pAP, swl_macBin_t* macAddres
         }
     }
     return NULL;
+}
+
+
+static void s_dcEntryConnected(T_AccessPoint* pAP, wld_ad_dcLog_t* entry) {
+    ASSERTI_NOT_NULL(entry, , ME, "NULL");
+    swl_timeSpecMono_t now;
+    swl_timespec_getMono(&now);
+    int64_t timeDiffMs = swl_timespec_diffToNanosec(&entry->dcTime, &now) / 1000 / 1000;
+    T_Radio* pRad = pAP->pRadio;
+
+
+    int32_t timeDiffStateChange = entry->dcTime.tv_sec - pAP->lastStatusChange;
+    int32_t timeDiffScanChange = entry->dcTime.tv_sec - pRad->scanState.lastScanTime;
+
+    SAH_TRACEZ_INFO(ME, " * retime assoc %" PRId64 "ms state %is scan %is", timeDiffMs, timeDiffStateChange, timeDiffScanChange);
+
+    if(timeDiffMs / 1000 <= FAST_RECONNECT_TIMEOUT) {
+        s_incrementAssocCounter(pAP, "FastReconnects");
+
+        wld_fastReconnectType_e reconnectType = WLD_FAST_RECONNECT_DEFAULT;
+
+        if(timeDiffStateChange <= FAST_RECONNECT_EVENT_TIMEOUT) {
+            reconnectType = WLD_FAST_RECONNECT_STATE_CHANGE;
+        } else if(timeDiffScanChange <= FAST_RECONNECT_EVENT_TIMEOUT) {
+            reconnectType = WLD_FAST_RECONNECT_SCAN;
+        } else if(timeDiffMs >= FAST_RECONNECT_USER_MIN_TIME_MS) {
+            reconnectType = WLD_FAST_RECONNECT_USER;
+        }
+
+        s_incrementFastReconnectType(pAP, reconnectType);
+
+
+        SAH_TRACEZ_WARNING(ME, SWL_MAC_FMT ": Fast reconnect detected @ %s ( %" PRId64 " / %i / %i). Reason -%s-",
+                           SWL_MAC_ARG(entry->macAddress.bMac),
+                           pAP->name,
+                           timeDiffMs, timeDiffStateChange, timeDiffScanChange,
+                           fastReconnectTypes[reconnectType]);
+    }
 }
 
 /**
@@ -763,16 +814,15 @@ void wld_ad_checkRoamSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 }
 
 void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    (void) pAP;
-    if(!pAD->Active) {
-        SAH_TRACEZ_WARNING(ME, "%s: assoc sta %s", pAP->alias, pAD->Name);
+    ASSERTI_FALSE(pAD->Active, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
 
-        pAD->Active = 1;
-        pAD->AuthenticationState = 0;
-        pAD->Inactive = 0;
-        pAD->hadSecFailure = false;
-        pAD->latestStateChangeTime = swl_time_getRealSec();
-    }
+    SAH_TRACEZ_INFO(ME, "%s : Try %s", pAP->alias, pAD->Name);
+    pAD->Active = 1;
+    pAD->AuthenticationState = 0;
+    pAD->Inactive = 0;
+    pAD->hadSecFailure = false;
+    pAD->latestStateChangeTime = swl_time_getRealSec();
+    pAD->associationTime = swl_time_getRealSec();
 
     //kick from all other AP's
     wld_ad_checkRoamSta(pAP, pAD);
@@ -780,6 +830,19 @@ void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     pAD->associationTime = swl_time_getMonoSec();
     wld_vap_sync_assoclist(pAP);
 }
+
+static void s_addDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
+    bool hasLog = (log == NULL);
+    if(hasLog) {
+        log = swl_unLiList_allocElement(&pAP->staDcList.list);
+        memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
+    }
+    swl_timespec_getMono(&log->dcTime);
+    SAH_TRACEZ_INFO(ME, "%s: addLog %s (had %u)", swl_typeMacBin_toBuf32(log->macAddress).buf,
+                    swl_typeTimeSpecMono_toBuf32(log->dcTime).buf, hasLog);
+}
+
 
 static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failSec) {
     ASSERTI_TRUE(pAD->Active, , ME, "%s : inactive sta dc %s", pAP->alias, pAD->Name);
@@ -793,12 +856,8 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
             s_incrementAssocCounter(pAP, "Fail");
         }
     } else if(pAD->AuthenticationState) {
-        wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
-        if(log == NULL) {
-            log = swl_unLiList_allocElement(&pAP->staDcList.list);
-            memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
-        }
-        log->dcTime = swl_time_getMonoSec();
+        s_incrementAssocCounter(pAP, "Disconnect");
+        s_addDcEntry(pAP, pAD);
     }
     if(pAD->Active) {
         uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
@@ -812,15 +871,13 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         if(log == NULL) {
             log = swl_unLiList_allocElement(&pAP->staDcList.list);
         }
-        log->dcTime = swl_time_getMonoSec();
+        log->dcTime = swl_timespec_getMonoVal();
         memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
     }
     pAD->AuthenticationState = 0;
     pAD->Active = 0;
     pAD->Inactive = 0;
     wld_ad_remove_assocdev_from_bridge(pAP, pAD);
-
-
 }
 
 /**
@@ -829,17 +886,21 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
  * Note that even if security is off, if it succeeds to connect, we consider it authenticated.
  */
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    if(!pAD->AuthenticationState) {
-        SAH_TRACEZ_WARNING(ME, "%s: auth sta %s",
-                           pAP->alias, pAD->Name);
+    ASSERTI_FALSE(pAD->AuthenticationState, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
 
-        pAD->AuthenticationState = 1;
-        pAD->Active = 1;
-        pAD->Inactive = 0;
-        pAD->latestStateChangeTime = swl_time_getRealSec();
-        s_incrementAssocCounter(pAP, "Success");
-        //Update device type when connection succeeds.
-        pAP->pFA->mfn_wvap_update_assoc_dev(pAP, pAD);
+    wld_ad_dcLog_t* entry = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
+    SAH_TRACEZ_INFO(ME, "%s : Success %s (dc %s)", pAP->alias, pAD->Name, entry != NULL ?
+                    swl_typeTimeSpecMono_toBuf32(entry->dcTime).buf : "NA");
+    pAD->AuthenticationState = 1;
+    pAD->Active = 1;
+    pAD->Inactive = 0;
+    pAD->latestStateChangeTime = swl_time_getRealSec();
+    s_incrementAssocCounter(pAP, "Success");
+    //Update device type when connection succeeds.
+    pAP->pFA->mfn_wvap_update_assoc_dev(pAP, pAD);
+
+    if(entry != NULL) {
+        s_dcEntryConnected(pAP, entry);
     }
 }
 
@@ -907,6 +968,7 @@ amxd_status_t _doAssociationCountReset(amxd_object_t* object _UNUSED,
         amxd_object_set_uint32_t(counter, "Success", 0);
         amxd_object_set_uint32_t(counter, "Fail", 0);
         amxd_object_set_uint32_t(counter, "FailSecurity", 0);
+        amxd_object_set_uint32_t(counter, "Disconnect", 0);
     }
 
     SAH_TRACEZ_OUT(ME);

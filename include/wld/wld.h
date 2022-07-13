@@ -1659,7 +1659,11 @@ struct S_ACCESSPOINT {
     amxc_llist_t vendorIEs;              /* List of vendor IE */
     wld_fcallState_t stationsStatsState; /* Station stats state */
     wld_vapConfigDriver_t driverCfg;     /* Detailed driver config options */
-    swl_unLiTable_t staDcList;           /* Table of recent station disconnections */
+
+    /* Table of recent station disconnections.
+     * Only for stations that were authenticated. Stations that did not get authenticated
+     * will not be added to this list */
+    swl_unLiTable_t staDcList;
     int32_t historyCnt;
 
     wld_nl80211_listener_t* nl80211Listener;  /* nl80211 events listener */
