@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.5 - 2022-07-13(08:43:45 +0000)
+
+### Other
+
+- - Integrate prplMesh on Dish HW
+
 ## Release v1.5.4 - 2022-06-29(16:56:45 +0000)
 
 ### Other
