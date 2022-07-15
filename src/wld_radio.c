@@ -625,6 +625,7 @@ amxd_status_t _wld_rad_setOperatingChannelBandwidth_pwf(amxd_object_t* object _U
 
     swl_bandwidth_e radBw = swl_conv_charToEnum(OCBW, Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
     bool autoBwChange = (pRad->operatingChannelBandwidth == SWL_BW_AUTO || radBw == SWL_BW_AUTO);
+    pRad->channelBandwidthChangeReason = CHAN_REASON_MANUAL;
 
     int ret = pRad->pFA->mfn_wrad_ochbw(pRad, radBw, SET);
     SAH_TRACEZ_INFO(ME, "%s set OCBW %u : %u, %u", pRad->Name, radBw, autoBwChange, ret);
