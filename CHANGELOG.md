@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.6 - 2022-07-19(11:46:54 +0000)
+
+### Other
+
+- ChannelChangeReason not properly working
+
 ## Release v1.5.5 - 2022-07-13(08:43:45 +0000)
 
 ### Other
