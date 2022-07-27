@@ -2022,7 +2022,7 @@ define rrm_t{
 				 *
 				 * A value of 1000 would always take the latest value.
 				 */
-				uint32 AveragingFactor{
+				%persistent uint32 AveragingFactor{
 					on action validate call check_range { min = 1, max = 1000 };
 					default 500;
 				}
@@ -2032,7 +2032,7 @@ define rrm_t{
 				 * the latest Rssi measurement.
 				 * Expressed in milliseconds.
 				 */
-				uint32 Interval{
+				%persistent uint32 Interval{
 					default 1000;
 					on action write call mon_intervalWriteHandler;
 					constraint minvalue 100;
@@ -4616,7 +4616,7 @@ define rrm_t{
 				/**
 				 * Enable the rssi eventing
 				 */
-				bool Enable{
+				%persistent bool Enable{
 					on action write call mon_enableWriteHandler;
 					default false;
 				}
@@ -4625,7 +4625,7 @@ define rrm_t{
 				 * The minimal level of difference required before an event is sent out.
 				 * Expressed in dbm.
 				 */
-				uint32 RssiInterval{
+				%persistent uint32 RssiInterval{
 					constraint minvalue 1;
 					default 10;
 				}
@@ -4637,7 +4637,7 @@ define rrm_t{
 				 *
 				 * A value of 1000 would always take the latest value.
 				 */
-				uint32 AveragingFactor{
+				%persistent uint32 AveragingFactor{
 					on action validate call check_range { min = 1, max = 1000 };
 					default 500;
 				}
@@ -4647,7 +4647,7 @@ define rrm_t{
 				 * the latest Rssi measurement.
 				 * Expressed in milliseconds.
 				 */
-				uint32 Interval{
+				%persistent uint32 Interval{
 					default 1000;
 					on action write call mon_intervalWriteHandler;
 					constraint minvalue 100;
