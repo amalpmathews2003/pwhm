@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.7 - 2022-07-28(08:00:27 +0000)
+
+### Other
+
+- : RssiEventing not reboot persistent
+
 ## Release v1.5.6 - 2022-07-19(11:46:54 +0000)
 
 ### Other
