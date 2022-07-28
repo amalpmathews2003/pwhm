@@ -70,7 +70,6 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-#include <components.h>
 
 #include "wld.h"
 #include "wld_util.h"

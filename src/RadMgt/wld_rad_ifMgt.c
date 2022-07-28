@@ -70,7 +70,6 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-#include <components.h>
 
 #include <swl/swl_commonLib.h>
 #include <swl/swl_conversion.h>
