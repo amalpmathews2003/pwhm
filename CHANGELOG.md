@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.8 - 2022-07-29(07:43:48 +0000)
+
+### Other
+
+- clean up components.h header
+
 ## Release v1.5.7 - 2022-07-28(08:00:27 +0000)
 
 ### Other
