@@ -62,7 +62,6 @@
 #ifndef __WLD_H__
 #define __WLD_H__
 
-#include <components.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <swl/swl_common.h>
