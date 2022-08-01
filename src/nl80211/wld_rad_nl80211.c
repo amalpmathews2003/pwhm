@@ -141,11 +141,6 @@ swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t*
     return wld_nl80211_getWiphyInfo(wld_nl80211_getSharedState(), pRadio->index, pWiphyInfo);
 }
 
-swl_rc_ne wld_rad_nl80211_getStationInfo(T_Radio* pRadio, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo) {
-    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), pRadio->index, pMac, pStationInfo);
-}
-
 swl_rc_ne wld_rad_nl80211_getNoise(T_Radio* pRadio, int32_t* noise) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_nl80211_getNoise(wld_nl80211_getSharedState(), pRadio->index, noise);

@@ -82,6 +82,8 @@
 #define WLD_NL80211_ID_ANY ((uint32_t) -2)
 
 #include "wld.h"
+#include <swl/swl_common_trilean.h>
+#include <swl/swl_common_mcs.h>
 
 typedef struct {
     uint32_t chanWidth;       //channel width in MHz
@@ -158,23 +160,38 @@ typedef struct {
 
 typedef struct {
     uint32_t bitrate;  // total bitrate (kbps) (u16/u32)
-    swl_mcs_t mscInfo; // mcs info
+    swl_mcs_t mcsInfo; // mcs info
     uint8_t heDcm;     // HE DCM value (u8, 0/1)
 } wld_nl80211_rateInfo_t;
 
 typedef struct {
-    swl_macBin_t macAddr;          // station's address MAC
-    uint32_t inactiveTime;         // time since last activity (u32, milliseconds)
-    uint32_t rxBytes;              // total received bytes
-    uint32_t txBytes;              // total transmitted bytes
-    uint32_t rxPackets;            // total received packet (MSDUs and MMPDUs)
-    uint32_t txPackets;            // total transmitted packets (MSDUs and MMPDUs)
-    uint32_t txRetries;            // total retries (MPDUs)
-    uint32_t txFailed;             // total failed packets
-    int8_t rssiDbm;                // signal strength of last received PPDU (dBm)
-    int8_t rssiAvgDbm;             // signal strength average (dBm)
-    wld_nl80211_rateInfo_t txRate; // tx rate (kbps), nested attributes
-    wld_nl80211_rateInfo_t rxRate; // rx rate (kbps), nested attributes
+    swl_trl_e authorized;    // station is authorized (802.1X)
+    swl_trl_e authenticated; // station is authenticated
+    swl_trl_e associated;    // station is associated:
+                             // used to transition a previously added station into associated state
+    swl_trl_e wme;           // station is WME/QoS capable
+    swl_trl_e mfp;           // station uses management frame protection
+} wld_nl80211_stationFlags_t;
+
+typedef struct {
+    swl_macBin_t macAddr;                     // station's address MAC
+    uint32_t inactiveTime;                    // time since last activity (u32, milliseconds)
+    uint64_t rxBytes;                         // total received bytes
+    uint64_t txBytes;                         // total transmitted bytes
+    uint32_t rxPackets;                       // total received packet (MSDUs and MMPDUs)
+    uint32_t txPackets;                       // total transmitted packets (MSDUs and MMPDUs)
+    uint32_t txRetries;                       // total retries (MPDUs)
+    uint32_t txFailed;                        // total failed packets
+    int8_t rssiDbm;                           // signal strength of last received PPDU (dBm)
+    int8_t rssiAvgDbm;                        // signal strength average (dBm)
+    wld_nl80211_rateInfo_t txRate;            // tx rate (kbps), nested attributes
+    wld_nl80211_rateInfo_t rxRate;            // rx rate (kbps), nested attributes
+
+    uint32_t connectedTime;                   // time since the station is last connected (u32, seconds)
+    wld_nl80211_stationFlags_t flags;         // retrieved optional station flags
+    uint32_t nrSignalChains;                  // nb chains on which signal is detected
+    int8_t rssiDbmByChain[MAX_NR_ANTENNA];    // per-chain signal strength of last PPDU (dBm)
+    int8_t rssiAvgDbmByChain[MAX_NR_ANTENNA]; // per-chain signal strength average (dBm)
 
 } wld_nl80211_stationInfo_t;
 

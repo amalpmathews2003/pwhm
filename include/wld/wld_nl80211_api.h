@@ -88,15 +88,15 @@ vendor_t* wld_nl80211_registerVendor(T_CWLD_FUNC_TABLE* fta);
  * @brief get all available nl80211 interfaces sorted per wiphy, and by increasing net dev index, in 2D array per wiphy
  * (Synchronous api)
  *
- * @param nWiphyMax max wiphy value to fetch (i.e max radios)
- * @param nWifaceMax max number of interfaces per wiphy (i.e max AP/EP per radio)
+ * @param nrWiphyMax max wiphy value to fetch (i.e max radios)
+ * @param nrWifaceMax max number of interfaces per wiphy (i.e max AP/EP per radio)
  * @param wlIfaces (output) 2D array of interfaces, sorted per wiphy/ifIndex
  *
  * @return SWL_RC_OK in case of success
  *         SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nWiphyMax, const uint32_t nWifaceMax,
-                                    wld_nl80211_ifaceInfo_t wlIfaces[nWiphyMax][nWifaceMax]);
+swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nrWiphyMax, const uint32_t nrWifaceMax,
+                                    wld_nl80211_ifaceInfo_t wlIfaces[nrWiphyMax][nrWifaceMax]);
 
 /*
  * @brief get current nl80211 interface info
@@ -192,14 +192,30 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
  * (Synchronous api)
  *
  * @param state nl80211 socket manager context
- * @param ifIndex station index
- * @param pMac pointer to station mac adress
+ * @param ifIndex parent interface index
+ * @param pMac pointer to station mac address
  * @param pSationInfo (output) station info
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_getStationInfo(wld_nl80211_state_t* state, uint32_t ifIndex, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pSationInfo);
+
+/*
+ * @brief get all paired stations info on a specific interface
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex parent interface index
+ * @param ppStationInfo (output) array of station info, dynamically allocated
+ * (need to be freed by user)
+ * @param pnrStation (output) number of available stations
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ * @
+ */
+swl_rc_ne wld_nl80211_getAllStationsInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation);
 
 /*
  * @brief get radio noise

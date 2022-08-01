@@ -4447,9 +4447,12 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
     T_Radio* pR = object->priv;
 
     const char* feature = GET_CHAR(args, "op");
-    if(feature == NULL) {
-        SAH_TRACEZ_ERROR(ME, "No argument given");
-    } else if(!strcasecmp(feature, "RssiMon")) {
+    ASSERT_NOT_NULL(feature, amxd_status_unknown_error, ME, "No argument given");
+
+    amxc_var_init(retval);
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+
+    if(!strcasecmp(feature, "RssiMon")) {
         wld_radStaMon_debug(pR, retval);
     } else if(!strcasecmp(feature, "DriverConfig")) {
         amxc_var_add_key(int32_t, retval, "TxBurst", pR->driverCfg.txBurst);
@@ -4481,11 +4484,15 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         wld_nl80211_ifaceInfo_t ifaceInfo;
         if(wld_rad_nl80211_getInterfaceInfo(pR, &ifaceInfo) < SWL_RC_OK) {
             amxc_var_add_key(cstring_t, retval, "Error", "Fail to get nl80211 iface info");
+        } else {
+            wld_nl80211_dumpIfaceInfo(&ifaceInfo, retval);
         }
     } else if(!strcasecmp(feature, "nl80211WiphyInfo")) {
         wld_nl80211_wiphyInfo_t wiphyInfo;
         if(wld_rad_nl80211_getWiphyInfo(pR, &wiphyInfo) < SWL_RC_OK) {
             amxc_var_add_key(cstring_t, retval, "Error", "Fail to get nl80211 wiphy info");
+        } else {
+            wld_nl80211_dumpWiphyInfo(&wiphyInfo, retval);
         }
     } else if(swl_str_matchesIgnoreCase(feature, "RadioLinuxStats")) {
 
@@ -4510,16 +4517,6 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
 
         if(wld_linuxIfStats_getAllVapStats(pR, &vapStats)) {
             s_setStats(retval, &vapStats);
-        }
-    } else if(swl_str_matchesIgnoreCase(feature, "nl80211StationInfo")) {
-        wld_nl80211_stationInfo_t stationInfo;
-
-        const char* sta = GET_CHAR(args, "sta");
-        swl_macBin_t bMac;
-        swl_mac_charToBin(&bMac, (swl_macChar_t*) sta);
-
-        if(wld_rad_nl80211_getStationInfo(pR, &bMac, &stationInfo) < SWL_RC_OK) {
-            amxc_var_add_key(cstring_t, retval, "Error", "Fail to get nl80211 station info");
         }
     } else if(swl_str_matchesIgnoreCase(feature, "nl80211SetAntennas")) {
         uint32_t txMapAnt = GET_UINT32(args, "txMapAnt");

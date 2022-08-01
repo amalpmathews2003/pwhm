@@ -128,121 +128,51 @@ int wifiGen_vap_sync(T_AccessPoint* pAP, int set) {
     return ret;
 }
 
-bool s_staCommand(T_AccessPoint* pAP, const char* cmd, swl_macBin_t* addrBuf) {
-    char buff[32] = {0};
+static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
 
-    int ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, cmd, buff, sizeof(buff) - 1);
+    uint32_t nStations = 0;
+    wld_nl80211_stationInfo_t* pAllStaInfo = NULL;
+    swl_rc_ne retVal = wld_ap_nl80211_getAllStationsInfo(pAP, &pAllStaInfo, &nStations);
+    ASSERT_FALSE(retVal < SWL_RC_OK, retVal, ME, "%s: fail to get all stations info", pAP->alias);
 
-    ASSERTI_TRUE(ret >= 0, false, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, cmd, ret);
+    int32_t noise = 0;
+    wld_rad_nl80211_getNoise(pAP->pRadio, &noise);
 
-    if(swl_str_nmatches(buff, "FAIL", 4)) {
-        return false;
-    }
-
-    uint32_t endIndex = 0;
-    while(endIndex < sizeof(buff) - 1 && buff[endIndex] != '\0' && buff[endIndex] != '\n') {
-        endIndex++;
-    }
-    buff[endIndex] = '\0';
-
-    size_t len = strlen(buff);
-    SAH_TRACEZ_INFO(ME, "%s: recv %zu:  %s", pAP->alias, len, buff);
-    ASSERTI_TRUE(len == 17, false, ME, "%s: mac too short: %zu", pAP->alias, len);
-
-    return swl_mac_charToBin(addrBuf, (swl_macChar_t*) buff);
-}
-
-
-static int64_t s_getIntParamCounter(const char* buf, const char* param) {
-    char tmpBuf[64] = {0};
-    bool paramFound = swl_str_getParameterValue(tmpBuf, sizeof(tmpBuf), buf, param, NULL);
-    if(!paramFound) {
-        return 0;
-    }
-
-    uint32_t endIndex = 0;
-    while(endIndex < sizeof(tmpBuf) - 1 && tmpBuf[endIndex] != '\0'
-          && tmpBuf[endIndex] != '\n' && tmpBuf[endIndex] != ' ') {
-        endIndex++;
-    }
-    tmpBuf[endIndex] = '\0';
-
-
-    int64_t val = swl_typeInt64_fromCharDef(tmpBuf, 0);
-    return val;
-}
-
-static void s_getHostapdInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-
-    char buff[1024] = {0};
-    char cmdBuf[100] = {0};
-    snprintf(cmdBuf, sizeof(cmdBuf), "STA %.17s", pAD->Name);
-
-    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, cmdBuf, buff, sizeof(buff) - 1);
-    ASSERT_TRUE(ret, , ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, cmdBuf, ret);
-    size_t len = strlen(buff);
-    SAH_TRACEZ_INFO(ME, "%s: sta %s : len %zu", pAP->alias, pAD->Name, len);
-
-    {
-        char tmpBuf[64] = {0};
-
-        bool paramFound = swl_str_getParameterValue(tmpBuf, sizeof(tmpBuf), buff, "flags", NULL);
-        if(paramFound) {
-            pAD->Active = (strstr(tmpBuf, "ASSOC") != NULL);
-            pAD->AuthenticationState = (strstr(tmpBuf, "AUTHORIZED") != NULL);
+    T_AssociatedDevice* pAD;
+    wld_nl80211_stationInfo_t* pStationInfo = NULL;
+    // Add new devices from driver maclist
+    for(uint32_t id = 0; id < nStations; id++) {
+        pStationInfo = &pAllStaInfo[id];
+        if((pAD = wld_vap_find_asociatedDevice(pAP, &pStationInfo->macAddr)) == NULL) {
+            if((pAD = wld_create_associatedDevice(pAP, &pStationInfo->macAddr)) == NULL) {
+                SAH_TRACEZ_ERROR(ME, "%s: could not create new detected AD "SWL_MAC_FMT,
+                                 pAP->alias, SWL_MAC_ARG(pStationInfo->macAddr.bMac));
+                continue;
+            }
+            SAH_TRACEZ_WARNING(ME, "%s: created missing AD %s", pAP->alias, pAD->Name);
+        }
+        pAD->seen = true;
+        wld_ap_nl80211_copyStationInfoToAssocDev(pAP, pAD, pStationInfo);
+        if((!pAD->AuthenticationState) && (pStationInfo->flags.authenticated == SWL_TRL_TRUE)) {
+            wld_ad_add_connection_success(pAP, pAD);
+        }
+        pAD->Noise = noise;
+        if((noise != 0) && (pAD->SignalStrength != 0) && (pAD->SignalStrength > pAD->Noise)) {
+            pAD->SignalNoiseRatio = pAD->SignalStrength - pAD->Noise;
+        } else {
+            pAD->SignalNoiseRatio = 0;
         }
     }
-
-    pAD->LastDataUplinkRate = s_getIntParamCounter(buff, "tx_rate_info") * 100;
-    pAD->LastDataDownlinkRate = s_getIntParamCounter(buff, "rx_rate_info") * 100;
-    pAD->SignalStrength = s_getIntParamCounter(buff, "signal");
-    pAD->Inactive = s_getIntParamCounter(buff, "inactive_msec") / 1000;
-    pAD->connectionDuration = s_getIntParamCounter(buff, "connected_time");
-    int32_t secMode = s_getIntParamCounter(buff, "wpa");
-    pAD->assocCaps.currentSecurity = APMSI_UNKNOWN;
-    if(secMode == 1) {
-        pAD->assocCaps.currentSecurity = APMSI_WPA_P;
-    } else if(secMode == 2) {
-        pAD->assocCaps.currentSecurity = APMSI_WPA2_P;
-    }
+    free(pAllStaInfo);
+    return SWL_RC_OK;
 }
-
-static void s_getNetlinkInfo(T_Radio* pRad, T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pAD) {
-
-
-    wld_nl80211_stationInfo_t stationInfo;
-    swl_rc_ne retVal = wld_rad_nl80211_getStationInfo(pRad, (swl_macBin_t*) &pAD->MACAddress, &stationInfo);
-    if(retVal != SWL_RC_OK) {
-        return;
-    }
-    pAD->downLinkRateSpec = stationInfo.txRate.mscInfo;
-    pAD->TxFailures = stationInfo.txFailed;
-    pAD->Tx_Retransmissions = stationInfo.txRetries;
-
-    pAD->RxBytes = stationInfo.rxBytes;
-    pAD->TxBytes = stationInfo.txBytes;
-    pAD->RxPacketCount = stationInfo.rxPackets;
-    pAD->TxPacketCount = stationInfo.txPackets;
-    pAD->Tx_Retransmissions = stationInfo.txRetries;
-    pAD->Tx_RetransmissionsFailed = stationInfo.txFailed;
-
-    if(pAD->SignalStrength != 0) {
-        return;
-    }
-    pAD->SignalStrength = stationInfo.rssiAvgDbm;
-    pAD->Inactive = stationInfo.inactiveTime / 1000;
-    pAD->LastDataDownlinkRate = stationInfo.txRate.bitrate;
-    pAD->LastDataUplinkRate = stationInfo.rxRate.bitrate;
-}
-
-
 
 swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
 
-    int32_t noise = 0;
-    wld_rad_nl80211_getNoise(pRad, &noise);
+    wld_vap_mark_all_stations_unseen(pAP);
+    s_getNetlinkAllStaInfo(pAP);
 
     for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
 
@@ -251,26 +181,19 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
             SAH_TRACEZ_ERROR(ME, "nullpointer! %p", pAD);
             return SWL_RC_ERROR;
         }
-        if(!pAD->Active) {
-            SAH_TRACEZ_WARNING(ME, "Skip inactive sta %s", pAD->Name);
+        if(!pAD->seen) {
+            pAD->SignalStrength = 0;
+            for(i = 0; i < MAX_NR_ANTENNA; i++) {
+                pAD->SignalStrengthByChain[i] = 0;
+            }
+            pAD->SignalNoiseRatio = 0;
+            SAH_TRACEZ_WARNING(ME, "Skip unseen sta %s", pAD->Name);
             continue;
         }
-
-        pAD->SignalStrength = 0;
-
-        s_getHostapdInfo(pAP, pAD);
-
-        s_getNetlinkInfo(pRad, pAP, pAD);
-
-
-        pAD->Noise = noise;
-        if((noise != 0) && (pAD->SignalStrength != 0) && (pAD->SignalStrength > pAD->Noise)) {
-            pAD->SignalNoiseRatio = pAD->SignalStrength - pAD->Noise;
-        } else {
-            pAD->SignalNoiseRatio = 0;
-        }
+        wld_ap_hostapd_getStaInfo(pAP, pAD);
     }
 
+    wld_vap_update_seen(pAP);
 
     return SWL_RC_OK;
 }

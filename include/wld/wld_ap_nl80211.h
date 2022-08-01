@@ -121,4 +121,42 @@ swl_rc_ne wld_ap_nl80211_getInterfaceInfo(T_AccessPoint* pAP, wld_nl80211_ifaceI
  */
 swl_rc_ne wld_ap_nl80211_delVapInterface(T_AccessPoint* pAP);
 
+/*
+ * @brief get info and statistics of station device
+ *
+ * @param pAP pointer to accesspoint context
+ * @param pMac pointer to station adress mac
+ * @param pStationInfo pointer to station info struct to be filled
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_nl80211_getStationInfo(T_AccessPoint* pAP, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo);
+
+/*
+ * @brief get info and statistics of all paired station devices
+ *
+ * @param pAP pointer to accesspoint context
+ * @param ppStationInfo (output) array of station info, dynamically allocated
+ * (need to be freed by user)
+ * @param pnrStation (output) number of available stations
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation);
+
+/*
+ * @brief copy retrieved station info to associated device struct
+ * with checks against learned station capabilities and host radio info (freq, chanWidth)
+ *
+ * @param pAP pointer to accesspoint context
+ * @param pAD pointer to associated device context
+ * @param ppStationInfo pointer to station info struct
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_nl80211_stationInfo_t* pStationInfo);
+
 #endif /* INCLUDE_WLD_WLD_AP_NL80211_H_ */

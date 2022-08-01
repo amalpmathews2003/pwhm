@@ -103,5 +103,6 @@ typedef struct {
 
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);
 int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey);
+bool wld_wpaCtrl_getValueIntExt(const char* pData, const char* pKey, int32_t* pVal);
 
 #endif /* __WLD_WPA_CTRL_EVENTS_H__ */

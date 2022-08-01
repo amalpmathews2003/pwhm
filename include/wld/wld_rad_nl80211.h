@@ -168,18 +168,6 @@ swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t*
  * @brief get info and statistics of station device
  *
  * @param pRadio pointer to radio context
- * @param pMac pointer to station adress mac
- * @param pStationInfo pointer to station info struct to be filled
- *
- * @return SWL_RC_OK in case of success
- *         <= SWL_RC_ERROR otherwise
- */
-swl_rc_ne wld_rad_nl80211_getStationInfo(T_Radio* pRadio, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo);
-
-/*
- * @brief get info and statistics of station device
- *
- * @param pRadio pointer to radio context
  * @param noise pointer to result noise
  *
  * @return SWL_RC_OK in case of success

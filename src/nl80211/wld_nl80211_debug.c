@@ -71,8 +71,8 @@
 
 static void s_dumpVar(amxc_var_t* retVar) {
     amxc_string_t retStr;
-    amxc_string_init(&tmpString, 0);
-    amxc_string_csv_join_var(&tmpString, retVar);
+    amxc_string_init(&retStr, 0);
+    amxc_string_csv_join_var(&retStr, retVar);
     SAH_TRACEZ_INFO(ME, "%s", amxc_string_get(&retStr, 0));
     amxc_string_clean(&retStr);
 }
@@ -210,47 +210,69 @@ swl_rc_ne wld_nl80211_dumpWiphyInfo(wld_nl80211_wiphyInfo_t* pWiphyInfo, amxc_va
 
 static swl_rc_ne wld_nl80211_dumpRateInfo(wld_nl80211_rateInfo_t* pRateInfo, amxc_var_t* retMap) {
     ASSERTS_NOT_NULL(pRateInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
-    variant_t localVar;
-    variant_initialize(&localVar, variant_type_map);
-    variant_map_t* pMap = (retMap ? retMap : variant_da_map(&localVar));
-    ASSERTS_NOT_NULL(pMap, SWL_RC_ERROR, ME, "NULL");
-
-    char buffer[128] = {0};
-    swl_mcs_toChar(buffer, sizeof(buffer), &pRateInfo->mscInfo);
-
-    variant_map_addUInt32(pMap, "Bitrate", pRateInfo->bitrate);
-    variant_map_addChar(pMap, "mscInfo", buffer);
-    variant_map_addUInt8(pMap, "HeDcm", pRateInfo->heDcm);
-
+    ASSERTS_NOT_NULL(retMap, SWL_RC_ERROR, ME, "NULL");
+    amxc_var_add_key(uint32_t, retMap, "Bitrate", pRateInfo->bitrate);
+    amxc_var_add_key(cstring_t, retMap, "mcsInfo", swl_typeMcs_toBuf32(pRateInfo->mcsInfo).buf);
+    amxc_var_add_key(uint8_t, retMap, "HeDcm", pRateInfo->heDcm);
     return SWL_RC_OK;
 }
 
 swl_rc_ne wld_nl80211_dumpStationInfo(wld_nl80211_stationInfo_t* pStationInfo, amxc_var_t* retMap) {
     ASSERTS_NOT_NULL(pStationInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
-    variant_t localVar;
-    variant_initialize(&localVar, variant_type_map);
-    variant_map_t* pMap = (retMap ? retMap : variant_da_map(&localVar));
+    amxc_var_t localVar;
+    amxc_var_init(&localVar);
+    amxc_var_set_type(&localVar, AMXC_VAR_ID_HTABLE);
+
+    amxc_var_t* pMap = (retMap ? retMap : &localVar);
     ASSERTS_NOT_NULL(pMap, SWL_RC_ERROR, ME, "NULL");
 
     swl_macChar_t cMacAddr;
     swl_mac_binToChar(&cMacAddr, &pStationInfo->macAddr);
 
-    variant_map_addChar(pMap, "MacAddress", cMacAddr.cMac);
-    variant_map_addUInt32(pMap, "inactiveTimeMs", pStationInfo->inactiveTime);
-    variant_map_addUInt32(pMap, "rxBytes", pStationInfo->rxBytes);
-    variant_map_addUInt32(pMap, "txBytes", pStationInfo->txBytes);
-    variant_map_addUInt32(pMap, "rxPackets", pStationInfo->rxPackets);
-    variant_map_addUInt32(pMap, "txPackets", pStationInfo->txPackets);
-    variant_map_addUInt32(pMap, "txRetries", pStationInfo->txRetries);
-    variant_map_addUInt32(pMap, "txFailed", pStationInfo->txFailed);
-    variant_map_addInt8(pMap, "rssiDbm", pStationInfo->rssiDbm);
-    variant_map_addInt8(pMap, "rssiAvgDbm", pStationInfo->rssiAvgDbm);
-    variant_map_addMap(pMap, "rxRate", NULL);
-    variant_map_t* rxRate = variant_map_da_findMap(pMap, "rxRate");
+    amxc_var_add_key(cstring_t, pMap, "MacAddress", cMacAddr.cMac);
+    amxc_var_add_key(uint32_t, pMap, "inactiveTimeMs", pStationInfo->inactiveTime);
+    amxc_var_add_key(uint64_t, pMap, "rxBytes", pStationInfo->rxBytes);
+    amxc_var_add_key(uint64_t, pMap, "txBytes", pStationInfo->txBytes);
+    amxc_var_add_key(uint32_t, pMap, "rxPackets", pStationInfo->rxPackets);
+    amxc_var_add_key(uint32_t, pMap, "txPackets", pStationInfo->txPackets);
+    amxc_var_add_key(uint32_t, pMap, "txRetries", pStationInfo->txRetries);
+    amxc_var_add_key(uint32_t, pMap, "txFailed", pStationInfo->txFailed);
+    amxc_var_add_key(int8_t, pMap, "rssiDbm", pStationInfo->rssiDbm);
+    amxc_var_add_key(int8_t, pMap, "rssiAvgDbm", pStationInfo->rssiAvgDbm);
+    amxc_var_t* rxRate = amxc_var_add_key(amxc_htable_t, pMap, "rxRate", NULL);
     wld_nl80211_dumpRateInfo(&pStationInfo->rxRate, rxRate);
-    variant_map_addMap(pMap, "txRate", NULL);
-    variant_map_t* txRate = variant_map_da_findMap(pMap, "txRate");
+    amxc_var_t* txRate = amxc_var_add_key(amxc_htable_t, pMap, "txRate", NULL);
     wld_nl80211_dumpRateInfo(&pStationInfo->txRate, txRate);
-
+    if(retMap) {
+        s_dumpMap(pMap);
+    } else {
+        s_dumpVar(&localVar);
+    }
+    amxc_var_clean(&localVar);
     return SWL_RC_OK;
 }
+
+swl_rc_ne wld_nl80211_dumpAllStationInfo(wld_nl80211_stationInfo_t* pAllStationInfo, uint32_t nStation, amxc_var_t* retMap) {
+    ASSERTS_NOT_NULL(pAllStationInfo, SWL_RC_OK, ME, "No data");
+    ASSERTS_NOT_EQUALS(nStation, 0, SWL_RC_OK, ME, "No data");
+    amxc_var_t localVar;
+    amxc_var_init(&localVar);
+    amxc_var_set_type(&localVar, AMXC_VAR_ID_HTABLE);
+    amxc_var_t* pMap = (retMap ? retMap : &localVar);
+    ASSERTS_NOT_NULL(pMap, SWL_RC_ERROR, ME, "NULL");
+
+    swl_macChar_t macStr;
+    for(uint32_t i = 0; i < nStation; i++) {
+        SWL_MAC_BIN_TO_CHAR(&macStr, &pAllStationInfo[i].macAddr);
+        amxc_var_t* staMap = amxc_var_add_key(amxc_htable_t, pMap, macStr.cMac, NULL);
+        wld_nl80211_dumpStationInfo(&pAllStationInfo[i], staMap);
+    }
+    if(retMap) {
+        s_dumpMap(pMap);
+    } else {
+        s_dumpVar(&localVar);
+    }
+    amxc_var_clean(&localVar);
+    return SWL_RC_OK;
+}
+

@@ -124,11 +124,21 @@ static int s_getValueStr(const char* pData, const char* pKey, char* pValue, int*
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length) {
     return s_getValueStr(pData, pKey, pValue, &length);
 }
-/* Extension functions get an integer value */
+/* Extension function get an integer value */
+bool wld_wpaCtrl_getValueIntExt(const char* pData, const char* pKey, int32_t* pVal) {
+    char strbuf[64] = {0};
+    ASSERTS_TRUE(wld_wpaCtrl_getValueStr(pData, pKey, strbuf, sizeof(strbuf)) > 0, false,
+                 ME, "key (%s) not found", pKey);
+    ASSERT_TRUE(swl_typeInt32_fromChar(pVal, strbuf), false,
+                ME, "key (%s) val (%s) num conversion failed", pKey, strbuf);
+    return true;
+}
+
+/* Extension function get an integer value , returns 0 as default value*/
 int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey) {
-    char strbuf[16] = {0};
-    wld_wpaCtrl_getValueStr(pData, pKey, strbuf, sizeof(strbuf));
-    return atoi(strbuf);
+    int32_t val = 0;
+    wld_wpaCtrl_getValueIntExt(pData, pKey, &val);
+    return val;
 }
 
 #define NOTIFY(PIFACE, FNAME, ...) \

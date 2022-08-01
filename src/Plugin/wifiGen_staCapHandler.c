@@ -229,8 +229,13 @@ static void s_parseRegClass(T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pDev
                             swl_80211_elId_ne elId _UNUSED, uint8_t len, uint8_t* frm) {
     ASSERTS_NOT_NULL(frm, , ME, "NULL");
     ASSERTS_NOT_NULL(pDev, , ME, "NULL");
+    swl_freqBand_e freqBand;
     for(uint8_t i = 1; i < len; i++) { //Start at 1 to skip current operating class
-        cap->freqCapabilities |= (1 << swl_chanspec_operClassToFreq(frm[i]));
+        freqBand = swl_chanspec_freqBandExtToFreqBand(swl_chanspec_operClassToFreq(frm[i]), SWL_FREQ_BAND_MAX, NULL);
+        if(freqBand == SWL_FREQ_BAND_MAX) {
+            continue;
+        }
+        W_SWL_BIT_SET(cap->freqCapabilities, freqBand);
     }
 }
 

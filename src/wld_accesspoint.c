@@ -2763,6 +2763,30 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
         wld_nl80211_ifaceInfo_t ifaceInfo;
         if(wld_ap_nl80211_getInterfaceInfo(pAP, &ifaceInfo) < SWL_RC_OK) {
             amxc_var_add_key(cstring_t, retMap, "Error", "Fail to get nl80211 iface info");
+        } else {
+            wld_nl80211_dumpIfaceInfo(&ifaceInfo, retMap);
+        }
+    } else if(swl_str_matchesIgnoreCase(feature, "nl80211StationInfo")) {
+        swl_rc_ne rc;
+        const char* sta = GET_CHAR(args, "sta");
+        if(sta && sta[0]) {
+            wld_nl80211_stationInfo_t stationInfo;
+            swl_macBin_t bMac;
+            if(!swl_mac_charToBin(&bMac, (swl_macChar_t*) sta)) {
+                rc = SWL_RC_INVALID_PARAM;
+            } else if((rc = wld_ap_nl80211_getStationInfo(pAP, &bMac, &stationInfo)) >= SWL_RC_OK) {
+                wld_nl80211_dumpStationInfo(&stationInfo, retMap);
+            }
+        } else {
+            wld_nl80211_stationInfo_t* allStationInfo = NULL;
+            uint32_t nStations = 0;
+            if((rc = wld_ap_nl80211_getAllStationsInfo(pAP, &allStationInfo, &nStations)) >= SWL_RC_OK) {
+                wld_nl80211_dumpAllStationInfo(allStationInfo, nStations, retMap);
+            }
+            free(allStationInfo);
+        }
+        if(rc < SWL_RC_OK) {
+            amxc_var_add_key(cstring_t, retMap, "Error", swl_rc_toString(rc));
         }
     } else if(!strcasecmp(feature, "kickSta")) {
         const char* sta = GET_CHAR(args, "sta");

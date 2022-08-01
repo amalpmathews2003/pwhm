@@ -110,6 +110,9 @@ bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason) {
  * @return true when the SET cmd is executed successfully. Otherwise false.
  */
 bool wld_ap_hostapd_setParamValue(T_AccessPoint* pAP, const char* field, const char* value, const char* reason) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_STR(field, false, ME, "empty key");
+    ASSERTS_STR(value, false, ME, "empty value");
     char cmd[128];
     snprintf(cmd, sizeof(cmd), "SET %s %s", field, value);
     return s_sendHostapdCommand(pAP, cmd, reason);
@@ -581,3 +584,65 @@ swl_rc_ne wld_ap_hostapd_delMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
     }
     return SWL_RC_OK;
 }
+
+/* Ref. WPA3_Specification_v3.0 */
+SWL_TABLE(sAkmSuiteSelectorMap,
+          ARR(char* akmSuiteSelectorStr; wld_securityMode_e secMode; ),
+          ARR(swl_type_charPtr, swl_type_uint32, ),
+          ARR({"00-0f-ac-1", APMSI_WPA2_E},      // EAP (SHA-1)
+              {"00-0f-ac-2", APMSI_WPA2_P},      // PSK (SHA1)
+              {"00-0f-ac-3", APMSI_WPA2_P},      // FT-EAP (SHA256)
+              {"00-0f-ac-4", APMSI_WPA2_P},      // FT-PSK (SHA1) (11r)
+              {"00-0f-ac-5", APMSI_WPA3_E},      // EAP (SHA-256)
+              {"00-0f-ac-6", APMSI_WPA2_WPA3_P}, // PSK (SHA256)
+              {"00-0f-ac-8", APMSI_WPA3_P},      // SAE (SHA256)
+              {"00-0f-ac-9", APMSI_WPA3_P},      // FT-SAE (SHA256) (11r)
+              ));
+swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
+    // when failing to get sta info from hostpad, consider security mode unknown
+    pAD->assocCaps.currentSecurity = APMSI_UNKNOWN;
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    char buff[WLD_L_BUF] = {0};
+    snprintf(buff, sizeof(buff), "STA %.17s", pAD->Name);
+    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, buff, ret);
+    ASSERT_TRUE(swl_str_nmatchesIgnoreCase(buff, pAD->Name, strlen(pAD->Name)), SWL_RC_ERROR,
+                ME, "%s: wrong sta %s info: received(%s)",
+                pAP->alias, pAD->Name, buff);
+
+    char valStr[WLD_M_BUF] = {0};
+    int32_t val = 0;
+
+    //Eg: flags=[AUTH][ASSOC][AUTHORIZED][WMM][MFP][HT][HE]
+    if(wld_wpaCtrl_getValueStr(buff, "flags", valStr, sizeof(valStr)) > 0) {
+        pAD->seen = (strstr(valStr, "[ASSOC]") != NULL);
+        /*
+         * when station is connected and authenticated, then initialize security with mode enabled on AP
+         * as it is the only way to detect Open and WEP modes.
+         * Other WPA modes can be detected below. */
+        if(strstr(valStr, "[AUTHORIZED]")) {
+            pAD->assocCaps.currentSecurity = pAP->secModeEnabled;
+        }
+    }
+
+    if(wld_wpaCtrl_getValueIntExt(buff, "wpa", &val)) {
+        switch(val) {
+        case 1: pAD->assocCaps.currentSecurity = APMSI_WPA_P; break;  // WPA_VERSION_WPA = 1: WPA / IEEE 802.11i/D3.0
+        case 2: pAD->assocCaps.currentSecurity = APMSI_WPA2_P; break; // WPA_VERSION_WPA2 = 2: WPA2 / IEEE 802.11i
+        default: break;                                               // WPA_VERSION_NO_WPA = 0 : WPA not used => Open or WEP or EAP
+        }
+    }
+    // if WPA not used, then sec mode may be Open, WEP, EAP ...
+    // even with wpa3, we need  refine secMode using the selected AuthenticationKeyManagement (AKM) suite
+    // Eg: AKMSuiteSelector=00-0f-ac-8
+    if(wld_wpaCtrl_getValueStr(buff, "AKMSuiteSelector", valStr, sizeof(valStr)) > 0) {
+        wld_securityMode_e* pCurrSec = (wld_securityMode_e*) swl_table_getMatchingValue(&sAkmSuiteSelectorMap, 1, 0, valStr);
+        if(pCurrSec) {
+            pAD->assocCaps.currentSecurity = *pCurrSec;
+        }
+    }
+    return SWL_RC_OK;
+}
+

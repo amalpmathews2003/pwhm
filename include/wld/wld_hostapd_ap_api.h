@@ -94,5 +94,6 @@ swl_rc_ne wld_ap_hostapd_delAllMacFilteringEntries(T_AccessPoint* pAP);
 swl_rc_ne wld_ap_hostapd_setMacFilteringList(T_AccessPoint* pAP);
 swl_rc_ne wld_ap_hostapd_addMacFilteringEntry(T_AccessPoint* pAP, char* macStr);
 swl_rc_ne wld_ap_hostapd_delMacFilteringEntry(T_AccessPoint* pAP, char* macStr);
+swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 
 #endif /* __WLD_AP_API_H__ */

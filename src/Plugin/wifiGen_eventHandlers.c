@@ -158,6 +158,11 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAdd
         ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
         SAH_TRACEZ_INFO(ME, "%s: created device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
     }
+    // initialize the associated device info at the connection time
+    wld_nl80211_stationInfo_t stationInfo;
+    if(wld_ap_nl80211_getStationInfo(pAP, (swl_macBin_t*) pAD->MACAddress, &stationInfo) >= SWL_RC_OK) {
+        wld_ap_nl80211_copyStationInfoToAssocDev(pAP, pAD, &stationInfo);
+    }
 
     wld_ad_add_connection_try(pAP, pAD);
     wld_ad_add_connection_success(pAP, pAD);
@@ -210,6 +215,7 @@ static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t
         wld_ad_add_connection_try(pAP, pAD);
 
         wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, data);
+        W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
     }
 }
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {

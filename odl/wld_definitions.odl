@@ -2074,7 +2074,7 @@ define rrm_t{
 			%read-only string Info;
 		}
 
-		void Radio_debug();
+		void debug();
 		
 		/**
 		 * List of fields for advanced driver config. Ensure that
@@ -4742,7 +4742,7 @@ define rrm_t{
 
 		void dbgClearInactiveEntries();
 
-		void AccessPoint_debug();
+		void debug();
 
 
 	} /* object AccessPoint */
@@ -5359,7 +5359,7 @@ define rrm_t{
 		/**
 		 * Perform debug commands to check internal state.
 		 */
-		void EndPoint_debug();
+		void debug();
 	} /* object EndPoint */
 }
 }

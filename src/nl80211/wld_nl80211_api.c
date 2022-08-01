@@ -85,8 +85,8 @@ vendor_t* wld_nl80211_registerVendor(T_CWLD_FUNC_TABLE* fta) {
 }
 
 struct getWirelessIfacesData_s {
-    const uint32_t nIfacesMax;
-    uint32_t nIfaces;
+    const uint32_t nrIfacesMax;
+    uint32_t nrIfaces;
     wld_nl80211_ifaceInfo_t* pIfaces;
 };
 static swl_rc_ne s_getInterfaceInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
@@ -114,18 +114,18 @@ static swl_rc_ne s_getInterfaceInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* 
         SAH_TRACEZ_INFO(ME, "interface %s is not AP/Station", ifaceInfo.name);
         return SWL_RC_OK;
     }
-    if((requestData->pIfaces == NULL) || (requestData->nIfacesMax == 0)) {
+    if((requestData->pIfaces == NULL) || (requestData->nrIfacesMax == 0)) {
         SAH_TRACEZ_INFO(ME, "interface %s skipped: no storage available", ifaceInfo.name);
         return SWL_RC_OK;
     }
-    if(requestData->nIfaces >= requestData->nIfacesMax) {
-        SAH_TRACEZ_INFO(ME, "interface %s skipped: maxIfaces %d reached", ifaceInfo.name, requestData->nIfacesMax);
+    if(requestData->nrIfaces >= requestData->nrIfacesMax) {
+        SAH_TRACEZ_INFO(ME, "interface %s skipped: maxIfaces %d reached", ifaceInfo.name, requestData->nrIfacesMax);
         return SWL_RC_DONE;
     }
 
-    wld_nl80211_ifaceInfo_t* pIface = &requestData->pIfaces[requestData->nIfaces];
+    wld_nl80211_ifaceInfo_t* pIface = &requestData->pIfaces[requestData->nrIfaces];
     memcpy(pIface, &ifaceInfo, sizeof(*pIface));
-    requestData->nIfaces++;
+    requestData->nrIfaces++;
     return SWL_RC_OK;
 }
 
@@ -137,26 +137,26 @@ static int s_ifaceInfoCmp(const void* e1, const void* e2) {
     }
     return (pIface1->wiphy - pIface2->wiphy);
 }
-swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nWiphyMax, const uint32_t nWifaceMax,
-                                    wld_nl80211_ifaceInfo_t wlIfaces[nWiphyMax][nWifaceMax]) {
-    memset(wlIfaces, 0, nWiphyMax * nWifaceMax * sizeof(wld_nl80211_ifaceInfo_t));
+swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nrWiphyMax, const uint32_t nrWifaceMax,
+                                    wld_nl80211_ifaceInfo_t wlIfaces[nrWiphyMax][nrWifaceMax]) {
+    memset(wlIfaces, 0, nrWiphyMax * nrWifaceMax * sizeof(wld_nl80211_ifaceInfo_t));
     struct getWirelessIfacesData_s requestData = {
-        .nIfacesMax = nWiphyMax * nWifaceMax,
-        .nIfaces = 0,
-        .pIfaces = calloc(nWiphyMax * nWifaceMax, sizeof(wld_nl80211_ifaceInfo_t)),
+        .nrIfacesMax = nrWiphyMax * nrWifaceMax,
+        .nrIfaces = 0,
+        .pIfaces = calloc(nrWiphyMax * nrWifaceMax, sizeof(wld_nl80211_ifaceInfo_t)),
     };
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state,
                                            NL80211_CMD_GET_INTERFACE, NLM_F_DUMP,
                                            0, NULL, s_getInterfaceInfoCb, &requestData);
     //sort wlifaces by wiphy then ifIndex, to get ordered vaps per radio
-    qsort(requestData.pIfaces, requestData.nIfaces, sizeof(wld_nl80211_ifaceInfo_t), s_ifaceInfoCmp);
+    qsort(requestData.pIfaces, requestData.nrIfaces, sizeof(wld_nl80211_ifaceInfo_t), s_ifaceInfoCmp);
     wld_nl80211_ifaceInfo_t* pWlIface;
     uint32_t lastWiphy = WLD_NL80211_ID_UNDEF;
     uint32_t curWiphyPos = 0;
     uint32_t curIfacePos = 0;
-    for(uint32_t i = 0; i < requestData.nIfaces; i++) {
-        if((curWiphyPos >= nWiphyMax) || (curIfacePos >= nWifaceMax)) {
+    for(uint32_t i = 0; i < requestData.nrIfaces; i++) {
+        if((curWiphyPos >= nrWiphyMax) || (curIfacePos >= nrWifaceMax)) {
             break;
         }
         if(lastWiphy != requestData.pIfaces[i].wiphy) {
@@ -182,13 +182,13 @@ swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nWiphyMax, const uint32_t nWi
 
 swl_rc_ne wld_nl80211_getInterfaceInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     struct getWirelessIfacesData_s requestData = {
-        .nIfacesMax = 1,
-        .nIfaces = 0,
+        .nrIfacesMax = 1,
+        .nrIfaces = 0,
         .pIfaces = calloc(1, sizeof(wld_nl80211_ifaceInfo_t)),
     };
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_INTERFACE, 0,
                                            ifIndex, NULL, s_getInterfaceInfoCb, &requestData);
-    if(requestData.nIfaces == 0) {
+    if(requestData.nrIfaces == 0) {
         SAH_TRACEZ_ERROR(ME, "no AP/Station interface with ifIndex(%d)", ifIndex);
         rc = SWL_RC_ERROR;
     } else if(pIfaceInfo) {
@@ -218,14 +218,14 @@ swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t ifIndex,
         NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pMac->bMac));
     }
     struct getWirelessIfacesData_s requestData = {
-        .nIfacesMax = 1,
-        .nIfaces = 0,
+        .nrIfacesMax = 1,
+        .nrIfaces = 0,
         .pIfaces = calloc(1, sizeof(wld_nl80211_ifaceInfo_t)),
     };
     rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_NEW_INTERFACE, 0,
                                  ifIndex, &attribs, s_getInterfaceInfoCb, &requestData);
     NL_ATTRS_CLEAR(&attribs);
-    if((requestData.nIfaces > 0) && pIfaceInfo) {
+    if((requestData.nrIfaces > 0) && pIfaceInfo) {
         memcpy(pIfaceInfo, requestData.pIfaces, sizeof(wld_nl80211_ifaceInfo_t));
     }
     free(requestData.pIfaces);
@@ -257,8 +257,8 @@ swl_rc_ne wld_nl80211_setInterfaceUse4Mac(wld_nl80211_state_t* state, uint32_t i
 }
 
 struct getWiphyData_s {
-    const uint32_t nWiphyMax;
-    uint32_t nWiphy;
+    const uint32_t nrWiphyMax;
+    uint32_t nrWiphy;
     wld_nl80211_wiphyInfo_t* pWiphys;
 };
 static swl_rc_ne s_getWiphyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
@@ -278,8 +278,8 @@ static swl_rc_ne s_getWiphyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv
     ASSERT_NOT_NULL(tb[NL80211_ATTR_GENERATION], SWL_RC_ERROR, ME, "missing genId");
     uint32_t genId = nla_get_u32(tb[NL80211_ATTR_GENERATION]);
     wld_nl80211_wiphyInfo_t* pWiphy = &requestData->pWiphys[0];
-    if(requestData->nWiphy > 0) {
-        pWiphy = &requestData->pWiphys[requestData->nWiphy - 1];
+    if(requestData->nrWiphy > 0) {
+        pWiphy = &requestData->pWiphys[requestData->nrWiphy - 1];
     }
     uint32_t wiphy = wld_nl80211_getWiphy(tb);
     if((pWiphy->genId > 0) &&
@@ -289,11 +289,11 @@ static swl_rc_ne s_getWiphyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv
         return SWL_RC_ERROR;
     }
     if(pWiphy->genId != genId) {
-        if(requestData->nWiphy >= requestData->nWiphyMax) {
-            SAH_TRACEZ_INFO(ME, "wiphy(%d) skipped: maxWiphys %d reached", wiphy, requestData->nWiphyMax);
+        if(requestData->nrWiphy >= requestData->nrWiphyMax) {
+            SAH_TRACEZ_INFO(ME, "wiphy(%d) skipped: maxWiphys %d reached", wiphy, requestData->nrWiphyMax);
             return SWL_RC_DONE;
         }
-        pWiphy = &requestData->pWiphys[requestData->nWiphy++];
+        pWiphy = &requestData->pWiphys[requestData->nrWiphy++];
         pWiphy->genId = genId;
     }
     rc = wld_nl80211_parseWiphyInfo(tb, pWiphy);
@@ -304,14 +304,14 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
     NL_ATTRS(attribs,
              ARR(NL_ATTR(NL80211_ATTR_SPLIT_WIPHY_DUMP)));
     struct getWiphyData_s requestData = {
-        .nWiphyMax = 1,
-        .nWiphy = 0,
+        .nrWiphyMax = 1,
+        .nrWiphy = 0,
         .pWiphys = calloc(1, sizeof(wld_nl80211_wiphyInfo_t)),
     };
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_WIPHY, NLM_F_DUMP,
                                            ifIndex, &attribs, s_getWiphyInfoCb, &requestData);
     NL_ATTRS_CLEAR(&attribs);
-    if(requestData.nWiphy == 0) {
+    if(requestData.nrWiphy == 0) {
         SAH_TRACEZ_ERROR(ME, "no Wiphy found for ifIndex(%d)", ifIndex);
         rc = SWL_RC_ERROR;
     } else if(pWiphyInfo) {
@@ -322,8 +322,8 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
 }
 
 struct getStationData_s {
-    const uint32_t nStationMax;
-    uint32_t nStation;
+    const uint32_t nrStationMax;
+    uint32_t nrStation;
     wld_nl80211_stationInfo_t* pStationInfo;
 };
 
@@ -351,21 +351,22 @@ static swl_rc_ne s_getStationInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* pr
     }
 
     wld_nl80211_stationInfo_t stationInfo;
+    memset(&stationInfo, 0, sizeof(stationInfo));
     rc = wld_nl80211_parseStationInfo(tb, &stationInfo);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "parsing station info failed");
 
-    if((requestData->pStationInfo == NULL) || (requestData->nStationMax == 0)) {
+    if((requestData->pStationInfo == NULL) || (requestData->nrStationMax == 0)) {
         SAH_TRACEZ_INFO(ME, "No device associated available");
         return SWL_RC_OK;
     }
-    if(requestData->nStation >= requestData->nStationMax) {
-        SAH_TRACEZ_INFO(ME, "Device skipped: maxStation %d reached", requestData->nStationMax);
+    if(requestData->nrStation >= requestData->nrStationMax) {
+        SAH_TRACEZ_INFO(ME, "Device skipped: maxStation %d reached", requestData->nrStationMax);
         return SWL_RC_DONE;
     }
 
-    wld_nl80211_stationInfo_t* pStationInfo = &requestData->pStationInfo[requestData->nStation];
+    wld_nl80211_stationInfo_t* pStationInfo = &requestData->pStationInfo[requestData->nrStation];
     memcpy(pStationInfo, &stationInfo, sizeof(*pStationInfo));
-    requestData->nStation++;
+    requestData->nrStation++;
 
     return rc;
 }
@@ -375,20 +376,46 @@ swl_rc_ne wld_nl80211_getStationInfo(wld_nl80211_state_t* state, uint32_t ifInde
     NL_ATTRS(attribs, ARR(NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pMac)));
 
     struct getStationData_s requestData = {
-        .nStationMax = 1,
-        .nStation = 0,
+        .nrStationMax = 1,
+        .nrStation = 0,
         .pStationInfo = calloc(1, sizeof(wld_nl80211_stationInfo_t)),
     };
 
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_STATION, 0, ifIndex, &attribs, s_getStationInfoCb, &requestData);
     NL_ATTRS_CLEAR(&attribs);
 
-    if(requestData.nStation == 0) {
+    if(requestData.nrStation == 0) {
         SAH_TRACEZ_ERROR(ME, "no Station device with ifIndex(%d)", ifIndex);
         rc = SWL_RC_ERROR;
     } else if(pStationInfo) {
         memcpy(pStationInfo, requestData.pStationInfo, sizeof(wld_nl80211_stationInfo_t));
-        memcpy(&pStationInfo->macAddr, pMac, sizeof(swl_macBin_t));
+    }
+    free(requestData.pStationInfo);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_getAllStationsInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnStation) {
+
+    struct getStationData_s requestData = {
+        .nrStationMax = MAXNROF_STAENTRY,
+        .nrStation = 0,
+        .pStationInfo = calloc(MAXNROF_STAENTRY, sizeof(wld_nl80211_stationInfo_t)),
+    };
+
+    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_STATION, NLM_F_DUMP, ifIndex, NULL, s_getStationInfoCb, &requestData);
+
+    if(requestData.nrStation == 0) {
+        SAH_TRACEZ_ERROR(ME, "no Station device with ifIndex(%d)", ifIndex);
+        rc = SWL_RC_ERROR;
+    } else if((ppStationInfo != NULL) && (pnStation != NULL)) {
+        *ppStationInfo = calloc(requestData.nrStation, sizeof(wld_nl80211_stationInfo_t));
+        if(*ppStationInfo == NULL) {
+            SAH_TRACEZ_ERROR(ME, "Fail to allocate memory for station info results");
+            rc = SWL_RC_ERROR;
+        } else {
+            *pnStation = requestData.nrStation;
+            memcpy(*ppStationInfo, requestData.pStationInfo, requestData.nrStation * sizeof(wld_nl80211_stationInfo_t));
+        }
     }
     free(requestData.pStationInfo);
     return rc;

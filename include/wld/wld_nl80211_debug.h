@@ -102,5 +102,16 @@ swl_rc_ne wld_nl80211_dumpWiphyInfo(wld_nl80211_wiphyInfo_t* pWiphyInfo, amxc_va
  */
 swl_rc_ne wld_nl80211_dumpStationInfo(wld_nl80211_stationInfo_t* pStationInfo, amxc_var_t* retMap);
 
+/*
+ * @brief dump all stations info into a map tree (for debug purpose)
+ *
+ * @param pAllStationInfo pointer to list of filled stations info struct
+ * @param nrStation number of stations
+ * @param retMap pointer to variant map to be filled
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_dumpAllStationInfo(wld_nl80211_stationInfo_t* pAllStationInfo, uint32_t nrStation, amxc_var_t* retMap);
 
 #endif /* INCLUDE_WLD_WLD_NL80211_DEBUG_H_ */

@@ -678,49 +678,45 @@ static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wl
     }
 
     // Get protocol info
-    if(pRinfo[NL80211_RATE_INFO_MCS]) {
-        pRate->mscInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_MCS]);
-        pRate->mscInfo.standard = SWL_STANDARD_HT;
+    swl_mcs_clean(&pRate->mcsInfo);
+    pRate->mcsInfo.numberOfSpatialStream = 1;
+    // legacy: to allow default stats for a/b/g std and passive rx devices
+    pRate->mcsInfo.standard = SWL_STANDARD_LEGACY;
 
+    if(pRinfo[NL80211_RATE_INFO_HE_MCS]) {
+        pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_MCS]);
+        pRate->mcsInfo.standard = SWL_STANDARD_HE;
+        if(pRinfo[NL80211_RATE_INFO_HE_NSS]) {
+            pRate->mcsInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_NSS]);
+        }
+        pRate->mcsInfo.guardInterval = SWL_SGI_3200;
     } else if(pRinfo[NL80211_RATE_INFO_VHT_MCS]) {
-        pRate->mscInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_VHT_MCS]);
-        pRate->mscInfo.standard = SWL_STANDARD_VHT;
+        pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_VHT_MCS]);
+        pRate->mcsInfo.standard = SWL_STANDARD_VHT;
 
         if(pRinfo[NL80211_RATE_INFO_VHT_NSS]) {
-            pRate->mscInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_VHT_NSS]);
+            pRate->mcsInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_VHT_NSS]);
         }
-
-    } else if(pRinfo[NL80211_RATE_INFO_HE_MCS]) {
-        pRate->mscInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_MCS]);
-        pRate->mscInfo.standard = SWL_STANDARD_HE;
-
-        if(pRinfo[NL80211_RATE_INFO_HE_NSS]) {
-            pRate->mscInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_NSS]);
-        }
-    } else {
-        pRate->mscInfo.mcsIndex = 0;
-        pRate->mscInfo.standard = SWL_STANDARD_UNKNOWN;
+        pRate->mcsInfo.guardInterval = SWL_SGI_800;
+    } else if(pRinfo[NL80211_RATE_INFO_MCS]) {
+        pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_MCS]);
+        pRate->mcsInfo.standard = SWL_STANDARD_HT;
+        pRate->mcsInfo.numberOfSpatialStream = 1 + (pRate->mcsInfo.mcsIndex / 8);
+        pRate->mcsInfo.guardInterval = SWL_SGI_800;
     }
 
     // Get guard interval
-    if(pRinfo[NL80211_RATE_INFO_SHORT_GI]) {
-        pRate->mscInfo.guardInterval = SWL_SGI_400;
-
-    } else if(pRinfo[NL80211_RATE_INFO_HE_GI]) {
-        if(nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_GI]) == NL80211_RATE_INFO_HE_GI_0_8) {
-            pRate->mscInfo.guardInterval = SWL_SGI_800;
-
-        } else if(nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_GI]) == NL80211_RATE_INFO_HE_GI_1_6) {
-            pRate->mscInfo.guardInterval = SWL_SGI_1600;
-
-        } else if(nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_GI]) == NL80211_RATE_INFO_HE_GI_3_2) {
-            pRate->mscInfo.guardInterval = SWL_SGI_3200;
-
-        } else {
-            pRate->mscInfo.guardInterval = SWL_SGI_AUTO;
+    if(pRinfo[NL80211_RATE_INFO_HE_GI]) {
+        uint8_t sgi = nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_GI]);
+        if(sgi == NL80211_RATE_INFO_HE_GI_0_8) {
+            pRate->mcsInfo.guardInterval = SWL_SGI_800;
+        } else if(sgi == NL80211_RATE_INFO_HE_GI_1_6) {
+            pRate->mcsInfo.guardInterval = SWL_SGI_1600;
+        } else if(sgi == NL80211_RATE_INFO_HE_GI_3_2) {
+            pRate->mcsInfo.guardInterval = SWL_SGI_3200;
         }
-    } else {
-        pRate->mscInfo.guardInterval = SWL_SGI_AUTO;
+    } else if(pRinfo[NL80211_RATE_INFO_SHORT_GI]) {
+        pRate->mcsInfo.guardInterval = SWL_SGI_400;
     }
 
     // Get HE DCM (u8, 0/1)
@@ -729,21 +725,40 @@ static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wl
     }
 
     // Get Bandwidth value
-    if(pRinfo[NL80211_RATE_INFO_5_MHZ_WIDTH]) {
-        pRate->mscInfo.bandwidth = SWL_BW_5MHZ;
-    } else if(pRinfo[NL80211_RATE_INFO_10_MHZ_WIDTH]) {
-        pRate->mscInfo.bandwidth = SWL_BW_10MHZ;
-    } else if(pRinfo[NL80211_RATE_INFO_40_MHZ_WIDTH]) {
-        pRate->mscInfo.bandwidth = SWL_BW_40MHZ;
+    if((pRinfo[NL80211_RATE_INFO_80P80_MHZ_WIDTH]) || (pRinfo[NL80211_RATE_INFO_160_MHZ_WIDTH])) {
+        pRate->mcsInfo.bandwidth = SWL_BW_160MHZ;
     } else if(pRinfo[NL80211_RATE_INFO_80_MHZ_WIDTH]) {
-        pRate->mscInfo.bandwidth = SWL_BW_80MHZ;
-    } else if((pRinfo[NL80211_RATE_INFO_80P80_MHZ_WIDTH]) || (pRinfo[NL80211_RATE_INFO_160_MHZ_WIDTH])) {
-        pRate->mscInfo.bandwidth = SWL_BW_160MHZ;
+        pRate->mcsInfo.bandwidth = SWL_BW_80MHZ;
+    } else if(pRinfo[NL80211_RATE_INFO_40_MHZ_WIDTH]) {
+        pRate->mcsInfo.bandwidth = SWL_BW_40MHZ;
+    } else if(pRinfo[NL80211_RATE_INFO_10_MHZ_WIDTH]) {
+        pRate->mcsInfo.bandwidth = SWL_BW_10MHZ;
+    } else if(pRinfo[NL80211_RATE_INFO_5_MHZ_WIDTH]) {
+        pRate->mcsInfo.bandwidth = SWL_BW_5MHZ;
     } else {
-        pRate->mscInfo.bandwidth = SWL_BW_20MHZ;
+        pRate->mcsInfo.bandwidth = SWL_BW_20MHZ;
     }
 
+    swl_mcs_checkMcsIndexes(&pRate->mcsInfo);
+
     return rc;
+}
+
+static swl_rc_ne wld_nl80211_parseSignalPerChain(struct nlattr* pSigPChain, int8_t* sigArray, uint32_t maxNChain, uint32_t* pNChains) {
+    ASSERTS_NOT_NULL(pSigPChain, SWL_RC_INVALID_PARAM, ME, "NULL");
+    struct nlattr* attr;
+    uint32_t i = 0;
+    int rem = 0;
+    nla_for_each_nested(attr, pSigPChain, rem) {
+        if(i >= maxNChain) {
+            break;
+        }
+        sigArray[i++] = (int8_t) nla_get_u8(attr);
+    }
+    if(pNChains) {
+        *pNChains = i;
+    }
+    return SWL_RC_OK;
 }
 
 swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationInfo_t* pStation) {
@@ -766,20 +781,31 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
         [NL80211_STA_INFO_SIGNAL_AVG] = { .type = NLA_U8 },
         [NL80211_STA_INFO_TX_BITRATE] = { .type = NLA_NESTED },
         [NL80211_STA_INFO_RX_BITRATE] = { .type = NLA_NESTED },
+        [NL80211_STA_INFO_CONNECTED_TIME] = { .type = NLA_U32},
+        [NL80211_STA_INFO_STA_FLAGS] = { .minlen = sizeof(struct nl80211_sta_flag_update) },
 
     };
+    statsPolicy[NL80211_STA_INFO_RX_BYTES64].type = NLA_U64;
+    statsPolicy[NL80211_STA_INFO_TX_BYTES64].type = NLA_U64;
+    statsPolicy[NL80211_STA_INFO_CHAIN_SIGNAL].type = NLA_NESTED;
+    statsPolicy[NL80211_STA_INFO_CHAIN_SIGNAL_AVG].type = NLA_NESTED;
 
     if(nla_parse_nested(pSinfo, NL80211_STA_INFO_MAX, tb[NL80211_ATTR_STA_INFO], statsPolicy) != SWL_RC_OK) {
         SAH_TRACEZ_ERROR(ME, "Failed to parse nested STA attributes!");
         return SWL_RC_ERROR;
     }
+    NLA_GET_DATA(pStation->macAddr.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
     if(pSinfo[NL80211_STA_INFO_INACTIVE_TIME]) {
         pStation->inactiveTime = nla_get_u32(pSinfo[NL80211_STA_INFO_INACTIVE_TIME]);
     }
-    if(pSinfo[NL80211_STA_INFO_RX_BYTES]) {
+    if(pSinfo[NL80211_STA_INFO_RX_BYTES64]) {
+        pStation->rxBytes = nla_get_u64(pSinfo[NL80211_STA_INFO_RX_BYTES64]);
+    } else if(pSinfo[NL80211_STA_INFO_RX_BYTES]) {
         pStation->rxBytes = nla_get_u32(pSinfo[NL80211_STA_INFO_RX_BYTES]);
     }
-    if(pSinfo[NL80211_STA_INFO_TX_BYTES]) {
+    if(pSinfo[NL80211_STA_INFO_RX_BYTES64]) {
+        pStation->txBytes = nla_get_u64(pSinfo[NL80211_STA_INFO_RX_BYTES64]);
+    } else if(pSinfo[NL80211_STA_INFO_TX_BYTES]) {
         pStation->txBytes = nla_get_u32(pSinfo[NL80211_STA_INFO_TX_BYTES]);
     }
     if(pSinfo[NL80211_STA_INFO_RX_PACKETS]) {
@@ -806,6 +832,35 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
     if(pSinfo[NL80211_STA_INFO_RX_BITRATE]) {
         wld_nl80211_parseRateInfo(pSinfo[NL80211_STA_INFO_RX_BITRATE], &pStation->rxRate);
     }
+    if(pSinfo[NL80211_STA_INFO_CONNECTED_TIME]) {
+        pStation->connectedTime = nla_get_u32(pSinfo[NL80211_STA_INFO_CONNECTED_TIME]);
+    }
+    struct nl80211_sta_flag_update* pSFlags = NULL;
+    pStation->flags.authorized = SWL_TRL_UNKNOWN;
+    pStation->flags.authenticated = SWL_TRL_UNKNOWN;
+    pStation->flags.associated = SWL_TRL_UNKNOWN;
+    pStation->flags.wme = SWL_TRL_UNKNOWN;
+    pStation->flags.mfp = SWL_TRL_UNKNOWN;
+    if(pSinfo[NL80211_STA_INFO_STA_FLAGS]) {
+        pSFlags = (struct nl80211_sta_flag_update*) nla_data(pSinfo[NL80211_STA_INFO_STA_FLAGS]);
+        if(SWL_BIT_IS_SET(pSFlags->mask, NL80211_STA_FLAG_AUTHORIZED)) {
+            pStation->flags.authorized = SWL_BIT_IS_SET(pSFlags->set, NL80211_STA_FLAG_AUTHORIZED);
+        }
+        if(SWL_BIT_IS_SET(pSFlags->mask, NL80211_STA_FLAG_AUTHENTICATED)) {
+            pStation->flags.authenticated = SWL_BIT_IS_SET(pSFlags->set, NL80211_STA_FLAG_AUTHENTICATED);
+        }
+        if(SWL_BIT_IS_SET(pSFlags->mask, NL80211_STA_FLAG_ASSOCIATED)) {
+            pStation->flags.associated = SWL_BIT_IS_SET(pSFlags->set, NL80211_STA_FLAG_ASSOCIATED);
+        }
+        if(SWL_BIT_IS_SET(pSFlags->mask, NL80211_STA_FLAG_WME)) {
+            pStation->flags.wme = SWL_BIT_IS_SET(pSFlags->set, NL80211_STA_FLAG_WME);
+        }
+        if(SWL_BIT_IS_SET(pSFlags->mask, NL80211_STA_FLAG_MFP)) {
+            pStation->flags.mfp = SWL_BIT_IS_SET(pSFlags->set, NL80211_STA_FLAG_MFP);
+        }
+    }
+    wld_nl80211_parseSignalPerChain(pSinfo[NL80211_STA_INFO_CHAIN_SIGNAL], pStation->rssiDbmByChain, MAX_NR_ANTENNA, &pStation->nrSignalChains);
+    wld_nl80211_parseSignalPerChain(pSinfo[NL80211_STA_INFO_CHAIN_SIGNAL_AVG], pStation->rssiAvgDbmByChain, MAX_NR_ANTENNA, NULL);
 
     return rc;
 }

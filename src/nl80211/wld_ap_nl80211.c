@@ -104,3 +104,65 @@ swl_rc_ne wld_ap_nl80211_delVapInterface(T_AccessPoint* pAP) {
     }
 }
 
+swl_rc_ne wld_ap_nl80211_getStationInfo(T_AccessPoint* pAP, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), pAP->index, pMac, pStationInfo);
+}
+
+swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), pAP->index, ppStationInfo, pnrStation);
+}
+
+swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_nl80211_stationInfo_t* pStationInfo) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pStationInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
+    pAD->RxBytes = pStationInfo->rxBytes;
+    pAD->TxBytes = pStationInfo->txBytes;
+    pAD->RxPacketCount = pStationInfo->rxPackets;
+    pAD->TxPacketCount = pStationInfo->txPackets;
+    pAD->TxFailures = pStationInfo->txFailed;
+    pAD->Tx_Retransmissions = pStationInfo->txRetries;
+
+    pAD->SignalStrength = pStationInfo->rssiDbm;
+    for(uint32_t i = 0; i < SWL_MIN(pStationInfo->nrSignalChains, (uint32_t) MAX_NR_ANTENNA); i++) {
+        pAD->SignalStrengthByChain[i] = pStationInfo->rssiDbmByChain[i];
+    }
+    pAD->connectionDuration = pStationInfo->connectedTime;
+    pAD->Inactive = pStationInfo->inactiveTime / 1000;
+
+    if(pStationInfo->flags.associated != SWL_TRL_UNKNOWN) {
+        pAD->seen = (pStationInfo->flags.associated == SWL_TRL_TRUE);
+    } else if(pStationInfo->rxRate.bitrate > 0) {
+        pAD->seen = true;
+    }
+
+    SAH_TRACEZ_INFO(ME, "%s: Downlink MCS %s", pAD->Name, swl_typeMcs_toBuf32(pStationInfo->txRate.mcsInfo).buf);
+    SAH_TRACEZ_INFO(ME, "%s: Uplink MCS %s", pAD->Name, swl_typeMcs_toBuf32(pStationInfo->rxRate.mcsInfo).buf);
+
+    pAD->operatingStandard = SWL_MAX(
+        swl_mcs_radStdFromMcsStd(pStationInfo->txRate.mcsInfo.standard, pAP->pRadio->operatingFrequencyBand),
+        swl_mcs_radStdFromMcsStd(pStationInfo->rxRate.mcsInfo.standard, pAP->pRadio->operatingFrequencyBand));
+    pAD->assocCaps.linkBandwidth = swl_chanspec_intToBw(
+        SWL_MAX(swl_chanspec_bwToInt(pStationInfo->txRate.mcsInfo.bandwidth),
+                swl_chanspec_bwToInt(pStationInfo->rxRate.mcsInfo.bandwidth)));
+
+    pAD->LastDataUplinkRate = pStationInfo->rxRate.bitrate;
+    pAD->MaxRxSpatialStreamsSupported = SWL_MAX(pAD->MaxRxSpatialStreamsSupported, (uint16_t) pStationInfo->rxRate.mcsInfo.numberOfSpatialStream);
+    pAD->MaxUplinkRateSupported = SWL_MAX(pAD->MaxUplinkRateSupported, pStationInfo->rxRate.bitrate);
+    pAD->UplinkMCS = pStationInfo->rxRate.mcsInfo.mcsIndex;
+    pAD->UplinkBandwidth = swl_chanspec_bwToInt(pStationInfo->rxRate.mcsInfo.bandwidth);
+    pAD->UplinkShortGuard = swl_mcs_guardIntervalToInt(pStationInfo->rxRate.mcsInfo.guardInterval);
+    pAD->upLinkRateSpec = pStationInfo->rxRate.mcsInfo;
+
+    pAD->LastDataDownlinkRate = pStationInfo->txRate.bitrate;
+    pAD->MaxTxSpatialStreamsSupported = SWL_MAX(pAD->MaxTxSpatialStreamsSupported, (uint16_t) pStationInfo->txRate.mcsInfo.numberOfSpatialStream);
+    pAD->DownlinkMCS = pStationInfo->txRate.mcsInfo.mcsIndex;
+    pAD->DownlinkBandwidth = swl_chanspec_bwToInt(pStationInfo->txRate.mcsInfo.bandwidth);
+    pAD->DownlinkShortGuard = swl_mcs_guardIntervalToInt(pStationInfo->txRate.mcsInfo.guardInterval);
+    pAD->downLinkRateSpec = pStationInfo->txRate.mcsInfo;
+
+    return SWL_RC_OK;
+}
+
