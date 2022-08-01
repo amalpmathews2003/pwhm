@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.10 - 2022-08-01(07:51:03 +0000)
+
+### Other
+
+- - make amx getStationStats work
+
 ## Release v1.5.9 - 2022-07-29(11:54:44 +0000)
 
 ### Other
