@@ -85,7 +85,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setOperatingStandard(T_Radio* pRadio) {
 /** @brief calculate the sec_channel_offset parameter of CHAN_SWITCH hostapd command
  * the function code is inspired from hostapd_ctrl_check_freq_params function in hostapd
  *
- * @param bandwidth bandwidht 20/4080/160MHz
+ * @param bandwidth bandwidht 20/40/80/160MHz
  * @param freq frequency
  * @param center_freq center frequency
  * @param sec_channel_offset a parameter in the CHAN_SWITCH command
@@ -202,3 +202,48 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
     ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "NULL");
     return SWL_RC_OK;
 }
+
+/**
+ * @brief reload the hostapd
+ *
+ * @param pR radio context
+ * @return SWL_RC_OK when the Hostapd config is reloaded. Otherwise error code.
+ */
+swl_rc_ne wld_rad_hostapd_reload(T_Radio* pR) {
+    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    bool ret = wld_ap_hostapd_sendCommand(primaryVap, "RELOAD", "reload conf");
+    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: reload fail", pR->Name);
+    return SWL_RC_OK;
+}
+
+
+/**
+ * @brief enable main hostapd interface
+ *
+ * @param pR radio context
+ *
+ * @return SWL_RC_OK when the enabling cmd is sent. Otherwise error code.
+ */
+swl_rc_ne wld_rad_hostapd_enable(T_Radio* pR) {
+    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
+    bool ret = wld_ap_hostapd_sendCommand(primaryVap, "ENABLE", "enableHapd");
+    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: enabling failed", primaryVap->alias);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief disable main hostapd interface
+ *
+ * @param pR radio context
+ *
+ * @return SWL_RC_OK when the the disabling cmd is sent. Otherwise error code.
+ */
+swl_rc_ne wld_rad_hostapd_disable(T_Radio* pR) {
+    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
+    bool ret = wld_ap_hostapd_sendCommand(primaryVap, "DISABLE", "disableHapd");
+    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: disabling failed", primaryVap->alias);
+    return SWL_RC_OK;
+}
+

@@ -63,6 +63,8 @@
 
 #include "wld/wld_common.h"
 #include "wld/wld_linuxIfUtils.h"
+#include "wld/wld_rad_hostapd_api.h"
+#include "wld/wld_hostapd_ap_api.h"
 
 #include "wifiGen_fsm.h"
 
@@ -71,6 +73,159 @@
 #include "wifiGen_hapd.h"
 
 #define ME "genFsm"
+
+/*
+ * List of actions that can be used to apply hostapd configuration,
+ * starting from the most global (most critical)
+ */
+static const wifiGen_fsmStates_e sApplyActions[] = {
+    GEN_FSM_START_HOSTAPD,  // leads to restarting hostapd
+    GEN_FSM_ENABLE_HOSTAPD, // leads to enabling (usually toggling) hostapd main interface
+    GEN_FSM_UPDATE_HOSTAPD, // leads to refreshing hostpad with SIGHUP (reloads conf file)
+    GEN_FSM_RELOAD_HOSTAPD, // leads to reloading hostpad conf from memory
+};
+/*
+ * List of params (fsm actions) that may be warm applied,
+ * at runtime, without restarting hostapd
+ */
+static const wifiGen_fsmStates_e sDynConfActions[] = {
+    GEN_FSM_MOD_SSID,
+};
+/*
+ * returns the index of the first met fsm action (among provided actionArray),
+ * that is more global than the action argument (i.e: implicitly applying it)
+ */
+static int s_fetchAction(const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
+                         wifiGen_fsmStates_e action) {
+    ASSERTS_NOT_NULL(actionArr, -1, ME, "NULL");
+    while(actionArrSize > 0) {
+        if(actionArr[--actionArrSize] == action) {
+            return actionArrSize;
+        }
+    }
+    return -1;
+}
+/*
+ * returns the enum id of the first met scheduled fsm action (among provided actionArray),
+ * that is more global than the provided indexed action (i.e: implicitly applying it)
+ */
+static int s_fetchHigherAction(unsigned long* bitMapArr, uint32_t bitMapArrSize,
+                               const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
+                               int32_t minId) {
+    ASSERTS_FALSE(minId < 0, -1, ME, "out of order");
+    for(int32_t i = minId; i >= 0 && i < (int32_t) actionArrSize; i--) {
+        if(isBitSetLongArray(bitMapArr, bitMapArrSize, actionArr[i])) {
+            return i;
+        }
+    }
+    return -1;
+}
+/*
+ * returns the enum id of the first met scheduled fsm action (among provided actionArray),
+ * that is more global than the provided enumerated action (i.e: implicitly applying it)
+ */
+static int s_fetchHigherActionExt(unsigned long* bitMapArr, uint32_t bitMapArrSize,
+                                  const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
+                                  wifiGen_fsmStates_e minAction) {
+    int pos = s_fetchAction(actionArr, actionArrSize, minAction);
+    if(pos <= 0) {
+        return -1;
+    }
+    return s_fetchHigherAction(bitMapArr, bitMapArrSize, actionArr, actionArrSize, pos - 1);
+}
+/*
+ * clear from fsm actions bitmap, all fsm actions (among action array) implicitly applied
+ * by provided indexed action (index in action array)
+ */
+static void s_clearLowerActions(unsigned long* bitMapArr, uint32_t bitMapArrSize,
+                                const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
+                                int32_t minId) {
+    for(int32_t i = minId; i >= 0 && i < (int32_t) actionArrSize; i++) {
+        clearBitLongArray(bitMapArr, bitMapArrSize, actionArr[i]);
+    }
+}
+/*
+ * clear from fsm actions bitmap, all fsm actions (among action array) implicitly applied
+ * by provided enumerated action
+ */
+static void s_clearLowerActionsExt(unsigned long* bitMapArr, uint32_t bitMapArrSize,
+                                   const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
+                                   wifiGen_fsmStates_e minAction) {
+    int pos = s_fetchAction(actionArr, actionArrSize, minAction);
+    ASSERTS_FALSE(pos < 0, , ME, "not found");
+    s_clearLowerActions(bitMapArr, bitMapArrSize, actionArr, actionArrSize, pos + 1);
+}
+/*
+ * fetch first met scheduled conf action implicitly applying fsm action
+ */
+static int s_fetchHigherApplyAction(unsigned long* bitMapArr, uint32_t bitMapArrSize, wifiGen_fsmStates_e action) {
+    return s_fetchHigherActionExt(bitMapArr, bitMapArrSize, sApplyActions, SWL_ARRAY_SIZE(sApplyActions), action);
+}
+/*
+ * clear conf applying fsm actions, that will be implicitly applied with than provided action
+ */
+static void s_clearLowerApplyActions(unsigned long* bitMapArr, uint32_t bitMapArrSize, wifiGen_fsmStates_e action) {
+    s_clearLowerActionsExt(bitMapArr, bitMapArrSize, sApplyActions, SWL_ARRAY_SIZE(sApplyActions), action);
+}
+/*
+ * schedule fsm conf applying action, if no more global actions are already scheduled.
+ * If successful, less global fsm conf applying actions are cleared (because implicit)
+ */
+static bool s_setApplyAction(unsigned long* bitMapArr, uint32_t bitMapArrSize, wifiGen_fsmStates_e action) {
+    if(s_fetchHigherApplyAction(bitMapArr, bitMapArrSize, action) >= 0) {
+        return false;
+    }
+    setBitLongArray(bitMapArr, bitMapArrSize, action);
+    s_clearLowerApplyActions(bitMapArr, bitMapArrSize, action);
+    return true;
+}
+/*
+ * fetch for scheduled conf applying fsm action
+ */
+static int s_fetchApplyAction(unsigned long* bitMapArr, uint32_t bitMapArrSize) {
+    int32_t size = SWL_ARRAY_SIZE(sApplyActions);
+    return s_fetchHigherAction(bitMapArr, bitMapArrSize, sApplyActions, size, size - 1);
+}
+/*
+ * fetch for scheduled dynamically configurable param fsm action
+ */
+static int s_fetchDynConfAction(unsigned long* bitMapArr, uint32_t bitMapArrSize) {
+    int32_t size = SWL_ARRAY_SIZE(sDynConfActions);
+    return s_fetchHigherAction(bitMapArr, bitMapArrSize, sDynConfActions, size, size - 1);
+}
+/*
+ * clear all dynamically configurable param fsm actions
+ * This is used when the conf will be entirely applied by restarting hostapd
+ */
+static void s_clearDynConfActions(unsigned long* bitMapArr, uint32_t bitMapArrSize) {
+    s_clearLowerActions(bitMapArr, bitMapArrSize, sDynConfActions, SWL_ARRAY_SIZE(sDynConfActions), 0);
+}
+/*
+ * schedule next conf applying fsm action after setting a dynamic param
+ */
+static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP _UNUSED, T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    switch(action) {
+    case SECDMN_ACTION_OK_NEED_RESTART:
+        if(s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
+        }
+        break;
+    case SECDMN_ACTION_OK_NEED_TOGGLE:
+        if(s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD)) {
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        }
+        break;
+    case SECDMN_ACTION_OK_NEED_SIGHUP:
+        s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
+        break;
+    case SECDMN_ACTION_OK_NEED_RELOAD:
+        s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_HOSTAPD);
+        break;
+    default:
+        return;
+    }
+}
 
 static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: enable vap", pAP->alias);
@@ -87,6 +242,7 @@ static bool s_doRadDisable(T_Radio* pRad) {
 }
 
 static bool s_doStopHostapd(T_Radio* pRad) {
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
     wifiGen_hapd_stopDaemon(pRad);
     T_AccessPoint* pAP = NULL;
@@ -105,17 +261,37 @@ static bool s_doConfHostapd(T_Radio* pRad) {
 
 static bool s_doReloadHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: reload conf", pRad->Name);
+    wld_rad_hostapd_reload(pRad);
+    return true;
+}
+
+static bool s_doUpdateHostapd(T_Radio* pRad) {
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
     return true;
 }
 
 static bool s_doStartHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wld_rad_hasEnabledVap(pRad), true, "%s: radio has not enabled vap", pRad->Name);
+    ASSERTS_TRUE(wld_rad_hasEnabledVap(pRad), true, "%s: radio has no enabled vap", pRad->Name);
     ASSERTS_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
+    ASSERTS_FALSE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd running", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: start hostapd", pRad->Name);
     wifiGen_hapd_startDaemon(pRad);
+    return true;
+}
+
+static bool s_doDisableHostapd(T_Radio* pRad) {
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    wld_rad_hostapd_disable(pRad);
     pRad->fsmRad.timeout_msec = 500;
+    return true;
+}
+
+static bool s_doEnableHostapd(T_Radio* pRad) {
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    wld_rad_hostapd_enable(pRad);
     return true;
 }
 
@@ -124,6 +300,18 @@ static bool s_doSetBssid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
                  true, ME, "Null mac");
     SAH_TRACEZ_INFO(ME, "%s: set bssid", pAP->alias);
     wifiGen_vap_setBssid(pAP);
+    return true;
+}
+
+static bool s_doSetSsid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERTS_NOT_NULL(pSSID, true, ME, "%s: no ssid ctx", pAP->alias);
+    SAH_TRACEZ_INFO(ME, "%s: set ssid (%s)", pSSID->Name, pSSID->SSID);
+    wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setSsid(pAP, pSSID->SSID);
+    ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set ssid", pSSID->Name);
+    s_schedNextAction(rc, pAP, pRad);
     return true;
 }
 
@@ -174,6 +362,16 @@ static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
     if(isBitSetLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_BSSID)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
     }
+    if(s_fetchDynConfAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW) >= 0) {
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+        if(!wifiGen_hapd_isRunning(pRad)) {
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        }
+    }
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
+        s_clearLowerApplyActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
+    }
 }
 
 static void s_checkRadDependency(T_Radio* pRad) {
@@ -181,14 +379,13 @@ static void s_checkRadDependency(T_Radio* pRad) {
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
-        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_READ_STATE);
-    }
-    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD)) {
-        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
-        clearBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
+        s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
+    }
+    if((s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
+       (s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
 }
@@ -196,9 +393,13 @@ static void s_checkRadDependency(T_Radio* pRad) {
 wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_DISABLE_RAD), .doRadFsmAction = s_doRadDisable},
     {FSM_ACTION(GEN_FSM_STOP_HOSTAPD), .doRadFsmAction = s_doStopHostapd},
+    {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
+    {FSM_ACTION(GEN_FSM_MOD_SSID), .doVapFsmAction = s_doSetSsid},
     {FSM_ACTION(GEN_FSM_MOD_HOSTAPD), .doRadFsmAction = s_doConfHostapd},
-    {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doReloadHostapd},
+    {FSM_ACTION(GEN_FSM_RELOAD_HOSTAPD), .doRadFsmAction = s_doReloadHostapd},
+    {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
+    {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
     {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
     {FSM_ACTION(GEN_FSM_ENABLE_RAD)},// Rad enable requires no config
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},

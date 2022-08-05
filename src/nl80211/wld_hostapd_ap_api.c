@@ -77,18 +77,7 @@ bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, false, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: send hostapd cmd %s for %s", pR->Name, cmd, reason);
-    return wld_wpaCtrl_sendCmdCheckResponse(pAP->wpaCtrlInterface, cmd, "OK\n");
-}
-
-/**
- * @brief reload the hostapd
- *
- * @param pAP accesspoint
- * @param reason the command caller
- * @return true when the Hostapd config is reloaded. Otherwise false.
- */
-bool wld_ap_hostapd_reload(T_AccessPoint* pAP, const char* reason) {
-    return s_sendHostapdCommand(pAP, "RELOAD", reason);
+    return wld_wpaCtrl_sendCmdCheckResponse(pAP->wpaCtrlInterface, cmd, "OK");
 }
 
 /**
@@ -174,22 +163,13 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, 
  */
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* ssid) {
     ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
-    char* interface = pAP->alias;
-    ASSERTS_NOT_NULL(interface, SECDMN_ACTION_ERROR, ME, "NULL");
-    T_Radio* pR = pAP->pRadio;
-    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
-    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
-    ASSERTS_NOT_NULL(ssid, SECDMN_ACTION_ERROR, ME, "NULL");
-
     // set the ssid field in the hostapd context
     bool ret = wld_ap_hostapd_setParamValue(pAP, "ssid", ssid, "ssid");
-    ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "update the hostapd context failed for setting SSID");
-
-    // update the hostapd config file
-    ret = wld_hostapd_cfgFile_update(pR->hostapd->cfgFile, (char*) interface, "ssid", ssid);
-    ASSERT_TRUE(ret, SECDMN_ACTION_OK_NEED_RESTART, ME, "update the hostapd config failed for setting SSID");
-
-    return SECDMN_ACTION_OK_NEED_UPDATE_BEACON;
+    ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "%s: failed for setting SSID", pAP->alias);
+    if(pAP->status == APSTI_DISABLED) {
+        return SECDMN_ACTION_OK_DONE;
+    }
+    return SECDMN_ACTION_OK_NEED_RELOAD;
 }
 
 /**

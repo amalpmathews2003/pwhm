@@ -94,7 +94,7 @@ int wifiGen_vap_ssid(T_AccessPoint* pAP, char* buf, int bufsize, int set) {
     ASSERTI_NOT_NULL(pSSID, SWL_RC_ERROR, ME, "NULL");
     if(set & SET) {
         swl_str_copy(pSSID->SSID, sizeof(pSSID->SSID), buf);
-        setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_SSID);
         SAH_TRACEZ_INFO(ME, "%s - %s", pAP->alias, pSSID->SSID);
     } else {
         strncpy(buf, pSSID->SSID, bufsize);

@@ -73,11 +73,11 @@ typedef enum {
     SECDMN_ACTION_OK_NEED_UPDATE_BEACON,
     SECDMN_ACTION_OK_NEED_RELOAD,
     SECDMN_ACTION_OK_NEED_SIGHUP,
+    SECDMN_ACTION_OK_NEED_TOGGLE, // Like a restart, but keeps available wpactrl sockets
     SECDMN_ACTION_OK_NEED_RESTART
 } wld_secDmn_action_rc_ne;
 
 bool wld_ap_hostapd_sendCommand(T_AccessPoint* pAP, char* cmd, const char* reason);
-bool wld_ap_hostapd_reload(T_AccessPoint* pAP, const char* reason);
 bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason);
 
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable);

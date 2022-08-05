@@ -66,12 +66,16 @@
 typedef enum {
     GEN_FSM_DISABLE_RAD,          /* Disable Radio device */
     GEN_FSM_STOP_HOSTAPD,         /* Stop hostapd */
+    GEN_FSM_DISABLE_HOSTAPD,      /* disable hostapd main interface*/
     GEN_FSM_MOD_BSSID,            /* Modify the BSSID */
+    GEN_FSM_MOD_SSID,             /* Set SSID */
     GEN_FSM_MOD_HOSTAPD,          /* Write config of hostapd */
-    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd */
+    GEN_FSM_RELOAD_HOSTAPD,       /* reload hostapd (by cmd): conf in mem */
+    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
+    GEN_FSM_ENABLE_HOSTAPD,       /* enable hostapd main interface*/
     GEN_FSM_START_HOSTAPD,        /* start and connect with hostapd */
     GEN_FSM_ENABLE_RAD,           /* Enable Radio device */
-    GEN_FSM_ENABLE_AP,            /* Enable AP interface */
+    GEN_FSM_ENABLE_AP,            /* Enable/Disable AP interface */
     GEN_FSM_READ_STATE,           /* Update Radio status */
     GEN_FSM_MAX
 } wifiGen_fsmStates_e;

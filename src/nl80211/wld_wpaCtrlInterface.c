@@ -122,8 +122,9 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
     SAH_TRACEZ_IN(ME);
     ASSERT_NOT_NULL(pConn, false, ME, "NULL");
     int fd = pConn->wpaPeer;
-    ASSERT_TRUE(fd > 0, false, ME, "invalid cmd fd");
-    ASSERT_TRUE(s_sendCmd(pConn, cmd), false, ME, "fail to send sync cmd(%s)", cmd);
+    const char* ifName = wld_wpaCtrlInterface_getName(pConn->pInterface);
+    ASSERT_TRUE(fd > 0, false, ME, "%s: invalid fd for cmd (%s)", ifName, cmd);
+    ASSERT_TRUE(s_sendCmd(pConn, cmd), false, ME, "%s: fail to send sync cmd(%s)", ifName, cmd);
 
     struct timeval tv;
     int res;
@@ -138,14 +139,21 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
         if((res < 0) && (errno == EINTR)) {
             continue;
         }
-        ASSERT_FALSE(res < 0, false, ME, "select err(%d:%s)", errno, strerror(errno));
-        ASSERT_NOT_EQUALS(res, 0, false, ME, "cmd(%s) timed out", cmd);
-        ASSERT_NOT_EQUALS(FD_ISSET(fd, &rfds), 0, false, ME, "missing reply on fd(%d)", fd);
-        res = recv(fd, reply, reply_len, 0);
-        ASSERT_FALSE(res < 0, false, ME, "recv err(%d:%s)", errno, strerror(errno));
-        if(((res > 0) && (reply[0] == '<')) ||
-           (( res > 6) && ( strncmp(reply, "IFNAME=", 7) == 0))) {
+        ASSERT_FALSE(res < 0, false, ME, "%s: select err(%d:%s)", ifName, errno, strerror(errno));
+        ASSERT_NOT_EQUALS(res, 0, false, ME, "%s: cmd(%s) timed out", ifName, cmd);
+        ASSERT_NOT_EQUALS(FD_ISSET(fd, &rfds), 0, false, ME, "%s: missing reply on fd(%d)", ifName, fd);
+        ssize_t nr = recv(fd, reply, reply_len, 0);
+        ASSERT_FALSE(nr < 0, false, ME, "%s: recv err(%d:%s)", ifName, errno, strerror(errno));
+        /* ignore reply when looking like a wpactrl event */
+        if(((nr > 0) && (reply[0] == '<')) ||
+           ((nr > 6) && ( strncmp(reply, "IFNAME=", 7) == 0))) {
             continue;
+        }
+        nr = SWL_MIN(nr, (ssize_t) reply_len - 1);
+        reply[nr] = '\0';
+        /* remove systematic carriage return at end of buffer */
+        if((nr > 0) && (reply[nr - 1] == '\n')) {
+            reply[nr - 1] = '\0';
         }
         break;
     } while(1);
@@ -210,7 +218,7 @@ static void s_readCtrl(int fd, void* priv _UNUSED) {
     ASSERTS_TRUE(fd > 0, , ME, "fd <= 0");
 
     msgDataLen = recv(fd, msgData, (sizeof(msgData) - 1), MSG_DONTWAIT);
-    ASSERT_FALSE(msgDataLen <= 0, , ME, "recv() failed");
+    ASSERTS_FALSE(msgDataLen <= 0, , ME, "recv() failed (%d:%s)", errno, strerror(errno));
     msgData[msgDataLen] = '\0';
     amxo_connection_t* con = amxo_connection_get(get_wld_plugin_parser(), fd);
     ASSERT_NOT_NULL(con, , ME, "con NULL");
@@ -331,7 +339,7 @@ void wld_wpaCtrlInterface_close(wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, , ME, "NULL");
     // Send DETACH before closing connection
     if(pIface->eventConn != NULL) {
-        bool ret = s_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK\n");
+        bool ret = s_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK");
         if(ret == false) {
             SAH_TRACEZ_ERROR(ME, "detach failed from (%s)", s_getConnSrvPath(pIface->eventConn));
         }
@@ -394,7 +402,7 @@ bool wld_wpaCtrlInterface_setEvtHandlers(wld_wpaCtrlInterface_t* pIface, void* u
 
 bool wld_wpaCtrlInterface_ping(wld_wpaCtrlInterface_t* pIface) {
     return ((pIface != NULL) &&
-            (s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG\n")));
+            (s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG")));
 }
 
 bool wld_wpaCtrlInterface_isReady(wld_wpaCtrlInterface_t* pIface) {
@@ -431,7 +439,7 @@ bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
      * send ping command to wpa_ctrl server and check the response
      */
     if((!s_wpaCtrlOpenConnection(pIface->cmdConn)) ||
-       (!s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG\n"))) {
+       (!s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG"))) {
         SAH_TRACEZ_ERROR(ME, "%s: fail to establish cmd connection", pIface->name);
         return false;
     }
@@ -441,7 +449,7 @@ bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
      * and send attach command to wpa_ctrl server to register for unsolicited msg
      */
     if((!s_wpaCtrlOpenConnection(pIface->eventConn)) ||
-       (!s_sendCmdCheckResponse(pIface->eventConn, "ATTACH", "OK\n"))) {
+       (!s_sendCmdCheckResponse(pIface->eventConn, "ATTACH", "OK"))) {
         SAH_TRACEZ_ERROR(ME, "%s: fail to establish event connection", pIface->name);
         return false;
     }
