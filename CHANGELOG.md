@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.11 - 2022-08-05(10:31:07 +0000)
+
+### Other
+
+- fill missing station stats info
+
 ## Release v1.5.10 - 2022-08-01(07:51:03 +0000)
 
 ### Other
