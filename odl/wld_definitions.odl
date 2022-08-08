@@ -3905,7 +3905,7 @@ define rrm_t{
 
 			/** Mode of the connected station : deprecated: please use tr-181 field operatingStandard */
 			%read-only string Mode{
-				on action validate call check_enum ["a","an","b","bg","bgn","ac","ax","Unknown"];
+				on action validate call check_enum ["auto","a","an","b","bg","bgn","ac","ax","Unknown"];
 				default "Unknown";
 			}
 			

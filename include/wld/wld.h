@@ -82,6 +82,7 @@
 #include <amxd/amxd_object_hierarchy.h>
 #include <amxd/amxd_object.h>
 #include <amxd/amxd_dm.h>
+#include <amxd/amxd_transaction.h>
 #include <amxb/amxb_types.h>
 #include <amxb/amxb_operators.h>
 #include <amxb/amxb_error.h>
