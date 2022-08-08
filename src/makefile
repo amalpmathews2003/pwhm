@@ -74,7 +74,9 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					nl80211/wld_hostapd_cfgManager.o \
 					nl80211/wld_hostapd_cfgFile.o \
 					nl80211/wld_hostapd_ap_api.o \
-					nl80211/wld_rad_hostapd_api.o
+					nl80211/wld_rad_hostapd_api.o \
+					nl80211/wld_wpaSupp_cfgFile.o \
+					nl80211/wld_wpaSupp_cfgManager.o				
 
 OBJS = $(OBJS-libwld.so)
 LIBS = libwld.so

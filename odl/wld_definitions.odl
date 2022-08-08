@@ -4776,7 +4776,8 @@ define rrm_t{
 		conflict with any existing entries. At most one enabled
 		entry in this table can exist with a given value for
 		SSIDReference.</p>*/
-		%persistent %read-only object EndPoint[]{
+		%persistent object EndPoint[]{
+		on action add-inst call wld_ep_addInstance_ocf;
 		/** <p>Indicates the status of this end point. Enumeration
 		*   of:</p>
 		*   <ul>

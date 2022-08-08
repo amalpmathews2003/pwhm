@@ -1,0 +1,305 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+#include "wld.h"
+#include "wld_util.h"
+#include "wld_wps.h"
+#include "wld_endpoint.h"
+#include "swl/map/swl_mapCharFmt.h"
+#include "wld_wpaSupp_cfgManager.h"
+#include "wld_wpaSupp_cfgFile.h"
+
+#define ME "wSupCfg"
+
+static const char* wld_wpsConfigMethods[] = { "usba", "ethernet", "label", "display", "ext_nfc_token", "int_nfc_token",
+    "nfc_interface", "push_button", "keypad", "virtual_display", "physical_display", "virtual_push_button",
+    "physical_push_button", "PIN",
+    0};
+
+/**
+ * @brief set the global configuration of the wpa_supplicant
+ *
+ * @param pEP an endpoint
+ * @param config a pointer to the configuration of the wpa_supplicant
+ *
+ * @return void
+ */
+static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t* config) {
+    T_Radio* pRad = pEP->pRadio;
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_mapChar_t* global = wld_wpaSupp_getGlobalConfig(config);
+    ASSERTS_NOT_NULL(global, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_mapChar_add(global, "update_config", "1");
+    swl_mapChar_add(global, "ctrl_interface", (pEP->wpaSupp ? pEP->wpaSupp->ctrlIfaceDir : WPA_SUPPLICANT_CTRL_IFACE_DIR));
+    swl_mapChar_add(global, "manufacturer", pRad->wpsConst->Manufacturer);
+    swl_mapChar_add(global, "model_name", pRad->wpsConst->ModelName);
+    swl_mapChar_add(global, "model_number", pRad->wpsConst->ModelNumber);
+    swl_mapChar_add(global, "serial_number", pRad->wpsConst->SerialNumber);
+    int tmpver[4];
+    sscanf(pRad->wpsConst->OsVersion, "%i.%i.%i.%i", &tmpver[0], &tmpver[1], &tmpver[2], &tmpver[3]);
+    swl_mapCharFmt_addValStr(global, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
+    swl_mapChar_add(global, "device_type", "6-0050F204-1");
+    amxc_string_t configMethodsStr;
+    amxc_string_init(&configMethodsStr, 0);
+    bitmask_to_string(&configMethodsStr, wld_wpsConfigMethods, ' ', pEP->WPS_ConfigMethodsEnabled);
+    swl_mapChar_add(global, "config_methods", (char*) configMethodsStr.buffer);
+    amxc_string_clean(&configMethodsStr);
+    swl_mapChar_add(global, "wps_cred_processing", pEP->WPS_Configured ? "2" : "0");
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief set the global configuration of the wpa_supplicant
+ *
+ * @param pEP an endpoint
+ * @param config a pointer to the configuration of the wpa_supplicant
+ *
+ * @return void
+ */
+static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t* config) {
+    T_EndPointProfile* epProfile = pEP->currentProfile;
+    ASSERTS_NOT_NULL(epProfile, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_mapChar_t* network = wld_wpaSupp_getNetworkConfig(config);
+    ASSERTS_NOT_NULL(network, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    bool ret = swl_str_isEmpty(epProfile->SSID);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "empty SSID");
+
+    swl_mapChar_add(network, "scan_ssid", "1");
+    swl_mapChar_add(network, "ssid", epProfile->SSID);
+
+    swl_macBin_t epBssidBin;
+    bool hasTarget = wld_endpoint_getTargetBssid(pEP, &epBssidBin);
+    if(hasTarget) {
+        swl_macChar_t epBssidStr;
+        swl_mac_binToChar(&epBssidStr, &epBssidBin);
+        swl_mapChar_add(network, "bssid", epBssidStr.cMac);
+    }
+
+    if(!swl_str_isEmpty(pEP->WPS_ClientPIN)) {
+        swl_mapChar_add(network, "pin", pEP->WPS_ClientPIN);
+    }
+
+    switch(epProfile->secModeEnabled) {
+    case APMSI_NONE:
+    case APMSI_NONE_E:
+    {
+        swl_mapChar_add(network, "key_mgmt", "NONE");
+    }
+    break;
+    case APMSI_WEP64:
+    case APMSI_WEP128:
+    case APMSI_WEP128IV:
+    {
+        swl_mapChar_add(network, "key_mgmt", "NONE");
+        char WEPKEYCONV[36] = {0};
+        convASCII_WEPKey(epProfile->WEPKey, WEPKEYCONV, sizeof(WEPKEYCONV));
+        swl_mapChar_add(network, "wep_key0", WEPKEYCONV);
+        swl_mapChar_add(network, "wep_key1", WEPKEYCONV);
+        swl_mapChar_add(network, "wep_key2", WEPKEYCONV);
+        swl_mapChar_add(network, "wep_key3", WEPKEYCONV);
+        swl_mapChar_add(network, "wep_tx_keyidx", "0");
+    }
+    break;
+    case APMSI_WPA_P:
+    {
+        swl_mapChar_add(network, "proto", "WPA");
+        swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
+        swl_mapChar_add(network, "pairwise", "TKIP");
+        swl_mapChar_add(network, "group", "TKIP");
+        swl_mapChar_add(network, "auth_alg", "OPEN");
+    }
+    break;
+    case APMSI_WPA2_P:
+    {
+        swl_mapChar_add(network, "proto", "RSN");
+        swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
+        swl_mapChar_add(network, "pairwise", "CCMP");
+        swl_mapChar_add(network, "group", "CCMP TKIP");
+        swl_mapChar_add(network, "auth_alg", "OPEN");
+    }
+    break;
+    case APMSI_WPA_WPA2_P:
+    {
+        swl_mapChar_add(network, "proto", "RSN");
+        swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
+        swl_mapChar_add(network, "pairwise", "CCMP TKIP");
+        swl_mapChar_add(network, "group", "TKIP");
+        swl_mapChar_add(network, "auth_alg", "OPEN");
+    }
+    break;
+    case APMSI_WPA2_WPA3_P:
+    {
+        swl_mapChar_add(network, "proto", "RSN");
+        swl_mapChar_add(network, "key_mgmt", "WPA-PSK SAE");
+        swl_mapChar_add(network, "pairwise", "CCMP");
+        swl_mapChar_add(network, "group", "CCMP");
+        swl_mapChar_add(network, "auth_alg", "OPEN");
+    }
+    break;
+    case APMSI_WPA3_P:
+    {
+        swl_mapChar_add(network, "proto", "RSN");
+        swl_mapChar_add(network, "key_mgmt", "SAE");
+        swl_mapChar_add(network, "pairwise", "CCMP");
+        swl_mapChar_add(network, "group", "CCMP");
+        swl_mapChar_add(network, "auth_alg", "OPEN");
+    }
+    break;
+    default:
+        SAH_TRACEZ_ERROR(ME, "%s: not supported security mode %d", pEP->Name, epProfile->secModeEnabled);
+        break;
+    }
+
+
+    char* keyPassPhrase = NULL;
+    char md5Key[PSK_KEY_SIZE_LEN * 2 - 1] = {'\0'};
+    if((!swl_str_isEmpty(epProfile->keyPassPhrase)) && (swl_str_len(epProfile->keyPassPhrase) != (PSK_KEY_SIZE_LEN - 1))) {
+        wldu_convCreds2MD5(epProfile->SSID, epProfile->keyPassPhrase, md5Key, PSK_KEY_SIZE_LEN * 2 - 1);
+        md5Key[PSK_KEY_SIZE_LEN - 1] = '\0';
+        keyPassPhrase = md5Key;
+    } else {
+        keyPassPhrase = epProfile->keyPassPhrase;
+    }
+    if(!swl_str_isEmpty(keyPassPhrase)) {
+        swl_mapChar_add(network, "psk", keyPassPhrase);
+    }
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief create a configuration file for the wpaSupplicant
+ *
+ * @param pEP the endpoint
+ * @param cfgFileName the wpaSupplicant configuration file name
+ *
+ * @return void
+ */
+swl_rc_ne wld_wpaSupp_cfgFile_create(T_EndPoint* pEP, char* cfgFileName) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_STR(cfgFileName, SWL_RC_INVALID_PARAM, ME, "Empty path");
+
+    wld_wpaSupp_config_t* config;
+    bool ret = wld_wpaSupp_createConfig(&config);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Bad config");
+
+    s_setWpaSuppGlobalConfig(pEP, config);
+
+    s_setWpaSuppNetworkConfig(pEP, config);
+
+    ret = wld_wpaSupp_writeConfig(config, cfgFileName);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Write config error");
+
+    ret = wld_wpaSupp_deleteConfig(config);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Delete config error");
+
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_wpaSupp_cfgFile_createExt(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pEP->wpaSupp, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_wpaSupp_cfgFile_create(pEP, pEP->wpaSupp->cfgFile);
+}
+
+/**
+ * @brief update a configuration file for the wpa_supplicant
+ *
+ * @param configPath the path of the config file
+ * @param key the param to update
+ * @param value the key value to set
+ * @return void
+ */
+swl_rc_ne s_cfgFile_update(char* configPath, const char* key, const char* value, bool isGlobal) {
+    SAH_TRACEZ_INFO(ME, "%s: updateConfig key:%s, value:%s", configPath, key, value);
+
+    wld_wpaSupp_config_t* config;
+    bool ret = wld_wpaSupp_loadConfig(&config, configPath);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Bad config");
+
+    ret = wld_wpaSupp_addConfigParam(config, key, value, isGlobal);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Update config error");
+
+    ret = wld_wpaSupp_writeConfig(config, configPath);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Write config error");
+
+    ret = wld_wpaSupp_deleteConfig(config);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Delete config error");
+
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_wpaSupp_cfgFile_globalConfigUpdate(char* configPath, const char* key, const char* value) {
+    ASSERT_STR(configPath, SWL_RC_INVALID_PARAM, ME, "Empty path");
+    ASSERT_STR(key, SWL_RC_INVALID_PARAM, ME, "Empty key");
+    ASSERT_NOT_NULL(value, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return s_cfgFile_update(configPath, key, value, true);
+}
+
+swl_rc_ne wld_wpaSupp_cfgFile_networkConfigUpdate(char* configPath, const char* key, const char* value) {
+    ASSERT_STR(configPath, false, ME, "Empty path");
+    ASSERT_STR(key, false, ME, "Empty key");
+    ASSERT_NOT_NULL(value, false, ME, "NULL");
+    return s_cfgFile_update(configPath, key, value, false);
+}

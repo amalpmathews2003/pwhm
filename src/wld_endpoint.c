@@ -79,6 +79,8 @@
 #include "swl/swl_assert.h"
 #include "wld_eventing.h"
 #include "wld_assocdev.h"
+#include "wld_wpaSupp_cfgFile.h"
+#include "wld_wpaSupp_cfgManager.h"
 #include "Utils/wld_autoCommitMgr.h"
 
 /* Function prototypes for helpers. */
@@ -2039,12 +2041,12 @@ bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer) {
     return false;
 }
 
-amxd_status_t _EndPoint_debug(amxd_object_t* epObj,
+amxd_status_t _EndPoint_debug(amxd_object_t* object,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args,
                               amxc_var_t* retval) {
 
-    T_EndPoint* pEP = epObj->priv;
+    T_EndPoint* pEP = object->priv;
     ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
 
     amxc_var_init(retval);
@@ -2084,10 +2086,48 @@ amxd_status_t _EndPoint_debug(amxd_object_t* epObj,
         amxc_var_add_key(cstring_t, &cmdList, "assocStats", "");
         amxc_var_add_key(cstring_t, &cmdList, "hasEnoughRoamAp", "");
         amxc_var_add_key(cstring_t, &cmdList, "profile", "");
+        amxc_var_add_key(cstring_t, &cmdList, "checkConnection", "");
+        amxc_var_add_key(cstring_t, &cmdList, "WpaSuppCfg", "");
         amxc_var_add_key(cstring_t, &cmdList, "help", "");
         amxc_var_add_key(amxc_llist_t, retval, "cmds", amxc_var_get_const_amxc_llist_t(&cmdList));
     } else if(strcmp(feature, "checkConnection") == 0) {
         swl_rc_ne retCode = wld_endpoint_checkConnection(pEP);
+        amxc_var_add_key(cstring_t, retval, "result", swl_rc_toString(retCode));
+    } else if(strcmp(feature, "WpaSuppCfg") == 0) {
+        swl_rc_ne retCode;
+        const char* instruction = GET_CHAR(args, "instruction");
+        char tmpName[128];
+        snprintf(tmpName, sizeof(tmpName), "%s-%s.tmp.txt", "/tmp/wpa_supplicant", pEP->Name);
+        if(swl_str_matches(instruction, "createConfig")) {
+            retCode = wld_wpaSupp_cfgFile_create(pEP, tmpName);
+        } else if(swl_str_matches(instruction, "globalUpdate")) {
+            const char* key = GET_CHAR(args, "key");
+            const char* value = GET_CHAR(args, "value");
+            retCode = wld_wpaSupp_cfgFile_globalConfigUpdate(tmpName, key, value);
+        } else if(swl_str_matches(instruction, "networkUpdate")) {
+            const char* key = GET_CHAR(args, "key");
+            const char* value = GET_CHAR(args, "value");
+            retCode = wld_wpaSupp_cfgFile_networkConfigUpdate(tmpName, key, value);
+        } else {
+            // dump the config file
+            wld_wpaSupp_config_t* config;
+            wld_wpaSupp_loadConfig(&config, tmpName);
+            swl_mapIt_t it;
+            char key[64];
+            char value[64];
+            swl_map_for_each(it, wld_wpaSupp_getGlobalConfig(config)) {
+                swl_map_itKeyChar(key, sizeof(key), &it);
+                swl_map_itValueChar(value, sizeof(value), &it);
+                amxc_var_add_key(cstring_t, retval, key, value);
+            }
+            swl_map_for_each(it, wld_wpaSupp_getNetworkConfig(config)) {
+                swl_map_itKeyChar(key, sizeof(key), &it);
+                swl_map_itValueChar(value, sizeof(value), &it);
+                amxc_var_add_key(cstring_t, retval, key, value);
+            }
+            wld_wpaSupp_deleteConfig(config);
+            retCode = SWL_RC_OK;
+        }
         amxc_var_add_key(cstring_t, retval, "result", swl_rc_toString(retCode));
     } else {
         snprintf(buffer, sizeof(buffer), "unknown command %s", feature);
