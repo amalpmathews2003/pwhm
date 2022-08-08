@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.0 - 2022-08-08(16:16:23 +0000)
+
+### Other
+
+- creating/updating the wpa_supplicant configguration file
+
 ## Release v1.5.11 - 2022-08-05(10:31:07 +0000)
 
 ### Other
