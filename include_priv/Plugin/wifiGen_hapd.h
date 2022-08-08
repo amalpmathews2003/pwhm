@@ -74,6 +74,7 @@ swl_rc_ne wifiGen_hapd_reloadDaemon(T_Radio* pRad);
 void wifiGen_hapd_writeConfig(T_Radio* pRad);
 bool wifiGen_hapd_isRunning(T_Radio* pRad);
 bool wifiGen_hapd_isAlive(T_Radio* pRad);
-bool wifiGen_hapd_hasStateEnabled(T_Radio* pRad);
+swl_rc_ne wifiGen_hapd_updateRadState(T_Radio* pRad);
+swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_HAPD_H_ */

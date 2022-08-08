@@ -155,26 +155,14 @@ int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey) {
 
 typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, char* params);
 
-// Call interface handler protected against null interface and null handler
-#define CALL_INTF(pIntf, fName, ...) \
+#define CALL_MGR_I(pIntf, fName, ...) \
     if(pIntf != NULL) { \
-        SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name, __VA_ARGS__); \
+        CALL_MGR(pIntf->pMgr, pIntf->name, fName, __VA_ARGS__); \
     }
 
-#define CALL_MGR(pIntf, fName, ...) \
+#define CALL_MGR_I_NA(pIntf, fName) \
     if(pIntf != NULL) { \
-        SWL_CALL(pIntf->pMgr->handlers.fName, pIntf->pMgr->userData, pIntf->name, __VA_ARGS__); \
-    }
-
-// Call interface handler protected against null interface and null handler. Don't add args
-#define CALL_INTF_NA(pIntf, fName) \
-    if(pIntf != NULL) { \
-        SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name); \
-    }
-
-#define CALL_MGR_NA(pIntf, fName) \
-    if(pIntf != NULL) { \
-        SWL_CALL(pIntf->pMgr->handlers.fName, pIntf->pMgr->userData, pIntf->name); \
+        CALL_MGR_NA(pIntf->pMgr, pIntf->name, fName); \
     }
 
 static void s_cancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
@@ -235,46 +223,168 @@ static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fBtmReplyCb, &mac, replyCode);
 }
 
-SWL_TABLE(sChWidthDescMaps,
-          ARR(char* chWidthDesc; swl_bandwidth_e swlBw; ),
-          ARR(swl_type_charPtr, swl_type_int32, ),
-          ARR({"20 MHz (no HT)", SWL_BW_20MHZ},
-              {"20 MHz", SWL_BW_20MHZ},
-              {"40 MHz", SWL_BW_40MHZ},
-              {"80 MHz", SWL_BW_80MHZ},
-              {"80+80 MHz", SWL_BW_160MHZ},
-              {"160 MHz", SWL_BW_160MHZ},
+SWL_TABLE(sChWidthMaps,
+          ARR(uint32_t chWidthId; char* chWidthDesc; swl_bandwidth_e swlBw; ),
+          ARR(swl_type_uint32, swl_type_charPtr, swl_type_uint32, ),
+          ARR({0, "20 MHz (no HT)", SWL_BW_20MHZ}, //CHAN_WIDTH_20_NOHT
+              {1, "20 MHz", SWL_BW_20MHZ},         //CHAN_WIDTH_20
+              {2, "40 MHz", SWL_BW_40MHZ},         //CHAN_WIDTH_40
+              {3, "80 MHz", SWL_BW_80MHZ},         //CHAN_WIDTH_80
+              {4, "80+80 MHz", SWL_BW_160MHZ},     //CHAN_WIDTH_80P80
+              {5, "160 MHz", SWL_BW_160MHZ},       //CHAN_WIDTH_160
               ));
+static swl_rc_ne s_freqParamToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
+    ASSERTS_STR(params, SWL_RC_INVALID_PARAM, ME, "Empty");
+    ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    uint32_t ctrlFreq = 0;
+    ASSERTS_TRUE(wld_wpaCtrl_getValueIntExt(params, key, (int32_t*) &ctrlFreq), SWL_RC_ERROR,
+                 ME, "Missing %s param", key);
+    swl_chanspec_t chanSpec;
+    swl_rc_ne rc = swl_chanspec_channelFromMHz(&chanSpec, ctrlFreq);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get chanspec for freq(%d)", ctrlFreq);
+    pChanSpec->channel = chanSpec.channel;
+    pChanSpec->band = chanSpec.band;
+    return SWL_RC_OK;
+}
+static swl_rc_ne s_chWidthDescToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
+    ASSERTS_STR(params, SWL_RC_INVALID_PARAM, ME, "Empty");
+    ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    char chWidthStr[64] = {0};
+    ASSERTS_TRUE(wld_wpaCtrl_getValueStr(params, key, chWidthStr, sizeof(chWidthStr)) > 0, SWL_RC_ERROR,
+                 ME, "Missing %s param", key);
+    swl_bandwidth_e* pBwEnu = (swl_bandwidth_e*) swl_table_getMatchingValue(&sChWidthMaps, 2, 1, chWidthStr);
+    ASSERTS_NOT_NULL(pBwEnu, SWL_RC_ERROR, ME, "unknown channel width desc (%s)", chWidthStr);
+    pChanSpec->bandwidth = *pBwEnu;
+    return SWL_RC_OK;
+}
+static swl_rc_ne s_chWidthIdToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
+    ASSERTS_STR(params, SWL_RC_INVALID_PARAM, ME, "Empty");
+    ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    uint32_t chWId = 0;
+    ASSERTS_TRUE(wld_wpaCtrl_getValueIntExt(params, key, (int32_t*) &chWId), SWL_RC_ERROR,
+                 ME, "Missing %s param", key);
+    swl_bandwidth_e* pBwEnu = (swl_bandwidth_e*) swl_table_getMatchingValue(&sChWidthMaps, 2, 0, &chWId);
+    ASSERTS_NOT_NULL(pBwEnu, SWL_RC_ERROR, ME, "unknown channel width id (%d)", chWId);
+    pChanSpec->bandwidth = *pBwEnu;
+    return SWL_RC_OK;
+}
+
+static void s_chanSwitchStartedEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: CTRL-EVENT-STARTED-CHANNEL-SWITCH freq=5260 ht_enabled=1 ch_offset=1 ch_width=80 MHz cf1=5290 cf2=0 dfs=1
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthDescToChanSpec(params, "ch_width", &chanSpec);
+    SAH_TRACEZ_INFO(ME, "%s: channel=%d width=%d band=%d", pInterface->name, chanSpec.channel,
+                    chanSpec.bandwidth, chanSpec.band);
+
+    CALL_MGR_I(pInterface, fChanSwitchStartedCb, &chanSpec);
+}
 
 static void s_chanSwitchEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: CTRL-EVENT-CHANNEL-SWITCH freq=2427 ht_enabled=0 ch_offset=0 ch_width=20 MHz (no HT) cf1=2427 cf2=0 dfs=0
-    swl_chanspec_t chanSpec;
-
-    uint32_t ctrlFreq = wld_wpaCtrl_getValueInt(params, "freq");
-    swl_rc_ne rc = swl_chanspec_channelFromMHz(&chanSpec, ctrlFreq);
-    ASSERT_FALSE(rc < SWL_RC_OK, , ME, "fail to get chanspec for freq(%d)", ctrlFreq);
-    char chWidthStr[64] = {0};
-    wld_wpaCtrl_getValueStr(params, "ch_width", chWidthStr, sizeof(chWidthStr));
-    swl_bandwidth_e* pBwEnu = (swl_bandwidth_e*) swl_table_getMatchingValue(&sChWidthDescMaps, 1, 0, chWidthStr);
-    if(pBwEnu) {
-        chanSpec.bandwidth = *pBwEnu;
-    }
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthDescToChanSpec(params, "ch_width", &chanSpec);
 
     SAH_TRACEZ_INFO(ME, "%s: channel=%d width=%d band=%d", pInterface->name, chanSpec.channel,
                     chanSpec.bandwidth, chanSpec.band);
 
-    CALL_MGR(pInterface, fChanSwitchCb, &chanSpec);
+    CALL_MGR_I(pInterface, fChanSwitchCb, &chanSpec);
 }
 
 static void s_apCsaFinishedEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: AP-CSA-FINISHED freq=2427 dfs=0
-    swl_chanspec_t chanSpec;
-    uint32_t freq = wld_wpaCtrl_getValueInt(params, "freq");
-    swl_chanspec_channelFromMHz(&chanSpec, freq);
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
 
     SAH_TRACEZ_INFO(ME, "%s: channel=%d", pInterface->name, chanSpec.channel);
 
-    CALL_MGR(pInterface, fApCsaFinishedCb, &chanSpec);
+    CALL_MGR_I(pInterface, fApCsaFinishedCb, &chanSpec);
+}
+
+static void s_apEnabledEvt(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
+    // Example: AP-ENABLED
+    // This event notifies that hapd main interface has setup completed
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    if(pInterface == wld_wpaCtrlMngr_getInterface(pInterface->pMgr, 0)) {
+        CALL_MGR_I_NA(pInterface, fMainApSetupCompletedCb);
+    }
+}
+
+static void s_apDisabledEvt(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
+    // Example: AP-DISABLED
+    // This event notifies that hapd main interface is disabled, or that secondary bss is removed from conf
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    if(pInterface == wld_wpaCtrlMngr_getInterface(pInterface->pMgr, 0)) {
+        CALL_MGR_I_NA(pInterface, fMainApDisabledCb);
+    }
+}
+
+static void s_ifaceTerminatingEvt(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
+    // Example: CTRL-EVENT-TERMINATING
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    pInterface->isReady = false;
+    wld_wpaCtrlInterface_close(pInterface);
+    if(pInterface == wld_wpaCtrlMngr_getInterface(pInterface->pMgr, 0)) {
+        CALL_MGR_I(pInterface, fMngrReadyCb, false);
+    }
+}
+
+static void s_radDfsCacStartedEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: DFS-CAC-START freq=5500 chan=100 sec_chan=1, width=1, seg0=106, seg1=0, cac_time=60s
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthIdToChanSpec(params, "width", &chanSpec);
+    uint32_t cac_time = wld_wpaCtrl_getValueInt(params, "cac_time");
+    SAH_TRACEZ_INFO(ME, "%s: cac started on channel=%d for %d sec",
+                    pInterface->name, chanSpec.channel, cac_time);
+    CALL_MGR_I(pInterface, fDfsCacStartedCb, &chanSpec, cac_time);
+}
+static void s_radDfsCacDoneEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: DFS-CAC-COMPLETED success=1 freq=5500 ht_enabled=0 chan_offset=0 chan_width=3 cf1=5530 cf2=0
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthIdToChanSpec(params, "chan_width", &chanSpec);
+    bool success = wld_wpaCtrl_getValueInt(params, "success");
+    SAH_TRACEZ_INFO(ME, "%s: CAC done channel=%d width=%d band=%d result=%d",
+                    pInterface->name, chanSpec.channel, chanSpec.bandwidth, chanSpec.band, success);
+    CALL_MGR_I(pInterface, fDfsCacDoneCb, &chanSpec, success);
+}
+static void s_radDfsCacExpiredEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: DFS-PRE-CAC-EXPIRED freq=5500 ht_enabled=0 chan_offset=0 chan_width=0 cf1=5500 cf2=0
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthIdToChanSpec(params, "chan_width", &chanSpec);
+    SAH_TRACEZ_INFO(ME, "%s: previous CAC expired on channel=%d width=%d band=%d",
+                    pInterface->name, chanSpec.channel, chanSpec.bandwidth, chanSpec.band);
+    CALL_MGR_I(pInterface, fDfsCacExpiredCb, &chanSpec);
+}
+static void s_radDfsRadarDetectedEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: DFS-RADAR-DETECTED freq=5540 ht_enabled=0 chan_offset=0 chan_width=3 cf1=5530 cf2=0
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthIdToChanSpec(params, "chan_width", &chanSpec);
+    SAH_TRACEZ_INFO(ME, "%s: DFS radar detected on channel=%d width=%d band=%d",
+                    pInterface->name, chanSpec.channel, chanSpec.bandwidth, chanSpec.band);
+    CALL_MGR_I(pInterface, fDfsRadarDetectedCb, &chanSpec);
+}
+static void s_radDfsNopFinishedEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: DFS-NOP-FINISHED freq=5500 ht_enabled=0 chan_offset=0 chan_width=0 cf1=5500 cf2=0
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    s_chWidthIdToChanSpec(params, "chan_width", &chanSpec);
+    SAH_TRACEZ_INFO(ME, "%s: DFS Non-Occupancy Period is over on channel=%d width=%d",
+                    pInterface->name, chanSpec.channel, chanSpec.bandwidth);
+    CALL_MGR_I(pInterface, fDfsNopFinishedCb, &chanSpec);
+}
+
+static void s_radDfsNewChannelEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: DFS-NEW-CHANNEL freq=5180 chan=36 sec_chan=1
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    ASSERT_FALSE(s_freqParamToChanSpec(params, "freq", &chanSpec) < SWL_RC_OK, , ME, "fail to get freq");
+    SAH_TRACEZ_INFO(ME, "%s: DFS New channel switch expected to channel=%d, after radar detection",
+                    pInterface->name, chanSpec.channel);
+    CALL_MGR_I(pInterface, fDfsNewChannelCb, &chanSpec);
 }
 
 static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -298,9 +408,19 @@ SWL_TABLE(sWpaCtrlEvents,
               {"AP-STA-CONNECTED", &s_stationConnected},
               {"AP-STA-DISCONNECTED", &s_stationDisconnected},
               {"BSS-TM-RESP", &s_btmResponse},
+              {"CTRL-EVENT-STARTED-CHANNEL-SWITCH", &s_chanSwitchStartedEvtCb},
               {"CTRL-EVENT-CHANNEL-SWITCH", &s_chanSwitchEvtCb},
               {"AP-CSA-FINISHED", &s_apCsaFinishedEvtCb},
-              {"AP-MGMT-FRAME-RECEIVED", &s_mgtFrameEvt}
+              {"AP-MGMT-FRAME-RECEIVED", &s_mgtFrameEvt},
+              {"AP-ENABLED", &s_apEnabledEvt},
+              {"AP-DISABLED", &s_apDisabledEvt},
+              {"CTRL-EVENT-TERMINATING", &s_ifaceTerminatingEvt},
+              {"DFS-CAC-START", &s_radDfsCacStartedEvt},
+              {"DFS-CAC-COMPLETED", &s_radDfsCacDoneEvt},
+              {"DFS-PRE-CAC-EXPIRED", &s_radDfsCacExpiredEvt},
+              {"DFS-RADAR-DETECTED", &s_radDfsRadarDetectedEvt},
+              {"DFS-NOP-FINISHED", &s_radDfsNopFinishedEvt},
+              {"DFS-NEW-CHANNEL", &s_radDfsNewChannelEvt},
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

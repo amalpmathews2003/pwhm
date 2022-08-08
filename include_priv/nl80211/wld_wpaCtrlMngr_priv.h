@@ -78,4 +78,14 @@ struct wld_wpaCtrlMngr {
     wld_wpaCtrl_radioEvtHandlers_cb handlers;
 };
 
+#define CALL_MGR(pMgr, ifName, fName, ...) \
+    if(pMgr != NULL) { \
+        SWL_CALL(pMgr->handlers.fName, pMgr->userData, ifName, __VA_ARGS__); \
+    }
+
+#define CALL_MGR_NA(pMgr, ifName, fName) \
+    if(pMgr != NULL) { \
+        SWL_CALL(pMgr->handlers.fName, pMgr->userData, ifName); \
+    }
+
 #endif /* __WLD_WPA_CTRL_MNGR_PRIV_H__ */

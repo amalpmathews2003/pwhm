@@ -95,6 +95,7 @@
 #include "wld_hostapd_cfgFile.h"
 #include "wld_rad_nl80211.h"
 #include "wld_linuxIfStats.h"
+#include "wld_linuxIfUtils.h"
 
 #define GETENV(x, var) \
     { \
@@ -126,6 +127,7 @@ const char* cstr_chanmgt_rad_state[CM_RAD_MAX + 1] = {
     "BG_CAC_EXT_NS",
     "Configuring",
     "DeepPowerDown",
+    "DelayApUp",
     "Error",
     NULL
 };
@@ -3662,6 +3664,40 @@ bool wld_rad_hasActiveVap(T_Radio* pRad) {
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
         if(pAP->status == APSTI_ENABLED) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool wld_rad_hasEnabledIface(T_Radio* pRad) {
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if((pAP->index > 0) &&
+           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias) > 0)) {
+            return true;
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        if((pEP->index > 0) &&
+           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pEP->alias) > 0)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool wld_rad_hasActiveIface(T_Radio* pRad) {
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if((pAP->index > 0) && (pRad->pFA->mfn_wvap_status(pAP) > 0)) {
+            return true;
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) > 0)) {
             return true;
         }
     }

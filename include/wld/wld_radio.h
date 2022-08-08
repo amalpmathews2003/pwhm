@@ -174,6 +174,9 @@ bool wld_rad_hasOnlyActiveEP(T_Radio* pRad);
 bool wld_rad_hasActiveVap(T_Radio* pRad);
 bool wld_rad_hasEnabledVap(T_Radio* pRad);
 
+bool wld_rad_hasEnabledIface(T_Radio* pRad);
+bool wld_rad_hasActiveIface(T_Radio* pRad);
+
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size);
 
 bool wld_rad_is_6ghz(const T_Radio* pR);

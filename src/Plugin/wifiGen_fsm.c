@@ -236,8 +236,6 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
 static bool s_doRadDisable(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: disable rad", pRad->Name);
     wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
-    pRad->detailedState = CM_RAD_DOWN;
-    wld_rad_updateState(pRad, false);
     return true;
 }
 
@@ -245,10 +243,6 @@ static bool s_doStopHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
     wifiGen_hapd_stopDaemon(pRad);
-    T_AccessPoint* pAP = NULL;
-    wld_rad_forEachAp(pAP, pRad) {
-        wld_vap_updateState(pAP);
-    }
     pRad->fsmRad.timeout_msec = 100;
     return true;
 }
@@ -315,24 +309,8 @@ static bool s_doSetSsid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     return true;
 }
 
-static bool s_doRequestStatus(T_Radio* pRad) {
-    T_AccessPoint* pAP;
-    wld_rad_forEachAp(pAP, pRad) {
-        wld_vap_updateState(pAP);
-        SAH_TRACEZ_ERROR(ME, "%s status %u", pAP->alias, pAP->status);
-    }
-
-    T_EndPoint* pEP = wld_rad_getFirstEp(pRad);
-    bool enabled = (wld_rad_hasActiveVap(pRad))
-        || (pEP != NULL && pEP->status == APSTI_ENABLED);
-
-    if(enabled) {
-        pRad->detailedState = CM_RAD_UP;
-    } else {
-        pRad->detailedState = CM_RAD_DOWN;
-    }
-
-    wld_rad_updateState(pRad, false);
+static bool s_doSyncState(T_Radio* pRad) {
+    wifiGen_hapd_syncVapStates(pRad);
     return true;
 }
 
@@ -346,7 +324,7 @@ static void s_checkPreRadDependency(T_Radio* pRad _UNUSED) {
     }
 
     bool targetEnable = (pRad->enable && (wld_rad_hasEnabledVap(pRad) || wld_rad_hasEnabledEp(pRad)));
-    bool currentEnable = (pRad->status != RST_DOWN) && (pRad->status != RST_DORMANT);
+    bool currentEnable = wld_rad_isUpExt(pRad);
     SAH_TRACEZ_ERROR(ME, "%s : curr %u tgt %u status %u enable %u", pRad->Name,
                      currentEnable, targetEnable, pRad->status, pRad->enable);
 
@@ -403,7 +381,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
     {FSM_ACTION(GEN_FSM_ENABLE_RAD)},// Rad enable requires no config
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},
-    {FSM_ACTION(GEN_FSM_READ_STATE), .doRadFsmAction = s_doRequestStatus},
+    {FSM_ACTION(GEN_FSM_SYNC_STATE), .doRadFsmAction = s_doSyncState},
 };
 
 wld_fsmMngr_t mngr = {

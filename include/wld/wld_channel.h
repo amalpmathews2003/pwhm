@@ -131,6 +131,7 @@ void wld_channel_mark_radar_req_channel(swl_chanspec_t chanspec);
 void wld_channel_mark_passive_channel(swl_chanspec_t chanspec);
 void wld_channel_clear_passive_channel(swl_chanspec_t chanspec);
 void wld_channel_mark_radar_detected_channel(swl_chanspec_t chanspec);
+void wld_channel_clear_radar_detected_channel(swl_chanspec_t chanspec);
 
 void wld_channel_mark_available_band(swl_chanspec_t chanspec);
 void wld_channel_mark_unavailable_band(swl_chanspec_t chanspec);
@@ -138,6 +139,7 @@ void wld_channel_mark_radar_req_band(swl_chanspec_t chanspec);
 void wld_channel_mark_passive_band(swl_chanspec_t chanspec);
 void wld_channel_clear_passive_band(swl_chanspec_t chanspec);
 void wld_channel_mark_radar_detected_band(swl_chanspec_t chanspec);
+void wld_channel_clear_radar_detected_band(swl_chanspec_t chanspec);
 
 void wld_channel_do_for_each_channel(T_Radio* rad, void* data, void (* channel_function)(T_Radio* rad, void* data, int channel));
 

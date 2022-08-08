@@ -561,7 +561,7 @@ int wld_rad_fsm(T_Radio* rad) {
 
 int wld_rad_fsm_reset(T_Radio* rad) {
     int bitmask = (1 << rad->ref_index);
-    if((s_radioFSMLock & RADIO_INDEX_MASK) != bitmask) {
+    if((s_radioFSMLock & RADIO_INDEX_MASK) & bitmask) {
         SAH_TRACEZ_ERROR(ME, "%s: resetting radio which has lock", rad->Name);
         s_freeLock(rad);
     }

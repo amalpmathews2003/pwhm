@@ -87,4 +87,16 @@ struct wld_wpaCtrlInterface {
     wld_wpaCtrl_evtHandlers_cb handlers;
 };
 
+// Call interface handler protected against null interface and null handler
+#define CALL_INTF(pIntf, fName, ...) \
+    if(pIntf != NULL) { \
+        SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name, __VA_ARGS__); \
+    }
+
+// Call interface handler protected against null interface and null handler. Don't add args
+#define CALL_INTF_NA(pIntf, fName) \
+    if(pIntf != NULL) { \
+        SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name); \
+    }
+
 #endif /* __WLD_WPA_CTRL_INTERFACE_PRIV_H__ */

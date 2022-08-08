@@ -65,6 +65,7 @@
 #include "wld/wld_hostapd_cfgFile.h"
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_wpaCtrl_events.h"
+#include "wld/wld_hostapd_ap_api.h"
 
 #define ME "genHapd"
 #define HOSTAPD_CONF_FILE_PATH_FORMAT "/tmp/%s_hapd.conf"
@@ -141,17 +142,61 @@ bool wifiGen_hapd_isAlive(T_Radio* pRad) {
     return ((pRad != NULL) && (wld_secDmn_isAlive(pRad->hostapd)));
 }
 
-bool wifiGen_hapd_hasStateEnabled(T_Radio* pRad) {
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), false, ME, "%s: hostapd not running", pRad->Name);
+SWL_TABLE(sHapdStateDescMaps,
+          ARR(char* hapdStateDesc; chanmgt_rad_state radDetState; ),
+          ARR(swl_type_charPtr, swl_type_uint32, ),
+          ARR({"UNKNOWN", CM_RAD_UNKNOWN},
+              {"UNINITIALIZED", CM_RAD_ERROR},
+              {"COUNTRY_UPDATE", CM_RAD_CONFIGURING},
+              {"ACS", CM_RAD_CONFIGURING},
+              {"HT_SCAN", CM_RAD_CONFIGURING},
+              {"DFS", CM_RAD_FG_CAC},
+              {"DISABLED", CM_RAD_DOWN},
+              {"ENABLED", CM_RAD_UP},
+              ));
+swl_rc_ne wifiGen_hapd_updateRadState(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_wpaCtrlInterface_t* mainIface = s_mainInterface(pRad);
+    ASSERTS_NOT_NULL(mainIface, SWL_RC_ERROR, ME, "%s: No main hapd wpactrl iface", pRad->Name);
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(mainIface), SWL_RC_ERROR,
+                 ME, "%s: main wpactrl iface is not ready", pRad->Name);
     char reply[1024] = {0};
-    int ret = wld_wpaCtrl_sendCmdSynced(s_mainInterface(pRad), "STATUS", reply, sizeof(reply) - 1);
-    ASSERT_EQUALS(ret, true, false, ME, "%s: fail to get status", pRad->Name);
     char state[64] = {0};
-    ret = wld_wpaCtrl_getValueStr(reply, "state", state, sizeof(state));
-    ASSERT_TRUE(ret > 0, false, ME, "%s: not found hostapd state", pRad->Name);
-    // HostAPD status is OK IF we've access and when the state is ENABLED or DFS!
-    // When status is DFS, we should set the radio status on DORMANT!
-    // But that (enum) state has a complete different sequence numbering then expected...
-    return swl_str_matches(state, "ENABLED");
+    if((!wld_wpaCtrl_sendCmdSynced(mainIface, "STATUS", reply, sizeof(reply) - 1)) ||
+       (wld_wpaCtrl_getValueStr(reply, "state", state, sizeof(state)) <= 0)) {
+        SAH_TRACEZ_INFO(ME, "%s: status not yet available", pRad->Name);
+        return SWL_RC_ERROR;
+    }
+    chanmgt_rad_state* pRadDetState = (chanmgt_rad_state*) swl_table_getMatchingValue(&sHapdStateDescMaps, 1, 0, state);
+    ASSERTI_NOT_NULL(pRadDetState, SWL_RC_ERROR, ME, "%s: unknown hapd state(%s)", pRad->Name, state);
+    pRad->detailedState = *pRadDetState;
+    SAH_TRACEZ_INFO(ME, "%s: hapd state(%s) -> radDetState(%d)", pRad->Name, state, pRad->detailedState);
+    return SWL_RC_OK;
 }
 
+swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
+    swl_rc_ne ret = SWL_RC_OK;
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface) || (pAP->index <= 0)) {
+            continue;
+        }
+        if((!pAP->enable) &&
+           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias) > 0)) {
+            //need to disable passive bss ifaces, implicitly activated by hostapd startup
+            //(although not broadcasting)
+            SAH_TRACEZ_INFO(ME, "%s: sync disable vap", pAP->alias);
+            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, false);
+        } else if((pAP->enable) &&
+                  (pAP->pFA->mfn_wvap_status(pAP) == 0) && (wld_rad_isUpAndReady(pRad))) {
+            //need to restart broadcasting the enabled bss,
+            //that were potentially stopped by hapd when disabling one AP
+            SAH_TRACEZ_INFO(ME, "%s: sync enable vap", pAP->alias);
+            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, true);
+            if(!wld_ap_hostapd_updateBeacon(pAP, "syncAp")) {
+                ret = SWL_RC_ERROR;
+            }
+        }
+    }
+    return ret;
+}

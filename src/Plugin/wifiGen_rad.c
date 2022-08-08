@@ -422,23 +422,40 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 }
 
 int wifiGen_rad_status(T_Radio* pRad) {
-    int ret = wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pRad->Name);
-    ASSERTS_FALSE(ret < 0, ret, ME, "%s: fail to get rad state", pRad->Name);
-    if(ret > 0) {
-        if((pRad->detailedState != CM_RAD_FG_CAC) || wifiGen_hapd_hasStateEnabled(pRad)) {
-            pRad->detailedState = CM_RAD_UP;
-        }
-    } else {
+    swl_chanspec_t currChanSpec;
+    if(!wld_rad_hasEnabledIface(pRad)) {
+        SAH_TRACEZ_INFO(ME, "%s: has no enabled interface", pRad->Name);
         pRad->detailedState = CM_RAD_DOWN;
+    } else if(wld_rad_nl80211_getChannel(pRad, &currChanSpec) < SWL_RC_OK) {
+        SAH_TRACEZ_INFO(ME, "%s: has no available channel", pRad->Name);
+        pRad->detailedState = CM_RAD_DOWN;
+    } else if(!wld_channel_is_band_usable(currChanSpec)) {
+        /*
+         * In this situation, some channel clearing must be done, or is on going
+         * The radio detailed status is updated through the driver/hostapd eventing.
+         */
+        SAH_TRACEZ_INFO(ME, "%s: curr band(c:%d/b:%d) is not yet unusable",
+                        pRad->Name, currChanSpec.channel, swl_chanspec_bwToInt(currChanSpec.bandwidth));
+    } else if(wld_rad_hasActiveIface(pRad)) {
+        /*
+         * radio is considered up when:
+         * 1) channel info available
+         * 2) radio's main/child interface is operational (i.e running with lower up)
+         * 3) current chanspec is usable (it is safety check, as net link may remain RUNNING even
+         *    after a dfs radar detection)
+         */
+        SAH_TRACEZ_INFO(ME, "%s: radio is up", pRad->Name);
+        pRad->detailedState = CM_RAD_UP;
     }
-    return ret;
+    // All other intermediate states are handled with eventing (nl80211/wpactrl)
+    return (pRad->detailedState != CM_RAD_DOWN);
 }
 
 int wifiGen_rad_enable(T_Radio* rad, int val, int set) {
     int ret;
     SAH_TRACEZ_INFO(ME, "%d --> %d -  %d", rad->enable, val, set);
     if(set & SET) {
-        ret = val;
+        ret = rad->enable = val;
         setBitLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
     } else {
         /* GET */
@@ -609,3 +626,16 @@ int wifiGen_rad_ochbw(T_Radio* pRad, int val, int set) {
     SAH_TRACEZ_INFO(ME, "%p %.8x %d", pRad, val, set);
     return 0;
 }
+
+void wifiGen_rad_initBands(T_Radio* pRad) {
+    int i = 0;
+    for(i = 0; i < pRad->nrPossibleChannels; i++) {
+        swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->possibleChannels[i], pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
+        wld_channel_mark_available_channel(chanspec);
+        if(wld_channel_is_dfs(pRad->possibleChannels[i])) {
+            wld_channel_mark_radar_req_channel(chanspec);
+            wld_channel_mark_passive_channel(chanspec);
+        }
+    }
+}
+

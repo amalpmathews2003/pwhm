@@ -239,6 +239,7 @@ static void s_readCtrl(int fd, void* priv _UNUSED) {
  */
 static void s_wpaCtrlCloseConnection(wpaCtrlConnection_t* pConn) {
     ASSERTS_NOT_NULL(pConn, , ME, "NULL");
+    ASSERTS_TRUE(pConn->wpaPeer > 0, , ME, "NULL");
     unlink(pConn->clientAddr.sun_path);
     amxo_connection_remove(get_wld_plugin_parser(), pConn->wpaPeer);
     pConn->wpaPeer = 0;
@@ -299,7 +300,7 @@ static bool s_wpaCtrlInitConnection(wpaCtrlConnection_t** ppConn, wld_wpaCtrlInt
  */
 static bool s_wpaCtrlOpenConnection(wpaCtrlConnection_t* pConn) {
     ASSERT_NOT_NULL(pConn, false, ME, "NULL");
-    ASSERTI_FALSE(pConn->wpaPeer > 0, true, ME, "already connected");
+    ASSERTS_FALSE(pConn->wpaPeer > 0, true, ME, "already connected");
     int fd = socket(PF_UNIX, SOCK_DGRAM, 0);
     ASSERT_FALSE(fd < 0, false, ME, "socket(PF_UNIX, SOCK_DGRAM, 0) failed");
 
@@ -338,7 +339,7 @@ static bool s_wpaCtrlOpenConnection(wpaCtrlConnection_t* pConn) {
 void wld_wpaCtrlInterface_close(wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, , ME, "NULL");
     // Send DETACH before closing connection
-    if(pIface->eventConn != NULL) {
+    if(pIface->isReady && (pIface->eventConn != NULL)) {
         bool ret = s_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK");
         if(ret == false) {
             SAH_TRACEZ_ERROR(ME, "detach failed from (%s)", s_getConnSrvPath(pIface->eventConn));
@@ -349,6 +350,7 @@ void wld_wpaCtrlInterface_close(wld_wpaCtrlInterface_t* pIface) {
     s_wpaCtrlCloseConnection(pIface->cmdConn);
     // Close event socket
     s_wpaCtrlCloseConnection(pIface->eventConn);
+    pIface->isReady = false;
 }
 
 void wld_wpaCtrlInterface_cleanup(wld_wpaCtrlInterface_t** ppIface) {

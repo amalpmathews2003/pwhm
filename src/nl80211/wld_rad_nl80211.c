@@ -65,6 +65,7 @@
 
 #include "wld_rad_nl80211.h"
 #include "swl/swl_common.h"
+#include "wld_radio.h"
 
 #define ME "nlRad"
 
@@ -169,3 +170,49 @@ swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* mbm) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_nl80211_getTxPower(wld_nl80211_getSharedState(), pRadio->index, mbm);
 }
+
+swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+    ASSERT_NOT_NULL(pIfaceInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc = swl_chanspec_channelFromMHz(pChanSpec, pIfaceInfo->chanSpec.ctrlFreq);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get channel");
+    pChanSpec->bandwidth = swl_chanspec_intToBw(pIfaceInfo->chanSpec.chanWidth);
+    return SWL_RC_OK;
+}
+
+static swl_rc_ne s_getChanSpec(int ifIndex, swl_chanspec_t* pChanSpec) {
+    ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(ifIndex > 0, SWL_RC_INVALID_PARAM, ME, "invalid ifindex");
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    swl_rc_ne rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), ifIndex, &ifaceInfo);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "no iface info");
+    rc = wld_rad_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo);
+    return rc;
+}
+
+swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec) {
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc;
+    if((rc = s_getChanSpec(pRadio->index, pChanSpec)) >= SWL_RC_OK) {
+        return rc;
+    }
+    /*
+     * disabled main iface (usually matching radio iface) may not carry channel info
+     * so fetch first vap iface having channel info
+     */
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRadio) {
+        if((rc = s_getChanSpec(pAP->index, pChanSpec)) >= SWL_RC_OK) {
+            return rc;
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRadio) {
+        if((rc = s_getChanSpec(pEP->index, pChanSpec)) >= SWL_RC_OK) {
+            return rc;
+        }
+    }
+    return rc;
+}
+

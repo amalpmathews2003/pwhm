@@ -230,4 +230,27 @@ swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t mbm);
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* dbm);
+
+/*
+ * @brief get channel specification from nl80211 interface info
+ *
+ * @param pChanSpec pointer to chanspec info struct to be filled
+ * @param pIfaceInfo source pointer to interface info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
+ * @brief get current radio channel info
+ *
+ * @param pRadio pointer to radio context
+ * @param pChanSpec pointer to chanspec info struct to be filled
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec);
+
 #endif /* INCLUDE_WLD_WLD_RAD_NL80211_H_ */

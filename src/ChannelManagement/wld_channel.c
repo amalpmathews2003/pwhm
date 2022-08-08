@@ -402,10 +402,17 @@ void wld_channel_clear_passive_channel(swl_chanspec_t chanspec) {
 }
 
 /**
- * Mark the channel as radar detected. Note we do not clean this ourselves!
+ * Mark the channel as radar detected.
  */
 void wld_channel_mark_radar_detected_channel(swl_chanspec_t chanspec) {
     chan_add_flag(chanspec.channel, chanspec.band, WLD_CHAN_RADAR_DETECTED);
+}
+
+/**
+ * Unmark the channel as radar detected
+ */
+void wld_channel_clear_radar_detected_channel(swl_chanspec_t chanspec) {
+    chan_remove_flag(chanspec.channel, chanspec.band, WLD_CHAN_RADAR_DETECTED);
 }
 
 /**
@@ -442,7 +449,7 @@ void wld_channel_mark_passive_band(swl_chanspec_t chanspec) {
  * Clear the passive flag from the given channel and band
  */
 void wld_channel_clear_passive_band(swl_chanspec_t chanspec) {
-    band_remove_flag(chanspec, WLD_CHAN_AVAILABLE_FLAG);
+    band_remove_flag(chanspec, WLD_CHAN_PASSIVE);
 }
 
 /**
@@ -450,6 +457,13 @@ void wld_channel_clear_passive_band(swl_chanspec_t chanspec) {
  */
 void wld_channel_mark_radar_detected_band(swl_chanspec_t chanspec) {
     band_add_flag(chanspec, WLD_CHAN_RADAR_DETECTED);
+}
+
+/**
+ * Clear the radar detected flag from the given channel and band
+ */
+void wld_channel_clear_radar_detected_band(swl_chanspec_t chanspec) {
+    band_remove_flag(chanspec, WLD_CHAN_RADAR_DETECTED);
 }
 
 /**

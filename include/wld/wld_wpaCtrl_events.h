@@ -89,16 +89,36 @@ typedef struct {
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
+typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
 typedef void (* wld_wpaCtrl_chanSwitchCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
 typedef void (* wld_wpaCtrl_apCsaFinishedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+typedef void (* wld_wpaCtrl_mngrReadyCb_f)(void* userData, char* ifName, bool isReady);
+typedef void (* wld_wpaCtrl_dfsCacStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec, uint32_t cac_time);
+typedef void (* wld_wpaCtrl_dfsCacDoneCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec, bool success);
+typedef void (* wld_wpaCtrl_dfsCacExpiredCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+typedef void (* wld_wpaCtrl_dfsRadarDetectedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+typedef void (* wld_wpaCtrl_dfsNopFinishedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+typedef void (* wld_wpaCtrl_dfsNewChannelCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
+typedef void (* wld_wpaCtrl_mainApSetupCompletedCb_f)(void* userData, char* ifName);
+typedef void (* wld_wpaCtrl_mainApDisabledCb_f)(void* userData, char* ifName);
 
 /*
  * @brief structure of Radio event handlers
  */
 typedef struct {
     wld_wpaCtrl_processMsgCb_f fProcEvtMsg; // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_chanSwitchStartedCb_f fChanSwitchStartedCb;
     wld_wpaCtrl_chanSwitchCb_f fChanSwitchCb;
     wld_wpaCtrl_apCsaFinishedCb_f fApCsaFinishedCb;
+    wld_wpaCtrl_mngrReadyCb_f fMngrReadyCb;
+    wld_wpaCtrl_dfsCacStartedCb_f fDfsCacStartedCb;
+    wld_wpaCtrl_dfsCacDoneCb_f fDfsCacDoneCb;
+    wld_wpaCtrl_dfsCacExpiredCb_f fDfsCacExpiredCb;
+    wld_wpaCtrl_dfsRadarDetectedCb_f fDfsRadarDetectedCb;
+    wld_wpaCtrl_dfsNopFinishedCb_f fDfsNopFinishedCb;
+    wld_wpaCtrl_dfsNewChannelCb_f fDfsNewChannelCb; //fallback after dfs radar detection
+    wld_wpaCtrl_mainApSetupCompletedCb_f fMainApSetupCompletedCb;
+    wld_wpaCtrl_mainApDisabledCb_f fMainApDisabledCb;
 } wld_wpaCtrl_radioEvtHandlers_cb;
 
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);

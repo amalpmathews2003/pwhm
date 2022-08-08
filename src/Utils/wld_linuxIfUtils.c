@@ -75,15 +75,29 @@ int wld_linuxIfUtils_getNetSock() {
     return socket(AF_INET, SOCK_DGRAM, 0);
 }
 
-int wld_linuxIfUtils_getState(int sock, char* intfName) {
+#ifndef IFF_LOWER_UP
+/* from linux/if.h */
+#define IFF_LOWER_UP  (1 << 16)  /* driver signals L1 up */
+#endif
+
+static int s_getIfFlags(int sock, char* intfName, uint16_t* pIntfFlags) {
     ASSERTS_STR(intfName, SWL_RC_INVALID_PARAM, ME, "Empty");
     ASSERT_FALSE(sock < 0, SWL_RC_INVALID_PARAM, ME, "invalid socket");
+    ASSERT_NOT_NULL(pIntfFlags, SWL_RC_INVALID_PARAM, ME, "NULL");
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
     swl_str_copy(ifr.ifr_name, sizeof(ifr.ifr_name), intfName);
     int ret = ioctl(sock, SIOCGIFFLAGS, &ifr);
     ASSERT_FALSE((ret < 0), -errno, ME, "%s: SIOCGIFFLAGS failed (errno:%d:%s))", intfName, errno, strerror(errno));
-    return ((ifr.ifr_flags & IFF_UP) == IFF_UP);
+    *pIntfFlags = ifr.ifr_flags;
+    return ret;
+}
+
+int wld_linuxIfUtils_getState(int sock, char* intfName) {
+    uint16_t intfFlags = 0;
+    int ret = s_getIfFlags(sock, intfName, &intfFlags);
+    ASSERTS_FALSE((ret < 0), ret, ME, "%s: fail to get intf flags");
+    return ((intfFlags & IFF_UP) == IFF_UP);
 }
 
 int wld_linuxIfUtils_getStateExt(char* intfName) {
@@ -94,9 +108,37 @@ int wld_linuxIfUtils_getStateExt(char* intfName) {
     return ret;
 }
 
+int wld_linuxIfUtils_getLinkState(int sock, char* intfName) {
+    uint16_t intfFlags = 0;
+    int ret = s_getIfFlags(sock, intfName, &intfFlags);
+    ASSERTS_FALSE((ret < 0), ret, ME, "%s: fail to inft flags");
+    /*
+     * IFF_LOWER_UP      Driver signals L1 up (since Linux 2.6.17)
+     */
+    if((intfFlags & IFF_LOWER_UP) == IFF_LOWER_UP) {
+        return true;
+    }
+    /*
+     * IFF_RUNNING       Resources allocated.
+     * This flag indicates that the interface is up and running.
+     * It is reflecting the operational status on a network interface,
+     * rather than its administrative one.
+     */
+    return ((intfFlags & IFF_RUNNING) == IFF_RUNNING);
+}
+
+int wld_linuxIfUtils_getLinkStateExt(char* intfName) {
+    int sock = wld_linuxIfUtils_getNetSock();
+    ASSERT_FALSE(sock < 0, SWL_RC_ERROR, ME, "invalid socket");
+    int ret = wld_linuxIfUtils_getLinkState(sock, intfName);
+    close(sock);
+    return ret;
+}
+
 int wld_linuxIfUtils_setState(int sock, char* intfName, int state) {
     ASSERTS_STR(intfName, SWL_RC_INVALID_PARAM, ME, "Empty");
     ASSERT_FALSE(sock < 0, SWL_RC_INVALID_PARAM, ME, "invalid socket");
+    SAH_TRACEZ_INFO(ME, "%s: set admin state %s", intfName, state ? "up" : "down");
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
     swl_str_copy(ifr.ifr_name, sizeof(ifr.ifr_name), intfName);
@@ -160,6 +202,28 @@ int wld_linuxIfUtils_getMacExt(char* intfName, swl_macBin_t* macInfo) {
     int sock = wld_linuxIfUtils_getNetSock();
     ASSERT_FALSE(sock < 0, SWL_RC_ERROR, ME, "invalid socket");
     int ret = wld_linuxIfUtils_getMac(sock, intfName, macInfo);
+    close(sock);
+    return ret;
+}
+
+int wld_linuxIfUtils_getIfIndex(int sock, char* intfName, int* pIfIndex) {
+    ASSERTS_STR(intfName, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pIfIndex, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_FALSE(sock < 0, SWL_RC_INVALID_PARAM, ME, "invalid socket");
+    struct ifreq ifr;
+    memset(&ifr, 0, sizeof(ifr));
+    swl_str_copy(ifr.ifr_name, sizeof(ifr.ifr_name), intfName);
+    int ret = ioctl(sock, SIOCGIFINDEX, &ifr);
+    ASSERT_FALSE((ret < 0), -errno, ME, "%s: SIOCGIFINDEX (errno:%d:%s))",
+                 intfName, errno, strerror(errno));
+    *pIfIndex = ifr.ifr_ifindex;
+    return SWL_RC_OK;
+}
+
+int wld_linuxIfUtils_getIfIndexExt(char* intfName, int* pIfIndex) {
+    int sock = wld_linuxIfUtils_getNetSock();
+    ASSERT_FALSE(sock < 0, SWL_RC_ERROR, ME, "invalid socket");
+    int ret = wld_linuxIfUtils_getIfIndex(sock, intfName, pIfIndex);
     close(sock);
     return ret;
 }

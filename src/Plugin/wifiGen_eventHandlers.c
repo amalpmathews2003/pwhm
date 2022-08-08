@@ -60,10 +60,13 @@
 **
 ****************************************************************************/
 #include "wifiGen_events.h"
+#include "wifiGen_hapd.h"
+#include "wifiGen_rad.h"
 #include "wld/wld_wpaCtrlMngr.h"
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
+#include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_accesspoint.h"
 #include "wld/wld_wps.h"
 #include "wld/wld_assocdev.h"
@@ -75,21 +78,142 @@
 #include "wifiGen_staCapHandler.h"
 #define ME "genEvt"
 
+static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_NOT_NULL(pChanSpec, , ME, "NULL");
+    ASSERTS_TRUE(pChanSpec->channel > 0, , ME, "invalid chan");
+    if((pChanSpec->channel != pRad->channel) ||
+       (pChanSpec->bandwidth != pRad->runningChannelBandwidth)) {
+        wld_rad_chan_notification(pRad, pChanSpec->channel, pChanSpec->bandwidth);
+    }
+    wld_rad_chan_update_model(pRad);
+    wld_rad_updateOperatingClass(pRad);
+}
+
+static void s_syncCurrentChannel(T_Radio* pRad) {
+    swl_chanspec_t chanSpec;
+    ASSERTS_FALSE(wld_rad_nl80211_getChannel(pRad, &chanSpec) < SWL_RC_OK, ,
+                  ME, "%s: fail to get channel", pRad->Name);
+    s_saveChanChanged(pRad, &chanSpec);
+}
+
 static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "%s: channel switch event central_chan=%d bandwidth=%d band=%d", pRad->Name,
                        chanSpec->channel, chanSpec->bandwidth, chanSpec->band);
+    s_saveChanChanged(pRad, chanSpec);
 }
 
 static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: csa finished cur_chan=%d new_chan=%d", pRad->Name, pRad->channel, chanSpec->channel);
-    if(pRad->channel != chanSpec->channel) {
-        pRad->channel = chanSpec->channel;
+    SAH_TRACEZ_INFO(ME, "%s: csa finished to new_chan=%d", pRad->Name, chanSpec->channel);
+}
+
+static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
+    SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
+    ASSERTS_TRUE(isReady, , ME, "Not ready");
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    if(wld_rad_vap_from_name(pRad, ifName) != NULL) {
+        //once we restart hostapd, previous dfs clearing must be reinitialized
+        wifiGen_rad_initBands(pRad);
+        s_syncCurrentChannel(pRad);
+        //update rad status from hapd main iface state
+        if((wifiGen_hapd_updateRadState(pRad) >= SWL_RC_OK) &&
+           (pRad->detailedState == CM_RAD_UP)) {
+            //we may missed the CAC Done event waiting to finalize wpactrl connection
+            //so mark current chanspec as active
+            wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
+            wifiGen_hapd_syncVapStates(pRad);
+        }
     }
     wld_rad_updateState(pRad, false);
+}
+
+static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
+    SAH_TRACEZ_WARNING(ME, "%s: main AP has setup completed", ifName);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    pRad->detailedState = CM_RAD_UP;
+    s_syncCurrentChannel(pRad);
+    wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
+    wifiGen_hapd_syncVapStates(pRad);
+    wld_rad_updateState(pRad, true);
+}
+
+static void s_mainApDisabledCb(void* userData, char* ifName) {
+    SAH_TRACEZ_WARNING(ME, "%s: main AP has been disabled", ifName);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    //once we toggle hostapd, previous dfs clearing must be reinitialized
+    wld_rad_updateState(pRad, true);
+    if(pRad->detailedState == CM_RAD_DOWN) {
+        wifiGen_rad_initBands(pRad);
+    }
+}
+
+static void s_dfsCacStartedCb(void* userData, char* ifName, swl_chanspec_t* chanSpec, uint32_t cac_time) {
+    SAH_TRACEZ_WARNING(ME, "%s: CAC started on channel %d for %d sec", ifName, chanSpec->channel, cac_time);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    s_syncCurrentChannel(pRad);
+    wld_channel_mark_passive_band(*chanSpec);
+    if(wld_channel_is_chan_in_band(wld_rad_getSwlChanspec(pRad), chanSpec->channel)) {
+        pRad->detailedState = CM_RAD_FG_CAC;
+        wld_rad_updateState(pRad, false);
+    }
+}
+
+static void s_dfsCacDoneCb(void* userData, char* ifName, swl_chanspec_t* chanSpec, bool success) {
+    SAH_TRACEZ_WARNING(ME, "%s: CAC finished on channel %d : %s", ifName, chanSpec->channel,
+                       (success ? "completed" : "aborted"));
+    //CAC completed
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    swl_chanspec_t currChanSpec = *chanSpec;
+    currChanSpec.bandwidth = pRad->runningChannelBandwidth;
+    if(success) {
+        wld_channel_clear_passive_band(currChanSpec);
+    } else if(wld_rad_isDoingDfsScan(pRad) && wld_channel_is_chan_in_band(currChanSpec, pRad->channel)) {
+        // CAC aborted: so mark temporary radio as down, until fallback to alternative channel (eg: non-dfs)
+        // Radio detailed status will then be rectified
+        pRad->detailedState = CM_RAD_DOWN;
+    }
+    wld_rad_updateState(pRad, false);
+}
+
+static void s_dfsCacExpiredCb(void* userData, char* ifName, swl_chanspec_t* chanSpec) {
+    SAH_TRACEZ_WARNING(ME, "%s: Pre-CAC Expired on channel %d", ifName, chanSpec->channel);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    wld_channel_mark_passive_channel(*chanSpec);
+    wld_rad_updateState(pRad, false);
+}
+
+static void s_dfsRadarDetectedCb(void* userData, char* ifName, swl_chanspec_t* chanSpec) {
+    SAH_TRACEZ_WARNING(ME, "%s: DFS Radar detected on channel %d bw %d", ifName, chanSpec->channel, chanSpec->bandwidth);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    wld_channel_mark_radar_detected_band(*chanSpec);
+    wld_rad_updateState(pRad, false);
+}
+
+static void s_dfsNopFinishedCb(void* userData _UNUSED, char* ifName, swl_chanspec_t* chanSpec) {
+    SAH_TRACEZ_WARNING(ME, "%s: DFS Non-Occupancy Period is over on channel %d", ifName, chanSpec->channel);
+    wld_channel_clear_radar_detected_channel(*chanSpec);
+    wld_channel_mark_passive_channel(*chanSpec);
+}
+
+static void s_dfsNewChannelCb(void* userData, char* ifName, swl_chanspec_t* chanSpec) {
+    SAH_TRACEZ_WARNING(ME, "%s: DFS Radar detection will trigger switching to channel %d", ifName, chanSpec->channel);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    swl_chanspec_t currChanSpec = *chanSpec;
+    currChanSpec.bandwidth = pRad->runningChannelBandwidth;
+    pRad->channelChangeReason = CHAN_REASON_DFS;
+    s_saveChanChanged(pRad, &currChanSpec);
 }
 
 static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Radio* pRad) {
@@ -97,8 +221,18 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     wld_wpaCtrl_radioEvtHandlers_cb wpaCtrlRadEvthandlers;
     memset(&wpaCtrlRadEvthandlers, 0, sizeof(wpaCtrlRadEvthandlers));
     //Set here the wpa_ctrl RAD event handlers
+    wpaCtrlRadEvthandlers.fChanSwitchStartedCb = s_chanSwitchCb;
     wpaCtrlRadEvthandlers.fChanSwitchCb = s_chanSwitchCb;
     wpaCtrlRadEvthandlers.fApCsaFinishedCb = s_csaFinishedCb;
+    wpaCtrlRadEvthandlers.fMngrReadyCb = s_mngrReadyCb;
+    wpaCtrlRadEvthandlers.fMainApSetupCompletedCb = s_mainApSetupCompletedCb;
+    wpaCtrlRadEvthandlers.fMainApDisabledCb = s_mainApDisabledCb;
+    wpaCtrlRadEvthandlers.fDfsCacStartedCb = s_dfsCacStartedCb;
+    wpaCtrlRadEvthandlers.fDfsCacDoneCb = s_dfsCacDoneCb;
+    wpaCtrlRadEvthandlers.fDfsCacExpiredCb = s_dfsCacExpiredCb;
+    wpaCtrlRadEvthandlers.fDfsRadarDetectedCb = s_dfsRadarDetectedCb;
+    wpaCtrlRadEvthandlers.fDfsNopFinishedCb = s_dfsNopFinishedCb;
+    wpaCtrlRadEvthandlers.fDfsNewChannelCb = s_dfsNewChannelCb;
     wld_wpaCtrlMngr_setEvtHandlers(wpaCtrlMngr, pRad, &wpaCtrlRadEvthandlers);
     return SWL_RC_OK;
 }
@@ -107,11 +241,24 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pIfaceInfo, , ME, "NULL");
+    if(pIfaceInfo->isAp) {
+        T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
+        if(pAP != NULL) {
+            pAP->index = pIfaceInfo->ifIndex;
+        }
+    }
 }
 
 static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceInfo_t* pIfaceInfo _UNUSED) {
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pIfaceInfo, , ME, "NULL");
+    if(pIfaceInfo->isAp) {
+        T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
+        if(pAP != NULL) {
+            pAP->index = 0;
+        }
+    }
 }
 
 swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {

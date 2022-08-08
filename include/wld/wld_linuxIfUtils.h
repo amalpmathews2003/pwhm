@@ -73,7 +73,7 @@
 int wld_linuxIfUtils_getNetSock();
 
 /*
- * @brief check weither interface is up
+ * @brief check whether interface is up
  *
  * @param sock socket to kernel
  * @param intfName interface name
@@ -85,7 +85,7 @@ int wld_linuxIfUtils_getNetSock();
 int wld_linuxIfUtils_getState(int sock, char* intfName);
 
 /*
- * @brief check weither interface is up
+ * @brief check whether interface is up
  * (socket is created internally)
  *
  * @param intfName interface name
@@ -167,5 +167,31 @@ int wld_linuxIfUtils_getMac(int sock, char* intfName, swl_macBin_t* macInfo);
  *        <0 (errno) in case of error
  */
 int wld_linuxIfUtils_getMacExt(char* intfName, swl_macBin_t* macInfo);
+
+/*
+ * @brief check whether interface link (lower layer) is up.
+ * It reflects a physical requirement (vs. administrative)
+ * to make the interface up and operational.
+ *
+ * @param sock socket to kernel
+ * @param intfName interface name
+ *
+ * @param 0 if interface link is down
+ *        1 if interface link is up
+ *        <0 (errno) in case of error
+ */
+int wld_linuxIfUtils_getLinkState(int sock, char* intfName);
+
+/*
+ * @brief check whether interface link (lower layer) is up.
+ * (socket is created internally)
+ *
+ * @param intfName interface name
+ *
+ * @param 0 if interface link is down
+ *        1 if interface link is up
+ *        <0 (errno) in case of error
+ */
+int wld_linuxIfUtils_getLinkStateExt(char* intfName);
 
 #endif /* INCLUDE_WLD_WLD_LINUXIFUTILS_H_ */

@@ -103,7 +103,16 @@ int wifiGen_vap_ssid(T_AccessPoint* pAP, char* buf, int bufsize, int set) {
 }
 
 int wifiGen_vap_status(T_AccessPoint* pAP) {
-    return wld_linuxIfUtils_getState(wld_rad_getSocket(pAP->pRadio), pAP->alias);
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), false, ME, "%s: wpactrl iface not ready", pAP->alias);
+    ASSERTI_TRUE(pAP->index > 0, false, ME, "%s: iface has no netdev index", pAP->alias);
+    int ret = wld_linuxIfUtils_getLinkState(wld_rad_getSocket(pAP->pRadio), pAP->alias);
+    ASSERTS_FALSE(ret <= 0, false, ME, "%s: link down", pAP->alias);
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    swl_rc_ne rc = wld_ap_nl80211_getInterfaceInfo(pAP, &ifaceInfo);
+    ASSERT_FALSE(rc < SWL_RC_OK, false, ME, "%s: Fail to get nl80211 ap iface info", pAP->alias);
+    ASSERTS_STR(ifaceInfo.ssid, false, ME, "%s: ssid down", pAP->alias);
+    ASSERTS_NOT_EQUALS(ifaceInfo.chanSpec.ctrlFreq, 0, false, ME, "%s: radio down", pAP->alias);
+    return true;
 }
 
 int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set) {

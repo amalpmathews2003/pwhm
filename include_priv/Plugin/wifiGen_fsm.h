@@ -76,7 +76,7 @@ typedef enum {
     GEN_FSM_START_HOSTAPD,        /* start and connect with hostapd */
     GEN_FSM_ENABLE_RAD,           /* Enable Radio device */
     GEN_FSM_ENABLE_AP,            /* Enable/Disable AP interface */
-    GEN_FSM_READ_STATE,           /* Update Radio status */
+    GEN_FSM_SYNC_STATE,           /* Sync all interfaces state */
     GEN_FSM_MAX
 } wifiGen_fsmStates_e;
 
