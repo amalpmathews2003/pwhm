@@ -939,6 +939,7 @@ define rrm_t{
 		 */
 		%persistent string OperatingChannelBandwidth{   /* Selected by channel */
 			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+			on action validate call wld_rad_validateOperatingChannelBandwidth_pvf;
 			default "Auto";
 			on action write call wld_rad_setOperatingChannelBandwidth_pwf;      /* Set Radio ChannelBandwidth (if supported) */
 		}

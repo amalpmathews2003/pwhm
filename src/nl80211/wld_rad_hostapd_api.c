@@ -144,7 +144,8 @@ static swl_rc_ne s_calculateSecChannelOffset(swl_bandwidth_e bandwidth, uint32_t
  *         - Otherwise SWL_RC_ERROR or SWL_RC_INVALID_PARAM
  */
 swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
-    ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     swl_chanspec_t chanspec = {
         .channel = pR->channel,
@@ -167,37 +168,38 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
     ASSERT_TRUE(res == SWL_RC_OK, SWL_RC_ERROR, ME, "Invalid band");
 
     // Extension Channel
-    int sec_channel_offset;
+    int sec_channel_offset = 0;
     res = s_calculateSecChannelOffset(chanspec.bandwidth, freq, center_freq, &sec_channel_offset);
     ASSERT_TRUE(res == SWL_RC_OK, SWL_RC_ERROR, ME, "invalid frequencies");
 
+    char cmd[256] = {'\0'};
+    swl_str_catFormat(cmd, sizeof(cmd), "CHAN_SWITCH");
+    swl_strlst_catFormat(cmd, sizeof(cmd), " ", "5"); // beacons count before switch
+    swl_strlst_catFormat(cmd, sizeof(cmd), " ", "%d", freq);
+
+    swl_strlst_catFormat(cmd, sizeof(cmd), " ", "bandwidth=%d", bw);
+    if(bw > 20) {
+        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "center_freq1=%d", center_freq);
+        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "sec_channel_offset=%d", sec_channel_offset);
+    }
 
     // standard_mode
-    char standard_mode[16] = {'\0'};
-    if(pR->operatingStandards & M_SWL_RADSTD_N) {
-        swl_strlst_cat(standard_mode, sizeof(standard_mode), " ", "ht");
+    swl_radioStandard_m operStd = pR->operatingStandards;
+    if(SWL_BIT_IS_ONLY_SET(operStd, SWL_RADSTD_AUTO)) {
+        operStd = pR->supportedStandards;
     }
-    if(pR->operatingStandards & M_SWL_RADSTD_AC) {
-        swl_strlst_cat(standard_mode, sizeof(standard_mode), " ", "vht");
+    if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_N)) {
+        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "ht");
     }
-    if(pR->operatingStandards & M_SWL_RADSTD_AC) {
-        swl_strlst_cat(standard_mode, sizeof(standard_mode), " ", "he");
+    //hostapd complains when setting vht cap in chan_switch with bw 20MHz
+    if((bw > 20) && (SWL_BIT_IS_SET(operStd, SWL_RADSTD_AC))) {
+        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "vht");
     }
-
-    // These param will be checked by hostapd_ctrl_check_freq_params function in hostapd
-    char cmd[256] = {'\0'};
-    snprintf(cmd, sizeof(cmd), "CHAN_SWITCH"
-             " 5"
-             " %d"
-             " sec_channel_offset=%d"
-             " bandwidth=%d"
-             " %s"
-             " center_freq1=%d"
-             " center_freq2=0",
-             freq, sec_channel_offset, bw, standard_mode, center_freq);
+    if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_AX)) {
+        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "he");
+    }
 
     //send command
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
     bool ret = wld_ap_hostapd_sendCommand(primaryVap, cmd, "switch channel");
     ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "NULL");
     return SWL_RC_OK;
@@ -216,6 +218,30 @@ swl_rc_ne wld_rad_hostapd_reload(T_Radio* pR) {
     return SWL_RC_OK;
 }
 
+/**
+ * @brief set main interface channel parameters
+ *
+ * @param pR radio context
+ *
+ * @return SECDMN_ACTION_OK_NEED_TOGGLE when the Hostapd config is set. Otherwise SECDMN_ACTION_ERROR.
+ */
+wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
+    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    ASSERT_NOT_NULL(primaryVap, SECDMN_ACTION_ERROR, ME, "NULL");
+    swl_mapChar_t radParams;
+    swl_mapChar_init(&radParams);
+    wld_hostapd_cfgFile_setRadioConfig(pR, &radParams);
+    const char* chanParams[] = {
+        "channel", "ht_capab",
+        "vht_capab", "vht_oper_centr_freq_seg0_idx", "vht_oper_chwidth",
+        "he_oper_centr_freq_seg0_idx", "he_oper_chwidth",
+    };
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(chanParams); i++) {
+        wld_ap_hostapd_setParamValue(primaryVap, chanParams[i], swl_mapChar_get(&radParams, (char*) chanParams[i]), "");
+    }
+    swl_mapChar_cleanup(&radParams);
+    return SECDMN_ACTION_OK_NEED_TOGGLE;
+}
 
 /**
  * @brief enable main hostapd interface

@@ -597,6 +597,48 @@ static swl_rc_ne s_parseAntMask(struct nlattr* pAttr, int32_t* pNAnt) {
     *pNAnt = swl_bit32_getNrSet(nla_get_u32(pAttr));
     return SWL_RC_OK;
 }
+
+static int s_extFeatureIsSet(const uint8_t* extFeat, uint32_t extFeatLen, uint32_t ftIdx) {
+    ASSERTS_TRUE((ftIdx / 8) < extFeatLen, 0, ME, "out of range");
+    return ((extFeat[(ftIdx / 8)] & (1 << (ftIdx % 8))) != 0);
+}
+
+static swl_rc_ne s_parseSuppFeatures(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
+    struct nlattr* attr;
+    if((attr = tb[NL80211_ATTR_FEATURE_FLAGS]) != NULL) {
+        uint32_t flags = nla_get_u32(attr);
+        pWiphy->suppFeatures.sae = ((flags & NL80211_FEATURE_SAE) != 0);
+    }
+    if((attr = tb[NL80211_ATTR_EXT_FEATURES]) != NULL) {
+        uint8_t* extFeat = nla_data(attr);
+        uint32_t extFeatLen = nla_len(attr);
+        if(SWL_BIT_IS_SET(pWiphy->freqBandsMask, SWL_FREQ_BAND_5GHZ)) {
+            pWiphy->suppFeatures.dfsOffload = s_extFeatureIsSet(extFeat, extFeatLen, NL80211_EXT_FEATURE_DFS_OFFLOAD);
+        }
+    }
+    return SWL_RC_OK;
+}
+
+static swl_rc_ne s_parseSuppCmds(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tb[NL80211_ATTR_SUPPORTED_COMMANDS], SWL_RC_OK, ME, "No cmds to parse");
+    struct nlattr* nlCmd;
+    int remCmd;
+    nla_for_each_nested(nlCmd, tb[NL80211_ATTR_SUPPORTED_COMMANDS], remCmd) {
+        switch(nla_get_u32(nlCmd)) {
+        case NL80211_CMD_CHANNEL_SWITCH:
+            pWiphy->suppCmds.channelSwitch = true;
+            break;
+        default:
+            break;
+        }
+    }
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
     ASSERT_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -619,6 +661,8 @@ swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_
     s_parseIfTypes(tb, pWiphy);
     s_parseIfCombi(tb, pWiphy);
     s_parseWiphyBands(tb, pWiphy);
+    s_parseSuppFeatures(tb, pWiphy);
+    s_parseSuppCmds(tb, pWiphy);
     return SWL_RC_OK;
 }
 

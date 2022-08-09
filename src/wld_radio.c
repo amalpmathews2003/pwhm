@@ -353,11 +353,11 @@ amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
             */
             if(!pR->autoChannelEnable && !epConnected) {
                 if(channel != pR->channel) {
+                    pR->pFA->mfn_wrad_channel(pR, channel, SET);
+                    wld_autoCommitMgr_notifyRadEdit(pR);
                     pR->channelChangeReason = CHAN_REASON_MANUAL;
                     wld_rad_chan_notification(pR, channel, pR->runningChannelBandwidth);
                 }
-                pR->pFA->mfn_wrad_channel(pR, channel, SET);
-                wld_autoCommitMgr_notifyRadEdit(pR);
             } else {
                 pR->channel = channel;
                 pR->channelChangeReason = CHAN_REASON_AUTO;
@@ -600,6 +600,31 @@ amxd_status_t _wld_rad_setAutoChannelEnable_pwf(amxd_object_t* object _UNUSED,
 
     SAH_TRACEZ_OUT(ME);
     return rv;
+}
+
+amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* object,
+                                                             amxd_param_t* param,
+                                                             amxd_action_t reason _UNUSED,
+                                                             const amxc_var_t* const args,
+                                                             amxc_var_t* const retval _UNUSED,
+                                                             void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    T_Radio* pRad = (T_Radio*) object->priv;
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
+    swl_bandwidth_e radBw;
+    if((swl_str_matches(currentValue, newValue)) ||
+       ((radBw = swl_conv_charToEnum(newValue, Rad_SupBW, SWL_BW_MAX, SWL_BW_MAX) < SWL_BW_MAX) &&
+        ((radBw == SWL_BW_AUTO) || (swl_chanspec_bwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
+        status = amxd_status_ok;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "%s: unsupported operating channel bandwidth(%s)", pRad->Name, newValue);
+    }
+    free(newValue);
+    return status;
 }
 
 amxd_status_t _wld_rad_setOperatingChannelBandwidth_pwf(amxd_object_t* object _UNUSED,

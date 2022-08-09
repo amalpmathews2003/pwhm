@@ -105,16 +105,14 @@ SWL_TABLE(sChWidthIDsMaps,
  *
  * @return void
  */
-static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
-    T_AccessPoint* firstVap = wld_rad_getFirstVap(pRad);
-    swl_mapChar_t* interfaceConfigMap = wld_hostapd_getConfigMap(config, firstVap->alias);
-    ASSERTS_NOT_NULL(interfaceConfigMap, , ME, "NULL");
-    swl_mapChar_add(interfaceConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
-    swl_mapCharFmt_addValInt32(interfaceConfigMap, "channel", pRad->channel);
-    swl_mapChar_add(interfaceConfigMap, "country_code", pRad->regulatoryDomain);
-    swl_mapChar_add(interfaceConfigMap, "ieee80211d", "1");
-    swl_mapCharFmt_addValInt32(interfaceConfigMap, "ieee80211h", pRad->IEEE80211hSupported && pRad->setRadio80211hEnable);
-    swl_mapCharFmt_addValInt32(interfaceConfigMap, "beacon_int", pRad->beaconPeriod);
+void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigMap) {
+    ASSERTS_NOT_NULL(radConfigMap, , ME, "NULL");
+    swl_mapChar_add(radConfigMap, "driver", "nl80211");
+    swl_mapChar_add(radConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
+    swl_mapCharFmt_addValInt32(radConfigMap, "channel", pRad->channel);
+    swl_mapChar_add(radConfigMap, "country_code", pRad->regulatoryDomain);
+    swl_mapChar_add(radConfigMap, "ieee80211d", "1");
+    swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211h", pRad->IEEE80211hSupported && pRad->setRadio80211hEnable);
 
     swl_bandwidth_e tgtChW = pRad->runningChannelBandwidth;
     SAH_TRACEZ_INFO(ME, "%s: operStd:0x%x suppStd:0x%x operChw:%d maxChW:%d tgtChW:%d chan:%d",
@@ -123,7 +121,7 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
                     );
 
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
-        swl_mapChar_add(interfaceConfigMap, "ieee80211n", "1");
+        swl_mapChar_add(radConfigMap, "ieee80211n", "1");
         char htCaps[256] = {0};
         if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_40MHZ)) {
             wld_channel_extensionPos_e extChanPos = wld_rad_getExtensionChannel(pRad);
@@ -143,7 +141,7 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
          * only add ht_caps tags when they are really supported by the driver (nl80211 phy caps).
          */
         if(!swl_str_isEmpty(htCaps)) {
-            swl_mapChar_add(interfaceConfigMap, "ht_capab", htCaps);
+            swl_mapChar_add(radConfigMap, "ht_capab", htCaps);
         }
     }
     uint32_t* pChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 0, 1, &tgtChW);
@@ -154,12 +152,10 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
     };
     swl_channel_t centerChan = swl_chanspec_getCentreChannel(&chanspec);
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AC)) {
-        swl_mapChar_add(interfaceConfigMap, "ieee80211ac", "1");
+        swl_mapChar_add(radConfigMap, "ieee80211ac", "1");
         if(pChWId) {
-            swl_mapCharFmt_addValInt32(interfaceConfigMap, "vht_oper_chwidth", *pChWId);
-            if((centerChan > 0) && (centerChan != pRad->channel)) {
-                swl_mapCharFmt_addValInt32(interfaceConfigMap, "vht_oper_centr_freq_seg0_idx", centerChan);
-            }
+            swl_mapCharFmt_addValInt32(radConfigMap, "vht_oper_chwidth", *pChWId);
+            swl_mapCharFmt_addValInt32(radConfigMap, "vht_oper_centr_freq_seg0_idx", centerChan);
         }
         char vhtCaps[256] = {0};
         if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_160MHZ)) {
@@ -184,16 +180,14 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
          * only add vht_caps tags when they are really supported by the driver (nl80211 phy caps).
          */
         if(!swl_str_isEmpty(vhtCaps)) {
-            swl_mapChar_add(interfaceConfigMap, "vht_capab", vhtCaps);
+            swl_mapChar_add(radConfigMap, "vht_capab", vhtCaps);
         }
     }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AX)) {
-        swl_mapChar_add(interfaceConfigMap, "ieee80211ax", "1");
+        swl_mapChar_add(radConfigMap, "ieee80211ax", "1");
         if(pChWId) {
-            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_oper_chwidth", *pChWId);
-            if((centerChan > 0) && (centerChan != pRad->channel)) {
-                swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_oper_centr_freq_seg0_idx", centerChan);
-            }
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_chwidth", *pChWId);
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_centr_freq_seg0_idx", centerChan);
         }
         /*
             !!Note:!!
@@ -207,10 +201,10 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
          */
         if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
             SAH_TRACEZ_INFO(ME, "%s: Adding 6GHz HE Caps parameters", pRad->Name);
-            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_max_mpdu", 0);          // corresponds to HE_6GHZ_BAND_CAP_MAX_MPDU_LEN
-            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_max_ampdu_len_exp", 0); // corresponds to HE_6GHZ_BAND_CAP_MAX_AMPDU_LEN_EXP
-            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_rx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_RX_ANTPAT_CONS
-            swl_mapCharFmt_addValInt32(interfaceConfigMap, "he_6ghz_tx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_TX_ANTPAT_CONS
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_max_mpdu", 0);          // corresponds to HE_6GHZ_BAND_CAP_MAX_MPDU_LEN
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_max_ampdu_len_exp", 0); // corresponds to HE_6GHZ_BAND_CAP_MAX_AMPDU_LEN_EXP
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_rx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_RX_ANTPAT_CONS
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_tx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_TX_ANTPAT_CONS
         }
     }
 }
@@ -223,13 +217,11 @@ static void s_setRadioConfig(T_Radio* pRad, wld_hostapd_config_t* config) {
  *
  * @return void
  */
-static void s_setVapIeee80211rConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) {
+static void s_setVapIeee80211rConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
-    ASSERTS_NOT_NULL(config, , ME, "NULL");
     T_SSID* pSSID = pAP->pSSID;
     ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
     ASSERTS_TRUE(pAP->IEEE80211rEnable, , ME, "11r disabled");
-    swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAP->alias);
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
 
     uint16_t mdid = ((((pAP->mobilityDomain) >> 8) & 0x00FF) | (((pAP->mobilityDomain) << 8) & 0xFF00));
@@ -302,49 +294,53 @@ static void s_writeMfConfig(T_AccessPoint* vap, swl_mapChar_t* vapConfigMap) {
 }
 
 /**
- * @brief set the security parameters of a vap
+ * @brief set the common parameters of a vap (ssid, secMode, keyPassphrase, bssid, ...)
  *
  * @param pAP a vap
  * @param cfgF a pointer to the the configuration file of the hostapd
  *
  * @return void
  */
-void s_setVapSecurityConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) {
+static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     T_SSID* pSSID = pAP->pSSID;
     ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
     T_Radio* pRad = pAP->pRadio;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAP->alias);
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
     int tval = 0;
-    T_AccessPoint* firstVap = wld_rad_getFirstVap(pRad);
-    ASSERTS_NOT_NULL(firstVap, , ME, "NULL");
-
-    char* wpa_key_str = ((strlen(pAP->keyPassPhrase) + 1) == PSK_KEY_SIZE_LEN) ? "wpa_psk" : "wpa_passphrase";
-    if(firstVap != pAP) {
+    if(pAP->ref_index == 0) {
+        swl_mapChar_add(vapConfigMap, "interface", pAP->alias);
+    } else {
         swl_mapChar_add(vapConfigMap, "bss", pAP->alias);
         swl_macChar_t bssidStr;
         SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
         swl_mapChar_add(vapConfigMap, "bssid", bssidStr.cMac);
+        swl_mapChar_add(vapConfigMap, "use_driver_iface_addr", "1");
     }
     if(strlen(pAP->bridgeName) > 0) {
         swl_mapChar_add(vapConfigMap, "bridge", pAP->bridgeName);
     }
-    swl_mapCharFmt_addValInt32(vapConfigMap, "dtim_period", pRad->dtimPeriod);
+    char* ctrlIfaceDir = HOSTAPD_CTRL_IFACE_DIR;
+    if(pRad->hostapd && pRad->hostapd->ctrlIfaceDir) {
+        ctrlIfaceDir = pRad->hostapd->ctrlIfaceDir;
+    }
+    swl_mapChar_add(vapConfigMap, "ctrl_interface", ctrlIfaceDir);
     swl_mapChar_add(vapConfigMap, "ssid", pSSID->SSID);
     swl_mapChar_add(vapConfigMap, "auth_algs", "1");
-    swl_mapCharFmt_addValInt32(vapConfigMap, "ap_isolate", pAP->clientIsolationEnable);
-    if(pAP->enable) {
-        swl_mapChar_add(vapConfigMap, "ignore_broadcast_ssid", pAP->SSIDAdvertisementEnabled ? "0" : "2");
-    } else {
-        swl_mapChar_add(vapConfigMap, "ignore_broadcast_ssid", "1");
-        swl_mapChar_add(vapConfigMap, "start_disabled", "1");
+    if(pRad->beaconPeriod > 0) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "beacon_int", pRad->beaconPeriod);
     }
+    if(pRad->dtimPeriod > 0) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "dtim_period", pRad->dtimPeriod);
+    }
+    swl_mapCharFmt_addValInt32(vapConfigMap, "ap_isolate", pAP->clientIsolationEnable);
+    swl_mapChar_add(vapConfigMap, "ignore_broadcast_ssid", pAP->SSIDAdvertisementEnabled ? "0" : "2");
 
-    s_setVapIeee80211rConfig(pAP, config);
+    s_setVapIeee80211rConfig(pAP, vapConfigMap);
 
     s_writeMfConfig(pAP, vapConfigMap);
 
+    char* wpa_key_str = ((strlen(pAP->keyPassPhrase) + 1) == PSK_KEY_SIZE_LEN) ? "wpa_psk" : "wpa_passphrase";
     switch(pAP->secModeEnabled) {
     case APMSI_WEP64:
     case APMSI_WEP128:
@@ -513,11 +509,13 @@ void s_setVapSecurityConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) {
  *
  * @return void
  */
-static void s_setVapWpsConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) {
+static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     T_Radio* pRad = pAP->pRadio;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAP->alias);
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
+    if(!pAP->WPS_Enable || (pAP->secModeEnabled == APMSI_WPA3_P)) {
+        return;
+    }
     bool wps_enable = (pAP->WPS_Enable &&
                        ((!pAP->secModeEnabled && pAP->WPS_CertMode) ||
                         (pAP->secModeEnabled > APMSI_WEP128IV) ||
@@ -539,7 +537,9 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) 
     amxc_string_t configMethodsStr;
     amxc_string_init(&configMethodsStr, 0);
     bitmask_to_string(&configMethodsStr, wld_hostapd_wpsConfigMethods, ' ', pAP->WPS_ConfigMethodsEnabled);
-    swl_mapChar_add(vapConfigMap, "config_methods", (char*) configMethodsStr.buffer);
+    if(!amxc_string_is_empty(&configMethodsStr)) {
+        swl_mapChar_add(vapConfigMap, "config_methods", (char*) configMethodsStr.buffer);
+    }
     amxc_string_clean(&configMethodsStr);
 
     swl_mapChar_add(vapConfigMap, "wps_cred_processing", pAP->WPS_Configured ? "2" : "0");
@@ -559,17 +559,12 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) 
  *
  * @return void
  */
-static void s_setVapConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) {
+void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
-    ASSERTS_NOT_NULL(config, , ME, "NULL");
+    ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
 
-    s_setVapSecurityConfig(pAP, config);
-
-    if(!pAP->WPS_Enable || (pAP->secModeEnabled == APMSI_WPA3_P)) {
-        return;
-    }
-
-    s_setVapWpsConfig(pAP, config);
+    s_setVapCommonConfig(pAP, vapConfigMap);
+    s_setVapWpsConfig(pAP, vapConfigMap);
 }
 
 /**
@@ -583,25 +578,18 @@ static void s_setVapConfig(T_AccessPoint* pAP, wld_hostapd_config_t* config) {
 void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_STR(cfgFileName, , ME, "Empty path");
-    T_AccessPoint* firstVap = wld_rad_getFirstVap(pRad);
-    ASSERTS_NOT_NULL(firstVap, , ME, "NULL");
+    ASSERTS_FALSE(amxc_llist_is_empty(&pRad->llAP), , ME, "No vaps");
     wld_hostapd_config_t* config;
-    bool ret = wld_hostapd_createConfig(&config, pRad->llAP);
+    bool ret = wld_hostapd_createConfig(&config, &pRad->llAP);
     ASSERT_TRUE(ret, , ME, "Bad config");
-    swl_mapChar_t* generalConfigMap = wld_hostapd_getConfigMap(config, NULL);
-    ASSERTS_NOT_NULL(generalConfigMap, , ME, "NULL");
-    swl_mapChar_add(generalConfigMap, "driver", "nl80211");
-    swl_mapChar_add(generalConfigMap, "ctrl_interface", (pRad->hostapd ? pRad->hostapd->ctrlIfaceDir : HOSTAPD_CTRL_IFACE_DIR));
-    swl_mapChar_add(generalConfigMap, "ctrl_interface_group", "0");
-    swl_mapChar_t* interfaceConfigMap = wld_hostapd_getConfigMap(config, firstVap->alias);
-    ASSERTS_NOT_NULL(interfaceConfigMap, , ME, "NULL");
-    swl_mapChar_add(interfaceConfigMap, "interface", firstVap->alias);
-    s_setRadioConfig(pRad, config);
+    swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
+    wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
     amxc_llist_it_t* ap_it;
     amxc_llist_for_each(ap_it, &pRad->llAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
         SAH_TRACEZ_INFO(ME, "%s: Write config %s %u", pRad->Name, pAp->alias, pAp->ref_index);
-        s_setVapConfig(pAp, config);
+        swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
+        wld_hostapd_cfgFile_setVapConfig(pAp, vapConfigMap);
     }
     wld_hostapd_writeConfig(config, cfgFileName);
     wld_hostapd_deleteConfig(config);

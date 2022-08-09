@@ -2166,7 +2166,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method; /**< Set BSS discovery method */
     PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;          /**< Set Config Driver */
 
-    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                    /**< bool, for driver capabilitis
+    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                    /**< bool, for driver capabilities
                                                                     "WEP","TKIP","AES","AES_CCM",
                                                                     "CKIP","FF","TURBOP","NOTUSED"
                                                                     "IBSS","PMGT","HOSTAP","AHDEMO",
@@ -2174,7 +2174,8 @@ typedef struct S_CWLD_FUNC_TABLE {
                                                                     "MONITOR","TKIPMIC","WPA1","WPA2",
                                                                     "WPA","BURST","WME","WDS",
                                                                     "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
-                                                                    "EXPL_BF", "IMPL_BF" */
+                                                                    "EXPL_BF", "IMPL_BF",
+                                                                    "DFS_OFFLOAD","CSA" */
 
     PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                       /**< Get the FSM state of the VAP */
     PFN_WVAP_FSM mfn_wvap_fsm;                                   /**< Do the tasks in parts (use of callback timer) */

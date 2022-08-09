@@ -113,7 +113,7 @@ static void s_deleteHostapdVapInfo(wld_hostapdVapInfo_t* vapInfo) {
  *      - conf is NULL or path is NULL
  *      - config file not found
  */
-bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t llAP) {
+bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP) {
     SAH_TRACEZ_IN(ME);
     ASSERTS_NOT_NULL(conf, false, ME, "NULL");
     wld_hostapd_config_t* config = calloc(1, sizeof(wld_hostapd_config_t));
@@ -123,12 +123,11 @@ bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t llAP) {
     swl_mapChar_init(&(config->header));
     amxc_llist_init(&config->vaps);
     amxc_llist_it_t* ap_it;
-    bool isInterface = true;
-    amxc_llist_for_each(ap_it, &llAP) {
+    amxc_llist_for_each(ap_it, pllAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
+        bool isInterface = (pAp->ref_index == 0);
         wld_hostapdVapInfo_t* vapInfo = s_createHostapdVapInfo(isInterface, pAp->alias);
         amxc_llist_append(&config->vaps, &vapInfo->it);
-        isInterface = false;
     }
     SAH_TRACEZ_OUT(ME);
     return true;

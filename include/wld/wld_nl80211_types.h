@@ -136,6 +136,15 @@ typedef struct {
     swl_mcs_t mcsStds[SWL_STANDARD_MAX];                     //support mcs standards (each indexed on its relative enum)
 } wld_nl80211_bandDef_t;
 
+typedef struct {
+    bool channelSwitch; // support Channel Switch Announcement
+} wld_nl80211_wiphySuppCmds;
+
+typedef struct {
+    bool dfsOffload; // driver will do all DFS-related actions by itself.
+    bool sae;        // driver supports Simultaneous Authentication of Equals (SAE) with user space SME
+} wld_nl80211_wiphySuppFeatures;
+
 #define WLD_NL80211_CIPHERS_MAX 14                  //(Cf: IEEE80211 Table 9-180—Cipher suite selectors: defined suite types 0..14)
 typedef struct {
     uint32_t genId;                                 //info generation id (unique for all wiphy info received chunks)
@@ -156,6 +165,8 @@ typedef struct {
     wld_nl80211_bandDef_t bands[SWL_FREQ_BAND_MAX]; //available freq bands (each indexed on its relative enum)
     uint32_t nCipherSuites;                         //number of supported cipher suites
     uint32_t cipherSuites[WLD_NL80211_CIPHERS_MAX]; //supported cipher suites (Cf: IEEE80211 Table 9-180—Cipher suite selectors)
+    wld_nl80211_wiphySuppFeatures suppFeatures;     //supported optional nl80211 features by the driver
+    wld_nl80211_wiphySuppCmds suppCmds;             //supported optional nl80211 commands by the driver
 } wld_nl80211_wiphyInfo_t;
 
 typedef struct {

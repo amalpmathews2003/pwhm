@@ -201,6 +201,15 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
                     wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "MU_MIMO");
                 }
             }
+            if(pWiphyInfo->suppFeatures.dfsOffload) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "DFS_OFFLOAD");
+            }
+            if(pWiphyInfo->suppFeatures.sae) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "SAE");
+            }
+            if(pWiphyInfo->suppCmds.channelSwitch) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "CSA");
+            }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
         }
     }
@@ -567,10 +576,9 @@ int wifiGen_rad_channel(T_Radio* pRad, int val, int set) {
 
     if(set & SET) {
         pRad->channel = val;
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
         if(set & DIRECT) {
-            wld_rad_hostapd_switchChannel(pRad);
-        } else {
-            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+            wld_rad_doCommitIfUnblocked(pRad);
         }
     }
     return pRad->channel;
@@ -619,7 +627,7 @@ int wifiGen_rad_ochbw(T_Radio* pRad, int val, int set) {
     if(set & SET) {
         pRad->operatingChannelBandwidth = val;
         wld_rad_get_update_running_bandwidth(pRad);
-        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
     } else {
         return pRad->operatingChannelBandwidth;
     }

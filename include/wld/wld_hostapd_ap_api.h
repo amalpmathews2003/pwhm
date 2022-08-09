@@ -77,6 +77,7 @@ typedef enum {
     SECDMN_ACTION_OK_NEED_RESTART
 } wld_secDmn_action_rc_ne;
 
+bool wld_ap_hostapd_setParamValue(T_AccessPoint* pAP, const char* field, const char* value, const char* reason);
 bool wld_ap_hostapd_sendCommand(T_AccessPoint* pAP, char* cmd, const char* reason);
 bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason);
 

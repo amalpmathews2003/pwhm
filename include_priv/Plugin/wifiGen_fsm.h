@@ -69,6 +69,7 @@ typedef enum {
     GEN_FSM_DISABLE_HOSTAPD,      /* disable hostapd main interface*/
     GEN_FSM_MOD_BSSID,            /* Modify the BSSID */
     GEN_FSM_MOD_SSID,             /* Set SSID */
+    GEN_FSM_MOD_CHANNEL,          /* Set Channel */
     GEN_FSM_MOD_HOSTAPD,          /* Write config of hostapd */
     GEN_FSM_RELOAD_HOSTAPD,       /* reload hostapd (by cmd): conf in mem */
     GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */

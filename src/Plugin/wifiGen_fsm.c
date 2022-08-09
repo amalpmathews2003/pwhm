@@ -65,6 +65,8 @@
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_rad_hostapd_api.h"
 #include "wld/wld_hostapd_ap_api.h"
+#include "wld/wld_hostapd_cfgFile.h"
+#include "wld/wld_rad_nl80211.h"
 
 #include "wifiGen_fsm.h"
 
@@ -90,6 +92,7 @@ static const wifiGen_fsmStates_e sApplyActions[] = {
  */
 static const wifiGen_fsmStates_e sDynConfActions[] = {
     GEN_FSM_MOD_SSID,
+    GEN_FSM_MOD_CHANNEL,
 };
 /*
  * returns the index of the first met fsm action (among provided actionArray),
@@ -309,7 +312,48 @@ static bool s_doSetSsid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     return true;
 }
 
+static bool s_doSetChannel(T_Radio* pRad) {
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: set channel %d", pRad->Name, pRad->channel);
+    if(pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) {
+        swl_chanspec_t currChanSpec = {
+            .band = pRad->operatingFrequencyBand,
+            .channel = pRad->channel,
+            .bandwidth = pRad->runningChannelBandwidth,
+        };
+        if((wld_channel_is_band_usable(currChanSpec)) ||
+           (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
+            wld_rad_hostapd_switchChannel(pRad);
+            return true;
+        }
+    }
+    wld_secDmn_action_rc_ne rc = wld_rad_hostapd_setChannel(pRad);
+    s_schedNextAction(rc, NULL, pRad);
+    return true;
+}
+
 static bool s_doSyncState(T_Radio* pRad) {
+    /*
+     * when hostapd is alive (i.e radio administratively enabled)
+     * and handling DFS clearing (i.e driver does not support DFS_OFFLOAD)
+     * and that current band channels are no more usable
+     * (previous CAC have expired, or channel not available)
+     * => we have to recover by toggling hapd (which eventually triggers a new dfs cac),
+     *    otherwise radio remains passively down
+     */
+    if((wifiGen_hapd_isAlive(pRad)) && (pRad->detailedState == CM_RAD_DOWN)) {
+        swl_chanspec_t chanSpec;
+        _UNUSED_(chanSpec);
+        if((!wld_channel_is_band_usable(wld_rad_getSwlChanspec(pRad)) ||
+            (wld_rad_nl80211_getChannel(pRad, &chanSpec) < SWL_RC_OK))) {
+            SAH_TRACEZ_WARNING(ME, "%s: curr band [%s] is unusable", pRad->Name, pRad->channelsInUse);
+            if(!pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0)) {
+                SAH_TRACEZ_WARNING(ME, "%s: no dfs_offload => need to toggle hostapd recover radio", pRad->Name);
+                s_schedNextAction(SECDMN_ACTION_OK_NEED_TOGGLE, NULL, pRad);
+                return true;
+            }
+        }
+    }
     wifiGen_hapd_syncVapStates(pRad);
     return true;
 }
@@ -374,6 +418,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
     {FSM_ACTION(GEN_FSM_MOD_SSID), .doVapFsmAction = s_doSetSsid},
+    {FSM_ACTION(GEN_FSM_MOD_CHANNEL), .doRadFsmAction = s_doSetChannel},
     {FSM_ACTION(GEN_FSM_MOD_HOSTAPD), .doRadFsmAction = s_doConfHostapd},
     {FSM_ACTION(GEN_FSM_RELOAD_HOSTAPD), .doRadFsmAction = s_doReloadHostapd},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},

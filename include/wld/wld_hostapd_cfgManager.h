@@ -70,7 +70,7 @@ struct wld_hostapd_config;
 typedef struct wld_hostapd_config wld_hostapd_config_t;
 
 bool wld_hostapd_loadConfig(wld_hostapd_config_t** conf, char* path);
-bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t llAP);
+bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP);
 bool wld_hostapd_deleteConfig(wld_hostapd_config_t* conf);
 bool wld_hostapd_writeConfig(wld_hostapd_config_t* conf, char* path);
 bool wld_hostapd_addConfigParam(wld_hostapd_config_t* conf, const char* bssName, const char* key, const char* value);
