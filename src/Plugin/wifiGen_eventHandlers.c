@@ -347,9 +347,14 @@ static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t
         memcpy(buf, &data[24], 12);
 
         swl_macBin_t mac;
+        swl_macBin_t bssid;
         swl_hex_toBytes(mac.bMac, SWL_MAC_BIN_LEN, buf, 12);
+        memset(bssid.bMac, 0, SWL_MAC_BIN_LEN);
+        if(pAP->pSSID->BSSID) {
+            memcpy(bssid.bMac, pAP->pSSID->BSSID, SWL_MAC_BIN_LEN);
+        }
         swl_timeReal_t timestamp = swl_time_getRealSec();
-        wld_vap_assocTableStruct_t tuple = {mac, data, timestamp, stype};
+        wld_vap_assocTableStruct_t tuple = {mac, bssid, data, timestamp, stype};
         swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
         SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "SWL_MAC_FMT, pAP->alias,
                         SWL_MAC_ARG(mac.bMac));

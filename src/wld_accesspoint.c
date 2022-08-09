@@ -111,7 +111,7 @@ const char* wld_vendorIe_frameType_str[] = {"Beacon", "ProbeResp", "AssocResp", 
 
 const char* g_str_wld_ap_dm[] = {"Default", "Disabled", "RNR", "UPR", "FILSDiscovery"};
 
-SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_charPtr, swl_type_timeReal, swl_type_uint16))
+SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_macBin, swl_type_charPtr, swl_type_timeReal, swl_type_uint16))
 
 static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
     ASSERT_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
@@ -2712,7 +2712,7 @@ amxd_status_t _AccessPoint_getLastAssocReq(amxd_object_t* object,
 
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
-    char* names[4] = {"mac", "frame", "timestamp", "request"};
+    char* names[5] = {"mac", "bssid", "frame", "timestamp", "request"};
     for(size_t i = 0; i < assocTable.nrTypes; i++) {
         swl_type_t* type = assocTable.types[i];
         swl_typeData_t* tmpValue = swl_tupleType_getValue(&assocTable, tuple, i);

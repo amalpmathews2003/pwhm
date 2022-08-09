@@ -1702,11 +1702,12 @@ struct S_ACCESSPOINT {
     wld_nl80211_listener_t* nl80211Listener;  /* nl80211 events listener */
     wld_wpaCtrlInterface_t* wpaCtrlInterface; /* wpaCtrlInterface to hostapd interface */
     bool clientIsolationEnable;
-    swl_circTable_t lastAssocReq;             /* (mac,assoc/reassoc frame, timestamp,assocType) where station mac format: xx:xx:xx:xx:xx:xx */
+    swl_circTable_t lastAssocReq;             /* (mac, bssid, assoc/reassoc frame, timestamp,assocType) where station mac format: xx:xx:xx:xx:xx:xx */
 };
 
 typedef struct SWL_PACKED {
     swl_macBin_t mac;
+    swl_macBin_t bssid;
     char* frame;
     swl_timeReal_t timestamp;
     uint16_t stype;
