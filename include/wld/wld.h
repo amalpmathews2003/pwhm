@@ -2177,7 +2177,7 @@ typedef struct S_CWLD_FUNC_TABLE {
                                                                     "WPA","BURST","WME","WDS",
                                                                     "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
                                                                     "EXPL_BF", "IMPL_BF",
-                                                                    "DFS_OFFLOAD","CSA" */
+                                                                    "DFS_OFFLOAD","CSA","SAE","SAE_PWE" */
 
     PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                       /**< Get the FSM state of the VAP */
     PFN_WVAP_FSM mfn_wvap_fsm;                                   /**< Do the tasks in parts (use of callback timer) */

@@ -81,10 +81,11 @@
  * starting from the most global (most critical)
  */
 static const wifiGen_fsmStates_e sApplyActions[] = {
-    GEN_FSM_START_HOSTAPD,  // leads to restarting hostapd
-    GEN_FSM_ENABLE_HOSTAPD, // leads to enabling (usually toggling) hostapd main interface
-    GEN_FSM_UPDATE_HOSTAPD, // leads to refreshing hostpad with SIGHUP (reloads conf file)
-    GEN_FSM_RELOAD_HOSTAPD, // leads to reloading hostpad conf from memory
+    GEN_FSM_START_HOSTAPD,    // leads to restarting hostapd
+    GEN_FSM_ENABLE_HOSTAPD,   // leads to enabling (usually toggling) hostapd main interface
+    GEN_FSM_UPDATE_HOSTAPD,   // leads to refreshing hostpad with SIGHUP (reloads conf file)
+    GEN_FSM_RELOAD_AP_SECKEY, // leads to reloading AP secret key conf from memory
+    GEN_FSM_UPDATE_BEACON,    // leads to refresh AP beacon frame from mem conf
 };
 /*
  * List of params (fsm actions) that may be warm applied,
@@ -94,6 +95,8 @@ static const wifiGen_fsmStates_e sDynConfActions[] = {
     GEN_FSM_MOD_SSID,
     GEN_FSM_MOD_CHANNEL,
     GEN_FSM_ENABLE_AP,
+    GEN_FSM_MOD_SEC,
+    GEN_FSM_MOD_AP,
 };
 /*
  * returns the index of the first met fsm action (among provided actionArray),
@@ -207,7 +210,7 @@ static void s_clearDynConfActions(unsigned long* bitMapArr, uint32_t bitMapArrSi
 /*
  * schedule next conf applying fsm action after setting a dynamic param
  */
-static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP _UNUSED, T_Radio* pRad) {
+static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     switch(action) {
     case SECDMN_ACTION_OK_NEED_RESTART:
@@ -223,8 +226,21 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
     case SECDMN_ACTION_OK_NEED_SIGHUP:
         s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
         break;
-    case SECDMN_ACTION_OK_NEED_RELOAD:
-        s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_HOSTAPD);
+    case SECDMN_ACTION_OK_NEED_RELOAD_SECKEY:
+        if(s_fetchHigherApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_AP_SECKEY) >= 0) {
+            return;
+        }
+        if(s_setApplyAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_AP_SECKEY)) {
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_AP_SECKEY);
+        }
+        break;
+    case SECDMN_ACTION_OK_NEED_UPDATE_BEACON:
+        if(s_fetchHigherApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_AP_SECKEY) >= 0) {
+            return;
+        }
+        if(s_setApplyAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON)) {
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
+        }
         break;
     default:
         return;
@@ -289,13 +305,6 @@ static bool s_doConfHostapd(T_Radio* pRad) {
     return true;
 }
 
-static bool s_doReloadHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
-    SAH_TRACEZ_INFO(ME, "%s: reload conf", pRad->Name);
-    wld_rad_hostapd_reload(pRad);
-    return true;
-}
-
 static bool s_doUpdateHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
@@ -342,6 +351,39 @@ static bool s_doSetSsid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setSsid(pAP, pSSID->SSID);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set ssid", pSSID->Name);
     s_schedNextAction(rc, pAP, pRad);
+    return true;
+}
+
+static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setSecParams(pAP);
+    ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set secret key", pAP->alias);
+    s_schedNextAction(rc, pAP, pRad);
+    return true;
+}
+
+static bool s_doSyncAp(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setNoSecParams(pAP);
+    ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
+    s_schedNextAction(rc, pAP, pRad);
+    return true;
+}
+
+static bool s_doReloadApSecKey(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    wld_ap_hostapd_reloadSecKey(pAP, "reloadSecKey");
+    wld_ap_hostapd_updateBeacon(pAP, "updateBeacon");
+    return true;
+}
+
+static bool s_doUpdateBeacon(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    wld_ap_hostapd_updateBeacon(pAP, "updateBeacon");
     return true;
 }
 
@@ -451,10 +493,13 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_STOP_HOSTAPD), .doRadFsmAction = s_doStopHostapd},
     {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
+    {FSM_ACTION(GEN_FSM_MOD_SEC), .doVapFsmAction = s_doSetApSec},
+    {FSM_ACTION(GEN_FSM_MOD_AP), .doVapFsmAction = s_doSyncAp},
     {FSM_ACTION(GEN_FSM_MOD_SSID), .doVapFsmAction = s_doSetSsid},
     {FSM_ACTION(GEN_FSM_MOD_CHANNEL), .doRadFsmAction = s_doSetChannel},
     {FSM_ACTION(GEN_FSM_MOD_HOSTAPD), .doRadFsmAction = s_doConfHostapd},
-    {FSM_ACTION(GEN_FSM_RELOAD_HOSTAPD), .doRadFsmAction = s_doReloadHostapd},
+    {FSM_ACTION(GEN_FSM_RELOAD_AP_SECKEY), .doVapFsmAction = s_doReloadApSecKey},
+    {FSM_ACTION(GEN_FSM_UPDATE_BEACON), .doVapFsmAction = s_doUpdateBeacon},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
     {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},

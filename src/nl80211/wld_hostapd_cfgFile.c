@@ -293,6 +293,40 @@ static void s_writeMfConfig(T_AccessPoint* vap, swl_mapChar_t* vapConfigMap) {
     fclose(tmpFile);
 }
 
+/*
+ * @brief Fix key negotiation and installation interop issues
+ */
+static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
+    switch(pAP->secModeEnabled) {
+    case APMSI_WPA_WPA2_P:
+    case APMSI_WPA2_P:
+    {
+        // Disable PKMSA caching
+        swl_mapCharFmt_addValInt32(vapConfigMap, "disable_pmksa_caching", 1);
+        // Disable Opportunistic Key Caching (aka Proactive Key Caching)
+        swl_mapCharFmt_addValInt32(vapConfigMap, "okc", 0);
+        // Allow EAPOL key retries
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_disable_eapol_key_retries", 0);
+        break;
+    }
+    case APMSI_WPA2_WPA3_P:
+    case APMSI_WPA3_P:
+    {
+        // Disable PKMSA caching
+        swl_mapCharFmt_addValInt32(vapConfigMap, "disable_pmksa_caching", 1);
+        // Enable Opportunistic Key Caching (aka Proactive Key Caching)
+        swl_mapCharFmt_addValInt32(vapConfigMap, "okc", 1);
+        // Allow EAPOL key retries
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_disable_eapol_key_retries", 0);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
 /**
  * @brief set the common parameters of a vap (ssid, secMode, keyPassphrase, bssid, ...)
  *
@@ -337,6 +371,9 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     swl_mapChar_add(vapConfigMap, "ignore_broadcast_ssid", pAP->SSIDAdvertisementEnabled ? "0" : "2");
     if(!pAP->enable) {
         swl_mapChar_add(vapConfigMap, "start_disabled", "1");
+    }
+    if(pAP->MaxStations >= 0) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", pAP->MaxStations);
     }
 
     s_setVapIeee80211rConfig(pAP, vapConfigMap);
@@ -419,10 +456,12 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_sync", "5");
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "2");
-        if(pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
-            swl_mapChar_add(vapConfigMap, "sae_pwe", "1");
-        } else {
-            swl_mapChar_add(vapConfigMap, "sae_pwe", "2");
+        if(pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "SAE_PWE", 0)) {
+            if(pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+                swl_mapChar_add(vapConfigMap, "sae_pwe", "1");
+            } else {
+                swl_mapChar_add(vapConfigMap, "sae_pwe", "2");
+            }
         }
         break;
     case APMSI_OWE:
@@ -489,6 +528,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     default:
         break;
     }
+    s_setSecKeyCacheConf(pAP, vapConfigMap);
     if(pAP->HotSpot2.enable) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "hs20", true);
         swl_mapCharFmt_addValInt32(vapConfigMap, "disable_dgaf", pAP->HotSpot2.dgaf_disable);
@@ -517,6 +557,7 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
     if(!pAP->WPS_Enable || (pAP->secModeEnabled == APMSI_WPA3_P)) {
+        swl_mapChar_add(vapConfigMap, "wps_state", "0");
         return;
     }
     bool wps_enable = (pAP->WPS_Enable &&

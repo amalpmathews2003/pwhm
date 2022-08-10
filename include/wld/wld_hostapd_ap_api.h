@@ -71,21 +71,24 @@ typedef enum {
     SECDMN_ACTION_ERROR = -1,
     SECDMN_ACTION_OK_DONE = 0,
     SECDMN_ACTION_OK_NEED_UPDATE_BEACON,
-    SECDMN_ACTION_OK_NEED_RELOAD,
+    SECDMN_ACTION_OK_NEED_RELOAD_SECKEY, // Only WPA-PSK Security key params on specific AP
     SECDMN_ACTION_OK_NEED_SIGHUP,
-    SECDMN_ACTION_OK_NEED_TOGGLE, // Like a restart, but keeps available wpactrl sockets
+    SECDMN_ACTION_OK_NEED_TOGGLE,        // Like a restart, but keeps available wpactrl sockets
     SECDMN_ACTION_OK_NEED_RESTART
 } wld_secDmn_action_rc_ne;
 
 bool wld_ap_hostapd_setParamValue(T_AccessPoint* pAP, const char* field, const char* value, const char* reason);
 bool wld_ap_hostapd_sendCommand(T_AccessPoint* pAP, char* cmd, const char* reason);
 bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason);
+bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason);
 
-wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* ssid);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP);
+wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setClientIsolation(T_AccessPoint* pAP);
+wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable);
+wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setEnableVap(T_AccessPoint* pAP, bool enable);
 wld_secDmn_action_rc_ne wld_ap_hostapd_enableVap(T_AccessPoint* pAP, bool enable);
 

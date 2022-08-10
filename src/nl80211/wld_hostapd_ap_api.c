@@ -93,6 +93,17 @@ bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason) {
 }
 
 /**
+ * @brief reload AP secret keys conf
+ *
+ * @param pAP accesspoint
+ * @param reason the command caller
+ * @return true when the RELOAD_WPA_PSK cmd is executed successfully. Otherwise false.
+ */
+bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason) {
+    return s_sendHostapdCommand(pAP, "RELOAD_WPA_PSK", reason);
+}
+
+/**
  * @brief set a parameter value in hostapd context
  *
  * @param pAP accesspoint
@@ -120,37 +131,80 @@ bool wld_ap_hostapd_sendCommand(T_AccessPoint* pAP, char* cmd, const char* reaso
     return s_sendHostapdCommand(pAP, cmd, reason);
 }
 
-/**
- * @brief set the SSID Advertisement in the hostapd
- *
- * @param pAP accesspoint
- * @param enable if true the SSID Advertisement is enabled. Otherwise false
- * @return - SECDMN_ACTION_OK_NEED_UPDATE_BEACON when the ignore_broadcast_ssid is updated for the hostapd config file and the hostapd context
- *         - SECDMN_ACTION_OK_NEED_RESTART when ignore_broadcast_ssid is updated the hostapd context but not for the hostapd config file.
- *         - Otherwise SECDMN_ACTION_ERROR.
- */
-wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable) {
-    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
-    char* interface = pAP->alias;
-    ASSERTS_NOT_NULL(interface, SECDMN_ACTION_ERROR, ME, "NULL");
-    T_Radio* pR = pAP->pRadio;
-    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
-    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+SWL_TABLE(sHapdCfgParamsActionMap,
+          ARR(char* param; wld_secDmn_action_rc_ne action; ),
+          ARR(swl_type_charPtr, swl_type_uint32, ),
+          ARR(//params set and applied with hostapd restart
+              {"wep_default_key", SECDMN_ACTION_OK_NEED_RESTART},
+              {"wep_key0", SECDMN_ACTION_OK_NEED_RESTART},
+              {"wep_key1", SECDMN_ACTION_OK_NEED_RESTART},
+              {"wep_key2", SECDMN_ACTION_OK_NEED_RESTART},
+              {"wep_key3", SECDMN_ACTION_OK_NEED_RESTART},
+              //params set and applied with global saved hostapd conf reloading
+              {"wpa", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"wpa_pairwise", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"wpa_key_mgmt", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"ieee80211w", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"auth_server_addr", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"auth_server_port", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"own_ip_addr", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"nas_identifier", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"radius_auth_req_attr", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"auth_server_shared_secret", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"auth_server_default_session_timeout", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"owe_transition_ifname", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"transition_disable", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"mobility_domain", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"wps_state", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"ft_over_ds", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"config_methods", SECDMN_ACTION_OK_NEED_SIGHUP},
+              //params set and applied on bss with reload_wpa_psk and update_beacon
+              {"ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              {"wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              {"wpa_passphrase", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              {"sae_password", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              //params set and applied with update_beacon
+              {"ignore_broadcast_ssid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
+              {"ap_isolate", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
+              //params set and applied without any action
+              {"max_num_sta", SECDMN_ACTION_OK_DONE},
+              ));
 
-    // set the value
-    char val[2];
-    val[0] = enable ? '0' : '2';
-    val[1] = '\0';
+static bool s_setParam(T_AccessPoint* pAP, const char* param, const char* value, wld_secDmn_action_rc_ne* pAction) {
+    ASSERTS_NOT_NULL(param, false, ME, "NULL");
+    bool ret = wld_ap_hostapd_setParamValue(pAP, param, value, param);
+    wld_secDmn_action_rc_ne* pMappedAction = (wld_secDmn_action_rc_ne*) swl_table_getMatchingValue(&sHapdCfgParamsActionMap, 1, 0, param);
+    if(pAP->status == APSTI_DISABLED) {
+        W_SWL_SETPTR(pAction, SECDMN_ACTION_OK_DONE);
+    } else if(pMappedAction != NULL) {
+        //keep most critical action
+        W_SWL_SETPTR(pAction, SWL_MAX(*pAction, *pMappedAction));
+    } else if(ret) {
+        /*
+         * If param is successfully set but has no specific applying action,
+         * then reload whole save hostapd conf
+         */
+        W_SWL_SETPTR(pAction, SECDMN_ACTION_OK_NEED_SIGHUP);
+    }
+    return ret;
+}
 
-    // set the ignore_broadcast_ssid field
-    bool ret = wld_ap_hostapd_setParamValue(pAP, "ignore_broadcast_ssid", val, "ignore_broadcast_ssid");
-    ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "update the hostapd context failed for setting ignore_broadcast_ssid");
+static bool s_setChangedParam(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams,
+                              const char* param, const char* newValue, wld_secDmn_action_rc_ne* pAction) {
+    ASSERTS_NOT_NULL(param, false, ME, "NULL");
+    const char* oldValue = swl_mapChar_get(pCurrVapParams, (char*) param);
+    ASSERTS_FALSE(swl_str_matches(oldValue, newValue), false, ME, "same value");
+    return s_setParam(pAP, param, newValue, pAction);
+}
 
-    // update hostapd config file
-    ret = wld_hostapd_cfgFile_update(pR->hostapd->cfgFile, (char*) interface, "ignore_broadcast_ssid", val);
-    ASSERT_TRUE(ret, SECDMN_ACTION_OK_NEED_RESTART, ME, "update the hostapd config failed for setting ignore_broadcast_ssid");
-
-    return SECDMN_ACTION_OK_NEED_UPDATE_BEACON;
+static bool s_setChangedMultiParams(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams, swl_mapChar_t* pNewVapParams,
+                                    const char* params[], uint32_t nParams, wld_secDmn_action_rc_ne* pAction) {
+    bool ret = false;
+    for(uint32_t i = 0; i < nParams; i++) {
+        ret |= s_setChangedParam(pAP, pCurrVapParams, params[i], swl_mapChar_get(pNewVapParams, (char*) params[i]), pAction);
+    }
+    return ret;
 }
 
 /**
@@ -165,106 +219,244 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, 
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* ssid) {
     ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
     // set the ssid field in the hostapd context
-    bool ret = wld_ap_hostapd_setParamValue(pAP, "ssid", ssid, "ssid");
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
+    bool ret = s_setParam(pAP, "ssid", ssid, &action);
     ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "%s: failed for setting SSID", pAP->alias);
-    if(pAP->status == APSTI_DISABLED) {
-        return SECDMN_ACTION_OK_DONE;
-    }
-    return SECDMN_ACTION_OK_NEED_RELOAD;
+    return action;
 }
 
 /**
- * @brief update the secret key in the hostapd config file and context
+ * @brief update the secret key in the hostapd runtime conf
  * This function updates wep_keyx, wpa_psk, wpa_passphrase and sae_password keys
  * For wep_keyx, a hostapd restart is needed to take into account the new value
  *
  * @param pAP accesspoint
  *
- * @return - SECDMN_ACTION_OK_NEED_RELOAD when the key is updated for the hostapd config file and the hostapd context (except wep_keyx)
- *         - SECDMN_ACTION_OK_NEED_RESTART when the key is updated for the hostapd config file but not for the hostapd context
- *         - Otherwise SECDMN_ACTION_ERROR.
+ * @return - > SECDMN_ACTION_OK_DONE when secret keys are set and can be applied
+ *         - Otherwise SECDMN_ACTION_ERROR
  */
-wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP) {
+static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams, swl_mapChar_t* pNewVapParams) {
     ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
-    T_Radio* pR = pAP->pRadio;
-    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
-
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
-    char* wpa_key_str = ((strlen(pAP->keyPassPhrase) + 1) == PSK_KEY_SIZE_LEN) ? "wpa_psk" : "wpa_passphrase";
-
     // set the key value
     switch(pAP->secModeEnabled) {
     case APMSI_WEP64:
     case APMSI_WEP128:
     case APMSI_WEP128IV:
     {
-        // nothing to do here, restarting hostapd is needed in order to take into account the new wep_key
-        action = SECDMN_ACTION_OK_NEED_RESTART;
+        const char* secParams[] = {"wep_key0", "wep_key1", "wep_key2", "wep_key3", };
+        //in wep mode, we need to restart hostapd to apply new wep_keys
+        s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                                secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
     case APMSI_WPA_P:
     case APMSI_WPA2_P:
     case APMSI_WPA_WPA2_P:
     {
-        const char* key;
-        const char* value;
-        if(pAP->keyPassPhrase[0]) {
-            key = wpa_key_str;
-            value = pAP->keyPassPhrase;
-        } else {
-            key = "wpa_psk";
-            value = pAP->preSharedKey;
-        }
-        bool ret = wld_ap_hostapd_setParamValue(pAP, key, value, key);
-        ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "update the hostapd context failed for setting %s", key);
-
-        // reload the hostapd interface, a hostapd restart is not needed
-        action = SECDMN_ACTION_OK_NEED_RELOAD;
+        const char* secParams[] = {"wpa_psk", "wpa_passphrase", };
+        //in wpa mode, we need to reload wpa_psk params per interface
+        s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                                secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
     case APMSI_WPA2_WPA3_P:
     case APMSI_WPA3_P:
     {
-        bool ret = wld_ap_hostapd_setParamValue(pAP, wpa_key_str, pAP->keyPassPhrase, wpa_key_str);
-        ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "update the hostapd context failed for setting %s", wpa_key_str);
-        if(!swl_str_matches(pAP->saePassphrase, "")) {
-            ret = wld_ap_hostapd_setParamValue(pAP, "sae_password", pAP->saePassphrase, "sae_password");
-            ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "update the hostapd context failed for setting sae_password");
-        }
-        // reload the hostapd interface, a hostapd restart is not needed
-        action = SECDMN_ACTION_OK_NEED_RELOAD;
+        const char* secParams[] = {"wpa_psk", "wpa_passphrase", "sae_password", };
+        //in wpa mode, we just need to reload wpa_psk params per interface
+        s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                                secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
+    case APMSI_WPA_E:
+    case APMSI_WPA2_E:
+    case APMSI_WPA_WPA2_E:
+    case APMSI_WPA3_E:
+    case APMSI_WPA2_WPA3_E:
+    {
+        const char* secParams[] = {"auth_server_shared_secret", };
+        //in wpa eap, we need to refresh whole hostapd config from file
+        s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                                secParams, SWL_ARRAY_SIZE(secParams), &action);
+    }
+    break;
+    case APMSI_NONE:
+    case APMSI_NONE_E:
     default:
-        action = SECDMN_ACTION_ERROR;
         break;
     }
+    return action;
+}
 
-    // overwrite the current hostapd config file
-    if(action != SECDMN_ACTION_ERROR) {
-        wld_hostapd_cfgFile_createExt(pR);
-    }
-
+wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t newVapParams;
+    swl_mapChar_t* pNewVapParams = &newVapParams;
+    swl_mapChar_init(pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_secDmn_action_rc_ne action = s_ap_hostapd_setSecretKeyExt(pAP, pCurrVapParams, pNewVapParams);
+    swl_mapChar_cleanup(pNewVapParams);
+    wld_hostapd_deleteConfig(config);
     return action;
 }
 
 /**
- * @brief update the the security mode in the hostapd
- * A hostapd restart is needed to take into account the new security mode
+ * @brief set the the security mode in the hostapd runtime conf
+ * A hostapd restart or refresh (SIGHUP) may be needed to apply the new security mode
  *
  * @param pAP accesspoint
- * @return - SECDMN_ACTION_OK_NEED_RESTART when the security mode is updated in the hostapd config file
+ * @return - > SECDMN_ACTION_OK_DONE when the security mode is set and can be applied
  *         - Otherwise SECDMN_ACTION_ERROR
  */
+static wld_secDmn_action_rc_ne s_ap_hostapd_setSecurityModeExt(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams, swl_mapChar_t* pNewVapParams) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
+    //when switching into or out of wep mode, we need to toggle hostapd to apply security mode
+    const char* secParams[] = {"wpa", "wpa_pairwise", "wpa_key_mgmt", "wep_default_key", };
+    s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                            secParams, SWL_ARRAY_SIZE(secParams), &action);
+    return action;
+}
+
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t newVapParams;
+    swl_mapChar_t* pNewVapParams = &newVapParams;
+    swl_mapChar_init(pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_secDmn_action_rc_ne action = s_ap_hostapd_setSecurityModeExt(pAP, pCurrVapParams, pNewVapParams);
+    swl_mapChar_cleanup(pNewVapParams);
+    wld_hostapd_deleteConfig(config);
+    return action;
+}
 
-    // overwrite the current hostapd config file
-    wld_hostapd_cfgFile_createExt(pR);
+/**
+ * @brief set AP security parameters
+ *
+ * @param pAP accesspoint
+ *
+ * @return >= SECDMN_ACTION_OK_DONE when AP sec config is set. Otherwise SECDMN_ACTION_ERROR.
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t newVapParams;
+    swl_mapChar_t* pNewVapParams = &newVapParams;
+    swl_mapChar_init(pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
 
-    return SECDMN_ACTION_OK_NEED_RESTART;
+    action = SWL_MAX(action, s_ap_hostapd_setSecurityModeExt(pAP, pCurrVapParams, pNewVapParams));
+    action = SWL_MAX(action, s_ap_hostapd_setSecretKeyExt(pAP, pCurrVapParams, pNewVapParams));
+
+    //set other changed security params
+    const char* secParams[] = {
+        "ieee80211w", "wpa_group_rekey",
+        "auth_server_addr", "auth_server_port", "own_ip_addr", "nas_identifier",
+        "radius_auth_req_attr", "auth_server_default_session_timeout", "radius_request_cui",
+        "owe_transition_ifname",
+        "transition_disable",
+        "mobility_domain",
+        "wps_state",
+    };
+    s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                            secParams, SWL_ARRAY_SIZE(secParams), &action);
+    swl_mapChar_cleanup(pNewVapParams);
+    wld_hostapd_deleteConfig(config);
+    return action;
+}
+
+
+/**
+ * @brief set the SSID Advertisement in the hostapd
+ *
+ * @param pAP accesspoint
+ * @param enable if true the SSID Advertisement is enabled. Otherwise false
+ * @return - > SECDMN_ACTION_OK_DONE when the ssid advertisement is set and can be applied
+ *         - Otherwise SECDMN_ACTION_ERROR
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
+    s_setChangedParam(pAP, pCurrVapParams, "ignore_broadcast_ssid", (enable ? "0" : "2"), &action);
+    wld_hostapd_deleteConfig(config);
+    return action;
+}
+
+/**
+ * @brief prevent exchange of frames between associated stations in the same VAP
+ * @param pAP accesspoint
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_setClientIsolation(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
+    s_setChangedParam(pAP, pCurrVapParams, "ap_isolate", (pAP->clientIsolationEnable ? "0" : "1"), &action);
+    wld_hostapd_deleteConfig(config);
+    return action;
+}
+
+/**
+ * @brief set AP common parameters (non-security)
+ *
+ * @param pAP accesspoint
+ *
+ * @return >= SECDMN_ACTION_OK_DONE when AP config is set. Otherwise SECDMN_ACTION_ERROR.
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t newVapParams;
+    swl_mapChar_t* pNewVapParams = &newVapParams;
+    swl_mapChar_init(pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
+    const char* params[] = {"max_num_sta", "ap_isolate", "ignore_broadcast_ssid", "ft_over_ds", "config_methods", };
+    s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                            params, SWL_ARRAY_SIZE(params), &action);
+    swl_mapChar_cleanup(pNewVapParams);
+    wld_hostapd_deleteConfig(config);
+    return action;
 }
 
 /**
@@ -368,28 +560,6 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
     return SWL_RC_OK;
 }
 
-/**
- * @brief prevent exchange of frames between associated stations in the same VAP
- * @param pAP accesspoint
- */
-wld_secDmn_action_rc_ne wld_ap_hostapd_setClientIsolation(T_AccessPoint* pAP) {
-    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
-    T_Radio* pR = pAP->pRadio;
-    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
-    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
-
-    // set the ap_isolate field in the hostapd context
-    char val[2];
-    snprintf(val, sizeof(val), "%d", pAP->clientIsolationEnable);
-    bool ret = wld_ap_hostapd_setParamValue(pAP, "ap_isolate", val, "ap_isolate");
-    ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "update the hostapd context failed for setting ap_isolate");
-
-    // update the hostapd config file
-    ret = wld_hostapd_cfgFile_update(pR->hostapd->cfgFile, pAP->alias, "ap_isolate", val);
-    ASSERT_TRUE(ret, SECDMN_ACTION_OK_NEED_RESTART, ME, "update the hostapd config failed for setting ap_isolate");
-
-    return SECDMN_ACTION_OK_NEED_UPDATE_BEACON;
-}
 /**
  * @brief start WPS session
  * @param pAP accesspoint

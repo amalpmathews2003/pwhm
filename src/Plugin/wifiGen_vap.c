@@ -132,7 +132,7 @@ int wifiGen_vap_sync(T_AccessPoint* pAP, int set) {
 
     if(set & SET) {
         SAH_TRACEZ_INFO(ME, "%s : set vap_sync", pAP->alias);
-        ret = setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        ret = setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
     }
     return ret;
 }
@@ -211,7 +211,7 @@ int wifiGen_vap_sec_sync(T_AccessPoint* pAP, int set) {
 
     if(set & SET) {
         SAH_TRACEZ_INFO(ME, "%s : set vap_sec_sync", pAP->alias);
-        ret = setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        ret = setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_SEC);
     }
     return ret;
 }

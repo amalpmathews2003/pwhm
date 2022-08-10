@@ -89,6 +89,10 @@
 #define NL80211_STA_INFO(a) VAL(a, NL80211_STA_INFO_MAX, __NL80211_STA_INFO_INVALID)
 #define NL80211_STA_FLAG(a) VAL(a, NL80211_STA_FLAG_MAX, __NL80211_STA_FLAG_INVALID)
 
+#define IS_SPECIFIED(v, m, u) (((v) <= (m)) && ((v) > (u)))
+#define NL80211_CMD_IS_SPECIFIED(a) IS_SPECIFIED(c, NL80211_CMD_MAX, NL80211_CMD_UNSPEC)
+#define NL80211_ATTR_IS_SPECIFIED(a) IS_SPECIFIED(a, NL80211_ATTR_MAX, NL80211_ATTR_UNSPEC)
+
 /* define needed macros when compilation headers are too old */
 #ifndef NL_AUTO_PORT
 #define NL_AUTO_PORT 0
@@ -221,5 +225,8 @@
 //defined since kernel >= 5.9
 #define NL80211_CHAN_WIDTH_1 8
 #define NL80211_CHAN_WIDTH_2 9
+
+//defined since kernel >= 5.11
+#define NL80211_ATTR_SAE_PWE NL80211_ATTR(298)
 
 #endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_COMPAT_H_ */

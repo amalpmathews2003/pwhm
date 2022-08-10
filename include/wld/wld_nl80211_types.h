@@ -143,6 +143,7 @@ typedef struct {
 typedef struct {
     bool dfsOffload; // driver will do all DFS-related actions by itself.
     bool sae;        // driver supports Simultaneous Authentication of Equals (SAE) with user space SME
+    bool sae_pwe;    // driver supports SAE PWE derivation in WPA3-Personal networks which are using SAE authentication.
 } wld_nl80211_wiphySuppFeatures;
 
 #define WLD_NL80211_CIPHERS_MAX 14                  //(Cf: IEEE80211 Table 9-180—Cipher suite selectors: defined suite types 0..14)

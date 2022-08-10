@@ -610,6 +610,9 @@ static swl_rc_ne s_parseSuppFeatures(struct nlattr* tb[], wld_nl80211_wiphyInfo_
     if((attr = tb[NL80211_ATTR_FEATURE_FLAGS]) != NULL) {
         uint32_t flags = nla_get_u32(attr);
         pWiphy->suppFeatures.sae = ((flags & NL80211_FEATURE_SAE) != 0);
+        if(pWiphy->suppFeatures.sae) {
+            pWiphy->suppFeatures.sae_pwe = NL80211_ATTR_IS_SPECIFIED(NL80211_ATTR_SAE_PWE);
+        }
     }
     if((attr = tb[NL80211_ATTR_EXT_FEATURES]) != NULL) {
         uint8_t* extFeat = nla_data(attr);
