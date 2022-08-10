@@ -93,6 +93,7 @@ static const wifiGen_fsmStates_e sApplyActions[] = {
 static const wifiGen_fsmStates_e sDynConfActions[] = {
     GEN_FSM_MOD_SSID,
     GEN_FSM_MOD_CHANNEL,
+    GEN_FSM_ENABLE_AP,
 };
 /*
  * returns the index of the first met fsm action (among provided actionArray),
@@ -231,8 +232,40 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
 }
 
 static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
-    SAH_TRACEZ_INFO(ME, "%s: enable vap", pAP->alias);
-    wld_linuxIfUtils_setState(wld_rad_getSocket(pAP->pRadio), pAP->alias, pRad->enable && pAP->enable);
+    ASSERTI_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    bool enable = pAP->enable;
+    SAH_TRACEZ_INFO(ME, "%s: enable vap %d", pAP->alias, enable);
+    wld_secDmn_action_rc_ne rc;
+    /*
+     * first, set dyn ena/disabling vap params, before applying any action
+     */
+    if((rc = wld_ap_hostapd_setEnableVap(pAP, enable)) < SECDMN_ACTION_OK_DONE) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to save enable %d", pAP->alias, enable);
+    } else if(!enable) {
+        if((rc = wld_ap_hostapd_enableVap(pAP, false)) == SECDMN_ACTION_OK_DONE) {
+            /*
+             * in hostapd older than 2.10, disabling one bss leads
+             * to disabling all BSSs of same main interface.
+             * In order to restore right status of other BSSs,
+             * we schedule fsm sync_state.
+             */
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+        }
+    } else {
+        int currState = wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias);
+        if(!currState) {
+            // we have to re-enable bss net interface before trying to (re)start beaconing
+            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, true);
+        }
+        if(((rc = wld_ap_hostapd_enableVap(pAP, true)) < SECDMN_ACTION_OK_DONE) && (!currState)) {
+            //if failed to start beaconing, restore the net iface disabled state.
+            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, false);
+        }
+    }
+    wld_vap_updateState(pAP);
+    ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to apply enable %d", pAP->alias, enable);
+    s_schedNextAction(rc, pAP, pRad);
     return true;
 }
 
@@ -378,9 +411,10 @@ static void s_checkPreRadDependency(T_Radio* pRad _UNUSED) {
 }
 
 static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
-    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
-        setBitLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_AP);
-    }
+    /*
+     * Disabling/enabling radio will implicitly interact with hostapd,
+     * which will manage the related VAPs
+     */
     if(isBitSetLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_BSSID)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
     }

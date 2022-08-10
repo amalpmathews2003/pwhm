@@ -73,10 +73,11 @@
 
 bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
-    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), false, ME, "Connection with hostapd not yet established");
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), false, ME, "%s: wpactrl link not ready", pAP->alias);
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, false, ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: send hostapd cmd %s for %s", pR->Name, cmd, reason);
+    SAH_TRACEZ_INFO(ME, "%s: send hostapd cmd %s for %s",
+                    wld_wpaCtrlInterface_getName(pAP->wpaCtrlInterface), cmd, reason);
     return wld_wpaCtrl_sendCmdCheckResponse(pAP->wpaCtrlInterface, cmd, "OK");
 }
 
@@ -264,6 +265,45 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP) {
     wld_hostapd_cfgFile_createExt(pR);
 
     return SECDMN_ACTION_OK_NEED_RESTART;
+}
+
+/**
+ * @brief save dynamic conf for enabling/disabling hostapd vap (main or secondary bss)
+ *
+ * @param pAP accesspoint
+ * @param enable the VAP enabling flag
+ * @return - SECDMN_ACTION_OK_DONE when VAP ena/disabling conf is set successfully
+ *         - Otherwise SECDMN_ACTION_ERROR
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_setEnableVap(T_AccessPoint* pAP, bool enable) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: save enable vap %d", pAP->alias, enable);
+    bool ret = (wld_ap_hostapd_setParamValue(pAP, "start_disabled", (enable ? "0" : "1"), "bcastOnStart") &&
+                wld_ap_hostapd_setParamValue(pAP, "send_probe_response", (enable ? "1" : "0"), "sndPrbResp"));
+    ASSERTS_TRUE(ret, SECDMN_ACTION_ERROR, ME, "NULL");
+    return SECDMN_ACTION_OK_DONE;
+}
+
+/**
+ * @brief enable/disable hostapd vap (main or secondary bss)
+ *
+ * @param pAP accesspoint
+ * @param enable the VAP enabling flag
+ * @return - SECDMN_ACTION_OK_DONE when VAP is ena/disable successfully
+ *         - SECDMN_ACTION_OK_NEED_TOGGLE when status application requires hostapd main iface toggle
+ *         - Otherwise SECDMN_ACTION_ERROR
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_enableVap(T_AccessPoint* pAP, bool enable) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: apply enable vap %d", pAP->alias, enable);
+    bool ret = false;
+    if(!enable) {
+        ret = wld_ap_hostapd_sendCommand(pAP, "STOP_AP", "disableAp");
+    } else {
+        ret = wld_ap_hostapd_updateBeacon(pAP, "syncAp");
+    }
+    ASSERTS_TRUE(ret, SECDMN_ACTION_OK_NEED_TOGGLE, ME, "NULL");
+    return SECDMN_ACTION_OK_DONE;
 }
 
 /**

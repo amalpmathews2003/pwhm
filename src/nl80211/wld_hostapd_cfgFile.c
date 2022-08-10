@@ -335,6 +335,9 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     }
     swl_mapCharFmt_addValInt32(vapConfigMap, "ap_isolate", pAP->clientIsolationEnable);
     swl_mapChar_add(vapConfigMap, "ignore_broadcast_ssid", pAP->SSIDAdvertisementEnabled ? "0" : "2");
+    if(!pAP->enable) {
+        swl_mapChar_add(vapConfigMap, "start_disabled", "1");
+    }
 
     s_setVapIeee80211rConfig(pAP, vapConfigMap);
 
