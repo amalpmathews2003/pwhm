@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.0 - 2022-08-18(09:42:12 +0000)
+
+### Other
+
+- [prplMesh WHM] the AP AssociatedDevice dm object change events are not sent over the bus
+
 ## Release v1.6.1 - 2022-08-18(09:39:14 +0000)
 
 ### Other
