@@ -2722,7 +2722,7 @@ amxd_status_t _AccessPoint_getLastAssocReq(amxd_object_t* object,
 
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
-    char* names[5] = {"mac", "bssid", "frame", "timestamp", "request"};
+    char* names[5] = {"mac", "bssid", "frame", "timestamp", "request_type"};
     for(size_t i = 0; i < assocTable.nrTypes; i++) {
         swl_type_t* type = assocTable.types[i];
         swl_typeData_t* tmpValue = swl_tupleType_getValue(&assocTable, tuple, i);
