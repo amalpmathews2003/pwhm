@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.1 - 2022-08-18(09:39:14 +0000)
+
+### Other
+
+- schedule fsm actions to apply dynamic conf to hapd
+- [prplMesh WHM] add additional info to the pwhm getLastAssocReq api
+
 ## Release v1.6.0 - 2022-08-08(16:16:23 +0000)
 
 ### Other
