@@ -4603,8 +4603,6 @@ define rrm_t{
 			 */
 			%persistent object RssiEventing{
 
-				on action write call wld_ap_setRssiEventing_owf;
-
 				/**
 				 * Getting the history statistics for a specific station or for all stations connected to the AP.
 				 * @param : optional mac address of the connected station (format xx:xx:xx:xx:xx:xx)
@@ -4628,8 +4626,9 @@ define rrm_t{
 				 * Expressed in dbm.
 				 */
 				%persistent uint32 RssiInterval{
-					constraint minvalue 1;
 					default 10;
+					on action write call wld_ap_setRssiInterval_pwf;
+					constraint minvalue 1;
 				}
 
 				/**
@@ -4642,6 +4641,7 @@ define rrm_t{
 				%persistent uint32 AveragingFactor{
 					on action validate call check_range { min = 1, max = 1000 };
 					default 500;
+					on action write call wld_ap_setAveragingFactor_pwf;
 				}
 
 				/**
@@ -4661,6 +4661,7 @@ define rrm_t{
 				 */
 				%persistent bool HistoryEnable{
 					default true;
+					on action write call wld_ap_setHistoryEnable_pwf;
 				}
 
 				/**
@@ -4668,8 +4669,9 @@ define rrm_t{
 				 * @version 10.1
 				 */
 				%persistent uint32 HistoryLen{
-					constraint minvalue 1;
 					default 10;
+					on action write call wld_ap_setHistoryLen_pwf;
+					constraint minvalue 1;
 				}
 
 				/**
@@ -4689,8 +4691,9 @@ define rrm_t{
 				 * @version 10.1
 				 */
 				%persistent uint32 HistoryIntervalCoeff{
-					constraint minvalue 1;
 					default 1;
+					on action write call wld_ap_setHistoryIntervalCoeff_pwf;
+					constraint minvalue 1;
 				}
 
 				/**
@@ -4700,6 +4703,7 @@ define rrm_t{
 				 * @version 10.1
 				 */
 				%persistent bool SendPeriodicEvent{
+					on action write call wld_ap_setSendPeriodicEvent_pwf;
 					default false;
 				}
 
@@ -4711,6 +4715,7 @@ define rrm_t{
 				 */
 				%persistent bool SendEventOnAssoc{
 					default true;
+					on action write call wld_ap_setSendEventOnAssoc_pwf;
 				}
 
 				/**
@@ -4721,6 +4726,7 @@ define rrm_t{
 				 */
 				%persistent bool SendEventOnDisassoc{
 					default true;
+					on action write call wld_ap_setSendEventOnDisassoc_pwf;
 				}
 
 			}

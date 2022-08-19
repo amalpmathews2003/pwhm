@@ -136,9 +136,7 @@ amxd_status_t _mon_enableWriteHandler(amxd_object_t* object _UNUSED,
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* topObject = amxd_param_get_owner(parameter);
     ASSERTS_NOT_NULL(topObject, amxd_status_unknown_error, ME, "NULL");
-    if(amxd_object_get_type(topObject) != amxd_object_instance) {
-        return rv;
-    }
+    ASSERTS_FALSE(amxd_object_get_type(topObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
     T_Monitor* pMon = (T_Monitor*) topObject->priv;
     ASSERTS_NOT_NULL(pMon, amxd_status_unknown_error, ME, "NULL");
     rv = amxd_action_param_write(topObject, parameter, reason, args, retval, priv);
@@ -163,9 +161,7 @@ amxd_status_t _mon_intervalWriteHandler(amxd_object_t* object _UNUSED,
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* topObject = amxd_param_get_owner(parameter);
     ASSERTS_NOT_NULL(topObject, amxd_status_unknown_error, ME, "NULL");
-    if(amxd_object_get_type(topObject) != amxd_object_instance) {
-        return rv;
-    }
+    ASSERTS_FALSE(amxd_object_get_type(topObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
     T_Monitor* pMon = (T_Monitor*) topObject->priv;
     ASSERTS_NOT_NULL(pMon, amxd_status_unknown_error, ME, "NULL");
     rv = amxd_action_param_write(topObject, parameter, reason, args, retval, priv);
