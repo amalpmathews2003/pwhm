@@ -1,5 +1,17 @@
 #!/bin/sh
 
+prevent_netifd_to_configure_wireless()
+{
+    if [ -e "/etc/config/wireless" ]; then
+        for i in $(uci -q show wireless | grep wifi-device | cut -d '=' -f1 | cut -d '.' -f2); do
+            uci -q del wireless.$i
+        done
+        echo "# Wireless is managed by prplMesh Wireless Hardware Manager" >> /etc/config/wireless
+        echo "# this is Backup of previous configuration that was available at /etc/config/wireless" >> /etc/config/wireless
+        mv /etc/config/wireless /etc/config/netifd.wireless.backup
+    fi
+}
+
 get_base_wan_address()
 {
     # Define WAN_ADDR env var needed by pwhm to initialize wifi devices
@@ -17,6 +29,7 @@ case $1 in
     start|boot)
         export LD_LIBRARY_PATH=/usr/lib/amx/wld
         get_base_wan_address
+        prevent_netifd_to_configure_wireless
         mkdir -p /var/lib/wld
         amxrt /etc/amx/wld/wld.odl &
         ;;
