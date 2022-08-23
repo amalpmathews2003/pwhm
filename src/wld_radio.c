@@ -4511,7 +4511,15 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
         pRad->obssCoexistenceActive = false;
     }
 
-    amxd_object_set_cstring_t(pRad->pBus, "Status", Rad_SupStatus[pRad->status]);
+    amxd_trans_t trans;
+    if(!wld_dm_init_transaction(pRad->pBus, &trans)) {
+        return;
+    }
+    amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
+    if(!wld_dm_apply_transaction(&trans, get_wld_plugin_dm())) {
+        SAH_TRACEZ_ERROR(ME, "%s : Failed to update radio status", pRad->Name);
+        return;
+    }
 
     //Update VAPs
 
