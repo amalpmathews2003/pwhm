@@ -2730,3 +2730,11 @@ void wld_util_addWmmStats(amxd_object_t* parentObj, amxc_var_t* map _UNUSED, con
     amxc_var_clean(&my_map);
 }
 
+void wld_util_updateWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
+    amxd_object_t* object = amxd_object_get(parentObj, objectName);
+
+    WLD_SET_VAR_UINT64(object, "AC_BE", stats[WLD_AC_BE]);
+    WLD_SET_VAR_UINT64(object, "AC_BK", stats[WLD_AC_BK]);
+    WLD_SET_VAR_UINT64(object, "AC_VO", stats[WLD_AC_VO]);
+    WLD_SET_VAR_UINT64(object, "AC_VI", stats[WLD_AC_VI]);
+}

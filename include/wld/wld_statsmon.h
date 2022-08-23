@@ -94,9 +94,11 @@ typedef struct intf_txrxstats {
 
 
 T_Stats* wld_statsmon_updateVAPStats(T_AccessPoint* pAP);
+T_Stats* wld_statsmon_updateEPStats(T_EndPoint* pEP);
 T_Stats* wld_statsmon_updateRADStats(T_Radio* pR);
 
 int wld_getLinuxStats();
 T_Stats* wld_updateVAPStats(T_AccessPoint* pAP, T_intf_txrxstats* pST);
+T_Stats* wld_updateEPStats(T_EndPoint* pEP, T_intf_txrxstats* pST);
 T_Stats* wld_updateRadioStats(T_Radio* pR, T_intf_txrxstats* pST);
 #endif /* __WLD_STATSMON_H__ */

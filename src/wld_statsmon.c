@@ -66,6 +66,7 @@
 
 #include "wld_statsmon.h"
 #include "wld_util.h"
+#include "wld_radio.h"
 
 /*Skip white space and word macros */
 #define SKIP_WSP(a)  while((a) && ((*(a) == ' ') || (*(a) == '\t')))(a) ++
@@ -115,7 +116,7 @@ static T_Stats* moveTxRxStats2Stats(T_Stats* pDst, const T_intf_txrxstats* pSrc)
     return NULL;
 }
 
-static int getLinuxLineStats(char* pCh, T_Radio* pR, T_AccessPoint* pAP) {
+static int getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pCh, 0, ME, "NULL");
     T_intf_txrxstats intfStats;
     memset(&intfStats, 0, sizeof(intfStats));
@@ -137,25 +138,36 @@ static int getLinuxLineStats(char* pCh, T_Radio* pR, T_AccessPoint* pAP) {
            &intfStats.txErrs, &intfStats.txDrop,
            &intfStats.txFifo, &intfStats.txCalls,
            &intfStats.txCarrier, &intfStats.txCompressed);
+
     if(pR != NULL) {
         if(!strcmp(pR->Name, intfStats.intfName)) {
             addRadioStats(&pR->stats, &intfStats);
             return 1;
         }
-        amxc_llist_it_t* it = NULL;
-        amxc_llist_for_each(it, &pR->llAP) {
-            pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
-            if(!strcmp(pAP->alias, intfStats.intfName)) {
+
+        T_AccessPoint* pAP;
+        wld_rad_forEachAp(pAP, pR) {
+            if(swl_str_matches(pAP->alias, intfStats.intfName)) {
                 moveTxRxStats2Stats(&pAP->pSSID->stats, &intfStats);
                 addRadioStats(&pR->stats, &intfStats);
                 return 1;
             }
         }
-    }
-    if(pAP != NULL) {
-        if(!strcmp(pAP->alias, intfStats.intfName)) {
-            moveTxRxStats2Stats(&pAP->pSSID->stats, &intfStats);
-            return 1;
+
+        T_EndPoint* pEP;
+        wld_rad_forEachEp(pEP, pR) {
+            if(swl_str_matches(pEP->alias, intfStats.intfName)) {
+                moveTxRxStats2Stats(&pEP->pSSID->stats, &intfStats);
+                addRadioStats(&pR->stats, &intfStats);
+                return 1;
+            }
+        }
+    } else {
+        if(pSSID != NULL) {
+            if((pSSID->AP_HOOK && swl_str_matches(pSSID->AP_HOOK->alias, intfStats.intfName)) || (pSSID->ENDP_HOOK && swl_str_matches(pSSID->ENDP_HOOK->alias, intfStats.intfName))) {
+                moveTxRxStats2Stats(&pSSID->stats, &intfStats);
+                return 1;
+            }
         }
     }
 
@@ -165,7 +177,7 @@ static int getLinuxLineStats(char* pCh, T_Radio* pR, T_AccessPoint* pAP) {
 /*
     Read out the Linux system stats and store them in the TxRxStats buffer.
  */
-static int wld_statsmon_getLinuxStats(T_Radio* pR, T_AccessPoint* pAP) {
+static int wld_statsmon_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
     FILE* hf;
     unsigned int i;
     char buf[512];
@@ -179,7 +191,7 @@ static int wld_statsmon_getLinuxStats(T_Radio* pR, T_AccessPoint* pAP) {
     }
     // proc file system has no size so we can't optimize. If our timeout collaps we update all stats.
     while(fgets(buf, sizeof(buf), hf)) {
-        getLinuxLineStats(buf, pR, pAP);
+        getLinuxLineStats(buf, pR, pSSID);
     }
     fclose(hf);
     latestStateChangeTime = time(NULL);
@@ -189,7 +201,14 @@ static int wld_statsmon_getLinuxStats(T_Radio* pR, T_AccessPoint* pAP) {
 T_Stats* wld_statsmon_updateVAPStats(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, NULL, ME, "NULL");
     T_SSID* pSSID = pAP->pSSID;
-    wld_statsmon_getLinuxStats(NULL, pAP);
+    wld_statsmon_getLinuxStats(NULL, pSSID);
+    return &pSSID->stats;
+}
+
+T_Stats* wld_statsmon_updateEPStats(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, NULL, ME, "NULL");
+    T_SSID* pSSID = pEP->pSSID;
+    wld_statsmon_getLinuxStats(NULL, pSSID);
     return &pSSID->stats;
 }
 
@@ -209,6 +228,11 @@ int wld_getLinuxStats() {
 T_Stats* wld_updateVAPStats(T_AccessPoint* pAP, T_intf_txrxstats* pST) {
     _UNUSED_(pST);
     return wld_statsmon_updateVAPStats(pAP);
+}
+
+T_Stats* wld_updateEPStats(T_EndPoint* pEP, T_intf_txrxstats* pST) {
+    _UNUSED_(pST);
+    return wld_statsmon_updateEPStats(pEP);
 }
 
 T_Stats* wld_updateRadioStats(T_Radio* pR, T_intf_txrxstats* pST) {

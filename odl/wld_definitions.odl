@@ -2559,6 +2559,7 @@ define rrm_t{
 		}
 
 		%read-only object Stats{
+			on action read call wld_ssid_getStats_orf;
 
 			/** The total number of bytes transmitted out of the
 			 *  interface, including framing characters. */

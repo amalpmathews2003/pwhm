@@ -85,4 +85,7 @@ int wifiGen_vap_wps_enable(T_AccessPoint* pAP, int enable, int set);
 int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set);
 int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize, int reason);
 
+swl_rc_ne wifiGen_wendpoint_stats(T_EndPoint* pEP, T_EndPointStats* stats);
+swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad, T_AccessPoint* pAP);
+
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_VAP_H_ */

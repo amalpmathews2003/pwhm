@@ -185,7 +185,6 @@ static const uint8_t wld_ether_null[ETHER_ADDR_LEN] = {0, 0, 0, 0, 0, 0};
         amxd_param_t* param = amxd_object_get_param_def(object, objectName); \
         amxc_var_set(cstring_t, &param->value, val);}
 
-
 bool findStrInArray(const char* str, const char** strarray, int* index);
 int findStrInArrayN(const char* str, const char** strarray, int size, int default_index);
 bool convIntArrToString(char* str, int str_size, const int* int_list, int list_size);
@@ -405,6 +404,8 @@ wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_m
 
 void wld_util_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats);
 void wld_util_addWmmStats(amxd_object_t* parentObj, amxc_var_t* map, const char* name);
+
+void wld_util_updateWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats);
 
 #ifdef __cplusplus
 }/* extern "C" */

@@ -395,11 +395,11 @@ static int TRAP_mfn_wvap_deleted_neighbour(T_AccessPoint* vap, T_ApNeighbour* ne
     return -1;
 }
 
-static int TRAP_mfn_wvap_update_ap_stats(T_Radio* rad, T_AccessPoint* vap) {
+static swl_rc_ne TRAP_mfn_wvap_update_ap_stats(T_Radio* rad, T_AccessPoint* vap) {
     _UNUSED_(rad);
     _UNUSED_(vap);
     SAH_TRACEZ_NOTICE(ME, "%p %p", rad, vap);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wvap_add_vendor_ie(T_AccessPoint* vap, wld_vendorIe_t* vendor_ie) {
@@ -461,9 +461,9 @@ static swl_rc_ne TRAP_mfn_wendpoint_bssid(T_EndPoint* endpoint, swl_macChar_t* b
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wendpoint_stats(T_EndPoint* endpoint _UNUSED, T_EndPointStats* stats _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_stats(T_EndPoint* endpoint _UNUSED, T_EndPointStats* stats _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "%p", endpoint);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wendpoint_wps_start(T_EndPoint* pEP _UNUSED, int method _UNUSED, char* pin _UNUSED, char* ssid _UNUSED, char* bssid _UNUSED) {

@@ -132,6 +132,8 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_destroy_hook = wifiGen_ep_destroyHook;
     fta.mfn_wendpoint_disconnect = wifiGen_ep_disconnect;
     fta.mfn_wendpoint_bssid = wifiGen_ep_bssid;
+    fta.mfn_wendpoint_stats = wifiGen_wendpoint_stats;
+    fta.mfn_wvap_update_ap_stats = wifiGen_update_ap_stats;
 
     s_vendor = wld_nl80211_registerVendor(&fta);
     wld_nl80211_getSharedState();

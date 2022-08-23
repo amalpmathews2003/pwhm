@@ -68,6 +68,7 @@
 #include "wld/wld_accesspoint.h"
 #include "wld/wld_wps.h"
 #include "wld/wld_linuxIfUtils.h"
+#include "wld/wld_linuxIfStats.h"
 #include "wld/wld_ap_nl80211.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_wpaCtrl_api.h"
@@ -362,4 +363,49 @@ int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize _UNUS
 
 int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set _UNUSED) {
     return wifiGen_vap_kick_sta_reason(pAP, buf, bufsize, SWL_IEEE80211_DEAUTH_REASON_AUTH_NO_LONGER_VALID);
+}
+
+swl_rc_ne wifiGen_wendpoint_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
+
+    swl_rc_ne ret;
+    if(wld_linuxIfStats_getInterfaceStats(pEP->Name, &pEP->pSSID->stats)) {
+        if(stats != NULL) {
+            stats->LastDataDownlinkRate = 0;
+            stats->LastDataUplinkRate = 0;
+            stats->SignalStrength = 0;
+            stats->Noise = 0;
+            stats->SignalNoiseRatio = 0;
+            stats->RSSI = 0;
+            stats->Retransmissions = pEP->pSSID->stats.RetransCount;
+            stats->txbyte = pEP->pSSID->stats.BytesSent;
+            stats->txPackets = pEP->pSSID->stats.PacketsSent;
+            stats->txRetries = pEP->pSSID->stats.RetryCount;
+            stats->rxbyte = pEP->pSSID->stats.BytesReceived;
+            stats->rxPackets = pEP->pSSID->stats.PacketsReceived;
+            stats->rxRetries = 0;
+
+            stats->maxRxStream = 0;
+            stats->maxTxStream = 0;
+        }
+
+        ret = SWL_RC_OK;
+        SAH_TRACEZ_INFO(ME, "get stats for %s OK", pEP->Name);
+    } else {
+        ret = SWL_RC_ERROR;
+        SAH_TRACEZ_INFO(ME, "get stats for %s fail", pEP->Name);
+    }
+    return ret;
+}
+
+swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad _UNUSED, T_AccessPoint* pAP) {
+    swl_rc_ne ret;
+    if(wld_linuxIfStats_getInterfaceStats(pAP->alias, &pAP->pSSID->stats)) {
+        ret = SWL_RC_OK;
+        SAH_TRACEZ_INFO(ME, "get stats for %s OK", pAP->alias);
+    } else {
+        SAH_TRACEZ_INFO(ME, "get stats for %s fail", pAP->alias);
+        ret = SWL_RC_ERROR;
+    }
+    return ret;
 }

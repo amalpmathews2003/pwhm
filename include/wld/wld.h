@@ -1991,7 +1991,7 @@ typedef void (APIENTRY* PFN_WVAP_SET_CONFIG_DRV)(T_AccessPoint* vap, wld_vap_dri
 /*********** Vendor Misc driver settings *********************/
 typedef int (APIENTRY* PFN_WRAD_HASSUPPORT)(T_Radio* rad, T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_VAP_BSSID)(T_Radio* rad, T_AccessPoint* vap, unsigned char* buf, int bufsize, int set);
-typedef int (APIENTRY* PFN_WVAP_UPDATE_AP_STATS)(T_Radio* rad, T_AccessPoint* vap);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_UPDATE_AP_STATS)(T_Radio* rad, T_AccessPoint* vap);
 
 /*********** Vendor Endpoint driver settings *********************/
 typedef int (APIENTRY* PFN_WENDPOINT_CREATE_HOOK)(T_EndPoint* endpoint);
@@ -2000,7 +2000,7 @@ typedef int (APIENTRY* PFN_WENDPOINT_ENABLE)(T_EndPoint* endpoint, int enable, i
 typedef int (APIENTRY* PFN_WENDPOINT_DISCONNECT)(T_EndPoint* endpoint);
 typedef int (APIENTRY* PFN_WENDPOINT_CONNECT_AP)(T_EndPointProfile* endpointProfile);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_BSSID)(T_EndPoint* ep, swl_macChar_t* bssid);
-typedef int (APIENTRY* PFN_WENDPOINT_STATS)(T_EndPoint* endpoint, T_EndPointStats* stats);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_STATS)(T_EndPoint* endpoint, T_EndPointStats* stats);
 typedef int (APIENTRY* PFN_WENDPOINT_WPS_START)(T_EndPoint* pEP, int method, char* pin, char* ssid, char* bssid);
 typedef int (APIENTRY* PFN_WENDPOINT_WPS_CANCEL)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WEP_ENABLE_VENDOR_ROAMING)(T_EndPoint* pEP);
