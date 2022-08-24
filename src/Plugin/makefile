@@ -18,6 +18,7 @@ OBJS-wld.so = wld_plugin.o \
 		  wifiGen_eventHandlers.o \
 		  wifiGen_fsm.o \
 		  wifiGen_staCapHandler.o \
+		  wifiGen_ep.o \
 
 
 OBJS = $(OBJS-wld.so)

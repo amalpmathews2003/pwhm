@@ -65,6 +65,7 @@
 #include "wld/wld_nl80211_api.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_vap.h"
+#include "wifiGen_ep.h"
 #include "wifiGen_fsm.h"
 
 #define ME "gen"
@@ -123,6 +124,10 @@ bool wifiGen_init() {
     fta.mfn_wvap_kick_sta = wifiGen_vap_kick_sta;
     fta.mfn_wvap_kick_sta_reason = wifiGen_vap_kick_sta_reason;
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;
+
+    //endpoint function
+    fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;
+    fta.mfn_wendpoint_destroy_hook = wifiGen_ep_destroyHook;
 
     s_vendor = wld_nl80211_registerVendor(&fta);
     wld_nl80211_getSharedState();
