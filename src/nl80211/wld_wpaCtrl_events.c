@@ -186,7 +186,7 @@ static void s_wpsSuccess(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED
     CALL_INTF(pInterface, fWpsSuccessMsg, &mac);
 }
 
-static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+static void s_apStationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     //Example: AP-STA-CONNECTED xx:xx:xx:xx:xx:xx
     char buf[SWL_MAC_CHAR_LEN] = {0};
     swl_macBin_t bStationMac;
@@ -194,10 +194,10 @@ static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _
     memcpy(buf, params, SWL_MAC_CHAR_LEN - 1);
     bool ret = swl_mac_charToBin(&bStationMac, (swl_macChar_t*) buf);
     ASSERT_TRUE(ret, , ME, "fail to convert mac address to binary");
-    CALL_INTF(pInterface, fStationConnectedCb, &bStationMac);
+    CALL_INTF(pInterface, fApStationConnectedCb, &bStationMac);
 }
 
-static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+static void s_apStationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     //Example: AP-STA-DISCONNECTED xx:xx:xx:xx:xx:xx
     char buf[SWL_MAC_CHAR_LEN] = {0};
     swl_macBin_t bStationMac;
@@ -205,7 +205,7 @@ static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* even
     memcpy(buf, params, SWL_MAC_CHAR_LEN - 1);
     bool ret = swl_mac_charToBin(&bStationMac, (swl_macChar_t*) buf);
     ASSERT_TRUE(ret, , ME, "fail to convert mac address to binary");
-    CALL_INTF(pInterface, fStationDisconnectedCb, &bStationMac);
+    CALL_INTF(pInterface, fApStationDisconnectedCb, &bStationMac);
 }
 
 static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -398,6 +398,16 @@ static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fMgtFrameReceivedCb, stype, params);
 }
 
+static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: <3>CTRL-EVENT-DISCONNECTED bssid=xx:xx:xx:xx:xx:xx reason=3 locally_generated=1
+    char bssid[SWL_MAC_CHAR_LEN] = {0};
+    wld_wpaCtrl_getValueStr(params, "bssid", bssid, sizeof(bssid));
+    swl_macBin_t bBssidMac;
+    swl_mac_charToBin(&bBssidMac, (swl_macChar_t*) bssid);
+    uint8_t reasonCode = wld_wpaCtrl_getValueInt(params, "reason");
+    CALL_INTF(pInterface, fStationDisconnectedCb, &bBssidMac, reasonCode);
+}
+
 SWL_TABLE(sWpaCtrlEvents,
           ARR(char* evtName; void* evtParser; ),
           ARR(swl_type_charPtr, swl_type_voidPtr),
@@ -405,8 +415,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-CANCEL", &s_cancelEvent},
               {"WPS-TIMEOUT", &s_timeoutEvent},
               {"WPS-REG-SUCCESS", &s_wpsSuccess},
-              {"AP-STA-CONNECTED", &s_stationConnected},
-              {"AP-STA-DISCONNECTED", &s_stationDisconnected},
+              {"AP-STA-CONNECTED", &s_apStationConnected},
+              {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
               {"BSS-TM-RESP", &s_btmResponse},
               {"CTRL-EVENT-STARTED-CHANNEL-SWITCH", &s_chanSwitchStartedEvtCb},
               {"CTRL-EVENT-CHANNEL-SWITCH", &s_chanSwitchEvtCb},
@@ -421,6 +431,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"DFS-RADAR-DETECTED", &s_radDfsRadarDetectedEvt},
               {"DFS-NOP-FINISHED", &s_radDfsNopFinishedEvt},
               {"DFS-NEW-CHANNEL", &s_radDfsNewChannelEvt},
+              {"CTRL-EVENT-DISCONNECTED", &s_stationDisconnected},
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

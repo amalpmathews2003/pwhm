@@ -72,6 +72,7 @@
 #include "wld/wld_assocdev.h"
 #include "wld/wld_util.h"
 #include "wld/wld_radio.h"
+#include "wld/wld_endpoint.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
 
@@ -292,7 +293,7 @@ static void s_successWps(void* userData, char* ifName _UNUSED, swl_macChar_t* ma
     wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_SUCCESS, mac->cMac);
 }
 
-static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
+static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
     T_AccessPoint* pAP = (T_AccessPoint*) pRef;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
@@ -316,7 +317,7 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAdd
     wld_vap_sync_assoclist(pAP);
 }
 
-static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
+static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
     T_AccessPoint* pAP = (T_AccessPoint*) pRef;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
@@ -380,8 +381,8 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fWpsCancelMsg = s_cancelWps;
     wpaCtrlVapEvtHandlers.fWpsTimeoutMsg = s_timeoutWps;
     wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_successWps;
-    wpaCtrlVapEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
-    wpaCtrlVapEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
+    wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
+    wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
 
@@ -397,6 +398,18 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     return SWL_RC_OK;
 }
 
+static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason) {
+    T_EndPoint* pEP = (T_EndPoint*) pRef;
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: station disconnected from "MAC_PRINT_FMT " reason %d", pEP->Name, MAC_PRINT_ARG(bBssidMac->bMac), reason);
+
+    if((pEP->currentProfile != NULL) && (pEP->connectionStatus == EPCS_CONNECTED)) {
+        wld_endpoint_sync_connection(pEP, false, 0);
+    }
+}
+
 swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pEP->wpaSupp, SWL_RC_ERROR, ME, "NULL");
@@ -406,6 +419,8 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     wld_wpaCtrl_evtHandlers_cb wpaCtrlEpEvtHandlers;
     memset(&wpaCtrlEpEvtHandlers, 0, sizeof(wpaCtrlEpEvtHandlers));
     //Set here the wpa_ctrl EP event handlers
+    wpaCtrlEpEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
+
     wld_wpaCtrlInterface_setEvtHandlers(pEP->wpaCtrlInterface, pEP, &wpaCtrlEpEvtHandlers);
 
     return SWL_RC_OK;

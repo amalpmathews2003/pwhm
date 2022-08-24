@@ -130,6 +130,9 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;
     fta.mfn_wendpoint_destroy_hook = wifiGen_ep_destroyHook;
 
+    //endpoint function
+    fta.mfn_wendpoint_disconnect = wifiGen_ep_disconnect;
+
     s_vendor = wld_nl80211_registerVendor(&fta);
     wld_nl80211_getSharedState();
     wifiGen_fsm_doInit(s_vendor);

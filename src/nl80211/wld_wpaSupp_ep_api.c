@@ -59,14 +59,38 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include "wld.h"
+#include "wld_util.h"
+#include "wld_wpaSupp_cfgFile.h"
+#include "wld_wpaSupp_ep_api.h"
+#include "wld_wpaCtrl_api.h"
+#include "wld_endpoint.h"
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
+#define ME "wpaSupp"
 
-#include "wld/wld.h"
 
-int wifiGen_ep_createHook(T_EndPoint* pEP);
-int wifiGen_ep_destroyHook(T_EndPoint* pEP);
-int wifiGen_ep_disconnect(T_EndPoint* pEP);
+bool s_sendWpaSuppCommand(T_EndPoint* pEP, char* cmd, const char* reason) {
+    ASSERTS_NOT_NULL(pEP, false, ME, "NULL");
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pEP->wpaCtrlInterface), false, ME, "Connection with hostapd not yet established");
+    T_Radio* pR = pEP->pRadio;
+    ASSERTS_NOT_NULL(pR, false, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: send wpaSupp cmd %s for %s", pR->Name, cmd, reason);
+    return wld_wpaCtrl_sendCmdCheckResponse(pEP->wpaCtrlInterface, cmd, "OK");
+}
 
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */
+/**
+ * @brief Disconnect the endpoint from an AP
+ *
+ * @param pEP endpoint
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pEP->pSSID, SWL_RC_ERROR, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: Disconnecting from "MAC_PRINT_FMT, pEP->Name, MAC_PRINT_ARG(pEP->pSSID->BSSID));
+
+    bool ret = s_sendWpaSuppCommand(pEP, "DISCONNECT", "");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send disconnect command", pEP->Name);
+    return SWL_RC_OK;
+}

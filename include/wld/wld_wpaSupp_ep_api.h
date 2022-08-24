@@ -60,13 +60,9 @@
 **
 ****************************************************************************/
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
+#ifndef __WLD_WPA_SUPPLICANT_API_H__
+#define __WLD_WPA_SUPPLICANT_API_H__
 
-#include "wld/wld.h"
+swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP);
 
-int wifiGen_ep_createHook(T_EndPoint* pEP);
-int wifiGen_ep_destroyHook(T_EndPoint* pEP);
-int wifiGen_ep_disconnect(T_EndPoint* pEP);
-
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */
+#endif /* __WLD_WPA_SUPPLICANT_API_H__ */

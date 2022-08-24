@@ -65,15 +65,17 @@
 
 #include "swl/swl_chanspec.h"
 #include "swl/swl_mac.h"
+#include "swl/swl_ieee802_1x_defs.h"
 
 typedef void (* wld_wpaCtrl_processMsgCb_f)(void* userData, char* ifName, char* msgData);
 
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
 typedef void (* wld_wpaCtrl_wpsTimeoutMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCancelMsg_f)(void* userData, char* ifName);
-typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
+typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status);
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, uint16_t stype, char* data);
+typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
 
 /*
  * @brief structure of AP/EP event handlers
@@ -83,10 +85,11 @@ typedef struct {
     wld_wpaCtrl_wpsSuccessMsg_f fWpsSuccessMsg;
     wld_wpaCtrl_wpsTimeoutMsg_f fWpsTimeoutMsg;
     wld_wpaCtrl_wpsCancelMsg_f fWpsCancelMsg;
-    wld_wpaCtrl_stationConnectivityCb_f fStationConnectedCb;
-    wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
+    wld_wpaCtrl_apStationConnectivityCb_f fApStationConnectedCb;
+    wld_wpaCtrl_apStationConnectivityCb_f fApStationDisconnectedCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
+    wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);

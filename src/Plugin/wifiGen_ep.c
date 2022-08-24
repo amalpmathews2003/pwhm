@@ -64,6 +64,7 @@
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_radio.h"
 #include "wifiGen_wpaSupp.h"
+#include "wld/wld_wpaSupp_ep_api.h"
 #include "wifiGen_events.h"
 
 #define ME "genEp"
@@ -79,3 +80,15 @@ int wifiGen_ep_destroyHook(T_EndPoint* pEP) {
     return SWL_RC_OK;
 }
 
+/**
+ * @brief mfn_wendpoint_disconnect
+ *
+ * Disassociate from an AP
+ *
+ * @param pEP The current endpoint
+ * @return 0
+ */
+int wifiGen_ep_disconnect(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_wpaSupp_ep_disconnect(pEP);
+}
