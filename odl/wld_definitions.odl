@@ -4083,7 +4083,7 @@ define rrm_t{
 			/**
 			 * HT Capabilities of the associated device.
 			 * It can be a single or combination of following values:
-			 * "40MHz", "SGI20", "SGI40"
+			 * "40MHz", "SGI20", "SGI40", "40MHz-INTOL"
 			 * @version 9.2
 			 */
 			%read-only string HtCapabilities;

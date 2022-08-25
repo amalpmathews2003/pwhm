@@ -2618,16 +2618,16 @@ char* wldu_getLocalFile(char* buffer, size_t bufSize, char* path, char* format, 
 }
 
 swl_bandwidth_e wld_util_getMaxBwCap(wld_assocDev_capabilities_t* caps) {
-    if(caps->vhtCapabilities & M_VHT_CAP_SGI160) {
+    if(caps->vhtCapabilities & M_SWL_STACAP_VHT_SGI160) {
         return SWL_BW_160MHZ;
     }
-    if(caps->vhtCapabilities & M_VHT_CAP_SGI80) {
+    if(caps->vhtCapabilities & M_SWL_STACAP_VHT_SGI80) {
         return SWL_BW_80MHZ;
     }
-    if(caps->htCapabilities & M_HT_CAP_SGI40) {
+    if(caps->htCapabilities & M_SWL_STACAP_HT_SGI40) {
         return SWL_BW_40MHZ;
     }
-    if(caps->htCapabilities & M_HT_CAP_SGI20) {
+    if(caps->htCapabilities & M_SWL_STACAP_HT_SGI20) {
         return SWL_BW_20MHZ;
     }
     return SWL_BW_AUTO;

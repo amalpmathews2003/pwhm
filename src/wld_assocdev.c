@@ -890,11 +890,11 @@ void wld_ad_syncCapabilities(amxd_object_t* object, wld_assocDev_capabilities_t*
     amxd_object_set_cstring_t(object, "SecurityModeEnabled", cstr_AP_ModesSupported[caps->currentSecurity]);
     amxd_object_set_cstring_t(object, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
     amxd_object_set_cstring_t(object, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
-    bitmask_to_string(&TBufStr, wld_assocDev_htCap_str, ',', caps->htCapabilities);
+    bitmask_to_string(&TBufStr, swl_staCapHt_str, ',', caps->htCapabilities);
     amxd_object_set_cstring_t(object, "HtCapabilities", amxc_string_get(&TBufStr, 0));
-    bitmask_to_string(&TBufStr, wld_assocDev_vhtCap_str, ',', caps->vhtCapabilities);
+    bitmask_to_string(&TBufStr, swl_staCapVht_str, ',', caps->vhtCapabilities);
     amxd_object_set_cstring_t(object, "VhtCapabilities", amxc_string_get(&TBufStr, 0));
-    bitmask_to_string(&TBufStr, wld_assocDev_heCap_str, ',', caps->heCapabilities);
+    bitmask_to_string(&TBufStr, swl_staCapHe_str, ',', caps->heCapabilities);
     amxd_object_set_cstring_t(object, "HeCapabilities", amxc_string_get(&TBufStr, 0));
     char frequencyCapabilitiesStr[128] = {0};
     swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);

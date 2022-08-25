@@ -102,10 +102,6 @@ const char* cstr_AP_MFMode[] = {"Off", "WhiteList", "BlackList",
 
 const char* cstr_MultiAPType[] = {"FronthaulBSS", "BackhaulBSS", "BackhaulSTA", 0};
 
-const char* wld_assocDev_htCap_str[] = {"40MHz", "SGI20", "SGI40", 0};
-const char* wld_assocDev_vhtCap_str[] = {"SGI80", "SGI160", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE", 0};
-const char* wld_assocDev_heCap_str[] = {"SU-BFR", "SU&MU-BFE", "MU-BFR", 0};
-
 const char* wld_apRole_str[] = {"Off", "Main", "Relay", "Remote", 0};
 
 const char* wld_vendorIe_frameType_str[] = {"Beacon", "ProbeResp", "AssocResp", "AuthResp", "ProbeReq", "AssocReq", "AuthReq"};

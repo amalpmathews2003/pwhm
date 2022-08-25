@@ -750,52 +750,6 @@ typedef struct {
     uint32_t txAsMuPktsPrc; /* current percentage of TX packets sent as MU. */
 } wld_sta_muMimoInfo_t;
 
-
-/* HT Capabilities */
-extern const char* wld_assocDev_htCap_str[];
-typedef uint16_t wld_assocDev_htCap_m;
-typedef enum {
-    HT_CAPI_40MHz,
-    HT_CAPI_SGI20,
-    HT_CAPI_SGI40,
-    HT_CAPI_MAX,
-} wld_assocDev_htCap_e;
-#define M_HT_CAP_40MHz          (1 << HT_CAPI_40MHz)
-#define M_HT_CAP_SGI20          (1 << HT_CAPI_SGI20)
-#define M_HT_CAP_SGI40          (1 << HT_CAPI_SGI40)
-
-/* VHT Capabilities */
-extern const char* wld_assocDev_vhtCap_str[];
-typedef uint16_t wld_assocDev_vhtCap_m;
-typedef enum {
-    VHT_CAPI_SGI80,
-    VHT_CAPI_SGI160,
-    VHT_CAPI_SU_BFR,
-    VHT_CAPI_SU_BFE,
-    VHT_CAPI_MU_BFR,
-    VHT_CAPI_MU_BFE,
-    VHT_CAPI_MAX,
-} wld_assocDev_vhtCap_e;
-#define M_VHT_CAP_SGI80         (1 << VHT_CAPI_SGI80)
-#define M_VHT_CAP_SGI160        (1 << VHT_CAPI_SGI160)
-#define M_VHT_CAP_SU_BFR        (1 << VHT_CAPI_SU_BFR)
-#define M_VHT_CAP_SU_BFE        (1 << VHT_CAPI_SU_BFE)
-#define M_VHT_CAP_MU_BFR        (1 << VHT_CAPI_MU_BFR)
-#define M_VHT_CAP_MU_BFE        (1 << VHT_CAPI_MU_BFE)
-
-/* HE Capabilities*/
-extern const char* wld_assocDev_heCap_str[];
-typedef uint16_t wld_assocDev_heCap_m;
-typedef enum {
-    HE_CAPI_SU_BFR,
-    HE_CAPI_SU_AND_MU_BFE,
-    HE_CAPI_MU_BFR,
-    HE_CAPI_MAX,
-} wld_assocDev_heCap_e;
-#define M_HE_CAP_SU_BFR         (1 << HE_CAPI_SU_BFR)
-#define M_HE_CAP_SU_AND_MU_BFE  (1 << HE_CAPI_SU_AND_MU_BFE)
-#define M_HE_CAP_MU_BFR         (1 << HE_CAPI_MU_BFR)
-
 #define WLD_MAX_MCS 128
 #define WLD_MAX_NSS 8
 
@@ -841,9 +795,9 @@ typedef struct {
     wld_enc_modes_e encryptMode;
     swl_bandwidth_e linkBandwidth;
 
-    wld_assocDev_htCap_m htCapabilities;   /* bitmap of HT (11n) SGI, MU and beamforming capabilities */
-    wld_assocDev_vhtCap_m vhtCapabilities; /* bitmap of VHT (11ac) SGI, MU and beamforming capabilities */
-    wld_assocDev_heCap_m heCapabilities;   /* bitmap of VHT (11ax) SGI, MU and beamforming capabilities */
+    swl_staCapHt_m htCapabilities;   /* bitmap of HT (11n) SGI, MU and beamforming capabilities */
+    swl_staCapVht_m vhtCapabilities; /* bitmap of VHT (11ac) SGI, MU and beamforming capabilities */
+    swl_staCapHe_m heCapabilities;   /* bitmap of VHT (11ax) SGI, MU and beamforming capabilities */
     swl_freqBandExt_m freqCapabilities;
 } wld_assocDev_capabilities_t;
 

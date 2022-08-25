@@ -74,16 +74,20 @@ static void s_parseHtCap(T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pDev _U
     ASSERTS_NOT_NULL(htCap, , ME, "NULL");
     ASSERTS_NOT_NULL(cap, , ME, "NULL");
     if(htCap->htCapInfo & M_SWL_80211_HTCAPINFO_CAP_40) {
-        cap->htCapabilities |= M_HT_CAP_40MHz;
-        SAH_TRACEZ_INFO(ME, "Adding M_HT_CAP_40MHz cap");
+        cap->htCapabilities |= M_SWL_STACAP_HT_40MHZ;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HT_40MHZ cap");
     }
     if(htCap->htCapInfo & M_SWL_80211_HTCAPINFO_SGI_20) {
-        cap->htCapabilities |= M_HT_CAP_SGI20;
-        SAH_TRACEZ_INFO(ME, "Adding M_HT_CAP_SGI20 cap");
+        cap->htCapabilities |= M_SWL_STACAP_HT_SGI20;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HT_SGI20 cap");
     }
     if(htCap->htCapInfo & M_SWL_80211_HTCAPINFO_SGI_40) {
-        cap->htCapabilities |= M_HT_CAP_SGI40;
-        SAH_TRACEZ_INFO(ME, "Adding M_HT_CAP_SGI40 cap");
+        cap->htCapabilities |= M_SWL_STACAP_HT_SGI40;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HT_SGI40 cap");
+    }
+    if(htCap->htCapInfo & M_SWL_80211_HTCAPINFO_INTOL_40) {
+        cap->htCapabilities |= M_SWL_STACAP_HT_40MHZ_INTOL;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HT_40MHZ_INTOL cap");
     }
     SAH_TRACEZ_INFO(ME, "Parsing HT Capabilities from %02x to %x", htCap->htCapInfo, cap->htCapabilities);
 }
@@ -95,28 +99,28 @@ static void s_parseVhtCap(T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pDev _
     ASSERTS_NOT_NULL(vhtCap, , ME, "NULL");
     ASSERTS_NOT_NULL(cap, , ME, "NULL");
     if(vhtCap->vhtCapInfo & M_SWL_80211_VHTCAPINFO_SGI_80) {
-        cap->vhtCapabilities |= M_VHT_CAP_SGI80;
-        SAH_TRACEZ_INFO(ME, "Adding M_VHT_CAP_SGI80 cap");
+        cap->vhtCapabilities |= M_SWL_STACAP_VHT_SGI80;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_VHT_SGI80 cap");
     }
     if(vhtCap->vhtCapInfo & M_SWL_80211_VHTCAPINFO_SGI_160) {
-        cap->vhtCapabilities |= M_VHT_CAP_SGI160;
-        SAH_TRACEZ_INFO(ME, "Adding M_VHT_CAP_SGI160 cap");
+        cap->vhtCapabilities |= M_SWL_STACAP_VHT_SGI160;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_VHT_SGI160 cap");
     }
     if(vhtCap->vhtCapInfo & M_SWL_80211_VHTCAPINFO_SU_BFR) {
-        cap->vhtCapabilities |= M_VHT_CAP_SU_BFR;
-        SAH_TRACEZ_INFO(ME, "Adding M_VHT_CAP_SU_BFR cap");
+        cap->vhtCapabilities |= M_SWL_STACAP_VHT_SU_BFR;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_VHT_SU_BFR cap");
     }
     if(vhtCap->vhtCapInfo & M_SWL_80211_VHTCAPINFO_SU_BFE) {
-        cap->vhtCapabilities |= M_VHT_CAP_SU_BFE;
-        SAH_TRACEZ_INFO(ME, "Adding M_VHT_CAP_SU_BFE cap");
+        cap->vhtCapabilities |= M_SWL_STACAP_VHT_SU_BFE;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_VHT_SU_BFE cap");
     }
     if(vhtCap->vhtCapInfo & M_SWL_80211_VHTCAPINFO_MU_BFR) {
-        cap->vhtCapabilities |= M_VHT_CAP_MU_BFR;
-        SAH_TRACEZ_INFO(ME, "Adding M_VHT_CAP_MU_BFR cap");
+        cap->vhtCapabilities |= M_SWL_STACAP_VHT_MU_BFR;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_VHT_MU_BFR cap");
     }
     if(vhtCap->vhtCapInfo & M_SWL_80211_VHTCAPINFO_MU_BFE) {
-        cap->vhtCapabilities |= M_VHT_CAP_MU_BFE;
-        SAH_TRACEZ_INFO(ME, "Adding M_VHT_CAP_MU_BFE cap");
+        cap->vhtCapabilities |= M_SWL_STACAP_VHT_MU_BFE;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_VHT_MU_BFE cap");
     }
     SAH_TRACEZ_INFO(ME, "Parsing VHT Capabilities from %04x to %x", vhtCap->vhtCapInfo, cap->vhtCapabilities);
 }
@@ -139,16 +143,16 @@ static void s_parseExtHeCap(T_AccessPoint* pAP _UNUSED, T_AssociatedDevice* pDev
         swl_str_cat(phy_cap_hex, sizeof(phy_cap_hex), hex_dump);
     }
     if(hecap->phyCap.cap[3] & 0x40) {
-        cap->heCapabilities |= M_HE_CAP_SU_BFR;
-        SAH_TRACEZ_INFO(ME, "Adding M_HE_CAP_SU_BFR cap");
+        cap->heCapabilities |= M_SWL_STACAP_HE_SU_BFR;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HE_SU_BFR cap");
     }
     if(hecap->phyCap.cap[4] & 0x01) {
-        cap->heCapabilities |= M_HE_CAP_SU_AND_MU_BFE;
-        SAH_TRACEZ_INFO(ME, "Adding M_HE_CAP_SU_AND_MU_BFE cap");
+        cap->heCapabilities |= M_SWL_STACAP_HE_SU_AND_MU_BFE;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HE_SU_AND_MU_BFE cap");
     }
     if((hecap->phyCap.cap[4] & 0x02) >> 1) {
-        cap->heCapabilities |= M_HE_CAP_MU_BFR;
-        SAH_TRACEZ_INFO(ME, "Adding M_HE_CAP_MU_BFR cap");
+        cap->heCapabilities |= M_SWL_STACAP_HE_MU_BFR;
+        SAH_TRACEZ_INFO(ME, "Adding M_SWL_STACAP_HE_MU_BFR cap");
     }
     SAH_TRACEZ_INFO(ME, "Parsing HE Capabilities from %s to %x", phy_cap_hex, cap->heCapabilities);
 }
