@@ -46,6 +46,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					ApMgt/wld_ap_neighbours.o\
 					ApMgt/wld_ap_macfilter.o\
 					ApMgt/wld_ap_bss_transfer.o\
+					ApMgt/wld_ap_public_action.o\
 					ApMgt/wld_ap_rrm.o \
 					ApMgt/wld_ap_rssiMonitor.o \
 					ApMgt/wld_ap_security.o \

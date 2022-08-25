@@ -328,6 +328,11 @@ static int TRAP_mfn_wvap_transfer_sta_ext(T_AccessPoint* vap _UNUSED, wld_transf
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
 
+static int TRAP_mfn_wvap_sendPublicAction(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data) {
+    SAH_TRACEZ_NOTICE(ME, "%p %p %02X:%02X:%02X %d %d %s", vap, sta, oui.ouiBytes[0], oui.ouiBytes[1], oui.ouiBytes[2], type, subtype, data);
+    return WLD_ERROR_NOT_IMPLEMENTED;
+}
+
 static int TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap _UNUSED, const char* sta _UNUSED, int operClass _UNUSED, int channel _UNUSED, const char* bssid _UNUSED, const char* ssid _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p %s", vap, sta);
     return WLD_ERROR_NOT_IMPLEMENTED;
@@ -607,6 +612,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_set_config_driver);
     FTA_ASSIGN(mfn_wvap_transfer_sta);
     FTA_ASSIGN(mfn_wvap_transfer_sta_ext);
+    FTA_ASSIGN(mfn_wvap_sendPublicAction);
     FTA_ASSIGN(mfn_wvap_fsm_state);
     FTA_ASSIGN(mfn_wvap_fsm);
     FTA_ASSIGN(mfn_wvap_fsm_nodelay);

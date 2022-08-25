@@ -1979,6 +1979,7 @@ typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, 
 typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA)(T_AccessPoint* vap, char* sta, char* bssid, int operClass, int channel);
 typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA_EXT)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
 typedef int (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const char* sta, int operClass, int channel, const char* bssid, const char* ssid);
+typedef int (APIENTRY* PFN_WVAP_SEND_PUBLIC_ACTION)(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data);
 typedef int (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_SET_AP_ROLE)(T_AccessPoint* vap);
@@ -2121,6 +2122,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_KICK_STA_REASON mfn_wvap_kick_sta_reason;           /**< Disconnect a connected Station from the VAP with reason code */
     PFN_WVAP_TRANSFER_STA mfn_wvap_transfer_sta;                 /**< Send a WNM transfer request */
     PFN_WVAP_TRANSFER_STA_EXT mfn_wvap_transfer_sta_ext;         /**< Send an extended WNM transfer request */
+    PFN_WVAP_SEND_PUBLIC_ACTION mfn_wvap_sendPublicAction;       /**< Send a public action frame */
     PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
     PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */
     PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;   /**< Set MultiAP type */

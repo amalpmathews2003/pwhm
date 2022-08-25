@@ -2811,6 +2811,18 @@ define rrm_t{
 		bool sendBssTransferRequest(%in string mac, %in string target, %in int32 class, %in int32 channel, %in int32 wait, %in int32 retries, %in int32 validity, %in int32 disassoc, %in uint32 bssidInfo, %in int32 transitionReason);
 
 		/**
+		 * <b>sendPublicAction</b>
+		 * Send a public action frame to a station with a custom data content.
+		 * Send a public action frame to a station with a custom data content.
+		 * @param mac : format xx:xx:xx:xx:xx:xx destination MACAddress.
+		 * @param oui : format xx:xx:xx OUI to be write into the management frame.
+		 * @param type : category of the vendor public action frame.
+		 * @param subtype : subcategory of the vendor public action frame.
+		 * @param data : custom data to be sent.
+		 */
+		bool sendPublicAction(string mac, string oui, uint8 type, uint8 subtype, string data);
+
+		/**
 		 * send a 802.11k remote measurement request
 		 * @param mac : format xx:xx:xx:xx:xx:xx
 		 * @param bssid : optional bssid arguement. Default wildcard ff:ff:ff:ff:ff:ff.

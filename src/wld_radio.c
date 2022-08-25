@@ -84,6 +84,8 @@
 #include "wld_wps.h"
 #include "wld_channel.h"
 #include "swl/swl_assert.h"
+#include "swl/swl_oui.h"
+#include "swl/swl_hex.h"
 #include "wld_statsmon.h"
 #include "wld_channel_types.h"
 #include "wld_ap_rssiMonitor.h"
@@ -4566,6 +4568,31 @@ static void s_setStats(amxc_var_t* pRetMap, T_Stats* pStats) {
     amxc_var_add_key(uint32_t, pRetMap, "FailedRetransCount", pStats->FailedRetransCount);
     amxc_var_add_key(uint32_t, pRetMap, "RetryCount", pStats->RetryCount);
     amxc_var_add_key(uint32_t, pRetMap, "MultipleRetryCount", pStats->MultipleRetryCount);
+}
+
+void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t oui, uint8_t type, uint8_t subtype, uint8_t* data) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+
+    amxc_var_t map;
+    amxc_var_init(&map);
+    amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
+
+    amxc_var_t notifMap;
+    amxc_var_init(&notifMap);
+    amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
+
+    amxc_var_add_key(cstring_t, &notifMap, "MACAddress", macStr->cMac);
+    char ouiStr[SWL_OUI_STR_LEN] = {0};
+    swl_hex_fromBytesSep(ouiStr, SWL_OUI_STR_LEN, oui.ouiBytes, SWL_OUI_BYTE_LEN, true, ':', NULL);
+    amxc_var_add_key(cstring_t, &notifMap, "OUI", ouiStr);
+    amxc_var_add_key(uint8_t, &notifMap, "Type", type);
+    amxc_var_add_key(uint8_t, &notifMap, "SubType", subtype);
+    amxc_var_add_key(cstring_t, &notifMap, "Data", (char*) data);
+    amxc_var_add_key(amxc_htable_t, &map, "Vendor", amxc_var_get_amxc_htable_t(&notifMap));
+    amxc_var_clean(&notifMap);
+
+    amxd_object_trigger_signal(pRad->pBus, "PublicAction", &map);
+    amxc_var_clean(&map);
 }
 
 amxd_status_t _Radio_debug(amxd_object_t* object,
