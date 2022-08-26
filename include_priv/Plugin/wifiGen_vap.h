@@ -75,6 +75,7 @@ int wifiGen_get_station_stats(T_AccessPoint* pAP);
 int wifiGen_vap_bssid(T_Radio* pRad, T_AccessPoint* pAP, unsigned char* buf, int bufsize, int set);
 int wifiGen_vap_setBssid(T_AccessPoint* pAP);
 int wifiGen_vap_sec_sync(T_AccessPoint* pAP, int set);
+int wifiGen_vap_multiap_update_type(T_AccessPoint* pAP);
 int wifiGen_vap_sta_transfer_ext(T_AccessPoint* vap, wld_transferStaArgs_t* params);
 int wifiGen_vap_sta_transfer(T_AccessPoint* vap, char* sta, char* bssid, int operClass, int channel);
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set);

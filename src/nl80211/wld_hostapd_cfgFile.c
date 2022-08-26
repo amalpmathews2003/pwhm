@@ -327,6 +327,34 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     }
 }
 
+static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
+    uint32_t multiApType = 0;          /* 0 = disabled (default) */
+    if(SWL_BIT_IS_SET(pAP->multiAPType, MULTIAP_BACKHAUL_BSS)) {
+        W_SWL_BIT_SET(multiApType, 0); /* 1 = AP support backhaul BSS */
+    }
+    if(SWL_BIT_IS_SET(pAP->multiAPType, MULTIAP_FRONTHAUL_BSS)) {
+        W_SWL_BIT_SET(multiApType, 1); /* 2 = AP support fronthaul BSS */
+    }
+    /* 3 = AP supports both backhaul BSS and fronthaul BSS */
+    swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap", multiApType);
+    char* wpsState = swl_mapChar_get(vapConfigMap, "wps_state");
+    if((!swl_str_isEmpty(wpsState)) && (!swl_str_matches(wpsState, "0")) && (multiApType >= 2)) {
+        /*
+         * Multi-AP backhaul BSS config: Used in WPS when multi_ap=2 or 3.
+         * It defines "backhaul BSS" credentials.
+         * These are passed in WPS M8 instead of the normal (fronthaul) credentials
+         * if the Enrollee has the Multi-AP subelement set. Backhaul SSID is formatted
+         * like ssid2. The key is set like wpa_psk or wpa_passphrase.
+         */
+        //hostapd requires backhaul_ssid included in double quotes
+        swl_mapCharFmt_addValStr(vapConfigMap, "multi_ap_backhaul_ssid", "\"%s\"", swl_mapChar_get(vapConfigMap, "ssid"));
+        swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_psk", swl_mapChar_get(vapConfigMap, "wpa_psk"));
+        swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_passphrase", swl_mapChar_get(vapConfigMap, "wpa_passphrase"));
+    }
+}
+
 /**
  * @brief set the common parameters of a vap (ssid, secMode, keyPassphrase, bssid, ...)
  *
@@ -609,6 +637,7 @@ void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConf
 
     s_setVapCommonConfig(pAP, vapConfigMap);
     s_setVapWpsConfig(pAP, vapConfigMap);
+    s_setVapMultiApConf(pAP, vapConfigMap);
 }
 
 /**

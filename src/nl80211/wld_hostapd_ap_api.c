@@ -159,11 +159,15 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"wps_state", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"ft_over_ds", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"config_methods", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"multi_ap", SECDMN_ACTION_OK_NEED_SIGHUP},
               //params set and applied on bss with reload_wpa_psk and update_beacon
               {"ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_passphrase", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"sae_password", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              {"multi_ap_backhaul_ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              {"multi_ap_backhaul_wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
+              {"multi_ap_backhaul_wpa_passphrase", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               //params set and applied with update_beacon
               {"ignore_broadcast_ssid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               {"ap_isolate", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
@@ -207,6 +211,14 @@ static bool s_setChangedMultiParams(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapP
     return ret;
 }
 
+static bool s_setExistingParam(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams,
+                               const char* param, const char* newValue, wld_secDmn_action_rc_ne* pAction) {
+    ASSERTS_NOT_NULL(param, false, ME, "NULL");
+    const char* oldValue = swl_mapChar_get(pCurrVapParams, (char*) param);
+    ASSERTS_FALSE(swl_str_isEmpty(oldValue), false, ME, "not existing");
+    return s_setParam(pAP, param, newValue, pAction);
+}
+
 /**
  * @brief set the SSID in the hostapd
  *
@@ -218,10 +230,21 @@ static bool s_setChangedMultiParams(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapP
  */
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* ssid) {
     ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
     // set the ssid field in the hostapd context
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     bool ret = s_setParam(pAP, "ssid", ssid, &action);
     ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "%s: failed for setting SSID", pAP->alias);
+    wld_hostapd_config_t* config = NULL;
+    wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    //hostapd requires backhaul_ssid included in double quotes
+    char bhSsid[strlen(ssid) + 3];
+    snprintf(bhSsid, sizeof(bhSsid), "\"%s\"", ssid);
+    s_setExistingParam(pAP, pCurrVapParams, "multi_ap_backhaul_ssid", bhSsid, &action);
+    wld_hostapd_deleteConfig(config);
     return action;
 }
 
@@ -254,7 +277,10 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
     case APMSI_WPA2_P:
     case APMSI_WPA_WPA2_P:
     {
-        const char* secParams[] = {"wpa_psk", "wpa_passphrase", };
+        const char* secParams[] = {
+            "wpa_psk", "wpa_passphrase",
+            "multi_ap_backhaul_wpa_psk", "multi_ap_backhaul_wpa_passphrase",
+        };
         //in wpa mode, we need to reload wpa_psk params per interface
         s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);
@@ -263,7 +289,10 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
     case APMSI_WPA2_WPA3_P:
     case APMSI_WPA3_P:
     {
-        const char* secParams[] = {"wpa_psk", "wpa_passphrase", "sae_password", };
+        const char* secParams[] = {
+            "wpa_psk", "wpa_passphrase", "sae_password",
+            "multi_ap_backhaul_wpa_psk", "multi_ap_backhaul_wpa_passphrase",
+        };
         //in wpa mode, we just need to reload wpa_psk params per interface
         s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);
@@ -451,7 +480,11 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     swl_mapChar_init(pNewVapParams);
     wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
-    const char* params[] = {"max_num_sta", "ap_isolate", "ignore_broadcast_ssid", "ft_over_ds", "config_methods", };
+    const char* params[] = {
+        "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",
+        "ft_over_ds", "config_methods",
+        "multi_ap",
+    };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
     swl_mapChar_cleanup(pNewVapParams);

@@ -1408,16 +1408,18 @@ amxd_status_t _wld_ap_setMultiAPType_pwf(amxd_object_t* object _UNUSED,
     SAH_TRACEZ_IN(ME);
 
     ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
-    const char* new_multiAPType = amxc_var_constcast(cstring_t, args);
+    char* new_multiAPType = amxc_var_dyncast(cstring_t, args);
     uint32_t m_multiAPType = 0;
     if(new_multiAPType && new_multiAPType[0]) {
         string_to_bitmask(&m_multiAPType, new_multiAPType, cstr_MultiAPType, NULL, ',');
     } else {
         m_multiAPType = 0;
     }
+    free(new_multiAPType);
     if(pAP->multiAPType != m_multiAPType) {
         pAP->multiAPType = m_multiAPType;
         pAP->pFA->mfn_wvap_multiap_update_type(pAP);
+        wld_autoCommitMgr_notifyVapEdit(pAP);
     }
 
     SAH_TRACEZ_OUT(ME);

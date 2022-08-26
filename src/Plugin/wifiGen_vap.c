@@ -216,6 +216,12 @@ int wifiGen_vap_sec_sync(T_AccessPoint* pAP, int set) {
     return ret;
 }
 
+int wifiGen_vap_multiap_update_type(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+    return 0;
+}
+
 int wifiGen_vap_sta_transfer_ext(T_AccessPoint* pAP, wld_transferStaArgs_t* params) {
     return wld_ap_hostapd_transferStation(pAP, params);
 }
