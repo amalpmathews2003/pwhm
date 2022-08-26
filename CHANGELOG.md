@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.2 - 2022-08-26(16:53:40 +0000)
+
+### Other
+
+- set dynamically vap security config
+- [prpl] disable uci wireless through pwhm init script
+
 ## Release v1.7.1 - 2022-08-26(09:49:49 +0000)
 
 ### Other
