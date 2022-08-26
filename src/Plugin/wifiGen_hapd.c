@@ -70,7 +70,7 @@
 #define ME "genHapd"
 #define HOSTAPD_CONF_FILE_PATH_FORMAT "/tmp/%s_hapd.conf"
 #define HOSTAPD_CMD "hostapd"
-#define HOSTAPD_ARGS_FORMAT "-ddt %s"
+#define HOSTAPD_ARGS_FORMAT "-ddts %s"
 
 swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
