@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.1 - 2022-08-26(09:49:49 +0000)
+
+### Other
+
+- : [pwhm] detect radios by context and not by pci order
+
 ## Release v1.7.0 - 2022-08-18(09:42:12 +0000)
 
 ### Other
