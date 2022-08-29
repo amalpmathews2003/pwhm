@@ -96,6 +96,7 @@
 #include "wld_rad_nl80211.h"
 #include "wld_linuxIfStats.h"
 #include "wld_linuxIfUtils.h"
+#include "wld_dm_trans.h"
 
 #define GETENV(x, var) \
     { \
@@ -4512,14 +4513,9 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
     }
 
     amxd_trans_t trans;
-    if(!wld_dm_init_transaction(pRad->pBus, &trans)) {
-        return;
-    }
+    ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
     amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
-    if(!wld_dm_apply_transaction(&trans, get_wld_plugin_dm())) {
-        SAH_TRACEZ_ERROR(ME, "%s : Failed to update radio status", pRad->Name);
-        return;
-    }
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
 
     //Update VAPs
 

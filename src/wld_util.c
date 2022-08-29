@@ -2708,39 +2708,3 @@ void wld_util_addWmmStats(amxd_object_t* parentObj, amxc_var_t* map _UNUSED, con
     amxc_var_clean(&my_map);
 }
 
-bool wld_dm_init_transaction(const amxd_object_t* object, amxd_trans_t* const transaction) {
-    amxd_status_t status = amxd_trans_init(transaction);
-    if(status != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "Failed to inititalize transaction, status: %s", amxd_status_string(status));
-        return false;
-    }
-
-    status = amxd_trans_set_attr(transaction, amxd_tattr_change_ro, true);
-    if(status != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "Failed to set transaction attributes, status: %s", amxd_status_string(status));
-        amxd_trans_clean(transaction);
-        return false;
-    }
-
-    status = amxd_trans_select_object(transaction, object);
-    if(status != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "Failed to select transaction object, status: %s", amxd_status_string(status));
-        amxd_trans_clean(transaction);
-        return false;
-    }
-
-    return true;
-}
-
-bool wld_dm_apply_transaction(amxd_trans_t* const transaction, amxd_dm_t* const dm) {
-    bool ret = true;
-    amxd_status_t status = amxd_trans_apply(transaction, dm);
-    if(status != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "Failed to apply transaction object, status: %s", amxd_status_string(status));
-        ret = false;
-    }
-
-    amxd_trans_clean(transaction);
-
-    return ret;
-}

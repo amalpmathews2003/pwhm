@@ -388,9 +388,6 @@ wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_m
 void wld_util_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats);
 void wld_util_addWmmStats(amxd_object_t* parentObj, amxc_var_t* map, const char* name);
 
-bool wld_dm_init_transaction(const amxd_object_t* object, amxd_trans_t* const transaction);
-bool wld_dm_apply_transaction(amxd_trans_t* const transaction, amxd_dm_t* const dm);
-
 #ifdef __cplusplus
 }/* extern "C" */
 #endif

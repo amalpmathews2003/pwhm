@@ -85,6 +85,7 @@
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_ap_nl80211.h"
 #include "wld_hostapd_ap_api.h"
+#include "wld_dm_trans.h"
 
 #define ME "ap"
 
@@ -2313,10 +2314,8 @@ bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
         }
 
         amxd_trans_t trans;
-        amxd_trans_init(&trans);
         amxd_object_t* object = pAD->object;
-        amxd_trans_set_attr(&trans, amxd_tattr_change_ro, true);
-        amxd_trans_select_object(&trans, object);
+        ASSERT_TRANSACTION_INIT(object, &trans, false, ME, "%s : trans init failure", pAD->Name);
 
         amxd_trans_set_value(cstring_t, &trans, "ChargeableUserId", pAD->Radius_CUID);
         amxd_trans_set_value(bool, &trans, "AuthenticationState", pAD->AuthenticationState);
@@ -2404,11 +2403,7 @@ bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
         amxd_object_t* probeReqCapsObject = amxd_object_get(object, "ProbeReqCaps");
         wld_ad_syncCapabilities(probeReqCapsObject, &pAD->probeReqCaps);
 
-        int ret = amxd_trans_apply(&trans, get_wld_plugin_dm());
-        if(ret != 0) {
-            SAH_TRACEZ_ERROR(ME, "amx apply transaction error:%d", ret);
-        }
-        amxd_trans_clean(&trans);
+        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), false, ME, "%s : trans apply failure", pAD->Name);
     }
 
     amxd_object_set_int32_t(pAP->pBus, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
@@ -2622,8 +2617,14 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
     }
     pAP->lastStatusChange = swl_time_getMonoSec();
 
-    amxd_object_set_cstring_t(pAP->pBus, "Status", cstr_AP_status[pAP->status]);
-    amxd_object_set_cstring_t(pSSID->pBus, "Status", Rad_SupStatus[pSSID->status]);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(pAP->pBus, &trans, , ME, "%s : trans init failure", pAP->alias);
+    amxd_trans_set_value(cstring_t, &trans, "Status", cstr_AP_status[pAP->status]);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pAP->alias);
+
+    ASSERT_TRANSACTION_INIT(pSSID->pBus, &trans, , ME, "%s : trans init failure", pSSID->SSID);
+    amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pSSID->status]);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pSSID->SSID);
 
     wld_vap_status_change_event_t vapUpdate;
     vapUpdate.vap = pAP;
