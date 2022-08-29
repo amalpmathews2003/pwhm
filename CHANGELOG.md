@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.4 - 2022-08-29(10:01:15 +0000)
+
+### Other
+
+- - Add endpoint create/destroy hook apis
+
 ## Release v1.7.3 - 2022-08-29(09:05:17 +0000)
 
 ### Other
