@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.6 - 2022-08-29(12:52:50 +0000)
+
+### Other
+
+- emit the radio status changed event
+
 ## Release v1.7.5 - 2022-08-29(11:31:46 +0000)
 
 ### Other
