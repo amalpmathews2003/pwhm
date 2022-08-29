@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.3 - 2022-08-29(09:05:17 +0000)
+
+### Other
+
+- [pWHM] getLastAssocReq api adjustment
+
 ## Release v1.7.2 - 2022-08-26(16:53:40 +0000)
 
 ### Other
