@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.5 - 2022-08-29(11:31:46 +0000)
+
+### Other
+
+- : Station statistic histograms
+
 ## Release v1.7.4 - 2022-08-29(10:01:15 +0000)
 
 ### Other
