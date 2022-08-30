@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.8 - 2022-08-30(17:11:36 +0000)
+
+### Other
+
+- Add FortyMHz Intolerant bit in datamodel per STA
+
 ## Release v1.7.7 - 2022-08-30(17:04:52 +0000)
 
 ### Other
