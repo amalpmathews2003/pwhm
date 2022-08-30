@@ -278,19 +278,29 @@ swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     return SWL_RC_OK;
 }
 
-static void s_cancelWps(void* userData, char* ifName _UNUSED) {
+static void s_wpsCancel(void* userData, char* ifName _UNUSED) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_CANCELLED, NULL);
 }
 
-static void s_timeoutWps(void* userData, char* ifName _UNUSED) {
+static void s_wpsTimeout(void* userData, char* ifName _UNUSED) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_TIMEOUT, NULL);
 }
 
-static void s_successWps(void* userData, char* ifName _UNUSED, swl_macChar_t* mac) {
+static void s_wpsSuccess(void* userData, char* ifName _UNUSED, swl_macChar_t* mac) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_SUCCESS, mac->cMac);
+}
+
+static void s_wpsOverlap(void* userData, char* ifName _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_OVERLAP, NULL);
+}
+
+static void s_wpsFail(void* userData, char* ifName _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_FAILURE, NULL);
 }
 
 static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
@@ -378,9 +388,11 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     memset(&wpaCtrlVapEvtHandlers, 0, sizeof(wpaCtrlVapEvtHandlers));
 
     //Set here the wpa_ctrl VAP event handlers
-    wpaCtrlVapEvtHandlers.fWpsCancelMsg = s_cancelWps;
-    wpaCtrlVapEvtHandlers.fWpsTimeoutMsg = s_timeoutWps;
-    wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_successWps;
+    wpaCtrlVapEvtHandlers.fWpsCancelMsg = s_wpsCancel;
+    wpaCtrlVapEvtHandlers.fWpsTimeoutMsg = s_wpsTimeout;
+    wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_wpsSuccess;
+    wpaCtrlVapEvtHandlers.fWpsOverlapMsg = s_wpsOverlap;
+    wpaCtrlVapEvtHandlers.fWpsFailMsg = s_wpsFail;
     wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
     wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;

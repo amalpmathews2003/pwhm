@@ -269,7 +269,9 @@ int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
     }
     return 0;
 }
-int wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set) {
+
+swl_rc_ne wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set) {
+    swl_rc_ne rc;
     if(!(set & SET)) {
         if((set & GET) && (val != NULL) && (bufsize > 64)) {
             snprintf(val, bufsize, "wps_configured=%s; wps_configmethod=%x",
@@ -277,46 +279,76 @@ int wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set) {
                      pAP->WPS_ConfigMethodsEnabled);
         }
 
-        return WLD_OK;
+        return SWL_RC_OK;
     }
 
     // When SSID is hided... we don't start WPS but STOP as escape...
     if(!pAP->SSIDAdvertisementEnabled || swl_str_matches(val, "STOP")) {
-        wld_ap_hostapd_stopWps(pAP);
+        rc = wld_ap_hostapd_stopWps(pAP);
+        ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to stop wps session", pAP->alias);
         wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_CANCELLED, NULL);
-        return WLD_OK;
+        return SWL_RC_OK;
     }
 
-
-    uint32_t iPIN = 0;
-
-    /* First check for Client PIN? (if a pin is given it's client pin!) */
-    if(!swl_str_isEmpty(val) && (pAP->WPS_ConfigMethodsEnabled & (APWPSCMS_LABEL | APWPSCMS_DISPLAY))) {
-
-        // PIN can be 4 digits long, so using a sprintf %08d does not work (problems with certif)
-        char* pCh = strchr(val, '=');
-        if(pCh != NULL) {
-            iPIN = atoi(pCh + 1); //I use it anyway to verify that val is a numeric argument, thus a PIN
-        } else {
-            iPIN = atoi(val);
-        }
-
-        if(iPIN != 0) {
-            /* client PIN scenario */
-
-            wld_ap_hostapd_startWpsPin(pAP, iPIN);
-            wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_READY, WPS_CAUSE_START_WPS_PIN, NULL);
-        } else {
-            SAH_TRACEZ_ERROR(ME, "%s: pin invalid -%s-", pAP->alias, val);
-            return WLD_ERROR;
-        }
-
-    } else if(pAP->WPS_ConfigMethodsEnabled & APWPSCMS_PBC) {
-        wld_ap_hostapd_startWps(pAP);
+    /*
+     * Empty val or asking for supported one of PushButton methods: start PBC
+     */
+    if(((swl_str_isEmpty(val)) ||
+        (swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_PBC))) ||
+        (swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_PBC_P))) ||
+        (swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_PBC_V)))) &&
+       (pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_PBC_ALL))) {
+        rc = wld_ap_hostapd_startWps(pAP);
+        ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to start wps pbc session", pAP->alias);
         //Note, the command to the driver is not sent yet (see set_wps_env below)
         wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_READY, WPS_CAUSE_START_WPS_PBC, NULL);
+        return SWL_RC_OK;
     }
-    return WLD_OK;
+
+    if(!swl_str_isEmpty(val)) {
+        if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_PIN)) {
+            char* clientPIN = NULL;
+            if(swl_str_startsWith(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_PIN))) {
+                char* pCh = strchr(val, '=');
+                ASSERT_NOT_NULL(pCh, SWL_RC_ERROR, ME, "%s: no wps pin in (%s)", pAP->alias, val);
+                pCh++;
+                ASSERT_TRUE(wldu_checkWpsPinStr(pCh), SWL_RC_ERROR, ME, "%s: invalid wps pin in (%s)", pAP->alias, val);
+                clientPIN = pCh;
+            } else if(wldu_checkWpsPinStr(val)) {
+                // when command is a valid PIN (format & value), we assume a WPS client pin request (Keypad)
+                clientPIN = val;
+            }
+            if(clientPIN != NULL) {
+                rc = wld_ap_hostapd_startWpsPin(pAP, clientPIN, WPS_WALK_TIME_DEFAULT);
+                ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to start wps client pin (%s) session", pAP->alias, clientPIN);
+                wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_READY, WPS_CAUSE_START_WPS_PIN, NULL);
+                return SWL_RC_OK;
+            }
+        }
+        if((pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) &&
+           ((swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_LABEL))) ||
+            (swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_DISPLAY))) ||
+            (swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_DISPLAY_P))) ||
+            (swl_str_matches(val, wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_DISPLAY_V))))) {
+            rc = wld_ap_hostapd_setWpsApPin(pAP, pAP->pRadio->wpsConst->DefaultPin, WPS_WALK_TIME_DEFAULT);
+            ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to start wps ap pin session", pAP->alias);
+            //WPS AP Pin is not attached to a pairing session
+            return SWL_RC_OK;
+        }
+        SAH_TRACEZ_ERROR(ME, "%s: unsupported wps sync val (%s)", pAP->alias, val);
+        return SWL_RC_ERROR;
+    }
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wifiGen_vap_wps_enable(T_AccessPoint* pAP, int enable, int set) {
+    /* WPS enabling requires restarting hostapd */
+    if(set & SET) {
+        pAP->WPS_Enable = enable;
+        setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+    }
+
+    return SWL_RC_OK;
 }
 
 int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize _UNUSED, int reason) {

@@ -1418,6 +1418,28 @@ int wpsPinValid(unsigned long PIN) {
     return (0 == (accum % 10));
 }
 
+/*
+ * @brief checks if provided pin string has a valid numerical value
+ * Cf. usp tr181 v2.15.0:
+ * Device PIN used for PIN based pairing between WPS peers.
+ * This PIN is either a four digit number or an eight digit number.
+ * @param pinStr PIN string
+ * @return true when PIN string matches validity criteria (i.e number with 4 or 8 digits)
+ *         false otherwise
+ */
+bool wldu_checkWpsPinStr(const char* pinStr) {
+    ASSERT_STR(pinStr, false, ME, "pin empty");
+    uint32_t pinNum = 0;
+    swl_rc_ne ret = wldu_convStrToNum(pinStr, &pinNum, sizeof(pinNum), 0, false);
+    ASSERTI_EQUALS(ret, SWL_RC_OK, false, ME, "%s is not a number", pinStr);
+    if((swl_str_len(pinStr) != 4) && (swl_str_len(pinStr) != 8)) {
+        SAH_TRACEZ_ERROR(ME, "%s has not required pin length (4 or 8 digits)", pinStr);
+        return false;
+    }
+    ASSERT_TRUE(wpsPinValid(pinNum), false, ME, "%s has invalid pin value", pinStr);
+    return true;
+}
+
 /**
  * Get the uint8 list from a  comma separated string list.
  * @arg srcStrList:  comma separated list of channels
@@ -2137,7 +2159,7 @@ bool bitmask_to_string(amxc_string_t* output, const char** strings, const char s
 
     for(i = 0; strings[i]; i++) {
         bit = 1 << i;
-        if(bitmask & bit) {
+        if((bitmask & bit) && (strings[i][0])) {
             int ret = 0;
             if(amxc_string_is_empty(output) || (separator == '\0')) {
                 ret = amxc_string_append(output, strings[i], strlen(strings[i]));

@@ -733,7 +733,6 @@ amxd_status_t _wld_ap_setWpsConfigMethodsEnabled_pwf(amxd_object_t* object _UNUS
                                                      amxc_var_t* const retval _UNUSED,
                                                      void* priv _UNUSED) {
 
-    uint32_t nv;
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* wifiVap = amxd_object_get_parent(object);
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
@@ -751,11 +750,15 @@ amxd_status_t _wld_ap_setWpsConfigMethodsEnabled_pwf(amxd_object_t* object _UNUS
         const char* StrParm = amxc_var_constcast(cstring_t, args);
         SAH_TRACEZ_INFO(ME, "set WPS ConfigMethodsEnabled %s", StrParm);
         /* convert it to our bit value... */
+        wld_wps_cfgMethod_m nv;
         wld_wps_ConfigMethods_string_to_mask(&nv, StrParm, ',');
-        /* Ignore comparation with virtual bit settings of WPS 2.0 */
-        if(nv && ((nv & APWPSCMS_MASK_WPS10_BITS) != (pAP->WPS_ConfigMethodsEnabled & APWPSCMS_MASK_WPS10_BITS))) {
+        if(nv != pAP->WPS_ConfigMethodsEnabled) {
+            /* Ignore comparation with virtual bit settings of WPS 2.0 */
+            bool needSync = ((!nv) || ((nv & M_WPS_CFG_MTHD_WPS10_ALL) != (pAP->WPS_ConfigMethodsEnabled & M_WPS_CFG_MTHD_WPS10_ALL)));
             pAP->WPS_ConfigMethodsEnabled = nv;
-            wld_ap_doWpsSync(pAP); // Force a resync of the structure (FIX ME)
+            if(needSync) {
+                wld_ap_doWpsSync(pAP);
+            }
         }
     }
 
@@ -1049,10 +1052,6 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsSupported);
 
-        /* If all PIN scenario's are set (Label,Display and KeyPad), we can use the PIN string */
-        if((pAP->WPS_ConfigMethodsSupported & APWPSCMS_PIN) == APWPSCMS_PIN) {
-            amxc_string_appendf(&TBufStr, "PIN");
-        }
         amxd_object_set_cstring_t(wpsObj, "ConfigMethodsSupported", TBufStr.buffer);
 
         /** 'ConfigMethodsEnabled' Comma-separated list of strings.
@@ -1258,8 +1257,8 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         const char* cfgMethods = amxd_object_get_cstring_t(wpsObj, "ConfigMethodsEnabled", NULL);
         wld_wps_ConfigMethods_string_to_mask(&tmp_uint32, cfgMethods, ',');
-        if(pAP->WPS_ConfigMethodsEnabled != (int32_t) tmp_uint32) {
-            pAP->WPS_ConfigMethodsEnabled = (int32_t) tmp_uint32;
+        if(pAP->WPS_ConfigMethodsEnabled != tmp_uint32) {
+            pAP->WPS_ConfigMethodsEnabled = tmp_uint32;
             wld_ap_doWpsSync(pAP);
             commit = true;
         }
@@ -2034,8 +2033,8 @@ T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
     /* In case we've support for them, enable it by default. */
     pAP->UAPSDEnable = (pAP->UAPSDCapability) ? 1 : 0;
     pAP->WMMEnable = (pAP->WMMCapability) ? 1 : 0;
-    pAP->WPS_ConfigMethodsSupported = (APWPSCMS_ETH | APWPSCMS_LABEL | APWPSCMS_DISPLAY | APWPSCMS_PBC | APWPSCMS_PIN);
-    pAP->WPS_ConfigMethodsEnabled = (APWPSCMS_PBC | APWPSCMS_DISPLAY);
+    pAP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
+    pAP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_PIN);
     pAP->WPS_Configured = TRUE;
     pAP->WPS_Enable = 0; /* Disable by default. Only '1' VAP can enable the WPS */
     pAP->defaultDeviceType = DEVICE_TYPE_DATA;

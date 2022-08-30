@@ -72,6 +72,8 @@ typedef void (* wld_wpaCtrl_processMsgCb_f)(void* userData, char* ifName, char* 
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
 typedef void (* wld_wpaCtrl_wpsTimeoutMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCancelMsg_f)(void* userData, char* ifName);
+typedef void (* wld_wpaCtrl_wpsOverlapMsg_f)(void* userData, char* ifName);
+typedef void (* wld_wpaCtrl_wpsFailMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status);
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, uint16_t stype, char* data);
@@ -85,6 +87,8 @@ typedef struct {
     wld_wpaCtrl_wpsSuccessMsg_f fWpsSuccessMsg;
     wld_wpaCtrl_wpsTimeoutMsg_f fWpsTimeoutMsg;
     wld_wpaCtrl_wpsCancelMsg_f fWpsCancelMsg;
+    wld_wpaCtrl_wpsOverlapMsg_f fWpsOverlapMsg; /** WPS overlap detected in PBC mode */
+    wld_wpaCtrl_wpsFailMsg_f fWpsFailMsg;       /** WPS registration failed after M2/M2D */
     wld_wpaCtrl_apStationConnectivityCb_f fApStationConnectedCb;
     wld_wpaCtrl_apStationConnectivityCb_f fApStationDisconnectedCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;

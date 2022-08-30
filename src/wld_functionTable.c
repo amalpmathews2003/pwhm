@@ -218,8 +218,6 @@ DEF_TRAP_int_int(T_AccessPoint, mfn_wvap_enable_uapsd);
 DEF_TRAP_char_int_int(T_AccessPoint, mfn_wvap_ssid);
 DEF_TRAP_int(T_AccessPoint, mfn_wvap_sync);
 DEF_TRAP_int(T_AccessPoint, mfn_wvap_sec_sync);
-DEF_TRAP_char_int_int(T_AccessPoint, mfn_wvap_wps_sync);
-DEF_TRAP_int_int(T_AccessPoint, mfn_wvap_wps_enable);
 DEF_TRAP_int(T_AccessPoint, mfn_wvap_wps_label_pin);
 DEF_TRAP_int_int(T_AccessPoint, mfn_wvap_wps_comp_mode);
 DEF_TRAP_int(T_AccessPoint, mfn_wvap_mf_sync);
@@ -510,6 +508,13 @@ static int TRAP_mfn_wrad_del_stamon(T_Radio* rad _UNUSED, T_NonAssociatedDevice*
     return -1;
 }
 
+static swl_rc_ne TRAP_mfn_wvap_wps_sync(T_AccessPoint* pAP _UNUSED, char* val _UNUSED, int bufsize _UNUSED, int set _UNUSED) {
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wvap_wps_enable(T_AccessPoint* pAP _UNUSED, int enable _UNUSED, int set _UNUSED) {
+    return SWL_RC_NOT_IMPLEMENTED;
+}
 
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 

@@ -71,6 +71,7 @@
 #include <swl/swl_time.h>
 #include <swl/swl_time_spec.h>
 #include <swl/swl_oui.h>
+#include <swl/swl_usp_cmdStatus.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -469,24 +470,6 @@ typedef enum {
 typedef uint32_t wld_ap_td_m;
 extern const char* g_str_wld_ap_td[];
 
-#define APWPSCMS_USBFD            (0x001)
-#define APWPSCMS_ETH              (0x002)
-#define APWPSCMS_LABEL            (0x004)
-#define APWPSCMS_DISPLAY          (0x008)
-#define APWPSCMS_EXTNFCTOKEN      (0x010)
-#define APWPSCMS_INTNFCTOKEN      (0x020)
-#define APWPSCMS_NFCINTF          (0x040)
-#define APWPSCMS_PBC              (0x080)
-#define APWPSCMS_KEYPAD           (0x100)
-#define APWPSCMS_DISPLAY_V       (0x2008)
-#define APWPSCMS_DISPLAY_P       (0x4008)
-#define APWPSCMS_PBC_V            (0x280)
-#define APWPSCMS_PBC_P            (0x480)
-#define APWPSCMS_PIN              (APWPSCMS_KEYPAD | APWPSCMS_DISPLAY | APWPSCMS_LABEL)
-//MC: shall I add the virtual/physical display to the above OR for PIN?
-
-#define APWPSCMS_MASK_WPS10_BITS (0x01FF)
-
 #define DEVICE_TYPE_MAX_NAME_LENGTH 5
 extern const char* cstr_DEVICE_TYPES[];
 enum {
@@ -496,24 +479,49 @@ enum {
     DEVICE_TYPE_MAX,
 };
 
+/*
+ * @brief enum define all WPS configuration methods as per tr-181-2-15-1-usp
+ * They correspond directly to the "Config Methods" attribute of
+ * Wi-Fi_Protected_Setup_Specification_v2.0.8 (Table 33 - Configuration Methods)
+ */
+typedef enum {
+    WPS_CFG_MTHD_USBFD,       // USBA (Flash Drive): Deprecated
+    WPS_CFG_MTHD_ETH,         // Ethernet: Deprecated
+    WPS_CFG_MTHD_LABEL,       // Label: 8 digit static PIN, typically available on device.
+    WPS_CFG_MTHD_DISPLAY,     // Display: A dynamic 4 or 8 digit PIN is available from a display.
+    WPS_CFG_MTHD_EXTNFCTOKEN, // External NFC Token: An NFC Tag is used to transfer the configuration or device password.
+    WPS_CFG_MTHD_INTNFCTOKEN, // Integrated NFC Token: The NFC Tag is integrated in the device.
+    WPS_CFG_MTHD_NFCINTF,     // NFC Interface: The device contains an NFC interface.
+    WPS_CFG_MTHD_PBC,         // Pushbutton: The device contains either a physical or virtual Pushbutton.
+    WPS_CFG_MTHD_PIN,         // same as legacy "Keypad": Device is capable of entering a PIN
+    /* Below enums are only defined in WPS 2.x */
+    WPS_CFG_MTHD_PBC_P,       // Physical Pushbutton: A physical Pushbutton is available on the device.
+    WPS_CFG_MTHD_DISPLAY_P,   // Physical Display PIN: The dynamic 4 or 8 digit PIN is shown on a display/screen that is part of the device.
+    WPS_CFG_MTHD_PBC_V,       // Virtual Pushbutton: Pushbutton functionality is available through a software user interface.
+    WPS_CFG_MTHD_DISPLAY_V,   // Virtual Display PIN: The dynamic 4 or 8 digit PIN is displayed through a remote user interface.
+    WPS_CFG_MTHD_MAX
+} wld_wps_cfgMethod_e;
 
-enum {
-    APWPSCMSI_USBFD,
-    APWPSCMSI_ETH,
-    APWPSCMSI_LABEL,
-    APWPSCMSI_DISPLAY,
-    APWPSCMSI_EXTNFCTOKEN,
-    APWPSCMSI_INTNFCTOKEN,
-    APWPSCMSI_NFCINTF,
-    APWPSCMSI_PBC,
-    APWPSCMSI_KEYPAD,
-    APWPSCMSI_DISPLAY_V,
-    APWPSCMSI_DISPLAY_P,
-    APWPSCMSI_PBC_V,
-    APWPSCMSI_PBC_P,
-    APWPSCMSI_PIN,
-    APWPSCMSI_UNKNOWN
-};
+#define M_WPS_CFG_MTHD_USBFD (SWL_BIT_SHIFT(WPS_CFG_MTHD_USBFD))
+#define M_WPS_CFG_MTHD_ETH (SWL_BIT_SHIFT(WPS_CFG_MTHD_ETH))
+#define M_WPS_CFG_MTHD_LABEL (SWL_BIT_SHIFT(WPS_CFG_MTHD_LABEL))
+#define M_WPS_CFG_MTHD_DISPLAY (SWL_BIT_SHIFT(WPS_CFG_MTHD_DISPLAY))
+#define M_WPS_CFG_MTHD_EXTNFCTOKEN (SWL_BIT_SHIFT(WPS_CFG_MTHD_EXTNFCTOKEN))
+#define M_WPS_CFG_MTHD_INTNFCTOKEN (SWL_BIT_SHIFT(WPS_CFG_MTHD_INTNFCTOKEN))
+#define M_WPS_CFG_MTHD_NFCINTF (SWL_BIT_SHIFT(WPS_CFG_MTHD_NFCINTF))
+#define M_WPS_CFG_MTHD_PBC (SWL_BIT_SHIFT(WPS_CFG_MTHD_PBC))
+#define M_WPS_CFG_MTHD_PIN (SWL_BIT_SHIFT(WPS_CFG_MTHD_PIN))
+#define M_WPS_CFG_MTHD_PBC_P (SWL_BIT_SHIFT(WPS_CFG_MTHD_PBC_P))
+#define M_WPS_CFG_MTHD_DISPLAY_P (SWL_BIT_SHIFT(WPS_CFG_MTHD_DISPLAY_P))
+#define M_WPS_CFG_MTHD_PBC_V (SWL_BIT_SHIFT(WPS_CFG_MTHD_PBC_V))
+#define M_WPS_CFG_MTHD_DISPLAY_V (SWL_BIT_SHIFT(WPS_CFG_MTHD_DISPLAY_V))
+
+#define M_WPS_CFG_MTHD_PBC_ALL (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_PBC_P | M_WPS_CFG_MTHD_PBC_V)
+#define M_WPS_CFG_MTHD_DISPLAY_ALL (M_WPS_CFG_MTHD_DISPLAY | M_WPS_CFG_MTHD_DISPLAY_P | M_WPS_CFG_MTHD_DISPLAY_V)
+// All WPS 1.x config method flags
+#define M_WPS_CFG_MTHD_WPS10_ALL (M_WPS_CFG_MTHD_PBC_P - 1)
+
+typedef swl_mask_m wld_wps_cfgMethod_m;
 
 extern const char* cstr_AP_WPS_VERSUPPORTED[];
 enum {
@@ -1598,19 +1606,19 @@ struct S_ACCESSPOINT {
     char radiusCalledStationId[88];
     int radiusChargeableUserId;
 
-    int WPS_CertMode;                            /* Correct default behavior for Certification Mode */
-    int WPS_Enable;                              /* WPS enabled? */
-    int WPS_Status;                              /* WPS real status  */
-    int WPS_Registrar;                           /* Enable the Registrar */
-    int WPS_ConfigMethodsSupported;              /* bit pattern mode */
-    int WPS_ConfigMethodsEnabled;                /* (bit pattern) current mode enabled */
-    int WPS_Configured;                          /* Not in ODL but required */
-    bool WPS_PairingInProgress;                  /* bool representing whether pairing is in progress */
-    char WPS_ClientPIN[16];                      /* Client PIN used for this VAP */
-    struct S_WPS_pushButton_Delay WPS_PBC_Delay; /* PushButton delay, commit running */
-    wld_wpsSessionInfo_t wpsSessionInfo;         /* WPS session context (with safety timer, to close session beyond WPS walk time) */
-    bool addRelayApCredentials;                  /* Use relay accesspoint as WPS credentials */
-    bool wpsRestartOnRequest;                    /* bool representing whether restarting wps within a wps session is allowed */
+    int WPS_CertMode;                               /* Correct default behavior for Certification Mode */
+    int WPS_Enable;                                 /* WPS enabled? */
+    int WPS_Status;                                 /* WPS real status  */
+    int WPS_Registrar;                              /* Enable the Registrar */
+    wld_wps_cfgMethod_m WPS_ConfigMethodsSupported; /* bit mask of supported wps config methods */
+    wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;   /* bit mask of enabled wps config methods */
+    int WPS_Configured;                             /* Not in ODL but required */
+    bool WPS_PairingInProgress;                     /* bool representing whether pairing is in progress */
+    char WPS_ClientPIN[16];                         /* Client PIN used for this VAP */
+    struct S_WPS_pushButton_Delay WPS_PBC_Delay;    /* PushButton delay, commit running */
+    wld_wpsSessionInfo_t wpsSessionInfo;            /* WPS session context (with safety timer, to close session beyond WPS walk time) */
+    bool addRelayApCredentials;                     /* Use relay accesspoint as WPS credentials */
+    bool wpsRestartOnRequest;                       /* bool representing whether restarting wps within a wps session is allowed */
 
     T_HotSpot2 HotSpot2;
     int CurrentAssociatedDevice;
@@ -1719,21 +1727,21 @@ struct S_EndPoint {
     T_EndPointProfile* currentProfile;
     amxc_llist_t llProfiles;
 
-    T_SSID* pSSID;                        /* Contains a direct pointer to the created SSID for this VAP */
-    T_Radio* pRadio;                      /* Contains a direct pointer to the parent of this VAP */
+    T_SSID* pSSID;                                  /* Contains a direct pointer to the created SSID for this VAP */
+    T_Radio* pRadio;                                /* Contains a direct pointer to the parent of this VAP */
 
-    wld_securityMode_m secModesSupported; /* Bit pattern for supported security modes */
+    wld_securityMode_m secModesSupported;           /* Bit pattern for supported security modes */
 
-    bool WPS_Enable;                      /* WPS enabled? */
-    int WPS_Configured;                   /* Not in ODL but required */
-    int WPS_ConfigMethodsSupported;       /* bit pattern mode */
-    int WPS_ConfigMethodsEnabled;         /* (bit pattern) current mode enabled */
-    bool WPS_PairingInProgress;           /* bool representing whether pairing is in progress */
-    char WPS_ClientPIN[16];               /* Client PIN used for this VAP */
-    T_WPS_pushButton_Delay WPS_PBC_Delay; /* To delay the push button when state machine not idle */
-    wld_wpsSessionInfo_t wpsSessionInfo;  /* WPS session context (with safety timer, to close session beyond WPS walk time) */
-    uint32_t reconnect_count;             /* Amount of reconnect retries currently done */
-    uint32_t reconnect_rad_trigger;       /* Amount of reconnect retries before toggling the radio */
+    bool WPS_Enable;                                /* WPS enabled? */
+    int WPS_Configured;                             /* Not in ODL but required */
+    wld_wps_cfgMethod_m WPS_ConfigMethodsSupported; /* bit mask of supported wps config methods */
+    wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;   /* bit mask of enabled wps config methods */
+    bool WPS_PairingInProgress;                     /* bool representing whether pairing is in progress */
+    char WPS_ClientPIN[16];                         /* Client PIN used for this VAP */
+    T_WPS_pushButton_Delay WPS_PBC_Delay;           /* To delay the push button when state machine not idle */
+    wld_wpsSessionInfo_t wpsSessionInfo;            /* WPS session context (with safety timer, to close session beyond WPS walk time) */
+    uint32_t reconnect_count;                       /* Amount of reconnect retries currently done */
+    uint32_t reconnect_rad_trigger;                 /* Amount of reconnect retries before toggling the radio */
 
     int enable;
     T_FSM fsm;
@@ -1823,7 +1831,7 @@ typedef struct {
     swl_radioStandard_m operatingStandards;
 
     wld_securityMode_e secModeEnabled;
-    uint32_t WPS_ConfigMethodsEnabled;
+    wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;
     uint32_t WPS_PBC_Active;
     bool adhoc;
     int32_t linkrate;
@@ -1960,8 +1968,8 @@ typedef int (APIENTRY* PFN_WVAP_VAP_ENABLE_UAPSD)(T_AccessPoint* vap, int enable
 typedef int (APIENTRY* PFN_WVAP_VAP_SSID)(T_AccessPoint* vap, char* buf, int bufsize, int set);
 typedef int (APIENTRY* PFN_WVAP_SYNC)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_SEC_SYNC)(T_AccessPoint* vap, int set);
-typedef int (APIENTRY* PFN_WVAP_WPS_SYNC)(T_AccessPoint* vap, char* val, int bufsize, int set);
-typedef int (APIENTRY* PFN_WVAP_WPS_ENABLE)(T_AccessPoint* vap, int enable, int set);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_WPS_SYNC)(T_AccessPoint* vap, char* val, int bufsize, int set);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_WPS_ENABLE)(T_AccessPoint* vap, int enable, int set);
 typedef int (APIENTRY* PFN_WVAP_WPS_LABEL_PIN)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_WPS_COMP_MODE)(T_AccessPoint* vap, int val, int set);
 typedef int (APIENTRY* PFN_WVAP_MF_SYNC)(T_AccessPoint* vap, int set);

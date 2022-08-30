@@ -3361,7 +3361,7 @@ amxd_status_t _checkWPSPIN(amxd_object_t* obj _UNUSED,
     stripOutToken(pinModified, " ");
     if(sscanf(pinModified, "%lu", &PIN) == 1) {
         SAH_TRACEZ_INFO(ME, "PIN: %s %lu", pinModified, PIN);
-        ret = wpsPinValid(PIN);
+        ret = wldu_checkWpsPinStr(pinModified);
     } else {
         SAH_TRACEZ_ERROR(ME, "PIN: '%s' sscanf did not return 1", pinModified);
     }

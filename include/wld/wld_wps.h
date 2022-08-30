@@ -89,9 +89,11 @@
 #define WPS_FAILURE_INVALID_PIN "Sta pin invalid"
 #define WPS_FAILURE_CREDENTIALS "Failed to retrieve credentials"
 
+// Default WPS session walk time
+#define WPS_WALK_TIME_DEFAULT 120
 //Safety WPS session timer: only used if session timeout is not notified by backend (driver).
 //expiration time: added margin to default WPS walk time
-#define WPS_SESSION_TIMEOUT (120 + 10)
+#define WPS_SESSION_TIMEOUT (WPS_WALK_TIME_DEFAULT + 10)
 
 typedef struct {
     char ssid[SSID_NAME_LEN];
@@ -99,10 +101,11 @@ typedef struct {
     char key[PSK_KEY_SIZE_LEN];
 } T_WPSCredentials;
 
-const char* wld_wps_ConfigMethod_to_string(const int value);
-bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const uint32_t WPS_ConfigMethodsEnabled);
-bool wld_wps_ConfigMethods_string_to_mask(uint32_t* output, const char* input, const char separator);
-void wld_wps_pushButton_reply(uint64_t call_id, bool error);
+const char* wld_wps_ConfigMethod_to_string(wld_wps_cfgMethod_e value);
+bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const wld_wps_cfgMethod_m configMethods);
+bool wld_wps_ConfigMethods_mask_to_charBuf(char* string, size_t stringsize, const wld_wps_cfgMethod_m configMethods);
+bool wld_wps_ConfigMethods_string_to_mask(wld_wps_cfgMethod_m* output, const char* input, const char separator);
+void wld_wps_pushButton_reply(uint64_t call_id, swl_usp_cmdStatus_ne cmdStatus);
 
 //FOR INTERNAL USE ONLY
 void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const char* reason, const char* macAddress, T_WPSCredentials* credentials);

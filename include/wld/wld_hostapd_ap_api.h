@@ -95,7 +95,33 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_enableVap(T_AccessPoint* pAP, bool enable
 swl_rc_ne wld_ap_hostapd_kickStation(T_AccessPoint* pAP, swl_macBin_t* mac, swl_IEEE80211deauthReason_ne reason);
 swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs_t* params);
 swl_rc_ne wld_ap_hostapd_startWps(T_AccessPoint* pAP);
-swl_rc_ne wld_ap_hostapd_startWpsPin(T_AccessPoint* pAP, uint32_t pin);
+
+/*
+ * @brief start a WPS client PIN session, to pair against a remote device.
+ *
+ * @param pAP accesspoint
+ * @param pin numerical string of 4 or 8 digits (Cf. WPS 2.x)
+ *            that can even start with sequence of zero digit.
+ * @param timeout Time (in seconds) when the PIN will be invalidated; 0 = no timeout
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_hostapd_startWpsPin(T_AccessPoint* pAP, const char* pin, uint32_t timeout);
+
+/*
+ * @brief start a WPS AP Pin session, allowing a remote device to pair.
+ *
+ * @param pAP accesspoint
+ * @param pin numerical string of 4 or 8 digits (Cf. WPS 2.x)
+ *            that can even start with sequence of zero digit
+ * @param timeout Time (in seconds) when the AP PIN will be disabled; 0 = no timeout
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_hostapd_setWpsApPin(T_AccessPoint* pAP, const char* pin, uint32_t timeout);
+
 swl_rc_ne wld_ap_hostapd_stopWps(T_AccessPoint* pAP);
 swl_rc_ne wld_ap_hostapd_delAllMacFilteringEntries(T_AccessPoint* pAP);
 swl_rc_ne wld_ap_hostapd_setMacFilteringList(T_AccessPoint* pAP);

@@ -70,10 +70,27 @@
 
 #define ME "hapdCfg"
 
-const char* wld_hostapd_wpsConfigMethods[] = { "usba", "ethernet", "label", "display", "ext_nfc_token", "int_nfc_token",
-    "nfc_interface", "push_button", "keypad", "virtual_display", "physical_display", "virtual_push_button",
-    "physical_push_button", "PIN",
-    0};
+/*
+ * @brief names of all WPS configuration methods supported by hostapd
+ * matching WPS v2.0 Config Methods
+ * */
+static const char* s_hostapd_WPS_configMethods_str[] = {
+    "usba",
+    "ethernet",
+    "label",
+    "display",
+    "ext_nfc_token",
+    "int_nfc_token",
+    "nfc_interface",
+    "push_button",
+    "keypad",
+    "physical_push_button",
+    "physical_display",
+    "virtual_push_button",
+    "virtual_display",
+    0,
+};
+SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_hostapd_WPS_configMethods_str) == (WPS_CFG_MTHD_MAX + 1), "s_hostapd_WPS_configMethods_str not correctly defined");
 
 static bool s_checkSGI(T_Radio* pRad, int guardInterval _UNUSED) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
@@ -608,14 +625,15 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
     amxc_string_t configMethodsStr;
     amxc_string_init(&configMethodsStr, 0);
-    bitmask_to_string(&configMethodsStr, wld_hostapd_wpsConfigMethods, ' ', pAP->WPS_ConfigMethodsEnabled);
+    bitmask_to_string(&configMethodsStr, s_hostapd_WPS_configMethods_str, ' ', pAP->WPS_ConfigMethodsEnabled);
     if(!amxc_string_is_empty(&configMethodsStr)) {
         swl_mapChar_add(vapConfigMap, "config_methods", (char*) configMethodsStr.buffer);
     }
     amxc_string_clean(&configMethodsStr);
 
     swl_mapChar_add(vapConfigMap, "wps_cred_processing", pAP->WPS_Configured ? "2" : "0");
-    if(pAP->WPS_Enable && (pAP->WPS_ConfigMethodsEnabled & (APWPSCMS_KEYPAD | APWPSCMS_DISPLAY))) {
+    //Label: STATIC 8 digit PIN, typically available on device.
+    if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL)) {
         swl_mapChar_add(vapConfigMap, "ap_pin", pRad->wpsConst->DefaultPin);
     }
     swl_mapChar_add(vapConfigMap, "wps_rf_bands", "ag");

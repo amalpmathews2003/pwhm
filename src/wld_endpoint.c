@@ -109,15 +109,6 @@ const char* cstr_EndPoint_lastError[] = {"None", "SSID_Not_Found", "Invalid_Pass
 /* Possible EndpointProfile Status values */
 const char* cstr_EndPointProfile_status[] = {"Active", "Available", "Error", "Disabled", NULL};
 
-
-/* All the WPS features that are possible */
-const char* cstr_EndPoint_WPS_CM_Supported[] = {"USBFlashDrive", "Ethernet", "Label", "Display",
-    "ExternalNFCToken", "IntegratedNFCToken", "NFCInterface",
-    "PushButton", "Keypad",
-    "VirtualPushButton", "PhysicalPushButton", "VirtualDisplay", "PhysicalDisplay",                                       /*WPS 2.0*/
-    "PIN",
-    0};
-
 int32_t wld_endpoint_isProfileIdentical(T_EndPointProfile* currentProfile, T_EndPointProfile* newProfile) {
     ASSERTS_NOT_NULL(currentProfile, LFALSE, ME, "currentProfile is NULL");
     ASSERTS_NOT_NULL(newProfile, LFALSE, ME, "newProfile is NULL");
@@ -599,8 +590,8 @@ void setEndPointDefaults(T_EndPoint* pEP, const char* endpointname, const char* 
 
     pEP->WPS_Enable = true;
 
-    pEP->WPS_ConfigMethodsSupported = (APWPSCMS_ETH | APWPSCMS_LABEL | APWPSCMS_DISPLAY | APWPSCMS_PBC | APWPSCMS_PIN);
-    pEP->WPS_ConfigMethodsEnabled = (APWPSCMS_PBC | APWPSCMS_DISPLAY);
+    pEP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
+    pEP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_DISPLAY);
     pEP->secModesSupported = 0;
     pEP->secModesSupported |= (pEP->pFA->mfn_misc_has_support(pEP->pRadio, NULL, "WEP", 0)) ?
         (APMS_WEP64 | APMS_WEP128 | APMS_WEP128IV) : 0;
@@ -1251,14 +1242,10 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
     amxd_object_t* wpsObj = amxd_object_findf(object, "WPS");
     amxd_object_set_int32_t(wpsObj, "Enable", pEP->WPS_Enable);
 
-    wld_bitmaskToCSValues(TBuf, sizeof(TBuf), pEP->WPS_ConfigMethodsSupported, cstr_EndPoint_WPS_CM_Supported);
-    /* If all PIN scenario's are set (Label,Display and KeyPad), we can use the PIN string */
-    if((pEP->WPS_ConfigMethodsSupported & APWPSCMS_PIN) == APWPSCMS_PIN) {
-        wldu_catStr(TBuf, ",PIN", sizeof(TBuf));
-    }
+    wld_wps_ConfigMethods_mask_to_charBuf(TBuf, sizeof(TBuf), pEP->WPS_ConfigMethodsSupported);
     amxd_object_set_cstring_t(wpsObj, "ConfigMethodsSupported", TBuf);
 
-    wld_bitmaskToCSValues(TBuf, sizeof(TBuf), pEP->WPS_ConfigMethodsEnabled, cstr_EndPoint_WPS_CM_Supported);
+    wld_wps_ConfigMethods_mask_to_charBuf(TBuf, sizeof(TBuf), pEP->WPS_ConfigMethodsEnabled);
     amxd_object_set_cstring_t(wpsObj, "ConfigMethodsEnabled", TBuf);
 }
 
@@ -1380,7 +1367,7 @@ amxd_status_t _EndPoint_pushButton(amxd_object_t* obj,
     if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
         if(pEP->WPS_PBC_Delay.timer) {
             //Need to cancel the previous request and replace with the current one
-            wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, true);
+            wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, SWL_USP_CMD_STATUS_ERROR_TIMEOUT);
             pEP->WPS_PBC_Delay.call_id = call_id;
             pEP->WPS_PBC_Delay.args = args;
         } else {
@@ -1394,7 +1381,7 @@ amxd_status_t _EndPoint_pushButton(amxd_object_t* obj,
     } else {
         if(pEP->WPS_PBC_Delay.timer) {
             amxp_timer_delete(&pEP->WPS_PBC_Delay.timer);
-            wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, true);
+            wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, SWL_USP_CMD_STATUS_ERROR_TIMEOUT);
             pEP->WPS_PBC_Delay.call_id = 0;
             pEP->WPS_PBC_Delay.args = NULL;
             pEP->WPS_PBC_Delay.timer = NULL;
@@ -1465,7 +1452,7 @@ amxd_status_t _EndPoint_cancelPairing(amxd_object_t* epObject,
     // If a timer is running... stop and destroy it also.
     if(pEP->WPS_PBC_Delay.timer) {
         amxp_timer_delete(&pEP->WPS_PBC_Delay.timer);
-        wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, true);
+        wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, SWL_USP_CMD_STATUS_ERROR_TIMEOUT);
         pEP->WPS_PBC_Delay.call_id = 0;
         pEP->WPS_PBC_Delay.args = NULL;
         pEP->WPS_PBC_Delay.timer = NULL;
@@ -1849,7 +1836,7 @@ void endpointReconfigure(T_EndPoint* pEP) {
 static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata) {
     SAH_TRACEZ_IN(ME);
 
-    bool error = false;
+    swl_usp_cmdStatus_ne cmdStatus = SWL_USP_CMD_STATUS_SUCCESS;
     T_EndPoint* pEP = userdata;
     T_Radio* pR = pEP->pRadio;
     if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
@@ -1863,15 +1850,15 @@ static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* use
     if(pEP->enable && pEP->WPS_Enable && (wld_rad_hasOnlyActiveEP(pR) || (pR->status == RST_UP))) {
         int ret = endpoint_wps_start(pEP, pEP->WPS_PBC_Delay.call_id, pEP->WPS_PBC_Delay.args);
         if(ret) {
-            error = true;
+            cmdStatus = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
         }
     } else {
         SAH_TRACEZ_ERROR(ME, "Radio condition not ok, endpoint not enabled or WPS not enabled");
-        error = true;
+        cmdStatus = SWL_USP_CMD_STATUS_ERROR_OTHER;
     }
 
     amxp_timer_delete(&timer);
-    wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, error);
+    wld_wps_pushButton_reply(pEP->WPS_PBC_Delay.call_id, cmdStatus);
     pEP->WPS_PBC_Delay.call_id = 0;
     pEP->WPS_PBC_Delay.args = NULL;
     pEP->WPS_PBC_Delay.timer = NULL;
@@ -1888,9 +1875,9 @@ static int endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_va
 
     int method;
     if(pin) {
-        method = APWPSCMSI_PIN;
+        method = WPS_CFG_MTHD_PIN;
     } else {
-        method = APWPSCMSI_PBC;
+        method = WPS_CFG_MTHD_PBC;
     }
 
     return pEP->pFA->mfn_wendpoint_wps_start(pEP, method, (char*) pin, (char*) ssid, (char*) bssid);

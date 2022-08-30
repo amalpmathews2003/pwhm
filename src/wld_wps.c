@@ -77,19 +77,27 @@
 
 #define ME "wps"
 
-static const char* cstr_AP_WPS_CM_Supported[] = {"USBFlashDrive", "Ethernet", "Label", "Display",
-    "ExternalNFCToken", "IntegratedNFCToken", "NFCInterface",
-    "PushButton", "Keypad",
-    "VirtualPushButton", "PhysicalPushButton", "VirtualDisplay", "PhysicalDisplay",                                        /*WPS 2.0*/
+/*
+ * @brief names of all WPS configuration methods as per tr-181-2-15-1-usp
+ * Device.WiFi.AccessPoint.{i}.WPS.ConfigMethodsSupported
+ * */
+static const char* cstr_WPS_CM_Supported[] = {
+    "USBFlashDrive",
+    "Ethernet",
+    "Label",
+    "Display",
+    "ExternalNFCToken",
+    "IntegratedNFCToken",
+    "NFCInterface",
+    "PushButton",
     "PIN",
-    0};
-
-static const uint32_t ci_AP_WPS_CM_Supported[] = {APWPSCMS_USBFD, APWPSCMS_ETH, APWPSCMS_LABEL, APWPSCMS_DISPLAY,
-    APWPSCMS_EXTNFCTOKEN, APWPSCMS_INTNFCTOKEN, APWPSCMS_NFCINTF,
-    APWPSCMS_PBC, APWPSCMS_KEYPAD,
-    APWPSCMS_PBC_V, APWPSCMS_PBC_P, APWPSCMS_DISPLAY_V, APWPSCMS_DISPLAY_P,                                   /*WPS 2.0*/
-    APWPSCMS_PIN,
-    0};
+    "PhysicalPushButton",
+    "PhysicalDisplay",
+    "VirtualPushButton",
+    "VirtualDisplay",
+    0,
+};
+SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(cstr_WPS_CM_Supported) == (WPS_CFG_MTHD_MAX + 1), "cstr_WPS_CM_Supported not correctly defined");
 
 const char* cstr_AP_WPS_VERSUPPORTED[] = {"AUTO", "Auto", "auto", "1.0", "1", "2.0", "2",
     0};
@@ -103,7 +111,7 @@ const int ci_AP_WPS_VERSUPPORTED[] = {
 
 amxd_status_t doCancelPairing(amxd_object_t* object) {
     T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(object)->priv;
-    char strbuf[5] = "STOP";
+    char strbuf[] = "STOP";
     // If a timer is running... stop and destroy it also.
     if(pAP->WPS_PBC_Delay.timer) {
         amxp_timer_delete(&pAP->WPS_PBC_Delay.timer);
@@ -111,47 +119,57 @@ amxd_status_t doCancelPairing(amxd_object_t* object) {
         pAP->WPS_PBC_Delay.intf.vap = NULL;
     }
     wld_wps_clearPairingTimer(&pAP->wpsSessionInfo);
-    pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, 5, amxd_status_ok);
+    pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, SWL_ARRAY_SIZE(strbuf), SET);
 
     SAH_TRACEZ_ERROR(ME, "WPS cancel %s", pAP->alias);
     return amxd_status_ok;
 }
 
-const char* wld_wps_ConfigMethod_to_string(const int value) {
-    return cstr_AP_WPS_CM_Supported[value];
+const char* wld_wps_ConfigMethod_to_string(wld_wps_cfgMethod_e value) {
+    ASSERT_TRUE(value < WPS_CFG_MTHD_MAX, "", ME, "invalid %d", value);
+    return cstr_WPS_CM_Supported[value];
 }
 
-bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const uint32_t ConfigMethods) {
-    if(ConfigMethods == 0) {
+bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const wld_wps_cfgMethod_m configMethods) {
+    ASSERTS_NOT_NULL(output, false, ME, "NULL");
+    if(configMethods == 0) {
         amxc_string_clean(output);
         amxc_string_appendf(output, "None");
         return true;
     }
-    return bitmask_to_string(output, cstr_AP_WPS_CM_Supported, ',', ConfigMethods);
+    return bitmask_to_string(output, cstr_WPS_CM_Supported, ',', configMethods);
 }
 
-bool wld_wps_ConfigMethods_string_to_mask(uint32_t* output, const char* input, const char separator) {
-    return string_to_bitmask(output, input, cstr_AP_WPS_CM_Supported, NULL, separator);
+bool wld_wps_ConfigMethods_mask_to_charBuf(char* string, size_t stringsize, const wld_wps_cfgMethod_m configMethods) {
+    return swl_conv_maskToChar(string, stringsize, configMethods, cstr_WPS_CM_Supported, WPS_CFG_MTHD_MAX);
 }
 
-bool wld_wps_ConfigMethods_from_string(const char* dsv_string, int* WPS_ConfigMethodsEnabled) {
-    int i;
-    int nv = 0;
-    if(!dsv_string || !WPS_ConfigMethodsEnabled) {
-        return false;
-    }
-
-    for(i = 0; cstr_AP_WPS_CM_Supported[i]; i++) {
-        if(strstr(dsv_string, cstr_AP_WPS_CM_Supported[i])) {
-            nv |= (ci_AP_WPS_CM_Supported[i]);
-        }
-    }
-    (*WPS_ConfigMethodsEnabled) = nv;
+bool wld_wps_ConfigMethods_string_to_mask(wld_wps_cfgMethod_m* output, const char* input, const char separator) {
+    ASSERTS_NOT_NULL(output, false, ME, "NULL");
+    *output = swl_conv_charToMaskSep(input, cstr_WPS_CM_Supported, WPS_CFG_MTHD_MAX, separator, NULL);
     return true;
 }
 
-void wld_wps_pushButton_reply(uint64_t call_id, bool error) {
-    amxd_function_deferred_done(call_id, error ? amxd_status_unknown_error : amxd_status_ok, NULL, NULL);
+static amxd_status_t s_setCommandReply(amxc_var_t* retval, swl_usp_cmdStatus_ne cmdStatus, amxd_status_t defRc) {
+    amxd_status_t rc = amxd_status_ok;
+    if(amxc_var_add_key(cstring_t, retval, "Status", swl_uspCmdStatus_toString(cmdStatus)) == NULL) {
+        /*
+         * If failing to add command status, then return amx error
+         * otherwise return amx success to allow returning the filled retval variant
+         * including the status (potentially error) description
+         */
+        rc = defRc;
+    }
+    return rc;
+}
+
+void wld_wps_pushButton_reply(uint64_t call_id, swl_usp_cmdStatus_ne cmdStatus) {
+    amxc_var_t retval;
+    amxc_var_init(&retval);
+    amxc_var_set_type(&retval, AMXC_VAR_ID_HTABLE);
+    amxd_status_t rc = s_setCommandReply(&retval, cmdStatus, amxd_status_unknown_error);
+    amxd_function_deferred_done(call_id, rc, NULL, &retval);
+    amxc_var_clean(&retval);
 }
 
 void wld_wps_clearPairingTimer(wld_wpsSessionInfo_t* pCtx) {
@@ -499,7 +517,6 @@ amxd_status_t _wld_wps_setUUID(amxd_object_t* object _UNUSED,
 static void wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata) {
     T_AccessPoint* pAP = (T_AccessPoint*) userdata;
     T_Radio* pR = (T_Radio*) pAP->pRadio;
-    bool error = false;
 
     SAH_TRACEZ_IN(ME);
 
@@ -508,26 +525,29 @@ static void wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata) {
         // 1 sec is clearly too short! some services are active after 5 sec...
         // Even the link is marked as active. Safety we take 10 sec!
         amxp_timer_start(timer, 10000);
+        SAH_TRACEZ_WARNING(ME, "%s: WPS (%s) Start delayed again", pAP->alias, pAP->WPS_PBC_Delay.val);
         SAH_TRACEZ_OUT(ME);
         return;
     }
 
+    swl_usp_cmdStatus_ne cmdStatus;
     if(((pR->status != RST_UP) || (pAP->status != APSTI_ENABLED))) {
         SAH_TRACEZ_ERROR(ME, "WPS PBC not executed because radio/AP is down");
-        error = true;
+        cmdStatus = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
     } else {
         pAP->pFA->mfn_wvap_wps_sync(
             (T_AccessPoint*) pAP->WPS_PBC_Delay.intf.vap,
             (char*) pAP->WPS_PBC_Delay.val,
             pAP->WPS_PBC_Delay.bufsize,
             pAP->WPS_PBC_Delay.setAct);
+        cmdStatus = SWL_USP_CMD_STATUS_SUCCESS;
     }
 
     amxp_timer_delete(&timer);
     pAP->WPS_PBC_Delay.timer = NULL;
     pAP->WPS_PBC_Delay.intf.vap = NULL;
 
-    wld_wps_pushButton_reply(pAP->WPS_PBC_Delay.call_id, error);
+    wld_wps_pushButton_reply(pAP->WPS_PBC_Delay.call_id, cmdStatus);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -574,156 +594,171 @@ amxd_status_t _setCompatibilityWPS(amxd_object_t* object,
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
+
 /**
- * This function will start the Registrar procedure for
- * Pushbutton and Client-PIN method. If the WPS configmethod
- * isn't set on PUSH_BUTTON it will start the Registrar (2min)
- * session for SELF-PIN method! Note the function must be called
- * from a given AP (vap) and the WPS configuration must be
- * commit'ed ! string clientPIN
+ * This function will start the WPS session
+ * for given AP (vap) (WPS configuration methods already matched)
  */
-amxd_status_t _AccessPoint_pushButton(amxd_object_t* object,
-                                      amxd_function_t* func _UNUSED,
-                                      amxc_var_t* args,
-                                      amxc_var_t* retval) {
-    amxd_object_t* obj_AP = NULL;
-    T_AccessPoint* pAP = NULL;
-    T_Radio* pR = NULL;
-
-    SAH_TRACEZ_IN(ME);
-    /* Check our input data */
-    obj_AP = amxd_object_get_parent(object); // Now we've the AccessPoint object handle.
-    const char* StrVal = GET_CHAR(args, "clientPIN");
-    pAP = obj_AP->priv;
-
-    if(pAP && debugIsVapPointer(pAP)) {
-        pR = pAP->pRadio;
-        if(RST_UP != pR->status) {
-            SAH_TRACEZ_ERROR(ME, "Radio is down");
-            amxc_var_set(uint32_t, retval, 1);
-            return amxd_status_unknown_error;
-        }
-
-        // Common check if the WPS command valid/allowed for this interface?
-        // Band & Security modes are checked later in vendor part.
-        if(!(pAP->enable && pAP->SSIDAdvertisementEnabled && pAP->WPS_Enable)) {
-            SAH_TRACEZ_ERROR(ME, "%s VAP, SSIDADV or WPS enable are NOT TRUE (%d,%d,%d)",
-                             pAP->alias,
-                             pAP->enable,
-                             pAP->SSIDAdvertisementEnabled,
-                             pAP->WPS_Enable);
-
-            amxc_var_set(uint32_t, retval, 2);
-            return amxd_status_unknown_error;
-        }
-
-        // Is our FSM running? Yes delay the command by a timer..
-        if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
-            if(pAP->WPS_PBC_Delay.timer == NULL) {
-                amxp_timer_new(&pAP->WPS_PBC_Delay.timer, wps_pbc_delayed_time_handler, pAP);
-            }
-            amxp_timer_start(pAP->WPS_PBC_Delay.timer, 1000);
-            pAP->WPS_PBC_Delay.intf.vap = (void*) pAP;
-            pAP->WPS_PBC_Delay.call_id = amxc_var_constcast(uint64_t, retval);
-        } else { // If timer is running clean it now!
-            if(pAP->WPS_PBC_Delay.timer) {
-                amxp_timer_delete(&pAP->WPS_PBC_Delay.timer);
-                wld_wps_pushButton_reply(pAP->WPS_PBC_Delay.call_id, true);
-                pAP->WPS_PBC_Delay.call_id = 0;
-            }
-
-            pAP->WPS_PBC_Delay.timer = NULL;
-            pAP->WPS_PBC_Delay.intf.vap = NULL;
-        }
-
-        /* Check for ClientPIN scenario first? */
-        if((pAP->WPS_ConfigMethodsEnabled & (APWPSCMS_LABEL | APWPSCMS_DISPLAY)) &&
-           StrVal) {
-            char* clean_str = strdup(StrVal);
-            if(!clean_str) {
-                return amxd_status_unknown_error;
-            }
-            /* Client PIN method is used */
-            SAH_TRACEZ_INFO(ME, "Client PIN %s -> %s",
-                            clean_str,
-                            (pAP->WPS_PBC_Delay.intf.vap) ? "Delayed" : "Direct");
-            stripOutToken(clean_str, "-");
-            stripOutToken(clean_str, " ");
-
-            pAP->WPS_PBC_Delay.bufsize = sizeof(pAP->WPS_PBC_Delay.val);
-            snprintf(pAP->WPS_PBC_Delay.val, pAP->WPS_PBC_Delay.bufsize,
-                     "%s=%s",
-                     wld_wps_ConfigMethod_to_string(APWPSCMSI_DISPLAY),
-                     clean_str);
-            pAP->WPS_PBC_Delay.setAct = TRUE;
-            /* Check if client PIN is valid! */
-            if(wpsPinValid(atoi(clean_str))) {
-                free(clean_str);
-            } else {
-                free(clean_str);
-                SAH_TRACEZ_ERROR(ME, "Client PIN is not valid!");
-                wld_sendPairingNotification(pAP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_INVALID_PIN, NULL);
-                amxc_var_set(uint32_t, retval, 3);
-                return amxd_status_unknown_error;
-            }
-        } else {
-            if(pAP->WPS_ConfigMethodsEnabled & APWPSCMS_PBC) {
-                SAH_TRACEZ_INFO(ME, "PushButton -> %s",
-                                (pAP->WPS_PBC_Delay.intf.vap) ? "Delayed" : "Direct");
-                pAP->WPS_PBC_Delay.bufsize = sizeof(pAP->WPS_PBC_Delay.val);
-                snprintf(pAP->WPS_PBC_Delay.val, pAP->WPS_PBC_Delay.bufsize,
-                         "%s",
-                         wld_wps_ConfigMethod_to_string(APWPSCMSI_PBC));
-
-                pAP->WPS_PBC_Delay.setAct = TRUE;
-            } else if(pAP->WPS_ConfigMethodsEnabled & APWPSCMS_KEYPAD) {
-                SAH_TRACEZ_INFO(ME, "Self PIN %s -> %s",
-                                pR->wpsConst->DefaultPin,
-                                (pAP->WPS_PBC_Delay.intf.vap) ? "Delayed" : "Direct");
-                if(pAP->WPS_PBC_Delay.intf.vap) {
-                    pAP->WPS_PBC_Delay.bufsize = sizeof(pAP->WPS_PBC_Delay.val);
-                    snprintf(pAP->WPS_PBC_Delay.val, pAP->WPS_PBC_Delay.bufsize,
-                             "%s",
-                             wld_wps_ConfigMethod_to_string(APWPSCMSI_KEYPAD));
-                    pAP->WPS_PBC_Delay.setAct = TRUE;
-                }
-            } else { /* Wrong command? */
-                amxc_var_set(uint32_t, retval, 4);
-                SAH_TRACEZ_ERROR(ME, "Error invalid config %u", pAP->WPS_ConfigMethodsEnabled);
-                return amxd_status_unknown_error;
-            }
-        }
-
-        /* If we defer the execution don't return that the call is done! */
-        if(pAP->WPS_PBC_Delay.intf.vap) {
-            SAH_TRACEZ_ERROR(ME, "WPS Start delay %s", pAP->alias);
-            SAH_TRACEZ_OUT(ME);
-            return amxd_status_deferred;
-        }
-
-        /* Cancel the ongoing wps session if RestartOnRequest is true */
-        if((pAP->wpsRestartOnRequest) && (pAP->WPS_PairingInProgress)) {
-            char strbuf[5] = "STOP";
-            pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, 5, TRUE);
-            SAH_TRACEZ_WARNING(ME, "%s: WPS cancel", pAP->alias);
-        }
-
-        pAP->pFA->mfn_wvap_wps_sync(pAP,
-                                    pAP->WPS_PBC_Delay.val,
-                                    pAP->WPS_PBC_Delay.bufsize,
-                                    TRUE);     // Start WPS Action (PBC,Client|Self-PIN)
-        SAH_TRACEZ_WARNING(ME, "WPS Start nodelay %s", pAP->alias);
+static amxd_status_t s_initiateWPS(T_AccessPoint* pAP, amxc_var_t* retval, swl_rc_ne* pRc) {
+    T_Radio* pR = pAP->pRadio;
+    if(pR->status != RST_UP) {
+        SAH_TRACEZ_ERROR(ME, "Radio is down");
+        *pRc = SWL_RC_INVALID_STATE;
+        return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_NOT_READY, amxd_status_unknown_error);
+    }
+    if(!(pAP->enable && pAP->SSIDAdvertisementEnabled && pAP->WPS_Enable)) {
+        SAH_TRACEZ_ERROR(ME, "%s VAP, SSIDADV or WPS enable are NOT TRUE (%d,%d,%d)",
+                         pAP->alias,
+                         pAP->enable,
+                         pAP->SSIDAdvertisementEnabled,
+                         pAP->WPS_Enable);
+        *pRc = SWL_RC_ERROR;
+        return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_NOT_READY, amxd_status_unknown_error);
     }
 
-    amxc_var_set(uint32_t, retval, 0);
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+    // Is our FSM running? Yes delay the command by a timer..
+    if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
+        if(pAP->WPS_PBC_Delay.timer == NULL) {
+            amxp_timer_new(&pAP->WPS_PBC_Delay.timer, wps_pbc_delayed_time_handler, pAP);
+        }
+        amxp_timer_start(pAP->WPS_PBC_Delay.timer, 1000);
+        pAP->WPS_PBC_Delay.intf.vap = (void*) pAP;
+        pAP->WPS_PBC_Delay.call_id = amxc_var_constcast(uint64_t, retval);
+        /* If we defer the execution don't return that the call is done! */
+        SAH_TRACEZ_WARNING(ME, "%s: WPS (%s) Start delayed", pAP->alias, pAP->WPS_PBC_Delay.val);
+        return amxd_status_deferred;
+    }
+
+    // If timer is running clean it now!
+    if(pAP->WPS_PBC_Delay.timer) {
+        amxp_timer_delete(&pAP->WPS_PBC_Delay.timer);
+        wld_wps_pushButton_reply(pAP->WPS_PBC_Delay.call_id, SWL_USP_CMD_STATUS_ERROR_TIMEOUT);
+        pAP->WPS_PBC_Delay.call_id = 0;
+    }
+
+    pAP->WPS_PBC_Delay.timer = NULL;
+    pAP->WPS_PBC_Delay.intf.vap = NULL;
+
+    /* Cancel the ongoing wps session if RestartOnRequest is true */
+    if((pAP->wpsRestartOnRequest) && (pAP->WPS_PairingInProgress)) {
+        char strbuf[] = "STOP";
+        pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, sizeof(strbuf), SET);
+        SAH_TRACEZ_WARNING(ME, "%s: WPS cancel", pAP->alias);
+    }
+
+    SAH_TRACEZ_INFO(ME, "%s: WPS (%s) Start now", pAP->alias, pAP->WPS_PBC_Delay.val);
+
+    // Start WPS Action (PBC,Client|Self-PIN)
+    *pRc = pAP->pFA->mfn_wvap_wps_sync(pAP,
+                                       pAP->WPS_PBC_Delay.val,
+                                       pAP->WPS_PBC_Delay.bufsize,
+                                       TRUE);
+    if(*pRc < SWL_RC_OK) {
+        return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
+    }
+    SAH_TRACEZ_WARNING(ME, "WPS Start nodelay %s", pAP->alias);
+    return s_setCommandReply(retval, SWL_USP_CMD_STATUS_SUCCESS, amxd_status_ok);
 }
 
-amxd_status_t _AccessPoint_cancelPairing(amxd_object_t* object,
-                                         amxd_function_t* func _UNUSED,
-                                         amxc_var_t* args _UNUSED,
-                                         amxc_var_t* retval _UNUSED) {
+amxd_status_t _WPS_InitiateWPSPBC(amxd_object_t* object,
+                                  amxd_function_t* func _UNUSED,
+                                  amxc_var_t* args _UNUSED,
+                                  amxc_var_t* retval) {
+    amxd_object_t* pApObj = amxd_object_get_parent(object);
+    T_AccessPoint* pAP = NULL;
+    amxc_var_init(retval);
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    swl_rc_ne rc = SWL_RC_OK;
+    amxd_status_t status = amxd_status_ok;
+    if((pApObj == NULL) || ((pAP = pApObj->priv) == NULL) || (!debugIsVapPointer(pAP)) || (pAP->pRadio == NULL)) {
+        rc = SWL_RC_INVALID_PARAM;
+        status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_invalid_value);
+    } else if(!(pAP->WPS_ConfigMethodsEnabled & M_WPS_CFG_MTHD_PBC_ALL)) {
+        SAH_TRACEZ_ERROR(ME, "%s: wps PushButton not supported", pAP->alias);
+        rc = SWL_RC_INVALID_STATE;
+        status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
+    } else {
+        pAP->WPS_PBC_Delay.bufsize = sizeof(pAP->WPS_PBC_Delay.val);
+        snprintf(pAP->WPS_PBC_Delay.val, pAP->WPS_PBC_Delay.bufsize,
+                 "%s",
+                 wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_PBC));
+        pAP->WPS_PBC_Delay.setAct = TRUE;
+    }
+    if(rc == SWL_RC_OK) {
+        status = s_initiateWPS(pAP, retval, &rc);
+    }
+    if(rc < SWL_RC_OK) {
+        wld_sendPairingNotification(pAP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_START_PBC, NULL);
+    }
+    return status;
+}
+
+amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
+                                  amxd_function_t* func _UNUSED,
+                                  amxc_var_t* args,
+                                  amxc_var_t* retval) {
+    amxd_object_t* pApObj = amxd_object_get_parent(object);
+    T_AccessPoint* pAP = NULL;
+    amxc_var_init(retval);
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    const char* clientPIN = GET_CHAR(args, "clientPIN");
+    swl_rc_ne rc = SWL_RC_OK;
+    amxd_status_t status = amxd_status_ok;
+    if((pApObj == NULL) || ((pAP = pApObj->priv) == NULL) || (!debugIsVapPointer(pAP)) || (pAP->pRadio == NULL)) {
+        rc = SWL_RC_INVALID_PARAM;
+        status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_invalid_value);
+    } else if(clientPIN == NULL) {
+        if((!(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL))) ||
+           (swl_str_isEmpty(pAP->pRadio->wpsConst->DefaultPin))) {
+            SAH_TRACEZ_ERROR(ME, "%s: wps self PIN not enabled", pAP->alias);
+            wld_sendPairingNotification(pAP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_NO_SELF_PIN, NULL);
+            return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
+        }
+        SAH_TRACEZ_INFO(ME, "%s: Self PIN %s", pAP->alias, pAP->pRadio->wpsConst->DefaultPin);
+        pAP->WPS_PBC_Delay.bufsize = sizeof(pAP->WPS_PBC_Delay.val);
+        snprintf(pAP->WPS_PBC_Delay.val, pAP->WPS_PBC_Delay.bufsize,
+                 "%s",
+                 wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_DISPLAY));
+        pAP->WPS_PBC_Delay.setAct = TRUE;
+    } else if(!(pAP->WPS_ConfigMethodsEnabled & M_WPS_CFG_MTHD_PIN)) {
+        SAH_TRACEZ_ERROR(ME, "%s: wps client PIN not enabled", pAP->alias);
+        rc = SWL_RC_INVALID_STATE;
+        status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
+    } else {
+        char clean_str[strlen(clientPIN) + 1];
+        swl_str_copy(clean_str, sizeof(clean_str), clientPIN);
+
+        stripOutToken(clean_str, "-");
+        stripOutToken(clean_str, " ");
+        /* Check if client PIN is valid! */
+        bool isPinValid = wldu_checkWpsPinStr(clean_str);
+        if(!isPinValid) {
+            SAH_TRACEZ_ERROR(ME, "Client PIN (%s) is not valid!", clean_str);
+            wld_sendPairingNotification(pAP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_INVALID_PIN, NULL);
+            return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_invalid_value);
+        }
+        /* Client PIN method is used */
+        SAH_TRACEZ_INFO(ME, "%s: Client PIN %s", pAP->alias, clean_str);
+        pAP->WPS_PBC_Delay.bufsize = sizeof(pAP->WPS_PBC_Delay.val);
+        snprintf(pAP->WPS_PBC_Delay.val, pAP->WPS_PBC_Delay.bufsize,
+                 "%s=%s",
+                 wld_wps_ConfigMethod_to_string(WPS_CFG_MTHD_PIN),
+                 clean_str);
+        pAP->WPS_PBC_Delay.setAct = TRUE;
+    }
+    if(rc == SWL_RC_OK) {
+        status = s_initiateWPS(pAP, retval, &rc);
+    }
+    if(rc < SWL_RC_OK) {
+        wld_sendPairingNotification(pAP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_START_PIN, NULL);
+    }
+    return status;
+}
+
+amxd_status_t _WPS_cancelWPSPairing(amxd_object_t* object,
+                                    amxd_function_t* func _UNUSED,
+                                    amxc_var_t* args _UNUSED,
+                                    amxc_var_t* retval _UNUSED) {
     return doCancelPairing(object);
 }
 

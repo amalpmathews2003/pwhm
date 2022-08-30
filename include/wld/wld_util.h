@@ -242,6 +242,7 @@ int isListOfChannels_US(unsigned char* possibleChannels, int len, int band);
 #define WPS_PIN_LEN 8
 void wpsPinGen(char pwd[WPS_PIN_LEN + 1]);
 int wpsPinValid(unsigned long PIN);
+bool wldu_checkWpsPinStr(const char* pinStr);
 
 int wldu_convStrToNum(const char* numSrcStr, void* numDstBuf, uint8_t numDstByteSize, uint8_t base, bool isSigned);
 uint64_t wldu_parseHexToUint64(const char* src);

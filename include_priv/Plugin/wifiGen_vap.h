@@ -81,6 +81,7 @@ int wifiGen_vap_sta_transfer_ext(T_AccessPoint* vap, wld_transferStaArgs_t* para
 int wifiGen_vap_sta_transfer(T_AccessPoint* vap, char* sta, char* bssid, int operClass, int channel);
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set);
 int wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set);
+int wifiGen_vap_wps_enable(T_AccessPoint* pAP, int enable, int set);
 int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set);
 int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize, int reason);
 

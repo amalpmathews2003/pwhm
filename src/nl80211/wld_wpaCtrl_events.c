@@ -165,12 +165,12 @@ typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, ch
         CALL_MGR_NA(pIntf->pMgr, pIntf->name, fName); \
     }
 
-static void s_cancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+static void s_wpsCancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s WPS CANCEL", pInterface->name);
     CALL_INTF_NA(pInterface, fWpsCancelMsg);
 }
 
-static void s_timeoutEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+static void s_wpsTimeoutEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s WPS TIMEOUT", pInterface->name);
     CALL_INTF_NA(pInterface, fWpsTimeoutMsg);
 }
@@ -184,6 +184,57 @@ static void s_wpsSuccess(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED
 
     SAH_TRACEZ_INFO(ME, "%s WPS SUCCESS %s", pInterface->name, mac.cMac);
     CALL_INTF(pInterface, fWpsSuccessMsg, &mac);
+}
+
+static void s_wpsOverlapEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    CALL_INTF_NA(pInterface, fWpsOverlapMsg);
+}
+
+static void s_wpsFailEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
+    //Example: WPS-FAIL msg=%d config_error=%d
+    //         (+Optionally: reason=%d (%s))
+    int32_t wpsMsgId = -1;
+    /*
+     *  WPS_M1 = 0x04,
+     *  WPS_M2 = 0x05,
+     *  WPS_M2D = 0x06,
+     *  WPS_M3 = 0x07,
+     *  WPS_M4 = 0x08,
+     *  WPS_M5 = 0x09,
+     *  WPS_M6 = 0x0a,
+     *  WPS_M7 = 0x0b,
+     *  WPS_M8 = 0x0c,
+     *  WPS_WSC_DONE = 0x0f
+     */
+    int32_t wpsCfgErr = -1;
+    /*
+     *  WPS_CFG_NO_ERROR = 0,
+     *  WPS_CFG_OOB_IFACE_READ_ERROR = 1,
+     *  WPS_CFG_DECRYPTION_CRC_FAILURE = 2,
+     *  WPS_CFG_24_CHAN_NOT_SUPPORTED = 3,
+     *  WPS_CFG_50_CHAN_NOT_SUPPORTED = 4,
+     *  WPS_CFG_SIGNAL_TOO_WEAK = 5,
+     *  WPS_CFG_NETWORK_AUTH_FAILURE = 6,
+     *  WPS_CFG_NETWORK_ASSOC_FAILURE = 7,
+     *  WPS_CFG_NO_DHCP_RESPONSE = 8,
+     *  WPS_CFG_FAILED_DHCP_CONFIG = 9,
+     *  WPS_CFG_IP_ADDR_CONFLICT = 10,
+     *  WPS_CFG_NO_CONN_TO_REGISTRAR = 11,
+     *  WPS_CFG_MULTIPLE_PBC_DETECTED = 12,
+     *  WPS_CFG_ROGUE_SUSPECTED = 13,
+     *  WPS_CFG_DEVICE_BUSY = 14,
+     *  WPS_CFG_SETUP_LOCKED = 15,
+     *  WPS_CFG_MSG_TIMEOUT = 16,
+     *  WPS_CFG_REG_SESS_TIMEOUT = 17,
+     *  WPS_CFG_DEV_PASSWORD_AUTH_FAILURE = 18,
+     *  WPS_CFG_60G_CHAN_NOT_SUPPORTED = 19,
+     *  WPS_CFG_PUBLIC_KEY_HASH_MISMATCH = 20
+     */
+    wld_wpaCtrl_getValueIntExt(params, "msg", &wpsMsgId);
+    wld_wpaCtrl_getValueIntExt(params, "config_error", &wpsCfgErr);
+    SAH_TRACEZ_INFO(ME, "%s: %s wpsMsgId(%d) wpsCfgErrId(%d)", pInterface->name, event, wpsMsgId, wpsCfgErr);
+    CALL_INTF_NA(pInterface, fWpsFailMsg);
 }
 
 static void s_apStationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -412,9 +463,11 @@ SWL_TABLE(sWpaCtrlEvents,
           ARR(char* evtName; void* evtParser; ),
           ARR(swl_type_charPtr, swl_type_voidPtr),
           ARR(
-              {"WPS-CANCEL", &s_cancelEvent},
-              {"WPS-TIMEOUT", &s_timeoutEvent},
+              {"WPS-CANCEL", &s_wpsCancelEvent},
+              {"WPS-TIMEOUT", &s_wpsTimeoutEvent},
               {"WPS-REG-SUCCESS", &s_wpsSuccess},
+              {"WPS-OVERLAP-DETECTED", &s_wpsOverlapEvent},
+              {"WPS-FAIL", &s_wpsFailEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
               {"BSS-TM-RESP", &s_btmResponse},

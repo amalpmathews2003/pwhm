@@ -3544,14 +3544,43 @@ define rrm_t{
 			}*/
 
 			/**
-			Randomly generated PIN-code, to be entered in client devices to connect to the HGW.
-			This code can be regenerated with generateSelfPIN().
-			However, the wlan implementation is free to regenerate this PIN code
-			whenever needed so it is not guaranteed to be constant between two consecutive
-			generateSelfPIN()-calls. */
+			 * Randomly generated PIN-code, to be entered in client devices to connect to the HGW.
+			 * This code can be regenerated with generateSelfPIN().
+			 * However, the wlan implementation is free to regenerate this PIN code
+			 * whenever needed so it is not guaranteed to be constant between two consecutive
+			 * generateSelfPIN()-calls.
+			 */
 			string SelfPIN{
 			on action write call wld_ap_setWpsSelfPIN_pwf;
 			}
+
+			/**
+			 * Initiates a Wi-Fi Protected Setup (WPS) Push Button Configuration (PBC)
+			 * process as defined in WPS 2.0.
+			 * @return htable including "Status" of the the request to start PBC 
+			 * registrar session, which is one of the following strings:
+			 * Success, Error_Not_Ready, Error_Timeout, Error_Other
+			 */
+			htable InitiateWPSPBC();
+			
+			/**
+			 * Initiates a Wi-Fi Protected Setup (WPS) AP/Client PIN:
+			 * - when clientPIN argument is provided: it starts a wps PIN session, 
+			 * and connects to the client device.
+			 * - Otherwise, it starts a WPS AP Pin session, allowing remote connections
+			 * with self PIN, for 2 mn.
+			 * Notice that the corresponding config methods need to be enabled by ConfigMethodsEnabled.
+			 * clientPIN: 4-digit or 8-digit WPS PIN code in case of ClientPIN.
+			 * @return htable including Status of the the request to start WPS AP/Client PIN session,
+			 * which is one of the following strings:
+			 * Success, Error_Not_Ready, Error_Timeout, Error_Other
+			 */
+			htable InitiateWPSPIN(%in string clientPIN);
+
+			/**
+			 * Cancel WPS registrar if it was runnning.
+			 */
+			void cancelWPSPairing();
 
 			bool setCompatibilityWPS(%in string supVerWPS);
 			/**
@@ -3570,7 +3599,7 @@ define rrm_t{
 			 * Not in the spec!
 			 * We need something to toggle WPS in unconfigured mode.
 			 */
-			bool Configured{
+			%persistent bool Configured{
 				on action write call wld_ap_setWpsConfigured_pwf;
 				default true;
 			}

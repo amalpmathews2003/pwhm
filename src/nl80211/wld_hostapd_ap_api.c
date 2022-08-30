@@ -140,6 +140,7 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"wep_key1", SECDMN_ACTION_OK_NEED_RESTART},
               {"wep_key2", SECDMN_ACTION_OK_NEED_RESTART},
               {"wep_key3", SECDMN_ACTION_OK_NEED_RESTART},
+              {"wps_state", SECDMN_ACTION_OK_NEED_RESTART},
               //params set and applied with global saved hostapd conf reloading
               {"wpa", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"wpa_pairwise", SECDMN_ACTION_OK_NEED_SIGHUP},
@@ -156,18 +157,18 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"owe_transition_ifname", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"transition_disable", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"mobility_domain", SECDMN_ACTION_OK_NEED_SIGHUP},
-              {"wps_state", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"ft_over_ds", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"config_methods", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"uuid", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"multi_ap_backhaul_ssid", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"multi_ap_backhaul_wpa_psk", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"multi_ap_backhaul_wpa_passphrase", SECDMN_ACTION_OK_NEED_SIGHUP},
               //params set and applied on bss with reload_wpa_psk and update_beacon
               {"ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_passphrase", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"sae_password", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
-              {"multi_ap_backhaul_ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
-              {"multi_ap_backhaul_wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
-              {"multi_ap_backhaul_wpa_passphrase", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               //params set and applied with update_beacon
               {"ignore_broadcast_ssid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               {"ap_isolate", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
@@ -244,6 +245,9 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* s
     char bhSsid[strlen(ssid) + 3];
     snprintf(bhSsid, sizeof(bhSsid), "\"%s\"", ssid);
     s_setExistingParam(pAP, pCurrVapParams, "multi_ap_backhaul_ssid", bhSsid, &action);
+    if(!swl_str_matches(swl_mapChar_get(pCurrVapParams, "wps_state"), "0")) {
+        action = SWL_MAX(action, SECDMN_ACTION_OK_NEED_SIGHUP);
+    }
     wld_hostapd_deleteConfig(config);
     return action;
 }
@@ -482,8 +486,8 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     const char* params[] = {
         "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",
-        "ft_over_ds", "config_methods",
-        "multi_ap",
+        "ft_over_ds", "multi_ap",
+        "wps_state", "config_methods", "uuid",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
@@ -599,8 +603,6 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
  */
 swl_rc_ne wld_ap_hostapd_startWps(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    T_Radio* pR = pAP->pRadio;
-    ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     SAH_TRACEZ_INFO(ME, "%s: Send wps start", pAP->alias);
 
@@ -609,17 +611,54 @@ swl_rc_ne wld_ap_hostapd_startWps(T_AccessPoint* pAP) {
     return SWL_RC_OK;
 }
 
-swl_rc_ne wld_ap_hostapd_startWpsPin(T_AccessPoint* pAP, uint32_t pin) {
+/*
+ * @brief start a WPS client PIN session, to pair against a remote device.
+ *
+ * @param pAP accesspoint
+ * @param pin numerical string of 4 or 8 digits (Cf. WPS 2.x)
+ *            that can even start with sequence of zero digit.
+ * @param timeout Time (in seconds) when the PIN will be invalidated; 0 = no timeout
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_hostapd_startWpsPin(T_AccessPoint* pAP, const char* pin, uint32_t timeout) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    T_Radio* pR = pAP->pRadio;
-    ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "%s: Send wps start pin %u", pAP->alias, pin);
+    SAH_TRACEZ_INFO(ME, "%s: Send wps start pin %s", pAP->alias, pin);
     char cmd[64] = {0};
-    snprintf(cmd, sizeof(cmd), "WPS_PIN any %u 120", pin);
+    //WPS client PIN started with a default wps session walk time
+    swl_str_catFormat(cmd, sizeof(cmd), "WPS_PIN any %s %d", pin, timeout);
 
     bool ret = s_sendHostapdCommand(pAP, cmd, "START_WPS_PIN");
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send WPS start command", pAP->alias);
+    return SWL_RC_OK;
+}
+
+/*
+ * @brief start a WPS AP Pin session, allowing a remote device to pair.
+ *
+ * @param pAP accesspoint
+ * @param pin numerical string of 4 or 8 digits (Cf. WPS 2.x)
+ *            that can even start with sequence of zero digit
+ * @param timeout Time (in seconds) when the AP PIN will be disabled; 0 = no timeout
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_hostapd_setWpsApPin(T_AccessPoint* pAP, const char* pin, uint32_t timeout) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: Send wps set AP pin %s", pAP->alias, pin);
+    /*
+     * when WPS AP PIN is set, peer stations can be WPS PIN paired,
+     * and meanwhile WPS-AP-SETUP is unlocked until WPS-AP-PIN-DISABLED
+     */
+    char cmd[64] = {0};
+    swl_str_catFormat(cmd, sizeof(cmd), "WPS_AP_PIN set %s %d", pin, timeout);
+    //when exec is successful, the applied PIN is returned in reply
+    bool ret = wld_wpaCtrl_sendCmdCheckResponse(pAP->wpaCtrlInterface, cmd, (char*) pin);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to execute WPS_AP_PIN command", pAP->alias);
     return SWL_RC_OK;
 }
 
