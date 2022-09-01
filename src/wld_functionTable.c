@@ -453,9 +453,9 @@ static int TRAP_mfn_wendpoint_status(T_EndPoint* endpoint _UNUSED) {
     return -1;
 }
 
-static int TRAP_mfn_wendpoint_bssid(T_EndPoint* endpoint _UNUSED, unsigned char* buf _UNUSED, int bufsize _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_bssid(T_EndPoint* endpoint, swl_macChar_t* bssid _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "%p", endpoint);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wendpoint_stats(T_EndPoint* endpoint _UNUSED, T_EndPointStats* stats _UNUSED) {

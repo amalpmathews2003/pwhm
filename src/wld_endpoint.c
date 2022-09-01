@@ -1682,9 +1682,9 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
         if(connectionStatus == EPCS_CONNECTED) {
             pEP->assocStats.lastAssocTime = pEP->lastConnStatusChange;
             pEP->assocStats.nrAssociations++;
-            unsigned char buffer[ETHER_ADDR_STR_LEN] = {0};
-            pEP->pFA->mfn_wendpoint_bssid(pEP, buffer, sizeof(buffer));
-            SAH_TRACEZ_WARNING(ME, "%s: EP connect to %s <"MAC_PRINT_FMT ">", pEP->Name, ssid->SSID, MAC_PRINT_ARG(ssid->BSSID));
+            swl_macBin_t bssid;
+            wld_endpoint_getBssidBin(pEP, &bssid);
+            SAH_TRACEZ_WARNING(ME, "%s: EP connect to %s <"MAC_PRINT_FMT ">", pEP->Name, ssid->SSID, MAC_PRINT_ARG(bssid.bMac));
         }
         s_writeAssocStats(pEP);
     }
@@ -1728,53 +1728,23 @@ static void s_setProfileStatus(T_EndPointProfile* profile, bool connected) {
 }
 
 /**
- * @brief wld_endpoint_getMacAddress
- * Get connected MAC address of the connected access point
- *
- * @deprecated in favor of #wld_endpoint_getBssidBin
- *
- * @param pEP The endpoint
- * @param bssid_buffer Returned MAC address
- */
-int wld_endpoint_getMacAddress(T_EndPoint* pEP, uint8_t bssid_buffer[ETHER_ADDR_LEN]) {
-    uint8_t uiStrMacAddress[ETHER_ADDR_STR_LEN];
-    char strMacAddress[ETHER_ADDR_STR_LEN];
-
-    /* Check endpoint pointer */
-    ASSERT_NOT_NULL(pEP, -1, ME, "NULL");
-    /* Check bssid_buffer pointer */
-    ASSERT_NOT_NULL(bssid_buffer, -1, ME, "NULL");
-
-    /* To get the MAC address of the connected access point */
-    if(pEP->pFA->mfn_wendpoint_bssid(pEP, uiStrMacAddress, ETHER_ADDR_STR_LEN) < 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to get mac");
-        return -1;
-    }
-
-    memcpy(strMacAddress, uiStrMacAddress, ETHER_ADDR_STR_LEN);
-    SAH_TRACEZ_INFO(ME, " MAC adress get : %s", strMacAddress);
-    /* Convert to numeric mac address */
-    wldu_convStr2Mac(bssid_buffer, ETHER_ADDR_LEN, strMacAddress, ETHER_ADDR_STR_LEN);
-
-    return 0;
-}
-
-/**
  * Get BSSID of the accesspoint that the given endpoint is connected to.
  *
  * In case of error or if not connected, the null-mac is written to `tgtMac`.
  */
-void wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac) {
-    ASSERT_NOT_NULL(pEP, , ME, "NULL");
-    ASSERT_NOT_NULL(tgtMac, , ME, "NULL");
+swl_rc_ne wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(tgtMac, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     // Make sure in case of any errors, it's set to the null-mac.
     *tgtMac = g_swl_macBin_null;
 
     swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
-    bool ok = pEP->pFA->mfn_wendpoint_bssid(pEP, (unsigned char*) macChar.cMac, SWL_MAC_CHAR_LEN) >= 0;
-    ASSERTS_TRUE(ok, , ME, "%s not connected", pEP->Name);
-    swl_mac_charToBin(tgtMac, &macChar);
+    swl_rc_ne ok = pEP->pFA->mfn_wendpoint_bssid(pEP, &macChar);
+    ASSERT_TRUE(swl_rc_isOk(ok), SWL_RC_ERROR, ME, "%s not connected", pEP->Name);
+    bool ret = swl_mac_charToBin(tgtMac, &macChar);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "fail to convert mac address to binary");
+    return SWL_RC_OK;
 }
 
 void endpointPerformConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
@@ -1990,15 +1960,12 @@ swl_rc_ne wld_endpoint_checkConnection(T_EndPoint* pEP) {
     ASSERTI_TRUE(pEP->connectionStatus == EPCS_CONNECTED, SWL_RC_INVALID_STATE, ME, "%s not connected", pEP->Name);
 
     swl_macBin_t binMac;
-    swl_macChar_t charMac;
     char* failMsg = NULL;
 
-    int ret = pEP->pFA->mfn_wendpoint_bssid(pEP, (unsigned char*) &charMac.cMac, sizeof(swl_macChar_t));
-    if(ret < 0) {
+    swl_rc_ne ret = wld_endpoint_getBssidBin(pEP, &binMac);
+    if(ret < SWL_RC_OK) {
         failMsg = "Failed to get BSSID";
     } else {
-        swl_mac_charToBin(&binMac, &charMac);
-
         T_SSID* pSSID = pEP->pSSID;
         if(!SWL_MAC_BIN_MATCHES(&binMac, pSSID->BSSID)) {
             failMsg = "HW BSSID does match stored BSSID";
@@ -2012,7 +1979,7 @@ swl_rc_ne wld_endpoint_checkConnection(T_EndPoint* pEP) {
         wld_endpoint_sync_connection(pEP, false, false);
         return SWL_RC_ERROR;
     } else {
-        SAH_TRACEZ_INFO(ME, "%s: check ok %s", pEP->Name, charMac.cMac);
+        SAH_TRACEZ_INFO(ME, "%s: check ok "MAC_PRINT_FMT, pEP->Name, MAC_PRINT_ARG(binMac.bMac));
         return SWL_RC_OK;
     }
 }

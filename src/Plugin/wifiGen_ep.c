@@ -86,9 +86,31 @@ int wifiGen_ep_destroyHook(T_EndPoint* pEP) {
  * Disassociate from an AP
  *
  * @param pEP The current endpoint
- * @return 0
+ * @return - SWL_RC_INVALID_PARAM if pEP is NULL
+           - Otherwise, the result of wld_wpaSupp_ep_disconnect function
  */
 int wifiGen_ep_disconnect(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_wpaSupp_ep_disconnect(pEP);
+}
+
+/**
+ * @brief mfn_wendpoint_bssid
+ *
+ * request current endpoint bssid (mac of remote AP) if ep has connected state
+ *
+ * @param pEP The current endpoint
+ * @param bssid The buffer containing the bssid
+ * @return - SWL_RC_INVALID_PARAM if either pEP or buf is NULL
+           - SWL_RC_INVALID_STATE if pEP is not connected to an AP
+           - Otherwise, the result of wld_wpaSupp_ep_getBssid function
+ */
+swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(bssid, SWL_RC_INVALID_PARAM, ME, "NULL");
+    if(pEP->connectionStatus != EPCS_CONNECTED) {
+        SAH_TRACEZ_INFO(ME, "%s: unable to get bssid, not connected", pEP->Name);
+        return SWL_RC_INVALID_STATE;
+    }
+    return wld_wpaSupp_ep_getBssid(pEP, bssid);
 }

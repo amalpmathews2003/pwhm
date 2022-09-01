@@ -68,5 +68,6 @@
 int wifiGen_ep_createHook(T_EndPoint* pEP);
 int wifiGen_ep_destroyHook(T_EndPoint* pEP);
 int wifiGen_ep_disconnect(T_EndPoint* pEP);
+swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */

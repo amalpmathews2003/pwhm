@@ -64,5 +64,6 @@
 #define __WLD_WPA_SUPPLICANT_API_H__
 
 swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP);
+swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid);
 
 #endif /* __WLD_WPA_SUPPLICANT_API_H__ */

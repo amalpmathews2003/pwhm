@@ -94,3 +94,22 @@ swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP) {
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send disconnect command", pEP->Name);
     return SWL_RC_OK;
 }
+
+/**
+ * @brief get the AP's bssid to which the endpoint is connected
+ *
+ * @param pEP endpoint
+ * @param cMac the bssid address
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
+    SAH_TRACEZ_INFO(ME, "%s: Send STATUS command", pEP->Name);
+    char reply[1024] = {0};
+    int ret = wld_wpaCtrl_sendCmdSynced(pEP->wpaCtrlInterface, "STATUS", reply, sizeof(reply));
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send status command", pEP->Name);
+    ret = wld_wpaCtrl_getValueStr(reply, "bssid", bssid->cMac, SWL_MAC_CHAR_LEN);
+    ASSERT_TRUE(ret > 0, SWL_RC_ERROR, ME, "%s: not found endpoint bssid", pEP->Name);
+    SAH_TRACEZ_INFO(ME, "%s: bssid[%s]", pEP->Name, bssid->cMac);
+    return SWL_RC_OK;
+}

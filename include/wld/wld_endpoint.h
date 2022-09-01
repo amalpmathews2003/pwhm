@@ -90,8 +90,7 @@ void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP);
 void endpointReconfigure(T_EndPoint* pEP);
 void endpointPerformConnect(T_EndPoint* pEP);
 void endpointPerformConnectCommit(T_EndPoint* pEP, bool alwaysCommit);
-int wld_endpoint_getMacAddress(T_EndPoint* pEP, uint8_t bssid_buffer[ETHER_ADDR_LEN]);
-void wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac);
+swl_rc_ne wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac);
 
 swl_rc_ne wld_endpoint_checkConnection(T_EndPoint* pEP);
 void wld_endpoint_writeStats(T_EndPoint* pEP, T_EndPointStats* stats, bool success);

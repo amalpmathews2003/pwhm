@@ -391,7 +391,9 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             err = pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) TBuf, sizeof(TBuf), GET);
             wld_autoCommitMgr_notifyVapEdit(pAP);
         } else if(pEP) {
-            err = pEP->pFA->mfn_wendpoint_bssid(pEP, (unsigned char*) TBuf, sizeof(TBuf));
+            swl_macChar_t macChar;
+            err = pEP->pFA->mfn_wendpoint_bssid(pEP, &macChar);
+            swl_str_copy(TBuf, sizeof(TBuf), macChar.cMac);
             wld_autoCommitMgr_notifyEpEdit(pEP);
         } else {
             err = WLD_ERROR_NOT_IMPLEMENTED;

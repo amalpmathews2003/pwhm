@@ -221,7 +221,7 @@ roamAttemptResult_e s_retrieveRoamAttemptResult(T_EndPoint* ep) {
     ASSERT_TRUE(s_goodEp(ep), false, ME, "NULL");
 
     swl_macBin_t currentBssid = SWL_MAC_BIN_NEW();
-    wld_endpoint_getMacAddress(ep, currentBssid.bMac);
+    wld_endpoint_getBssidBin(ep, &currentBssid);
 
     if(!wld_tinyRoam_isRoaming(ep)) {
         return ROAMATTEMPTRESULT_NOTROAMING;
