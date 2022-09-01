@@ -1123,7 +1123,7 @@ amxd_status_t _wld_endpoint_setEnable_pwf(amxd_object_t* object _UNUSED,
     }
 
     /* set enable flag */
-    pRad->pFA->mfn_wendpoint_enable(pEP, enable, SET);
+    pRad->pFA->mfn_wendpoint_enable(pEP, enable);
 
     endpointReconfigure(pEP);
 

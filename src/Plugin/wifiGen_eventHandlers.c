@@ -62,10 +62,12 @@
 #include "wifiGen_events.h"
 #include "wifiGen_hapd.h"
 #include "wifiGen_rad.h"
+#include "wifiGen_fsm.h"
 #include "wld/wld_wpaCtrlMngr.h"
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
+#include "wld/wld_rad_hostapd_api.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_accesspoint.h"
 #include "wld/wld_wps.h"
@@ -77,6 +79,7 @@
 #include "swl/swl_ieee802_1x_defs.h"
 
 #include "wifiGen_staCapHandler.h"
+#include <errno.h>
 #define ME "genEvt"
 
 static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec) {
@@ -422,6 +425,48 @@ static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBs
     }
 }
 
+static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) pRef;
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: station connected to "MAC_PRINT_FMT, pEP->Name, MAC_PRINT_ARG(bBssidMac->bMac));
+
+    T_Radio* pRad = pEP->pRadio;
+    // enable the hapd previously disabled
+    if(wifiGen_hapd_isRunning(pRad)) {
+        wld_rad_hostapd_enable(pRad);
+    }
+    wld_endpoint_sync_connection(pEP, true, 0);
+
+    // update radio datamodel
+    swl_chanspec_t chanSpec;
+    wld_rad_nl80211_getChannel(pRad, &chanSpec);
+    s_saveChanChanged(pRad, &chanSpec);
+    wld_channel_clear_passive_band(chanSpec);
+    wld_rad_updateState(pRad, true);
+
+    // set hostapd channel
+    if(wifiGen_hapd_isRunning(pRad)) {
+        setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
+        wld_rad_doCommitIfUnblocked(pRad);
+    }
+}
+
+static void s_stationScanFailedEvt(void* pRef, char* ifName, int error) {
+    T_EndPoint* pEP = (T_EndPoint*) pRef;
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: scan Failed with error(%d)", pEP->Name, error);
+    if((error == -EBUSY) && wifiGen_hapd_isAlive(pRad)) {
+        // disable hostapd to allow wpa_supplicant to do scan
+        wld_rad_hostapd_disable(pRad);
+    }
+}
+
 swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pEP->wpaSupp, SWL_RC_ERROR, ME, "NULL");
@@ -432,6 +477,8 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     memset(&wpaCtrlEpEvtHandlers, 0, sizeof(wpaCtrlEpEvtHandlers));
     //Set here the wpa_ctrl EP event handlers
     wpaCtrlEpEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
+    wpaCtrlEpEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
+    wpaCtrlEpEvtHandlers.fStationScanFailedCb = s_stationScanFailedEvt;
 
     wld_wpaCtrlInterface_setEvtHandlers(pEP->wpaCtrlInterface, pEP, &wpaCtrlEpEvtHandlers);
 

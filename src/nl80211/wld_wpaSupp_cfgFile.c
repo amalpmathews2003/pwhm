@@ -124,10 +124,12 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
     ASSERTS_NOT_NULL(network, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     bool ret = swl_str_isEmpty(epProfile->SSID);
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "empty SSID");
+    ASSERT_FALSE(ret, SWL_RC_ERROR, ME, "empty SSID");
 
     swl_mapChar_add(network, "scan_ssid", "1");
-    swl_mapChar_add(network, "ssid", epProfile->SSID);
+    char ssid[SSID_NAME_LEN + 2] = {0};
+    swl_str_catFormat(ssid, sizeof(ssid), "\"%s\"", epProfile->SSID);
+    swl_mapChar_add(network, "ssid", ssid);
 
     swl_macBin_t epBssidBin;
     bool hasTarget = wld_endpoint_getTargetBssid(pEP, &epBssidBin);
@@ -225,6 +227,8 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
     if(!swl_str_isEmpty(keyPassPhrase)) {
         swl_mapChar_add(network, "psk", keyPassPhrase);
     }
+    swl_mapChar_add(network, "multi_ap_backhaul_sta", "1");
+    swl_mapChar_add(network, "beacon_int", "100");
     return SWL_RC_OK;
 }
 

@@ -196,7 +196,7 @@ void _wld_ssid_setEnable_ehf(const char* const event_name _UNUSED,
     if(pAP) {
         pAP->pFA->mfn_wvap_enable(pAP, flag, SET);
     } else if(pEP) {
-        pEP->pFA->mfn_wendpoint_enable(pEP, flag, SET);
+        pEP->pFA->mfn_wendpoint_enable(pEP, flag);
     }
 
     wld_rad_doCommitIfUnblocked(pRad);

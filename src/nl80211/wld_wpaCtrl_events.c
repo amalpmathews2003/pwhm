@@ -459,6 +459,25 @@ static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* even
     CALL_INTF(pInterface, fStationDisconnectedCb, &bBssidMac, reasonCode);
 }
 
+static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: <3>CTRL-EVENT-CONNECTED - Connection to 98:42:65:2d:27:b0 completed [id=0 id_str=]
+    swl_macBin_t bBssidMac = SWL_MAC_BIN_NEW();
+    const char* msgPfx = "- Connection to ";
+    if(swl_str_startsWith(params, msgPfx)) {
+        char bssid[SWL_MAC_CHAR_LEN] = {0};
+        swl_str_copy(bssid, SWL_MAC_CHAR_LEN, &params[strlen(msgPfx)]);
+        SWL_MAC_CHAR_TO_BIN(&bBssidMac, bssid);
+    }
+    CALL_INTF(pInterface, fStationConnectedCb, &bBssidMac, 0);
+}
+
+static void s_stationScanFailed(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example:<3>CTRL-EVENT-SCAN-FAILED ret=-16 retry=1
+    int error = wld_wpaCtrl_getValueInt(params, "ret");
+    CALL_INTF(pInterface, fStationScanFailedCb, error);
+}
+
+
 SWL_TABLE(sWpaCtrlEvents,
           ARR(char* evtName; void* evtParser; ),
           ARR(swl_type_charPtr, swl_type_voidPtr),
@@ -485,6 +504,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"DFS-NOP-FINISHED", &s_radDfsNopFinishedEvt},
               {"DFS-NEW-CHANNEL", &s_radDfsNewChannelEvt},
               {"CTRL-EVENT-DISCONNECTED", &s_stationDisconnected},
+              {"CTRL-EVENT-CONNECTED", &s_stationConnected},
+              {"CTRL-EVENT-SCAN-FAILED", &s_stationScanFailed},
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

@@ -78,6 +78,7 @@ typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifN
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status);
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, uint16_t stype, char* data);
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
+typedef void (* wld_wpaCtrl_stationScanFailedCb_f)(void* userData, char* ifName, int error);
 
 /*
  * @brief structure of AP/EP event handlers
@@ -94,6 +95,8 @@ typedef struct {
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
+    wld_wpaCtrl_stationConnectivityCb_f fStationConnectedCb;
+    wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);

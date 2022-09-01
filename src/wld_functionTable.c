@@ -436,9 +436,9 @@ static int TRAP_mfn_wendpoint_destroy_hook(T_EndPoint* pEP _UNUSED) {
     return WLD_OK;
 }
 
-static int TRAP_mfn_wendpoint_enable(T_EndPoint* endpoint _UNUSED, int enable _UNUSED, int set _UNUSED) {
-    SAH_TRACEZ_WARNING(ME, "%p %d %d", endpoint, enable, set);
-    return -1;
+static swl_rc_ne TRAP_mfn_wendpoint_enable(T_EndPoint* endpoint, bool enable) {
+    SAH_TRACEZ_WARNING(ME, "%p %d", endpoint, enable);
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wendpoint_disconnect(T_EndPoint* endpoint _UNUSED) {
@@ -446,9 +446,9 @@ static int TRAP_mfn_wendpoint_disconnect(T_EndPoint* endpoint _UNUSED) {
     return -1;
 }
 
-static int TRAP_mfn_wendpoint_connect_ap(T_EndPointProfile* endpointProfile _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_connect_ap(T_EndPointProfile* endpointProfile _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "%p", endpointProfile);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wendpoint_status(T_EndPoint* endpoint _UNUSED) {

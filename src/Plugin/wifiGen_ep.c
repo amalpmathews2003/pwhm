@@ -65,18 +65,49 @@
 #include "wld/wld_radio.h"
 #include "wifiGen_wpaSupp.h"
 #include "wld/wld_wpaSupp_ep_api.h"
+#include "wld/wld_util.h"
 #include "wifiGen_events.h"
+#include "wifiGen_fsm.h"
 
 #define ME "genEp"
 
 int wifiGen_ep_createHook(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    // The fsm is started before the endpoint instance creation
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_INIT_WPASUPP);
     return SWL_RC_OK;
 }
 
 int wifiGen_ep_destroyHook(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     wifiGen_wpaSupp_cleanup(pEP);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief wifiGen_ep_enable
+ *
+ * Enable/Disable the Endpoint
+ *
+ * @param pEP T_EndPoint struct endpoint instance
+ * @param enable false(disable)/true(enable) value
+ * @return - SWL_RC_INVALID_PARAM if pEP is NULL
+ *         - SWL_RC_ERROR if radio instance associated to pEP is NULL
+ *         - Otherwise, SWL_RC_OK
+ */
+swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s : Endpoint enable changed : [%d] --> [%d]", pEP->Name, pEP->enable, enable);
+    pEP->enable = enable;
+    pRad->isSTA = pRad->isSTASup && pEP->enable;
+    if(pRad->isSTA) {
+        setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
+    } else {
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
+    }
     return SWL_RC_OK;
 }
 
@@ -113,4 +144,41 @@ swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
         return SWL_RC_INVALID_STATE;
     }
     return wld_wpaSupp_ep_getBssid(pEP, bssid);
+}
+
+/**
+ * @brief wifiGen_ep_connectAp
+ *
+ * Connect to an AP
+ *
+ * @param epProfile a profile containing informations to which the endpoint should connect
+ * @return - SWL_RC_INVALID_PARAM if epProfile is NULL
+           - SWL_RC_ERROR if pEP associated to the profile is NULL
+           - Otherwise, SWL_RC_OK
+ */
+swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile) {
+    ASSERTS_NOT_NULL(epProfile, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_EndPoint* pEP = epProfile->endpoint;
+    ASSERTS_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief wifiGen_ep_status
+ *
+ * get the interface status
+ *
+ * @param pEP The current endpoint
+ * @return - SWL_RC_INVALID_PARAM if pEP is NULL
+           - SWL_RC_ERROR when wpactrl interface isn't ready or interface hasn't netdev index or the netdev ionterface state is down
+           - Otherwise, SWL_RC_OK
+ */
+swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(wld_wpaCtrlInterface_isReady(pEP->wpaCtrlInterface), SWL_RC_ERROR, ME, "%s: wpactrl iface not ready", pEP->alias);
+    ASSERT_TRUE(pEP->index > 0, SWL_RC_ERROR, ME, "%s: iface has no netdev index", pEP->alias);
+    int ret = wld_linuxIfUtils_getLinkState(wld_rad_getSocket(pEP->pRadio), pEP->Name);
+    ASSERT_FALSE(ret <= 0, SWL_RC_ERROR, ME, "%s: link down", pEP->alias);
+    return SWL_RC_OK;
 }

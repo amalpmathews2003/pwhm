@@ -128,13 +128,16 @@ bool wifiGen_init() {
     fta.mfn_wvap_kick_sta_reason = wifiGen_vap_kick_sta_reason;
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;
 
-    //endpoint function
+    //endpoint functions
     fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;
     fta.mfn_wendpoint_destroy_hook = wifiGen_ep_destroyHook;
+    fta.mfn_wendpoint_enable = wifiGen_ep_enable;
+    fta.mfn_wendpoint_connect_ap = wifiGen_ep_connectAp;
     fta.mfn_wendpoint_disconnect = wifiGen_ep_disconnect;
     fta.mfn_wendpoint_bssid = wifiGen_ep_bssid;
     fta.mfn_wendpoint_stats = wifiGen_wendpoint_stats;
     fta.mfn_wvap_update_ap_stats = wifiGen_update_ap_stats;
+    fta.mfn_wendpoint_status = wifiGen_ep_status;
 
     s_vendor = wld_nl80211_registerVendor(&fta);
     wld_nl80211_getSharedState();

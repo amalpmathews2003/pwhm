@@ -60,23 +60,30 @@
 **
 ****************************************************************************/
 #include "wld/wld.h"
+#include "wld/wld_radio.h"
+#include "wld/wld_wpaSupp_cfgFile.h"
+#include "wifiGen_hapd.h"
 
 #define ME "genWsup"
 #define WPASUPP_CONF_FILE_PATH_FORMAT "/tmp/%s_wpa_supplicant.conf"
 #define WPASUPP_CMD "wpa_supplicant"
-#define WPASUPP_ARGS_FORMAT "-ddK -i%s -Dnl80211 -c%s"
+#define WPASUPP_ARGS_FORMAT "-ddK -b%s -i%s -Dnl80211 -c%s"
 #define WPASUPP_CTRL_IFACE_DIR "/var/run/wpa_supplicant"
 
 swl_rc_ne wifiGen_wpaSupp_init(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
     char confFilePath[128] = {0};
     swl_str_catFormat(confFilePath, sizeof(confFilePath), WPASUPP_CONF_FILE_PATH_FORMAT, pEP->Name);
     char startArgs[128] = {0};
-    swl_str_catFormat(startArgs, sizeof(startArgs), WPASUPP_ARGS_FORMAT, pEP->Name, confFilePath);
+    swl_str_catFormat(startArgs, sizeof(startArgs), WPASUPP_ARGS_FORMAT, pEP->bridgeName, pEP->Name, confFilePath);
     swl_rc_ne rc = wld_secDmn_init(&pEP->wpaSupp, WPASUPP_CMD, startArgs, confFilePath, WPASUPP_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init wpa_supplicant", pEP->Name);
     ASSERT_TRUE(wld_wpaCtrlInterface_init(&pEP->wpaCtrlInterface, pEP->Name, pEP->wpaSupp->ctrlIfaceDir),
                 SWL_RC_ERROR, ME, "%s: Fail to init EP interface", pEP->Name);
+    ASSERT_TRUE(wld_wpaCtrlMngr_registerInterface(pEP->wpaSupp->wpaCtrlMngr, pEP->wpaCtrlInterface),
+                SWL_RC_ERROR, ME, "%s: fail to add wpa_ctrl interface to mngr", pEP->Name);
     return SWL_RC_OK;
 }
 
@@ -108,5 +115,10 @@ swl_rc_ne wifiGen_wpaSupp_reloadDaemon(T_EndPoint* pEP) {
 
 void wifiGen_wpaSupp_writeConfig(T_EndPoint* pEP) {
     ASSERTS_NOT_NULL(pEP, , ME, "NULL");
+    wld_wpaSupp_cfgFile_createExt(pEP);
+}
+
+bool wifiGen_wpaSupp_isRunning(T_EndPoint* pEP) {
+    return ((pEP != NULL) && (wld_secDmn_isRunning(pEP->wpaSupp)));
 }
 

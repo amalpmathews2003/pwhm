@@ -73,6 +73,8 @@
 #include "wifiGen_rad.h"
 #include "wifiGen_vap.h"
 #include "wifiGen_hapd.h"
+#include "wifiGen_wpaSupp.h"
+#include "wifiGen_events.h"
 
 #define ME "genFsm"
 
@@ -291,6 +293,12 @@ static bool s_doRadDisable(T_Radio* pRad) {
     return true;
 }
 
+static bool s_doRadEnable(T_Radio* pRad) {
+    SAH_TRACEZ_INFO(ME, "%s: Enable rad", pRad->Name);
+    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, true);
+    return true;
+}
+
 static bool s_doStopHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
@@ -313,7 +321,7 @@ static bool s_doUpdateHostapd(T_Radio* pRad) {
 }
 
 static bool s_doStartHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wld_rad_hasEnabledVap(pRad), true, "%s: radio has no enabled vap", pRad->Name);
+    ASSERTS_TRUE(wld_rad_hasEnabledVap(pRad), true, ME, "%s: radio has no enabled vap", pRad->Name);
     ASSERTS_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
     ASSERTS_FALSE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd running", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: start hostapd", pRad->Name);
@@ -433,6 +441,88 @@ static bool s_doSyncState(T_Radio* pRad) {
     return true;
 }
 
+#define FIRST_DELAY_MS 3000
+#define RETRY_DELAY_MS 1000
+#define WPA_SUPP_MAX_ATTEMPTS 3
+static uint8_t wpaSuppStartingAttempts = 0;
+static amxp_timer_t* wpaSuppTimer = NULL;
+
+static void s_startWpaSuppTimer(amxp_timer_t* timer, void* userdata) {
+    ASSERTS_NOT_NULL(timer, , ME, "NULL");
+    ASSERTS_NOT_NULL(userdata, , ME, "NULL");
+    T_EndPoint* pEP = (T_EndPoint*) userdata;
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    bool ret = wifiGen_hapd_isAlive(pRad);
+    if(ret) {
+        SAH_TRACEZ_WARNING(ME, "%s: disable hostapd", pRad->Name);
+        wld_rad_hostapd_disable(pRad);
+        wpaSuppStartingAttempts = 0;
+        amxp_timer_delete(&timer);
+    } else if(wpaSuppStartingAttempts < WPA_SUPP_MAX_ATTEMPTS) {
+        SAH_TRACEZ_WARNING(ME, "%s: hostapd is not yet alive, waiting (%d/%d)..", pRad->Name, wpaSuppStartingAttempts, WPA_SUPP_MAX_ATTEMPTS);
+        wpaSuppStartingAttempts++;
+    } else {
+        wpaSuppStartingAttempts = 0;
+        amxp_timer_delete(&timer);
+        SAH_TRACEZ_ERROR(ME, "%s: Fail to disable hostapd", pRad->Name);
+    }
+}
+static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
+    SAH_TRACEZ_INFO(ME, "%s: enable endpoint", pEP->Name);
+    // check if there is a running hostapd in order to disable it in order allow to wpa_supplicant to connect.
+    // Otherwise, wpa_supplicant will fail to connect
+    if(wifiGen_hapd_isRunning(pRad)) {
+        wpaSuppStartingAttempts = 0;
+        amxp_timer_new(&wpaSuppTimer, s_startWpaSuppTimer, pEP);
+        amxp_timer_set_interval(wpaSuppTimer, RETRY_DELAY_MS);
+        amxp_timer_start(wpaSuppTimer, FIRST_DELAY_MS);
+    }
+    return true;
+}
+
+static bool s_doConnectedEp(T_EndPoint* pEP, T_Radio* pRad) {
+    SAH_TRACEZ_INFO(ME, "%s: connected endpoint", pEP->Name);
+    if(wifiGen_hapd_isRunning(pRad)) {
+        // update hostapd channel
+        wld_secDmn_action_rc_ne rc = wld_rad_hostapd_setChannel(pRad);
+        s_schedNextAction(rc, NULL, pRad);
+    }
+    return true;
+}
+
+static bool s_doStopWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s: stop wpa_supplicant", pEP->Name);
+    wifiGen_wpaSupp_stopDaemon(pEP);
+    return true;
+}
+
+static bool s_doInitWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s: init wpa_supplicant", pEP->Name);
+    wifiGen_wpaSupp_init(pEP);
+    wifiGen_setEpEvtHandlers(pEP);
+    return true;
+}
+
+static bool s_doStartWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    ASSERTS_TRUE(pEP->enable, true, ME, "%s: endpoint disabled", pEP->Name);
+    SAH_TRACEZ_INFO(ME, "%s: start wpa_supplicant", pEP->Name);
+    wifiGen_wpaSupp_startDaemon(pEP);
+    return true;
+}
+
+static bool s_doConfWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s: write wpa_supplicant config", pEP->Name);
+    wifiGen_wpaSupp_writeConfig(pEP);
+    return true;
+}
+
+static bool s_doReloadWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    ASSERTS_TRUE(wifiGen_wpaSupp_isRunning(pEP), true, ME, "%s: wpa_supplicant stopped", pEP->Name);
+    SAH_TRACEZ_INFO(ME, "%s: reload wpa_supplicant", pEP->Name);
+    wifiGen_wpaSupp_reloadDaemon(pEP);
+    return true;
+}
 /*
  * Check if we need to do radio up down actions. Need to happen if it's first interface that goes up.
  */
@@ -488,9 +578,22 @@ static void s_checkRadDependency(T_Radio* pRad) {
     }
 }
 
+void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP)) {
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
+    }
+    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP)) {
+        clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
+    }
+}
+
 wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_DISABLE_RAD), .doRadFsmAction = s_doRadDisable},
+    {FSM_ACTION(GEN_FSM_INIT_WPASUPP), .doEpFsmAction = s_doInitWpaSupp},
     {FSM_ACTION(GEN_FSM_STOP_HOSTAPD), .doRadFsmAction = s_doStopHostapd},
+    {FSM_ACTION(GEN_FSM_STOP_WPASUPP), .doEpFsmAction = s_doStopWpaSupp},
     {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
     {FSM_ACTION(GEN_FSM_MOD_SEC), .doVapFsmAction = s_doSetApSec},
@@ -498,19 +601,24 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_MOD_SSID), .doVapFsmAction = s_doSetSsid},
     {FSM_ACTION(GEN_FSM_MOD_CHANNEL), .doRadFsmAction = s_doSetChannel},
     {FSM_ACTION(GEN_FSM_MOD_HOSTAPD), .doRadFsmAction = s_doConfHostapd},
+    {FSM_ACTION(GEN_FSM_MOD_WPASUPP), .doEpFsmAction = s_doConfWpaSupp},
     {FSM_ACTION(GEN_FSM_RELOAD_AP_SECKEY), .doVapFsmAction = s_doReloadApSecKey},
     {FSM_ACTION(GEN_FSM_UPDATE_BEACON), .doVapFsmAction = s_doUpdateBeacon},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
+    {FSM_ACTION(GEN_FSM_UPDATE_WPASUPP), .doEpFsmAction = s_doReloadWpaSupp},
     {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
     {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
-    {FSM_ACTION(GEN_FSM_ENABLE_RAD)},// Rad enable requires no config
+    {FSM_ACTION(GEN_FSM_START_WPASUPP), .doEpFsmAction = s_doStartWpaSupp},
+    {FSM_ACTION(GEN_FSM_ENABLE_RAD), .doRadFsmAction = s_doRadEnable},
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},
+    {FSM_ACTION(GEN_FSM_ENABLE_EP), .doEpFsmAction = s_doEnableEp},
+    {FSM_ACTION(GEN_FSM_CONNECTED_EP), .doEpFsmAction = s_doConnectedEp},
     {FSM_ACTION(GEN_FSM_SYNC_STATE), .doRadFsmAction = s_doSyncState},
 };
 
 wld_fsmMngr_t mngr = {
     .checkPreDependency = s_checkPreRadDependency,
-//    .checkEpDependency = s_checkEpDependency,
+    .checkEpDependency = s_checkEpDependency,
     .checkVapDependency = s_checkApDependency,
     .checkRadDependency = s_checkRadDependency,
     .actionList = actions,
