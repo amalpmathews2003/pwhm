@@ -242,6 +242,11 @@ static swl_rc_ne TRAP_mfn_wvap_get_station_stats(T_AccessPoint* ap) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wvap_get_single_station_stats(T_AssociatedDevice* ad) {
+    _UNUSED_(ad);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static int TRAP_mfn_wrad_bgdfs_start_ext(T_Radio* rad, wld_startBgdfsArgs_t* args) {
     _UNUSED_(rad);
     _UNUSED_(args);
@@ -569,6 +574,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_create_hook);
     FTA_ASSIGN(mfn_wvap_destroy_hook);
     FTA_ASSIGN(mfn_wvap_get_station_stats);
+    FTA_ASSIGN(mfn_wvap_get_single_station_stats);
     FTA_ASSIGN(mfn_wvap_update_rssi_stats);
     FTA_ASSIGN(mfn_wvap_status);
     FTA_ASSIGN(mfn_wvap_enable);

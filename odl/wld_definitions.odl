@@ -3690,6 +3690,8 @@ define rrm_t{
 		    @version 6.0
 		  */
 		%read-only object AssociatedDevice[]{
+			on action read call getSingleStationStats;
+
 			/** CUI based on Chargeable-User-Identity attribute in Access-Accept
 			 * @version 6.0  */
 			%read-only string ChargeableUserId;

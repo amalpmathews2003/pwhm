@@ -2091,6 +2091,7 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     /**< Update list of associated device statistics */
     swl_rc_ne (* mfn_wvap_get_station_stats)(T_AccessPoint* pAP);
+    swl_rc_ne (* mfn_wvap_get_single_station_stats)(T_AssociatedDevice* pAD);
 
     PFN_WVAP_VAP_UPDATE_ADL mfn_wvap_update_rssi_stats;          /**< Update rssi of associated devices */
     PFN_WVAP_UPDATE_AP_STATS mfn_wvap_update_ap_stats;           /**< Update the stats counters of Radio or req SSID */

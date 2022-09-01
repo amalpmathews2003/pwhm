@@ -472,6 +472,58 @@ amxd_status_t _getStationStats(amxd_object_t* obj_AP,
     return amxd_status_ok;
 }
 
+amxd_status_t _getSingleStationStats(amxd_object_t* const object,
+                                     amxd_param_t* const param,
+                                     amxd_action_t reason,
+                                     const amxc_var_t* const args,
+                                     amxc_var_t* const action_retval,
+                                     void* priv) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_status_ok;
+    if(reason != action_object_read) {
+        status = amxd_status_function_not_implemented;
+        goto exit;
+    }
+
+    T_AssociatedDevice* pAD = object->priv;
+    if(pAD == NULL) {
+        SAH_TRACEZ_INFO(ME, "pAD is NULL, no device present");
+        status = amxd_status_unknown_error;
+        goto exit;
+    }
+
+    T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(amxd_object_get_parent(pAD->object))->priv;
+    swl_rc_ne ret = pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
+
+    if(ret >= SWL_RC_OK) {
+        WLD_SET_VAR_CSTRING(object, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
+        WLD_SET_VAR_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
+        WLD_SET_VAR_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
+        WLD_SET_VAR_UINT32(object, "SignalStrength", pAD->SignalStrength);
+        WLD_SET_VAR_UINT32(object, "Noise", pAD->Noise);
+        WLD_SET_VAR_UINT32(object, "TxBytes", pAD->TxBytes);
+        WLD_SET_VAR_UINT32(object, "RxBytes", pAD->RxBytes);
+        WLD_SET_VAR_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
+        WLD_SET_VAR_UINT32(object, "RxPacketCount", pAD->RxPacketCount);
+        WLD_SET_VAR_UINT32(object, "TxErrors", pAD->TxFailures);
+        WLD_SET_VAR_UINT32(object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
+        WLD_SET_VAR_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+        WLD_SET_VAR_BOOL(object, "AuthenticationState", pAD->AuthenticationState);
+
+        swl_time_objectParamSetReal(object, "LastStateChange", pAD->latestStateChangeTime);
+        swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
+        swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
+    }
+
+    status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+
 /**
  * Return whether or not the given accesspoint has a far station.
  * @param pAP
@@ -970,3 +1022,4 @@ void wld_assocDev_cleanAp(T_AccessPoint* pAP) {
 void wld_assocDev_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant) {
     swl_unLiTable_toListOfMaps(&pAP->staDcList, variant, tupleNames);
 }
+

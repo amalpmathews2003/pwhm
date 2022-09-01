@@ -192,8 +192,8 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
         }
         if(!pAD->seen) {
             pAD->SignalStrength = 0;
-            for(i = 0; i < MAX_NR_ANTENNA; i++) {
-                pAD->SignalStrengthByChain[i] = 0;
+            for(int j = 0; j < MAX_NR_ANTENNA; j++) {
+                pAD->SignalStrengthByChain[j] = 0;
             }
             pAD->SignalNoiseRatio = 0;
             SAH_TRACEZ_WARNING(ME, "Skip unseen sta %s", pAD->Name);
@@ -203,9 +203,32 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
     }
 
     wld_vap_update_seen(pAP);
-
     return SWL_RC_OK;
 }
+
+swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
+    T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(amxd_object_get_parent(pAD->object))->priv;
+    T_Radio* pRad = (T_Radio*) pAP->pRadio;
+    ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
+
+    wld_vap_mark_all_stations_unseen(pAP);
+    s_getNetlinkAllStaInfo(pAP);
+
+    SAH_TRACEZ_INFO(ME, "pAP->alias = %s", pAP->alias);
+    SAH_TRACEZ_INFO(ME, "pAD->Name = %s", pAD->Name);
+
+    if(!pAD->seen) {
+        pAD->SignalStrength = 0;
+        for(int j = 0; j < MAX_NR_ANTENNA; j++) {
+            pAD->SignalStrengthByChain[j] = 0;
+        }
+        pAD->SignalNoiseRatio = 0;
+    }
+    wld_ap_hostapd_getStaInfo(pAP, pAD);
+    wld_vap_update_seen(pAP);
+    return SWL_RC_OK;
+}
+
 int wifiGen_vap_sec_sync(T_AccessPoint* pAP, int set) {
     int ret = 0;
 

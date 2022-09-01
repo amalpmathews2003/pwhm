@@ -169,6 +169,23 @@ void wldu_llist_mapInternal(amxc_llist_t* list, size_t offset, void (* map)(void
 static const uint8_t wld_ether_bcast[ETHER_ADDR_LEN] = {255, 255, 255, 255, 255, 255};
 static const uint8_t wld_ether_null[ETHER_ADDR_LEN] = {0, 0, 0, 0, 0, 0};
 
+#define WLD_SET_VAR_UINT32(object, objectName, val) { \
+        amxd_param_t* param = amxd_object_get_param_def(object, objectName); \
+        amxc_var_set(uint32_t, &param->value, val);}
+
+#define WLD_SET_VAR_UINT64(object, objectName, val) { \
+        amxd_param_t* param = amxd_object_get_param_def(object, objectName); \
+        amxc_var_set(uint64_t, &param->value, val);}
+
+#define WLD_SET_VAR_BOOL(object, objectName, val) { \
+        amxd_param_t* param = amxd_object_get_param_def(object, objectName); \
+        amxc_var_set(bool, &param->value, val);}
+
+#define WLD_SET_VAR_CSTRING(object, objectName, val) { \
+        amxd_param_t* param = amxd_object_get_param_def(object, objectName); \
+        amxc_var_set(cstring_t, &param->value, val);}
+
+
 bool findStrInArray(const char* str, const char** strarray, int* index);
 int findStrInArrayN(const char* str, const char** strarray, int size, int default_index);
 bool convIntArrToString(char* str, int str_size, const int* int_list, int list_size);
