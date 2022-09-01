@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.7.9 - 2022-09-01(09:50:10 +0000)
+
+### Other
+
+- Implementing endpoint_disconnect api
+
 ## Release v1.7.8 - 2022-08-30(17:11:36 +0000)
 
 ### Other
