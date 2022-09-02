@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.8.3 - 2022-09-02(16:56:11 +0000)
+
+### Other
+
+- Enabling traces for WiFi component
+
 ## Release v1.8.2 - 2022-09-02(14:42:33 +0000)
 
 ### Other
