@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.8.1 - 2022-09-02(08:30:37 +0000)
+
+### Other
+
+- - Implementing get endpoint bssid api
+
 ## Release v1.8.0 - 2022-09-01(13:02:38 +0000)
 
 ## Release v1.7.9 - 2022-09-01(09:50:10 +0000)
