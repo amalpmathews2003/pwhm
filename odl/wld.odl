@@ -169,8 +169,8 @@
                    "swlTpl" = 200,
                    "swlTrl" = 200,
                    "swlType" = 200,
-                   "swlType" = 200,
                    "swlULLi" = 200,
+                   "swlUspC" = 200,
                    "swlUuid" = 200,
                    "swlWps" = 200,
                    "tyRoam" = 200,
@@ -185,6 +185,7 @@
                    "wldScan" = 200,
                    "wldTrap" = 200,
                    "wpaCtrl" = 200,
+                   "wpaSupp" = 200,
                    "wps" = 200,
                    "wSupCfg" = 200
                    };
