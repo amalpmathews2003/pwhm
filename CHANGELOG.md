@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.8.5 - 2022-09-06(16:39:30 +0000)
+
+### Other
+
+- handle wps registrar config and triggering
+
 ## Release v1.8.4 - 2022-09-05(15:34:45 +0000)
 
 ### Other
