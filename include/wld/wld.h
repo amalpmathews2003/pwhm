@@ -1792,6 +1792,7 @@ struct _EndPointProfile {
     char WEPKey[36];        /* Max 32, but we need some 0 for termination (and alignment) */
     char preSharedKey[PSK_KEY_SIZE_LEN];
     char keyPassPhrase[PSK_KEY_SIZE_LEN];
+    char saePassphrase[SAE_KEY_SIZE_LEN];
     wld_mfpConfig_e mfpConfig;
     amxc_llist_it_t it;
     amxd_object_t* pBus;

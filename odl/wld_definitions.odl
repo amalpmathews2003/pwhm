@@ -5261,7 +5261,6 @@ define rrm_t{
 			/** This object contains security related parameters that apply
 			 *  to a WiFi End Point profile.*/
 			%persistent object Security{
-				on action write call wld_endpoint_setProfileSecurity_owf;
 				/** The value MUST be a member of the list reported by the
 				 *  Security.ModesSupported  parameter. Indicates which
 				 *  security mode is enabled.*/
@@ -5274,6 +5273,7 @@ define rrm_t{
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 					default "None";
+					on action write call wld_endpoint_setProfileSecurity_pwf;
 				}
 
 				/** A WEP key expressed as a hexadecimal string.
@@ -5282,7 +5282,9 @@ define rrm_t{
 				 *  and a 13 byte WEPKey corresponds to security mode WEP-128.
 				 *  When read, this parameter returns an empty string,
 				 *  regardless of the actual value.*/
-				%persistent string WEPKey;
+				%persistent string WEPKey{
+				    on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
 				/** A literal PreSharedKey (PSK) expressed as a hexadecimal
 				 *  string. PreSharedKey is only used if ModeEnabled is set to
 				 *  WPA-Personal or WPA2-Personal or WPA-WPA2-Personal. If
@@ -5291,7 +5293,9 @@ define rrm_t{
 				 *  the PreSharedKey directly (the result of doing this is
 				 *  undefined). When read, this parameter returns an empty
 				 *  string, regardless of the actual value.*/
-				%persistent string PreSharedKey;
+				%persistent string PreSharedKey{
+				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
 				
 				/** 
 				 * A passphrase from which the PreSharedKey  is to be
@@ -5306,7 +5310,22 @@ define rrm_t{
 				 * string, regardless of the actual value.
 				 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
 				 * or 256 bit secret, entered as a 64 characters hex key.*/
-				%persistent string KeyPassPhrase;
+				%persistent string KeyPassPhrase{
+				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+
+				/** A passphrase for WPA3-Personal or WPA3-Personal-Transition
+			         *  security modes.
+			         *
+			         *  NOTE: this parameter is for WPA3. WPA2 PreSharedKey is generated
+			         *  from KeyPassphrase.
+			         *
+			         *  When read, this parameter returns an empty string, regardless of
+			         *  the actual value.
+			         */
+				%persistent string SAEPassphrase{
+				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
 
 				/** Management Frame Protection configuration applicable when ModeEnabled is set
 				 * to WPA2-Personal or WPA2-Enterprise. Enumeration of:
@@ -5319,6 +5338,7 @@ define rrm_t{
 							"Optional",
 							"Required"];
 					default "Disabled";
+					on action write call wld_endpoint_setProfileSecurity_pwf;
 				}
 			}
 		}

@@ -119,17 +119,10 @@ int32_t wld_endpoint_isProfileIdentical(T_EndPointProfile* currentProfile, T_End
         }
     }
 
-    if(strcmp(currentProfile->SSID, newProfile->SSID)) {
-        return LFALSE;
-    }
-
-    if(strcmp(currentProfile->keyPassPhrase, newProfile->keyPassPhrase)) {
-        return LFALSE;
-    }
-
-    if(currentProfile->secModeEnabled != newProfile->secModeEnabled) {
-        return LFALSE;
-    }
+    ASSERT_TRUE(swl_str_matches(currentProfile->SSID, newProfile->SSID), LFALSE, ME, "SSID not identical");
+    ASSERT_TRUE(swl_str_matches(currentProfile->keyPassPhrase, newProfile->keyPassPhrase), LFALSE, ME, "keyPassPhrase not identical");
+    ASSERT_TRUE(swl_str_matches(currentProfile->saePassphrase, newProfile->saePassphrase), LFALSE, ME, "saePassphrase not identical");
+    ASSERT_TRUE((currentProfile->secModeEnabled == newProfile->secModeEnabled), LFALSE, ME, "secModeEnabled not identical");
 
     return LTRUE;
 }
@@ -508,6 +501,7 @@ void setEndPointProfileDefaults(T_EndPointProfile* profile) {
     memset(profile->SSID, 0, sizeof(profile->SSID));
     memset(profile->BSSID, 0, sizeof(profile->BSSID));
     memset(profile->keyPassPhrase, 0, sizeof(profile->keyPassPhrase));
+    memset(profile->saePassphrase, 0, sizeof(profile->saePassphrase));
     memset(profile->alias, 0, sizeof(profile->alias));
     memset(profile->location, 0, sizeof(profile->location));
     memset(profile->WEPKey, 0, sizeof(profile->WEPKey));
@@ -825,6 +819,17 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
         }
     }
 
+    const char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
+    if(isModeWPAPersonal(pProfile->secModeEnabled) &&
+       strncmp(saePassphrase, pProfile->saePassphrase, sizeof(pProfile->saePassphrase))) {
+        if(!isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN)) {
+            SAH_TRACEZ_WARNING(ME, "Sync Failure - SAEPassphrase is not in a valid format");
+        } else {
+            changed |= 1;
+            wldu_copyStr(pProfile->saePassphrase, saePassphrase, sizeof(pProfile->saePassphrase));
+        }
+    }
+
     const char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
     if(strncmp(mfp, wld_mfpConfig_str[pProfile->mfpConfig],
                strlen(wld_mfpConfig_str[pProfile->mfpConfig]))) {
@@ -850,8 +855,8 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
 amxd_status_t _wld_endpoint_setProfile_owf(amxd_object_t* object) {
     T_EndPointProfile* pProfile = NULL;
     T_EndPoint* pEP = NULL;
-    bool profileEnable_changed = false;
-    bool profile_changed = false;
+    bool profileEnableChanged = false;
+    bool profileChanged = false;
 
     SAH_TRACEZ_IN(ME);
 
@@ -884,28 +889,28 @@ amxd_status_t _wld_endpoint_setProfile_owf(amxd_object_t* object) {
     SAH_TRACEZ_INFO(ME, "Syncing : EndpointProfile enable parameter --> T_EndpointProfile");
     bool tmp_res = amxd_object_get_bool(object, "Enable", NULL);
     if(tmp_res != pProfile->enable) {
-        profileEnable_changed = true;
+        profileEnableChanged = true;
         pProfile->enable = tmp_res;
     }
 
     SAH_TRACEZ_INFO(ME, "Syncing : EndpointProfile object --> T_EndpointProfile");
-    profile_changed = syncData_Object2EndPointProfile(object);
+    profileChanged = syncData_Object2EndPointProfile(object);
 
     if(pEP->currentProfile != pProfile) {
         SAH_TRACEZ_INFO(ME, "Changed profile is not currently selected : done");
         goto leave;
     }
 
-    if(!profileEnable_changed && !profile_changed) {
+    if(!profileEnableChanged && !profileChanged) {
         SAH_TRACEZ_INFO(ME, "Profile enabled field and profile parameters not changed : done");
         goto leave;
     }
 
-    if(profileEnable_changed) {
+    if(profileEnableChanged) {
         s_setProfileStatus(pProfile, false);
     }
 
-    if(profile_changed || profileEnable_changed) {
+    if(profileChanged || profileEnableChanged) {
         endpointReconfigure(pEP);
     }
 
@@ -915,15 +920,44 @@ leave:
 }
 
 /**
- * @brief wld_endpoint_setProfileSecurity_owf
+ * @brief wld_endpoint_setProfileSecurity_pwf
  *
- * Write handler on the Endpoint Profile Security Object
+ * Write handler on the Endpoint Profile Security parameters
  * Sync object data to the EndPontProfile structure
  *
- * @param object Endpoint Profile Security Object
  */
+amxd_status_t _wld_endpoint_setProfileSecurity_pwf(amxd_object_t* object,
+                                                   amxd_param_t* parameter,
+                                                   amxd_action_t reason,
+                                                   const amxc_var_t* const args,
+                                                   amxc_var_t* const retval,
+                                                   void* priv) {
+
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "Invalid action (%d)", rv);
+
+    amxd_object_t* profileObject = amxd_object_get_parent(object);
+    T_EndPointProfile* pProfile = (T_EndPointProfile*) profileObject->priv;
+    ASSERT_NOT_NULL(pProfile, amxd_status_unknown_error, ME, "Profile is not yet set");
+
+    T_EndPoint* pEP = pProfile->endpoint;
+    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "pProfile(%p), pEP->currentProfile(%p)", pProfile, pEP->currentProfile);
+
+    bool profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
+
+    if(profileChanged) {
+        endpointReconfigure(pEP);
+    }
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
 amxd_status_t _wld_endpoint_setProfileSecurity_owf(amxd_object_t* object) {
-    bool profile_changed = false;
+    bool profileChanged = false;
     amxd_object_t* profileObject = amxd_object_get_parent(object);
 
     if(amxd_object_get_type(profileObject) == amxd_object_template) {
@@ -940,9 +974,9 @@ amxd_status_t _wld_endpoint_setProfileSecurity_owf(amxd_object_t* object) {
 
     T_EndPoint* pEP = pProfile->endpoint;
     ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
-    profile_changed = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
+    profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
 
-    if(profile_changed) {
+    if(profileChanged) {
         endpointReconfigure(pEP);
     }
     SAH_TRACEZ_OUT(ME);
@@ -1568,6 +1602,18 @@ bool wld_endpoint_validate_profile(const T_EndPointProfile* epProfile) {
             SAH_TRACEZ_ERROR(ME, "invalid KeyPassPhrase :[%s] (detected mode [%u]) for mode [%u]", epProfile->keyPassPhrase, keyClassification, epProfile->secModeEnabled);
             return false;
         }
+    } else if((epProfile->secModeEnabled == APMSI_WPA3_P) || (epProfile->secModeEnabled == APMSI_WPA2_WPA3_P)
+              || (epProfile->secModeEnabled == APMSI_WPA3_E) || (epProfile->secModeEnabled == APMSI_WPA2_WPA3_E)) {
+        if(isValidAESKey(epProfile->saePassphrase, SAE_KEY_SIZE_LEN)) {
+            keyClassification = APMSI_WPA3_P;
+        } else if(isValidAESKey(epProfile->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
+            keyClassification = APMSI_WPA2_P;
+        }
+        if(!((APMSI_WPA3_P == keyClassification) || (APMSI_WPA2_P == keyClassification))) {
+            SAH_TRACEZ_ERROR(ME, "invalid saePassphrase :[%s] and keyPassPhrase :[%s] (detected mode [%u]) for mode [%u]",
+                             epProfile->saePassphrase, epProfile->keyPassPhrase, keyClassification, epProfile->secModeEnabled);
+            return false;
+        }
     } else if(epProfile->secModeEnabled == APMSI_AUTO) {
         keyClassification = APMSI_AUTO;
     }
@@ -2042,6 +2088,7 @@ amxd_status_t _EndPoint_debug(amxd_object_t* object,
             amxc_var_add_key(cstring_t, retval, "BSSID", macBuffer);
             amxc_var_add_key(cstring_t, retval, "Security", cstr_AP_ModesSupported[pEP->currentProfile->secModeEnabled]);
             amxc_var_add_key(cstring_t, retval, "KeyPassPhrase", pEP->currentProfile->keyPassPhrase);
+            amxc_var_add_key(cstring_t, retval, "SAEPassphrase", pEP->currentProfile->saePassphrase);
             amxc_var_add_key(cstring_t, retval, "PreSharedKey", pEP->currentProfile->preSharedKey);
             amxc_var_add_key(cstring_t, retval, "WEPKey", pEP->currentProfile->WEPKey);
         }
