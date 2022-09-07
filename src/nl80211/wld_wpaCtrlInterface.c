@@ -62,6 +62,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <fcntl.h>
 #include "wld.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_wpaCtrlInterface_priv.h"
@@ -124,11 +125,17 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
     int fd = pConn->wpaPeer;
     const char* ifName = wld_wpaCtrlInterface_getName(pConn->pInterface);
     ASSERT_TRUE(fd > 0, false, ME, "%s: invalid fd for cmd (%s)", ifName, cmd);
-    ASSERT_TRUE(s_sendCmd(pConn, cmd), false, ME, "%s: fail to send sync cmd(%s)", ifName, cmd);
 
     struct timeval tv;
     int res;
     fd_set rfds;
+
+    /* clear pending replies to avoid getting answer of timeouted request */
+    char dropBuf[reply_len];
+    while(recv(fd, dropBuf, reply_len, 0) > 0) {
+    }
+
+    ASSERT_TRUE(s_sendCmd(pConn, cmd), false, ME, "%s: fail to send sync cmd(%s)", ifName, cmd);
 
     do {
         tv.tv_sec = 1;
@@ -303,6 +310,7 @@ static bool s_wpaCtrlOpenConnection(wpaCtrlConnection_t* pConn) {
     ASSERTS_FALSE(pConn->wpaPeer > 0, true, ME, "already connected");
     int fd = socket(PF_UNIX, SOCK_DGRAM, 0);
     ASSERT_FALSE(fd < 0, false, ME, "socket(PF_UNIX, SOCK_DGRAM, 0) failed");
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 
     int ret = bind(fd, (struct sockaddr*) &(pConn->clientAddr), sizeof(struct sockaddr_un));
     if((ret < 0) && (errno == EADDRINUSE)) {
@@ -339,7 +347,7 @@ static bool s_wpaCtrlOpenConnection(wpaCtrlConnection_t* pConn) {
 void wld_wpaCtrlInterface_close(wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, , ME, "NULL");
     // Send DETACH before closing connection
-    if(pIface->isReady && (pIface->eventConn != NULL)) {
+    if(wld_wpaCtrlMngr_isConnected(pIface->pMgr) && pIface->isReady && (pIface->eventConn != NULL)) {
         bool ret = s_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK");
         if(ret == false) {
             SAH_TRACEZ_ERROR(ME, "detach failed from (%s)", s_getConnSrvPath(pIface->eventConn));
@@ -437,22 +445,20 @@ bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
     pIface->isReady = false;
 
     /*
-     * create a socket for cmd
-     * send ping command to wpa_ctrl server and check the response
-     */
-    if((!s_wpaCtrlOpenConnection(pIface->cmdConn)) ||
-       (!s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG"))) {
-        SAH_TRACEZ_ERROR(ME, "%s: fail to establish cmd connection", pIface->name);
-        return false;
-    }
-
-    /*
      * create a socket for event
      * and send attach command to wpa_ctrl server to register for unsolicited msg
      */
     if((!s_wpaCtrlOpenConnection(pIface->eventConn)) ||
        (!s_sendCmdCheckResponse(pIface->eventConn, "ATTACH", "OK"))) {
         SAH_TRACEZ_ERROR(ME, "%s: fail to establish event connection", pIface->name);
+        return false;
+    }
+
+    /*
+     * create a socket for cmd
+     */
+    if(!s_wpaCtrlOpenConnection(pIface->cmdConn)) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to establish cmd connection", pIface->name);
         return false;
     }
 

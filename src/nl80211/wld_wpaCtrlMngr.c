@@ -80,9 +80,21 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
     wld_wpaCtrlMngr_t* pMgr = (wld_wpaCtrlMngr_t*) userdata;
 
     uint32_t nIfacesReady = 0;
+    const char* srvName = "";
     swl_unLiListIt_t it;
+    wld_wpaCtrlInterface_t* pIface = NULL;
     swl_unLiList_for_each(it, &pMgr->ifaces) {
-        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(!srvName[0]) {
+            srvName = wld_wpaCtrlInterface_getName(pIface);
+        }
+        if((pMgr->pSecDmn != NULL) &&
+           (!wld_secDmn_isRunning(pMgr->pSecDmn))) {
+            SAH_TRACEZ_ERROR(ME, "%s: %s not started yet, no need to reconnect", srvName, pMgr->pSecDmn->dmnProcess->cmd);
+            //no need to retry, as long as sec daemon is not running
+            pMgr->wpaCtrlConnectAttempts += MAX_CONNECTION_ATTEMPTS;
+            break;
+        }
         if(!wld_wpaCtrlInterface_open(pIface)) {
             pMgr->wpaCtrlConnectAttempts++;
             break;
@@ -93,17 +105,18 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
 
     uint32_t nExpecIfaces = swl_unLiList_size(&pMgr->ifaces);
     if((nIfacesReady > 0) && (nIfacesReady == nExpecIfaces)) {
-        SAH_TRACEZ_INFO(ME, "wpa_ctrl server is ready");
+        SAH_TRACEZ_INFO(ME, "%s: wpa_ctrl server is ready (%d/%d connected)", srvName, nIfacesReady, nExpecIfaces);
         pMgr->wpaCtrlConnectAttempts = 0;
         amxp_timer_stop(pMgr->connectTimer);
+        CALL_MGR(pMgr, pIface->name, fMngrReadyCb, true);
     } else if(pMgr->wpaCtrlConnectAttempts < MAX_CONNECTION_ATTEMPTS) {
-        SAH_TRACEZ_WARNING(ME, "wpa_ctrl server not yet ready (%d/%d), waiting (%d/%d)..",
-                           nIfacesReady, nExpecIfaces,
+        SAH_TRACEZ_WARNING(ME, "%s: wpa_ctrl server not yet ready (%d/%d), waiting (%d/%d)..",
+                           srvName, nIfacesReady, nExpecIfaces,
                            pMgr->wpaCtrlConnectAttempts, MAX_CONNECTION_ATTEMPTS);
     } else {
         pMgr->wpaCtrlConnectAttempts = 0;
         amxp_timer_stop(pMgr->connectTimer);
-        SAH_TRACEZ_ERROR(ME, "Fail to connect to wpa_ctrl server");
+        SAH_TRACEZ_ERROR(ME, "%s: Fail to connect to wpa_ctrl server", srvName);
     }
 }
 
@@ -199,14 +212,14 @@ bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr) {
 }
 
 /**
- * @brief check that all registed wpa_ctrl interfaces are ready and alive
+ * @brief check that all registed wpa_ctrl interfaces are ready
  *
  * @param pMgr pointer to wpa ctrl manager
  *
  * @return true when all registed wpa_ctrl interfaces are ready,
  *         false, otherwise.
  */
-bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr) {
+bool wld_wpaCtrlMngr_isReady(wld_wpaCtrlMngr_t* pMgr) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
     ASSERTI_NOT_EQUALS(swl_unLiList_size(&pMgr->ifaces), 0, false, ME, "Empty");
     swl_unLiListIt_t it;
@@ -214,8 +227,23 @@ bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr) {
         wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
         ASSERT_NOT_NULL(pIface, false, ME, "NULL");
         ASSERTS_TRUE(pIface->isReady, false, ME, "Not ready");
-        ASSERTS_TRUE(wld_wpaCtrlInterface_ping(pIface), false, ME, "Not responding");
     }
+    return true;
+}
+
+/**
+ * @brief check that wpaCtrl manager is connected:
+ * i.e can receive events from its main interface.
+ *
+ * @param pMgr pointer to wpa ctrl manager
+ *
+ * @return true when relative secDmn is running and main interface is connected,
+ *         false, otherwise.
+ */
+bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr) {
+    ASSERTS_TRUE(wld_secDmn_isRunning(pMgr->pSecDmn), false, ME, "No running server");
+    wld_wpaCtrlInterface_t* mainIface = wld_wpaCtrlMngr_getInterface(pMgr, 0);
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(mainIface), false, ME, "main iface not Ready");
     return true;
 }
 
@@ -229,7 +257,7 @@ bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr) {
  */
 bool wld_wpaCtrlMngr_connect(wld_wpaCtrlMngr_t* pMgr) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
-    ASSERTS_FALSE(wld_wpaCtrlMngr_isConnected(pMgr), true, ME, "already connected");
+    ASSERTI_FALSE(wld_wpaCtrlMngr_isConnected(pMgr), true, ME, "already connected");
     amxp_timer_start(pMgr->connectTimer, FIRST_DELAY_MS);
     return true;
 }

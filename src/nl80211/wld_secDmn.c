@@ -187,6 +187,6 @@ bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn) {
 
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
-    return (wld_secDmn_isRunning(pSecDmn) && wld_wpaCtrlMngr_ping(pSecDmn->wpaCtrlMngr));
+    return (wld_secDmn_isRunning(pSecDmn) && wld_wpaCtrlMngr_isConnected(pSecDmn->wpaCtrlMngr));
 }
 

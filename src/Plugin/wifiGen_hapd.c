@@ -73,12 +73,28 @@
 #define HOSTAPD_CMD "hostapd"
 #define HOSTAPD_ARGS_FORMAT "-ddt %s"
 
+#define HOSTAPD_EXIT_REASON_SUCCESS 0
+/*
+ * hostapd exits with retcode -1, when failing to:
+ * - alloc memory for internal usage
+ * - init global ctx
+ * - init wpa ctrl interface (comm sock)
+ */
+#define HOSTAPD_EXIT_REASON_INIT_FAIL -1
+/*
+ * hostapd exits with retcode 1, when failing to:
+ * - detect local interfaces
+ * - parse config file or load config sections of global/iface/bss
+ */
+#define HOSTAPD_EXIT_REASON_LOAD_FAIL 1
+
 static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
     const char* mainIface = wld_rad_getFirstVap(pRad)->alias;
     SAH_TRACEZ_WARNING(ME, "%s: hostapd stopped", mainIface);
     wld_deamonExitInfo_t* pExitInfo = &pHapdInst->dmnProcess->lastExitInfo;
-    if(pExitInfo && pExitInfo->isExited && (pExitInfo->exitStatus == 1)) {
+    if((pExitInfo != NULL) && (pExitInfo->isExited) &&
+       (pExitInfo->exitStatus == HOSTAPD_EXIT_REASON_LOAD_FAIL)) {
         SAH_TRACEZ_ERROR(ME, "%s: invalid hostapd configuration", mainIface);
     }
     wld_rad_updateState(pRad, true);

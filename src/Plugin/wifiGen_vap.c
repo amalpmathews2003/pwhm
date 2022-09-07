@@ -282,7 +282,7 @@ swl_rc_ne wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int s
         return SWL_RC_OK;
     }
 
-    // When SSID is hided... we don't start WPS but STOP as escape...
+    // When SSID is hidden... we don't start WPS but STOP as escape...
     if(!pAP->SSIDAdvertisementEnabled || swl_str_matches(val, "STOP")) {
         rc = wld_ap_hostapd_stopWps(pAP);
         ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to stop wps session", pAP->alias);
