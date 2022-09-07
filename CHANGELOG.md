@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.10.0 - 2022-09-07(14:14:35 +0000)
+
+### Other
+
+- improve wpactrl connections of MultiVAP
+
 ## Release v1.9.0 - 2022-09-07(10:37:06 +0000)
 
 ### Other
