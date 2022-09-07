@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.9.0 - 2022-09-07(10:37:06 +0000)
+
+### Other
+
+- manage secDmn and hostapd crash and stop
+
 ## Release v1.8.6 - 2022-09-06(17:13:55 +0000)
 
 ### Other
