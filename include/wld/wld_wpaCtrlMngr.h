@@ -64,9 +64,10 @@
 #define __WLD_WPA_CTRL_MNGR_H__
 
 #include "wld_wpaCtrlInterface.h"
+struct wld_secDmn;
 typedef struct wld_wpaCtrlMngr wld_wpaCtrlMngr_t;
 
-bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr);
+bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr, struct wld_secDmn* pSecDmn);
 bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers);
 bool wld_wpaCtrlMngr_connect(wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_disconnect(wld_wpaCtrlMngr_t* pMgr);

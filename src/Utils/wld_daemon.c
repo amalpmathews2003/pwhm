@@ -84,8 +84,14 @@ void wld_dmn_setMonitorConf(wld_daemonMonitorConf_t* pDmnMoniConf) {
 }
 
 static void s_deamonStarter(amxp_timer_t* timer _UNUSED, void* userdata) {
+    wld_process_t* process = (wld_process_t*) userdata;
+    ASSERTS_NOT_NULL(process, , ME, "NULL");
+    if(process->handlers.restartCb != NULL) {
+        process->handlers.restartCb(process, process->userData);
+        return;
+    }
     //keep same stop handler
-    wld_dmn_startDeamon((wld_process_t*) userdata);
+    wld_dmn_startDeamon(process);
 }
 
 static int s_cmdBuilder(amxc_array_t* cmd, amxc_var_t* settings) {
@@ -100,8 +106,7 @@ static int s_cmdBuilder(amxc_array_t* cmd, amxc_var_t* settings) {
     return -(i == 0);
 }
 
-bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd,
-                              wld_dmn_restartHandler restartDaemon, void* userData) {
+bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd) {
     ASSERT_NOT_NULL(process, false, ME, "NULL");
     ASSERT_NOT_NULL(cmd, false, ME, "NULL");
     ASSERT_NOT_EQUALS(process->status, WLD_DAEMON_STATE_DOWN, false, ME, "INVALID STATE");
@@ -122,22 +127,25 @@ bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd,
     }
 
     process->cmd = cmd;
-    process->userData = userData;
     process->argList[0] = process->cmd;
-    process->restartDaemon = restartDaemon;
     process->status = WLD_DAEMON_STATE_DOWN;
     process->enabled = false;
 
-    amxp_timer_cb_t cb;
-    // Configure process's restart timer.
-    if(process->restartDaemon != NULL) {
-        cb = process->restartDaemon;
-    } else {
-        cb = s_deamonStarter;
-    }
-    amxp_timer_new(&process->restart_timer, cb, process);
+    amxp_timer_new(&process->restart_timer, s_deamonStarter, process);
     process->failDate = time(NULL);
 
+    return true;
+}
+
+bool wld_dmn_setDeamonEvtHandlers(wld_process_t* process, wld_deamonEvtHandlers* pHandlers,
+                                  void* userData) {
+    ASSERT_NOT_NULL(process, false, ME, "NULL");
+    process->userData = userData;
+    if(pHandlers == NULL) {
+        memset(&process->handlers, 0, sizeof(wld_deamonEvtHandlers));
+    } else {
+        memcpy(&process->handlers, pHandlers, sizeof(wld_deamonEvtHandlers));
+    }
     return true;
 }
 
@@ -257,6 +265,10 @@ bool wld_dmn_stopDeamon(wld_process_t* dmn_process) {
     dmn_process->status = WLD_DAEMON_STATE_DOWN;
     dmn_process->enabled = false;
 
+    memset(&dmn_process->lastExitInfo, 0, sizeof(wld_deamonExitInfo_t));
+    dmn_process->lastExitInfo.isStopped = true;
+    SWL_CALL(dmn_process->handlers.stopCb, dmn_process, dmn_process->userData);
+
     SAH_TRACEZ_INFO(ME, "%s success terminated", name);
     return true;
 }
@@ -266,10 +278,24 @@ bool wld_dmn_stopCb(wld_process_t* end_process) {
         SAH_TRACEZ_ERROR(ME, "Unknown stopped unexpectedly");
         return true;
     }
+    ASSERTS_NOT_EQUALS(end_process->status, WLD_DAEMON_STATE_ERROR, true,
+                       ME, "Process %s crash already processed", end_process->cmd);
 
     end_process->status = WLD_DAEMON_STATE_ERROR;
-    SAH_TRACEZ_ERROR(ME, "Process %s stopped unexpectedly",
-                     end_process->cmd);
+    wld_deamonExitInfo_t* pExitInfo = &end_process->lastExitInfo;
+    memset(pExitInfo, 0, sizeof(wld_deamonExitInfo_t));
+    pExitInfo->isExited = (amxp_subproc_ifexited(end_process->process->proc) != 0);
+    if(pExitInfo->isExited) {
+        pExitInfo->exitStatus = amxp_subproc_get_exitstatus(end_process->process->proc);
+    }
+    pExitInfo->isSignaled = (amxp_subproc_ifsignaled(end_process->process->proc) != 0);
+    if(pExitInfo->isSignaled) {
+        pExitInfo->termSignal = amxp_subproc_get_termsig(end_process->process->proc);
+    }
+    SAH_TRACEZ_ERROR(ME, "Process %s stopped unexpectedly (e:%d/r:%d/k:%d/s:%d)",
+                     end_process->cmd,
+                     pExitInfo->isExited, pExitInfo->exitStatus,
+                     pExitInfo->isSignaled, pExitInfo->termSignal);
 
     SAH_TRACEZ_INFO(ME, "%s->fails is %d And %s->totalFails is %d.", end_process->cmd,
                     end_process->fails, end_process->cmd, end_process->totalFails);
@@ -277,6 +303,7 @@ bool wld_dmn_stopCb(wld_process_t* end_process) {
     end_process->totalFails++;
     SAH_TRACEZ_INFO(ME, "%s->fails updated to %d And %s->totalFails to %d.", end_process->cmd,
                     end_process->fails, end_process->cmd, end_process->totalFails);
+    SWL_CALL(end_process->handlers.stopCb, end_process, end_process->userData);
 
     time_t lastFailDate = end_process->failDate;
     end_process->failDate = time(NULL);
@@ -284,6 +311,7 @@ bool wld_dmn_stopCb(wld_process_t* end_process) {
         double elapsedTime = difftime(end_process->failDate, lastFailDate);
         SAH_TRACEZ_ERROR(ME, "Last daemon crash occured %.2f seconds before.", elapsedTime);
 
+        amxp_timer_stop(end_process->restart_timer);
         if((s_dmnMoniConf.instantRestartLimit >= 0) &&
            (end_process->totalFails > (uint32_t) s_dmnMoniConf.instantRestartLimit) &&
            (s_dmnMoniConf.minRestartInterval > (uint32_t) elapsedTime)) {

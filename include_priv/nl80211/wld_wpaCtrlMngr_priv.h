@@ -69,10 +69,12 @@
 
 #include "swl/swl_unLiList.h"
 #include "wld_wpaCtrl_events.h"
+#include "wld_secDmn.h"
 
 struct wld_wpaCtrlMngr {
     amxp_timer_t* connectTimer;
     uint8_t wpaCtrlConnectAttempts;
+    wld_secDmn_t* pSecDmn;
     void* userData;
     swl_unLiList_t ifaces; //list of wpa_ctrl interfaces, handled by the manager
     wld_wpaCtrl_radioEvtHandlers_cb handlers;

@@ -66,16 +66,26 @@
 #include "wld_wpaCtrlMngr.h"
 #include "wld_daemon.h"
 
+typedef struct wld_secDmn wld_secDmn_t;
+typedef void (* wld_secDmn_restartHandler)(wld_secDmn_t* pSecDmn, void* userdata);
+typedef void (* wld_secDmn_stopHandler)(wld_secDmn_t* pSecDmn, void* userdata);
+
 typedef struct {
+    wld_secDmn_restartHandler restartCb; // optional handler to manage security daemon restarting
+    wld_secDmn_stopHandler stopCb;       // optional handler to get notification for security daemon process end
+} wld_secDmnEvtHandlers;
+
+struct wld_secDmn {
     wld_wpaCtrlMngr_t* wpaCtrlMngr; /* wpaCtrlMngr */
     wld_process_t* dmnProcess;      /* daemon context. */
     char* cfgFile;                  /* config file path*/
     char* ctrlIfaceDir;             /* ctrl_interface directory: /var/run/xxx/*/
-} wld_secDmn_t;
+    wld_secDmnEvtHandlers handlers; /* optional handlers of secDmn events*/
+    void* userData;                 /* optional user data available in restart handler. */
+};
 
 swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir);
-swl_rc_ne wld_secDmn_initExt(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir,
-                             wld_dmn_restartHandler restartDaemon, void* userData);
+swl_rc_ne wld_secDmn_setEvtHandlers(wld_secDmn_t* pSecDmn, wld_secDmnEvtHandlers* pHandlers, void* userData);
 swl_rc_ne wld_secDmn_cleanup(wld_secDmn_t** ppSecDmn);
 swl_rc_ne wld_secDmn_start(wld_secDmn_t* pSecDmn);
 swl_rc_ne wld_secDmn_stop(wld_secDmn_t* pSecDmn);

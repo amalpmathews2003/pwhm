@@ -66,11 +66,25 @@
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_wpaCtrl_events.h"
 #include "wld/wld_hostapd_ap_api.h"
+#include "wifiGen_hapd.h"
 
 #define ME "genHapd"
 #define HOSTAPD_CONF_FILE_PATH_FORMAT "/tmp/%s_hapd.conf"
 #define HOSTAPD_CMD "hostapd"
 #define HOSTAPD_ARGS_FORMAT "-ddt %s"
+
+static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
+    T_Radio* pRad = (T_Radio*) userdata;
+    const char* mainIface = wld_rad_getFirstVap(pRad)->alias;
+    SAH_TRACEZ_WARNING(ME, "%s: hostapd stopped", mainIface);
+    wld_deamonExitInfo_t* pExitInfo = &pHapdInst->dmnProcess->lastExitInfo;
+    if(pExitInfo && pExitInfo->isExited && (pExitInfo->exitStatus == 1)) {
+        SAH_TRACEZ_ERROR(ME, "%s: invalid hostapd configuration", mainIface);
+    }
+    wld_rad_updateState(pRad, true);
+    //finalize hapd cleanup
+    wifiGen_hapd_stopDaemon(pRad);
+}
 
 swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -80,6 +94,10 @@ swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     swl_str_catFormat(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT, confFilePath);
     swl_rc_ne rc = wld_secDmn_init(&pRad->hostapd, HOSTAPD_CMD, startArgs, confFilePath, HOSTAPD_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init hostapd", pRad->Name);
+    wld_secDmnEvtHandlers handlers;
+    memset(&handlers, 0, sizeof(handlers));
+    handlers.stopCb = s_stopHapdCb;
+    wld_secDmn_setEvtHandlers(pRad->hostapd, &handlers, pRad);
     return SWL_RC_OK;
 }
 
@@ -113,7 +131,9 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
     ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
-        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, 0);
+        if(pAP->index > 0) {
+            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, 0);
+        }
     }
     return SWL_RC_OK;
 }

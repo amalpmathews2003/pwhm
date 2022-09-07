@@ -79,7 +79,7 @@ bool wifiGen_init() {
     wld_daemonMonitorConf_t dmnMoniConf = {
         .enableParam = true,
         .instantRestartLimit = 3,
-        .minRestartInterval = 1800,
+        .minRestartInterval = 5,
     };
     wld_dmn_setMonitorConf(&dmnMoniConf);
 

@@ -112,10 +112,11 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
  * If already allocated, then it will be reset
  *
  * @param ppMgr pointer wpa_ctrl manager to be allocated/initialized
+ * @param pSecDmn pointer to target security deamon (server)
  *
  * @return true when wpa_ctrl manager is successfully initialized. Otherwise, false.
  */
-bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr) {
+bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr, struct wld_secDmn* pSecDmn) {
     ASSERT_NOT_NULL(ppMgr, false, ME, "NULL");
     wld_wpaCtrlMngr_t* pMgr = *ppMgr;
 
@@ -125,6 +126,7 @@ bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr) {
         swl_unLiList_init(&pMgr->ifaces, sizeof(wld_wpaCtrlInterface_t*));
         amxp_timer_new(&pMgr->connectTimer, s_reconnectMgrTimer, pMgr);
         amxp_timer_set_interval(pMgr->connectTimer, RETRY_DELAY_MS);
+        pMgr->pSecDmn = pSecDmn;
         *ppMgr = pMgr;
     } else {
         wld_wpaCtrlMngr_disconnect(pMgr);

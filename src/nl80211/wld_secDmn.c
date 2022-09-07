@@ -74,13 +74,28 @@ void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn) {
     wld_wpaCtrlMngr_connect(pSecDmn->wpaCtrlMngr);
 }
 
-static void s_restartDeamon(amxp_timer_t* timer _UNUSED, void* userdata) {
-    wld_process_t* process = (wld_process_t*) userdata;
-    ASSERT_NOT_NULL(process, , ME, "NULL");
-    wld_secDmn_restartCb((wld_secDmn_t*) process->userData);
+static void s_restartDeamon(wld_process_t* pProc _UNUSED, void* userdata) {
+    wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
+    ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
+    if(pSecDmn->handlers.restartCb != NULL) {
+        pSecDmn->handlers.restartCb(pSecDmn, pSecDmn->userData);
+        return;
+    }
+    wld_secDmn_restartCb(pSecDmn);
 }
 
-swl_rc_ne wld_secDmn_initExt(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir, wld_dmn_restartHandler restartDaemon, void* userData) {
+static void s_stopDeamon(wld_process_t* pProc _UNUSED, void* userdata) {
+    wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
+    ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
+    if(pSecDmn->handlers.stopCb) {
+        pSecDmn->handlers.stopCb(pSecDmn, pSecDmn->userData);
+        return;
+    }
+    //finalize secDmn cleanup
+    wld_secDmn_stop(pSecDmn);
+}
+
+swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir) {
     ASSERT_STR(cmd, SWL_RC_INVALID_PARAM, ME, "invalid cmd");
     ASSERT_NOT_NULL(ppSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_secDmn_t* pSecDmn = *ppSecDmn;
@@ -92,10 +107,13 @@ swl_rc_ne wld_secDmn_initExt(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs
     ASSERT_NULL(pSecDmn->dmnProcess, SWL_RC_OK, ME, "already initialized");
     pSecDmn->dmnProcess = calloc(1, sizeof(wld_process_t));
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
-    if((!wld_dmn_initializeDeamon(pSecDmn->dmnProcess, cmd,
-                                  (restartDaemon ? restartDaemon : s_restartDeamon),
-                                  (userData ? userData : pSecDmn))) ||
-       (!wld_wpaCtrlMngr_init(&pSecDmn->wpaCtrlMngr))) {
+    wld_deamonEvtHandlers handlers = {
+        .restartCb = s_restartDeamon,
+        .stopCb = s_stopDeamon,
+    };
+    if((!wld_dmn_initializeDeamon(pSecDmn->dmnProcess, cmd)) ||
+       (!wld_dmn_setDeamonEvtHandlers(pSecDmn->dmnProcess, &handlers, pSecDmn)) ||
+       (!wld_wpaCtrlMngr_init(&pSecDmn->wpaCtrlMngr, pSecDmn))) {
         SAH_TRACEZ_ERROR(ME, "fail to initialize daemon %s", cmd);
         wld_dmn_cleanupDaemon(pSecDmn->dmnProcess);
         free(pSecDmn->dmnProcess);
@@ -108,8 +126,15 @@ swl_rc_ne wld_secDmn_initExt(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs
     return SWL_RC_OK;
 }
 
-swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir) {
-    return wld_secDmn_initExt(ppSecDmn, cmd, startArgs, cfgFile, ctrlIfaceDir, NULL, NULL);
+swl_rc_ne wld_secDmn_setEvtHandlers(wld_secDmn_t* pSecDmn, wld_secDmnEvtHandlers* pHandlers, void* userData) {
+    ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
+    pSecDmn->userData = userData;
+    if(pHandlers == NULL) {
+        memset(&pSecDmn->handlers, 0, sizeof(wld_secDmnEvtHandlers));
+    } else {
+        memcpy(&pSecDmn->handlers, pHandlers, sizeof(wld_secDmnEvtHandlers));
+    }
+    return SWL_RC_OK;
 }
 
 swl_rc_ne wld_secDmn_cleanup(wld_secDmn_t** ppSecDmn) {

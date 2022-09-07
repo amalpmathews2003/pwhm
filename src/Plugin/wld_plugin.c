@@ -101,7 +101,7 @@ int _wld_main(int reason,
          */
         amxp_timer_t* timer = NULL;
         amxp_timer_new(&timer, s_delayLoadDmConf, NULL);
-        amxp_timer_start(timer, 100);
+        amxp_timer_start(timer, 250);
         break;
     case 1:     // STOP
         SAH_TRACEZ_WARNING(ME, "WLD plugin stopped");

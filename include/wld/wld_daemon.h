@@ -79,30 +79,56 @@ typedef enum {
 } wld_deamonState_e;
 
 extern const char* g_str_wld_dmn_state[];
+typedef struct wld_process wld_process_t;
+typedef void (* wld_dmn_restartHandler)(wld_process_t* pProc, void* userdata);
+
+typedef struct {
+    bool isStopped;     // process stopped by user
+    bool isExited;      // process exited unexpectedly
+    int32_t exitStatus; // exit code
+    bool isSignaled;    // process ended with signal
+    int32_t termSignal; // received signa
+} wld_deamonExitInfo_t;
+
+/*
+ * @brief handler notifying child process's end of execution
+ *
+ * @param pProc process context
+ * @param userdata private data context pointer registered when starting the process
+ * @param pExitInfo pointer to child process exit info.
+ */
+typedef void (* wld_dmn_stopHandler)(wld_process_t* pProc, void* userdata);
+
+typedef struct {
+    wld_dmn_restartHandler restartCb; // optional handler to manage child process restarting
+    wld_dmn_stopHandler stopCb;       // optional handler to get notification for child process end
+} wld_deamonEvtHandlers;
 
 /* wld daemon context. */
-typedef struct wld_process {
-    char* cmd;                   /* Command to run */
-    char* args;                  /* arguments as provided by user */
-    uint32_t argLen;             /* length of args */
-    char** argList;              /* argument list to be provided to start API */
-    uint32_t nrArgs;             /* number of arguments */
-    bool enabled;                /* Indicates if daemon is enabled(true) or disabled(false) */
-    wld_deamonState_e status;    /* Indicates daemon's current state */
-    void (* restartDaemon)();    /* Points to daemon's restart function */
-    uint32_t fails;              /* Amount of fails since last time daemon is set to enabled */
-    uint32_t totalFails;         /* Total amount of fails since first time daemon is set to enabled */
-    uint32_t restarts;           /* Amount of restarts since last time daemon is set to enabled */
-    uint32_t totalRestarts;      /* Total amount of restarts since first time daemon is set to enabled */
-    time_t failDate;             /* Indicates the last time daemon has been started */
-    void* userData;              /* Optional userdata for process */
-    bool forceKill;              /* Force -9 option when terminating, as done by some ref software */
+struct wld_process {
+    char* cmd;                         /* Command to run */
+    char* args;                        /* arguments as provided by user */
+    uint32_t argLen;                   /* length of args */
+    char** argList;                    /* argument list to be provided to start API */
+    uint32_t nrArgs;                   /* number of arguments */
+    bool enabled;                      /* Indicates if daemon is enabled(true) or disabled(false) */
+    wld_deamonState_e status;          /* Indicates daemon's current state */
+    uint32_t fails;                    /* Amount of fails since last time daemon is set to enabled */
+    uint32_t totalFails;               /* Total amount of fails since first time daemon is set to enabled */
+    uint32_t restarts;                 /* Amount of restarts since last time daemon is set to enabled */
+    uint32_t totalRestarts;            /* Total amount of restarts since first time daemon is set to enabled */
+    time_t failDate;                   /* Indicates the last time daemon has been started */
+    bool forceKill;                    /* Force -9 option when terminating, as done by some ref software */
 
-    amxp_proc_ctrl_t* process;   /* Process information struct */
-    amxp_timer_t* restart_timer; /* used when a daemon need to be restarted */
-    int stdInPeer;               /* peer for stdIn reading */
-    int stdErrPeer;              /* peer for stdErr reading */
-} wld_process_t;
+    amxp_proc_ctrl_t* process;         /* Process information struct */
+    amxp_timer_t* restart_timer;       /* used when a daemon need to be restarted */
+    int stdInPeer;                     /* peer for stdIn reading */
+    int stdErrPeer;                    /* peer for stdErr reading */
+
+    wld_deamonExitInfo_t lastExitInfo; /* Last process termination details. */
+    wld_deamonEvtHandlers handlers;    /* Optional handlers of daemon process events. */
+    void* userData;                    /* Optional userdata for process */
+};
 
 typedef struct {
     bool enableParam;
@@ -112,14 +138,13 @@ typedef struct {
 
 void wld_dmn_setMonitorConf(wld_daemonMonitorConf_t* pDmnMoniConf);
 
-typedef void (* wld_dmn_restartHandler)(amxp_timer_t* timer, void* userdata);
-
 /**
  * Create and initialize a daemonMonitor object.
  * @param process: IN process context
  * @return : true is successful, false otherwise
  */
-bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd, wld_dmn_restartHandler start_daemon, void* userData);
+bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd);
+bool wld_dmn_setDeamonEvtHandlers(wld_process_t* process, wld_deamonEvtHandlers* pHandlers, void* userData);
 void wld_dmn_cleanupDaemon(wld_process_t* process);
 
 /* Start daemon. */
