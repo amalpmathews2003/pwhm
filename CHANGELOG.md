@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.10.1 - 2022-09-08(09:47:20 +0000)
+
+### Other
+
+- : Add public action frame API.
+
 ## Release v1.10.0 - 2022-09-07(14:14:35 +0000)
 
 ### Other
