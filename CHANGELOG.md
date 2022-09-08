@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.11.1 - 2022-09-08(13:06:22 +0000)
+
+### Other
+
+- - FastStaReconnect catching to many events
+
 ## Release v1.11.0 - 2022-09-08(10:28:10 +0000)
 
 ## Release v1.10.1 - 2022-09-08(09:47:20 +0000)
