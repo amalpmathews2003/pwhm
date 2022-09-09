@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.11.2 - 2022-09-09(09:39:46 +0000)
+
+### Other
+
+- [prpl] remove unused token in pwhm
+
 ## Release v1.11.1 - 2022-09-08(13:06:22 +0000)
 
 ### Other
