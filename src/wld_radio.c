@@ -2570,30 +2570,6 @@ void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             swl_str_copy(pCWPS->ModelDescription, sizeof(pCWPS->ModelDescription), GET_CHAR(devInfo, "Description"));
             swl_str_copy(pCWPS->OsVersion, sizeof(pCWPS->OsVersion), GET_CHAR(devInfo, "SoftwareVersion"));
             swl_str_copy(pCWPS->SerialNumber, sizeof(pCWPS->SerialNumber), GET_CHAR(devInfo, "SerialNumber"));
-#if !CONFIG_SAH_WPS_IE_SERIAL_DEFAULT
-#if CONFIG_SAH_WPS_IE_SERIAL_FT_REQ
-            /* Only take a part of the serial key for security reasons! */
-            int i;
-            i = strlen(pCWPS->SerialNumber) / 2;
-            pCWPS->SerialNumber[i++] = 'F';
-            pCWPS->SerialNumber[i++] = 'F';
-            pCWPS->SerialNumber[i] = '\0';
-#elif CONFIG_SAH_WPS_IE_RANDOM_SERIAL
-            /* Not really random, we're making use of the STACK address for RND start.*/
-            int ch, i;
-            i = strlen(pCWPS->SerialNumber);
-            pCWPS->SerialNumber[i] = '\0';
-            for(--i; i >= 0; i--) {
-                get_random((unsigned char*) &ch, sizeof(int));
-                // Now make a ASCII string of it..
-                // 0-9 = Digit; 10-36 = A...Z; 36-62 = a..z; 62,63 = '*','-'
-                pCWPS->SerialNumber[i] =
-                    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz*-"[(ch & 0x3f)];
-            }
-#else
-            SAH_TRACEZ_ERROR(ME, "No WPS IE configured");
-#endif
-#endif
             swl_str_copy(pCWPS->ModelName, sizeof(pCWPS->ModelName), GET_CHAR(devInfo, "ModelName"));
             swl_str_copy(pCWPS->ModelNumber, sizeof(pCWPS->ModelNumber), GET_CHAR(devInfo, "ModelNumber"));
             swl_str_copy(pCWPS->ModelUrl, sizeof(pCWPS->ModelUrl), GET_CHAR(devInfo, "VendorURL"));
