@@ -1960,6 +1960,7 @@ typedef int (APIENTRY* PFN_WRAD_DEL_STAMON)(T_Radio* rad, T_NonAssociatedDevice*
 typedef int (APIENTRY* PFN_WRAD_SETUP_INTFRMON)(T_Radio* rad, bool enable);
 typedef int (APIENTRY* PFN_WRAD_CHECK_HEALTH)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_DELAY_AP_UP_DONE)(T_Radio* rad);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_RADIO_STATS)(T_Radio* rad);
 
 /*********** Vendor VAP driver settings *********************/
 typedef int (APIENTRY* PFN_WVAP_CREATE_HOOK)(T_AccessPoint* vap);
@@ -2097,6 +2098,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_ADD_STAMON mfn_wrad_add_stamon;                     /**< Add the non associated station */
     PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                     /**< Del the non associated station */
     PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;            /**< Warn driver delay AP up period is over*/
+    PFN_WRAD_RADIO_STATS mfn_wrad_radio_stats;                   /**< get radio statistics */
 
     PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;                   /**< VAP constructor hook */
     PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;                 /**< VAP destructor hook */

@@ -82,5 +82,6 @@ int wifiGen_rad_antennactrl(T_Radio* pRad, int val _UNUSED, int set);
 int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards);
 int wifiGen_rad_ochbw(T_Radio* pRad, int val, int set);
 void wifiGen_rad_initBands(T_Radio* pRad);
+swl_rc_ne wifiGen_rad_radio_stats(T_Radio* pRad);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_RAD_H_ */

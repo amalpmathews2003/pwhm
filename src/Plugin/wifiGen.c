@@ -105,6 +105,7 @@ bool wifiGen_init() {
     fta.mfn_wrad_antennactrl = wifiGen_rad_antennactrl;
     fta.mfn_wrad_supstd = wifiGen_rad_supstd;
     fta.mfn_wrad_ochbw = wifiGen_rad_ochbw;
+    fta.mfn_wrad_radio_stats = wifiGen_rad_radio_stats;
 
     //vap functions
     fta.mfn_wvap_create_hook = wifiGen_vap_createHook;

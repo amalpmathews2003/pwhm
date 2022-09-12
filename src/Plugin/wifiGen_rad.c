@@ -67,6 +67,7 @@
 #include "wld/wld_channel.h"
 #include "wld/wld_util.h"
 #include "wld/wld_linuxIfUtils.h"
+#include "wld/wld_linuxIfStats.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
 #include "wifiGen_rad.h"
@@ -648,5 +649,17 @@ void wifiGen_rad_initBands(T_Radio* pRad) {
             wld_channel_mark_passive_channel(chanspec);
         }
     }
+}
+
+swl_rc_ne wifiGen_rad_radio_stats(T_Radio* pRad) {
+    swl_rc_ne ret;
+    if(wld_linuxIfStats_getRadioStats(pRad, &pRad->stats)) {
+        ret = SWL_RC_OK;
+        SAH_TRACEZ_INFO(ME, "get stats for radio %d OK", pRad->index);
+    } else {
+        SAH_TRACEZ_INFO(ME, "get stats for radio %d fail", pRad->index);
+        ret = SWL_RC_ERROR;
+    }
+    return ret;
 }
 

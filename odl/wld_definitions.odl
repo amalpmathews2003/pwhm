@@ -1513,7 +1513,8 @@ define rrm_t{
 		 * operational interface status is discussed in [Section
 		 * 4.2.2/TR-181i2]. </p>
 		 */
-		%read-only object Stats{		
+		%read-only object Stats{
+			on action read call wld_radio_getStats_orf;
 													   
 			/** The total number of bytes transmitted out of the
 			 *  interface, including framing characters. */
@@ -1587,7 +1588,12 @@ define rrm_t{
 			 *  layer to a higher layer, which were addressed to a
 			 *  broadcast address at this layer. */
 			%read-only uint32 BroadcastPacketsReceived;
-
+			
+			/** The total number of packets received via the interface which
+			 *  were discarded because of an unknown or unsupported
+			 *  protocol.*/
+			%read-only uint32 UnknownProtoPacketsReceived;
+			
 			/** The number of packets that were not transmitted successfully
 			 *  due to the number of retransmission attempts
 			 *  exceeding an 802.11 retry limit.*/

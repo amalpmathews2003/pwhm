@@ -521,6 +521,12 @@ static swl_rc_ne TRAP_mfn_wvap_wps_enable(T_AccessPoint* pAP _UNUSED, int enable
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_radio_stats(T_Radio* pRadio _UNUSED) {
+    _UNUSED_(pRadio);
+    SAH_TRACEZ_NOTICE(ME, "%p", pRadio);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 
 #define FTA_ASSIGN(x) \
@@ -579,6 +585,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_add_stamon);
     FTA_ASSIGN(mfn_wrad_del_stamon);
     FTA_ASSIGN(mfn_wrad_delayApUpDone);
+    FTA_ASSIGN(mfn_wrad_radio_stats);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);
