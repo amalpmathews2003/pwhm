@@ -3739,8 +3739,11 @@ define rrm_t{
 		*/
 		void getStationStats();
 
-		/** The number of active entries in the AssociatedDevice  table.  */
+		/** The number of active entries in the AssociatedDevice table.  */
 		%read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
+		
+		/** The number of entries in the AssociatedDevice table. */
+		%read-only uint32 AssociatedDeviceNumberOfEntries;
 
 		/** <p> A table of the devices currently associated with the
 		    accesspoint. At most one entry in this table can exist with

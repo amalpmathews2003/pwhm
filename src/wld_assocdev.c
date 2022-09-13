@@ -105,12 +105,11 @@ SWL_TABLE(modeToStandard,
 #define FAST_RECONNECT_EVENT_TIMEOUT 30
 #define FAST_RECONNECT_USER_MIN_TIME_MS 1500
 
-typedef struct {
-    swl_macBin_t macAddress;
-    swl_timeSpecMono_t dcTime;
-} wld_ad_dcLog_t;
+#define X_WLD_AD_DC_LOG_T(X, Y) \
+    X(Y, gtSwl_type_macBin, macAddress) \
+    X(Y, gtSwl_type_timeSpecMono, dcTime)
+SWL_TT(tWld_ad_dcLog, wld_ad_dcLog_t, X_WLD_AD_DC_LOG_T, )
 char* tupleNames[] = {"macAddress", "dcTime"};
-SWL_TUPLE_TYPE(wld_ad_dcLog, ARR(swl_type_macBin, swl_type_timeMono));
 
 const char* fastReconnectTypes[WLD_FAST_RECONNECT_MAX] = {"Default", "OnStateChange", "OnScan", "User"};
 
@@ -213,6 +212,29 @@ int wld_ad_remove_assocdev_from_bridge(T_AccessPoint* pAP, T_AssociatedDevice* p
 
     err = ioctl(pRad->wlRadio_SK, SIOCDEVPRIVATE, &ifr);
     return err;
+}
+
+int wld_ad_getIndex(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+        if(pAD == pAP->AssociatedDevice[i]) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    if(pAD->object) {
+        amxd_object_delete(&pAD->object);
+        pAD->object = NULL;
+    } else {
+        SAH_TRACEZ_INFO(ME, "%s: object did not exist!", pAD->Name);
+    }
+
+    int i = wld_ad_getIndex(pAP, pAD);
+    if(i >= 0) {
+        wld_ad_destroy_associatedDevice(pAP, i);
+    }
 }
 
 
@@ -829,14 +851,16 @@ void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     wld_ad_checkRoamSta(pAP, pAD);
 
     pAD->associationTime = swl_time_getMonoSec();
-    wld_vap_sync_assoclist(pAP);
+    wld_vap_sync_device(pAP, pAD);
+    wld_vap_syncNrDev(pAP);
 }
 
 static void s_addDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
-    bool hasLog = (log == NULL);
-    if(hasLog) {
+    bool hasLog = (log != NULL);
+    if(!hasLog) {
         log = swl_unLiList_allocElement(&pAP->staDcList.list);
+        ASSERT_NOT_NULL(log, , ME, "%s: failed to create dc entry for %s", pAP->name, pAD->Name);
         memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
     }
     swl_timespec_getMono(&log->dcTime);
@@ -862,8 +886,8 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
     }
     if(pAD->Active) {
         uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
-        SAH_TRACEZ_WARNING(ME, "%s: disassoc sta %s - assoc @ %s - active %u sec - SNR %i",
-                           pAP->alias, pAD->Name, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
+        SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i",
+                           pAP->alias, pAD->Name, pAD->AuthenticationState, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
                            timeOnline, pAD->SignalNoiseRatio);
         pAD->latestStateChangeTime = swl_time_getRealSec();
         pAD->disassociationTime = swl_time_getMonoSec();
@@ -879,6 +903,10 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
     pAD->Active = 0;
     pAD->Inactive = 0;
     wld_ad_remove_assocdev_from_bridge(pAP, pAD);
+
+    wld_vap_cleanup_stationlist(pAP);
+    wld_vap_sync_device(pAP, pAD);
+    wld_vap_syncNrDev(pAP);
 }
 
 /**
@@ -890,8 +918,8 @@ void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) 
     ASSERTI_FALSE(pAD->AuthenticationState, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
 
     wld_ad_dcLog_t* entry = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
-    SAH_TRACEZ_INFO(ME, "%s : Success %s (dc %s)", pAP->alias, pAD->Name, entry != NULL ?
-                    swl_typeTimeSpecMono_toBuf32(entry->dcTime).buf : "NA");
+    SAH_TRACEZ_WARNING(ME, "%s: Connect %s (dc %s)", pAP->alias, pAD->Name, entry != NULL ?
+                       swl_typeTimeSpecMono_toBuf32(entry->dcTime).buf : "NA");
     pAD->AuthenticationState = 1;
     pAD->Active = 1;
     pAD->Inactive = 0;
@@ -1067,7 +1095,7 @@ void wld_ad_getHeMCS(uint16_t he_mcs, wld_sta_supMCS_adv_t* supportedHeMCS) {
 }
 
 void wld_assocDev_initAp(T_AccessPoint* pAP) {
-    swl_unLiTable_initExt(&pAP->staDcList, &wld_ad_dcLogTupleType, 3);
+    swl_unLiTable_initExt(&pAP->staDcList, &tWld_ad_dcLog, 3);
     swl_unLiList_setKeepsLastBlock(&pAP->staDcList.list, true);
     amxd_object_t* templateObj = amxd_object_get(pAP->pBus, "AssociationCount.FastReconnectTypes");
     for(uint32_t i = 0; i < WLD_FAST_RECONNECT_MAX; i++) {

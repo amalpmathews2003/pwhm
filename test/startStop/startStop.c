@@ -89,6 +89,8 @@
 
 #include <amxb/amxb_register.h>
 
+#include "wld.h"
+#include "wld_assocdev.h"
 #include "wld_util.h"
 
 #include "../mocks/dummy_be.h"
@@ -105,6 +107,8 @@ static amxb_bus_ctx_t* bus_ctx = NULL;
 
 static wld_th_mockVendor_t* mockVendor;
 
+
+static T_AccessPoint* s_vapList[2];
 
 static amxd_status_t func(_UNUSED amxd_object_t* obj,
                           _UNUSED amxd_function_t* func,
@@ -167,14 +171,16 @@ int test_dm_proxy_setup(void** state _UNUSED) {
     assert_non_null(rad5);
     amxo_parser_parse_file(&parser, "../../examples/defaults/wld_defaults.odl", root_obj);
 
+    s_vapList[0] = wld_getAccesspointByAlias("wlan0");
+    assert_non_null(s_vapList[0]);
+    s_vapList[1] = wld_getAccesspointByAlias("wlan1");
+    assert_non_null(s_vapList[1]);
 
     return 0;
 }
 
 int test_dm_proxy_teardown(void** state _UNUSED) {
-
     assert_int_equal(_wld_main(AMXO_STOP, &dm, &parser), 0);
-
 
     amxd_dm_remove_root_object(&dm, "WiFi");
     handle_events();
@@ -193,8 +199,57 @@ int test_dm_proxy_teardown(void** state _UNUSED) {
     return 0;
 }
 
+void s_checkDevEntries(T_AccessPoint* pAP, uint32_t nrAssoc, uint32_t nrActive) {
+    amxc_var_t retval;
+    amxc_var_init(&retval);
+
+    assert_int_equal(amxd_object_get_param(pAP->pBus, "AssociatedDeviceNumberOfEntries", &retval), 0);
+    uint32_t dmNrAssoc = amxc_var_get_const_uint32_t(&retval);
+    assert_int_equal(dmNrAssoc, nrAssoc);
+    assert_int_equal(pAP->AssociatedDeviceNumberOfEntries, nrAssoc);
+
+    assert_int_equal(amxd_object_get_param(pAP->pBus, "ActiveAssociatedDeviceNumberOfEntries", &retval), 0);
+
+    uint32_t dmNrActive = amxc_var_get_const_uint32_t(&retval);
+    assert_int_equal(dmNrActive, nrActive);
+    assert_int_equal(pAP->ActiveAssociatedDeviceNumberOfEntries, nrActive);
+
+    amxc_var_clean(&retval);
+}
+
 void test_dm_proxy_get(_UNUSED void** state) {
-    printf("test\n");
+
+#define NR_TEST_DEV 5
+
+    T_AssociatedDevice* devList[NR_TEST_DEV];
+
+    for(int i = 0; i < NR_TEST_DEV; i++) {
+        char devName[18];
+        snprintf(devName, sizeof(devName), "AA:BB:CC:DD:EE:%02x", i);
+        swl_macBin_t binAddr;
+        swl_mac_charToBin(&binAddr, (swl_macChar_t*) devName);
+
+        s_checkDevEntries(s_vapList[0], i, i);
+
+        devList[i] = wld_ad_create_associatedDevice(s_vapList[0], &binAddr);
+        wld_ad_add_connection_try(s_vapList[0], devList[i]);
+
+        s_checkDevEntries(s_vapList[0], i + 1, i + 1);
+
+        wld_ad_add_connection_success(s_vapList[0], devList[i]);
+    }
+
+    for(int i = 0; i < NR_TEST_DEV; i++) {
+
+
+        s_checkDevEntries(s_vapList[0], SWL_MIN(NR_TEST_DEV, NR_TEST_DEV - i + 1), (NR_TEST_DEV - i));
+
+        wld_ad_add_disconnection(s_vapList[0], devList[i]);
+
+        s_checkDevEntries(s_vapList[0], NR_TEST_DEV - i, SWL_MAX(0, NR_TEST_DEV - i - 1));
+
+    }
+
 }
 
 int main(void) {
@@ -204,5 +259,6 @@ int main(void) {
     int rv = cmocka_run_group_tests(tests, test_dm_proxy_setup, test_dm_proxy_teardown);
     return rv;
 }
+
 
 

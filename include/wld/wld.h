@@ -860,7 +860,7 @@ typedef struct {
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* MAC address of station */
     amxd_object_t* object;
     char Radius_CUID[256];                    /* Chargeable-User-Identity attribute in Radius Access-Accept */
-    int AuthenticationState;                  /* Associate STA or device authenticated? */
+    bool AuthenticationState;                 /* Associate STA or device authenticated? */
     long LastDataDownlinkRate;
     long LastDataUplinkRate;
     long SignalStrength;
@@ -922,7 +922,6 @@ typedef struct {
     swl_bandwidth_e MaxBandwidthSupported;
 
     bool powerSave;
-    int obsolete;
     int deviceType;                       /* The device type: index of device type in the cstr_DEVICE_TYPES */
     int devicePriority;                   /* The priority of this device. Secondary to device type. */
     swl_timeReal_t latestStateChangeTime; /* Timestamp of the last time the state of this device changed */

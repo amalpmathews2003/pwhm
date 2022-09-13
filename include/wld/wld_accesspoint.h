@@ -81,6 +81,8 @@ int vap_libsync_status_cb(T_AccessPoint* pAP);
 void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set);
 void SetAPDefaults(T_AccessPoint* pAP, int idx);
 
+swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
+void wld_vap_syncNrDev(T_AccessPoint* pAP);
 bool wld_vap_sync_assoclist(T_AccessPoint* pAP);
 void wld_ap_sec_doSync(T_AccessPoint* pAP);
 

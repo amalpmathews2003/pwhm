@@ -85,7 +85,7 @@ void wld_mon_sendUpdateNotification(amxd_object_t* eventObject, const char* name
     amxc_var_t map;
     amxc_var_init(&map);
     amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(amxc_htable_t, &map, "Updates", amxc_var_get_amxc_htable_t(variant));
+    amxc_var_add_key(amxc_htable_t, &map, "Updates", amxc_var_get_const_amxc_htable_t(variant));
     amxd_object_trigger_signal(eventObject, name, &map);
     amxc_var_clean(&map);
 }
