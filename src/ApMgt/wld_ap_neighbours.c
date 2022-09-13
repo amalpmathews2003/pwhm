@@ -128,6 +128,13 @@ amxd_status_t _wld_ap_update_neigh(amxd_object_t* instance_object) {
     }
     memcpy(neigh->bssid, bssid, ETHER_ADDR_LEN);
 
+    const char* ssid = amxd_object_get_cstring_t(instance_object, "SSID", NULL);
+    if(ssid) {
+        swl_str_copy(neigh->ssid, SSID_NAME_LEN, ssid);
+    } else {
+        swl_str_copy(neigh->ssid, SSID_NAME_LEN, "");
+    }
+
     neigh->information = amxd_object_get_int32_t(instance_object, "Information", NULL);
     neigh->operatingClass = amxd_object_get_int32_t(instance_object, "OperatingClass", NULL);
     neigh->channel = amxd_object_get_int32_t(instance_object, "Channel", NULL);
@@ -200,6 +207,7 @@ amxd_status_t _setNeighbourAP(amxd_object_t* obj,
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
     const char* bssid = GET_CHAR(args, "BSSID");
+    const char* ssid = GET_CHAR(args, "SSID");
     uint32_t info = GET_UINT32(args, "Information");
     uint32_t operatingClass = GET_UINT32(args, "OperatingClass");
     uint32_t channel = GET_UINT32(args, "Channel");
@@ -233,6 +241,9 @@ amxd_status_t _setNeighbourAP(amxd_object_t* obj,
     }
 
     SAH_TRACEZ_INFO(ME, "Updating neighbour object with provide arguments");
+    if(ssid) {
+        amxd_object_set_cstring_t(object, "SSID", ssid);
+    }
     if(info != 0) {
         amxd_object_set_int32_t(object, "Information", info);
     }

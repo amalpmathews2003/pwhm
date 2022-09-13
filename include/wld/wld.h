@@ -675,6 +675,7 @@ typedef struct {
 typedef struct {
     amxc_llist_it_t it;
     char bssid[ETHER_ADDR_LEN];
+    char ssid[SSID_NAME_LEN];
     int information;
     int operatingClass;
     int channel;

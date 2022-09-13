@@ -1909,9 +1909,30 @@ amxd_status_t _wld_ap_setDiscoveryMethod_pwf(amxd_object_t* object _UNUSED,
     const char* dmStr = amxc_var_constcast(cstring_t, args);
     wld_ap_dm_m discoveryMethod = swl_conv_charToMask(dmStr, g_str_wld_ap_dm, AP_DM_MAX);
 
+    /* Discovery method (UPR/FILS) is mandatory on 6GHz if no discovery
+     * method is present on other bands (2.4/5GHz). Check if RNR is present
+     */
+    bool rnrEnabled = false;
+    amxc_llist_it_t* llit = NULL;
+    amxc_llist_for_each(llit, &g_radios) {
+        T_Radio* pOtherRad = amxc_llist_it_get_data(llit, T_Radio, it);
+        if((swl_str_matches(pRad->Name, pOtherRad->Name)) ||
+           (pOtherRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ)) {
+            continue;
+        }
+        amxc_llist_it_t* it;
+        for(it = amxc_llist_get_first(&pRad->llAP); it; it = amxc_llist_it_get_next(it)) {
+            T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+            if(pAP->discoveryMethod & M_AP_DM_RNR) {
+                rnrEnabled = true;
+                break;
+            }
+        }
+    }
+
     ASSERTI_NOT_EQUALS(discoveryMethod, pAP->discoveryMethod, amxd_status_ok, ME, "%s: no change", pAP->alias);
     ASSERTI_FALSE((discoveryMethod & M_AP_DM_DISABLED) && (discoveryMethod & ~M_AP_DM_DISABLED), amxd_status_unknown_error, ME, "Can not set disabled with other methods");
-    ASSERTI_FALSE((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod == M_AP_DM_DISABLED), amxd_status_unknown_error, ME, "Disabled is not valid for 6GHz AP");
+    ASSERTI_FALSE(rnrEnabled && (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod == M_AP_DM_DISABLED), amxd_status_unknown_error, ME, "Disabled is not valid for 6GHz AP");
     ASSERTI_FALSE((pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod & M_AP_DM_UPR), amxd_status_unknown_error, ME, "Unsolicted Probe Responses method is 6GHz AP only");
     ASSERTI_FALSE((discoveryMethod & M_AP_DM_UPR) && (discoveryMethod & M_AP_DM_FD), amxd_status_unknown_error, ME, "Unsolicited Probe Response and FILS Discovery must not be enabled at the same time");
 

@@ -4574,6 +4574,7 @@ define rrm_t{
 		 */
 		void setNeighbourAP(
 			string BSSID,
+			string SSID,
 			int32 Information,
 			int32 OperatingClass,
 			int32 Channel,
@@ -4604,6 +4605,10 @@ define rrm_t{
 			 * The BSSID of the neighbour accesspoint.
 			 */
 			string BSSID;
+			/**
+			 * The SSID of the neighbour accesspoint.
+			 */
+			string SSID;
 			/**
 			 * The BSSID Information field.
 			 */
