@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.11.3 - 2022-09-20(07:39:38 +0000)
+
+### Other
+
+- 6GHz discovery optimization
+
 ## Release v1.11.2 - 2022-09-09(09:39:46 +0000)
 
 ### Other
