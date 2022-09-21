@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.11.4 - 2022-09-21(07:36:38 +0000)
+
+### Other
+
+- - Implementing wpa_supplicant fsm
+
 ## Release v1.11.3 - 2022-09-20(07:39:38 +0000)
 
 ### Other
