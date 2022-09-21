@@ -81,6 +81,7 @@
 #include "wld_assocdev.h"
 #include "swl/swl_assert.h"
 #include "swl/swl_tupleType.h"
+#include "swl/swl_oui.h"
 #include "wld_ap_rssiMonitor.h"
 #include "wld_rad_nl80211.h"
 
@@ -979,7 +980,7 @@ static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
     ASSERTI_TRUE(vendorOui->count != 0, , ME, "No OUI Vendor");
     char buffer[SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM];
     memset(buffer, 0, sizeof(buffer));
-    swl_typeOui_arrayToChar(buffer, SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM, vendorOui->oui, vendorOui->count);
+    swl_typeOui_arrayToChar(buffer, SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM, &vendorOui->oui[0], vendorOui->count);
     amxc_string_set(output, buffer);
 }
 

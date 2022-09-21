@@ -290,22 +290,10 @@ char* wldu_catFormat(char* dest, size_t destsize, const char* format, ...);
 uint32_t wldu_countChar(const char* src, char tgt);
 bool wldu_strStartsWith(const char* msg, const char* prefix);
 
-#define LOG_EXEC_ARGV_STACK_LIMIT 32
-int Log_script(const char* prg, const char* format, ...);
-int Log_scriptBg(const char* prg, const char* format, ...);
-int Log_exec(const char* prg, const char* format, ...);
-int Log_execFd(const char* prg, const char* format, ...);
-int Log_execFds(int* fdOut, int* fdErr, const char* prg, const char* format, ...);
-int Log_execBuf(const char* prg, char* outBuf, uint32_t bufSize, const char* format, ...);
-
-
-#if 1
-/* For DEBUG only must be removed at end of project - FIX ME */
 int debugIsVapPointer(void* p);
 int debugIsEpPointer(void* p);
 int debugIsRadPointer(void* p);
 int debugIsSsidPointer(void* p);
-#endif
 
 /** Deprecated. Use `SWL_UUID_BIN_SIZE` from `swl_uuid.h`. */
 #define UUID_LEN 16

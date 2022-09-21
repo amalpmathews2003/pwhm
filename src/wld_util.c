@@ -75,10 +75,6 @@
 
 #include "wld_linuxIfUtils.h"
 
-static const char* myerror_description;
-static const char* myerror_info;
-static int myerror_value;
-
 #define ME "util"
 
 const char* com_dir_char[COM_DIR_MAX] = {"Tx", "Rx"};
@@ -557,7 +553,6 @@ void wldu_llist_freeDataFunInternal(amxc_llist_t* list, size_t offset, void (* d
  */
 void wldu_llist_mapInternal(amxc_llist_t* list, size_t offset, void (* map)(void* val, void* data), void* data) {
     ASSERT_NOT_NULL(map, , ME, "NULL");
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, list) {
         void* object = (((void*) it) - offset);
         map(object, data);
@@ -2424,7 +2419,6 @@ int wld_util_getBanList(T_AccessPoint* pAP, wld_macfilterList_t* macList) {
 }
 
 bool wld_util_areAllVapsDisabled(T_Radio* pRad) {
-    amxc_llist_it_t* it;
     T_AccessPoint* pAP;
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
@@ -2436,7 +2430,6 @@ bool wld_util_areAllVapsDisabled(T_Radio* pRad) {
 }
 
 bool wld_util_areAllEndpointsDisabled(T_Radio* pRad) {
-    amxc_llist_it_t* it;
     T_EndPoint* pEP;
     amxc_llist_for_each(it, &pRad->llEndPoints) {
         pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);

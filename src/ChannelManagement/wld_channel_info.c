@@ -70,6 +70,8 @@
 #include "wld_channel_lib.h"
 #include "wld_radio.h"
 
+#include <debug/sahtrace.h>
+
 typedef struct {
     swl_bandwidth_e wldBw;
     int chanWidth;
