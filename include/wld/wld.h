@@ -742,6 +742,7 @@ typedef struct {
     unsigned long WmmFailedBytesSent[WLD_AC_MAX];
     unsigned long WmmFailedBytesReceived[WLD_AC_MAX];
     int32_t TemperatureDegreesCelsius; //Chipset Temperature in degrees Celsius
+    int32_t noise;
 } T_Stats;
 
 typedef struct {
@@ -871,7 +872,7 @@ typedef struct {
     int nrMeanSignalStrength;
     double SignalStrengthByChain[MAX_NR_ANTENNA]; /* dBm */
     int32_t AvgSignalStrengthByChain;             /* dBm */
-    int32_t Noise;                                /* dBm */
+    int32_t noise;                                /* dBm */
     int32_t SignalNoiseRatio;                     /* dB */
     long Retransmissions;
     long Rx_Retransmissions;
@@ -1801,7 +1802,7 @@ typedef struct {
     uint32_t LastDataDownlinkRate;
     uint32_t LastDataUplinkRate;
     int32_t SignalStrength;     // Received signal strength in dBm, -1 if unavailable
-    int32_t Noise;              // Measured noise floor in dBm, -1 if unavailable
+    int32_t noise;              // Measured noise floor in dBm, -1 if unavailable
     int32_t SignalNoiseRatio;   // Signal to noise radio, dBm, 0 if unavailable
     int32_t RSSI;               // Received signal strength indicator in percent
     uint32_t Retransmissions;

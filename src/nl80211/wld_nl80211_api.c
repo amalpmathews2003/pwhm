@@ -425,18 +425,12 @@ static swl_rc_ne s_getNoiseCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
     ASSERTS_FALSE((rc <= SWL_RC_ERROR), rc, ME, "Request error");
     ASSERT_NOT_NULL(nlh, SWL_RC_ERROR, ME, "NULL");
     ASSERTI_EQUALS(nlh->nlmsg_type, g_nl80211DriverIDs.family_id, SWL_RC_OK, ME, "skip msgtype %d", nlh->nlmsg_type);
-
     struct genlmsghdr* gnlh = (struct genlmsghdr*) nlmsg_data(nlh);
-    ASSERTI_EQUALS(gnlh->cmd, NL80211_CMD_GET_SURVEY, SWL_RC_OK, ME, "unexpected cmd %d", gnlh->cmd);
+    ASSERTI_EQUALS(gnlh->cmd, NL80211_CMD_NEW_SURVEY_RESULTS, SWL_RC_OK, ME, "unexpected cmd %d", gnlh->cmd);
 
-    int32_t* requestData = (int32_t*) priv;
-    ASSERT_NOT_NULL(requestData, SWL_RC_ERROR, ME, "No request data");
-    *requestData = 0;
 
-    // Parse the netlink message
     struct nlattr* tb[NL80211_ATTR_MAX + 1] = {};
 
-    struct nlattr* pSinfo[NL80211_SURVEY_INFO_MAX + 1];
     if(nla_parse(tb,
                  NL80211_ATTR_MAX,
                  genlmsg_attrdata(gnlh, 0),
@@ -447,26 +441,15 @@ static swl_rc_ne s_getNoiseCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
         return SWL_RC_ERROR;
     }
 
-    static struct nla_policy sp[NL80211_SURVEY_INFO_MAX + 1] = {
-        [NL80211_SURVEY_INFO_FREQUENCY] = { .type = NLA_U32 },
-        [NL80211_SURVEY_INFO_NOISE] = { .type = NLA_U8  },
-    };
-
-    if(nla_parse_nested(pSinfo, NL80211_SURVEY_INFO_MAX, tb[NL80211_ATTR_SURVEY_INFO], sp) != SWL_RC_OK) {
-        SAH_TRACEZ_ERROR(ME, "Failed to parse nested STA attributes!");
-        return SWL_RC_ERROR;
-    }
-
-    *requestData = (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]);
-
-    return rc;
+    // Parse the netlink message
+    return wld_nl80211_parseNoise(tb, (int32_t*) priv);
 }
 
 
 swl_rc_ne wld_nl80211_getNoise(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* noise) {
 
     NL_ATTRS(attribs, ARR());
-    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_SURVEY, 0, ifIndex, &attribs, s_getNoiseCb, noise);
+    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_SURVEY, NLM_F_DUMP, ifIndex, &attribs, s_getNoiseCb, noise);
     NL_ATTRS_CLEAR(&attribs);
     return rc;
 }

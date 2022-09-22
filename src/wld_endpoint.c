@@ -1495,7 +1495,7 @@ bool wld_update_endpoint_stats(amxd_object_t* obj, T_EndPointStats* stats) {
     amxd_object_set_uint32_t(obj, "Retransmissions", stats->Retransmissions);
     amxd_object_set_int32_t(obj, "SignalStrength", stats->SignalStrength);
     amxd_object_set_int32_t(obj, "SignalNoiseRatio", stats->SignalNoiseRatio);
-    amxd_object_set_int32_t(obj, "Noise", stats->Noise);
+    amxd_object_set_int32_t(obj, "Noise", stats->noise);
     amxd_object_set_int32_t(obj, "RSSI", stats->RSSI);
     amxd_object_set_uint64_t(obj, "TxBytes", stats->txbyte);
     amxd_object_set_uint32_t(obj, "TxPacketCount", stats->txPackets);

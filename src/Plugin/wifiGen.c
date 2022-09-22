@@ -127,6 +127,7 @@ bool wifiGen_init() {
     fta.mfn_wvap_kick_sta = wifiGen_vap_kick_sta;
     fta.mfn_wvap_kick_sta_reason = wifiGen_vap_kick_sta_reason;
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;
+    fta.mfn_wvap_update_ap_stats = wifiGen_vap_updateApStats;
 
     //endpoint functions
     fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;

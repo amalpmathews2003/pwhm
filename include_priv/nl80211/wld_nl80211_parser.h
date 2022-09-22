@@ -116,4 +116,17 @@ swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_
  */
 swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationInfo_t* pStation);
 
+
+/*
+ * @brief get channel's noise from nl msg attributes
+ *
+ * @param tb array of attributes from parsed nl msg
+ * @param requestData pointer to the noise level
+ *
+ * @return SWL_RC_DONE parsing done successfully
+ *         SWL_RC_CONTINUE if we are not pointing into the used channel
+ */
+swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData);
+
+
 #endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_PARSER_H_ */

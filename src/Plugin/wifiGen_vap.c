@@ -75,6 +75,7 @@
 #include "wld/wld_assocdev.h"
 #include "wld/wld_hostapd_ap_api.h"
 #include "wifiGen_fsm.h"
+#include "wld/wld_statsmon.h"
 
 #define ME "genVap"
 
@@ -166,9 +167,9 @@ static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
         if((!pAD->AuthenticationState) && (pStationInfo->flags.authenticated == SWL_TRL_TRUE)) {
             wld_ad_add_connection_success(pAP, pAD);
         }
-        pAD->Noise = noise;
-        if((noise != 0) && (pAD->SignalStrength != 0) && (pAD->SignalStrength > pAD->Noise)) {
-            pAD->SignalNoiseRatio = pAD->SignalStrength - pAD->Noise;
+        pAD->noise = noise;
+        if((noise != 0) && (pAD->SignalStrength != 0) && (pAD->SignalStrength > pAD->noise)) {
+            pAD->SignalNoiseRatio = pAD->SignalStrength - pAD->noise;
         } else {
             pAD->SignalNoiseRatio = 0;
         }
@@ -365,6 +366,14 @@ int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set _UN
     return wifiGen_vap_kick_sta_reason(pAP, buf, bufsize, SWL_IEEE80211_DEAUTH_REASON_AUTH_NO_LONGER_VALID);
 }
 
+int wifiGen_vap_updateApStats(T_Radio* rad, T_AccessPoint* vap) {
+    _UNUSED_(vap);
+    //TODO : wiphyInfo.suppCmds.survey is not registred in NL80211_ATTR_SUPPORTED_COMMANDS in kernel version 4.19
+    wld_rad_nl80211_getNoise(rad, &rad->stats.noise);
+    wld_updateRadioStats(rad, NULL);
+    return 0;
+}
+
 swl_rc_ne wifiGen_wendpoint_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
     ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
 
@@ -374,7 +383,7 @@ swl_rc_ne wifiGen_wendpoint_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
             stats->LastDataDownlinkRate = 0;
             stats->LastDataUplinkRate = 0;
             stats->SignalStrength = 0;
-            stats->Noise = 0;
+            stats->noise = 0;
             stats->SignalNoiseRatio = 0;
             stats->RSSI = 0;
             stats->Retransmissions = pEP->pSSID->stats.RetransCount;

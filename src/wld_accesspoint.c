@@ -2366,7 +2366,7 @@ bool wld_vap_sync_assoclist(T_AccessPoint* pAP) {
         if(pAD->Active && !pAD->obsolete) {
             active++;
         }
-        amxd_trans_set_value(int32_t, &trans, "Noise", pAD->Noise);
+        amxd_trans_set_value(int32_t, &trans, "Noise", pAD->noise);
         amxd_trans_set_value(uint32_t, &trans, "Inactive", pAD->Inactive);
         amxd_trans_set_value(uint32_t, &trans, "RxPacketCount", pAD->RxPacketCount);
         amxd_trans_set_value(uint32_t, &trans, "TxPacketCount", pAD->TxPacketCount);

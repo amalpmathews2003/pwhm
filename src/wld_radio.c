@@ -877,12 +877,10 @@ amxd_status_t _getRadioStats(amxd_object_t* object,
                              amxc_var_t* retval) {
 
     SAH_TRACEZ_INFO(ME, "getRadioStats");
-
     T_Radio* pR = object->priv;
 
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NULL");
-
     amxd_object_t* stats = amxd_object_get(pR->pBus, "Stats");
 
     // Update the stats with Linux counters if we don't handle them in the plugin.
@@ -911,6 +909,7 @@ amxd_status_t _getRadioStats(amxd_object_t* object,
     amxd_object_set_uint32_t(stats, "RetryCount", pR->stats.RetryCount);
     amxd_object_set_uint32_t(stats, "MultipleRetryCount", pR->stats.MultipleRetryCount);
     amxd_object_set_int32_t(stats, "Temperature", pR->stats.TemperatureDegreesCelsius);
+    amxd_object_set_int32_t(stats, "Noise", pR->stats.noise);
 
     wld_util_writeWmmStats(stats, "WmmPacketsSent", pR->stats.WmmPacketsSent);
     wld_util_writeWmmStats(stats, "WmmPacketsReceived", pR->stats.WmmPacketsReceived);
@@ -2678,7 +2677,7 @@ void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 #endif
             if((MACaddr[0] != 0) &&
                (swl_uuid_fromMacAddress(&uuid_i, MACaddr, offset) && swl_uuid_toChar(uuid, sizeof(uuid), &uuid_i))
-               ) {     // MC Tricky
+               ) {
 #ifdef CONFIG_USE_SAH_WPS_FORCE_EQUAL_WL_UUID
                 pCWPS->wpsUUIDShared = 1;
 #else

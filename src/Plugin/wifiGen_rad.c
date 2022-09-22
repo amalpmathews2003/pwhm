@@ -214,6 +214,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             if(pWiphyInfo->suppCmds.channelSwitch) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "CSA");
             }
+            if(pWiphyInfo->suppCmds.survey) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "SURVEY");
+            }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
         }
     }

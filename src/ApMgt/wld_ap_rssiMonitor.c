@@ -149,7 +149,7 @@ static void timeHandler(void* userdata) {
             SAH_TRACEZ_ERROR(ME, "AssociatedDevice[%d]==null", i);
             continue;
         }
-        if((pAP->rssiEventing.rssiInterval == 0) || (pAD->Noise == 0) || (pAD->SignalStrength == 0) || (pAD->SignalStrength < pAD->Noise)) {
+        if((pAP->rssiEventing.rssiInterval == 0) || (pAD->noise == 0) || (pAD->SignalStrength == 0) || (pAD->SignalStrength < pAD->noise)) {
             pAD->rssiLevel = 0;
             continue;
         }
@@ -164,7 +164,7 @@ static void timeHandler(void* userdata) {
             amxc_var_t myMap;
             amxc_var_init(&myMap);
             amxc_var_add_key(int32_t, &myMap, "SignalStrength", rssi_val);
-            amxc_var_add_key(int32_t, &myMap, "Noise", pAD->Noise);
+            amxc_var_add_key(int32_t, &myMap, "Noise", pAD->noise);
             unsigned char buffer[ETHER_ADDR_STR_LEN];
             convMac2Str(pAD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
 
@@ -610,7 +610,7 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
     swl_timespec_getReal(&ts);
     pAD->staHistory->measurementTimestamp = ts;
     pAD->staHistory->signalStrength = pAD->SignalStrength;
-    pAD->staHistory->noise = pAD->Noise;
+    pAD->staHistory->noise = pAD->noise;
     pAD->staHistory->signalNoiseRatio = pAD->SignalNoiseRatio;
 
     if((pAD->staHistory->nr_valid_samples == 0) && (pAD->staHistory->measurementTimestampAssoc.tv_sec == 0)) {
@@ -618,7 +618,7 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
         swl_timespec_realToDate(buffer, sizeof(buffer), &ts);
         pAD->staHistory->measurementTimestampAssoc = ts;
         pAD->staHistory->signalStrengthAssoc = pAD->SignalStrength;
-        pAD->staHistory->noiseAssoc = pAD->Noise;
+        pAD->staHistory->noiseAssoc = pAD->noise;
         pAD->staHistory->signalNoiseRatioAssoc = pAD->SignalNoiseRatio;
     }
 
@@ -646,7 +646,7 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
 
         sample->timestamp = ts;
         sample->signalStrength = pAD->SignalStrength;
-        sample->noise = pAD->Noise;
+        sample->noise = pAD->noise;
         sample->dataDownlinkRate = pAD->LastDataDownlinkRate;
         sample->dataUplinkRate = pAD->LastDataUplinkRate;
         sample->txBytes = pAD->TxBytes;

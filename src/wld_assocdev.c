@@ -81,8 +81,8 @@
 #include "wld_assocdev.h"
 #include "swl/swl_assert.h"
 #include "swl/swl_tupleType.h"
-
 #include "wld_ap_rssiMonitor.h"
+#include "wld_rad_nl80211.h"
 
 #define BRCTL_DEL_FDB_ENTRIES 27
 #define STATIONS_STATS_TIMEOUT 5000
@@ -552,7 +552,7 @@ amxd_status_t _getSingleStationStats(amxd_object_t* const object,
         WLD_SET_VAR_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
         WLD_SET_VAR_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
         WLD_SET_VAR_UINT32(object, "SignalStrength", pAD->SignalStrength);
-        WLD_SET_VAR_UINT32(object, "Noise", pAD->Noise);
+        WLD_SET_VAR_UINT32(object, "Noise", pAD->noise);
         WLD_SET_VAR_UINT32(object, "TxBytes", pAD->TxBytes);
         WLD_SET_VAR_UINT32(object, "RxBytes", pAD->RxBytes);
         WLD_SET_VAR_UINT32(object, "TxPacketCount", pAD->TxPacketCount);

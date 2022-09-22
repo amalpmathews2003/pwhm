@@ -1684,6 +1684,16 @@ define rrm_t{
 				default -274;
 				constraint minvalue -274;
 			}
+			
+			/**
+			* An indicator of average noise strength received at this radio, measured in dBm.
+			* This measurement of non-IEEE 802.11 noise power is made by sampling the channel
+			* when virtual carrier sense indicates idle and this radio is neither transmitting
+			* nor receiving a frame.
+			*/
+			%read-only int32 Noise{
+					default 0;
+			}
 		}
 
 		/**

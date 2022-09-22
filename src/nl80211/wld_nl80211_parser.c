@@ -635,6 +635,9 @@ static swl_rc_ne s_parseSuppCmds(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* p
         case NL80211_CMD_CHANNEL_SWITCH:
             pWiphy->suppCmds.channelSwitch = true;
             break;
+        case NL80211_CMD_GET_SURVEY:
+            pWiphy->suppCmds.survey = true;
+            break;
         default:
             break;
         }
@@ -911,3 +914,28 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
 
     return rc;
 }
+
+swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData) {
+    ASSERT_NOT_NULL(requestData, SWL_RC_ERROR, ME, "No request data");
+    *requestData = 0;
+    struct nlattr* pSinfo[NL80211_SURVEY_INFO_MAX + 1];
+
+    static struct nla_policy sp[NL80211_SURVEY_INFO_MAX + 1] = {
+        [NL80211_SURVEY_INFO_FREQUENCY] = { .type = NLA_U32 },
+        [NL80211_SURVEY_INFO_NOISE] = { .type = NLA_U8  },
+    };
+
+    if(nla_parse_nested(pSinfo, NL80211_SURVEY_INFO_MAX, tb[NL80211_ATTR_SURVEY_INFO], sp) != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to parse nested STA attributes!");
+        return SWL_RC_ERROR;
+    }
+
+    if(pSinfo[NL80211_SURVEY_INFO_IN_USE]) {
+        SAH_TRACEZ_INFO(ME, "\tnoise level :\t\t\t\t%d dBm\n",
+                        (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]));
+        *requestData = (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]);
+        return SWL_RC_DONE;
+    }
+    return SWL_RC_CONTINUE;
+}
+
