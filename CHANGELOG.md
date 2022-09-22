@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.12.0 - 2022-09-22(09:49:27 +0000)
+
+### Other
+
+- Add channel noise function
+
 ## Release v1.11.4 - 2022-09-21(07:36:38 +0000)
 
 ### Other
