@@ -59,25 +59,43 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include <sys/signalfd.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#include <stdlib.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
+
+#include "wld_th_vap.h"
 #include "wld.h"
+#include "wld_th_mockVendor.h"
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bufsize _UNUSED) {
+    return 0;
+}
 
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, T_Radio* radio, const char* name) {
+    amxc_var_t args;
+    amxc_var_init(&args);
 
-void wld_ssid_cleanAll();
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
 
-#endif /* __WLD_SSID_H__ */
+
+    amxc_var_add_key(cstring_t, &args, "vap", name);
+    amxc_var_add_key(cstring_t, &args, "radio", radio->instanceName);
+
+
+    assert_int_equal(amxb_call(bus_ctx, "WiFi", "addVAPIntf", &args, NULL, 5), 0);
+
+    amxc_var_clean(&args);
+
+    T_AccessPoint* vap = wld_getAccesspointByAlias(name);
+    assert_non_null(vap);
+    return vap;
+}

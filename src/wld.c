@@ -74,6 +74,7 @@
 #include "wld_radio.h"
 #include "wld_ssid.h"
 #include "wld_accesspoint.h"
+#include "wld_endpoint.h"
 #include "wld_wps.h"
 #include "wld_rad_stamon.h"
 #include "wld_eventing.h"
@@ -143,7 +144,7 @@ bool wld_plugin_start() {
     }
     swl_timespec_getMono(&initTime);
 
-    SAH_TRACEZ_INFO(ME, "Initializing wld (%s:%s)", __DATE__, __TIME__);
+    SAH_TRACEZ_WARNING(ME, "Initializing wld (%s:%s)", __DATE__, __TIME__);
 
     swl_lib_initialize(wld_plugin_amx);
 
@@ -215,14 +216,18 @@ vendor_t* wld_getVendorByName(const char* name) {
 
 void wld_cleanup() {
     SAH_TRACEZ_INFO(ME, "Cleaning up wld plugin");
+    wld_deleteAllEps();
+    wld_deleteAllVaps();
     wld_deleteAllRadios();
-    //wld_bridge_nemo_client_cleanup();
+    wld_ssid_cleanAll();
     wld_event_destroy();
     wld_nl80211_cleanupAll();
+    wld_channel_cleanAll();
     wld_unregisterAllVendors();
     swl_lib_cleanup();
     wld_plugin_dm = NULL;
     init = false;
+    sahTraceRemoveAllZones();
 }
 
 vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta) {
@@ -455,6 +460,30 @@ void wld_deleteAllRadios() {
         T_Radio* pRad = amxc_llist_it_get_data(llit, T_Radio, it);
         llit = amxc_llist_it_get_next(llit);
         wld_deleteRadioObj(pRad);
+    }
+}
+
+void wld_deleteAllVaps() {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llAP);
+        while(it != NULL) {
+            T_AccessPoint* pAP = wld_ap_fromIt(it);
+            wld_ap_destroy(pAP);
+            it = amxc_llist_get_first(&pRad->llAP);
+        }
+    }
+}
+
+void wld_deleteAllEps() {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llEndPoints);
+        while(it != NULL) {
+            T_EndPoint* pEP = wld_endpoint_fromIt(it);
+            wld_endpoint_destroy(pEP);
+            it = amxc_llist_get_first(&pRad->llEndPoints);
+        }
     }
 }
 

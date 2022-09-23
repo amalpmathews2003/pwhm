@@ -63,6 +63,11 @@
                 parameter SSID = "prplMesh-WHM-5g";
                 parameter Enable = 1;
             }
+            instance add ("sta1") {
+                parameter LowerLayers = "WiFi.Radio.wifi1";
+                parameter SSID = "prplMesh-WHM-5g";
+                parameter Enable = 1;
+            }
         }
         object AccessPoint {
             instance add ("wlan0") {
@@ -153,6 +158,12 @@
                 object DriverConfig {
                     parameter BssMaxIdlePeriod = -1;
                 }
+            }
+        }
+        object EndPoint {
+            instance add ("sta1") {
+                parameter SSIDReference = "WiFi.SSID.sta1";
+                parameter Enable = 1;
             }
         }
     }

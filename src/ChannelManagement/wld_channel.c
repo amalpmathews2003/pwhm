@@ -307,6 +307,15 @@ void wld_channel_init_channels(T_Radio* rad) {
     }
 }
 
+void wld_channel_cleanAll() {
+    for(int i = 0; i < SWL_FREQ_BAND_MAX; i++) {
+        free(wldBandDataList[i].channels);
+        wldBandDataList[i].channels = NULL;
+        wldBandDataList[i].nr_channels = 0;
+    }
+
+}
+
 /**
  * clear all flags of the radio band of the given radio.
  */

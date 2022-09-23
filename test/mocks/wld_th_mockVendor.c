@@ -60,24 +60,68 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#include "wld_th_mockVendor.h"
+#include "wld_th_radio.h"
+#include "wld_th_vap.h"
+#include "swl/swl_common.h"
+#include "wld_eventing.h"
 
-#include "wld.h"
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+static T_CWLD_FUNC_TABLE s_functionTable = {
+    .mfn_wrad_supports = wld_th_radio_vendorCb_supports,
+    .mfn_wrad_addendpointif = wld_th_radio_vendorCb_addEndpointIf,
+    .mfn_wrad_addvapif = wld_th_vap_vendorCb_addVapIf,
+    .mfn_wrad_fsm = wld_th_wrad_fsm,
+};
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+struct wld_th_mockVendor {
+    char name[32];
+    vendor_t* vendor;
+};
 
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+static int32_t s_numberOfVendors = 0;
 
-void wld_ssid_cleanAll();
+const char* wld_th_mockVendor_name(wld_th_mockVendor_t* mockVendor) {
+    return mockVendor->name;
+}
 
-#endif /* __WLD_SSID_H__ */
+wld_th_mockVendor_t* wld_th_mockVendor_create(const char* name) {
+
+    wld_th_mockVendor_t* mockVendor = calloc(1, sizeof(wld_th_mockVendor_t));
+
+    swl_str_copy(mockVendor->name, sizeof(mockVendor->name), name);
+
+    s_numberOfVendors++;
+
+    return mockVendor;
+}
+
+vendor_t* wld_th_mockVendor_register(wld_th_mockVendor_t* mockVendor) {
+
+    vendor_t* vendor = wld_registerVendor(wld_th_mockVendor_name(mockVendor), &s_functionTable);
+    mockVendor->vendor = vendor;
+    return vendor;
+}
+
+vendor_t* wld_th_mockVendor_vendor(wld_th_mockVendor_t* mockVendor) {
+    return mockVendor->vendor;
+}
+
+
+void wld_mockVendor_destroy(wld_th_mockVendor_t* mockVendor) {
+    if((gWld_queue_rad_onStatusChange == NULL) || !amxc_llist_is_empty(&gWld_queue_rad_onStatusChange->subscribers)) {
+        printf("You must first call wld_cleanup() because that function still uses vendor\n");
+    }
+    if(mockVendor->vendor != NULL) {
+        wld_unregisterVendor(mockVendor->vendor);
+    }
+
+    free(mockVendor);
+
+    s_numberOfVendors--;
+
+}
+
+bool wld_mockVendor_areThereStillVendors() {
+    return s_numberOfVendors > 0;
+}

@@ -1455,6 +1455,7 @@ typedef struct {
 } wld_radio_status_change_event_t;
 
 struct S_SSID {
+    amxc_llist_it_t it;
     int debug;                                /* FIX ME */
     wld_status_e status;                      /* == AP/ENDP.Status --> VAP up == TRUE else FALSE */
     T_Radio* RADIO_PARENT;                    /* Pointer to the T_Radio structure */
@@ -2242,6 +2243,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx);
 void wld_deleteRadio(const char* name);
 void wld_deleteRadioObj(T_Radio* pRad);
 void wld_deleteAllRadios();
+void wld_deleteAllVaps();
+void wld_deleteAllEps();
 
 T_Radio* wld_getRadioByIndex(int index);
 T_Radio* wld_getRadioByName(const char* name);

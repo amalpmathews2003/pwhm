@@ -59,25 +59,18 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#ifndef __WLD_TESTHELPER_MOCKVENDOR_H__
+#define __WLD_TESTHELPER_MOCKVENDOR_H__
 
 #include "wld.h"
+#include "wld_th_types.h"
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+const char* wld_th_mockVendor_name();
+wld_th_mockVendor_t* wld_th_mockVendor_create(const char* name);
+vendor_t* wld_th_mockVendor_register(wld_th_mockVendor_t* mockVendor);
+vendor_t* wld_th_mockVendor_vendor(wld_th_mockVendor_t* mockVendor);
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+void wld_mockVendor_destroy(wld_th_mockVendor_t* mockVendor);
+bool wld_mockVendor_areThereStillVendors();
 
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-void wld_ssid_cleanAll();
-
-#endif /* __WLD_SSID_H__ */
+#endif

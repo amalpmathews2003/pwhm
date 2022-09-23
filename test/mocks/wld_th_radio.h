@@ -59,25 +59,27 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#ifndef __WLD_TESTHELPER_RADIO_H__
+#define __WLD_TESTHELPER_RADIO_H__
+#include "wld_types.h"
+#include "wld_th_types.h"
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#include <amxc/amxc_macros.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_path.h>
+#include <amxd/amxd_object_event.h>
+#include <amxo/amxo.h>
+#include <amxo/amxo_save.h>
+#include <amxb/amxb.h>
 
-#include "wld.h"
+T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name);
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad, char* endpoint, int bufsize);
+int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
+int wld_th_wrad_fsm(T_Radio* rad);
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-void wld_ssid_cleanAll();
-
-#endif /* __WLD_SSID_H__ */
+#endif

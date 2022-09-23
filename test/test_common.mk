@@ -13,20 +13,21 @@
 
 VALGRIND?=valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=10
 UT_SETTINGS=CMOCKA_MESSAGE_OUTPUT=XML
+LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib
 
 runtest: $(BINARIES) prerun
-	($(foreach binary,$(BINARIES),$(VALGRIND) ./$(binary) &&) true) || ($(MAKE) postrun && false)
+	($(foreach binary,$(BINARIES),$(LD_LIB) $(VALGRIND) ./$(binary) &&) true) || ($(MAKE) postrun && false)
 	$(MAKE) postrun
 
 unit.xml: $(UNITXMLS) $(BINARIES) runtest
 	# poorman's way of joining two xml files with <testsuites><testsuite> elements
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' > $@
 	echo "<testsuites>" >> $@
-	$(foreach binary,$(BINARIES),$(UT_SETTINGS) $(VALGRIND) ./$(binary) | grep -v "testsuites" | grep -v "?xml" >> $@;)
+	$(foreach binary,$(BINARIES),$(UT_SETTINGS) $(LD_LIB) $(VALGRIND) ./$(binary) | grep -v "testsuites" | grep -v "?xml" >> $@;)
 	echo '</testsuites>' >> $@
 	grep -B 1 -A 3 '<failure>' < $@ && exit 1 || exit 0
 
-prerun:
+prerun: 
 
 postrun:
 

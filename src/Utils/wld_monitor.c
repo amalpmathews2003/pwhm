@@ -179,6 +179,18 @@ amxd_status_t _mon_intervalWriteHandler(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
+static amxd_status_t s_objDelete(amxd_object_t* const object _UNUSED,    // the object
+                                 amxd_param_t* const param _UNUSED,      // the parameter
+                                 amxd_action_t reason _UNUSED,           // the action id (reason)
+                                 const amxc_var_t* const args _UNUSED,   // action arguments, when null default behaviour
+                                 amxc_var_t* const retval _UNUSED,       // action retval
+                                 void* priv) {
+    T_Monitor* pMon = (T_Monitor*) priv;
+    pMon->object = NULL;
+
+    return amxd_status_ok;
+}
+
 void wld_mon_initMon(T_Monitor* pMon, amxd_object_t* object, char* name, void* userData, void (* callback_fn)(void* userData)) {
     ASSERT_NOT_NULL(pMon, , ME, "NULL");
     ASSERT_NOT_NULL(object, , ME, "NULL");
@@ -187,6 +199,8 @@ void wld_mon_initMon(T_Monitor* pMon, amxd_object_t* object, char* name, void* u
 
     object->priv = pMon;
     pMon->object = object;
+
+    amxd_object_add_action_cb(object, action_object_destroy, s_objDelete, pMon);
 
     amxc_var_t value;
     amxc_var_init(&value);
@@ -208,8 +222,10 @@ void wld_mon_initMon(T_Monitor* pMon, amxd_object_t* object, char* name, void* u
 
 void wld_mon_destroyMon(T_Monitor* pMon) {
     SAH_TRACEZ_INFO(ME, "%s: destroy mon", pMon->name);
-
-    pMon->object->priv = NULL;
+    if(pMon->object != NULL) {
+        pMon->object->priv = NULL;
+        amxd_object_remove_action_cb(pMon->object, action_object_destroy, s_objDelete);
+    }
     amxp_timer_delete(&pMon->timer);
     free(pMon->name);
     pMon->name = NULL;

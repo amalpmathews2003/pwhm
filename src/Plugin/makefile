@@ -1,6 +1,10 @@
 include ../../makefile.inc
 
-CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra -Wno-unused-but-set-variable -I../../include/ -I$(STAGINGDIR)/include -I../../include_priv/Plugin
+CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra -Wno-unused-but-set-variable \
+			-I../../include/ \
+			-I$(STAGINGDIR)/include/ \
+			-I$(STAGINGDIR)/usr/include/ \
+			-I../../include_priv/Plugin
 CFLAGS += -Wimplicit-function-declaration -Wl,--no-undefined
 CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 

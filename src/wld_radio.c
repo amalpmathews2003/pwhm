@@ -187,10 +187,11 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
 
     ASSERT_NULL(pRadioObj->priv, amxd_status_unknown_error, ME, "pRadioObj->priv not NULL %s", pRad->Name);
 
-    const char* instanceName = amxd_object_get_path(pRadioObj, AMXD_OBJECT_NAMED);
+    char* instanceName = amxd_object_get_path(pRadioObj, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_WARNING(ME, "Mapping new Radio instance [%s:%s]", pRad->Name, instanceName);
 
     snprintf(pRad->instanceName, IFNAMSIZ, "%s", instanceName);
+    free(instanceName);
 
     /* General initializations */
     pRadioObj->priv = pRad;
@@ -217,8 +218,10 @@ amxd_status_t _wld_radio_addInstance_ocf(amxd_object_t* object,
                                          amxc_var_t* const retval,
                                          void* priv) {
     amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), amxd_object_get_path(object, AMXD_OBJECT_NAMED));
+                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path);
+    free(path);
     if(instance == NULL) {
         amxd_status_t status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
         ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");

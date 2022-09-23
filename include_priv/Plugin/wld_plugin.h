@@ -60,24 +60,12 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#ifndef INCLUDE_PRIV_PLUGIN_WLD_PLUGIN_H_
+#define INCLUDE_PRIV_PLUGIN_WLD_PLUGIN_H_
 
-#include "wld.h"
+int _wld_main(int reason,
+              amxd_dm_t* dm,
+              amxo_parser_t* parser);
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+#endif /* INCLUDE_PRIV_PLUGIN_WLD_PLUGIN_H_ */
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-void wld_ssid_cleanAll();
-
-#endif /* __WLD_SSID_H__ */

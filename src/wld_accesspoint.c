@@ -123,7 +123,6 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
         pAP->pSSID->AP_HOOK = NULL;
         wld_ap_destroy(pAP);
         object->priv = NULL;
-        free(pAP);
         pAP = NULL;
     }
     const char* vapName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
@@ -197,16 +196,19 @@ amxd_status_t _wld_ap_setSSIDRef_pwf(amxd_object_t* object,
     }
 
     SAH_TRACEZ_IN(ME);
-    const char* ssidRef = amxc_var_dyncast(cstring_t, args);
+    char* ssidRef = amxc_var_dyncast(cstring_t, args);
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_INFO(ME, "apObj(%p:%s:%s) ssidRef(%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), amxd_object_get_path(object, AMXD_OBJECT_NAMED),
+                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path,
                     ssidRef);
+    free(path);
 
     amxd_object_t* pSsidObj = NULL;
     if(ssidRef && ssidRef[0]) {
         pSsidObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", ssidRef);
     }
     rv = _linkApSsid(object, pSsidObj);
+    free(ssidRef);
 
     SAH_TRACEZ_OUT(ME);
     return rv;
@@ -1128,7 +1130,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             commit = true;
         }
 
-        const char* mode = amxd_object_get_cstring_t(secObj, "ModeEnabled", NULL);
+        char* mode = amxd_object_get_cstring_t(secObj, "ModeEnabled", NULL);
         if(strncmp(cstr_AP_ModesSupported[pAP->secModeEnabled], mode,
                    strlen(cstr_AP_ModesSupported[pAP->secModeEnabled]))) {
             /* We still must update the pAP->secModeEnabled value */
@@ -1138,8 +1140,9 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
                 wld_ap_sec_doSync(pAP);
             }
         }
+        free(mode);
 
-        const char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
+        char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
         if(strncmp(wld_mfpConfig_str[pAP->mfpConfig], mfp,
                    strlen(wld_mfpConfig_str[pAP->mfpConfig]))) {
             /* We still must update the pAP->secModeEnabled value */
@@ -1149,6 +1152,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
                 wld_ap_sec_doSync(pAP);
             }
         }
+        free(mfp);
 
         tmp_int32 = amxd_object_get_int32_t(secObj, "SPPAmsdu", NULL);
         if(pAP->sppAmsdu != tmp_int32) {
@@ -1156,44 +1160,49 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             wld_ap_sec_doSync(pAP);
         }
 
-        const char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
+        char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
         if(strncmp(pAP->WEPKey, wepKey, strlen(pAP->WEPKey))) {
             if(isValidWEPKey(wepKey)) {
                 wldu_copyStr(pAP->WEPKey, wepKey, sizeof(pAP->WEPKey));
                 wld_ap_sec_doSync(pAP);
             }
         }
+        free(wepKey);
 
-        const char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
+        char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
         if(strncmp(pAP->preSharedKey, pskKey, strlen(pAP->preSharedKey))) {
             if(isValidPSKKey(pskKey)) {
                 wldu_copyStr(pAP->preSharedKey, pskKey, sizeof(pAP->preSharedKey));
                 wld_ap_sec_doSync(pAP);
             }
         }
+        free(pskKey);
 
-        const char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
+        char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
         if(strncmp(pAP->keyPassPhrase, keyPassPhrase, strlen(pAP->keyPassPhrase))) {
             if(isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
                 wldu_copyStr(pAP->keyPassPhrase, keyPassPhrase, sizeof(pAP->keyPassPhrase));
                 wld_ap_sec_doSync(pAP);
             }
         }
+        free(keyPassPhrase);
 
-        const char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
+        char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
         if(strncmp(pAP->saePassphrase, saePassphrase, strlen(pAP->saePassphrase))) {
             if(isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN)) {
                 wldu_copyStr(pAP->saePassphrase, saePassphrase, sizeof(pAP->saePassphrase));
                 wld_ap_sec_doSync(pAP);
             }
         }
+        free(saePassphrase);
 
-        const char* encryption = amxd_object_get_cstring_t(secObj, "EncryptionMode", NULL);
+        char* encryption = amxd_object_get_cstring_t(secObj, "EncryptionMode", NULL);
         if(strncmp(cstr_AP_EncryptionMode[pAP->encryptionModeEnabled], encryption,
                    strlen(cstr_AP_EncryptionMode[pAP->encryptionModeEnabled]))) {
             pAP->encryptionModeEnabled = conv_strToEnum(cstr_AP_EncryptionMode, encryption, APEMI_MAX, APEMI_DEFAULT);
             wld_ap_sec_doSync(pAP);
         }
+        free(encryption);
 
         tmp_int32 = amxd_object_get_int32_t(secObj, "RekeyingInterval", NULL);
         if(pAP->rekeyingInterval != tmp_int32) {
@@ -1201,11 +1210,12 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             wld_ap_sec_doSync(pAP);
         }
 
-        const char* radSvrIp = amxd_object_get_cstring_t(secObj, "RadiusServerIPAddr", NULL);
+        char* radSvrIp = amxd_object_get_cstring_t(secObj, "RadiusServerIPAddr", NULL);
         if(strncmp(pAP->radiusServerIPAddr, radSvrIp, strlen(pAP->radiusServerIPAddr))) {
             wldu_copyStr(pAP->radiusServerIPAddr, radSvrIp, sizeof(pAP->radiusServerIPAddr));
             wld_ap_sec_doSync(pAP);
         }
+        free(radSvrIp);
 
         tmp_int32 = amxd_object_get_int32_t(secObj, "RadiusServerPort", NULL);
         if(pAP->radiusServerPort != tmp_int32) {
@@ -1213,11 +1223,12 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             wld_ap_sec_doSync(pAP);
         }
 
-        const char* radSecret = amxd_object_get_cstring_t(secObj, "RadiusSecret", NULL);
+        char* radSecret = amxd_object_get_cstring_t(secObj, "RadiusSecret", NULL);
         if(strncmp(pAP->radiusSecret, radSecret, strlen(pAP->radiusSecret))) {
             wldu_copyStr(pAP->radiusSecret, radSecret, sizeof(pAP->radiusSecret));
             wld_ap_sec_doSync(pAP);
         }
+        free(radSecret);
 
         tmp_int32 = amxd_object_get_int32_t(secObj, "RadiusDefaultSessionTimeout", NULL);
         if(pAP->radiusDefaultSessionTimeout != tmp_int32) {
@@ -1225,23 +1236,26 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             wld_ap_sec_doSync(pAP);
         }
 
-        const char* radOwnIp = amxd_object_get_cstring_t(secObj, "RadiusOwnIPAddress", NULL);
+        char* radOwnIp = amxd_object_get_cstring_t(secObj, "RadiusOwnIPAddress", NULL);
         if(strncmp(pAP->radiusOwnIPAddress, radOwnIp, strlen(pAP->radiusOwnIPAddress))) {
             wldu_copyStr(pAP->radiusOwnIPAddress, radOwnIp, sizeof(pAP->radiusOwnIPAddress));
             wld_ap_sec_doSync(pAP);
         }
+        free(radOwnIp);
 
-        const char* radNasId = amxd_object_get_cstring_t(secObj, "RadiusNASIdentifier", NULL);
+        char* radNasId = amxd_object_get_cstring_t(secObj, "RadiusNASIdentifier", NULL);
         if(strncmp(pAP->radiusNASIdentifier, radNasId, strlen(pAP->radiusNASIdentifier))) {
             wldu_copyStr(pAP->radiusNASIdentifier, radNasId, sizeof(pAP->radiusNASIdentifier));
             wld_ap_sec_doSync(pAP);
         }
+        free(radNasId);
 
-        const char* radStaId = amxd_object_get_cstring_t(secObj, "RadiusCalledStationId", NULL);
+        char* radStaId = amxd_object_get_cstring_t(secObj, "RadiusCalledStationId", NULL);
         if(strncmp(pAP->radiusCalledStationId, radStaId, strlen(pAP->radiusCalledStationId))) {
             wldu_copyStr(pAP->radiusCalledStationId, radStaId, sizeof(pAP->radiusCalledStationId));
             wld_ap_sec_doSync(pAP);
         }
+        free(radStaId);
 
         tmp_int32 = amxd_object_get_int32_t(secObj, "RadiusChargeableUserId", NULL);
         if(pAP->radiusChargeableUserId != tmp_int32) {
@@ -1255,13 +1269,14 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             wld_ap_doWpsSync(pAP);
         }
 
-        const char* cfgMethods = amxd_object_get_cstring_t(wpsObj, "ConfigMethodsEnabled", NULL);
+        char* cfgMethods = amxd_object_get_cstring_t(wpsObj, "ConfigMethodsEnabled", NULL);
         wld_wps_ConfigMethods_string_to_mask(&tmp_uint32, cfgMethods, ',');
         if(pAP->WPS_ConfigMethodsEnabled != tmp_uint32) {
             pAP->WPS_ConfigMethodsEnabled = tmp_uint32;
             wld_ap_doWpsSync(pAP);
             commit = true;
         }
+        free(cfgMethods);
 
         tmp_int32 = amxd_object_get_int32_t(wpsObj, "Configured", NULL);
         if(pAP->WPS_Configured != tmp_int32) {
@@ -1269,18 +1284,20 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             wld_ap_sec_doSync(pAP);
         }
 
-        const char* oweTransIntf = amxd_object_get_cstring_t(secObj, "OWETransitionInterface", NULL);
+        char* oweTransIntf = amxd_object_get_cstring_t(secObj, "OWETransitionInterface", NULL);
         if(strncmp(pAP->oweTransModeIntf, oweTransIntf, strlen(pAP->oweTransModeIntf))) {
             swl_str_copy(pAP->oweTransModeIntf, sizeof(pAP->oweTransModeIntf), oweTransIntf);
             wld_ap_sec_doSync(pAP);
         }
+        free(oweTransIntf);
 
-        const char* tdStr = amxd_object_get_cstring_t(secObj, "TransitionDisable", NULL);
+        char* tdStr = amxd_object_get_cstring_t(secObj, "TransitionDisable", NULL);
         wld_ap_td_m transitionDisable = swl_conv_charToMask(tdStr, g_str_wld_ap_td, AP_TD_MAX);
         if(pAP->transitionDisable != transitionDisable) {
             pAP->transitionDisable = transitionDisable;
             wld_ap_sec_doSync(pAP);
         }
+        free(tdStr);
         if(commit) {
             wld_ap_doSync(pAP);
         }
@@ -2128,6 +2145,14 @@ void wld_ap_destroy(T_AccessPoint* pAP) {
 
     /* Take VAP also out the Radio */
     amxc_llist_it_take(&pAP->it);
+
+    if(pAP->pBus != NULL) {
+        pAP->pBus->priv = NULL;
+    }
+    if(pAP->pSSID != NULL) {
+        pAP->pSSID->AP_HOOK = NULL;
+    }
+    free(pAP);
 }
 
 /**
@@ -2166,8 +2191,9 @@ amxd_status_t _wld_ap_updateAssocDev(amxd_object_t* object _UNUSED,
         return amxd_status_unknown_error;
     }
 
-    const char* deviceType = amxd_object_get_cstring_t(station, "DeviceType", NULL);
+    char* deviceType = amxd_object_get_cstring_t(station, "DeviceType", NULL);
     int newDeviceType = conv_ModeIndexStr(cstr_DEVICE_TYPES, deviceType);
+    free(deviceType);
     int newDevicePriority = amxd_object_get_int32_t(station, "DevicePriority", NULL);
 
     if((newDeviceType != assocDev->deviceType) || (newDevicePriority != assocDev->devicePriority)) {

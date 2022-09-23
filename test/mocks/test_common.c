@@ -60,24 +60,73 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#include <sys/signalfd.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
+#include <string.h>
 
-#include "wld.h"
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxo/amxo.h>
+#include <amxb/amxb.h>
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+#include "test_common.h"
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+void handle_events(void) {
+    printf("Handling events ");
+    while(amxp_signal_read() == 0) {
+        printf(".");
+    }
+    printf("\n");
+}
 
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+static int sfd;
+static sigset_t mask;
 
-void wld_ssid_cleanAll();
 
-#endif /* __WLD_SSID_H__ */
+int read_sig_alarm(void) {
+    while(1) {
+        printf(".\n");
+        struct signalfd_siginfo si;
+        ssize_t res;
+        res = read(sfd, &si, sizeof(si));
+        assert_false(res < 0);
+        assert_false(res != sizeof(si));
+        if(si.ssi_signo == SIGALRM) {
+            amxp_timers_calculate();
+            amxp_timers_check();
+            break;
+        }
+    }
+
+    while(amxp_signal_read() == 0) {
+    }
+
+    return 0;
+}
+
+
+int test_common_setup() {
+
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGALRM);
+
+    int rv = sigprocmask(SIG_BLOCK, &mask, NULL);
+    assert_false(rv < 0);
+
+    sfd = signalfd(-1, &mask, 0);
+    assert_false(sfd < 0);
+
+    return 0;
+}
+
+int test_common_teardown() {
+    close(sfd);
+
+    return 0;
+}

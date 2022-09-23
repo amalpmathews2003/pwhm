@@ -99,6 +99,7 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
 
     const char* radioname = GET_CHAR(args, "radio");
     const char* vapname = GET_CHAR(args, "vap");
+    SAH_TRACEZ_ERROR(ME, "NEW VAP %s %s", radioname, vapname);
     /* uint32 addVAPIntf(string vap, string radio); */
 
     /* Get our T_Radio pointer of the selected radio */
@@ -492,9 +493,7 @@ amxd_status_t _delEndPointIntf(amxd_object_t* wifi,
         goto leave;
     }
 
-    if(pR->pFA->mfn_wendpoint_destroy_hook(pEP)) {
-        SAH_TRACEZ_ERROR(ME, "%s: pEP destroy hook failed", pEP->Name);
-    }
+    wld_endpoint_destroy(pEP);
 
     /* Try to delete the requested interface by calling the HW function */
     if(pR->pFA->mfn_wrad_delendpointif(pR, (char*) endpointname) < 0) {
@@ -507,8 +506,6 @@ amxd_status_t _delEndPointIntf(amxd_object_t* wifi,
     amxd_object_delete(&epObj);
     amxd_object_delete(&ssidObj);
 
-    /* Take EP also out the Radio */
-    amxc_llist_it_take(&pEP->it);
 
     if(!(wifi)) {
         SAH_TRACEZ_ERROR(ME, "Failed to commit");

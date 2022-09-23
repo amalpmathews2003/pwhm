@@ -79,6 +79,8 @@
 
 static char* SSID_SupStatus[] = {"Error", "LowerLayerDown", "NotPresent", "Dormant", "Unknown", "Down", "Up", 0};
 
+static amxc_llist_t sSsidList = {NULL, NULL};
+
 T_SSID* s_createSsid(amxd_object_t* obj) {
     ASSERT_NOT_NULL(obj, NULL, ME, "NULL");
     T_SSID* pSSID = calloc(1, sizeof(T_SSID));
@@ -87,14 +89,13 @@ T_SSID* s_createSsid(amxd_object_t* obj) {
     obj->priv = pSSID;
     pSSID->debug = SSID_POINTER;
     sprintf(pSSID->SSID, "PWHM_SSID%d", amxd_object_get_index(obj));
+    amxc_llist_append(&sSsidList, &pSSID->it);
     return pSSID;
 }
 
-/* Be sure that our attached memory structure is cleared */
-static void s_destroySsid(amxd_object_t* object) {
-    T_SSID* pSSID = (T_SSID*) object->priv;
-    ASSERT_TRUE(debugIsSsidPointer(pSSID), , ME, "INVALID");
+static void s_cleanSSID(T_SSID* pSSID) {
     SAH_TRACEZ_INFO(ME, "%s: destroy SSID", pSSID->Name);
+    amxd_object_t* object = pSSID->pBus;
     T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
     T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
     if(debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
@@ -104,8 +105,27 @@ static void s_destroySsid(amxd_object_t* object) {
         pEP->pSSID = NULL;
         //update SSID Reference of AccessPoint
     }
+    amxc_llist_it_take(&pSSID->it);
     free(pSSID);
-    object->priv = NULL;
+    if(object != NULL) {
+        object->priv = NULL;
+    }
+}
+
+/* Be sure that our attached memory structure is cleared */
+static void s_destroySsid(amxd_object_t* object) {
+    T_SSID* pSSID = (T_SSID*) object->priv;
+    ASSERT_TRUE(debugIsSsidPointer(pSSID), , ME, "INVALID");
+    s_cleanSSID(pSSID);
+}
+
+void wld_ssid_cleanAll() {
+    amxc_llist_it_t* it = amxc_llist_get_first(&sSsidList);
+    while(it != NULL) {
+        T_SSID* pSSID = amxc_llist_it_get_data(it, T_SSID, it);
+        s_cleanSSID(pSSID);
+        it = amxc_llist_get_first(&sSsidList);
+    }
 }
 
 amxd_status_t _wld_ssid_addInstance_ocf(amxd_object_t* object,
@@ -114,8 +134,10 @@ amxd_status_t _wld_ssid_addInstance_ocf(amxd_object_t* object,
                                         const amxc_var_t* const args,
                                         amxc_var_t* const retval,
                                         void* priv) {
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), amxd_object_get_path(object, AMXD_OBJECT_NAMED));
+                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path);
+    free(path);
     amxd_status_t status = amxd_status_ok;
     status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
@@ -154,19 +176,24 @@ amxd_status_t _wld_ssid_setLowerLayers_pwf(amxd_object_t* object,
         return amxd_status_unknown_error;
     }
     T_SSID* pSSID = (T_SSID*) object->priv;
-    const char* radioRef = amxc_var_dyncast(cstring_t, args);
+    char* radioRef = amxc_var_dyncast(cstring_t, args);
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_INFO(ME, "ssid_obj(%p:%s:%s) LowerLayer %s",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), amxd_object_get_path(object, AMXD_OBJECT_NAMED),
+                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path,
                     radioRef);
+    free(path);
     ASSERTI_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
     T_Radio* pRad = NULL;
     amxd_object_t* pRadObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", radioRef);
     if(pRadObj) {
         pRad = (T_Radio*) pRadObj->priv;
+        char* path = amxd_object_get_path(pRadObj, AMXD_OBJECT_NAMED);
         SAH_TRACEZ_INFO(ME, "radObj(%p:%s:%s) pRad(%p)",
-                        pRadObj, amxd_object_get_name(pRadObj, AMXD_OBJECT_NAMED), amxd_object_get_path(pRadObj, AMXD_OBJECT_NAMED),
+                        pRadObj, amxd_object_get_name(pRadObj, AMXD_OBJECT_NAMED), path,
                         pRad);
+        free(path);
     }
+    free(radioRef);
     pSSID->RADIO_PARENT = pRad;
     return amxd_status_ok;
 }
@@ -540,7 +567,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             }
         }
 
-        const char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
+        char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
         if(strncmp(pS->SSID, ssid, strlen(pS->SSID))) {
             if(isValidSSID(ssid)) {
                 swl_str_copy(pS->SSID, sizeof(pS->SSID), ssid);
@@ -550,6 +577,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
                 }
             }
         }
+        free(ssid);
     }
     SAH_TRACEZ_OUT(ME);
 }

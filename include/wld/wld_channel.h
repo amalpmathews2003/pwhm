@@ -121,6 +121,7 @@ bool wld_channel_isBandAdjacentTo(swl_chanspec_t band1, swl_chanspec_t band2);
 //Setters
 
 void wld_channel_init_channels(T_Radio* pRad);
+void wld_channel_cleanAll();
 void wld_channel_clear_flags(T_Radio* rad);
 int wld_channel_get_cleared_channels(T_Radio* rad, int* list, int list_size);
 int wld_channel_get_radartriggered_channels(T_Radio* pRad, int* list, int list_size);

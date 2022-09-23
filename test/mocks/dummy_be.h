@@ -59,25 +59,13 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#ifndef __DUMMY_BE_H__
+#define __DUMMY_BE_H__
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+int test_register_dummy_be(void);
+int test_unregister_dummy_be(void);
+int test_load_dummy_remote(const char* odl);
+void test_set_dummy_caps(uint32_t dummy_caps);
+void test_custom_event(const char* object, const char* name, amxc_var_t* data);
 
-#include "wld.h"
-
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
-
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-void wld_ssid_cleanAll();
-
-#endif /* __WLD_SSID_H__ */
+#endif // __DUMMY_BE_H__

@@ -1995,6 +1995,21 @@ bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer) {
     return false;
 }
 
+void wld_endpoint_destroy(T_EndPoint* pEP) {
+    T_Radio* pR = pEP->pRadio;
+    if(pR->pFA->mfn_wendpoint_destroy_hook(pEP)) {
+        SAH_TRACEZ_ERROR(ME, "%s: pEP destroy hook failed", pEP->Name);
+    }
+
+
+    if(pEP->pSSID != NULL) {
+        pEP->pSSID->ENDP_HOOK = NULL;
+    }
+
+    /* Take EP also out the Radio */
+    amxc_llist_it_take(&pEP->it);
+}
+
 amxd_status_t _EndPoint_debug(amxd_object_t* object,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args,

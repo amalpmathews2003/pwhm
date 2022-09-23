@@ -60,24 +60,24 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#ifndef __WLD_TESTHELPER_VAP_H__
+#define __WLD_TESTHELPER_VAP_H__
+#include "wld_types.h"
+#include "wld_th_types.h"
 
-#include "wld.h"
+#include <amxc/amxc_macros.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_path.h>
+#include <amxd/amxd_object_event.h>
+#include <amxo/amxo.h>
+#include <amxo/amxo_save.h>
+#include <amxb/amxb.h>
 
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
+int wld_th_vap_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
 
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-void wld_ssid_cleanAll();
-
-#endif /* __WLD_SSID_H__ */
+#endif
