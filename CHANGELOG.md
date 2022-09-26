@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.12.1 - 2022-09-26(13:25:42 +0000)
+
+### Other
+
+- - Add initial tests
+- - Implement 11k using hostapd cmd/event
+
 ## Release v1.12.0 - 2022-09-22(09:49:27 +0000)
 
 ### Other
