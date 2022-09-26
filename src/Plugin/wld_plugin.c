@@ -85,7 +85,10 @@ int _wld_main(int reason,
         SAH_TRACEZ_WARNING(ME, "WLD plugin started");
         wld_plugin_init(dm, parser);
         wld_plugin_start();
-        wld_vendorModuleMgr_loadInternal();
+        const char* mod_dir = GETP_CHAR(&parser->config, "wld.mod-dir");
+        if(swl_str_isEmpty(mod_dir) || (wld_vendorModuleMgr_loadExternalDir(mod_dir) < 0)) {
+            wld_vendorModuleMgr_loadInternal();
+        }
 
         //Init info struct to be filled with need info
         wld_vendorModule_initInfo_t initInfo;

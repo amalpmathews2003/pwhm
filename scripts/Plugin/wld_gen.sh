@@ -27,7 +27,6 @@ get_base_wan_address()
 
 case $1 in
     start|boot)
-        export LD_LIBRARY_PATH=/usr/lib/amx/wld
         get_base_wan_address
         prevent_netifd_to_configure_wireless
         mkdir -p /var/lib/wld

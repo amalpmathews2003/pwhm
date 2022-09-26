@@ -86,10 +86,8 @@ static const char* sVendorModuleNS = "self";
 static int s_forwardInit(amxc_var_t* args, amxc_var_t* ret _UNUSED, const wld_vendorModule_handlers_cb* pModCbs) {
     ASSERT_NOT_NULL(pModCbs, WLD_ERROR, ME, "NULL");
     ASSERT_NOT_NULL(pModCbs->fInitCb, WLD_ERROR_NOT_IMPLEMENTED, ME, "No init handler");
-    wld_vendorModule_initInfo_t* initData = NULL;
-    if(args && (amxc_var_type_of(args) == AMXC_VAR_ID_CUSTOM_BASE)) {
-        initData = (wld_vendorModule_initInfo_t*) args->data.data;
-    }
+    wld_vendorModule_initInfo_t* initData =
+        (wld_vendorModule_initInfo_t*) ((uintptr_t) amxc_var_get_const_uint64_t(args));
     bool retCode = pModCbs->fInitCb(initData);
     ASSERT_TRUE(retCode, WLD_ERROR, ME, "init failure");
     return WLD_OK;

@@ -80,6 +80,12 @@ const T_CWLD_FUNC_TABLE* wld_nl80211_getVendorTable() {
     return &pVendor->fta;
 }
 
+const wld_fsmMngr_t* wld_nl80211_getFsmMngr() {
+    vendor_t* pVendor = wld_getVendorByName(NL80211_WLD_VENDOR_NAME);
+    ASSERTS_NOT_NULL(pVendor, NULL, ME, "NULL");
+    return pVendor->fsmMngr;
+}
+
 vendor_t* wld_nl80211_registerVendor(T_CWLD_FUNC_TABLE* fta) {
     return wld_registerVendor(NL80211_WLD_VENDOR_NAME, fta);
 }

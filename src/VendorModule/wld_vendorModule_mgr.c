@@ -64,6 +64,7 @@
 #include <stdlib.h>
 #include <debug/sahtrace.h>
 #include <errno.h>
+#include <dirent.h>
 
 #include <amxc/amxc_variant.h>
 #include <amxm/amxm.h>
@@ -176,8 +177,8 @@ static int s_initVendorModule(wld_vendorModule_t* pVendorModule, wld_vendorModul
     amxc_var_t ret;
     amxc_var_init(&args);
     amxc_var_init(&ret);
-    amxc_var_set_type(&args, AMXC_VAR_ID_CUSTOM_BASE);
-    args.data.data = pInfo;
+    amxc_var_set_type(&args, AMXC_VAR_ID_UINT64);
+    amxc_var_set_uint64_t(&args, (uintptr_t) pInfo);
     SAH_TRACEZ_INFO(ME, "Executing %s.%s", pVendorModule->name, funcName);
     int error = amxm_module_execute_function(pMod, funcName, &args, &ret);
     amxc_var_clean(&args);
@@ -235,6 +236,39 @@ int wld_vendorModuleMgr_loadExternal(const char* soFilePath) {
         amxm_so_close(&pSoSrc);
     }
     return ret;
+}
+
+static int s_filterModNames(const struct dirent* pEntry) {
+    const char* fname = pEntry->d_name;
+    if(swl_str_matches(fname, ".") || swl_str_matches(fname, "..")) {
+        return 0;
+    }
+    if(!swl_str_startsWith(fname, "mod-") || !strstr(fname, ".so")) {
+        return 0;
+    }
+    return 1;
+}
+
+int wld_vendorModuleMgr_loadExternalDir(const char* soDirPath) {
+    ASSERTS_STR(soDirPath, SWL_RC_INVALID_PARAM, ME, "NULL");
+    struct dirent** namelist;
+    int count = 0;
+    int n = scandir(soDirPath, &namelist, s_filterModNames, alphasort);
+    ASSERT_NOT_EQUALS(n, -1, SWL_RC_ERROR, ME, "fail to scan dir %s", soDirPath);
+    while(n--) {
+        const char* fname = namelist[n]->d_name;
+        char fullPath[swl_str_len(soDirPath) + swl_str_len(fname) + 2];
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", soDirPath, fname);
+        int ret = wld_vendorModuleMgr_loadExternal(fullPath);
+        if(ret < 0) {
+            SAH_TRACEZ_ERROR(ME, "Fail to load file %s", fullPath);
+        } else {
+            count += ret;
+        }
+        free(namelist[n]);
+    }
+    free(namelist);
+    return count;
 }
 
 int wld_vendorModuleMgr_unloadAll() {

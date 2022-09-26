@@ -63,6 +63,10 @@
 
 %config {
     name = "wld";
+    wld = {
+        mod-dir = "/usr/lib/amx/${name}/modules",
+        external-mod-dir = "/usr/lib/amx/modules"
+    };
 
     // odl parser config options
     import-dbg = false;

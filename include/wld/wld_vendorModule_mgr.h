@@ -83,6 +83,15 @@ int wld_vendorModuleMgr_loadInternal();
 int wld_vendorModuleMgr_loadExternal(const char* soFilePath);
 
 /**
+ * @brief Find and Open vendor modules shared object files located in directory
+ * These will be registered in local "Self" namespace
+ *
+ * @return positive number of vendor modules loaded from all shared object files
+ * or SWL_RC_ERROR in case of failure
+ */
+int wld_vendorModuleMgr_loadExternalDir(const char* soDirPath);
+
+/**
  * @brief initialize all loaded vendor modules in local namespace
  *
  * @param pInfo Pointer of initialization info struct

@@ -78,6 +78,24 @@
 const T_CWLD_FUNC_TABLE* wld_nl80211_getVendorTable();
 
 /*
+ * @brief return registered FSM manager, defining action sequences and state transitions
+ * of wld implementation for nl80211.
+ * The FSM manager defines the way the scheduled action bitmaps are applied,
+ * and also the dependencies between the scheduled actions for Radio, AccessPoint or Endpoint.
+ *
+ * Technically, every vendor module may (and shall):
+ * - define its own STATIC fsm manager, with defining its own action bitmaps
+ * to be scheduled when the function table handlers are called.
+ * The FSM manager relies on generic wld FSM implementation
+ * - share the same FSM manager as nl80211 default implementation
+ * when calling wld_fsm_init, while registering the new vendor to wld.
+ *
+ * @return pointer to FSM manager
+ *         or NULL if nl80211 implementation was not registered
+ */
+const wld_fsmMngr_t* wld_nl80211_getFsmMngr();
+
+/*
  * @brief create wld implementation for nl80211, with provided function table
  *
  * @return pointer to nl80211 vendor context
