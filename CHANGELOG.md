@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.0.0 - 2022-09-27(08:16:58 +0000)
+
+### Other
+
+- [prpl] clean swl swla headers install
+
 ## Release v1.13.0 - 2022-09-26(16:25:34 +0000)
 
 ### Other
