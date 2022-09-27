@@ -63,8 +63,8 @@
 #ifndef __WLD_WPA_CTRL_EVENTS_H__
 #define __WLD_WPA_CTRL_EVENTS_H__
 
-#include "swl/swl_chanspec.h"
-#include "swl/swl_mac.h"
+#include "swla/swla_chanspec.h"
+#include "swla/swla_mac.h"
 #include "swl/swl_ieee802_1x_defs.h"
 
 typedef struct {

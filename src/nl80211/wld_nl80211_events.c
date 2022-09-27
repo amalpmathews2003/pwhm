@@ -68,7 +68,7 @@
 #include "wld_nl80211_events_priv.h"
 #include "wld_nl80211_parser.h"
 #include "swl/swl_common.h"
-#include "swl/swl_table.h"
+#include "swla/swla_table.h"
 
 #define ME "nlEvt"
 

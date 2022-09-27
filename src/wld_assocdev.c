@@ -80,8 +80,8 @@
 #include "wld_radio.h"
 #include "wld_assocdev.h"
 #include "swl/swl_assert.h"
-#include "swl/swl_tupleType.h"
-#include "swl/swl_oui.h"
+#include "swla/swla_tupleType.h"
+#include "swla/swla_oui.h"
 #include "wld_ap_rssiMonitor.h"
 #include "wld_rad_nl80211.h"
 

@@ -65,8 +65,8 @@
 
 #include <stdbool.h>
 
-#include "swl/swl_chanspec.h"
-#include "swl/swl_time.h"
+#include "swla/swla_chanspec.h"
+#include "swla/swla_time.h"
 
 typedef enum {
     WLD_CHANNEL_EXTENTION_POS_AUTO,

@@ -67,7 +67,7 @@
 
 
 #include <string.h>
-#include <swl/swl_mac.h>
+#include <swla/swla_mac.h>
 
 #include "wld.h"
 #include "wld_radio.h"

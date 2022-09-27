@@ -73,7 +73,7 @@
 #include "wld_radio.h"
 #include "swl/swl_assert.h"
 #include "swl/swl_hex.h"
-#include "swl/swl_oui.h"
+#include "swla/swla_oui.h"
 
 #define ME "apPub"
 

@@ -66,7 +66,7 @@
 #include <linux/if_arp.h>
 
 #include "swl/swl_common.h"
-#include "swl/swl_mac.h"
+#include "swla/swla_mac.h"
 #include "swl/swl_string.h"
 
 #define ME "netUtil"

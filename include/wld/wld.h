@@ -65,12 +65,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <swl/swl_common.h>
-#include <swl/swl_commonLib.h>
+#include <swla/swla_commonLib.h>
 #include <swl/swl_uuid.h>
-#include <swl/swl_radioStandards.h>
-#include <swl/swl_time.h>
-#include <swl/swl_time_spec.h>
-#include <swl/swl_oui.h>
+#include <swla/swla_radioStandards.h>
+#include <swla/swla_time.h>
+#include <swla/swla_time_spec.h>
+#include <swla/swla_oui.h>
 #include <swl/swl_usp_cmdStatus.h>
 
 #include <amxc/amxc.h>
@@ -96,14 +96,14 @@
 #include "wld_rad_delayMgr.h"
 #include "wld_fsm.h"
 #include "Utils/wld_autoCommitRadData.h"
-#include "swl/swl_radioStandards.h"
-#include "swl/swl_chanspec.h"
+#include "swla/swla_radioStandards.h"
+#include "swla/swla_chanspec.h"
 #include "swl/swl_uuid.h"
 #include "swl/swl_staCap.h"
-#include "swl/swl_table.h"
+#include "swla/swla_table.h"
 #include "swl/swl_assert.h"
-#include "swl/swl_tupleType.h"
-#include "swl/swl_circTable.h"
+#include "swla/swla_tupleType.h"
+#include "swla/swla_circTable.h"
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
 #include "wld_hostapd_cfgManager.h"

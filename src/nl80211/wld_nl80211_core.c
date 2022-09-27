@@ -64,7 +64,7 @@
 #include "wld_nl80211_events_priv.h"
 #include "wld_nl80211_api_priv.h"
 #include <linux/netlink.h>
-#include "swl/swl_time.h"
+#include "swla/swla_time.h"
 
 #define ME "nlCore"
 

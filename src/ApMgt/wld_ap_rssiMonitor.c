@@ -77,13 +77,13 @@
 #include "wld_radio.h"
 #include "wld_assocdev.h"
 #include "swl/swl_assert.h"
-#include "swl/swl_tupleType.h"
-#include "swl/swl_table.h"
-#include "swl/swl_mac.h"
-#include "swl/swl_time_spec.h"
+#include "swla/swla_tupleType.h"
+#include "swla/swla_table.h"
+#include "swla/swla_mac.h"
+#include "swla/swla_time_spec.h"
 #include "wld_monitor.h"
 #include "wld_ap_rssiMonitor.h"
-#include <swl/swl_mcs.h>
+#include <swla/swla_mcs.h>
 
 #define ME "apRssi"
 

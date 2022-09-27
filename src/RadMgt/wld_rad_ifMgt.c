@@ -71,8 +71,8 @@
 #include <assert.h>
 #include <ctype.h>
 
-#include <swl/swl_commonLib.h>
-#include <swl/swl_conversion.h>
+#include <swla/swla_commonLib.h>
+#include <swla/swla_conversion.h>
 #include <swl/swl_string.h>
 
 #include "wld.h"

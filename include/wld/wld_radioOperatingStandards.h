@@ -65,7 +65,7 @@
 
 
 #include <stdbool.h>
-#include "swl/swl_radioStandards.h"
+#include "swla/swla_radioStandards.h"
 #include "wld.h"
 
 void wld_rad_update_operating_standard(T_Radio* pRad);

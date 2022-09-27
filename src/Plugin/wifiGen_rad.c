@@ -62,7 +62,7 @@
 
 #include <net/if.h>
 #include "swl/swl_common.h"
-#include "swl/swl_chanspec.h"
+#include "swla/swla_chanspec.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_channel.h"
 #include "wld/wld_util.h"

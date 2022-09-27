@@ -72,7 +72,7 @@
 
 #include "wld.h"
 #include "swl/swl_common.h"
-#include "swl/swl_table.h"
+#include "swla/swla_table.h"
 #include "wld_vendorModule_priv.h"
 #include "wld_vendorModule.h"
 

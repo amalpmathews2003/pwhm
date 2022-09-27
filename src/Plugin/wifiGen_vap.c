@@ -60,7 +60,7 @@
 **
 ****************************************************************************/
 #include <swl/swl_common.h>
-#include <swl/swl_mac.h>
+#include <swla/swla_mac.h>
 
 #include "wld/wld.h"
 #include "wld/wld_util.h"

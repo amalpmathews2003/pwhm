@@ -59,7 +59,7 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#include "swl/swl_table.h"
+#include "swla/swla_table.h"
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
 #include "wld_channel.h"

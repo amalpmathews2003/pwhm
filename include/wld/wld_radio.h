@@ -66,7 +66,7 @@
 
 
 
-#include "swl/swl_trilean.h"
+#include "swla/swla_trilean.h"
 #include "wld.h"
 #include "wld_channel.h"
 #include "wld_radioOperatingStandards.h"

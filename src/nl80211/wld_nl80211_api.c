@@ -69,7 +69,7 @@
 
 #include "swl/swl_common.h"
 #include "swl/swl_assert.h"
-#include "swl/swl_mac.h"
+#include "swla/swla_mac.h"
 
 #define ME "nlApi"
 #define NL80211_WLD_VENDOR_NAME "nl80211"

@@ -63,7 +63,7 @@
 #ifndef INCLUDE_WLD_WLD_LINUXIFUTILS_H_
 #define INCLUDE_WLD_WLD_LINUXIFUTILS_H_
 
-#include "swl/swl_mac.h"
+#include "swla/swla_mac.h"
 
 /*
  * @brief return inet socket to kernel

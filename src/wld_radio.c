@@ -71,8 +71,8 @@
 #include <assert.h>
 #include <ctype.h>
 
-#include <swl/swl_commonLib.h>
-#include <swl/swl_conversion.h>
+#include <swla/swla_commonLib.h>
+#include <swla/swla_conversion.h>
 #include <swl/swl_string.h>
 
 #include "wld.h"
@@ -84,7 +84,7 @@
 #include "wld_wps.h"
 #include "wld_channel.h"
 #include "swl/swl_assert.h"
-#include "swl/swl_oui.h"
+#include "swla/swla_oui.h"
 #include "swl/swl_hex.h"
 #include "wld_statsmon.h"
 #include "wld_channel_types.h"
