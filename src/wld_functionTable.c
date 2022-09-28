@@ -466,14 +466,14 @@ static swl_rc_ne TRAP_mfn_wendpoint_stats(T_EndPoint* endpoint _UNUSED, T_EndPoi
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wendpoint_wps_start(T_EndPoint* pEP _UNUSED, int method _UNUSED, char* pin _UNUSED, char* ssid _UNUSED, char* bssid _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_wps_start(T_EndPoint* pEP, wld_wps_cfgMethod_e method _UNUSED, char* pin _UNUSED, char* ssid _UNUSED, swl_macChar_t* bssid _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "%p", pEP);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wendpoint_wps_cancel(T_EndPoint* pEP _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_wps_cancel(T_EndPoint* pEP) {
     SAH_TRACEZ_WARNING(ME, "%p", pEP);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wendpoint_enable_vendor_roaming(T_EndPoint* pEP _UNUSED) {

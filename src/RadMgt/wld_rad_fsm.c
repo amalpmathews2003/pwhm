@@ -267,6 +267,12 @@ static void s_performSync(T_Radio* rad) {
         rad->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
         rad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
     }
+
+    wld_rad_forEachEp(pEP, rad) {
+        pSSID = (T_SSID*) pEP->pSSID;
+        rad->pFA->mfn_sync_ep(pEP);
+        rad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
+    }
 }
 
 

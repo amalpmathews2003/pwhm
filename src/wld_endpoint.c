@@ -90,7 +90,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
                                 wld_epError_e error);
 static void s_setProfileStatus(T_EndPointProfile* profile, bool connected);
 static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata);
-static int endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id, amxc_var_t* args);
+static swl_rc_ne endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id, amxc_var_t* args);
 static void endpoint_reconnect_handler(amxp_timer_t* timer, void* userdata);
 
 /* Possible Endpoint Status Values */
@@ -1344,17 +1344,14 @@ void wld_endpoint_sendPairingNotification(T_EndPoint* pEP, uint32_t type, const 
  * @param retval variant that must contain the return value
  * @return function execution state
  */
-amxd_status_t _EndPoint_pushButton(amxd_object_t* obj,
-                                   amxd_function_t* func _UNUSED,
-                                   amxc_var_t* args,
-                                   amxc_var_t* retval) {
-    SAH_TRACEZ_IN(ME);
-    int ret = -1;
+amxd_status_t _pushButton(amxd_object_t* obj,
+                          amxd_function_t* func _UNUSED,
+                          amxc_var_t* args,
+                          amxc_var_t* retval) {
     amxd_object_t* epObject = amxd_object_get_parent(obj);
     T_EndPoint* pEP = epObject->priv;
-
-    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "EP NULL");
-    SAH_TRACEZ_INFO(ME, "pushButton called for EP %s", pEP->alias);
+    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "pushButton called for EP %s", pEP->Name);
 
     T_Radio* pR = pEP->pRadio;
     if(!(pEP->enable && pEP->WPS_Enable && (wld_rad_hasOnlyActiveEP(pR) || (pR->status == RST_UP)))) {
@@ -1363,7 +1360,8 @@ amxd_status_t _EndPoint_pushButton(amxd_object_t* obj,
         return amxd_status_unknown_error;
     }
 
-    uint64_t call_id = amxc_var_constcast(uint64_t, retval);
+    uint64_t call_id;
+    amxd_function_defer(func, &call_id, retval, NULL, NULL);
     if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
         if(pEP->WPS_PBC_Delay.timer) {
             //Need to cancel the previous request and replace with the current one
@@ -1393,9 +1391,8 @@ amxd_status_t _EndPoint_pushButton(amxd_object_t* obj,
         return amxd_status_deferred;
     }
 
-    ret = endpoint_wps_start(pEP, pEP->WPS_PBC_Delay.call_id, args);
-    SAH_TRACEZ_OUT(ME);
-    return ret ? amxd_status_unknown_error : amxd_status_ok;
+    swl_rc_ne ret = endpoint_wps_start(pEP, pEP->WPS_PBC_Delay.call_id, args);
+    return swl_rc_isOk(ret) ? amxd_status_ok : amxd_status_unknown_error;
 }
 
 amxd_status_t _getDebug(amxd_object_t* epObject,
@@ -1434,20 +1431,15 @@ amxd_status_t _getDebug(amxd_object_t* epObject,
  * @param retval variant that must contain the return value
  * @return function execution state
  */
-amxd_status_t _EndPoint_cancelPairing(amxd_object_t* epObject,
-                                      amxd_function_t* func _UNUSED,
-                                      amxc_var_t* args _UNUSED,
-                                      amxc_var_t* retval _UNUSED) {
-    SAH_TRACEZ_IN(ME);
-    int ret = -1;
+amxd_status_t _cancelPairing(amxd_object_t* obj,
+                             amxd_function_t* func _UNUSED,
+                             amxc_var_t* args _UNUSED,
+                             amxc_var_t* retval _UNUSED) {
+    amxd_object_t* epObject = amxd_object_get_parent(obj);
     T_EndPoint* pEP = epObject->priv;
+    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
 
-    if(!pEP) {
-        SAH_TRACEZ_ERROR(ME, "No EP struct found");
-        goto exit;
-    }
-
-    SAH_TRACEZ_INFO(ME, "cancelPairing called for %s", pEP->alias);
+    SAH_TRACEZ_INFO(ME, "cancelPairing called for %s", pEP->Name);
 
     // If a timer is running... stop and destroy it also.
     if(pEP->WPS_PBC_Delay.timer) {
@@ -1458,12 +1450,9 @@ amxd_status_t _EndPoint_cancelPairing(amxd_object_t* epObject,
         pEP->WPS_PBC_Delay.timer = NULL;
         pEP->WPS_PBC_Delay.intf.pEP = NULL;
     }
-
     wld_wps_clearPairingTimer(&pEP->wpsSessionInfo);
-    ret = pEP->pFA->mfn_wendpoint_wps_cancel(pEP);
-exit:
-    SAH_TRACEZ_OUT(ME);
-    return ret ? amxd_status_unknown_error : amxd_status_ok;
+    swl_rc_ne ret = pEP->pFA->mfn_wendpoint_wps_cancel(pEP);
+    return swl_rc_isOk(ret) ? amxd_status_ok : amxd_status_unknown_error;
 }
 
 void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP) {
@@ -1835,8 +1824,7 @@ void endpointReconfigure(T_EndPoint* pEP) {
  */
 static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata) {
     SAH_TRACEZ_IN(ME);
-
-    swl_usp_cmdStatus_ne cmdStatus = SWL_USP_CMD_STATUS_SUCCESS;
+    swl_usp_cmdStatus_ne cmdStatus;
     T_EndPoint* pEP = userdata;
     T_Radio* pR = pEP->pRadio;
     if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
@@ -1848,13 +1836,25 @@ static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* use
     // In case we're enrollee (STA mode and no AP active) we accept Radio RST_DORMANT status.
     // As the Radio is UP but passively on a DFS channel.
     if(pEP->enable && pEP->WPS_Enable && (wld_rad_hasOnlyActiveEP(pR) || (pR->status == RST_UP))) {
-        int ret = endpoint_wps_start(pEP, pEP->WPS_PBC_Delay.call_id, pEP->WPS_PBC_Delay.args);
-        if(ret) {
+        swl_rc_ne ret = endpoint_wps_start(pEP, pEP->WPS_PBC_Delay.call_id, pEP->WPS_PBC_Delay.args);
+        if(swl_rc_isOk(ret)) {
+            cmdStatus = SWL_USP_CMD_STATUS_SUCCESS;
+        } else if(ret == SWL_RC_NOT_IMPLEMENTED) {
+            cmdStatus = SWL_USP_CMD_STATUS_ERROR_NOT_IMPLEMENTED;
+        } else if(ret == SWL_RC_INVALID_PARAM) {
+            cmdStatus = SWL_USP_CMD_STATUS_ERROR_INVALID_INPUT;
+        } else if(ret == SWL_RC_NOT_AVAILABLE) {
             cmdStatus = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
+        } else {
+            cmdStatus = SWL_USP_CMD_STATUS_ERROR;
         }
     } else {
         SAH_TRACEZ_ERROR(ME, "Radio condition not ok, endpoint not enabled or WPS not enabled");
-        cmdStatus = SWL_USP_CMD_STATUS_ERROR_OTHER;
+        if(pR->status != RST_UP) {
+            cmdStatus = SWL_USP_CMD_STATUS_ERROR_INTERFACE_DOWN;
+        } else {
+            cmdStatus = SWL_USP_CMD_STATUS_ERROR_OTHER;
+        }
     }
 
     amxp_timer_delete(&timer);
@@ -1868,7 +1868,7 @@ exit:
     SAH_TRACEZ_OUT(ME);
 }
 
-static int endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_var_t* args) {
+static swl_rc_ne endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_var_t* args) {
     const char* ssid = GET_CHAR(args, "ssid");
     const char* bssid = GET_CHAR(args, "bssid");
     const char* pin = GET_CHAR(args, "clientPIN");
@@ -1879,8 +1879,11 @@ static int endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_va
     } else {
         method = WPS_CFG_MTHD_PBC;
     }
-
-    return pEP->pFA->mfn_wendpoint_wps_start(pEP, method, (char*) pin, (char*) ssid, (char*) bssid);
+    swl_macChar_t cBssid = SWL_MAC_CHAR_NEW();
+    if(!swl_str_isEmpty(bssid)) {
+        swl_mac_charToStandard(&cBssid, bssid);
+    }
+    return pEP->pFA->mfn_wendpoint_wps_start(pEP, method, (char*) pin, (char*) ssid, &cBssid);
 }
 
 static void endpoint_reconnect_handler(amxp_timer_t* timer _UNUSED, void* userdata) {

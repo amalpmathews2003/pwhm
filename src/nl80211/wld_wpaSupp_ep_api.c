@@ -113,3 +113,69 @@ swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
     SAH_TRACEZ_INFO(ME, "%s: bssid[%s]", pEP->Name, bssid->cMac);
     return SWL_RC_OK;
 }
+
+/**
+ * @brief wld_wpaSupp_ep_startWpsPbc
+ *
+ * send wps_pbc command to wpa_supplicant
+ *
+ * @param pEP: Pointer to the endpoint.
+ * @param bssid: The BSSID to connect to (optional)
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_startWpsPbc(T_EndPoint* pEP, swl_macChar_t* bssid) {
+    SAH_TRACEZ_INFO(ME, "%s: send wps_pbc", pEP->Name);
+
+    char cmd[64] = {0};
+    swl_str_catFormat(cmd, sizeof(cmd), "WPS_PBC");
+    if(!swl_mac_charIsNull(bssid)) {
+        swl_str_catFormat(cmd, sizeof(cmd), " %s", bssid->cMac);
+    }
+    bool ret = s_sendWpaSuppCommand(pEP, cmd, "WPS_PBC");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send wps_pbc command", pEP->Name);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief wld_wpaSupp_ep_startWpsPin
+ *
+ * send wps_pin command to wpa_supplicant
+ *
+ * @param pEP: Pointer to the endpoint.
+ * @param pin: The PIN to use
+ * @param bssid: The BSSID to connect to (optional)
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_startWpsPin(T_EndPoint* pEP, char* pin, swl_macChar_t* bssid) {
+    ASSERT_STR(pin, SWL_RC_INVALID_PARAM, ME, "NULL PIN");
+    SAH_TRACEZ_INFO(ME, "%s: send wps start pin %s", pEP->Name, pin);
+    char cmd[64] = {0};
+    //WPS client PIN started with a default wps session walk time
+    char* bssidStr = "any";
+    if(!swl_mac_charIsNull(bssid)) {
+        bssidStr = bssid->cMac;
+    }
+    swl_str_catFormat(cmd, sizeof(cmd), "WPS_PIN %s %s", bssidStr, pin);
+    bool ret = s_sendWpaSuppCommand(pEP, cmd, "WPS_PIN");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send wps_pin command", pEP->Name);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief wld_wpaSupp_ep_cancelWps
+ *
+ * send wps_cancel command to wpa_supplicant
+ *
+ * @param pEP: Pointer to the endpoint
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_cancelWps(T_EndPoint* pEP) {
+    SAH_TRACEZ_INFO(ME, "%s: send wps stop", pEP->Name);
+
+    bool ret = s_sendWpaSuppCommand(pEP, "WPS_CANCEL", "WPS_CANCEL");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send wps_cancel command", pEP->Name);
+    return SWL_RC_OK;
+}

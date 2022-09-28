@@ -2008,8 +2008,8 @@ typedef int (APIENTRY* PFN_WENDPOINT_DISCONNECT)(T_EndPoint* endpoint);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_CONNECT_AP)(T_EndPointProfile* endpointProfile);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_BSSID)(T_EndPoint* ep, swl_macChar_t* bssid);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_STATS)(T_EndPoint* endpoint, T_EndPointStats* stats);
-typedef int (APIENTRY* PFN_WENDPOINT_WPS_START)(T_EndPoint* pEP, int method, char* pin, char* ssid, char* bssid);
-typedef int (APIENTRY* PFN_WENDPOINT_WPS_CANCEL)(T_EndPoint* pEP);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_WPS_START)(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid, swl_macChar_t* bssid);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_WPS_CANCEL)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WEP_ENABLE_VENDOR_ROAMING)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WEP_UPDATE_VENDOR_ROAMING)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WENDPOINT_MULTIAP_ENABLE)(T_EndPoint* pEP);
@@ -2034,6 +2034,7 @@ typedef int (APIENTRY* PFN_WRAD_FSM_DELAY_COMMIT)(T_Radio* rad);
 typedef void (APIENTRY* PFN_SYNC_RADIO)(amxd_object_t* object, T_Radio* pR, int set);
 typedef void (APIENTRY* PFN_SYNC_AP)(amxd_object_t* object, T_AccessPoint* pAP, int set);
 typedef void (APIENTRY* PFN_SYNC_SSID)(amxd_object_t* object, T_SSID* pS, int set);
+typedef void (APIENTRY* PFN_SYNC_EP)(T_EndPoint* pEP);
 
 /* This function will fill-in all our default parameters at once! */
 typedef int (APIENTRY* PFN_WIFI_SUPVEND_MODES)(T_Radio* rad, T_AccessPoint* pAP, amxd_object_t* object);             // updates all read only params
@@ -2172,6 +2173,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_SYNC_RADIO mfn_sync_radio;                       /**< Resync data with our internal Radio structure */
     PFN_SYNC_AP mfn_sync_ap;                             /**< Resync data with our internal AccessPoint structure */
     PFN_SYNC_SSID mfn_sync_ssid;                         /**< Resync data with our internal SSID structure */
+    PFN_SYNC_EP mfn_sync_ep;                             /**< Resync data with our internal EndPoint structure */
 
     PFN_WRAD_GETSPECTRUMINFO mfn_wrad_getspectruminfo;
     PFN_WRAD_START_SCAN mfn_wrad_start_scan;

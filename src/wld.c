@@ -192,6 +192,7 @@ bool wld_plugin_loadDmConf() {
         T_EndPoint* pEP;
         wld_rad_forEachEp(pEP, pRad) {
             pSSID = (T_SSID*) pEP->pSSID;
+            pRad->pFA->mfn_sync_ep(pEP);
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
     }
@@ -251,6 +252,7 @@ vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta) {
     fta->mfn_sync_radio = vendor->fta.mfn_sync_radio = syncData_Radio2OBJ;
     fta->mfn_sync_ap = vendor->fta.mfn_sync_ap = SyncData_AP2OBJ;
     fta->mfn_sync_ssid = vendor->fta.mfn_sync_ssid = syncData_SSID2OBJ;
+    fta->mfn_sync_ep = vendor->fta.mfn_sync_ep = syncData_EndPoint2OBJ;
 
     fta->mfn_wrad_libsync_status = vendor->fta.mfn_wrad_libsync_status = radio_libsync_status_cb;
     fta->mfn_wvap_libsync_status = vendor->fta.mfn_wvap_libsync_status = vap_libsync_status_cb;

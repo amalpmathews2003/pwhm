@@ -496,6 +496,49 @@ static void s_stationScanFailedEvt(void* pRef, char* ifName, int error) {
     }
 }
 
+static void s_stationWpsCredReceivedEvt(void* pRef, char* ifName, void* creds, swl_rc_ne status) {
+    T_EndPoint* pEP = (T_EndPoint*) pRef;
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(creds, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: wps credentials received with status (%d)", pEP->Name, status);
+    if(swl_rc_isOk(status)) {
+        pEP->WPS_Configured = 1;
+        pEP->connectionStatus = EPCS_WPS_PAIRINGDONE;
+        wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_SUCCESS, (T_WPSCredentials*) creds);
+    } else {
+        wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_CREDENTIALS, NULL);
+    }
+}
+
+static void s_stationWpsCancel(void* userData, char* ifName _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_CANCELLED, NULL);
+}
+
+static void s_stationWpsTimeout(void* userData, char* ifName _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_TIMEOUT, NULL);
+}
+
+static void s_stationWpsSuccess(void* userData, char* ifName _UNUSED, swl_macChar_t* mac _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_SUCCESS, NULL);
+}
+
+static void s_stationWpsOverlap(void* userData, char* ifName _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_OVERLAP, NULL);
+}
+
+static void s_stationWpsFail(void* userData, char* ifName _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_FAILURE, NULL);
+}
+
 swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pEP->wpaSupp, SWL_RC_ERROR, ME, "NULL");
@@ -508,6 +551,12 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     wpaCtrlEpEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
     wpaCtrlEpEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
     wpaCtrlEpEvtHandlers.fStationScanFailedCb = s_stationScanFailedEvt;
+    wpaCtrlEpEvtHandlers.fWpsCredReceivedCb = s_stationWpsCredReceivedEvt;
+    wpaCtrlEpEvtHandlers.fWpsCancelMsg = s_stationWpsCancel;
+    wpaCtrlEpEvtHandlers.fWpsTimeoutMsg = s_stationWpsTimeout;
+    wpaCtrlEpEvtHandlers.fWpsSuccessMsg = s_stationWpsSuccess;
+    wpaCtrlEpEvtHandlers.fWpsOverlapMsg = s_stationWpsOverlap;
+    wpaCtrlEpEvtHandlers.fWpsFailMsg = s_stationWpsFail;
 
     wld_wpaCtrlInterface_setEvtHandlers(pEP->wpaCtrlInterface, pEP, &wpaCtrlEpEvtHandlers);
 

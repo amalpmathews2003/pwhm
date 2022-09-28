@@ -63,9 +63,11 @@
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
 #include "wld_channel.h"
+#include "wld_wps.h"
 #include "wld_wpaCtrlInterface_priv.h"
 #include "wld_wpaCtrlMngr_priv.h"
 #include "wld_wpaCtrl_events.h"
+#include "wld_wpaSupp_parser.h"
 
 #define ME "wpaCtrl"
 
@@ -236,6 +238,21 @@ static void s_wpsFailEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char
     wld_wpaCtrl_getValueIntExt(params, "config_error", &wpsCfgErr);
     SAH_TRACEZ_INFO(ME, "%s: %s wpsMsgId(%d) wpsCfgErrId(%d)", pInterface->name, event, wpsMsgId, wpsCfgErr);
     CALL_INTF_NA(pInterface, fWpsFailMsg);
+}
+
+
+
+static void s_wpsCredReceivedEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
+    T_WPSCredentials creds;
+    memset(&creds, 0, sizeof(creds));
+    swl_rc_ne ret = wpaSup_parseWpsReceiveCredentialsEvt(&creds, params, strlen(params));
+    SAH_TRACEZ_INFO(ME, "%s: %s ssid(%s) secMode(%d) key(%s)", pInterface->name, event, creds.ssid, creds.secMode, creds.key);
+    CALL_INTF(pInterface, fWpsCredReceivedCb, &creds, ret);
+}
+
+static void s_wpsStationSuccessEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s: WPS SUCCESS", pInterface->name);
+    CALL_INTF(pInterface, fWpsSuccessMsg, NULL);
 }
 
 static void s_apStationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -519,6 +536,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-REG-SUCCESS", &s_wpsSuccess},
               {"WPS-OVERLAP-DETECTED", &s_wpsOverlapEvent},
               {"WPS-FAIL", &s_wpsFailEvent},
+              {"WPS-CRED-RECEIVED", &s_wpsCredReceivedEvent},
+              {"WPS-SUCCESS", &s_wpsStationSuccessEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
               {"BSS-TM-RESP", &s_btmResponse},

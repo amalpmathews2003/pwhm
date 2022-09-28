@@ -72,5 +72,7 @@ swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile);
 int wifiGen_ep_disconnect(T_EndPoint* pEP);
 swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid);
 swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP);
+swl_rc_ne wifiGen_ep_wpsStart(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid, swl_macChar_t* bssid);
+swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */

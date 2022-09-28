@@ -60,13 +60,9 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_WPA_SUPPLICANT_API_H__
-#define __WLD_WPA_SUPPLICANT_API_H__
+#ifndef __WLD_WPA_SUPPLICANT_PARSER_H__
+#define __WLD_WPA_SUPPLICANT_PARSER_H__
 
-swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP);
-swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid);
-swl_rc_ne wld_wpaSupp_ep_startWpsPbc(T_EndPoint* pEP, swl_macChar_t* bssid);
-swl_rc_ne wld_wpaSupp_ep_startWpsPin(T_EndPoint* pEP, char* pin, swl_macChar_t* bssid);
-swl_rc_ne wld_wpaSupp_ep_cancelWps(T_EndPoint* pEP);
+swl_rc_ne wpaSup_parseWpsReceiveCredentialsEvt(T_WPSCredentials* creds, char* data, size_t dataLen);
 
-#endif /* __WLD_WPA_SUPPLICANT_API_H__ */
+#endif /* __WLD_WPA_SUPPLICANT_PARSER_H__ */

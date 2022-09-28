@@ -66,6 +66,8 @@
 #include "wifiGen_wpaSupp.h"
 #include "wld/wld_wpaSupp_ep_api.h"
 #include "wld/wld_util.h"
+#include "wld/wld_wps.h"
+#include "wld/wld_endpoint.h"
 #include "wifiGen_events.h"
 #include "wifiGen_fsm.h"
 
@@ -182,3 +184,67 @@ swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP) {
     ASSERT_FALSE(ret <= 0, SWL_RC_ERROR, ME, "%s: link down", pEP->alias);
     return SWL_RC_OK;
 }
+
+/**
+ * @brief wifiGen_ep_wpsStart
+ *
+ * start a WPS attempt for an endpoint.
+ *
+ * @param pEP: Pointer to the endpoint.
+ * @param configmethod: The WPS method to use.
+ * @param pin: The PIN to use (only for PIN based methods)
+ * @param ssid: The SSID to connect to (mandatory for PIN methods, optional otherwise)
+ * @param bssid: The BSSID to connect to (optional)
+ * @return - SWL_RC_INVALID_PARAM if pEP is NULL
+           - SWL_RC_ERROR if endpoint radio is NULL
+           - SWL_RC_NOT_AVAILABLE if there is on going WPS session on another endpoint of the same radio
+           - Otherwise, result of wld_wpaSupp_ep_startWps call
+ */
+swl_rc_ne wifiGen_ep_wpsStart(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid _UNUSED, swl_macChar_t* bssid) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
+    if(wld_rad_hasWpsActiveEndpoint(pRad)) {
+        SAH_TRACEZ_ERROR(ME, "%s: WPS already started for other endpoint", pEP->Name);
+        return SWL_RC_NOT_AVAILABLE;
+    }
+    char* reason = NULL;
+    swl_rc_ne ret;
+
+    if((method == WPS_CFG_MTHD_LABEL) || (method == WPS_CFG_MTHD_DISPLAY) || (method == WPS_CFG_MTHD_DISPLAY_V)
+       || (method == WPS_CFG_MTHD_DISPLAY_P) || (method == WPS_CFG_MTHD_DISPLAY_V) || (method == WPS_CFG_MTHD_PIN)) {
+        ret = wld_wpaSupp_ep_startWpsPin(pEP, pin, bssid);
+        reason = WPS_CAUSE_START_WPS_PIN;
+    } else if((method == WPS_CFG_MTHD_PBC) || (method == WPS_CFG_MTHD_PBC_P) || (method == WPS_CFG_MTHD_PBC_V)) {
+        ret = wld_wpaSupp_ep_startWpsPbc(pEP, bssid);
+        reason = WPS_CAUSE_START_WPS_PBC;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "Not supported WPS configmethod %d", method);
+        ret = SWL_RC_ERROR;
+    }
+    ASSERT_TRUE(swl_rc_isOk(ret), ret, ME, "error %d", ret);
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_READY, reason, NULL);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief wifiGen_ep_wpsCancel
+ *
+ * cancel a WPS attempt for an endpoint
+ *
+ * @param pEP: Pointer to the endpoint
+ * @return - SWL_RC_INVALID_PARAM if pEP is NULL
+           - SWL_RC_ERROR if endpoint radio is NULL
+           - SWL_RC_NOT_AVAILABLE if there is on going WPS session on another endpoint of the same radio
+           - Otherwise, result of wld_wpaSupp_ep_cancelWps call
+ */
+swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne ret = wld_wpaSupp_ep_cancelWps(pEP);
+    ASSERT_TRUE(swl_rc_isOk(ret), ret, ME, "error %d", ret);
+    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_CANCELLED, NULL);
+    return SWL_RC_OK;
+}
+
+
+

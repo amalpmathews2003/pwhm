@@ -5325,7 +5325,7 @@ define rrm_t{
 
 		/** This object contains parameters related to Wi-Fi
 		 *  Protected Setup [WPSv1.0] for this end point. */
-		object WPS{
+		%persistent object WPS{
 			/** Enables or disables WPS functionality for this endpoint. */
 			%persistent bool Enable{
 				default false;
@@ -5369,9 +5369,26 @@ define rrm_t{
 			}
 
 			/**
-			* Indicates whether WPS pairing is busy.
-			* This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
+			This function is for WPS enrollment
+			If no arguments are given, this starts the PushButton scenario.
+			Notice that the corresponding config method needs to be enabled by ConfigMethodsEnabled.
+			* @param clientPIN optional argument to use clientPIN, give a 4-digit or 8-digit WPS PIN code.
+			* @param ssid restrict the wps session to a certain ssid
+			* @param bssid restrict the wps session to the AP with this BSSID
+			* @version 6.1
 			*/
+			void pushButton(string ssid, string bssid, string clientPIN);
+
+			/**
+			* Cancel WPS registrar if it was runnning.
+			* @version 6.1
+			*/
+			void cancelPairing();
+			
+			/**
+			 * Indicates whether WPS pairing is busy.
+			 * This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
+			 */
 			%read-only bool PairingInProgress;
 		}
 		
