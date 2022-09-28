@@ -9,7 +9,7 @@ CFLAGS += -Wimplicit-function-declaration -Wl,--no-undefined
 CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 
 LDFLAGS += -L.. -L$(STAGINGDIR)/lib -L$(STAGINGDIR)/usr/lib
-LDFLAGS += -Wl,-rpath,/lib -Wl,-rpath,/usr/lib -Wl,-rpath,/usr/lib/amx/wld
+LDFLAGS += -Wl,-rpath,/lib -Wl,-rpath,/usr/lib
 LDFLAGS += -lsahtrace -lswlc -lswla -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
 
 OBJS-wld.so = wld_plugin.o \

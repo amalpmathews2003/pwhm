@@ -35,7 +35,7 @@ install: all
 	$(INSTALL) -D -p -m 0644 include/wld/*.h $(DEST)$(INCLUDEDIR)/wld/
 	$(INSTALL) -d -m 0755 $(DEST)/$(INCLUDEDIR)/wld/Utils
 	$(INSTALL) -D -p -m 0644 include/wld/Utils/*.h $(DEST)$(INCLUDEDIR)/wld/Utils/
-	$(INSTALL) -D -p -m 0755 src/libwld.so $(DEST)$(LIBDIR)/amx/wld/libwld.so
+	$(INSTALL) -D -p -m 0755 src/libwld.so $(DEST)$(LIBDIR)/libwld.so
 	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(DEST)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(DEST)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(DEST)/etc/amx/wld/wld_definitions.odl
@@ -54,7 +54,7 @@ package: all
 	$(INSTALL) -D -p -m 0644 include/wld/*.h $(PKGDIR)$(INCLUDEDIR)/wld/
 	$(INSTALL) -d -m 0755 $(PKGDIR)/$(INCLUDEDIR)/wld/Utils
 	$(INSTALL) -D -p -m 0644 include/wld/Utils/*.h $(PKGDIR)$(INCLUDEDIR)/wld/Utils/
-	$(INSTALL) -D -p -m 0755 src/libwld.so $(PKGDIR)$(LIBDIR)/amx/wld/libwld.so
+	$(INSTALL) -D -p -m 0755 src/libwld.so $(PKGDIR)$(LIBDIR)/libwld.so
 	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(PKGDIR)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(PKGDIR)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(PKGDIR)/etc/amx/wld/wld_definitions.odl
