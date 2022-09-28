@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.0.2 - 2022-09-28(12:36:23 +0000)
+
+### Other
+
+- : Segfault wld_bcm
+
 ## Release v2.0.1 - 2022-09-28(11:22:06 +0000)
 
 ### Other
