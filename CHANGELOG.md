@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.0.1 - 2022-09-28(11:22:06 +0000)
+
+### Other
+
+- Support for Vendor Specific nl80211 extensions
+
 ## Release v2.0.0 - 2022-09-27(08:16:58 +0000)
 
 ### Other
