@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.1.0 - 2022-10-05(09:38:36 +0000)
+
+### Other
+
+- - Endpoint support - WPS connection
+
 ## Release v2.0.2 - 2022-09-28(12:36:23 +0000)
 
 ### Other
