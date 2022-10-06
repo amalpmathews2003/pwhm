@@ -2055,58 +2055,58 @@ typedef int (APIENTRY* PFN_WVAP_UPDATE_STA_INFO)(T_AccessPoint* vap, T_Associate
 /* <<ADD Functions that do combined task or no HW related >> */
 
 typedef struct S_CWLD_FUNC_TABLE {
-    PFN_WRAD_CREATE_HOOK mfn_wrad_create_hook;                   /**< Radio constructor hook */
-    PFN_WRAD_DESTROY_HOOK mfn_wrad_destroy_hook;                 /**< Radio destructor hook */
-    PFN_WRAD_ADDVAP_EXT mfn_wrad_addVapExt;                      /**< Create a VAP interface on the RADIO, with pAp object provided*/
-    PFN_WRAD_ADDVAPIF mfn_wrad_addvapif;                         /**< Create a VAP interface on the RADIO */
-    PFN_WRAD_DELVAPIF mfn_wrad_delvapif;                         /**< Delete a VAP interface  */
-    PFN_WRAD_RADIO_STATUS mfn_wrad_radio_status;                 /**< Collect (and update) radio status data */
-    PFN_WRAD_ENABLE mfn_wrad_enable;                             /**< Enable/Disable the Radio interface */
-    PFN_WRAD_MAXBITRATE mfn_wrad_maxbitrate;                     /**< Set/Get the MAX bit rate */
-    PFN_WRAD_DFSRADARTRIGGER mfn_wrad_dfsradartrigger;           /**< Automation Test - Trigger a driver DFS radar pulese*/
-    PFN_WRAD_SUPFREQBANDS mfn_wrad_supfreqbands;                 /**< Get the supported frequence bands */
-    PFN_WRAD_SUPSTD mfn_wrad_supstd;                             /**< Supported Standards */
-    PFN_WRAD_POSCHANS mfn_wrad_poschans;                         /**< Get HW possible channels (scan) */
-    PFN_WRAD_CHANSINUSE mfn_wrad_chansinuse;                     /**< ??? Get Scan list of all used channels */
-    PFN_WRAD_CHANNEL mfn_wrad_channel;                           /**< Set/Get Channel selection */
-    PFN_WRAD_SUPPORTS mfn_wrad_supports;                         /**< Update all ReadOnly Radio states */
-    PFN_WRAD_AUTOCHANNELENABLE mfn_wrad_autochannelenable;       /**< Set/Get Auto Channel Enable */
-    PFN_WRAD_STARTACS mfn_wrad_startacs;                         /**< Trigger Autochannel scan to start! */
-    PFN_WRAD_BGDFS_ENABLE mfn_wrad_bgdfs_enable;                 /**< Set background dfs feature */
-    PFN_WRAD_BGDFS_START mfn_wrad_bgdfs_start;                   /**< Start bg dfs clear for a dedicated channel */
-    PFN_WRAD_BGDFS_START_EXT mfn_wrad_bgdfs_start_ext;           /**< Start bg dfs clear for a dedicated channel with extended options */
-    PFN_WRAD_BGDFS_STOP mfn_wrad_bgdfs_stop;                     /**< Stop bg dfs clear */
+    PFN_WRAD_CREATE_HOOK mfn_wrad_create_hook;               /**< Radio constructor hook */
+    PFN_WRAD_DESTROY_HOOK mfn_wrad_destroy_hook;             /**< Radio destructor hook */
+    PFN_WRAD_ADDVAP_EXT mfn_wrad_addVapExt;                  /**< Create a VAP interface on the RADIO, with pAp object provided*/
+    PFN_WRAD_ADDVAPIF mfn_wrad_addvapif;                     /**< Create a VAP interface on the RADIO */
+    PFN_WRAD_DELVAPIF mfn_wrad_delvapif;                     /**< Delete a VAP interface  */
+    PFN_WRAD_RADIO_STATUS mfn_wrad_radio_status;             /**< Collect (and update) radio status data */
+    PFN_WRAD_ENABLE mfn_wrad_enable;                         /**< Enable/Disable the Radio interface */
+    PFN_WRAD_MAXBITRATE mfn_wrad_maxbitrate;                 /**< Set/Get the MAX bit rate */
+    PFN_WRAD_DFSRADARTRIGGER mfn_wrad_dfsradartrigger;       /**< Automation Test - Trigger a driver DFS radar pulese*/
+    PFN_WRAD_SUPFREQBANDS mfn_wrad_supfreqbands;             /**< Get the supported frequence bands */
+    PFN_WRAD_SUPSTD mfn_wrad_supstd;                         /**< Supported Standards */
+    PFN_WRAD_POSCHANS mfn_wrad_poschans;                     /**< Get HW possible channels (scan) */
+    PFN_WRAD_CHANSINUSE mfn_wrad_chansinuse;                 /**< ??? Get Scan list of all used channels */
+    PFN_WRAD_CHANNEL mfn_wrad_channel;                       /**< Set/Get Channel selection */
+    PFN_WRAD_SUPPORTS mfn_wrad_supports;                     /**< Update all ReadOnly Radio states */
+    PFN_WRAD_AUTOCHANNELENABLE mfn_wrad_autochannelenable;   /**< Set/Get Auto Channel Enable */
+    PFN_WRAD_STARTACS mfn_wrad_startacs;                     /**< Trigger Autochannel scan to start! */
+    PFN_WRAD_BGDFS_ENABLE mfn_wrad_bgdfs_enable;             /**< Set background dfs feature */
+    PFN_WRAD_BGDFS_START mfn_wrad_bgdfs_start;               /**< Start bg dfs clear for a dedicated channel */
+    PFN_WRAD_BGDFS_START_EXT mfn_wrad_bgdfs_start_ext;       /**< Start bg dfs clear for a dedicated channel with extended options */
+    PFN_WRAD_BGDFS_STOP mfn_wrad_bgdfs_stop;                 /**< Stop bg dfs clear */
 
-    PFN_WRAD_ACHREFPERIOD mfn_wrad_achrefperiod;                 /**< Set/Get Auto Channel Refresh Period */
-    PFN_WRAD_OCHBW mfn_wrad_ochbw;                               /**< Set/Get Operating Channel Bandwidth (Auto/20/40) */
-    PFN_WRAD_EXTCHAN mfn_wrad_extchan;                           /**< Set/Get secondary extension channel position (+1/Auto/-1) */
-    PFN_WRAD_GUARDINTVAL mfn_wrad_guardintval;                   /**< Set/Get guard interval between OFDM symbols */
-    PFN_WRAD_MCS mfn_wrad_mcs;                                   /**< Set/Get MCS */
-    PFN_WRAD_TXPOW mfn_wrad_txpow;                               /**< Set/Get TxPower */
-    PFN_WRAD_ANTENNACTRL mfn_wrad_antennactrl;                   /**< Set/Get Antenna parameters */
-    PFN_WRAD_REGDOMAIN mfn_wrad_regdomain;                       /**< Set/Get Country code */
-    PFN_WRAD_BEAMFORMING mfn_wrad_beamforming;                   /**< Set/Get beam forming settings */
-    PFN_WRAD_RIFS mfn_wrad_rifs;                                 /**< Set/Get RIFS status */
-    PFN_WRAD_AIRTIMEFAIRNESS mfn_wrad_airtimefairness;           /**< Set/Get AirTimeFairness status */
-    PFN_WRAD_RXPOWERSAVE mfn_wrad_rx_powersave;                  /**< Set/Get Power Save status */
-    PFN_WRAD_INTELLIGENTAIRTIME mfn_wrad_intelligentAirtime;     /**< Set/Get Intelligent airtime scheduler status */
-    PFN_WRAD_MULTIUSERMIMO mfn_wrad_multiusermimo;               /**< Set/Get MultiUserMIMO status */
-    PFN_WRAD_AIRSTATS mfn_wrad_airstats;                         /**< Get Air usage statistics */
-    PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;           /**< Update probe requests */
-    PFN_WRAD_SYNC mfn_wrad_sync;                                 /**< Sync Enable/channel/band-mode/... */
-    PFN_WRAD_PER_ANTENNA_RSSI mfn_wrad_per_ant_rssi;             /**< Get the RSSI values of each antenna*/
-    PFN_WRAD_LATEST_POWER mfn_wrad_latest_power;                 /**< Get the power values of each antenna*/
-    PFN_WRAD_UPDATE_CHANINFO mfn_wrad_update_chaninfo;           /**< Update the channel information and statistics*/
-    PFN_WRAD_UPDATE_MON_STATS mfn_wrad_update_mon_stats;         /**< Update the non associated station counters of SSID */
-    PFN_WRAD_SETUP_STAMON mfn_wrad_setup_stamon;                 /**< Set the station monitor */
-    PFN_WRAD_ADD_STAMON mfn_wrad_add_stamon;                     /**< Add the non associated station */
-    PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                     /**< Del the non associated station */
-    PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;            /**< Warn driver delay AP up period is over*/
-    PFN_WRAD_RADIO_STATS mfn_wrad_radio_stats;                   /**< get radio statistics */
+    PFN_WRAD_ACHREFPERIOD mfn_wrad_achrefperiod;             /**< Set/Get Auto Channel Refresh Period */
+    PFN_WRAD_OCHBW mfn_wrad_ochbw;                           /**< Set/Get Operating Channel Bandwidth (Auto/20/40) */
+    PFN_WRAD_EXTCHAN mfn_wrad_extchan;                       /**< Set/Get secondary extension channel position (+1/Auto/-1) */
+    PFN_WRAD_GUARDINTVAL mfn_wrad_guardintval;               /**< Set/Get guard interval between OFDM symbols */
+    PFN_WRAD_MCS mfn_wrad_mcs;                               /**< Set/Get MCS */
+    PFN_WRAD_TXPOW mfn_wrad_txpow;                           /**< Set/Get TxPower */
+    PFN_WRAD_ANTENNACTRL mfn_wrad_antennactrl;               /**< Set/Get Antenna parameters */
+    PFN_WRAD_REGDOMAIN mfn_wrad_regdomain;                   /**< Set/Get Country code */
+    PFN_WRAD_BEAMFORMING mfn_wrad_beamforming;               /**< Set/Get beam forming settings */
+    PFN_WRAD_RIFS mfn_wrad_rifs;                             /**< Set/Get RIFS status */
+    PFN_WRAD_AIRTIMEFAIRNESS mfn_wrad_airtimefairness;       /**< Set/Get AirTimeFairness status */
+    PFN_WRAD_RXPOWERSAVE mfn_wrad_rx_powersave;              /**< Set/Get Power Save status */
+    PFN_WRAD_INTELLIGENTAIRTIME mfn_wrad_intelligentAirtime; /**< Set/Get Intelligent airtime scheduler status */
+    PFN_WRAD_MULTIUSERMIMO mfn_wrad_multiusermimo;           /**< Set/Get MultiUserMIMO status */
+    PFN_WRAD_AIRSTATS mfn_wrad_airstats;                     /**< Get Air usage statistics */
+    PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;       /**< Update probe requests */
+    PFN_WRAD_SYNC mfn_wrad_sync;                             /**< Sync Enable/channel/band-mode/... */
+    PFN_WRAD_PER_ANTENNA_RSSI mfn_wrad_per_ant_rssi;         /**< Get the RSSI values of each antenna*/
+    PFN_WRAD_LATEST_POWER mfn_wrad_latest_power;             /**< Get the power values of each antenna*/
+    PFN_WRAD_UPDATE_CHANINFO mfn_wrad_update_chaninfo;       /**< Update the channel information and statistics*/
+    PFN_WRAD_UPDATE_MON_STATS mfn_wrad_update_mon_stats;     /**< Update the non associated station counters of SSID */
+    PFN_WRAD_SETUP_STAMON mfn_wrad_setup_stamon;             /**< Set the station monitor */
+    PFN_WRAD_ADD_STAMON mfn_wrad_add_stamon;                 /**< Add the non associated station */
+    PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                 /**< Del the non associated station */
+    PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;        /**< Warn driver delay AP up period is over*/
+    PFN_WRAD_RADIO_STATS mfn_wrad_stats;                     /**< get radio statistics */
 
-    PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;                   /**< VAP constructor hook */
-    PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;                 /**< VAP destructor hook */
-    PFN_WVAP_VAP_STATUS mfn_wvap_status;                         /**< Get ReadOnly VAP states */
+    PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;               /**< VAP constructor hook */
+    PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;             /**< VAP destructor hook */
+    PFN_WVAP_VAP_STATUS mfn_wvap_status;                     /**< Get ReadOnly VAP states */
 
     /**< Update list of associated device statistics */
     swl_rc_ne (* mfn_wvap_get_station_stats)(T_AccessPoint* pAP);

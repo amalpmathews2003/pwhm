@@ -105,7 +105,7 @@ bool wifiGen_init() {
     fta.mfn_wrad_antennactrl = wifiGen_rad_antennactrl;
     fta.mfn_wrad_supstd = wifiGen_rad_supstd;
     fta.mfn_wrad_ochbw = wifiGen_rad_ochbw;
-    fta.mfn_wrad_radio_stats = wifiGen_rad_radio_stats;
+    fta.mfn_wrad_stats = wifiGen_rad_stats;
 
     //vap functions
     fta.mfn_wvap_create_hook = wifiGen_vap_createHook;
@@ -127,7 +127,6 @@ bool wifiGen_init() {
     fta.mfn_wvap_kick_sta = wifiGen_vap_kick_sta;
     fta.mfn_wvap_kick_sta_reason = wifiGen_vap_kick_sta_reason;
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;
-    fta.mfn_wvap_update_ap_stats = wifiGen_vap_updateApStats;
     fta.mfn_wvap_request_rrm_report = wifiGen_vap_requestRrmReport;
 
     //endpoint functions

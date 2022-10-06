@@ -239,29 +239,6 @@ void _wld_ssid_setEnable_ehf(const char* const event_name _UNUSED,
     SAH_TRACEZ_OUT(ME);
 }
 
-static void s_addSsidStatsToMap(amxc_var_t* pRetMap, T_SSID* pSSID) {
-    amxc_var_add_key(uint64_t, pRetMap, "BytesSent", pSSID->stats.BytesSent);
-    amxc_var_add_key(uint64_t, pRetMap, "BytesReceived", pSSID->stats.BytesReceived);
-    amxc_var_add_key(uint64_t, pRetMap, "PacketsSent", pSSID->stats.PacketsSent);
-    amxc_var_add_key(uint64_t, pRetMap, "PacketsReceived", pSSID->stats.PacketsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "ErrorsSent", pSSID->stats.ErrorsSent);
-    amxc_var_add_key(uint32_t, pRetMap, "ErrorsReceived", pSSID->stats.ErrorsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "RetransCount", pSSID->stats.RetransCount);
-    amxc_var_add_key(uint32_t, pRetMap, "DiscardPacketsSent", pSSID->stats.DiscardPacketsSent);
-    amxc_var_add_key(uint32_t, pRetMap, "DiscardPacketsReceived", pSSID->stats.DiscardPacketsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "UnicastPacketsSent", pSSID->stats.UnicastPacketsSent);
-    amxc_var_add_key(uint32_t, pRetMap, "UnicastPacketsReceived", pSSID->stats.UnicastPacketsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "MulticastPacketsSent", pSSID->stats.MulticastPacketsSent);
-    amxc_var_add_key(uint32_t, pRetMap, "MulticastPacketsReceived", pSSID->stats.MulticastPacketsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "BroadcastPacketsSent", pSSID->stats.BroadcastPacketsSent);
-    amxc_var_add_key(uint32_t, pRetMap, "BroadcastPacketsReceived", pSSID->stats.BroadcastPacketsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "UnknownProtoPacketsReceived", pSSID->stats.UnknownProtoPacketsReceived);
-    amxc_var_add_key(uint32_t, pRetMap, "FailedRetransCount", pSSID->stats.FailedRetransCount);
-    amxc_var_add_key(uint32_t, pRetMap, "RetryCount", pSSID->stats.RetryCount);
-    amxc_var_add_key(uint32_t, pRetMap, "MultipleRetryCount", pSSID->stats.MultipleRetryCount);
-    amxc_var_add_key(uint32_t, pRetMap, "Temperature", pSSID->stats.TemperatureDegreesCelsius);
-}
-
 static amxd_status_t wld_getSSIDStats(T_SSID* pSSID) {
     T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
     T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
@@ -296,7 +273,6 @@ amxd_status_t _SSID_getSSIDStats(amxd_object_t* object,
                                  amxc_var_t* retval) {
     SAH_TRACEZ_INFO(ME, "getSSIDStats");
 
-    amxd_status_t status = amxd_status_ok;
     T_SSID* pSSID = (T_SSID*) object->priv;
 
     if(!pSSID || !debugIsSsidPointer(pSSID)) {
@@ -304,55 +280,16 @@ amxd_status_t _SSID_getSSIDStats(amxd_object_t* object,
         return amxd_status_ok;
     }
 
-    status = wld_getSSIDStats(pSSID);
+    wld_getSSIDStats(pSSID);
 
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     amxd_object_t* stats = amxd_object_get(pSSID->pBus, "Stats");
 
-    /* Update object with what we have */
-    amxd_object_set_uint64_t(stats, "BytesSent", pSSID->stats.BytesSent);
-    amxd_object_set_uint64_t(stats, "BytesReceived", pSSID->stats.BytesReceived);
-    amxd_object_set_uint64_t(stats, "PacketsSent", pSSID->stats.PacketsSent);
-    amxd_object_set_uint64_t(stats, "PacketsReceived", pSSID->stats.PacketsReceived);
-    amxd_object_set_uint32_t(stats, "ErrorsSent", pSSID->stats.ErrorsSent);
-    amxd_object_set_uint32_t(stats, "RetransCount", pSSID->stats.RetransCount);
-    amxd_object_set_uint32_t(stats, "ErrorsReceived", pSSID->stats.ErrorsReceived);
-    amxd_object_set_uint32_t(stats, "UnicastPacketsSent", pSSID->stats.UnicastPacketsSent);
-    amxd_object_set_uint32_t(stats, "UnicastPacketsReceived", pSSID->stats.UnicastPacketsReceived);
-    amxd_object_set_uint32_t(stats, "DiscardPacketsSent", pSSID->stats.DiscardPacketsSent);
-    amxd_object_set_uint32_t(stats, "DiscardPacketsReceived", pSSID->stats.DiscardPacketsReceived);
-    amxd_object_set_uint32_t(stats, "MulticastPacketsSent", pSSID->stats.MulticastPacketsSent);
-    amxd_object_set_uint32_t(stats, "MulticastPacketsReceived", pSSID->stats.MulticastPacketsReceived);
-    amxd_object_set_uint32_t(stats, "BroadcastPacketsSent", pSSID->stats.BroadcastPacketsSent);
-    amxd_object_set_uint32_t(stats, "BroadcastPacketsReceived", pSSID->stats.BroadcastPacketsReceived);
-    amxd_object_set_uint32_t(stats, "UnknownProtoPacketsReceived", pSSID->stats.UnknownProtoPacketsReceived);
-    amxd_object_set_uint32_t(stats, "FailedRetransCount", pSSID->stats.FailedRetransCount);
-    amxd_object_set_uint32_t(stats, "RetryCount", pSSID->stats.RetryCount);
-    amxd_object_set_uint32_t(stats, "MultipleRetryCount", pSSID->stats.MultipleRetryCount);
-    amxd_object_set_uint32_t(stats, "Temperature", pSSID->stats.TemperatureDegreesCelsius);
+    wld_util_stats2Obj(stats, &pSSID->stats);
+    wld_util_stats2Var(retval, &pSSID->stats);
 
-    wld_util_writeWmmStats(stats, "WmmPacketsSent", pSSID->stats.WmmPacketsSent);
-    wld_util_writeWmmStats(stats, "WmmPacketsReceived", pSSID->stats.WmmPacketsReceived);
-    wld_util_writeWmmStats(stats, "WmmFailedSent", pSSID->stats.WmmFailedSent);
-    wld_util_writeWmmStats(stats, "WmmFailedReceived", pSSID->stats.WmmFailedReceived);
-    wld_util_writeWmmStats(stats, "WmmBytesSent", pSSID->stats.WmmBytesSent);
-    wld_util_writeWmmStats(stats, "WmmFailedbytesSent", pSSID->stats.WmmFailedBytesSent);
-    wld_util_writeWmmStats(stats, "WmmBytesReceived", pSSID->stats.WmmBytesReceived);
-    wld_util_writeWmmStats(stats, "WmmFailedBytesReceived", pSSID->stats.WmmFailedBytesReceived);
-
-    wld_util_addWmmStats(stats, retval, "WmmPacketsSent");
-    wld_util_addWmmStats(stats, retval, "WmmPacketsReceived");
-    wld_util_addWmmStats(stats, retval, "WmmFailedSent");
-    wld_util_addWmmStats(stats, retval, "WmmFailedReceived");
-    wld_util_addWmmStats(stats, retval, "WmmBytesSent");
-    wld_util_addWmmStats(stats, retval, "WmmFailedbytesSent");
-    wld_util_addWmmStats(stats, retval, "WmmBytesReceived");
-    wld_util_addWmmStats(stats, retval, "WmmFailedBytesReceived");
-
-    s_addSsidStatsToMap(retval, pSSID);
-
-    return status;
+    return amxd_status_ok;
 }
 
 amxd_status_t _wld_ssid_getStats_orf(amxd_object_t* const object,

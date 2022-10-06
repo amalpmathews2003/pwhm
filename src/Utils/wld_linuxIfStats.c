@@ -63,6 +63,7 @@
 
 #include "wld_linuxIfStats.h"
 #include "swl/swl_assert.h"
+#include "wld_rad_nl80211.h"
 
 #include <debug/sahtrace.h>
 
@@ -417,7 +418,7 @@ bool wld_linuxIfStats_getRadioStats(T_Radio* pRadio, T_Stats* pRadioStats) {
 
     result |= wld_linuxIfStats_getAllVapStats(pRadio, pRadioStats);
     result |= wld_linuxIfStats_getAllEpStats(pRadio, pRadioStats);
-
+    result |= wld_rad_nl80211_getNoise(pRadio, &pRadioStats->noise);
     return result;
 }
 

@@ -654,7 +654,7 @@ void wifiGen_rad_initBands(T_Radio* pRad) {
     }
 }
 
-swl_rc_ne wifiGen_rad_radio_stats(T_Radio* pRad) {
+swl_rc_ne wifiGen_rad_stats(T_Radio* pRad) {
     swl_rc_ne ret;
     if(wld_linuxIfStats_getRadioStats(pRad, &pRad->stats)) {
         ret = SWL_RC_OK;

@@ -394,6 +394,26 @@ void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, int md5_si
 
 wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_mfpConfig_e mfpConfig);
 
+/**
+ * @brief wld_util_updateStats convert the internal stats context to object map,
+ * this object is the actual datamodel representation of the internal context stats
+ *
+ * @param obj the dict output
+ * @param stats stats the internal stats (input)
+ * @return amxd_status_t return code
+ */
+amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats);
+
+/**
+ * @brief convert the internal stats context to variant map,
+ * then the variant map can be the return of any amxd callback
+ *
+ * @param map the dict output
+ * @param stats the internal stats (input)
+ * @return amxd_status_t return code
+ */
+amxd_status_t wld_util_stats2Var(amxc_var_t* map, T_Stats* stats);
+
 void wld_util_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats);
 void wld_util_addWmmStats(amxd_object_t* parentObj, amxc_var_t* map, const char* name);
 

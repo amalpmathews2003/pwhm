@@ -134,7 +134,6 @@ bool wld_rad_SupFreqBands_mask_to_string(amxc_string_t* output, uint32_t support
 bool radio_scanresults_to_variant(T_Radio* radio, amxc_var_t* variant_out);
 bool wld_radio_notify_scanresults(amxd_object_t* obj);
 bool wld_radio_stats_to_variant(T_Radio* a, T_Stats* stats, amxc_var_t* map);
-bool wld_update_radio_stats(amxd_object_t* obj, T_Stats* stats);
 bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, T_ScanResult_SSID* output);
 bool wld_radio_scanresults_cleanup(T_ScanResults* results);
 

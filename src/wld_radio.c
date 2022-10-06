@@ -886,33 +886,12 @@ amxd_status_t _getRadioStats(amxd_object_t* object,
     ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NULL");
     amxd_object_t* stats = amxd_object_get(pR->pBus, "Stats");
 
-    // Update the stats with Linux counters if we don't handle them in the plugin.
-    if(pR->pFA->mfn_wvap_update_ap_stats(pR, NULL) < 0) {
+    if(pR->pFA->mfn_wrad_stats(pR) < 0) {
         wld_updateRadioStats(pR, NULL);
     }
 
-    /* Update object with what we have */
-    amxd_object_set_uint64_t(stats, "BytesSent", pR->stats.BytesSent);
-    amxd_object_set_uint64_t(stats, "BytesReceived", pR->stats.BytesReceived);
-    amxd_object_set_uint64_t(stats, "PacketsSent", pR->stats.PacketsSent);
-    amxd_object_set_uint64_t(stats, "PacketsReceived", pR->stats.PacketsReceived);
-    amxd_object_set_uint32_t(stats, "ErrorsSent", pR->stats.ErrorsSent);
-    amxd_object_set_uint32_t(stats, "RetransCount", pR->stats.RetransCount);
-    amxd_object_set_uint32_t(stats, "ErrorsReceived", pR->stats.ErrorsReceived);
-    amxd_object_set_uint32_t(stats, "DiscardPacketsSent", pR->stats.DiscardPacketsSent);
-    amxd_object_set_uint32_t(stats, "DiscardPacketsReceived", pR->stats.DiscardPacketsReceived);
-    amxd_object_set_uint32_t(stats, "UnicastPacketsSent", pR->stats.UnicastPacketsSent);
-    amxd_object_set_uint32_t(stats, "UnicastPacketsReceived", pR->stats.UnicastPacketsReceived);
-    amxd_object_set_uint32_t(stats, "MulticastPacketsSent", pR->stats.MulticastPacketsSent);
-    amxd_object_set_uint32_t(stats, "MulticastPacketsReceived", pR->stats.MulticastPacketsReceived);
-    amxd_object_set_uint32_t(stats, "BroadcastPacketsSent", pR->stats.BroadcastPacketsSent);
-    amxd_object_set_uint32_t(stats, "BroadcastPacketsReceived", pR->stats.BroadcastPacketsReceived);
-    amxd_object_set_uint32_t(stats, "UnknownProtoPacketsReceived", pR->stats.UnknownProtoPacketsReceived);
-    amxd_object_set_uint32_t(stats, "FailedRetransCount", pR->stats.FailedRetransCount);
-    amxd_object_set_uint32_t(stats, "RetryCount", pR->stats.RetryCount);
-    amxd_object_set_uint32_t(stats, "MultipleRetryCount", pR->stats.MultipleRetryCount);
-    amxd_object_set_int32_t(stats, "Temperature", pR->stats.TemperatureDegreesCelsius);
-    amxd_object_set_int32_t(stats, "Noise", pR->stats.noise);
+    wld_util_stats2Obj(stats, &pR->stats);
+    wld_util_stats2Var(retval, &pR->stats);
 
     wld_util_writeWmmStats(stats, "WmmPacketsSent", pR->stats.WmmPacketsSent);
     wld_util_writeWmmStats(stats, "WmmPacketsReceived", pR->stats.WmmPacketsReceived);
@@ -923,15 +902,6 @@ amxd_status_t _getRadioStats(amxd_object_t* object,
     wld_util_writeWmmStats(stats, "WmmBytesReceived", pR->stats.WmmBytesReceived);
     wld_util_writeWmmStats(stats, "WmmFailedBytesReceived", pR->stats.WmmFailedBytesReceived);
 
-    wld_util_addWmmStats(stats, retval, "WmmPacketsSent");
-    wld_util_addWmmStats(stats, retval, "WmmPacketsReceived");
-    wld_util_addWmmStats(stats, retval, "WmmFailedSent");
-    wld_util_addWmmStats(stats, retval, "WmmFailedReceived");
-    wld_util_addWmmStats(stats, retval, "WmmBytesSent");
-    wld_util_addWmmStats(stats, retval, "WmmFailedbytesSent");
-    wld_util_addWmmStats(stats, retval, "WmmBytesReceived");
-    wld_util_addWmmStats(stats, retval, "WmmFailedBytesReceived");
-
     return amxd_status_ok;
 }
 
@@ -939,8 +909,7 @@ static void s_updateRadioStatsvalues(T_Radio* pR, amxd_object_t* stats) {
     ASSERT_NOT_NULL(pR, , ME, "pRadio NULL");
     ASSERT_NOT_NULL(stats, , ME, "stats NULL");
 
-    // Update the stats with Linux counters if we don't handle them in the plugin.
-    if(pR->pFA->mfn_wrad_radio_stats(pR) < 0) {
+    if(pR->pFA->mfn_wrad_stats(pR) < 0) {
         wld_updateRadioStats(pR, NULL);
     }
 
@@ -3511,45 +3480,6 @@ bool wld_radio_notify_scanresults(amxd_object_t* obj) {
     const char* const name = "ScanComplete";
     SAH_TRACEZ_INFO(ME, "send notification [%d|%s]", type, name);
     amxd_object_trigger_signal(obj, name, NULL);
-    return true;
-}
-
-bool wld_radio_stats_to_variant(T_Radio* a _UNUSED, T_Stats* stats, amxc_var_t* map) {
-    /* stub, implemenentation to be in libwld */
-    amxc_var_add_key(uint32_t, map, "BytesSent", stats->BytesSent);
-    amxc_var_add_key(uint32_t, map, "BytesReceived", stats->BytesReceived);
-    amxc_var_add_key(uint32_t, map, "PacketsSent", stats->PacketsSent);
-    amxc_var_add_key(uint32_t, map, "PacketsReceived", stats->PacketsReceived);
-    amxc_var_add_key(uint32_t, map, "ErrorsSent", stats->ErrorsSent);
-    amxc_var_add_key(uint32_t, map, "RetransCount", stats->RetransCount);
-    amxc_var_add_key(uint32_t, map, "ErrorsReceived", stats->ErrorsReceived);
-    amxc_var_add_key(uint32_t, map, "DiscardPacketsSent", stats->DiscardPacketsSent);
-    amxc_var_add_key(uint32_t, map, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
-    amxc_var_add_key(uint32_t, map, "FailedRetransCount", stats->FailedRetransCount);
-    amxc_var_add_key(uint32_t, map, "RetryCount", stats->RetryCount);
-    amxc_var_add_key(uint32_t, map, "MultipleRetryCount", stats->MultipleRetryCount);
-    amxc_var_add_key(uint32_t, map, "Temperature", stats->TemperatureDegreesCelsius);
-    return true;
-}
-
-
-bool wld_update_radio_stats(amxd_object_t* obj, T_Stats* stats) {
-    if((!obj) || (!stats)) {
-        return false;
-    }
-    amxd_object_set_uint32_t(obj, "BytesSent", stats->BytesSent);
-    amxd_object_set_uint32_t(obj, "BytesReceived", stats->BytesReceived);
-    amxd_object_set_uint32_t(obj, "PacketsSent", stats->PacketsSent);
-    amxd_object_set_uint32_t(obj, "PacketsReceived", stats->PacketsReceived);
-    amxd_object_set_uint32_t(obj, "ErrorsSent", stats->ErrorsSent);
-    amxd_object_set_uint32_t(obj, "RetransCount", stats->RetransCount);
-    amxd_object_set_uint32_t(obj, "ErrorsReceived", stats->ErrorsReceived);
-    amxd_object_set_uint32_t(obj, "DiscardPacketsSent", stats->DiscardPacketsSent);
-    amxd_object_set_uint32_t(obj, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
-    amxd_object_set_uint32_t(obj, "FailedRetransCount", stats->FailedRetransCount);
-    amxd_object_set_uint32_t(obj, "RetryCount", stats->RetryCount);
-    amxd_object_set_uint32_t(obj, "MultipleRetryCount", stats->MultipleRetryCount);
-    amxd_object_set_uint32_t(obj, "Temperature", stats->TemperatureDegreesCelsius);
     return true;
 }
 

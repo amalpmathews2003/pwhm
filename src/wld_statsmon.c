@@ -220,11 +220,6 @@ T_Stats* wld_statsmon_updateRADStats(T_Radio* pR) {
     return &pR->stats;
 }
 
-/* Depriciated: use wld_statsmon_getLinuxStats */
-int wld_getLinuxStats() {
-    return 1;
-}
-
 T_Stats* wld_updateVAPStats(T_AccessPoint* pAP, T_intf_txrxstats* pST) {
     _UNUSED_(pST);
     return wld_statsmon_updateVAPStats(pAP);

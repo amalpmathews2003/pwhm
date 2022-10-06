@@ -18,6 +18,7 @@ CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra  \
 		-I../include_priv/ChannelManagement/ \
 		-I../include_priv/VendorModule/ \
 		-I../include/wld/ $(addprefix -I ,$(INCDIRS)) \
+		-I../include/ $(addprefix -I ,$(INCDIRS)) \
 		-I../include_priv/nl80211/ \
 		-DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 CFLAGS += -Wimplicit-function-declaration -Wl,--no-undefined -Wno-unused-variable

@@ -2705,6 +2705,61 @@ wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_m
     return mfpConfig;
 }
 
+amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats) {
+    ASSERT_NOT_NULL(obj, false, ME, "NULL");
+    ASSERT_NOT_NULL(stats, false, ME, "NULL");
+
+    amxd_object_set_uint64_t(obj, "BytesSent", stats->BytesSent);
+    amxd_object_set_uint64_t(obj, "BytesReceived", stats->BytesReceived);
+    amxd_object_set_uint64_t(obj, "PacketsSent", stats->PacketsSent);
+    amxd_object_set_uint64_t(obj, "PacketsReceived", stats->PacketsReceived);
+    amxd_object_set_uint32_t(obj, "ErrorsSent", stats->ErrorsSent);
+    amxd_object_set_uint32_t(obj, "RetransCount", stats->RetransCount);
+    amxd_object_set_uint32_t(obj, "ErrorsReceived", stats->ErrorsReceived);
+    amxd_object_set_uint32_t(obj, "DiscardPacketsSent", stats->DiscardPacketsSent);
+    amxd_object_set_uint32_t(obj, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
+    amxd_object_set_uint32_t(obj, "UnicastPacketsSent", stats->UnicastPacketsSent);
+    amxd_object_set_uint32_t(obj, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
+    amxd_object_set_uint32_t(obj, "MulticastPacketsSent", stats->MulticastPacketsSent);
+    amxd_object_set_uint32_t(obj, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
+    amxd_object_set_uint32_t(obj, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
+    amxd_object_set_uint32_t(obj, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
+    amxd_object_set_uint32_t(obj, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
+    amxd_object_set_uint32_t(obj, "FailedRetransCount", stats->FailedRetransCount);
+    amxd_object_set_uint32_t(obj, "RetryCount", stats->RetryCount);
+    amxd_object_set_uint32_t(obj, "MultipleRetryCount", stats->MultipleRetryCount);
+    amxd_object_set_uint32_t(obj, "Temperature", stats->TemperatureDegreesCelsius);
+    amxd_object_set_int32_t(obj, "Noise", stats->noise);
+
+    return amxd_status_ok;
+}
+
+amxd_status_t wld_util_stats2Var(amxc_var_t* map, T_Stats* stats) {
+    amxc_var_add_key(uint64_t, map, "BytesSent", stats->BytesSent);
+    amxc_var_add_key(uint64_t, map, "BytesReceived", stats->BytesReceived);
+    amxc_var_add_key(uint64_t, map, "PacketsSent", stats->PacketsSent);
+    amxc_var_add_key(uint64_t, map, "PacketsReceived", stats->PacketsReceived);
+    amxc_var_add_key(uint32_t, map, "ErrorsSent", stats->ErrorsSent);
+    amxc_var_add_key(uint32_t, map, "ErrorsReceived", stats->ErrorsReceived);
+    amxc_var_add_key(uint32_t, map, "RetransCount", stats->RetransCount);
+    amxc_var_add_key(uint32_t, map, "DiscardPacketsSent", stats->DiscardPacketsSent);
+    amxc_var_add_key(uint32_t, map, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
+    amxc_var_add_key(uint32_t, map, "UnicastPacketsSent", stats->UnicastPacketsSent);
+    amxc_var_add_key(uint32_t, map, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
+    amxc_var_add_key(uint32_t, map, "MulticastPacketsSent", stats->MulticastPacketsSent);
+    amxc_var_add_key(uint32_t, map, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
+    amxc_var_add_key(uint32_t, map, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
+    amxc_var_add_key(uint32_t, map, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
+    amxc_var_add_key(uint32_t, map, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
+    amxc_var_add_key(uint32_t, map, "FailedRetransCount", stats->FailedRetransCount);
+    amxc_var_add_key(uint32_t, map, "RetryCount", stats->RetryCount);
+    amxc_var_add_key(uint32_t, map, "MultipleRetryCount", stats->MultipleRetryCount);
+    amxc_var_add_key(uint32_t, map, "Temperature", stats->TemperatureDegreesCelsius);
+    amxc_var_add_key(int64_t, map, "Noise", stats->noise);
+
+    return amxd_status_ok;
+}
+
 void wld_util_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
     amxd_object_t* object = amxd_object_get(parentObj, objectName);
     ASSERT_NOT_NULL(object, , ME, "No object named <%s>", objectName);
