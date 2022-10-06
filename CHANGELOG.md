@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.2.0 - 2022-10-06(12:23:46 +0000)
+
+### Other
+
+- [prpl] code tweak for stats impl
+
 ## Release v2.1.2 - 2022-10-06(09:24:41 +0000)
 
 ### Other
