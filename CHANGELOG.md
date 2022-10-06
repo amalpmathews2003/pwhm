@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.2.1 - 2022-10-06(16:34:08 +0000)
+
+### Other
+
+- - Fix wld compliation issue
+
 ## Release v2.2.0 - 2022-10-06(12:23:46 +0000)
 
 ### Other
