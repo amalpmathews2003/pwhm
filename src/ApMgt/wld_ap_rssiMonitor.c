@@ -681,7 +681,7 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
             swl_table_t table;
             memset(&table, 0, sizeof(swl_table_t));
             table.tupleType = &mytupleTupleType;
-            table.tupleType->elementSize = swl_tupleType_size(&mytupleTupleType);
+            table.tupleType->size = swl_tupleType_size(&mytupleTupleType);
             table.nrTuples = (nbValidSample < historyLen) ? nbValidSample : historyLen;
             table.tuples = pAD->staHistory->samples;
 
@@ -741,7 +741,7 @@ void wld_apRssiMon_getStaHistory(T_AccessPoint* pAP, const unsigned char macAddr
     swl_table_t table;
     memset(&table, 0, sizeof(swl_table_t));
     table.tupleType = &mytupleTupleType;
-    table.tupleType->elementSize = swl_tupleType_size(&mytupleTupleType);
+    table.tupleType->size = swl_tupleType_size(&mytupleTupleType);
     table.nrTuples = (nbValidSample < historyLen) ? nbValidSample : historyLen;
     table.tuples = staHistory;
     swl_table_toMapOfChar(myMap, historyNames, &table);
