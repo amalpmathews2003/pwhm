@@ -1006,7 +1006,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_object_set_cstring_t(secObj, "OWETransitionInterface", pAP->oweTransModeIntf);
 
-        amxd_object_set_uint16_t(secObj, "TransitionDisable", pAP->transitionDisable);
+        amxd_object_set_uint32_t(secObj, "TransitionDisable", pAP->transitionDisable);
         /** 'RadiusServerIPAddr' [IPAddress] The IP address of the
          *  RADIUS server used for WLAN security. RadiusServerIPAddr
          *  is only applicable when ModeEnabled is an Enterprise type
