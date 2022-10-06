@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.1.2 - 2022-10-06(09:24:41 +0000)
+
+### Other
+
+- : Wrong RSSI value
+
 ## Release v2.1.1 - 2022-10-06(09:19:08 +0000)
 
 ### Other
