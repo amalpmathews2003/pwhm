@@ -574,8 +574,8 @@ amxd_status_t _getSingleStationStats(amxd_object_t* const object,
         WLD_SET_VAR_CSTRING(object, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
         WLD_SET_VAR_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
         WLD_SET_VAR_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
-        WLD_SET_VAR_UINT32(object, "SignalStrength", pAD->SignalStrength);
-        WLD_SET_VAR_UINT32(object, "Noise", pAD->noise);
+        WLD_SET_VAR_INT32(object, "SignalStrength", pAD->SignalStrength);
+        WLD_SET_VAR_INT32(object, "Noise", pAD->noise);
         WLD_SET_VAR_UINT32(object, "TxBytes", pAD->TxBytes);
         WLD_SET_VAR_UINT32(object, "RxBytes", pAD->RxBytes);
         WLD_SET_VAR_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
