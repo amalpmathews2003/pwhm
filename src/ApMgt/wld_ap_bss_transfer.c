@@ -193,7 +193,7 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     params.bssidInfo = (bssidInfo == NULL) ? 0 : amxc_var_dyncast(uint32_t, bssidInfo);
 
     amxc_var_t* transitionReason = amxc_var_get_key(args, "transitionReason", AMXC_VAR_FLAG_DEFAULT);
-    params.transitionReason = (transitionReason == NULL) ? -1 : amxc_var_dyncast(int32_t, transitionReason);
+    params.transitionReason = (transitionReason == NULL) ? 0 : amxc_var_dyncast(int32_t, transitionReason);
 
     if(!mac || !bssid || (params.channel == 0)) {
         SAH_TRACEZ_ERROR(ME, "Invalid argument");
