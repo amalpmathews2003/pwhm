@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.2.2 - 2022-10-07(07:47:30 +0000)
+
+### Other
+
+- build with -Wformat -Wformat-security
+
 ## Release v2.2.1 - 2022-10-06(16:34:08 +0000)
 
 ### Other
