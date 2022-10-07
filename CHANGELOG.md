@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.2.3 - 2022-10-07(10:29:54 +0000)
+
+### Other
+
+- : Invalid MBO transition reason code
+
 ## Release v2.2.2 - 2022-10-07(07:47:30 +0000)
 
 ### Other
