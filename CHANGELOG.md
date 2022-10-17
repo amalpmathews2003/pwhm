@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.2.4 - 2022-10-17(12:51:47 +0000)
+
+### Other
+
+- squash commits before opensourcing them to make sahbot principal author for SoftAtHome deliveries
+- [prpl] create an initial wifi debug script
+
 ## Release v2.2.3 - 2022-10-07(10:29:54 +0000)
 
 ### Other
