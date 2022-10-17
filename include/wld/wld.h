@@ -1414,7 +1414,6 @@ struct WLD_RADIO {
     uint64_t call_id;                   /* Used for delayed function return state */
     int blockCommit;                    /* Blocks TR98-commit way, edit(), ..XXX.. , commit()! */
     time_t blockStart;                  /* Set when block was started */
-    char IWDP[2 * 1024];                /* Used as storge for all our IW-xxxx commands */
     int ignoreWPSEvents;                /* Ignore commands received from wpa_talk when this is set */
     amxc_llist_it_t it;
     void* pBus;                         /* Keep a copy of the amxd_object_t */
@@ -1781,14 +1780,12 @@ struct _EndPointProfile {
     wld_epProfileStatus_e status;
     int index;
     char alias[64];
-    char* reference;
     char SSID[SSID_NAME_LEN];
     uint8_t BSSID[ETHER_ADDR_LEN];
     char location[64];
     uint8_t priority;
 
     wld_securityMode_e secModeEnabled;
-    char connectionType[64];
     char WEPKey[36];        /* Max 32, but we need some 0 for termination (and alignment) */
     char preSharedKey[PSK_KEY_SIZE_LEN];
     char keyPassPhrase[PSK_KEY_SIZE_LEN];
@@ -2002,10 +1999,10 @@ typedef int (APIENTRY* PFN_WVAP_VAP_BSSID)(T_Radio* rad, T_AccessPoint* vap, uns
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_UPDATE_AP_STATS)(T_Radio* rad, T_AccessPoint* vap);
 
 /*********** Vendor Endpoint driver settings *********************/
-typedef int (APIENTRY* PFN_WENDPOINT_CREATE_HOOK)(T_EndPoint* endpoint);
-typedef int (APIENTRY* PFN_WENDPOINT_DESTROY_HOOK)(T_EndPoint* endpoint);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_CREATE_HOOK)(T_EndPoint* endpoint);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_DESTROY_HOOK)(T_EndPoint* endpoint);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_ENABLE)(T_EndPoint* endpoint, bool enable);
-typedef int (APIENTRY* PFN_WENDPOINT_DISCONNECT)(T_EndPoint* endpoint);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_DISCONNECT)(T_EndPoint* endpoint);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_CONNECT_AP)(T_EndPointProfile* endpointProfile);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_BSSID)(T_EndPoint* ep, swl_macChar_t* bssid);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_STATS)(T_EndPoint* endpoint, T_EndPointStats* stats);

@@ -70,6 +70,7 @@
 static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wrad_supports = wld_th_radio_vendorCb_supports,
     .mfn_wrad_addendpointif = wld_th_radio_vendorCb_addEndpointIf,
+    .mfn_wrad_delendpointif = wld_th_radio_vendorCb_delEndpointIf,
     .mfn_wrad_addvapif = wld_th_vap_vendorCb_addVapIf,
     .mfn_wrad_fsm = wld_th_wrad_fsm,
 };

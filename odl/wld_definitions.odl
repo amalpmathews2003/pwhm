@@ -4852,7 +4852,8 @@ define rrm_t{
 		conflict with any existing entries. At most one enabled
 		entry in this table can exist with a given value for
 		SSIDReference.</p>*/
-		%persistent object EndPoint[]{
+	%persistent object EndPoint[]{
+		on action add-inst call wld_ep_addInstance_ocf;
 		/** <p>Indicates the status of this end point. Enumeration
 		*   of:</p>
 		*   <ul>
@@ -4941,7 +4942,7 @@ define rrm_t{
 		 *  string if ProfileReference  is an empty string (i.e. only
 		 *  when an active profile is assigned can the associated SSID
 		 *  interface be determined).*/
-		string SSIDReference;
+		%persistent string SSIDReference;
 
 		/* The name of the Radio used by this endpoint */
 		%read-only string RadioReference;
@@ -5192,7 +5193,6 @@ define rrm_t{
 		 *  At most one enabled entry in this table can exist with all
 		 *  the same values for SSID, Location and Priority.*/
 		%persistent object Profile[]{
-			on action write call wld_endpoint_setProfile_owf;
 			on action del-inst call wld_endpoint_deleteProfileInstance_odf;
 			on action add-inst call wld_endpoint_addProfileInstance_ocf;
 
@@ -5201,7 +5201,9 @@ define rrm_t{
 			 *  instance supports a different SSID and/or different
 			 *  security configuration, this parameter can be used to
 			 *  control which of the instances are currently enabled.</p>*/
-			%persistent bool Enable;
+			%persistent bool Enable{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
 			/**  Indicates the status of this Profile. Enumeration of:
 			*   <ul>
 			*     <li> Active </li>
@@ -5217,26 +5219,35 @@ define rrm_t{
 			string Status{
 				on action validate call check_enum ["Active","Available","Error","Disabled"];
 				default "Disabled";
+				on action write call wld_endpoint_setProfile_pwf;
 			}
 			/** A non-volatile handle used to reference this instance. Alias
 			 *  provides a mechanism for an ACS to label this instance for
 			 *  future reference. An initial unique value MUST be assigned
 			 *  when the CPE creates an instance of this object.*/
-			%persistent string Alias;
+			%persistent string Alias{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
 			/** The profile identifier in use by the connection. The SSID is
 			 *  an identifier that is attached to packets sent over the
 			 *  wireless LAN that functions as an ID for joining a
 			 *  particular radio network (BSS).*/
-			%persistent string SSID;
+			%persistent string SSID{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
 			/**
 			 * Specify the MAC address of the AccessPoint to connect to
 			 */
-			string ForceBSSID;
+			string ForceBSSID{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
 			/** Location of the profile. This value serves as a reminder
 			 *  from the user, describing the location of the profile. For
 			 *  example: "Home", "Office", "Neighbor House", "Airport",
 			 *  etc. An empty string is also valid.*/
-			%persistent string Location;
+			%persistent string Location{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
 			/** The profile Priority defines one of the criteria used by the
 			 *  End Point to automatically select the "best" AP when several
 			 *  APs with known profiles are simultaneously available for
@@ -5248,16 +5259,10 @@ define rrm_t{
 			 *  SNR, etc. <p>0 is the highest priority.</p>*/
 			%persistent uint32 Priority{
 				on action validate call check_range { min = 0, max = 255 };
+				on action write call wld_endpoint_setProfile_pwf;
 				default 0;
 			}
 
-			/**
-			 * Profile connection type identifier
-			 */
-			string ConnectionType {
-				on action validate call check_enum ["Normal", "WPS"];
-				default "Normal";
-			}
 			/** This object contains security related parameters that apply
 			 *  to a WiFi End Point profile.*/
 			%persistent object Security{
@@ -5458,7 +5463,7 @@ define rrm_t{
 		 *  instance supports a different SSID and/or different
 		 *  security configuration, this parameter can be used to
 		 *  control which of the instances are currently enabled.</p> */
-		bool Enable{
+		%persistent bool Enable{
 			default false;
 			on action write call wld_endpoint_setEnable_pwf;
 		}

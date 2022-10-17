@@ -424,16 +424,16 @@ static int TRAP_mfn_wrad_delendpointif(T_Radio* radio _UNUSED, char* endpoint _U
     return -1;
 }
 
-static int TRAP_mfn_wendpoint_create_hook(T_EndPoint* pEP _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_create_hook(T_EndPoint* pEP _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p", pEP);
     //create hook doesn't need implementation
-    return WLD_OK;
+    return SWL_RC_OK;
 }
 
-static int TRAP_mfn_wendpoint_destroy_hook(T_EndPoint* pEP _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_destroy_hook(T_EndPoint* pEP _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p", pEP);
     //destroy hook doesn't need implementation
-    return WLD_OK;
+    return SWL_RC_OK;
 }
 
 static swl_rc_ne TRAP_mfn_wendpoint_enable(T_EndPoint* endpoint, bool enable) {
@@ -441,9 +441,9 @@ static swl_rc_ne TRAP_mfn_wendpoint_enable(T_EndPoint* endpoint, bool enable) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wendpoint_disconnect(T_EndPoint* endpoint _UNUSED) {
+static swl_rc_ne TRAP_mfn_wendpoint_disconnect(T_EndPoint* endpoint _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "%p", endpoint);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static swl_rc_ne TRAP_mfn_wendpoint_connect_ap(T_EndPointProfile* endpointProfile _UNUSED) {

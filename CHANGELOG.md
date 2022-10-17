@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.2.5 - 2022-10-17(14:45:36 +0000)
+
+### Other
+
+- - Implementing endpoint/endpoint profiles instances
+
 ## Release v2.2.4 - 2022-10-17(12:51:47 +0000)
 
 ### Other

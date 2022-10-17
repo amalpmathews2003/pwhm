@@ -59,37 +59,25 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#ifndef __WLD_TESTHELPER_EP_H__
+#define __WLD_TESTHELPER_EP_H__
+#include "wld.h"
+#include "wld_types.h"
+#include "wld_th_types.h"
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_FSM_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_FSM_H_
+#include <amxc/amxc_macros.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_path.h>
+#include <amxd/amxd_object_event.h>
+#include <amxo/amxo.h>
+#include <amxo/amxo_save.h>
+#include <amxb/amxb.h>
 
-typedef enum {
-    GEN_FSM_DISABLE_RAD,          /* Disable Radio device */
-    GEN_FSM_STOP_HOSTAPD,         /* Stop hostapd */
-    GEN_FSM_STOP_WPASUPP,         /* Stop wpa_supplicant */
-    GEN_FSM_DISABLE_HOSTAPD,      /* disable hostapd main interface*/
-    GEN_FSM_MOD_BSSID,            /* Modify the BSSID */
-    GEN_FSM_MOD_SEC,              /* Set AP Security */
-    GEN_FSM_MOD_AP,               /* Sync AP non-security params */
-    GEN_FSM_MOD_SSID,             /* Set SSID */
-    GEN_FSM_MOD_CHANNEL,          /* Set Channel */
-    GEN_FSM_MOD_HOSTAPD,          /* Write config of hostapd */
-    GEN_FSM_MOD_WPASUPP,          /* Write config of wpa_supplicant */
-    GEN_FSM_RELOAD_AP_SECKEY,     /* reload AP security secret key */
-    GEN_FSM_UPDATE_BEACON,        /* Start/Refresh AP Beacon */
-    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
-    GEN_FSM_UPDATE_WPASUPP,       /* Update wpa_supplicant */
-    GEN_FSM_ENABLE_HOSTAPD,       /* enable hostapd main interface*/
-    GEN_FSM_START_HOSTAPD,        /* start and connect with hostapd */
-    GEN_FSM_START_WPASUPP,        /* Start wpa_supplicant */
-    GEN_FSM_ENABLE_RAD,           /* Enable Radio device */
-    GEN_FSM_ENABLE_AP,            /* Enable/Disable AP interface */
-    GEN_FSM_ENABLE_EP,            /* Enable Endpoint interface */
-    GEN_FSM_CONNECTED_EP,         /* Update when Endpoint is connected */
-    GEN_FSM_SYNC_STATE,           /* Sync all interfaces state */
-    GEN_FSM_MAX
-} wifiGen_fsmStates_e;
+T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
+void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name);
+amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name);
 
-void wifiGen_fsm_doInit(vendor_t* vendor);
-
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_FSM_H_ */
+#endif

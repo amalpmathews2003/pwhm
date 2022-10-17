@@ -497,13 +497,6 @@ static bool s_doStopWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
     return true;
 }
 
-static bool s_doInitWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
-    SAH_TRACEZ_INFO(ME, "%s: init wpa_supplicant", pEP->Name);
-    wifiGen_wpaSupp_init(pEP);
-    wifiGen_setEpEvtHandlers(pEP);
-    return true;
-}
-
 static bool s_doStartWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
     ASSERTS_TRUE(pEP->enable, true, ME, "%s: endpoint disabled", pEP->Name);
     SAH_TRACEZ_INFO(ME, "%s: start wpa_supplicant", pEP->Name);
@@ -591,7 +584,6 @@ void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
 
 wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_DISABLE_RAD), .doRadFsmAction = s_doRadDisable},
-    {FSM_ACTION(GEN_FSM_INIT_WPASUPP), .doEpFsmAction = s_doInitWpaSupp},
     {FSM_ACTION(GEN_FSM_STOP_HOSTAPD), .doRadFsmAction = s_doStopHostapd},
     {FSM_ACTION(GEN_FSM_STOP_WPASUPP), .doEpFsmAction = s_doStopWpaSupp},
     {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},

@@ -59,37 +59,52 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include <sys/signalfd.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_FSM_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_FSM_H_
+#include <stdlib.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-typedef enum {
-    GEN_FSM_DISABLE_RAD,          /* Disable Radio device */
-    GEN_FSM_STOP_HOSTAPD,         /* Stop hostapd */
-    GEN_FSM_STOP_WPASUPP,         /* Stop wpa_supplicant */
-    GEN_FSM_DISABLE_HOSTAPD,      /* disable hostapd main interface*/
-    GEN_FSM_MOD_BSSID,            /* Modify the BSSID */
-    GEN_FSM_MOD_SEC,              /* Set AP Security */
-    GEN_FSM_MOD_AP,               /* Sync AP non-security params */
-    GEN_FSM_MOD_SSID,             /* Set SSID */
-    GEN_FSM_MOD_CHANNEL,          /* Set Channel */
-    GEN_FSM_MOD_HOSTAPD,          /* Write config of hostapd */
-    GEN_FSM_MOD_WPASUPP,          /* Write config of wpa_supplicant */
-    GEN_FSM_RELOAD_AP_SECKEY,     /* reload AP security secret key */
-    GEN_FSM_UPDATE_BEACON,        /* Start/Refresh AP Beacon */
-    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
-    GEN_FSM_UPDATE_WPASUPP,       /* Update wpa_supplicant */
-    GEN_FSM_ENABLE_HOSTAPD,       /* enable hostapd main interface*/
-    GEN_FSM_START_HOSTAPD,        /* start and connect with hostapd */
-    GEN_FSM_START_WPASUPP,        /* Start wpa_supplicant */
-    GEN_FSM_ENABLE_RAD,           /* Enable Radio device */
-    GEN_FSM_ENABLE_AP,            /* Enable/Disable AP interface */
-    GEN_FSM_ENABLE_EP,            /* Enable Endpoint interface */
-    GEN_FSM_CONNECTED_EP,         /* Update when Endpoint is connected */
-    GEN_FSM_SYNC_STATE,           /* Sync all interfaces state */
-    GEN_FSM_MAX
-} wifiGen_fsmStates_e;
+#include "wld_th_ep.h"
+#include "wld_th_mockVendor.h"
 
-void wifiGen_fsm_doInit(vendor_t* vendor);
+T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, T_Radio* radio, const char* name) {
+    amxc_var_t args;
+    amxc_var_init(&args);
 
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_FSM_H_ */
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &args, "radio", radio->Name);
+    amxc_var_add_key(cstring_t, &args, "endpoint", name);
+
+    assert_int_equal(amxb_call(bus_ctx, "WiFi.", "addEndPointIntf", &args, NULL, 5), AMXB_STATUS_OK);
+    amxc_var_clean(&args);
+
+    T_EndPoint* ep = wld_getEndpointByAlias(name);
+    return ep;
+}
+
+void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name) {
+    amxc_var_t args;
+    amxc_var_init(&args);
+
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &args, "endpoint", name);
+
+    assert_int_equal(amxb_call(bus_ctx, "WiFi.", "delEndPointIntf", &args, NULL, 5), AMXB_STATUS_OK);
+    amxc_var_clean(&args);
+}
+
+amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name) {
+    assert_non_null(ep);
+    amxd_object_t* epObj = ep->pBus;
+    assert_non_null(epObj);
+    amxd_object_t* profilesObj = amxd_object_findf(epObj, "Profile");
+    amxd_object_t* obj;
+    amxd_object_add_instance(&obj, profilesObj, name, 0, NULL);
+    return obj;
+}

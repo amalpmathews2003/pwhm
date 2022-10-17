@@ -466,11 +466,11 @@ amxd_status_t _wld_rad_setAPMode_pwf(amxd_object_t* object _UNUSED,
 }
 
 amxd_status_t _wld_rad_setSTAMode_pwf(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
+                                      amxd_param_t* parameter,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args,
+                                      amxc_var_t* const retval,
+                                      void* priv) {
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
     if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
@@ -1515,6 +1515,21 @@ amxd_status_t _validateIEEE80211hEnabled(amxd_param_t* parameter, void* validati
     return ((pR->IEEE80211hSupported & flag) == flag);
 }
 
+swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_FALSE(swl_str_isEmpty(countryCode), SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_FALSE(swl_str_matches(countryCode, " "), SWL_RC_ERROR, ME, "NULL");
+    int indexCountryCode = atoi(countryCode);
+    int idx;
+    if(!indexCountryCode) {
+        getCountryParam(countryCode, 0, &idx);
+    } else {
+        getCountryParam(NULL, indexCountryCode, &idx);
+    }
+    pR->regulatoryDomainIdx = idx;
+    pR->pFA->mfn_wrad_regdomain(pR, NULL, 0, SET);
+    return SWL_RC_OK;
+}
 amxd_status_t _wld_rad_setCountryCode_pwf(amxd_object_t* object _UNUSED,
                                           amxd_param_t* parameter _UNUSED,
                                           amxd_action_t reason _UNUSED,
@@ -1539,20 +1554,8 @@ amxd_status_t _wld_rad_setCountryCode_pwf(amxd_object_t* object _UNUSED,
     CC = amxc_var_constcast(cstring_t, args);
     SAH_TRACEZ_INFO(ME, "set CountryCode %s", CC);
 
-    if(pR && debugIsRadPointer(pR) && CC) {
-        if(strcmp(CC, " ") && strcmp(CC, "")) {
-            iCC = atoi(CC);
-            if(!iCC) {
-                iCC = getCountryParam(CC, 0, &idx);
-            } else {
-                getCountryParam(NULL, iCC, &idx);
-            }
-            pR->regulatoryDomainIdx = idx;
-
-            sprintf(pR->IWDP, "%d | %s | %s", iCC, CC, getFullCountryName(idx) ? : "Unknown");
-            pR->pFA->mfn_wrad_regdomain(pR, pR->IWDP, strlen(pR->IWDP), SET);
-            wld_autoCommitMgr_notifyRadEdit(pR);
-        }
+    if(s_setCountryCode(pR, CC) == SWL_RC_OK) {
+        wld_autoCommitMgr_notifyRadEdit(pR);
     }
 
     SAH_TRACEZ_OUT(ME);
@@ -2189,6 +2192,8 @@ amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
     pR->operatingFrequencyBand = band;
 
     SAH_TRACEZ_INFO(ME, "set OperatingFrequencyBand %p %s %d", parameter, OFB, band);
+
+    pR->pFA->mfn_sync_radio(pR->pBus, pR, GET);
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -2467,15 +2472,20 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             commit = true;
         }
 
-        pR->operatingStandardsFormat = swl_radStd_charToFormat(amxd_object_get_cstring_t(object, "OperatingStandardsFormat", NULL));
+        char* operatingStandardsFormatStr = amxd_object_get_cstring_t(object, "OperatingStandardsFormat", NULL);
+        pR->operatingStandardsFormat = swl_radStd_charToFormat(operatingStandardsFormatStr);
+        free(operatingStandardsFormatStr);
+        operatingStandardsFormatStr = NULL;
 
-        const char* newStandardStr = amxd_object_get_cstring_t(object, "OperatingStandards", NULL);
+        char* newStandardStr = amxd_object_get_cstring_t(object, "OperatingStandards", NULL);
         swl_radioStandard_m newStandard = 0;
         swl_radStd_fromCharAndValidate(&newStandard, newStandardStr, pR->operatingStandardsFormat, pR->supportedStandards, "syncData_Radio2OBJ");
         if(pR->operatingStandards != newStandard) {
             pR->pFA->mfn_wrad_supstd(pR, newStandard);
             commit = true;
         }
+        free(newStandardStr);
+        newStandardStr = NULL;
 
         tmp_bool = amxd_object_get_bool(object, "OfdmaEnable", NULL);
         if(pR->ofdmaEnable != tmp_bool) {
@@ -2516,12 +2526,14 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             pR->pFA->mfn_wrad_achrefperiod(pR, pR->autoChannelRefreshPeriod, SET);
         }
 
-        const char* guardInt = amxd_object_get_cstring_t(object, "GuardInterval", NULL);
+        char* guardInt = amxd_object_get_cstring_t(object, "GuardInterval", NULL);
         if(strncmp(Rad_SupGI[pR->guardInterval], guardInt, strlen(Rad_SupGI[pR->guardInterval]))) {
             pR->guardInterval = conv_strToEnum(Rad_SupGI, guardInt, RGI_800NSEC, RGI_AUTO);
             pR->pFA->mfn_wrad_guardintval(pR, NULL, pR->guardInterval, SET);
             commit = true;
         }
+        free(guardInt);
+        guardInt = NULL;
 
         tmp_int32 = amxd_object_get_int32_t(object, "MCS", NULL);
         if(pR->MCS != tmp_int32) {
@@ -2543,6 +2555,29 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         if(pR->enable != tmp_int32) {
             pR->enable = tmp_int32;
             pR->pFA->mfn_wrad_enable(pR, pR->enable, SET);
+            commit = true;
+        }
+
+        char* regulatoryDomain = amxd_object_get_cstring_t(object, "RegulatoryDomain", NULL);
+        if(!swl_str_matches(regulatoryDomain, pR->regulatoryDomain)) {
+            if(s_setCountryCode(pR, regulatoryDomain) == SWL_RC_OK) {
+                commit = true;
+            }
+        }
+        free(regulatoryDomain);
+        regulatoryDomain = NULL;
+
+        tmp_bool = amxd_object_get_bool(object, "STA_Mode", NULL);
+        if(pR->isSTA != tmp_bool) {
+            pR->isSTA = tmp_bool;
+            pR->fsmRad.FSM_SyncAll = TRUE;
+            commit = true;
+        }
+
+        tmp_bool = amxd_object_get_bool(object, "STASupported_Mode", NULL);
+        if(pR->isSTASup != tmp_bool) {
+            pR->isSTASup = tmp_bool;
+            pR->fsmRad.FSM_SyncAll = TRUE;
             commit = true;
         }
 
@@ -3760,7 +3795,7 @@ bool wld_rad_hasActiveIface(T_Radio* pRad) {
     }
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
-        if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) > 0)) {
+        if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) >= SWL_RC_OK)) {
             return true;
         }
     }

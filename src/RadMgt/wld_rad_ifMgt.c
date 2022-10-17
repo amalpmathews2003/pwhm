@@ -352,7 +352,7 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     char endpointnamebuf[64];
     int32_t intfNr;
 
-    bool ret = false;
+    swl_rc_ne ret = SWL_RC_ERROR;
 
     SAH_TRACEZ_IN(ME);
 
@@ -424,23 +424,15 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
         free(objpath);
     }
 
-    if((ret = pR->pFA->mfn_wendpoint_create_hook(endpoint))) {
+    ret = pR->pFA->mfn_wendpoint_create_hook(endpoint);
+    if(!swl_rc_isOk(ret)) {
         SAH_TRACEZ_ERROR(ME, "%s: pEP create hook failed", endpoint->Name);
     }
 
-    if(!(wifi)) {
-        SAH_TRACEZ_ERROR(ME, "Failed to commit");
-        goto leave;
-    }
-
-    ret = true;
 leave:
-    if(false == ret) {
-        /* ERROR! */
-    }
-    amxc_var_set(bool, retval, ret);
+    amxc_var_set(bool, retval, swl_rc_isOk(ret));
     SAH_TRACEZ_OUT(ME);
-    return ret ? amxd_status_ok : amxd_status_unknown_error;
+    return (swl_rc_isOk(ret) ? amxd_status_ok : amxd_status_unknown_error);
 }
 
 /**

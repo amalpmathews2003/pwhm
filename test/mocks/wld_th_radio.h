@@ -78,6 +78,7 @@
 T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name);
 
 int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad, char* endpoint, int bufsize);
+int wld_th_radio_vendorCb_delEndpointIf(T_Radio* radio, char* endpoint);
 int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
 int wld_th_wrad_fsm(T_Radio* rad);

@@ -95,7 +95,6 @@ T_SSID* s_createSsid(amxd_object_t* obj) {
 
 static void s_cleanSSID(T_SSID* pSSID) {
     SAH_TRACEZ_INFO(ME, "%s: destroy SSID", pSSID->Name);
-    amxd_object_t* object = pSSID->pBus;
     T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
     T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
     if(debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
@@ -107,9 +106,6 @@ static void s_cleanSSID(T_SSID* pSSID) {
     }
     amxc_llist_it_take(&pSSID->it);
     free(pSSID);
-    if(object != NULL) {
-        object->priv = NULL;
-    }
 }
 
 /* Be sure that our attached memory structure is cleared */
@@ -462,7 +458,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             err = pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) TBuf, sizeof(TBuf), GET);
             wld_autoCommitMgr_notifyVapEdit(pAP);
         } else if(pEP) {
-            swl_macChar_t macChar;
+            swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
             err = pEP->pFA->mfn_wendpoint_bssid(pEP, &macChar);
             swl_str_copy(TBuf, sizeof(TBuf), macChar.cMac);
             wld_autoCommitMgr_notifyEpEdit(pEP);

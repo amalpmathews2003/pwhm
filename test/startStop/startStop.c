@@ -98,6 +98,7 @@
 #include "../mocks/wld_th_mockVendor.h"
 #include "../mocks/wld_th_radio.h"
 #include "../mocks/wld_th_vap.h"
+#include "../mocks/wld_th_ep.h"
 
 #include "Plugin/wld_plugin.h"
 
@@ -176,6 +177,26 @@ int test_dm_proxy_setup(void** state _UNUSED) {
     s_vapList[1] = wld_getAccesspointByAlias("wlan1");
     assert_non_null(s_vapList[1]);
 
+    T_EndPoint* ep2 = wld_th_ep_createEp(bus_ctx, mockVendor, rad2, "ep2g0");
+    assert_non_null(ep2);
+    T_EndPoint* ep5 = wld_th_ep_createEp(bus_ctx, mockVendor, rad5, "ep5g0");
+    assert_non_null(ep5);
+
+    amxd_object_t* profile2 = wld_th_ep_createProfile(ep2, "myprofile2");
+    assert_non_null(profile2);
+    assert_non_null(profile2->priv);
+    free(profile2->priv);
+    amxd_object_delete(&profile2);
+
+    amxd_object_t* profile5 = wld_th_ep_createProfile(ep5, "myprofile5");
+    assert_non_null(profile5);
+    assert_non_null(profile5->priv);
+    free(profile5->priv);
+    amxd_object_delete(&profile5);
+
+    wld_th_ep_deleteEp(bus_ctx, mockVendor, "ep2g0");
+    wld_th_ep_deleteEp(bus_ctx, mockVendor, "ep5g0");
+
     return 0;
 }
 
@@ -253,6 +274,13 @@ void test_dm_proxy_get(_UNUSED void** state) {
 }
 
 int main(void) {
+    sahTraceOpen(__FILE__, TRACE_TYPE_STDERR);
+    if(!sahTraceIsOpen()) {
+        fprintf(stderr, "FAILED to open SAH TRACE\n");
+    }
+    sahTraceSetLevel(TRACE_LEVEL_INFO);
+    sahTraceSetTimeFormat(TRACE_TIME_APP_SECONDS);
+
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_dm_proxy_get),
     };

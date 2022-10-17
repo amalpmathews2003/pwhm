@@ -89,6 +89,11 @@ int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad _UNUSED, char* endpoint _UN
     return 0;
 }
 
+/** Implements #PFN_WRAD_DELENDPOINTIF */
+int wld_th_radio_vendorCb_delEndpointIf(T_Radio* radio _UNUSED, char* endpoint _UNUSED) {
+    return 0;
+}
+
 /** Implements #PFN_WRAD_ADDVAPIF */
 int wld_th_radio_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bufsize _UNUSED) {
     return 0;

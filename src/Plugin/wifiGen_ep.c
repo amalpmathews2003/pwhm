@@ -73,14 +73,15 @@
 
 #define ME "genEp"
 
-int wifiGen_ep_createHook(T_EndPoint* pEP) {
+swl_rc_ne wifiGen_ep_createHook(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     // The fsm is started before the endpoint instance creation
-    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_INIT_WPASUPP);
+    wifiGen_wpaSupp_init(pEP);
+    wifiGen_setEpEvtHandlers(pEP);
     return SWL_RC_OK;
 }
 
-int wifiGen_ep_destroyHook(T_EndPoint* pEP) {
+swl_rc_ne wifiGen_ep_destroyHook(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     wifiGen_wpaSupp_cleanup(pEP);
     return SWL_RC_OK;
@@ -122,7 +123,7 @@ swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
  * @return - SWL_RC_INVALID_PARAM if pEP is NULL
            - Otherwise, the result of wld_wpaSupp_ep_disconnect function
  */
-int wifiGen_ep_disconnect(T_EndPoint* pEP) {
+swl_rc_ne wifiGen_ep_disconnect(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_wpaSupp_ep_disconnect(pEP);
 }
