@@ -183,15 +183,12 @@ const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
 static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBandExt_e band) {
     ASSERT_NOT_NULL(pRadioObj, amxd_status_unknown_error, ME, "NULL");
     T_Radio* pRad = wld_getUinitRadioByBand(band);
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "pRad not found for frequency %s", swl_freqBandExt_str[band]);
+    ASSERTW_NOT_NULL(pRad, amxd_status_unknown_error, ME, "No uninit pRad for frequency %s", swl_freqBandExt_str[band]);
 
     ASSERT_NULL(pRadioObj->priv, amxd_status_unknown_error, ME, "pRadioObj->priv not NULL %s", pRad->Name);
 
-    char* instanceName = amxd_object_get_path(pRadioObj, AMXD_OBJECT_NAMED);
-    SAH_TRACEZ_WARNING(ME, "Mapping new Radio instance [%s:%s]", pRad->Name, instanceName);
-
-    snprintf(pRad->instanceName, IFNAMSIZ, "%s", instanceName);
-    free(instanceName);
+    wld_util_getObjName(pRad->instanceName, sizeof(pRad->instanceName), pRadioObj);
+    SAH_TRACEZ_WARNING(ME, "Mapping new Radio instance [%s:%s]", pRad->Name, pRad->instanceName);
 
     /* General initializations */
     pRadioObj->priv = pRad;
@@ -211,24 +208,27 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_radio_addInstance_ocf(amxd_object_t* object,
-                                         amxd_param_t* param,
-                                         amxd_action_t reason,
-                                         const amxc_var_t* const args,
-                                         amxc_var_t* const retval,
-                                         void* priv) {
-    amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
-    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
-    SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path);
-    free(path);
-    if(instance == NULL) {
-        amxd_status_t status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
-        ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
-        instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+void _wld_radio_addInstance_ocf(const char* const sig_name _UNUSED,
+                                const amxc_var_t* const data,
+                                void* const priv _UNUSED) {
+    amxd_dm_t* dm = get_wld_plugin_dm();
+    amxd_object_t* templ_obj = amxd_dm_signal_get_object(dm, data);
+    ASSERT_NOT_NULL(templ_obj, , ME, "Could not get template object");
+    amxd_object_t* instance = amxd_object_get_instance(templ_obj, NULL, GET_UINT32(data, "index"));
+    ASSERT_NOT_NULL(instance, , ME, "Could not get the added instance");
+    const char* OFB = GETP_CHAR(data, "parameters.OperatingFrequencyBand");
+    /* Link radio/object */
+    T_Radio* pR = instance->priv;
+    if(pR == NULL) {
+        ASSERTW_STR(OFB, , ME, "Missing OperFreqBand");
+        swl_freqBandExt_e band = swl_conv_charToEnum(OFB, Rad_SupFreqBands, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_2_4GHZ);
+        _linkFirstUinitRadio(instance, band);
+        pR = instance->priv;
+        ASSERT_NOT_NULL(pR, , ME, "NULL");
+        pR->operatingFrequencyBand = band;
     }
-    ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
-    return amxd_status_ok;
+    ASSERT_TRUE(debugIsRadPointer(pR), , ME, "NO radio Ctx");
+    SAH_TRACEZ_INFO(ME, "%s: added instance object(%p:%s:%s)", pR->Name, instance, pR->instanceName, OFB);
 }
 
 /*
@@ -2193,7 +2193,6 @@ amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
 
     SAH_TRACEZ_INFO(ME, "set OperatingFrequencyBand %p %s %d", parameter, OFB, band);
 
-    pR->pFA->mfn_sync_radio(pR->pBus, pR, GET);
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -3779,7 +3778,7 @@ bool wld_rad_hasEnabledIface(T_Radio* pRad) {
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
         if((pEP->index > 0) &&
-           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pEP->alias) > 0)) {
+           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pEP->Name) > 0)) {
             return true;
         }
     }

@@ -183,6 +183,11 @@ bool wld_plugin_loadDmConf() {
     wld_for_eachRad(pRad) {
         T_AccessPoint* pAP;
         T_SSID* pSSID;
+        /*
+         * update internal context, with all params that we might missed
+         * before radio obj mapping
+         */
+        syncData_Radio2OBJ(pRad->pBus, pRad, GET);
         syncData_Radio2OBJ(pRad->pBus, pRad, SET);
         wld_rad_forEachAp(pAP, pRad) {
             pSSID = (T_SSID*) pAP->pSSID;

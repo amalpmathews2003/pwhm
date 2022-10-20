@@ -440,7 +440,6 @@ define rrm_t{
 	   destroy it when the plugin stops.
 	    */
 	%persistent object Radio[] {
-		on action add-inst call wld_radio_addInstance_ocf;
 		/**
 		 * getSpectrumInfo() returns a list of channels the radio
 		 * supports, along with quality parameters
@@ -638,7 +637,7 @@ define rrm_t{
 		 *  instance for future reference. An initial unique value
 		 *  MUST be assigned when the CPE creates an instance of this
 		 *  object.</p> */
-		string Alias;
+		%persistent %unique %key string Alias;
 		/**
 		 *  <p>The textual name of the radio as assigned by
 		 *  the CPE.</p> Internal vendor string (<B>DEBUG</B>)   */
@@ -655,7 +654,14 @@ define rrm_t{
 		 * its current operational state.</p>
 		 */
 		/*uint32 LastChange;*/
-		/* string LowerLayers;            / * -- See NeMo! Guess this isn't needed here? FIX ME */
+
+		/**
+		 * <p>List of Path Names of an interface objects that are stacked 
+		 * immediately below this interface object.
+		 * Note: Since Radio is a layer 1 interface, it is expected that 
+		 * LowerLayers will not be used.</p>
+		 */
+		string LowerLayers;
 
 		/**
 		 * (<B>DEBUG</B>) Contains the NETFINDEX value of the interface.
@@ -748,6 +754,8 @@ define rrm_t{
 		*   <li>6GHz</li>
 		*  </ul>
 		*/
+		%read-only string SupportedFrequencyBands;
+
 		/**
 		 * <p>The value MUST be a member of the list reported by the
 		 * SupportedFrequencyBands  parameter. Indicates the frequency
@@ -2524,7 +2532,7 @@ define rrm_t{
 		 * instance for future reference. An initial unique value MUST
 		 * be assigned when the CPE creates an instance of this
 		 * object.</p> */
-		string Alias;
+		%persistent %unique %key string Alias;
 		/**
 		 * <p> The textual name of the SSID entry as assigned by the
 		 * CPE.</p> */
@@ -5483,6 +5491,8 @@ define rrm_t{
 }
 
 %populate {
+	on event "dm:instance-added" call wld_radio_addInstance_ocf
+		filter 'path == "WiFi.Radio."';
 	on event "dm:object-changed" call wld_ssid_setEnable_ehf
 		filter 'path matches "WiFi\.SSID\.[a-zA-Z0-9_-]\." && 
 				contains("parameters.Enable")';

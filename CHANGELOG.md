@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.3.0 - 2022-10-20(06:58:55 +0000)
+
+### Other
+
+- Alias missing from WiFi Radio and SSID interface
+- [prplMesh WHM] the endpoint connection is not working properly
+
 ## Release v2.2.5 - 2022-10-17(14:45:36 +0000)
 
 ### Other

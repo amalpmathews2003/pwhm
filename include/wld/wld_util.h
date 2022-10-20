@@ -395,6 +395,16 @@ void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, int md5_si
 wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_mfpConfig_e mfpConfig);
 
 /**
+ * @brief extract object (or instance) name from the object path
+ *
+ * @param objName (in/out): output buffer where name is saved
+ * @param objNameSize (in): max name size
+ * @param obj (in): object context
+ *
+ */
+bool wld_util_getObjName(char* objName, size_t objNameSize, amxd_object_t* obj);
+
+/**
  * @brief wld_util_updateStats convert the internal stats context to object map,
  * this object is the actual datamodel representation of the internal context stats
  *

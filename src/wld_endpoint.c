@@ -575,7 +575,7 @@ void destroyEndPointProfile(T_EndPointProfile* Profile) {
 void setEndPointDefaults(T_EndPoint* pEP, const char* endpointname, const char* intfname, int idx) {
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "%s: Setting Endpoint Defaults", pEP->alias);
+    SAH_TRACEZ_INFO(ME, "%s: Setting Endpoint Defaults", endpointname);
 
 
     wldu_copyStr(pEP->alias, endpointname, sizeof(pEP->alias));
@@ -1201,10 +1201,10 @@ bool syncData_OBJ2EndPoint(amxd_object_t* object) {
     SAH_TRACEZ_INFO(ME, "Endpoint.enable=%d", pEP->enable);
 
     char* alias = amxd_object_get_cstring_t(object, "Alias", NULL);
-    if(alias != NULL) {
+    if(!swl_str_isEmpty(alias)) {
         wldu_copyStr(pEP->alias, alias, sizeof(pEP->alias));
-        free(alias);
     }
+    free(alias);
 
     /* WPS */
     amxd_object_t* const wpsobject = amxd_object_get(object, "WPS");
@@ -1266,7 +1266,10 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
         amxd_object_set_cstring_t(object, "ProfileReference", "");
     }
 
-    sprintf(TBuf, "%s.%s", "SSID", pEP->alias);
+    TBuf[0] = 0;
+    if(pEP->pSSID) {
+        swl_str_copy(TBuf, sizeof(TBuf), amxd_object_get_path(pEP->pSSID->pBus, AMXD_OBJECT_NAMED));
+    }
     amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
 
     wld_bitmaskToCSValues(TBuf, sizeof(TBuf), pEP->secModesSupported, cstr_AP_ModesSupported);

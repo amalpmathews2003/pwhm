@@ -75,6 +75,8 @@
 
 swl_rc_ne wifiGen_ep_createHook(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    // Set the endpoint interface mode to station
+    wld_rad_nl80211_setSta(pEP->pRadio);
     // The fsm is started before the endpoint instance creation
     wifiGen_wpaSupp_init(pEP);
     wifiGen_setEpEvtHandlers(pEP);

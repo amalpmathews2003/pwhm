@@ -473,7 +473,6 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         }
 
         amxd_object_set_cstring_t(object, "BSSID", TBuf);
-        amxd_object_set_cstring_t(object, "Name", pS->Name);
         TBuf[0] = 0;
         int32_t ifIndex = 0;
         if(pAP != NULL) {
@@ -483,7 +482,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             swl_str_copy(TBuf, sizeof(TBuf), pEP->alias);
             ifIndex = pEP->index;
         }
-        amxd_object_set_cstring_t(pS->pBus, "Alias", TBuf);
+        amxd_object_set_cstring_t(pS->pBus, "Name", TBuf);
         amxd_object_set_int32_t(pS->pBus, "Index", ifIndex);
 
         if(!(set & NO_COMMIT)) {
@@ -598,7 +597,7 @@ int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object) {
     ASSERT_NOT_NULL(pSSID, WLD_ERROR, ME, "NULL");
     ASSERT_NOT_NULL(pSSID->AP_HOOK, WLD_ERROR, ME, "NULL");
 
-    swl_str_copy(pSSID->Name, sizeof(pSSID->Name), pSSID->AP_HOOK->name);
+    wld_util_getObjName(pSSID->Name, sizeof(pSSID->Name), instance_object);
 
     instance_object->priv = pSSID;
     pSSID->pBus = instance_object;
