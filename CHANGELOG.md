@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.3.1 - 2022-10-24(07:45:19 +0000)
+
+### Other
+
+- : pwhm - Station history is not working anymore
+
 ## Release v2.3.0 - 2022-10-20(06:58:55 +0000)
 
 ### Other

@@ -130,8 +130,8 @@ static void timeHandler(void* userdata) {
 
     SAH_TRACEZ_INFO(ME, "Time rssiMon %s", pAP->alias);
 
-    int result = pAP->pFA->mfn_wvap_update_rssi_stats(pAP);
-    if(result != WLD_OK) {
+    swl_rc_ne result = pAP->pFA->mfn_wvap_update_rssi_stats(pAP);
+    if(result != SWL_RC_OK) {
         wld_mon_stop(&ev->monitor);
     }
     int i;
@@ -875,6 +875,7 @@ amxd_status_t _getShortHistoryStats(amxd_object_t* obj_rssiEventing,
             for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
                 amxc_var_t varmap;
                 amxc_var_init(&varmap);
+                amxc_var_set_type(&varmap, AMXC_VAR_ID_HTABLE);
                 wld_apRssiMon_getStaHistory(pAP, pAP->AssociatedDevice[i]->MACAddress, &varmap);
                 amxc_var_move(retval, &varmap);
                 amxc_var_clean(&varmap);

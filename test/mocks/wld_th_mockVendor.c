@@ -65,6 +65,7 @@
 #include "wld_th_vap.h"
 #include "swl/swl_common.h"
 #include "wld_eventing.h"
+#include "Plugin/wifiGen_vap.h"
 
 
 static T_CWLD_FUNC_TABLE s_functionTable = {
@@ -73,6 +74,7 @@ static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wrad_delendpointif = wld_th_radio_vendorCb_delEndpointIf,
     .mfn_wrad_addvapif = wld_th_vap_vendorCb_addVapIf,
     .mfn_wrad_fsm = wld_th_wrad_fsm,
+    .mfn_wvap_get_station_stats = wifiGen_get_station_stats,
 };
 
 struct wld_th_mockVendor {
