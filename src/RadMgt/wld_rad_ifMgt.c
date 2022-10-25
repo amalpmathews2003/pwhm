@@ -294,30 +294,16 @@ amxd_object_t* endpoint_create(amxd_object_t* pBus, T_Radio* pR, const char* end
     }
 
     /* Set the T_Endpoint struct to the new instance */
-    endpointinstance->priv = calloc(1, sizeof(T_EndPoint));
-    T_EndPoint* endpoint = (T_EndPoint*) endpointinstance->priv;
+    T_EndPoint* endpoint = wld_endpoint_create(pR, endpointname, intfname, intfNr, endpointinstance);
     if(!endpoint) {
         amxd_object_delete(&endpointinstance);
         SAH_TRACEZ_ERROR(ME, "Unable to set T_Endpoint struct to the new instance");
         return NULL;
     }
 
-    /* Interlinking */
-    endpoint->debug = ENDP_POINTER;
-    endpoint->pBus = endpointinstance;
-    endpoint->pRadio = pR;
-    endpoint->pFA = pR->pFA;
-    amxc_llist_append(&pR->llEndPoints, &endpoint->it);
-
-    /* Set some defaults to the endpoint struct */
-    setEndPointDefaults(endpoint, endpointname, intfname, intfNr);
-
-    wld_endpoint_create_reconnect_timer(endpoint);
-
     /* Sync dynamic parameters : T_Endpoint -> Datamodel */
     syncData_EndPoint2OBJ(endpoint);
 
-    wld_tinyRoam_init(endpoint);
     return endpointinstance;
 }
 

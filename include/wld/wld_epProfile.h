@@ -60,12 +60,12 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_COMMON_H__
-#define __TEST_COMMON_H__
+#ifndef SRC_INCLUDE_WLD_WLD_EPPROFILE_H_
+#define SRC_INCLUDE_WLD_WLD_EPPROFILE_H_
 
-void handle_events(void);
-int read_sig_alarm(void);
-int test_common_setup();
-int test_common_teardown();
+#include "wld.h"
 
-#endif
+swl_rc_ne wld_epProfile_delete(T_EndPoint* pEP, T_EndPointProfile* pProfile);
+T_EndPointProfile* wld_epProfile_fromIt(amxc_llist_it_t* it);
+
+#endif /* SRC_INCLUDE_WLD_WLD_EPPROFILE_H_ */

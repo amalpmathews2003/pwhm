@@ -65,14 +65,13 @@
 #include "wld.h"
 #include "wld_wps.h"
 
-void t_destroy_handler_EP (amxd_object_t* object);
-void setEndPointDefaults(T_EndPoint* EndPoint, const char* endpointname, const char* intfname, int idx);
-void setEndPointProfileDefaults(T_EndPointProfile* profile);
-void setEndpointCurrentProfile(amxd_object_t* endpointObject, T_EndPointProfile* Profile);
 void syncData_EndPoint2OBJ(T_EndPoint* endpoint);
 bool syncData_OBJ2EndPoint(amxd_object_t* object);
+
+void wld_endpoint_setCurrentProfile(amxd_object_t* endpointObject, T_EndPointProfile* Profile);
+
 bool wld_endpoint_isReady(T_EndPoint* pEP);
-bool wld_update_endpoint_stats(amxd_object_t* obj, T_EndPointStats* stats);
+bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats);
 bool wld_endpoint_validate_profile(const T_EndPointProfile* Profile);
 void wld_endpoint_setConnectionStatus(T_EndPoint* pEP, wld_epConnectionStatus_e connectionStatus, wld_epError_e error);
 void wld_endpoint_sync_connection(T_EndPoint* pEP, bool connected, wld_epError_e error);
@@ -87,15 +86,17 @@ amxd_status_t _EndPoint_WPS_cancelPairing(amxd_object_t* obj,
                                           amxc_var_t* args,
                                           amxc_var_t* ret);
 void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP);
-void endpointReconfigure(T_EndPoint* pEP);
-void endpointPerformConnect(T_EndPoint* pEP);
-void endpointPerformConnectCommit(T_EndPoint* pEP, bool alwaysCommit);
+void wld_endpoint_reconfigure(T_EndPoint* pEP);
+void wld_endpoint_performConnect(T_EndPoint* pEP);
+void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit);
 swl_rc_ne wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac);
 
 swl_rc_ne wld_endpoint_checkConnection(T_EndPoint* pEP);
 void wld_endpoint_writeStats(T_EndPoint* pEP, T_EndPointStats* stats, bool success);
 bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer);
-void wld_endpoint_destroy(T_EndPoint* pEP);
+
 T_EndPoint* wld_endpoint_fromIt(amxc_llist_it_t* it);
 
+T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, const char* intfname, int idx, amxd_object_t* object);
+void wld_endpoint_destroy(T_EndPoint* pEP);
 #endif /* __WLD_ENDPOINT_H__ */

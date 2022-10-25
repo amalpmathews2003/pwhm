@@ -59,13 +59,29 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#ifndef __DUMMY_BE_H__
-#define __DUMMY_BE_H__
+#ifndef __WLD_TESTHELPER_RADIO_H__
+#define __WLD_TESTHELPER_RADIO_H__
+#include "wld_types.h"
+#include "wld_th_types.h"
 
-int test_register_dummy_be(void);
-int test_unregister_dummy_be(void);
-int test_load_dummy_remote(const char* odl);
-void test_set_dummy_caps(uint32_t dummy_caps);
-void test_custom_event(const char* object, const char* name, amxc_var_t* data);
+#include <amxc/amxc_macros.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_path.h>
+#include <amxd/amxd_object_event.h>
+#include <amxo/amxo.h>
+#include <amxo/amxo_save.h>
+#include <amxb/amxb.h>
 
-#endif // __DUMMY_BE_H__
+T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name);
+
+int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad, char* endpoint, int bufsize);
+int wld_th_radio_vendorCb_delEndpointIf(T_Radio* radio, char* endpoint);
+int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
+int wld_th_wrad_fsm(T_Radio* rad);
+int wld_th_rad_enable(T_Radio* rad, int val, int set);
+
+#endif

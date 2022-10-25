@@ -1422,6 +1422,17 @@ define rrm_t{
 					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
 					default "Auto";
 				}
+				/* Channel to which the radio went after DFS detection */
+				%read-only uint32 NewChannel;
+				
+				/* Bandwidth to which the radio went after DFS detection */
+				%read-only string NewBandwidth{
+					constraint enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					default "Auto";
+				}
+				
+				/* List of channels on which radar was actually detected */
+				%read-only string DFSRadarDetectionList;
 				/* Detected radar's zone */
 				%read-only string RadarZone{
 					constraint enum["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
@@ -1887,6 +1898,27 @@ define rrm_t{
 			 */
 			void Disable(%in string Capability);
 		} /* object RadCaps */
+
+		object ChannelMgt{
+			/**
+			 * List of currently cleared channels.
+			 * Note that this will only contain channel that require radar. Non radar sensitive channels
+			 * will not be added to this list. Format is comma separated list of numbers.
+			 */
+			%read-only string ClearedDfsChannels{
+				default "";
+			}
+
+			/**
+			 * List of dfs channels where a radar pulse has been
+			 * detected and we're currently waiting for the channel to be released.
+			 * Format is comma separated list.
+			 */
+			%read-only string RadarTriggeredDfsChannels{
+				default "";
+			}
+			
+		}
 
 		/**
 		 * Object encapsulating non associated device statistics system.

@@ -59,43 +59,77 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#include <sys/signalfd.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/stat.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
-
-
-#include "wld_th_vap.h"
-#include "wld.h"
 #include "wld_th_mockVendor.h"
+#include "wld_th_radio.h"
+#include "wld_th_vap.h"
+#include "swl/swl_common.h"
+#include "wld_eventing.h"
+#include "Plugin/wifiGen_vap.h"
 
 
-int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bufsize _UNUSED) {
-    return 0;
+static T_CWLD_FUNC_TABLE s_functionTable = {
+    .mfn_wrad_supports = wld_th_radio_vendorCb_supports,
+    .mfn_wrad_addendpointif = wld_th_radio_vendorCb_addEndpointIf,
+    .mfn_wrad_delendpointif = wld_th_radio_vendorCb_delEndpointIf,
+    .mfn_wrad_addvapif = wld_th_vap_vendorCb_addVapIf,
+    .mfn_wrad_fsm = wld_th_wrad_fsm,
+    .mfn_wrad_enable = wld_th_rad_enable,
+
+    .mfn_wvap_create_hook = wld_th_vap_createHook,
+    .mfn_wvap_destroy_hook = wld_th_vap_destroyHook,
+    .mfn_wvap_enable = wld_th_vap_enable,
+    .mfn_wvap_get_station_stats = wld_th_vap_getStationStats,
+};
+
+struct wld_th_mockVendor {
+    char name[32];
+    vendor_t* vendor;
+};
+
+static int32_t s_numberOfVendors = 0;
+
+const char* wld_th_mockVendor_name(wld_th_mockVendor_t* mockVendor) {
+    return mockVendor->name;
 }
 
-T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, T_Radio* radio, const char* name) {
-    amxc_var_t args;
-    amxc_var_init(&args);
+wld_th_mockVendor_t* wld_th_mockVendor_create(const char* name) {
 
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    wld_th_mockVendor_t* mockVendor = calloc(1, sizeof(wld_th_mockVendor_t));
+
+    swl_str_copy(mockVendor->name, sizeof(mockVendor->name), name);
+
+    s_numberOfVendors++;
+
+    return mockVendor;
+}
+
+vendor_t* wld_th_mockVendor_register(wld_th_mockVendor_t* mockVendor) {
+
+    vendor_t* vendor = wld_registerVendor(wld_th_mockVendor_name(mockVendor), &s_functionTable);
+    mockVendor->vendor = vendor;
+    return vendor;
+}
+
+vendor_t* wld_th_mockVendor_vendor(wld_th_mockVendor_t* mockVendor) {
+    return mockVendor->vendor;
+}
 
 
-    amxc_var_add_key(cstring_t, &args, "vap", name);
-    amxc_var_add_key(cstring_t, &args, "radio", radio->instanceName);
+void wld_mockVendor_destroy(wld_th_mockVendor_t* mockVendor) {
+    if((gWld_queue_rad_onStatusChange == NULL) || !amxc_llist_is_empty(&gWld_queue_rad_onStatusChange->subscribers)) {
+        printf("You must first call wld_cleanup() because that function still uses vendor\n");
+    }
+    if(mockVendor->vendor != NULL) {
+        wld_unregisterVendor(mockVendor->vendor);
+    }
 
+    free(mockVendor);
 
-    assert_int_equal(amxb_call(bus_ctx, "WiFi", "addVAPIntf", &args, NULL, 5), 0);
+    s_numberOfVendors--;
 
-    amxc_var_clean(&args);
+}
 
-    T_AccessPoint* vap = wld_getAccesspointByAlias(name);
-    assert_non_null(vap);
-    return vap;
+bool wld_mockVendor_areThereStillVendors() {
+    return s_numberOfVendors > 0;
 }

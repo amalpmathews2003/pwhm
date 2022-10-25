@@ -59,104 +59,41 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
+#ifndef SRC_TEST_TESTHELPER_WLD_TH_DM_H_
+#define SRC_TEST_TESTHELPER_WLD_TH_DM_H_
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_function.h>
-#include <amxd/amxd_object_event.h>
-#include <amxb/amxb_be.h>
-#include <amxo/amxo.h>
+#include "wld.h"
+#include "test-toolbox/ttb_amx.h"
+#include "test-toolbox/ttb_object.h"
+#include "wld_th_types.h"
 
-#include "dummy_be.h"
+#include "swla/swla_chanspec.h"
+#include "swl/swl_common.h"
 
-#include <amxc/amxc_macros.h>
+#include "wld_th_radio.h"
+#include "wld_th_vap.h"
+#include "wld_th_types.h"
+#include "wld_th_mockVendor.h"
 
-static char* ctx = "Dummy";
 
-static void* amxb_dummy_connect(UNUSED const char* host,
-                                UNUSED const char* port,
-                                UNUSED const char* path,
-                                UNUSED amxp_signal_mngr_t* sigmngr) {
-    return ctx;
-}
+typedef struct {
+    T_Radio* rad;
+    ttb_object_t* radObj;
+    T_AccessPoint* vapPriv;
+    ttb_object_t* vapPrivObj;
+    T_EndPoint* ep;
+    ttb_object_t* epObj;
+} wld_th_dmBand_t;
 
-static int amxb_dummy_disconnect(UNUSED void* ctx) {
-    return 0;
-}
+typedef struct {
+    wld_th_dmBand_t bandList[SWL_FREQ_BAND_MAX];
+    ttb_amx_t* ttbAmx;
+    wld_th_mockVendor_t* mockVendor;
+} wld_th_dm_t;
 
-static int amxb_dummy_invoke(UNUSED void* const ctx,
-                             UNUSED amxb_invoke_t* invoke_ctx,
-                             UNUSED amxc_var_t* args,
-                             UNUSED amxb_request_t* request,
-                             UNUSED int timeout) {
-    return 0;
-}
+bool wld_th_dm_init(wld_th_dm_t* dm);
+void wld_th_dm_destroy(wld_th_dm_t* dm);
 
-static void amxb_dummy_free(UNUSED void* ctx) {
-}
+void wld_th_dm_handleEvents(wld_th_dm_t* dm);
 
-static int amxb_dummy_register(UNUSED void* const ctx,
-                               UNUSED amxd_dm_t* const dm) {
-    return 0;
-}
-
-static amxb_be_funcs_t amxb_dummy_impl = {
-    .connect = amxb_dummy_connect,
-    .disconnect = amxb_dummy_disconnect,
-    .get_fd = NULL,
-    .read = NULL,
-    .invoke = amxb_dummy_invoke,
-    .async_invoke = NULL,
-    .wait_request = NULL,
-    .close_request = NULL,
-    .subscribe = NULL,
-    .unsubscribe = NULL,
-    .free = amxb_dummy_free,
-    .register_dm = amxb_dummy_register,
-    .has = NULL,
-    .capabilities = NULL,
-    .name = "dummy",
-    .size = sizeof(amxb_be_funcs_t),
-};
-
-static amxb_version_t sup_min_lib_version = {
-    .major = 2,
-    .minor = 0,
-    .build = -1
-};
-
-static amxb_version_t sup_max_lib_version = {
-    .major = 2,
-    .minor = -1,
-    .build = -1
-};
-
-static amxb_version_t dummy_be_version = {
-    .major = 0,
-    .minor = 0,
-    .build = 0,
-};
-
-amxb_be_info_t amxb_dummy_be_info = {
-    .min_supported = &sup_min_lib_version,
-    .max_supported = &sup_max_lib_version,
-    .be_version = &dummy_be_version,
-    .name = "dummy",
-    .description = "AMXB Dummy Backend for testing",
-    .funcs = &amxb_dummy_impl,
-};
-
-int test_register_dummy_be(void) {
-    return amxb_be_register(&amxb_dummy_impl);
-}
-
-int test_unregister_dummy_be(void) {
-    return amxb_be_unregister(&amxb_dummy_impl);
-}
+#endif /* SRC_TEST_TESTHELPER_WLD_TH_DM_H_ */

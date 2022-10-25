@@ -180,6 +180,24 @@ const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
     "",
 };
 
+static void s_doSyncUpdate(amxp_timer_t* timer _UNUSED, void* priv) {
+    T_Radio* pRad = (T_Radio*) priv;
+
+    amxd_object_t* pRadioObj = pRad->pBus;
+
+    wld_rad_init_counters(pRad, &pRad->genericCounters, radCounterDefaults);
+    wld_radStaMon_init(pRad);
+    syncData_VendorWPS2OBJ(NULL, pRad, GET);
+    syncData_Radio2OBJ(pRadioObj, pRad, SET | NO_COMMIT);
+    amxd_object_t* dfsObj = amxd_object_get(pRadioObj, "DFS");
+    if(dfsObj == NULL) {
+        SAH_TRACEZ_ERROR(ME, "cannot found DFS object on %s", pRad->Name);
+    } else {
+        pRad->dfsEventLogLimit = amxd_object_get_uint8_t(dfsObj, "EventLogLimit", NULL);
+        pRad->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
+    }
+}
+
 static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBandExt_e band) {
     ASSERT_NOT_NULL(pRadioObj, amxd_status_unknown_error, ME, "NULL");
     T_Radio* pRad = wld_getUinitRadioByBand(band);
@@ -194,17 +212,10 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
     pRadioObj->priv = pRad;
     pRad->pBus = pRadioObj;
 
-    wld_rad_init_counters(pRad, &pRad->genericCounters, radCounterDefaults);
-    wld_radStaMon_init(pRad);
-    syncData_VendorWPS2OBJ(NULL, pRad, GET);
-    syncData_Radio2OBJ(pRadioObj, pRad, SET | NO_COMMIT);
-    amxd_object_t* dfsObj = amxd_object_get(pRadioObj, "DFS");
-    if(dfsObj == NULL) {
-        SAH_TRACEZ_ERROR(ME, "cannot found DFS object on %s", pRad->Name);
-    } else {
-        pRad->dfsEventLogLimit = amxd_object_get_uint8_t(dfsObj, "EventLogLimit", NULL);
-        pRad->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
-    }
+
+    amxp_timer_new(&pRad->updateTimer, s_doSyncUpdate, pRad);
+    amxp_timer_start(pRad->updateTimer, 0);
+
     return amxd_status_ok;
 }
 
@@ -814,7 +825,7 @@ static void checkRadioEventLogLimitReached (T_Radio* pR) {
 bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt) {
     ASSERT_NOT_NULL(pR, false, ME, "NULL");
 
-    amxd_object_t* event = amxd_object_get(pR->pBus, "DFS.Event");
+    amxd_object_t* event = amxd_object_findf(pR->pBus, "DFS.Event");
     ASSERT_NOT_NULL(event, false, ME, "NULL");
     amxd_object_t* evtInstance;
     amxd_object_new_instance(&evtInstance, event, NULL, 0, NULL);
@@ -825,6 +836,12 @@ bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt) {
     amxd_object_set_cstring_t(evtInstance, "Bandwidth", Rad_SupBW[evt->bandwidth]);
     amxd_object_set_cstring_t(evtInstance, "RadarZone", Rad_RadarZones[evt->radarZone]);
     amxd_object_set_uint8_t(evtInstance, "RadarIndex", evt->radarIndex);
+
+    amxd_object_set_uint32_t(evtInstance, "NewChannel", pR->channel);
+    amxd_object_set_cstring_t(evtInstance, "NewBandwidth", swl_bandwidth_str[pR->runningChannelBandwidth]);
+
+    swl_typeUInt8_arrayObjectParamSetChar(evtInstance, "DFSRadarDetectionList",
+                                          pR->lastRadarChannelsAdded, pR->nrLastRadarChannelsAdded);
 
     pR->dfsEventNbr++;
     checkRadioEventLogLimitReached(pR);
@@ -4170,7 +4187,7 @@ void wld_rad_write_possible_channels(T_Radio* pRad) {
         }
         wldu_catStr(TBuf, itoa(pRad->possibleChannels[idx], ValBuf, 10), sizeof(TBuf));
     }
-    SAH_TRACEZ_INFO(ME, "PosChan %s", TBuf);
+
     amxd_object_set_cstring_t(pRad->pBus, "PossibleChannels", TBuf);
     amxd_object_set_cstring_t(pRad->pBus, "MaxChannelBandwidth", Rad_SupBW[pRad->maxChannelBandwidth]);
 }
@@ -4598,6 +4615,10 @@ void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t 
 
     amxd_object_trigger_signal(pRad->pBus, "PublicAction", &map);
     amxc_var_clean(&map);
+}
+
+amxd_object_t* wld_rad_getObject(T_Radio* pRad) {
+    return pRad->pBus;
 }
 
 amxd_status_t _Radio_debug(amxd_object_t* object,

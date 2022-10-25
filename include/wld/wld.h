@@ -102,6 +102,7 @@
 #include "swl/swl_staCap.h"
 #include "swla/swla_table.h"
 #include "swl/swl_assert.h"
+#include "swl/swl_returnCode.h"
 #include "swla/swla_tupleType.h"
 #include "swla/swla_circTable.h"
 #include "wld_nl80211_core.h"
@@ -1249,6 +1250,7 @@ typedef struct {
     int vhtOmnEnabled;                 /* enable vht Operating mode notifications */
     int broadcastMaxBwCapability;      /* broadcast max bw capability.*/
     wld_tpcMode_e tpcMode;             /* configure transmit power control. */
+    bool skipSocketIO;                 /* bool to skip socket IO */
 } wld_driverCfg_t;
 
 
@@ -1290,8 +1292,13 @@ struct WLD_RADIO {
     // because dealing with `operatingStandardsFormat` is taken care of already.
     swl_radStd_format_e operatingStandardsFormat;
 
-    uint8_t possibleChannels[WLD_MAX_POSSIBLE_CHANNELS];
+    swl_channel_t possibleChannels[WLD_MAX_POSSIBLE_CHANNELS];
     int nrPossibleChannels;
+    swl_channel_t radarDetectedChannels[WLD_MAX_POSSIBLE_CHANNELS];
+    uint8_t nrRadarDetectedChannels;
+    swl_channel_t lastRadarChannelsAdded[SWL_BW_CHANNELS_MAX];
+    uint8_t nrLastRadarChannelsAdded;
+
     unsigned char MACAddr[ETHER_ADDR_LEN];
     swl_macBin_t mbssBaseMACAddr;                  /* multiple BSS base mac address: */
                                                    /* may be shifted radio base mac, to handle enough bss macs. */
@@ -1407,7 +1414,6 @@ struct WLD_RADIO {
 
     int enable;                         /* Enable/Disable the Radio */
     int wlRadio_SK;                     /* Storage of the Radio Socket handler */
-    int wlRadio_EventSocket;            /* Storage of the Radio Socket handler */
     char Name[IFNAMSIZ];                /* The interface name */
     char instanceName[IFNAMSIZ];        /* The object name */
     struct S_CWLD_FUNC_TABLE* pFA;      /* Function Array */
@@ -1444,6 +1450,7 @@ struct WLD_RADIO {
     wld_autoCommitRadData_t autoCommitData;  /* struct for managing auto commiting */
     wld_nl80211_listener_t* nl80211Listener; /* nl80211 events listener */
     wld_secDmn_t* hostapd;                   /* hostapd daemon context. */
+    amxp_timer_t* updateTimer;               /* Update timer to do sync after object write */
 };
 
 typedef struct {

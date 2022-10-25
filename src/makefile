@@ -35,6 +35,7 @@ OBJS-libwld.so = wld.o wld_accesspoint.o wld_endpoint.o wld_radio.o \
 		wld_radioOperatingStandards.o 
 		
 OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
+					ChannelManagement/wld_chanmgt.o \
 					ChannelManagement/wld_channel_info.o \
 					RadMgt/wld_prb_req.o\
 					RadMgt/wld_rad_stamon.o\
@@ -53,6 +54,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					ApMgt/wld_ap_security.o \
 					EpMgt/wld_tinyRoam.o \
 					EpMgt/wld_tinyRoam_bus.o \
+					EpMgt/wld_epProfile.o \
 					Utils/wld_eventing.o \
 					Utils/wld_monitor.o \
 					Utils/wld_autoCommitMgr.o \

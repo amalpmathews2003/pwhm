@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.4.0 - 2022-10-25(10:09:28 +0000)
+
+### Other
+
+- - Add list of DFS marked channels to DFS event
+
 ## Release v2.3.1 - 2022-10-24(07:45:19 +0000)
 
 ### Other

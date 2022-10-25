@@ -108,16 +108,21 @@ void s_readChanInfo(T_Radio* pRad) {
     for(int i = 0; i < pRad->nrPossibleChannels; i++) {
         swl_chanspec_t cs = SWL_CHANSPEC_NEW(pRad->possibleChannels[i], pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
         wld_channel_mark_available_channel(cs);
+        if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) && wld_channel_is_dfs(possibleChannels5[i])) {
+            wld_channel_mark_radar_req_channel(cs);
+            wld_channel_mark_passive_channel(cs);
+        }
     }
 }
 
 /** Implements #PFN_WRAD_SUPPORTS */
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize _UNUSED) {
+    rad->driverCfg.skipSocketIO = true;
 
     // In wld's radio cration, this callback is called, after which it syncs to PCB,
     // after which it commits the PCB object, which fails if the band is invalid.
     // So write the band here, so it's synced, so the commit succeeds.
-    printf("SUPP TEST %s\n", rad->Name);
+    printf("SUPP TEST -%s-\n", rad->Name);
     if(swl_str_matches(rad->Name, "wifi1")) {
         rad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_5GHZ;
         rad->supportedFrequencyBands = M_SWL_FREQ_BAND_5GHZ;
@@ -126,6 +131,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->maxChannelBandwidth = SWL_BW_160MHZ;
         rad->operatingChannelBandwidth = SWL_BW_80MHZ;
         rad->channel = 36;
+        rad->supportedStandards = M_SWL_RADSTD_A | M_SWL_RADSTD_N | M_SWL_RADSTD_AC | M_SWL_RADSTD_AX;
     } else {
         rad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_2_4GHZ;
         rad->supportedFrequencyBands = M_SWL_FREQ_BAND_2_4GHZ;
@@ -134,11 +140,14 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->maxChannelBandwidth = SWL_BW_40MHZ;
         rad->operatingChannelBandwidth = SWL_BW_20MHZ;
         rad->channel = 1;
+        rad->supportedStandards = M_SWL_RADSTD_B | M_SWL_RADSTD_G | M_SWL_RADSTD_N | M_SWL_RADSTD_AX;
     }
 
     wld_channel_init_channels(rad);
     s_readChanInfo(rad);
     wld_rad_write_possible_channels(rad);
+
+    printf("%s: run supports\n", rad->Name);
 
     return 0;
 }
@@ -168,4 +177,17 @@ int wld_th_wrad_fsm(T_Radio* rad) {
     printf("%s: do commit\n", rad->Name);
     return 0;
 }
+
+int wld_th_rad_enable(T_Radio* rad, int val, int set) {
+    int ret;
+    printf("RAD: %d --> %d -  %d", rad->enable, val, set);
+    if(set & SET) {
+        rad->enable = val;
+        ret = val;
+    } else {
+        ret = rad->enable;
+    }
+    return ret;
+}
+
 

@@ -293,13 +293,13 @@ static void chan_remove_flag(int channel, swl_freqBandExt_e freqBand, uint32_t f
 void wld_channel_init_channels(T_Radio* rad) {
     unsigned int i = 0;
     wld_band_data* band = get_band(rad->operatingFrequencyBand);
-    ASSERTS_NOT_NULL(band, , ME, "null freqband");
+    ASSERT_NOT_NULL(band, , ME, "null freqband");
     if(band->channels != NULL) {
         free(band->channels);
         band->channels = NULL;
     }
     band->channels = calloc(rad->nrPossibleChannels, sizeof(wld_channel_data));
-    ASSERTS_NOT_NULL(band->channels, , ME, "NULL");
+    ASSERT_NOT_NULL(band->channels, , ME, "NULL");
     band->nr_channels = rad->nrPossibleChannels;
     for(i = 0; i < band->nr_channels; i++) {
         band->channels[i].channel = rad->possibleChannels[i];
@@ -331,13 +331,13 @@ void wld_channel_clear_flags(T_Radio* rad) {
 }
 
 
-int wld_channel_get_cleared_channels(T_Radio* pRad, int* list, int list_size) {
+size_t wld_channel_get_cleared_channels(T_Radio* pRad, swl_channel_t* list, size_t list_size) {
     wld_band_data* band = get_band(pRad->operatingFrequencyBand);
     ASSERTS_NOT_NULL(band, 0, ME, "null freqband");
-    int i = 0;
-    int nr_cleared_channels = 0;
+    size_t i = 0;
+    size_t nr_cleared_channels = 0;
     wld_channel_data* channel;
-    for(i = 0; (i < (int) band->nr_channels) && (nr_cleared_channels < list_size); i++) {
+    for(i = 0; (i < band->nr_channels) && (nr_cleared_channels < list_size); i++) {
         channel = &(band->channels[i]);
         if(chandata_has_flag(channel, WLD_CHAN_RADAR_REQUIRED)
            && !chandata_has_flag(channel, WLD_CHAN_PASSIVE)
@@ -346,27 +346,27 @@ int wld_channel_get_cleared_channels(T_Radio* pRad, int* list, int list_size) {
             nr_cleared_channels++;
         }
     }
-    if(i < (int) band->nr_channels) {
+    if(i < band->nr_channels) {
         SAH_TRACEZ_ERROR(ME, "Performed getCleared channels with too short list %s", pRad->Name);
     }
     return nr_cleared_channels;
 }
 
 
-int wld_channel_get_radartriggered_channels(T_Radio* pRad, int* list, int list_size) {
+size_t wld_channel_get_radartriggered_channels(T_Radio* pRad, swl_channel_t* list, size_t list_size) {
     wld_band_data* band = get_band(pRad->operatingFrequencyBand);
     ASSERTS_NOT_NULL(band, 0, ME, "null freqband");
-    int i = 0;
-    int nr_cleared_channels = 0;
+    size_t i = 0;
+    size_t nr_cleared_channels = 0;
     wld_channel_data* channel;
-    for(i = 0; (i < (int) band->nr_channels) && (nr_cleared_channels < list_size); i++) {
+    for(i = 0; (i < band->nr_channels) && (nr_cleared_channels < list_size); i++) {
         channel = &(band->channels[i]);
         if(chandata_has_flag(channel, WLD_CHAN_RADAR_DETECTED)) {
             list[nr_cleared_channels] = channel->channel;
             nr_cleared_channels++;
         }
     }
-    if(i < (int) band->nr_channels) {
+    if(i < band->nr_channels) {
         SAH_TRACEZ_ERROR(ME, "Performed getRadar channels with too short list %s", pRad->Name);
     }
     return nr_cleared_channels;

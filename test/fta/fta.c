@@ -95,132 +95,47 @@
 #include "wld_accesspoint.h"
 #include "wld_ap_rssiMonitor.h"
 
-#include "../mocks/dummy_be.h"
-#include "../mocks/test_common.h"
-#include "../mocks/wld_th_mockVendor.h"
-#include "../mocks/wld_th_radio.h"
-#include "../mocks/wld_th_vap.h"
+#include "../testHelper/wld_th_dm.h"
+#include "../testHelper/wld_th_mockVendor.h"
+#include "../testHelper/wld_th_radio.h"
+#include "../testHelper/wld_th_vap.h"
 
 #include "Plugin/wld_plugin.h"
 #include "Plugin/wifiGen.h"
 
-static amxo_parser_t parser;
-static amxd_dm_t dm;
-static amxb_bus_ctx_t* bus_ctx = NULL;
+static wld_th_dm_t dm;
 
-static wld_th_mockVendor_t* mockVendor;
-
-
-static T_AccessPoint* s_vapList[2];
-
-static amxd_status_t func(_UNUSED amxd_object_t* obj,
-                          _UNUSED amxd_function_t* func,
-                          _UNUSED amxc_var_t* args,
-                          _UNUSED amxc_var_t* ret) {
-    char* obj_path = amxd_object_get_path(obj, AMXD_OBJECT_TERMINATE);
-    printf("Func called on %s\n", obj_path);
-    free(obj_path);
-    return amxd_status_ok;
-}
-
-int test_dm_proxy_setup(void** state _UNUSED) {
-    test_common_setup();
-    amxd_object_t* root_obj = NULL;
-
-    amxo_parser_init(&parser);
-    amxd_dm_init(&dm);
-
-    amxc_var_t* lib_dirs = amxo_parser_get_config(&parser, "import-dirs");
-    amxc_var_add(cstring_t, lib_dirs, "../src/");
-    amxc_var_add(cstring_t, lib_dirs, "../src/Plugin/");
-    amxc_var_dump(&parser.config, STDOUT_FILENO);
-
-    setenv("WAN_ADDR", "AA:BB:CC:DD:EE:FF", 0);
-
-    sahTraceOpen("testApp", TRACE_TYPE_STDOUT);
-    if(!sahTraceIsOpen()) {
-        fprintf(stderr, "FAILED to open SAH TRACE\n");
-    }
-
-    sahTraceSetLevel(TRACE_LEVEL_NOTICE);
-    sahTraceSetTimeFormat(TRACE_TIME_APP_SECONDS);
-
-    amxo_resolver_ftab_add(&parser, "func", AMXO_FUNC(func));
-
-    root_obj = amxd_dm_get_root(&dm);
-    amxo_parser_parse_file(&parser, "../../odl/wld.odl", root_obj);
-
-    assert_int_equal(test_register_dummy_be(), 0);
-    assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
-    amxb_register(bus_ctx, &dm);
-    amxb_set_access(bus_ctx, amxd_dm_access_public);
-
-    handle_events();
-
-    assert_int_equal(_wld_main(AMXO_START, &dm, &parser), 0);
-
-    mockVendor = wld_th_mockVendor_create("MockVendor");
-    wld_th_mockVendor_register(mockVendor);
-
-    amxc_var_t ret;
-    amxc_var_init(&ret);
-
-    assert_int_equal(amxb_get(bus_ctx, "WiFi.", INT32_MAX, &ret, 5), AMXB_STATUS_OK);
-    amxc_var_clean(&ret);
-
-    T_Radio* rad2 = wld_th_radio_create(bus_ctx, mockVendor, "wifi0");
-    assert_non_null(rad2);
-    T_Radio* rad5 = wld_th_radio_create(bus_ctx, mockVendor, "wifi1");
-    assert_non_null(rad5);
-    amxo_parser_parse_file(&parser, "../../examples/defaults/wld_defaults.odl", root_obj);
-
-    s_vapList[0] = wld_getAccesspointByAlias("wlan0");
-    assert_non_null(s_vapList[0]);
-    s_vapList[1] = wld_getAccesspointByAlias("wlan1");
-    assert_non_null(s_vapList[1]);
-
+static int s_testSetup(void** state _UNUSED) {
+    assert_true(wld_th_dm_init(&dm));
     return 0;
 }
 
-int test_dm_proxy_teardown(void** state _UNUSED) {
-    assert_int_equal(_wld_main(AMXO_STOP, &dm, &parser), 0);
-
-    amxd_dm_remove_root_object(&dm, "WiFi");
-    handle_events();
-
-    amxo_parser_clean(&parser);
-    amxd_dm_clean(&dm);
-
-    handle_events();
-
-    test_unregister_dummy_be();
-
-    wld_mockVendor_destroy(mockVendor);
-
-    sahTraceClose();
-    test_common_teardown();
+static int s_testTeardown(void** state _UNUSED) {
+    wld_th_dm_destroy(&dm);
     return 0;
 }
 
 void test_validFta(_UNUSED void** state) {
-    assert_true(s_vapList[0]->pFA->mfn_wvap_update_rssi_stats(s_vapList[0]) != SWL_RC_NOT_IMPLEMENTED);
-    assert_true(s_vapList[0]->pFA->mfn_wvap_get_station_stats(s_vapList[0]) != SWL_RC_NOT_IMPLEMENTED);
+    T_AccessPoint* pAP = dm.bandList[0].vapPriv;
+
+    assert_true(pAP->pFA->mfn_wvap_update_rssi_stats(pAP) != SWL_RC_NOT_IMPLEMENTED);
+    assert_true(pAP->pFA->mfn_wvap_get_station_stats(pAP) != SWL_RC_NOT_IMPLEMENTED);
 
     char* buf = "AA:BB:CC:DD:EE:FF";
     swl_macBin_t bStationMac;
     swl_mac_charToBin(&bStationMac, (swl_macChar_t*) buf);
-    T_AssociatedDevice* pAD = wld_create_associatedDevice(s_vapList[0], &bStationMac);
-    wld_ad_add_connection_try(s_vapList[0], pAD);
-    wld_ad_add_connection_success(s_vapList[0], pAD);
-    s_vapList[0]->pRadio->status = RST_UP;
+    T_AssociatedDevice* pAD = wld_create_associatedDevice(pAP, &bStationMac);
+    wld_ad_add_connection_try(pAP, pAD);
+    wld_ad_add_connection_success(pAP, pAD);
+    pAP->pRadio->status = RST_UP;
 
-    assert_int_equal(s_vapList[0]->pFA->mfn_wvap_update_rssi_stats(s_vapList[0]), SWL_RC_OK);
+    assert_int_equal(pAP->pFA->mfn_wvap_update_rssi_stats(pAP), SWL_RC_OK);
 
-    wld_apRssiMon_updateStaHistoryAll(s_vapList[0]);
+    wld_apRssiMon_updateStaHistoryAll(pAP);
     amxc_var_t varmap;
     amxc_var_init(&varmap);
     amxc_var_set_type(&varmap, AMXC_VAR_ID_HTABLE);
-    wld_apRssiMon_getStaHistory(s_vapList[0], (unsigned char*) &bStationMac.bMac, &varmap);
+    wld_apRssiMon_getStaHistory(pAP, (unsigned char*) &bStationMac.bMac, &varmap);
     amxc_var_clean(&varmap);
 }
 
@@ -228,9 +143,8 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_validFta),
     };
-    int rv = cmocka_run_group_tests(tests, test_dm_proxy_setup, test_dm_proxy_teardown);
+    int rv = cmocka_run_group_tests(tests, s_testSetup, s_testTeardown);
     return rv;
 }
-
 
 

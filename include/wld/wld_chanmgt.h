@@ -60,73 +60,14 @@
 **
 ****************************************************************************/
 
-#include <sys/signalfd.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <stdio.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
-#include <string.h>
+#ifndef _WLD_CHANMGT_PCB_H_
+#define _WLD_CHANMGT_PCB_H_
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxo/amxo.h>
-#include <amxb/amxb.h>
+#include "wld.h"
 
-#include "test_common.h"
+/**
+ * Write the currently cleared dfs channels to pcb
+ */
+void wld_chanmgt_writeDfsChannels(T_Radio* pRad);
 
-void handle_events(void) {
-    printf("Handling events ");
-    while(amxp_signal_read() == 0) {
-        printf(".");
-    }
-    printf("\n");
-}
-
-static int sfd;
-static sigset_t mask;
-
-
-int read_sig_alarm(void) {
-    while(1) {
-        printf(".\n");
-        struct signalfd_siginfo si;
-        ssize_t res;
-        res = read(sfd, &si, sizeof(si));
-        assert_false(res < 0);
-        assert_false(res != sizeof(si));
-        if(si.ssi_signo == SIGALRM) {
-            amxp_timers_calculate();
-            amxp_timers_check();
-            break;
-        }
-    }
-
-    while(amxp_signal_read() == 0) {
-    }
-
-    return 0;
-}
-
-
-int test_common_setup() {
-
-    sigemptyset(&mask);
-    sigaddset(&mask, SIGALRM);
-
-    int rv = sigprocmask(SIG_BLOCK, &mask, NULL);
-    assert_false(rv < 0);
-
-    sfd = signalfd(-1, &mask, 0);
-    assert_false(sfd < 0);
-
-    return 0;
-}
-
-int test_common_teardown() {
-    close(sfd);
-
-    return 0;
-}
+#endif /* _WLD_CHANMGT_PCB_H_ */

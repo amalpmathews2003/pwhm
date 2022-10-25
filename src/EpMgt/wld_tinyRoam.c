@@ -177,7 +177,7 @@ static void s_stopRoaming(T_EndPoint* ep, bool doReconnect, wld_tinyRoam_roamRes
     *s_targetBssid(ep) = g_swl_macBin_null;
 
     if(doReconnect) {
-        endpointPerformConnectCommit(ep, true);
+        wld_endpoint_performConnectCommit(ep, true);
     }
 
     if(ep->tinyRoam->roamAttemptTimer != NULL) {
@@ -207,7 +207,7 @@ static void s_doRoamAttempt(T_EndPoint* ep) {
                        ep->Name, ep->tinyRoam->numberOfAttemptsStarted,
                        ep->tinyRoam->maxNumberOfAttempts, SWL_MAC_ARG(s_targetBssid(ep)->bMac));
     // Do this roam attempt:
-    endpointPerformConnectCommit(ep, true);
+    wld_endpoint_performConnectCommit(ep, true);
 
     // Schedule checking result of this roam attempt and potentially starting the next roam attempt.
     if(ep->tinyRoam->roamAttemptTimer != NULL) {

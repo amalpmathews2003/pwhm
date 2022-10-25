@@ -877,12 +877,16 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
          *  parameter value MUST be set to an empty string. */
         TBuf[0] = 0;
         if(pAP->pSSID) {
-            swl_str_copy(TBuf, sizeof(TBuf), amxd_object_get_path(pAP->pSSID->pBus, AMXD_OBJECT_NAMED));
+            char* path = amxd_object_get_path(pAP->pSSID->pBus, AMXD_OBJECT_NAMED);
+            swl_str_copy(TBuf, sizeof(TBuf), path);
+            free(path);
         }
         amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
         TBuf[0] = 0;
         if(pAP->pRadio) {
-            swl_str_copy(TBuf, sizeof(TBuf), amxd_object_get_path(pAP->pRadio->pBus, AMXD_OBJECT_NAMED));
+            char* path = amxd_object_get_path(pAP->pRadio->pBus, AMXD_OBJECT_NAMED);
+            swl_str_copy(TBuf, sizeof(TBuf), path);
+            free(path);
         }
         amxd_object_set_cstring_t(object, "RadioReference", TBuf);
         /** 'RetryLimit' The maximum number of retransmission for a
@@ -2496,33 +2500,44 @@ T_AssociatedDevice* wld_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t
 
 /* clean up stations who failed authentication */
 bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
-    T_AssociatedDevice* oldestInactive = NULL;
-    uint32_t inactiveCount = 0;
-    SAH_TRACEZ_INFO(ME, "%s: clean", pAP->alias);
+    int inactiveStaCount = 0;
 
-    // Find ad that was dc's longest ago
-    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
-        T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
-        ASSERT_NOT_NULL(pAD, false, ME, "%s: AssociatedDevice[%d]==0!", pAP->alias, i);
+    /* Allow two devices with Authenticationstate==false
+     * The first is one to keep around (to diagnose failed connection attempts)
+     * The second is necessary to allow a client to go through
+     * AuthenticationState==false => AuthenticationState==true when connecting
+     * Since we should call this function each time a sta DC's, we use a simple
+     * cleanup algorithm instead of doing the effort of sorting and cleaning.
+     */
+    do{
+        inactiveStaCount = 0;
+        uint32_t inactiveStaIndex = 0;
 
-        if(pAD->Active) {
-            continue;
+        for(int assocIndex = 0; assocIndex < pAP->AssociatedDeviceNumberOfEntries; assocIndex++) {
+            T_AssociatedDevice* pAD = pAP->AssociatedDevice[assocIndex];
+            if(!pAD) {
+                SAH_TRACEZ_ERROR(ME, "AssociatedDevice[%d] is NULL!", assocIndex);
+                SAH_TRACEZ_OUT(ME);
+                return false;
+            }
+
+            if(!pAD->Active) {
+                if(inactiveStaCount == 0) {
+                    inactiveStaIndex = assocIndex;
+                } else if(pAD->latestStateChangeTime < pAP->AssociatedDevice[inactiveStaIndex]->latestStateChangeTime) {
+                    inactiveStaIndex = assocIndex;
+                }
+                inactiveStaCount++;
+            }
         }
-        inactiveCount++;
-        if((oldestInactive == NULL)
-           || (oldestInactive->disassociationTime > pAD->disassociationTime)) {
-            oldestInactive = pAD;
+
+        if(inactiveStaCount > (NR_OF_STICKY_UNAUTHORIZED_STATIONS)) {
+            SAH_TRACEZ_INFO(ME, "Destroying oldest failed-auth entry (%s) out of %d",
+                            pAP->AssociatedDevice[inactiveStaIndex]->Name,
+                            inactiveStaCount);
+            wld_ad_destroy_associatedDevice(pAP, inactiveStaIndex);
         }
-    }
-
-    if(inactiveCount > (NR_OF_STICKY_UNAUTHORIZED_STATIONS)) {
-        SAH_TRACEZ_INFO(ME, " * Marking oldest failed-auth entry (%s) out of %d obsolete",
-                        oldestInactive->Name,
-                        inactiveCount);
-        wld_ad_destroy(pAP, oldestInactive);
-    }
-
-    SAH_TRACEZ_INFO(ME, "%s: done clean", pAP->alias);
+    } while(inactiveStaCount > NR_OF_STICKY_UNAUTHORIZED_STATIONS);
     return true;
 }
 

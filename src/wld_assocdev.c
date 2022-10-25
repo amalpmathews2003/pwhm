@@ -188,6 +188,7 @@ static void s_dcEntryConnected(T_AccessPoint* pAP, wld_ad_dcLog_t* entry) {
 int wld_ad_remove_assocdev_from_bridge(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
     T_Radio* pRad = pAP->pRadio;
+    ASSERTI_FALSE(pRad->driverCfg.skipSocketIO, -1, ME, "%s skip SocketIO", pRad->Name);
 
     ASSERT_FALSE(pRad->wlRadio_SK == -1, -1, ME,
                  "Radio %s socket not init", pRad->Name);
@@ -241,7 +242,6 @@ void wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
 /* free the T_AssociatedDevice and remove it from the list */
 void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
-    int i;
 
     SAH_TRACEZ_IN(ME);
     if(0 == pAP->AssociatedDeviceNumberOfEntries) {
@@ -259,7 +259,7 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
     wld_apRssiMon_destroyStaHistory(pAP->AssociatedDevice[index]);
     free(pAP->AssociatedDevice[index]);
 
-    for(i = index; i < (pAP->AssociatedDeviceNumberOfEntries - 1); i++) {
+    for(int i = index; i < (pAP->AssociatedDeviceNumberOfEntries - 1); i++) {
         pAP->AssociatedDevice[i] = pAP->AssociatedDevice[i + 1];
     }
     pAP->AssociatedDevice[pAP->AssociatedDeviceNumberOfEntries - 1] = NULL;
@@ -363,11 +363,11 @@ void wld_vap_update_seen(T_AccessPoint* pAP) {
 void wld_vap_remove_all(T_AccessPoint* pAP) {
     int i;
     T_AssociatedDevice* pAD;
-    for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
-        pAD = pAP->AssociatedDevice[i];
+    int totalNrDev = pAP->AssociatedDeviceNumberOfEntries;
+    for(i = 0; i < totalNrDev; i++) {
+        pAD = pAP->AssociatedDevice[totalNrDev - 1 - i];
         if(pAD->Active) {
             wld_ad_add_disconnection(pAP, pAD);
-            SAH_TRACEZ_ERROR(ME, "Deactivating sta %s remove all", pAD->Name);
         }
     }
     wld_vap_cleanup_stationlist(pAP);
@@ -425,9 +425,9 @@ static void wld_update_station_stats(T_AccessPoint* pAP) {
     }
 }
 
-static void s_addStaStatsValues(T_AccessPoint* pAP, int ret, amxc_var_t* retval) {
+static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* retval) {
     T_Radio* pRad = pAP->pRadio;
-    if(!pAP->enable || !pRad->enable || (ret < 0)) {
+    if(!pAP->enable || !pRad->enable || !swl_rc_isOk(ret)) {
         //remove all stations if AP or Radio is disabled or station stats returns error
         wld_vap_remove_all(pAP);
     }
@@ -904,8 +904,8 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
     pAD->Inactive = 0;
     wld_ad_remove_assocdev_from_bridge(pAP, pAD);
 
-    wld_vap_cleanup_stationlist(pAP);
     wld_vap_sync_device(pAP, pAD);
+    wld_vap_cleanup_stationlist(pAP);
     wld_vap_syncNrDev(pAP);
 }
 
@@ -1097,7 +1097,8 @@ void wld_ad_getHeMCS(uint16_t he_mcs, wld_sta_supMCS_adv_t* supportedHeMCS) {
 void wld_assocDev_initAp(T_AccessPoint* pAP) {
     swl_unLiTable_initExt(&pAP->staDcList, &tWld_ad_dcLog, 3);
     swl_unLiList_setKeepsLastBlock(&pAP->staDcList.list, true);
-    amxd_object_t* templateObj = amxd_object_get(pAP->pBus, "AssociationCount.FastReconnectTypes");
+    amxd_object_t* templateObj = amxd_object_findf(pAP->pBus, "AssociationCount.FastReconnectTypes");
+    ASSERT_NOT_NULL(templateObj, , ME, "NULL");
     for(uint32_t i = 0; i < WLD_FAST_RECONNECT_MAX; i++) {
         amxd_object_t* instObj = NULL;
         amxd_object_new_instance(&instObj, templateObj, fastReconnectTypes[i], 0, NULL);

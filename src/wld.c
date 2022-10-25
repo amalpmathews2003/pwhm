@@ -314,7 +314,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     }
     pR->vendor = vendor;
     pR->wlRadio_SK = -1;
-    pR->wlRadio_EventSocket = -1;
 
     memcpy(pR->MACAddr, &wld_getWanAddr()->bMac, SWL_MAC_BIN_LEN);
     swl_mac_binAddVal((swl_macBin_t*) pR->MACAddr, idx, -1);

@@ -76,8 +76,21 @@
 #include <amxo/amxo_save.h>
 #include <amxb/amxb.h>
 
+#include "wld/wld.h"
+#include "wld/wld_accesspoint.h"
+
+typedef struct {
+    bool errorOnStaStats;
+} wld_vap_testData_t;
+
 T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
 
-int wld_th_vap_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+swl_rc_ne wld_th_vap_createHook(T_AccessPoint* pAP);
+void wld_th_vap_destroyHook(T_AccessPoint* pAP);
 
+int wld_th_vap_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP);
+int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set);
+
+wld_vap_testData_t* wl_th_vap_getVendorData(T_AccessPoint* pAP);
 #endif

@@ -82,6 +82,7 @@
 #include "wld_wpaSupp_cfgFile.h"
 #include "wld_wpaSupp_cfgManager.h"
 #include "Utils/wld_autoCommitMgr.h"
+#include "wld_epProfile.h"
 
 /* Function prototypes for helpers. */
 static void s_setEndpointStatus(T_EndPoint* pEP,
@@ -356,14 +357,14 @@ amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
     }
 
     if(!pEP->currentProfile) {
-        SAH_TRACEZ_ERROR(ME, "No profile found matching the profileRef [%s]", newProfileRef);
+        SAH_TRACEZ_INFO(ME, "No profile found matching the profileRef [%s]", newProfileRef);
         return amxd_status_ok;
     }
 
     wldu_copyStr(pEP->pSSID->SSID, pEP->currentProfile->SSID, sizeof(pEP->pSSID->SSID));
     syncData_SSID2OBJ(pEP->pSSID->pBus, pEP->pSSID, SET);
     if(credentialsChanged) {
-        endpointReconfigure(pEP);
+        wld_endpoint_reconfigure(pEP);
     }
 
     SAH_TRACEZ_OUT(ME);
@@ -402,7 +403,7 @@ amxd_status_t _wld_endpoint_setBridgeInterface_pwf(amxd_object_t* object,
     ASSERT_NOT_NULL(pstr_BridgeName, amxd_status_ok, ME, "NULL");
 
     snprintf(pEP->bridgeName, sizeof(pEP->bridgeName), "%s", pstr_BridgeName);
-    endpointReconfigure(pEP);
+    wld_endpoint_reconfigure(pEP);
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -410,7 +411,7 @@ amxd_status_t _wld_endpoint_setBridgeInterface_pwf(amxd_object_t* object,
 
 static void s_writeStats(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_var_t* variant, T_EndPointStats* stats) {
     amxd_object_t* object = amxd_object_get(pEP->pBus, "Stats");
-    wld_update_endpoint_stats(object, stats);
+    wld_endpoint_updateStats(object, stats);
     amxc_var_t map;
     amxc_var_init(&map);
     amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
@@ -489,31 +490,6 @@ amxd_status_t _getStats(amxd_object_t* object,
 }
 
 /**
- * @brief setEndPointProfileDefaults
- *
- * Set some default settings for the Endpoint Profile
- * Used when the profile is just created
- *
- * @param profile Endpoint profile
- */
-void setEndPointProfileDefaults(T_EndPointProfile* profile) {
-    SAH_TRACEZ_INFO(ME, "Setting EndpointProfile Defaults");
-
-    profile->enable = 0;
-    profile->priority = 0;
-    profile->status = EPPS_DISABLED;
-    memset(profile->SSID, 0, sizeof(profile->SSID));
-    memset(profile->BSSID, 0, sizeof(profile->BSSID));
-    memset(profile->keyPassPhrase, 0, sizeof(profile->keyPassPhrase));
-    memset(profile->saePassphrase, 0, sizeof(profile->saePassphrase));
-    memset(profile->alias, 0, sizeof(profile->alias));
-    memset(profile->location, 0, sizeof(profile->location));
-    memset(profile->WEPKey, 0, sizeof(profile->WEPKey));
-    memset(profile->preSharedKey, 0, sizeof(profile->preSharedKey));
-    profile->secModeEnabled = APMSI_NONE;
-}
-
-/**
  * @brief setEndpointCurrentProfile
  *
  * Set the current profile when a matching profile reference is set
@@ -522,43 +498,33 @@ void setEndPointProfileDefaults(T_EndPointProfile* profile) {
  * @param endpointObject Endpoint object
  * @param Profile new endpoint profile
  */
-void setEndpointCurrentProfile(amxd_object_t* endpointObject, T_EndPointProfile* Profile) {
+void wld_endpoint_setCurrentProfile(amxd_object_t* endpointObject, T_EndPointProfile* Profile) {
     ASSERT_NOT_NULL(endpointObject, , ME, "NULL");
     ASSERT_NOT_NULL(Profile, , ME, "NULL");
 
     T_EndPoint* EndPoint = (T_EndPoint*) endpointObject->priv;
     ASSERT_NOT_NULL(EndPoint, , ME, "NULL");
 
-    char* ProfileReference = amxd_object_get_cstring_t(endpointObject, "ProfileReference", NULL);
-    if(ProfileReference == NULL) {
+    char* profileRefStr = amxd_object_get_cstring_t(endpointObject, "ProfileReference", NULL);
+    if(profileRefStr == NULL) {
         SAH_TRACEZ_INFO(ME, "Profile Reference is not yet set - not setting currentProfile");
         return;
     }
     char* profileRef = amxd_object_get_path(Profile->pBus, AMXD_OBJECT_NAMED);
-    if(!swl_str_matches(ProfileReference, profileRef)) {
-        SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] does not match the ProfileReference [%s] - not setting currentProfile",
-                          profileRef, ProfileReference);
-        goto leave;
+    const char* profileName = amxd_object_get_name(Profile->pBus, 0);
+
+    if(swl_str_matches(profileRefStr, profileRef) || swl_str_matches(profileRefStr, profileName)) {
+        SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] : setting as currentProfile",
+                          profileRef);
+    } else {
+        SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] does not match the profileRefStr [%s] - not setting currentProfile",
+                          profileRef, profileRefStr);
     }
 
     EndPoint->currentProfile = Profile;
 
-leave:
     free(profileRef);
-    free(ProfileReference);
-    ProfileReference = NULL;
-}
-
-/**
- * @brief destroyEndPointProfile
- *
- * Cleanup the profile struct
- * Used when the profile instance is deleted
- *
- * @param Profile endpoint profile struct
- */
-void destroyEndPointProfile(T_EndPointProfile* Profile) {
-    free(Profile);
+    free(profileRefStr);
 }
 
 /**
@@ -572,7 +538,7 @@ void destroyEndPointProfile(T_EndPointProfile* Profile) {
  * @param intfname name of interface of the endpoint
  * @param idx index number given to the endpoint
  */
-void setEndPointDefaults(T_EndPoint* pEP, const char* endpointname, const char* intfname, int idx) {
+static void s_setDefaults(T_EndPoint* pEP, const char* endpointname, const char* intfname, int idx) {
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
 
     SAH_TRACEZ_INFO(ME, "%s: Setting Endpoint Defaults", endpointname);
@@ -625,102 +591,6 @@ void t_destroy_handler_EP(amxd_object_t* object) {
 }
 
 /**
- * @brief wld_endpoint_deleteProfileInstance_odf
- *
- * Delete handler on the Profile template object
- * Remove the linked profile data
- *
- * @param template_object
- * @param instance_object
- * @return true on success, false otherwise
- */
-amxd_status_t _wld_endpoint_deleteProfileInstance_odf(amxd_object_t* template_object, amxd_object_t* instance_object) {
-    amxd_object_t* endpointObject = NULL;
-    T_EndPointProfile* Profile = NULL;
-    T_EndPoint* EndPoint = NULL;
-
-    SAH_TRACEZ_IN(ME);
-
-    endpointObject = amxd_object_get_parent(template_object);
-    EndPoint = (T_EndPoint*) endpointObject->priv;
-    if(!EndPoint) {
-        SAH_TRACEZ_ERROR(ME, "Failed to find Endpoint structure");
-        return amxd_status_unknown_error;
-    }
-
-    Profile = (T_EndPointProfile*) instance_object->priv;
-    if(!Profile) {
-        SAH_TRACEZ_ERROR(ME, "Failed to find EndpointProfile structure");
-        return amxd_status_unknown_error;
-    }
-
-    if(EndPoint->currentProfile == Profile) {
-        EndPoint->currentProfile = NULL;
-        SAH_TRACEZ_WARNING(ME, "Current Active EndpointProfile gets deleted !!!");
-        EndPoint->internalChange = true;
-        amxd_object_set_cstring_t(EndPoint->pBus, "ProfileReference", "");
-        EndPoint->internalChange = false;
-        endpointReconfigure(EndPoint);
-    }
-
-    amxc_llist_it_take(&Profile->it);
-    destroyEndPointProfile(Profile);
-
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
-}
-
-/**
- * @brief wld_endpoint_addProfileInstance_ocf
- *
- * Endpoint Profile instance Add Handler
- * Create a new EndpointProfile Instance
- * and set its defaults
- *
- * @param template_object EndpointProfile template object
- * @param instance_object EndpointProfile instance object
- * @return true on success, false otherwise
- */
-amxd_status_t _wld_endpoint_addProfileInstance_ocf(amxd_object_t* object,
-                                                   amxd_param_t* param,
-                                                   amxd_action_t reason,
-                                                   const amxc_var_t* const args,
-                                                   amxc_var_t* const retval,
-                                                   void* priv) {
-    amxd_status_t status = amxd_status_ok;
-    status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
-    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
-    amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
-    ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
-    amxd_object_t* endpointObject = amxd_object_get_parent(object);
-    ASSERT_NOT_NULL(endpointObject, amxd_status_unknown_error, ME, "NULL");
-    T_EndPoint* pEP = (T_EndPoint*) endpointObject->priv;
-    if(!pEP) {
-        SAH_TRACEZ_ERROR(ME, "Failed to find Endpoint structure");
-        return amxd_status_unknown_error;
-    }
-    /* Set the T_EndPointProfile struct to the new instance */
-    T_EndPointProfile* profile = (T_EndPointProfile*) calloc(1, sizeof(T_EndPointProfile));
-    if(profile == NULL) {
-        SAH_TRACEZ_ERROR(ME, "Failed to allocate T_EndpointProfile structure");
-        return amxd_status_unknown_error;
-    }
-    instance->priv = profile;
-    profile->pBus = instance;
-    /* Interlinking */
-    amxc_llist_append(&pEP->llProfiles, &profile->it);
-    profile->endpoint = pEP;
-
-    /* Set some defaults to the endpoint profile struct */
-    setEndPointProfileDefaults(profile);
-    /* Set the current profile when a matching profile reference is set */
-    setEndpointCurrentProfile(endpointObject, profile);
-
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
-}
-
-/**
  * @brief syncData_Object2EndPointProfile
  *
  * Sync Datamodel Endpoint Profile object parameters to
@@ -760,13 +630,14 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
         pProfile->priority = tmp_priority;
     }
 
-    const char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
+    char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
     if(strncmp(ssid, pProfile->SSID, SSID_NAME_LEN)) {
         changed |= 1;
         wldu_copyStr(pProfile->SSID, ssid, sizeof(pProfile->SSID));
     }
+    free(ssid);
 
-    const char* bssid = amxd_object_get_cstring_t(object, "ForceBSSID", NULL);
+    char* bssid = amxd_object_get_cstring_t(object, "ForceBSSID", NULL);
     if((bssid == 0) || (bssid[0] == 0)
        || !wldu_convStr2Mac((unsigned char*) BSSID, sizeof(BSSID), bssid, strlen(bssid))) {
         memcpy(pProfile->BSSID, wld_ether_null, sizeof(pProfile->BSSID));
@@ -774,22 +645,26 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
         changed |= !!memcmp(pProfile->BSSID, BSSID, sizeof(pProfile->BSSID));
         memcpy(pProfile->BSSID, BSSID, sizeof(pProfile->BSSID));
     }
+    free(bssid);
 
     //These 2 parameters have no effect on the actual connection and should not cause
     //a connection change.
-    const char* alias = amxd_object_get_cstring_t(object, "Alias", NULL);
+    char* alias = amxd_object_get_cstring_t(object, "Alias", NULL);
     wldu_copyStr(pProfile->alias, alias,
                  sizeof(pProfile->alias));
-    const char* location = amxd_object_get_cstring_t(object, "Location", NULL);
+    free(alias);
+    char* location = amxd_object_get_cstring_t(object, "Location", NULL);
     wldu_copyStr(pProfile->location, location,
                  sizeof(pProfile->location));
+    free(location);
 
-    const char* mode = amxd_object_get_cstring_t(secObj, "ModeEnabled", NULL);
+    char* mode = amxd_object_get_cstring_t(secObj, "ModeEnabled", NULL);
     if(!strncmp(mode, rollbackBuffer, 256)) {
         rollbackBuffer[0] = '\0';
     } else {
         wldu_copyStr(rollbackBuffer, mode, sizeof(rollbackBuffer));
     }
+    free(mode);
 
     wld_securityMode_e secMode = conv_strToEnum(cstr_AP_ModesSupported, rollbackBuffer, APMSI_MAX, APMSI_UNKNOWN);
     if(secMode != pProfile->secModeEnabled) {
@@ -797,7 +672,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
         pProfile->secModeEnabled = secMode;
     }
 
-    const char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
+    char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
     if(isModeWEP(pProfile->secModeEnabled)) {
         if(!isValidWEPKey(wepKey)) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - WEPKey is not in a valid format");
@@ -806,8 +681,9 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             wldu_copyStr(pProfile->WEPKey, wepKey, sizeof(pProfile->WEPKey));
         }
     }
+    free(wepKey);
 
-    const char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
+    char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
     if(isModeWPAPersonal(pProfile->secModeEnabled) &&
        strncmp(pskKey, pProfile->preSharedKey, sizeof(pProfile->preSharedKey))) {
         if(!isValidPSKKey(pskKey)) {
@@ -817,8 +693,9 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             wldu_copyStr(pProfile->preSharedKey, pskKey, sizeof(pProfile->preSharedKey));
         }
     }
+    free(pskKey);
 
-    const char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
+    char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
     if(isModeWPAPersonal(pProfile->secModeEnabled) &&
        strncmp(keyPassPhrase, pProfile->preSharedKey, sizeof(pProfile->preSharedKey))) {
         if(!isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
@@ -828,8 +705,9 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             wldu_copyStr(pProfile->keyPassPhrase, keyPassPhrase, sizeof(pProfile->keyPassPhrase));
         }
     }
+    free(keyPassPhrase);
 
-    const char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
+    char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
     if(isModeWPAPersonal(pProfile->secModeEnabled) &&
        strncmp(saePassphrase, pProfile->saePassphrase, sizeof(pProfile->saePassphrase))) {
         if(!isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN)) {
@@ -839,8 +717,9 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             wldu_copyStr(pProfile->saePassphrase, saePassphrase, sizeof(pProfile->saePassphrase));
         }
     }
+    free(saePassphrase);
 
-    const char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
+    char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
     if(strncmp(mfp, wld_mfpConfig_str[pProfile->mfpConfig],
                strlen(wld_mfpConfig_str[pProfile->mfpConfig]))) {
         wld_mfpConfig_e idx = conv_strToEnum(wld_mfpConfig_str, mfp, WLD_MFP_MAX, WLD_MFP_DISABLED);
@@ -849,6 +728,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             changed |= 1;
         }
     }
+    free(mfp);
 
     return changed;
 }
@@ -915,7 +795,7 @@ amxd_status_t _wld_endpoint_setProfile_pwf(amxd_object_t* object,
     }
 
     if(profileChanged || profileEnableChanged) {
-        endpointReconfigure(pEP);
+        wld_endpoint_reconfigure(pEP);
     }
 
 leave:
@@ -954,7 +834,7 @@ amxd_status_t _wld_endpoint_setProfileSecurity_pwf(amxd_object_t* object,
     bool profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
 
     if(profileChanged) {
-        endpointReconfigure(pEP);
+        wld_endpoint_reconfigure(pEP);
     }
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -981,7 +861,7 @@ amxd_status_t _wld_endpoint_setProfileSecurity_owf(amxd_object_t* object) {
     profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
 
     if(profileChanged) {
-        endpointReconfigure(pEP);
+        wld_endpoint_reconfigure(pEP);
     }
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -1157,7 +1037,7 @@ amxd_status_t _wld_endpoint_setEnable_pwf(amxd_object_t* object,
     /* set enable flag */
     pRad->pFA->mfn_wendpoint_enable(pEP, enable);
 
-    endpointReconfigure(pEP);
+    wld_endpoint_reconfigure(pEP);
 
     /* when idle : kick the FSM state machine to handle the new state */
     wld_rad_doCommitIfUnblocked(pRad);
@@ -1268,7 +1148,9 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
 
     TBuf[0] = 0;
     if(pEP->pSSID) {
-        swl_str_copy(TBuf, sizeof(TBuf), amxd_object_get_path(pEP->pSSID->pBus, AMXD_OBJECT_NAMED));
+        char* path = amxd_object_get_path(pEP->pSSID->pBus, AMXD_OBJECT_NAMED);
+        swl_str_copy(TBuf, sizeof(TBuf), path);
+        free(path);
     }
     amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
 
@@ -1510,7 +1392,7 @@ void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP) {
  * @param stats T_EndPointStats of the endpoint instance
  * @return
  */
-bool wld_update_endpoint_stats(amxd_object_t* obj, T_EndPointStats* stats) {
+bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats) {
     if(!obj || !stats) {
         SAH_TRACEZ_ERROR(ME, "Bad usage of function : !obj||!stats");
         return false;
@@ -1763,7 +1645,7 @@ swl_rc_ne wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac) {
     return SWL_RC_OK;
 }
 
-void endpointPerformConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
+void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
 
     T_Radio* pR = pEP->pRadio;
 
@@ -1788,9 +1670,9 @@ void endpointPerformConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
 }
 
 //Deprecated
-void endpointPerformConnect(T_EndPoint* pEP) {
+void wld_endpoint_performConnect(T_EndPoint* pEP) {
     SAH_TRACEZ_WARNING(ME, "DEPRECATED");
-    endpointPerformConnectCommit(pEP, false);
+    wld_endpoint_performConnectCommit(pEP, false);
 }
 
 /**
@@ -1801,7 +1683,7 @@ void endpointPerformConnect(T_EndPoint* pEP) {
  *
  * @param pEP The endpoint to reconfigure
  */
-void endpointReconfigure(T_EndPoint* pEP) {
+void wld_endpoint_reconfigure(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, , ME, "null Endpoint");
     ASSERT_NOT_NULL(pEP->pRadio, , ME, "null radio");
 
@@ -1849,7 +1731,7 @@ void endpointReconfigure(T_EndPoint* pEP) {
         return;
     }
 
-    endpointPerformConnectCommit(pEP, false);
+    wld_endpoint_performConnectCommit(pEP, false);
 }
 
 
@@ -1960,7 +1842,7 @@ static void endpoint_reconnect_handler(amxp_timer_t* timer _UNUSED, void* userda
     }
 
     // Do reconnect
-    endpointPerformConnectCommit(pEP, true);
+    wld_endpoint_performConnectCommit(pEP, true);
 
 
     pEP->assocStats.nrAssocAttempts++;
@@ -2020,6 +1902,7 @@ T_EndPoint* wld_endpoint_fromIt(amxc_llist_it_t* it) {
     return amxc_llist_it_get_data(it, T_EndPoint, it);
 }
 
+
 /**
  * Provide the target mac address. If false, no target is currently configured.
  */
@@ -2045,6 +1928,12 @@ void wld_endpoint_destroy(T_EndPoint* pEP) {
         SAH_TRACEZ_ERROR(ME, "%s: pEP destroy hook failed", pEP->Name);
     }
 
+    while(amxc_llist_size(&pEP->llProfiles) > 0) {
+        amxc_llist_it_t* it = amxc_llist_take_first(&pEP->llProfiles);
+        T_EndPointProfile* pEpProf = wld_epProfile_fromIt(it);
+        wld_epProfile_delete(pEP, pEpProf);
+    }
+
     /* Try to delete the requested interface by calling the HW function */
     pR->pFA->mfn_wrad_delendpointif(pR, pEP->Name);
 
@@ -2058,12 +1947,14 @@ void wld_endpoint_destroy(T_EndPoint* pEP) {
         }
     }
 
+
     /* Take EP also out the Radio */
     amxc_llist_it_take(&pEP->it);
     free(pEP);
 }
 
-T_EndPoint* wld_ep_create(T_Radio* pRad, const char* epName, const char* intfname) {
+T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, const char* intfname,
+                                int idx, amxd_object_t* object) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     T_EndPoint* pEP = calloc(1, sizeof(T_EndPoint));
     ASSERT_NOT_NULL(pEP, NULL, ME, "NULL");
@@ -2071,20 +1962,29 @@ T_EndPoint* wld_ep_create(T_Radio* pRad, const char* epName, const char* intfnam
     pEP->debug = ENDP_POINTER;
     pEP->pRadio = pRad;
     pEP->pFA = pRad->pFA;
-    setEndPointDefaults(pEP, epName, intfname, pRad->index);
-    return pEP;
-}
+    s_setDefaults(pEP, epName, intfname, idx);
 
-swl_rc_ne s_endpointInit(T_EndPoint* pEP) {
-    T_Radio* pR = pEP->pRadio;
+    // init ep obj
+    pEP->pBus = object;
 
-    /* Add pEP on linked list of pR */
-    amxc_llist_append(&pR->llEndPoints, &pEP->it);
+
+    swl_rc_ne ret = pRad->pFA->mfn_wendpoint_create_hook(pEP);
+    if(ret < SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "%s: ep create hook failed %d", pEP->alias, ret);
+        free(pEP);
+        return NULL;
+    }
+
+
+    amxc_llist_append(&pRad->llEndPoints, &pEP->it);
+    wld_endpoint_create_reconnect_timer(pEP);
     wld_tinyRoam_init(pEP);
 
-    swl_rc_ne ret = pR->pFA->mfn_wendpoint_create_hook(pEP);
-    ASSERT_FALSE(ret < SWL_RC_OK, ret, ME, "%s: ep create hook failed %d", pEP->alias, ret);
-    return ret;
+    amxd_object_t* wpsinstance = amxd_object_get(object, "WPS");
+    pEP->wpsSessionInfo.intfObj = object;
+    wpsinstance->priv = &pEP->wpsSessionInfo;
+    object->priv = pEP;
+    return pEP;
 }
 
 static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
@@ -2093,30 +1993,24 @@ static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     if(pSsidObj) {
         pSSID = (T_SSID*) pSsidObj->priv;
     }
+    ASSERT_NOT_NULL(pSsidObj, amxd_status_unknown_error, ME, "NULL");
+
     T_EndPoint* pEP = (T_EndPoint*) object->priv;
-    if(pEP) {
-        ASSERTI_NOT_EQUALS(pSSID, pEP->pSSID, amxd_status_ok, ME, "same ssid reference");
-        amxd_object_set_cstring_t(object, "RadioReference", "");
-        pEP->pSSID->ENDP_HOOK = NULL;
-        wld_endpoint_destroy(pEP);
-        object->priv = NULL;
-        pEP = NULL;
-    }
-    const char* epName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
-    ASSERT_NOT_NULL(epName, amxd_status_unknown_error, ME, "NULL");
-    ASSERTI_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
     T_Radio* pRad = pSSID->RADIO_PARENT;
-    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
-    pEP = wld_ep_create(pRad, epName, pRad->Name);
+    if(pEP == NULL) {
+        const char* epName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+        ASSERT_NOT_NULL(epName, amxd_status_unknown_error, ME, "NULL");
+        ASSERTI_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
 
-    // init ep obj
-    object->priv = pEP;
-    pEP->pBus = object;
-    amxd_object_t* wpsinstance = amxd_object_get(object, "WPS");
-    pEP->wpsSessionInfo.intfObj = object;
-    wpsinstance->priv = &pEP->wpsSessionInfo;
+        ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
+        pEP = wld_endpoint_create(pRad, epName, pRad->Name, pRad->index, object);
 
-    SAH_TRACEZ_INFO(ME, "%s: add ep %s", pRad->Name, epName);
+
+
+        SAH_TRACEZ_INFO(ME, "%s: add ep %s", pRad->Name, epName);
+    }
+
+
     char* radObjPath = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
     if(radObjPath) {
         SAH_TRACEZ_INFO(ME, "%s: radObjPath %s", pRad->Name, radObjPath);
@@ -2128,7 +2022,6 @@ static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     pSsidObj->priv = pSSID;
     pSSID->pBus = pSsidObj;
 
-    s_endpointInit(pEP);
 
     /* Get defined paramater values from the default instance */
     syncData_SSID2OBJ(pSsidObj, pSSID, GET);

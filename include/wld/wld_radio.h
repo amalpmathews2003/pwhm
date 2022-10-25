@@ -236,4 +236,5 @@ void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t 
 #define wld_rad_forEachEp(epPtr, radPtr) \
     for(epPtr = wld_rad_firstEp(radPtr); epPtr; epPtr = wld_rad_nextEp(radPtr, epPtr))
 
+amxd_object_t* wld_rad_getObject(T_Radio* pRad);
 #endif /* __WLD_RADIO_H__ */
