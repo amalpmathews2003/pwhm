@@ -63,6 +63,7 @@
 #include "wld_th_mockVendor.h"
 #include "wld_th_radio.h"
 #include "wld_th_vap.h"
+#include "wld_th_ep.h"
 #include "swl/swl_common.h"
 #include "wld_eventing.h"
 #include "Plugin/wifiGen_vap.h"
@@ -80,6 +81,8 @@ static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wvap_destroy_hook = wld_th_vap_destroyHook,
     .mfn_wvap_enable = wld_th_vap_enable,
     .mfn_wvap_get_station_stats = wld_th_vap_getStationStats,
+
+    .mfn_wendpoint_stats = wld_th_ep_getStats,
 };
 
 struct wld_th_mockVendor {

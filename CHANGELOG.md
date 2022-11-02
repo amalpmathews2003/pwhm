@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.4.1 - 2022-11-02(13:42:02 +0000)
+
+### Other
+
+- prplMesh - Endpoint support - stats
+
 ## Release v2.4.0 - 2022-10-25(10:09:28 +0000)
 
 ### Other

@@ -108,3 +108,10 @@ amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name) {
     amxd_object_add_instance(&obj, profilesObj, name, 0, NULL);
     return obj;
 }
+
+swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP _UNUSED, T_EndPointStats* stats) {
+    stats->txbyte = 12991;
+    stats->txPackets = 65;
+    stats->assocCaps.currentSecurity = APMSI_WPA2_P;
+    return SWL_RC_OK;
+}

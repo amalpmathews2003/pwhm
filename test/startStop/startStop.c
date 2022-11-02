@@ -216,6 +216,21 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
 
     wl_th_vap_getVendorData(vap)->errorOnStaStats = false;
     wl_th_vap_getVendorData(vap)->errorOnStaStats = false;
+
+    T_EndPoint* ep = dm.bandList[0].ep;
+    amxc_var_init(&ret);
+    amxc_var_init(&args);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    assert_int_equal(amxd_object_invoke_function(ep->pBus, "getStats", &args, &ret), 0);
+    amxc_var_clean(&ret);
+    amxc_var_clean(&args);
+    ttb_object_t* epStats = ttb_object_getChildObject(ep->pBus, "Stats");
+    assert_non_null(epStats);
+    assert_int_equal(12991, swl_typeUInt32_fromObjectParamDef(epStats, "TxBytes", 0));
+    assert_int_equal(65, swl_typeUInt32_fromObjectParamDef(epStats, "TxPacketCount", 0));
+    char* epSecMode = swl_typeCharPtr_fromObjectParamDef(epStats, "SecurityModeEnabled", 0);
+    assert_string_equal("WPA2-Personal", epSecMode);
+    free(epSecMode);
 }
 
 int main(void) {

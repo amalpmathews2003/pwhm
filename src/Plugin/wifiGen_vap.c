@@ -380,39 +380,6 @@ int wifiGen_vap_updateApStats(T_Radio* rad, T_AccessPoint* vap) {
     return 0;
 }
 
-swl_rc_ne wifiGen_wendpoint_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
-    ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
-
-    swl_rc_ne ret;
-    if(wld_linuxIfStats_getInterfaceStats(pEP->Name, &pEP->pSSID->stats)) {
-        if(stats != NULL) {
-            stats->LastDataDownlinkRate = 0;
-            stats->LastDataUplinkRate = 0;
-            stats->SignalStrength = 0;
-            stats->noise = 0;
-            stats->SignalNoiseRatio = 0;
-            stats->RSSI = 0;
-            stats->Retransmissions = pEP->pSSID->stats.RetransCount;
-            stats->txbyte = pEP->pSSID->stats.BytesSent;
-            stats->txPackets = pEP->pSSID->stats.PacketsSent;
-            stats->txRetries = pEP->pSSID->stats.RetryCount;
-            stats->rxbyte = pEP->pSSID->stats.BytesReceived;
-            stats->rxPackets = pEP->pSSID->stats.PacketsReceived;
-            stats->rxRetries = 0;
-
-            stats->maxRxStream = 0;
-            stats->maxTxStream = 0;
-        }
-
-        ret = SWL_RC_OK;
-        SAH_TRACEZ_INFO(ME, "get stats for %s OK", pEP->Name);
-    } else {
-        ret = SWL_RC_ERROR;
-        SAH_TRACEZ_INFO(ME, "get stats for %s fail", pEP->Name);
-    }
-    return ret;
-}
-
 swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad _UNUSED, T_AccessPoint* pAP) {
     swl_rc_ne ret;
     if(wld_linuxIfStats_getInterfaceStats(pAP->alias, &pAP->pSSID->stats)) {

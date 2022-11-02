@@ -137,6 +137,11 @@ void test_validFta(_UNUSED void** state) {
     amxc_var_set_type(&varmap, AMXC_VAR_ID_HTABLE);
     wld_apRssiMon_getStaHistory(pAP, (unsigned char*) &bStationMac.bMac, &varmap);
     amxc_var_clean(&varmap);
+
+    T_EndPoint* pEP = dm.bandList[0].ep;
+    T_EndPointStats stats;
+    memset(&stats, 0, sizeof(T_EndPointStats));
+    assert_int_equal(pEP->pFA->mfn_wendpoint_stats(pEP, &stats), SWL_RC_OK);
 }
 
 int main(void) {

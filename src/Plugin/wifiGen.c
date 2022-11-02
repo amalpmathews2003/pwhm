@@ -136,7 +136,7 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_connect_ap = wifiGen_ep_connectAp;
     fta.mfn_wendpoint_disconnect = wifiGen_ep_disconnect;
     fta.mfn_wendpoint_bssid = wifiGen_ep_bssid;
-    fta.mfn_wendpoint_stats = wifiGen_wendpoint_stats;
+    fta.mfn_wendpoint_stats = wifiGen_ep_stats;
     fta.mfn_wvap_update_ap_stats = wifiGen_update_ap_stats;
     fta.mfn_wendpoint_status = wifiGen_ep_status;
     fta.mfn_wendpoint_wps_start = wifiGen_ep_wpsStart;

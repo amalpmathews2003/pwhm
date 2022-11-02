@@ -62,6 +62,7 @@
 #include "wld/wld.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_linuxIfUtils.h"
+#include "wld/wld_linuxIfStats.h"
 #include "wld/wld_radio.h"
 #include "wifiGen_wpaSupp.h"
 #include "wld/wld_wpaSupp_ep_api.h"
@@ -249,5 +250,65 @@ swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP) {
     return SWL_RC_OK;
 }
 
+/**
+ * @brief wifiGen_ep_stats
+ *
+ * get endpoint stats
+ *
+ * @param pEP: Pointer to the T_EndPoint
+ * @param stats: Pointer to the T_EndPointStats
+ * @return - SWL_RC_ERROR if pEP is NULL
+           - SWL_RC_ERROR if stats is NULL
+           - SWL_RC_OK, if success to get stats, SWL_RC_ERROR if not
+ */
+swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
+    ASSERT_NOT_NULL(stats, SWL_RC_ERROR, ME, "NULL");
+
+    // interface station dump
+    wld_nl80211_stationInfo_t stationInfo;
+    swl_macBin_t bssid;
+    memcpy(bssid.bMac, pEP->pSSID->BSSID, SWL_MAC_BIN_LEN);
+    if(wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), pEP->index, &bssid, &stationInfo) < SWL_RC_OK) {
+        SAH_TRACEZ_INFO(ME, "get stats for %s fail", pEP->Name);
+        return SWL_RC_ERROR;
+    }
+
+    int32_t noise = 0;
+    wld_rad_nl80211_getNoise(pEP->pRadio, &noise);
+    stats->SignalStrength = stationInfo.rssiDbm;
+    stats->noise = noise;
+    stats->SignalNoiseRatio = 0;
+    if((stats != 0) && (stats->SignalStrength != 0) && (stats->SignalStrength > stats->noise)) {
+        stats->SignalNoiseRatio = stats->SignalStrength - stats->noise;
+    }
+    stats->RSSI = convSignal2Quality(stats->SignalStrength);
+
+    stats->txbyte = stationInfo.txBytes;
+    stats->txPackets = stationInfo.txPackets;
+    stats->txRetries = stationInfo.txRetries;
+    stats->rxbyte = stationInfo.rxBytes;
+    stats->rxPackets = stationInfo.rxPackets;
+    stats->rxRetries = 0;
+    stats->Retransmissions = stationInfo.txRetries;
+    stats->operatingStandard = SWL_MAX(
+        swl_mcs_radStdFromMcsStd(stationInfo.txRate.mcsInfo.standard, pEP->pRadio->operatingFrequencyBand),
+        swl_mcs_radStdFromMcsStd(stationInfo.rxRate.mcsInfo.standard, pEP->pRadio->operatingFrequencyBand));
+    stats->LastDataUplinkRate = stationInfo.rxRate.bitrate;
+    stats->maxRxStream = (uint16_t) stationInfo.rxRate.mcsInfo.numberOfSpatialStream;
+    stats->LastDataDownlinkRate = stationInfo.txRate.bitrate;
+    stats->maxTxStream = (uint16_t) stationInfo.txRate.mcsInfo.numberOfSpatialStream;
+
+    stats->assocCaps.linkBandwidth = swl_chanspec_intToBw(
+        SWL_MAX(swl_chanspec_bwToInt(stationInfo.txRate.mcsInfo.bandwidth),
+                swl_chanspec_bwToInt(stationInfo.rxRate.mcsInfo.bandwidth)));
+    if(stationInfo.flags.authorized == SWL_TRL_TRUE) {
+        stats->assocCaps.currentSecurity = pEP->currentProfile->secModeEnabled;
+    }
+
+    SAH_TRACEZ_INFO(ME, "get stats for %s OK", pEP->Name);
+
+    return SWL_RC_OK;
+}
 
 

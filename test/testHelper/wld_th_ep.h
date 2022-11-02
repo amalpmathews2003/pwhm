@@ -79,5 +79,6 @@
 T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
 void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name);
 amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name);
+swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP, T_EndPointStats* stats);
 
 #endif
