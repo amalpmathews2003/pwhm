@@ -295,6 +295,11 @@ static bool s_doRadDisable(T_Radio* pRad) {
 
 static bool s_doRadEnable(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: Enable rad", pRad->Name);
+    if(pRad->isSTA) {
+        wld_rad_nl80211_setSta(pRad);
+    } else if(pRad->isAP) {
+        wld_rad_nl80211_setAp(pRad);
+    }
     wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, true);
     return true;
 }

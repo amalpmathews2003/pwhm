@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.4.2 - 2022-11-03(10:03:23 +0000)
+
+### Other
+
+- [prplMesh WHM] endpoint: setting the radio in managed (station) mode
+
 ## Release v2.4.1 - 2022-11-02(13:42:02 +0000)
 
 ### Other
