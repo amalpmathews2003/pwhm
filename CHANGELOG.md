@@ -1,3 +1,5 @@
+Change for the sake of change ... and testing JIRA integration ;-)
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
