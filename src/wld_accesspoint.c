@@ -1039,6 +1039,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         /** 'Enable' Enables or disables WPS functionality for this
          *  accesspoint. */
         amxd_object_set_int32_t(wpsObj, "Enable", pAP->WPS_Enable);
+        amxd_object_set_cstring_t(wpsObj, "Status", cstr_AP_status[pAP->WPS_Status]);
         amxd_object_set_cstring_t(wpsObj, "SelfPIN", g_wpsConst.DefaultPin);
 
         /** 'ConfigMethodsSupported' Comma-separated list of strings.

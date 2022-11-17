@@ -139,6 +139,7 @@ typedef struct {
 typedef struct {
     bool channelSwitch; // support Channel Switch Announcement
     bool survey;        // support Survey API
+    bool WMMCapability; // support WME
 } wld_nl80211_wiphySuppCmds;
 
 typedef struct {

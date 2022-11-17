@@ -193,14 +193,37 @@
                    "wps" = 200,
                    "wSupCfg" = 200
                    };
+    NetModel =  "nm_radio,nm_ssid";
+    nm_ssid = {
+        InstancePath = "WiFi.SSID.",
+        Tags = "ssid netdev",
+        Prefix = "ssid-"
+    };
+    nm_radio = {
+        InstancePath = "WiFi.Radio.",
+        Tags = "radio",
+        Prefix = "radio-"
+    };
+
+    import-dirs = [
+        ".",
+        "../src/",
+        "../src/Plugin/",
+        "${prefix}${plugin-dir}/${name}",
+        "${prefix}${plugin-dir}/modules",
+        "${prefix}/usr/lib/amx/${name}",
+        "${prefix}/usr/lib/amx/modules"
+    ];
 }
 
 import "${name}.so" as "${name}";
+import "mod-netmodel.so" as "mnm";
 
 #include "mod_sahtrace.odl";
 include "${definition_file}";
 
 %define {
+    entry-point mnm.mod_netmodel_main;
     entry-point wld.wld_main;
 }
 

@@ -631,15 +631,18 @@ static swl_rc_ne s_parseSuppCmds(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* p
     struct nlattr* nlCmd;
     int remCmd;
     nla_for_each_nested(nlCmd, tb[NL80211_ATTR_SUPPORTED_COMMANDS], remCmd) {
-        switch(nla_get_u32(nlCmd)) {
-        case NL80211_CMD_CHANNEL_SWITCH:
+
+        uint32_t nl80211Cmd = nla_get_u32(nlCmd);
+        if(nl80211Cmd == NL80211_CMD_UNSPEC) {
+            continue;
+        }
+
+        if(nl80211Cmd == NL80211_CMD_CHANNEL_SWITCH) {
             pWiphy->suppCmds.channelSwitch = true;
-            break;
-        case NL80211_CMD_GET_SURVEY:
+        } else if(nl80211Cmd == NL80211_CMD_GET_SURVEY) {
             pWiphy->suppCmds.survey = true;
-            break;
-        default:
-            break;
+        } else if(nl80211Cmd == NL80211_CMD_SET_QOS_MAP) {
+            pWiphy->suppCmds.WMMCapability = true;
         }
     }
     return SWL_RC_OK;
