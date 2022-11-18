@@ -2008,8 +2008,14 @@ define rrm_t{
 			*/
 			%read-only object NonAssociatedDevice[]{
 
-				on action del-inst call wld_rad_deleteNaSta_odf;
-				on action add-inst call wld_rad_addNaSta_ocf;
+				on action del-inst call wld_rad_staMon_deleteNaSta_odf;
+				on action add-inst call wld_rad_staMon_addNaSta_ocf;
+
+				/** A non-volatile handle used to reference this instance. Alias
+				*  provides a mechanism for an ACS to label this instance for
+				*  future reference. An initial unique value MUST be assigned
+				*  when the CPE creates an instance of this object.*/
+				%unique %key string Alias;
 
 				/**
 				 * [MACAddress] The MAC address of an monitored device.
@@ -2041,8 +2047,15 @@ define rrm_t{
 			 * @version 9.2
 			*/
 			%read-only object MonitorDevice[]{
-				on action del-inst call wld_rad_delete_nastaMonDev;
-				on action add-inst call wld_rad_add_nastaMonDev;
+				on action del-inst call wld_rad_staMon_deleteNastaMonDev_odf;
+				on action add-inst call wld_rad_staMon_addNastaMonDev_ocf;
+
+				/** A non-volatile handle used to reference this instance. Alias
+				*  provides a mechanism for an ACS to label this instance for
+				*  future reference. An initial unique value MUST be assigned
+				*  when the CPE creates an instance of this object.*/
+				%unique %key string Alias;
+
 				/**
 				 * [MACAddress] The MAC address of an monitored device.
 				 * @version 9.2

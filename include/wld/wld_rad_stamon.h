@@ -68,9 +68,9 @@ void wld_radStaMon_updateActive(T_Radio* pRad);
 void wld_radStaMon_init(T_Radio* pRad);
 void wld_radStaMon_destroy(T_Radio* pRad);
 void wld_radStaMon_debug(T_Radio* pRad, amxc_var_t* retMap);
-T_NonAssociatedDevice* wld_rad_get_NonAssociatedDevice(T_Radio* pRad, const char* macAddrStr);
-T_MonitorDevice* wld_rad_get_MonitorDevice(T_Radio* pRad, const char* macAddrStr);
+T_NonAssociatedDevice* wld_rad_staMon_getNonAssociatedDevice(T_Radio* pRad, const char* macAddrStr);
+T_MonitorDevice* wld_rad_staMon_getMonitorDevice(T_Radio* pRad, const char* macAddrStr);
 
-wld_nasta_t* wld_rad_getDevice(const char* macAddrStr, amxc_llist_t* devList);
+wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devList);
 
 #endif /* SRC_INCLUDE_WLD_WLD_RAD_STAMON_H_ */

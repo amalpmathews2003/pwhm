@@ -82,7 +82,7 @@
 /**
  * Retrieve a Device based on its string MACAddress in a given list.
  */
-wld_nasta_t* wld_rad_getDevice(const char* macAddrStr, amxc_llist_t* devList) {
+wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devList) {
     ASSERT_NOT_NULL(macAddrStr, NULL, ME, "NULL");
     ASSERTS_EQUALS(strlen(macAddrStr), ETHER_ADDR_STR_LEN - 1, NULL, ME, "Bad Format MacAddress");
 
@@ -101,30 +101,33 @@ wld_nasta_t* wld_rad_getDevice(const char* macAddrStr, amxc_llist_t* devList) {
     return NULL;
 }
 
-T_NonAssociatedDevice* wld_rad_get_NonAssociatedDevice(T_Radio* pRad, const char* macAddrStr) {
-    return wld_rad_getDevice(macAddrStr, &pRad->naStations);
+T_NonAssociatedDevice* wld_rad_staMon_getNonAssociatedDevice(T_Radio* pRad, const char* macAddrStr) {
+    return wld_rad_staMon_getDevice(macAddrStr, &pRad->naStations);
 }
 
-T_MonitorDevice* wld_rad_get_MonitorDevice(T_Radio* pRad, const char* macAddrStr) {
-    return wld_rad_getDevice(macAddrStr, &pRad->monitorDev);
+T_MonitorDevice* wld_rad_staMon_getMonitorDevice(T_Radio* pRad, const char* macAddrStr) {
+    return wld_rad_staMon_getDevice(macAddrStr, &pRad->monitorDev);
 }
 
-amxd_status_t wld_rad_add_device(T_Radio* pRad, amxd_object_t* instance_object, amxc_llist_t* devList) {
-    const char* macAddrStr = amxd_object_get_name(instance_object, AMXD_OBJECT_NAMED);
+amxd_status_t wld_rad_staMon_addDevice(T_Radio* pRad, amxd_object_t* instance_object, amxc_llist_t* devList, const amxc_var_t* const args) {
+    amxc_var_t* params = amxc_var_get_key(args, "parameters", AMXC_VAR_FLAG_DEFAULT);
+    const char* macAddrStr = GET_CHAR(params, "MACAddress");
     if(!macAddrStr || (strlen(macAddrStr) != ETHER_ADDR_STR_LEN - 1)) {
+        SAH_TRACEZ_ERROR(ME, "macAddrStr %s is not accepted! ", macAddrStr);
         return amxd_status_unknown_error;
     }
 
     wld_nasta_t* pMD = calloc(1, sizeof(wld_nasta_t));
     ASSERT_NOT_NULL(pMD, amxd_status_unknown_error, ME, "NULL");
-
     amxc_llist_it_init(&pMD->it);
     amxc_llist_append(devList, &pMD->it);
     instance_object->priv = pMD;
 
     convStr2Mac(pMD->MACAddress, ETHER_ADDR_LEN, (unsigned char*) macAddrStr, ETHER_ADDR_STR_LEN);
+
     pMD->SignalStrength = 0;
     pMD->TimeStamp = 0;
+
     pMD->obj = instance_object;
     pRad->pFA->mfn_wrad_add_stamon(pRad, pMD);
     return amxd_status_ok;
@@ -133,14 +136,34 @@ amxd_status_t wld_rad_add_device(T_Radio* pRad, amxd_object_t* instance_object, 
 /**
  *  Called when a new NonAssociatedDevice is added.
  */
-amxd_status_t _wld_rad_addNaSta_ocf(amxd_object_t* template_object, amxd_object_t* instance_object) {
-    amxd_object_t* obj_rad = amxd_object_get_parent(amxd_object_get_parent(template_object));
+amxd_status_t _wld_rad_staMon_addNaSta_ocf(amxd_object_t* object,
+                                           amxd_param_t* param,
+                                           amxd_action_t reason,
+                                           const amxc_var_t* const args,
+                                           amxc_var_t* const retval,
+                                           void* priv) {
+    amxd_status_t status = amxd_status_ok;
+    amxd_object_t* obj_rad = amxd_object_get_parent(amxd_object_get_parent(object));
     T_Radio* pRad = (T_Radio*) obj_rad->priv;
     ASSERT_NOT_NULL(pRad, true, ME, "NULL");
-    return wld_rad_add_device(pRad, instance_object, &pRad->naStations);
+    status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
+    amxd_object_t* instance = NULL;
+    if(status == amxd_status_ok) {
+        instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+        status = wld_rad_staMon_addDevice(pRad, instance, &pRad->naStations, args);
+    } else {
+        SAH_TRACEZ_ERROR(ME, " Nasta creation failed with error: %d", status);
+    }
+    return status;
 }
 
-amxd_status_t wld_rad_delete_device(amxd_object_t* templateObject, amxd_object_t* instanceObject) {
+amxd_status_t wld_rad_staMon_deleteDevice(amxd_object_t* instanceObject) {
+    ASSERT_NOT_NULL(instanceObject, amxd_status_unknown_error, ME, "NULL");
+    amxd_object_t* templateObject = amxd_object_get_parent(instanceObject);
+    if(amxd_object_get_type(instanceObject) != amxd_object_template) {
+        char* path = amxd_object_get_path(instanceObject, AMXD_OBJECT_NAMED);
+        SAH_TRACEZ_ERROR(ME, " Path %s is not a  template! ", path);
+    }
     wld_nasta_t* pMD = (wld_nasta_t*) instanceObject->priv;
     ASSERT_NOT_NULL(pMD, amxd_status_unknown_error, ME, "NULL");
 
@@ -160,30 +183,36 @@ amxd_status_t wld_rad_delete_device(amxd_object_t* templateObject, amxd_object_t
 /**
  *  Called when a NonAssociatedDevice is deleted
  */
-amxd_status_t _wld_rad_deleteNaSta_odf(amxd_object_t* template_object, amxd_object_t* instance_object) {
-    return wld_rad_delete_device(template_object, instance_object);
+amxd_status_t _wld_rad_staMon_deleteNaSta_odf(amxd_object_t* object,
+                                              amxd_param_t* param _UNUSED,
+                                              amxd_action_t reason _UNUSED,
+                                              const amxc_var_t* const args _UNUSED,
+                                              amxc_var_t* const retval _UNUSED,
+                                              void* priv _UNUSED) {
+    return wld_rad_staMon_deleteDevice(object);
 }
 
-amxd_status_t createNastaDevice(amxd_object_t* parent, const char* template, amxc_var_t* args, amxc_llist_t* devList) {
+amxd_status_t wld_rad_stamon_createDevice(amxd_object_t* parent, const char* template, amxc_var_t* args, amxc_llist_t* devList) {
     ASSERT_NOT_NULL(parent, amxd_status_unknown_error, ME, "NULL");
     ASSERT_NOT_NULL(template, amxd_status_unknown_error, ME, "NULL");
 
-    const char* macAddr = GET_CHAR(args, "macaddress");
-    ASSERT_NOT_NULL(macAddr, amxd_status_unknown_error, ME, "NULL");
-
-    SAH_TRACEZ_INFO(ME, "Creating MonitorDevice instance with macAddr %s", macAddr);
+    const char* macAddr = GET_CHAR(args, "MACAddress");
+    ASSERT_NOT_NULL(macAddr, amxd_status_unknown_error, ME, "MACAddress NULL");
+    SAH_TRACEZ_INFO(ME, "Creating Device instance with template %s and macAddr %s", template, macAddr);
 
     amxd_object_t* object;
-    wld_nasta_t* pMD = wld_rad_getDevice(macAddr, devList);
+    wld_nasta_t* pMD = wld_rad_staMon_getDevice(macAddr, devList);
     if(pMD != NULL) {
         SAH_TRACEZ_INFO(ME, "Found Device instance with macAddr %s", macAddr);
         object = pMD->obj;
     } else {
+
         amxd_object_t* templateObject = amxd_object_get(parent, template);
-        amxd_object_new_instance(&object, templateObject, macAddr, 0, NULL);
+        // the following is just starting the on action add-inst function
+        amxd_status_t status = amxd_object_add_instance(&object, templateObject, macAddr, 0, args);
         if(object == NULL) {
-            SAH_TRACEZ_ERROR(ME, "Failed to create new object");
-            return amxd_status_unknown_error;
+            SAH_TRACEZ_ERROR(ME, "Failed to create new object with error %d", status);
+            return status;
         }
         amxd_object_set_cstring_t(object, "MACAddress", macAddr);
     }
@@ -192,16 +221,16 @@ amxd_status_t createNastaDevice(amxd_object_t* parent, const char* template, amx
 }
 
 
-amxd_status_t deleteNastaDevice(amxc_var_t* args, amxc_llist_t* devList) {
-    const char* macAddr = GET_CHAR(args, "macaddress");
+amxd_status_t wld_rad_staMon_deleteNastaDevice(amxc_var_t* args, amxc_llist_t* devList) {
+    const char* macAddr = GET_CHAR(args, "MACAddress");
+    SAH_TRACEZ_INFO(ME, "DeleteNastaDevice with macaddress %s", macAddr);
     ASSERT_NOT_NULL(macAddr, amxd_status_unknown_error, ME, "NULL");
 
-    wld_nasta_t* pMD = wld_rad_getDevice(macAddr, devList);
+    wld_nasta_t* pMD = wld_rad_staMon_getDevice(macAddr, devList);
     if(!pMD) {
         SAH_TRACEZ_INFO(ME, "Invalid MACAddr delete");
         return amxd_status_ok;
     }
-
     amxd_object_delete(&pMD->obj);
 
     return amxd_status_ok;
@@ -220,7 +249,7 @@ amxd_status_t _createNonAssociatedDevice(amxd_object_t* obj,
     T_Radio* pRad = amxd_object_get_parent(obj)->priv;
     ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
 
-    amxd_status_t state = createNastaDevice(obj, "NonAssociatedDevice", args, &pRad->naStations);
+    amxd_status_t state = wld_rad_stamon_createDevice(obj, "NonAssociatedDevice", args, &pRad->naStations);
 
     SAH_TRACEZ_OUT(ME);
     return state;
@@ -238,16 +267,16 @@ amxd_status_t _deleteNonAssociatedDevice(amxd_object_t* obj,
     T_Radio* pRad = amxd_object_get_parent(obj)->priv;
     ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
 
-    amxd_status_t state = deleteNastaDevice(args, &pRad->naStations);
+    amxd_status_t state = wld_rad_staMon_deleteNastaDevice(args, &pRad->naStations);
 
     SAH_TRACEZ_OUT(ME);
     return state;
 }
 
-amxd_status_t getDeviceStats(amxd_object_t* obj,
-                             uint64_t call_id _UNUSED,
-                             amxc_var_t* retval,
-                             const char* path) {
+amxd_status_t wld_rad_staMon_getDeviceStats(amxd_object_t* obj,
+                                            uint64_t call_id _UNUSED,
+                                            amxc_var_t* retval,
+                                            const char* path) {
     SAH_TRACEZ_IN(ME);
 
     amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
@@ -297,7 +326,7 @@ amxd_status_t _getNaStationStats(amxd_object_t* obj,
                                  amxc_var_t* args _UNUSED,
                                  amxc_var_t* retval) {
     uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
-    return getDeviceStats(obj, call_id, retval, "NaStaMonitor.NonAssociatedDevice");
+    return wld_rad_staMon_getDeviceStats(obj, call_id, retval, "NaStaMonitor.NonAssociatedDevice");
 }
 
 amxd_status_t _clearNonAssociatedDevices(amxd_object_t* obj,
@@ -359,7 +388,7 @@ amxd_status_t _wld_radStaMon_setEnable_pwf(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
-static int32_t wld_mon_getStats(amxc_var_t* myList, T_RssiEventing* ev, amxc_llist_t* devList) {
+static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, amxc_llist_t* devList) {
     int nrUpdates = 0;
     amxc_llist_it_t* it;
     amxc_llist_for_each(it, devList) {
@@ -412,8 +441,8 @@ static void timeHandler(void* userdata) {
     amxc_var_init(&myList);
     amxc_var_set_type(&myList, AMXC_VAR_ID_LIST);
 
-    nrUpdates = wld_mon_getStats(&myList, ev, &pRad->monitorDev);
-    nrUpdates += wld_mon_getStats(&myList, ev, &pRad->naStations);
+    nrUpdates = wld_rad_staMon_getStats(&myList, ev, &pRad->monitorDev);
+    nrUpdates += wld_rad_staMon_getStats(&myList, ev, &pRad->naStations);
 
     // Only send update if necessary, don't want to continuously spam
     if(nrUpdates > 0) {
@@ -480,18 +509,35 @@ void wld_radStaMon_debug(T_Radio* pRad, amxc_var_t* retMap) {
     wld_mon_debug(&ev->monitor, retMap);
 }
 
-
-amxd_status_t _wld_rad_add_nastaMonDev(amxd_object_t* template_object, amxd_object_t* instance_object) {
-    amxd_object_t* obj_rad = amxd_object_get_parent(amxd_object_get_parent(template_object));
+amxd_status_t _wld_rad_staMon_addNastaMonDev_ocf(amxd_object_t* object,
+                                                 amxd_param_t* param,
+                                                 amxd_action_t reason,
+                                                 const amxc_var_t* const args,
+                                                 amxc_var_t* const retval,
+                                                 void* priv) {
+    amxd_status_t status = amxd_status_ok;
+    amxd_object_t* obj_rad = amxd_object_get_parent(amxd_object_get_parent(object));
     T_Radio* pRad = (T_Radio*) obj_rad->priv;
     ASSERT_NOT_NULL(pRad, true, ME, "NULL");
-    return wld_rad_add_device(pRad, instance_object, &pRad->monitorDev);
+    status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
+    amxd_object_t* instance = NULL;
+    if(status == amxd_status_ok) {
+        instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+        status = wld_rad_staMon_addDevice(pRad, instance, &pRad->monitorDev, args);
+    } else {
+        SAH_TRACEZ_ERROR(ME, "Creation of Nasta failed!");
+    }
+    return status;
 }
 
-amxd_status_t _wld_rad_delete_nastaMonDev(amxd_object_t* template_object, amxd_object_t* instance_object) {
-    return wld_rad_delete_device(template_object, instance_object);
+amxd_status_t _wld_rad_staMon_deleteNastaMonDev_odf(amxd_object_t* object,
+                                                    amxd_param_t* param _UNUSED,
+                                                    amxd_action_t reason _UNUSED,
+                                                    const amxc_var_t* const args _UNUSED,
+                                                    amxc_var_t* const retval _UNUSED,
+                                                    void* priv _UNUSED) {
+    return wld_rad_staMon_deleteDevice(object);
 }
-
 
 /**
  * Retrieve MonitorDevice statistics from WLAN driver
@@ -501,23 +547,21 @@ amxd_status_t _getMonitorDeviceStats(amxd_object_t* obj,
                                      amxc_var_t* args _UNUSED,
                                      amxc_var_t* retval) {
     uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
-    return getDeviceStats(obj, call_id, retval, "NaStaMonitor.MonitorDevice");
+    return wld_rad_staMon_getDeviceStats(obj, call_id, retval, "NaStaMonitor.MonitorDevice");
 }
-
 
 /**
  * This function create a new monitor device based on MACAddress.
  */
 amxd_status_t _createMonitorDevice(amxd_object_t* obj,
                                    amxd_function_t* func _UNUSED,
-                                   amxc_var_t* args _UNUSED,
+                                   amxc_var_t* args,
                                    amxc_var_t* retval _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
     T_Radio* pRad = amxd_object_get_parent(obj)->priv;
     ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
-
-    amxd_status_t state = createNastaDevice(obj, "MonitorDevice", args, &pRad->monitorDev);
+    amxd_status_t state = wld_rad_stamon_createDevice(obj, "MonitorDevice", args, &pRad->monitorDev);
 
     SAH_TRACEZ_OUT(ME);
     return state;
@@ -532,7 +576,7 @@ amxd_status_t _deleteMonitorDevice(amxd_object_t* obj,
     T_Radio* pRad = amxd_object_get_parent(obj)->priv;
     ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
 
-    amxd_status_t state = deleteNastaDevice(args, &pRad->monitorDev);
+    amxd_status_t state = wld_rad_staMon_deleteNastaDevice(args, &pRad->monitorDev);
 
     SAH_TRACEZ_OUT(ME);
     return state;

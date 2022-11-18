@@ -265,7 +265,7 @@ static void wld_notify_rssi_exist(T_Radio* pR, T_ProbeRequest* req, int rssi) {
     amxc_llist_prepend(&pR->llProbeRequests, &(req->it));
     req->timestamp = time(NULL);
 
-    wld_nasta_t* monDev = wld_rad_getDevice((const char*) req->macStr, &pR->monitorDev);
+    wld_nasta_t* monDev = wld_rad_staMon_getDevice((const char*) req->macStr, &pR->monitorDev);
 
     if(rssi != 0) {
         int old_rssi = req->rssi;
@@ -305,7 +305,7 @@ void wld_notify_rssi_new(T_Radio* pR, const unsigned char* macStr, int rssi) {
         free(del);
     }
 
-    wld_nasta_t* monDev = wld_rad_getDevice((const char*) macStr, &pR->monitorDev);
+    wld_nasta_t* monDev = wld_rad_staMon_getDevice((const char*) macStr, &pR->monitorDev);
 
     if(pR->probeRequestMode != WLD_PRB_NO_UPDATE) {
         if((rssi != 0)

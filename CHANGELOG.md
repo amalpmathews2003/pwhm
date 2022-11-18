@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.7.0 - 2022-11-18(16:41:25 +0000)
+
+### Other
+
+- - [prplMesh WHM] Adding NonAssociatedDevice through createNonAssociatedDevice() does not work
+
 ## Release v2.6.0 - 2022-11-18(11:22:07 +0000)
 
 ### Other
