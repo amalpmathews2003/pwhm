@@ -170,8 +170,8 @@ swl_rc_ne wld_nl80211_dumpWiphyInfo(wld_nl80211_wiphyInfo_t* pWiphyInfo, amxc_va
         amxc_var_add_key(uint32_t, bandMap, "nrSSMax", pWiphyInfo->bands[i].nSSMax);
         uint32_t j;
         amxc_var_t* mcsStdsList = amxc_var_add_key(amxc_llist_t, bandMap, "suppMcsStds", NULL);
-        for(j = 0; j < SWL_STANDARD_MAX; j++) {
-            if(pWiphyInfo->bands[i].mcsStds[j].standard == SWL_STANDARD_UNKNOWN) {
+        for(j = 0; j < SWL_MCS_STANDARD_MAX; j++) {
+            if(pWiphyInfo->bands[i].mcsStds[j].standard == SWL_MCS_STANDARD_UNKNOWN) {
                 continue;
             }
             if(swl_mcs_toChar(buffer, sizeof(buffer), &pWiphyInfo->bands[i].mcsStds[j]) > 0) {

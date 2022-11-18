@@ -8,9 +8,7 @@ REPORT_XMLS = $(subst %,%.xml,$(RUNTEST_SUBDIRS))
 unexport PKG_CONFIG_LIBDIR
 
 test: $(RUNTEST_SUBDIRS)
-runtest: test	
-	echo BLA
-	cp $(SUT_DIR)/src/Plugin/wld.so $(SUT_DIR)/src/wld.so
+runtest: test
 
 report: $(patsubst %,%.xml,$(REPORT_XMLS))
 

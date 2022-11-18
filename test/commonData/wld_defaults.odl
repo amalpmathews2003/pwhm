@@ -2,7 +2,7 @@
     object WiFi {
         object AutoCommitMgr {
             parameter Enable = true;
-            parameter DelayTime = 1000;
+            parameter DelayTime = 5;
         }
         object Radio {
             instance add ("wifi0") {
@@ -55,21 +55,25 @@
         object SSID {
             instance add ("wlan0") {
                 parameter LowerLayers = "WiFi.Radio.wifi0";
+                parameter MACAddress = "AA:BB:CC:DD:EE:01";
                 parameter SSID = "prplMesh-WHM-24g";
                 parameter Enable = 1;
             }
             instance add ("wlan1") {
                 parameter LowerLayers = "WiFi.Radio.wifi1";
+                parameter MACAddress = "AA:BB:CC:DD:EE:11";
                 parameter SSID = "prplMesh-WHM-5g";
                 parameter Enable = 1;
             }
             instance add ("sta0") {
                 parameter LowerLayers = "WiFi.Radio.wifi0";
+                parameter MACAddress = "AA:BB:CC:DD:EE:00";
                 parameter SSID = "prplMesh-WHM-5g";
                 parameter Enable = 1;
             }
             instance add ("sta1") {
                 parameter LowerLayers = "WiFi.Radio.wifi1";
+                parameter MACAddress = "AA:BB:CC:DD:EE:10";
                 parameter SSID = "prplMesh-WHM-5g";
                 parameter Enable = 1;
             }

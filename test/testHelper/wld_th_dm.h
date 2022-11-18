@@ -1,3 +1,20 @@
+/*
+ * wld_th_dm.h
+ *
+ *  Created on: 28 Sept 2022
+ *      Author: jefm
+ */
+
+/*
+ * Copyright (c) 2022 SoftAtHome
+ *
+ * The information and source code contained herein is the exclusive
+ * property of SoftAtHome and may not be disclosed, examined, or
+ * reproduced in whole or in part without explicit written authorization
+ * of the copyright owner.
+ *
+ */
+
 /****************************************************************************
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -78,20 +95,26 @@
 
 typedef struct {
     T_Radio* rad;
+    swl_timeMono_t radCreateTime;
     ttb_object_t* radObj;
     T_AccessPoint* vapPriv;
+    T_SSID* vapPrivSSID;
+    swl_timeMono_t vapCreateTime;
     ttb_object_t* vapPrivObj;
+    ttb_object_t* vapPrivSSIDObj;
     T_EndPoint* ep;
+    swl_timeMono_t epCreateTime;
     ttb_object_t* epObj;
 } wld_th_dmBand_t;
 
 typedef struct {
     wld_th_dmBand_t bandList[SWL_FREQ_BAND_MAX];
-    ttb_amx_t* ttbAmx;
+    ttb_amx_t* ttbBus;
     wld_th_mockVendor_t* mockVendor;
 } wld_th_dm_t;
 
 bool wld_th_dm_init(wld_th_dm_t* dm);
+bool wld_th_dm_initFreq(wld_th_dm_t* dm, swl_freqBand_m initMask);
 void wld_th_dm_destroy(wld_th_dm_t* dm);
 
 void wld_th_dm_handleEvents(wld_th_dm_t* dm);

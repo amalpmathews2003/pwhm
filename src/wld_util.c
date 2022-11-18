@@ -2799,3 +2799,16 @@ void wld_util_updateWmmStats(amxd_object_t* parentObj, const char* objectName, u
     WLD_SET_VAR_UINT64(object, "AC_VO", stats[WLD_AC_VO]);
     WLD_SET_VAR_UINT64(object, "AC_VI", stats[WLD_AC_VI]);
 }
+
+void wld_util_updateStatusChangeInfo(wld_status_changeInfo_t* info, wld_status_e status) {
+    ASSERT_NOT_NULL(info, , ME, "NULL");
+    swl_timeMono_t now = swl_time_getMonoSec();
+    if(info->lastStatusHistogramUpdate == 0) {
+        info->lastStatusHistogramUpdate = now;
+        return;
+    }
+
+    swl_timeMono_t timeDiff = now - info->lastStatusHistogramUpdate;
+    info->statusHistogram.data[status] += timeDiff;
+    info->lastStatusHistogramUpdate = now;
+}

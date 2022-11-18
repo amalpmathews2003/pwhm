@@ -110,6 +110,10 @@ amxd_status_t _checkWPSPIN(amxd_object_t* obj,
                            amxc_var_t* args,
                            amxc_var_t* ret);
 
+void _wld_radio_addInstance_ocf(const char* const sig_name _UNUSED,
+                                const amxc_var_t* const data,
+                                void* const priv _UNUSED);
+
 extern amxc_llist_t g_radios;
 
 /* DEBUG !!! FIX ME */
@@ -219,6 +223,7 @@ bool wld_rad_isAvailable(T_Radio* pRad);
 bool wld_rad_isActive(T_Radio* pRad);
 bool wld_rad_isUp(T_Radio* pRad);
 int wld_rad_getSocket(T_Radio* rad);
+void wld_rad_resetStatusHistogram(T_Radio* pRad);
 void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate);
 
 T_AccessPoint* wld_radio_getVapFromRole(T_Radio* pRad, wld_apRole_e role);

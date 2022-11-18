@@ -411,11 +411,11 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     pRad->guardInterval = RGI_AUTO;              /* Auto == 400NSec*/
     pRad->MCS = 10;
     if(pOperBand->radStdsMask & M_SWL_RADSTD_AX) {
-        pRad->MCS = pOperBand->mcsStds[SWL_STANDARD_HE].mcsIndex;
+        pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_HE].mcsIndex;
     } else if(pOperBand->radStdsMask & M_SWL_RADSTD_AC) {
-        pRad->MCS = pOperBand->mcsStds[SWL_STANDARD_VHT].mcsIndex;
+        pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_VHT].mcsIndex;
     } else if(pOperBand->radStdsMask & M_SWL_RADSTD_N) {
-        pRad->MCS = pOperBand->mcsStds[SWL_STANDARD_HT].mcsIndex;
+        pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_HT].mcsIndex;
     }
 
     swl_table_columnToArrayOffset(pRad->transmitPowerSupported, 64, &sPowerTable, 0, 0);

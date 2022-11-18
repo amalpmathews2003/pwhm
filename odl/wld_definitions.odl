@@ -590,6 +590,19 @@ define rrm_t{
 		 * Get the latest TX Power value for each antenna of the radio.
 		 */
 		void getLatestPower();
+		
+		/**
+		 * Returns a map containing this SSID's status histogram information.
+		 * The map contains:
+		 * LastStatusChange: Timestamp when status changed for last time.
+		 * NrStatusChanges: Number of times status changed.
+		 * StatusHistogram: String of comma separated values, containing seconds how long interface has spent in that state
+		 * LastStatusHistogramUpdate
+		 * LastEnableTime: The timestamp of the last time that radio was set to enable.
+		 * LastDisableTime: The timestamp of the last time that radio was set to disable.
+		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
+		 */
+		void getStatusHistogram();
 
 		/**
 		* The current operational state of the radio (see [Section 4.2.2/TR-181i2]).
@@ -626,6 +639,13 @@ define rrm_t{
 			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
 			default "Down";
 		}
+		
+				
+		/**
+		 * Timestamp of the last time status changed.
+		 */
+		read-only datetime LastStatusChangeTimeStamp;
+		
 		/** <p>SoftAtHome parameter. This is used for configuring a
 		 *  MAC address on thr RADIO interface. It's important to know
 		 *  that it can only be used before the VAP's are created! </p>*/
@@ -2523,6 +2543,20 @@ define rrm_t{
 		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
 		*/
 		bool CommitSSID(%in uint32 cm);
+		
+		
+		/**
+		 * Returns a map containing this SSID's status histogram information.
+		 * The map contains:
+		 * LastStatusChange: Timestamp when status changed for last time.
+		 * NrStatusChanges: Number of times status changed.
+		 * StatusHistogram: String of comma separated values, containing seconds how long interface has spent in that state
+		 * LastStatusHistogramUpdate
+		 * LastEnableTime: The timestamp of the last time that radio was set to enable.
+		 * LastDisableTime: The timestamp of the last time that radio was set to disable.
+		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
+		 */
+		void getStatusHistogram();
 
 		/**
 		 * <p>The current operational state of the SSID entry (see
@@ -2558,6 +2592,12 @@ define rrm_t{
 			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
 			default "Down";
 		}
+		
+		/**
+		 * Timestamp of the last time status changed.
+		 */
+		read-only datetime LastStatusChangeTimeStamp;
+		
 		/**
 		 * <p>A non-volatile handle used to reference this instance.
 		 * Alias provides a mechanism for an ACS to label this
@@ -2784,6 +2824,7 @@ define rrm_t{
 		/**
 		 * Enables or disables the SSID entry.  */
 		%persistent bool Enable{
+			on action write call wld_ssid_setEnable_pwf;
 			default false;
 		}
 	} /* object SSID */
@@ -5525,9 +5566,6 @@ define rrm_t{
 %populate {
 	on event "dm:instance-added" call wld_radio_addInstance_ocf
 		filter 'path == "WiFi.Radio."';
-	on event "dm:object-changed" call wld_ssid_setEnable_ehf
-		filter 'path matches "WiFi\.SSID\.[a-zA-Z0-9_-]\." && 
-				contains("parameters.Enable")';
 }
 
 /** @location sah_lib_wld /wld.odl */

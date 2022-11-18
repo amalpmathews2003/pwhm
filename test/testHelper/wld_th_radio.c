@@ -72,7 +72,11 @@
 
 #include "wld_th_radio.h"
 #include "wld.h"
+#include "wld_util.h"
 #include "wld_th_mockVendor.h"
+#include "test-toolbox/ttb_mockTimer.h"
+#include "wld_th_vap.h"
+#include "wld_th_ep.h"
 #include "wld_radio.h"
 #include "swl/swl_common_chanspec.h"
 
@@ -117,6 +121,7 @@ void s_readChanInfo(T_Radio* pRad) {
 
 /** Implements #PFN_WRAD_SUPPORTS */
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize _UNUSED) {
+    assert_non_null(rad);
     rad->driverCfg.skipSocketIO = true;
 
     // In wld's radio cration, this callback is called, after which it syncs to PCB,
@@ -146,13 +151,18 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
     wld_channel_init_channels(rad);
     s_readChanInfo(rad);
     wld_rad_write_possible_channels(rad);
+    swl_typeUInt32_toObjectParam(rad->pBus, "Channel", rad->channel);
 
-    printf("%s: run supports\n", rad->Name);
 
+    rad->detailedState = CM_RAD_DOWN;
+    wld_rad_updateState(rad, false);
     return 0;
 }
 
 T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name) {
+    assert_non_null(bus_ctx);
+    assert_non_null(mockVendor);
+    assert_non_null(name);
 
     int idx = s_getNextIndex();
 
@@ -174,20 +184,43 @@ T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t*
 }
 
 int wld_th_wrad_fsm(T_Radio* rad) {
+    assert_non_null(rad);
     printf("%s: do commit\n", rad->Name);
+    rad->detailedState = rad->enable ? CM_RAD_UP : CM_RAD_DOWN;
+
+    clearAllBitsLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW);
+
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, rad) {
+        wld_th_vap_doFsmClean(pAP);
+    }
+
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, rad) {
+        wld_th_ep_doFsmClean(pEP);
+    }
+
+    wld_rad_updateState(rad, true);
     return 0;
 }
 
 int wld_th_rad_enable(T_Radio* rad, int val, int set) {
-    int ret;
-    printf("RAD: %d --> %d -  %d", rad->enable, val, set);
+    assert_non_null(rad);
+
+    printf("RAD: %d --> %d -  %d\n", rad->enable, val, set);
     if(set & SET) {
         rad->enable = val;
-        ret = val;
-    } else {
-        ret = rad->enable;
     }
-    return ret;
+    setBitLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW, 1);
+    return rad->enable;
+}
+
+void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit) {
+    assert_non_null(rad);
+    swl_typeUInt32_toObjectParam(rad->pBus, "Enable", enable);
+    if(commit) {
+        ttb_mockTimer_goToFutureMs(10);
+    }
 }
 
 

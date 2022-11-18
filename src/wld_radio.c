@@ -109,15 +109,18 @@
     }
 
 const char* Rad_SupStatus[] = {"Error", "LowerLayerDown", "NotPresent", "Dormant", "Unknown", "Down", "Up", 0};
+const char* wld_status_str[] = {"Error", "LowerLayerDown", "NotPresent", "Dormant", "Unknown", "Down", "Up", 0};
+
 const char** Rad_SupFreqBands = swl_freqBandExt_str;
+
 const char** Rad_SupBW = swl_bandwidth_str;
 
 const char* Rad_RadarZones[RADARZONES_MAX] = {"NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"};
 
-const char* Rad_SupCExt[] = {"Auto", "AboveControlChannel", "BelowControlChannel", 0};
+const char* Rad_SupCExt[] = {"Auto", "AboveControlChannel", "BelowControlChannel", "None", 0};
 const char* Rad_SupGI[] = {"Auto", "400nsec", "800nsec", 0};
 
-const char* wld_rad_autoBwSelectMode_str[] = {"MaxAvailable", "MaxCleared", "Default"};
+const char* wld_rad_autoBwSelectMode_str[] = {"MaxAvailable", "MaxCleared", "Default", 0};
 
 const char* cstr_chanmgt_rad_state[CM_RAD_MAX + 1] = {
     "Unknown",
@@ -174,6 +177,9 @@ static const char* Rad_RIFS_MODE[RIFS_MODE_MAX] = {"Default", "Auto", "Off", "On
 
 amxc_llist_t g_radios = { NULL, NULL };
 
+SWL_ARRAY_TYPE_C(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX, true, true);
+SWL_NTT_C(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO);
+
 const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
     "0",
     "0",
@@ -211,6 +217,7 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
     /* General initializations */
     pRadioObj->priv = pRad;
     pRad->pBus = pRadioObj;
+
 
 
     amxp_timer_new(&pRad->updateTimer, s_doSyncUpdate, pRad);
@@ -263,19 +270,20 @@ amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* wifiRad,
     T_Radio* pR = (T_Radio*) wifiRad->priv;
     ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
     ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "INVALID");
-
     SAH_TRACEZ_IN(ME);
     bool flag = amxc_var_dyncast(bool, args);
 
     SAH_TRACEZ_INFO(ME, "set Enable - %s: %d --> %d", pR->Name, pR->enable, flag);
     pR->pFA->mfn_wrad_enable(pR, flag, SET | DIRECT);   // Fix Bug 20729
 
-    if(flag) {
-        wld_rad_doCommitIfUnblocked(pR);
-    } else {
-        wld_autoCommitMgr_notifyRadEdit(pR);
-    }
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
+    if(flag) {
+        pR->changeInfo.nrEnables++;
+        pR->changeInfo.lastEnableTime = swl_time_getMonoSec();
+    } else {
+        pR->changeInfo.lastDisableTime = swl_time_getMonoSec();
+    }
 
     SAH_TRACEZ_OUT(ME);
     return rv;
@@ -760,7 +768,7 @@ amxd_status_t _wld_rad_setAutoBandwidthSelectMode_pwf(amxd_object_t* object _UNU
 
     const char* TCBW = amxc_var_constcast(cstring_t, args);
     SAH_TRACEZ_INFO(ME, "set AutoBandwidthSelectMode %p", TCBW);
-    pRad->autoBwSelectMode = swl_conv_charToEnum(TCBW, wld_rad_autoBwSelectMode_str, BW_SELECT_MODE_DEFAULT, BW_SELECT_MODE_MAX);
+    pRad->autoBwSelectMode = swl_conv_charToEnum(TCBW, wld_rad_autoBwSelectMode_str, BW_SELECT_MODE_MAX, BW_SELECT_MODE_DEFAULT);
 
     SAH_TRACEZ_OUT(ME);
     return rv;
@@ -2220,7 +2228,6 @@ T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn) {
     char FullPath[128];
     amxd_object_t* radio;
     amxd_object_t* inst;
-
     if(pobj) {
         radio = amxd_object_get_child(pobj, "Radio");
         inst = amxd_object_get_instance(radio, rn, 0);
@@ -2321,7 +2328,9 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         swl_conv_maskToChar(TBuf, sizeof(TBuf), pR->bfCapsSupported[COM_DIR_RECEIVE], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
         amxd_object_set_cstring_t(object, "RxBeamformingCapsAvailable", TBuf);
 
+
         amxd_object_set_cstring_t(object, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));
+
 
         /* 'OperatingStandards' Comma-separated list of strings.
          *  Each list item MUST be a member of the list reported by
@@ -2932,7 +2941,7 @@ T_DEBUG_OBJ_STR VerifyAccessPoint[] = {
     {TPH_SEL_SSID, "SWAP POINTER TO SSID", TPH_SEL_SSID, 0},
     {TPH_STR, "BSSID", TPH_BSTR, offsetof(T_SSID, BSSID)},
     {TPH_STR, "SSID", TPH_STR, offsetof(T_SSID, SSID)},
-    {TPH_BOOL, "Enable", TPH_INT32, offsetof(T_SSID, enable)},
+    {TPH_BOOL, "Enable", TPH_BOOL, offsetof(T_SSID, enable)},
     {TPH_STR, "Status", TPH_INT32, offsetof(T_SSID, status)},
     {0, NULL, 0, 0},
 };
@@ -4477,6 +4486,11 @@ int wld_rad_getSocket(T_Radio* rad) {
     return rad->wlRadio_SK;
 }
 
+void wld_rad_resetStatusHistogram(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    memset(&pRad->changeInfo.statusHistogram.data, 0, sizeof(pRad->changeInfo.statusHistogram.data));
+}
+
 
 void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
     ASSERTI_NOT_NULL(pRad, , ME, "Radio null");
@@ -4484,6 +4498,8 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
         SAH_TRACEZ_ERROR(ME, "Detailed rad state wrong %s : %u, entering error", pRad->Name, pRad->detailedState);
         pRad->detailedState = CM_RAD_ERROR;
     }
+    wld_util_updateStatusChangeInfo(&pRad->changeInfo, pRad->status);
+
     int curState = pRad->pFA->mfn_wrad_radio_status(pRad);
     wld_status_e oldStatus = pRad->status;
 
@@ -4517,12 +4533,24 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
     if((event.oldDetailedState != pRad->detailedState) || (event.oldStatus != pRad->status)) {
         //send radio status change event to all subscribers
         wld_event_trigger_callback(gWld_queue_rad_onStatusChange, &event);
-        pRad->lastStatusChange = wld_util_time_monotonic_sec();
-        SAH_TRACEZ_INFO(ME, "%s update status from %u/%u to %u/%u at %u", pRad->Name,
+        SAH_TRACEZ_INFO(ME, "%s update status from %u/%u to %u/%u at %s", pRad->Name,
                         event.oldStatus, event.oldDetailedState,
                         pRad->status, pRad->detailedState,
-                        (uint32_t) pRad->lastStatusChange);
+                        swl_typeTimeMono_toBuf32(pRad->changeInfo.lastStatusChange).buf);
+    }
 
+    if(oldStatus != pRad->status) {
+        pRad->changeInfo.lastStatusChange = swl_time_getMonoSec();
+        pRad->changeInfo.nrStatusChanges++;
+
+        if(pRad->pBus != NULL) {
+            amxd_trans_t trans;
+            ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
+            amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
+            swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pRad->changeInfo.lastStatusChange);
+            wld_dm_transaction_apply(&trans, get_wld_plugin_dm());
+            ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+        }
     }
 
     if((oldStatus == pRad->status) && !forceVapUpdate) {
@@ -4530,16 +4558,10 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
         return;
     }
 
-
     if((pRad->status == RST_DOWN) && pRad->obssCoexistenceActive) {
         SAH_TRACEZ_INFO(ME, "%s : disabling obssCoexistence", pRad->Name);
         pRad->obssCoexistenceActive = false;
     }
-
-    amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
-    amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
 
     //Update VAPs
 
@@ -4619,6 +4641,24 @@ void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t 
 
 amxd_object_t* wld_rad_getObject(T_Radio* pRad) {
     return pRad->pBus;
+}
+
+
+
+amxd_status_t _Radio_getStatusHistogram(amxd_object_t* object,
+                                        amxd_function_t* func _UNUSED,
+                                        amxc_var_t* args _UNUSED,
+                                        amxc_var_t* retval) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pRad = object->priv;
+    amxc_var_init(retval);
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    wld_util_updateStatusChangeInfo(&pRad->changeInfo, pRad->status);
+    swl_type_toVariant((swl_type_t*) &gtWld_status_changeInfo, retval, &pRad->changeInfo);
+
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
 }
 
 amxd_status_t _Radio_debug(amxd_object_t* object,

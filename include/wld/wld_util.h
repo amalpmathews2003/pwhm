@@ -393,6 +393,7 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
 void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, int md5_size);
 
 wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_mfpConfig_e mfpConfig);
+void wld_util_updateStatusChangeInfo(wld_status_changeInfo_t* info, wld_status_e status);
 
 /**
  * @brief extract object (or instance) name from the object path

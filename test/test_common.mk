@@ -11,6 +11,13 @@
 #   * OBJECTS: the objects required to build these programs
 #   * UNITXMLS: the unit.xml outputs expected to result from these programs
 
+ifneq ($(AUTO_TEST_FILE),)
+BINARIES = test.$(AUTO_TEST_FILE)_test
+
+test.$(AUTO_TEST_FILE)_test: test_$(AUTO_TEST_FILE).o $(SUT_OBJECTS) $(COMMON_OBJECTS)
+	$(CC) -o $(@) $^ $(LDFLAGS)
+endif
+
 VALGRIND?=valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=10
 UT_SETTINGS=CMOCKA_MESSAGE_OUTPUT=XML
 LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib:$(SUT_DIR)/src/Plugin

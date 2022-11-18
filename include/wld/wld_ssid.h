@@ -65,19 +65,11 @@
 
 #include "wld.h"
 
+void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
 int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
 void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
 
-amxd_status_t _SSID_VerifySSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
-amxd_status_t _SSID_CommitSSID(amxd_object_t* object,
-                               amxd_function_t* func,
-                               amxc_var_t* args,
-                               amxc_var_t* retval);
-
 void wld_ssid_cleanAll();
+void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
 
 #endif /* __WLD_SSID_H__ */

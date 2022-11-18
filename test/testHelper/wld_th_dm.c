@@ -67,9 +67,11 @@
 #include "wld_radio.h"
 #include "wld_accesspoint.h"
 #include "wld_assocdev.h"
+#include "wld_ssid.h"
 #include "swl/fileOps/swl_fileUtils.h"
 #include "test-toolbox/ttb_amx.h"
 #include "test-toolbox/ttb_mockTimer.h"
+#include "test-toolbox/ttb_mockClock.h"
 #include "../testHelper/wld_th_mockVendor.h"
 #include "../testHelper/wld_th_radio.h"
 #include "../testHelper/wld_th_vap.h"
@@ -80,23 +82,31 @@
 #include "wld_util.h"
 #include "Plugin/wld_plugin.h"
 
+
+bool wld_th_dm_initFreq(wld_th_dm_t* dm, swl_freqBand_m initMask _UNUSED) {
+    assert_non_null(dm);
+    return wld_th_dm_init(dm);
+}
+
 bool wld_th_dm_init(wld_th_dm_t* dm) {
-    dm->ttbAmx = ttb_amx_init();
+    assert_non_null(dm);
+    ttb_mockClock_initDefault();
+    dm->ttbBus = ttb_amx_init();
 
-    amxc_var_t* lib_dirs = amxo_parser_get_config(&dm->ttbAmx->parser, "import-dirs");
-    amxc_var_add(cstring_t, lib_dirs, "../src/");
-    amxc_var_add(cstring_t, lib_dirs, "../src/Plugin/");
+    amxc_var_t* lib_dirs = amxo_parser_get_config(&dm->ttbBus->parser, "import-dirs");
+    amxc_var_add(cstring_t, lib_dirs, "../../src/");
+    amxc_var_add(cstring_t, lib_dirs, "../../src/Plugin/");
 
-    amxc_var_t* incDirs = amxo_parser_get_config(&dm->ttbAmx->parser, "include-dirs");
+    amxc_var_t* incDirs = amxo_parser_get_config(&dm->ttbBus->parser, "include-dirs");
     amxc_var_add(cstring_t, incDirs, "../commonData");
-    amxc_var_dump(&dm->ttbAmx->parser.config, STDOUT_FILENO);
+    amxc_var_add(cstring_t, incDirs, "../../odl/");
+    amxc_var_dump(&dm->ttbBus->parser.config, STDOUT_FILENO);
 
     setenv("WAN_ADDR", "AA:BB:CC:DD:EE:FF", 0);
 
-    ttb_amx_loadDm(dm->ttbAmx, "../../odl/wld.odl", "WiFi");
+    ttb_amx_loadDm(dm->ttbBus, "../../test/commonData/wld.odl", "WiFi");
 
-
-    assert_int_equal(_wld_main(AMXO_START, &dm->ttbAmx->dm, &dm->ttbAmx->parser), 0);
+    assert_int_equal(_wld_main(AMXO_START, &dm->ttbBus->dm, &dm->ttbBus->parser), 0);
 
     dm->mockVendor = wld_th_mockVendor_create("MockVendor");
     wld_th_mockVendor_register(dm->mockVendor);
@@ -104,7 +114,7 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
     amxc_var_t ret;
     amxc_var_init(&ret);
 
-    assert_int_equal(amxb_get(dm->ttbAmx->bus_ctx, "WiFi.", INT32_MAX, &ret, 5), AMXB_STATUS_OK);
+    assert_int_equal(amxb_get(dm->ttbBus->bus_ctx, "WiFi.", INT32_MAX, &ret, 5), AMXB_STATUS_OK);
     amxc_var_clean(&ret);
 
     char* radNames[2] = {"wifi0", "wifi1"};
@@ -114,14 +124,13 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 
     for(size_t i = 0; i < SWL_FREQ_BAND_MAX && i < SWL_ARRAY_SIZE(radNames); i++) {
         wld_th_dmBand_t* band = &dm->bandList[i];
-        band->rad = wld_th_radio_create(dm->ttbAmx->bus_ctx, dm->mockVendor, radNames[i]);
+        band->rad = wld_th_radio_create(dm->ttbBus->bus_ctx, dm->mockVendor, radNames[i]);
         assert_non_null(band->rad);
     }
-    //amxd_object_t* root_obj = amxd_dm_get_root(&dm->ttbAmx->dm);
 
-    //amxo_parser_parse_file(&dm->ttbAmx->parser, "../commonData/wld_testDefaults.odl", root_obj);
+    swl_timeMono_t createTime = swl_time_getMonoSec();
 
-    ttb_mockTimer_goToFutureMs(1000);
+    ttb_mockTimer_goToFutureMs(10000);
 
     for(size_t i = 0; i < SWL_FREQ_BAND_MAX && i < SWL_ARRAY_SIZE(radNames); i++) {
         printf("** INIT BAND %s, rad %s, vap %s, sta %s\n", swl_freqBand_str[i],
@@ -129,6 +138,7 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
         wld_th_dmBand_t* band = &dm->bandList[i];
         assert_true(band->rad->enable);
         assert_int_equal(band->rad->channel, channels[i]);
+
 
         band->radObj = band->rad->pBus;
         assert_non_null(band->radObj);
@@ -140,7 +150,17 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
         band->vapPrivObj = band->vapPriv->pBus;
         assert_non_null(band->vapPrivObj);
 
+        band->vapPrivSSID = band->vapPriv->pSSID;
+        band->vapPrivSSIDObj = band->vapPrivSSID->pBus;
+        //assert_true(band->vapPrivSSID->enable);
+
         band->ep = wld_getEndpointByAlias(epNames[i]);
+
+
+        band->radCreateTime = createTime;
+        band->epCreateTime = createTime;
+        band->vapCreateTime = createTime;
+
         assert_non_null(band->ep);
 
         assert_int_equal(amxc_llist_size(&band->ep->llProfiles), 1);
@@ -153,13 +173,13 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 }
 
 void wld_th_dm_destroy(wld_th_dm_t* dm) {
-
-    assert_int_equal(_wld_main(AMXO_STOP, &dm->ttbAmx->dm, &dm->ttbAmx->parser), 0);
+    assert_non_null(dm);
+    assert_int_equal(_wld_main(AMXO_STOP, &dm->ttbBus->dm, &dm->ttbBus->parser), 0);
     wld_mockVendor_destroy(dm->mockVendor);
 
-    ttb_amx_cleanup(dm->ttbAmx);
+    ttb_amx_cleanup(dm->ttbBus);
 }
 
 void wld_th_dm_handleEvents(wld_th_dm_t* dm _UNUSED) {
-
+    assert_non_null(dm);
 }

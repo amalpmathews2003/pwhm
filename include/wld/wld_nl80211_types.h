@@ -133,7 +133,7 @@ typedef struct {
     uint32_t nChans;                                         //number of available channels
     wld_nl80211_chanDesc_t chans[WLD_MAX_POSSIBLE_CHANNELS]; //array of available channels
     wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];           //which beamforming capabilities are available
-    swl_mcs_t mcsStds[SWL_STANDARD_MAX];                     //support mcs standards (each indexed on its relative enum)
+    swl_mcs_t mcsStds[SWL_MCS_STANDARD_MAX];                 //support mcs standards (each indexed on its relative enum)
 } wld_nl80211_bandDef_t;
 
 typedef struct {

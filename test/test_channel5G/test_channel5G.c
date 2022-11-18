@@ -72,12 +72,12 @@
 
 static wld_th_dm_t dm;
 
-static int setup_suite(void** state _UNUSED) {
-    assert_true(wld_th_dm_init(&dm));
+static int s_setupSuite(void** state _UNUSED) {
+    assert_true(wld_th_dm_initFreq(&dm, M_SWL_FREQ_BAND_5GHZ));
     return 0;
 }
 
-static int teardown_suite(void** state _UNUSED) {
+static int s_teardownSuite(void** state _UNUSED) {
     wld_th_dm_destroy(&dm);
     return 0;
 }
@@ -180,6 +180,6 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_startstop),
     };
-    return cmocka_run_group_tests(tests, setup_suite, teardown_suite);
+    return cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
 }
 

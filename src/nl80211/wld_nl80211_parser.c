@@ -232,10 +232,10 @@ swl_rc_ne s_parseHtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
     ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_HT_CAPA], SWL_RC_OK, ME, "no ht cap");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_HT_MCS_SET], SWL_RC_OK, ME, "no ht mcs set");
-    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_STANDARD_HT];
+    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_HT];
     htCapabilityInfo_t htCapInfo;
     NLA_GET_DATA(&htCapInfo, tbBand[NL80211_BAND_ATTR_HT_CAPA], sizeof(htCapInfo));
-    pMcsStd->standard = SWL_STANDARD_HT;
+    pMcsStd->standard = SWL_MCS_STANDARD_HT;
     //HT20 / HT40
     pMcsStd->bandwidth = SWL_BW_20MHZ;
     if(htCapInfo.support_ch_width_set) {
@@ -285,10 +285,10 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_VHT_CAPA], SWL_RC_OK, ME, "no vht cap");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_VHT_MCS_SET], SWL_RC_OK, ME, "no vht mcs set");
     ASSERTW_NOT_EQUALS(pBand->freqBand, SWL_FREQ_BAND_2_4GHZ, SWL_RC_OK, ME, "invalid vht cap in 2.4g band");
-    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_STANDARD_VHT];
+    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_VHT];
     vhtCapabilityInfo_t vhtCapInfo;
     NLA_GET_DATA(&vhtCapInfo, tbBand[NL80211_BAND_ATTR_VHT_CAPA], sizeof(vhtCapInfo));
-    pMcsStd->standard = SWL_STANDARD_VHT;
+    pMcsStd->standard = SWL_MCS_STANDARD_VHT;
     //Supported Channel Width
     pMcsStd->bandwidth = SWL_BW_80MHZ;
     pBand->chanWidthMask |= (M_SWL_BW_40MHZ | M_SWL_BW_80MHZ);
@@ -370,7 +370,7 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
     ASSERTS_NOT_NULL(tbBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_IFTYPE_DATA], SWL_RC_OK, ME, "no iftype data");
-    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_STANDARD_HE];
+    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_HE];
     struct nlattr* nlIfType;
     int rem;
     int bandIftypeAttrMax = NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET;
@@ -389,7 +389,7 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         NLA_GET_DATA(&htPhyCapInfo, heCapPhyAttr, sizeof(htPhyCapInfo));
         uint64_t phyCap[2] = { 0 };
         NLA_GET_DATA(phyCap, heCapPhyAttr, 11);
-        pMcsStd->standard = SWL_STANDARD_HE;
+        pMcsStd->standard = SWL_MCS_STANDARD_HE;
         pMcsStd->bandwidth = SWL_BW_20MHZ;
         if(pBand->freqBand == SWL_FREQ_BAND_2_4GHZ) {
             if(htPhyCapInfo.supp_40mhz_in_2_4ghz) {
@@ -450,7 +450,7 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
         pBand->radStdsMask |= M_SWL_RADSTD_AX;
     }
-    ASSERTS_EQUALS(pMcsStd->standard, SWL_STANDARD_HE, SWL_RC_OK, ME, "Missing HE caps");
+    ASSERTS_EQUALS(pMcsStd->standard, SWL_MCS_STANDARD_HE, SWL_RC_OK, ME, "Missing HE caps");
     return SWL_RC_DONE;
 }
 
@@ -734,18 +734,18 @@ static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wl
     swl_mcs_clean(&pRate->mcsInfo);
     pRate->mcsInfo.numberOfSpatialStream = 1;
     // legacy: to allow default stats for a/b/g std and passive rx devices
-    pRate->mcsInfo.standard = SWL_STANDARD_LEGACY;
+    pRate->mcsInfo.standard = SWL_MCS_STANDARD_LEGACY;
 
     if(pRinfo[NL80211_RATE_INFO_HE_MCS]) {
         pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_MCS]);
-        pRate->mcsInfo.standard = SWL_STANDARD_HE;
+        pRate->mcsInfo.standard = SWL_MCS_STANDARD_HE;
         if(pRinfo[NL80211_RATE_INFO_HE_NSS]) {
             pRate->mcsInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_NSS]);
         }
         pRate->mcsInfo.guardInterval = SWL_SGI_3200;
     } else if(pRinfo[NL80211_RATE_INFO_VHT_MCS]) {
         pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_VHT_MCS]);
-        pRate->mcsInfo.standard = SWL_STANDARD_VHT;
+        pRate->mcsInfo.standard = SWL_MCS_STANDARD_VHT;
 
         if(pRinfo[NL80211_RATE_INFO_VHT_NSS]) {
             pRate->mcsInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_VHT_NSS]);
@@ -753,7 +753,7 @@ static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wl
         pRate->mcsInfo.guardInterval = SWL_SGI_800;
     } else if(pRinfo[NL80211_RATE_INFO_MCS]) {
         pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_MCS]);
-        pRate->mcsInfo.standard = SWL_STANDARD_HT;
+        pRate->mcsInfo.standard = SWL_MCS_STANDARD_HT;
         pRate->mcsInfo.numberOfSpatialStream = 1 + (pRate->mcsInfo.mcsIndex / 8);
         pRate->mcsInfo.guardInterval = SWL_SGI_800;
     }

@@ -1,9 +1,4 @@
-SUT_DIR=$(realpath ../..)
+AUTO_TEST_FILE = startStop
+
 include ../test_defines.mk
-
-BINARIES = test.startStop
-
-test.startStop: startStop.o $(SUT_OBJECTS)
-	$(CC) -o $(@) $^ $(LDFLAGS)
-
 include ../test_common.mk

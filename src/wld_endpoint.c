@@ -1033,6 +1033,7 @@ amxd_status_t _wld_endpoint_setEnable_pwf(amxd_object_t* object,
     if(enable) {
         syncData_OBJ2EndPoint(object);
     }
+    pEP->enable = enable;
 
     /* set enable flag */
     pRad->pFA->mfn_wendpoint_enable(pEP, enable);
@@ -1040,7 +1041,8 @@ amxd_status_t _wld_endpoint_setEnable_pwf(amxd_object_t* object,
     wld_endpoint_reconfigure(pEP);
 
     /* when idle : kick the FSM state machine to handle the new state */
-    wld_rad_doCommitIfUnblocked(pRad);
+    wld_autoCommitMgr_notifyEpEdit(pEP);
+    wld_ssid_syncEnable(pEP->pSSID, false);
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -1543,7 +1545,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
     amxd_object_set_cstring_t(object, "ConnectionStatus", cstr_EndPoint_connectionStatus[pEP->connectionStatus]);
     amxd_object_set_cstring_t(object, "LastError", cstr_EndPoint_lastError[pEP->error]);
 
-    int ssidStatus = RST_DOWN;
+    wld_status_e ssidStatus = RST_DOWN;
     if(pEP->connectionStatus == EPCS_CONNECTED) {
         ssidStatus = RST_UP;
     } else if((pEP->connectionStatus == EPCS_IDLE) || (status == APSTI_ENABLED)) {
@@ -1551,7 +1553,8 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
     } else if(pEP->connectionStatus == EPCS_ERROR) {
         ssidStatus = RST_ERROR;
     }
-    pEP->pSSID->status = ssidStatus;
+    wld_ssid_setStatus(pEP->pSSID, ssidStatus, false);
+
     char oldSsid[SSID_NAME_LEN];
     swl_macBin_t oldBssid;
     swl_str_copy(oldSsid, sizeof(oldSsid), pEP->pSSID->SSID);
@@ -1821,7 +1824,7 @@ static void endpoint_reconnect_handler(amxp_timer_t* timer _UNUSED, void* userda
     }
 
     chanspec = wld_rad_getSwlChanspec(pRad);
-    uint32_t curStateTime = (uint32_t) (wld_util_time_monotonic_sec() - pRad->lastStatusChange);
+    uint32_t curStateTime = (uint32_t) (wld_util_time_monotonic_sec() - pRad->changeInfo.lastStatusChange);
     uint32_t clearTimeSec = wld_channel_get_band_clear_time(chanspec) / 1000;
 
     SAH_TRACEZ_INFO(ME, "%s: status %u timeInfo %u/%u chanInfo %u/%u", pRad->Name, pRad->status,

@@ -89,8 +89,13 @@ swl_rc_ne wld_th_vap_createHook(T_AccessPoint* pAP);
 void wld_th_vap_destroyHook(T_AccessPoint* pAP);
 
 int wld_th_vap_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+int wld_th_vap_status(T_AccessPoint* pAP);
 swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP);
 int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set);
 
+//Helper functions
+void wld_th_vap_doFsmClean(T_AccessPoint* pAP);
 wld_vap_testData_t* wl_th_vap_getVendorData(T_AccessPoint* pAP);
+void wld_th_vap_setSSIDEnable(T_AccessPoint* pAP, bool enable, bool commit);
+void wld_th_vap_setApEnable(T_AccessPoint* pAP, bool enable, bool commit);
 #endif

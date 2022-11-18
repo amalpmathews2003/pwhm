@@ -1,9 +1,4 @@
-SUT_DIR=$(realpath ../..)
+AUTO_TEST_FILE = channel5G
+
 include ../test_defines.mk
-
-BINARIES = test.channel5G
-
-test.channel5G: test_channel5G.o $(SUT_OBJECTS)
-	$(CC) -o $(@) $^ $(LDFLAGS)
-
 include ../test_common.mk

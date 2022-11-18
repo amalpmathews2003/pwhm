@@ -104,6 +104,8 @@
 #include "swl/swl_assert.h"
 #include "swl/swl_returnCode.h"
 #include "swla/swla_tupleType.h"
+#include "swl/types/swl_arrayType.h"
+#include "swla/swla_namedTupleType.h"
 #include "swla/swla_circTable.h"
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
@@ -317,6 +319,7 @@ extern amxd_object_t* wifi;
 
 /* Must be used in driver modules but they are mapping on this strings.*/
 extern const char* Rad_SupStatus[];
+extern const char* wld_status_str[];
 typedef enum {
     RST_ERROR,
     RST_LLDOWN,
@@ -324,7 +327,8 @@ typedef enum {
     RST_DORMANT,
     RST_UNKNOWN,
     RST_DOWN,
-    RST_UP
+    RST_UP,
+    RST_MAX
 } wld_status_e;
 
 extern const char** Rad_SupFreqBands;
@@ -812,34 +816,36 @@ typedef struct {
     swl_freqBandExt_m freqCapabilities;
 } wld_assocDev_capabilities_t;
 
-typedef struct {
-    swl_timeSpecReal_t timestamp;
-    int32_t signalStrength;  // Received signal strength in dBm, -1 if unavailable
-    int32_t noise;           // Measured noise floor in dBm, -1 if unavailable
-    uint32_t dataDownlinkRate;
-    uint32_t dataUplinkRate;
-    uint64_t txBytes;
-    uint64_t rxBytes;
-    uint32_t txPacketCount;
-    uint32_t rxPacketCount;
-    uint32_t txError;
-    uint32_t rxError;
-    uint32_t tx_Retransmissions;
-    uint32_t tx_RetransmissionsFailed;
-    uint32_t retryCount;
-    uint32_t multipleRetryCount;
-    uint32_t inactive;                     // seconds
-    uint32_t powerSave;
-    // Mcs data
-    swl_bandwidth_e txLinkBandwidth; /* Uplink channel bandwidth */
-    uint32_t txSpatialStream;
-    uint32_t txRateStandard;
-    uint32_t txMcsIndex;
-    swl_bandwidth_e rxLinkBandwidth; /* Downlink channel bandwidth */
-    uint32_t rxSpatialStream;
-    uint32_t rxRateStandard;
-    uint32_t rxMcsIndex;
-} wld_staHistory_t;
+#define X_WLD_STA_HISTORY(X, Y) \
+    X(Y, gtSwl_type_timeSpecReal, timestamp) \
+    X(Y, gtSwl_type_int32, signalStrength) \
+    X(Y, gtSwl_type_int32, noise) \
+    X(Y, gtSwl_type_uint32, dataDownlinkRate) \
+    X(Y, gtSwl_type_uint32, dataUplinkRate) \
+    X(Y, gtSwl_type_uint64, txBytes) \
+    X(Y, gtSwl_type_uint64, rxBytes) \
+    X(Y, gtSwl_type_uint32, txPacketCount) \
+    X(Y, gtSwl_type_uint32, rxPacketCount) \
+    X(Y, gtSwl_type_uint32, txError) \
+    X(Y, gtSwl_type_uint32, rxError) \
+    X(Y, gtSwl_type_uint32, tx_Retransmissions) \
+    X(Y, gtSwl_type_uint32, tx_RetransmissionsFailed) \
+    X(Y, gtSwl_type_uint32, rx_Retransmissions) \
+    X(Y, gtSwl_type_uint32, rx_RetransmissionsFailed) \
+    X(Y, gtSwl_type_uint32, retryCount) \
+    X(Y, gtSwl_type_uint32, multipleRetryCount) \
+    X(Y, gtSwl_type_uint32, inactive) \
+    X(Y, gtSwl_type_uint32, powerSave) \
+    X(Y, gtSwl_type_bandwidth, txLinkBandwidth) \
+    X(Y, gtSwl_type_uint32, txSpatialStream) \
+    X(Y, gtSwl_type_mcsStandard, txRateStandard) \
+    X(Y, gtSwl_type_uint32, txMcsIndex) \
+    X(Y, gtSwl_type_bandwidth, rxLinkBandwidth) \
+    X(Y, gtSwl_type_uint32, rxSpatialStream) \
+    X(Y, gtSwl_type_mcsStandard, rxRateStandard) \
+    X(Y, gtSwl_type_uint32, rxMcsIndex)
+
+SWL_TT_H(gtWld_staHistory, wld_staHistory_t, X_WLD_STA_HISTORY, );
 
 typedef struct {
     uint8_t nr_valid_samples;
@@ -1270,11 +1276,24 @@ typedef enum {
     RIFS_MODE_MAX
 } wld_rifs_mode_e;
 
+SWL_ARRAY_TYPE_H(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX);
+
+#define X_WLD_STATUS_CHANGE_INFO(X, Y) \
+    X(Y, gtSwl_type_timeMono, lastStatusChange, "LastStatusChange") \
+    X(Y, gtSwl_type_uint32, nrStatusChanges, "NrStatusChanges") \
+    X(Y, gtWld_type_statusArray, statusHistogram, "StatusHistogram") \
+    X(Y, gtSwl_type_timeMono, lastStatusHistogramUpdate, "LastStatusHistogramUpdate") \
+    X(Y, gtSwl_type_timeMono, lastEnableTime, "LastEnableTime") \
+    X(Y, gtSwl_type_timeMono, lastDisableTime, "LastDisableTime") \
+    X(Y, gtSwl_type_uint32, nrEnables, "NrEnables")
+
+SWL_NTT_H(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO, );
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;
     wld_status_e status;
-    time_t lastStatusChange;
+    wld_status_changeInfo_t changeInfo;
     int maxBitRate;
     int index;                          /* Network device number */
     int ref_index;                      /* Radio index number (0=wifi0,1=wifi1,...) */
@@ -1459,10 +1478,12 @@ typedef struct {
     chanmgt_rad_state oldDetailedState;
 } wld_radio_status_change_event_t;
 
+
 struct S_SSID {
     amxc_llist_it_t it;
     int debug;                                /* FIX ME */
     wld_status_e status;                      /* == AP/ENDP.Status --> VAP up == TRUE else FALSE */
+    wld_status_changeInfo_t changeInfo;       /* Status change info */
     T_Radio* RADIO_PARENT;                    /* Pointer to the T_Radio structure */
     T_AccessPoint* AP_HOOK;                   /* Pointer to the T_AccessPoint structure */
     T_EndPoint* ENDP_HOOK;                    /* Pointer to the T_EndPoint structure */
@@ -1471,9 +1492,11 @@ struct S_SSID {
     char SSID[36];                            /* VAP SSID broadcast name */
     char Name[32];                            /* Contains the datamodel name of this SSID */
     T_Stats stats;
-    int enable;                               /* Copied state of AccessPoint.enabled */
+    bool enable;                              /* Copied state of AccessPoint.enabled */
     amxd_object_t* pBus;                      /* Keep a copy of the amxd_object_t */
     void* vendorData;                         /* Additional vendor specific data */
+    amxp_timer_t* enableSyncTimer;            /* Timer to keep the SSID and Intf enable synced */
+    bool syncEnableToIntf;                    /* Whether the sync should be SSID to intf (true) or other way (false)*/
 };
 
 typedef struct {

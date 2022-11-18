@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.6.0 - 2022-11-18(11:22:07 +0000)
+
+### Other
+
+- - Add rad & vap state statistics
+
 ## Release v2.4.2 - 2022-11-03(10:03:23 +0000)
 
 ### Other

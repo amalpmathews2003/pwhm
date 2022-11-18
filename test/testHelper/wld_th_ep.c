@@ -70,10 +70,21 @@
 #include <stdarg.h>
 #include <cmocka.h>
 
+
+#include "wld.h"
+#include "wld_util.h"
 #include "wld_th_ep.h"
 #include "wld_th_mockVendor.h"
+#include "test-toolbox/ttb_mockTimer.h"
+
+#define ME "TH_EP"
 
 T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, T_Radio* radio, const char* name) {
+    assert_non_null(bus_ctx);
+    assert_non_null(mockVendor);
+    assert_non_null(radio);
+    assert_non_null(name);
+
     amxc_var_t args;
     amxc_var_init(&args);
 
@@ -89,6 +100,9 @@ T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_
 }
 
 void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name) {
+    assert_non_null(bus_ctx);
+    assert_non_null(mockVendor);
+    assert_non_null(name);
     amxc_var_t args;
     amxc_var_init(&args);
 
@@ -101,6 +115,7 @@ void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mock
 
 amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name) {
     assert_non_null(ep);
+    assert_non_null(name);
     amxd_object_t* epObj = ep->pBus;
     assert_non_null(epObj);
     amxd_object_t* profilesObj = amxd_object_findf(epObj, "Profile");
@@ -109,7 +124,21 @@ amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name) {
     return obj;
 }
 
+void wld_th_ep_doFsmClean(T_EndPoint* pEP) {
+    assert_non_null(pEP);
+    clearAllBitsLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW);
+}
+
+void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit) {
+    assert_non_null(pEP);
+    swl_typeUInt32_toObjectParam(pEP->pBus, "Enable", enable);
+    if(commit) {
+        ttb_mockTimer_goToFutureMs(10);
+    }
+}
+
 swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP _UNUSED, T_EndPointStats* stats) {
+    assert_non_null(pEP);
     stats->txbyte = 12991;
     stats->txPackets = 65;
     stats->assocCaps.currentSecurity = APMSI_WPA2_P;

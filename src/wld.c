@@ -102,6 +102,9 @@ static swl_timeSpecMono_t initTime;
 T_CONST_WPS g_wpsConst;
 static bool init = false;
 
+SWL_TT_C(gtWld_staHistory, wld_staHistory_t, X_WLD_STA_HISTORY);
+
+
 const swl_macBin_t* wld_getWanAddr() {
     return &sWanAddr;
 }
@@ -170,7 +173,11 @@ bool wld_plugin_loadDmConf() {
     SAH_TRACEZ_IN(ME);
     // Defaults or saved odl will be loaded here:
     // This makes sure that the events for the defaults are only called when the plugin is started
+    while(amxp_signal_read() == 0) {
+    }
     int rv = amxo_parser_parse_string(wld_plugin_parser, "?include '${odl.directory}/${name}.odl':'${defaults_file}';", amxd_dm_get_root(wld_plugin_dm));
+    while(amxp_signal_read() == 0) {
+    }
     if(rv != 0) {
         SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
                          amxo_parser_get_status(wld_plugin_parser),
@@ -192,12 +199,14 @@ bool wld_plugin_loadDmConf() {
         wld_rad_forEachAp(pAP, pRad) {
             pSSID = (T_SSID*) pAP->pSSID;
             pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
+            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
         T_EndPoint* pEP;
         wld_rad_forEachEp(pEP, pRad) {
             pSSID = (T_SSID*) pEP->pSSID;
             pRad->pFA->mfn_sync_ep(pEP);
+            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
     }
@@ -303,9 +312,12 @@ const char* radCounterNames[WLD_RAD_EV_MAX] = {
 };
 
 int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
-    char macStr[SWL_MAC_CHAR_LEN] = {0};
-
+    ASSERT_NOT_NULL(name, -1, ME, "NULL");
     ASSERT_NOT_NULL(vendor, -1, ME, "NULL");
+
+    char macStr[SWL_MAC_CHAR_LEN] = {0};
+    SAH_TRACEZ_INFO(ME, "Create new radio %s %u", name, idx);
+
 
     T_Radio* pR = calloc(1, sizeof(T_Radio));
     if(!pR) {
@@ -327,10 +339,13 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->ref_index = idx;
     pR->detailedState = CM_RAD_UNKNOWN;
     pR->detailedStatePrev = CM_RAD_UNKNOWN;
+    pR->status = RST_UNKNOWN;
+    swl_timeMono_t now = swl_time_getMonoSec();
+    pR->changeInfo.lastStatusChange = now;
+    pR->changeInfo.lastStatusHistogramUpdate = now;
     pR->probeRequestMode = WLD_PRB_NO_UPDATE;
     pR->probeRequestAggregationTime = 1000;
     pR->aggregationTimer = NULL;
-
     pR->genericCounters.nrCounters = WLD_RAD_EV_MAX;
     pR->genericCounters.values = pR->counterList;
     pR->genericCounters.names = radCounterNames;
@@ -338,6 +353,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->nrAntenna[COM_DIR_RECEIVE] = -1;
     pR->nrActiveAntenna[COM_DIR_TRANSMIT] = -1;
     pR->nrActiveAntenna[COM_DIR_RECEIVE] = -1;
+    pR->changeInfo.lastDisableTime = swl_time_getMonoSec();
 
     SAH_TRACEZ_WARNING(ME, "Creating new Radio context [%s]", pR->Name);
 

@@ -521,11 +521,11 @@ static void test_isValidAesKey(void** state _UNUSED) {
     assert_true(isValidAESKey("/*-+!@#$%^&*()_{}\"[]<>?", PSK_KEY_SIZE_LEN - 1));
 }
 
-static int setup_suite(void** state _UNUSED) {
+static int s_setupSuite(void** state _UNUSED) {
     return 0;
 }
 
-static int teardown_suite(void** state _UNUSED) {
+static int s_teardownSuite(void** state _UNUSED) {
     return 0;
 }
 
@@ -558,7 +558,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_convIntArrToString),
         cmocka_unit_test(test_convStrToIntArray),
     };
-    int rc = cmocka_run_group_tests(tests, setup_suite, teardown_suite);
+    int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();
     return rc;
 }

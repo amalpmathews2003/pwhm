@@ -1,9 +1,4 @@
-SUT_DIR=$(realpath ../..)
+AUTO_TEST_FILE = fta
+
 include ../test_defines.mk
-
-BINARIES = test.fta
-
-test.fta: fta.o $(SUT_OBJECTS)
-	$(CC) -o $(@) $^ $(LDFLAGS)
-
 include ../test_common.mk

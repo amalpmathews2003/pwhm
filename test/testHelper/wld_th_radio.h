@@ -84,4 +84,6 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
 int wld_th_wrad_fsm(T_Radio* rad);
 int wld_th_rad_enable(T_Radio* rad, int val, int set);
 
+
+void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit);
 #endif

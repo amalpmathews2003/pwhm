@@ -72,6 +72,7 @@
 #include "wld_accesspoint.h"
 #include "wld_statsmon.h"
 #include "wld_radio.h"
+#include "wld_dm_trans.h"
 #include "swl/swl_string.h"
 #include "Utils/wld_autoCommitMgr.h"
 
@@ -80,6 +81,33 @@
 static char* SSID_SupStatus[] = {"Error", "LowerLayerDown", "NotPresent", "Dormant", "Unknown", "Down", "Up", 0};
 
 static amxc_llist_t sSsidList = {NULL, NULL};
+
+static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
+    T_SSID* pSSID = (T_SSID*) priv;
+    T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
+    T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
+
+    if(pSSID->syncEnableToIntf) {
+        if(pAP) {
+            /* Sync AP object values */
+            amxd_object_set_bool(pAP->pBus, "Enable", pSSID->enable);
+        } else if(pEP) {
+            /* Sync Endpoint object values */
+            amxd_object_set_bool(pEP->pBus, "Enable", pSSID->enable);
+        }
+    } else {
+        if(pAP) {
+            /* Sync AP object values */
+            amxd_object_set_bool(pSSID->pBus, "Enable", pAP->enable);
+        } else if(pEP) {
+            /* Sync Endpoint object values */
+            amxd_object_set_bool(pSSID->pBus, "Enable", pEP->enable);
+        }
+    }
+
+}
+
+
 
 T_SSID* s_createSsid(amxd_object_t* obj) {
     ASSERT_NOT_NULL(obj, NULL, ME, "NULL");
@@ -90,6 +118,9 @@ T_SSID* s_createSsid(amxd_object_t* obj) {
     pSSID->debug = SSID_POINTER;
     sprintf(pSSID->SSID, "PWHM_SSID%d", amxd_object_get_index(obj));
     amxc_llist_append(&sSsidList, &pSSID->it);
+    amxp_timer_new(&pSSID->enableSyncTimer, s_syncEnable, pSSID);
+    pSSID->enable = 0;
+    pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
     return pSSID;
 }
 
@@ -130,6 +161,7 @@ amxd_status_t _wld_ssid_addInstance_ocf(amxd_object_t* object,
                                         const amxc_var_t* const args,
                                         amxc_var_t* const retval,
                                         void* priv) {
+
     char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
                     object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path);
@@ -194,45 +226,56 @@ amxd_status_t _wld_ssid_setLowerLayers_pwf(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-void _wld_ssid_setEnable_ehf(const char* const event_name _UNUSED,
-                             const amxc_var_t* const event_data,
-                             void* const priv _UNUSED) {
-
-    amxd_object_t* wifiSsid = amxd_dm_signal_get_object(get_wld_plugin_dm(), event_data);
-    T_SSID* pSSID = (T_SSID*) wifiSsid->priv;
-
-    SAH_TRACEZ_IN(ME);
-
-    bool flag = GETP_BOOL(event_data, "parameters.Enable.to");
-    SAH_TRACEZ_INFO(ME, "set Enable %d", flag);
-
-    if(!pSSID || !debugIsSsidPointer(pSSID)) {
-        SAH_TRACEZ_ERROR(ME, "Invalid pointer !");
-        SAH_TRACEZ_OUT(ME);
+void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
+    ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);
+    pSSID->syncEnableToIntf = syncToIntf;
+    if((amxp_timer_get_state(pSSID->enableSyncTimer) == amxp_timer_started) ||
+       (amxp_timer_get_state(pSSID->enableSyncTimer) == amxp_timer_running)) {
         return;
     }
 
-    T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK; /* FIX ME */
-    T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;     /* FIX ME */
-    T_Radio* pRad = (T_Radio*) pSSID->RADIO_PARENT;
+    amxp_timer_start(pSSID->enableSyncTimer, 1);
+}
 
-    if(pAP) {
-        pAP->pFA->mfn_wvap_enable(pAP, flag, SET);
-    } else if(pEP) {
-        pEP->pFA->mfn_wendpoint_enable(pEP, flag);
+void wld_ssid_setEnable(T_SSID* pSSID, bool newEnable) {
+    ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: SET ENABLE %u %u", pSSID->Name, pSSID->enable, newEnable);
+    if(pSSID->enable == newEnable) {
+        return;
+    }
+    pSSID->enable = newEnable;
+    if(newEnable) {
+        pSSID->changeInfo.nrEnables++;
+        pSSID->changeInfo.lastEnableTime = swl_time_getMonoSec();
+    } else {
+        pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
     }
 
-    wld_rad_doCommitIfUnblocked(pRad);
+    wld_ssid_syncEnable(pSSID, true);
+}
 
-    if(pAP) {
-        /* Sync AP object values */
-        amxd_object_set_bool(pAP->pBus, "Enable", flag);
-    } else if(pEP) {
-        /* Sync Endpoint object values */
-        amxd_object_set_bool(pEP->pBus, "Enable", flag);
+amxd_status_t _wld_ssid_setEnable_pwf(amxd_object_t* object,
+                                      amxd_param_t* parameter,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args,
+                                      amxc_var_t* const retval,
+                                      void* priv) {
+    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    if(rv != amxd_status_ok) {
+        return rv;
     }
+    if(amxd_object_get_type(object) != amxd_object_instance) {
+        return amxd_status_unknown_error;
+    }
+    T_SSID* pSSID = (T_SSID*) object->priv;
 
+    bool newEnable = amxc_var_get_bool(args);
+
+    wld_ssid_setEnable(pSSID, newEnable);
     SAH_TRACEZ_OUT(ME);
+
+    return amxd_status_ok;
 }
 
 static amxd_status_t wld_getSSIDStats(T_SSID* pSSID) {
@@ -380,7 +423,6 @@ amxd_status_t _wld_ssid_setSSID_pwf(amxd_object_t* object _UNUSED,
                                     const amxc_var_t* const args _UNUSED,
                                     amxc_var_t* const retval _UNUSED,
                                     void* priv _UNUSED) {
-
     amxd_status_t rv = amxd_status_ok;
     if(amxd_object_get_type(object) != amxd_object_instance) {
         return rv;
@@ -438,6 +480,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         //set_OBJ_ParameterHelper(TPH_INT32 , object, "Enable", &pS->enable);
         /** 'Status' The current operational state of the SSID entry. */
         amxd_object_set_cstring_t(object, "Status", SSID_SupStatus[pS->status]);
+        swl_typeTimeMono_toObjectParam(object, "LastStatusChangeTimeStamp", pS->changeInfo.lastStatusChange);
         /** 'SSID' The current service set identifier in use by the
          *  connection. The SSID is an identifier that is attached to
          *  packets sent over the wireless LAN that functions as an
@@ -492,12 +535,9 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         }
     } else {
         /* Get AP data from OBJ to AP */
-        int32_t tmp_int32 = amxd_object_get_int32_t(object, "Enable", NULL);
-        if(pS->enable != tmp_int32) {
-            if(pAP) {
-                pS->enable = pAP->enable;   // AP rulez state!
-            }
-        }
+        bool tmpEnable = amxd_object_get_bool(object, "Enable", NULL);
+        wld_ssid_setEnable(pS, tmpEnable);
+
 
         char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
         if(strncmp(pS->SSID, ssid, strlen(pS->SSID))) {
@@ -544,7 +584,6 @@ amxd_status_t _wld_ssid_setMacAddress_pwf(amxd_object_t* object _UNUSED,
                                           const amxc_var_t* const args _UNUSED,
                                           amxc_var_t* const retval _UNUSED,
                                           void* priv _UNUSED) {
-
     SAH_TRACEZ_IN(ME);
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* wifiSsid = object;
@@ -557,7 +596,7 @@ amxd_status_t _wld_ssid_setMacAddress_pwf(amxd_object_t* object _UNUSED,
     char* pMacStr = amxc_var_dyncast(cstring_t, args);
     ASSERT_STR(pMacStr, amxd_status_unknown_error, ME, "Mac address empty");
     swl_macBin_t mac = SWL_MAC_BIN_NEW();
-    if(!SWL_MAC_CHAR_TO_BIN(&mac, pMacStr) || swl_mac_binIsNull(&mac)) {
+    if(!SWL_MAC_CHAR_TO_BIN(&mac, pMacStr)) {
         SAH_TRACEZ_ERROR(ME, "Invalid mac address (%s)", pMacStr);
         rv = amxd_status_invalid_value;
     } else if(!SWL_MAC_BIN_MATCHES(pSSID->MACAddress, &mac)) {
@@ -602,4 +641,38 @@ int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object) {
     instance_object->priv = pSSID;
     pSSID->pBus = instance_object;
     return WLD_OK;
+}
+
+
+void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit) {
+    ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    wld_util_updateStatusChangeInfo(&pSSID->changeInfo, pSSID->status);
+    ASSERTI_NOT_EQUALS(pSSID->status, status, , ME, "%s: same status %u", pSSID->Name, status);
+    pSSID->changeInfo.lastStatusChange = swl_time_getMonoSec();
+    pSSID->changeInfo.nrStatusChanges++;
+    pSSID->status = status;
+
+    if(commit) {
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(pSSID->pBus, &trans, , ME, "%s : trans init failure", pSSID->Name);
+        amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pSSID->status]);
+        swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pSSID->changeInfo.lastStatusChange);
+        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pSSID->Name);
+    }
+}
+
+
+amxd_status_t _SSID_getStatusHistogram(amxd_object_t* object,
+                                       amxd_function_t* func _UNUSED,
+                                       amxc_var_t* args _UNUSED,
+                                       amxc_var_t* retval) {
+    SAH_TRACEZ_IN(ME);
+
+    T_SSID* pSSID = object->priv;
+
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    wld_util_updateStatusChangeInfo(&pSSID->changeInfo, pSSID->status);
+    swl_type_toVariant((swl_type_t*) &gtWld_status_changeInfo, retval, &pSSID->changeInfo);
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
 }

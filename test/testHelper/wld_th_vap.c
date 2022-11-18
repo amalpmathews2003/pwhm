@@ -72,12 +72,18 @@
 
 
 #include "wld_th_vap.h"
+#include "wld_util.h"
 #include "wld.h"
+#include "wld_radio.h"
 #include "wld_assocdev.h"
 #include "wld_th_mockVendor.h"
+#include "test-toolbox/ttb_mockTimer.h"
 
 
 int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bufsize _UNUSED) {
+    assert_non_null(rad);
+    assert_non_null(vap);
+    assert_true(bufsize > 0);
     return 0;
 }
 
@@ -94,6 +100,9 @@ void wld_th_vap_destroyHook(T_AccessPoint* pAP) {
 }
 
 T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, T_Radio* radio, const char* name) {
+    assert_non_null(bus_ctx);
+    assert_non_null(radio);
+    assert_non_null(name);
     amxc_var_t args;
     amxc_var_init(&args);
 
@@ -113,9 +122,15 @@ T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVe
     return vap;
 }
 
+int wld_th_vap_status(T_AccessPoint* pAP) {
+    assert_non_null(pAP);
+    return pAP->enable;
+}
 
 swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP) {
+    assert_non_null(pAP);
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
+    assert_non_null(pRad);
 
     bool errOnStaStats = wl_th_vap_getVendorData(pAP)->errorOnStaStats;
 
@@ -141,17 +156,39 @@ swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP) {
     return SWL_RC_OK;
 }
 
-int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set) {
-    int ret;
-    printf("VAP:%s State:%d-->%d - Set:%d", pAP->alias, pAP->enable, enable, set);
-    if(set & SET) {
-        ret = pAP->enable = enable;
-    } else {
-        ret = pAP->enable;
+void wld_th_vap_setSSIDEnable(T_AccessPoint* pAP, bool enable, bool commit) {
+    assert_non_null(pAP);
+    T_SSID* pSSID = pAP->pSSID;
+    swl_typeUInt32_toObjectParam(pSSID->pBus, "Enable", enable);
+    if(commit) {
+        ttb_mockTimer_goToFutureMs(10);
     }
+}
+
+void wld_th_vap_setApEnable(T_AccessPoint* pAP, bool enable, bool commit) {
+    assert_non_null(pAP);
+    swl_typeUInt32_toObjectParam(pAP->pBus, "Enable", enable);
+    if(commit) {
+        ttb_mockTimer_goToFutureMs(10);
+    }
+}
+
+int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set) {
+    assert_non_null(pAP);
+    int ret = enable;
+    printf("VAP:%s State:%d-->%d - Set:%d\n", pAP->alias, pAP->enable, enable, set);
+
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, 1);
+
     return ret;
 }
 
+void wld_th_vap_doFsmClean(T_AccessPoint* pAP) {
+    assert_non_null(pAP);
+    clearAllBitsLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW);
+}
+
 wld_vap_testData_t* wl_th_vap_getVendorData(T_AccessPoint* pAP) {
+    assert_non_null(pAP);
     return (wld_vap_testData_t*) pAP->vendorData;
 }

@@ -81,4 +81,6 @@ void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mock
 amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name);
 swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP, T_EndPointStats* stats);
 
+void wld_th_ep_doFsmClean(T_EndPoint* pEP);
+void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit);
 #endif

@@ -659,12 +659,12 @@ static void test_wld_channel_bands_adjacent(void** state) {
     assert_false(wld_channel_isBandAdjacentTo(chanspec2, chanspec1));
 }
 
-static int setup_suite(void** state) {
+static int s_setupSuite(void** state) {
     (void) state;
     return 0;
 }
 
-static int teardown_suite(void** state) {
+static int s_teardownSuite(void** state) {
     (void) state;
     return 0;
 }
@@ -693,7 +693,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_channel_bands_overlapping),
         cmocka_unit_test(test_wld_channel_bands_adjacent),
     };
-    int rc = cmocka_run_group_tests(tests, setup_suite, teardown_suite);
+    int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();
     return rc;
 }

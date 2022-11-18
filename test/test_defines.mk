@@ -1,11 +1,10 @@
 ifndef STAGINGDIR
 	$(error "STAGINGDIR not defined")
 endif
-ifndef SUT_DIR
-	$(error "SUT_DIR not defined")
-endif
 
-
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+SUT_DIR = $(dir $(MKFILE_PATH))/..
+$(info $$SUT_DIR is [${SUT_DIR}])
 
 SUT_OBJECTS = \
 	$(patsubst %.c, %.o, $(wildcard $(SUT_DIR)/test/testHelper/*.c))
@@ -28,7 +27,7 @@ LDFLAGS += -fprofile-arcs -ftest-coverage  \
 		   -Wl,-rpath,$(STAGINGDIR)/lib \
 		   -Wl,-rpath,$(STAGINGDIR)/usr/lib \
 		   $(shell PKG_CONFIG_PATH=$(STAGINGDIR)/usr/lib/pkgconfig pkg-config --libs sahtrace pcb cmocka swla swlc openssl test-toolbox) \
-		   -lamxb -lamxc -lamxd -lamxo \
+		   -lamxb -lamxc -lamxd -lamxo -lamxp\
 		   -L$(SUT_DIR)/src \
 		   -L$(SUT_DIR)/src/Plugin \
 		   -l:libwld.so \

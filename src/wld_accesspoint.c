@@ -1965,34 +1965,29 @@ amxd_status_t _wld_ap_setEnable_pwf(amxd_object_t* object _UNUSED,
                                     amxc_var_t* const retval _UNUSED,
                                     void* priv _UNUSED) {
 
+    SAH_TRACEZ_IN(ME);
+
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* wifiVap = object;
     if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
         return rv;
     }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
     rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
 
-    SAH_TRACEZ_IN(ME);
+    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
 
-    bool CB = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "setAccessPointEnable %d", CB);
+    bool newEnable = amxc_var_dyncast(bool, args);
+    SAH_TRACEZ_INFO(ME, "setAccessPointEnable %d", newEnable);
 
-    if(pAP && debugIsVapPointer(pAP)) {
-        T_Radio* pRad = (T_Radio*) pAP->pRadio;
-        T_SSID* pSSID = (T_SSID*) pAP->pSSID;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NOT VAP");
 
-        pAP->pFA->mfn_wvap_enable(pAP, CB, SET);
-
-        /* Always AUTO commit IF it's not blocked by Radio.xxx.edit() mode! */
-        wld_rad_doCommitIfUnblocked(pRad);
-        if(debugIsSsidPointer(pSSID)) {
-            amxd_object_set_bool(pSSID->pBus, "Enable", CB);
-        }
-    }
+    pAP->enable = newEnable;
+    pAP->pFA->mfn_wvap_enable(pAP, newEnable, SET);
+    wld_autoCommitMgr_notifyVapEdit(pAP);
+    wld_ssid_syncEnable(pAP->pSSID, false);
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -2646,37 +2641,37 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
     wld_intfStatus_e oldVapStatus = pAP->status;
     wld_status_e oldSsidStatus = pSSID->status;
 
+    wld_status_e newSsidStatus = 0;
+
     int status = pAP->pFA->mfn_wvap_status(pAP);
     if(status > 0) {
         pAP->status = APSTI_ENABLED;
     } else {
         pAP->status = APSTI_DISABLED;
     }
+
     if(pRad->status == RST_ERROR) {
-        pSSID->status = RST_ERROR;
+        newSsidStatus = RST_ERROR;
     } else if((pAP->status == APSTI_DISABLED) || (pRad->status == RST_DOWN)) {
-        pSSID->status = RST_DOWN;
+        newSsidStatus = RST_DOWN;
     } else if(pRad->status == RST_DORMANT) {
-        pSSID->status = RST_LLDOWN;
+        newSsidStatus = RST_LLDOWN;
     } else {
-        pSSID->status = RST_UP;
+        newSsidStatus = RST_UP;
     }
 
-    SAH_TRACEZ_INFO(ME, "%s: ap %u -> %u / ssid %u -> %u", pAP->alias, oldVapStatus, pAP->status, oldSsidStatus, pSSID->status);
+    SAH_TRACEZ_INFO(ME, "%s: ap %u -> %u / ssid %u -> %u", pAP->alias, oldVapStatus, pAP->status, oldSsidStatus, newSsidStatus);
 
-    if((oldVapStatus == pAP->status) && (oldSsidStatus == pSSID->status)) {
+    if((oldVapStatus == pAP->status) && (oldSsidStatus == newSsidStatus)) {
         return;
     }
     pAP->lastStatusChange = swl_time_getMonoSec();
+    wld_ssid_setStatus(pSSID, newSsidStatus, true);
 
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(pAP->pBus, &trans, , ME, "%s : trans init failure", pAP->alias);
     amxd_trans_set_value(cstring_t, &trans, "Status", cstr_AP_status[pAP->status]);
     ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pAP->alias);
-
-    ASSERT_TRANSACTION_INIT(pSSID->pBus, &trans, , ME, "%s : trans init failure", pSSID->SSID);
-    amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pSSID->status]);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pSSID->SSID);
 
     wld_vap_status_change_event_t vapUpdate;
     vapUpdate.vap = pAP;
