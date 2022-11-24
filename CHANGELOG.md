@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.7.1 - 2022-11-24(08:41:17 +0000)
+
+### Other
+
+- - [pwhm] Enabled secondary vaps status remain Down
+
 ## Release v2.7.0 - 2022-11-18(16:41:25 +0000)
 
 ### Other

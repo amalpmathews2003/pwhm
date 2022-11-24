@@ -61,6 +61,7 @@
 ****************************************************************************/
 #include "wld/wld.h"
 #include "wld/wld_radio.h"
+#include "wld/wld_accesspoint.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_hostapd_cfgFile.h"
 #include "wld/wld_wpaCtrl_api.h"
@@ -238,6 +239,7 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
                 ret = SWL_RC_ERROR;
             }
         }
+        wld_vap_updateState(pAP);
     }
     return ret;
 }

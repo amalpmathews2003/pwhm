@@ -666,3 +666,14 @@ swl_rc_ne wifiGen_rad_stats(T_Radio* pRad) {
     return ret;
 }
 
+int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad) {
+    if(pRad->fsmRad.FSM_State != FSM_IDLE) {
+        // Do nothing... we're still in commit state.
+        pRad->fsmRad.TODC = 10000;
+        return 0;
+    }
+    wld_rad_updateState(pRad, true);
+    pRad->fsmRad.TODC = 0;
+    return 0;
+}
+

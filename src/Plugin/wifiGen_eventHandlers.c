@@ -130,7 +130,9 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-            wifiGen_hapd_syncVapStates(pRad);
+            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+            wld_rad_doCommitIfUnblocked(pRad);
+            return;
         }
     }
     wld_rad_updateState(pRad, false);
@@ -143,7 +145,8 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     pRad->detailedState = CM_RAD_UP;
     s_syncCurrentChannel(pRad);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-    wifiGen_hapd_syncVapStates(pRad);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+    wld_rad_doCommitIfUnblocked(pRad);
     wld_rad_updateState(pRad, true);
 }
 
@@ -245,11 +248,11 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pIfaceInfo, , ME, "NULL");
-    if(pIfaceInfo->isAp) {
-        T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
-        if(pAP != NULL) {
-            pAP->index = pIfaceInfo->ifIndex;
-        }
+    SAH_TRACEZ_NOTICE(ME, "%s: interface created (devIdx:%d)", pIfaceInfo->name, pIfaceInfo->ifIndex);
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
+    if(pAP != NULL) {
+        pAP->index = pIfaceInfo->ifIndex;
+        wld_vap_updateState(pAP);
     }
 }
 
@@ -257,11 +260,11 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pIfaceInfo, , ME, "NULL");
-    if(pIfaceInfo->isAp) {
-        T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
-        if(pAP != NULL) {
-            pAP->index = 0;
-        }
+    SAH_TRACEZ_NOTICE(ME, "%s: interface deleted (devIdx:%d)", pIfaceInfo->name, pIfaceInfo->ifIndex);
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
+    if(pAP != NULL) {
+        pAP->index = 0;
+        wld_vap_updateState(pAP);
     }
 }
 
