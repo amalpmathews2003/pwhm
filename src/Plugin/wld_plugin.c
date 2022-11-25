@@ -109,8 +109,8 @@ int _wld_main(int reason,
     case 1:     // STOP
         SAH_TRACEZ_WARNING(ME, "WLD plugin stopped");
         wld_vendorModuleMgr_deinitAll();
-        wld_vendorModuleMgr_unloadAll();
         wld_cleanup();
+        wld_vendorModuleMgr_unloadAll();
         break;
     default:
         break;

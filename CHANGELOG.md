@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.7.2 - 2022-11-25(11:13:06 +0000)
+
+### Other
+
+- [pwhm] crash on stop
+
 ## Release v2.7.1 - 2022-11-24(08:41:17 +0000)
 
 ### Other

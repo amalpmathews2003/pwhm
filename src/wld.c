@@ -217,9 +217,7 @@ bool wld_plugin_loadDmConf() {
 }
 
 vendor_t* wld_getVendorByName(const char* name) {
-    ASSERTS_NOT_NULL(name, NULL, ME, "NULL");
-    ASSERTS_NOT_EQUALS(name[0], 0, NULL, ME, "NULL");
-    amxc_llist_it_t* it;
+    ASSERTS_STR(name, NULL, ME, "Invalid");
     amxc_llist_for_each(it, &vendors) {
         vendor_t* pVendor = amxc_llist_it_get_data(it, vendor_t, it);
         if(pVendor && swl_str_matches(pVendor->name, name)) {
@@ -274,34 +272,46 @@ vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta) {
     return vendor;
 }
 
-static void s_cleanVendor(vendor_t* vendor) {
-    if(!vendor) {
-        return;
+bool wld_isVendorUsed(vendor_t* vendor) {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        if(vendor && pRad->vendor && (pRad->pFA == &vendor->fta)) {
+            SAH_TRACEZ_NOTICE(ME, "Vendor %s FTA is still used by Radio %s", vendor->name, pRad->Name);
+            return true;
+        }
     }
+    return false;
+}
+
+static bool s_cleanVendor(vendor_t* vendor) {
+    if(!vendor) {
+        return true;
+    }
+    ASSERT_FALSE(wld_isVendorUsed(vendor), false, ME, "Fail to clear vendor %s: still used", vendor->name);
     amxc_llist_it_take(&vendor->it);
     free(vendor->name);
     free(vendor);
+    return true;
 }
 
-void wld_unregisterVendor(vendor_t* vendor) {
-    amxc_llist_it_t* it = NULL;
+bool wld_unregisterVendor(vendor_t* vendor) {
+    if(!vendor) {
+        return true;
+    }
     amxc_llist_for_each(it, &vendors) {
-        if(vendor == amxc_llist_it_get_data(it, vendor_t, it)) {
-            s_cleanVendor(vendor);
-            break;
+        if(vendor == amxc_container_of(it, vendor_t, it)) {
+            return s_cleanVendor(vendor);
         }
     }
+    return false;
 }
 
-void wld_unregisterAllVendors() {
-    amxc_llist_it_t* it = amxc_llist_get_first(&vendors);
-    amxc_llist_it_t* itNext = NULL;
-    while(it) {
-        itNext = amxc_llist_it_get_next(it);
-        vendor_t* vendor = amxc_llist_it_get_data(it, vendor_t, it);
+bool wld_unregisterAllVendors() {
+    amxc_llist_for_each(it, &vendors) {
+        vendor_t* vendor = amxc_container_of(it, vendor_t, it);
         s_cleanVendor(vendor);
-        it = itNext;
     }
+    return (amxc_llist_is_empty(&vendors));
 }
 
 const char* radCounterNames[WLD_RAD_EV_MAX] = {
@@ -436,15 +446,11 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     wld_rad_clearSuppDrvCaps(pRad);
     wld_prbReq_destroy(pRad);
 
-    amxc_llist_it_t* it;
-    it = amxc_llist_get_first(&pRad->scanState.stats.extendedStat);
-    while(it) {
+    amxc_llist_for_each(it, &pRad->scanState.stats.extendedStat) {
         wld_brief_stats_t* stat = amxc_llist_it_get_data(it, wld_brief_stats_t, it);
-        it = amxc_llist_it_get_next(it);
         amxc_llist_it_take(&stat->it);
         free(stat->scanReason);
         free(stat);
-        stat = NULL;
     }
 
     free(pRad->scanState.cfg.fastScanReasons);
@@ -456,10 +462,9 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     amxp_timer_delete(&pRad->aggregationTimer);
     pRad->aggregationTimer = NULL;
 
-    amxd_object_t* radObj = (amxd_object_t*) pRad->pBus;
-    if(radObj != NULL) {
+    if(pRad->pBus != NULL) {
+        pRad->pBus->priv = NULL;
         pRad->pBus = NULL;
-        amxd_object_delete(&radObj);
     }
 
     free(pRad->dbgOutput);
@@ -477,10 +482,8 @@ void wld_deleteRadio(const char* name) {
 }
 
 void wld_deleteAllRadios() {
-    amxc_llist_it_t* llit = amxc_llist_get_first(&g_radios);
-    while(llit != NULL) {
-        T_Radio* pRad = amxc_llist_it_get_data(llit, T_Radio, it);
-        llit = amxc_llist_it_get_next(llit);
+    amxc_llist_for_each(it, &g_radios) {
+        T_Radio* pRad = wld_rad_fromIt(it);
         wld_deleteRadioObj(pRad);
     }
 }
@@ -488,11 +491,9 @@ void wld_deleteAllRadios() {
 void wld_deleteAllVaps() {
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
-        amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llAP);
-        while(it != NULL) {
+        amxc_llist_for_each(it, &pRad->llAP) {
             T_AccessPoint* pAP = wld_ap_fromIt(it);
             wld_ap_destroy(pAP);
-            it = amxc_llist_get_first(&pRad->llAP);
         }
     }
 }
@@ -500,11 +501,9 @@ void wld_deleteAllVaps() {
 void wld_deleteAllEps() {
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
-        amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llEndPoints);
-        while(it != NULL) {
+        amxc_llist_for_each(it, &pRad->llEndPoints) {
             T_EndPoint* pEP = wld_endpoint_fromIt(it);
             wld_endpoint_destroy(pEP);
-            it = amxc_llist_get_first(&pRad->llEndPoints);
         }
     }
 }

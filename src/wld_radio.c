@@ -3447,14 +3447,14 @@ amxd_status_t _checkWPSPIN(amxd_object_t* obj _UNUSED,
 T_AccessPoint* wld_rad_getFirstVap(T_Radio* pR) {
     ASSERT_NOT_NULL(pR, NULL, ME, "NULL");
     amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pR->llAP);
-    ASSERT_NOT_NULL(it, NULL, ME, "NULL");
+    ASSERTI_NOT_NULL(it, NULL, ME, "Empty");
     return (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
 }
 
 T_EndPoint* wld_rad_getFirstEp(T_Radio* pR) {
     ASSERT_NOT_NULL(pR, NULL, ME, "NULL");
     amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pR->llEndPoints);
-    ASSERTI_NOT_NULL(it, NULL, ME, "NULL");
+    ASSERTI_NOT_NULL(it, NULL, ME, "Empty");
     return (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
 }
 

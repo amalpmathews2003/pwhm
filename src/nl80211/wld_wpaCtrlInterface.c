@@ -365,10 +365,10 @@ void wld_wpaCtrlInterface_cleanup(wld_wpaCtrlInterface_t** ppIface) {
     ASSERTS_NOT_NULL(ppIface, , ME, "NULL");
     wld_wpaCtrlInterface_t* pIface = *ppIface;
     ASSERTS_NOT_NULL(pIface, , ME, "NULL");
-    wld_wpaCtrlMngr_unregisterInterface(pIface->pMgr, pIface);
     wld_wpaCtrlInterface_close(pIface);
     s_wpaCtrlCleanConnection(&pIface->cmdConn);
     s_wpaCtrlCleanConnection(&pIface->eventConn);
+    wld_wpaCtrlMngr_unregisterInterface(pIface->pMgr, pIface);
     free(pIface);
     *ppIface = NULL;
 }

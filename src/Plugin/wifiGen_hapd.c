@@ -91,7 +91,12 @@
 
 static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
-    const char* mainIface = wld_rad_getFirstVap(pRad)->alias;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    const char* mainIface = pRad->Name;
+    T_AccessPoint* pMainAP = wld_rad_getFirstVap(pRad);
+    if(pMainAP != NULL) {
+        mainIface = pMainAP->alias;
+    }
     SAH_TRACEZ_WARNING(ME, "%s: hostapd stopped", mainIface);
     wld_deamonExitInfo_t* pExitInfo = &pHapdInst->dmnProcess->lastExitInfo;
     if((pExitInfo != NULL) && (pExitInfo->isExited) &&

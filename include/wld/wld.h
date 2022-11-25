@@ -1441,7 +1441,7 @@ struct WLD_RADIO {
     time_t blockStart;                  /* Set when block was started */
     int ignoreWPSEvents;                /* Ignore commands received from wpa_talk when this is set */
     amxc_llist_it_t it;
-    void* pBus;                         /* Keep a copy of the amxd_object_t */
+    amxd_object_t* pBus;                /* Keep a copy of the amxd_object_t */
     void* vendorData;                   /* Additional vendor specific data */
     const T_Radio_Capability* capabilities;
     T_Radio_Cap_Item* cap_status;
@@ -2265,8 +2265,9 @@ void wld_cleanup();
 
 vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta);
 vendor_t* wld_getVendorByName(const char* name);
-void wld_unregisterVendor(vendor_t* vendor);
-void wld_unregisterAllVendors();
+bool wld_isVendorUsed(vendor_t* vendor);
+bool wld_unregisterVendor(vendor_t* vendor);
+bool wld_unregisterAllVendors();
 
 int wld_addRadio(const char* name, vendor_t* vendor, int idx);
 void wld_deleteRadio(const char* name);
