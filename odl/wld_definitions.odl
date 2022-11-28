@@ -2034,8 +2034,8 @@ define rrm_t{
 				 * device.
 				 * @version 9.0
 				 */
-				%read-only int32 SignalStrength{
-					on action validate call check_range { min = -200, max = 0 };
+				%read-only uint8 SignalStrength{
+					on action validate call check_range { min = 0, max = 220 };
 				}
 
 				/**
@@ -2043,6 +2043,18 @@ define rrm_t{
 				 * @version 9.0
 				 */
 				%read-only datetime TimeStamp;
+
+				/**
+				 * Channel used when the measurement was done
+				 * @version 9.0
+				 */
+				%read-only uint8 Channel;
+
+				/**
+				 * Operating_class of the radio when the measurement was done
+				 * @version 9.0
+				 */
+				%read-only uint8 OperatingClass;
 			}
 
 			/**

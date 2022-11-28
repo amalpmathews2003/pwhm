@@ -683,7 +683,7 @@ typedef struct {
     char bssid[ETHER_ADDR_LEN];
     char ssid[SSID_NAME_LEN];
     int information;
-    int operatingClass;
+    swl_operatingClass_t operatingClass;
     int channel;
     int phyType;
     char nasIdentifier[NAS_IDENTIFIER_MAX_LEN];
@@ -952,6 +952,8 @@ typedef struct wld_nasta {
     int32_t rssiAccumulator;
     time_t TimeStamp;
     amxd_object_t* obj;
+    swl_channel_t channel;
+    swl_operatingClass_t operatingClass;
     void* vendorData;
 } wld_nasta_t;
 
@@ -1357,7 +1359,7 @@ struct WLD_RADIO {
     wld_rad_bwSelectMode_e autoBwSelectMode;                /* channel bandwidth pushed for a fixed channel */
     bool obssCoexistenceEnabled;                            /* Enable the coexistence Bandwidth */
     bool obssCoexistenceActive;                             /* Obss coexistence activated */
-    uint32_t operatingClass;
+    swl_operatingClass_t operatingClass;
     wld_channel_extensionPos_e extensionChannel;
     int guardInterval;
     int MCS;                                    /* Modulation Coding Scheme index */

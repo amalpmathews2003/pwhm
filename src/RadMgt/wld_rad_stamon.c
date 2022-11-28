@@ -127,6 +127,8 @@ amxd_status_t wld_rad_staMon_addDevice(T_Radio* pRad, amxd_object_t* instance_ob
 
     pMD->SignalStrength = 0;
     pMD->TimeStamp = 0;
+    pMD->channel = 0;
+    pMD->operatingClass = 0;
 
     pMD->obj = instance_object;
     pRad->pFA->mfn_wrad_add_stamon(pRad, pMD);
@@ -301,6 +303,8 @@ amxd_status_t wld_rad_staMon_getDeviceStats(amxd_object_t* obj,
             continue;
         }
         amxd_object_set_int32_t(instance, "SignalStrength", pMD->SignalStrength);
+        amxd_object_set_uint8_t(instance, "Channel", pMD->channel);
+        amxd_object_set_uint8_t(instance, "OperatingClass", pMD->operatingClass);
         struct tm now_tm;
         gmtime_r(&pMD->TimeStamp, &now_tm);
         amxc_ts_t ts;
