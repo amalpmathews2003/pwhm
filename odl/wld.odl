@@ -84,12 +84,12 @@
         dm-save = false,
         dm-save-on-changed = true,
         dm-save-delay = 1000,
+        dm-defaults = "${name}_defaults/",
         directory = "${storage-path}/odl"
     };
 
     //main files
     definition_file = "${name}_definitions.odl";
-    defaults_file = "${name}_defaults.odl";
 
     sahtrace = {
         type = "syslog",

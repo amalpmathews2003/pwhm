@@ -175,7 +175,7 @@ bool wld_plugin_loadDmConf() {
     // This makes sure that the events for the defaults are only called when the plugin is started
     while(amxp_signal_read() == 0) {
     }
-    int rv = amxo_parser_parse_string(wld_plugin_parser, "?include '${odl.directory}/${name}.odl':'${defaults_file}';", amxd_dm_get_root(wld_plugin_dm));
+    int rv = amxo_parser_parse_string(wld_plugin_parser, "?include '${odl.directory}/${name}.odl':'${odl.dm-defaults}';", amxd_dm_get_root(wld_plugin_dm));
     while(amxp_signal_read() == 0) {
     }
     if(rv != 0) {
