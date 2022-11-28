@@ -125,17 +125,21 @@ T_SSID* s_createSsid(amxd_object_t* obj) {
 }
 
 static void s_cleanSSID(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: destroy SSID", pSSID->Name);
     T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
     T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
-    if(debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
+    if((pAP != NULL) && debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
+        //clear SSID Reference of AccessPoint
         pAP->pSSID = NULL;
-        //update SSID Reference of AccessPoint
-    } else if(debugIsEpPointer(pEP) && (pEP->pSSID == pSSID)) {
+    } else if((pEP != NULL) && debugIsEpPointer(pEP) && (pEP->pSSID == pSSID)) {
+        //clear SSID Reference of EndPoint
         pEP->pSSID = NULL;
-        //update SSID Reference of AccessPoint
     }
     amxc_llist_it_take(&pSSID->it);
+    if(pSSID->pBus != NULL) {
+        pSSID->pBus->priv = NULL;
+    }
     free(pSSID);
 }
 
@@ -475,22 +479,25 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         memset(TBuf, 0, sizeof(TBuf));
         memset(objPath, 0, sizeof(objPath));
 
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pS->Name);
+
         /* Set SSID data in mapped OBJ structure */
         /** 'Enable' Enables or disables the SSID entry  */
         //set_OBJ_ParameterHelper(TPH_INT32 , object, "Enable", &pS->enable);
         /** 'Status' The current operational state of the SSID entry. */
-        amxd_object_set_cstring_t(object, "Status", SSID_SupStatus[pS->status]);
-        swl_typeTimeMono_toObjectParam(object, "LastStatusChangeTimeStamp", pS->changeInfo.lastStatusChange);
+        amxd_trans_set_cstring_t(&trans, "Status", SSID_SupStatus[pS->status]);
+        swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pS->changeInfo.lastStatusChange);
         /** 'SSID' The current service set identifier in use by the
          *  connection. The SSID is an identifier that is attached to
          *  packets sent over the wireless LAN that functions as an
          *  ID for joining a particular radio network (BSS). */
-        amxd_object_set_cstring_t(object, "SSID", pS->SSID);
+        amxd_trans_set_cstring_t(&trans, "SSID", pS->SSID);
         /** 'MACAddress' The MAC address of this interface.  */
         sprintf(TBuf, "%.2X:%.2X:%.2X:%.2X:%.2X:%.2X",
                 pS->MACAddress[0], pS->MACAddress[1], pS->MACAddress[2],
                 pS->MACAddress[3], pS->MACAddress[4], pS->MACAddress[5]);
-        amxd_object_set_cstring_t(object, "MACAddress", TBuf);
+        amxd_trans_set_cstring_t(&trans, "MACAddress", TBuf);
         /** 'BSSID' The Basic Service Set ID. This is the MAC address
          *  of the access point, which can either be local (when this
          *  instance models an access point SSID) or remote (when
@@ -515,7 +522,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             convStr2Mac(pS->BSSID, ETHER_ADDR_LEN, (unsigned char*) TBuf, ETHER_ADDR_STR_LEN);
         }
 
-        amxd_object_set_cstring_t(object, "BSSID", TBuf);
+        amxd_trans_set_cstring_t(&trans, "BSSID", TBuf);
         TBuf[0] = 0;
         int32_t ifIndex = 0;
         if(pAP != NULL) {
@@ -525,14 +532,10 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             swl_str_copy(TBuf, sizeof(TBuf), pEP->alias);
             ifIndex = pEP->index;
         }
-        amxd_object_set_cstring_t(pS->pBus, "Name", TBuf);
-        amxd_object_set_int32_t(pS->pBus, "Index", ifIndex);
+        amxd_trans_set_cstring_t(&trans, "Name", TBuf);
+        amxd_trans_set_int32_t(&trans, "Index", ifIndex);
 
-        if(!(set & NO_COMMIT)) {
-            if(!(object)) {
-                SAH_TRACEZ_ERROR(ME, "Failed to commit");
-            }
-        }
+        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pS->Name);
     } else {
         /* Get AP data from OBJ to AP */
         bool tmpEnable = amxd_object_get_bool(object, "Enable", NULL);

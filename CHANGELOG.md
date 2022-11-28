@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.8.0 - 2022-11-28(14:26:26 +0000)
+
+### Other
+
+- [pwhm] ssid interface name set in dm with no amx notification
+
 ## Release v2.7.2 - 2022-11-25(11:13:06 +0000)
 
 ### Other

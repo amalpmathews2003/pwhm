@@ -251,7 +251,6 @@ amxd_object_t* ssid_create(amxd_object_t* pBus, T_Radio* pR, const char* name) {
 
     /* Sync constant parameters : name -> Datamodel */
     amxd_object_set_cstring_t(ssidinstance, "Name", name);
-    amxd_object_set_cstring_t(ssidinstance, "Alias", name);
     swl_str_copy(pSSID->Name, sizeof(pSSID->Name), name);
 
     /* Sync dynamic parameters : T_SSID -> Datamodel */
