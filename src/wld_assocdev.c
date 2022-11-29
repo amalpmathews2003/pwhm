@@ -84,6 +84,7 @@
 #include "swla/swla_oui.h"
 #include "wld_ap_rssiMonitor.h"
 #include "wld_rad_nl80211.h"
+#include "wld_dm_trans.h"
 
 #define BRCTL_DEL_FDB_ENTRIES 27
 #define STATIONS_STATS_TIMEOUT 5000
@@ -226,8 +227,16 @@ int wld_ad_getIndex(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
 void wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     if(pAD->object) {
-        amxd_object_delete(&pAD->object);
-        pAD->object = NULL;
+        amxd_trans_t trans;
+        amxd_object_t* adObjTempl = amxd_object_get_parent(pAD->object);
+        ASSERT_TRANSACTION_INIT(adObjTempl, &trans, , ME, "%s : trans init failure", pAD->Name);
+        amxd_trans_del_inst(&trans, amxd_object_get_index(pAD->object), NULL);
+        pAD->object->priv = NULL;
+        if(!wld_dm_transaction_apply(&trans, get_wld_plugin_dm())) {
+            SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pAD->Name);
+            pAD->object->priv = pAD;
+            return;
+        }
     } else {
         SAH_TRACEZ_INFO(ME, "%s: object did not exist!", pAD->Name);
     }

@@ -116,9 +116,23 @@ static void s_checkDevEntries(T_AccessPoint* pAP, uint32_t nrAssoc, uint32_t nrA
     assert_int_equal(dmNrAssoc, nrAssoc);
     assert_int_equal(pAP->AssociatedDeviceNumberOfEntries, nrAssoc);
 
+    //check assocDev obj instances count matching internal count
+    amxd_object_t* pAdTempl = amxd_object_get(pAP->pBus, "AssociatedDevice");
+    assert_non_null(pAdTempl);
+    assert_int_equal(amxc_llist_size(&pAdTempl->instances), nrAssoc);
+
     uint32_t dmNrActive = swl_typeUInt32_fromObjectParamDef(pAP->pBus, "ActiveAssociatedDeviceNumberOfEntries", 0);
     assert_int_equal(dmNrActive, nrActive);
     assert_int_equal(pAP->ActiveAssociatedDeviceNumberOfEntries, nrActive);
+}
+
+static void s_removeDevEntriesRange(T_AccessPoint* vap, T_AssociatedDevice* devList[], int nbEntries, int startId, int stopId) {
+    for(int i = startId; i < stopId; i++) {
+        assert_non_null(devList[i]);
+        s_checkDevEntries(vap, SWL_MIN(nbEntries, nbEntries - i + 1), (nbEntries - i));
+        wld_ad_add_disconnection(vap, devList[i]);
+        s_checkDevEntries(vap, nbEntries - i, SWL_MAX(0, nbEntries - i - 1));
+    }
 }
 
 static void test_startStop_checkAssoc(_UNUSED void** state) {
@@ -136,6 +150,10 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
         s_checkDevEntries(vap, i, i);
 
         devList[i] = wld_vap_findOrCreateAssociatedDevice(vap, &binAddr);
+        //check instance creation
+        assert_non_null(devList[i]);
+        //check instance match
+        assert_ptr_equal(devList[i], wld_vap_find_asociatedDevice(vap, &binAddr));
         wld_ad_add_connection_try(vap, devList[i]);
 
         s_checkDevEntries(vap, i + 1, i + 1);
@@ -159,14 +177,27 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
     amxc_var_clean(&ret);
     amxc_var_clean(&args);
 
+    //remove 1st half of assoc dev entries
+    s_removeDevEntriesRange(vap, devList, NR_TEST_DEV, 0, NR_TEST_DEV / 2);
 
-    for(int i = 0; i < NR_TEST_DEV; i++) {
-        s_checkDevEntries(vap, SWL_MIN(NR_TEST_DEV, NR_TEST_DEV - i + 1), (NR_TEST_DEV - i));
-
-        wld_ad_add_disconnection(vap, devList[i]);
-
-        s_checkDevEntries(vap, NR_TEST_DEV - i, SWL_MAX(0, NR_TEST_DEV - i - 1));
+    amxd_object_t* pAdTempl = amxd_object_get(vap->pBus, "AssociatedDevice");
+    assert_non_null(pAdTempl);
+    //check all obj instances pointing to valid internal contexts
+    amxc_llist_for_each(it, &pAdTempl->instances) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        assert_non_null(instance);
+        assert_non_null(instance->priv);
+        int i;
+        for(i = 0; i < NR_TEST_DEV && (instance->priv == devList[i]); i++) {
+        }
+        assert_int_not_equal(i, NR_TEST_DEV);
     }
+
+    //removing remaining assoc dev entries
+    s_removeDevEntriesRange(vap, devList, NR_TEST_DEV, NR_TEST_DEV / 2, NR_TEST_DEV);
+
+    //check that only last inactive assocDev obj instance remains
+    assert_int_equal(amxc_llist_size(&pAdTempl->instances), NR_OF_STICKY_UNAUTHORIZED_STATIONS);
 
     //readd
 

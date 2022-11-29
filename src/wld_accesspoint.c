@@ -2307,13 +2307,13 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
         if(!templateObject) {
             SAH_TRACEZ_ERROR(ME, "%s: Could not get template: %p", pAP->alias, templateObject);
-            return false;
+            return SWL_RC_INVALID_PARAM;
         }
 
         amxd_status_t result = amxd_object_new_instance(&pAD->object, templateObject, NULL, 0, NULL);
         if((result != amxd_status_ok) || (pAD->object == NULL)) {
             SAH_TRACEZ_ERROR(ME, "%s: Could not create template object %u", pAP->alias, result);
-            return false;
+            return SWL_RC_ERROR;
         }
         pAD->object->priv = (void*) pAD;
         amxd_object_set_cstring_t(pAD->object, "MACAddress", pAD->Name);
@@ -2321,7 +2321,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
     amxd_trans_t trans;
     amxd_object_t* object = pAD->object;
-    ASSERT_TRANSACTION_INIT(object, &trans, false, ME, "%s : trans init failure", pAD->Name);
+    ASSERT_TRANSACTION_INIT(object, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
 
     amxd_trans_set_value(cstring_t, &trans, "ChargeableUserId", pAD->Radius_CUID);
     amxd_trans_set_value(bool, &trans, "AuthenticationState", pAD->AuthenticationState);
@@ -2407,7 +2407,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     amxd_object_t* probeReqCapsObject = amxd_object_get(object, "ProbeReqCaps");
     wld_ad_syncCapabilities(probeReqCapsObject, &pAD->probeReqCaps);
 
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), false, ME, "%s : trans apply failure", pAD->Name);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
     return SWL_RC_CONTINUE;
 }
 
@@ -2423,10 +2423,12 @@ void wld_vap_syncNrDev(T_AccessPoint* pAP) {
     SAH_TRACEZ_INFO(ME, "%s: sync Assocdev %u %u", pAP->alias,
                     active, pAP->ActiveAssociatedDeviceNumberOfEntries);
 
-    amxd_object_set_int32_t(pAP->pBus, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(pAP->pBus, &trans, , ME, "%s : trans init failure", pAP->alias);
+    amxd_trans_set_value(int32_t, &trans, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
     pAP->ActiveAssociatedDeviceNumberOfEntries = active;
-    amxd_object_set_int32_t(pAP->pBus, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
-
+    amxd_trans_set_value(int32_t, &trans, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pAP->alias);
 
     wld_rad_updateActiveDevices((T_Radio*) pAP->pRadio);
 }
@@ -2505,7 +2507,7 @@ bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
      * Since we should call this function each time a sta DC's, we use a simple
      * cleanup algorithm instead of doing the effort of sorting and cleaning.
      */
-    do{
+    do {
         inactiveStaCount = 0;
         uint32_t inactiveStaIndex = 0;
 
@@ -2531,7 +2533,7 @@ bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
             SAH_TRACEZ_INFO(ME, "Destroying oldest failed-auth entry (%s) out of %d",
                             pAP->AssociatedDevice[inactiveStaIndex]->Name,
                             inactiveStaCount);
-            wld_ad_destroy_associatedDevice(pAP, inactiveStaIndex);
+            wld_ad_destroy(pAP, pAP->AssociatedDevice[inactiveStaIndex]);
         }
     } while(inactiveStaCount > NR_OF_STICKY_UNAUTHORIZED_STATIONS);
     return true;
