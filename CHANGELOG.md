@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.9.0 - 2022-11-29(12:03:46 +0000)
+
+### Other
+
+- support SSID LowerLayer TR181 compliant format
+
 ## Release v2.8.0 - 2022-11-28(14:26:26 +0000)
 
 ### Other

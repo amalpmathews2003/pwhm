@@ -107,6 +107,7 @@
 #include "swl/types/swl_arrayType.h"
 #include "swla/swla_namedTupleType.h"
 #include "swla/swla_circTable.h"
+#include "swla/swla_object.h"
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
 #include "wld_hostapd_cfgManager.h"

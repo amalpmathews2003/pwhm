@@ -208,24 +208,20 @@ amxd_status_t _wld_ssid_setLowerLayers_pwf(amxd_object_t* object,
         return amxd_status_unknown_error;
     }
     T_SSID* pSSID = (T_SSID*) object->priv;
-    char* radioRef = amxc_var_dyncast(cstring_t, args);
-    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
-    SAH_TRACEZ_INFO(ME, "ssid_obj(%p:%s:%s) LowerLayer %s",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path,
-                    radioRef);
-    free(path);
     ASSERTI_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
-    T_Radio* pRad = NULL;
-    amxd_object_t* pRadObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", radioRef);
-    if(pRadObj) {
-        pRad = (T_Radio*) pRadObj->priv;
-        char* path = amxd_object_get_path(pRadObj, AMXD_OBJECT_NAMED);
-        SAH_TRACEZ_INFO(ME, "radObj(%p:%s:%s) pRad(%p)",
-                        pRadObj, amxd_object_get_name(pRadObj, AMXD_OBJECT_NAMED), path,
-                        pRad);
-        free(path);
+    char* lowerLayer = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(lowerLayer, amxd_status_ok, ME, "NULL");
+    T_Radio* pRad = (T_Radio*) swla_object_getReferenceObjectPriv(object, lowerLayer);
+    if(pRad != NULL) {
+        SAH_TRACEZ_INFO(ME, "SSID (%s) has radio LowerLayer (%s) and refers to pRad(%p:%s)",
+                        pSSID->Name, lowerLayer, pRad, pRad->Name);
+        //sync potentially missed conf params on boot
+        pRad->pFA->mfn_sync_radio(pRad->pBus, pRad, GET);
+    } else {
+        SAH_TRACEZ_INFO(ME, "SSID (%s) has no identified radio LowerLayer (%s)",
+                        pSSID->Name, lowerLayer);
     }
-    free(radioRef);
+    free(lowerLayer);
     pSSID->RADIO_PARENT = pRad;
     return amxd_status_ok;
 }
