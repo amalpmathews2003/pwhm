@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.11.0 - 2022-12-02(14:58:49 +0000)
+
+### Other
+
+- - [prplMesh M2] WiFi.NeighboringWiFiDiagnostic
+
 ## Release v2.10.0 - 2022-12-02(09:01:51 +0000)
 
 ### Other

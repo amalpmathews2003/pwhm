@@ -1290,6 +1290,14 @@ SWL_ARRAY_TYPE_H(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX);
 
 SWL_NTT_H(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO, );
 
+typedef enum {
+    WLD_RAD_SCAN_STATUS_COMPLETED,
+    WLD_RAD_SCAN_STATUS_FAILED,
+    WLD_RAD_SCAN_STATUS_DISABLED,
+    WLD_RAD_SCAN_STATUS_MAX,
+} wld_radScanStatus_e;
+extern const char* g_str_wld_radScanStatus[];
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;
@@ -1431,6 +1439,7 @@ struct WLD_RADIO {
     amxc_llist_t monitorDev;            /* @listof T_MonitorDevice */
 
     T_ScanState scanState;              /* SSID Scan state */
+    wld_radScanStatus_e radScanStatus;  /* radio status for scan feature */
 
     int enable;                         /* Enable/Disable the Radio */
     int wlRadio_SK;                     /* Storage of the Radio Socket handler */

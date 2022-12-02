@@ -64,6 +64,16 @@
 
 #define ME "wldScan"
 
+#define SCAN_DELAY 60000
+uint64_t g_neighboringWiFiDiagnosticID = 0;
+bool g_neighboringWiFiDiagnosticStatus = false;
+
+const char* g_str_wld_radScanStatus[WLD_RAD_SCAN_STATUS_MAX] = {
+    "ReportingRadios",
+    "FailedRadios",
+    "DisabledRadios",
+};
+
 const char* g_str_wld_blockScanMode[BLOCKSCANMODE_MAX] = {
     "Disable",
     "Prio",
@@ -754,7 +764,6 @@ static void wld_scan_update_obj_results(T_Radio* pR) {
     wld_scan_count_cochannel(pR, obj_scan);
 }
 
-
 /**
  * This function should be called by the plug-in when it receives the notification that a scan is
  * completed.
@@ -797,24 +806,188 @@ void wld_scan_done(T_Radio* pR, bool success) {
     /* Scan is done */
     swl_str_copy(pR->scanState.scanReason, sizeof(pR->scanState.scanReason), "None");
     pR->scanState.scanType = SCAN_TYPE_NONE;
-}
 
-/**
- * get the first radio interface for given frequency.
- */
-T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand) {
-    T_Radio* radio = NULL;
-    amxc_llist_it_t* rad_it = NULL;
-    amxc_llist_for_each(rad_it, &g_radios) {
-        radio = amxc_llist_it_get_data(rad_it, T_Radio, it);
-
-        if(radio->operatingFrequencyBand == (swl_freqBandExt_e) freqBand) {
-            return radio;
-        }
+    if(success) {
+        pR->radScanStatus = WLD_RAD_SCAN_STATUS_COMPLETED;
+    } else {
+        pR->radScanStatus = WLD_RAD_SCAN_STATUS_FAILED;
     }
-    return NULL;
+
+    /* Notify scan done*/
+    wld_scan_diagNotifyRadDone(success);
 }
 
 bool wld_scan_isRunning(T_Radio* pR) {
     return pR->scanState.scanType != SCAN_TYPE_NONE;
+}
+
+bool wld_isAnyRadioRunningScan() {
+    bool scanRunning = false;
+
+    T_Radio* pRadio = NULL;
+    wld_for_eachRad(pRadio) {
+        if(pRadio->scanState.scanType != SCAN_TYPE_NONE) {
+            scanRunning = true;
+        }
+    }
+    return scanRunning;
+}
+
+static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad, T_ScanResult_SSID* pSsid) {
+    ASSERTS_NOT_NULL(pResultListMap, , ME, "NULL");
+    ASSERTS_NOT_NULL(pSsid, , ME, "NULL");
+
+    amxc_var_t* resulMap = amxc_var_add(amxc_htable_t, pResultListMap, NULL);
+
+    // Set Elements
+    char bssid[ETHER_ADDR_STR_LEN];
+    mac2str(bssid, pSsid->bssid, sizeof(bssid));
+    amxc_var_add_key(cstring_t, resulMap, "Radio", pRad->instanceName);
+    amxc_var_add_key(cstring_t, resulMap, "SSID", wld_ssid_to_string(pSsid->ssid, pSsid->ssid_len));
+    amxc_var_add_key(cstring_t, resulMap, "BSSID", bssid);
+    amxc_var_add_key(uint32_t, resulMap, "Channel", pSsid->channel);
+    amxc_var_add_key(uint32_t, resulMap, "CentreChannel", pSsid->centre_channel);
+    amxc_var_add_key(uint32_t, resulMap, "SignalStrength", pSsid->signalStrength);
+    amxc_var_add_key(cstring_t, resulMap, "SecurityModeEnabled", cstr_AP_ModesSupported[pSsid->secModeEnabled]);
+    amxc_var_add_key(cstring_t, resulMap, "EncryptionMode", cstr_AP_EncryptionMode[pSsid->encryptionMode]);
+    amxc_var_add_key(cstring_t, resulMap, "OperatingFrequencyBand", Rad_SupFreqBands[pRad->operatingFrequencyBand]);
+
+    char operatingStandardsChar[32] = "";
+    swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar), pSsid->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
+    amxc_var_add_key(cstring_t, resulMap, "OperatingStandard", operatingStandardsChar);
+    amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", Rad_SupBW[pSsid->bandwidth]);
+
+    amxc_string_t wpsmethods;
+    amxc_string_init(&wpsmethods, 0);
+    wld_wps_ConfigMethods_mask_to_string(&wpsmethods, pSsid->WPS_ConfigMethodsEnabled);
+    amxc_var_add_key(cstring_t, resulMap, "ConfigMethodsSupported", amxc_string_get(&wpsmethods, 0)); // WPSConfigMethodsSupported
+    amxc_string_clean(&wpsmethods);
+    amxc_var_add_key(uint32_t, resulMap, "Noise", pSsid->noise);
+
+    SAH_TRACEZ_INFO(ME, "SET MAP FINISH");
+}
+
+
+static void s_addDiagRadioResultsToMap(amxc_var_t* pResultListMap, T_Radio* pRad, T_ScanResults* pScanResults) {
+    ASSERTS_NOT_NULL(pResultListMap, , ME, "NULL");
+    ASSERTS_NOT_NULL(pScanResults, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+
+    amxc_llist_it_t* it = amxc_llist_get_first(&pScanResults->ssids);
+    while(it != NULL) {
+        T_ScanResult_SSID* pSsid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
+        it = amxc_llist_it_get_next(it);
+
+        s_addDiagSingleResultToMap(pResultListMap, pRad, pSsid);
+    }
+}
+
+static void s_addRadiosScanStatusToMap(amxc_var_t* pMap) {
+    amxc_string_t radLists[WLD_RAD_SCAN_STATUS_MAX];
+
+    for(size_t i = 0; i < WLD_RAD_SCAN_STATUS_MAX; i++) {
+        amxc_string_init(&radLists[i], 0);
+    }
+
+    T_Radio* pRadio = NULL;
+    wld_for_eachRad(pRadio) {
+        amxc_string_appendf(&radLists[pRadio->radScanStatus], "%s%s", amxc_string_is_empty(&radLists[pRadio->radScanStatus]) ? "" : ",", pRadio->instanceName);
+    }
+
+    for(size_t i = 0; i < WLD_RAD_SCAN_STATUS_MAX; i++) {
+        amxc_var_add_key(cstring_t, pMap, g_str_wld_radScanStatus[i], amxc_string_get(&radLists[i], 0));
+        amxc_string_clean(&radLists[i]);
+    }
+}
+
+static void s_sendNeighboringWifiDiagnositResult() {
+    amxc_var_t retMap;
+    amxc_var_init(&retMap);
+    amxc_var_set_type(&retMap, AMXC_VAR_ID_HTABLE);
+
+    /*
+     * If at least one radio succeeds in making a scan:
+     * ==> Status is "Complete"
+     * ==> else, Status is "Error"
+     */
+    if(g_neighboringWiFiDiagnosticStatus) {
+        amxc_var_add_key(cstring_t, &retMap, "Status", "Error");
+    } else {
+        amxc_var_add_key(cstring_t, &retMap, "Status", "Completed");
+    }
+
+    s_addRadiosScanStatusToMap(&retMap);
+
+    amxc_var_t* pResultListMap = amxc_var_add_key(amxc_llist_t, &retMap, "Result", NULL);
+
+    T_ScanResults scanRes;
+    amxc_llist_init(&scanRes.ssids);
+
+    T_Radio* pRadio = NULL;
+    wld_for_eachRad(pRadio) {
+        // Get data
+        if(pRadio->pFA->mfn_wrad_scan_results(pRadio, &scanRes) < 0) {
+            SAH_TRACEZ_ERROR(ME, "Unable to retrieve scan results");
+            continue;
+        }
+
+        // Add data to map
+        s_addDiagRadioResultsToMap(pResultListMap, pRadio, &scanRes);
+        wld_scan_cleanupScanResults(&scanRes);
+    }
+
+    amxd_function_deferred_done(g_neighboringWiFiDiagnosticID, amxd_status_ok, NULL, &retMap);
+    amxc_var_clean(&retMap);
+    g_neighboringWiFiDiagnosticID = 0;         // reset call id
+    g_neighboringWiFiDiagnosticStatus = false; // reset status
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+void wld_scan_diagNotifyRadDone(bool success) {
+    if(success) {
+        g_neighboringWiFiDiagnosticStatus = success;
+    }
+
+    /* Send the Neighboring WiFi Diagnostic Result list */
+    if(!wld_isAnyRadioRunningScan()) {
+        s_sendNeighboringWifiDiagnositResult();
+    }
+}
+
+amxd_status_t _neighboringWiFiDiagnostic(amxd_object_t* pWifiObj,
+                                         amxd_function_t* func,
+                                         amxc_var_t* args,
+                                         amxc_var_t* retval) {
+
+    SAH_TRACEZ_IN(ME);
+
+    g_neighboringWiFiDiagnosticID = amxc_var_dyncast(uint64_t, retval);
+
+    char* path = amxd_object_get_path(pWifiObj, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_INFO(ME, "instance object(%p:%s:%s)", pWifiObj, amxd_object_get_name(pWifiObj, AMXD_OBJECT_NAMED), path);
+
+    amxd_status_t status = amxd_status_ok;
+
+    // Step 1 Launch scan:
+    T_Radio* pRadio = NULL;
+    wld_for_eachRad(pRadio) {
+
+        if(pRadio->status == RST_UP) {
+            status = _startScan(pRadio->pBus, func, args, retval);
+
+            if(status != amxd_status_ok) {
+                pRadio->radScanStatus = WLD_RAD_SCAN_STATUS_FAILED;
+            }
+            SAH_TRACEZ_INFO(ME, "Scan for (%s) %s", pRadio->Name, (status == amxd_status_ok) ? "is correctely launched" : "is not launched");
+
+        } else {
+            pRadio->radScanStatus = WLD_RAD_SCAN_STATUS_DISABLED;
+        }
+    }
+
+    amxd_function_defer(func, &g_neighboringWiFiDiagnosticID, retval, NULL, NULL);
+
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_deferred;
 }

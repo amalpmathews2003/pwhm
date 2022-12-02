@@ -329,6 +329,11 @@ define rrm_t{
 // bool getWebWPSData(%in string vap, %in bool enable, %in string wpsMode, %in string wpsClientPin, %in string wpsSelfPin);
 // bool setWebWPSData(%in string vap, %in bool enable, %in string wpsMode, %in string wpsClientPin);
 
+	/**
+	 * This command defines access to other WiFi SSIDs that this device is able to receive.
+	 */
+	void neighboringWiFiDiagnostic();
+
 /* /////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////// */
 

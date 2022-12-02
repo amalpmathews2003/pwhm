@@ -598,6 +598,22 @@ T_Radio* wld_getRadioByAddress(unsigned char* macAddress) {
     return NULL;
 }
 
+/**
+ * get the first radio interface for given frequency.
+ */
+T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand) {
+    T_Radio* radio = NULL;
+    amxc_llist_it_t* rad_it = NULL;
+    amxc_llist_for_each(rad_it, &g_radios) {
+        radio = amxc_llist_it_get_data(rad_it, T_Radio, it);
+
+        if(radio->operatingFrequencyBand == (swl_freqBandExt_e) freqBand) {
+            return radio;
+        }
+    }
+    return NULL;
+}
+
 amxd_object_t* get_wld_object() {
     return wifi;
 }
