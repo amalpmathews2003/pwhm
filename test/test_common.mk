@@ -20,7 +20,7 @@ endif
 
 VALGRIND?=valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=10
 UT_SETTINGS=CMOCKA_MESSAGE_OUTPUT=XML
-LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib:$(SUT_DIR)/src/Plugin
+LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib:$(SUT_DIR)/src:$(SUT_DIR)/src/Plugin
 
 runtest: $(BINARIES) prerun
 	($(foreach binary,$(BINARIES),$(LD_LIB) $(VALGRIND) ./$(binary) &&) true) || ($(MAKE) postrun && false)

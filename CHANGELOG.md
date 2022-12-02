@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.10.0 - 2022-12-02(09:01:51 +0000)
+
+### Other
+
+- [pwhm][libwld] restore nl80211 unit tests
+
 ## Release v2.9.0 - 2022-11-29(12:03:46 +0000)
 
 ### Other
