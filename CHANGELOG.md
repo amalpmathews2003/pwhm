@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.11.1 - 2022-12-05(08:28:49 +0000)
+
+### Other
+
+- [pwhm] fix crash when getting sta stats after 2 disconnections
+- remove squash commits as no needed anymore
+
 ## Release v2.11.0 - 2022-12-02(14:58:49 +0000)
 
 ### Other
