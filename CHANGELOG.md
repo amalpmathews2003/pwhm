@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.12.0 - 2022-12-07(15:49:36 +0000)
+
+### Other
+
+- - Adding operating_class and channel for the NonAssociatedDevice object
+
 ## Release v2.11.1 - 2022-12-05(08:28:49 +0000)
 
 ### Other
