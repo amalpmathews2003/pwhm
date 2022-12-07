@@ -249,6 +249,7 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
     wl_th_vap_getVendorData(vap)->errorOnStaStats = false;
 
     T_EndPoint* ep = dm.bandList[0].ep;
+    assert_non_null(ep);
     amxc_var_init(&ret);
     amxc_var_init(&args);
     amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
@@ -262,6 +263,42 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
     char* epSecMode = swl_typeCharPtr_fromObjectParamDef(epStats, "SecurityModeEnabled", 0);
     assert_string_equal("WPA2-Personal", epSecMode);
     free(epSecMode);
+
+    // Check the endpoint radio reference
+    T_Radio* rad = ep->pSSID->RADIO_PARENT;
+    assert_non_null(rad);
+    char* radioRef = amxd_object_get_path(rad->pBus, AMXD_OBJECT_NAMED);
+    char* epRadioRef = swl_typeCharPtr_fromObjectParamDef(ep->pBus, "RadioReference", 0);
+    assert_string_equal(radioRef, epRadioRef);
+    assert_string_equal(radioRef, "WiFi.Radio.wifi0");
+    free(radioRef);
+    free(epRadioRef);
+
+    // Check the endpoint profile reference
+    // Named profile reference
+    assert_int_equal(amxd_object_set_cstring_t(ep->pBus, "ProfileReference", "WiFi.EndPoint.sta0.Profile.prof0"), 0);
+    assert_non_null(ep->currentProfile);
+    char* profileAlias = swl_typeCharPtr_fromObjectParamDef(ep->currentProfile->pBus, "Alias", 0);
+    assert_string_equal(profileAlias, "prof0");
+    free(profileAlias);
+    char* profileRef = amxd_object_get_path(ep->currentProfile->pBus, AMXD_OBJECT_NAMED);
+    char* epProfileRef = swl_typeCharPtr_fromObjectParamDef(ep->pBus, "ProfileReference", 0);
+    assert_string_equal(profileRef, epProfileRef);
+    assert_string_equal(profileRef, "WiFi.EndPoint.sta0.Profile.prof0");
+    free(profileRef);
+    free(epProfileRef);
+    // Indexed profile reference
+    assert_int_equal(amxd_object_set_cstring_t(ep->pBus, "ProfileReference", "WiFi.EndPoint.1.Profile.2"), 0);
+    assert_non_null(ep->currentProfile);
+    profileAlias = swl_typeCharPtr_fromObjectParamDef(ep->currentProfile->pBus, "Alias", 0);
+    assert_string_equal(profileAlias, "prof2");
+    free(profileAlias);
+    profileRef = amxd_object_get_path(ep->currentProfile->pBus, AMXD_OBJECT_INDEXED);
+    epProfileRef = swl_typeCharPtr_fromObjectParamDef(ep->pBus, "ProfileReference", 0);
+    assert_string_equal(profileRef, epProfileRef);
+    assert_string_equal(profileRef, "WiFi.EndPoint.1.Profile.2");
+    free(profileRef);
+    free(epProfileRef);
 }
 
 int main(void) {

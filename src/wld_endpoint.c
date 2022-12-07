@@ -317,50 +317,31 @@ amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
     const char* newProfileRef = amxc_var_constcast(cstring_t, args);
     if(swl_str_isEmpty(newProfileRef)) {
         SAH_TRACEZ_WARNING(ME, "profile Ref is not yet set");
-        return amxd_status_unknown_error;
+        return amxd_status_ok;
     }
 
     SAH_TRACEZ_INFO(ME, "setProfileReference - %s", newProfileRef);
 
     bool credentialsChanged = false;
-    amxc_llist_it_t* it = NULL;
     T_EndPointProfile* oldProfile = pEP->currentProfile;
     pEP->currentProfile = NULL;
-    SAH_TRACEZ_INFO(ME, "Number of Endpoint Profiles detected : [%zd]", amxc_llist_size(&pEP->llProfiles));
 
-    for(it = amxc_llist_get_first(&pEP->llProfiles); it; it = amxc_llist_it_get_next(it)) {
-        T_EndPointProfile* profile = (T_EndPointProfile*) amxc_llist_it_get_data(it, T_EndPointProfile, it);
-        if(!profile) {
-            SAH_TRACEZ_ERROR(ME, "Failed to retrieve the T_EndPointProfile struct from the Linked List");
-            continue;
-        }
-
-        char* profileRef = amxd_object_get_path(profile->pBus, AMXD_OBJECT_NAMED);
-
-        if(!swl_str_matches(newProfileRef, profileRef)) {
-            SAH_TRACEZ_INFO(ME, "profileRef [%s] != [%s] -> next", profileRef, profileRef);
-            free(profileRef);
-            continue;
-        }
-
-        int comparison = wld_endpoint_isProfileIdentical(oldProfile, profile);
-        if(comparison < 0) {
-            SAH_TRACEZ_INFO(ME, "Profile is not identical %i", comparison);
-            credentialsChanged = true;
-        } else {
-            SAH_TRACEZ_INFO(ME, "Profile is identical, don't disconnect");
-        }
-
-        SAH_TRACEZ_INFO(ME, "Profile reference found - Setting Current Profile for [%s]", profileRef);
-        pEP->currentProfile = profile;
-        free(profileRef);
-        break;
-    }
-
-    if(!pEP->currentProfile) {
-        SAH_TRACEZ_INFO(ME, "No profile found matching the profileRef [%s]", newProfileRef);
+    amxd_object_t* newProfileObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", newProfileRef);
+    if(!newProfileObj) {
+        SAH_TRACEZ_ERROR(ME, "No profile found matching the profileRef [%s]", newProfileRef);
         return amxd_status_ok;
     }
+    T_EndPointProfile* newProfile = (T_EndPointProfile*) newProfileObj->priv;
+    int comparison = wld_endpoint_isProfileIdentical(oldProfile, newProfile);
+    if(comparison < 0) {
+        SAH_TRACEZ_ERROR(ME, "Profile is not identical %i", comparison);
+        credentialsChanged = true;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "Profile is identical, don't disconnect");
+    }
+
+    SAH_TRACEZ_INFO(ME, "Profile reference found - Setting Current Profile for [%s]", newProfileRef);
+    pEP->currentProfile = newProfile;
 
     wldu_copyStr(pEP->pSSID->SSID, pEP->currentProfile->SSID, sizeof(pEP->pSSID->SSID));
     syncData_SSID2OBJ(pEP->pSSID->pBus, pEP->pSSID, SET);
@@ -1144,7 +1125,9 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
     amxd_object_set_cstring_t(object, "IntfName", pEP->Name);
 
     if(pEP->currentProfile) {
-        amxd_object_set_cstring_t(object, "ProfileReference", pEP->currentProfile->alias);
+        char* profileRef = amxd_object_get_path(pEP->currentProfile->pBus, AMXD_OBJECT_INDEXED);
+        amxd_object_set_cstring_t(object, "ProfileReference", profileRef);
+        free(profileRef);
     } else {
         amxd_object_set_cstring_t(object, "ProfileReference", "");
     }
@@ -1154,6 +1137,15 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
         char* path = amxd_object_get_path(pEP->pSSID->pBus, AMXD_OBJECT_NAMED);
         swl_str_copy(TBuf, sizeof(TBuf), path);
         free(path);
+        T_Radio* pRad = pEP->pSSID->RADIO_PARENT;
+        if(pRad) {
+            char* radObjPath = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
+            if(radObjPath) {
+                SAH_TRACEZ_INFO(ME, "%s: radObjPath %s", pRad->Name, radObjPath);
+                amxd_object_set_cstring_t(pEP->pBus, "RadioReference", radObjPath);
+                free(radObjPath);
+            }
+        }
     }
     amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
 

@@ -163,7 +163,7 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 
         assert_non_null(band->ep);
 
-        assert_int_equal(amxc_llist_size(&band->ep->llProfiles), 1);
+        assert_int_equal(amxc_llist_size(&band->ep->llProfiles), 2);
 
         assert_non_null(band->ep->currentProfile);
 

@@ -173,7 +173,8 @@
             instance add ("sta0") {
                 parameter SSIDReference = "WiFi.SSID.sta0";
                 parameter Enable = 1;
-                parameter ProfileReference = "prof0";
+                parameter RadioReference = "WiFi.Radio.wifi0";
+                parameter ProfileReference = "WiFi.EndPoint.sta0.Profile.prof0";
                 object Profile {
                 	instance add ("prof0"){
                 		parameter Alias = "prof0";
@@ -184,6 +185,15 @@
                 			parameter KeyPassPhrase = "prplMesh";
                 		}	
                 	}
+                        instance add ("prof2"){
+                                parameter Alias = "prof2";
+                                parameter Enable = 0;
+                                parameter SSID = "prplMesh-WHM-24g";
+                                object Security {
+                                        parameter ModeEnabled = "WPA2-Personal";
+                                        parameter KeyPassPhrase = "prplMesh";
+                                }
+                        }
                 }
             }
         }
@@ -191,7 +201,8 @@
             instance add ("sta1") {
                 parameter SSIDReference = "WiFi.SSID.sta1";
                 parameter Enable = 1;
-                parameter ProfileReference = "prof1";
+                parameter RadioReference = "WiFi.Radio.wifi1";
+                parameter ProfileReference = "WiFi.EndPoint.sta1.Profile.prof1";
                 object Profile {
                 	instance add ("prof1"){
                 		parameter Alias = "prof1";
@@ -202,6 +213,15 @@
                 			parameter KeyPassPhrase = "prplMesh";
                 		}	
                 	}
+                        instance add ("prof3"){
+                                parameter Alias = "prof3";
+                                parameter Enable = 0;
+                                parameter SSID = "prplMesh-WHM-5g";
+                                object Security {
+                                        parameter ModeEnabled = "WPA2-Personal";
+                                        parameter KeyPassPhrase = "prplMesh";
+                                }
+                        }
                 }
             }
         }
