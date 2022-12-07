@@ -843,7 +843,9 @@ static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     char bssid[ETHER_ADDR_STR_LEN];
     mac2str(bssid, pSsid->bssid, sizeof(bssid));
     amxc_var_add_key(cstring_t, resulMap, "Radio", pRad->instanceName);
-    amxc_var_add_key(cstring_t, resulMap, "SSID", wld_ssid_to_string(pSsid->ssid, pSsid->ssid_len));
+    char* ssid_str = wld_ssid_to_string(pSsid->ssid, pSsid->ssid_len);
+    amxc_var_add_key(cstring_t, resulMap, "SSID", ssid_str);
+    free(ssid_str);
     amxc_var_add_key(cstring_t, resulMap, "BSSID", bssid);
     amxc_var_add_key(uint32_t, resulMap, "Channel", pSsid->channel);
     amxc_var_add_key(uint32_t, resulMap, "CentreChannel", pSsid->centre_channel);

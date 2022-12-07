@@ -117,10 +117,10 @@ const char** Rad_SupBW = swl_bandwidth_str;
 
 const char* Rad_RadarZones[RADARZONES_MAX] = {"NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"};
 
-const char* Rad_SupCExt[] = {"Auto", "AboveControlChannel", "BelowControlChannel", "None", 0};
+const char* Rad_SupCExt[] = {"Auto", "AboveControlChannel", "BelowControlChannel", "None", NULL};
 const char* Rad_SupGI[] = {"Auto", "400nsec", "800nsec", 0};
 
-const char* wld_rad_autoBwSelectMode_str[] = {"MaxAvailable", "MaxCleared", "Default", 0};
+const char* wld_rad_autoBwSelectMode_str[] = {"MaxAvailable", "MaxCleared", "Default", NULL};
 
 const char* cstr_chanmgt_rad_state[CM_RAD_MAX + 1] = {
     "Unknown",
@@ -2616,6 +2616,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 /* Set our WPS data. This is usual fix at compiler time */
 /** the object must point to an WIFI.wps_DefParam object !*/
 void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
     ASSERT_TRUE(debugIsRadPointer(pR), , ME, "Invalid rad ctx");
     T_CONST_WPS* pCWPS = pR->wpsConst;
     ASSERT_NOT_NULL(pCWPS, , ME, "NULL");
