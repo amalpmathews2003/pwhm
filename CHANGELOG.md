@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.13.1 - 2022-12-13(16:10:35 +0000)
+
+### Other
+
+- Fix klocwork issues on WiFi components
+
 ## Release v2.13.0 - 2022-12-08(13:38:29 +0000)
 
 ### New
