@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.13.2 - 2022-12-16(15:51:09 +0000)
+
+### Other
+
+- [prplMesh WHM] endpoint ConnectionStatus dm change notification is not sent
+
 ## Release v2.13.1 - 2022-12-13(16:10:35 +0000)
 
 ### Other
