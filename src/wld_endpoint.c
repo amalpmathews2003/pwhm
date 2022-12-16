@@ -83,6 +83,7 @@
 #include "wld_wpaSupp_cfgManager.h"
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_epProfile.h"
+#include "wld_dm_trans.h"
 
 /* Function prototypes for helpers. */
 static void s_setEndpointStatus(T_EndPoint* pEP,
@@ -1534,16 +1535,24 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
     wld_epConnectionStatus_e oldConnectionStatus = pEP->connectionStatus;
     wld_intfStatus_e oldStatus = pEP->status;
 
-    if((status != pEP->status) || (connectionStatus != pEP->connectionStatus) || (error != pEP->error)) {
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pEP->Name);
+    if(pEP->status != status) {
+        amxd_trans_set_value(cstring_t, &trans, "Status", cstr_EndPoint_status[status]);
+        pEP->status = status;
         changed = true;
     }
-
-    pEP->status = status;
-    pEP->connectionStatus = connectionStatus;
-    pEP->error = error;
-    amxd_object_set_cstring_t(object, "Status", cstr_EndPoint_status[pEP->status]);
-    amxd_object_set_cstring_t(object, "ConnectionStatus", cstr_EndPoint_connectionStatus[pEP->connectionStatus]);
-    amxd_object_set_cstring_t(object, "LastError", cstr_EndPoint_lastError[pEP->error]);
+    if(pEP->connectionStatus != connectionStatus) {
+        amxd_trans_set_value(cstring_t, &trans, "ConnectionStatus", cstr_EndPoint_connectionStatus[connectionStatus]);
+        pEP->connectionStatus = connectionStatus;
+        changed = true;
+    }
+    if(pEP->error != error) {
+        amxd_trans_set_value(cstring_t, &trans, "LastError", cstr_EndPoint_lastError[error]);
+        pEP->error = error;
+        changed = true;
+    }
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pEP->Name);
 
     wld_status_e ssidStatus = RST_DOWN;
     if(pEP->connectionStatus == EPCS_CONNECTED) {
