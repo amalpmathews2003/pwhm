@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.13.3 - 2022-12-21(10:27:32 +0000)
+
+### Other
+
+- [prplMesh WHM] endpoint ProfileReference && RadioReference setting issue
+- [prplMesh WHM] wps connection credentials are empty and parsing issue
+
 ## Release v2.13.2 - 2022-12-16(15:51:09 +0000)
 
 ### Other
