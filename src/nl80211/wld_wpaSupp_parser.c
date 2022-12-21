@@ -166,15 +166,15 @@ static inline uint16_t WPS_SUPPLICANT_GET_BE16(const uint8_t* a) {
 }
 
 static swl_rc_ne s_parseSsid(T_WPSCredentials* creds, uint16_t attr _UNUSED, uint16_t len, uint8_t* data) {
-    ASSERT_FALSE(len > sizeof(creds->ssid), SWL_RC_ERROR, ME, "Invalid ssid size %u", len);
-    bool success = swl_str_copy(creds->ssid, len, (const char*) data);
+    ASSERT_FALSE(len >= sizeof(creds->ssid), SWL_RC_ERROR, ME, "Invalid ssid size %u", len);
+    bool success = swl_str_ncopy(creds->ssid, sizeof(creds->ssid), (const char*) data, len);
     ASSERT_TRUE(success, SWL_RC_ERROR, ME, " FAIL");
     return SWL_RC_OK;
 }
 
 static swl_rc_ne s_parseKey(T_WPSCredentials* creds, uint16_t attr _UNUSED, uint16_t len, uint8_t* data) {
-    ASSERT_FALSE(len > sizeof(creds->key), SWL_RC_ERROR, ME, "Invalid key size %u", len);
-    bool success = swl_str_copy(creds->key, len, (const char*) data);
+    ASSERT_FALSE(len >= sizeof(creds->key), SWL_RC_ERROR, ME, "Invalid key size %u", len);
+    bool success = swl_str_ncopy(creds->key, sizeof(creds->key), (const char*) data, len);
     ASSERT_TRUE(success, SWL_RC_ERROR, ME, "FAIL");
     return SWL_RC_OK;
 }
@@ -232,7 +232,10 @@ swl_rc_ne wpaSup_parseWpsReceiveCredentialsEvt(T_WPSCredentials* creds, char* da
         } else {
             SAH_TRACEZ_INFO(ME, "Unsupported element id %d", attr);
         }
-        index += len;
+        // Skip empty data for WPS_ATTR_CRED attr
+        if(attr != WPS_ATTR_CRED) {
+            index += len;
+        }
     }
     SAH_TRACEZ_INFO(ME, "Retrieved credentials: SSID: %s; security mode: %d; key: %s",
                     creds->ssid, creds->secMode, creds->key);

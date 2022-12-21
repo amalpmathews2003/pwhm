@@ -103,7 +103,10 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
     bitmask_to_string(&configMethodsStr, wld_wpsConfigMethods, ' ', pEP->WPS_ConfigMethodsEnabled);
     swl_mapChar_add(global, "config_methods", (char*) configMethodsStr.buffer);
     amxc_string_clean(&configMethodsStr);
-    swl_mapChar_add(global, "wps_cred_processing", pEP->WPS_Configured ? "2" : "0");
+    /* By default for endpoint, wps_cred_processing should be set to 2
+     * to process received credentials internally and pass them over ctrl_iface
+     * to external program */
+    swl_mapChar_add(global, "wps_cred_processing", "2");
     return SWL_RC_OK;
 }
 
