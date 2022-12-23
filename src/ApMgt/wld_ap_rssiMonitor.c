@@ -83,44 +83,42 @@
 #include "swla/swla_time_spec.h"
 #include "wld_monitor.h"
 #include "wld_ap_rssiMonitor.h"
-#include <swla/swla_mcs.h>
+#include "swla/types/swla_tupleTypeArray.h"
+#include "swla/swla_mcs.h"
 
 #define ME "apRssi"
 
-char* historyNames[] = {"MeasurementTimestamps",
-    "SignalStrengthHistory", "NoiseHistory",
-    "DownlinkRateHistory", "UplinkRateHistory",
-    "BytesSentHistory", "BytesReceivedHistory",
-    "PacketsSentHistory", "PacketsReceivedHistory",
-    "ErrorsSentHistory", "ErrorsReceivedHistory",
-    "RetransCountHistory", "FailedRetransCountHistory",
-    "RetryCountHistory", "MultipleRetryCountHistory",
-    "InactiveHistory", "PowerSaveHistory",
-    //mcs data
-    "TxLinkBandwidthHistory", "TxSpatialStreamHistory",
-    "TxRateStandardHistory", "TxMcsIndexHistory",
-    "RxLinkBandwidthHistory", "RxSpatialStreamHistory",
-    "RxRateStandardHistory", "RxMcsIndexHistory"};
+char* historyNames[] = {
+    "MeasurementTimestamps",
+    "SignalStrengthHistory",
+    "NoiseHistory",
+    "DownlinkRateHistory",
+    "UplinkRateHistory",
+    "BytesSentHistory",
+    "BytesReceivedHistory",
+    "PacketsSentHistory",
+    "PacketsReceivedHistory",
+    "ErrorsSentHistory",
+    "ErrorsReceivedHistory",
+    "RetransCountHistory",
+    "FailedRetransCountHistory",
+    "RxRetransCountHistory",
+    "RxFailedRetransCountHistory",
+    "RetryCountHistory",
+    "MultipleRetryCountHistory",
+    "InactiveHistory",
+    "PowerSaveHistory",
+    "TxLinkBandwidthHistory",
+    "TxSpatialStreamHistory",
+    "TxRateStandardHistory",
+    "TxMcsIndexHistory",
+    "RxLinkBandwidthHistory",
+    "RxSpatialStreamHistory",
+    "RxRateStandardHistory",
+    "RxMcsIndexHistory"
+};
 
-SWL_TUPLE_TYPE(mytuple, ARR(swl_type_timeSpecReal,
-                            swl_type_int32, swl_type_int32,
-                            swl_type_uint32, swl_type_uint32,
-                            swl_type_uint64, swl_type_uint64,
-                            swl_type_uint32, swl_type_uint32,
-                            swl_type_uint32, swl_type_uint32,
-                            swl_type_uint32, swl_type_uint32,
-                            swl_type_uint32, swl_type_uint32,
-                            swl_type_uint32, swl_type_uint32,
-                            //mcs data
-                            (swl_type_t*) swl_type_bandwidth,
-                            swl_type_uint32,
-                            (swl_type_t*) swl_type_radStd,
-                            swl_type_uint32,
-                            (swl_type_t*) swl_type_bandwidth,
-                            swl_type_uint32,
-                            (swl_type_t*) swl_type_radStd,
-                            swl_type_uint32));
-
+SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(historyNames) == (gtWld_staHistory__max), "historyNames not correctly defined");
 
 static void timeHandler(void* userdata) {
     T_AccessPoint* pAP = (T_AccessPoint*) userdata;
@@ -678,15 +676,12 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
 
             uint8_t nbValidSample = pAD->staHistory->nr_valid_samples;
 
-            swl_table_t table;
-            memset(&table, 0, sizeof(swl_table_t));
-            table.tupleType = &gtWld_staHistory;
-            table.nrTuples = (nbValidSample < historyLen) ? nbValidSample : historyLen;
-            table.tuples = pAD->staHistory->samples;
-
             amxc_var_add_key(cstring_t, &myMap, "MACAddress", pAD->Name);
             amxc_var_add_key(uint8_t, &myMap, "Historylength", nbValidSample);
-            swl_table_toMapOfChar(&myMap, historyNames, &table);
+            if(nbValidSample > 0) {
+                swl_tta_toMapOfChar(&myMap, historyNames, &gtWld_staHistory, pAD->staHistory->samples, (nbValidSample < historyLen) ? nbValidSample : historyLen);
+            }
+
             wld_apRssiMon_sendHistoryOnAssocEvent(pAP, pAD, &myMap);
             amxc_var_clean(&myMap);
         }
@@ -705,28 +700,6 @@ void wld_apRssiMon_getStaHistory(T_AccessPoint* pAP, const unsigned char macAddr
     uint32_t historyLen = pAP->rssiEventing.historyLen;
     uint8_t nbValidSample = pAD->staHistory->nr_valid_samples;
 
-    wld_staHistory_t* staHistory = (wld_staHistory_t*) calloc(historyLen, sizeof(wld_staHistory_t));
-    ASSERT_NOT_NULL(staHistory, , ME, "NULL");
-
-    if((pAD->staHistory->index_last_sample < historyLen - 1) && (nbValidSample >= historyLen)) {
-        uint8_t idx = pAD->staHistory->index_last_sample;
-        uint8_t i = 0;
-        uint8_t j = 0;
-
-        for(i = idx + 1; i < historyLen; i++) {
-            staHistory[j] = pAD->staHistory->samples[i];
-            j++;
-        }
-        for(i = 0; i <= idx; i++) {
-            if(j < historyLen) {
-                staHistory[j] = pAD->staHistory->samples[i];
-                j++;
-            }
-        }
-    } else {
-        memcpy(staHistory, pAD->staHistory->samples, historyLen * sizeof(wld_staHistory_t));
-    }
-
     amxc_var_add_key(cstring_t, myMap, "MACAddress", pAD->Name);
     char buffer[50] = {'\0'};
     swl_timespec_realToDate(buffer, sizeof(buffer), &pAD->staHistory->measurementTimestamp);
@@ -737,14 +710,15 @@ void wld_apRssiMon_getStaHistory(T_AccessPoint* pAP, const unsigned char macAddr
 
     amxc_var_add_key(uint8_t, myMap, "Historylength", nbValidSample);
 
-    swl_table_t table;
-    memset(&table, 0, sizeof(swl_table_t));
-    table.tupleType = &gtWld_staHistory;
-    table.nrTuples = (nbValidSample < historyLen) ? nbValidSample : historyLen;
-    table.tuples = staHistory;
-    swl_table_toMapOfChar(myMap, historyNames, &table);
+    if(nbValidSample > 0) {
+        ssize_t offset = 0;
+        if(nbValidSample == historyLen) {
+            offset = (pAD->staHistory->index_last_sample + 1) % historyLen;
+        }
 
-    free(staHistory);
+        swl_tta_toMapOfCharOffset(myMap, historyNames, &gtWld_staHistory, pAD->staHistory->samples,
+                                  (nbValidSample < historyLen) ? nbValidSample : historyLen, offset, -1);
+    }
 }
 
 void wld_apRssiMon_sendHistoryOnAssocEvent(T_AccessPoint* pAP, T_AssociatedDevice* pAD, amxc_var_t* myVar) {
@@ -871,12 +845,9 @@ amxd_status_t _getShortHistoryStats(amxd_object_t* obj_rssiEventing,
             amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
             int i;
             for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
-                amxc_var_t varmap;
-                amxc_var_init(&varmap);
-                amxc_var_set_type(&varmap, AMXC_VAR_ID_HTABLE);
-                wld_apRssiMon_getStaHistory(pAP, pAP->AssociatedDevice[i]->MACAddress, &varmap);
-                amxc_var_move(retval, &varmap);
-                amxc_var_clean(&varmap);
+                amxc_var_t* varmap = amxc_var_add_new(retval);
+                amxc_var_set_type(varmap, AMXC_VAR_ID_HTABLE);
+                wld_apRssiMon_getStaHistory(pAP, pAP->AssociatedDevice[i]->MACAddress, varmap);
             }
         }
     }

@@ -171,7 +171,7 @@ T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t*
 
     T_Radio* radio = wld_rad_get_radio(name);
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "WiFi.Radio.wifi%d", idx);
+    snprintf(buffer, sizeof(buffer), "WiFi.Radio.wifi%d.", idx);
 
     // wld itself chokes when the pcb object does not exist, so fail fast if that happens.
     amxc_var_t ret;
