@@ -39,6 +39,8 @@ install: all
 	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(DEST)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(DEST)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(DEST)/etc/amx/wld/wld_definitions.odl
+	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
+	$(foreach odl,$(wildcard odl/wld_defaults/*.odl), $(INSTALL) -D -p -m 0644 $(odl) $(DEST)/etc/amx/wld/wld_defaults/;)
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(DEST)$(LIBDIR)/amx/wld/wld.so
@@ -59,6 +61,8 @@ package: all
 	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(PKGDIR)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(PKGDIR)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(PKGDIR)/etc/amx/wld/wld_definitions.odl
+	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
+	$(INSTALL) -D -p -m 0644 odl/wld_defaults/*.odl $(PKGDIR)/etc/amx/wld/wld_defaults/
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKGDIR)$(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(PKGDIR)$(LIBDIR)/amx/wld/wld.so
@@ -81,6 +85,8 @@ doc:
 
 	$(eval ODLFILES += odl/wld.odl)
 	$(eval ODLFILES += odl/wld_definitions.odl)
+	# expand/substitute source wildcard instead of using destination directory: the destination directory can contain files from another artifact not intended for pcb_docgen use
+	$(eval ODLFILES += $(wildcard odl/wld_defaults/*.odl))
 
 	mkdir -p output/xml
 	mkdir -p output/html

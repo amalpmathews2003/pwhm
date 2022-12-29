@@ -1,0 +1,8 @@
+%populate {
+    object WiFi {
+        object AutoCommitMgr {
+            parameter Enable = true;
+            parameter DelayTime = 1000;
+        }
+    }
+}

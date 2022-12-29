@@ -1,0 +1,168 @@
+%populate {
+    object WiFi {
+        object SSID {
+            instance add ("vap2g0priv") {
+                parameter LowerLayers = "Device.WiFi.Radio.1.";
+                parameter SSID = "prplOS";
+                parameter Enable = 0;
+            }
+            instance add ("vap5g0priv") {
+                parameter LowerLayers = "Device.WiFi.Radio.2.";
+                parameter SSID = "prplOS";
+                parameter Enable = 0;
+            }
+            instance add ("vap2g0guest") {
+                parameter LowerLayers = "Device.WiFi.Radio.1.";
+                parameter SSID = "prplOS-guest";
+                parameter Enable = 0;
+            }
+            instance add ("vap5g0guest") {
+                parameter LowerLayers = "Device.WiFi.Radio.2.";
+                parameter SSID = "prplOS-guest";
+                parameter Enable = 0;
+            }
+        }
+        object AccessPoint {
+            instance add ("vap2g0priv") {
+                parameter SSIDReference = "WiFi.SSID.vap2g0priv";
+                parameter Enable = 0;
+                parameter RetryLimit = 3;
+                parameter WMMEnable = 0;
+                parameter UAPSDEnable = 0;
+                parameter MCEnable = 0;
+                parameter DefaultDeviceType = "Data";
+                parameter BridgeInterface = "br-lan";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 0;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "password";
+                    parameter RekeyingInterval = 0;
+                    parameter OWETransitionInterface = "";
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter SHA256Enable = 0;
+                    parameter RadiusServerIPAddr = "";
+                    parameter RadiusServerPort = 1812;
+                    parameter RadiusSecret = "";
+                    parameter RadiusDefaultSessionTimeout = 0;
+                    parameter RadiusNASIdentifier = "";
+                    parameter RadiusCalledStationId = "";
+                    parameter RadiusChargeableUserId = 0;
+                    parameter ModeEnabled = "WPA2-Personal";
+                }
+                object WPS {
+                    parameter Enable = 1;
+                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
+                    parameter Configured = 1;
+                }
+                object DriverConfig {
+                    parameter BssMaxIdlePeriod = -1;
+                }
+            }
+            instance add ("vap5g0priv") {
+                parameter SSIDReference = "WiFi.SSID.vap5g0priv";
+                parameter Enable = 0;
+                parameter RetryLimit = 3;
+                parameter WMMEnable = 0;
+                parameter UAPSDEnable = 0;
+                parameter MCEnable = 0;
+                parameter DefaultDeviceType = "Data";
+                parameter BridgeInterface = "br-lan";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 1;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "password";
+                    parameter RekeyingInterval = 0;
+                    parameter OWETransitionInterface = "";
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter SHA256Enable = 0;
+                    parameter RadiusServerIPAddr = "";
+                    parameter RadiusServerPort = 1812;
+                    parameter RadiusSecret = "";
+                    parameter RadiusDefaultSessionTimeout = 0;
+                    parameter RadiusNASIdentifier = "";
+                    parameter RadiusCalledStationId = "";
+                    parameter RadiusChargeableUserId = 0;
+                    parameter ModeEnabled = "WPA2-Personal";
+                }
+                object WPS {
+                    parameter Enable = 1;
+                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
+                    parameter Configured = 1;
+                }
+                object DriverConfig {
+                    parameter BssMaxIdlePeriod = -1;
+                }
+            }
+            instance add ("vap2g0guest") {
+                parameter SSIDReference = "WiFi.SSID.vap2g0guest";
+                parameter Enable = 0;
+                parameter DefaultDeviceType = "Guest";
+                parameter BridgeInterface = "br-guest";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 0;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "passwordGuest";
+                    parameter RekeyingInterval = 0;
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter ModeEnabled = "WPA2-Personal";
+                }
+                object WPS {
+                    parameter Enable = 0;
+                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
+                    parameter Configured = 1;
+                }
+            }
+            instance add ("vap5g0guest") {
+                parameter SSIDReference = "WiFi.SSID.vap5g0guest";
+                parameter Enable = 0;
+                parameter DefaultDeviceType = "Guest";
+                parameter BridgeInterface = "br-guest";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 0;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "passwordGuest";
+                    parameter RekeyingInterval = 0;
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter ModeEnabled = "WPA2-Personal";
+                }
+                object WPS {
+                    parameter Enable = 0;
+                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
+                    parameter Configured = 1;
+                }
+            }
+        }
+    }
+}
