@@ -139,13 +139,13 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
     }
 
     amxc_var_t* class = amxc_var_get_key(args, "class", AMXC_VAR_FLAG_DEFAULT);
-    int32_t operClass = (class == NULL) ? 0 : amxc_var_dyncast(int32_t, class);
+    uint32_t operClass = (class == NULL) ? 0 : amxc_var_dyncast(uint32_t, class);
 
     amxc_var_t* channelVar = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
-    int32_t channel = (channelVar == NULL) ? 0 : amxc_var_dyncast(int32_t, channelVar);
+    uint32_t channel = (channelVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, channelVar);
 
     amxc_var_t* timeoutVar = amxc_var_get_key(args, "wait", AMXC_VAR_FLAG_DEFAULT);
-    int32_t timeout = (timeoutVar == NULL) ? 1000 : amxc_var_dyncast(int32_t, timeoutVar);
+    uint32_t timeout = (timeoutVar == NULL) ? 1000 : amxc_var_dyncast(uint32_t, timeoutVar);
 
     amxd_status_t status = amxd_status_ok;
 
