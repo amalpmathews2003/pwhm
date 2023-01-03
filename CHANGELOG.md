@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.13.4 - 2023-01-03(16:18:00 +0000)
+
+### Other
+
+- - Fix rpc argument types
+
 ## Release v2.13.3 - 2022-12-21(10:27:32 +0000)
 
 ### Other
