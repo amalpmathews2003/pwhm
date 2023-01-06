@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.13.5 - 2023-01-06(18:21:48 +0000)
+
+### Other
+
+- Fix pwhm integration into feeds
+
 ## Release v2.13.4 - 2023-01-03(16:18:00 +0000)
 
 ### Other
