@@ -766,7 +766,7 @@ typedef struct {
 } wld_assocDev_capabilities_t;
 
 #define X_WLD_STA_HISTORY(X, Y) \
-    X(Y, gtSwl_type_timeSpecReal, timestamp) \
+    X(Y, gtSwl_type_timeSpecMono, timestamp) \
     X(Y, gtSwl_type_int32, signalStrength) \
     X(Y, gtSwl_type_int32, noise) \
     X(Y, gtSwl_type_uint32, dataDownlinkRate) \
@@ -777,6 +777,8 @@ typedef struct {
     X(Y, gtSwl_type_uint32, rxPacketCount) \
     X(Y, gtSwl_type_uint32, txError) \
     X(Y, gtSwl_type_uint32, rxError) \
+    X(Y, gtSwl_type_uint32, txFrameCount) \
+    X(Y, gtSwl_type_uint32, rxFrameCount) \
     X(Y, gtSwl_type_uint32, tx_Retransmissions) \
     X(Y, gtSwl_type_uint32, tx_RetransmissionsFailed) \
     X(Y, gtSwl_type_uint32, rx_Retransmissions) \
@@ -817,15 +819,17 @@ typedef struct {
     amxd_object_t* object;
     char Radius_CUID[256];                    /* Chargeable-User-Identity attribute in Radius Access-Accept */
     bool AuthenticationState;                 /* Associate STA or device authenticated? */
-    long LastDataDownlinkRate;
-    long LastDataUplinkRate;
-    long SignalStrength;
-    int minSignalStrength;
-    int maxSignalStrength;
-    int meanSignalStrength;
-    int meanSignalStrengthExpAccumulator;
-    long meanSignalStrengthLinearAccumulator;
-    int nrMeanSignalStrength;
+    uint32_t LastDataDownlinkRate;
+    uint32_t LastDataUplinkRate;
+    int32_t SignalStrength;
+    int32_t minSignalStrength;
+    swl_timeMono_t minSignalStrengthTime;
+    int32_t maxSignalStrength;
+    swl_timeMono_t maxSignalStrengthTime;
+    int32_t meanSignalStrength;
+    int32_t meanSignalStrengthExpAccumulator;
+    int32_t meanSignalStrengthLinearAccumulator;
+    uint32_t nrMeanSignalStrength;
     double SignalStrengthByChain[MAX_NR_ANTENNA]; /* dBm */
     int32_t AvgSignalStrengthByChain;             /* dBm */
     int32_t noise;                                /* dBm */
@@ -835,7 +839,7 @@ typedef struct {
     uint32_t Tx_Retransmissions;
     uint32_t Tx_RetransmissionsFailed;
     uint32_t Rx_RetransmissionsFailed;
-    int Active;                 /* bool */
+    bool Active;                /* Whether station is actually connected, potentially not Authenticated */
     bool seen;                  /* data field for maclist updates */
     swl_radStd_e operatingStandard;
 
@@ -873,7 +877,11 @@ typedef struct {
     uint32_t DownlinkShortGuard;
 
     swl_mcs_t upLinkRateSpec;              /* Up link rate info (standard, mcs index, guard interval, number of spacial streams, bandwidth) */
+    swl_mcs_t lastNonLegacyUplinkMCS;
+    swl_timeMono_t lastNonLegacyUplinkTime;
     swl_mcs_t downLinkRateSpec;            /* down link rate info (standard, mcs index, guard interval, number of spacial streams, bandwidth) */
+    swl_mcs_t lastNonLegacyDownlinkMCS;
+    swl_timeMono_t lastNonLegacyDownlinkTime;
 
     uint16_t MaxRxSpatialStreamsSupported; /* number of Rx Spatial streams*/
     uint16_t MaxTxSpatialStreamsSupported; /* number of Tx Spatial streams*/
@@ -896,6 +904,7 @@ typedef struct {
     bool hadSecFailure;                   /* Number of security failures of this station */
     wld_sta_muMimoInfo_t staMuMimoInfo;
     wld_assocDev_history_t* staHistory;
+    swl_IEEE80211deauthReason_ne lastDeauthReason;       /* last deauth reason for this sta */
 } T_AssociatedDevice;
 
 #define X_T_ASSOCIATED_DEVICE_ANNOT(X, Y) \
@@ -940,6 +949,7 @@ typedef struct {
     X(Y, gtSwl_type_uint32, MaxDownlinkRateReached, "MaxDownlinkRateReached") \
     X(Y, gtSwl_type_uint32, MaxUplinkRateSupported, "MaxUplinkRateSupported") \
     X(Y, gtSwl_type_uint32, MaxUplinkRateReached, "MaxUplinkRateReached") \
+    X(Y, gtSwl_type_bandwidthUnknown, MaxBandwidthSupported, "MaxBandwidthSupported") \
     X(Y, gtSwl_type_bool, powerSave, "PowerSave")
 
 SWL_NTT_H_ANNOTATE(gtWld_associatedDevice, T_AssociatedDevice, X_T_ASSOCIATED_DEVICE_ANNOT);

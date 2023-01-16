@@ -334,17 +334,16 @@ amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
     T_EndPointProfile* newProfile = (T_EndPointProfile*) newProfileObj->priv;
     int comparison = wld_endpoint_isProfileIdentical(oldProfile, newProfile);
     if(comparison < 0) {
-        SAH_TRACEZ_ERROR(ME, "Profile is not identical %i", comparison);
+        SAH_TRACEZ_INFO(ME, "Profile is not identical %i", comparison);
         credentialsChanged = true;
     } else {
-        SAH_TRACEZ_ERROR(ME, "Profile is identical, don't disconnect");
+        SAH_TRACEZ_INFO(ME, "Profile is identical, don't disconnect");
     }
 
     SAH_TRACEZ_INFO(ME, "Profile reference found - Setting Current Profile for [%s]", newProfileRef);
     pEP->currentProfile = newProfile;
 
     wldu_copyStr(pEP->pSSID->SSID, pEP->currentProfile->SSID, sizeof(pEP->pSSID->SSID));
-    pEP->pFA->mfn_sync_ssid(pEP->pSSID->pBus, pEP->pSSID, SET);
     if(credentialsChanged) {
         wld_endpoint_reconfigure(pEP);
     }
@@ -2032,6 +2031,7 @@ static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     pSsidObj->priv = pSSID;
     pSSID->pBus = pSsidObj;
 
+    wld_util_getObjName(pSSID->Name, sizeof(pSSID->Name), pSsidObj);
 
     /* Get defined paramater values from the default instance */
     pRad->pFA->mfn_sync_ssid(pSsidObj, pSSID, GET);

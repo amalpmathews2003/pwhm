@@ -27,7 +27,7 @@ LDFLAGS += -fprofile-arcs -ftest-coverage  \
 		   -Wl,-rpath,$(STAGINGDIR)/lib \
 		   -Wl,-rpath,$(STAGINGDIR)/usr/lib \
 		   $(shell PKG_CONFIG_PATH=$(PKGCONFDIR) pkg-config --define-prefix --libs sahtrace pcb cmocka swla swlc openssl test-toolbox) \
-		   -lamxb -lamxc -lamxd -lamxo -lamxp\
+		   -lamxb -lamxc -lamxd -lamxo -lamxp -lamxj\
 		   -L$(SUT_DIR)/src \
 		   -L$(SUT_DIR)/src/Plugin \
 		   -l:libwld.so \

@@ -78,6 +78,8 @@ static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wrad_enable = wld_th_rad_enable,
     .mfn_wrad_start_scan_ext = wld_th_rad_startScanExt,
     .mfn_wrad_scan_results = wld_th_rad_getScanResults,
+    .mfn_wrad_airtimefairness = wld_th_mfn_wrad_airtimefairness,
+    .mfn_wrad_intelligentAirtime = wld_th_mfn_wrad_intelligentAirtime,
 
     .mfn_wvap_create_hook = wld_th_vap_createHook,
     .mfn_wvap_destroy_hook = wld_th_vap_destroyHook,

@@ -1,0 +1,14 @@
+{
+    "data": {
+        "object": "WiFi.AccessPoint.wlan1.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].",
+        "parameters": {
+            "ActiveAssociatedDeviceNumberOfEntries": {
+                "from": 2,
+                "to": 1
+            }
+        },
+        "path": "WiFi.AccessPoint.2."
+    }
+}

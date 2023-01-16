@@ -93,6 +93,7 @@ static void test_getStats(void** state _UNUSED) {
     wld_th_vap_getVendorData(vap)->nrStaInFile = NR_TEST_DEV;
     wld_th_vap_getVendorData(vap)->staStatsFileName = "data0.txt";
 
+
     ttb_mockTimer_goToFutureSec(1);
     printf("\n Start Rssi Ev \n");
 
@@ -172,10 +173,13 @@ static void test_getStats(void** state _UNUSED) {
 
     ttb_mockTimer_goToFutureSec(1);
 
+    ttb_notifWatch_t* req = ttb_notifWatch_createOnObject(dm.ttbBus, vap->pBus);
+
     //Disassoc one manually.
 
     assert_non_null(pAD);
-    wld_ad_add_disconnection(vap, pAD);
+    wld_ad_deauthWithReason(vap, pAD, SWL_IEEE80211_DEAUTH_REASON_BTM);
+    ttb_amx_handleEvents();
 
 
     // Disassoc one by having 0 updates.
@@ -183,9 +187,28 @@ static void test_getStats(void** state _UNUSED) {
     wld_th_vap_getVendorData(vap)->nrStaInFile = 0;
     ttb_mockTimer_goToFutureSec(1);
     s_checkHistory(vap, evObj, "history4.txt");
+    ttb_amx_handleEvents();
+
+    ttb_notifWatch_printList(req);
+
+
+    size_t nrNotif = 10;
+    assert_int_equal(nrNotif, ttb_notifWatch_nbNotifsSeen(req));
+
+    for(size_t i = 0; i < nrNotif; i++) {
+        char fileBuf[64] = {0};
+        snprintf(fileBuf, sizeof(fileBuf), "deauthNot/notif_%zi.txt", i);
+        ttb_notification_t* notif = ttb_notifWatch_notif(req, i);
+        if(amxc_var_is_null(&notif->variant)) {
+            printf("NULL %zu\n", i);
+        } else {
+            swl_ttbVariant_assertToFileMatchesFile(&notif->variant, fileBuf);
+        }
+    }
+
 
     s_checkStaStats(vap, vapObj);
-
+    ttb_notifWatch_destroy(req);
 }
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {

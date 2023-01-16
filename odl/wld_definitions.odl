@@ -4056,6 +4056,9 @@ define rrm_t{
 
 			/** Short guarding interval is applied for uplink */
 			%read-only bool UplinkShortGuard;
+			
+			/** String representation of full receive rateSpec */
+			%read-only string UplinkRateSpec;
 
 			/** MCS Id of the station's downlink */
 			%read-only uint32 DownlinkMCS;
@@ -4065,6 +4068,9 @@ define rrm_t{
 
 			/** Short guarding interval is applied for downlink */
 			%read-only bool DownlinkShortGuard;
+			
+			/** String representation of full transmit rateSpec */
+			%read-only string DownlinkRateSpec;
 
 			/* Maximum number of Rx spatial streams supported */
 			%read-only uint16 MaxRxSpatialStreamsSupported;

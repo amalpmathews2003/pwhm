@@ -65,6 +65,15 @@
 
 #include "wld.h"
 
+typedef struct {
+    int32_t minRssi;
+    int32_t maxRssi;
+    int32_t minNoise;
+    int32_t maxNoise;
+    int32_t minSNR;
+    int32_t maxSNR;
+} wld_apRssiMon_signalRange_t;
+
 void wld_apRssiMon_updateEnable(T_AccessPoint* pAP);
 void wld_ap_rssiEv_debug(T_AccessPoint* pAP, amxc_var_t* retMap);
 void wld_ap_rssiMonInit(T_AccessPoint* pAP);
@@ -74,6 +83,7 @@ void wld_apRssiMon_destroyStaHistory(T_AssociatedDevice* pAD);
 void wld_apRssiMon_updateHistoryLen(T_AccessPoint* pAP);
 void wld_apRssiMon_cleanStaHistory(wld_assocDev_history_t* staHistory, uint32_t historyLen);
 void wld_apRssiMon_cleanStaHistoryAll(T_AccessPoint* pAP);
+wld_staHistory_t* wld_apRssiMon_getOldestStaSample(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_apRssiMon_getStaHistory(T_AccessPoint* pAP, const unsigned char macAddress[ETHER_ADDR_LEN], amxc_var_t* myMap);
 void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_apRssiMon_sendHistoryOnAssocEvent(T_AccessPoint* pAP, T_AssociatedDevice* pAD, amxc_var_t* myVar);
@@ -82,4 +92,5 @@ void wld_apRssiMon_sendStaHistoryAll(T_AccessPoint* pAP);
 void wld_apRssiMon_clearSendEventOnAssoc(T_AccessPoint* pAP);
 bool wld_apRssiMon_isReadyStaHistory(T_AssociatedDevice* pAD);
 void wld_apRssiMon_updateStaHistoryAll(T_AccessPoint* pAP);
+bool wld_apRssiMon_getMinMaxSignal(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_apRssiMon_signalRange_t* range);
 #endif /* SRC_INCLUDE_WLD_WLD_AP_RSSIMONITOR_H_ */

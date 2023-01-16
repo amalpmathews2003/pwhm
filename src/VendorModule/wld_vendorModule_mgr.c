@@ -209,7 +209,7 @@ static swl_rc_ne s_loadDefaultsVendorModule(wld_vendorModule_t* pVendorModule) {
 static int s_loadSharedObj(amxm_shared_object_t* pSoSrc) {
     ASSERT_NOT_NULL(pSoSrc, SWL_RC_ERROR, ME, "NULL");
     size_t modCount = amxm_so_count_modules(s_selfSo());
-    ASSERT_TRUE((modCount > 0), SWL_RC_ERROR, ME, "no modules registered");
+    ASSERTW_TRUE((modCount > 0), SWL_RC_ERROR, ME, "no modules registered");
     char* modName = NULL;
     while(modCount > 0) {
         modCount--;

@@ -100,6 +100,8 @@ char* historyNames[] = {
     "PacketsReceivedHistory",
     "ErrorsSentHistory",
     "ErrorsReceivedHistory",
+    "TxFrameCountHistory",
+    "RxFrameCountHistory",
     "RetransCountHistory",
     "FailedRetransCountHistory",
     "RxRetransCountHistory",
@@ -130,6 +132,7 @@ static void timeHandler(void* userdata) {
 
     swl_rc_ne result = pAP->pFA->mfn_wvap_update_rssi_stats(pAP);
     if(result != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "%s: stopping rssi monitor, rssi stats failed", pAP->name);
         wld_mon_stop(&ev->monitor);
     }
     int i;
@@ -573,6 +576,19 @@ void wld_apRssiMon_cleanStaHistoryAll(T_AccessPoint* pAP) {
     }
 }
 
+wld_staHistory_t* wld_apRssiMon_getOldestStaSample(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
+    ASSERTS_TRUE(pAP->rssiEventing.historyEnable, NULL, ME, "DISABLED");
+    ASSERTS_TRUE(pAD->AuthenticationState, NULL, ME, "No auth");
+    ASSERT_NOT_NULL(pAD->staHistory, NULL, ME, "NULL");
+
+
+    uint32_t historyLen = pAP->rssiEventing.historyLen;
+    uint8_t nbValidSample = pAD->staHistory->nr_valid_samples;
+    uint8_t indexOldestSample = nbValidSample >= historyLen ? (pAD->staHistory->index_last_sample + 1) % historyLen : 0;
+    return &pAD->staHistory->samples[indexOldestSample];
+}
+
 void wld_apRssiMon_updateStaHistoryAll(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
 
@@ -591,6 +607,47 @@ void wld_apRssiMon_updateStaHistoryAll(T_AccessPoint* pAP) {
         pAD = pAP->AssociatedDevice[i];
         wld_apRssiMon_updateStaHistory(pAP, pAD);
     }
+}
+
+bool wld_apRssiMon_getMinMaxSignal(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_apRssiMon_signalRange_t* range) {
+    ASSERT_NOT_NULL(pAD, false, ME, "NULL");
+    ASSERTS_TRUE(pAP->rssiEventing.historyEnable, false, ME, "DISABLED");
+    ASSERTS_TRUE(pAD->AuthenticationState, false, ME, "NULL");
+    ASSERT_NOT_NULL(pAD->staHistory, false, ME, "NULL");
+
+
+    uint8_t nbValidSample = pAD->staHistory->nr_valid_samples;
+    if(nbValidSample == 0) {
+        return false;
+    }
+    range->minRssi = pAD->staHistory->samples[0].signalStrength;
+    range->maxRssi = pAD->staHistory->samples[0].signalStrength;
+    range->minNoise = pAD->staHistory->samples[0].noise;
+    range->maxNoise = pAD->staHistory->samples[0].noise;
+    range->minSNR = pAD->staHistory->samples[0].signalStrength - pAD->staHistory->samples[0].noise;
+    range->maxSNR = pAD->staHistory->samples[0].signalStrength - pAD->staHistory->samples[0].noise;
+
+    for(uint8_t i = 1; i < nbValidSample; i++) {
+        if(pAD->staHistory->samples[i].signalStrength < range->minRssi) {
+            range->minRssi = pAD->staHistory->samples[i].signalStrength;
+        } else if(pAD->staHistory->samples[i].signalStrength > range->maxRssi) {
+            range->maxRssi = pAD->staHistory->samples[i].signalStrength;
+        }
+        if(pAD->staHistory->samples[i].noise < range->minNoise) {
+            range->minNoise = pAD->staHistory->samples[i].noise;
+        } else if(pAD->staHistory->samples[i].noise > range->maxNoise) {
+            range->maxNoise = pAD->staHistory->samples[i].noise;
+        }
+        int32_t SNR = pAD->staHistory->samples[i].signalStrength - pAD->staHistory->samples[i].noise;
+        if(SNR < range->minSNR) {
+            range->minSNR = SNR;
+        } else if(SNR > range->maxSNR) {
+            range->maxSNR = SNR;
+        }
+
+    }
+
+    return true;
 }
 
 void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
@@ -636,13 +693,10 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
             }
         }
 
-        swl_timeSpecReal_t ts;
-        swl_timespec_reset(&ts);
-        swl_timespec_getReal(&ts);
 
         wld_staHistory_t* sample = &pAD->staHistory->samples[pAD->staHistory->index_last_sample];
 
-        sample->timestamp = ts;
+        sample->timestamp = swl_timespec_getMonoVal();
         sample->signalStrength = pAD->SignalStrength;
         sample->noise = pAD->noise;
         sample->dataDownlinkRate = pAD->LastDataDownlinkRate;
@@ -653,8 +707,12 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
         sample->rxPacketCount = pAD->RxPacketCount;
         sample->txError = pAD->TxFailures;
         sample->rxError = 0;
+        sample->txFrameCount = pAD->TxFrameCount;
+        sample->rxFrameCount = pAD->RxFrameCount;
         sample->tx_Retransmissions = pAD->Tx_Retransmissions;
         sample->tx_RetransmissionsFailed = pAD->Tx_RetransmissionsFailed;
+        sample->txFrameCount = pAD->TxFrameCount;
+        sample->rxFrameCount = pAD->RxFrameCount;
         sample->retryCount = 0;
         sample->multipleRetryCount = 0;
         sample->inactive = pAD->Inactive;

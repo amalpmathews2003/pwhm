@@ -4,6 +4,22 @@
         "notification": "dm:object-changed",
         "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
         "parameters": {
+            "UplinkRateSpec": {
+                "from": "",
+                "to": "unk_0_0_0_0"
+            },
+            "DownlinkRateSpec": {
+                "from": "",
+                "to": "unk_0_0_0_0"
+            },
+            "LastStateChange": {
+                "from": "0001-01-01T00:00:00Z",
+                "to": "2022-01-01T00:00:12Z"
+            },
+            "MACAddress": {
+                "from": "",
+                "to": "18:58:80:C2:FC:A0"
+            },
             "SignalStrengthHistory": {
                 "from": "",
                 "to": "0,-200,0,0"
@@ -12,9 +28,9 @@
                 "from": false,
                 "to": true
             },
-            "MACAddress": {
-                "from": "",
-                "to": "18:58:80:C2:FC:A0"
+            "AssociationTime": {
+                "from": "0001-01-01T00:00:00Z",
+                "to": "2022-01-01T00:00:12Z"
             },
             "Mode": {
                 "from": "Unknown",

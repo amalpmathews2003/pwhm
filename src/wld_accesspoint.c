@@ -2338,8 +2338,8 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
         amxd_trans_set_value(cstring_t, &trans, "ChargeableUserId", pAD->Radius_CUID);
         amxd_trans_set_value(bool, &trans, "AuthenticationState", pAD->AuthenticationState);
-        amxd_trans_set_value(int32_t, &trans, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
-        amxd_trans_set_value(int32_t, &trans, "LastDataUplinkRate", pAD->LastDataUplinkRate);
+        amxd_trans_set_value(uint32_t, &trans, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
+        amxd_trans_set_value(uint32_t, &trans, "LastDataUplinkRate", pAD->LastDataUplinkRate);
         amxd_trans_set_value(int32_t, &trans, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
         amxd_trans_set_value(int32_t, &trans, "SignalStrength", pAD->SignalStrength);
 
@@ -2357,16 +2357,17 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
             snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
             wldu_catStr(TBuf, ValBuf, sizeof(TBuf));
         }
+
         pAD->AvgSignalStrengthByChain = wld_ad_getAvgSignalStrengthByChain(pAD);
 
         amxd_trans_set_value(int32_t, &trans, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
         amxd_trans_set_value(cstring_t, &trans, "SignalStrengthByChain", TBuf);
         amxd_trans_set_value(int32_t, &trans, "SignalNoiseRatio", pAD->SignalNoiseRatio);
-        amxd_trans_set_value(int32_t, &trans, "Retransmissions", pAD->Retransmissions);
-        amxd_trans_set_value(int32_t, &trans, "Rx_Retransmissions", pAD->Rx_Retransmissions);
-        amxd_trans_set_value(int32_t, &trans, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
-        amxd_trans_set_value(int32_t, &trans, "Tx_Retransmissions", pAD->Tx_Retransmissions);
-        amxd_trans_set_value(int32_t, &trans, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+        amxd_trans_set_value(uint32_t, &trans, "Retransmissions", pAD->Retransmissions);
+        amxd_trans_set_value(uint32_t, &trans, "Rx_Retransmissions", pAD->Rx_Retransmissions);
+        amxd_trans_set_value(uint32_t, &trans, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
+        amxd_trans_set_value(uint32_t, &trans, "Tx_Retransmissions", pAD->Tx_Retransmissions);
+        amxd_trans_set_value(uint32_t, &trans, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
         amxd_trans_set_value(bool, &trans, "Active", pAD->Active);
         amxd_trans_set_value(int32_t, &trans, "Noise", pAD->noise);
         amxd_trans_set_value(uint32_t, &trans, "Inactive", pAD->Inactive);
@@ -2399,15 +2400,18 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         }
         amxd_trans_set_value(cstring_t, &trans, "MaxBandwidthSupported", swl_bandwidth_unknown_str[maxBw]);
 
+        swl_typeMcs_toTransParam(&trans, "UplinkRateSpec", pAD->upLinkRateSpec);
+        swl_typeMcs_toTransParam(&trans, "DownlinkRateSpec", pAD->downLinkRateSpec);
+
         amxd_trans_set_value(cstring_t, &trans, "DeviceType", cstr_DEVICE_TYPES[pAD->deviceType]);
         amxd_trans_set_value(int32_t, &trans, "DevicePriority", pAD->devicePriority);
         char buffer[32] = {0};
         wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
         amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
         amxd_trans_set_value(uint32_t, &trans, "ConnectionDuration", pAD->connectionDuration);
-        swl_time_objectParamSetMono(object, "LastStateChange", pAD->latestStateChangeTime);
-        swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
-        swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
+        swl_typeTimeMono_toTransParam(&trans, "LastStateChange", pAD->latestStateChangeTime);
+        swl_typeTimeMono_toTransParam(&trans, "AssociationTime", pAD->associationTime);
+        swl_typeTimeMono_toTransParam(&trans, "DisassociationTime", pAD->disassociationTime);
         amxd_trans_set_value(bool, &trans, "PowerSave", pAD->powerSave);
         amxd_trans_set_value(cstring_t, &trans, "Mode", wld_ad_getMode(pAP, pAD));
         amxd_trans_set_value(cstring_t, &trans, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
@@ -2924,6 +2928,16 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
         const char* macStr = GET_CHAR(args, "macStr");
         swl_rc_ne ret = wld_ap_hostapd_delMacFilteringEntry(pAP, (char*) macStr);
         amxc_var_add_key(cstring_t, retMap, "Result", swl_rc_toString(ret));
+    } else if(!strcasecmp(feature, "writeSta")) {
+        swl_print_args_t tmpArgs = g_swl_print_json;
+        FILE* fp = fopen("/tmp/vapStaDump.txt", "w");
+        if(fp == NULL) {
+            SAH_TRACEZ_ERROR(ME, "Failure to open file");
+            return amxd_status_file_not_found;
+        }
+        swl_type_arrayToFilePrint(&gtWld_associatedDevicePtr.type, fp, pAP->AssociatedDevice,
+                                  pAP->AssociatedDeviceNumberOfEntries, false, &tmpArgs);
+        fclose(fp);
     } else {
         amxc_var_add_key(cstring_t, retMap, "Error", "Unknown command");
     }

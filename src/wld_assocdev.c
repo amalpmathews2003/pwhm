@@ -183,6 +183,156 @@ static void s_dcEntryConnected(T_AccessPoint* pAP, wld_ad_dcLog_t* entry) {
     }
 }
 
+
+#define X_WLD_AD_DISASSOC_EVENT(X, Y) \
+    X(Y, gtSwl_type_macChar, mac, "MACAddress") \
+    X(Y, gtSwl_type_timeReal, associationTime, "AssociationTime") \
+    X(Y, gtSwl_type_timeReal, disassociationTime, "DisassociationTime") \
+    X(Y, gtSwl_type_timeSpecMono, lastSampleTime, "LastSampleTime") \
+    X(Y, gtSwl_type_uint32, deauthReason, "DeauthReason") \
+    X(Y, gtSwl_type_int32, noise, "Noise") \
+    X(Y, gtSwl_type_int32, signalStrength, "SignalStrength") \
+    X(Y, gtSwl_type_int32, avgSignalStrengthByChain, "AvgSignalStrengthByChain") \
+    X(Y, gtSwl_type_int32, minSignalStrength, "MinSignalStrength") \
+    X(Y, gtSwl_type_timeMono, minSignalStrengthTime, "MinSignalStrengthTime") \
+    X(Y, gtSwl_type_int32, maxSignalStrength, "MaxSignalStrength") \
+    X(Y, gtSwl_type_timeMono, maxSignalStrengthTime, "MaxSignalStrengthTime") \
+    X(Y, gtSwl_type_int32, signalNoiseRatio, "SignalNoiseRatio") \
+    X(Y, gtSwl_type_uint32, lastDataDownlinkRate, "LastDataDownlinkRate") \
+    X(Y, gtSwl_type_uint32, lastDataUplinkRate, "LastDataUplinkRate") \
+    X(Y, gtSwl_type_mcs, lastUplinkMcs, "LastUplinkMcs") \
+    X(Y, gtSwl_type_timeMono, lastUplinkMcsTime, "LastUplinkMcsTime") \
+    X(Y, gtSwl_type_mcs, lastDownlinkMcs, "LastDownlinkMcs") \
+    X(Y, gtSwl_type_timeMono, lastDownlinkMcsTime, "LastDownlinkMcsTime") \
+    X(Y, gtSwl_type_uint32, rxFrameCount, "RxFrameCount") \
+    X(Y, gtSwl_type_uint32, txFrameCount, "TxFrameCount") \
+    X(Y, gtSwl_type_uint32, rxRetransmissions, "RxRetransmissions") \
+    X(Y, gtSwl_type_uint32, txRetransmissions, "TxRetransmissions") \
+    X(Y, gtSwl_type_uint32, rxRetransmissionsFailed, "RxRetransmissionsFailed") \
+    X(Y, gtSwl_type_uint32, txRetransmissionsFailed, "TxRetransmissionsFailed") \
+    X(Y, gtSwl_type_uint32, rxPacketCount, "RxPacketCount") \
+    X(Y, gtSwl_type_uint32, txPacketCount, "TxPacketCount") \
+    X(Y, gtSwl_type_uint32, rxUnicastPacketCount, "RxUnicastPacketCount") \
+    X(Y, gtSwl_type_uint32, txUnicastPacketCount, "TxUnicastPacketCount") \
+    X(Y, gtSwl_type_uint32, rxMulticastPacketCount, "RxMulticastPacketCount") \
+    X(Y, gtSwl_type_uint32, txMulticastPacketCount, "TxMulticastPacketCount") \
+    X(Y, gtSwl_type_uint64, rxBytes, "RxBytes") \
+    X(Y, gtSwl_type_uint64, txBytes, "TxBytes") \
+    X(Y, gtSwl_type_uint32, rxErrors, "RxErrors") \
+    X(Y, gtSwl_type_uint32, txErrors, "TxErrors") \
+    X(Y, gtSwl_type_uint32, inactive, "Inactive") \
+    X(Y, gtSwl_type_timeSpecMono, recentSampleTime, "RecentSampleTime") \
+    X(Y, gtSwl_type_int32, recentMinSignalStrength, "RecentMinSignalStrength") \
+    X(Y, gtSwl_type_int32, recentMaxSignalStrength, "RecentMaxSignalStrength") \
+    X(Y, gtSwl_type_int32, recentMinNoise, "RecentMinNoise") \
+    X(Y, gtSwl_type_int32, recentMaxNoise, "RecentMaxNoise") \
+    X(Y, gtSwl_type_int32, recentMinSNR, "RecentMinSNR") \
+    X(Y, gtSwl_type_int32, recentMaxSNR, "RecentMaxSNR") \
+    X(Y, gtSwl_type_uint64, recentTxBytes, "RecentTxBytes") \
+    X(Y, gtSwl_type_uint64, recentRxBytes, "RecentRxBytes") \
+    X(Y, gtSwl_type_uint32, recentTxPacketCount, "RecentTxPacketCount") \
+    X(Y, gtSwl_type_uint32, recentRxPacketCount, "RecentRxPacketCount") \
+    X(Y, gtSwl_type_uint32, recentTxError, "RecentTxError") \
+    X(Y, gtSwl_type_uint32, recentRxError, "RecentRxError") \
+    X(Y, gtSwl_type_uint32, recentTxFrameCount, "RecentTxFrameCount") \
+    X(Y, gtSwl_type_uint32, recentRxFrameCount, "RecentRxFrameCount") \
+    X(Y, gtSwl_type_uint32, recentTxRetransmissions, "RecentTxRetransmissions") \
+    X(Y, gtSwl_type_uint32, recentTxRetransmissionsFailed, "RecentTxRetransmissionsFailed") \
+    X(Y, gtSwl_type_uint32, recentRxRetransmissions, "RecentRxRetransmissions") \
+    X(Y, gtSwl_type_uint32, recentRxRetransmissionsFailed, "RecentRxRetransmissionsFailed") \
+
+SWL_NTT(gtWld_ad_disassocEvent, wld_ad_disassocEvent_t, X_WLD_AD_DISASSOC_EVENT, )
+
+static void s_sendDisassocNotification(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+
+
+
+    wld_ad_disassocEvent_t disassocEvent;
+    memset(&disassocEvent, 0, sizeof(wld_ad_disassocEvent_t));
+    swl_mac_binToChar(&disassocEvent.mac, (swl_macBin_t*) &pAD->MACAddress[0]);
+    disassocEvent.associationTime = pAD->associationTime;
+    disassocEvent.disassociationTime = pAD->disassociationTime;
+    disassocEvent.deauthReason = pAD->lastDeauthReason;
+    disassocEvent.lastSampleTime = pAD->lastSampleTime;
+
+    disassocEvent.signalStrength = pAD->SignalStrength;
+    disassocEvent.minSignalStrength = pAD->minSignalStrength;
+    disassocEvent.minSignalStrengthTime = pAD->minSignalStrengthTime;
+    disassocEvent.maxSignalStrength = pAD->maxSignalStrength;
+    disassocEvent.maxSignalStrengthTime = pAD->maxSignalStrengthTime;
+    disassocEvent.avgSignalStrengthByChain = pAD->AvgSignalStrengthByChain;
+    disassocEvent.signalNoiseRatio = pAD->SignalNoiseRatio;
+    disassocEvent.noise = pAD->noise;
+    disassocEvent.lastDataDownlinkRate = pAD->LastDataDownlinkRate;
+    disassocEvent.lastDataUplinkRate = pAD->LastDataUplinkRate;
+    memcpy(&disassocEvent.lastDownlinkMcs, &pAD->lastNonLegacyDownlinkMCS, sizeof(swl_mcs_t));
+    disassocEvent.lastDownlinkMcsTime = pAD->lastNonLegacyDownlinkTime;
+    memcpy(&disassocEvent.lastUplinkMcs, &pAD->lastNonLegacyUplinkMCS, sizeof(swl_mcs_t));
+    disassocEvent.lastUplinkMcsTime = pAD->lastNonLegacyUplinkTime;
+
+    disassocEvent.rxFrameCount = pAD->RxFrameCount;
+    disassocEvent.txFrameCount = pAD->TxFrameCount;
+    disassocEvent.rxRetransmissions = pAD->Rx_Retransmissions;
+    disassocEvent.txRetransmissions = pAD->Tx_Retransmissions;
+    disassocEvent.rxRetransmissionsFailed = pAD->Rx_RetransmissionsFailed;
+    disassocEvent.txRetransmissionsFailed = pAD->Tx_RetransmissionsFailed;
+    disassocEvent.rxPacketCount = pAD->RxPacketCount;
+    disassocEvent.txPacketCount = pAD->TxPacketCount;
+    disassocEvent.rxUnicastPacketCount = pAD->RxUnicastPacketCount;
+    disassocEvent.txUnicastPacketCount = pAD->TxUnicastPacketCount;
+    disassocEvent.rxMulticastPacketCount = pAD->RxMulticastPacketCount;
+    disassocEvent.txMulticastPacketCount = pAD->TxMulticastPacketCount;
+    disassocEvent.rxBytes = pAD->RxBytes;
+    disassocEvent.txBytes = pAD->TxBytes;
+    disassocEvent.rxErrors = pAD->RxFailures;
+    disassocEvent.txErrors = pAD->TxFailures;
+    disassocEvent.inactive = pAD->Inactive;
+
+
+    wld_staHistory_t* hist = wld_apRssiMon_getOldestStaSample(pAP, pAD);
+    if((hist != NULL) && !swl_timespec_equals(&pAD->lastSampleTime, &hist->timestamp)) {
+        disassocEvent.recentSampleTime = hist->timestamp;
+        disassocEvent.recentTxBytes = pAD->TxBytes - hist->txBytes;
+        disassocEvent.recentRxBytes = pAD->RxBytes - hist->rxBytes;
+        disassocEvent.recentTxPacketCount = pAD->TxPacketCount - hist->txPacketCount;
+        disassocEvent.recentRxPacketCount = pAD->RxPacketCount - hist->rxPacketCount;
+        disassocEvent.recentTxError = pAD->TxFailures - hist->txError;
+        disassocEvent.recentRxError = pAD->RxFailures - hist->rxError;
+        disassocEvent.recentTxFrameCount = pAD->TxFrameCount - hist->txFrameCount;
+        disassocEvent.recentRxFrameCount = pAD->RxFrameCount - hist->rxFrameCount;
+        disassocEvent.recentTxRetransmissions = pAD->Tx_Retransmissions - hist->tx_Retransmissions;
+        disassocEvent.recentTxRetransmissionsFailed = pAD->Tx_RetransmissionsFailed - hist->tx_RetransmissionsFailed;
+        disassocEvent.recentRxRetransmissions = pAD->Rx_Retransmissions - hist->rx_Retransmissions;
+        disassocEvent.recentRxRetransmissionsFailed = pAD->Rx_RetransmissionsFailed - hist->rx_RetransmissionsFailed;
+    }
+    wld_apRssiMon_signalRange_t sigRange;
+    memset(&sigRange, 0, sizeof(wld_apRssiMon_signalRange_t));
+    bool getSig = wld_apRssiMon_getMinMaxSignal(pAP, pAD, &sigRange);
+    if(getSig) {
+        disassocEvent.recentMinSignalStrength = sigRange.minRssi;
+        disassocEvent.recentMaxSignalStrength = sigRange.maxRssi;
+        disassocEvent.recentMinNoise = sigRange.minNoise;
+        disassocEvent.recentMaxNoise = sigRange.maxNoise;
+        disassocEvent.recentMinSNR = sigRange.minSNR;
+        disassocEvent.recentMaxSNR = sigRange.maxSNR;
+    }
+
+    amxc_var_t myVar;
+    amxc_var_init(&myVar);
+    amxc_var_set_type(&myVar, AMXC_VAR_ID_HTABLE);
+
+    amxc_var_t* tmpMap = amxc_var_add_key(amxc_htable_t, &myVar, "Data", NULL);
+
+    swl_ntt_toMap(tmpMap, &gtWld_ad_disassocEvent, &disassocEvent);
+
+    amxd_object_trigger_signal(pAP->pBus, "Disassociation", &myVar);
+
+    amxc_var_clean(&myVar);
+}
+
+
 /**
  * Remove a given associated device from the bridge table.
  */
@@ -315,6 +465,8 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
         return NULL;
     }
 
+    swl_timeMono_t timeNow = swl_time_getMonoSec();
+
     memcpy(pAD->MACAddress, macAddress->bMac, ETHER_ADDR_LEN);
 
     SWL_MAC_BIN_TO_CHAR(pAD->Name, pAD->MACAddress);
@@ -325,12 +477,14 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
     pAD->AuthenticationState = 0;
     pAP->AssociatedDevice[pAP->AssociatedDeviceNumberOfEntries] = pAD;
     pAP->AssociatedDeviceNumberOfEntries++;
-    pAD->latestStateChangeTime = swl_time_getMonoSec();
-    pAD->associationTime = swl_time_getMonoSec();
+    pAD->latestStateChangeTime = timeNow;
+    pAD->associationTime = timeNow;
     pAD->MaxDownlinkRateReached = 0;
     pAD->MaxUplinkRateReached = 0;
     pAD->minSignalStrength = 0;
+    pAD->minSignalStrengthTime = timeNow;
     pAD->maxSignalStrength = -200;
+    pAD->maxSignalStrengthTime = timeNow;
     pAD->meanSignalStrength = 0;
     pAD->meanSignalStrengthLinearAccumulator = 0;
     pAD->meanSignalStrengthExpAccumulator = 0;
@@ -428,19 +582,31 @@ static void wld_update_station_stats(T_AccessPoint* pAP) {
         pAD = pAP->AssociatedDevice[i];
         if(pAD->SignalStrength < pAD->minSignalStrength) {
             pAD->minSignalStrength = pAD->SignalStrength;
+            pAD->minSignalStrengthTime = swl_time_getMonoSec();
         }
         if(pAD->SignalStrength > pAD->maxSignalStrength) {
             pAD->maxSignalStrength = pAD->SignalStrength;
+            pAD->maxSignalStrengthTime = swl_time_getMonoSec();
         }
         pAD->nrMeanSignalStrength++;
         pAD->meanSignalStrengthLinearAccumulator += pAD->SignalStrength;
-        pAD->meanSignalStrength = ((int) pAD->meanSignalStrengthLinearAccumulator / pAD->nrMeanSignalStrength);
+        pAD->meanSignalStrength = pAD->meanSignalStrengthLinearAccumulator / (int32_t) pAD->nrMeanSignalStrength;
+
         pAD->meanSignalStrengthExpAccumulator = wld_util_performFactorStep(pAD->meanSignalStrengthExpAccumulator, pAD->SignalStrength, 50);
         if((uint32_t) pAD->LastDataDownlinkRate > pAD->MaxDownlinkRateReached) {
             pAD->MaxDownlinkRateReached = pAD->LastDataDownlinkRate;
         }
         if((uint32_t) pAD->LastDataUplinkRate > pAD->MaxUplinkRateReached) {
             pAD->MaxUplinkRateReached = pAD->LastDataUplinkRate;
+        }
+
+        if(pAD->downLinkRateSpec.standard > SWL_MCS_STANDARD_LEGACY) {
+            memcpy(&pAD->lastNonLegacyDownlinkMCS, &pAD->downLinkRateSpec, sizeof(swl_mcs_t));
+            pAD->lastNonLegacyDownlinkTime = pAD->lastSampleTime.tv_sec;
+        }
+        if(pAD->upLinkRateSpec.standard > SWL_MCS_STANDARD_LEGACY) {
+            memcpy(&pAD->lastNonLegacyUplinkMCS, &pAD->upLinkRateSpec, sizeof(swl_mcs_t));
+            pAD->lastNonLegacyUplinkTime = pAD->lastSampleTime.tv_sec;
         }
     }
 }
@@ -892,7 +1058,7 @@ void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     wld_vap_syncNrDev(pAP);
 }
 
-static void s_addDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+static void s_addDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_IEEE80211deauthReason_ne deauthReason) {
     wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
     bool hasLog = (log != NULL);
     if(!hasLog) {
@@ -900,13 +1066,16 @@ static void s_addDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         ASSERT_NOT_NULL(log, , ME, "%s: failed to create dc entry for %s", pAP->name, pAD->Name);
         memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
     }
+    pAD->lastDeauthReason = deauthReason;
     swl_timespec_getMono(&log->dcTime);
+
+    s_sendDisassocNotification(pAP, pAD);
     SAH_TRACEZ_INFO(ME, "%s: addLog %s (had %u)", swl_typeMacBin_toBuf32(log->macAddress).buf,
                     swl_typeTimeSpecMono_toBuf32(log->dcTime).buf, hasLog);
 }
 
 
-static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failSec) {
+static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failSec, swl_IEEE80211deauthReason_ne deauthReason) {
     ASSERTI_TRUE(pAD->Active, , ME, "%s : inactive sta dc %s", pAP->alias, pAD->Name);
 
     SAH_TRACEZ_INFO(ME, "%s : Dc %s Auth %u", pAP->alias, pAD->Name, pAD->AuthenticationState);
@@ -919,13 +1088,13 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         }
     } else if(pAD->AuthenticationState) {
         s_incrementAssocCounter(pAP, "Disconnect");
-        s_addDcEntry(pAP, pAD);
+        s_addDcEntry(pAP, pAD, deauthReason);
     }
     if(pAD->Active) {
         uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
-        SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i",
+        SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i - reason %u",
                            pAP->alias, pAD->Name, pAD->AuthenticationState, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
-                           timeOnline, pAD->SignalNoiseRatio);
+                           timeOnline, pAD->SignalNoiseRatio, deauthReason);
         pAD->latestStateChangeTime = swl_time_getMonoSec();
         pAD->disassociationTime = swl_time_getMonoSec();
 
@@ -974,13 +1143,17 @@ void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) 
 }
 
 
+void wld_ad_deauthWithReason(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_IEEE80211deauthReason_ne deauthReason) {
+    wld_apRssiMon_sendHistoryOnDisassocEvent(pAP, pAD);
+    s_add_dc_sta(pAP, pAD, false, deauthReason);
+}
+
 /**
  * Notify the wld that a station is disconnected.
  * This will set active and authenticated to 0.
  */
 void wld_ad_add_disconnection(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    wld_apRssiMon_sendHistoryOnDisassocEvent(pAP, pAD);
-    s_add_dc_sta(pAP, pAD, false);
+    wld_ad_deauthWithReason(pAP, pAD, SWL_IEEE80211_DEAUTH_REASON_NONE);
 }
 
 /**
@@ -988,7 +1161,7 @@ void wld_ad_add_disconnection(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
  * This will deactivate the given station.
  */
 void wld_ad_add_sec_failure(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    s_add_dc_sta(pAP, pAD, true);
+    s_add_dc_sta(pAP, pAD, true, SWL_IEEE80211_DEAUTH_REASON_NONE);
 }
 
 /**

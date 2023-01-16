@@ -94,6 +94,7 @@ int wld_ad_get_nb_far_station(T_AccessPoint* pAP, int threshold);
 void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_disconnection(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
+void wld_ad_deauthWithReason(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_IEEE80211deauthReason_ne deauthReason);
 void wld_ad_add_sec_failure(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_sec_failNoDc(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 int wld_ad_get_nb_active_stations(T_AccessPoint* pAP);

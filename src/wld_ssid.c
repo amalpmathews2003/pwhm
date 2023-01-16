@@ -479,11 +479,11 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pS->Name);
 
         /* Set SSID data in mapped OBJ structure */
-        /** 'Enable' Enables or disables the SSID entry  */
-        //set_OBJ_ParameterHelper(TPH_INT32 , object, "Enable", &pS->enable);
+
         /** 'Status' The current operational state of the SSID entry. */
         amxd_trans_set_cstring_t(&trans, "Status", SSID_SupStatus[pS->status]);
         swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pS->changeInfo.lastStatusChange);
+
         /** 'SSID' The current service set identifier in use by the
          *  connection. The SSID is an identifier that is attached to
          *  packets sent over the wireless LAN that functions as an
@@ -499,6 +499,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
          *  instance models an access point SSID) or remote (when
          *  this instance models an end point SSID).
          *  In multiple VAP setup it differs */
+
         int err = 0;
         if(pAP) {
             err = pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) TBuf, sizeof(TBuf), GET);
@@ -517,7 +518,6 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         } else {
             convStr2Mac(pS->BSSID, ETHER_ADDR_LEN, (unsigned char*) TBuf, ETHER_ADDR_STR_LEN);
         }
-
         amxd_trans_set_cstring_t(&trans, "BSSID", TBuf);
         TBuf[0] = 0;
         int32_t ifIndex = 0;
@@ -634,7 +634,6 @@ int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object) {
     ASSERT_NOT_NULL(instance_object, WLD_ERROR, ME, "NULL");
     ASSERT_NOT_NULL(pSSID, WLD_ERROR, ME, "NULL");
     ASSERT_NOT_NULL(pSSID->AP_HOOK, WLD_ERROR, ME, "NULL");
-
     wld_util_getObjName(pSSID->Name, sizeof(pSSID->Name), instance_object);
 
     instance_object->priv = pSSID;

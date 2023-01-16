@@ -75,7 +75,7 @@ static vendor_t* s_vendor = NULL;
 
 bool wifiGen_init() {
     ASSERT_FALSE(s_init, false, ME, "already initialized");
-    SAH_TRACEZ_ERROR(ME, "Generic init");
+    SAH_TRACEZ_WARNING(ME, "Generic init");
     wld_daemonMonitorConf_t dmnMoniConf = {
         .enableParam = true,
         .instantRestartLimit = 3,

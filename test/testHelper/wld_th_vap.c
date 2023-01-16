@@ -130,6 +130,7 @@ int wld_th_vap_status(T_AccessPoint* pAP) {
 swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP) {
     assert_non_null(pAP);
     wld_th_vap_vendorData_t* vendorD = wld_th_vap_getVendorData(pAP);
+    assert_non_null(vendorD);
 
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     assert_non_null(pRad);

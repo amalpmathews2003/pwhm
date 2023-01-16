@@ -41,6 +41,7 @@
         "MaxDownlinkRateReached" : 2161760,
         "MaxUplinkRateSupported" : 3466667,
         "MaxUplinkRateReached" : 2401910,
+        "MaxBandwidthSupported" : "20MHz",
         "PowerSave" : False
     },
     {

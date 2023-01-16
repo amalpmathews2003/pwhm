@@ -341,6 +341,9 @@ amxd_status_t _wld_prbReq_setNotify_pwf(amxd_object_t* object,
                                         const amxc_var_t* const args,
                                         amxc_var_t* const retval,
                                         void* priv) {
+    T_Radio* pR = (T_Radio*) priv;
+    ASSERTI_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
+
     if(reason != action_param_write) {
         return amxd_status_ok;
     }
@@ -352,8 +355,7 @@ amxd_status_t _wld_prbReq_setNotify_pwf(amxd_object_t* object,
         return amxd_status_ok;
     }
 
-    T_Radio* pR = (T_Radio*) priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
+
 
     SAH_TRACEZ_INFO(ME, "Setting mode %s to %u", pR->Name, new_mode);
     pR->probeRequestMode = new_mode;
@@ -374,7 +376,7 @@ amxd_status_t _wld_prbReq_setNotifyAggregationTimer_pwf(amxd_object_t* object,
     uint32_t new_val = amxc_var_dyncast(uint32_t, args);
 
     T_Radio* pR = (T_Radio*) priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
+    ASSERTI_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
 
     if(new_val != pR->probeRequestAggregationTime) {
         pR->probeRequestAggregationTime = new_val;
