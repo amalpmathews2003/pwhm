@@ -246,6 +246,9 @@ swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio, T_ScanArgs* args) {
             char* ssid = args->ssid;
             swl_unLiList_add(&params.ssids, &ssid);
         }
+        if(swl_mac_charIsValidStaMac(&args->bssid)) {
+            params.bssid = args->bssid;
+        }
     }
     /*
      * start_scan command has to be sent to enabled interface (UP)

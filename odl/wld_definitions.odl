@@ -512,6 +512,7 @@ define rrm_t{
 		 * 3. if channel is specified: scan only the channel in the spectrum.
 		 * All channels must be part of the PossibleChannels list.
 		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param BSSID: optional particular BSSID of the Access Point to scan for.
 		 * @param channels: optional comma seperated list of channels.
 		 * @param scanReason: optional string indicates the scan reason.
 		 * Default scan reason is "Ssid".
@@ -521,7 +522,7 @@ define rrm_t{
 		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
 		 * @error function_exec_error "A scan is already running" if a scan is already active.
 		 */
-		void startScan(%in string SSID, %in string channels, %in string scanReason, %in bool forceFast, %in bool updateUsage);
+		void startScan(%in string SSID, %in string BSSID,%in string channels, %in string scanReason, %in bool forceFast, %in bool updateUsage);
 
 		/**
 		 * Stop a running scan for SSID's.
@@ -535,6 +536,7 @@ define rrm_t{
 		 * 3. if channel is specified: scan only the channel in the spectrum.
 		 * All Channels must be part of the PossibleChannels list.
 		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param BSSID: optional particular BSSID of the Access Point to scan for.
 		 * @param channels: optional comma seperated list of channels.
 		 * @version 9.2
 		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
@@ -547,7 +549,7 @@ define rrm_t{
 		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
 		 * @error function_exec_error "A scan is already running" if a scan is already active.
 		 */
-		list scan(%in string SSID, %in string channels, %in int32 min_rssi, %in string scanReason);
+		list scan(%in string SSID, %in string BSSID,%in string channels, %in int32 min_rssi, %in string scanReason);
 
 		/**
 		 * Return a list scanresult_t describing the accesspoints discovered

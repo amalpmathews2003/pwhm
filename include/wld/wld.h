@@ -1158,11 +1158,12 @@ typedef enum {
 } wld_blockScanMode_e;
 extern const char* g_str_wld_blockScanMode[];
 
+//Note : scan type is more of what triggered the scanning not what the result has!
 typedef enum {
     SCAN_TYPE_NONE,
     SCAN_TYPE_SSID,
     SCAN_TYPE_SPECTRUM,
-    SCAN_TYPE_INTERNAL,
+    SCAN_TYPE_INTERNAL,//Internal middleware to know AP environment (either CSM or ApRoaming or something else)
     SCAN_TYPE_MAX
 } wld_scan_type_e;
 
@@ -1204,6 +1205,7 @@ struct wld_scanResults {
 
 struct wld_scanArgs {
     char ssid[SSID_NAME_LEN];
+    swl_macChar_t bssid;               /*particular BSSID MAC address to scan*/
     int ssidLen;
     uint8_t chanlist[WLD_MAX_POSSIBLE_CHANNELS];
     int chanCount;

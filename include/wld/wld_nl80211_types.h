@@ -211,6 +211,7 @@ typedef struct {
 
 typedef struct {
     swl_unLiList_t ssids; //list of ssids (char*) to scan for them
+    swl_macChar_t bssid;  //bssid of the AP to scan for.
     swl_unLiList_t freqs; //list of frequencies (uint32_t) to use
     uint32_t iesLen;      //length of extra Information Elements to add in probeReq
     const uint8_t* ies;   //extra Information Elements to add in probeReq

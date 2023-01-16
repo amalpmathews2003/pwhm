@@ -272,6 +272,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
     T_Radio* pR = object->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
     char* reason = NULL;
+    amxd_status_t errorCode = amxd_status_unknown_error;
 
     if(wld_scan_isRunning(pR)) {
         SAH_TRACEZ_ERROR(ME, "%s: scan is already running", pR->Name);
@@ -281,20 +282,23 @@ static amxd_status_t _startScan(amxd_object_t* object,
     if(!wld_rad_isUpExt(pR)) {
         SAH_TRACEZ_ERROR(ME, "%s: rad not ready for scan (state:%s)",
                          pR->Name, cstr_chanmgt_rad_state[pR->detailedState]);
+        errorCode = amxd_status_unknown_error;
         goto error;
     }
 
     if(pR->scanState.scanType != SCAN_TYPE_NONE) {
         SAH_TRACEZ_ERROR(ME, "%s: rad has ongoing scan type(%d)",
                          pR->Name, pR->scanState.scanType);
+        errorCode = amxd_status_unknown_error;
         goto error;
     }
 
     const char* ssid = GET_CHAR(args, "SSID");
+    const char* bssid = GET_CHAR(args, "BSSID");
     const char* channels = GET_CHAR(args, "channels");
     const char* scanReason = GET_CHAR(args, "scanReason");
 
-    int error = WLD_OK;
+
     bool extendedScanRequired = false;
     T_ScanArgs scanArgs;
     size_t len = 0;
@@ -307,6 +311,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
         len = swl_type_arrayFromChar(swl_type_uint8, scanArgs.chanlist, WLD_MAX_POSSIBLE_CHANNELS, channels);
         if(!wld_rad_isChannelSubset(pR, scanArgs.chanlist, len) || (len == 0)) {
             SAH_TRACEZ_ERROR(ME, "%s: Invalid Channel list", pR->Name);
+            errorCode = amxd_status_invalid_function_argument;
             goto error;
         }
         scanArgs.chanCount = len;
@@ -317,6 +322,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
         len = strlen(ssid);
         if(len >= SSID_NAME_LEN) {
             SAH_TRACEZ_ERROR(ME, "SSID too large");
+            errorCode = amxd_status_invalid_function_argument;
             goto error;
         }
 
@@ -325,9 +331,20 @@ static amxd_status_t _startScan(amxd_object_t* object,
         extendedScanRequired = true;
     }
     wld_scan_type_e type = SCAN_TYPE_INTERNAL;
+    if(!swl_str_isEmpty(bssid)) {
+        if(!swl_mac_charToStandard(&scanArgs.bssid, bssid) || (!swl_mac_charIsValidStaMac(&scanArgs.bssid))) {
+            SAH_TRACEZ_ERROR(ME, "Invalid bssid %s", bssid);
+            errorCode = amxd_status_invalid_function_argument;
+            goto error;
+
+        } else {
+            extendedScanRequired = true;
+        }
+    }
+
     if(scanReason == NULL) {
         type = SCAN_TYPE_SSID;
-        reason = strdup("Ssid");
+        reason = strdup("ScanCall");
     } else {
         reason = strdup(scanReason);
     }
@@ -359,9 +376,9 @@ static amxd_status_t _startScan(amxd_object_t* object,
     if(extendedScanRequired) {
         scanArgs.reason = reason;
     }
-    error = pR->pFA->mfn_wrad_start_scan_ext(pR, extendedScanRequired ? &scanArgs : NULL);
+    swl_rc_ne scanResult = pR->pFA->mfn_wrad_start_scan_ext(pR, extendedScanRequired ? &scanArgs : NULL);
 
-    if(error < 0) {
+    if(scanResult < 0) {
         goto error;
     } else {
         wld_notifyStartScan(pR, type, reason);
@@ -373,7 +390,7 @@ error:
     free(reason);
     pR->scanState.stats.nrScanError++;
     wld_radio_update_ScanStats(pR);
-    return amxd_status_unknown_error;
+    return errorCode;
 }
 
 amxd_status_t _Radio_startScan(amxd_object_t* object,
@@ -527,7 +544,11 @@ amxd_status_t _getScanResults(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-static void wld_scan_done_notification(T_Radio* pR, bool success) {
+
+/**
+ * Send ScanComplete notification which includes the Result("done" OR "error") to all subscribers
+ **/
+static void wld_rad_scan_SendDoneNotification(T_Radio* pR, bool success) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
 
     char* path = amxd_object_get_path(pR->pBus, AMXD_OBJECT_NAMED);
@@ -541,7 +562,11 @@ static void wld_scan_done_notification(T_Radio* pR, bool success) {
     free(path);
 }
 
-static void wld_scan_done_finish_fcall(T_Radio* pR, bool success) {
+
+/**
+ * Send scan results back to the caller and reset the scanState call_id.
+ **/
+static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
     ASSERT_NOT_EQUALS(pR->scanState.call_id, 0, , ME, "%s no call_id", pR->Name);
     ASSERT_TRUE(wld_scan_isRunning(pR), , ME, "%s no scan", pR->Name);
@@ -551,11 +576,11 @@ static void wld_scan_done_finish_fcall(T_Radio* pR, bool success) {
 
     if(pR->scanState.scanType == SCAN_TYPE_SSID) {
         if(!wld_get_scan_results(pR, &ret, pR->scanState.min_rssi)) {
-            success = false;
+            *success = false;
         }
     } else {
         SAH_TRACEZ_ERROR(ME, "%s scan type unknown %s", pR->Name, pR->scanState.scanReason);
-        success = false;
+        *success = false;
     }
 
     amxd_function_deferred_done(pR->scanState.call_id, success ? amxd_status_ok : amxd_status_unknown_error, NULL, &ret);
@@ -801,9 +826,9 @@ void wld_scan_done(T_Radio* pR, bool success) {
     }
 
     if(pR->scanState.call_id == 0) {
-        wld_scan_done_notification(pR, success);
+        wld_rad_scan_SendDoneNotification(pR, success);
     } else {
-        wld_scan_done_finish_fcall(pR, success);
+        wld_rad_scan_FinishScanCall(pR, &success);
     }
 
     wld_scanEvent_t ev;

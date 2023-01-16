@@ -526,6 +526,19 @@ swl_rc_ne wld_nl80211_startScan(wld_nl80211_state_t* state, uint32_t ifIndex, wl
                 wld_nl80211_cleanNlAttr(&ssidsAttr);
             }
         }
+
+        if(swl_mac_charIsValidStaMac(&params->bssid) && !swl_mac_charIsNull(&params->bssid)) {
+            swl_macBin_t bssidBin;
+            swl_mac_charToBin(&bssidBin, &params->bssid);
+            wld_nl80211_nlAttr_t bssidAttr = {
+                .type = NL80211_ATTR_BSSID,
+                .nested = false,
+                .data = {.raw = {.len = SWL_ARRAY_SIZE(bssidBin.bMac), .ptr = bssidBin.bMac, }, },
+            };
+            swl_unLiList_add(&attribs, &bssidAttr);
+            SAH_TRACEZ_INFO(ME, "Scan for bssid %s ", params->bssid.cMac);
+
+        }
         if(swl_unLiList_size(&params->freqs) > 0) {
             NL_ATTR_NESTED(freqsAttr, NL80211_ATTR_SCAN_FREQUENCIES);
             swl_unLiList_for_each(it, &params->freqs) {

@@ -114,13 +114,13 @@ static void test_startAndGetScan(void** state _UNUSED) {
                 amxd_object_t* apSsid_obj = amxc_llist_it_get_data(itApSsid, amxd_object_t, it);
                 char* ssid = amxd_object_get_cstring_t(apSsid_obj, "SSID", NULL);
                 char* bssid = amxd_object_get_cstring_t(apSsid_obj, "BSSID", NULL);
-                swl_macBin_t bssid_bin = SWL_MAC_BIN_NEW();
-                SWL_MAC_CHAR_TO_BIN(&bssid_bin, bssid);
+                swl_macBin_t bssidBin = SWL_MAC_BIN_NEW();
+                SWL_MAC_CHAR_TO_BIN(&bssidBin, bssid);
                 amxc_llist_for_each(itScanSSID, &res.ssids) {
                     T_ScanResult_SSID* pSSID = amxc_container_of(itScanSSID, T_ScanResult_SSID, it);
                     if((swl_str_nmatches((char*) pSSID->ssid, ssid, pSSID->ssidLen)) &&
                        (pSSID->channel == channel) &&
-                       (SWL_MAC_BIN_MATCHES(&pSSID->bssid, &bssid_bin))) {
+                       (SWL_MAC_BIN_MATCHES(&pSSID->bssid, &bssidBin))) {
                         match += 1;
                     }
                 }
