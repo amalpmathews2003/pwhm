@@ -78,7 +78,7 @@ int wld_vendorModuleMgr_loadInternal();
  * would be registered in local "Self" namespace
  *
  * @return positive number of vendor modules loaded from specific shared object file
- * or WLD_ERROR in case of failure
+ * or SWL_RC_ERROR in case of failure
  */
 int wld_vendorModuleMgr_loadExternal(const char* soFilePath);
 
@@ -98,21 +98,29 @@ int wld_vendorModuleMgr_loadExternalDir(const char* soDirPath);
  *
  * @return WLD_OK in case of success , or WLD_ERROR otherwise
  */
-int wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo);
+swl_rc_ne wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo);
 
 /**
  * @brief de-initialize all loaded vendor modules in local namespace
  *
- * @return WLD_OK in case of success , or WLD_ERROR otherwise
+ * @return SWL_RC_OK in case of success , or SWL_RC_ERROR otherwise
  */
-int wld_vendorModuleMgr_deinitAll();
+swl_rc_ne wld_vendorModuleMgr_deinitAll();
 
 /**
  * @brief Unload all vendor module from local namespace
  * and close the relative source shared object file if external.
  *
- * @return WLD_OK in case of success , or WLD_ERROR otherwise
+ * @return SWL_RC_OK in case of success , or SWL_RC_ERROR otherwise
  */
-int wld_vendorModuleMgr_unloadAll();
+swl_rc_ne wld_vendorModuleMgr_unloadAll();
+
+/**
+ * @brief Load default datamodel configuration of all loaded vendor modules
+ * in local namespace.
+ *
+ * @return SWL_RC_OK in case of success , or SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_vendorModuleMgr_loadDefaultsAll();
 
 #endif /* INCLUDE_WLD_WLD_VENDORMODULE_MGR_H_ */

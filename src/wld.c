@@ -169,51 +169,36 @@ bool wld_plugin_start() {
     return true;
 }
 
-bool wld_plugin_loadDmConf() {
-    SAH_TRACEZ_IN(ME);
-    // Defaults or saved odl will be loaded here:
-    // This makes sure that the events for the defaults are only called when the plugin is started
-    while(amxp_signal_read() == 0) {
-    }
-    int rv = amxo_parser_parse_string(wld_plugin_parser, "?include '${odl.directory}/${name}.odl':'${odl.dm-defaults}';", amxd_dm_get_root(wld_plugin_dm));
-    while(amxp_signal_read() == 0) {
-    }
-    if(rv != 0) {
-        SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
-                         amxo_parser_get_status(wld_plugin_parser),
-                         amxo_parser_get_message(wld_plugin_parser));
-        return false;
-    }
-    /* Fill DM with learned values */
+void wld_plugin_syncDm() {
     SAH_TRACEZ_WARNING(ME, "Syncing Objects RAD/SSID/AP/EP");
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
         T_AccessPoint* pAP;
         T_SSID* pSSID;
         /*
-         * update internal context, with all params that we might missed
-         * before radio obj mapping
+         * Rad obj DM params was synced to internal when setting upperLayer SSID instances
+         * Now we push updated Rad params to DM
          */
-        syncData_Radio2OBJ(pRad->pBus, pRad, GET);
-        syncData_Radio2OBJ(pRad->pBus, pRad, SET);
+        pRad->pFA->mfn_sync_radio(pRad->pBus, pRad, SET);
+        /*
+         * SSID obj DM params was synced to internal when setting relative AP/EP instances
+         * Now we push updated SSID params to DM
+         */
         wld_rad_forEachAp(pAP, pRad) {
             pSSID = (T_SSID*) pAP->pSSID;
+            pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
             pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
-            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
         T_EndPoint* pEP;
         wld_rad_forEachEp(pEP, pRad) {
             pSSID = (T_SSID*) pEP->pSSID;
             pRad->pFA->mfn_sync_ep(pEP);
-            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
     }
     syncData_VendorWPS2OBJ(amxd_object_get(get_wld_object(), "wps_DefParam"), wld_firstRad(), SET);
     SAH_TRACEZ_WARNING(ME, "Syncing Done");
-    SAH_TRACEZ_OUT(ME);
-    return true;
 }
 
 vendor_t* wld_getVendorByName(const char* name) {

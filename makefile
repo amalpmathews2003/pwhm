@@ -39,7 +39,7 @@ install: all
 	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(DEST)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(DEST)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(DEST)/etc/amx/wld/wld_definitions.odl
-	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(DEST)$(PKG_CONFIG_LIBDIR)/wld.pc
+	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(DEST)$(LIBDIR)/amx/wld/wld.so
 endif

@@ -116,24 +116,23 @@ static int s_countVendorModules(amxm_shared_object_t* pSoSrc) {
     return count;
 }
 
-static int s_unloadVendorModule(wld_vendorModule_t* pVendorModule) {
-    ASSERTS_NOT_NULL(pVendorModule, WLD_ERROR, ME, "NULL");
+static swl_rc_ne s_unloadVendorModule(wld_vendorModule_t* pVendorModule) {
+    ASSERTS_NOT_NULL(pVendorModule, SWL_RC_INVALID_PARAM, ME, "NULL");
     amxc_llist_it_take(&pVendorModule->it);
     amxm_module_t* pMod = amxm_so_get_module(s_selfSo(), pVendorModule->name);
-    if(pMod) {
-        if((pVendorModule->so) &&
-           (pVendorModule->so != s_selfSo()) &&
-           (s_countVendorModules(pVendorModule->so) == 0)) {
-            SAH_TRACEZ_INFO(ME, "Closing shared object %s", pVendorModule->so->name);
-            amxm_so_close(&pVendorModule->so);
-        } else {
-            SAH_TRACEZ_INFO(ME, "Unloading module %s", pMod->name);
-            amxm_module_deregister(&pMod);
-        }
+    if(pMod != NULL) {
+        SAH_TRACEZ_INFO(ME, "Unloading module %s", pMod->name);
+        amxm_module_deregister(&pMod);
+    }
+    if((pVendorModule->so) &&
+       (pVendorModule->so != s_selfSo()) &&
+       (s_countVendorModules(pVendorModule->so) == 0)) {
+        SAH_TRACEZ_INFO(ME, "Closing shared object %s", pVendorModule->so->name);
+        amxm_so_close(&pVendorModule->so);
     }
     free(pVendorModule->name);
     free(pVendorModule);
-    return WLD_OK;
+    return SWL_RC_OK;
 }
 
 static wld_vendorModule_t* s_loadVendorModule(amxm_shared_object_t* pSoSrc, const char* modName) {
@@ -166,49 +165,51 @@ static wld_vendorModule_t* s_loadVendorModule(amxm_shared_object_t* pSoSrc, cons
     return pVendorModule;
 }
 
-static int s_initVendorModule(wld_vendorModule_t* pVendorModule, wld_vendorModule_initInfo_t* pInfo) {
-    ASSERT_NOT_NULL(pVendorModule, WLD_ERROR, ME, "NULL");
-    ASSERT_NOT_NULL(pInfo, WLD_ERROR, ME, "NULL");
+static swl_rc_ne s_execVendorModuleApi(wld_vendorModule_t* pVendorModule, wld_vendorModule_apis_e apiId, amxc_var_t* pArgs, amxc_var_t* pRet) {
+    ASSERT_NOT_NULL(pVendorModule, SWL_RC_INVALID_PARAM, ME, "NULL");
     amxm_module_t* pMod = amxm_so_get_module(s_selfSo(), pVendorModule->name);
-    ASSERT_NOT_NULL(pMod, WLD_ERROR, ME, "Module %s not registered", pVendorModule->name);
-    const char* funcName = wld_vendorModule_apiName(WLD_VENDORMODULE_API_INIT);
-    ASSERT_TRUE((funcName && funcName[0]), WLD_ERROR, ME, "function not available");
+    ASSERT_NOT_NULL(pMod, SWL_RC_NOT_AVAILABLE, ME, "Module %s not registered", pVendorModule->name);
+    const char* funcName = wld_vendorModule_apiName(apiId);
+    ASSERTW_STR(funcName, SWL_RC_NOT_IMPLEMENTED, ME, "Module %s has not function (%d)", pVendorModule->name, apiId);
+    SAH_TRACEZ_INFO(ME, "Executing %s.%s", pVendorModule->name, funcName);
     amxc_var_t args;
     amxc_var_t ret;
     amxc_var_init(&args);
     amxc_var_init(&ret);
-    amxc_var_set_type(&args, AMXC_VAR_ID_UINT64);
-    amxc_var_set_uint64_t(&args, (uintptr_t) pInfo);
-    SAH_TRACEZ_INFO(ME, "Executing %s.%s", pVendorModule->name, funcName);
-    int error = amxm_module_execute_function(pMod, funcName, &args, &ret);
+    if(pArgs == NULL) {
+        pArgs = &args;
+    }
+    if(pRet == NULL) {
+        pRet = &ret;
+    }
+    int error = amxm_module_execute_function(pMod, funcName, pArgs, pRet);
     amxc_var_clean(&args);
     amxc_var_clean(&ret);
-    ASSERT_EQUALS(error, 0, WLD_ERROR, ME, "fail to execute %s.%s", pVendorModule->name, funcName);
-    return WLD_OK;
+    ASSERT_EQUALS(error, 0, SWL_RC_ERROR, ME, "fail to execute %s.%s", pVendorModule->name, funcName);
+    return SWL_RC_OK;
 }
 
-static int s_deinitVendorModule(wld_vendorModule_t* pVendorModule) {
-    ASSERT_NOT_NULL(pVendorModule, WLD_ERROR, ME, "NULL");
-    amxm_module_t* pMod = amxm_so_get_module(s_selfSo(), pVendorModule->name);
-    ASSERT_NOT_NULL(pMod, WLD_ERROR, ME, "Module %s not registered", pVendorModule->name);
-    const char* funcName = wld_vendorModule_apiName(WLD_VENDORMODULE_API_DEINIT);
-    ASSERT_TRUE((funcName && funcName[0]), WLD_ERROR, ME, "function not available");
+static swl_rc_ne s_initVendorModule(wld_vendorModule_t* pVendorModule, wld_vendorModule_initInfo_t* pInfo) {
     amxc_var_t args;
-    amxc_var_t ret;
     amxc_var_init(&args);
-    amxc_var_init(&ret);
-    SAH_TRACEZ_INFO(ME, "Executing %s.%s", pVendorModule->name, funcName);
-    int error = amxm_module_execute_function(pMod, funcName, &args, &ret);
+    amxc_var_set_uint64_t(&args, (uintptr_t) pInfo);
+    swl_rc_ne rc = s_execVendorModuleApi(pVendorModule, WLD_VENDORMODULE_API_INIT, &args, NULL);
     amxc_var_clean(&args);
-    amxc_var_clean(&ret);
-    ASSERT_EQUALS(error, 0, WLD_ERROR, ME, "fail to execute %s.%s", pVendorModule->name, funcName);
-    return WLD_OK;
+    return rc;
+}
+
+static swl_rc_ne s_deinitVendorModule(wld_vendorModule_t* pVendorModule) {
+    return s_execVendorModuleApi(pVendorModule, WLD_VENDORMODULE_API_DEINIT, NULL, NULL);
+}
+
+static swl_rc_ne s_loadDefaultsVendorModule(wld_vendorModule_t* pVendorModule) {
+    return s_execVendorModuleApi(pVendorModule, WLD_VENDORMODULE_API_LOAD_DEFAULTS, NULL, NULL);
 }
 
 static int s_loadSharedObj(amxm_shared_object_t* pSoSrc) {
-    ASSERT_NOT_NULL(pSoSrc, WLD_ERROR, ME, "NULL");
+    ASSERT_NOT_NULL(pSoSrc, SWL_RC_ERROR, ME, "NULL");
     size_t modCount = amxm_so_count_modules(s_selfSo());
-    ASSERT_TRUE((modCount > 0), WLD_ERROR, ME, "no modules registered");
+    ASSERT_TRUE((modCount > 0), SWL_RC_ERROR, ME, "no modules registered");
     char* modName = NULL;
     while(modCount > 0) {
         modCount--;
@@ -229,7 +230,7 @@ int wld_vendorModuleMgr_loadExternal(const char* soFilePath) {
     amxm_shared_object_t* pSoSrc = NULL;
     int ret = -1;
     ret = amxm_so_open(&pSoSrc, soFilePath, soFilePath);
-    ASSERT_EQUALS(ret, 0, WLD_ERROR, ME, "fail to open %s", soFilePath);
+    ASSERT_EQUALS(ret, 0, SWL_RC_ERROR, ME, "fail to open %s", soFilePath);
     ret = s_loadSharedObj(pSoSrc);
     if(ret <= 0) {
         SAH_TRACEZ_ERROR(ME, "No vendor modules loaded from %s", soFilePath);
@@ -243,7 +244,7 @@ static int s_filterModNames(const struct dirent* pEntry) {
     if(swl_str_matches(fname, ".") || swl_str_matches(fname, "..")) {
         return 0;
     }
-    if(!swl_str_startsWith(fname, "mod-") || !strstr(fname, ".so")) {
+    if(!swl_str_startsWith(fname, WLD_VENDOR_MODULE_PREFIX) || !strstr(fname, ".so")) {
         return 0;
     }
     return 1;
@@ -278,25 +279,35 @@ int wld_vendorModuleMgr_unloadAll() {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
         s_unloadVendorModule(pVendorModule);
     }
-    return WLD_OK;
+    return SWL_RC_OK;
 }
 
-int wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo) {
+swl_rc_ne wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo) {
     amxc_llist_it_t* it = NULL;
     wld_vendorModule_t* pVendorModule = NULL;
     amxc_llist_for_each(it, &sVendorModulesList) {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
         s_initVendorModule(pVendorModule, pInfo);
     }
-    return WLD_OK;
+    return SWL_RC_OK;
 }
 
-int wld_vendorModuleMgr_deinitAll() {
+swl_rc_ne wld_vendorModuleMgr_deinitAll() {
     amxc_llist_it_t* it = NULL;
     wld_vendorModule_t* pVendorModule = NULL;
     amxc_llist_for_each(it, &sVendorModulesList) {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
         s_deinitVendorModule(pVendorModule);
     }
-    return WLD_OK;
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_vendorModuleMgr_loadDefaultsAll() {
+    amxc_llist_it_t* it = NULL;
+    wld_vendorModule_t* pVendorModule = NULL;
+    amxc_llist_for_each(it, &sVendorModulesList) {
+        pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
+        s_loadDefaultsVendorModule(pVendorModule);
+    }
+    return SWL_RC_OK;
 }

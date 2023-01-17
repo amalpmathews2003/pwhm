@@ -254,7 +254,7 @@ amxd_object_t* ssid_create(amxd_object_t* pBus, T_Radio* pR, const char* name) {
     swl_str_copy(pSSID->Name, sizeof(pSSID->Name), name);
 
     /* Sync dynamic parameters : T_SSID -> Datamodel */
-    syncData_SSID2OBJ(ssidinstance, pSSID, SET | NO_COMMIT);
+    pR->pFA->mfn_sync_ssid(ssidinstance, pSSID, SET | NO_COMMIT);
     return ssidinstance;
 }
 
@@ -301,7 +301,7 @@ amxd_object_t* endpoint_create(amxd_object_t* pBus, T_Radio* pR, const char* end
     }
 
     /* Sync dynamic parameters : T_Endpoint -> Datamodel */
-    syncData_EndPoint2OBJ(endpoint);
+    pR->pFA->mfn_sync_ep(endpoint);
 
     return endpointinstance;
 }

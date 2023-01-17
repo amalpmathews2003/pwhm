@@ -65,6 +65,12 @@
 
 #include <amxc/amxc_variant.h>
 #include <amxm/amxm.h>
+#include "swl/swl_returnCode.h"
+
+/**
+ * @brief required string prefix in the vendor module shared object file
+ */
+#define WLD_VENDOR_MODULE_PREFIX "mod-"
 
 /**
  * @brief data struct to share init info between wld and vendor module
@@ -89,9 +95,17 @@ typedef bool (* wld_vendorModule_init_f) (wld_vendorModule_initInfo_t* pInitInfo
  */
 typedef bool (* wld_vendorModule_deinit_f) ();
 
+/**
+ * @brief Prototype of vendor module function to load default vendor configuration.
+ *
+ * @return true on success, false on failure
+ */
+typedef bool (* wld_vendorModule_loadDefaults_f) ();
+
 typedef struct {
-    wld_vendorModule_init_f fInitCb;     // MANDATORY: handler to initialize vendor module
-    wld_vendorModule_deinit_f fDeinitCb; // MANDATORY: handler to deinitialize vendor module
+    wld_vendorModule_init_f fInitCb;                 // MANDATORY: handler to initialize vendor module
+    wld_vendorModule_deinit_f fDeinitCb;             // MANDATORY: handler to deinitialize vendor module
+    wld_vendorModule_loadDefaults_f fLoadDefaultsCb; // OPTIONAL: handler to load default vendor datamodel config (if any)
 } wld_vendorModule_handlers_cb;
 
 typedef struct {
@@ -111,9 +125,9 @@ typedef struct {
  * @param pConfig Pointer to vendor module configuration including the handlers
  * to be called by wld plugin side
  *
- * @return int WLD_OK on success, or one of wld error codes on failure
+ * @return int SWL_RC_OK on success, or one of swl error codes on failure
  */
-int wld_vendorModule_register(const char* modName, const wld_vendorModule_config_t* const pConfig);
+swl_rc_ne wld_vendorModule_register(const char* modName, const wld_vendorModule_config_t* const pConfig);
 
 /**
  * @brief Unregister vendor module from the wld plugin side.
@@ -121,9 +135,9 @@ int wld_vendorModule_register(const char* modName, const wld_vendorModule_config
  *
  * @param modName Vendor module name (unique per vendor)
  *
- * @return int WLD_OK on success, or one of wld error codes on failure
+ * @return int SWL_RC_OK on success, or one of wld error codes on failure
  */
-int wld_vendorModule_unregister(const char* modName);
+swl_rc_ne wld_vendorModule_unregister(const char* modName);
 
 /**
  * @brief Forward function calls to vendor module handlers:
@@ -137,9 +151,39 @@ int wld_vendorModule_unregister(const char* modName);
  * @param ret Returned result in in amx variant type
  * @param handlers Module's internal callbacks
  *
- * @return int WLD_OK on success, or one of wld error codes on failure
+ * @return SWL_RC_OK on success, or one of swl error codes on failure
  */
-int wld_vendorModule_forwardCall(const char* const funcName, amxc_var_t* args, amxc_var_t* ret,
-                                 const wld_vendorModule_handlers_cb* const handlers);
+swl_rc_ne wld_vendorModule_forwardCall(const char* const funcName, amxc_var_t* args, amxc_var_t* ret,
+                                       const wld_vendorModule_handlers_cb* const handlers);
+
+/**
+ * @brief Load vendor module odl file path into the main datamodel
+ * using the global wld parser
+ *
+ * @param path vendor module odl(s) path (od file or directory of odl files)
+ *             May be absolute or relative (regarding inc-dirs of pwhm plugin)
+ *
+ * @return SWL_RC_OK on success, or one of swl error codes on failure
+ */
+swl_rc_ne wld_vendorModule_loadOdls(const char* path);
+
+/**
+ * @brief Parse vendor module odl file and load into the main datamodel
+ * using the global wld parser
+ *
+ * @param path absolute vendor module odl path (or relative to directory $cfg-dir}/${name}/)
+ *
+ * @return SWL_RC_OK on success, or one of swl error codes on failure
+ */
+swl_rc_ne wld_vendorModule_parseOdl(const char* path);
+
+/**
+ * @brief Load additional trace zones (with name and log level) to main wld logging config
+ *
+ * @param traceZonesVarMap pointer to htable variant including vendor module tracing zones and levels
+ *
+ * @return SWL_RC_OK on success, or one of swl error codes on failure
+ */
+swl_rc_ne wld_vendorModule_loadPrivTraceZones(amxc_var_t* traceZonesVarMap);
 
 #endif /* INCLUDE_WLD_WLD_VENDORMODULE_H_ */

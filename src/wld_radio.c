@@ -194,7 +194,7 @@ static void s_doSyncUpdate(amxp_timer_t* timer _UNUSED, void* priv) {
     wld_rad_init_counters(pRad, &pRad->genericCounters, radCounterDefaults);
     wld_radStaMon_init(pRad);
     syncData_VendorWPS2OBJ(NULL, pRad, GET);
-    syncData_Radio2OBJ(pRadioObj, pRad, SET | NO_COMMIT);
+    pRad->pFA->mfn_sync_radio(pRadioObj, pRad, SET | NO_COMMIT);
     amxd_object_t* dfsObj = amxd_object_get(pRadioObj, "DFS");
     if(dfsObj == NULL) {
         SAH_TRACEZ_ERROR(ME, "cannot found DFS object on %s", pRad->Name);

@@ -69,12 +69,68 @@
 #include "wld/wld_vendorModule_mgr.h"
 #include "swl/swl_assert.h"
 #include "wifiGen.h"
+#include "swl/fileOps/swl_fileUtils.h"
 
 #define ME "wld"
 
+static bool s_getSavedConfPath(amxc_string_t* path) {
+    ASSERT_NOT_NULL(path, false, ME, "NULL");
+    amxc_string_reset(path);
+    amxc_var_t* config = amxo_parser_get_config(get_wld_plugin_parser(), "odl.directory");
+    const char* saveDir = amxc_var_constcast(cstring_t, config);
+    ASSERTS_STR(saveDir, false, ME, "Empty");
+    config = amxo_parser_get_config(get_wld_plugin_parser(), "name");
+    const char* wldName = amxc_var_constcast(cstring_t, config);
+    ASSERTS_STR(wldName, false, ME, "Empty");
+    int ret = amxc_string_appendf(path, "%s/%s.odl", saveDir, wldName);
+    ASSERT_EQUALS(ret, 0, false, ME, "fail to format save path");
+    return true;
+}
+
+static bool s_loadDmConf() {
+    SAH_TRACEZ_IN(ME);
+    // Defaults or saved odl will be loaded here:
+    // This makes sure that the events for the defaults are only called when the plugin is started
+    while(amxp_signal_read() == 0) {
+    }
+    int rv;
+    amxc_string_t confPath;
+    amxc_string_init(&confPath, 0);
+    amxd_object_t* rootObj = amxd_dm_get_root(get_wld_plugin_dm());
+    amxo_parser_t* parser = get_wld_plugin_parser();
+    if(s_getSavedConfPath(&confPath) && swl_fileUtils_existsFile(amxc_string_get(&confPath, 0))) {
+        rv = amxo_parser_parse_file(parser, amxc_string_get(&confPath, 0), rootObj);
+    } else {
+        rv = amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
+        wld_vendorModuleMgr_loadDefaultsAll();
+    }
+    amxc_string_clean(&confPath);
+    while(amxp_signal_read() == 0) {
+    }
+    if(rv != 0) {
+        SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
+                         amxo_parser_get_status(parser),
+                         amxo_parser_get_message(parser));
+        return false;
+    }
+    /* Fill DM with learned values */
+    wld_plugin_syncDm();
+    SAH_TRACEZ_OUT(ME);
+    return true;
+}
+
 static void s_delayLoadDmConf(amxp_timer_t* timer, void* userdata _UNUSED) {
     amxp_timer_delete(&timer);
-    wld_plugin_loadDmConf();
+    s_loadDmConf();
+}
+
+static bool s_initPluginConf() {
+    const char* confFile = amxc_var_constcast(cstring_t, amxo_parser_get_config(get_wld_plugin_parser(), "config-storage-file"));
+    ASSERTS_STR(confFile, false, ME, "empty");
+    ASSERTS_FALSE(swl_fileUtils_existsFile(confFile), true, ME, "%s exists", confFile);
+    const char* confDir = amxc_var_constcast(cstring_t, amxo_parser_get_config(get_wld_plugin_parser(), "config-storage-dir"));
+    ASSERT_TRUE(swl_fileUtils_mkdirRecursive(confDir), false, ME, "Fail to create conf dir %s", confDir);
+    return swl_fileUtils_writeFile("", confFile);
 }
 
 int _wld_main(int reason,
@@ -95,6 +151,7 @@ int _wld_main(int reason,
         memset(&initInfo, 0, sizeof(initInfo));
 
         wifiGen_init();
+        s_initPluginConf();
         wld_vendorModuleMgr_initAll(&initInfo);
         wifiGen_addRadios();
 

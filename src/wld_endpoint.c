@@ -344,7 +344,7 @@ amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
     pEP->currentProfile = newProfile;
 
     wldu_copyStr(pEP->pSSID->SSID, pEP->currentProfile->SSID, sizeof(pEP->pSSID->SSID));
-    syncData_SSID2OBJ(pEP->pSSID->pBus, pEP->pSSID, SET);
+    pEP->pFA->mfn_sync_ssid(pEP->pSSID->pBus, pEP->pSSID, SET);
     if(credentialsChanged) {
         wld_endpoint_reconfigure(pEP);
     }
@@ -1561,7 +1561,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
     swl_str_copy(oldSsid, sizeof(oldSsid), pEP->pSSID->SSID);
     memcpy(oldBssid.bMac, pEP->pSSID->BSSID, SWL_MAC_BIN_LEN);
 
-    syncData_SSID2OBJ(pEP->pSSID->pBus, pEP->pSSID, SET);
+    pEP->pFA->mfn_sync_ssid(pEP->pSSID->pBus, pEP->pSSID, SET);
 
     ASSERTI_TRUE(changed, , ME, "%s: unchanged", pEP->Name);
 
@@ -2028,7 +2028,7 @@ static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
 
 
     /* Get defined paramater values from the default instance */
-    syncData_SSID2OBJ(pSsidObj, pSSID, GET);
+    pRad->pFA->mfn_sync_ssid(pSsidObj, pSSID, GET);
     syncData_OBJ2EndPoint(object);
     syncData_VendorWPS2OBJ(NULL, pRad, GET);
     /* DM will be synced with internal Ctxs later (on event or after dm load completed) */

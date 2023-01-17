@@ -1746,7 +1746,7 @@ define rrm_t{
 		 * data and configuration to be made available.
 		 * Triggers a callback in the vendor plugin
 		 */
-		object Vendor{
+		%persistent object Vendor{
 			on action write call wld_rad_setVendorData_owf;
 		}
 

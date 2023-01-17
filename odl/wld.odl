@@ -64,8 +64,8 @@
 %config {
     name = "wld";
     wld = {
-        mod-dir = "/usr/lib/amx/${name}/modules",
-        external-mod-dir = "/usr/lib/amx/modules"
+        mod-dir = "${prefix}${plugin-dir}/${name}/modules",
+        external-mod-dir = "${prefix}${plugin-dir}/modules"
     };
 
     // odl parser config options
@@ -210,9 +210,7 @@
         "../src/",
         "../src/Plugin/",
         "${prefix}${plugin-dir}/${name}",
-        "${prefix}${plugin-dir}/modules",
-        "${prefix}/usr/lib/amx/${name}",
-        "${prefix}/usr/lib/amx/modules"
+        "${prefix}${plugin-dir}/modules"
     ];
 }
 
