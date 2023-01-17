@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.14.0 - 2023-01-17(11:01:08 +0000)
+
+### Other
+
+- disable config opt check
+- load datamodel extension definition and defaults
+
 ## Release v2.13.5 - 2023-01-06(18:21:48 +0000)
 
 ### Other
