@@ -78,7 +78,9 @@
 #include "wld_nl80211_core.h"
 #include "wld_nl80211_api.h"
 #include "wld_nl80211_events.h"
+#include "wld_radio.h"
 #include "swl/swl_common.h"
+#include "swl/swl_80211.h"
 #include "test-toolbox/ttb_amx.h"
 
 static int s_loIfIndex = 0;
@@ -439,10 +441,11 @@ ssize_t s_recv(int socket, void* buffer, size_t length, int flags _UNUSED) {
 }
 
 static bool s_stateMockDeInit(stateMock_t* pStateMock) {
-    if(pStateMock == NULL) {
+    if((pStateMock == NULL) || (pStateMock->state == NULL)) {
         return false;
     }
     wld_nl80211_cleanup(pStateMock->state);
+    pStateMock->state = NULL;
     close(pStateMock->pipeFds[0]);
     close(pStateMock->pipeFds[1]);
     return true;
@@ -546,14 +549,18 @@ static void test_wld_nl80211_callEvtListeners(void** mockaState _UNUSED) {
     }
 }
 
-static struct nl_msg* s_mirrorNlMsg(struct nl_msg* msg, uint32_t cmd) {
+static struct nl_msg* s_mirrorNlMsgExt(struct nl_msg* msg, int msgType, uint32_t cmd, uint32_t flags) {
     struct nlmsghdr* nlh = nlmsg_hdr(msg);
     uint32_t seqId = nlh->nlmsg_seq;
     uint32_t portId = nlh->nlmsg_pid;
-    int family = nlh->nlmsg_type;
     struct nl_msg* msgReply = nlmsg_alloc();
-    genlmsg_put(msgReply, portId, seqId, family, 0, 0, cmd, 0);
+    genlmsg_put(msgReply, portId, seqId, msgType, 0, flags, cmd, 0);
     return msgReply;
+}
+
+static struct nl_msg* s_mirrorNlMsg(struct nl_msg* msg, uint32_t cmd, uint32_t flags) {
+    struct nlmsghdr* nlh = nlmsg_hdr(msg);
+    return s_mirrorNlMsgExt(msg, nlh->nlmsg_type, cmd, flags);
 }
 
 typedef struct {
@@ -578,7 +585,7 @@ static int s_nlSend_ifaceInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _
     }
     uint8_t use4Mac = pIfaceInfo->use4Mac;
 
-    struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_INTERFACE);
+    struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_INTERFACE, 0);
     NL_ATTRS(attribs,
              ARR(NL_ATTR_VAL(NL80211_ATTR_IFINDEX, pIfaceInfo->ifIndex),
                  NL_ATTR_VAL(NL80211_ATTR_WIPHY, pIfaceInfo->wiphy),
@@ -664,7 +671,7 @@ static int s_nlSend_wiphyInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _
     uint32_t antMask[COM_DIR_MAX] = ARR(s_getMask(pWiphyInfo->nrAntenna[COM_DIR_TRANSMIT]), s_getMask(pWiphyInfo->nrAntenna[COM_DIR_RECEIVE]));
     uint32_t actAntMask[COM_DIR_MAX] = ARR(s_getMask(pWiphyInfo->nrActiveAntenna[COM_DIR_TRANSMIT]), s_getMask(pWiphyInfo->nrActiveAntenna[COM_DIR_RECEIVE]));
     uint32_t genId = 2;
-    struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_WIPHY);
+    struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_WIPHY, 0);
     NL_ATTRS(attribs,
              ARR(NL_ATTR_VAL(NL80211_ATTR_GENERATION, genId),
                  NL_ATTR_VAL(NL80211_ATTR_WIPHY, pWiphyInfo->wiphy),
@@ -822,6 +829,176 @@ static void test_wld_nl80211_getWiphyInfo(void** mockaState _UNUSED) {
     s_stateMockDeInit(&mockGetWiphyInfo.stateMock);
 }
 
+typedef struct {
+    stateMock_t stateMock;
+    void* expectedData;
+    void* resultingData;
+} cmdMockAsyncTest_t;
+
+cmdMockAsyncTest_t mockGetScanResults;
+
+static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
+    assert_false(rc < SWL_RC_OK);
+    assert_non_null(results);
+    cmdMockAsyncTest_t* mockCtx = (cmdMockAsyncTest_t*) priv;
+    assert_non_null(mockCtx);
+    T_ScanResults* pCopy = mockCtx->resultingData;
+    wld_scan_cleanupScanResults(pCopy);
+    pCopy = (T_ScanResults*) calloc(1, sizeof(T_ScanResults));
+    amxc_llist_for_each(it, &results->ssids) {
+        T_ScanResult_SSID* pItem = amxc_container_of(it, T_ScanResult_SSID, it);
+        amxc_llist_it_take(&pItem->it);
+        amxc_llist_append(&pCopy->ssids, &pItem->it);
+    }
+    mockCtx->resultingData = pCopy;
+}
+
+static int s_nlSend_getScanResults(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
+    int fd = mockGetScanResults.stateMock.pipeFds[1];
+    T_ScanResults* pResults = (T_ScanResults*) mockGetScanResults.expectedData;
+    uint32_t genId = 2;
+    uint32_t wiphy = 1;
+    uint32_t ifIndex = 14;
+    uint64_t wdevId = ((uint64_t) wiphy << 32) | 0x1;
+    bool hasMulti = (amxc_llist_size(&pResults->ssids) > 1);
+
+    amxc_llist_for_each(it, &pResults->ssids) {
+        T_ScanResult_SSID* bss = amxc_container_of(it, T_ScanResult_SSID, it);
+        struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_SCAN_RESULTS, hasMulti ? NLM_F_MULTI : 0);
+        NL_ATTRS(attribs,
+                 ARR(NL_ATTR_VAL(NL80211_ATTR_GENERATION, genId),
+                     NL_ATTR_VAL(NL80211_ATTR_IFINDEX, ifIndex),
+                     NL_ATTR_VAL(NL80211_ATTR_WIPHY, wiphy),
+                     NL_ATTR_VAL(NL80211_ATTR_WDEV, wdevId)));
+        NL_ATTR_NESTED(bssAttr, NL80211_ATTR_BSS);
+        NL_ATTRS_ADD(&bssAttr.data.attribs, NL_ATTR_DATA(NL80211_BSS_BSSID, SWL_MAC_BIN_LEN, bss->bssid.bMac));
+        uint32_t rssi = bss->rssi * 100;
+        NL_ATTRS_ADD(&bssAttr.data.attribs, NL_ATTR_VAL(NL80211_BSS_SIGNAL_MBM, rssi));
+        swl_chanspec_t chspec = SWL_CHANSPEC_EMPTY;
+        chspec.channel = bss->channel;
+        chspec.band = swl_chanspec_freqBandExtFromBaseChannel(bss->channel);
+        chspec.bandwidth = swl_chanspec_intToBw(bss->bandwidth);
+        uint32_t freq = 0;
+        swl_chanspec_channelToMHz(&chspec, &freq);
+        NL_ATTRS_ADD(&bssAttr.data.attribs, NL_ATTR_VAL(NL80211_BSS_FREQUENCY, freq));
+        size_t len = 0;
+        swl_bit8_t iesBuf[2048];
+        /* fill IE SSID */
+        iesBuf[len++] = SWL_80211_EL_ID_SSID;
+        iesBuf[len++] = bss->ssidLen;
+        memcpy(&iesBuf[len], bss->ssid, bss->ssidLen);
+        len += bss->ssidLen;
+        /* fill IE Supported Operating class */
+        swl_freqBandExt_e freqBandExt = swl_chanspec_freqBandExtFromBaseChannel(bss->channel);
+        swl_bandwidth_e bandwidth = swl_chanspec_intToBw(bss->bandwidth);
+        iesBuf[len++] = SWL_80211_EL_ID_SUP_OP_CLASS;
+        iesBuf[len++] = 2;
+        uint8_t defOperClass[SWL_BW_MAX][SWL_FREQ_BAND_EXT_MAX] = {
+            {0, 0, 0},
+            {81, 115, 131},
+            {83, 122, 132},
+            {0, 128, 133},
+            {0, 129, 134}
+        };
+        iesBuf[len++] = defOperClass[bandwidth][freqBandExt];
+        iesBuf[len++] = 0; //no alternatives
+
+        NL_ATTRS_ADD(&bssAttr.data.attribs, NL_ATTR_DATA(NL80211_BSS_INFORMATION_ELEMENTS, len, iesBuf));
+        swl_unLiList_add(&attribs, &bssAttr);
+        wld_nl80211_addNlAttrs(msgReply, &attribs);
+        write(fd, (void*) nlmsg_hdr(msgReply), nlmsg_hdr(msgReply)->nlmsg_len);
+        nlmsg_free(msgReply);
+        NL_ATTRS_CLEAR(&attribs);
+    }
+
+    if(hasMulti) {
+        struct nl_msg* msgReply = s_mirrorNlMsgExt(msg, NLMSG_DONE, 0, NLM_F_MULTI);
+        write(fd, (void*) nlmsg_hdr(msgReply), nlmsg_hdr(msgReply)->nlmsg_len);
+        nlmsg_free(msgReply);
+    }
+    return 0;
+}
+
+static int s_test_getScanResults_setup(void** state) {
+    *state = &mockGetScanResults;
+    return 0;
+}
+static int s_test_getScanResults_teardown(void** state) {
+    cmdMockAsyncTest_t* pMockGetScanResults = *state;
+    s_stateMockDeInit(&pMockGetScanResults->stateMock);
+    T_ScanResults* results = (T_ScanResults*) pMockGetScanResults->resultingData;
+    wld_scan_cleanupScanResults(results);
+    free(results);
+    return 0;
+}
+
+static void test_wld_nl80211_getScanResults(void** mockaState _UNUSED) {
+    assert_true(s_stateMockInit(&mockGetScanResults.stateMock));
+    //tweak: override nl_send API to catch request and build reply locally
+    mockGetScanResults.stateMock.state->fNlSendPriv = s_nlSend_getScanResults;
+
+    T_ScanResults expectedList;
+    amxc_llist_init(&expectedList.ssids);
+    T_ScanResult_SSID aItems[] = {
+        {
+            .ssid = "Neigh_1_2G_20M",
+            .ssidLen = swl_str_len("Neigh_1_2G_20M"),
+            .bssid = {.bMac = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06}},
+            .rssi = -60,
+            .channel = 6,
+            .bandwidth = 20,
+        },
+        {
+            .ssid = "Neigh_2_2G_40M",
+            .ssidLen = swl_str_len("Neigh_2_2G_40M"),
+            .bssid = {.bMac = {0x11, 0x12, 0x13, 0x14, 0x15, 0x16}},
+            .rssi = -47,
+            .channel = 3,
+            .bandwidth = 40,
+        },
+    };
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(aItems); i++) {
+        T_ScanResult_SSID* pResultItem = &aItems[i];
+        amxc_llist_it_init(&pResultItem->it);
+        amxc_llist_append(&expectedList.ssids, &pResultItem->it);
+    }
+    mockGetScanResults.expectedData = &expectedList;
+
+    swl_rc_ne rc = wld_nl80211_getScanResults(mockGetScanResults.stateMock.state, 14, &mockGetScanResults, s_scanResultsCb);
+    assert_true(rc >= SWL_RC_OK);
+
+    //run local event loop, until all requests are processed
+    wld_nl80211_stateCounters_t counters = {};
+    do {
+        s_runEventLoopIter();
+        wld_nl80211_getAllCounters(&counters);
+    } while(counters.reqPending > 0);
+
+    T_ScanResults* resultingList = (T_ScanResults*) mockGetScanResults.resultingData;
+    assert_non_null(resultingList);
+
+    assert_int_equal(amxc_llist_size(&expectedList.ssids), amxc_llist_size(&resultingList->ssids));
+    amxc_llist_for_each(it, &expectedList.ssids) {
+        T_ScanResult_SSID* pExpectedItem = amxc_container_of(it, T_ScanResult_SSID, it);
+        bool found = false;
+        amxc_llist_for_each(it2, &resultingList->ssids) {
+            T_ScanResult_SSID* pResultItem = amxc_container_of(it2, T_ScanResult_SSID, it);
+            if(swl_mac_binMatches(&pResultItem->bssid, &pExpectedItem->bssid)) {
+                found = true;
+                assert_int_equal(pResultItem->channel, pExpectedItem->channel);
+                assert_int_equal(pResultItem->bandwidth, pExpectedItem->bandwidth);
+                assert_int_equal(pResultItem->ssidLen, pExpectedItem->ssidLen);
+                assert_string_equal(pResultItem->ssid, pExpectedItem->ssid);
+                assert_int_equal(pResultItem->rssi, pExpectedItem->rssi);
+                wld_scan_cleanupScanResultSSID(pResultItem);
+                break;
+            }
+        }
+        assert_true(found);
+    }
+    assert_true(amxc_llist_is_empty(&resultingList->ssids));
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceOpen(__FILE__, TRACE_TYPE_STDERR);
     if(!sahTraceIsOpen()) {
@@ -841,6 +1018,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_nl80211_callEvtListeners),
         cmocka_unit_test(test_wld_nl80211_getIfaceInfo),
         cmocka_unit_test(test_wld_nl80211_getWiphyInfo),
+        cmocka_unit_test_setup_teardown(test_wld_nl80211_getScanResults, s_test_getScanResults_setup, s_test_getScanResults_teardown),
     };
     int rc = cmocka_run_group_tests(tests, setup_suite, teardown_suite);
     sahTraceClose();

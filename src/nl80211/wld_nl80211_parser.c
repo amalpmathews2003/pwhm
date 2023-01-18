@@ -64,6 +64,7 @@
  */
 
 #include "wld_nl80211_parser.h"
+#include "swl/swl_genericFrameParser.h"
 
 #define ME "nlParser"
 
@@ -940,5 +941,97 @@ swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData) {
         return SWL_RC_DONE;
     }
     return SWL_RC_CONTINUE;
+}
+
+static void s_copyScanInfoFromIEs(T_ScanResult_SSID* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+    if(pWirelessDevIE->operChanInfo.channel > 0) {
+        pResult->channel = pWirelessDevIE->operChanInfo.channel;
+    }
+    pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
+    pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
+    pResult->ssidLen = SWL_MIN((uint8_t) SSID_NAME_LEN, pWirelessDevIE->ssidLen);
+    memcpy(pResult->ssid, pWirelessDevIE->ssid, pResult->ssidLen);
+    pResult->operatingStandards = pWirelessDevIE->operatingStandards;
+    pResult->secModeEnabled = pWirelessDevIE->secModeEnabled;
+    pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
+}
+
+swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], T_ScanResult_SSID* pResult) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(tb, rc, ME, "NULL");
+    ASSERT_NOT_NULL(pResult, rc, ME, "NULL");
+    rc = SWL_RC_ERROR;
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    ASSERT_NOT_EQUALS(wiphy, WLD_NL80211_ID_UNDEF, rc, ME, "missing wiphy");
+    ASSERT_NOT_NULL(tb[NL80211_ATTR_BSS], rc, ME, "no bss info in scan result");
+    struct nlattr* bss[NL80211_BSS_MAX + 1];
+    static struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = {
+        [NL80211_BSS_TSF] = { .type = NLA_U64 },
+        [NL80211_BSS_FREQUENCY] = { .type = NLA_U32 },
+        [NL80211_BSS_BSSID] = {.type = NLA_UNSPEC  },
+        [NL80211_BSS_BEACON_INTERVAL] = { .type = NLA_U16 },
+        [NL80211_BSS_CAPABILITY] = { .type = NLA_U16 },
+        [NL80211_BSS_INFORMATION_ELEMENTS] = { .type = NLA_UNSPEC },
+        [NL80211_BSS_SIGNAL_MBM] = { .type = NLA_U32 },
+        [NL80211_BSS_SIGNAL_UNSPEC] = { .type = NLA_U8 },
+        [NL80211_BSS_STATUS] = { .type = NLA_U32 },
+        [NL80211_BSS_SEEN_MS_AGO] = { .type = NLA_U32 },
+        [NL80211_BSS_BEACON_IES] = { .type = NLA_UNSPEC },
+    };
+
+    if(nla_parse_nested(bss, NL80211_BSS_MAX, tb[NL80211_ATTR_BSS], bss_policy)) {
+        SAH_TRACEZ_ERROR(ME, "failed to parse nested bss attributes");
+        return rc;
+    }
+    ASSERT_NOT_NULL(bss[NL80211_BSS_BSSID], rc, ME, "missing bssid in scan result");
+    memcpy(pResult->bssid.bMac, nla_data(bss[NL80211_BSS_BSSID]), ETHER_ADDR_LEN);
+
+    // get signal strength, signal strength units not specified, scaled to 0-100
+    if(bss[NL80211_BSS_SIGNAL_UNSPEC]) {
+        //signal strength of the probe response/beacon in unspecified units, scaled to 0..100 <u8>
+        pResult->rssi = (int32_t) nla_get_u8(bss[NL80211_BSS_SIGNAL_UNSPEC]);
+    } else if(bss[NL80211_BSS_SIGNAL_MBM]) {
+        //signal strength of probe response/beacon in mBm (100 * dBm) <s32>
+        pResult->rssi = ((int32_t) nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM])) / 100;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "missing signal strength of "SWL_MAC_FMT, SWL_MAC_ARG(pResult->bssid.bMac));
+    }
+
+    ASSERT_NOT_NULL(bss[NL80211_BSS_FREQUENCY], rc, ME, "missing frequency in scan result");
+
+    uint32_t freq = 0;
+    NLA_GET_VAL(freq, nla_get_u32, bss[NL80211_BSS_FREQUENCY]);
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    if(swl_chanspec_channelFromMHz(&chanSpec, freq) == SWL_RC_OK) {
+        pResult->channel = chanSpec.channel;
+        pResult->centreChannel = chanSpec.channel;
+    }
+
+    //get information elements from probe_resp or from beacon
+    if(bss[NL80211_BSS_BEACON_IES] || bss[NL80211_BSS_INFORMATION_ELEMENTS]) {
+        uint32_t iesAttr = (bss[NL80211_BSS_INFORMATION_ELEMENTS])
+            ? NL80211_BSS_INFORMATION_ELEMENTS
+            : NL80211_BSS_BEACON_IES;
+        size_t iesLen = nla_len(bss[iesAttr]);
+        uint8_t* iesData = (uint8_t*) nla_data(bss[iesAttr]);
+        swl_wirelessDevice_infoElements_t wirelessDevIE;
+        swl_parsingArgs_t parsingArgs = {
+            .seenOnChanspec = SWL_CHANSPEC_NEW(chanSpec.channel, chanSpec.bandwidth, chanSpec.band),
+        };
+        ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
+        if(parsedLen < (ssize_t) iesLen) {
+            SAH_TRACEZ_WARNING(ME, "Error while parsing probe/beacon rcvd IEs");
+            return SWL_RC_CONTINUE;
+        }
+        s_copyScanInfoFromIEs(pResult, &wirelessDevIE);
+    }
+
+    if(!pResult->channel || !pResult->ssidLen) {
+        SAH_TRACEZ_NOTICE(ME, "missing channel and ssid info");
+        return SWL_RC_CONTINUE;
+    }
+
+    return SWL_RC_OK;
 }
 

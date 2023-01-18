@@ -3794,38 +3794,46 @@ bool wld_rad_hasActiveVap(T_Radio* pRad) {
     return false;
 }
 
-bool wld_rad_hasEnabledIface(T_Radio* pRad) {
+uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
         if((pAP->index > 0) &&
            (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias) > 0)) {
-            return true;
+            return pAP->index;
         }
     }
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
         if((pEP->index > 0) &&
            (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pEP->Name) > 0)) {
-            return true;
+            return pEP->index;
         }
     }
-    return false;
+    return 0;
 }
 
-bool wld_rad_hasActiveIface(T_Radio* pRad) {
+bool wld_rad_hasEnabledIface(T_Radio* pRad) {
+    return (wld_rad_getFirstEnabledIfaceIndex(pRad) > 0);
+}
+
+uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
         if((pAP->index > 0) && (pRad->pFA->mfn_wvap_status(pAP) > 0)) {
-            return true;
+            return pAP->index;
         }
     }
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
         if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) >= SWL_RC_OK)) {
-            return true;
+            return pEP->index;
         }
     }
-    return false;
+    return 0;
+}
+
+bool wld_rad_hasActiveIface(T_Radio* pRad) {
+    return (wld_rad_getFirstActiveIfaceIndex(pRad) > 0);
 }
 
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size) {

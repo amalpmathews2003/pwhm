@@ -143,6 +143,58 @@ static swl_rc_ne s_delInterfaceEvtCb(swl_unLiList_t* pListenerList, struct nlmsg
     return SWL_RC_DONE;
 }
 
+static swl_rc_ne s_scanStartedCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.scan_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
+    SAH_TRACEZ_INFO(ME, "scan started on w:%d,i:%d", wiphy, ifIndex);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fScanStartedCb(pListener->pRef, pListener->pData, wiphy, ifIndex);
+    });
+    return SWL_RC_DONE;
+}
+
+static swl_rc_ne s_scanAbortedCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.scan_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
+    SAH_TRACEZ_INFO(ME, "scan aborted on w:%d,i:%d", wiphy, ifIndex);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fScanAbortedCb(pListener->pRef, pListener->pData, wiphy, ifIndex);
+    });
+    return SWL_RC_DONE;
+}
+
+static swl_rc_ne s_scanResultsCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.scan_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
+    ASSERTS_EQUALS(nlh->nlmsg_seq, 0, SWL_RC_DONE, ME, "not notif");
+    SAH_TRACEZ_INFO(ME, "scan done on w:%d,i:%d", wiphy, ifIndex);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fScanDoneCb(pListener->pRef, pListener->pData, wiphy, ifIndex);
+    });
+    return SWL_RC_DONE;
+}
+
 #define OFFSET_UNDEF (-1)
 #define MSG_ID_NAME(x) x, #x
 
@@ -175,9 +227,9 @@ SWL_TABLE(sNl80211Msgs,
               {MSG_ID_NAME(NL80211_CMD_ABORT_SCAN), NULL, OFFSET_UNDEF},
               /* Events */
               /* NL80211_MCGRP_SCAN */
-              {MSG_ID_NAME(NL80211_CMD_TRIGGER_SCAN), s_commonEvtCb, OFFSET_UNDEF},
-              {MSG_ID_NAME(NL80211_CMD_SCAN_ABORTED), s_commonEvtCb, OFFSET_UNDEF},
-              {MSG_ID_NAME(NL80211_CMD_NEW_SCAN_RESULTS), s_commonEvtCb, OFFSET_UNDEF},
+              {MSG_ID_NAME(NL80211_CMD_TRIGGER_SCAN), s_scanStartedCb, offsetof(wld_nl80211_evtHandlers_cb, fScanStartedCb)},
+              {MSG_ID_NAME(NL80211_CMD_SCAN_ABORTED), s_scanAbortedCb, offsetof(wld_nl80211_evtHandlers_cb, fScanAbortedCb)},
+              {MSG_ID_NAME(NL80211_CMD_NEW_SCAN_RESULTS), s_scanResultsCb, offsetof(wld_nl80211_evtHandlers_cb, fScanDoneCb)},
               {MSG_ID_NAME(NL80211_CMD_START_SCHED_SCAN), s_commonEvtCb, OFFSET_UNDEF},
               /* NL80211_MCGRP_CONFIG */
               {MSG_ID_NAME(NL80211_CMD_NEW_WIPHY), s_commonEvtCb, OFFSET_UNDEF},
@@ -244,6 +296,9 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
         //Wiphy events handlers to be set here
         pListener->handlers.fNewInterfaceCb = handlers->fNewInterfaceCb;
         pListener->handlers.fDelInterfaceCb = handlers->fDelInterfaceCb;
+        pListener->handlers.fScanStartedCb = handlers->fScanStartedCb;
+        pListener->handlers.fScanAbortedCb = handlers->fScanAbortedCb;
+        pListener->handlers.fScanDoneCb = handlers->fScanDoneCb;
     }
     if(pListener->ifIndex != WLD_NL80211_ID_UNDEF) {
         //Iface events handlers to be set here

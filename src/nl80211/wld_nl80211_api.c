@@ -498,3 +498,149 @@ swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, i
     *mbm = ifaceInfo.txPower;
     return rc;
 }
+
+swl_rc_ne wld_nl80211_startScan(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_scanParams_t* params) {
+    SAH_TRACEZ_IN(ME);
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    uint32_t flags = NL80211_SCAN_FLAG_FLUSH;
+    NL_ATTRS(attribs,
+             ARR(NL_ATTR_VAL(NL80211_ATTR_SCAN_FLAGS, flags)));
+    SAH_TRACEZ_INFO(ME, "iface:%d, added scan flags attribute(%d)", ifIndex, swl_unLiList_size(&attribs));
+    if(params) {
+        swl_unLiListIt_t it;
+        if(swl_unLiList_size(&params->ssids) > 0) {
+            NL_ATTR_NESTED(ssidsAttr, NL80211_ATTR_SCAN_SSIDS);
+            SAH_TRACEZ_INFO(ME, "Trying to add scan ssids(%d)", swl_unLiList_size(&params->ssids));
+            swl_unLiList_for_each(it, &params->ssids) {
+                char* ssid = *(swl_unLiList_data(&it, char**));
+                if(ssid == NULL) {
+                    continue;
+                }
+                SAH_TRACEZ_INFO(ME, "Scan for ssid %s ", ssid);
+                NL_ATTRS_ADD(&ssidsAttr.data.attribs,
+                             NL_ATTR_DATA(swl_unLiList_size(&ssidsAttr.data.attribs) + 1, strlen(ssid), ssid));
+            }
+            if(swl_unLiList_size(&ssidsAttr.data.attribs) > 0) {
+                swl_unLiList_add(&attribs, &ssidsAttr);
+            } else {
+                wld_nl80211_cleanNlAttr(&ssidsAttr);
+            }
+        }
+        if(swl_unLiList_size(&params->freqs) > 0) {
+            NL_ATTR_NESTED(freqsAttr, NL80211_ATTR_SCAN_FREQUENCIES);
+            swl_unLiList_for_each(it, &params->freqs) {
+                uint32_t* pFreq = swl_unLiList_data(&it, uint32_t*);
+                if((pFreq == NULL) || (*pFreq == 0)) {
+                    continue;
+                }
+                SAH_TRACEZ_INFO(ME, "Scan over frequency %u MHz", *pFreq);
+                NL_ATTRS_ADD(&freqsAttr.data.attribs,
+                             NL_ATTR_DATA(swl_unLiList_size(&freqsAttr.data.attribs) + 1, sizeof(*pFreq), pFreq));
+            }
+            if(swl_unLiList_size(&freqsAttr.data.attribs) > 0) {
+                swl_unLiList_add(&attribs, &freqsAttr);
+            } else {
+                wld_nl80211_cleanNlAttr(&freqsAttr);
+            }
+        }
+        if((params->iesLen > 0) && (params->ies != NULL)) {
+            SAH_TRACEZ_INFO(ME, "Scan probe with extra IEs");
+            wld_nl80211_nlAttr_t iesAttr = {
+                .type = NL80211_ATTR_IE,
+                .nested = false,
+                .data = {.raw = {.len = params->iesLen, .ptr = params->ies, }, },
+            };
+            swl_unLiList_add(&attribs, &iesAttr);
+        }
+    }
+    rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_TRIGGER_SCAN, 0, ifIndex, &attribs);
+    NL_ATTRS_CLEAR(&attribs);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_abortScan(wld_nl80211_state_t* state, uint32_t ifIndex) {
+    return wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_ABORT_SCAN, 0, ifIndex, NULL);
+}
+
+struct getScanResultsData_s {
+    scanResultsCb_f fScanResultsCb;
+    T_ScanResults results;
+    void* priv;
+};
+static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
+    T_ScanResult_SSID* pResult = NULL;
+    struct getScanResultsData_s* requestData = (struct getScanResultsData_s*) priv;
+    if(rc <= SWL_RC_ERROR) {
+        goto scanFinish;
+    }
+    if(nlh->nlmsg_type == NLMSG_DONE) {
+        rc = SWL_RC_DONE;
+        goto scanFinish;
+    }
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.scan_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    struct genlmsghdr* gnlh = (struct genlmsghdr*) nlmsg_data(nlh);
+    ASSERTI_EQUALS(gnlh->cmd, NL80211_CMD_NEW_SCAN_RESULTS, SWL_RC_OK, ME, "unexpected cmd %d", gnlh->cmd);
+    T_ScanResult_SSID result;
+    memset(&result, 0, sizeof(result));
+    struct nlattr* tb[NL80211_ATTR_MAX + 1] = {};
+    if((nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL) != 0) ||
+       ((rc = wld_nl80211_parseScanResult(tb, &result)) < SWL_RC_OK)) {
+        SAH_TRACEZ_ERROR(ME, "Failed to parse nl msg evt(%d)", gnlh->cmd);
+        goto scanFinish;
+    }
+    if(rc == SWL_RC_CONTINUE) {
+        SAH_TRACEZ_INFO(ME, "skip nl msg due to partial parsing");
+    } else if(requestData) {
+        pResult = calloc(1, sizeof(T_ScanResult_SSID));
+        if(pResult == NULL) {
+            SAH_TRACEZ_ERROR(ME, "fail to alloc scan result element");
+            goto scanFinish;
+        }
+        memcpy(pResult, &result, sizeof(T_ScanResult_SSID));
+        amxc_llist_it_init(&pResult->it);
+        amxc_llist_append(&requestData->results.ssids, &pResult->it);
+    }
+    ASSERTS_FALSE((nlh->nlmsg_flags & NLM_F_MULTI), SWL_RC_OK, ME, "expecting other nl msg");
+scanFinish:
+    ASSERTS_NOT_NULL(requestData, rc, ME, "no request data");
+    SAH_TRACEZ_INFO(ME, "rc:%d nResults:%d", rc, (int) amxc_llist_size(&requestData->results.ssids));
+    amxc_llist_for_each(it, &requestData->results.ssids) {
+        pResult = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
+        SAH_TRACEZ_INFO(ME, "scan result entry: bssid("SWL_MAC_FMT ") ssid(%s) signal(%d dbm)",
+                        SWL_MAC_ARG(pResult->bssid.bMac), pResult->ssid, pResult->rssi);
+    }
+    if(requestData->fScanResultsCb) {
+        requestData->fScanResultsCb(requestData->priv, rc, &requestData->results);
+    }
+    SAH_TRACEZ_INFO(ME, "clean request data");
+    amxc_llist_for_each(it, &requestData->results.ssids) {
+        pResult = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
+        amxc_llist_it_take(&pResult->it);
+        free(pResult);
+    }
+    free(requestData);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(state, rc, ME, "NULL");
+    struct getScanResultsData_s* pScanResultsData = calloc(1, sizeof(struct getScanResultsData_s));
+    if(pScanResultsData == NULL) {
+        SAH_TRACEZ_ERROR(ME, "Fail to alloc getScanResults req data");
+        if(fScanResultsCb) {
+            fScanResultsCb(priv, rc, NULL);
+        }
+        return rc;
+    }
+    pScanResultsData->fScanResultsCb = fScanResultsCb;
+    amxc_llist_init(&pScanResultsData->results.ssids);
+    pScanResultsData->priv = priv;
+    rc = wld_nl80211_sendCmd(false, state, NL80211_CMD_GET_SCAN, NLM_F_DUMP, ifIndex, NULL, s_scanResultCb, pScanResultsData, NULL);
+    return rc;
+}
+

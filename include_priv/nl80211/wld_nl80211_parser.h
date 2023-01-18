@@ -128,5 +128,15 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
  */
 swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData);
 
+/*
+ * @brief parse nl msg attributes into scan result struct
+ *
+ * @param tb array of attributes from parsed nl msg
+ * @param pResult pointer to scan result struct to be filled
+ *
+ * @return SWL_RC_OK parsing done successfully
+ *         <= SWL_RC_ERROR parsing error
+ */
+swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], T_ScanResult_SSID* pResult);
 
 #endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_PARSER_H_ */

@@ -72,6 +72,8 @@
 #include <swla/swla_time_spec.h>
 #include <swla/swla_oui.h>
 #include <swl/swl_usp_cmdStatus.h>
+#include <swl/swl_wps.h>
+#include <swl/swl_security.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -1513,7 +1515,7 @@ struct S_SSID {
 
 typedef struct {
     char ssid[SSID_NAME_LEN];
-    int ssid_len;
+    int ssidLen;
     uint8_t chanlist[WLD_MAX_POSSIBLE_CHANNELS];
     int chanCount;
     bool updateUsageStats;
@@ -1862,26 +1864,25 @@ typedef struct {
 } T_EndPointStats;
 
 typedef struct {
-    uint8_t ssid_len;
+    uint8_t ssidLen;
     uint8_t ssid[SSID_NAME_LEN];
-    uint8_t bssid[ETHER_ADDR_LEN];
+    swl_macBin_t bssid;
     int32_t snr;
     int32_t noise;
     int32_t rssi;
     int32_t channel;
-    int32_t centre_channel;
+    int32_t centreChannel;
     int32_t bandwidth;
-    int32_t signalStrength;
 
     // Not always filled in. In that case it is 0.
     swl_radioStandard_m operatingStandards;
 
-    wld_securityMode_e secModeEnabled;
-    wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;
-    uint32_t WPS_PBC_Active;
+    swl_security_apMode_e secModeEnabled;
+    swl_wps_cfgMethod_m WPS_ConfigMethodsEnabled;
+    bool hasActiveWpsRegistrar;
     bool adhoc;
     int32_t linkrate;
-    wld_enc_modes_e encryptionMode;
+    swl_security_encMode_e encryptionMode;
 
     amxc_llist_it_t it;
 } T_ScanResult_SSID;

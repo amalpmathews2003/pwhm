@@ -70,11 +70,11 @@
 #define ME "nlDbg"
 
 static void s_dumpVar(amxc_var_t* retVar) {
-    amxc_string_t retStr;
-    amxc_string_init(&retStr, 0);
-    amxc_string_csv_join_var(&retStr, retVar);
-    SAH_TRACEZ_INFO(ME, "%s", amxc_string_get(&retStr, 0));
-    amxc_string_clean(&retStr);
+    amxc_var_t retStr;
+    amxc_var_init(&retStr);
+    amxc_var_convert(&retStr, retVar, AMXC_VAR_ID_CSTRING);
+    SAH_TRACEZ_INFO(ME, "%s", amxc_var_constcast(cstring_t, &retStr));
+    amxc_var_clean(&retStr);
 }
 
 static void s_dumpMap(amxc_var_t* retMap) {

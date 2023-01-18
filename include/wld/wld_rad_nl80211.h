@@ -253,4 +253,40 @@ swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wl
  */
 swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec);
 
+/*
+ * @brief initiate a neighbor scan
+ * It is possible to indicate scan options:
+ * - ssids to fetch
+ * - frequencies to use
+ *
+ * @param pRadio pointer to radio context
+ * @param args scan options (ssid, channels)
+ *
+ * @return SWL_RC_OK in case of success (scan trigger acknowledged)
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio, T_ScanArgs* args);
+
+/*
+ * @brief abort a running neighbor scan
+ *
+ * @param pRadio pointer to radio context
+ *
+ * @return SWL_RC_OK in case of success (scan abort acknowledged)
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_abortScan(T_Radio* pRadio);
+
+/*
+ * @brief subscribe to get asynchronous scan results
+ *
+ * @param pRadio pointer to radio context
+ * @param priv user data that will returned in the result handler
+ * @param fScanResultsCb handler that will be called when results are ready
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResultsCb_f fScanResultsCb);
+
 #endif /* INCLUDE_WLD_WLD_RAD_NL80211_H_ */

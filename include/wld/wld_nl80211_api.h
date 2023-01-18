@@ -312,4 +312,53 @@ swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifI
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* dbm);
+
+/*
+ * @brief initiate a neighbor scan
+ * It is possible to indicate scan options:
+ * - ssids to fetch
+ * - frequencies to use
+ * - extra InfoElements to add to scan probe request frames
+ *
+ * @param state nl80211 socket manager
+ * @param ifIndex network interface index indicating relative radio device
+ * @param params scan options (ssids, frequencies, IEs)
+ *
+ * @return SWL_RC_OK in case of success (scan trigger acknowledged)
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_startScan(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_scanParams_t* params);
+
+/*
+ * @brief abort a running neighbor scan
+ *
+ * @param state nl80211 socket manager
+ * @param ifIndex network interface index indicating relative radio device
+ *
+ * @return SWL_RC_OK in case of success (scan abort acknowledged)
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_abortScan(wld_nl80211_state_t* state, uint32_t ifIndex);
+
+/*
+ * @brief handler prototype to get asynchronous scan results
+ *
+ * @param priv Private user data
+ * @param results pointer to scan results structure
+ */
+typedef void (* scanResultsCb_f) (void* priv, swl_rc_ne rc, T_ScanResults* results);
+
+/*
+ * @brief subscribe to get asynchronous scan results
+ *
+ * @param state nl80211 socket manager
+ * @param ifIndex network interface index indicating relative radio device
+ * @param priv user data that will returned in the result handler
+ * @param fScanResultsCb handler that will be called when results are ready
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb);
+
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

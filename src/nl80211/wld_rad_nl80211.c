@@ -216,3 +216,63 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
     return rc;
 }
 
+swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio, T_ScanArgs* args) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+    wld_nl80211_state_t* state = wld_nl80211_getSharedState();
+    wld_nl80211_scanParams_t params;
+    swl_unLiList_init(&params.ssids, sizeof(char*));
+    swl_unLiList_init(&params.freqs, sizeof(uint32_t));
+    params.iesLen = 0;
+    if(args) {
+        int i;
+        for(i = 0; i < args->chanCount; i++) {
+            if(!wld_rad_hasChannel(pRadio, args->chanlist[i])) {
+                SAH_TRACEZ_ERROR(ME, "rad(%s) does not support scan chan(%d)",
+                                 pRadio->Name, args->chanlist[i]);
+                goto scan_error;
+            }
+            swl_chanspec_t chanspec = {
+                .band = pRadio->operatingFrequencyBand,
+                .bandwidth = pRadio->operatingChannelBandwidth,
+                .channel = args->chanlist[i],
+            };
+            chanspec.band = pRadio->operatingFrequencyBand;
+            chanspec.bandwidth = pRadio->operatingChannelBandwidth;
+            uint32_t freq = wld_channel_getFrequencyOfChannel(chanspec);
+            swl_unLiList_add(&params.freqs, &freq);
+        }
+        if(args->ssid[0] && (args->ssidLen > 0)) {
+            char* ssid = args->ssid;
+            swl_unLiList_add(&params.ssids, &ssid);
+        }
+    }
+    /*
+     * start_scan command has to be sent to enabled interface (UP)
+     * (even when secondary VAP, while primary is disabled)
+     */
+    int index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    rc = wld_nl80211_startScan(state, index, &params);
+scan_error:
+    swl_unLiList_destroy(&params.ssids);
+    swl_unLiList_destroy(&params.freqs);
+    return rc;
+}
+
+swl_rc_ne wld_rad_nl80211_abortScan(T_Radio* pRadio) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+    /*
+     * abort_scan command has to be sent to enabled interface (UP)
+     * (even when secondary VAP, while primary is disabled)
+     */
+    int index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    return wld_nl80211_abortScan(wld_nl80211_getSharedState(), index);
+}
+
+swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResultsCb_f fScanResultsCb) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+    return wld_nl80211_getScanResults(wld_nl80211_getSharedState(), pRadio->index, priv, fScanResultsCb);
+}
+

@@ -101,6 +101,9 @@ typedef struct {
     wld_nl80211_genIfaceEvtCb_f fUnspecEvtCb;     // unspecified event is never sent by kernel: only defined for test purpose
     wld_nl80211_ifaceInfoEvtCb_f fNewInterfaceCb; // created virtual interface
     wld_nl80211_ifaceInfoEvtCb_f fDelInterfaceCb; // deleted virtual interface
+    wld_nl80211_genIfaceEvtCb_f fScanStartedCb;   // scan is started successfully and running
+    wld_nl80211_genIfaceEvtCb_f fScanAbortedCb;   // running scan was aborted
+    wld_nl80211_genIfaceEvtCb_f fScanDoneCb;      // scan is terminated and results can be retrieved
 } wld_nl80211_evtHandlers_cb;
 
 /*
