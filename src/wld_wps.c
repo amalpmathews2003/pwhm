@@ -198,7 +198,7 @@ void s_startPairingTimer(wld_wpsSessionInfo_t* pCtx) {
     amxp_timer_start(pCtx->sessionTimer, WPS_SESSION_TIMEOUT * 1000);
 }
 
-void wld_wps_sendNotification(amxd_object_t* wps, const char* name, const char* reason, const char* macAddress, T_WPSCredentials* credentials) {
+void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason, const char* macAddress, T_WPSCredentials* credentials) {
     amxc_var_t notifMap;
     amxc_var_init(&notifMap);
     amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
@@ -249,7 +249,7 @@ void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const
         s_startPairingTimer(pCtx);
     }
 
-    wld_wps_sendNotification(wps, name, reason, macAddress, credentials);
+    s_sendNotif(wps, name, reason, macAddress, credentials);
 
     if(prevInProgress != inProgress) {
         amxd_object_set_bool(wps, "PairingInProgress", inProgress);

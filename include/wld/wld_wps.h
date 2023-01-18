@@ -112,7 +112,6 @@ void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const
 void wld_wps_clearPairingTimer(wld_wpsSessionInfo_t* pCtx);
 //DEPRECATED
 void wld_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* reason, const char* macAddress);
-void wld_wps_sendNotification(amxd_object_t* wps, const char* name, const char* reason, const char* macAddress, T_WPSCredentials* credentials);
 
 void genSelfPIN();
 

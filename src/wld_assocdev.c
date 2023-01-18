@@ -314,7 +314,7 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
     pAD->AuthenticationState = 0;
     pAP->AssociatedDevice[pAP->AssociatedDeviceNumberOfEntries] = pAD;
     pAP->AssociatedDeviceNumberOfEntries++;
-    pAD->latestStateChangeTime = swl_time_getRealSec();
+    pAD->latestStateChangeTime = swl_time_getMonoSec();
     pAD->associationTime = swl_time_getMonoSec();
     pAD->MaxDownlinkRateReached = 0;
     pAD->MaxUplinkRateReached = 0;
@@ -434,6 +434,12 @@ static void wld_update_station_stats(T_AccessPoint* pAP) {
     }
 }
 
+/**
+ * Function to be called when station stats was successfully received from driver.
+ * Can either be called synchronously if driver immediately returns from getStats call,
+ * or in callback handler.
+ * It will update staStats values in data model, and return the new values in retval.
+ */
 static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* retval) {
     T_Radio* pRad = pAP->pRadio;
     if(!pAP->enable || !pRad->enable || !swl_rc_isOk(ret)) {
@@ -594,7 +600,7 @@ amxd_status_t _getSingleStationStats(amxd_object_t* const object,
         WLD_SET_VAR_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
         WLD_SET_VAR_BOOL(object, "AuthenticationState", pAD->AuthenticationState);
 
-        swl_time_objectParamSetReal(object, "LastStateChange", pAD->latestStateChangeTime);
+        swl_time_objectParamSetMono(object, "LastStateChange", pAD->latestStateChangeTime);
         swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
         swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
     }
@@ -845,21 +851,32 @@ void wld_ad_checkRoamSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     }
 }
 
-void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    ASSERTI_FALSE(pAD->Active, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
-
+static void s_activate(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     SAH_TRACEZ_INFO(ME, "%s : Try %s", pAP->alias, pAD->Name);
     pAD->Active = 1;
     pAD->AuthenticationState = 0;
     pAD->Inactive = 0;
     pAD->hadSecFailure = false;
-    pAD->latestStateChangeTime = swl_time_getRealSec();
-    pAD->associationTime = swl_time_getRealSec();
+    pAD->latestStateChangeTime = swl_time_getMonoSec();
+    pAD->associationTime = swl_time_getMonoSec();
+
+    swl_timespec_reset(&pAD->lastSampleTime);
 
     //kick from all other AP's
     wld_ad_checkRoamSta(pAP, pAD);
+}
 
-    pAD->associationTime = swl_time_getMonoSec();
+/**
+ * Activate a station, updating the data model.
+ * Note that if it is already known the station is authorised, please use
+ * wld_ad_add_connection_succes immediately.
+ */
+void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERTI_FALSE(pAD->Active, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
+
+    s_activate(pAP, pAD);
+
+
     wld_vap_sync_device(pAP, pAD);
     wld_vap_syncNrDev(pAP);
 }
@@ -898,7 +915,7 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i",
                            pAP->alias, pAD->Name, pAD->AuthenticationState, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
                            timeOnline, pAD->SignalNoiseRatio);
-        pAD->latestStateChangeTime = swl_time_getRealSec();
+        pAD->latestStateChangeTime = swl_time_getMonoSec();
         pAD->disassociationTime = swl_time_getMonoSec();
 
         wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
@@ -926,13 +943,16 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     ASSERTI_FALSE(pAD->AuthenticationState, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
 
+    if(!pAD->Active) {
+        s_activate(pAP, pAD);
+    }
+
     wld_ad_dcLog_t* entry = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
     SAH_TRACEZ_WARNING(ME, "%s: Connect %s (dc %s)", pAP->alias, pAD->Name, entry != NULL ?
                        swl_typeTimeSpecMono_toBuf32(entry->dcTime).buf : "NA");
     pAD->AuthenticationState = 1;
-    pAD->Active = 1;
     pAD->Inactive = 0;
-    pAD->latestStateChangeTime = swl_time_getRealSec();
+    pAD->latestStateChangeTime = swl_time_getMonoSec();
     s_incrementAssocCounter(pAP, "Success");
     //Update device type when connection succeeds.
     pAP->pFA->mfn_wvap_update_assoc_dev(pAP, pAD);
@@ -1021,36 +1041,41 @@ static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
     amxc_string_set(output, buffer);
 }
 
-void wld_ad_syncCapabilities(amxd_object_t* object, wld_assocDev_capabilities_t* caps) {
-    ASSERT_NOT_NULL(object, , ME, "NULL");
+
+void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
+    ASSERT_NOT_NULL(trans, , ME, "NULL");
     ASSERT_NOT_NULL(caps, , ME, "NULL");
+
     char mcsList[100];
     memset(mcsList, 0, sizeof(mcsList));
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedMCS.mcs, caps->supportedMCS.mcsNbr);
-    amxd_object_set_cstring_t(object, "SupportedMCS", mcsList);
+    amxd_trans_set_cstring_t(trans, "SupportedMCS", mcsList);
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedVhtMCS.nssMcsNbr, caps->supportedVhtMCS.nssNbr);
-    amxd_object_set_cstring_t(object, "SupportedVhtMCS", mcsList);
+    amxd_trans_set_cstring_t(trans, "SupportedVhtMCS", mcsList);
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHeMCS.nssMcsNbr, caps->supportedHeMCS.nssNbr);
-    amxd_object_set_cstring_t(object, "SupportedHeMCS", mcsList);
+    amxd_trans_set_cstring_t(trans, "SupportedHeMCS", mcsList);
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe160MCS.nssMcsNbr, caps->supportedHe160MCS.nssNbr);
-    amxd_object_set_cstring_t(object, "SupportedHe160MCS", mcsList);
+    amxd_trans_set_cstring_t(trans, "SupportedHe160MCS", mcsList);
 
     amxc_string_t TBufStr;
     amxc_string_init(&TBufStr, 0);
     s_getOUIValue(&TBufStr, &caps->vendorOUI);
-    amxd_object_set_cstring_t(object, "VendorOUI", amxc_string_get(&TBufStr, 0));
-    amxd_object_set_cstring_t(object, "SecurityModeEnabled", cstr_AP_ModesSupported[caps->currentSecurity]);
-    amxd_object_set_cstring_t(object, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
-    amxd_object_set_cstring_t(object, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
+    amxd_trans_set_cstring_t(trans, "VendorOUI", amxc_string_get(&TBufStr, 0));
+    amxd_trans_set_cstring_t(trans, "SecurityModeEnabled", cstr_AP_ModesSupported[caps->currentSecurity]);
+    amxd_trans_set_cstring_t(trans, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
+
+
+
+    amxd_trans_set_cstring_t(trans, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
     bitmask_to_string(&TBufStr, swl_staCapHt_str, ',', caps->htCapabilities);
-    amxd_object_set_cstring_t(object, "HtCapabilities", amxc_string_get(&TBufStr, 0));
+    amxd_trans_set_cstring_t(trans, "HtCapabilities", amxc_string_get(&TBufStr, 0));
     bitmask_to_string(&TBufStr, swl_staCapVht_str, ',', caps->vhtCapabilities);
-    amxd_object_set_cstring_t(object, "VhtCapabilities", amxc_string_get(&TBufStr, 0));
+    amxd_trans_set_cstring_t(trans, "VhtCapabilities", amxc_string_get(&TBufStr, 0));
     bitmask_to_string(&TBufStr, swl_staCapHe_str, ',', caps->heCapabilities);
-    amxd_object_set_cstring_t(object, "HeCapabilities", amxc_string_get(&TBufStr, 0));
+    amxd_trans_set_cstring_t(trans, "HeCapabilities", amxc_string_get(&TBufStr, 0));
     char frequencyCapabilitiesStr[128] = {0};
     swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);
-    amxd_object_set_cstring_t(object, "FrequencyCapabilities", frequencyCapabilitiesStr);
+    amxd_trans_set_cstring_t(trans, "FrequencyCapabilities", frequencyCapabilitiesStr);
     amxc_string_clean(&TBufStr);
 }
 

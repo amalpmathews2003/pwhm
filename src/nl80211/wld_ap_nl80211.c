@@ -162,6 +162,7 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     pAD->DownlinkBandwidth = swl_chanspec_bwToInt(pStationInfo->txRate.mcsInfo.bandwidth);
     pAD->DownlinkShortGuard = swl_mcs_guardIntervalToInt(pStationInfo->txRate.mcsInfo.guardInterval);
     pAD->downLinkRateSpec = pStationInfo->txRate.mcsInfo;
+    pAD->lastSampleTime = swl_timespec_getMonoVal();
 
     return SWL_RC_OK;
 }

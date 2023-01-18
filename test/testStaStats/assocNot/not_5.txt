@@ -1,0 +1,26 @@
+{
+    "data": {
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
+        "parameters": {
+            "SignalStrengthHistory": {
+                "from": "",
+                "to": "0,-200,0,0"
+            },
+            "Active": {
+                "from": false,
+                "to": true
+            },
+            "MACAddress": {
+                "from": "",
+                "to": "18:58:80:C2:FC:A1"
+            },
+            "Mode": {
+                "from": "Unknown",
+                "to": "auto"
+            }
+        },
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
+    }
+}

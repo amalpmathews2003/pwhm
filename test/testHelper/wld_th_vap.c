@@ -89,7 +89,7 @@ int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bu
 
 swl_rc_ne wld_th_vap_createHook(T_AccessPoint* pAP) {
     assert_non_null(pAP);
-    pAP->vendorData = calloc(1, sizeof(wld_vap_testData_t));
+    pAP->vendorData = calloc(1, sizeof(wld_th_vap_vendorData_t));
     return SWL_RC_OK;
 }
 
@@ -129,31 +129,82 @@ int wld_th_vap_status(T_AccessPoint* pAP) {
 
 swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP) {
     assert_non_null(pAP);
+    wld_th_vap_vendorData_t* vendorD = wld_th_vap_getVendorData(pAP);
+
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     assert_non_null(pRad);
 
-    bool errOnStaStats = wl_th_vap_getVendorData(pAP)->errorOnStaStats;
+    bool errOnStaStats = wld_th_vap_getVendorData(pAP)->errorOnStaStats;
 
     printf("%s: request stats %u / %u\n", pAP->alias, pRad->status, errOnStaStats);
     if(errOnStaStats) {
         return SWL_RC_ERROR;
-    }
+    } else if(vendorD->staStatsFileName == NULL) {
 
-    wld_vap_mark_all_stations_unseen(pAP);
+        wld_vap_mark_all_stations_unseen(pAP);
 
-    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+        for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
 
-        T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
-        if(!pAD) {
-            printf("NULL %u\n", i);
-            return SWL_RC_ERROR;
+            T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
+            if(!pAD) {
+                printf("NULL %u\n", i);
+                return SWL_RC_ERROR;
+            }
+            pAD->seen = true;
+            pAD->Active = true;
         }
-        pAD->seen = true;
-        pAD->Active = true;
-    }
 
-    wld_vap_update_seen(pAP);
-    return SWL_RC_OK;
+        wld_vap_update_seen(pAP);
+        return 0;
+    } else {
+        wld_vap_mark_all_stations_unseen(pAP);
+        if(vendorD->nrStaInFile == 0) {
+            wld_vap_update_seen(pAP);
+            return 0;
+        }
+        swl_print_args_t tmpArgs = g_swl_print_json;
+        T_AssociatedDevice dataList[vendorD->nrStaInFile];
+        memset(dataList, 0, sizeof(dataList));
+
+        size_t nrParsed = 0;
+        bool done = swl_type_arrayFromFileName(&gtWld_associatedDevice.type.type, dataList, vendorD->nrStaInFile, vendorD->staStatsFileName,
+                                               &tmpArgs, &nrParsed);
+        printf("%s: Reading stats from file %s: %zu seen, %u expected / done: %u\n", pAP->name, vendorD->staStatsFileName,
+               nrParsed, vendorD->nrStaInFile, done);
+        printf("%s / %s\n",
+               swl_type_toBuf32(&gtSwl_type_macBin, dataList[0].MACAddress).buf,
+               swl_type_toBuf32(&gtSwl_type_macBin, dataList[1].MACAddress).buf);
+
+        printf("%s\n", swl_type_arrayToBuf128(&gtWld_associatedDevice.type.type, dataList, vendorD->nrStaInFile).buf);
+
+
+        // Add new devices from driver maclist
+        for(uint32_t i = 0; i < vendorD->nrStaInFile; i++) {
+            T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, (swl_macBin_t*) dataList[i].MACAddress);
+            if(!pAD) {
+                pAD = wld_create_associatedDevice(pAP, (swl_macBin_t*) dataList[i].MACAddress);
+                printf("created AD from assoclist %s @ %s\n", pAD->Name, pAP->alias);
+            }
+            if(!pAD->Active && dataList[i].Active) {
+                wld_ad_add_connection_try(pAP, pAD);
+            }
+            if(!pAD->AuthenticationState && dataList[i].AuthenticationState) {
+                wld_ad_add_connection_success(pAP, pAD);
+            }
+            swl_tupleType_copyByMask(pAD, &gtWld_associatedDevice.type, &dataList[i], -1);
+
+            printf("%s - %s\n", swl_type_toBuf32(&gtSwl_type_macBin, &pAD->MACAddress).buf,
+                   swl_type_toBuf32(&gtSwl_type_macBin, &dataList[i].MACAddress).buf);
+            pAD->seen = 1;
+            pAD->lastSampleTime = swl_timespec_getMonoVal();
+        }
+
+        wld_vap_update_seen(pAP);
+
+        swl_type_arrayCleanup(&gtWld_associatedDevice.type.type, dataList, vendorD->nrStaInFile);
+
+        return 0;
+    }
 }
 
 void wld_th_vap_setSSIDEnable(T_AccessPoint* pAP, bool enable, bool commit) {
@@ -188,7 +239,7 @@ void wld_th_vap_doFsmClean(T_AccessPoint* pAP) {
     clearAllBitsLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW);
 }
 
-wld_vap_testData_t* wl_th_vap_getVendorData(T_AccessPoint* pAP) {
+wld_th_vap_vendorData_t* wld_th_vap_getVendorData(T_AccessPoint* pAP) {
     assert_non_null(pAP);
-    return (wld_vap_testData_t*) pAP->vendorData;
+    return (wld_th_vap_vendorData_t*) pAP->vendorData;
 }

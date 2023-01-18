@@ -81,12 +81,16 @@
 
 typedef struct {
     bool errorOnStaStats;
-} wld_vap_testData_t;
+    uint32_t nrStaInFile;
+    char* staStatsFileName;
+} wld_th_vap_vendorData_t;
 
 T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
 
 swl_rc_ne wld_th_vap_createHook(T_AccessPoint* pAP);
 void wld_th_vap_destroyHook(T_AccessPoint* pAP);
+
+
 
 int wld_th_vap_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
 int wld_th_vap_status(T_AccessPoint* pAP);
@@ -95,7 +99,7 @@ int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set);
 
 //Helper functions
 void wld_th_vap_doFsmClean(T_AccessPoint* pAP);
-wld_vap_testData_t* wl_th_vap_getVendorData(T_AccessPoint* pAP);
+wld_th_vap_vendorData_t* wld_th_vap_getVendorData(T_AccessPoint* pAP);
 void wld_th_vap_setSSIDEnable(T_AccessPoint* pAP, bool enable, bool commit);
 void wld_th_vap_setApEnable(T_AccessPoint* pAP, bool enable, bool commit);
 #endif

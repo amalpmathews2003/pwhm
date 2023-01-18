@@ -1392,25 +1392,31 @@ bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats) {
         SAH_TRACEZ_ERROR(ME, "Bad usage of function : !obj||!stats");
         return false;
     }
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(obj, &trans, SWL_RC_ERROR, ME, "trans init failure");
 
-    amxd_object_set_uint32_t(obj, "LastDataDownlinkRate", stats->LastDataDownlinkRate);
-    amxd_object_set_uint32_t(obj, "LastDataUplinkRate", stats->LastDataUplinkRate);
-    amxd_object_set_uint32_t(obj, "Retransmissions", stats->Retransmissions);
-    amxd_object_set_int32_t(obj, "SignalStrength", stats->SignalStrength);
-    amxd_object_set_int32_t(obj, "SignalNoiseRatio", stats->SignalNoiseRatio);
-    amxd_object_set_int32_t(obj, "Noise", stats->noise);
-    amxd_object_set_int32_t(obj, "RSSI", stats->RSSI);
-    amxd_object_set_uint64_t(obj, "TxBytes", stats->txbyte);
-    amxd_object_set_uint32_t(obj, "TxPacketCount", stats->txPackets);
-    amxd_object_set_uint32_t(obj, "Tx_Retransmissions", stats->txRetries);
-    amxd_object_set_uint64_t(obj, "RxBytes", stats->rxbyte);
-    amxd_object_set_uint32_t(obj, "RxPacketCount", stats->rxPackets);
-    amxd_object_set_uint32_t(obj, "Rx_Retransmissions", stats->rxRetries);
 
-    amxd_object_set_cstring_t(obj, "OperatingStandard", swl_radStd_unknown_str[stats->operatingStandard]);
-    amxd_object_set_uint32_t(obj, "MaxRxSpatialStreamsSupported", stats->maxRxStream);
-    amxd_object_set_uint32_t(obj, "MaxTxSpatialStreamsSupported", stats->maxTxStream);
-    wld_ad_syncCapabilities(obj, &stats->assocCaps);
+    amxd_trans_set_uint32_t(&trans, "LastDataDownlinkRate", stats->LastDataDownlinkRate);
+    amxd_trans_set_uint32_t(&trans, "LastDataUplinkRate", stats->LastDataUplinkRate);
+    amxd_trans_set_uint32_t(&trans, "Retransmissions", stats->Retransmissions);
+    amxd_trans_set_int32_t(&trans, "SignalStrength", stats->SignalStrength);
+    amxd_trans_set_int32_t(&trans, "SignalNoiseRatio", stats->SignalNoiseRatio);
+    amxd_trans_set_int32_t(&trans, "Noise", stats->noise);
+    amxd_trans_set_int32_t(&trans, "RSSI", stats->RSSI);
+    amxd_trans_set_uint64_t(&trans, "TxBytes", stats->txbyte);
+    amxd_trans_set_uint32_t(&trans, "TxPacketCount", stats->txPackets);
+    amxd_trans_set_uint32_t(&trans, "Tx_Retransmissions", stats->txRetries);
+    amxd_trans_set_uint64_t(&trans, "RxBytes", stats->rxbyte);
+    amxd_trans_set_uint32_t(&trans, "RxPacketCount", stats->rxPackets);
+    amxd_trans_set_uint32_t(&trans, "Rx_Retransmissions", stats->rxRetries);
+
+    amxd_trans_set_cstring_t(&trans, "OperatingStandard", swl_radStd_unknown_str[stats->operatingStandard]);
+    amxd_trans_set_uint32_t(&trans, "MaxRxSpatialStreamsSupported", stats->maxRxStream);
+    amxd_trans_set_uint32_t(&trans, "MaxTxSpatialStreamsSupported", stats->maxTxStream);
+    wld_ad_syncCapabilities(&trans, &stats->assocCaps);
+
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "trans apply failure");
+
 
     return true;
 }

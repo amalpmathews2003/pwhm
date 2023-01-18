@@ -1,0 +1,22 @@
+{
+    "data": {
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.ProbeReqCaps.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].ProbeReqCaps.",
+        "parameters": {
+            "FrequencyCapabilities": {
+                "from": "",
+                "to": "2.4GHz,5GHz"
+            },
+            "HtCapabilities": {
+                "from": "",
+                "to": "40MHz,SGI20"
+            },
+            "SecurityModeEnabled": {
+                "from": "None",
+                "to": "WPA2-Personal"
+            }
+        },
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2.ProbeReqCaps."
+    }
+}

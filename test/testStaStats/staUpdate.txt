@@ -1,0 +1,14 @@
+{
+    "data": {
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
+        "parameters": {
+            "AvgSignalStrength": {
+                "from": -29,
+                "to": -31
+            }
+        },
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
+    }
+}

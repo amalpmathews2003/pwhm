@@ -374,9 +374,7 @@ static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macA
         wld_ap_nl80211_copyStationInfoToAssocDev(pAP, pAD, &stationInfo);
     }
 
-    wld_ad_add_connection_try(pAP, pAD);
     wld_ad_add_connection_success(pAP, pAD);
-    wld_vap_sync_assoclist(pAP);
 }
 
 static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
@@ -390,9 +388,6 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
 
     wld_ad_add_disconnection(pAP, pAD);
-    // clean up stations who failed authentication
-    wld_vap_cleanup_stationlist(pAP);
-    wld_vap_sync_assoclist(pAP);
 }
 
 static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode) {

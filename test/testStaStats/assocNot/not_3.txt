@@ -1,0 +1,12 @@
+{
+    "data": {
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.",
+        "keys": null,
+        "name": "2",
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.",
+        "index": 2,
+        "notification": "dm:instance-added",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.",
+        "parameters": null
+    }
+}

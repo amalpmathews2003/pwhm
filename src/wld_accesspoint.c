@@ -110,6 +110,7 @@ const char* g_str_wld_ap_dm[] = {"Default", "Disabled", "RNR", "UPR", "FILSDisco
 
 SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_macBin, swl_type_charPtr, swl_type_timeReal, swl_type_uint16))
 
+
 static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
     ASSERT_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
     T_SSID* pSSID = NULL;
@@ -2295,14 +2296,14 @@ amxd_status_t __CommitAccessPoint(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
-
-
 swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
     ASSERT_NOT_NULL(pAD, SWL_RC_ERROR, ME, "%s: AssociatedDevice==null", pAP->alias);
 
+    uint32_t nextDevIndex = pAP->lastDevIndex + 1;
+
     if(pAD->object == NULL) {
-        SAH_TRACEZ_INFO(ME, "Creating template object for mac %s", pAD->Name);
+        SAH_TRACEZ_INFO(ME, "%s: Creating template object for mac %s (id %u)", pAP->name, pAD->Name, nextDevIndex);
         amxd_object_t* templateObject = amxd_object_get(pAP->pBus, "AssociatedDevice");
 
         if(!templateObject) {
@@ -2310,104 +2311,130 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
             return SWL_RC_INVALID_PARAM;
         }
 
-        amxd_status_t result = amxd_object_new_instance(&pAD->object, templateObject, NULL, 0, NULL);
-        if((result != amxd_status_ok) || (pAD->object == NULL)) {
-            SAH_TRACEZ_ERROR(ME, "%s: Could not create template object %u", pAP->alias, result);
-            return SWL_RC_ERROR;
-        }
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(templateObject, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
+
+        amxd_trans_add_inst(&trans, nextDevIndex, NULL);
+
+        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
+
+        pAD->object = amxd_object_get_instance(templateObject, NULL, nextDevIndex);
+        ASSERT_NOT_NULL(pAD->object, SWL_RC_ERROR, ME, "%s: failure to create object", pAD->Name);
         pAD->object->priv = (void*) pAD;
-        amxd_object_set_cstring_t(pAD->object, "MACAddress", pAD->Name);
+        pAP->lastDevIndex = nextDevIndex;
     }
 
-    amxd_trans_t trans;
     amxd_object_t* object = pAD->object;
-    ASSERT_TRANSACTION_INIT(object, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
 
-    amxd_trans_set_value(cstring_t, &trans, "ChargeableUserId", pAD->Radius_CUID);
-    amxd_trans_set_value(bool, &trans, "AuthenticationState", pAD->AuthenticationState);
-    amxd_trans_set_value(int32_t, &trans, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
-    amxd_trans_set_value(int32_t, &trans, "LastDataUplinkRate", pAD->LastDataUplinkRate);
-    amxd_trans_set_value(int32_t, &trans, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
-    amxd_trans_set_value(int32_t, &trans, "SignalStrength", pAD->SignalStrength);
+    if(swl_timespec_isZero(&pAD->lastSampleTime) || (swl_timespec_diff(NULL, &pAD->lastSampleSyncTime, &pAD->lastSampleTime) != 0)
+       || (pAD->latestStateChangeTime >= pAD->lastSampleSyncTime.tv_sec)) {
 
-    char rssiHistory[64] = {'\0'};
-    snprintf(rssiHistory, sizeof(rssiHistory), "%i,%i,%i,%i", pAD->minSignalStrength, pAD->maxSignalStrength, pAD->meanSignalStrength, WLD_ACC_TO_VAL(pAD->meanSignalStrengthExpAccumulator));
-    amxd_trans_set_value(cstring_t, &trans, "SignalStrengthHistory", rssiHistory);
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
 
-    int idx = 0;
-    char TBuf[64] = {'\0'};
-    char ValBuf[7] = {'\0'};//Example : -100.0
-    for(idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
-        if(idx && TBuf[0]) {
-            wldu_catStr(TBuf, ",", sizeof(TBuf));
+        amxd_trans_set_cstring_t(&trans, "MACAddress", pAD->Name);
+
+        amxd_trans_set_value(cstring_t, &trans, "ChargeableUserId", pAD->Radius_CUID);
+        amxd_trans_set_value(bool, &trans, "AuthenticationState", pAD->AuthenticationState);
+        amxd_trans_set_value(int32_t, &trans, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
+        amxd_trans_set_value(int32_t, &trans, "LastDataUplinkRate", pAD->LastDataUplinkRate);
+        amxd_trans_set_value(int32_t, &trans, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
+        amxd_trans_set_value(int32_t, &trans, "SignalStrength", pAD->SignalStrength);
+
+        char rssiHistory[64] = {'\0'};
+        snprintf(rssiHistory, sizeof(rssiHistory), "%i,%i,%i,%i", pAD->minSignalStrength, pAD->maxSignalStrength, pAD->meanSignalStrength, WLD_ACC_TO_VAL(pAD->meanSignalStrengthExpAccumulator));
+        amxd_trans_set_value(cstring_t, &trans, "SignalStrengthHistory", rssiHistory);
+
+        int idx = 0;
+        char TBuf[64] = {'\0'};
+        char ValBuf[7] = {'\0'};//Example : -100.0
+        for(idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
+            if(idx && TBuf[0]) {
+                wldu_catStr(TBuf, ",", sizeof(TBuf));
+            }
+            snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
+            wldu_catStr(TBuf, ValBuf, sizeof(TBuf));
         }
-        snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
-        wldu_catStr(TBuf, ValBuf, sizeof(TBuf));
+        pAD->AvgSignalStrengthByChain = wld_ad_getAvgSignalStrengthByChain(pAD);
+
+        amxd_trans_set_value(int32_t, &trans, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
+        amxd_trans_set_value(cstring_t, &trans, "SignalStrengthByChain", TBuf);
+        amxd_trans_set_value(int32_t, &trans, "SignalNoiseRatio", pAD->SignalNoiseRatio);
+        amxd_trans_set_value(int32_t, &trans, "Retransmissions", pAD->Retransmissions);
+        amxd_trans_set_value(int32_t, &trans, "Rx_Retransmissions", pAD->Rx_Retransmissions);
+        amxd_trans_set_value(int32_t, &trans, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
+        amxd_trans_set_value(int32_t, &trans, "Tx_Retransmissions", pAD->Tx_Retransmissions);
+        amxd_trans_set_value(int32_t, &trans, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+        amxd_trans_set_value(bool, &trans, "Active", pAD->Active);
+        amxd_trans_set_value(int32_t, &trans, "Noise", pAD->noise);
+        amxd_trans_set_value(uint32_t, &trans, "Inactive", pAD->Inactive);
+        amxd_trans_set_value(uint32_t, &trans, "RxPacketCount", pAD->RxPacketCount);
+        amxd_trans_set_value(uint32_t, &trans, "TxPacketCount", pAD->TxPacketCount);
+        amxd_trans_set_value(uint32_t, &trans, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
+        amxd_trans_set_value(uint32_t, &trans, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
+        amxd_trans_set_value(uint32_t, &trans, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
+        amxd_trans_set_value(uint32_t, &trans, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
+
+        amxd_trans_set_value(uint64_t, &trans, "RxBytes", pAD->RxBytes);
+        amxd_trans_set_value(uint64_t, &trans, "TxBytes", pAD->TxBytes);
+        amxd_trans_set_value(uint32_t, &trans, "TxErrors", pAD->TxFailures);
+        amxd_trans_set_value(uint32_t, &trans, "UplinkMCS", pAD->UplinkMCS);
+        amxd_trans_set_value(uint32_t, &trans, "UplinkBandwidth", pAD->UplinkBandwidth);
+        amxd_trans_set_value(uint32_t, &trans, "UplinkShortGuard", pAD->UplinkShortGuard);
+        amxd_trans_set_value(uint32_t, &trans, "DownlinkMCS", pAD->DownlinkMCS);
+        amxd_trans_set_value(uint32_t, &trans, "DownlinkBandwidth", pAD->DownlinkBandwidth);
+        amxd_trans_set_value(uint32_t, &trans, "DownlinkShortGuard", pAD->DownlinkShortGuard);
+        amxd_trans_set_value(uint16_t, &trans, "MaxRxSpatialStreamsSupported", pAD->MaxRxSpatialStreamsSupported);
+        amxd_trans_set_value(uint16_t, &trans, "MaxTxSpatialStreamsSupported", pAD->MaxTxSpatialStreamsSupported);
+        amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateSupported", pAD->MaxDownlinkRateSupported);
+        amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
+        amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateSupported", pAD->MaxUplinkRateSupported);
+        amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateReached", pAD->MaxUplinkRateReached);
+
+        swl_bandwidth_e maxBw = pAD->MaxBandwidthSupported;
+        if(maxBw == SWL_BW_AUTO) {
+            maxBw = wld_util_getMaxBwCap(&pAD->assocCaps);
+        }
+        amxd_trans_set_value(cstring_t, &trans, "MaxBandwidthSupported", swl_bandwidth_unknown_str[maxBw]);
+
+        amxd_trans_set_value(cstring_t, &trans, "DeviceType", cstr_DEVICE_TYPES[pAD->deviceType]);
+        amxd_trans_set_value(int32_t, &trans, "DevicePriority", pAD->devicePriority);
+        char buffer[32] = {0};
+        wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
+        amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
+        amxd_trans_set_value(uint32_t, &trans, "ConnectionDuration", pAD->connectionDuration);
+        swl_time_objectParamSetMono(object, "LastStateChange", pAD->latestStateChangeTime);
+        swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
+        swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
+        amxd_trans_set_value(bool, &trans, "PowerSave", pAD->powerSave);
+        amxd_trans_set_value(cstring_t, &trans, "Mode", wld_ad_getMode(pAP, pAD));
+        amxd_trans_set_value(cstring_t, &trans, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
+        amxd_trans_set_value(uint32_t, &trans, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
+        amxd_trans_set_value(uint32_t, &trans, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);
+        amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
+        amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
+
+        //wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
+
+        swl_conv_objectParamSetMask(object, "UNIIBandsCapabilities", pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX);
+
+        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
+
+        pAD->lastSampleSyncTime = pAD->lastSampleTime;
     }
-    pAD->AvgSignalStrengthByChain = wld_ad_getAvgSignalStrengthByChain(pAD);
-    amxd_trans_set_value(int32_t, &trans, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
-    amxd_trans_set_value(cstring_t, &trans, "SignalStrengthByChain", TBuf);
-    amxd_trans_set_value(int32_t, &trans, "SignalNoiseRatio", pAD->SignalNoiseRatio);
-    amxd_trans_set_value(int32_t, &trans, "Retransmissions", pAD->Retransmissions);
-    amxd_trans_set_value(int32_t, &trans, "Rx_Retransmissions", pAD->Rx_Retransmissions);
-    amxd_trans_set_value(int32_t, &trans, "Tx_Retransmissions", pAD->Tx_Retransmissions);
-    amxd_trans_set_value(int32_t, &trans, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
-    amxd_trans_set_value(bool, &trans, "Active", pAD->Active);
 
-    amxd_trans_set_value(int32_t, &trans, "Noise", pAD->noise);
-    amxd_trans_set_value(uint32_t, &trans, "Inactive", pAD->Inactive);
-    amxd_trans_set_value(uint32_t, &trans, "RxPacketCount", pAD->RxPacketCount);
-    amxd_trans_set_value(uint32_t, &trans, "TxPacketCount", pAD->TxPacketCount);
-    amxd_trans_set_value(uint32_t, &trans, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
-    amxd_trans_set_value(uint32_t, &trans, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
-    amxd_trans_set_value(uint32_t, &trans, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
-    amxd_trans_set_value(uint32_t, &trans, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
-    amxd_trans_set_value(uint64_t, &trans, "RxBytes", pAD->RxBytes);
-    amxd_trans_set_value(uint64_t, &trans, "TxBytes", pAD->TxBytes);
-    amxd_trans_set_value(uint32_t, &trans, "TxErrors", pAD->TxFailures);
-    amxd_trans_set_value(uint32_t, &trans, "UplinkMCS", pAD->UplinkMCS);
-    amxd_trans_set_value(uint32_t, &trans, "UplinkBandwidth", pAD->UplinkBandwidth);
-    amxd_trans_set_value(uint32_t, &trans, "UplinkShortGuard", pAD->UplinkShortGuard);
-    amxd_trans_set_value(uint32_t, &trans, "DownlinkMCS", pAD->DownlinkMCS);
-    amxd_trans_set_value(uint32_t, &trans, "DownlinkBandwidth", pAD->DownlinkBandwidth);
-    amxd_trans_set_value(uint32_t, &trans, "DownlinkShortGuard", pAD->DownlinkShortGuard);
-    amxd_trans_set_value(uint16_t, &trans, "MaxRxSpatialStreamsSupported", pAD->MaxRxSpatialStreamsSupported);
-    amxd_trans_set_value(uint16_t, &trans, "MaxTxSpatialStreamsSupported", pAD->MaxTxSpatialStreamsSupported);
-    amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateSupported", pAD->MaxDownlinkRateSupported);
-    amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
-    amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateSupported", pAD->MaxUplinkRateSupported);
-    amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateReached", pAD->MaxUplinkRateReached);
 
-    swl_bandwidth_e maxBw = pAD->MaxBandwidthSupported;
-    if(maxBw == SWL_BW_AUTO) {
-        maxBw = wld_util_getMaxBwCap(&pAD->assocCaps);
+    if(pAD->probeReqCaps.updateTime != pAD->lastProbeCapUpdateTime) {
+        amxd_object_t* probeReqCapsObject = amxd_object_get(object, "ProbeReqCaps");
+
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(probeReqCapsObject, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
+        wld_ad_syncCapabilities(&trans, &pAD->probeReqCaps);
+        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
+        pAD->lastProbeCapUpdateTime = pAD->probeReqCaps.updateTime;
     }
-    amxd_trans_set_value(cstring_t, &trans, "MaxBandwidthSupported", swl_bandwidth_unknown_str[maxBw]);
 
-    amxd_trans_set_value(cstring_t, &trans, "DeviceType", cstr_DEVICE_TYPES[pAD->deviceType]);
-    amxd_trans_set_value(int32_t, &trans, "DevicePriority", pAD->devicePriority);
-    char buffer[32] = {0};
-    wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
-    amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
-    amxd_trans_set_value(uint32_t, &trans, "ConnectionDuration", pAD->connectionDuration);
-    swl_time_objectParamSetReal(object, "LastStateChange", pAD->latestStateChangeTime);
-    swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
-    swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
-    amxd_trans_set_value(bool, &trans, "PowerSave", pAD->powerSave);
-    amxd_trans_set_value(cstring_t, &trans, "Mode", wld_ad_getMode(pAP, pAD));
-    amxd_trans_set_value(cstring_t, &trans, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
-    amxd_trans_set_value(uint32_t, &trans, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
-    amxd_trans_set_value(uint32_t, &trans, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);
-    amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
-    amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 
-    swl_conv_objectParamSetMask(object, "UNIIBandsCapabilities", pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX);
-
-    wld_ad_syncCapabilities(object, &pAD->assocCaps);
-    amxd_object_t* probeReqCapsObject = amxd_object_get(object, "ProbeReqCaps");
-    wld_ad_syncCapabilities(probeReqCapsObject, &pAD->probeReqCaps);
-
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
     return SWL_RC_CONTINUE;
 }
 
@@ -2546,9 +2573,8 @@ bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid
 
     memset(pAD->Radius_CUID, 0, sizeof(pAD->Radius_CUID));
     memcpy(pAD->Radius_CUID, cuid, sizeof(pAD->Radius_CUID));
-    wld_vap_cleanup_stationlist(pAP);
-    wld_vap_sync_assoclist(pAP);
 
+    wld_vap_sync_device(pAP, pAD);
     return true;
 }
 

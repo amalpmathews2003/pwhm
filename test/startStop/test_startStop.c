@@ -69,6 +69,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 #include <cmocka.h>
+#include <test-toolbox/ttb.h>
 #include <string.h>
 #include <debug/sahtrace.h>
 
@@ -216,7 +217,7 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
 
         wld_ad_add_connection_success(vap, devList[i]);
     }
-    wl_th_vap_getVendorData(vap)->errorOnStaStats = true;
+    wld_th_vap_getVendorData(vap)->errorOnStaStats = true;
 
     amxc_var_init(&ret);
     amxc_var_init(&args);
@@ -230,7 +231,7 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
 
     amxc_var_clean(&ret);
     amxc_var_clean(&args);
-    wl_th_vap_getVendorData(vap)->errorOnStaStats = true;
+    wld_th_vap_getVendorData(vap)->errorOnStaStats = true;
 
     amxc_var_init(&ret);
     amxc_var_init(&args);
@@ -245,8 +246,8 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
     amxc_var_clean(&ret);
     amxc_var_clean(&args);
 
-    wl_th_vap_getVendorData(vap)->errorOnStaStats = false;
-    wl_th_vap_getVendorData(vap)->errorOnStaStats = false;
+    wld_th_vap_getVendorData(vap)->errorOnStaStats = false;
+    wld_th_vap_getVendorData(vap)->errorOnStaStats = false;
 
     T_EndPoint* ep = dm.bandList[0].ep;
     assert_non_null(ep);
@@ -258,8 +259,8 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
     amxc_var_clean(&args);
     ttb_object_t* epStats = ttb_object_getChildObject(ep->pBus, "Stats");
     assert_non_null(epStats);
-    assert_int_equal(12991, swl_typeUInt32_fromObjectParamDef(epStats, "TxBytes", 0));
-    assert_int_equal(65, swl_typeUInt32_fromObjectParamDef(epStats, "TxPacketCount", 0));
+    ttb_assert_int_eq(12991, swl_typeUInt32_fromObjectParamDef(epStats, "TxBytes", 0));
+    ttb_assert_int_eq(65, swl_typeUInt32_fromObjectParamDef(epStats, "TxPacketCount", 0));
     char* epSecMode = swl_typeCharPtr_fromObjectParamDef(epStats, "SecurityModeEnabled", 0);
     assert_string_equal("WPA2-Personal", epSecMode);
     free(epSecMode);

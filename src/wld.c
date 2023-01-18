@@ -103,6 +103,7 @@ T_CONST_WPS g_wpsConst;
 static bool init = false;
 
 SWL_TT_C(gtWld_staHistory, wld_staHistory_t, X_WLD_STA_HISTORY);
+SWL_NTT_C(gtWld_associatedDevice, T_AssociatedDevice, X_T_ASSOCIATED_DEVICE_ANNOT)
 
 
 const swl_macBin_t* wld_getWanAddr() {

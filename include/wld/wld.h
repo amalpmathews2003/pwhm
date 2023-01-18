@@ -802,6 +802,7 @@ typedef struct {
 } wld_transferStaArgs_t;
 
 typedef struct {
+    swl_timeMono_t updateTime;
     wld_sta_supMCS_t supportedMCS;
     wld_sta_supMCS_adv_t supportedVhtMCS;
     wld_sta_supMCS_adv_t supportedHeMCS;
@@ -884,10 +885,11 @@ typedef struct {
     int32_t AvgSignalStrengthByChain;             /* dBm */
     int32_t noise;                                /* dBm */
     int32_t SignalNoiseRatio;                     /* dB */
-    long Retransmissions;
-    long Rx_Retransmissions;
-    long Tx_Retransmissions;
-    long Tx_RetransmissionsFailed;
+    uint32_t Retransmissions;
+    uint32_t Rx_Retransmissions;
+    uint32_t Tx_Retransmissions;
+    uint32_t Tx_RetransmissionsFailed;
+    uint32_t Rx_RetransmissionsFailed;
     int Active;                 /* bool */
     bool seen;                  /* data field for maclist updates */
     swl_radStd_e operatingStandard;
@@ -896,6 +898,9 @@ typedef struct {
     wld_assocDev_capabilities_t probeReqCaps;
 
     swl_uniiBand_m uniiBandsCapabilities;  /* bitmap of UNII bands capabilities */
+    swl_timeSpecMono_t lastSampleTime;     /* mono time of last sample update */
+    swl_timeSpecMono_t lastSampleSyncTime; /* mono time of last update to data model */
+    swl_timeMono_t lastProbeCapUpdateTime; /* mono time when probe info was last updated */
 
     uint32_t Inactive;                     /* seconds */
     uint32_t RxPacketCount;
@@ -906,12 +911,14 @@ typedef struct {
     uint32_t TxUnicastPacketCount;
     uint32_t RxMulticastPacketCount;
     uint32_t TxMulticastPacketCount;
-    long TxFailures;
+    uint32_t TxFailures;
+    uint32_t RxFailures;
 
     uint32_t TxFrameCount;     /* total of user frames sent successfully */
                                /* the difference is that a packet is a unit of transmission as requested by upper
                                   layer and a frame is a unit of transmission sent on the wire, possible aggregating
                                   packets if small, or splitting them if big.*/
+    uint32_t RxFrameCount;
     uint32_t UplinkMCS;
     uint32_t UplinkBandwidth;  /* Uplink channel bandwidth in MHz (20/40/80/160)*/
     uint32_t UplinkShortGuard; /* 400ns guard interval */
@@ -934,7 +941,7 @@ typedef struct {
     bool powerSave;
     int deviceType;                       /* The device type: index of device type in the cstr_DEVICE_TYPES */
     int devicePriority;                   /* The priority of this device. Secondary to device type. */
-    swl_timeReal_t latestStateChangeTime; /* Timestamp of the last time the state of this device changed */
+    swl_timeMono_t latestStateChangeTime; /* Timestamp of the last time the state of this device changed */
     int32_t rssiAccumulator;              /* Accumulator for RSSi data */
     int32_t rssiLevel;                    /* Latest RSSi event */
     swl_staCap_m capabilities;            /* Capabilities of the station */
@@ -945,6 +952,52 @@ typedef struct {
     wld_sta_muMimoInfo_t staMuMimoInfo;
     wld_assocDev_history_t* staHistory;
 } T_AssociatedDevice;
+
+#define X_T_ASSOCIATED_DEVICE_ANNOT(X, Y) \
+    X(Y, gtSwl_type_macBin, MACAddress, "MACAddress") \
+    X(Y, gtSwl_type_bool, AuthenticationState, "AuthenticationState") \
+    X(Y, gtSwl_type_uint32, LastDataDownlinkRate, "LastDataDownlinkRate") \
+    X(Y, gtSwl_type_uint32, LastDataUplinkRate, "LastDataUplinkRate") \
+    X(Y, gtSwl_type_int32, SignalStrength, "SignalStrength") \
+    X(Y, gtSwl_type_int32, noise, "Noise") \
+    X(Y, gtSwl_type_int32, SignalNoiseRatio, "SignalNoiseRatio") \
+    X(Y, gtSwl_type_uint32, Retransmissions, "Retransmissions") \
+    X(Y, gtSwl_type_uint32, Rx_Retransmissions, "Rx_Retransmissions") \
+    X(Y, gtSwl_type_uint32, Rx_RetransmissionsFailed, "Rx_RetransmissionsFailed") \
+    X(Y, gtSwl_type_uint32, Tx_Retransmissions, "Tx_Retransmissions") \
+    X(Y, gtSwl_type_uint32, Tx_RetransmissionsFailed, "Tx_RetransmissionsFailed") \
+    X(Y, gtSwl_type_bool, Active, "Active") \
+    X(Y, gtSwl_type_radStd, operatingStandard, "OperatingStandard") \
+    X(Y, gtSwl_type_uint32, Inactive, "Inactive") \
+    X(Y, gtSwl_type_uint32, RxPacketCount, "RxPacketCount") \
+    X(Y, gtSwl_type_uint32, TxPacketCount, "TxPacketCount") \
+    X(Y, gtSwl_type_uint64, RxBytes, "RxBytes") \
+    X(Y, gtSwl_type_uint64, TxBytes, "TxBytes") \
+    X(Y, gtSwl_type_uint32, RxUnicastPacketCount, "RxUnicastPacketCount") \
+    X(Y, gtSwl_type_uint32, TxUnicastPacketCount, "TxUnicastPacketCount") \
+    X(Y, gtSwl_type_uint32, RxMulticastPacketCount, "RxMulticastPacketCount") \
+    X(Y, gtSwl_type_uint32, TxMulticastPacketCount, "TxMulticastPacketCount") \
+    X(Y, gtSwl_type_uint32, TxFailures, "TxErrors") \
+    X(Y, gtSwl_type_uint32, RxFailures, "RxErrors") \
+    X(Y, gtSwl_type_uint32, TxFrameCount, "TxFrameCount") \
+    X(Y, gtSwl_type_uint32, RxFrameCount, "RxFrameCount") \
+    X(Y, gtSwl_type_uint32, UplinkMCS, "UplinkMCS") \
+    X(Y, gtSwl_type_uint32, UplinkBandwidth, "UplinkBandwidth") \
+    X(Y, gtSwl_type_uint32, UplinkShortGuard, "UplinkShortGuard") \
+    X(Y, gtSwl_type_uint32, DownlinkMCS, "DownlinkMCS") \
+    X(Y, gtSwl_type_uint32, DownlinkBandwidth, "DownlinkBandwidth") \
+    X(Y, gtSwl_type_uint32, DownlinkShortGuard, "DownlinkShortGuard") \
+    X(Y, gtSwl_type_mcs, upLinkRateSpec, "UplinkRateSpec") \
+    X(Y, gtSwl_type_mcs, downLinkRateSpec, "DownlinkRateSpec") \
+    X(Y, gtSwl_type_uint16, MaxRxSpatialStreamsSupported, "MaxRxSpatialStreamsSupported") \
+    X(Y, gtSwl_type_uint16, MaxTxSpatialStreamsSupported, "MaxTxSpatialStreamsSupported") \
+    X(Y, gtSwl_type_uint32, MaxDownlinkRateSupported, "MaxDownlinkRateSupported") \
+    X(Y, gtSwl_type_uint32, MaxDownlinkRateReached, "MaxDownlinkRateReached") \
+    X(Y, gtSwl_type_uint32, MaxUplinkRateSupported, "MaxUplinkRateSupported") \
+    X(Y, gtSwl_type_uint32, MaxUplinkRateReached, "MaxUplinkRateReached") \
+    X(Y, gtSwl_type_bool, powerSave, "PowerSave")
+
+SWL_NTT_H_ANNOTATE(gtWld_associatedDevice, T_AssociatedDevice, X_T_ASSOCIATED_DEVICE_ANNOT);
 
 typedef struct wld_nasta {
     amxc_llist_it_t it;
@@ -1736,6 +1789,7 @@ struct S_ACCESSPOINT {
     wld_wpaCtrlInterface_t* wpaCtrlInterface; /* wpaCtrlInterface to hostapd interface */
     bool clientIsolationEnable;
     swl_circTable_t lastAssocReq;             /* (mac, bssid, assoc/reassoc frame, timestamp,assocType) where station mac format: xx:xx:xx:xx:xx:xx */
+    uint32_t lastDevIndex;
 };
 
 typedef struct SWL_PACKED {
