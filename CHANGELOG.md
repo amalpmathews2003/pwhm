@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.15.0 - 2023-01-18(14:54:22 +0000)
+
+### Other
+
+- add apis for nl80211 ap scan actions
+
 ## Release v2.14.1 - 2023-01-18(09:51:14 +0000)
 
 ### Other
