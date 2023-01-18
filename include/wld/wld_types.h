@@ -71,6 +71,8 @@ typedef struct S_SSID T_SSID;
 typedef struct S_EndPoint T_EndPoint;
 typedef struct vendor vendor_t;
 typedef struct wld_tinyRoam wld_tinyRoam_t;
+typedef struct wld_scanResults T_ScanResults;
+typedef struct wld_scanArgs T_ScanArgs;
 
 typedef enum {
     COM_DIR_TRANSMIT,

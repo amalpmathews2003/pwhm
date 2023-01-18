@@ -1751,23 +1751,15 @@ static bool ssid_is_printable(const uint8_t* ssid, uint8_t len) {
  * convert the SSID to a hex string.
  */
 char* wld_ssid_to_string(const uint8_t* ssid, uint8_t len) {
-    if(WLD_BUG_ON(!ssid)) {
-        return NULL;
-    }
+    ASSERT_NOT_NULL(ssid, NULL, ME, "NULL");
 
     /* If the SSID is ASCII printable we just copy that data, if not convert it
      * to a HEX string */
-    if(ssid_is_printable(ssid, len)) {
-        char* str = calloc(1, len + 1);
-        memcpy(str, ssid, len);
-        return str;
-    }
+    size_t maxStrSize = 1 + ((ssid_is_printable(ssid, len)) ? len : (len * 2));
 
-    char* str = calloc(1, (len * 2) + 1);
-    ASSERTS_NOT_NULL(str, "", ME, "NULL");
-    for(uint8_t i = 0; i < len; i++) {
-        sprintf(str + (i * 2), "%02x", ssid[i]);
-    }
+    char* str = calloc(1, maxStrSize);
+    ASSERT_NOT_NULL(str, str, ME, "NULL");
+    convSsid2Str(ssid, len, str, maxStrSize);
 
     return str;
 }
@@ -1778,23 +1770,23 @@ char* wld_ssid_to_string(const uint8_t* ssid, uint8_t len) {
  * This is a direct access function : nothing is allocated
  *
  * @param ssid numeric representation of the ssid
- * @param ssid_len length of the ssid
+ * @param ssidLen length of the ssid
  * @param str string formatted output of the ssid
+ * @param maxStrSize target string buffer size
  * @return 0 on success; -1 on failure
  */
-int convSsid2Str(const uint8_t* ssid, uint8_t ssid_len, char* str) {
+int convSsid2Str(const uint8_t* ssid, uint8_t ssidLen, char* str, size_t maxStrSize) {
     ASSERT_NOT_NULL(ssid, -1, ME, "NULL");
 
     /* If the SSID is ASCII printable we just copy that data, if not convert it
      * to a HEX string */
-    if(ssid_is_printable(ssid, ssid_len)) {
-        memcpy(str, ssid, ssid_len);
-        return 0;
+    bool ret;
+    if(ssid_is_printable(ssid, ssidLen)) {
+        ret = swl_str_ncopy(str, maxStrSize, (const char*) ssid, ssidLen);
+    } else {
+        ret = swl_hex_fromBytes(str, maxStrSize, ssid, ssidLen, false);
     }
-
-    for(uint8_t i = 0; i < ssid_len; i++) {
-        sprintf(str + (i * 2), "%02x", ssid[i]);
-    }
+    ASSERTI_TRUE(ret, -1, ME, "fail to convert ssid raw to string");
 
     return 0;
 }

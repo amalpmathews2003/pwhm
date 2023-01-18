@@ -264,7 +264,7 @@ int convSignal2Quality(int dBm);
 
 /* SSID manipulation */
 char* wld_ssid_to_string(const uint8_t* ssid, uint8_t len);
-int convSsid2Str(const uint8_t* ssid, uint8_t ssid_len, char* str);
+int convSsid2Str(const uint8_t* ssid, uint8_t ssidLen, char* str, size_t maxStrSize);
 
 /* MacFiltering APIs */
 #define MAX_ADDR_IN_FILTER_LIST 64

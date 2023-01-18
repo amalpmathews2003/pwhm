@@ -1145,11 +1145,11 @@ typedef struct {
     amxc_llist_it_t it;
 } T_ScanResult_SSID;
 
-typedef struct {
+struct wld_scanResults {
     amxc_llist_t ssids;
-} T_ScanResults;
+};
 
-typedef struct {
+struct wld_scanArgs {
     char ssid[SSID_NAME_LEN];
     int ssidLen;
     uint8_t chanlist[WLD_MAX_POSSIBLE_CHANNELS];
@@ -1157,7 +1157,7 @@ typedef struct {
     bool updateUsageStats;
     bool fastScan;
     const char* reason;
-} T_ScanArgs;
+};
 
 #define SCAN_REASON_MAX 5
 
@@ -1196,6 +1196,7 @@ typedef struct {
     bool start;   //set to true if start, false if stop
     bool success; // only relevant if start == false (i.e. scan stopping). Provides result of scan.
     wld_scan_type_e scanType;
+    const char* scanReason;
 } wld_scanEvent_t;
 
 typedef struct {
@@ -1332,14 +1333,6 @@ SWL_ARRAY_TYPE_H(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX);
     X(Y, gtSwl_type_uint32, nrEnables, "NrEnables")
 
 SWL_NTT_H(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO, );
-
-typedef enum {
-    WLD_RAD_SCAN_STATUS_COMPLETED,
-    WLD_RAD_SCAN_STATUS_FAILED,
-    WLD_RAD_SCAN_STATUS_DISABLED,
-    WLD_RAD_SCAN_STATUS_MAX,
-} wld_radScanStatus_e;
-extern const char* g_str_wld_radScanStatus[];
 
 struct WLD_RADIO {
     int debug;   /* FIX ME */
@@ -1482,7 +1475,6 @@ struct WLD_RADIO {
     amxc_llist_t monitorDev;            /* @listof T_MonitorDevice */
 
     T_ScanState scanState;              /* SSID Scan state */
-    wld_radScanStatus_e radScanStatus;  /* radio status for scan feature */
 
     int enable;                         /* Enable/Disable the Radio */
     int wlRadio_SK;                     /* Storage of the Radio Socket handler */

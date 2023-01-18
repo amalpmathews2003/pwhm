@@ -64,14 +64,20 @@
 
 #define ME "wldScan"
 
-#define SCAN_DELAY 60000
-uint64_t g_neighboringWiFiDiagnosticID = 0;
-bool g_neighboringWiFiDiagnosticStatus = false;
+#define DIAG_SCAN_REASON "NeighboringDiag"
+typedef struct {
+    uint64_t call_id;
+    amxc_llist_t runningRads;   /* list of radios running diag scan. */
+    amxc_llist_t completedRads; /* list of radios reporting scan results. */
+    amxc_llist_t canceledRads;  /* list of radios having cancelled scan. */
+    amxc_llist_t failedRads;    /* list of radios having failed to scan (busy, not ready...). */
+} neighboringWiFiDiagnosticInfo_t;
 
-const char* g_str_wld_radScanStatus[WLD_RAD_SCAN_STATUS_MAX] = {
-    "ReportingRadios",
-    "FailedRadios",
-    "DisabledRadios",
+/**
+ * global neighboringWiFiDiagnostic context.
+ */
+neighboringWiFiDiagnosticInfo_t g_neighWiFiDiag = {
+    .call_id = 0,
 };
 
 const char* g_str_wld_blockScanMode[BLOCKSCANMODE_MAX] = {
@@ -101,7 +107,9 @@ amxd_status_t _wld_rad_writeScanConfig(amxd_object_t* object) {
     pRad->scanState.cfg.homeTime = amxd_object_get_int32_t(object, "HomeTime", NULL);
     pRad->scanState.cfg.activeChannelTime = amxd_object_get_int32_t(object, "ActiveChannelTime", NULL);
     pRad->scanState.cfg.passiveChannelTime = amxd_object_get_int32_t(object, "PassiveChannelTime", NULL);
-    pRad->scanState.cfg.blockScanMode = swl_conv_charToEnum(amxd_object_get_cstring_t(object, "BlockScanMode", NULL), g_str_wld_blockScanMode, BLOCKSCANMODE_MAX, BLOCKSCANMODE_DISABLE);
+    char* blockScanMode = amxd_object_get_cstring_t(object, "BlockScanMode", NULL);
+    pRad->scanState.cfg.blockScanMode = swl_conv_charToEnum(blockScanMode, g_str_wld_blockScanMode, BLOCKSCANMODE_MAX, BLOCKSCANMODE_DISABLE);
+    free(blockScanMode);
     pRad->scanState.cfg.maxChannelsPerScan = amxd_object_get_int32_t(object, "MaxChannelsPerScan", NULL);
     pRad->scanState.cfg.scanRequestInterval = amxd_object_get_int32_t(object, "ScanRequestInterval", NULL);
     pRad->scanState.cfg.scanChannelCount = amxd_object_get_int32_t(object, "ScanChannelCount", NULL);
@@ -110,7 +118,7 @@ amxd_status_t _wld_rad_writeScanConfig(amxd_object_t* object) {
         free(pRad->scanState.cfg.fastScanReasons);
         pRad->scanState.cfg.fastScanReasons = NULL;
     }
-    pRad->scanState.cfg.fastScanReasons = strdup(amxd_object_get_cstring_t(object, "FastScanReasons", NULL));
+    pRad->scanState.cfg.fastScanReasons = amxd_object_get_cstring_t(object, "FastScanReasons", NULL);
     return amxd_status_ok;
 }
 
@@ -123,7 +131,7 @@ void wld_radio_update_ScanStats(T_Radio* pRad) {
     amxd_object_set_uint32_t(objScanStats, "NrScanBlocked", pRad->scanState.stats.nrScanBlocked);
 
     amxd_object_t* obj = amxd_object_findf(pRad->pBus, "ScanStats.ScanReason");
-    amxc_llist_it_t* it = NULL;
+    ASSERTS_NOT_NULL(obj, , ME, "NULL");
     amxc_llist_for_each(it, &(pRad->scanState.stats.extendedStat)) {
         wld_brief_stats_t* stats = amxc_llist_it_get_data(it, wld_brief_stats_t, it);
         amxd_object_t* objExtendedStats = amxd_object_findf(obj, "%s", stats->scanReason);
@@ -169,8 +177,11 @@ bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, T_ScanResult_SSID
     ASSERT_NOT_NULL(ssid, -1, ME, "EP NULL");
 
     T_ScanResults res;
-    char ssid_str[SSID_NAME_LEN];
-    memset(ssid_str, 0, SSID_NAME_LEN);
+    /*
+     * over-size buffer assuming content is not printable (i.e fully displayed as hex string)
+     */
+    char ssidStr[(2 * SSID_NAME_LEN) + 1];
+    memset(ssidStr, 0, sizeof(ssidStr));
     bool isEntryFound = false;
 
     amxc_llist_init(&res.ssids);
@@ -186,10 +197,10 @@ bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, T_ScanResult_SSID
         T_ScanResult_SSID* SR_ssid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
         it = amxc_llist_it_get_next(it);
 
-        convSsid2Str(SR_ssid->ssid, SR_ssid->ssid_len, ssid_str);
-        SAH_TRACEZ_INFO(ME, "searching for matching ssid : [%s] <-> [%s]", ssid, ssid_str);
+        convSsid2Str(SR_ssid->ssid, SR_ssid->ssidLen, ssidStr, sizeof(ssidStr));
+        SAH_TRACEZ_INFO(ME, "searching for matching ssid : [%s] <-> [%s]", ssid, ssidStr);
 
-        if(!strncmp(ssid, ssid_str, strlen(ssid))) {
+        if(!strncmp(ssid, ssidStr, strlen(ssid))) {
             SAH_TRACEZ_INFO(ME, "Found matching ssid");
             memcpy(output, SR_ssid, sizeof(T_ScanResult_SSID));
             isEntryFound = true;
@@ -239,6 +250,7 @@ void wld_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* scanRe
     ev.pRad = pRad;
     ev.start = true;
     ev.scanType = type;
+    ev.scanReason = scanReason;
     wld_event_trigger_callback(gWld_queue_rad_onScan_change, &ev);
 
     pRad->scanState.scanType = type;
@@ -328,7 +340,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
 
     bool hasForceFast = GET_BOOL(args, "forceFast");
     if(!hasForceFast) {
-        scanArgs.fastScan = strstr(pR->scanState.cfg.fastScanReasons, reason) != NULL;
+        scanArgs.fastScan = (swl_str_find(pR->scanState.cfg.fastScanReasons, reason) > 0);
     }
 
     if(scanArgs.fastScan) {
@@ -413,21 +425,23 @@ amxd_status_t _stopScan(amxd_object_t* object,
  */
 
 amxd_status_t _scan(amxd_object_t* object,
-                    amxd_function_t* func _UNUSED,
+                    amxd_function_t* func,
                     amxc_var_t* args,
                     amxc_var_t* retval) {
 
     T_Radio* pR = object->priv;
-    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
 
     amxd_status_t res = _startScan(object, func, args, retval);
     if(res != amxd_status_deferred) {
         return res;
     }
 
-    int32_t min_rssi = GET_INT32(args, "min_rssi");
-    pR->scanState.min_rssi = min_rssi;
-    pR->scanState.call_id = call_id;
+    pR->scanState.min_rssi = INT32_MIN;
+    amxc_var_t* minRssiVar = GET_ARG(args, "min_rssi");
+    if(minRssiVar != NULL) {
+        pR->scanState.min_rssi = amxc_var_dyncast(int32_t, minRssiVar);
+    }
+    amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
 
     return amxd_status_deferred;
 }
@@ -444,58 +458,49 @@ static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rs
 
     amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
 
-    amxc_llist_it_t* it = amxc_llist_get_first(&res.ssids);
-    while(it != NULL) {
+    amxc_llist_for_each(it, &res.ssids) {
         T_ScanResult_SSID* ssid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
-        it = amxc_llist_it_get_next(it);
 
         if(ssid->rssi < min_rssi) {
-            amxc_llist_it_take(&ssid->it);
-            free(ssid);
             continue;
         }
 
-        amxc_var_t entry;
-        amxc_var_init(&entry);
+        amxc_var_t* pEntry = amxc_var_add(amxc_htable_t, retval, NULL);
+        if(pEntry == NULL) {
+            break;
+        }
 
-        amxc_string_t wpsmethods;
-        amxc_string_init(&wpsmethods, 0);
+        swl_macChar_t bssidStr = SWL_MAC_CHAR_NEW();
+        swl_mac_binToChar(&bssidStr, &ssid->bssid);
 
-        char bssid[18];
-        mac2str(bssid, ssid->bssid, sizeof(bssid));
+        char* ssidStr = wld_ssid_to_string(ssid->ssid, ssid->ssidLen);
+        amxc_var_add_key(cstring_t, pEntry, "SSID", ssidStr);
+        free(ssidStr);
 
-        char* ssid_str = wld_ssid_to_string(ssid->ssid, ssid->ssid_len);
-        amxc_var_add_key(cstring_t, &entry, "SSID", ssid_str);
+        amxc_var_add_key(cstring_t, pEntry, "BSSID", bssidStr.cMac);
+        amxc_var_add_key(int32_t, pEntry, "SignalNoiseRatio", ssid->snr);
+        amxc_var_add_key(int32_t, pEntry, "Noise", ssid->noise);
+        amxc_var_add_key(int32_t, pEntry, "RSSI", ssid->rssi);
+        amxc_var_add_key(int32_t, pEntry, "Channel", ssid->channel);
+        amxc_var_add_key(int32_t, pEntry, "CentreChannel", ssid->centreChannel);
+        amxc_var_add_key(int32_t, pEntry, "Bandwidth", ssid->bandwidth);
+        amxc_var_add_key(int32_t, pEntry, "SignalStrength", ssid->rssi);
 
-        free(ssid_str);
-        amxc_var_add_key(cstring_t, &entry, "BSSID", bssid);
-        amxc_var_add_key(int32_t, &entry, "SignalNoiseRatio", ssid->snr);
-        amxc_var_add_key(int32_t, &entry, "Noise", ssid->noise);
-        amxc_var_add_key(int32_t, &entry, "RSSI", ssid->rssi);
-        amxc_var_add_key(int32_t, &entry, "Channel", ssid->channel);
-        amxc_var_add_key(int32_t, &entry, "CentreChannel", ssid->centre_channel);
-        amxc_var_add_key(int32_t, &entry, "Bandwidth", ssid->bandwidth);
-        amxc_var_add_key(int32_t, &entry, "SignalStrength", ssid->signalStrength);
+        amxc_var_add_key(cstring_t, pEntry, "SecurityModeEnabled", swl_security_apModeToString(ssid->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
 
-        amxc_var_add_key(cstring_t, &entry, "SecurityModeEnabled", cstr_AP_ModesSupported[ssid->secModeEnabled]);
+        char wpsmethods[256] = {0};
+        swl_wps_configMethodMaskToNames(wpsmethods, SWL_ARRAY_SIZE(wpsmethods), ssid->WPS_ConfigMethodsEnabled);
+        amxc_var_add_key(cstring_t, pEntry, "WPSConfigMethodsSupported", wpsmethods);
 
-        wld_wps_ConfigMethods_mask_to_string(&wpsmethods, ssid->WPS_ConfigMethodsEnabled);
-        amxc_var_add_key(cstring_t, &entry, "WPSConfigMethodsSupported", amxc_string_get(&wpsmethods, 0));
-        amxc_string_clean(&wpsmethods);
-
-        amxc_var_add_key(cstring_t, &entry, "EncryptionMode", cstr_AP_EncryptionMode[ssid->encryptionMode]);
+        amxc_var_add_key(cstring_t, pEntry, "EncryptionMode", swl_security_encMode_str[ssid->encryptionMode]);
 
         char operatingStandardsChar[32] = "";
         swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar),
                           ssid->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
-        amxc_var_add_key(cstring_t, &entry, "OperatingStandards", operatingStandardsChar);
-
-        amxc_var_move(retval, &entry);
-        amxc_var_clean(&entry);
-
-        amxc_llist_it_take(&ssid->it);
-        free(ssid);
+        amxc_var_add_key(cstring_t, pEntry, "OperatingStandards", operatingStandardsChar);
     }
+
+    wld_scan_cleanupScanResults(&res);
 
     return true;
 }
@@ -509,7 +514,11 @@ amxd_status_t _getScanResults(amxd_object_t* object,
 
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    int32_t min_rssi = GET_INT32(args, "min_rssi");
+    int32_t min_rssi = INT32_MIN;
+    amxc_var_t* minRssiVar = GET_ARG(args, "min_rssi");
+    if(minRssiVar != NULL) {
+        min_rssi = amxc_var_dyncast(int32_t, minRssiVar);
+    }
 
     if(!wld_get_scan_results(pR, retval, min_rssi)) {
         return amxd_status_unknown_error;
@@ -570,24 +579,26 @@ static void wld_scan_done_finish_fcall(T_Radio* pR, bool success) {
  *  if the channel is zero, we return null
  *  otherwise we create a new channel object.
  */
-amxd_object_t* wld_scan_update_get_channel(amxd_object_t* obj_scan, uint16_t channel) {
+amxd_object_t* wld_scan_update_get_channel(amxd_object_t* objScan, uint16_t channel) {
     if(channel == 0) {
         return NULL;
     }
 
-    char name[6];
-    amxd_object_t* chan_template = amxd_object_get(obj_scan, "SurroundingChannels");
-    snprintf(name, sizeof(name), "%u", channel);
-    amxd_object_t* chan_obj = amxd_object_get(chan_template, name);
-
-    if(chan_obj != NULL) {
-        return chan_obj;
-    } else {
-        amxd_object_new_instance(&chan_obj, chan_template, name, 0, NULL);
-        amxd_object_set_uint16_t(chan_obj, "Channel", channel);
-        return chan_obj;
+    amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
+    ASSERT_NOT_NULL(chanTemplate, NULL, ME, "NULL");
+    amxd_object_t* chanObj = NULL;
+    amxd_object_for_each(instance, it, chanTemplate) {
+        chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
+        if(amxd_object_get_uint16_t(chanObj, "Channel", NULL) == channel) {
+            return chanObj;
+        }
     }
+    amxd_status_t ret = amxd_object_new_instance(&chanObj, chanTemplate, NULL, 0, NULL);
+    ASSERT_EQUALS(ret, amxd_status_ok, NULL,
+                  ME, "fail to create channel instance for channel %d ret:%d", channel, ret);
+    amxd_object_set_uint16_t(chanObj, "Channel", channel);
 
+    return chanObj;
 }
 
 swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad) {
@@ -621,24 +632,6 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
     return amxd_status_deferred;
 }
 
-
-/**
- * Returns the amount of characters on which two character arrays differ, over the given length.
- */
-static uint16_t nr_str_diff(const char* test1, const char* test2, uint16_t len) {
-    uint16_t diff = 0;
-    uint16_t i = 0;
-    for(i = 0; i < len; i++) {
-        if(*test1 != *test2) {
-            diff++;
-        }
-        test1++;
-        test2++;
-    }
-
-    return diff;
-}
-
 /**
  * Search for an access point object that matches the given bssid and the given rssi, withing the current
  * ap_template object. If no matching ap currently exists, null is returned.
@@ -646,19 +639,30 @@ static uint16_t nr_str_diff(const char* test1, const char* test2, uint16_t len) 
  * An accesspoint matches if the differences in bssid strings is less or equal to two (about 1 byte difference)
  * and the rssi matches. Since we look only at a given ap_template, the channel also must match.
  */
-static amxd_object_t* wld_scan_find_ap(amxd_object_t* ap_template, char bssid[], int16_t rssi) {
-    amxc_llist_it_t* it = amxd_object_first_instance(ap_template);
-    amxd_object_t* test_ap = amxc_llist_it_get_data(it, amxd_object_t, it);
-    int16_t test_rssi;
-    const char* test_bssid;
-    while(test_ap != NULL) {
-        test_rssi = amxd_object_get_int16_t(test_ap, "RSSI", NULL);
-        test_bssid = amxd_object_get_cstring_t(test_ap, "BSSID", NULL);
-        if((test_rssi == rssi) && (nr_str_diff(test_bssid, bssid, 18) <= 2)) {
-            return test_ap;
-        } else {
-            it = amxc_llist_it_get_next(it);
-            test_ap = amxc_llist_it_get_data(it, amxd_object_t, it);
+static amxd_object_t* s_findScanApGroup(amxd_object_t* ap_template, swl_macChar_t* pBssidChar, int16_t rssi) {
+    amxd_object_t* testAp;
+    int16_t testRssi;
+    char* testBssid;
+    bool match = false;
+    size_t macDevOffset = 9;
+    swl_macChar_t macVendorOuiMask = {.cMac = {"FD:FF:FF:00:00:00"}};
+    swl_macChar_t testBssidChar = SWL_MAC_CHAR_NEW();
+    amxd_object_for_each(instance, it, ap_template) {
+        testAp = amxc_llist_it_get_data(it, amxd_object_t, it);
+        testRssi = amxd_object_get_int16_t(testAp, "RSSI", NULL);
+        testBssid = amxd_object_get_cstring_t(testAp, "BSSID", NULL);
+        match = (/* same rssi */
+            (testRssi == rssi) &&
+            /* valid test mac */
+            (swl_typeMacChar_fromChar(&testBssidChar, testBssid)) &&
+            /* same MAC Vendor OUI part as the reference mac, after clearing the LocallyAdminAddress bit */
+            (swl_mac_charMatchesMask(&testBssidChar, pBssidChar, &macVendorOuiMask)) &&
+            /* at most 2 different hex digits in the MAC Device part */
+            (swl_str_nrStrDiff(&testBssidChar.cMac[macDevOffset], &pBssidChar->cMac[macDevOffset], SWL_MAC_CHAR_LEN - macDevOffset) <= 2));
+
+        free(testBssid);
+        if(match) {
+            return testAp;
         }
     }
     return NULL;
@@ -668,64 +672,66 @@ static amxd_object_t* wld_scan_find_ap(amxd_object_t* ap_template, char bssid[],
  * Add a given SSID result to the given channel.
  */
 static void wld_scan_update_add_ssid(amxd_object_t* channel, T_ScanResult_SSID* ssid) {
+    ASSERT_NOT_NULL(ssid, , ME, "NULL");
     amxd_object_t* ap_template = amxd_object_get(channel, "Accesspoint");
+    ASSERT_NOT_NULL(ap_template, , ME, "Null ap template");
 
-    char bssid[19];
-    mac2str(bssid, ssid->bssid, sizeof(bssid));
+    swl_macChar_t bssidStr = SWL_MAC_CHAR_NEW();
+    swl_mac_binToChar(&bssidStr, &ssid->bssid);
 
-    amxd_object_t* ap_val = wld_scan_find_ap(ap_template, bssid, ssid->rssi);
+    amxd_object_t* ap_val = s_findScanApGroup(ap_template, &bssidStr, ssid->rssi);
 
+    amxd_status_t ret;
     if(ap_val == NULL) {
-        char id[4];
-        snprintf(id, 4, "%u", amxd_object_get_instance_count(ap_template) + 1);
-        amxd_object_new_instance(&ap_val, ap_template, id, 0, NULL);
+        uint32_t id = amxd_object_get_instance_count(ap_template) + 1;
+        ret = amxd_object_new_instance(&ap_val, ap_template, NULL, id, NULL);
+        ASSERT_EQUALS(ret, amxd_status_ok, , ME, "Fail to create scan AP instance (ret %d)", ret);
         amxd_object_set_int16_t(ap_val, "RSSI", ssid->rssi);
-        amxd_object_set_cstring_t(ap_val, "BSSID", bssid);
+        amxd_object_set_cstring_t(ap_val, "BSSID", bssidStr.cMac);
 
     }
-    char* ssid_str = wld_ssid_to_string(ssid->ssid, ssid->ssid_len);
     amxd_object_t* ap_ssid_template = amxd_object_get(ap_val, "SSID");
-    amxd_object_t* ap_ssid;
-    amxd_object_new_instance(&ap_ssid, ap_ssid_template, bssid, 0, NULL);
-    amxd_object_set_cstring_t(ap_ssid, "SSID", ssid_str);
-    amxd_object_set_cstring_t(ap_ssid, "BSSID", bssid);
+    amxd_object_t* ap_ssid = NULL;
+    ret = amxd_object_new_instance(&ap_ssid, ap_ssid_template, NULL, 0, NULL);
+    ASSERT_EQUALS(ret, amxd_status_ok, , ME, "Fail to create scan SSID instance (ret %d)", ret);
+    char* ssidStr = wld_ssid_to_string(ssid->ssid, ssid->ssidLen);
+    amxd_object_set_cstring_t(ap_ssid, "SSID", ssidStr);
+    amxd_object_set_cstring_t(ap_ssid, "BSSID", bssidStr.cMac);
     amxd_object_set_uint16_t(ap_ssid, "Bandwidth", ssid->bandwidth);
-    free(ssid_str);
+    free(ssidStr);
 }
 
 /**
  * Clear the scan results. Should be called before we start adding new
  * results for the latest scan.
  */
-static void wld_scan_update_clear_obj(amxd_object_t* obj_scan) {
-    amxd_object_t* chan_template = amxd_object_get(obj_scan, "SurroundingChannels");
-    amxc_llist_it_t* it = amxd_object_first_instance(chan_template);
-    amxd_object_t* channel_obj = amxc_llist_it_get_data(it, amxd_object_t, it);
-    while(channel_obj != NULL) {
-        amxd_object_delete(&channel_obj);
-        amxc_llist_it_t* it = amxd_object_first_instance(chan_template);
-        channel_obj = amxc_llist_it_get_data(it, amxd_object_t, it);
+static void wld_scan_update_clear_obj(amxd_object_t* objScan) {
+    amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
+    amxd_object_for_each(instance, it, chanTemplate) {
+        amxd_object_t* chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
+        amxd_object_delete(&chanObj);
     }
 }
 
 /**
  * Count the number of access points that are on the same channel as the radio currently is.
  */
-static void wld_scan_count_cochannel(T_Radio* pR, amxd_object_t* obj_scan) {
+static void wld_scan_count_cochannel(T_Radio* pR, amxd_object_t* objScan) {
     uint16_t channel = amxd_object_get_uint16_t(pR->pBus, "Channel", NULL);
 
-    char name[5];
-    amxd_object_t* chan_template = amxd_object_get(obj_scan, "SurroundingChannels");
-    snprintf(name, sizeof(name), "%u", (uint8_t) channel);
-    amxd_object_t* chan_obj = amxd_object_get(chan_template, name);
+    uint32_t nrCoChannel = 0;
+    amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
+    amxd_object_t* chanObj = NULL;
 
-    if(chan_obj != NULL) {
-        amxd_object_t* ap_template = amxd_object_get(chan_obj, "Accesspoint");
-        uint32_t nr_cochannel = amxd_object_get_instance_count(ap_template);
-        amxd_object_set_uint16_t(obj_scan, "NrCoChannelAP", nr_cochannel);
-    } else {
-        amxd_object_set_uint16_t(obj_scan, "NrCoChannelAP", 0);
+    amxd_object_for_each(instance, it, chanTemplate) {
+        chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
+        if(amxd_object_get_uint16_t(chanObj, "Channel", NULL) == channel) {
+            amxd_object_t* apTemplate = amxd_object_get(chanObj, "Accesspoint");
+            nrCoChannel = amxd_object_get_instance_count(apTemplate);
+            break;
+        }
     }
+    amxd_object_set_uint16_t(objScan, "NrCoChannelAP", nrCoChannel);
 }
 
 void wld_scan_cleanupScanResultSSID(T_ScanResult_SSID* ssid) {
@@ -735,10 +741,9 @@ void wld_scan_cleanupScanResultSSID(T_ScanResult_SSID* ssid) {
 
 
 void wld_scan_cleanupScanResults(T_ScanResults* res) {
-    amxc_llist_it_t* it = amxc_llist_get_first(&res->ssids);
-    while(it != NULL) {
-        T_ScanResult_SSID* ssid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
-        it = amxc_llist_it_get_next(it);
+    ASSERTS_NOT_NULL(res, , ME, "NULL");
+    amxc_llist_for_each(it, &res->ssids) {
+        T_ScanResult_SSID* ssid = amxc_container_of(it, T_ScanResult_SSID, it);
         wld_scan_cleanupScanResultSSID(ssid);
     }
 }
@@ -760,11 +765,8 @@ static void wld_scan_update_obj_results(T_Radio* pR) {
     amxd_object_t* obj_scan = amxd_object_get(pR->pBus, "ScanResults");
 
     wld_scan_update_clear_obj(obj_scan);
-    amxc_llist_it_t* it = amxc_llist_get_first(&res.ssids);
-    while(it != NULL) {
-        T_ScanResult_SSID* ssid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
-        it = amxc_llist_it_get_next(it);
-
+    amxc_llist_for_each(it, &res.ssids) {
+        T_ScanResult_SSID* ssid = amxc_container_of(it, T_ScanResult_SSID, it);
         amxd_object_t* channel = wld_scan_update_get_channel(obj_scan, ssid->channel);
         wld_scan_update_add_ssid(channel, ssid);
         wld_scan_cleanupScanResultSSID(ssid);
@@ -809,72 +811,86 @@ void wld_scan_done(T_Radio* pR, bool success) {
     ev.start = false;
     ev.success = success;
     ev.scanType = pR->scanState.scanType;
+    ev.scanReason = pR->scanState.scanReason;
     wld_event_trigger_callback(gWld_queue_rad_onScan_change, &ev);
 
     /* Scan is done */
     swl_str_copy(pR->scanState.scanReason, sizeof(pR->scanState.scanReason), "None");
     pR->scanState.scanType = SCAN_TYPE_NONE;
-
-    if(success) {
-        pR->radScanStatus = WLD_RAD_SCAN_STATUS_COMPLETED;
-    } else {
-        pR->radScanStatus = WLD_RAD_SCAN_STATUS_FAILED;
-    }
-
-    /* Notify scan done*/
-    wld_scan_diagNotifyRadDone(success);
 }
 
 bool wld_scan_isRunning(T_Radio* pR) {
     return pR->scanState.scanType != SCAN_TYPE_NONE;
 }
 
-bool wld_isAnyRadioRunningScan() {
-    bool scanRunning = false;
+static void s_sendNeighboringWifiDiagnosticResult();
 
-    T_Radio* pRadio = NULL;
-    wld_for_eachRad(pRadio) {
-        if(pRadio->scanState.scanType != SCAN_TYPE_NONE) {
-            scanRunning = true;
+static void s_radScanStatusUpdateCb(wld_scanEvent_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    T_Radio* pRadio = event->pRad;
+    ASSERT_NOT_NULL(pRadio, , ME, "NULL");
+    ASSERTS_TRUE(swl_str_matches(event->scanReason, DIAG_SCAN_REASON), , ME, "Not diag scan");
+    if(event->start) {
+        amxc_llist_add_string(&g_neighWiFiDiag.runningRads, pRadio->Name);
+        return;
+    }
+    ASSERTI_FALSE(amxc_llist_is_empty(&g_neighWiFiDiag.runningRads), , ME, "No diag running");
+    amxc_llist_for_each(it, &g_neighWiFiDiag.runningRads) {
+        amxc_string_t* radName = amxc_string_from_llist_it(it);
+        if(swl_str_matches(amxc_string_get(radName, 0), pRadio->Name)) {
+            amxc_llist_it_take(it);
+            if(event->success) {
+                amxc_llist_append(&g_neighWiFiDiag.completedRads, it);
+            } else {
+                amxc_llist_append(&g_neighWiFiDiag.failedRads, it);
+            }
+            break;
         }
     }
-    return scanRunning;
+    //all diag scans are answered: send deferred reply
+    if(amxc_llist_is_empty(&g_neighWiFiDiag.runningRads)) {
+        /* Send the Neighboring WiFi Diagnostic Result list */
+        s_sendNeighboringWifiDiagnosticResult();
+    }
 }
+
+static wld_event_callback_t s_radScanStatusCbContainer = {
+    .callback = (wld_event_callback_fun) s_radScanStatusUpdateCb
+};
 
 static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad, T_ScanResult_SSID* pSsid) {
     ASSERTS_NOT_NULL(pResultListMap, , ME, "NULL");
     ASSERTS_NOT_NULL(pSsid, , ME, "NULL");
 
     amxc_var_t* resulMap = amxc_var_add(amxc_htable_t, pResultListMap, NULL);
+    ASSERTS_NOT_NULL(resulMap, , ME, "NULL");
 
     // Set Elements
-    char bssid[ETHER_ADDR_STR_LEN];
-    mac2str(bssid, pSsid->bssid, sizeof(bssid));
-    amxc_var_add_key(cstring_t, resulMap, "Radio", pRad->instanceName);
-    char* ssid_str = wld_ssid_to_string(pSsid->ssid, pSsid->ssid_len);
-    amxc_var_add_key(cstring_t, resulMap, "SSID", ssid_str);
-    free(ssid_str);
-    amxc_var_add_key(cstring_t, resulMap, "BSSID", bssid);
+    swl_macChar_t bssidStr = SWL_MAC_CHAR_NEW();
+    swl_mac_binToChar(&bssidStr, &pSsid->bssid);
+    char* path = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_INDEXED);
+    amxc_var_add_key(cstring_t, resulMap, "Radio", path);
+    free(path);
+    char* ssidStr = wld_ssid_to_string(pSsid->ssid, pSsid->ssidLen);
+    amxc_var_add_key(cstring_t, resulMap, "SSID", ssidStr);
+    free(ssidStr);
+    amxc_var_add_key(cstring_t, resulMap, "BSSID", bssidStr.cMac);
     amxc_var_add_key(uint32_t, resulMap, "Channel", pSsid->channel);
-    amxc_var_add_key(uint32_t, resulMap, "CentreChannel", pSsid->centre_channel);
-    amxc_var_add_key(uint32_t, resulMap, "SignalStrength", pSsid->signalStrength);
-    amxc_var_add_key(cstring_t, resulMap, "SecurityModeEnabled", cstr_AP_ModesSupported[pSsid->secModeEnabled]);
-    amxc_var_add_key(cstring_t, resulMap, "EncryptionMode", cstr_AP_EncryptionMode[pSsid->encryptionMode]);
+    amxc_var_add_key(uint32_t, resulMap, "CentreChannel", pSsid->centreChannel);
+    amxc_var_add_key(int32_t, resulMap, "SignalStrength", pSsid->rssi);
+    amxc_var_add_key(cstring_t, resulMap, "SecurityModeEnabled", swl_security_apModeToString(pSsid->secModeEnabled, SWL_SECURITY_APMODEFMT_ALTERNATE));
+    amxc_var_add_key(cstring_t, resulMap, "EncryptionMode", swl_security_encMode_str[pSsid->encryptionMode]);
     amxc_var_add_key(cstring_t, resulMap, "OperatingFrequencyBand", Rad_SupFreqBands[pRad->operatingFrequencyBand]);
 
     char operatingStandardsChar[32] = "";
     swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar), pSsid->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
     amxc_var_add_key(cstring_t, resulMap, "OperatingStandard", operatingStandardsChar);
-    amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", Rad_SupBW[pSsid->bandwidth]);
+    amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", Rad_SupBW[swl_chanspec_intToBw(pSsid->bandwidth)]);
 
-    amxc_string_t wpsmethods;
-    amxc_string_init(&wpsmethods, 0);
-    wld_wps_ConfigMethods_mask_to_string(&wpsmethods, pSsid->WPS_ConfigMethodsEnabled);
-    amxc_var_add_key(cstring_t, resulMap, "ConfigMethodsSupported", amxc_string_get(&wpsmethods, 0)); // WPSConfigMethodsSupported
-    amxc_string_clean(&wpsmethods);
+    char wpsmethods[256] = {0};
+    swl_wps_configMethodMaskToNames(wpsmethods, SWL_ARRAY_SIZE(wpsmethods), pSsid->WPS_ConfigMethodsEnabled);
+    amxc_var_add_key(cstring_t, resulMap, "ConfigMethodsSupported", wpsmethods); // WPSConfigMethodsSupported
     amxc_var_add_key(uint32_t, resulMap, "Noise", pSsid->noise);
-
-    SAH_TRACEZ_INFO(ME, "SET MAP FINISH");
 }
 
 
@@ -883,121 +899,138 @@ static void s_addDiagRadioResultsToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     ASSERTS_NOT_NULL(pScanResults, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
 
-    amxc_llist_it_t* it = amxc_llist_get_first(&pScanResults->ssids);
-    while(it != NULL) {
-        T_ScanResult_SSID* pSsid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
-        it = amxc_llist_it_get_next(it);
-
+    amxc_llist_for_each(it, &pScanResults->ssids) {
+        T_ScanResult_SSID* pSsid = amxc_container_of(it, T_ScanResult_SSID, it);
         s_addDiagSingleResultToMap(pResultListMap, pRad, pSsid);
     }
 }
 
-static void s_addRadiosScanStatusToMap(amxc_var_t* pMap) {
-    amxc_string_t radLists[WLD_RAD_SCAN_STATUS_MAX];
-
-    for(size_t i = 0; i < WLD_RAD_SCAN_STATUS_MAX; i++) {
-        amxc_string_init(&radLists[i], 0);
-    }
-
-    T_Radio* pRadio = NULL;
-    wld_for_eachRad(pRadio) {
-        amxc_string_appendf(&radLists[pRadio->radScanStatus], "%s%s", amxc_string_is_empty(&radLists[pRadio->radScanStatus]) ? "" : ",", pRadio->instanceName);
-    }
-
-    for(size_t i = 0; i < WLD_RAD_SCAN_STATUS_MAX; i++) {
-        amxc_var_add_key(cstring_t, pMap, g_str_wld_radScanStatus[i], amxc_string_get(&radLists[i], 0));
-        amxc_string_clean(&radLists[i]);
-    }
+static void s_addDiagRadiosListToMap(amxc_var_t* retval, const char* listName, amxc_llist_t* listEntries) {
+    ASSERTS_FALSE(amxc_llist_is_empty(listEntries), , ME, "Empty");
+    amxc_string_t radios;
+    amxc_string_init(&radios, 0);
+    amxc_string_join_llist(&radios, listEntries, ',');
+    amxc_var_add_key(cstring_t, retval, listName, amxc_string_get(&radios, 0));
+    amxc_string_clean(&radios);
 }
 
-static void s_sendNeighboringWifiDiagnositResult() {
-    amxc_var_t retMap;
-    amxc_var_init(&retMap);
-    amxc_var_set_type(&retMap, AMXC_VAR_ID_HTABLE);
-
+static void s_addDiagRadiosStatusToMap(amxc_var_t* retval) {
+    if(!amxc_llist_is_empty(&g_neighWiFiDiag.runningRads)) {
+        amxc_var_add_key(cstring_t, retval, "Status",
+                         swl_uspCmdStatus_toString(SWL_USP_CMD_STATUS_ERROR));
+        s_addDiagRadiosListToMap(retval, "FailedRadios", &g_neighWiFiDiag.runningRads);
+        return;
+    }
     /*
      * If at least one radio succeeds in making a scan:
      * ==> Status is "Complete"
      * ==> else, Status is "Error"
      */
-    if(g_neighboringWiFiDiagnosticStatus) {
-        amxc_var_add_key(cstring_t, &retMap, "Status", "Error");
+    if(!amxc_llist_is_empty(&g_neighWiFiDiag.completedRads)) {
+        amxc_var_add_key(cstring_t, retval, "Status",
+                         swl_uspCmdStatus_toString(SWL_USP_CMD_STATUS_COMPLETE));
+    } else if(!amxc_llist_is_empty(&g_neighWiFiDiag.canceledRads)) {
+        amxc_var_add_key(cstring_t, retval, "Status",
+                         swl_uspCmdStatus_toString(SWL_USP_CMD_STATUS_CANCELED));
     } else {
-        amxc_var_add_key(cstring_t, &retMap, "Status", "Completed");
+        amxc_var_add_key(cstring_t, retval, "Status",
+                         swl_uspCmdStatus_toString(SWL_USP_CMD_STATUS_ERROR));
     }
+    s_addDiagRadiosListToMap(retval, "ReportingRadios", &g_neighWiFiDiag.completedRads);
+    s_addDiagRadiosListToMap(retval, "CanceledRadios", &g_neighWiFiDiag.canceledRads);
+    s_addDiagRadiosListToMap(retval, "FailedRadios", &g_neighWiFiDiag.failedRads);
+}
 
-    s_addRadiosScanStatusToMap(&retMap);
+static void s_sendNeighboringWifiDiagnosticResult() {
+    amxc_var_t retMap;
+    amxc_var_init(&retMap);
+    amxc_var_set_type(&retMap, AMXC_VAR_ID_HTABLE);
 
+    s_addDiagRadiosStatusToMap(&retMap);
     amxc_var_t* pResultListMap = amxc_var_add_key(amxc_llist_t, &retMap, "Result", NULL);
 
     T_ScanResults scanRes;
     amxc_llist_init(&scanRes.ssids);
 
     T_Radio* pRadio = NULL;
-    wld_for_eachRad(pRadio) {
-        // Get data
-        if(pRadio->pFA->mfn_wrad_scan_results(pRadio, &scanRes) < 0) {
-            SAH_TRACEZ_ERROR(ME, "Unable to retrieve scan results");
+    amxc_llist_for_each(it, &g_neighWiFiDiag.completedRads) {
+        amxc_string_t* radName = amxc_string_from_llist_it(it);
+        if(amxc_string_is_empty(radName)) {
             continue;
         }
-
-        // Add data to map
-        s_addDiagRadioResultsToMap(pResultListMap, pRadio, &scanRes);
+        pRadio = wld_rad_get_radio(amxc_string_get(radName, 0));
+        if(pRadio == NULL) {
+            continue;
+        }
+        // Get data
+        if(pRadio->pFA->mfn_wrad_scan_results(pRadio, &scanRes) >= SWL_RC_OK) {
+            // Add data to map
+            s_addDiagRadioResultsToMap(pResultListMap, pRadio, &scanRes);
+        } else {
+            SAH_TRACEZ_ERROR(ME, "%s: Unable to retrieve scan results", pRadio->Name);
+        }
         wld_scan_cleanupScanResults(&scanRes);
     }
 
-    amxd_function_deferred_done(g_neighboringWiFiDiagnosticID, amxd_status_ok, NULL, &retMap);
+    amxd_function_deferred_done(g_neighWiFiDiag.call_id, amxd_status_ok, NULL, &retMap);
     amxc_var_clean(&retMap);
-    g_neighboringWiFiDiagnosticID = 0;         // reset call id
-    g_neighboringWiFiDiagnosticStatus = false; // reset status
+
+    g_neighWiFiDiag.call_id = 0;
+    wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
+    amxc_llist_clean(&g_neighWiFiDiag.completedRads, amxc_string_list_it_free);
+    amxc_llist_clean(&g_neighWiFiDiag.canceledRads, amxc_string_list_it_free);
+    amxc_llist_clean(&g_neighWiFiDiag.failedRads, amxc_string_list_it_free);
 
     SAH_TRACEZ_OUT(ME);
 }
 
-void wld_scan_diagNotifyRadDone(bool success) {
-    if(success) {
-        g_neighboringWiFiDiagnosticStatus = success;
-    }
-
-    /* Send the Neighboring WiFi Diagnostic Result list */
-    if(!wld_isAnyRadioRunningScan()) {
-        s_sendNeighboringWifiDiagnositResult();
-    }
-}
-
-amxd_status_t _neighboringWiFiDiagnostic(amxd_object_t* pWifiObj,
+amxd_status_t _NeighboringWiFiDiagnostic(amxd_object_t* pWifiObj,
                                          amxd_function_t* func,
-                                         amxc_var_t* args,
+                                         amxc_var_t* args _UNUSED,
                                          amxc_var_t* retval) {
 
     SAH_TRACEZ_IN(ME);
 
-    g_neighboringWiFiDiagnosticID = amxc_var_dyncast(uint64_t, retval);
-
-    char* path = amxd_object_get_path(pWifiObj, AMXD_OBJECT_NAMED);
-    SAH_TRACEZ_INFO(ME, "instance object(%p:%s:%s)", pWifiObj, amxd_object_get_name(pWifiObj, AMXD_OBJECT_NAMED), path);
-
-    amxd_status_t status = amxd_status_ok;
-
-    // Step 1 Launch scan:
-    T_Radio* pRadio = NULL;
-    wld_for_eachRad(pRadio) {
-
-        if(pRadio->status == RST_UP) {
-            status = _startScan(pRadio->pBus, func, args, retval);
-
-            if(status != amxd_status_ok) {
-                pRadio->radScanStatus = WLD_RAD_SCAN_STATUS_FAILED;
-            }
-            SAH_TRACEZ_INFO(ME, "Scan for (%s) %s", pRadio->Name, (status == amxd_status_ok) ? "is correctely launched" : "is not launched");
-
-        } else {
-            pRadio->radScanStatus = WLD_RAD_SCAN_STATUS_DISABLED;
-        }
+    if(g_neighWiFiDiag.call_id != 0) {
+        SAH_TRACEZ_ERROR(ME, "WiFiDiagnostic is already running");
+        goto error;
     }
 
-    amxd_function_defer(func, &g_neighboringWiFiDiagnosticID, retval, NULL, NULL);
+    amxc_llist_init(&g_neighWiFiDiag.runningRads);
+    amxc_llist_init(&g_neighWiFiDiag.completedRads);
+    amxc_llist_init(&g_neighWiFiDiag.canceledRads);
+    amxc_llist_init(&g_neighWiFiDiag.failedRads);
 
+    amxd_status_t status = amxd_status_ok;
+    amxc_var_t localArgs;
+    amxc_var_init(&localArgs);
+    amxc_var_set_type(&localArgs, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &localArgs, "scanReason", DIAG_SCAN_REASON);
+    wld_event_add_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
+    // use radio obj instances order (isof radio device detection order)
+    amxd_object_t* radTempl = amxd_object_get(pWifiObj, "Radio");
+    amxd_object_for_each(instance, it, radTempl) {
+        amxd_object_t* radObj = amxc_llist_it_get_data(it, amxd_object_t, it);
+        if((radObj == NULL) || (radObj->priv == NULL)) {
+            continue;
+        }
+        T_Radio* pRadio = radObj->priv;
+        status = _startScan(pRadio->pBus, func, &localArgs, retval);
+        if(status != amxd_status_deferred) {
+            amxc_llist_add_string(&g_neighWiFiDiag.failedRads, pRadio->Name);
+        }
+    }
+    amxc_var_clean(&localArgs);
+    if(!amxc_llist_is_empty(&g_neighWiFiDiag.runningRads)) {
+        amxd_function_defer(func, &g_neighWiFiDiag.call_id, retval, NULL, NULL);
+        SAH_TRACEZ_OUT(ME);
+        return amxd_status_deferred;
+    }
+    wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
+error:
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    s_addDiagRadiosStatusToMap(retval);
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_deferred;
+    return amxd_status_ok;
 }
+

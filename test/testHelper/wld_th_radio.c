@@ -223,4 +223,22 @@ void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit) {
     }
 }
 
+int wld_th_rad_startScanExt(T_Radio* rad, T_ScanArgs* args _UNUSED) {
+    assert_non_null(rad);
+    return SWL_RC_OK;
+}
+
+int wld_th_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {
+    assert_non_null(pRad);
+    assert_non_null(results);
+    amxc_llist_for_each(it, &pRad->scanState.lastScanResults.ssids) {
+        T_ScanResult_SSID* pResult = amxc_container_of(it, T_ScanResult_SSID, it);
+        T_ScanResult_SSID* pCopy = calloc(1, sizeof(T_ScanResult_SSID));
+        assert_non_null(pCopy);
+        memcpy(pCopy, pResult, sizeof(*pCopy));
+        amxc_llist_it_init(&pCopy->it);
+        amxc_llist_append(&results->ssids, &pCopy->it);
+    }
+    return SWL_RC_OK;
+}
 

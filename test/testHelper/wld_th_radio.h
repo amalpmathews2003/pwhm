@@ -86,4 +86,6 @@ int wld_th_rad_enable(T_Radio* rad, int val, int set);
 
 
 void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit);
+int wld_th_rad_startScanExt(T_Radio* rad, T_ScanArgs* args);
+int wld_th_rad_getScanResults(T_Radio* rad, T_ScanResults* results);
 #endif
