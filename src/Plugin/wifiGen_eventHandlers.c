@@ -268,6 +268,49 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     }
 }
 
+static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
+    T_Radio* pRad = (T_Radio*) priv;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(results, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: rc:%d nResults:%zu", pRad->Name, rc, amxc_llist_size(&results->ssids));
+    if(rc < SWL_RC_OK) {
+        wld_scan_done(pRad, false);
+        return;
+    }
+    wld_scan_cleanupScanResults(&pRad->scanState.lastScanResults);
+    amxc_llist_for_each(it, &results->ssids) {
+        T_ScanResult_SSID* pResult = amxc_container_of(it, T_ScanResult_SSID, it);
+        SAH_TRACEZ_INFO(ME, "scan result entry: bssid("SWL_MAC_FMT ") ssid(%s) signal(%d dbm)",
+                        SWL_MAC_ARG(pResult->bssid.bMac), pResult->ssid, pResult->rssi);
+        amxc_llist_it_take(&pResult->it);
+        amxc_llist_append(&pRad->scanState.lastScanResults.ssids, &pResult->it);
+    }
+    wld_scan_done(pRad, true);
+}
+
+static void s_scanDoneCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED, uint32_t ifIndex _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "scan done on wiphy:%d iface:%d", wiphy, ifIndex);
+    T_Radio* pRad = (T_Radio*) pRef;
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTW_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: getting scan async results", pRad->Name);
+    wld_rad_nl80211_getScanResults(pRad, pRad, s_scanResultsCb);
+}
+
+static void s_scanAbortedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED, uint32_t ifIndex _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "scan aborted on wiphy:%d iface:%d", wiphy, ifIndex);
+    T_Radio* pRad = (T_Radio*) pRef;
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTW_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
+    wld_scan_done(pRad, false);
+}
+
+static void s_scanStartedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED, uint32_t ifIndex _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "scan started on wiphy:%d iface:%d", wiphy, ifIndex);
+    T_Radio* pRad = (T_Radio*) pRef;
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+}
+
 swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pRad->hostapd, SWL_RC_ERROR, ME, "NULL");
@@ -279,6 +322,9 @@ swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     //Set here the nl80211 RAD event handlers
     nl80211RadEvtHandlers.fNewInterfaceCb = s_newInterfaceCb;
     nl80211RadEvtHandlers.fDelInterfaceCb = s_delInterfaceCb;
+    nl80211RadEvtHandlers.fScanStartedCb = s_scanStartedCb;
+    nl80211RadEvtHandlers.fScanAbortedCb = s_scanAbortedCb;
+    nl80211RadEvtHandlers.fScanDoneCb = s_scanDoneCb;
     wld_rad_nl80211_setEvtListener(pRad, NULL, &nl80211RadEvtHandlers);
 
     return SWL_RC_OK;

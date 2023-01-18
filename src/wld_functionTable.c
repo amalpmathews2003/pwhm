@@ -79,18 +79,24 @@ static void TRAP_mfn_wrad_destroy_hook(T_Radio* rad) {
     // Ignore silently. Destructor hooks are optional.
 }
 
-static int TRAP_mfn_wrad_scan_results(T_Radio* rad, T_ScanResults* results) {
+static swl_rc_ne TRAP_mfn_wrad_scan_results(T_Radio* rad, T_ScanResults* results) {
     _UNUSED_(rad);
     _UNUSED_(results);
     SAH_TRACEZ_NOTICE(ME, "%p, %p", rad, results);
-    return -1;
+    return SWL_RC_ERROR;
 }
 
-static int TRAP_mfn_wrad_start_scan_ext(T_Radio* rad, T_ScanArgs* args) {
+static swl_rc_ne TRAP_mfn_wrad_start_scan_ext(T_Radio* rad, T_ScanArgs* args) {
     _UNUSED_(rad);
     _UNUSED_(args);
     SAH_TRACEZ_NOTICE(ME, "%p, %p", rad, args);
-    return WLD_ERROR_NOT_IMPLEMENTED;
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_stop_scan(T_Radio* rad) {
+    _UNUSED_(rad);
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
+    return SWL_RC_ERROR;
 }
 
 static int TRAP_mfn_wrad_addVapExt(T_Radio* rad, T_AccessPoint* ap) {
@@ -191,8 +197,6 @@ DEF_TRAP_char_int_int(T_Radio, mfn_wrad_extchan);
 DEF_TRAP_char_int_int(T_Radio, mfn_wrad_guardintval);
 DEF_TRAP_char_int_int(T_Radio, mfn_wrad_mcs);
 DEF_TRAP_char_int_int(T_Radio, mfn_wrad_regdomain);
-DEF_TRAP(T_Radio, mfn_wrad_start_scan);
-DEF_TRAP(T_Radio, mfn_wrad_stop_scan);
 DEF_TRAP(T_Radio, mfn_wrad_radio_status);
 DEF_TRAP(T_Radio, mfn_wrad_maxbitrate);
 DEF_TRAP(T_Radio, mfn_wrad_fsm_state);
@@ -579,7 +583,6 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_latest_power);
     FTA_ASSIGN(mfn_wrad_sync);
     FTA_ASSIGN(mfn_wrad_getspectruminfo);
-    FTA_ASSIGN(mfn_wrad_start_scan);
     FTA_ASSIGN(mfn_wrad_start_scan_ext);
     FTA_ASSIGN(mfn_wrad_stop_scan);
     FTA_ASSIGN(mfn_wrad_scan_results);
@@ -658,9 +661,5 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wendpoint_set_mac_address);
 
     FTA_ASSIGN(mfn_wvap_request_rrm_report);
-}
-
-bool wld_functionTable_hasVendorScanExt(T_Radio* pRad) {
-    return pRad->pFA->mfn_wrad_start_scan_ext != TRAP_mfn_wrad_start_scan_ext;
 }
 

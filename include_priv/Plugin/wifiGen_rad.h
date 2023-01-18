@@ -84,5 +84,8 @@ int wifiGen_rad_ochbw(T_Radio* pRad, int val, int set);
 void wifiGen_rad_initBands(T_Radio* pRad);
 swl_rc_ne wifiGen_rad_stats(T_Radio* pRad);
 int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad);
+swl_rc_ne wifiGen_rad_startScanExt(T_Radio* pRad, T_ScanArgs* args);
+swl_rc_ne wifiGen_rad_stopScan(T_Radio* pRad);
+swl_rc_ne wifiGen_rad_getScanResults(T_Radio* rad, T_ScanResults* results);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_RAD_H_ */

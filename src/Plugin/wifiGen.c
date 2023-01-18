@@ -107,6 +107,9 @@ bool wifiGen_init() {
     fta.mfn_wrad_ochbw = wifiGen_rad_ochbw;
     fta.mfn_wrad_stats = wifiGen_rad_stats;
     fta.mfn_wrad_fsm_delay_commit = wifiGen_rad_delayedCommitUpdate;
+    fta.mfn_wrad_start_scan_ext = wifiGen_rad_startScanExt;
+    fta.mfn_wrad_stop_scan = wifiGen_rad_stopScan;
+    fta.mfn_wrad_scan_results = wifiGen_rad_getScanResults;
 
     //vap functions
     fta.mfn_wvap_create_hook = wifiGen_vap_createHook;

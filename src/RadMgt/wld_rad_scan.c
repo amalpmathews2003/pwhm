@@ -262,7 +262,19 @@ static amxd_status_t _startScan(amxd_object_t* object,
     char* reason = NULL;
 
     if(wld_scan_isRunning(pR)) {
-        SAH_TRACEZ_ERROR(ME, "A scan is already running");
+        SAH_TRACEZ_ERROR(ME, "%s: scan is already running", pR->Name);
+        goto error;
+    }
+
+    if(!wld_rad_isUpExt(pR)) {
+        SAH_TRACEZ_ERROR(ME, "%s: rad not ready for scan (state:%s)",
+                         pR->Name, cstr_chanmgt_rad_state[pR->detailedState]);
+        goto error;
+    }
+
+    if(pR->scanState.scanType != SCAN_TYPE_NONE) {
+        SAH_TRACEZ_ERROR(ME, "%s: rad has ongoing scan type(%d)",
+                         pR->Name, pR->scanState.scanType);
         goto error;
     }
 
@@ -297,7 +309,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
         }
 
         swl_str_copy(scanArgs.ssid, SSID_NAME_LEN, ssid);
-        scanArgs.ssid_len = len;
+        scanArgs.ssidLen = len;
         extendedScanRequired = true;
     }
     wld_scan_type_e type = SCAN_TYPE_INTERNAL;
@@ -320,9 +332,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
     }
 
     if(scanArgs.fastScan) {
-        if(wld_functionTable_hasVendorScanExt(pR)) {
-            extendedScanRequired = true;
-        }
+        extendedScanRequired = true;
     }
 
     if((pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_ALL)
@@ -336,10 +346,8 @@ static amxd_status_t _startScan(amxd_object_t* object,
 
     if(extendedScanRequired) {
         scanArgs.reason = reason;
-        error = pR->pFA->mfn_wrad_start_scan_ext(pR, &scanArgs);
-    } else {
-        error = pR->pFA->mfn_wrad_start_scan(pR);
     }
+    error = pR->pFA->mfn_wrad_start_scan_ext(pR, extendedScanRequired ? &scanArgs : NULL);
 
     if(error < 0) {
         goto error;

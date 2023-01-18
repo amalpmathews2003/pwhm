@@ -1121,6 +1121,44 @@ typedef struct {
     amxc_llist_it_t it;
 } wld_brief_stats_t;
 
+typedef struct {
+    uint8_t ssidLen;
+    uint8_t ssid[SSID_NAME_LEN];
+    swl_macBin_t bssid;
+    int32_t snr;
+    int32_t noise;
+    int32_t rssi;
+    int32_t channel;
+    int32_t centreChannel;
+    int32_t bandwidth;
+
+    // Not always filled in. In that case it is 0.
+    swl_radioStandard_m operatingStandards;
+
+    swl_security_apMode_e secModeEnabled;
+    swl_wps_cfgMethod_m WPS_ConfigMethodsEnabled;
+    bool hasActiveWpsRegistrar;
+    bool adhoc;
+    int32_t linkrate;
+    swl_security_encMode_e encryptionMode;
+
+    amxc_llist_it_t it;
+} T_ScanResult_SSID;
+
+typedef struct {
+    amxc_llist_t ssids;
+} T_ScanResults;
+
+typedef struct {
+    char ssid[SSID_NAME_LEN];
+    int ssidLen;
+    uint8_t chanlist[WLD_MAX_POSSIBLE_CHANNELS];
+    int chanCount;
+    bool updateUsageStats;
+    bool fastScan;
+    const char* reason;
+} T_ScanArgs;
+
 #define SCAN_REASON_MAX 5
 
 typedef struct {
@@ -1150,6 +1188,7 @@ typedef struct {
     wld_scan_stats_t stats;
     wld_scan_config_t cfg;
     swl_timeMono_t lastScanTime;
+    T_ScanResults lastScanResults;
 } T_ScanState;
 
 typedef struct {
@@ -1514,16 +1553,6 @@ struct S_SSID {
 };
 
 typedef struct {
-    char ssid[SSID_NAME_LEN];
-    int ssidLen;
-    uint8_t chanlist[WLD_MAX_POSSIBLE_CHANNELS];
-    int chanCount;
-    bool updateUsageStats;
-    bool fastScan;
-    const char* reason;
-} T_ScanArgs;
-
-typedef struct {
     int enable;                         /* Enable/Disable HotSpot2.0 */
     bool dgaf_disable;
     bool l2_traffic_inspect;
@@ -1863,34 +1892,6 @@ typedef struct {
     uint16_t maxTxStream;
 } T_EndPointStats;
 
-typedef struct {
-    uint8_t ssidLen;
-    uint8_t ssid[SSID_NAME_LEN];
-    swl_macBin_t bssid;
-    int32_t snr;
-    int32_t noise;
-    int32_t rssi;
-    int32_t channel;
-    int32_t centreChannel;
-    int32_t bandwidth;
-
-    // Not always filled in. In that case it is 0.
-    swl_radioStandard_m operatingStandards;
-
-    swl_security_apMode_e secModeEnabled;
-    swl_wps_cfgMethod_m WPS_ConfigMethodsEnabled;
-    bool hasActiveWpsRegistrar;
-    bool adhoc;
-    int32_t linkrate;
-    swl_security_encMode_e encryptionMode;
-
-    amxc_llist_it_t it;
-} T_ScanResult_SSID;
-
-typedef struct {
-    amxc_llist_t ssids;
-} T_ScanResults;
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -1910,10 +1911,9 @@ typedef int (APIENTRY* PFN_WRAD_ADDENDPOINTIF)(T_Radio* rad, char* endpoint, int
 typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);
 
 typedef amxd_status_t (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, uint64_t call_id, amxc_var_t* retval);
-typedef int (APIENTRY* PFN_WRAD_START_SCAN)(T_Radio* rad);
-typedef int (APIENTRY* PFN_WRAD_START_SCAN_EXT)(T_Radio* rad, T_ScanArgs* args);
-typedef int (APIENTRY* PFN_WRAD_STOP_SCAN)(T_Radio* rad);
-typedef int (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, T_ScanResults* results);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_START_SCAN_EXT)(T_Radio* rad, T_ScanArgs* args);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_STOP_SCAN)(T_Radio* rad);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, T_ScanResults* results);
 
 /* Our common function table that all VENDOR WIFI drivers must be able to handle... */
 
@@ -2217,7 +2217,6 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_SYNC_EP mfn_sync_ep;                             /**< Resync data with our internal EndPoint structure */
 
     PFN_WRAD_GETSPECTRUMINFO mfn_wrad_getspectruminfo;
-    PFN_WRAD_START_SCAN mfn_wrad_start_scan;
     PFN_WRAD_START_SCAN_EXT mfn_wrad_start_scan_ext;
     PFN_WRAD_STOP_SCAN mfn_wrad_stop_scan;
     PFN_WRAD_SCAN_RESULTS mfn_wrad_scan_results;
@@ -2317,7 +2316,6 @@ const swl_macBin_t* wld_getWanAddr();
 extern T_CONST_WPS g_wpsConst;
 
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta);
-bool wld_functionTable_hasVendorScanExt(T_Radio* pRad);
 
 T_Radio* wld_firstRad();
 T_Radio* wld_nextRad(T_Radio* pRad);

@@ -440,6 +440,7 @@ void wld_deleteRadioObj(T_Radio* pRad) {
 
     free(pRad->scanState.cfg.fastScanReasons);
     pRad->scanState.cfg.fastScanReasons = NULL;
+    wld_scan_cleanupScanResults(&pRad->scanState.lastScanResults);
 
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pRad->pFA, , ME, "NULL");
