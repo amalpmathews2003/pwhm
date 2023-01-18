@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.14.1 - 2023-01-18(09:51:14 +0000)
+
+### Other
+
+- - RssiMonitoring issues fixed
+
 ## Release v2.14.0 - 2023-01-17(11:01:08 +0000)
 
 ### Other
