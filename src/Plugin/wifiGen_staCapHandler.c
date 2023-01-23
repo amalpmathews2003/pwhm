@@ -76,6 +76,9 @@ static void s_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_cap
     cap->htCapabilities = pWirelessDevIE->htCapabilities;
     cap->vhtCapabilities = pWirelessDevIE->vhtCapabilities;
     cap->heCapabilities = pWirelessDevIE->heCapabilities;
+    cap->rrmCapabilities = pWirelessDevIE->rrmCapabilities;
+    cap->rrmOnChannelMaxDuration = pWirelessDevIE->rrmOnChannelMaxDuration;
+    cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;
 }
 
 static swl_rc_ne s_processAssocFrame(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* data, size_t len) {

@@ -78,7 +78,7 @@
 
 typedef struct {
     amxc_llist_it_t it;
-    unsigned char mac[ETHER_ADDR_STR_LEN];
+    swl_macChar_t mac;
     int timeout;
     uint8_t token;
     amxc_var_t* result_list;
@@ -89,21 +89,6 @@ typedef struct {
 
 amxc_llist_t rrm_wait_list;
 
-/**
- * Callback function for vendor plug-ins to indicate a given mac provided a reply.
- * Reply code should come from 802.11v request
- */
-void wld_ap_rrm_item(T_AccessPoint* ap, const unsigned char* mac, amxc_var_t* result) {
-    SAH_TRACEZ_INFO(ME, "rrm data %s %s", ap->alias, mac);
-    amxc_llist_it_t* it;
-    amxc_llist_for_each(it, &rrm_wait_list) {
-        rrm_wait_t* wait = amxc_llist_it_get_data(it, rrm_wait_t, it);
-        if((wait->ap == ap) && (strncasecmp((char*) mac, (char*) wait->mac, ETHER_ADDR_STR_LEN) == 0)) {
-            amxc_var_add(amxc_htable_t, wait->result_list, amxc_var_get_amxc_htable_t(result));
-            return;
-        }
-    }
-}
 
 /**
  * Timeout handler for bss transfer frame retry.
@@ -113,10 +98,31 @@ static void rrm_timeout_handler(amxp_timer_t* timer _UNUSED, void* userdata) {
     rrm_wait_t* wait_item = (rrm_wait_t*) userdata;
     amxc_llist_it_take(&wait_item->it);
     amxp_timer_delete(&wait_item->timer);
-    SAH_TRACEZ_INFO(ME, "Ret %s : %zu items", wait_item->mac, amxc_llist_size(amxc_var_get_const_amxc_llist_t(wait_item->result_list)));
+    SAH_TRACEZ_INFO(ME, "Ret %s : %zu items", wait_item->mac.cMac, amxc_llist_size(amxc_var_get_const_amxc_llist_t(wait_item->result_list)));
     amxd_function_deferred_done(wait_item->call_id, amxd_status_ok, NULL, wait_item->result_list);
     amxc_var_delete(&wait_item->result_list);
     free(wait_item);
+}
+
+/**
+ * Callback function for vendor plug-ins to indicate a given mac provided a reply.
+ * Reply code should come from 802.11v request
+ */
+void wld_ap_rrm_item(T_AccessPoint* ap, const swl_macChar_t* mac, amxc_var_t* result) {
+    SAH_TRACEZ_INFO(ME, "rrm data %s %s", ap->alias, mac->cMac);
+    amxc_llist_it_t* it;
+    amxc_llist_for_each(it, &rrm_wait_list) {
+        rrm_wait_t* wait = amxc_llist_it_get_data(it, rrm_wait_t, it);
+        if((wait->ap == ap) && swl_mac_charMatches(mac, &wait->mac)) {
+            if(result) {
+                amxc_var_add(amxc_htable_t, wait->result_list, amxc_var_get_amxc_htable_t(result));
+                amxp_timer_start(wait->timer, 300);
+                return;
+            } else {
+                rrm_timeout_handler(wait->timer, wait);
+            }
+        }
+    }
 }
 
 amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
@@ -129,6 +135,9 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
 
     SAH_TRACEZ_IN(ME);
 
+    wld_rrmReq_t reqCall;
+    memset(&reqCall, 0, sizeof(reqCall));
+
     const char* macStr = GET_CHAR(args, "mac");
     ASSERTS_NOT_NULL(macStr, amxd_status_invalid_function_argument, ME, "NULL");
 
@@ -138,22 +147,38 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
         bssid = SWL_MAC_CHAR_BCAST;
     }
 
-    amxc_var_t* class = amxc_var_get_key(args, "class", AMXC_VAR_FLAG_DEFAULT);
-    uint32_t operClass = (class == NULL) ? 0 : amxc_var_dyncast(uint32_t, class);
+    swl_mac_charToStandard(&reqCall.bssid, bssid);
+    swl_str_copy(reqCall.ssid, SSID_NAME_LEN, ssid);
 
-    amxc_var_t* channelVar = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
-    uint32_t channel = (channelVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, channelVar);
+    amxc_var_t* tpVar = amxc_var_get_key(args, "class", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.operClass = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
 
-    amxc_var_t* timeoutVar = amxc_var_get_key(args, "wait", AMXC_VAR_FLAG_DEFAULT);
-    uint32_t timeout = (timeoutVar == NULL) ? 1000 : amxc_var_dyncast(uint32_t, timeoutVar);
+    tpVar = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.channel = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
+
+    tpVar = amxc_var_get_key(args, "timeout", AMXC_VAR_FLAG_DEFAULT);
+    uint32_t timeout = (tpVar == NULL) ? 1000 : amxc_var_dyncast(uint32_t, tpVar);
+
+    tpVar = amxc_var_get_key(args, "mode", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.mode = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
+
+    tpVar = amxc_var_get_key(args, "modeMask", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.modeMask = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
+
+    tpVar = amxc_var_get_key(args, "token", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.token = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
+
+    tpVar = amxc_var_get_key(args, "duration", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.duration = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint16_t, tpVar);
+
+    tpVar = amxc_var_get_key(args, "interval", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.interval = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint16_t, tpVar);
 
     amxd_status_t status = amxd_status_ok;
 
-    swl_macChar_t cBssid;
     swl_macChar_t cStation;
-    swl_mac_charToStandard(&cBssid, bssid);
     swl_mac_charToStandard(&cStation, macStr);
-    swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_request_rrm_report(pAP, &cStation, operClass, (swl_channel_t) channel, &cBssid, ssid);
+    swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_request_rrm_report(pAP, &cStation, &reqCall);
 
     if(cmdRetval == SWL_RC_NOT_IMPLEMENTED) {
         SAH_TRACEZ_ERROR(ME, "Function not supported");
@@ -167,7 +192,7 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
         ASSERT_NOT_NULL(wait_item, amxd_status_out_of_mem, ME, "NULL");
 
         wait_item->ap = pAP;
-        wldu_copyStr((char*) wait_item->mac, macStr, ETHER_ADDR_STR_LEN);
+        swl_mac_charToStandard(&wait_item->mac, macStr);
 
         amxc_var_new(&wait_item->result_list);
         amxc_var_set_type(wait_item->result_list, AMXC_VAR_ID_LIST);

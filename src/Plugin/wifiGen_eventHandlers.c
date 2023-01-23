@@ -392,7 +392,7 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
 
 static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
-    wld_ap_bss_done(pAP, (const unsigned char*) mac->cMac, (int) replyCode);
+    wld_ap_bss_done(pAP, mac, (int) replyCode);
 }
 
 static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t stype, char* data) {
@@ -452,7 +452,7 @@ static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin
     amxc_var_add_key(uint8_t, &retval, "Channel", rrmBeaconResponse->channel);
     amxc_var_add_key(uint8_t, &retval, "RCPI", rrmBeaconResponse->rcpi);
     amxc_var_add_key(uint8_t, &retval, "RSNI", rrmBeaconResponse->rsni);
-    wld_ap_rrm_item(pAP, (const unsigned char*) cStation.cMac, &retval);
+    wld_ap_rrm_item(pAP, &cStation, &retval);
     amxc_var_clean(&retval);
 }
 

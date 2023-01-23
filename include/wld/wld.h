@@ -113,6 +113,8 @@
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
 #include "wld_hostapd_cfgManager.h"
+#include "swl/swl_80211.h"
+#include "swl/swl_ieee802.h"
 
 #ifndef IFNAMSIZ
 #define IFNAMSIZ 16
@@ -736,14 +738,14 @@ typedef struct {
 } wld_sta_supMCS_adv_t;
 
 typedef struct {
-    char sta[ETHER_ADDR_STR_LEN];               /* MAC of the station to steer */
-    char targetBssid[ETHER_ADDR_STR_LEN];       /* Bss transition request's target BSSID */
-    int operClass;                              /* Operating class of target AP */
-    int channel;                                /* Channel of target AP */
-    int validity;                               /* Timer of the bss request validity */
-    int disassoc;                               /* Timer before device disassociation */
-    uint32_t bssidInfo;                         /* BSSID Info data */
-    int transitionReason;                       /* MBO Transition reason */
+    swl_macChar_t sta;                   /* MAC of the station to steer */
+    swl_macChar_t targetBssid;           /* Bss transition request's target BSSID */
+    swl_operatingClass_t operClass;      /* Operating class of target AP */
+    swl_channel_t channel;               /* Channel of target AP */
+    int validity;                        /* Timer of the bss request validity */
+    int disassoc;                        /* Timer before device disassociation */
+    uint32_t bssidInfo;                  /* BSSID Info data */
+    int transitionReason;                /* MBO Transition reason */
 } wld_transferStaArgs_t;
 
 typedef struct {
@@ -759,10 +761,13 @@ typedef struct {
     wld_enc_modes_e encryptMode;
     swl_bandwidth_e linkBandwidth;
 
-    swl_staCapHt_m htCapabilities;   /* bitmap of HT (11n) SGI, MU and beamforming capabilities */
-    swl_staCapVht_m vhtCapabilities; /* bitmap of VHT (11ac) SGI, MU and beamforming capabilities */
-    swl_staCapHe_m heCapabilities;   /* bitmap of VHT (11ax) SGI, MU and beamforming capabilities */
-    swl_freqBandExt_m freqCapabilities;
+    swl_staCapHt_m htCapabilities;      /* bitmap of HT (11n) SGI, MU and beamforming capabilities */
+    swl_staCapVht_m vhtCapabilities;    /* bitmap of VHT (11ac) SGI, MU and beamforming capabilities */
+    swl_staCapHe_m heCapabilities;      /* bitmap of HE (11ax) SGI, MU and beamforming capabilities */
+    swl_staCapRrm_m rrmCapabilities;    /* bitmap of RRM Enabled Capabilties */
+    uint32_t rrmOnChannelMaxDuration;   /* Operating Channel Max Measurement Duration */
+    uint32_t rrmOffChannelMaxDuration;  /* NonOperating Channel Max Measurement Duration */
+    swl_freqBandExt_m freqCapabilities; /* Frequency Capabilities */
 } wld_assocDev_capabilities_t;
 
 #define X_WLD_STA_HISTORY(X, Y) \
@@ -1997,6 +2002,17 @@ typedef struct {
     double power_value[MAX_NR_ANTENNA];
     uint16_t nr_antenna;
 } T_ANTENNA_POWER;
+typedef struct {
+    uint8_t token;
+    uint16_t duration;
+    uint16_t interval;
+    swl_ieee802_rrmReqMode_m modeMask;
+    swl_ieee802_rrmBeaconReqMode_e mode;
+    swl_operatingClass_t operClass;
+    swl_channel_t channel;
+    swl_macChar_t bssid;
+    char ssid[SSID_NAME_LEN];
+} wld_rrmReq_t;
 typedef int (APIENTRY* PFN_WRAD_PER_ANTENNA_RSSI)(T_Radio* rad, T_ANTENNA_RSSI*);
 typedef int (APIENTRY* PFN_WRAD_LATEST_POWER)(T_Radio* rad, T_ANTENNA_POWER*);
 typedef int (APIENTRY* PFN_WRAD_UPDATE_CHANINFO)(T_Radio* rad);
@@ -2030,8 +2046,8 @@ typedef int (APIENTRY* PFN_WVAP_KICK_STA)(T_AccessPoint* vap, char* buf, int buf
 typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, int bufsize, int reason);
 typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA)(T_AccessPoint* vap, char* sta, char* bssid, int operClass, int channel);
 typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA_EXT)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
-typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, int operClass, swl_channel_t channel, const swl_macChar_t* bssid, const char* ssid);
 typedef int (APIENTRY* PFN_WVAP_SEND_PUBLIC_ACTION)(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef int (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_SET_AP_ROLE)(T_AccessPoint* vap);

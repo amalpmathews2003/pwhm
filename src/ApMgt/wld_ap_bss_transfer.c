@@ -108,14 +108,12 @@ static void ap_bss_done(bss_wait_t* wait, int reply_code) {
  * Callback function for vendor plug-ins to indicate a given mac provided a reply.
  * Reply code should come from 802.11v request
  */
-void wld_ap_bss_done(T_AccessPoint* ap, const unsigned char* mac, int reply_code) {
-    char macStr[ETHER_ADDR_STR_LEN];
-    mac2str(macStr, mac, ETHER_ADDR_STR_LEN);
-    SAH_TRACEZ_INFO(ME, "bss done %s", macStr);
+void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code) {
+    SAH_TRACEZ_INFO(ME, "bss done %s", mac->cMac);
     amxc_llist_it_t* it;
     amxc_llist_for_each(it, &bss_wait_list) {
         bss_wait_t* wait = amxc_llist_it_get_data(it, bss_wait_t, it);
-        if((wait->ap == ap) && (strncasecmp(macStr, (char*) wait->params.sta, ETHER_ADDR_STR_LEN) == 0)) {
+        if((wait->ap == ap) && swl_mac_charMatches(mac, &wait->params.sta)) {
             ap_bss_done(wait, reply_code);
             return;
         }
@@ -130,14 +128,14 @@ static void bss_tranfer_timeout_handler(amxp_timer_t* timer _UNUSED, void* userd
     bss_wait_t* wait_item = (bss_wait_t*) userdata;
     int cmdRetval = WLD_ERROR;
     if(wait_item->retries > wait_item->done_retries) {
-        SAH_TRACEZ_INFO(ME, "retry %s %s %u / %u", wait_item->ap->alias, wait_item->params.sta, wait_item->done_retries, wait_item->retries);
+        SAH_TRACEZ_INFO(ME, "retry %s %s %u / %u", wait_item->ap->alias, wait_item->params.sta.cMac, wait_item->done_retries, wait_item->retries);
         wait_item->done_retries++;
         cmdRetval = wait_item->ap->pFA->mfn_wvap_transfer_sta_ext(wait_item->ap, &wait_item->params);
         if(cmdRetval == WLD_ERROR_NOT_IMPLEMENTED) {
             wait_item->ap->pFA->mfn_wvap_transfer_sta(
                 wait_item->ap,
-                wait_item->params.sta,
-                wait_item->params.targetBssid,
+                wait_item->params.sta.cMac,
+                wait_item->params.targetBssid.cMac,
                 wait_item->params.operClass,
                 wait_item->params.channel);
         }
@@ -164,24 +162,24 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     const char* mac = GET_CHAR(args, "mac");
     const char* bssid = GET_CHAR(args, "target");
 
-    int32_t ms_wait_time;
-    int32_t retries;
+    uint32_t ms_wait_time;
+    uint32_t retries;
 
     int cmdRetval = WLD_ERROR;
 
     wld_transferStaArgs_t params;
 
     amxc_var_t* operClass = amxc_var_get_key(args, "class", AMXC_VAR_FLAG_DEFAULT);
-    params.operClass = (operClass == NULL) ? 0 : amxc_var_dyncast(int32_t, operClass);
+    params.operClass = (operClass == NULL) ? 0 : amxc_var_dyncast(int8_t, operClass);
 
     amxc_var_t* channel = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
-    params.channel = (channel == NULL) ? 0 : amxc_var_dyncast(int32_t, channel);
+    params.channel = (channel == NULL) ? 0 : amxc_var_dyncast(int8_t, channel);
 
     amxc_var_t* ms_wait_timeVar = amxc_var_get_key(args, "wait", AMXC_VAR_FLAG_DEFAULT);
-    ms_wait_time = (ms_wait_timeVar == NULL) ? 0 : amxc_var_dyncast(int32_t, ms_wait_timeVar);
+    ms_wait_time = (ms_wait_timeVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, ms_wait_timeVar);
 
     amxc_var_t* retriesVar = amxc_var_get_key(args, "retries", AMXC_VAR_FLAG_DEFAULT);
-    retries = (retriesVar == NULL) ? 0 : amxc_var_dyncast(int32_t, retriesVar);
+    retries = (retriesVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, retriesVar);
 
     amxc_var_t* validity = amxc_var_get_key(args, "validity", AMXC_VAR_FLAG_DEFAULT);
     params.validity = (validity == NULL) ? 0 : amxc_var_dyncast(int32_t, validity);
@@ -201,15 +199,16 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
         goto end;
     }
 
-    snprintf(params.sta, sizeof(params.sta), "%s", mac);
-    snprintf(params.targetBssid, sizeof(params.targetBssid), "%s", bssid);
+    swl_typeMacChar_fromChar(&params.sta, mac);
+    swl_typeMacChar_fromChar(&params.targetBssid, bssid);
 
     SAH_TRACEZ_NOTICE(ME, "Steer %s @ %s 2 %s/%u:%u retry %u x %u ms",
-                      params.sta, pAP->alias, params.targetBssid, params.operClass, params.channel, retries, ms_wait_time);
+                      params.sta.cMac, pAP->alias, params.targetBssid.cMac,
+                      params.operClass, params.channel, retries, ms_wait_time);
 
     cmdRetval = pAP->pFA->mfn_wvap_transfer_sta_ext(pAP, &params);
     if(cmdRetval == WLD_ERROR_NOT_IMPLEMENTED) {
-        cmdRetval = pAP->pFA->mfn_wvap_transfer_sta(pAP, params.sta, params.targetBssid,
+        cmdRetval = pAP->pFA->mfn_wvap_transfer_sta(pAP, params.sta.cMac, params.targetBssid.cMac,
                                                     params.operClass, params.channel);
         SAH_TRACEZ_INFO(ME, "Extended Function not supported");
     }

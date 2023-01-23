@@ -101,11 +101,10 @@ static void test_getStats(void** state _UNUSED) {
     ttb_object_t* evObj = ttb_object_getChildObject(vapObj, "RssiEventing");
     assert_non_null(evObj);
 
+    s_checkHistory(vap, evObj, "historyEmpty.txt");
+
     assert_true(swl_typeUInt32_toObjectParam(evObj, "HistoryLen", 3));
     assert_true(swl_typeUInt32_toObjectParam(evObj, "Enable", 1));
-
-
-    s_checkHistory(vap, evObj, "historyEmpty.txt");
 
     amxd_object_t* templateObject = amxd_object_get(vapObj, "AssociatedDevice");
 
@@ -152,6 +151,7 @@ static void test_getStats(void** state _UNUSED) {
     pAD->probeReqCaps.htCapabilities = M_SWL_STACAP_HT_SGI20 | M_SWL_STACAP_HT_40MHZ;
     pAD->probeReqCaps.updateTime = swl_time_getMonoSec();
     ttb_amx_handleEvents();
+
     ttb_notifWatch_t* notWatch = ttb_notifWatch_createOnObject(dm.ttbBus, pAD->object);
 
     ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, vapObj, "getStationStats",

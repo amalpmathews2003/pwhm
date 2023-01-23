@@ -1257,6 +1257,10 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     amxd_trans_set_cstring_t(trans, "VhtCapabilities", amxc_string_get(&TBufStr, 0));
     bitmask_to_string(&TBufStr, swl_staCapHe_str, ',', caps->heCapabilities);
     amxd_trans_set_cstring_t(trans, "HeCapabilities", amxc_string_get(&TBufStr, 0));
+    bitmask_to_string(&TBufStr, swl_staCapRrm_str, ',', caps->rrmCapabilities);
+    amxd_trans_set_cstring_t(trans, "RrmCapabilities", amxc_string_get(&TBufStr, 0));
+    amxd_trans_set_uint32_t(trans, "RrmOnChannelMaxDuration", caps->rrmOnChannelMaxDuration);
+    amxd_trans_set_uint32_t(trans, "RrmOffChannelMaxDuration", caps->rrmOffChannelMaxDuration);
     char frequencyCapabilitiesStr[128] = {0};
     swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);
     amxd_trans_set_cstring_t(trans, "FrequencyCapabilities", frequencyCapabilitiesStr);

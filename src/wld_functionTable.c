@@ -329,8 +329,8 @@ static int TRAP_mfn_wvap_transfer_sta(T_AccessPoint* vap _UNUSED, char* sta _UNU
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wvap_transfer_sta_ext(T_AccessPoint* vap _UNUSED, wld_transferStaArgs_t* params _UNUSED) {
-    SAH_TRACEZ_NOTICE(ME, "%p %s %s %d %d %d %d", vap, params->sta, params->targetBssid,
+static int TRAP_mfn_wvap_transfer_sta_ext(T_AccessPoint* vap, wld_transferStaArgs_t* params) {
+    SAH_TRACEZ_NOTICE(ME, "%p %s %s %d %d %d %d", vap, params->sta.cMac, params->targetBssid.cMac,
                       params->operClass, params->channel, params->validity, params->disassoc);
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
@@ -340,7 +340,7 @@ static int TRAP_mfn_wvap_sendPublicAction(T_AccessPoint* vap, swl_macBin_t* sta,
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
 
-static swl_rc_ne TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap, const swl_macChar_t* sta, int operClass _UNUSED, swl_channel_t channel _UNUSED, const swl_macChar_t* bssid _UNUSED, const char* ssid _UNUSED) {
+static swl_rc_ne TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t* req _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p %p", vap, sta);
     return SWL_RC_NOT_IMPLEMENTED;
 }

@@ -2970,7 +2970,7 @@ define rrm_t{
 		 * If no measurement report was received, or the timeout was 0, then an empty list is returned.
 		 * @version 9.0
 		 */
-		list sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint32 class, %in uint32 channel, %in uint32 timeout, %in string ssid);
+		list sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint8 class, %in uint8 channel, %in uint32 timeout, %in string ssid, %in uint8 token, %in uint8 mode, %in uint8 modeMask, %in uint16 duration, %in uint16 interval);
 
 		/**
 		 * get the last assoc request sent by a station to a vap
@@ -4296,6 +4296,29 @@ define rrm_t{
 			%read-only string HeCapabilities;
 
 			/**
+			 * RRM Enabled Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "LINK", "NEIGHBOR", "PRALLAL", "REPEATED", "BEACON_ACTIVE",
+			 * "BEACON_PASSIVE", "BEACON_TABLE", "BEACON_COND", "FRAME",
+			 * "CHANNEL_LOAD", "NOISE_HISTOGRAM", "STATS", "LCI", "LCI_AZIMUTH"
+			 * "TSC", "TRSC", "AP_CHANNEL", "MIB", "PILOT", "TSF_OFFSET", "RCPI",
+			 * "RSNI", "ACCESS_DELAY", "ADMISS_CAPACITY", "ANTENNA", "FTM",
+			 * "CIVIC_LOCATION", "IDENT_LOCATION"
+			 */
+			%read-only string RrmCapabilities;
+
+			/**
+			 * RRM On-Channel Max Duration (in TU).
+			 */
+			%read-only uint32 RrmOnChannelMaxDuration;
+
+			/**
+			 * RRM Off-Channel Max Duration (in TU).
+			 * If 0, the STA does not support RM measurements on nonoperating channels.
+			 */
+			%read-only uint32 RrmOffChannelMaxDuration;
+
+			/**
 			 * Frequency Capabilities
 			 * Comma-separated list of strings.
 			 * It can be a single or combination of following values:
@@ -4411,6 +4434,29 @@ define rrm_t{
 				 * @version 9.2
 				 */
 				%read-only string HeCapabilities;
+
+				/**
+				 * RRM Enabled Capabilities of the associated device
+				 * It can be a single or combination of following values:
+				 * "LINK", "NEIGHBOR", "PRALLAL", "REPEATED", "BEACON_ACTIVE",
+				 * "BEACON_PASSIVE", "BEACON_TABLE", "BEACON_COND", "FRAME",
+				 * "CHANNEL_LOAD", "NOISE_HISTOGRAM", "STATS", "LCI", "LCI_AZIMUTH"
+				 * "TSC", "TRSC", "AP_CHANNEL", "MIB", "PILOT", "TSF_OFFSET", "RCPI",
+				 * "RSNI", "ACCESS_DELAY", "ADMISS_CAPACITY", "ANTENNA", "FTM",
+				 * "CIVIC_LOCATION", "IDENT_LOCATION"
+				 */
+				%read-only string RrmCapabilities;
+
+				/**
+				 * RRM On-Channel Max Duration (in TU).
+				 */
+				%read-only uint32 RrmOnChannelMaxDuration;
+
+				/**
+				 * RRM Off-Channel Max Duration (in TU).
+				 * If 0, the STA does not support RM measurements on nonoperating channels.
+				 */
+				%read-only uint32 RrmOffChannelMaxDuration;
 
 				/**
 				 * Frequency Capabilities

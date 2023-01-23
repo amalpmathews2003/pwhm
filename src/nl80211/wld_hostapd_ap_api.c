@@ -578,7 +578,7 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "%s: Send tranfer from %s to %s of %s", pR->Name, pAP->alias, params->targetBssid, params->sta);
+    SAH_TRACEZ_INFO(ME, "%s: Send tranfer from %s to %s of %s", pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac);
 
     char cmd[256] = {'\0'};
     snprintf(cmd, sizeof(cmd), "BSS_TM_REQ"
@@ -589,11 +589,11 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
              ",%u,%d,%d,%d"   //<bssidInfo>,<operClass>,<channel>,<phyType>
              " pref=1 abridged=1 disassoc_imminent=1"
              " mbo=%d:%d:%d"  //mbo=<reason>:<reassoc_delay>:<cell_pref>
-             , params->sta, params->disassoc, params->validity, params->targetBssid, params->bssidInfo, params->operClass, params->channel,
+             , params->sta.cMac, params->disassoc, params->validity, params->targetBssid.cMac, params->bssidInfo, params->operClass, params->channel,
              swl_chanspec_operClassToPhyMode(params->operClass), params->transitionReason, params->disassoc ? 100 : 0, 0);
 
     bool ret = s_sendHostapdCommand(pAP, cmd, "bss transition management");
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: btm from %s to %s of station %s failed", pR->Name, pAP->alias, params->targetBssid, params->sta);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: btm from %s to %s of station %s failed", pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac);
     return SWL_RC_OK;
 }
 

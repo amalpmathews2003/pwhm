@@ -259,8 +259,8 @@ int wifiGen_vap_sta_transfer_ext(T_AccessPoint* pAP, wld_transferStaArgs_t* para
 
 int wifiGen_vap_sta_transfer(T_AccessPoint* pAP, char* sta, char* bssid, int operClass, int channel) {
     wld_transferStaArgs_t params;
-    snprintf(params.sta, sizeof(params.sta), "%s", sta);
-    snprintf(params.targetBssid, sizeof(params.targetBssid), "%s", bssid);
+    swl_mac_charToStandard(&params.sta, sta);
+    swl_mac_charToStandard(&params.targetBssid, bssid);
     params.operClass = operClass;
     params.channel = channel;
     params.disassoc = 15;
@@ -392,8 +392,8 @@ swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad _UNUSED, T_AccessPoint* pAP) {
     return ret;
 }
 
-swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, int operClass, swl_channel_t channel, const swl_macChar_t* bssid, const char* ssid) {
-    SAH_TRACEZ_INFO(ME, "%s: send rrm to %s %u/%u %s %s", pAP->alias, sta->cMac, operClass, channel, bssid->cMac, ssid);
-    return wld_ap_hostapd_requestRRMReport(pAP, sta, RRM_DEFAULT_REQ_MODE, (uint8_t) operClass, channel, RRM_DEFAULT_RANDOM_INTERVAL,
-                                           RRM_DEFAULT_MEASUREMENT_DURATION, RRM_DEFAULT_MEASUREMENT_MODE, bssid, ssid);
+swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, wld_rrmReq_t* req) {
+    SAH_TRACEZ_INFO(ME, "%s: send rrm to %s %u/%u %s %s", pAP->alias, sta->cMac, req->operClass, req->channel, req->bssid.cMac, req->ssid);
+    return wld_ap_hostapd_requestRRMReport(pAP, sta, req->modeMask, req->operClass, req->channel, req->interval,
+                                           req->duration, req->mode, &req->bssid, req->ssid);
 }

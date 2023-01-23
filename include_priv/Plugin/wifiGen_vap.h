@@ -86,6 +86,6 @@ int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set);
 int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize, int reason);
 int wifiGen_vap_updateApStats(T_Radio* rad, T_AccessPoint* vap);
 swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad, T_AccessPoint* pAP);
-swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, int operClass, swl_channel_t channel, const swl_macChar_t* bssid, const char* ssid);
+swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, wld_rrmReq_t* req);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_VAP_H_ */
