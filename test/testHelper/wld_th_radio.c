@@ -74,7 +74,7 @@
 #include "wld.h"
 #include "wld_util.h"
 #include "wld_th_mockVendor.h"
-#include "test-toolbox/ttb_mockTimer.h"
+#include "test-toolbox/ttb.h"
 #include "wld_th_vap.h"
 #include "wld_th_ep.h"
 #include "wld_radio.h"
@@ -170,15 +170,7 @@ T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t*
     assert_true(ok);
 
     T_Radio* radio = wld_rad_get_radio(name);
-    char buffer[64];
-    snprintf(buffer, sizeof(buffer), "WiFi.Radio.wifi%d.", idx);
-
-    // wld itself chokes when the pcb object does not exist, so fail fast if that happens.
-    amxc_var_t ret;
-    amxc_var_init(&ret);
-
-    assert_int_equal(amxb_get(bus_ctx, buffer, INT32_MAX, &ret, 5), AMXB_STATUS_OK);
-    amxc_var_clean(&ret);
+    assert_non_null(radio);
 
     return radio;
 }
