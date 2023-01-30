@@ -1160,7 +1160,7 @@ struct wld_scanResults {
 
 struct wld_scanArgs {
     char ssid[SSID_NAME_LEN];
-    swl_macChar_t bssid;               /*particular BSSID MAC address to scan*/
+    swl_macBin_t bssid;               /*particular BSSID MAC address to scan*/
     int ssidLen;
     uint8_t chanlist[WLD_MAX_POSSIBLE_CHANNELS];
     int chanCount;
@@ -1188,6 +1188,7 @@ typedef struct {
     int32_t maxChannelsPerScan;
     wld_blockScanMode_e blockScanMode;
     char* fastScanReasons;
+    T_ScanArgs scanArguments;
 } wld_scan_config_t;
 
 typedef struct {

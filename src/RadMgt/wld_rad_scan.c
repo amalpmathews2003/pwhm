@@ -300,21 +300,21 @@ static amxd_status_t _startScan(amxd_object_t* object,
 
 
     bool extendedScanRequired = false;
-    T_ScanArgs scanArgs;
+    T_ScanArgs* scanArgs = &pR->scanState.cfg.scanArguments;
     size_t len = 0;
 
-    memset(&scanArgs, 0, sizeof(T_ScanArgs));
+    memset(scanArgs, 0, sizeof(T_ScanArgs));
 
     if(channels != NULL) {
         // chanlist must have at most nrPossible elements,
         // otherwise there will be elements that are not part of possible channels.
-        len = swl_type_arrayFromChar(swl_type_uint8, scanArgs.chanlist, WLD_MAX_POSSIBLE_CHANNELS, channels);
-        if(!wld_rad_isChannelSubset(pR, scanArgs.chanlist, len) || (len == 0)) {
+        len = swl_type_arrayFromChar(swl_type_uint8, scanArgs->chanlist, WLD_MAX_POSSIBLE_CHANNELS, channels);
+        if(!wld_rad_isChannelSubset(pR, scanArgs->chanlist, len) || (len == 0)) {
             SAH_TRACEZ_ERROR(ME, "%s: Invalid Channel list", pR->Name);
             errorCode = amxd_status_invalid_function_argument;
             goto error;
         }
-        scanArgs.chanCount = len;
+        scanArgs->chanCount = len;
         extendedScanRequired = true;
     }
 
@@ -326,13 +326,15 @@ static amxd_status_t _startScan(amxd_object_t* object,
             goto error;
         }
 
-        swl_str_copy(scanArgs.ssid, SSID_NAME_LEN, ssid);
-        scanArgs.ssidLen = len;
+        swl_str_copy(scanArgs->ssid, SSID_NAME_LEN, ssid);
+        scanArgs->ssidLen = len;
         extendedScanRequired = true;
     }
     wld_scan_type_e type = SCAN_TYPE_INTERNAL;
     if(!swl_str_isEmpty(bssid)) {
-        if(!swl_mac_charToStandard(&scanArgs.bssid, bssid) || (!swl_mac_charIsValidStaMac(&scanArgs.bssid))) {
+        swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
+        memcpy(macChar.cMac, bssid, sizeof(swl_macChar_t));
+        if(!swl_mac_charToBin(&scanArgs->bssid, &macChar) || (!swl_mac_charIsValidStaMac(&macChar))) {
             SAH_TRACEZ_ERROR(ME, "Invalid bssid %s", bssid);
             errorCode = amxd_status_invalid_function_argument;
             goto error;
@@ -351,16 +353,16 @@ static amxd_status_t _startScan(amxd_object_t* object,
 
     bool updateUsageData = GET_BOOL(args, "updateUsage");
     if(updateUsageData) {
-        scanArgs.updateUsageStats = true;
+        scanArgs->updateUsageStats = true;
         extendedScanRequired = true;
     }
 
     bool hasForceFast = GET_BOOL(args, "forceFast");
     if(!hasForceFast) {
-        scanArgs.fastScan = (swl_str_find(pR->scanState.cfg.fastScanReasons, reason) > 0);
+        scanArgs->fastScan = (swl_str_find(pR->scanState.cfg.fastScanReasons, reason) > 0);
     }
 
-    if(scanArgs.fastScan) {
+    if(scanArgs->fastScan) {
         extendedScanRequired = true;
     }
 
@@ -374,9 +376,10 @@ static amxd_status_t _startScan(amxd_object_t* object,
     }
 
     if(extendedScanRequired) {
-        scanArgs.reason = reason;
+        scanArgs->reason = reason;
     }
-    swl_rc_ne scanResult = pR->pFA->mfn_wrad_start_scan_ext(pR, extendedScanRequired ? &scanArgs : NULL);
+
+    swl_rc_ne scanResult = pR->pFA->mfn_wrad_start_scan_ext(pR, extendedScanRequired ? scanArgs : NULL);
 
     if(scanResult < 0) {
         goto error;
@@ -463,6 +466,44 @@ amxd_status_t _scan(amxd_object_t* object,
     return amxd_status_deferred;
 }
 
+
+/**
+ * Filters out the scan Results if the scan was run with a matching filter
+ *
+ * Returns true if the result shall be filtered out.
+ */
+static bool s_filterScanResultsBasedOnArgs(T_Radio* pRad, T_ScanResult_SSID* pResult) {
+    T_ScanArgs* pScanArgs = &pRad->scanState.cfg.scanArguments;
+
+    if((pScanArgs->ssid != NULL) && (pScanArgs->ssidLen > 0)) {
+        char ssidStr[SSID_NAME_LEN];
+        memset(ssidStr, 0, sizeof(ssidStr));
+        convSsid2Str(pResult->ssid, pResult->ssidLen, ssidStr, sizeof(ssidStr));
+        if(swl_str_matches(ssidStr, pScanArgs->ssid) == false) {
+            SAH_TRACEZ_INFO(ME, "Received scan result with SSID %s while the scan was started with param SSID %s", pScanArgs->ssid, ssidStr);
+            return true;
+        }
+    }
+
+    if(swl_mac_binIsNull(&pScanArgs->bssid) == false) {
+        if(swl_mac_binMatches(&pResult->bssid, &pScanArgs->bssid) == false) {
+            SAH_TRACEZ_INFO(ME, "Received scan result with BSSID "SWL_MAC_FMT "  while the scan was started with param BSSID "SWL_MAC_FMT "", SWL_MAC_ARG(pResult->bssid.bMac), SWL_MAC_ARG(pScanArgs->bssid.bMac));
+            return true;
+
+        }
+    }
+
+    if(pScanArgs->chanCount > 0) {
+        if(swl_type_arrayContains(swl_type_uint8, pScanArgs->chanlist, pScanArgs->chanCount, &pResult->channel) == false) {
+            SAH_TRACEZ_INFO(ME, "Received scan result with channel %d which is not part of the channels scan params", pResult->channel);
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
 static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rssi) {
     T_ScanResults res;
 
@@ -477,6 +518,12 @@ static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rs
 
     amxc_llist_for_each(it, &res.ssids) {
         T_ScanResult_SSID* ssid = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
+
+        // Scan filter is normally handled by the vendor, but sometimes, for divers reasons, the filtering might fail.
+        // So let's double-chek it
+        if(s_filterScanResultsBasedOnArgs(pR, ssid) == true) {
+            continue;
+        }
 
         if(ssid->rssi < min_rssi) {
             continue;
@@ -525,7 +572,7 @@ static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rs
 amxd_status_t _getScanResults(amxd_object_t* object,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args,
-                              amxc_var_t* retval _UNUSED) {
+                              amxc_var_t* retval) {
 
     T_Radio* pR = object->priv;
 

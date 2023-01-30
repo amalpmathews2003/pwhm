@@ -134,11 +134,138 @@ static void test_startAndGetScan(void** state _UNUSED) {
     assert_int_equal(totalResults, NB_SCAN_RESULTS);
 }
 
+
+
+static void test_filterScanResultsBasedOnSSID(void** state _UNUSED) {
+    T_Radio* pRad = dm.bandList[SWL_FREQ_BAND_2_4GHZ].rad;
+    ttb_var_t* replyVar;
+    ttb_var_t* args = ttb_object_createArgs();
+    assert_non_null(args);
+    amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
+    const char* ssidFilterValue = "ssid_8";//just random existing value
+    amxc_var_add_key(cstring_t, args, "SSID", ssidFilterValue);
+    ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "startScan", &args, &replyVar);
+    assert_true(ttb_object_replySuccess(reply));
+    ttb_object_cleanReply(&reply, &replyVar);
+    ttb_mockTimer_goToFutureMs(100);
+    assert_true(wld_scan_isRunning(pRad));
+    ttb_mockTimer_goToFutureMs(1000);
+    wld_scan_done(pRad, true);
+    assert_false(wld_scan_isRunning(pRad));
+
+    ttb_var_t* scanResultsVar = NULL;
+    reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "getScanResults", NULL, &scanResultsVar);
+    assert_true(ttb_object_replySuccess(reply));
+    assert_non_null(scanResultsVar);
+
+    const amxc_llist_t* allResults = amxc_var_constcast(amxc_llist_t, scanResultsVar);
+    assert_non_null(allResults);
+    amxc_llist_for_each(it, allResults) {
+        const amxc_htable_t* ssidScanResults = amxc_var_constcast(amxc_htable_t, amxc_var_from_llist_it(it));
+        assert_non_null(ssidScanResults);
+        char* ssid_result = NULL;
+        amxc_htable_it_t* hit = NULL;
+        amxc_var_t* ht_data = NULL;
+        hit = amxc_htable_get(ssidScanResults, "SSID");
+        ht_data = amxc_var_from_htable_it(hit);
+        ssid_result = amxc_var_dyncast(cstring_t, ht_data);
+        assert_non_null(ssid_result);
+        assert_string_equal(ssid_result, ssidFilterValue);
+        free(ssid_result);
+    }
+    ttb_object_cleanReply(&reply, &scanResultsVar);
+}
+
+
+static void test_filterScanResultsBasedOnBSSID(void** state _UNUSED) {
+    T_Radio* pRad = dm.bandList[SWL_FREQ_BAND_2_4GHZ].rad;
+    ttb_var_t* replyVar;
+    ttb_var_t* args = ttb_object_createArgs();
+    assert_non_null(args);
+    amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
+    const char* bssidFilterValue = "00:00:00:04:04:0A";//just random existing value
+    amxc_var_add_key(cstring_t, args, "BSSID", bssidFilterValue);
+    ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "startScan", &args, &replyVar);
+    assert_true(ttb_object_replySuccess(reply));
+    ttb_object_cleanReply(&reply, &replyVar);
+    ttb_mockTimer_goToFutureMs(100);
+    assert_true(wld_scan_isRunning(pRad));
+    ttb_mockTimer_goToFutureMs(1000);
+    wld_scan_done(pRad, true);
+    assert_false(wld_scan_isRunning(pRad));
+
+    ttb_var_t* scanResultsVar = NULL;
+    reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "getScanResults", NULL, &scanResultsVar);
+    assert_true(ttb_object_replySuccess(reply));
+    assert_non_null(scanResultsVar);
+
+    const amxc_llist_t* allResults = amxc_var_constcast(amxc_llist_t, scanResultsVar);
+    assert_non_null(allResults);
+    amxc_llist_for_each(it, allResults) {
+        const amxc_htable_t* ssidScanResults = amxc_var_constcast(amxc_htable_t, amxc_var_from_llist_it(it));
+        assert_non_null(ssidScanResults);
+        char* bssid_result = NULL;
+        amxc_htable_it_t* hit = NULL;
+        amxc_var_t* ht_data = NULL;
+        hit = amxc_htable_get(ssidScanResults, "BSSID");
+        ht_data = amxc_var_from_htable_it(hit);
+        bssid_result = amxc_var_dyncast(cstring_t, ht_data);
+        assert_non_null(bssid_result);
+        assert_string_equal(bssid_result, bssidFilterValue);
+        free(bssid_result);
+    }
+    ttb_object_cleanReply(&reply, &scanResultsVar);
+}
+
+
+static void test_filterScanResultsBasedOnChannel(void** state _UNUSED) {
+    T_Radio* pRad = dm.bandList[SWL_FREQ_BAND_2_4GHZ].rad;
+    ttb_var_t* replyVar;
+    ttb_var_t* args = ttb_object_createArgs();
+    assert_non_null(args);
+    amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
+    const char* channelFilterValue = "1";//just random existing value
+    amxc_var_add_key(cstring_t, args, "channels", channelFilterValue);
+    ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "startScan", &args, &replyVar);
+    assert_true(ttb_object_replySuccess(reply));
+    ttb_object_cleanReply(&reply, &replyVar);
+    ttb_mockTimer_goToFutureMs(100);
+    assert_true(wld_scan_isRunning(pRad));
+    ttb_mockTimer_goToFutureMs(1000);
+    wld_scan_done(pRad, true);
+    assert_false(wld_scan_isRunning(pRad));
+
+    ttb_var_t* scanResultsVar = NULL;
+    reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "getScanResults", NULL, &scanResultsVar);
+    assert_true(ttb_object_replySuccess(reply));
+    assert_non_null(scanResultsVar);
+
+    const amxc_llist_t* allResults = amxc_var_constcast(amxc_llist_t, scanResultsVar);
+    assert_non_null(allResults);
+    char* ssid_channel = NULL;
+    amxc_llist_for_each(it, allResults) {
+        const amxc_htable_t* ssidScanResults = amxc_var_constcast(amxc_htable_t, amxc_var_from_llist_it(it));
+        assert_non_null(ssidScanResults);
+        amxc_htable_it_t* hit = NULL;
+        amxc_var_t* ht_data = NULL;
+        hit = amxc_htable_get(ssidScanResults, "Channel");
+        ht_data = amxc_var_from_htable_it(hit);
+        ssid_channel = amxc_var_dyncast(cstring_t, ht_data);
+        assert_string_equal(ssid_channel, channelFilterValue);
+        free(ssid_channel);
+    }
+    ttb_object_cleanReply(&reply, &scanResultsVar);
+
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
     sahTraceAddZone(TRACE_LEVEL_APP_INFO, "ssid");
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_startAndGetScan),
+        cmocka_unit_test(test_filterScanResultsBasedOnSSID),
+        cmocka_unit_test(test_filterScanResultsBasedOnBSSID),
+        cmocka_unit_test(test_filterScanResultsBasedOnChannel)
     };
     int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();

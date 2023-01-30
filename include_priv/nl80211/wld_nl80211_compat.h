@@ -200,9 +200,7 @@
 #define NL80211_CMD_ABORT_SCAN NL80211_CMD(114)
 
 //defined since kernel >= 4.10
-#ifndef NL80211_ATTR_BSSID
-#define NL80211_ATTR_BSSID 245
-#endif
+#define NL80211_ATTR_BSSID NL80211_ATTR(245)
 
 //defined since kernel >= 4.12
 #ifndef NETLINK_EXT_ACK
