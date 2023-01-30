@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.17.0 - 2023-01-30(14:22:54 +0000)
+
+### Other
+
+- cleanup wld: replace wld securityMode with swl type
+- adding the bssid as an argument to the scan function(pwhm+Nl802)
+
 ## Release v2.16.2 - 2023-01-27(12:05:17 +0000)
 
 ### Other
