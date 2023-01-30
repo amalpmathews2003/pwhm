@@ -81,19 +81,7 @@
 
 #define ME "apSec"
 
-const char* cstr_AP_ModesSupported[APMSI_MAX + 1] = {"None", "OWE",
-    "WEP-64", "WEP-128", "WEP-128iv",
-    "WPA-Personal", "WPA2-Personal", "WPA-WPA2-Personal",
-    "WPA3-Personal", "WPA2-WPA3-Personal",
-    "E-None",
-    "WPA-Enterprise", "WPA2-Enterprise", "WPA-WPA2-Enterprise",
-    "WPA3-Enterprise", "WPA2-WPA3-Enterprise",
-    "Auto", "Unsupported", "Unknown",
-    0};
-
 const char* cstr_AP_EncryptionMode[] = {"Default", "AES", "TKIP", "TKIP-AES", 0};
-
-const char* wld_mfpConfig_str[WLD_MFP_MAX] = {"Disabled", "Optional", "Required"};
 
 const char* g_str_wld_ap_td[AP_TD_MAX] = {"WPA3-Personal", "SAE-PK", "WPA3-Enterprise", "EnhancedOpen"};
 
@@ -116,22 +104,21 @@ amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
     const char* wepKey = NULL;
     const char* radiusSecret = NULL;
     const char* modeEnabled = NULL;
-    const char* s_modesAvailable = NULL;
-    const char* s_modesSupported = NULL;
+    const char* modesAvailableStr = NULL;
+    const char* modesSupportedStr = NULL;
     const char* encryptionMode = NULL;
-    int idx;
     int ret;
-    wld_securityMode_e iModeEnabled;
-    uint32_t m_modesAvailable = 0;
-    uint32_t m_modesSupported = 0;
+    swl_security_apMode_e modeEnabledId;
+    swl_security_apMode_m modesAvailableMask = 0;
+    swl_security_apMode_m modesSupportedMask = 0;
 
     amxc_var_t pVar;
     amxc_var_init(&pVar);
 
     pModeParam = amxd_object_get_param_def(obj, "ModesAvailable");
     amxd_param_get_value(pModeParam, &pVar);
-    s_modesAvailable = amxc_var_get_cstring_t(&pVar);
-    assert(s_modesAvailable);
+    modesAvailableStr = amxc_var_get_cstring_t(&pVar);
+    assert(modesAvailableStr);
 
     pModeParam = amxd_object_get_param_def(obj, "ModeEnabled");
     amxd_param_get_value(pModeParam, &pVar);
@@ -140,8 +127,8 @@ amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
 
     pModeParam = amxd_object_get_param_def(obj, "ModesSupported");
     amxd_param_get_value(pModeParam, &pVar);
-    s_modesSupported = amxc_var_get_cstring_t(&pVar);
-    assert(s_modesSupported);
+    modesSupportedStr = amxc_var_get_cstring_t(&pVar);
+    assert(modesSupportedStr);
 
     pModeParam = amxd_object_get_param_def(obj, "EncryptionMode");
     amxd_param_get_value(pModeParam, &pVar);
@@ -172,10 +159,10 @@ amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
     saePassphrase = amxc_var_get_cstring_t(&pVar);
     assert(saePassphrase);
 
-    iModeEnabled = swl_conv_charToEnum(modeEnabled, cstr_AP_ModesSupported, APMSI_MAX, APMSI_UNKNOWN);
+    modeEnabledId = swl_security_apModeFromString((char*) modeEnabled);
 
     // Double check when in WPAx security mode... one of the 2 must be OK!
-    if(isModeWPAPersonal(iModeEnabled)) {
+    if(swl_security_isApModeWPAPersonal(modeEnabledId)) {
         ret = ((preSharedKey && preSharedKey[0] &&
                 isValidPSKKey(preSharedKey)) ||
                (keyPassPhrase && keyPassPhrase[0] &&
@@ -197,57 +184,53 @@ amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
     radiusSecret = amxc_var_get_cstring_t(&pVar);
     assert(radiusSecret);
 
-    findStrInArray(modeEnabled, cstr_AP_ModesSupported, &idx);
-
-    m_modesSupported = swl_conv_charToMask(s_modesSupported, cstr_AP_ModesSupported, APMSI_MAX);
-    m_modesAvailable = swl_conv_charToMask(s_modesAvailable, cstr_AP_ModesSupported, APMSI_MAX);
+    modesSupportedMask = swl_security_apModeMaskFromString(modesSupportedStr);
+    modesAvailableMask = swl_security_apModeMaskFromString(modesAvailableStr);
 
     T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
-    if((m_modesSupported != 0) && (m_modesAvailable == 0)) {
-        m_modesAvailable = m_modesSupported;
-        amxc_string_t TBufStr;
-        amxc_string_init(&TBufStr, 0);
-        wld_ap_ModesSupported_mask_to_string(&TBufStr, m_modesAvailable);
+    if((modesSupportedMask != 0) && (modesAvailableMask == 0)) {
+        modesAvailableMask = modesSupportedMask;
+        char TBuf[256] = {0};
+        swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, modesAvailableMask);
         if(pAP && debugIsVapPointer(pAP)) {
             amxc_var_t value;
             amxc_var_init(&value);
-            amxc_var_set(cstring_t, &value, amxc_string_get(&TBufStr, 0));
+            amxc_var_set(cstring_t, &value, TBuf);
             amxd_param_t* parameter = amxd_object_get_param_def(obj, "ModesAvailable");
             amxd_param_set_value(parameter, &value);
             amxc_var_clean(&value);
         }
-        amxc_string_clean(&TBufStr);
     }
-    if((m_modesSupported != 0) && !(m_modesSupported & m_modesAvailable)) {
+    if((modesSupportedMask != 0) && !(modesSupportedMask & modesAvailableMask)) {
         SAH_TRACEZ_ERROR(ME, "ModesAvailable not supported");
         return amxd_status_unknown_error;
     }
 
 
-    if((m_modesAvailable != 0) && !(m_modesAvailable & (1 << idx))) {
-        if(SWL_BIT_IS_SET(m_modesAvailable, APMSI_WPA3_P) && (iModeEnabled == APMSI_WPA2_P)) {
+    if((modesAvailableMask != 0) && !(SWL_BIT_IS_SET(modesAvailableMask, modeEnabledId))) {
+        if(SWL_BIT_IS_SET(modesAvailableMask, SWL_SECURITY_APMODE_WPA3_P) && (modeEnabledId == SWL_SECURITY_APMODE_WPA2_P)) {
             amxc_var_t value;
             amxc_var_init(&value);
-            amxc_var_set(cstring_t, &value, cstr_AP_ModesSupported[APMSI_WPA3_P]);
+            amxc_var_set(cstring_t, &value, swl_security_apModeToString(SWL_SECURITY_APMODE_WPA3_P, SWL_SECURITY_APMODEFMT_LEGACY));
             amxd_param_t* parameter = amxd_object_get_param_def(obj, "ModeEnabled");
             amxd_param_set_value(parameter, &value);
             SAH_TRACEZ_WARNING(ME, "%s: Default WPA2 set but not available, setting to available WPA3", pAP->alias);
             amxc_var_clean(&value);
         } else {
-            SAH_TRACEZ_ERROR(ME, "%s: ModeEnabled %s not available 0x%02x", pAP->alias, cstr_AP_ModesSupported[idx], m_modesAvailable);
+            SAH_TRACEZ_ERROR(ME, "%s: ModeEnabled %s not available 0x%02x", pAP->alias, modeEnabled, modesAvailableMask);
             if(pAP && debugIsVapPointer(pAP)) {
-                if(SWL_BIT_IS_SET(m_modesAvailable, APMSI_WPA2_P)) {
+                if(SWL_BIT_IS_SET(modesAvailableMask, SWL_SECURITY_APMODE_WPA2_P)) {
                     SAH_TRACEZ_ERROR(ME, "%s: reverting to WPA2 from ", pAP->alias);
                     amxc_var_t value;
                     amxc_var_init(&value);
-                    amxc_var_set(cstring_t, &value, cstr_AP_ModesSupported[APMSI_WPA2_P]);
+                    amxc_var_set(cstring_t, &value, swl_security_apModeToString(SWL_SECURITY_APMODE_WPA2_P, SWL_SECURITY_APMODEFMT_LEGACY));
                     amxd_param_t* parameter = amxd_object_get_param_def(obj, "ModeEnabled");
                     amxd_param_set_value(parameter, &value);
                 }
-                if(SWL_BIT_IS_SET(m_modesAvailable, APMSI_WPA3_P)) {
+                if(SWL_BIT_IS_SET(modesAvailableMask, SWL_SECURITY_APMODE_WPA3_P)) {
                     amxc_var_t value;
                     amxc_var_init(&value);
-                    amxc_var_set(cstring_t, &value, cstr_AP_ModesSupported[APMSI_WPA3_P]);
+                    amxc_var_set(cstring_t, &value, swl_security_apModeToString(SWL_SECURITY_APMODE_WPA3_P, SWL_SECURITY_APMODEFMT_LEGACY));
                     amxd_param_t* parameter = amxd_object_get_param_def(obj, "ModeEnabled");
                     amxd_param_set_value(parameter, &value);
                 } else {
@@ -258,13 +241,13 @@ amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
         }
     }
 
-    switch(idx) {
-    case APMSI_NONE:
-    case APMSI_OWE:
+    switch(modeEnabledId) {
+    case SWL_SECURITY_APMODE_NONE:
+    case SWL_SECURITY_APMODE_OWE:
         return amxd_status_ok;
-    case APMSI_WEP64:        /* 5/10 */
-    case APMSI_WEP128:       /* 13/26 */
-    case APMSI_WEP128IV:     /* 16/32 */
+    case SWL_SECURITY_APMODE_WEP64:        /* 5/10 */
+    case SWL_SECURITY_APMODE_WEP128:       /* 13/26 */
+    case SWL_SECURITY_APMODE_WEP128IV:     /* 16/32 */
         /* BUG 49483 - SOP screwed WEP, result many targets fail
            Our WebUI can't change the WEP key if there's no Key filled in.
            See this as a HACK to get around most of the trouble!
@@ -289,31 +272,30 @@ amxd_status_t _validateSecurity_pvf(amxd_object_t* obj, void* validationData) {
         }
         return (isValidWEPKey(wepKey)) ? true : false;
 
-    case APMSI_WPA_P:
+    case SWL_SECURITY_APMODE_WPA_P:
         if(isValidPSKKey(preSharedKey)) {
             return amxd_status_ok;
         }
         return isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
-    case APMSI_WPA2_P:
-    case APMSI_WPA_WPA2_P:
-    case APMSI_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P:
         return isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
-    case APMSI_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
         if(swl_str_matches(saePassphrase, "")) {
             return isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
         } else {
             return isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN);
         }
-    case APMSI_WPA_E:
+    case SWL_SECURITY_APMODE_WPA_E:
         if(isValidPSKKey(radiusSecret)) {
             return amxd_status_ok;
         }
         return isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1);
-    case APMSI_NONE_E:
-    case APMSI_WPA2_E:
-    case APMSI_WPA_WPA2_E:
-    case APMSI_WPA2_WPA3_E:
-    case APMSI_WPA3_E:
+    case SWL_SECURITY_APMODE_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_E:
+    case SWL_SECURITY_APMODE_WPA3_E:
         // The only technical limitation is that shared secrets must be greater than 0 in length!
         ret = strlen(radiusSecret);
         return (ret >= 1 && ret < 64) ? true : false;
@@ -337,7 +319,7 @@ amxd_status_t _wld_ap_validateWEPKey_pvf(amxd_object_t* object _UNUSED,
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
-    if(swl_str_matches(currentValue, newValue) || (isValidWEPKey(newValue) != APMSI_UNKNOWN)) {
+    if(swl_str_matches(currentValue, newValue) || (isValidWEPKey(newValue) != SWL_SECURITY_APMODE_UNKNOWN)) {
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "invalid WEPKey (%s)", newValue);
@@ -388,7 +370,7 @@ amxd_status_t _wld_ap_setMFPConfig_pwf(amxd_object_t* object,
     rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
     ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* mfpStr = amxc_var_constcast(cstring_t, args);
-    pAP->mfpConfig = conv_strToEnum(wld_mfpConfig_str, mfpStr, WLD_MFP_MAX, WLD_MFP_DISABLED);
+    pAP->mfpConfig = swl_security_mfpModeFromString(mfpStr);
     wld_ap_sec_doSync(pAP);
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -410,7 +392,7 @@ amxd_status_t _wld_ap_setModesAvailable_pwf(amxd_object_t* object,
     ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
     const char* modesAvailable = amxc_var_constcast(cstring_t, args);
     if(modesAvailable && modesAvailable[0]) {
-        pAP->secModesAvailable = swl_conv_charToMask(modesAvailable, cstr_AP_ModesSupported, APMSI_MAX);
+        pAP->secModesAvailable = swl_security_apModeMaskFromString(modesAvailable);
     } else {
         pAP->secModesAvailable = pAP->secModesSupported;
     }
@@ -432,32 +414,32 @@ amxd_status_t _wld_ap_setModeEnabled_pwf(amxd_object_t* object,
     ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
 
     const char* mode = amxc_var_constcast(cstring_t, args);
-    wld_securityMode_e idx = conv_strToEnum(cstr_AP_ModesSupported, mode, APMSI_MAX, APMSI_UNKNOWN);
+    swl_security_apMode_e idx = swl_security_apModeFromString((char*) mode);
     switch(idx) {
-    case APMSI_NONE:
-    case APMSI_OWE:
+    case SWL_SECURITY_APMODE_NONE:
+    case SWL_SECURITY_APMODE_OWE:
         /* If we must enable MAC filter... it must be here */
         break;
-    case APMSI_WEP64:    /* 5/10 */
-    case APMSI_WEP128:   /* 13/26 */
-    case APMSI_WEP128IV: /* 16/32 */
+    case SWL_SECURITY_APMODE_WEP64:    /* 5/10 */
+    case SWL_SECURITY_APMODE_WEP128:   /* 13/26 */
+    case SWL_SECURITY_APMODE_WEP128IV: /* 16/32 */
         /* Before changing... check if we've a valid WEP key */
         ASSERT_TRUE(isValidWEPKey(pAP->WEPKey), amxd_status_unknown_error, ME, "Invalid WEPKey(%s) in WEP mode", pAP->WEPKey);
         break;
-    case APMSI_WPA_P:
+    case SWL_SECURITY_APMODE_WPA_P:
         if((!isValidPSKKey(pAP->preSharedKey)) &&
            (!isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1))) {
             SAH_TRACEZ_ERROR(ME, "No valid PSK(%s) KeyPP(%s) in WPA-TKIP mode", pAP->preSharedKey, pAP->keyPassPhrase);
             return amxd_status_unknown_error;
         }
         break;
-    case APMSI_WPA2_P:
-    case APMSI_WPA_WPA2_P:
-    case APMSI_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P:
         ASSERT_TRUE(isValidAESKey((char*) pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1), amxd_status_unknown_error,
                     ME, "Invalid AESKey(%s) in WPA(x)-AES mode", pAP->keyPassPhrase);
         break;
-    case APMSI_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
         if(swl_str_isEmpty(pAP->saePassphrase)) {
             ASSERT_TRUE(isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1), amxd_status_unknown_error,
                         ME, "Invalid AESKey(%s) in WPA3 mode", pAP->keyPassPhrase);
@@ -466,25 +448,24 @@ amxd_status_t _wld_ap_setModeEnabled_pwf(amxd_object_t* object,
                         ME, "Invalid SAE PassPhrase(%s) in WPA3 mode", pAP->saePassphrase);
         }
         break;
-    case APMSI_WPA_E:
+    case SWL_SECURITY_APMODE_WPA_E:
         if((!isValidPSKKey(pAP->radiusSecret)) &&
            (!isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1))) {
             SAH_TRACEZ_ERROR(ME, "No valid RadSecret(%s) KeyPP(%s) in WPA-Enterprise mode", pAP->radiusSecret, pAP->keyPassPhrase);
             return amxd_status_unknown_error;
         }
         break;
-    case APMSI_NONE_E:
-    case APMSI_WPA2_E:
-    case APMSI_WPA_WPA2_E:
-    case APMSI_WPA3_E:
-    case APMSI_WPA2_WPA3_E:
+    case SWL_SECURITY_APMODE_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA3_E:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_E:
     {
         int radSecLen = strlen(pAP->radiusSecret);
         ASSERT_TRUE((radSecLen >= 8) && (radSecLen < 64), amxd_status_unknown_error,
                     ME, "Invalid radius secret (%s) length(8-63) in WPAx-Enterprise mode", pAP->radiusSecret);
         break;
     }
-    case APMSI_UNKNOWN:
+    case SWL_SECURITY_APMODE_UNKNOWN:
     default:
         SAH_TRACEZ_ERROR(ME, "%s : unknown security mode %s", pAP->alias, mode);
         return amxd_status_unknown_error;

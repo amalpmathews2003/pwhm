@@ -146,7 +146,7 @@ static void test_getStats(void** state _UNUSED) {
     swl_mac_charToBin(&macBin, (swl_macChar_t*) &testBuff[0]);
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(vap, &macBin);
     // Check probe update
-    pAD->probeReqCaps.currentSecurity = APMSI_WPA2_P;
+    pAD->probeReqCaps.currentSecurity = SWL_SECURITY_APMODE_WPA2_P;
     pAD->probeReqCaps.freqCapabilities = M_SWL_FREQ_BAND_EXT_2_4GHZ | M_SWL_FREQ_BAND_EXT_5GHZ;
     pAD->probeReqCaps.htCapabilities = M_SWL_STACAP_HT_SGI20 | M_SWL_STACAP_HT_40MHZ;
     pAD->probeReqCaps.updateTime = swl_time_getMonoSec();

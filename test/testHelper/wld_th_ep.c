@@ -141,6 +141,6 @@ swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP _UNUSED, T_EndPointStats* stats) {
     assert_non_null(pEP);
     stats->txbyte = 12991;
     stats->txPackets = 65;
-    stats->assocCaps.currentSecurity = APMSI_WPA2_P;
+    stats->assocCaps.currentSecurity = SWL_SECURITY_APMODE_WPA2_P;
     return SWL_RC_OK;
 }

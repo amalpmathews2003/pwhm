@@ -183,11 +183,11 @@ static swl_rc_ne s_parseAuthType(T_WPSCredentials* creds, uint16_t attr _UNUSED,
     ASSERT_FALSE(len != 2, SWL_RC_ERROR, ME, "Invalid auth type size %u", len);
     uint16_t auth = WPS_SUPPLICANT_GET_BE16(data);
     if(auth == WPS_SUPPLICANT_AUTH_WPAPSK) {
-        creds->secMode = APMSI_WPA_P;
+        creds->secMode = SWL_SECURITY_APMODE_WPA_P;
     } else if(auth == WPS_SUPPLICANT_AUTH_WPA2PSK) {
-        creds->secMode = APMSI_WPA2_P;
+        creds->secMode = SWL_SECURITY_APMODE_WPA2_P;
     } else if(auth == (WPS_SUPPLICANT_AUTH_WPA2PSK | WPS_SUPPLICANT_AUTH_WPAPSK)) {
-        creds->secMode = APMSI_WPA_WPA2_P;
+        creds->secMode = SWL_SECURITY_APMODE_WPA_WPA2_P;
     }
     return SWL_RC_OK;
 }

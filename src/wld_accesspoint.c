@@ -829,7 +829,8 @@ int vap_libsync_status_cb(T_AccessPoint* pAP) {
     /* Keep WPS status sync when SSIDAdvertisement is enabled! Otherwise NeMo must handle it!  */
     if(pAP->SSIDAdvertisementEnabled) {
         pAP->WPS_Status = ((pAP->WPS_Enable) &&
-                           (pAP->secModeEnabled == APMSI_NONE || pAP->secModeEnabled > APMSI_WEP128IV) &&
+                           (swl_security_isApModeValid(pAP->secModeEnabled)) &&
+                           (pAP->secModeEnabled == SWL_SECURITY_APMODE_NONE || (!swl_security_isApModeWEP(pAP->secModeEnabled))) &&
                            (pAP->MF_Mode != APMFM_WHITELIST || pAP->WPS_CertMode));
     }
 
@@ -945,19 +946,19 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         /** 'ModesSupported' Comma separated list of strings. Inicates
          *  which security modes this AccessPoint instance is capable
          *  of supporting. */
-        wld_ap_ModesSupported_mask_to_string(&TBufStr, pAP->secModesSupported);
+        swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pAP->secModesSupported);
 
-        amxd_object_set_cstring_t(secObj, "ModesSupported", TBufStr.buffer);
+        amxd_object_set_cstring_t(secObj, "ModesSupported", TBuf);
 
-        wld_ap_ModesSupported_mask_to_string(&TBufStr, pAP->secModesAvailable);
+        swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pAP->secModesAvailable);
 
-        amxd_object_set_cstring_t(secObj, "ModesAvailable", TBufStr.buffer);
+        amxd_object_set_cstring_t(secObj, "ModesAvailable", TBuf);
 
         /** 'ModeEnabled' The value MUST be a member of the list
          *  reported by the ModesSupported parameter. Indicates which
          *  security mode is enabled. */
-        amxd_object_set_cstring_t(secObj, "ModeEnabled", cstr_AP_ModesSupported[pAP->secModeEnabled]);
-        amxd_object_set_cstring_t(secObj, "MFPConfig", wld_mfpConfig_str[pAP->mfpConfig]);
+        amxd_object_set_cstring_t(secObj, "ModeEnabled", swl_security_apModeToString(pAP->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
+        amxd_object_set_cstring_t(secObj, "MFPConfig", swl_security_mfpModeToString(pAP->mfpConfig));
         amxd_object_set_int32_t(secObj, "SPPAmsdu", pAP->sppAmsdu);
 
         /** 'WEPKey' A WEP key expressed as a hexadecimal string.
@@ -1129,11 +1130,11 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         char* mode = amxd_object_get_cstring_t(secObj, "ModeEnabled", NULL);
-        if(strncmp(cstr_AP_ModesSupported[pAP->secModeEnabled], mode,
-                   strlen(cstr_AP_ModesSupported[pAP->secModeEnabled]))) {
+        const char* curSecMode = swl_security_apModeToString(pAP->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY);
+        if(!swl_str_nmatches(curSecMode, mode, swl_str_len(curSecMode))) {
             /* We still must update the pAP->secModeEnabled value */
-            int idx = conv_ModeIndexStr(cstr_AP_ModesSupported, mode);
-            if(idx >= 0) {
+            swl_security_apMode_e idx = swl_security_apModeFromString(mode);
+            if(swl_security_isApModeValid(idx)) {
                 pAP->secModeEnabled = idx;
                 wld_ap_sec_doSync(pAP);
             }
@@ -1141,10 +1142,10 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         free(mode);
 
         char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
-        if(strncmp(wld_mfpConfig_str[pAP->mfpConfig], mfp,
-                   strlen(wld_mfpConfig_str[pAP->mfpConfig]))) {
+        const char* curMfpMode = swl_security_mfpModeToString(pAP->mfpConfig);
+        if(!swl_str_nmatches(mfp, curMfpMode, swl_str_len(curMfpMode))) {
             /* We still must update the pAP->secModeEnabled value */
-            wld_mfpConfig_e idx = conv_strToEnum(wld_mfpConfig_str, mfp, WLD_MFP_MAX, WLD_MFP_DISABLED);
+            swl_security_mfpMode_e idx = swl_security_mfpModeFromString(mfp);
             if(idx != pAP->mfpConfig) {
                 pAP->mfpConfig = idx;
                 wld_ap_sec_doSync(pAP);
@@ -1739,8 +1740,8 @@ amxd_status_t _validateHotSpot2Requirements(amxd_param_t* parameter) {
 
 /* Broadcom requires that wpa2 is used when starting Hotspot. This only applies for 4.12.
  *  Later version don't have this requirement */
-    if(pAP->secModeEnabled != APMSI_WPA2_E) {
-        SAH_TRACEZ_INFO(ME, "Error: secModeEnabled is not  APMSI_WPA2_E ");
+    if(pAP->secModeEnabled != SWL_SECURITY_APMODE_WPA2_E) {
+        SAH_TRACEZ_INFO(ME, "Error: secModeEnabled is not WPA2_E ");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
     }
@@ -2025,23 +2026,24 @@ T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
     pAP->retryLimit = 3;
     pAP->SSIDAdvertisementEnabled = 1;
     pAP->status = APSTI_DISABLED;
-    pAP->secModesSupported = APMS_NONE;
+    pAP->secModesSupported = M_SWL_SECURITY_APMODE_NONE;
     pAP->MaxStations = -1;
 
     pAP->UAPSDCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "UAPSD", 0);
     pAP->WMMCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WME", 0);
     pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WEP", 0)) ?
-        (APMS_WEP64 | APMS_WEP128 | APMS_WEP128IV) : 0;
+        (M_SWL_SECURITY_APMODE_WEP64 | M_SWL_SECURITY_APMODE_WEP128 | M_SWL_SECURITY_APMODE_WEP128IV) : 0;
     pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "AES", 0)) ?
-        (APMS_WPA_P | APMS_WPA2_P | APMS_WPA_WPA2_P | APMS_NONE_E | APMS_WPA_E | APMS_WPA2_E | APMS_WPA_WPA2_E) : 0;
+        (M_SWL_SECURITY_APMODE_WPA_P | M_SWL_SECURITY_APMODE_WPA2_P | M_SWL_SECURITY_APMODE_WPA_WPA2_P |
+         M_SWL_SECURITY_APMODE_WPA_E | M_SWL_SECURITY_APMODE_WPA2_E | M_SWL_SECURITY_APMODE_WPA_WPA2_E) : 0;
     if(pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "SAE", 0)) {
-        pAP->secModesSupported |= APMS_WPA3_P;
-        if(pAP->secModesSupported & APMS_WPA2_P) {
-            pAP->secModesSupported |= APMS_WPA2_WPA3_P;
+        pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA3_P;
+        if(pAP->secModesSupported & M_SWL_SECURITY_APMODE_WPA2_P) {
+            pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA2_WPA3_P;
         }
     }
     pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "OWE", 0)) ?
-        (APMS_OWE) : 0;
+        (M_SWL_SECURITY_APMODE_OWE) : 0;
     pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, NULL, 0); // Update the Drv CAP value!
     pAP->pFA->mfn_wrad_poschans(pAP->pRadio, NULL, 0);         // Update Radio Bands...
     if(!pAP->MCEnable) {
@@ -2052,12 +2054,12 @@ T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
     }
 
     if(pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
-        pAP->secModeEnabled = APMSI_WPA3_P;
+        pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA3_P;
     } else {
-        pAP->secModeEnabled = APMSI_WPA2_P;
+        pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA2_P;
     }
     pAP->secModesAvailable = pAP->secModesSupported;
-    pAP->mfpConfig = WLD_MFP_DISABLED;
+    pAP->mfpConfig = SWL_SECURITY_MFPMODE_DISABLED;
     pAP->MF_AddressList = NULL;
     pAP->MF_AddressListBlockSync = false;
 
@@ -2576,11 +2578,6 @@ bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid
 
     wld_vap_sync_device(pAP, pAD);
     return true;
-}
-
-
-bool wld_ap_ModesSupported_mask_to_string(amxc_string_t* output, wld_securityMode_m secModesSupported) {
-    return bitmask_to_string(output, cstr_AP_ModesSupported, ',', secModesSupported);
 }
 
 void wld_ap_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* reason, const char* macAddress) {

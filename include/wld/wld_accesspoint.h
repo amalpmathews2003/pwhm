@@ -104,8 +104,6 @@ bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid
 void wld_ap_bss_done(T_AccessPoint* ap, const unsigned char* mac, int reply_code);
 void wld_ap_rrm_item(T_AccessPoint* ap, const unsigned char* mac, amxc_var_t* result);
 
-bool wld_ap_ModesSupported_mask_to_string(amxc_string_t* output, wld_securityMode_m secModesSupported);
-
 void wld_ap_notifyToggle(T_AccessPoint* pAP);
 
 void wld_ap_performErrorToggle(T_AccessPoint* pAP, const char* reason);

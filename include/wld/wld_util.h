@@ -230,11 +230,7 @@ void longArrayClean(unsigned long* array, int len);
 char* convASCII_WEPKey(const char* Key, char* out, int sizeout);
 char* convHex_WEPKey(const char* key, char* out, int sizeout);
 
-bool isModeWEP(wld_securityMode_e mode);
-bool isModeWPAPersonal(wld_securityMode_e mode);
-bool isModeWPA3Personal(wld_securityMode_e mode);
-
-wld_securityMode_e isValidWEPKey (const char* key);
+swl_security_apMode_e isValidWEPKey (const char* key);
 bool isValidPSKKey(const char* key);
 bool isValidAESKey(const char* key, int maxLen);
 bool isValidSSID(const char* ssid);
@@ -392,7 +388,6 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
 
 void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, int md5_size);
 
-wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_mfpConfig_e mfpConfig);
 void wld_util_updateStatusChangeInfo(wld_status_changeInfo_t* info, wld_status_e status);
 
 /**

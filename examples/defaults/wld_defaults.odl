@@ -86,7 +86,7 @@
                 parameter ApRole = "Off";
                 parameter SSIDAdvertisementEnabled = 1;
                 object Security {
-                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
                     parameter WEPKey = "123456789ABCD";
                     parameter PreSharedKey = "";
                     parameter KeyPassPhrase = "prplMesh";
@@ -131,7 +131,7 @@
                 parameter ApRole = "Off";
                 parameter SSIDAdvertisementEnabled = 1;
                 object Security {
-                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
                     parameter WEPKey = "123456789ABCD";
                     parameter PreSharedKey = "";
                     parameter KeyPassPhrase = "prplMesh";

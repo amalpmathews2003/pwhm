@@ -3478,7 +3478,6 @@ define rrm_t{
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 						"WPA3-Personal","WPA2-WPA3-Personal",
-						"E-None",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise", "Unknown"];
 				on action write call wld_ap_setModeEnabled_pwf;
@@ -4243,7 +4242,6 @@ define rrm_t{
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 						"WPA3-Personal","WPA2-WPA3-Personal",
-						"E-None",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 				default "None";
@@ -4361,7 +4359,6 @@ define rrm_t{
 							"WEP-64","WEP-128","WEP-128iv",
 							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 							"WPA3-Personal","WPA2-WPA3-Personal",
-							"E-None",
 							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 							"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 					default "None";
@@ -5268,7 +5265,6 @@ define rrm_t{
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 						"WPA3-Personal","WPA2-WPA3-Personal",
-						"E-None",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 				default "None";
@@ -5456,7 +5452,6 @@ define rrm_t{
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 						"WPA3-Personal","WPA2-WPA3-Personal",
-						"E-None",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 					default "None";

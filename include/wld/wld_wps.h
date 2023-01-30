@@ -97,7 +97,7 @@
 
 typedef struct {
     char ssid[SSID_NAME_LEN];
-    wld_securityMode_e secMode;
+    swl_security_apMode_e secMode;
     char key[PSK_KEY_SIZE_LEN];
 } T_WPSCredentials;
 

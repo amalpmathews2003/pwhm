@@ -103,7 +103,7 @@ static void s_setDefaults(T_EndPointProfile* profile) {
     memset(profile->location, 0, sizeof(profile->location));
     memset(profile->WEPKey, 0, sizeof(profile->WEPKey));
     memset(profile->preSharedKey, 0, sizeof(profile->preSharedKey));
-    profile->secModeEnabled = APMSI_NONE;
+    profile->secModeEnabled = SWL_SECURITY_APMODE_NONE;
 }
 
 

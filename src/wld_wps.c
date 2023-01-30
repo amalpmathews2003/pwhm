@@ -209,7 +209,7 @@ void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason, const
     }
     if(credentials) {
         amxc_var_add_key(cstring_t, &notifMap, "SSID", credentials->ssid);
-        amxc_var_add_key(cstring_t, &notifMap, "securitymode", cstr_AP_ModesSupported[credentials->secMode]);
+        amxc_var_add_key(cstring_t, &notifMap, "securitymode", swl_security_apModeToString(credentials->secMode, SWL_SECURITY_APMODEFMT_LEGACY));
         amxc_var_add_key(cstring_t, &notifMap, "KeyPassPhrase", credentials->key);
     }
     SAH_TRACEZ_WARNING(ME, "notif %s, reason=%s, macAddress=%s}", name, reason, macAddress);

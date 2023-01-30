@@ -1061,7 +1061,7 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     amxc_string_init(&TBufStr, 0);
     s_getOUIValue(&TBufStr, &caps->vendorOUI);
     amxd_trans_set_cstring_t(trans, "VendorOUI", amxc_string_get(&TBufStr, 0));
-    amxd_trans_set_cstring_t(trans, "SecurityModeEnabled", cstr_AP_ModesSupported[caps->currentSecurity]);
+    amxd_trans_set_cstring_t(trans, "SecurityModeEnabled", swl_security_apModeToString(caps->currentSecurity, SWL_SECURITY_APMODEFMT_LEGACY));
     amxd_trans_set_cstring_t(trans, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
 
 

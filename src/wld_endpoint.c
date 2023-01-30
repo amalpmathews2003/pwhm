@@ -544,11 +544,11 @@ static void s_setDefaults(T_EndPoint* pEP, const char* endpointname, const char*
     pEP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_DISPLAY);
     pEP->secModesSupported = 0;
     pEP->secModesSupported |= (pEP->pFA->mfn_misc_has_support(pEP->pRadio, NULL, "WEP", 0)) ?
-        (APMS_WEP64 | APMS_WEP128 | APMS_WEP128IV) : 0;
+        (M_SWL_SECURITY_APMODE_WEP64 | M_SWL_SECURITY_APMODE_WEP128 | M_SWL_SECURITY_APMODE_WEP128IV) : 0;
     pEP->secModesSupported |= (pEP->pFA->mfn_misc_has_support(pEP->pRadio, NULL, "AES", 0)) ?
-        (APMS_WPA_P | APMS_WPA2_P | APMS_WPA_WPA2_P) : 0;
+        (M_SWL_SECURITY_APMODE_WPA_P | M_SWL_SECURITY_APMODE_WPA2_P | M_SWL_SECURITY_APMODE_WPA_WPA2_P) : 0;
     pEP->secModesSupported |= (pEP->pFA->mfn_misc_has_support(pEP->pRadio, NULL, "SAE", 0)) ?
-        (APMS_WPA3_P | APMS_WPA2_WPA3_P) : 0;
+        (M_SWL_SECURITY_APMODE_WPA3_P | M_SWL_SECURITY_APMODE_WPA2_WPA3_P) : 0;
 }
 
 /**
@@ -648,14 +648,14 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     }
     free(mode);
 
-    wld_securityMode_e secMode = conv_strToEnum(cstr_AP_ModesSupported, rollbackBuffer, APMSI_MAX, APMSI_UNKNOWN);
+    swl_security_apMode_e secMode = swl_security_apModeFromString(rollbackBuffer);
     if(secMode != pProfile->secModeEnabled) {
         changed = true;
         pProfile->secModeEnabled = secMode;
     }
 
     char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
-    if(isModeWEP(pProfile->secModeEnabled)) {
+    if(swl_security_isApModeWEP(pProfile->secModeEnabled)) {
         if(!isValidWEPKey(wepKey)) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - WEPKey is not in a valid format");
         } else {
@@ -666,7 +666,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     free(wepKey);
 
     char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
-    if(isModeWPAPersonal(pProfile->secModeEnabled) &&
+    if(swl_security_isApModeWPAPersonal(pProfile->secModeEnabled) &&
        strncmp(pskKey, pProfile->preSharedKey, sizeof(pProfile->preSharedKey))) {
         if(!isValidPSKKey(pskKey)) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - PreSharedKey is not in a valid format");
@@ -678,10 +678,10 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     free(pskKey);
 
     char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
-    if(isModeWPAPersonal(pProfile->secModeEnabled) &&
-       strncmp(keyPassPhrase, pProfile->preSharedKey, sizeof(pProfile->preSharedKey))) {
+    if(swl_security_isApModeWPAPersonal(pProfile->secModeEnabled) &&
+       strncmp(keyPassPhrase, pProfile->keyPassPhrase, sizeof(pProfile->keyPassPhrase))) {
         if(!isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
-            SAH_TRACEZ_WARNING(ME, "Sync Failure - PreSharedKey is not in a valid format");
+            SAH_TRACEZ_WARNING(ME, "Sync Failure - KeyPassPhrase is not in a valid format");
         } else {
             changed |= !(wldu_key_matches(pProfile->SSID, pProfile->keyPassPhrase, keyPassPhrase));
             wldu_copyStr(pProfile->keyPassPhrase, keyPassPhrase, sizeof(pProfile->keyPassPhrase));
@@ -690,7 +690,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     free(keyPassPhrase);
 
     char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
-    if(isModeWPAPersonal(pProfile->secModeEnabled) &&
+    if(swl_security_isApModeWPA3Personal(pProfile->secModeEnabled) &&
        strncmp(saePassphrase, pProfile->saePassphrase, sizeof(pProfile->saePassphrase))) {
         if(!isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN)) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - SAEPassphrase is not in a valid format");
@@ -702,9 +702,9 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     free(saePassphrase);
 
     char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
-    if(strncmp(mfp, wld_mfpConfig_str[pProfile->mfpConfig],
-               strlen(wld_mfpConfig_str[pProfile->mfpConfig]))) {
-        wld_mfpConfig_e idx = conv_strToEnum(wld_mfpConfig_str, mfp, WLD_MFP_MAX, WLD_MFP_DISABLED);
+    const char* curMfpMode = swl_security_mfpModeToString(pProfile->mfpConfig);
+    if(!swl_str_nmatches(mfp, curMfpMode, swl_str_len(curMfpMode))) {
+        swl_security_mfpMode_e idx = swl_security_mfpModeFromString(mfp);
         if(idx != pProfile->mfpConfig) {
             pProfile->mfpConfig = idx;
             changed |= 1;
@@ -1149,7 +1149,7 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
     }
     amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
 
-    wld_bitmaskToCSValues(TBuf, sizeof(TBuf), pEP->secModesSupported, cstr_AP_ModesSupported);
+    swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pEP->secModesSupported);
     SAH_TRACEZ_INFO(ME, "Security.ModesSupported=%s", TBuf);
     amxd_object_set_cstring_t(amxd_object_findf(object, "Security"), "ModesSupported", TBuf);
 
@@ -1443,22 +1443,22 @@ bool wld_endpoint_validate_profile(const T_EndPointProfile* epProfile) {
 
     /* check or the security mode/keys are valid */
 
-    if(epProfile->secModeEnabled == APMSI_UNKNOWN) {
+    if(epProfile->secModeEnabled == SWL_SECURITY_APMODE_UNKNOWN) {
         SAH_TRACEZ_ERROR(ME, "Invalid security mode");
         return false;
     }
 
-    wld_securityMode_e keyClassification = APMSI_NONE;
-    if((epProfile->secModeEnabled >= APMSI_WEP64) && (epProfile->secModeEnabled <= APMSI_WEP128IV)) {
+    swl_security_apMode_e keyClassification = SWL_SECURITY_APMODE_NONE;
+    if(swl_security_isApModeWEP(epProfile->secModeEnabled)) {
         keyClassification = isValidWEPKey(epProfile->WEPKey);
         if(epProfile->secModeEnabled != keyClassification) {
             SAH_TRACEZ_ERROR(ME, "Invalid WEP key [%s] (detected mode [%u]) for mode [%u]", epProfile->WEPKey, keyClassification, epProfile->secModeEnabled);
             return false;
         }
-    } else if((epProfile->secModeEnabled == APMSI_WPA_WPA2_P)
-              || (epProfile->secModeEnabled == APMSI_WPA_P)
-              || (epProfile->secModeEnabled == APMSI_WPA_E)
-              || (epProfile->secModeEnabled == APMSI_WPA_WPA2_E)
+    } else if((epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA_WPA2_P)
+              || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA_P)
+              || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA_E)
+              || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA_WPA2_E)
               ) {
         if(!epProfile->keyPassPhrase[0]) {
             SAH_TRACEZ_ERROR(ME, "Invalid KeyPassPhrase: [%s]", epProfile->keyPassPhrase);
@@ -1466,45 +1466,45 @@ bool wld_endpoint_validate_profile(const T_EndPointProfile* epProfile) {
         }
 
         if(isValidPSKKey(epProfile->keyPassPhrase)) {
-            keyClassification = APMSI_WPA_P;
+            keyClassification = SWL_SECURITY_APMODE_WPA_P;
         }
 
 
-        if(APMSI_WPA2_P != keyClassification) {
+        if(SWL_SECURITY_APMODE_WPA2_P != keyClassification) {
             if(isValidAESKey(epProfile->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
-                keyClassification = APMSI_WPA2_P;
+                keyClassification = SWL_SECURITY_APMODE_WPA2_P;
             }
 
-            if(APMSI_WPA2_P != keyClassification) {
+            if(SWL_SECURITY_APMODE_WPA2_P != keyClassification) {
                 SAH_TRACEZ_ERROR(ME, "invalid KeyPassPhrase: [%s]", epProfile->keyPassPhrase);
                 return false;
             }
         }
-    } else if((epProfile->secModeEnabled == APMSI_WPA2_P) || (epProfile->secModeEnabled == APMSI_WPA2_E)) {
+    } else if((epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA2_P) || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA2_E)) {
         if(isValidAESKey(epProfile->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
-            keyClassification = APMSI_WPA2_P;
+            keyClassification = SWL_SECURITY_APMODE_WPA2_P;
         }
-        if(!(APMSI_WPA2_P == keyClassification)) {
+        if(!(SWL_SECURITY_APMODE_WPA2_P == keyClassification)) {
             SAH_TRACEZ_ERROR(ME, "invalid KeyPassPhrase :[%s] (detected mode [%u]) for mode [%u]", epProfile->keyPassPhrase, keyClassification, epProfile->secModeEnabled);
             return false;
         }
-    } else if((epProfile->secModeEnabled == APMSI_WPA3_P) || (epProfile->secModeEnabled == APMSI_WPA2_WPA3_P)
-              || (epProfile->secModeEnabled == APMSI_WPA3_E) || (epProfile->secModeEnabled == APMSI_WPA2_WPA3_E)) {
+    } else if((epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P) || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA2_WPA3_P)
+              || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA3_E) || (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA2_WPA3_E)) {
         if(isValidAESKey(epProfile->saePassphrase, SAE_KEY_SIZE_LEN)) {
-            keyClassification = APMSI_WPA3_P;
+            keyClassification = SWL_SECURITY_APMODE_WPA3_P;
         } else if(isValidAESKey(epProfile->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
-            keyClassification = APMSI_WPA2_P;
+            keyClassification = SWL_SECURITY_APMODE_WPA2_P;
         }
-        if(!((APMSI_WPA3_P == keyClassification) || (APMSI_WPA2_P == keyClassification))) {
+        if(!((SWL_SECURITY_APMODE_WPA3_P == keyClassification) || (SWL_SECURITY_APMODE_WPA2_P == keyClassification))) {
             SAH_TRACEZ_ERROR(ME, "invalid saePassphrase :[%s] and keyPassPhrase :[%s] (detected mode [%u]) for mode [%u]",
                              epProfile->saePassphrase, epProfile->keyPassPhrase, keyClassification, epProfile->secModeEnabled);
             return false;
         }
-    } else if(epProfile->secModeEnabled == APMSI_AUTO) {
-        keyClassification = APMSI_AUTO;
+    } else if(epProfile->secModeEnabled == SWL_SECURITY_APMODE_AUTO) {
+        keyClassification = SWL_SECURITY_APMODE_AUTO;
     }
 
-    if((epProfile->secModeEnabled > APMSI_NONE) && (keyClassification == APMSI_NONE)) {
+    if((epProfile->secModeEnabled > SWL_SECURITY_APMODE_NONE) && (keyClassification == SWL_SECURITY_APMODE_NONE)) {
         SAH_TRACEZ_ERROR(ME, "No key available for security method [%d]", epProfile->secModeEnabled);
         return false;
     }
@@ -2084,7 +2084,7 @@ amxd_status_t _EndPoint_debug(amxd_object_t* object,
             char macBuffer[ETHER_ADDR_STR_LEN];
             wldu_convMac2Str(pEP->currentProfile->BSSID, ETHER_ADDR_LEN, macBuffer, sizeof(macBuffer));
             amxc_var_add_key(cstring_t, retval, "BSSID", macBuffer);
-            amxc_var_add_key(cstring_t, retval, "Security", cstr_AP_ModesSupported[pEP->currentProfile->secModeEnabled]);
+            amxc_var_add_key(cstring_t, retval, "Security", swl_security_apModeToString(pEP->currentProfile->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
             amxc_var_add_key(cstring_t, retval, "KeyPassPhrase", pEP->currentProfile->keyPassPhrase);
             amxc_var_add_key(cstring_t, retval, "SAEPassphrase", pEP->currentProfile->saePassphrase);
             amxc_var_add_key(cstring_t, retval, "PreSharedKey", pEP->currentProfile->preSharedKey);

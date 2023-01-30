@@ -177,15 +177,14 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
     }
 
     switch(epProfile->secModeEnabled) {
-    case APMSI_NONE:
-    case APMSI_NONE_E:
+    case SWL_SECURITY_APMODE_NONE:
     {
         swl_mapChar_add(network, "key_mgmt", "NONE");
     }
     break;
-    case APMSI_WEP64:
-    case APMSI_WEP128:
-    case APMSI_WEP128IV:
+    case SWL_SECURITY_APMODE_WEP64:
+    case SWL_SECURITY_APMODE_WEP128:
+    case SWL_SECURITY_APMODE_WEP128IV:
     {
         swl_mapChar_add(network, "key_mgmt", "NONE");
         char WEPKEYCONV[36] = {0};
@@ -197,7 +196,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "wep_tx_keyidx", "0");
     }
     break;
-    case APMSI_WPA_P:
+    case SWL_SECURITY_APMODE_WPA_P:
     {
         swl_mapChar_add(network, "proto", "WPA");
         swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
@@ -208,7 +207,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
                       "%s: fail to set psk", pEP->Name);
     }
     break;
-    case APMSI_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
     {
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
@@ -219,7 +218,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
                       "%s: fail to set psk", pEP->Name);
     }
     break;
-    case APMSI_WPA_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
     {
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
@@ -230,7 +229,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
                       "%s: fail to set psk", pEP->Name);
     }
     break;
-    case APMSI_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P:
     {
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapChar_add(network, "key_mgmt", "WPA-PSK SAE");
@@ -243,7 +242,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
                       "%s: fail to set psk", pEP->Name);
     }
     break;
-    case APMSI_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
     {
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapChar_add(network, "key_mgmt", "SAE");
@@ -259,7 +258,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         break;
     }
 
-    wld_mfpConfig_e mfp = wld_util_getTargetMfpMode(epProfile->secModeEnabled, epProfile->mfpConfig);
+    swl_security_mfpMode_e mfp = swl_security_getTargetMfpMode(epProfile->secModeEnabled, epProfile->mfpConfig);
     swl_mapCharFmt_addValInt32(network, "ieee80211w", mfp);
 
     swl_mapChar_add(network, "multi_ap_backhaul_sta", "1");

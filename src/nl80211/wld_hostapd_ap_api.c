@@ -268,9 +268,9 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     // set the key value
     switch(pAP->secModeEnabled) {
-    case APMSI_WEP64:
-    case APMSI_WEP128:
-    case APMSI_WEP128IV:
+    case SWL_SECURITY_APMODE_WEP64:
+    case SWL_SECURITY_APMODE_WEP128:
+    case SWL_SECURITY_APMODE_WEP128IV:
     {
         const char* secParams[] = {"wep_key0", "wep_key1", "wep_key2", "wep_key3", };
         //in wep mode, we need to restart hostapd to apply new wep_keys
@@ -278,9 +278,9 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
-    case APMSI_WPA_P:
-    case APMSI_WPA2_P:
-    case APMSI_WPA_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
     {
         const char* secParams[] = {
             "wpa_psk", "wpa_passphrase",
@@ -291,8 +291,8 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
-    case APMSI_WPA2_WPA3_P:
-    case APMSI_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
     {
         const char* secParams[] = {
             "wpa_psk", "wpa_passphrase", "sae_password",
@@ -303,11 +303,11 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
-    case APMSI_WPA_E:
-    case APMSI_WPA2_E:
-    case APMSI_WPA_WPA2_E:
-    case APMSI_WPA3_E:
-    case APMSI_WPA2_WPA3_E:
+    case SWL_SECURITY_APMODE_WPA_E:
+    case SWL_SECURITY_APMODE_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA3_E:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_E:
     {
         const char* secParams[] = {"auth_server_shared_secret", };
         //in wpa eap, we need to refresh whole hostapd config from file
@@ -315,8 +315,7 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);
     }
     break;
-    case APMSI_NONE:
-    case APMSI_NONE_E:
+    case SWL_SECURITY_APMODE_NONE:
     default:
         break;
     }
@@ -850,21 +849,21 @@ swl_rc_ne wld_ap_hostapd_delMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
 
 /* Ref. WPA3_Specification_v3.0 */
 SWL_TABLE(sAkmSuiteSelectorMap,
-          ARR(char* akmSuiteSelectorStr; wld_securityMode_e secMode; ),
+          ARR(char* akmSuiteSelectorStr; swl_security_apMode_e secMode; ),
           ARR(swl_type_charPtr, swl_type_uint32, ),
-          ARR({"00-0f-ac-1", APMSI_WPA2_E},      // EAP (SHA-1)
-              {"00-0f-ac-2", APMSI_WPA2_P},      // PSK (SHA1)
-              {"00-0f-ac-3", APMSI_WPA2_P},      // FT-EAP (SHA256)
-              {"00-0f-ac-4", APMSI_WPA2_P},      // FT-PSK (SHA1) (11r)
-              {"00-0f-ac-5", APMSI_WPA3_E},      // EAP (SHA-256)
-              {"00-0f-ac-6", APMSI_WPA2_WPA3_P}, // PSK (SHA256)
-              {"00-0f-ac-8", APMSI_WPA3_P},      // SAE (SHA256)
-              {"00-0f-ac-9", APMSI_WPA3_P},      // FT-SAE (SHA256) (11r)
+          ARR({"00-0f-ac-1", SWL_SECURITY_APMODE_WPA2_E},      // EAP (SHA-1)
+              {"00-0f-ac-2", SWL_SECURITY_APMODE_WPA2_P},      // PSK (SHA1)
+              {"00-0f-ac-3", SWL_SECURITY_APMODE_WPA2_P},      // FT-EAP (SHA256)
+              {"00-0f-ac-4", SWL_SECURITY_APMODE_WPA2_P},      // FT-PSK (SHA1) (11r)
+              {"00-0f-ac-5", SWL_SECURITY_APMODE_WPA3_E},      // EAP (SHA-256)
+              {"00-0f-ac-6", SWL_SECURITY_APMODE_WPA2_WPA3_P}, // PSK (SHA256)
+              {"00-0f-ac-8", SWL_SECURITY_APMODE_WPA3_P},      // SAE (SHA256)
+              {"00-0f-ac-9", SWL_SECURITY_APMODE_WPA3_P},      // FT-SAE (SHA256) (11r)
               ));
 swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
     // when failing to get sta info from hostpad, consider security mode unknown
-    pAD->assocCaps.currentSecurity = APMSI_UNKNOWN;
+    pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_UNKNOWN;
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     char buff[WLD_L_BUF] = {0};
@@ -892,16 +891,16 @@ swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
 
     if(wld_wpaCtrl_getValueIntExt(buff, "wpa", &val)) {
         switch(val) {
-        case 1: pAD->assocCaps.currentSecurity = APMSI_WPA_P; break;  // WPA_VERSION_WPA = 1: WPA / IEEE 802.11i/D3.0
-        case 2: pAD->assocCaps.currentSecurity = APMSI_WPA2_P; break; // WPA_VERSION_WPA2 = 2: WPA2 / IEEE 802.11i
-        default: break;                                               // WPA_VERSION_NO_WPA = 0 : WPA not used => Open or WEP or EAP
+        case 1: pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_WPA_P; break;  // WPA_VERSION_WPA = 1: WPA / IEEE 802.11i/D3.0
+        case 2: pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_WPA2_P; break; // WPA_VERSION_WPA2 = 2: WPA2 / IEEE 802.11i
+        default: break;                                                             // WPA_VERSION_NO_WPA = 0 : WPA not used => Open or WEP or EAP
         }
     }
     // if WPA not used, then sec mode may be Open, WEP, EAP ...
     // even with wpa3, we need  refine secMode using the selected AuthenticationKeyManagement (AKM) suite
     // Eg: AKMSuiteSelector=00-0f-ac-8
     if(wld_wpaCtrl_getValueStr(buff, "AKMSuiteSelector", valStr, sizeof(valStr)) > 0) {
-        wld_securityMode_e* pCurrSec = (wld_securityMode_e*) swl_table_getMatchingValue(&sAkmSuiteSelectorMap, 1, 0, valStr);
+        swl_security_apMode_e* pCurrSec = (swl_security_apMode_e*) swl_table_getMatchingValue(&sAkmSuiteSelectorMap, 1, 0, valStr);
         if(pCurrSec) {
             pAD->assocCaps.currentSecurity = *pCurrSec;
         }

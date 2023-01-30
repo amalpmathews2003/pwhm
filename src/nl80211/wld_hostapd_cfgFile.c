@@ -317,8 +317,8 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
     switch(pAP->secModeEnabled) {
-    case APMSI_WPA_WPA2_P:
-    case APMSI_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
     {
         // Disable PKMSA caching
         swl_mapCharFmt_addValInt32(vapConfigMap, "disable_pmksa_caching", 1);
@@ -328,8 +328,8 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_disable_eapol_key_retries", 0);
         break;
     }
-    case APMSI_WPA2_WPA3_P:
-    case APMSI_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
     {
         // Disable PKMSA caching
         swl_mapCharFmt_addValInt32(vapConfigMap, "disable_pmksa_caching", 1);
@@ -427,9 +427,9 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
 
     char* wpa_key_str = ((strlen(pAP->keyPassPhrase) + 1) == PSK_KEY_SIZE_LEN) ? "wpa_psk" : "wpa_passphrase";
     switch(pAP->secModeEnabled) {
-    case APMSI_WEP64:
-    case APMSI_WEP128:
-    case APMSI_WEP128IV:
+    case SWL_SECURITY_APMODE_WEP64:
+    case SWL_SECURITY_APMODE_WEP128:
+    case SWL_SECURITY_APMODE_WEP128IV:
     {
         swl_mapChar_add(vapConfigMap, "wpa", "0");
         swl_mapChar_add(vapConfigMap, "wep_default_key", "0");
@@ -441,10 +441,10 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "wep_key3", WEPKEYCONV);
         break;
     }
-    case APMSI_WPA_P:
-    case APMSI_WPA2_P:
-    case APMSI_WPA_WPA2_P:
-        tval = (pAP->secModeEnabled - APMSI_WPA_P) + 1;
+    case SWL_SECURITY_APMODE_WPA_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
+        tval = (pAP->secModeEnabled - SWL_SECURITY_APMODE_WPA_P) + 1;
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa", tval);
         if(pAP->keyPassPhrase[0]) {    /* prefer AES key? ontop of TKIP */
             swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", pAP->IEEE80211rEnable ? "WPA-PSK FT-PSK" : "WPA-PSK");
@@ -465,7 +465,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
         swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", pAP->mfpConfig);
         break;
-    case APMSI_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P:
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", "WPA-PSK SAE");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
@@ -484,7 +484,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "1");
         break;
-    case APMSI_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", pAP->IEEE80211rEnable ? "SAE FT-SAE" : "SAE");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
@@ -509,7 +509,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
             }
         }
         break;
-    case APMSI_OWE:
+    case SWL_SECURITY_APMODE_OWE:
     {
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
@@ -522,7 +522,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         }
         break;
     }
-    case APMSI_NONE:
+    case SWL_SECURITY_APMODE_NONE:
     {
         swl_mapChar_add(vapConfigMap, "wpa", "0");
         T_AccessPoint* transitionAp;
@@ -532,18 +532,10 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         }
         break;
     }
-    case APMSI_NONE_E:
-        swl_mapChar_add(vapConfigMap, "wpa", "0");
-        swl_mapChar_add(vapConfigMap, "auth_server_addr", *pAP->radiusServerIPAddr ? pAP->radiusServerIPAddr : "127.0.0.1");
-        swl_mapCharFmt_addValInt32(vapConfigMap, "auth_server_port", pAP->radiusServerPort);
-        if(!swl_str_isEmpty(pAP->radiusSecret)) {
-            swl_mapChar_add(vapConfigMap, "auth_server_shared_secret", pAP->radiusSecret);
-        }
-        break;
-    case APMSI_WPA_E:
-    case APMSI_WPA2_E:
-    case APMSI_WPA_WPA2_E:
-        tval = (pAP->secModeEnabled - APMSI_WPA_E) + 1;
+    case SWL_SECURITY_APMODE_WPA_E:
+    case SWL_SECURITY_APMODE_WPA2_E:
+    case SWL_SECURITY_APMODE_WPA_WPA2_E:
+        tval = (pAP->secModeEnabled - SWL_SECURITY_APMODE_WPA_E) + 1;
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa", tval),
         swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", pAP->IEEE80211rEnable ? "WPA-EAP FT-EAP" : "WPA-EAP");
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_pairwise", "%s %s", (tval & 1) ? "TKIP" : "", (tval & 2) ? "CCMP" : "");
@@ -607,13 +599,13 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     T_Radio* pRad = pAP->pRadio;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
-    if(!pAP->WPS_Enable || (pAP->secModeEnabled == APMSI_WPA3_P)) {
+    if(!pAP->WPS_Enable || (pAP->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P)) {
         swl_mapChar_add(vapConfigMap, "wps_state", "0");
         return;
     }
     bool wps_enable = (pAP->WPS_Enable &&
                        ((!pAP->secModeEnabled && pAP->WPS_CertMode) ||
-                        (pAP->secModeEnabled > APMSI_WEP128IV) ||
+                        (!swl_security_isApModeWEP(pAP->secModeEnabled)) ||
                         (!pAP->WPS_Configured)));
     swl_mapChar_add(vapConfigMap, "wps_state", wps_enable ? (pAP->WPS_Configured ? "2" : "1") : "0");
     swl_mapChar_add(vapConfigMap, "wps_independent", "1");

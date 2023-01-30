@@ -408,61 +408,6 @@ typedef enum {
     APMFM_COUNT
 } wld_mfMode_e;
 
-extern const char* cstr_AP_ModesSupported[];
-
-typedef enum {
-    APMSI_NONE,
-    APMSI_OWE,
-    APMSI_WEP64,
-    APMSI_WEP128,
-    APMSI_WEP128IV,
-    APMSI_WPA_P,
-    APMSI_WPA2_P,
-    APMSI_WPA_WPA2_P,
-    APMSI_WPA3_P,
-    APMSI_WPA2_WPA3_P,
-    APMSI_NONE_E,
-    APMSI_WPA_E,
-    APMSI_WPA2_E,
-    APMSI_WPA_WPA2_E,
-    APMSI_WPA3_E,
-    APMSI_WPA2_WPA3_E,
-    APMSI_AUTO,
-    APMSI_UNSUPPORTED,
-    APMSI_UNKNOWN,
-    APMSI_MAX
-} wld_securityMode_e;
-
-typedef uint32_t wld_securityMode_m;
-
-#define APMS_NONE            (1 << APMSI_NONE)
-#define APMS_OWE             (1 << APMSI_OWE)
-#define APMS_WEP64           (1 << APMSI_WEP64)
-#define APMS_WEP128          (1 << APMSI_WEP128)
-#define APMS_WEP128IV        (1 << APMSI_WEP128IV)
-#define APMS_WPA_P           (1 << APMSI_WPA_P)
-#define APMS_WPA2_P          (1 << APMSI_WPA2_P)
-#define APMS_WPA_WPA2_P      (1 << APMSI_WPA_WPA2_P)
-#define APMS_WPA3_P          (1 << APMSI_WPA3_P)
-#define APMS_WPA2_WPA3_P     (1 << APMSI_WPA2_WPA3_P)
-#define APMS_NONE_E          (1 << APMSI_NONE_E)
-#define APMS_WPA_E           (1 << APMSI_WPA_E)
-#define APMS_WPA2_E          (1 << APMSI_WPA2_E)
-#define APMS_WPA_WPA2_E      (1 << APMSI_WPA_WPA2_E)
-#define APMS_WPA3_E          (1 << APMSI_WPA3_E)
-#define APMS_WPA2_WPA3_E     (1 << APMSI_WPA2_WPA3_E)
-#define APMS_AUTO            (1 << APMSI_AUTO)
-#define APMS_UNSUPPORTED     (1 << APMSI_UNSUPPORTED)
-#define APMS_UNKNOWN         (1 << APMSI_UNKNOWN)
-
-typedef enum {
-    WLD_MFP_DISABLED,
-    WLD_MFP_OPTIONAL,
-    WLD_MFP_REQUIRED,
-    WLD_MFP_MAX
-} wld_mfpConfig_e;
-extern const char* wld_mfpConfig_str[WLD_MFP_MAX];
-
 typedef enum {
     AP_TD_WPA3_P,
     AP_TD_SAE_PK,
@@ -810,7 +755,7 @@ typedef struct {
 
     swl_oui_list_t vendorOUI;
 
-    wld_securityMode_e currentSecurity;
+    swl_security_apMode_e currentSecurity;
     wld_enc_modes_e encryptMode;
     swl_bandwidth_e linkBandwidth;
 
@@ -1703,15 +1648,15 @@ struct S_ACCESSPOINT {
     char R0KHKey[KHKEY_MAX_LEN];                /* R0 key used by the AP */
     uint16_t mobilityDomain;                    /* MobilityDomain, common to all APs inside the network */
     wld_cfg11u_t cfg11u;
-    wld_securityMode_m secModesAvailable;       /* Bit pattern for available security modes */
-    wld_securityMode_m secModesSupported;       /* Bit pattern for supported security modes */
-    wld_securityMode_e secModeEnabled;          /* ModesSupported. */
+    swl_security_apMode_m secModesAvailable;    /* Bit pattern for available security modes */
+    swl_security_apMode_m secModesSupported;    /* Bit pattern for supported security modes */
+    swl_security_apMode_e secModeEnabled;       /* ModesSupported. */
     char WEPKey[36];                            /* Max 32, but we need some 0 for termination (and alignment) */
     char preSharedKey[PSK_KEY_SIZE_LEN];
     char keyPassPhrase[PSK_KEY_SIZE_LEN];
     char saePassphrase[SAE_KEY_SIZE_LEN];
     wld_enc_modes_e encryptionModeEnabled;
-    wld_mfpConfig_e mfpConfig;
+    swl_security_mfpMode_e mfpConfig;
     int sppAmsdu;
     int rekeyingInterval;
     int SHA256Enable;              /* (NEW) If supported add extra key protection */
@@ -1856,7 +1801,7 @@ struct S_EndPoint {
     T_SSID* pSSID;                                  /* Contains a direct pointer to the created SSID for this VAP */
     T_Radio* pRadio;                                /* Contains a direct pointer to the parent of this VAP */
 
-    wld_securityMode_m secModesSupported;           /* Bit pattern for supported security modes */
+    swl_security_apMode_m secModesSupported;        /* Bit pattern for supported security modes */
 
     bool WPS_Enable;                                /* WPS enabled? */
     int WPS_Configured;                             /* Not in ODL but required */
@@ -1906,12 +1851,12 @@ struct _EndPointProfile {
     char location[64];
     uint8_t priority;
 
-    wld_securityMode_e secModeEnabled;
+    swl_security_apMode_e secModeEnabled;
     char WEPKey[36];        /* Max 32, but we need some 0 for termination (and alignment) */
     char preSharedKey[PSK_KEY_SIZE_LEN];
     char keyPassPhrase[PSK_KEY_SIZE_LEN];
     char saePassphrase[SAE_KEY_SIZE_LEN];
-    wld_mfpConfig_e mfpConfig;
+    swl_security_mfpMode_e mfpConfig;
     amxc_llist_it_t it;
     amxd_object_t* pBus;
     T_EndPoint* endpoint;

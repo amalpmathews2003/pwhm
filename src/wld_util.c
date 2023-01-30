@@ -982,47 +982,6 @@ void longArrayClean(unsigned long* array, int len) {
 }
 
 /**
- * @brief isModeWEP
- *
- * Check if given mode is one of the WEP modes.
- *
- * @param mode The security mode.
- * @return true if the mode is a WEP mode, false otherwise.
- */
-bool isModeWEP(wld_securityMode_e mode) {
-    if((mode == APMSI_WEP64) || (mode == APMSI_WEP128) || (mode == APMSI_WEP128IV)) {
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @brief isModeWPAPersonal
- *
- * Check if given mode is one of the WPA personal modes.
- *
- * @param mode The security mode.
- * @return true if the mode is a WPA personal mode, false otherwise.
- */
-bool isModeWPAPersonal(wld_securityMode_e mode) {
-    if((mode == APMSI_WPA_P) || (mode == APMSI_WPA2_P) || (mode == APMSI_WPA_WPA2_P)
-       || (mode == APMSI_WPA3_P) || (mode == APMSI_WPA2_WPA3_P)) {
-        return true;
-    }
-
-    return false;
-}
-
-bool isModeWPA3Personal(wld_securityMode_e mode) {
-    if((mode == APMSI_WPA3_P) || (mode == APMSI_WPA2_WPA3_P)) {
-        return true;
-    }
-
-    return false;
-}
-
-/**
  * @details isValidWEPKey check if given string is a valid WEP
  *          key. We support 5/13/16 ASCII WEP key or 10/26/32
  *          Hex WEP key
@@ -1031,11 +990,11 @@ bool isModeWPA3Personal(wld_securityMode_e mode) {
  *
  * @return due to legacy reasons, this returns the WEP standard for which this
  * key is suited. Possible return values are
- * * APMSI_WEP64
- * * APMSI_WEP128
- * * APMSI_WEP128IV
+ * * SWL_SECURITY_APMODE_WEP64
+ * * SWL_SECURITY_APMODE_WEP128
+ * * SWL_SECURITY_APMODE_WEP128IV
  */
-wld_securityMode_e isValidWEPKey (const char* key) {
+swl_security_apMode_e isValidWEPKey (const char* key) {
     ASSERTS_NOT_NULL(key, false, ME, "NULL");
     int len = strlen(key);
     int i;
@@ -1047,15 +1006,15 @@ wld_securityMode_e isValidWEPKey (const char* key) {
                 return 0;
             }
         }
-        return (len == 10) ? (APMSI_WEP64) : ((len == 26) ? APMSI_WEP128 : APMSI_WEP128IV);
+        return (len == 10) ? (SWL_SECURITY_APMODE_WEP64) : ((len == 26) ? SWL_SECURITY_APMODE_WEP128 : SWL_SECURITY_APMODE_WEP128IV);
     } else {
         /* Expect an ASCII string of fix lenght */
         if((len == 5) || (len == 13) || (len == 16)) {
-            return (len == 5) ? (APMSI_WEP64) : ((len == 13) ? APMSI_WEP128 : APMSI_WEP128IV);
+            return (len == 5) ? (SWL_SECURITY_APMODE_WEP64) : ((len == 13) ? SWL_SECURITY_APMODE_WEP128 : SWL_SECURITY_APMODE_WEP128IV);
         }
     }
     /* All other stuff... */
-    return APMSI_UNKNOWN;
+    return SWL_SECURITY_APMODE_UNKNOWN;
 }
 
 /**
@@ -2680,21 +2639,6 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
     }
     SAH_TRACEZ_INFO(ME, "Keys are identical");
     return true;
-}
-
-/**
- * get the MFPMode
- */
-wld_mfpConfig_e wld_util_getTargetMfpMode(wld_securityMode_e securityMode, wld_mfpConfig_e mfpConfig) {
-    if((securityMode == APMSI_WPA3_P)
-       && (mfpConfig < WLD_MFP_REQUIRED)) {
-        return WLD_MFP_REQUIRED;
-    }
-    if((securityMode == APMSI_WPA2_WPA3_P)
-       && (mfpConfig < WLD_MFP_OPTIONAL)) {
-        return WLD_MFP_OPTIONAL;
-    }
-    return mfpConfig;
 }
 
 bool wld_util_getObjName(char* objName, size_t objNameSize, amxd_object_t* obj) {
