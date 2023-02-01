@@ -225,18 +225,28 @@ int wld_ad_getIndex(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     return -1;
 }
 
-void wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+bool wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pAD, false, ME, "NULL");
     if(pAD->object) {
         amxd_trans_t trans;
-        amxd_object_t* adObjTempl = amxd_object_get_parent(pAD->object);
-        ASSERT_TRANSACTION_INIT(adObjTempl, &trans, , ME, "%s : trans init failure", pAD->Name);
-        amxd_trans_del_inst(&trans, amxd_object_get_index(pAD->object), NULL);
-        pAD->object->priv = NULL;
-        if(!wld_dm_transaction_apply(&trans, get_wld_plugin_dm())) {
-            SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pAD->Name);
-            pAD->object->priv = pAD;
-            return;
+        amxd_object_t* adObjTempl = amxd_object_get(pAP->pBus, "AssociatedDevice");
+        amxd_object_for_each(instance, it, adObjTempl) {
+            if(amxc_container_of(it, amxd_object_t, it) == pAD->object) {
+                uint32_t index = amxd_object_get_index(pAD->object);
+                ASSERT_TRUE(index > 0, false, ME, "wrong instance index");
+                ASSERT_TRANSACTION_INIT(adObjTempl, &trans, false, ME, "%s : trans init failure", pAD->Name);
+                amxd_trans_del_inst(&trans, index, NULL);
+                pAD->object->priv = NULL;
+                if(!wld_dm_transaction_apply(&trans, get_wld_plugin_dm())) {
+                    SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pAD->Name);
+                    pAD->object->priv = pAD;
+                    return false;
+                }
+                break;
+            }
         }
+        pAD->object = NULL;
     } else {
         SAH_TRACEZ_INFO(ME, "%s: object did not exist!", pAD->Name);
     }
@@ -245,6 +255,7 @@ void wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     if(i >= 0) {
         wld_ad_destroy_associatedDevice(pAP, i);
     }
+    return true;
 }
 
 

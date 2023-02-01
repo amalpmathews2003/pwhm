@@ -2525,6 +2525,26 @@ T_AssociatedDevice* wld_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t
     return wld_ad_create_associatedDevice(pAP, macAddress);
 }
 
+/*
+ * @brief compare assoc dev entries with their latestStateChangeTime values
+ * @param e1 entry 1
+ * @param e2 entry 2
+ * @return < 0 when e1 is selected (ie *e1 not null and oldest against *e2)
+ *         > 0 when e2 is selected (ie *e2 not null and oldest against *e1)
+ *         = 0 when e1 and e2 are equivalent
+ */
+static int s_inactAdCmp(const void* e1, const void* e2) {
+    T_AssociatedDevice** ppSta1 = (T_AssociatedDevice**) e1;
+    T_AssociatedDevice** ppSta2 = (T_AssociatedDevice**) e2;
+    //not null first
+    ASSERT_NOT_NULL(ppSta1, ((ppSta2 != NULL) && (*ppSta2 != NULL)), ME, "NULL");
+    ASSERT_NOT_NULL(ppSta2, -(*ppSta1 != NULL), ME, "NULL");
+    ASSERT_NOT_NULL(*ppSta1, (*ppSta2 != NULL), ME, "NULL");
+    ASSERT_NOT_NULL(*ppSta2, -1, ME, "NULL");
+    //oldest first
+    return ((*ppSta1)->latestStateChangeTime - (*ppSta2)->latestStateChangeTime);
+}
+
 /* clean up stations who failed authentication */
 bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
     int inactiveStaCount = 0;
@@ -2536,35 +2556,32 @@ bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
      * Since we should call this function each time a sta DC's, we use a simple
      * cleanup algorithm instead of doing the effort of sorting and cleaning.
      */
-    do {
-        inactiveStaCount = 0;
-        uint32_t inactiveStaIndex = 0;
-
-        for(int assocIndex = 0; assocIndex < pAP->AssociatedDeviceNumberOfEntries; assocIndex++) {
-            T_AssociatedDevice* pAD = pAP->AssociatedDevice[assocIndex];
-            if(!pAD) {
-                SAH_TRACEZ_ERROR(ME, "AssociatedDevice[%d] is NULL!", assocIndex);
-                SAH_TRACEZ_OUT(ME);
-                return false;
-            }
-
-            if(!pAD->Active) {
-                if(inactiveStaCount == 0) {
-                    inactiveStaIndex = assocIndex;
-                } else if(pAD->latestStateChangeTime < pAP->AssociatedDevice[inactiveStaIndex]->latestStateChangeTime) {
-                    inactiveStaIndex = assocIndex;
-                }
-                inactiveStaCount++;
-            }
+    T_AssociatedDevice* inactiveStaList[pAP->AssociatedDeviceNumberOfEntries + 1];
+    for(int assocIndex = 0; assocIndex < pAP->AssociatedDeviceNumberOfEntries; assocIndex++) {
+        T_AssociatedDevice* pAD = pAP->AssociatedDevice[assocIndex];
+        if((pAD != NULL) && (!pAD->Active)) {
+            inactiveStaList[inactiveStaCount] = pAD;
+            inactiveStaCount++;
         }
-
-        if(inactiveStaCount > (NR_OF_STICKY_UNAUTHORIZED_STATIONS)) {
-            SAH_TRACEZ_INFO(ME, "Destroying oldest failed-auth entry (%s) out of %d",
-                            pAP->AssociatedDevice[inactiveStaIndex]->Name,
-                            inactiveStaCount);
-            wld_ad_destroy(pAP, pAP->AssociatedDevice[inactiveStaIndex]);
+    }
+    if(inactiveStaCount <= NR_OF_STICKY_UNAUTHORIZED_STATIONS) {
+        return true;
+    }
+    //sort inactive stations by latestStateChangeTime
+    qsort(inactiveStaList, inactiveStaCount, sizeof(T_AssociatedDevice*), s_inactAdCmp);
+    for(int i = 0; i < (inactiveStaCount - NR_OF_STICKY_UNAUTHORIZED_STATIONS); i++) {
+        T_AssociatedDevice* inactiveSta = inactiveStaList[i];
+        if(inactiveSta == NULL) {
+            continue;
         }
-    } while(inactiveStaCount > NR_OF_STICKY_UNAUTHORIZED_STATIONS);
+        SAH_TRACEZ_INFO(ME, "Destroying oldest failed-auth entry (%s) out of %d",
+                        inactiveSta->Name,
+                        inactiveStaCount);
+        if(!wld_ad_destroy(pAP, inactiveSta)) {
+            SAH_TRACEZ_ERROR(ME, "Fail to destroy dm entry of (%s)", inactiveSta->Name);
+            return false;
+        }
+    }
     return true;
 }
 
