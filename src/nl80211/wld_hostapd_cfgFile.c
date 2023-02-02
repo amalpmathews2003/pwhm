@@ -331,8 +331,8 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     case SWL_SECURITY_APMODE_WPA2_WPA3_P:
     case SWL_SECURITY_APMODE_WPA3_P:
     {
-        // Disable PKMSA caching
-        swl_mapCharFmt_addValInt32(vapConfigMap, "disable_pmksa_caching", 1);
+        // Keep PKMSA caching (needed for SAE)
+        swl_mapCharFmt_addValInt32(vapConfigMap, "disable_pmksa_caching", 0);
         // Enable Opportunistic Key Caching (aka Proactive Key Caching)
         swl_mapCharFmt_addValInt32(vapConfigMap, "okc", 1);
         // Allow EAPOL key retries
