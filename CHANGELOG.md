@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.17.1 - 2023-02-02(12:09:17 +0000)
+
+### Other
+
+- fix cleanup of obsolete assocDevs with invalid objs
+
 ## Release v2.17.0 - 2023-01-30(14:22:54 +0000)
 
 ### Other
