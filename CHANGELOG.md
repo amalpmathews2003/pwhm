@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.17.2 - 2023-02-03(10:26:20 +0000)
+
+### Other
+
+- [pwhm] fix iphone device authentication issue in wpa3 modes
+
 ## Release v2.17.1 - 2023-02-02(12:09:17 +0000)
 
 ### Other
