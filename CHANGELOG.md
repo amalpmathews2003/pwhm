@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.18.0 - 2023-02-06(12:29:05 +0000)
+
+### Other
+
+- - Add disassociation event
+
 ## Release v2.17.2 - 2023-02-03(10:26:20 +0000)
 
 ### Other
