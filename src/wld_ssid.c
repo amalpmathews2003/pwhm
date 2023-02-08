@@ -167,12 +167,13 @@ amxd_status_t _wld_ssid_addInstance_ocf(amxd_object_t* object,
                                         void* priv) {
 
     char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
+    const char* name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
     SAH_TRACEZ_INFO(ME, "add instance object(%p:%s:%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path);
+                    object, name, path);
     free(path);
-    amxd_status_t status = amxd_status_ok;
-    status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
-    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
+    amxd_status_t status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
+    ASSERTI_NOT_EQUALS(status, amxd_status_duplicate, status, ME, "override instance (%p:%s)", object, name);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance %s (status %d)", name, status);
     amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
     ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
     s_createSsid(instance);
