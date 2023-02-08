@@ -31,7 +31,6 @@
                 parameter UAPSDEnable = 0;
                 parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
-                parameter BridgeInterface = "br-lan";
                 parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 0;
                 parameter MBOEnable = 0;
@@ -74,7 +73,6 @@
                 parameter UAPSDEnable = 0;
                 parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
-                parameter BridgeInterface = "br-lan";
                 parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 1;
                 parameter MBOEnable = 0;
@@ -113,7 +111,6 @@
                 parameter SSIDReference = "WiFi.SSID.vap2g0guest";
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Guest";
-                parameter BridgeInterface = "br-guest";
                 parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 0;
                 parameter MBOEnable = 0;
@@ -140,7 +137,6 @@
                 parameter SSIDReference = "WiFi.SSID.vap5g0guest";
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Guest";
-                parameter BridgeInterface = "br-guest";
                 parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 0;
                 parameter MBOEnable = 0;
