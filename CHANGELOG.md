@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.19.2 - 2023-02-09(08:32:45 +0000)
+
+### Other
+
+- Remove the set of bridge interfaces
+
 ## Release v2.19.1 - 2023-02-08(12:35:53 +0000)
 
 ### Other
