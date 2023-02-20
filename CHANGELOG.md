@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.20.0 - 2023-02-20(08:26:10 +0000)
+
+### Other
+
+- - IEEE80211k capabilities per station
+
 ## Release v2.19.2 - 2023-02-09(08:32:45 +0000)
 
 ### Other
