@@ -65,6 +65,7 @@
 #include "swla/swla_chanspec.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_channel.h"
+#include "wld/wld_chanmgt.h"
 #include "wld/wld_util.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_linuxIfStats.h"
@@ -171,7 +172,6 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
     SAH_TRACEZ_IN(ME);
     SAH_TRACEZ_INFO(ME, "init cap %s", pRad->Name);
     wld_rad_init_cap(pRad);
-    wld_rad_parse_cap(pRad);
 
     ASSERT_NOT_NULL(pWiphyInfo, , ME, "NULL");
     for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
@@ -191,16 +191,18 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
                 }
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, (char*) swl_table_getMatchingValue(&sCiphersMap, 1, 0, &cipherSuite));
             }
-            if(SWL_BIT_IS_SET(pBand->radStdsMask, SWL_RADSTD_AC)) {
-                if(SWL_BIT_IS_SET(pBand->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU)) {
-                    wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "EXPL_BF");
-                }
-                if(SWL_BIT_IS_SET(pBand->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU)) {
-                    wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "IMPL_BF");
-                }
-                if(SWL_BIT_IS_SET(pBand->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU)) {
-                    wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "MU_MIMO");
-                }
+            if(((pBand->freqBand == SWL_FREQ_BAND_5GHZ) &&
+                (pBand->bfCapsSupported[COM_DIR_TRANSMIT] & (M_RAD_BF_CAP_VHT_SU | M_RAD_BF_CAP_VHT_MU))) ||
+               (pBand->bfCapsSupported[COM_DIR_TRANSMIT] & (M_RAD_BF_CAP_HE_SU | M_RAD_BF_CAP_HE_MU))) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "EXPL_BF");
+            }
+            if(((pBand->freqBand == SWL_FREQ_BAND_5GHZ) &&
+                (pBand->bfCapsSupported[COM_DIR_RECEIVE] & (M_RAD_BF_CAP_VHT_SU | M_RAD_BF_CAP_VHT_MU))) ||
+               (pBand->bfCapsSupported[COM_DIR_RECEIVE] & (M_RAD_BF_CAP_HE_SU | M_RAD_BF_CAP_HE_MU))) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "IMPL_BF");
+            }
+            if(pBand->bfCapsSupported[COM_DIR_TRANSMIT] & (M_RAD_BF_CAP_VHT_MU | M_RAD_BF_CAP_HE_MU)) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "MU_MIMO");
             }
             if(pWiphyInfo->suppFeatures.dfsOffload) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "DFS_OFFLOAD");
@@ -216,6 +218,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             }
             if(pWiphyInfo->suppCmds.survey) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "SURVEY");
+            }
+            if(pWiphyInfo->suppCmds.WMMCapability) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "WME");
             }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
         }
@@ -321,7 +326,7 @@ void s_readChanInfo(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
     }
 }
 
-int s_updateChannels(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
+swl_rc_ne s_updateChannels(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pOperBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     pRad->nrPossibleChannels = 0;
@@ -336,7 +341,6 @@ int s_updateChannels(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
     }
     wld_channel_init_channels(pRad);
     s_readChanInfo(pRad, pOperBand);
-    wld_rad_write_possible_channels(pRad);
     return SWL_RC_OK;
 }
 
@@ -347,7 +351,10 @@ int wifiGen_rad_poschans(T_Radio* pRad, uint8_t* buf _UNUSED, int bufsize _UNUSE
     swl_rc_ne rc = wld_rad_nl80211_getWiphyInfo(pRad, &wiphyInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "Fail to get nl80211 wiphy info");
     wld_nl80211_bandDef_t* pOperBand = &wiphyInfo.bands[pRad->operatingFrequencyBand];
-    return s_updateChannels(pRad, pOperBand);
+    rc = s_updateChannels(pRad, pOperBand);
+    wld_rad_write_possible_channels(pRad);
+    wld_chanmgt_writeDfsChannels(pRad);
+    return rc;
 }
 
 int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) {
@@ -402,8 +409,6 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     pRad->channelBandwidthChangeReason = CHAN_REASON_INITIAL;
     pRad->channelChangeReason = CHAN_REASON_INITIAL;
-
-    wld_rad_update_operating_standard(pRad);
     pRad->autoChannelSupported = TRUE;
     pRad->autoChannelEnable = FALSE;
     pRad->autoChannelRefreshPeriod = FALSE;
@@ -503,8 +508,6 @@ int wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
     return true;
 }
 
-
-
 int32_t s_getMaxPow(T_Radio* pRad) {
     wld_nl80211_wiphyInfo_t pWiphyInfo;
     memset(&pWiphyInfo, 0, sizeof(wld_nl80211_wiphyInfo_t));
@@ -530,6 +533,7 @@ int32_t s_getMaxPow(T_Radio* pRad) {
 int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
     if(set & SET) {
         pRad->transmitPower = val;
+        ASSERTI_TRUE(wld_rad_hasActiveIface(pRad), SWL_RC_ERROR, ME, "%s not ready", pRad->Name);
 
         if(val == -1) {
             return wld_rad_nl80211_setTxPowerAuto(pRad);
@@ -555,12 +559,13 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
 
         return (retVal == SWL_RC_OK ? WLD_OK : WLD_ERROR);
     } else {
+        ASSERTI_TRUE(wld_rad_hasActiveIface(pRad), pRad->transmitPower, ME, "%s not ready", pRad->Name);
         int32_t maxPow = s_getMaxPow(pRad) * 100;
-        ASSERT_TRUE(maxPow != 0, WLD_ERROR, ME, "ERROR");
+        ASSERT_TRUE(maxPow != 0, SWL_RC_ERROR, ME, "ERROR");
 
         int32_t curDbm;
         swl_rc_ne retVal = wld_rad_nl80211_getTxPower(pRad, &curDbm);
-        ASSERT_TRUE(retVal == SWL_RC_OK, WLD_ERROR, ME, "ERROR");
+        ASSERT_TRUE(retVal == SWL_RC_OK, SWL_RC_ERROR, ME, "ERROR");
 
         if(curDbm == 0) {
             //auto set as 0

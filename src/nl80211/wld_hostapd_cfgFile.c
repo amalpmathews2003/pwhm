@@ -168,6 +168,9 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         .channel = pRad->channel,
     };
     swl_channel_t centerChan = swl_chanspec_getCentreChannel(&chanspec);
+    bool implicitBf = (pRad->implicitBeamFormingSupported && pRad->implicitBeamFormingEnabled);
+    bool explicitBf = (pRad->explicitBeamFormingSupported && pRad->explicitBeamFormingEnabled);
+    bool muMimo = (pRad->multiUserMIMOSupported && pRad->multiUserMIMOEnabled);
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AC)) {
         swl_mapChar_add(radConfigMap, "ieee80211ac", "1");
         if(pChWId) {
@@ -181,17 +184,24 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_80MHZ) && s_checkSGI(pRad, RGI_400NSEC)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SHORT-GI-80]");
         }
-        if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU)) {
-            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SU-BEAMFORMER]");
+        if(implicitBf) {
+            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) &&
+                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU)) ||
+               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU))) {
+                swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SU-BEAMFORMEE]");
+            }
         }
-        if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU)) {
-            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SU-BEAMFORMEE]");
-        }
-        if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU)) {
-            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MU-BEAMFORMER]");
-        }
-        if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_MU)) {
-            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MU-BEAMFORMEE]");
+        if(explicitBf) {
+            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
+                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU)) ||
+               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU))) {
+                swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SU-BEAMFORMER]");
+            }
+            if(((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
+                 SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU)) ||
+                (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU))) && muMimo) {
+                swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MU-BEAMFORMER]");
+            }
         }
         /*
          * only add vht_caps tags when they are really supported by the driver (nl80211 phy caps).
@@ -205,6 +215,25 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         if(pChWId) {
             swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_chwidth", *pChWId);
             swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_centr_freq_seg0_idx", centerChan);
+        }
+        if(implicitBf) {
+            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) &&
+                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_HE_SU)) ||
+               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_HE_SU))) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "he_su_beamformee", 1);
+            }
+        }
+        if(explicitBf) {
+            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
+                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_SU)) ||
+               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_SU))) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "he_su_beamformer", 1);
+            }
+            if(((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
+                 SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU)) ||
+                (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU))) && muMimo) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "he_mu_beamformer", 1);
+            }
         }
         /*
             !!Note:!!
@@ -572,7 +601,12 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "hs20_deauth_req_timeout", 0);
         swl_mapCharFmt_addValInt32(vapConfigMap, "osen", false);
     }
-    swl_mapChar_add(vapConfigMap, "wmm_enabled", "1");
+    if(pAP->WMMCapability && pAP->WMMEnable) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wmm_enabled", true);
+    }
+    if(pAP->UAPSDCapability && pAP->UAPSDEnable) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "uapsd_advertisement_enabled", true);
+    }
     //Temporarily disabled : triggering station disconnection
     swl_mapChar_add(vapConfigMap, "#bss_transition", "1");
     swl_mapChar_add(vapConfigMap, "notify_mgmt_frames", "1");

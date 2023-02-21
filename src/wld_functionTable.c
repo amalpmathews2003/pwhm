@@ -364,12 +364,12 @@ static int TRAP_mfn_misc_has_support(T_Radio* rad, T_AccessPoint* vap, char* buf
     return -1;
 }
 
-static int TRAP_mfn_wifi_supvend_modes(T_Radio* rad, T_AccessPoint* dstAP, amxd_object_t* object) {
+static swl_rc_ne TRAP_mfn_wifi_supvend_modes(T_Radio* rad, T_AccessPoint* dstAP, amxd_object_t* object, amxc_var_t* params _UNUSED) {
     _UNUSED_(rad);
     _UNUSED_(dstAP);
     _UNUSED_(object);
-    SAH_TRACEZ_NOTICE(ME, "%p %p %p", rad, dstAP, object);
-    return -1;
+    SAH_TRACEZ_NOTICE(ME, "%p %p %p %p", rad, dstAP, object, params);
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_on_bridge_state_change(T_Radio* rad, T_AccessPoint* vap, int set) {

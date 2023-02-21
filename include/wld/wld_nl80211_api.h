@@ -77,6 +77,23 @@
  */
 const T_CWLD_FUNC_TABLE* wld_nl80211_getVendorTable();
 
+#define CALL_NL80211_FTA(fun, arg, ...) \
+    { \
+        const T_CWLD_FUNC_TABLE* ftaTab = wld_nl80211_getVendorTable(); \
+        if((ftaTab != NULL) && (ftaTab->fun != NULL)) { \
+            ftaTab->fun(arg, ## __VA_ARGS__); \
+        } \
+    }
+
+#define CALL_NL80211_FTA_RET(ret, fun, arg, ...) \
+    { \
+        ret = SWL_RC_NOT_IMPLEMENTED; \
+        const T_CWLD_FUNC_TABLE* ftaTab = wld_nl80211_getVendorTable(); \
+        if((ftaTab != NULL) && (ftaTab->fun != NULL)) { \
+            ret = ftaTab->fun(arg, ## __VA_ARGS__); \
+        } \
+    }
+
 /*
  * @brief return registered FSM manager, defining action sequences and state transitions
  * of wld implementation for nl80211.

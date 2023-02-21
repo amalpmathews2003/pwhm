@@ -180,8 +180,8 @@ swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile) {
  */
 swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_TRUE(wld_wpaCtrlInterface_isReady(pEP->wpaCtrlInterface), SWL_RC_ERROR, ME, "%s: wpactrl iface not ready", pEP->alias);
-    ASSERT_TRUE(pEP->index > 0, SWL_RC_ERROR, ME, "%s: iface has no netdev index", pEP->alias);
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pEP->wpaCtrlInterface), SWL_RC_ERROR, ME, "%s: wpactrl iface not ready", pEP->alias);
+    ASSERTI_TRUE(pEP->index > 0, SWL_RC_ERROR, ME, "%s: iface has no netdev index", pEP->alias);
     int ret = wld_linuxIfUtils_getLinkState(wld_rad_getSocket(pEP->pRadio), pEP->Name);
     ASSERT_FALSE(ret <= 0, SWL_RC_ERROR, ME, "%s: link down", pEP->alias);
     return SWL_RC_OK;

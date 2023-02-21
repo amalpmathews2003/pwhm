@@ -110,10 +110,6 @@ amxd_status_t _checkWPSPIN(amxd_object_t* obj,
                            amxc_var_t* args,
                            amxc_var_t* ret);
 
-void _wld_radio_addInstance_ocf(const char* const sig_name _UNUSED,
-                                const amxc_var_t* const data,
-                                void* const priv _UNUSED);
-
 extern amxc_llist_t g_radios;
 
 /* DEBUG !!! FIX ME */

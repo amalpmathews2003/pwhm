@@ -1107,7 +1107,10 @@ define rrm_t{
 		 * indicates auto mode (automatic decision by CPE). </p>
 		 */
 		%persistent int32 TransmitPower = -1 {
-			on action write call wld_rad_setTxPower_pwf;      /* Set transmit power - FIX Me, we disable this on driver */
+			on action validate call check_range { min = -1, max = 100 };
+			on action validate call wld_rad_validateTxPower_pvf;
+			on action read call wld_rad_getTxPower_prf;
+			on action write call wld_rad_setTxPower_pwf;
 		}
 
 		/**
@@ -1753,9 +1756,7 @@ define rrm_t{
 		 * data and configuration to be made available.
 		 * Triggers a callback in the vendor plugin
 		 */
-		%persistent object Vendor{
-			on action write call wld_rad_setVendorData_owf;
-		}
+		%persistent object Vendor;
 
 		/**
 		 * Percentage of time that the channel is unavailable for sending. This can be
@@ -5716,6 +5717,8 @@ define rrm_t{
 %populate {
 	on event "dm:instance-added" call wld_radio_addInstance_ocf
 		filter 'path == "WiFi.Radio."';
+	on event regexp("dm:object-(added|changed)") call wld_rad_setVendorData_ocf
+		filter 'path matches "WiFi\.Radio\.[0-9]+\.Vendor\.+"';
 }
 
 /** @location sah_lib_wld /wld.odl */

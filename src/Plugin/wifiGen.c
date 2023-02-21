@@ -167,19 +167,15 @@ int wifiGen_addRadios() {
             continue;
         }
         T_Radio* pRad = wld_rad_get_radio(pMainIface->name);
-        if(pRad) {
+        if(pRad == NULL) {
+            SAH_TRACEZ_WARNING(ME, "Interface %s handled by %s", pMainIface->name, s_vendor->name);
+            wld_addRadio(pMainIface->name, s_vendor, -1);
+        } else {
             SAH_TRACEZ_WARNING(ME, "Interface %s already handled by %s", pMainIface->name, pRad->vendor->name);
-            index++;
-            continue;
         }
-        SAH_TRACEZ_WARNING(ME, "Interface %s handled by %s", pMainIface->name, s_vendor->name);
-        wld_addRadio(pMainIface->name, s_vendor, index);
         index++;
     }
-    if(index == 0) {
-        SAH_TRACEZ_INFO(ME, "NO Wireless interface found");
-        return SWL_RC_ERROR;
-    }
+    ASSERTW_NOT_EQUALS(index, 0, SWL_RC_ERROR, ME, "NO Wireless interface found");
 
     return SWL_RC_OK;
 }

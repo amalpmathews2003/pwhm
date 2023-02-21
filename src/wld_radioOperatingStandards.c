@@ -195,6 +195,7 @@ void wld_rad_update_operating_standard(T_Radio* pRad) {
                  pRad->Name, pRad->operatingStandards, pRad->supportedStandards);
     char* oldStandardsText = amxd_object_get_cstring_t(pRad->pBus, "OperatingStandards", NULL);
     ASSERT_NOT_NULL(oldStandardsText, , ME, "OperatingStandards not found in pRad object");
+    free(oldStandardsText);
     swl_radioStandard_m oldStandards = pRad->operatingStandards;
 
     //If operatingStandards not yet set, ignore update.
@@ -209,11 +210,11 @@ void wld_rad_update_operating_standard(T_Radio* pRad) {
     amxc_string_t operatingStandardsText = swl_radStd_toStr(pRad->operatingStandards,
                                                             pRad->operatingStandardsFormat, pRad->supportedStandards);
 
-    SAH_TRACEZ_INFO(ME, "%s update_operating_standard: update from %#x (%s) to %#x (%s)",
+    SAH_TRACEZ_INFO(ME, "%s update_operating_standard: update from %#x to %#x (%s)",
                     pRad->Name,
-                    oldStandards, oldStandardsText,
-                    pRad->operatingStandards, operatingStandardsText.buffer);
-    amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", operatingStandardsText.buffer);
+                    oldStandards,
+                    pRad->operatingStandards, amxc_string_get(&operatingStandardsText, 0));
+    amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", amxc_string_get(&operatingStandardsText, 0));
     amxc_string_clean(&operatingStandardsText);
 
     SAH_TRACEZ_OUT(ME);

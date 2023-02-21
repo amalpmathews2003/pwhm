@@ -232,12 +232,35 @@ swl_rc_ne wld_vendorModule_parseOdl(const char* path) {
 }
 
 SWL_MAP_TYPE(privTraceZoneMap, swl_type_charPtr, swl_type_uint32)
+static void s_getCurrentTraceZones(swl_map_t* pCurrZoneMaps) {
+    ASSERTS_NOT_NULL(pCurrZoneMaps, , ME, "NULL");
+    memset(pCurrZoneMaps, 0, sizeof(*pCurrZoneMaps));
+    amxc_var_t ret;
+    amxc_var_init(&ret);
+    amxc_var_t args;
+    amxc_var_init(&args);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxd_object_invoke_function(get_wld_object(), "list_trace_zones", &args, &ret);
+    swl_type_fromVariant(&privTraceZoneMap.type, pCurrZoneMaps, &ret);
+    amxc_var_clean(&ret);
+    amxc_var_clean(&args);
+}
 swl_rc_ne wld_vendorModule_loadPrivTraceZones(amxc_var_t* traceZonesVarMap) {
     ASSERT_NOT_NULL(traceZonesVarMap, SWL_RC_INVALID_PARAM, ME, "no private trace zone conf");
     swl_map_t zoneMaps;
     memset(&zoneMaps, 0, sizeof(zoneMaps));
-    bool ret = swl_type_fromVariant(&privTraceZoneMap.type, &zoneMaps, traceZonesVarMap);
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Fail to load private trace zones");
+    bool rc = swl_type_fromVariant(&privTraceZoneMap.type, &zoneMaps, traceZonesVarMap);
+    ASSERT_TRUE(rc, SWL_RC_ERROR, ME, "Fail to load private trace zones");
+    if(!swl_map_size(&zoneMaps)) {
+        SAH_TRACEZ_INFO(ME, "No specific trace zones to be added");
+        swl_type_cleanup(&privTraceZoneMap.type, &zoneMaps);
+        return SWL_RC_OK;
+    }
+
+    swl_map_t currZoneMaps;
+    memset(&currZoneMaps, 0, sizeof(currZoneMaps));
+    s_getCurrentTraceZones(&currZoneMaps);
+
     swl_mapIt_t mapIt;
     swl_map_for_each(mapIt, &zoneMaps) {
         const char* zone = (const char*) swl_map_itKey(&mapIt);
@@ -245,6 +268,12 @@ swl_rc_ne wld_vendorModule_loadPrivTraceZones(amxc_var_t* traceZonesVarMap) {
         if((swl_str_len(zone) == 0) || (pLevel == NULL)) {
             continue;
         }
+        //keep existing trace level
+        if(swl_map_get(&currZoneMaps, zone) != NULL) {
+            SAH_TRACEZ_INFO(ME, "trace zone (%s) already exists", zone);
+            continue;
+        }
+        SAH_TRACEZ_INFO(ME, "adding trace zone (%s) with level (%u)", zone, *pLevel);
         amxc_var_t ret;
         amxc_var_init(&ret);
         amxc_var_t args;
@@ -260,6 +289,7 @@ swl_rc_ne wld_vendorModule_loadPrivTraceZones(amxc_var_t* traceZonesVarMap) {
         }
     }
     swl_type_cleanup(&privTraceZoneMap.type, &zoneMaps);
+    swl_type_cleanup(&privTraceZoneMap.type, &currZoneMaps);
     return SWL_RC_OK;
 }
 

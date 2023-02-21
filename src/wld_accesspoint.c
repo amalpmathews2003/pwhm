@@ -899,7 +899,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_object_set_int32_t(object, "RetryLimit", pAP->retryLimit);
         /** 'WMMCapability' Indicates whether this access point supports
          *  WiFi Multimedia(WMM) Access Cagegories (AC). */
-        amxd_object_set_int32_t(object, "WMMCapability", pAP->WMMCapability);
+        amxd_object_set_bool(object, "WMMCapability", pAP->WMMCapability);
         /** 'UAPSDCapability' Indicates whether this access point
          *  supports WMM Unscheduled Automatic Power Save Delivery
          *  (U-APSD). */

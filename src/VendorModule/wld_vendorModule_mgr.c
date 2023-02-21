@@ -65,6 +65,7 @@
 #include <debug/sahtrace.h>
 #include <errno.h>
 #include <dirent.h>
+#include <dlfcn.h>
 
 #include <amxc/amxc_variant.h>
 #include <amxm/amxm.h>
@@ -229,8 +230,10 @@ int wld_vendorModuleMgr_loadInternal() {
 int wld_vendorModuleMgr_loadExternal(const char* soFilePath) {
     amxm_shared_object_t* pSoSrc = NULL;
     int ret = -1;
+    dlerror();
     ret = amxm_so_open(&pSoSrc, soFilePath, soFilePath);
-    ASSERT_EQUALS(ret, 0, SWL_RC_ERROR, ME, "fail to open %s", soFilePath);
+    char* loadError = dlerror();
+    ASSERT_EQUALS(ret, 0, SWL_RC_ERROR, ME, "fail to open %s (%s)", soFilePath, loadError);
     ret = s_loadSharedObj(pSoSrc);
     if(ret <= 0) {
         SAH_TRACEZ_ERROR(ME, "No vendor modules loaded from %s", soFilePath);

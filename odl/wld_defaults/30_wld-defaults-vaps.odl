@@ -27,7 +27,7 @@
                 parameter SSIDReference = "WiFi.SSID.vap2g0priv";
                 parameter Enable = 0;
                 parameter RetryLimit = 3;
-                parameter WMMEnable = 0;
+                parameter WMMEnable = 1;
                 parameter UAPSDEnable = 0;
                 parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
@@ -69,7 +69,7 @@
                 parameter SSIDReference = "WiFi.SSID.vap5g0priv";
                 parameter Enable = 0;
                 parameter RetryLimit = 3;
-                parameter WMMEnable = 0;
+                parameter WMMEnable = 1;
                 parameter UAPSDEnable = 0;
                 parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
@@ -110,6 +110,7 @@
             instance add ("vap2g0guest") {
                 parameter SSIDReference = "WiFi.SSID.vap2g0guest";
                 parameter Enable = 0;
+                parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
                 parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 0;
@@ -136,6 +137,7 @@
             instance add ("vap5g0guest") {
                 parameter SSIDReference = "WiFi.SSID.vap5g0guest";
                 parameter Enable = 0;
+                parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
                 parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 0;

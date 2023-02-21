@@ -89,14 +89,31 @@
  */
 #define HOSTAPD_EXIT_REASON_LOAD_FAIL 1
 
-static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
-    T_Radio* pRad = (T_Radio*) userdata;
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+static const char* s_getMainIface(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     const char* mainIface = pRad->Name;
     T_AccessPoint* pMainAP = wld_rad_getFirstVap(pRad);
     if(pMainAP != NULL) {
         mainIface = pMainAP->alias;
     }
+    return mainIface;
+}
+
+static void s_restartHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
+    T_Radio* pRad = (T_Radio*) userdata;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    const char* mainIface = s_getMainIface(pRad);
+    ASSERTW_TRUE(wld_rad_hasEnabledVap(pRad), , ME, "%s: radio has no enabled vap", mainIface);
+    ASSERTW_TRUE(pRad->enable, , ME, "%s: radio disabled", mainIface);
+    ASSERTW_FALSE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hostapd running", mainIface);
+    SAH_TRACEZ_WARNING(ME, "%s: restarting hostapd", mainIface);
+    wld_secDmn_restartCb(pSecDmn);
+}
+
+static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
+    T_Radio* pRad = (T_Radio*) userdata;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    const char* mainIface = s_getMainIface(pRad);
     SAH_TRACEZ_WARNING(ME, "%s: hostapd stopped", mainIface);
     wld_deamonExitInfo_t* pExitInfo = &pHapdInst->dmnProcess->lastExitInfo;
     if((pExitInfo != NULL) && (pExitInfo->isExited) &&
@@ -118,6 +135,7 @@ swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init hostapd", pRad->Name);
     wld_secDmnEvtHandlers handlers;
     memset(&handlers, 0, sizeof(handlers));
+    handlers.restartCb = s_restartHapdCb;
     handlers.stopCb = s_stopHapdCb;
     wld_secDmn_setEvtHandlers(pRad->hostapd, &handlers, pRad);
     return SWL_RC_OK;

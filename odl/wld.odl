@@ -147,6 +147,7 @@
                    "swlConv" = 200,
                    "swlCryp" = 200,
                    "swlCTbl" = 200,
+                   "swlExec" = 200,
                    "swlFile" = 200,
                    "swlHash" = 200,
                    "swlHex" = 200,
@@ -217,6 +218,7 @@
 import "${name}.so" as "${name}";
 import "mod-netmodel.so" as "mnm";
 
+import "mod-dmext.so";
 #include "mod_sahtrace.odl";
 include "${definition_file}";
 

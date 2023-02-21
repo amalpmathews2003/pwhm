@@ -114,6 +114,10 @@ T_Radio* wld_firstRad() {
     amxc_llist_it_t* it = amxc_llist_get_first(&g_radios);
     return wld_rad_fromIt(it);
 }
+T_Radio* wld_lastRad() {
+    amxc_llist_it_t* it = amxc_llist_get_last(&g_radios);
+    return wld_rad_fromIt(it);
+}
 T_Radio* wld_nextRad(T_Radio* pRad) {
     amxc_llist_it_t* it = amxc_llist_it_get_next(&pRad->it);
     return wld_rad_fromIt(it);
@@ -311,6 +315,18 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     ASSERT_NOT_NULL(name, -1, ME, "NULL");
     ASSERT_NOT_NULL(vendor, -1, ME, "NULL");
 
+    T_Radio* pTmpR;
+    if(idx < 0) {
+        idx = 0;
+        wld_for_eachRad(pTmpR) {
+            idx = SWL_MAX(idx, (pTmpR->ref_index + 1));
+        }
+    } else {
+        wld_for_eachRad(pTmpR) {
+            ASSERT_NOT_EQUALS(idx, pTmpR->ref_index, -1, ME, "%s: refIfx(%d) already used by radio(%s)", name, idx, pTmpR->Name);
+        }
+    }
+
     char macStr[SWL_MAC_CHAR_LEN] = {0};
     SAH_TRACEZ_INFO(ME, "Create new radio %s %u", name, idx);
 
@@ -376,11 +392,11 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->pFA->mfn_wrad_supports(pR, NULL, 0);
     pR->maxBitRate = 0; // Mark this as AUTO!
 
-    pR->multiUserMIMOSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "MU_MIMO", 0) == 1);
-    pR->implicitBeamFormingSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "IMPL_BF", 0) == 1);
+    pR->multiUserMIMOSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "MU_MIMO", 0) == SWL_TRL_TRUE);
+    pR->implicitBeamFormingSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "IMPL_BF", 0) == SWL_TRL_TRUE);
     /* Enabled by default, but not if it's not supported of course. */
     pR->implicitBeamFormingEnabled = pR->implicitBeamFormingSupported;
-    pR->explicitBeamFormingSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "EXPL_BF", 0) == 1);
+    pR->explicitBeamFormingSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "EXPL_BF", 0) == SWL_TRL_TRUE);
     pR->explicitBeamFormingEnabled = pR->explicitBeamFormingSupported;
 
     pR->pFA->mfn_wrad_beamforming(pR, beamforming_implicit, pR->implicitBeamFormingEnabled, SET);
@@ -628,20 +644,17 @@ char* wld_getVendorParam(const T_Radio* pR, const char* parameter, const char* d
     ASSERT_NOT_NULL(parameter, NULL, ME, "NULL");
 
     amxd_object_t* vendorObject = amxd_object_get(pR->pBus, "Vendor");
-    const char* value = amxd_object_get_cstring_t(vendorObject, parameter, NULL);
+    char* value = amxd_object_get_cstring_t(vendorObject, parameter, NULL);
 
-    if(value != NULL) {
-        if(strlen(value) > 0) {
-            return strdup(value);
-        }
-        // skip to default
+    if(!swl_str_isEmpty(value)) {
+        return value;
     }
+    free(value);
 
     if(def != NULL) {
         return strdup(def);
-    } else {
-        return NULL;
     }
+    return NULL;
 }
 
 /**
@@ -692,18 +705,6 @@ bool wld_isInternalBSSID(const char bssid[ETHER_ADDR_STR_LEN]) {
     swl_macBin_t bssidBin = SWL_MAC_BIN_NEW();
     SWL_MAC_CHAR_TO_BIN(&bssidBin, bssid);
     return wld_isInternalBssidBin(&bssidBin);
-}
-
-amxd_status_t _wld_rad_setVendorData_owf(amxd_object_t* object) {
-    SAH_TRACEZ_INFO(ME, "update vendor data");
-    amxd_object_t* radioObj = amxd_object_get_parent(object);
-    T_Radio* pR = radioObj->priv;
-    if(pR == NULL) {
-        SAH_TRACEZ_INFO(ME, "Radio is NULL");
-        return amxd_status_unknown_error;
-    }
-    pR->pFA->mfn_wifi_supvend_modes(pR, NULL, object);
-    return amxd_status_ok;
 }
 
 /**

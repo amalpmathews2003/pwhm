@@ -1423,17 +1423,17 @@ struct WLD_RADIO {
     uint8_t retryLimit;                         /* The maximum number of retransmissions of a short packet */
     uint8_t longRetryLimit;                     /* The maximum number of retransmissions of a long packet */
     bool twtEnable;                             /* Enable the target wake time 11ax feature */
-    int IEEE80211hSupported;                    /* Indicate if we've 802.11h support */
+    bool IEEE80211hSupported;                   /* Indicate if we've 802.11h support */
     bool IEEE80211kSupported;                   /* Indicate if we've 802.11k support */
     bool IEEE80211rSupported;                   /* Indicate if we've 802.11r support */
     wld_multiap_type_m m_multiAPTypesSupported; /* Indicate if we've 802.11r support */
-    int setRadio80211hEnable;                   /* Enable 802.11h */
+    bool setRadio80211hEnable;                  /* Enable 802.11h */
     int regulatoryDomainIdx;                    /* Responding country code */
     char regulatoryDomain[8];                   /* Country code (BE, FR, EU, US,...)*/
-    int implicitBeamFormingSupported;
-    int implicitBeamFormingEnabled;
-    int explicitBeamFormingSupported;
-    int explicitBeamFormingEnabled;
+    bool implicitBeamFormingSupported;
+    bool implicitBeamFormingEnabled;
+    bool explicitBeamFormingSupported;
+    bool explicitBeamFormingEnabled;
     wld_rifs_mode_e RIFSEnabled;
     bool airtimeFairnessEnabled;                   /* Enable airtime fairness feature */
     bool intAirtimeSchedEnabled;                   /* Enable intelligent airtime scheduling*/
@@ -1531,7 +1531,6 @@ struct WLD_RADIO {
     wld_autoCommitRadData_t autoCommitData;  /* struct for managing auto commiting */
     wld_nl80211_listener_t* nl80211Listener; /* nl80211 events listener */
     wld_secDmn_t* hostapd;                   /* hostapd daemon context. */
-    amxp_timer_t* updateTimer;               /* Update timer to do sync after object write */
 };
 
 typedef struct {
@@ -1648,10 +1647,10 @@ struct S_ACCESSPOINT {
 
     int SSIDAdvertisementEnabled;
     int retryLimit;
-    int WMMCapability;
-    int UAPSDCapability;
-    int WMMEnable;
-    int UAPSDEnable;
+    bool WMMCapability;
+    bool UAPSDCapability;
+    bool WMMEnable;
+    bool UAPSDEnable;
     int MCEnable;       /* multicast enable */
     int doth;
     int APBridgeDisable;
@@ -2099,8 +2098,16 @@ typedef void (APIENTRY* PFN_SYNC_AP)(amxd_object_t* object, T_AccessPoint* pAP, 
 typedef void (APIENTRY* PFN_SYNC_SSID)(amxd_object_t* object, T_SSID* pS, int set);
 typedef void (APIENTRY* PFN_SYNC_EP)(T_EndPoint* pEP);
 
-/* This function will fill-in all our default parameters at once! */
-typedef int (APIENTRY* PFN_WIFI_SUPVEND_MODES)(T_Radio* rad, T_AccessPoint* pAP, amxd_object_t* object);             // updates all read only params
+/*
+ * @brief handler of modified vendor parameters
+ *
+ * @param pRad Radio context when relevant (ie vendor subobj of radio), null otherwise
+ * @param pAP AccessPoint context when relevant (ie vendor subobj of accessPoint), null otherwise
+ * @param object modified vendor object (of child objects)
+ * @param params modified parameters in variant htable (to: and from:)
+ * @return SWL_RC_OK if successful, error code otherwise
+ */
+typedef swl_rc_ne (APIENTRY* PFN_WIFI_SUPVEND_MODES)(T_Radio* pRad, T_AccessPoint* pAP, amxd_object_t* object, amxc_var_t* params);
 
 /* Functions that are called from vendor plugin in wld lib! */
 typedef int (APIENTRY* PFN_WRAD_RADIO_LIBSYNC_STATUS)(T_Radio* rad);
@@ -2340,6 +2347,7 @@ extern T_CONST_WPS g_wpsConst;
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta);
 
 T_Radio* wld_firstRad();
+T_Radio* wld_lastRad();
 T_Radio* wld_nextRad(T_Radio* pRad);
 
 #define wld_for_eachRad(radPtr) \
