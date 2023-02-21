@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.21.0 - 2023-02-21(09:14:45 +0000)
+
+### Other
+
+- - add more options for IEEE80211v BTM request
+
 ## Release v2.20.0 - 2023-02-20(08:26:10 +0000)
 
 ### Other
