@@ -4288,7 +4288,8 @@ void wld_rad_chan_update_model(T_Radio* pRad) {
 
 void wld_rad_updateOperatingClass(T_Radio* pRad) {
     swl_chanspec_t chanspec = wld_rad_getSwlChanspec(pRad);
-    pRad->operatingClass = wld_channel_getOperatingClass(chanspec);
+    char* fullCountryName = getFullCountryName(pRad->regulatoryDomainIdx);
+    pRad->operatingClass = wld_channel_getOperatingClass(fullCountryName, chanspec);
     amxd_object_set_uint32_t(pRad->pBus, "OperatingClass", pRad->operatingClass);
     SAH_TRACEZ_INFO(ME, "%s: set operatingClass to %d", pRad->Name, pRad->operatingClass);
 }

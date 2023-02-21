@@ -139,83 +139,25 @@ struct operating_class_table {
     uint8_t chan_set[64];
 };
 
-const struct operating_class_table eu_oper_class_table_2g[] = {
-    {4, 20, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}},
-    {11, 40, {1, 2, 3, 4, 5, 6, 7, 8, 9}},
-    {12, 40, {5, 6, 7, 8, 9, 10, 11, 12, 13}},
-    {0, 0, {0}},
-};
-
-const struct operating_class_table eu_oper_class_table_5g[] = {
-    {1, 20, {36, 40, 44, 48}},
-    {2, 20, {52, 56, 60, 64}},
-    {3, 20, {100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140}},
-    {5, 40, {36, 44}},
-    {6, 40, {52, 60}},
-    {7, 40, {100, 108, 116, 124, 132}},
-    {8, 40, {40, 48}},
-    {9, 40, {56, 64}},
-    {10, 40, {104, 112, 120, 128, 136}},
-    {128, 80, {36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128}},
-    {129, 160, {36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128}},
-    {0, 0, {0}},
-};
-
-const struct operating_class_table eu_oper_class_table_6g[] = {
-    {131, 20, {1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77,
-            81, 85, 89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145,
-            149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205, 209,
-            213, 217, 221, 225, 229, 233}},
-    {132, 40, {3, 11, 19, 27, 35, 43, 51, 59, 67, 75, 83, 91, 99, 107, 115, 123, 131, 139,
-            147, 155, 163, 171, 179, 187, 195, 203, 211, 219, 227}},
-    {133, 80, {7, 23, 39, 55, 71, 87, 103, 119, 135, 151, 167, 183, 199, 215}},
-    {134, 160, {15, 47, 79, 111, 143, 175, 207}},
-    {0, 0, {0}},
-};
 
 /*
  * Return the operating class
- * See 802.11-2012.pdf Table E-2—Operating classes in Europe
+ * See 802.11-2021.pdf Table E-*—Operating classes
  */
-int wld_channel_getOperatingClass(swl_chanspec_t chanspec) {
-    uint32_t i, j;
-    int bw = wld_channel_getBandwidthValFromEnum(chanspec.bandwidth);
-    if(chanspec.band == SWL_FREQ_BAND_EXT_6GHZ) {
-        for(i = 0; eu_oper_class_table_6g[i].index; i++) {
-            if(eu_oper_class_table_6g[i].bandwidth != bw) {
-                continue;
-            }
-            for(j = 0; j < sizeof(eu_oper_class_table_6g[i].chan_set); j++) {
-                if(eu_oper_class_table_6g[i].chan_set[j] == chanspec.channel) {
-                    return eu_oper_class_table_6g[i].index;
-                }
-            }
-        }
-    } else if(chanspec.band == SWL_FREQ_BAND_EXT_5GHZ) {
-        for(i = 0; eu_oper_class_table_5g[i].index; i++) {
-            if(eu_oper_class_table_5g[i].bandwidth != bw) {
-                continue;
-            }
-            for(j = 0; j < sizeof(eu_oper_class_table_5g[i].chan_set); j++) {
-                if(eu_oper_class_table_5g[i].chan_set[j] == chanspec.channel) {
-                    return eu_oper_class_table_5g[i].index;
-                }
-            }
-        }
+int wld_channel_getOperatingClass(char* fullCountryName, swl_chanspec_t chanspec) {
+
+    int operClass = 0;
+    if((fullCountryName != NULL) && swl_str_startsWith(fullCountryName, "United States")) {
+        SAH_TRACEZ_INFO(ME, "this FullCountryName code is  %s", fullCountryName);
+        operClass = swl_chanspec_getLocalOperClass(&chanspec, SWL_OP_CLASS_COUNTRY_USA);
+    } else if((fullCountryName != NULL) && swl_str_startsWith(fullCountryName, "Japan")) {
+        SAH_TRACEZ_INFO(ME, "this FullCountryName code is  %s", fullCountryName);
+        operClass = swl_chanspec_getLocalOperClass(&chanspec, SWL_OP_CLASS_COUNTRY_JP);
     } else {
-        for(i = 0; eu_oper_class_table_2g[i].index; i++) {
-            if(eu_oper_class_table_2g[i].bandwidth != bw) {
-                continue;
-            }
-            for(j = 0; j < sizeof(eu_oper_class_table_2g[i].chan_set); j++) {
-                if(eu_oper_class_table_2g[i].chan_set[j] == chanspec.channel) {
-                    return eu_oper_class_table_2g[i].index;
-                }
-            }
-        }
+        operClass = swl_chanspec_getLocalOperClass(&chanspec, SWL_OP_CLASS_COUNTRY_EU);
     }
-    SAH_TRACEZ_INFO(ME, "OperatingClass not found for %d/%d", chanspec.channel, bw);
-    return 0;
+    SAH_TRACEZ_ERROR(ME, "OperatingClass  found for %d is %d", chanspec.channel, operClass);
+    return operClass;
 }
 
 /**
