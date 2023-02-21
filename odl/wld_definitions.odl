@@ -2928,6 +2928,7 @@ define rrm_t{
 		 * @param disassoc : timer before device disassociation.
 		 * @param bssidInfo : BSSID Info data.
 		 * @param transitionReason : MBO Transtion reason.
+		 * @param mode : bitMask of the request mode.
 		 * @return
 		 * function returns -1 if wait (1+retries) ms has expired without receiving a bss transfer reply.
 		 * If wait was equal to 0, -1 is returned immediately.
@@ -2943,7 +2944,7 @@ define rrm_t{
 		 * a reply of -1 is returned.</p>
 		 *
 		 */
-		bool sendBssTransferRequest(%in string mac, %in string target, %in int32 class, %in int32 channel, %in int32 wait, %in int32 retries, %in int32 validity, %in int32 disassoc, %in uint32 bssidInfo, %in int32 transitionReason);
+		bool sendBssTransferRequest(%in string mac, %in string target, %in int32 class, %in int32 channel, %in int32 wait, %in int32 retries, %in int32 validity, %in int32 disassoc, %in uint32 bssidInfo, %in int32 transitionReason, %in uint8 mode);
 
 		/**
 		 * <b>sendPublicAction</b>
@@ -2965,12 +2966,13 @@ define rrm_t{
 		 * @param channel : optional channel to scan. Default 0.
 		 * @param timeout : optional time to wait in milliseconds. Default 1000.
 		 * @param ssid : optional ssid. Default empty.
+		 * @param neighbor : optional add AP Channel Report if neighbour detection is active (default true).
 		 * @return
 		 * a variant list containing rrm_t entries.
 		 * If no measurement report was received, or the timeout was 0, then an empty list is returned.
 		 * @version 9.0
 		 */
-		list sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint8 class, %in uint8 channel, %in uint32 timeout, %in string ssid, %in uint8 token, %in uint8 mode, %in uint8 modeMask, %in uint16 duration, %in uint16 interval);
+		list sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint8 class, %in uint8 channel, %in uint32 timeout, %in string ssid, %in uint8 token, %in uint8 mode, %in uint8 modeMask, %in uint16 duration, %in uint16 interval, %in bool neighbor);
 
 		/**
 		 * get the last assoc request sent by a station to a vap

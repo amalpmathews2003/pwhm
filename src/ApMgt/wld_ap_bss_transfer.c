@@ -193,6 +193,12 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     amxc_var_t* transitionReason = amxc_var_get_key(args, "transitionReason", AMXC_VAR_FLAG_DEFAULT);
     params.transitionReason = (transitionReason == NULL) ? 0 : amxc_var_dyncast(int32_t, transitionReason);
 
+    amxc_var_t* mode = amxc_var_get_key(args, "mode", AMXC_VAR_FLAG_DEFAULT);
+    params.reqModeMask = (mode == NULL) ? M_SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL |
+        M_SWL_IEEE802_BTM_REQ_MODE_ABRIDGED |
+        M_SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT :
+        amxc_var_dyncast(uint8_t, mode);
+
     if(!mac || !bssid || (params.channel == 0)) {
         SAH_TRACEZ_ERROR(ME, "Invalid argument");
         status = amxd_status_invalid_function_argument;

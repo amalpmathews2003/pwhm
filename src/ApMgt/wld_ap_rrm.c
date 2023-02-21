@@ -174,6 +174,9 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
     tpVar = amxc_var_get_key(args, "interval", AMXC_VAR_FLAG_DEFAULT);
     reqCall.interval = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint16_t, tpVar);
 
+    tpVar = amxc_var_get_key(args, "neighbor", AMXC_VAR_FLAG_DEFAULT);
+    reqCall.addNeighbor = (tpVar == NULL) ? true : amxc_var_dyncast(bool, tpVar);
+
     amxd_status_t status = amxd_status_ok;
 
     swl_macChar_t cStation;

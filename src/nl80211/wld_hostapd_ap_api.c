@@ -587,10 +587,14 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
              " valid_int=%d"
              " neighbor=%s"
              ",%u,%d,%d,%d"   //<bssidInfo>,<operClass>,<channel>,<phyType>
-             " pref=1 abridged=1 disassoc_imminent=1"
+             " pref=%u abridged=%u disassoc_imminent=%u"
              " mbo=%d:%d:%d"  //mbo=<reason>:<reassoc_delay>:<cell_pref>
              , params->sta.cMac, params->disassoc, params->validity, params->targetBssid.cMac, params->bssidInfo, params->operClass, params->channel,
-             swl_chanspec_operClassToPhyMode(params->operClass), params->transitionReason, params->disassoc ? 100 : 0, 0);
+             swl_chanspec_operClassToPhyMode(params->operClass),
+             SWL_BIT_IS_SET(params->reqModeMask, M_SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL),
+             SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_ABRIDGED),
+             SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT),
+             params->transitionReason, params->disassoc ? 100 : 0, 0);
 
     bool ret = s_sendHostapdCommand(pAP, cmd, "bss transition management");
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: btm from %s to %s of station %s failed", pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac);
@@ -918,7 +922,7 @@ swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
  * @param bssid (optional) bssid argument
  * @param ssid (optional) ssid
  */
-swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_t* sta, uint8_t reqMode, uint8_t operClass, swl_channel_t channel,
+swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_t* sta, uint8_t reqMode, uint8_t operClass, swl_channel_t channel, bool addNeighbor,
                                           uint16_t randomInterval, uint16_t measurementDuration, uint8_t measurementMode, const swl_macChar_t* bssid, const char* ssid) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(sta, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -936,13 +940,40 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
              "%.2x"
              "%.2x%.2x%.2x%.2x%.2x%.2x",
              sta->cMac, reqMode, operClass, channel, htons(randomInterval), htons(measurementDuration), measurementMode, MAC_PRINT_ARG(bMac.bMac));
+
+    /* add SSID subelement. */
     if(ssid != NULL) {
-        size_t cmdLen = swl_str_len(cmd);
         size_t ssidLen = swl_str_len(ssid);
-        snprintf(cmd + cmdLen, sizeof(cmd) - cmdLen, "00%.2x", (unsigned int) ssidLen);
-        char* ptr = cmd + cmdLen + 4;
+        swl_str_catFormat(cmd, sizeof(cmd), "00%.2x", (unsigned int) ssidLen);
         for(size_t i = 0; i < ssidLen; i++) {
-            ptr += sprintf(ptr, "%.2x", ssid[i]);
+            bool ok = swl_str_catFormat(cmd, sizeof(cmd), "%.2x", ssid[i]);
+            ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding SSID subelement failed");
+        }
+    }
+
+    /* add Reporting Detail subelement */
+    bool ok = swl_str_catFormat(cmd, sizeof(cmd), "020100");
+    ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding Reporting Detail subelement failed");
+
+    /* add AP Channel Report subelements. */
+    if(addNeighbor) {
+        T_Radio* pRad = pAP->pRadio;
+        if(channel != pRad->channel) {
+            swl_freqBandExt_e freqBand = swl_chanspec_operClassToFreq(pRad->operatingClass);
+            swl_operatingClass_t operClass = swl_chanspec_getOperClassDirect(pRad->channel, freqBand, SWL_BW_20MHZ);
+            ok = swl_str_catFormat(cmd, sizeof(cmd), "3302%.2x%.2x", operClass, pRad->channel);
+            ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding AP Channel Report subelement failed");
+        }
+
+        amxc_llist_it_t* it;
+        amxc_llist_for_each(it, &pAP->neighbours) {
+            T_ApNeighbour* neigh = amxc_llist_it_get_data(it, T_ApNeighbour, it);
+            if(channel != neigh->channel) {
+                swl_freqBandExt_e freqBand = swl_chanspec_operClassToFreq(neigh->operatingClass);
+                swl_operatingClass_t operClass = swl_chanspec_getOperClassDirect(neigh->channel, freqBand, SWL_BW_20MHZ);
+                ok = swl_str_catFormat(cmd, sizeof(cmd), "3302%.2x%.2x", operClass, neigh->channel);
+                ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding AP Channel Report subelement failed");
+            }
         }
     }
 

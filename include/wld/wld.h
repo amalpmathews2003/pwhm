@@ -738,14 +738,15 @@ typedef struct {
 } wld_sta_supMCS_adv_t;
 
 typedef struct {
-    swl_macChar_t sta;                   /* MAC of the station to steer */
-    swl_macChar_t targetBssid;           /* Bss transition request's target BSSID */
-    swl_operatingClass_t operClass;      /* Operating class of target AP */
-    swl_channel_t channel;               /* Channel of target AP */
-    int validity;                        /* Timer of the bss request validity */
-    int disassoc;                        /* Timer before device disassociation */
-    uint32_t bssidInfo;                  /* BSSID Info data */
-    int transitionReason;                /* MBO Transition reason */
+    swl_macChar_t sta;                    /* MAC of the station to steer */
+    swl_macChar_t targetBssid;            /* Bss transition request's target BSSID */
+    swl_operatingClass_t operClass;       /* Operating class of target AP */
+    swl_channel_t channel;                /* Channel of target AP */
+    swl_ieee802_btmReqMode_m reqModeMask; /* request mode (prefered list, abridge, dissoc imminent, ...) */
+    int validity;                         /* Timer of the bss request validity */
+    int disassoc;                         /* Timer before device disassociation */
+    uint32_t bssidInfo;                   /* BSSID Info data */
+    int transitionReason;                 /* MBO Transition reason */
 } wld_transferStaArgs_t;
 
 typedef struct {
@@ -2012,6 +2013,7 @@ typedef struct {
     swl_channel_t channel;
     swl_macChar_t bssid;
     char ssid[SSID_NAME_LEN];
+    bool addNeighbor;
 } wld_rrmReq_t;
 typedef int (APIENTRY* PFN_WRAD_PER_ANTENNA_RSSI)(T_Radio* rad, T_ANTENNA_RSSI*);
 typedef int (APIENTRY* PFN_WRAD_LATEST_POWER)(T_Radio* rad, T_ANTENNA_POWER*);
