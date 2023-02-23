@@ -1,0 +1,2235 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+
+/*
+//Structure containing a remote measurement reply
+define rrm_t{
+	// The BSSID that was measured
+	string BSSID;
+	// Channel that the BSSID was observed on
+	uint32 Channel;
+	// Received channel power indicator
+	uint8 RCPI;
+	// Received Signal Noise Indicator
+	uint8 RSNI;
+}
+*/
+
+%define {
+    select WiFi {
+	/** <p>This object models an 802.11 connection from the
+	 *  perspective of a wireless access point. Each AccessPoint
+	 *  entry is associated with a particular SSID  interface
+	 *  instance via the SSIDReference  parameter.</p>
+	 *  <p>For enabled table entries, if SSIDReference is not a valid
+	 *  reference then the table entry is inoperable and the CPE
+	 *  MUST set Status to Error_Misconfigured.</p>
+	 *  <p>Note: The AccessPoint table includes a unique key
+	 *  parameter that is a strong reference. If a strongly
+	 *  referenced object is deleted, the CPE will set the
+	 *  referencing parameter to an empty string. However, doing so
+	 *  under these circumstances might cause the updated
+	 *  AccessPoint row to then violate the table's unique key
+	 *  constraint; if this occurs, the CPE MUST set Status to
+	 *  Error_Misconfigured and disable the offending AccessPoint
+	 *  row.</p>
+	 *  <p>At most one entry in this table (regardless of whether or
+	 *  not it is enabled) can exist with a given value for Alias.
+	 *  On creation of a new table entry, the CPE MUST choose an
+	 *  initial value for Alias such that the new entry does not
+	 *  conflict with any existing entries. At most one enabled
+	 *  entry in this table can exist with a given value for
+	 *  SSIDReference.</p>*/
+	%persistent object AccessPoint[]{
+		on action add-inst call wld_ap_addInstance_ocf;
+
+		/**
+		 * <b>kickStation</b>
+		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+		 * <p> Disassociation of a station with given MAC address </p>
+		*/
+		bool kickStation(%in string macaddress);
+
+		/**
+		 * <b>kickStationReason</b>
+		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+		 * <p> Disassociation of a station with given MAC address with given reason code </p>
+		*/
+		bool kickStationReason(%in string macaddress, %in int32 reason);
+
+		/**
+		 * <b>cleanStation</b>
+		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+		 * <p> Station will be removed from driver without sending a deauth. </p>
+		 * @version 9.2
+		*/
+		bool cleanStation(%in string macaddress);
+
+		/**
+		 * <b>sendBssTransferRequest</b>
+		 *
+		 * @param mac : format xx:xx:xx:xx:xx:xx
+		 * @param target : target bss: format xx:xx:xx:xx:xx:xx
+		 * @param class : operating class of target AP
+		 * @param channel : channel of target AP
+		 * @param wait : time to wait before sending a retry or giving up, in milliseconds
+		 * @param retries : number of retries before giving up. Default 0.
+		 * @param validity : timer of the bss request validity.
+		 * @param disassoc : timer before device disassociation.
+		 * @param bssidInfo : BSSID Info data.
+		 * @param transitionReason : MBO Transtion reason.
+		 * @param mode : bitMask of the request mode.
+		 * @return
+		 * function returns -1 if wait (1+retries) ms has expired without receiving a bss transfer reply.
+		 * If wait was equal to 0, -1 is returned immediately.
+		 * If a bss transfer reply is received, the reply code in the transfer
+		 * reply will be the reply code of this function. The reply code is always greater or equal to 0.
+		 *
+		 * <p>Note: Timers are specified in TBTT (Target Beacon Transmission Time) units,
+		 * which is the interval time between every beacon. By default every beacon is sent every 100ms,
+		 * so by default 1 TBTT = 100ms. Timers =  X TBTT/10 = x seconds.</p>
+		 *
+		 * <p> send a Bss transfer request to the given bssid. The function will wait for given amount
+		 * of time before sending a retry, or giving up. If the wait time has expired without receiving an answer
+		 * a reply of -1 is returned.</p>
+		 *
+		 */
+		bool sendBssTransferRequest(%in string mac, %in string target, %in int32 class, %in int32 channel, %in int32 wait, %in int32 retries, %in int32 validity, %in int32 disassoc, %in uint32 bssidInfo, %in int32 transitionReason, %in uint8 mode);
+
+		/**
+		 * <b>sendPublicAction</b>
+		 * Send a public action frame to a station with a custom data content.
+		 * Send a public action frame to a station with a custom data content.
+		 * @param mac : format xx:xx:xx:xx:xx:xx destination MACAddress.
+		 * @param oui : format xx:xx:xx OUI to be write into the management frame.
+		 * @param type : category of the vendor public action frame.
+		 * @param subtype : subcategory of the vendor public action frame.
+		 * @param data : custom data to be sent.
+		 */
+		bool sendPublicAction(string mac, string oui, uint8 type, uint8 subtype, string data);
+
+		/**
+		 * send a 802.11k remote measurement request
+		 * @param mac : format xx:xx:xx:xx:xx:xx
+		 * @param bssid : optional bssid arguement. Default wildcard ff:ff:ff:ff:ff:ff.
+		 * @param class : optional class to scan. Default 0.
+		 * @param channel : optional channel to scan. Default 0.
+		 * @param timeout : optional time to wait in milliseconds. Default 1000.
+		 * @param ssid : optional ssid. Default empty.
+		 * @param neighbor : optional add AP Channel Report if neighbour detection is active (default true).
+		 * @return
+		 * a variant list containing rrm_t entries.
+		 * If no measurement report was received, or the timeout was 0, then an empty list is returned.
+		 * @version 9.0
+		 */
+		list sendRemoteMeasumentRequest(%in string mac, %in string bssid, %in uint8 class, %in uint8 channel, %in uint32 timeout, %in string ssid, %in uint8 token, %in uint8 mode, %in uint8 modeMask, %in uint16 duration, %in uint16 interval, %in bool neighbor);
+
+		/**
+		 * get the last assoc request sent by a station to a vap
+		 * @param mac : format xx:xx:xx:xx:xx:xx
+		 * @return
+		 * a variant map containing ASSOC_REQ or REASSOC_REQ frames
+		 * Otherwise an error is returned
+		 * @version 11.1
+		 */
+		bool getLastAssocReq(%in string mac);
+
+		/** Indicates the status of this access point. Enumeration of:
+		*  <ul>
+		*    <li>Disabled</li>
+		*    <li>Enabled</li>
+		*    <li>Error_Misconfigured</li>
+		*    <li>Error (OPTIONAL)</li>
+		*  </ul>
+		*  The Error_Misconfigured value indicates that a necessary
+		*  configuration value is undefined or invalid. The Error value
+		*  MAY be used by the CPE to indicate a locally defined error
+		*  condition.*/
+		%read-only string Status;
+/*		{
+			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
+			default "Disabled";
+		}
+*/
+		/** A non-volatile handle used to reference this instance. Alias
+		 *  provides a mechanism for an ACS to label this instance for
+		 *  future reference. An initial unique value MUST be assigned
+		 *  when the CPE creates an instance of this object.*/
+		string Alias;
+		/** Index in the AccessPoint tree (also for the SSID tree,
+		 *  both are inline) */
+		%read-only uint32 Index;
+
+		/* The name of the Radio used by this AccessPoint */
+		%read-only string RadioReference;
+
+		/** The value MUST be the path name of a row in the SSID table.
+		 *  If the referenced object is deleted, the parameter value
+		 *  MUST be set to an empty string.  */
+		%persistent string SSIDReference{
+			on action write call wld_ap_setSSIDRef_pwf;
+		}
+		/** Indicates whether or not beacons include the SSID name. */
+		%persistent bool SSIDAdvertisementEnabled{
+			on action write call wld_ap_setCommonParam_pwf;
+			default true;
+		}
+		/** The maximum number of retransmission for a packet. This
+		 *  corresponds to IEEE 802.11 parameter
+		 *  dot11ShortRetryLimit. */
+		%persistent uint32 RetryLimit{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+		/** Indicates whether this access point supports WiFi
+		 *  Multimedia (WMM) Access Categories (AC).  */
+		%read-only bool WMMCapability;
+		/** <p>Indicates whether this access point supports WMM
+		 *  Unscheduled Automatic Power Save Delivery (U-APSD).</p>
+		 *  Note: U-APSD support implies WMM support.*/
+		%read-only bool UAPSDCapability;
+		/** Whether WMM support is currently enabled. When enabled,
+		 *  this is indicated in beacon frames.*/
+		%persistent bool WMMEnable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+		/** <p>Whether U-APSD support is currently enabled. When
+		 *  enabled, this is indicated in beacon frames.</p> Note:
+		 *  U-APSD can only be enabled if WMM is also enabled. */
+		%persistent bool UAPSDEnable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** <p>Enable / Disable the MultiCast feature on the interface
+		On a 5GHz by default enabled </p>
+		*/
+		%persistent bool MCEnable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** <p>APBridgeDisable Disable the Bridged traffic of
+		STA connected on the same VAP. </p>
+		*/
+		%persistent bool APBridgeDisable{
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** <p> Name of the bridge interface used with this VAP.
+		Some vendor deamons depend on this so we can track it.</p>
+		 */
+		%persistent string BridgeInterface{
+			on action write call wld_ap_setBridgeInterface_pwf;
+		}
+
+		/**
+		 * The wlan device type which will be assigned to devices connecting to this vap.
+		 * Setting the type will only be enacted on future devices connecting. It will not
+		 * change the type of devices allready connected.
+		 */
+		%persistent string DefaultDeviceType{
+			on action validate call check_enum ["Video","Data","Guest"];
+			default "Data";
+			on action write call wld_ap_setDefaultDeviceType_pwf;
+		}
+
+		/**
+		 * Indicates whether IEEE 802.11k functionality is supported
+		 * on this accesspoint. It must be supported by the radio of this accesspoint.
+		 * @version 9.0
+		 */
+		%persistent bool IEEE80211kEnabled{
+			on action write call wld_ap_set80211kEnabled_pwf;
+			default false;
+		}
+
+		/** Enables or disables this access point.*/
+		%persistent bool Enable{
+			default false;
+			on action write call wld_ap_setEnable_pwf;
+		}
+
+		/**
+		 * Enables or disables Wireless Distribution System- 4MAC mode
+		 * @version 9.2
+		 */
+		%persistent bool WDSEnable{
+			default false;
+			on action write call wld_ap_setWDSEnable_pwf;
+		}
+
+		/**
+		 * Enable Multi Band Operation functionality
+		 * @version 9.3
+		 */
+		%persistent bool MBOEnable{
+			default false;
+			on action write call wld_ap_setMBOEnable_pwf;
+		}
+
+		/**
+		 * Comma-separated list of strings. List items indicate which IEEE 1905
+		 * Multi-AP type is used for this Access Point.
+		 * Supported options are : "Off", "FronthaulBSS", "BackhaulBSS".
+		 * @version 9.2
+		 */
+		%persistent string MultiAPType {
+			default "Off";
+			on action write call wld_ap_setMultiAPType_pwf;
+		}
+
+		/**
+		 * Define in which role AccessPoint will be used, IE in the Beacon will be added.
+		 * Off : undefined role, no additional IE.
+		 * Main: everyone should be able to connect.
+		 * Relay: only other repeaters should connect.
+		 * Remote: only non-repeaters should connect.
+		 * @version 9.2
+		 */
+		%persistent string ApRole {
+			default "Off";
+			on action write call wld_ap_setRole_pwf;
+			on action validate call check_enum ["Off","Main","Relay","Remote"];
+		}
+
+		/**
+		 * List of MAC Addresses allowed or blocked on the current AP depending of the mode.
+		 * @version 9.3
+		 */
+		string MACFilterAddressList{
+			on action write call wld_apMacFilter_setAddressList_pwf;
+		}
+
+		/**
+		 * Object encapsulating IEEE 802.11r configuration parameters.
+		 * @version 9.1
+		 */
+		%persistent object IEEE80211r {
+			/**
+			 * Indicates whether IEEE 802.11r functionality is enabled
+			 * on this accesspoint. It must be supported by the radio of this accesspoint.
+			 * @version 9.1
+			 */
+			%persistent bool Enabled{
+				on action write call wld_ap_set80211rEnabled_pwf;
+				default false;
+			}
+
+			/**
+			 * Indicates whether IEEE 802.11r FT Over DS functionality is enabled
+			 * If disable, FT Over the Air only will be enabled.
+			 * @version 10.0
+			 */
+			%persistent bool FTOverDSEnable{
+				on action write call wld_ap_setFTOverDSEnable_pwf;
+				default false;
+			}
+
+			/**
+			* The Network Access Server Identifier, which must be unique for each access point.
+			* @version 9.1
+			*/
+			%read-only string NASIdentifier;
+
+			/**
+			* The R0 key use by the AP.
+			* @version 10.0
+			*/
+			%read-only string R0KHKey;
+
+			/**
+			* The mobility domain of the home network. This domain must be set to the same value for all APs inside the same ESS.
+			* @version 9.1
+			*/
+			%persistent uint16 MobilityDomain{
+				on action validate call check_range { min = 0, max = 65535 };
+				on action write call wld_ap_setMobilityDomain_pwf;
+				default 0;
+			}
+		}
+
+		/**
+		 * Object encapsulating IEEE 802.11u configuration parameters.
+		 * @version 10.0
+		 */
+		%persistent object IEEE80211u {
+			/**
+			 * Indicates whether IEEE 802.11u interworking feature is enabled
+			 * @version 10.0
+			 */
+			%persistent bool InterworkingEnable{
+				on action write call wld_ap_setInterworkingEnable_pwf;
+				default false;
+			}
+
+			/**
+			 * QoS Map Set configuration
+			 * Comma delimited QoS Map Set in decimal values
+			 * (see IEEE Std 802.11-2012, 8.4.2.97)
+			 * format:
+			 * [<DSCP Exceptions[DSCP,UP]>,]<UP 0 range[low,high]>,...<UP 7 range[low,high]>
+			 * @version 10.0
+			 */
+			%persistent string QoSMapSet {
+				on action write call wld_ap_setQosMapSet_pwf;
+			}
+		}
+
+		/**
+		 * The maximum number of devices that can simultaneously be connected to the access point.
+		 *
+		 * value of 0 means that there is no specific limit.
+		 * @version 9.1
+		 */
+		uint32 MaxAssociatedDevices{
+			default 32;
+			on action write call wld_ap_setMaxStations_pwf;
+		}
+
+		/** 
+		 * Enable or disable device isolation.
+		 * A value of true means that the devices connected to the Access Point are isolated from 
+		 * all other devices within the home network (as is typically the case for a Wireless Hotspot).
+		 * @version 11.1
+		 */
+		%persistent bool IsolationEnable{
+			default false;
+			on action write call wld_ap_setCommonParam_pwf;
+		}
+
+		/** This object contains security related parameters that apply
+		 * to a CPE acting as an Access Point */
+		%persistent object Security{
+			/** <p>Comma-separated list of strings. Indicates which security
+			 *  modes this AccessPoint  instance is capable of supporting.
+			 *  Each list item is an enumeration of:</p>
+			 *  <ul>
+			 *    <li>None</li>
+			 *    <li>OWE</li>
+			 *    <li>WEP-64</li>
+			 *    <li>WEP-128</li>
+			 *    <li>WPA-Personal</li>
+			 *    <li>WPA2-Personal</li>
+			 *    <li>WPA-WPA2-Personal</li>
+			 *    <li>WPA3-Personal</li>
+			 *    <li>WPA2-WPA3-Personal</li>
+			 *    <li>WPA-Enterprise</li>
+			 *    <li>WPA2-Enterprise</li>
+			 *    <li>WPA-WPA2-Enterprise</li>
+			 *    <li>WPA3-Enterprise</li>
+			 *    <li>WPA2-WPA3-Enterprise</li>
+			 *  </ul>
+			 *  */
+			%read-only string ModesSupported;
+			/** <p>Comma-separated list of strings. Indicates which security
+			 *  modes this AccessPoint instance is allowed to use.
+			 *  Each list item is an enumeration of:</p>
+			 *  <ul>
+			 *    <li>None</li>
+			 *    <li>OWE</li>
+			 *    <li>WEP-64</li>
+			 *    <li>WEP-128</li>
+			 *    <li>WPA-Personal</li>
+			 *    <li>WPA2-Personal</li>
+			 *    <li>WPA-WPA2-Personal</li>
+			 *    <li>WPA3-Personal</li>
+			 *    <li>WPA2-WPA3-Personal</li>
+			 *    <li>WPA-Enterprise</li>
+			 *    <li>WPA2-Enterprise</li>
+			 *    <li>WPA-WPA2-Enterprise</li>
+			 *    <li>WPA3-Enterprise</li>
+			 *    <li>WPA2-WPA3-Enterprise</li>
+			 *  </ul>
+			 * @version 9.2
+			 *  */
+			%persistent string ModesAvailable{
+				on action write call wld_ap_setModesAvailable_pwf;
+			}
+			/**A WEP key expressed as a hexadecimal string.
+			 * WEPKey is used only if ModeEnabled is set to WEP-64 or
+			 * WEP-128.
+			 * <p>A 5 byte WEPKey corresponds to security mode WEP-64 and a
+			 * 13 byte WEPKey corresponds to security mode WEP-128. <B>A 16
+			 * byte WEPKey corresponds to security mode WEP-128iv.</B> </p>
+			 * <i>When read, this parameter returns an empty string,
+			 * regardless of the actual value.</i>*/
+			%persistent string WEPKey{  /* Must be hexbinary? */
+				default "123456789ABCD";
+				on action validate call wld_ap_validateWEPKey_pvf;
+				on action write call wld_ap_setWEPKey_pwf;
+			}
+
+			/** <p>A literal PreSharedKey (PSK) expressed as a hexadecimal
+			    string. PreSharedKey is only used if ModeEnabled is set to
+			    WPA-Personal or WPA2-Personal or WPA-WPA2-Personal.
+			    If KeyPassPhrase is written, then PreSharedKey is
+			    immediately generated. The ACS SHOULD NOT set both the
+			    KeyPassPhrase and the PreSharedKey directly (the result of
+			    doing this is undefined).</p>
+			    <i>When read, this parameter returns an empty string,
+			    regardless of the actual value.</i>*/
+			%persistent string PreSharedKey{
+				on action validate call wld_ap_validatePreSharedKey_pvf;
+				on action write call wld_ap_setPreSharedKey_pwf;
+			}
+			/** <p>A passphrase from which the PreSharedKey  is to be
+			 *  generated, for WPA-Personal  or WPA2-Personal  or
+			 *  WPA-WPA2-Personal  security modes. If KeyPassPhrase is
+			 *  written, then PreSharedKey is immediately generated. The ACS
+			 *  SHOULD NOT set both the KeyPassPhrase and the PreSharedKey
+			 *  directly (the result of doing this is undefined). The key is
+			 *  generated as specified by WPA, which uses PBKDF2 from PKCS
+			 *  #5: Password-based Cryptography Specification Version 2.0</p>
+			 * <i> When read, this parameter returns an empty string,
+			 * regardless of the actual value.</i>
+			 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
+			 * or 256 bit secret, entered as a 64 characters hex key.*/
+			%persistent string KeyPassPhrase = "password" {
+				on action validate call wld_ap_validateKeyPassPhrase_pvf;
+				on action write call wld_ap_setKeyPassPhrase_pwf;
+			}
+			/**  <p>The interval (expressed in seconds) in which the keys are
+			 *   re-generated. This is applicable to WPA, WPA2 and Mixed
+			 *   (WPA-WPA2) modes in Personal or Enterprise mode (i.e.
+			 *   when ModeEnabled is set to a value other than None or
+			 *   WEP-64 WEP-128 or WEP-128uv.</p>*/
+			%persistent uint32 RekeyingInterval = 3600 {
+				on action write call wld_ap_setRekeyInterval_pwf;
+			}
+			/** Transition interface for OWE Transition Mode
+			 *  Link current VAP to the other VAP needed for transition
+			 *  with OWE security mode
+			 *
+			 *  @version 10.0
+			 */
+			%persistent string OWETransitionInterface{
+				on action write call wld_ap_setOweTransitionIntf_pwf;
+			}
+			/** Transition Disable indication
+			 *  The AP can notify authenticated stations to disable transition mode in their
+			 *  network profiles when the network has completed transition steps, i.e., once
+			 *  sufficiently large number of APs in the ESS have been updated to support the
+			 *  more secure alternative. When this indication is used, the stations are
+			 *  expected to automatically disable transition mode and less secure security
+			 *  options. This includes use of WEP, TKIP (including use of TKIP as the group
+			 *  cipher), and connections without PMF.
+			 *  Options :
+			 *  - WPA3-Personal (i.e., disable WPA2-Personal = WPA-PSK and only allow SAE to be used)
+			 *  - SAE-PK (disable SAE without use of SAE-PK)
+			 *  - WPA3-Enterprise (move to requiring PMF)
+			 *  - Enhanced Open (disable use of open network; require OWE)
+			 *  - "" : Default does not include Transition Disable KDE
+			 *
+			 *  It is a comma-seperated list of strings. It can be one or more options of
+			 *  the following: "", "WPA3-Personal", "SAE-PK", "WPA3-Enterprise", "EnhancedOpen",
+			 *
+			 *  @version 10.0
+			 */
+			%persistent string TransitionDisable{
+				on action write call wld_ap_setTransitionDisable_pwf;
+				default "";
+			}
+			/**  A passphrase for WPA3-Personal or WPA2-WPA3-Personal 
+			 *   security modes.
+			 *
+			 *   NOTE: this parameter is for WPA3. WPA2 PreSharedKey is generated
+			 *   from KeyPassphrase.
+			 *
+			 *   If SAEPassphrase is not set, KeyPassPhrase field will be used
+			 *   for WPA3 and WPA2/WPA3 connection.
+			 *   This behavior should be fased out and SAEPassphrase should be set
+			 *   if WPA3 is enabled
+			 *
+			 *   @version 10.0
+			 */
+			%persistent string SAEPassphrase{
+				on action validate call wld_ap_validateSaePassphrase_pvf;
+				on action write call wld_ap_setSaePassphrase_pwf;
+				default "";
+			}
+			/**  <p>WPA-key encryption Mode</p>*/
+			%persistent string EncryptionMode = "Default" {
+				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+				on action write call wld_ap_setEncryptionMode_pwf;
+			}
+			/**  <p>Enable extra WPA-key encryption protection..</p>*/
+			%persistent bool SHA256Enable{
+				on action write call wld_ap_setSHA256Enable_pwf;
+				default false;
+			}
+			/** <p>[IPAddress] The IP Address of the RADIUS server used for
+			 *  WLAN security. RadiusServerIPAddr  is only applicable when
+			 *  ModeEnabled  is an Enterprise type (i.e. WPA-Enterprise,
+			 *  WPA2-Enterprise  or
+			 *  WPA-WPA2-Enterprise).</p>*/
+			%persistent string RadiusServerIPAddr{
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+			/** <p> The port number of the RADIUS server used for WLAN
+			 *  security. RadiusServerPort is only applicable when
+			 *  ModeEnabled  is an Enterprise type (i.e. WPA-Enterprise,
+			 *  WPA2-Enterprise  or WPA-WPA2-Enterprise). </p> */
+			%persistent uint32 RadiusServerPort = 1812 {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+			/** <p> The secret used for handshaking with the RADIUS
+			 *  server </p> <i>When read, this parameter returns an empty
+			 *  string, regardless of the actual value.</i>*/
+			%persistent string RadiusSecret{
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** Default Session-Timeout (expressed in seconds). If set, it will be used
+			 *  as the default Session-Timeout if no timeout is set by the radius server.
+			 *  RadiusDefaultSessionTimeout is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent uint32 RadiusDefaultSessionTimeout {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** IP address to use for NAS-IP-Address or NAS-IPv6-Address.
+			 *  If set, it will overrule the address of the interface.
+			 *  RadiusOwnIPAddress is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			string RadiusOwnIPAddress {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** Optional NAS-Identifier string for RADIUS messages.
+			 *  RadiusNASIdentifier is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent string RadiusNASIdentifier {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** If set, it will override Called-Station-Id in the radius messages.
+			 *  RadiusCalledStationId is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent string RadiusCalledStationId {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/** Request Chargeable-User-Identity (RFC 4372)
+			 *  RadiusChargeableUserId is only applicable when ModeEnabled is an Enterprise
+			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+			 */
+			%persistent bool RadiusChargeableUserId {
+				on action write call wld_ap_setRadiusInfo_pwf;
+			}
+
+			/**The value MUST be a member of the list reported by the
+			 * ModesSupported  parameter. Indicates which security mode is
+			 * enabled. We put this at the end because we expect that the
+			 * selected mode got a correct key. In case the key isn't filled in
+			 * the action is ignored.
+			 */
+			%persistent string ModeEnabled = "WPA2-Personal" {
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise", "Unknown"];
+				on action write call wld_ap_setModeEnabled_pwf;
+			}
+
+			/** Management Frame Protection configuration applicable when ModeEnabled is set
+			 * to WPA2-Personal or WPA2-Enterprise. Enumeration of:
+			 *     * Disabled
+			 *     * Optional
+			 *     * Required
+			 */
+			string MFPConfig = "Disabled" {
+				on action validate call check_enum ["Disabled",
+						"Optional",
+						"Required"];
+				on action write call wld_ap_setMFPConfig_pwf;
+			}
+
+			/**
+			 * Signaling Payload Protection AMSDU (SPP AMSDU) capability in order to protect
+			 * AMSDU frames from fragmentation attacks. It is applicable when WPA2 and/or WPA3
+			 * is enabled in ModeEnabled. Possible values are :
+			 *	- -1: apply vendor default
+			 *	-  0: disabled
+			 *	-  1: capable
+			 *	-  2: required
+			 *
+			 * @version 10.0
+			 */
+			int32 SPPAmsdu {
+				default -1;
+			}
+		}
+
+		/** This object contains parameters related to MAC-address based filtering for this access point.  */
+		%persistent object MACFiltering {
+			on action write call wld_ap_setMACFiltering_owf;
+			/** The MAC-address based filtering mode. Enumeration of:
+			  * <ul>
+			  *   <li><b>Off</b> All MAC-addresses are allowed.</li>
+			  *   <li><b>WhiteList</b> Access is granted only for MAC-addresses occurring in the Entry table. </li>
+			  *   <li><b>BlackList</b> Access is granted for all MAC-addresses except for the ones occurring in the Entry table. </li>
+			  * </ul>
+			  * This only specifies how the entries in the Entry list should be handled. The
+			  * temp entry list is independent of this mode setting.
+			  */
+			%persistent string Mode {
+				on action validate call check_enum [ "Off", "WhiteList", "BlackList"];
+				default "Off";
+			}
+
+			/** This is the list of MAC-addresses to be allowed/denied depending on the MAC-filtering mode. */
+			%persistent object Entry[] {
+				on action write call wld_ap_setMACFilteringEntry_owf;
+				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
+				/** The MAC-address of this table entry. */
+				string MACAddress;
+			}
+
+			/**
+			 * This boolean enables temporary blacklisting. If mode is disabled, these entries should still be
+			 * blacklisted. The mode above is only relevant for the %persistent entry mode
+			 * If mode is blacklist, the union of the two lists shall be blacklisted.
+			 * If mode is whitelist, all entries in the %persistent entry lists, which are not in the
+			 * temp entry list will be whitelisted.
+			 */
+			%persistent bool TempBlacklistEnable{
+				default true;
+			}
+
+			/**
+			 * This is the list of MAC-addresses to be temporarily denied only, if temp blacklisting is enabled.
+			 * The temp entries will always be blacklisted only, and have priority on the entries in the
+			 * entry list. These entries should NOT be boot %persistent, nor back-up restored, and are runtime
+			 * only.
+			 **/
+			object TempEntry[] {
+				on action write call wld_ap_setMACFilteringEntry_owf;
+				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
+				string MACAddress;
+			}
+
+			/**
+			 * <b>addEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Add a MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void addEntry(%in string mac);
+
+			/**
+			 * <b>delEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Remove a MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void delEntry(%in string mac);
+
+			/**
+			 * <b>addTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Add a temporary MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void addTempEntry(%in string mac);
+
+			/**
+			 * <b>delTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Remove a temporary MACFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 7.0
+			 */
+			void delTempEntry(%in string mac);
+		}
+
+		/**
+		 * This object contains parameters related to MAC-address based filtering for this access point.
+		 * @version 9.1
+		 */
+		object ProbeFiltering {
+			/**
+			 * This is the list of MAC-addresses to be temporarily denied only.
+			 * @param MACAddress (format xx:xx:xx:xx:xx:xx)
+			 * @version 9.1
+			 **/
+			object TempEntry[] {
+				on action write call wld_ap_setProbeFilteringEntry_owf;
+				on action del-inst call wld_ap_deleteProbeFilteringEntry_odf;
+				string MACAddress;
+			}
+
+			/**
+			 * <b>addTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Add a temporary ProbeFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 9.1
+			 */
+			void addTempEntry(%in string mac);
+
+			/**
+			 * <b>delTempEntry</b>
+			 * @param macaddress (format xx:xx:xx:xx:xx:xx)
+			 * <p> Remove a temporary ProbeFiltering entry. This does not require a commit() to become active.</p>
+			 * @version 9.1
+			 */
+			void delTempEntry(%in string mac);
+		}
+
+		/** This object contains parameters related to Wi-Fi Protected
+		 *  Setup [WPSv1.0] for this access point.*/
+		%persistent object WPS{
+			/** Enables or disables WPS functionality for this access
+			 *  point. Note only one VAP/Radio can enable WPS. For this by
+			 *  design the default is disable. */
+			%persistent bool Enable{
+				default false;
+				on action write call wld_ap_setWPSEnable_pwf;
+			}
+			/** Keeps track of current (real) WPS activation status.
+			 *  Some configurations modes disable WPS!
+			 *  Still 'the intention of the user' that is tracked in the enable field is backuped. */
+			%read-only string Status;
+			/** <p>Comma-separated list of strings. Indicates WPS
+			 *  configuration methods supported by the device. Each list
+			 *  item is an enumeration of:</p>
+			 *  <ul>
+			 *    <li>USBFlashDrive</li>
+			 *    <li>Ethernet</li>
+			 *    <li>Label</li>
+			 *    <li>Display</li>
+			 *    <li>ExternalNFCToken</li>
+			 *    <li>IntegratedNFCToken</li>
+			 *    <li>NFCInterface</li>
+			 *    <li>PushButton</li>
+			 *    <li>PIN</li>
+			 *    <li>PhysicalPushButton</li>
+			 *    <li>PhysicalDisplay</li>
+			 *    <li>VirtualPushButton</li>
+			 *    <li>VirtualDisplay</li>
+			 *  </ul>
+			 *  This parameter corresponds directly to the "Config
+			 *  Methods" attribute of the WPS specification [WPSv2.0].
+			 *  The USBFlashDrive and Ethernet are only applicable in WPS 1.0 and are deprecated in WPS 2.x.
+			 *  The PhysicalPushButton, VirtualPushButton, PhysicalDisplay and VirtualDisplay are applicable to WPS 2.x only.
+			 *  The PushButton and PIN methods MUST be supported.
+			 *  S@H comments: PIN covers LABEL, DISPLAY and KEYPAD bit pattern.
+			 *  Note combination KEYPAD and PushButton is forbidden
+			 */
+			%read-only string ConfigMethodsSupported;
+			/** Comma-separated list of strings. Each list item MUST
+			 *  be a member of the list reported by the
+			 *  ConfigMethodsSupported  parameter. Indicates WPS
+			 *  configuration methods enabled on the device.*/
+			%persistent string ConfigMethodsEnabled{
+				on action write call wld_ap_setWpsConfigMethodsEnabled_pwf;
+			}
+
+			bool CertModeEnable{
+				on action write call wld_ap_setWpsCertModeEnable_pwf;
+				default false;
+			}
+
+			/*{
+			NEED VALIDATOR FUNCTION FOR THIS!!!
+				on action validate call check_enum ["USB","Ethernet","Label","Display",
+									  "ExternalNFCToken","InternalNFCToken","NFCInterface","PushButton",
+									  "Keypad",
+									  "PIN"];
+				default "PushButton";
+			}*/
+
+			/**
+			 * Randomly generated PIN-code, to be entered in client devices to connect to the HGW.
+			 * This code can be regenerated with generateSelfPIN().
+			 * However, the wlan implementation is free to regenerate this PIN code
+			 * whenever needed so it is not guaranteed to be constant between two consecutive
+			 * generateSelfPIN()-calls.
+			 */
+			string SelfPIN{
+			on action write call wld_ap_setWpsSelfPIN_pwf;
+			}
+
+			/**
+			 * Initiates a Wi-Fi Protected Setup (WPS) Push Button Configuration (PBC)
+			 * process as defined in WPS 2.0.
+			 * @return htable including "Status" of the the request to start PBC 
+			 * registrar session, which is one of the following strings:
+			 * Success, Error_Not_Ready, Error_Timeout, Error_Other
+			 */
+			htable InitiateWPSPBC();
+			
+			/**
+			 * Initiates a Wi-Fi Protected Setup (WPS) AP/Client PIN:
+			 * - when clientPIN argument is provided: it starts a wps PIN session, 
+			 * and connects to the client device.
+			 * - Otherwise, it starts a WPS AP Pin session, allowing remote connections
+			 * with self PIN, for 2 mn.
+			 * Notice that the corresponding config methods need to be enabled by ConfigMethodsEnabled.
+			 * clientPIN: 4-digit or 8-digit WPS PIN code in case of ClientPIN.
+			 * @return htable including Status of the the request to start WPS AP/Client PIN session,
+			 * which is one of the following strings:
+			 * Success, Error_Not_Ready, Error_Timeout, Error_Other
+			 */
+			htable InitiateWPSPIN(%in string clientPIN);
+
+			/**
+			 * Cancel WPS registrar if it was runnning.
+			 */
+			void cancelWPSPairing();
+
+			bool setCompatibilityWPS(%in string supVerWPS);
+			/**
+			string generateSelfPIN()
+			Regenerate the SelfPIN.
+			It's not specified at this level whether the generated PIN-code should be
+			a 4-digit or an 8-digit WPS PIN code, but this should be configurable somehow
+			in an implementation specific way. The newly generated PIN-code should be stored
+			in SelfPIN and it should be applied, meaning that devices can connect using this PIN-code.
+			During the ACTIVE registrar period (2 min).
+			The return value indicates that the registrar is started or not.
+			*/
+			string generateSelfPIN();
+
+			/**
+			 * Not in the spec!
+			 * We need something to toggle WPS in unconfigured mode.
+			 */
+			%persistent bool Configured{
+				on action write call wld_ap_setWpsConfigured_pwf;
+				default true;
+			}
+
+			/**
+			Indicates whether WPS pairing is busy.
+			This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
+			*/
+			bool PairingInProgress;
+			
+			/**
+			 * UUID used during WPS pairing.
+			 *
+			 * This is visible in the beacon frames.
+			 *
+			 * UUID is written in hex format, e.g. "12345678-9abc-def0-1234-56789abcdef0".
+			 *
+			 * @version 10.0
+			 */
+			string UUID {
+				on action write call wld_wps_setUUID;
+				default "00000000-0000-0000-0000-000000000000";
+			}
+
+			/**
+			 * If enable, credentials of the relay interface will be forwarded inside the WPS session.
+			 * Relay interface must be on the same radio as this AP.
+			 * @version 10.0
+			 */
+			%persistent bool RelayCredentialsEnable {
+				on action write call wld_ap_setWpsRelayCredentialsEnable_pwf;
+				default false;
+			}
+
+			/**
+			 * This parameter allow to restart wps within a wps session
+			 * If RestartOnRequest is true then the calling to startPairing again will cancel the previous pairing, and start a new pairing sessions.
+			 * If false, the call will get ignored
+			 * @version 10.0
+			 */
+			 %persistent bool RestartOnRequest {
+				on action write call wld_ap_setWpsRestartOnRequest_pwf;
+				default false;
+			}
+		}
+
+		/**
+		 * Object which contains the association counters.
+		 * The association counters keep track of the amount of successful and failed connection attempts.
+		 */
+		object AssociationCount {
+
+			/**
+			 * The amount of successful connection attempts since last reset.
+			 */
+			%read-only uint32 Success;
+
+			/**
+			 * The amount of failed connection attempts since last reset, due to unknown reasons.
+			 */
+			%read-only uint32 Fail;
+
+			/**
+			 * The amount of failed connection attempts since last reset, due to security reasons.
+			 * Likely cause is that the user was using an invalid password.
+			 */
+			%read-only uint32 FailSecurity;
+
+			/**
+			 * The number of fast reconnects observed. A fast reconnect is if a station
+			 * disconnects and then reconnects within a configured time frame.
+			 * @version 10.0
+			 */
+			%read-only uint32 FastReconnects;
+			
+			/**
+			 * Specific classifications of fast reconnects. Currently supported ones are
+			 * reconnections on state change (e.g. DFS), and on scan. By default 
+			 * reconnects get classified as the other type.
+			 * @version 10.0
+			 */
+			%read-only object FastReconnectTypes[] {
+				/**
+				 * The type of fast reconnection. Current types are "OnStateChange", "OnScan", "Default"
+				 * @version 10.0
+				 */
+				%read-only string Type;
+				/**
+				 * The number of fast reconnections observed of this type.
+				 * @version 10.0
+				 */
+				%read-only uint32 Count;
+			}
+
+			/**
+			 * IGD doesn't support function support.
+			 * This param does a reset of AssociationCounts params when TRUE.
+			 * But is visibly always FALSE!
+			 */
+			bool ResetCounters{
+				on action write call doAssociationCountReset;
+			}
+		}
+
+		/** Update the statistics in of the AssociatedDevice[] objects in the datamodel,
+		 * @return list of variant maps with the AssociatedDevice values
+		 * @version 6.0
+		*/
+		void getStationStats();
+
+		/** The number of active entries in the AssociatedDevice table.  */
+		%read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
+		
+		/** The number of entries in the AssociatedDevice table. */
+		%read-only uint32 AssociatedDeviceNumberOfEntries;
+
+		/** <p> A table of the devices currently associated with the
+		    accesspoint. At most one entry in this table can exist with
+		    a given value for MACAddress.</p>
+		    @version 6.0
+		  */
+		%read-only object AssociatedDevice[]{
+			on action read call getSingleStationStats;
+
+			/** CUI based on Chargeable-User-Identity attribute in Access-Accept
+			 * @version 6.0  */
+			%read-only string ChargeableUserId;
+
+			/**[MACAddress] The MAC address of an associated device.
+			 * @version 6.0
+			*/
+			%read-only string MACAddress;
+			/** Whether an associated device has authenticated (true) or
+			 * not (false).
+			 * @version 6.0
+			 */
+			%read-only bool AuthenticationState;
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the access point to the associated
+			 *  device.
+			 * @version 6.0
+			 */
+			%read-only uint32 LastDataDownlinkRate;
+
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the associated device to the access
+			 *  point.
+			 * @version 6.0
+			 */
+			%read-only uint32 LastDataUplinkRate;
+
+			/** An indicator of radio signal strength of the uplink from the
+			 *  associated device to the access point, measured in dBm, as
+			 *  an average of the last 100 packets received from the
+			 *  device.
+			 *  The value is the highest value accross all SignalStrengthByChain values. If not available, the value is the one reported by the driver.
+			 * @version 6.0
+			 */
+			%read-only int32 SignalStrength{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+
+			/** An indicator of radio Min,Max,Mean(Linear),Mean(Exp) signal strength of the uplink from the
+			 *  associated device to the access point, measured in dBm since last association.
+			 *  format is comma separated string of integers, example : -11,-33
+			 * @version 10.0
+			 */
+			%read-only string SignalStrengthHistory;
+
+			/**
+			* List of radio signal strength per antennas of the uplink from the
+			* associated device to the access point, float values with one decimal,
+			* measured in dBm, separated by a comma.
+			* Example : -58.5,-58.2,-57.4,-58.1
+			 * @version 9.1
+			*/
+			%read-only string SignalStrengthByChain;
+			/**
+			 * An indicator of radio signal strength of the uplink from the
+			 * associated device to the access point, measured in dBm, as
+			 * an average over all antennas.
+			 * @version 9.2
+			 */
+			%read-only int32 AvgSignalStrengthByChain{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+			/**
+			 * An indicator of radio signal strength of the uplink from the
+			 * associated device to the access point, measured in dBm.
+			 * Reported as measured by the RssiMonitor
+			 * @version 6.0
+			 */
+			%read-only int32 AvgSignalStrength{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+
+			/** The number of packets that had to be re-transmitted recently.
+			 * Official spec requires this to be a value in range [0,100], representing the amount
+			 * of retransmissions done in the last 100 packets.
+			 * However, due to drivers not offering this value, this value will present the percentage
+			 * of tx retransmissions vs actual transmissions since the last time statistics were taken.
+			 * This will also be a value between 0 and 100.
+			 * @version 6.0
+			 */
+			%read-only uint32 Retransmissions;
+
+			/** <p>Whether or not this node is currently present in the WiFi
+			 *  AccessPoint network.</p>
+			 *  <p>The ability to list inactive nodes is OPTIONAL. If the CPE
+			 *  includes inactive nodes in this table, Active MUST be set
+			 *  to false for each inactive node. The length of time an
+			 *  inactive node remains listed in this table is a local
+			 *  matter to the CPE.</p>
+			 * @version 6.0
+			 */
+			%read-only bool Active;
+
+			/** Signal to noise ratio in dB
+			 * @version 6.0
+			 */
+			%read-only int32 SignalNoiseRatio;
+			/** Radio noise level in dB
+			 * @version 6.0
+			*/
+			%read-only int32 Noise;
+			/** The time elapsed since the station was last active, in seconds
+			 * @version 6.0
+			*/
+			%read-only uint32 Inactive;
+			/** Number of packets received by the station
+			 * @version 6.0
+			*/
+			%read-only uint32 RxPacketCount;
+
+			/** Number of packets sent by the station
+			 * @version 6.0
+			*/
+			%read-only uint32 TxPacketCount;
+
+			/** 
+                         * Number of unicast packets received by the station
+			 * @version 9.2 
+			*/
+                        %read-only uint32 RxUnicastPacketCount;
+
+
+			/** 
+                         * Number of unicast packets sent by the station
+			 * @version 9.2 
+			*/
+			%read-only uint32 TxUnicastPacketCount;
+
+
+			/** 
+                         * Number of Multicast packets received by the station
+			 * @version 9.2 
+			*/
+			%read-only uint32 RxMulticastPacketCount;
+
+
+			/** 
+                         * Number of Multicast packets sent by the station
+			 * @version 9.2 
+			*/
+			%read-only uint32 TxMulticastPacketCount;
+
+			/** Number of bytes sent by the station
+			 * @version 6.0
+			*/
+			%read-only uint64 TxBytes;
+
+			/** Number of bytes received by the station
+			 * @version 6.0
+			*/
+			%read-only uint64 RxBytes;
+
+			/** Number of packets errors
+			 * @version 9.0
+			*/
+			%read-only uint32 TxErrors;
+
+			/** Number of received retransmissions.
+			 * @version 6.0
+			*/
+			%read-only uint32 Rx_Retransmissions;
+			
+			/** Number of failed receive retransmissions.
+			 * @version 9.0
+			*/
+			%read-only uint32 Rx_RetransmissionsFailed;
+			
+
+			/** Number of retransmissions we sent out ourselves.
+			 * @version 6.0
+			*/
+			%read-only uint32 Tx_Retransmissions;
+
+			/** Number of failed retransmissions.
+			 * @version 9.0
+			*/
+			%read-only uint32 Tx_RetransmissionsFailed;
+
+			/** MCS Id of the station's uplink */
+			%read-only uint32 UplinkMCS;
+
+			/** Indicates channel bandwidth is used as uplink */
+			%read-only uint32 UplinkBandwidth;
+
+			/** Short guarding interval is applied for uplink */
+			%read-only bool UplinkShortGuard;
+			
+			/** String representation of full receive rateSpec */
+			%read-only string UplinkRateSpec;
+
+			/** MCS Id of the station's downlink */
+			%read-only uint32 DownlinkMCS;
+
+			/** Indicates channel bandwidth is used as downlink */
+			%read-only uint32 DownlinkBandwidth;
+
+			/** Short guarding interval is applied for downlink */
+			%read-only bool DownlinkShortGuard;
+			
+			/** String representation of full transmit rateSpec */
+			%read-only string DownlinkRateSpec;
+
+			/* Maximum number of Rx spatial streams supported */
+			%read-only uint16 MaxRxSpatialStreamsSupported;
+
+			/* Maximum number of Tx spatial streams supported */
+			%read-only uint16 MaxTxSpatialStreamsSupported;
+
+			/* Maximum DownlinkRate supported in Kbps */
+			%read-only uint32 MaxDownlinkRateSupported;
+
+			/* Maximum Downlink physical rate reached in Kbps */
+			%read-only uint32 MaxDownlinkRateReached;
+
+			/* Maximum UplinkRate supported in Kbps */
+			%read-only uint32 MaxUplinkRateSupported;
+
+			/* Maximum Uplink physical rate reached in Kbps */
+			%read-only uint32 MaxUplinkRateReached;
+
+			/* Maximum bandwidth supported */
+			%read-only string MaxBandwidthSupported {
+				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+				default "Unknown";
+			}
+
+			/** Mode of the connected station : deprecated: please use tr-181 field operatingStandard */
+			%read-only string Mode{
+				on action validate call check_enum ["auto","a","an","b","bg","bgn","ac","ax","Unknown"];
+				default "Unknown";
+			}
+			
+			/**
+			 * The operating standard that this associated device is connected with. Enumeration of:
+			 * * a ([802.11a-1999])
+			 * * b ([802.11b-1999])
+			 * * g ([802.11g-2003])
+			 * * n ([802.11n-2009])
+			 * * ac ([802.11ac-2013])
+			 * * ax ([802.11ax]) 
+			 * @version 10.0
+			 */
+			%read-only string OperatingStandard{
+				on action validate call check_enum ["a","b","g","n","ac","ax","Unknown"];
+				default "Unknown";
+			}
+
+			/** Station is in power save mode */
+			%read-only bool PowerSave;
+
+			/**
+			 * Station Capabilities
+			 * Comma-separated list of strings. Indicates the capabilities supported by the station
+			 * List item: "RRM", "BTM"
+			 * RRM = Radio Resource Management 802.11k
+			 * BTM = BSS Transition Management 802.11v
+			 * @version 9.0
+			*/
+			%read-only string Capabilities{
+				default "";
+			}
+
+			/**
+			 * Connection Duration in seconds
+			 * @version 9.0
+			*/
+			%read-only uint32 ConnectionDuration;
+
+			/**
+			 * The type of device.
+			 */
+			string DeviceType{
+				on action validate call check_enum ["Video","Data","Guest"];
+				default "Data";
+				on action write call wld_ap_updateAssocDev;
+			}
+
+			/**
+			 * The priority of the device in the wireless network.
+			 */
+			uint32 DevicePriority{
+				default 1;
+				on action write call wld_ap_updateAssocDev;
+			}
+
+			/**
+			 * The timestamp when the device changes active state.
+			 * Expressed in UTC time.
+			 */
+			%read-only datetime LastStateChange;
+
+			/**
+			 * Date and time in UTC when the device was associated.
+			 * @version 9.1
+			 */
+			%read-only datetime AssociationTime;
+			
+			/**
+			 * Date and time in UTC when the device was disassociated.
+			 * @version 10.1
+			 */
+			%read-only datetime DisassociationTime;
+			
+			/**
+			 * Current device's MultiUser MIMO assigned Group ID.
+			 * Group  IDs  1 to 62 are assigned to STAs for VHT MU-MIMO communication.
+			 * Group ID (0) indicates SU transmission.
+			 * @version 9.2
+			 */
+			%read-only uint32 MUGroupId;
+
+			/**
+			 * Current device's MU User position ID.
+			 * Within one group, four possible User Position may be assigned (1-4).
+			 * Value 0 indicates undefined position. 
+			 * @version 9.2
+			 */
+			%read-only uint32 MUUserPositionId;
+			
+			/**
+			 * Instant count of packets sent as MU to the device. 
+			 * @version 9.2
+			 */
+			%read-only uint32 MUMimoTxPktsCount;
+			
+			/**
+			 * Instant percentage of packets sent as MU to the device. 
+			 * @version 9.2
+			 */
+			%read-only uint32 MUMimoTxPktsPercentage;
+
+			/**
+			 * list of HT modulation and coding scheme (MCS) supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 9.2
+			 */
+			%read-only string SupportedMCS;
+
+			/**
+			 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedVhtMCS;
+
+			/**
+			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedHeMCS;
+
+			/**
+			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * for 160MHz bandwidth supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedHe160MCS;
+
+			/**
+			 * Vendor OUI of the associated device.
+			 * format: AA:BB:CC,DD:EE:FF,....
+			 * @version 9.2
+			 */
+			%read-only string VendorOUI;
+
+			/**
+			 * Indicates which security mode is enabled.
+			 * @version 9.2
+			 */
+			%read-only string SecurityModeEnabled{
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+				default "None";
+			}
+
+			/**
+			 * The link bandwidth of the associated device.
+			 * @version 9.2
+			 */
+			%read-only string LinkBandwidth{
+				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+				default "Unknown";
+			}
+
+			/**
+			 * Encryption Mode
+			 * @version 9.2
+			 */
+			%read-only string EncryptionMode{
+				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+				default "Default";
+			}
+
+			/**
+			 * HT Capabilities of the associated device.
+			 * It can be a single or combination of following values:
+			 * "40MHz", "SGI20", "SGI40", "40MHz-INTOL"
+			 * @version 9.2
+			 */
+			%read-only string HtCapabilities;
+
+			/**
+			 * VHT Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
+			 * @version 9.2
+			 */
+			%read-only string VhtCapabilities;
+
+			/**
+			 * HE Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
+			 * @version 9.2
+			 */
+			%read-only string HeCapabilities;
+
+			/**
+			 * RRM Enabled Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "LINK", "NEIGHBOR", "PRALLAL", "REPEATED", "BEACON_ACTIVE",
+			 * "BEACON_PASSIVE", "BEACON_TABLE", "BEACON_COND", "FRAME",
+			 * "CHANNEL_LOAD", "NOISE_HISTOGRAM", "STATS", "LCI", "LCI_AZIMUTH"
+			 * "TSC", "TRSC", "AP_CHANNEL", "MIB", "PILOT", "TSF_OFFSET", "RCPI",
+			 * "RSNI", "ACCESS_DELAY", "ADMISS_CAPACITY", "ANTENNA", "FTM",
+			 * "CIVIC_LOCATION", "IDENT_LOCATION"
+			 */
+			%read-only string RrmCapabilities;
+
+			/**
+			 * RRM On-Channel Max Duration (in TU).
+			 */
+			%read-only uint32 RrmOnChannelMaxDuration;
+
+			/**
+			 * RRM Off-Channel Max Duration (in TU).
+			 * If 0, the STA does not support RM measurements on nonoperating channels.
+			 */
+			%read-only uint32 RrmOffChannelMaxDuration;
+
+			/**
+			 * Frequency Capabilities
+			 * Comma-separated list of strings.
+			 * It can be a single or combination of following values:
+			 * "2.4GHz","5GHz","6GHz",
+			 * @version 10.0
+			 */
+			%read-only string FrequencyCapabilities;
+
+			/**
+			 * UNIIBands Capabilities
+			 * Comma-separated list of strings.
+			 * It can be a single or combination of following values:
+			 * "U-NII-1","U-NII-2C","U-NII-2A","U-NII-3","U-NII-5","U-NII-6","U-NII-7","U-NII-8"
+			 * @version 10.0
+			 */
+			%read-only string UNIIBandsCapabilities;
+
+			/**
+			 * Capabilities seen per associated device inside a probe request
+			 * @version 9.2
+			 */
+			%read-only object ProbeReqCaps{
+				/**
+				 * list of modulation and coding scheme (MCS) supported by the associated device.
+				 * Format is comma separated list of integers.
+				 * @version 9.2
+				 */
+				%read-only string SupportedMCS;
+				
+				/**
+				 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
+				 * supported by the associated device.
+				 * Format is comma separated list of integers.
+				 * @version 10.0
+				 */
+				%read-only string SupportedVhtMCS;
+	
+				/**
+				 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+				 * supported by the associated device.
+				 * Format is comma separated list of integers.
+				 * @version 10.0
+				 */
+				%read-only string SupportedHeMCS;
+	
+				/**
+				 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+				 * for 160MHz bandwidth supported by the associated device.
+				 * Format is comma separated list of integers.
+				 * @version 10.0
+				 */
+				%read-only string SupportedHe160MCS;
+
+				/**
+				 * Vendor OUI of the associated device.
+				 * format: AA:BB:CC,DD:EE:FF,....
+				 * @version 9.2
+				 */
+				%read-only string VendorOUI;
+
+				/**
+				 * Indicates which security mode is enabled.
+				 * @version 9.2
+				 */
+				%read-only string SecurityModeEnabled{
+					on action validate call check_enum ["None", "OWE",
+							"WEP-64","WEP-128","WEP-128iv",
+							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+							"WPA3-Personal","WPA2-WPA3-Personal",
+							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+							"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+					default "None";
+				}
+
+				/**
+				 * The link bandwidth of the associated device.
+				 * @version 9.2
+				 */
+				%read-only string LinkBandwidth{
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+					default "Unknown";
+				}
+
+				/**
+				 * Encryption Mode
+				 * @version 9.2
+				 */
+				%read-only string EncryptionMode{
+					on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+					default "Default";
+				}
+
+				/**
+				 * HT Capabilities of the associated device.
+				 * It can be a single or combination of following values:
+				 * "40MHz", "SGI20", "SGI40"
+				 * @version 9.2
+				 */
+				%read-only string HtCapabilities;
+
+				/**
+				 * VHT Capabilities of the associated device
+				 * It can be a single or combination of following values:
+				 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
+				 * @version 9.2
+				 */
+				%read-only string VhtCapabilities;
+
+				/**
+				 * HE Capabilities of the associated device
+				 * It can be a single or combination of following values:
+				 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
+				 * @version 9.2
+				 */
+				%read-only string HeCapabilities;
+
+				/**
+				 * RRM Enabled Capabilities of the associated device
+				 * It can be a single or combination of following values:
+				 * "LINK", "NEIGHBOR", "PRALLAL", "REPEATED", "BEACON_ACTIVE",
+				 * "BEACON_PASSIVE", "BEACON_TABLE", "BEACON_COND", "FRAME",
+				 * "CHANNEL_LOAD", "NOISE_HISTOGRAM", "STATS", "LCI", "LCI_AZIMUTH"
+				 * "TSC", "TRSC", "AP_CHANNEL", "MIB", "PILOT", "TSF_OFFSET", "RCPI",
+				 * "RSNI", "ACCESS_DELAY", "ADMISS_CAPACITY", "ANTENNA", "FTM",
+				 * "CIVIC_LOCATION", "IDENT_LOCATION"
+				 */
+				%read-only string RrmCapabilities;
+
+				/**
+				 * RRM On-Channel Max Duration (in TU).
+				 */
+				%read-only uint32 RrmOnChannelMaxDuration;
+
+				/**
+				 * RRM Off-Channel Max Duration (in TU).
+				 * If 0, the STA does not support RM measurements on nonoperating channels.
+				 */
+				%read-only uint32 RrmOffChannelMaxDuration;
+
+				/**
+				 * Frequency Capabilities
+				 * Comma-separated list of strings.
+				 * It can be a single or combination of following values:
+				 * "2.4GHz","5GHz","6GHz",
+				 * @version 10.0
+				 */
+				%read-only string FrequencyCapabilities;
+			}
+		}
+
+		/**
+		 * Extra vendor IEs broadcasted in capabilities frames (eg. beacon, probe req/resp,
+		 * assoc req, resp, etc...)
+		 * @version 10.0
+		 */
+		%persistent object VendorIEs {
+			/**
+			 * Enable or disable the vendor IEs support
+			 * @version 10.0
+			 */
+			%persistent bool Enable {
+				on action write call wld_ap_enableVendorIEs;
+				default false;
+			}
+
+			/**
+			 * Add a specific vendor IE with the given OUI and the given
+			 * data. This IE will be broadcasted through the given frame type
+			 * that can be one or more of these frames : Beacon, ProbeReq, ProbeResp,
+			 * AssocReq, AssocResp, AuthReq, AuthResp
+			 * @version 10.0
+			 */
+			void createVendorIE(%in string oui, %in string data, %in string frame_type);
+
+			/**
+			 * Delete a specific vendor IE with the given OUI and the given
+			 * data. This IE will be broadcasted through the given frame type
+			 * that can be one or more of these frames : Beacon, ProbeReq, ProbeResp,
+			 * AssocReq, AssocResp, AuthReq, AuthResp
+			 * @version 10.0
+			 */
+			void deleteVendorIE(%in string oui, %in string data);
+
+			/**
+			 * Customized vendor IE object containing OUI and data
+			 * and broadcasted in specific frame types
+			 * @version 10.0
+			 */
+			%persistent object VendorIE[]{
+				on action add-inst call wld_ap_addVendorIE_ocf;
+				on action write call wld_ap_setVendorIE_owf;
+				on action del-inst call wld_ap_delVendorIE_odf;
+
+				/**
+				 * Vendor OUI
+				 * Format must be 3 bytes separated by a colon: "xx:xx:xx"
+				 * @version 10.0
+				 */
+				%persistent string OUI;
+
+				/**
+				 * Data broadcasted in the IE
+				 * Format must be in hexadecimal, multiple of bytes
+				 * @version 10.0
+				 */
+				%persistent string Data;
+
+				/**
+				 * The list of frame types that include the vendor IE:
+				 * It's comma separated list of strings whose valid entries are:
+				 * "Beacon", "ProbeReq", "ProbeResp", "AuthReq", "AuthResp",
+				 * "AssocReq", "AssocResp"
+				 * @version 10.0
+				 */
+				%persistent string FrameType;
+			}
+		}
+
+		/* This object contains parameters for HotSpot2.0 */
+		%persistent object HotSpot2 {
+			/**
+			# Enable Hotspot 2.0 support
+			*/
+			%persistent bool Enable{
+				default false;
+				on action write call wld_ap_setHotSpotEnable_pwf;
+			}
+
+			/**
+			Disable Downstream Group-Addressed Forwarding (DGAF) This can be used to
+			configure a network where no group-addressed frames are allowed. The AP will not
+			forward any group-address frames to the stations and random GTKs are issued for
+			each station to prevent associated stations from forging such frames to other
+			stations in the BSS.
+			*/
+			%persistent bool DgafDisable {
+				default false;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			/**
+			 Connection Capability  [multiple entries separated by ';']
+			 This can be used to advertise what type of IP traffic can be sent through the
+			 hotspot (e.g., due to firewall allowing/blocking protocols/ports).
+			 format: &lt;IP Protocol&gt;:&lt;Port Number&gt;:&lt;Status&gt; IP Protocol: 1 =
+			 ICMP, 6 = TCP, 17 = UDP Port Number: 0..65535 Status: 0 = Closed, 1 = Open, 2 =
+			 Unknown Each hs20_conn_capab line is added to the list of advertised tuples.
+			 ex: hs20_conn_capab=17:5060:0
+			*/
+			%persistent string L2TrafficInspect {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			 * Don't find anything on this?
+			 */
+			%persistent bool IcmpV4Echo {
+				default true;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+			/**
+			# Access Network Type
+			# 0 = Private network
+			# 1 = Private network with guest access
+			# 2 = Chargeable public network
+			# 3 = Free public network
+			# 4 = Personal device network
+			# 5 = Emergency services only network
+			# 14 = Test or experimental
+			# 15 = Wildcard
+			*/
+			%persistent uint32 Interworking {
+				default 1;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 15 };
+			}
+
+			/**
+			# Whether the network provides connectivity to the Internet
+			# 0 = Unspecified
+			# 1 = Network provides connectivity to the Internet
+			*/
+			%persistent bool Internet {
+				default false;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			/**
+			# Additional Step Required for Access
+			# Note: This is only used with open network, i.e., ASRA shall ne set to 0 if
+			# RSN is used. (Hotspot 2.0 Release 1 doesn't allow an open network)
+			*/
+			%persistent uint32 Additional {
+				default 0;
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			/** Doesn't sound logic? */
+			%persistent bool Hs2Ie {
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+			/**
+			# P2P Device management, allow cross connection
+			*/
+			%persistent bool P2PEnable {
+				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 1 };
+			}
+
+			%persistent int32 GasDelay {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			%persistent uint8 AccessNetworkType {
+				default 2;
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Venue Info (optional)
+			# The available values are defined in IEEE Std 802.11u-2011, 7.3.1.34.
+			# Example values (group,type):
+			# 0,0 = Unspecified
+			# 1,7 = Convention Center
+			# 1,13 = Coffee Shop
+			# 2,0 = Unspecified Business
+			# 7,1 Private Residence
+			# (Mandatory to support this according to the testplan although the setting is optional)
+			*/
+			%persistent uint8 VenueType {
+				default 8;
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+			%persistent uint8 VenueGroup {
+				default 2;
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Venue Name information
+			# This parameter can be used to configure one or more Venue Name Duples for
+			# Venue Name ANQP information. Each entry has a two or three character language
+			# code (ISO-639) separated by colon from the venue name string.
+			# Note that venue_group and venue_type have to be set for Venue Name
+			# information to be complete.
+			#venue_name=eng:Example venue
+			#venue_name=fin:Esimerkkipaikka
+			# Alternative format for language:value strings:
+			# (double quoted string, printf-escaped string)
+			#venue_name=P"eng:Example\nvenue"
+			*/
+			%persistent string VenueName {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+			/**
+			# Homogeneous ESS identifier (optional; dot11HESSID)
+			# If set, this shall be identifical to one of the BSSIDs in the homogeneous
+			# ESS and this shall be set to the same value across all BSSs in homogeneous
+			# ESS. (Mandatory to support this according to the testplan although the setting is optional)
+			# (Can be set to our own BSSID, this is also what the test does)
+			*/
+			%persistent string HeSSID {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Roaming Consortium List &lt;multiple entries separated by ';'&gt; # Arbitrary
+			number of Roaming Consortium OIs can be configured with each line # adding a new
+			OI to the list. The first three entries are available through # Beacon and Probe
+			Response frames. Any additional entry will be available only # through ANQP
+			queries. Each OI is between 3 and 15 octets and is configured as # a hexstring.
+			# (Mandatory to support this according to the testplan although the setting is optional)
+			*/
+			%persistent string RoamingConsortium {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# Domain Name
+			# format: &lt;variable-octet str&gt;[,&lt;variable-octet str&gt;]
+			*/
+			%persistent string DomainName {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			# 3GPP Ce"PRIu64"lar Network information
+			# format: &lt;MCC1,MNC1&gt;[;&lt;MCC2,MNC2&gt;][;...]
+			*/
+			string Anqp3gpp_CellNet {
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+
+			/**
+			WAN Metrics
+			format: &lt;WAN Info&gt;:&lt;DL Speed&gt;:&lt;UL Speed&gt;:&lt;DL Load&gt;:&lt;UL
+			Load&gt;:&lt;LMD&gt; WAN Info: B0-B1: Link Status, B2: Symmetric Link, B3: At
+			Capabity (encoded as two hex digits) # Link Status: 1 = Link up, 2 = Link
+			down, 3 = Link in test state Downlink Speed: Estimate of WAN backhaul link
+			current downlink speed in kbps; 1..4294967295; 0 = unknown # Uplink Speed:
+			Estimate of WAN backhaul link current uplink speed in kbps 1..4294967295; 0 =
+			unknown  Downlink Load: Current load of downlink WAN connection (scaled to 255
+			= 100%)  Uplink Load: Current load of uplink WAN connection (scaled to 255 =
+			100%)  Load Measurement Duration: Duration for measuring downlink/uplink load
+			in  tenths of a second (1..65535); 0 if load cannot be determined
+			*/
+			%read-only string WanMetrics;
+
+			/**
+			# Operating Class Indication
+			# List of operating classes the BSSes in this ESS use. The Global operating
+			# classes in Table E-4 of IEEE Std 802.11-2012 Annex E define the values that
+			# can be used in this.
+			# format: hexdump of operating class octets
+			# for example, operating classes 81 (2.4 GHz channels 1-13) and 115 (5 GHz
+			# channels 36-48):
+			# hs20_operating_class=5173
+			*/
+			string OperatingClass{
+				on action write call wld_ap_configHotSpot_pwf;
+			}
+		}
+
+		/**
+		 * List of fields for advanced driver config
+		 * @version 10.0
+		 */
+		%persistent object DriverConfig {
+		on action write call wld_ap_setDriverConfig_owf;
+			/**
+			 * The BSS Max Idle period is the time frame during which an access point (AP) does not disassociate a client
+			 * due to non-receipt of frames from the connectedclient.
+			 * -1 = Auto, 0 = Disabled
+			 * @version 10.0
+			 */
+			%persistent int32 BssMaxIdlePeriod{
+				on action validate call check_range { min = -1, max = 65535 };
+				default -1;
+			}
+		}
+
+		/**
+		 * Add or set a neighbour accesspoint with a given BSSID, Information, OperatingClass, Channel and Phytype.
+		 * If currently no neighbour with the given BSSID exists, then a new BSSID object will be created.
+		 * BSSID is the mandatory arguement, other arguements are optional, and will be left default if not set.
+		 *
+		 * If a neighbour with a given BSSID exists, then this function will update the neighbour with the given
+		 * BSSID with the fields that differ from zero.
+		 * @param BSSID : bssid of the neighbour to add format xx:xx:xx:xx:xx:xx
+		 * @param Information : the information int32 field, as defined in 802.11 standard.
+		 * @param OperatingClass : the operating class of the Neighbour as defined in 802.11 standard.
+		 * @param Channel : the control channel on which the Neighbour is broadcasting.
+		 * @param PhyType : the phy type of the Neighbour, as defined in 802.11 standard.
+		 * @param NASIdentifier : the NASIdentifier of the Neighbour.
+		 * @param R0KHKey : the R0kHKey of the Neighbour.
+		 * @return no return
+		 * @version 9.0
+		 */
+		void setNeighbourAP(
+			string BSSID,
+			string SSID,
+			int32 Information,
+			int32 OperatingClass,
+			int32 Channel,
+			int32 PhyType,
+			string NASIdentifier,
+			string R0KHKey);
+
+		/**
+		 * Delete the neighbour accesspoint with the given BSSID.
+		 * @param BSSID : bssid of the neighbour to delete. format xx:xx:xx:xx:xx:xx
+		 * @return no return
+		 * @version 9.0
+		 */
+		void delNeighbourAP(string BSSID);
+
+		/**
+		 * The list of neighbour access points. All the accesspoints listed here should belong to the
+		 * same extended service set (ESS).
+		 * @version 9.0
+		 */
+		%persistent object Neighbour[]{
+
+			on action del-inst call wld_ap_delete_neigh;
+			on action write call wld_ap_update_neigh;
+			on action add-inst call wld_ap_add_neigh;
+
+			/**
+			 * The BSSID of the neighbour accesspoint.
+			 */
+			string BSSID;
+			/**
+			 * The SSID of the neighbour accesspoint.
+			 */
+			string SSID;
+			/**
+			 * The BSSID Information field.
+			 */
+			int32 Information;
+			/**
+			 * The neighbour accesspoint operating class.
+			 */
+			int32 OperatingClass;
+			/**
+			 * The current channel of the neighbour accesspoint
+			 */
+			int32 Channel;
+			/**
+			 * The phy type of the neighbour accesspoint.
+			 */
+			int32 PhyType;
+			/**
+			 * The NAS Identifier of the neighbour accesspoint.
+			 */
+			string NASIdentifier;
+			/**
+			 * The R0KHKey of the neighbour accesspoint.
+			 */
+			string R0KHKey;
+		}
+
+		/**
+		 * In band discovery methods enabled (mandatory for 6GHz). It is a comma-seperated
+         * list of strings. It can be one or more options of the following:
+		 * - Default value from driver: "Default"
+		 * - Disabled: "Disabled"
+         * - Reduced Neigbor Report: "RNR"
+		 * - Unsolicited Probe Response (6GHz only): "UPR"
+		 * - FILS Discovery: "FILSDiscovery"
+		 * @version 10.0
+		 */
+		%persistent string DiscoveryMethodEnabled{
+			default "Default";
+			on action write call wld_ap_setDiscoveryMethod_pwf;
+		}
+
+			/**
+			 * Perform event based RSSi Monitoring. When a significant "step" has been detected
+			 * compared to the previous value, an event is sent out.
+			 * This way, upper layers can be notified within very few seconds when significant changes
+			 * of rssi have taken place
+			 */
+			%persistent object RssiEventing{
+
+				/**
+				 * Getting the history statistics for a specific station or for all stations connected to the AP.
+				 * @param : optional mac address of the connected station (format xx:xx:xx:xx:xx:xx)
+				 * @return
+				 * variant list of the history data for all station of the AP if no given mac address.
+				 * variant map of the history data for a specific station of the AP given by mac param.
+				 * @version 10.1
+				 */
+				void getShortHistoryStats();
+
+				/**
+				 * Enable the rssi eventing
+				 */
+				%persistent bool Enable{
+					on action write call mon_enableWriteHandler;
+					default false;
+				}
+
+				/**
+				 * The minimal level of difference required before an event is sent out.
+				 * Expressed in dbm.
+				 */
+				%persistent uint32 RssiInterval{
+					default 10;
+					on action write call wld_ap_setRssiInterval_pwf;
+					constraint minvalue 1;
+				}
+
+				/**
+				 * The system shall average out measurements, to avoid spikes in the data.
+				 * Upon measurement, newval is calculated as follows:
+				 * NewValue = (OldValue * (1000 - AveragingFactor) + AveragingFactor * Measurement) / 1000
+				 *
+				 * A value of 1000 would always take the latest value.
+				 */
+				%persistent uint32 AveragingFactor{
+					on action validate call check_range { min = 1, max = 1000 };
+					default 500;
+					on action write call wld_ap_setAveragingFactor_pwf;
+				}
+
+				/**
+				 * The interval with which the monitor will call the underlying layer to retrieve
+				 * the latest Rssi measurement.
+				 * Expressed in milliseconds.
+				 */
+				%persistent uint32 Interval{
+					default 1000;
+					on action write call mon_intervalWriteHandler;
+					constraint minvalue 100;
+				}
+
+				/**
+				 * Enable the historys gathering.
+				 * @version 10.1
+				 */
+				%persistent bool HistoryEnable{
+					default true;
+					on action write call wld_ap_setHistoryEnable_pwf;
+				}
+
+				/**
+				 * The number of values saved in the history (the history length).
+				 * @version 10.1
+				 */
+				%persistent uint32 HistoryLen{
+					default 10;
+					on action write call wld_ap_setHistoryLen_pwf;
+					constraint minvalue 1;
+				}
+
+				/**
+				 * HistoryIntervalCoeff configures the interval with which the stats are saved in the history
+				 * and also the interval necessary to get a full history.
+				 * This parameter is a positive integer that is used to calculate the interval of history filling
+				 * according to the following formula :
+				 *        History filling interval = HistoryIntervalCoeff x RssiMonitorInterval.
+				 * Every HistoryIntervalCoeff RssiMonitor readings, a separate reading is saved in the history.
+				 * e.g.   HistoryIntervalCoeff = 3
+				 *        RssiMonitorInterval = 1000 (1s)
+				 *        HistoryLen = 5
+				 *        The interval between to history consecutive samples :
+				 *              HistoryIntervalCoeff x RssiMonitorInterval = 3s
+				 *        The interval needed to fill completely the history :
+				 *              HistoryIntervalCoeff x RssiMonitorInterval x HistoryLen = 15s
+				 * @version 10.1
+				 */
+				%persistent uint32 HistoryIntervalCoeff{
+					default 1;
+					on action write call wld_ap_setHistoryIntervalCoeff_pwf;
+					constraint minvalue 1;
+				}
+
+				/**
+				 * Enable periodic event sending of history data.
+				 * A single event with the history of all stations connected to the AP is sent
+				 * every "RssiMonitorInterval x HistoryIntervalCoeff x HistoryLen" (seconds).
+				 * @version 10.1
+				 */
+				%persistent bool SendPeriodicEvent{
+					on action write call wld_ap_setSendPeriodicEvent_pwf;
+					default false;
+				}
+
+				/**
+				 * Send a history event containing single station data
+				 * after one full history monitoring interval.
+				 * Only applies if the station was associated and authorized.
+				 * @version 10.1
+				 */
+				%persistent bool SendEventOnAssoc{
+					default true;
+					on action write call wld_ap_setSendEventOnAssoc_pwf;
+				}
+
+				/**
+				 * Send a history event when station disconnects containing
+				 * most recent data for that station.
+				 * Only applies if the station was authorized.
+				 * @version 10.1
+				 */
+				%persistent bool SendEventOnDisassoc{
+					default true;
+					on action write call wld_ap_setSendEventOnDisassoc_pwf;
+				}
+
+			}
+
+		/**
+		 * DEBUG SUPPORT
+		 */
+
+		/**
+		 * <B>DEBUG </B>
+		 *  Enable extra debugging output by vendor deamon applications
+		 *  The content of this one is for developpers only and not meant to export for clients.
+		 */
+		int32 dbgAPEnable{
+			default 0;
+			on action write call wld_ap_setDbgEnable_pwf;
+		}
+		string dbgAPFile{
+			on action write call wld_ap_setDbgFile_pwf;
+		}
+
+		void dbgClearInactiveEntries();
+
+		void debug();
+
+
+	} /* object AccessPoint */
+    }
+}
+

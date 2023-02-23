@@ -1,0 +1,397 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+
+
+%define {
+    select WiFi {
+	/**
+	SSID configuration. Here we config the VAP interface. Name id,
+	MAC address make SSID visible.
+
+	<p>WiFi SSID table (a stackable interface object as described in
+	[Section 4.2/TR-181i2]), where table entries model the MAC
+	layer. A WiFi SSID entry is typically stacked on top of a Radio
+	object. WiFi SSID is also a multiplexing layer, i.e. more than
+	one SSID can be stacked above a single Radio. At most one entry
+	in this table (regardless of whether or not it is enabled) can
+	exist with a given value for Alias, or with a given value for
+	Name. On creation of a new table entry, the CPE MUST choose
+	initial values for Alias and Name such that the new entry does
+	not conflict with any existing entries.
+	At most one enabled entry in this table can exist with a given
+	value for SSID, or with a given value for BSSID. </p>
+	*/
+	%persistent object SSID[]{
+		on action add-inst call wld_ssid_addInstance_ocf;
+		on action del-inst call wld_ssid_delInstance_odf;
+		
+		/**
+		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+		 * <p> Real function <b>bool VerifySSID(string SSID, ...)</b></p>
+		 * Verify 'all' or 'selected' the SSID-object parameters
+		 * @param SSID Name of the SSID interface that will be verified.
+		 * @param &lt;user param&gt; In case empty, the current given parameters are verified.
+		 * If the parameter is filled in (strin=value) it must be one of the SSID object strings:
+		 * Alias, LastChange, LowerLayers, BSSID, SSID or Enable.
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		 */
+		bool VerifySSID();
+		/**
+		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+		 * <p> Real function <b>bool CommitSSID(string SSID, uint32_t cm, ...)</b></p>
+		 * Sets main SSID data. The function can only be used for setting DATA (not get)!
+		 * @param SSID Name of the SSID interface that will be modified. Needed input field.
+		 * @param cm Commit mode, Or'ed value of following bit fields:
+			SET(1), NO_COMMIT(2), DIRECT(4). Noet SET is set by default!
+		 * @param ... A sequence of the SSID object parameters.
+			If nothing is set the current SSID-object config is reparsed.
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		*/
+		bool CommitSSID(%in uint32 cm);
+		
+		
+		/**
+		 * Returns a map containing this SSID's status histogram information.
+		 * The map contains:
+		 * LastStatusChange: Timestamp when status changed for last time.
+		 * NrStatusChanges: Number of times status changed.
+		 * StatusHistogram: String of comma separated values, containing seconds how long interface has spent in that state
+		 * LastStatusHistogramUpdate
+		 * LastEnableTime: The timestamp of the last time that radio was set to enable.
+		 * LastDisableTime: The timestamp of the last time that radio was set to disable.
+		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
+		 */
+		void getStatusHistogram();
+
+		/**
+		 * <p>The current operational state of the SSID entry (see
+		 * [Section 4.2.2/TR-181i2]). Enumeration of: </p>
+		 * <ul>
+		 *     <li> Up</li>
+		 *     <li> Down</li>
+		 *     <li> Unknown</li>
+		 *     <li> Dormant</li>
+		 *     <li> NotPresent</li>
+		 *     <li> LowerLayerDown</li>
+		 *     <li> Error(OPTIONAL)</li>
+		 * </ul>
+		 * <p>When Enable is false then Status SHOULD normally be Down
+		 * (or NotPresent or Error if there is a fault condition on the
+		 * interface). When Enable is changed to true then Status SHOULD
+		 * change to Up if and only if the interface is able to transmit
+		 * and receive network traffic; it SHOULD change to Dormant if
+		 * and only if the interface is operable but is waiting for
+		 * external actions before it can transmit and receive network
+		 * traffic (and subsequently change to Up if still operable when
+		 * the expected actions have completed); it SHOULD change to
+		 * LowerLayerDown if and only if the interface is prevented from
+		 * entering the Up state because one or more of the interfaces
+		 * beneath it is down; it SHOULD remain in the Error state if
+		 * there is an error or other fault condition detected on the
+		 * interface; it SHOULD remain in the NotPresent state if the
+		 * interface has missing (typically hardware) components; it
+		 * SHOULD change to Unknown if the state of the interface can
+		 * not be determined for some reason. </p>
+		 */
+		%read-only string Status{
+			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
+			default "Down";
+		}
+		
+		/**
+		 * Timestamp of the last time status changed.
+		 */
+		%read-only datetime LastStatusChangeTimeStamp;
+		
+		/**
+		 * <p>A non-volatile handle used to reference this instance.
+		 * Alias provides a mechanism for an ACS to label this
+		 * instance for future reference. An initial unique value MUST
+		 * be assigned when the CPE creates an instance of this
+		 * object.</p> */
+		%persistent %unique %key string Alias;
+		/**
+		 * <p> The textual name of the SSID entry as assigned by the
+		 * CPE.</p> */
+		%read-only string Name;
+		
+		/**
+		 * <p>The accumulated time in seconds since the SSID entered
+		 * its current operational state.</p> */
+		/* uint32 LastChange; */
+		/**
+		 * <p> Comma-separated list (maximum length 1024) of strings.
+		 * Each list item MUST be the path name of an interface object
+		 * that is stacked immediately below this interface object. If
+		 * the referenced object is deleted, the corresponding item MUST
+		 * be removed from the list.</p> */
+		%persistent string LowerLayers{
+			on action write call wld_ssid_setLowerLayers_pwf;
+		}
+		%read-only uint32 Index;      /* (DEBUG) Index in the SSID tree                     */
+		/**
+		 * <p>[MACAddress] The Basic Service Set ID.</p>
+		 * <p>This is the MAC address of the access point, which can
+		 * either be local (when this instance models an access point
+		 * SSID) or remote (when this instance models an end point
+		 * SSID). </p> */
+		%persistent %read-only string BSSID;
+		/**
+		 * <p>[MACAddress] The MAC address of this interface.</p>
+		 * <p>If this instance models an access point SSID, MACAddress is
+		 * the same as MACAddress. Note: This is not necessarily the
+		 * same as the Ethernet header source or destination MAC
+		 * address, which is associated with the IP interface and is
+		 * modeled via the Ethernet.Link.{i}.MACAddress parameter. </p>
+		 */
+		%persistent string MACAddress{
+			on action write call wld_ssid_setMacAddress_pwf;
+		}
+		/**
+		 *  <p> The current service set identifier in use by the
+		 *  connection. The SSID is an identifier that is attached to
+		 *  packets sent over the wireless LAN that functions as an ID
+		 *  for joining a particular radio network (BSS).</p>
+		 */
+		%persistent string SSID{
+			on action validate call wld_ssid_validateSSID_pvf;
+			on action write call wld_ssid_setSSID_pwf;
+			default "SSID_NOT_SET";
+		}
+
+		%read-only object Stats{
+			on action read call wld_ssid_getStats_orf;
+
+			/** The total number of bytes transmitted out of the
+			 *  interface, including framing characters. */
+			%volatile %read-only uint64 BytesSent;
+
+			/** The total number of bytes received on the interface,
+			 *  including framing characters. */
+			%volatile %read-only uint64 BytesReceived;
+
+			/** The total number of packets transmitted out of the
+			 *  interface. */
+			%volatile %read-only uint64 PacketsSent;
+
+			/** The total number of packets received on the interface. */
+			%volatile %read-only uint64 PacketsReceived;
+			/** The total number of outbound packets that could not be
+			 *  transmitted because of errors. */
+			%volatile %read-only uint32 ErrorsSent;
+
+			/** The total number of transmitted packets which were retransmissions. 
+			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
+			%read-only uint32 RetransCount;
+
+			/** The total number of inbound packets that contained errors
+			 *  preventing them from being delivered to a higher-layer
+			 *  protocol.*/
+			%volatile %read-only uint32 ErrorsReceived;
+
+			/** The total number of packets requested for transmission which
+			 *  were not addressed to a multicast or broadcast address at
+			 *  this layer, including those that were discarded or not
+			 *  sent.*/
+			%volatile %read-only uint32 DiscardPacketsSent;
+
+			/** The total number of inbound packets which were chosen to be
+			 *  discarded even though no errors had been detected to prevent
+			 *  their being delivered. One possible reason for discarding
+			 *  such a packet could be to free up buffer space.*/
+			%volatile %read-only uint32 DiscardPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  multicast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			%volatile %read-only uint32 UnicastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were not addressed to a
+			 *  multicast or broadcast address at this layer.*/
+			%volatile %read-only uint32 UnicastPacketsReceived;
+			
+			/** The total number of outbound packets which were chosen to be
+			 *  discarded even though no errors had been detected to prevent
+			 *  their being transmitted. One possible reason for discarding
+			 *  such a packet could be to free up buffer space.*/
+			%volatile %read-only uint32 MulticastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  multicast address at this layer.*/
+			%volatile %read-only uint32 MulticastPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  broadcast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			%volatile %read-only uint32 BroadcastPacketsSent;
+			
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  broadcast address at this layer. */
+			%volatile %read-only uint32 BroadcastPacketsReceived;
+
+			/** The total number of packets received via the interface which
+			 *  were discarded because of an unknown or unsupported
+			 *  protocol.*/
+			%volatile %read-only uint32 UnknownProtoPacketsReceived;
+
+			/** The number of packets that were not transmitted successfully
+			 *  due to the number of retransmission attempts
+			 *  exceeding an 802.11 retry limit.*/
+			%volatile %read-only uint32 FailedRetransCount;
+
+			/** The number of packets that were successfully transmitted after one or more retransmissions*/
+			%volatile %read-only uint32 RetryCount;
+
+			/** The number of packets that were successfully transmitted after more than one retransmission*/
+			%volatile %read-only uint32 MultipleRetryCount;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			%volatile %read-only object WmmPacketsSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			%volatile %read-only object WmmFailedSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface ordered by wmm category*/
+			%volatile %read-only object WmmPacketsReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			%volatile %read-only object WmmFailedReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			%volatile %read-only object WmmBytesSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			%volatile %read-only object WmmFailedbytesSent {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes received on this interface ordered by wmm category*/
+			%volatile %read-only object WmmBytesReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			%volatile %read-only object WmmFailedBytesReceived {
+				%volatile %read-only uint32 AC_BE;
+				%volatile %read-only uint32 AC_BK;
+				%volatile %read-only uint32 AC_VO;
+				%volatile %read-only uint32 AC_VI;
+			}
+		}
+
+		/**
+		 *  Packets statistics per SSID
+		 */
+		void getSSIDStats();
+
+		/**
+		 * Enables or disables the SSID entry.  */
+		%persistent bool Enable{
+			on action write call wld_ssid_setEnable_pwf;
+			default false;
+		}
+	} /* object SSID */
+    }
+}
+

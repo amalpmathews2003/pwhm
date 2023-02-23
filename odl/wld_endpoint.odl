@@ -1,0 +1,751 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+
+%define {
+    select WiFi {
+	/** <p>This object models an 802.11 connection from the
+		perspective of a wireless end point. Each EndPoint entry is
+		associated with a particular SSID  interface instance via
+		the SSIDReference  parameter, and an associated active
+		Profile  instance via the ProfileReference  parameter. The
+		active profile is responsible for specifying the actual SSID
+		and security settings used by the end point.</p>
+		<p>For enabled table entries, if SSIDReference or
+		ProfileReference is not a valid reference then the table
+		entry is inoperable and the CPE MUST set Status to
+		Error_Misconfigured. Note: The EndPoint table includes a
+		unique key parameter that is a strong reference. If a
+		strongly referenced object is deleted, the CPE will set the
+		referencing parameter to an empty string. However, doing so
+		under these circumstances might cause the updated EndPoint
+		row to then violate the table's unique key constraint; if
+		this occurs, the CPE MUST set Status to Error_Misconfigured
+		and disable the offending EndPoint row.</p>
+		<p>At most one entry in this table (regardless of whether or
+		not it is enabled) can exist with a given value for Alias.
+		On creation of a new table entry, the CPE MUST choose an
+		initial value for Alias such that the new entry does not
+		conflict with any existing entries. At most one enabled
+		entry in this table can exist with a given value for
+		SSIDReference.</p>*/
+	%persistent object EndPoint[]{
+		on action add-inst call wld_ep_addInstance_ocf;
+		/** <p>Indicates the status of this end point. Enumeration
+		*   of:</p>
+		*   <ul>
+		*     <li> Disabled </li>
+		*     <li> Enabled </li>
+		*     <li> Error_Misconfigured </li>
+		*     <li> Error (OPTIONAL) </li>
+		*   </ul>
+		*   The Error_Misconfigured value indicates that a necessary
+		*   configuration value is undefined or invalid. The Error
+		*   value MAY be used by the CPE to indicate a locally defined
+		*   error condition.*/
+		%read-only string Status{
+			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
+			default "Disabled";
+		}
+
+		/** <p>Indicates the state of the endpoint's connection.</p>*/
+		%read-only string ConnectionStatus {
+			on action validate call check_enum ["Disabled", "Idle", "Discovering", "Connecting", "WPS_Pairing", "WPS_PairingDone", "WPS_Timeout", "Connected", "Disconnected", "Error", "Error_Misconfigured"];
+			default "Disabled";
+		}
+
+		/** <p>The last error that occurred</p> */
+		%read-only string LastError {
+			on action validate call check_enum ["None", "SSID_Not_Found", "Invalid_PassPhrase", "SecurityMethod_Unsupported", "WPS_Timeout", "WPS_Canceled", "Error_Misconfigured", "Association_Timeout"];
+			default "None";
+		}
+
+		/**
+		 * Time before try to connect
+		 */
+		uint32 ReconnectDelay {
+			default 15;
+			on action write call wld_endpoint_setReconnectDelay_pwf;
+		}
+
+		/**
+		 * If fail to reconnect, time before try again
+		 */
+		uint32 ReconnectInterval {
+			default 15;
+			on action write call wld_endpoint_setReconnectInterval_pwf;
+		}
+
+		/**
+		 * Enable IEEE 1905 BackhaulSTA extension.
+		 * @version 9.2
+		 */
+		%persistent bool MultiAPEnable {
+			on action write call wld_endpoint_setMultiAPEnable_pwf;
+			default false;
+		}
+
+		/**
+		 * The threshold for the number of reconnects at which we perform a radio toggle
+		 * Set to 0 to disable.
+		 */
+		uint32 ReconnectRadioToggleThreshold {
+			default 8;
+			on action write call wld_endpoint_setRadToggleThreshold_pwf;
+		}
+
+
+		/** A non-volatile handle used to reference this instance. Alias
+		 *  provides a mechanism for an ACS to label this instance for
+		 *  future reference. An initial unique value MUST be assigned
+		 *  when the CPE creates an instance of this object. */
+		string Alias;
+		/** Index in the EndPoint object tree */
+		%read-only uint32 Index;
+		/** The value MUST be the path name of a row in the Profile
+		 *  table. If the referenced object is deleted, the parameter
+		 *  value MUST be set to an empty string. This is the currently
+		 *  active profile, which specifies the SSID and security
+		 *  settings to be used by the end point.*/
+		%persistent string ProfileReference {
+			default "";
+			on action write call wld_endpoint_setProfileReference_pwf;
+		}
+		/** The value MUST be the path name of a row in the SSID table.
+		 *  If the referenced object is deleted, the parameter value
+		 *  MUST be set to an empty string. SSIDReference is determined
+		 *  based on the Profile.{i}.SSID  within the associated Profile
+		 *  Reference) endpoint profile. SSIDReference MUST be an empty
+		 *  string if ProfileReference  is an empty string (i.e. only
+		 *  when an active profile is assigned can the associated SSID
+		 *  interface be determined).*/
+		%persistent string SSIDReference;
+
+		/* The name of the Radio used by this endpoint */
+		%read-only string RadioReference;
+
+		/* The name of the underlying interface of this endpoint */
+		%read-only string IntfName;
+
+		/** Unused in this version of wld */
+		%persistent string BridgeInterface{
+			on action write call wld_endpoint_setBridgeInterface_pwf;
+		}
+
+		/**
+		 * Connect to specific accesspoint.
+		 *
+		 * Tries 'tries' times to connect to the accesspoint with BSSID 'bssid'. If
+		 * they all fail, attempts a "normal" connect to any accesspoint in the network.
+		 *
+		 * @param bssid: bssid of accesspoint to connect to, in "XX:XX:XX:XX:XX:XX" format.
+		 * @param tries: How many times to try to roam. Must be at least 1. Default: 1.
+		 * @param timeoutInSec: Number of seconds after an attempt has started but not
+		 *   succeeded yet, to try again or give up. Must be at least 5, default 60.
+		 *
+		 * @return After roam has succeeded, or all attempts have failed or timed out, a
+		 *   map is returned with the following keys:
+		 *   - Result: uint32: zero on success, non-zero on errors or after all roam
+		 *             attempts timed out.
+		 */
+		variant roamTo(%in mandatory string bssid, %in int32 tries, %in int32 timeoutInSec);
+
+		/** Throughput statistics for this end point.  <b>Not
+		 *  clear how we can handle this? ToBe Defined!!!</b> */
+		%read-only object Stats{
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the access point to the end point
+			 *  device.*/
+			%read-only uint32 LastDataDownlinkRate;
+
+			/** The data transmit rate in kbps that was most recently used
+			 *  for transmission from the end point to the access point
+			 *  device.*/
+			%read-only uint32 LastDataUplinkRate;
+
+			/** An indicator of radio signal strength of the downlink from
+			 *  the access point to the end point, measured in dBm, as an
+			 *  average of the last 100 packets received from the device.*/
+			%read-only int32 SignalStrength{
+				on action validate call check_range { min = -200, max = 0 };
+			}
+			/** Signal to noise ratio in dB
+			 * @version 6.1
+			 */
+			%read-only int32 SignalNoiseRatio;
+			/** Radio noise level in dBm
+			 * @version 6.1
+			*/
+			%read-only int32 Noise;
+
+			/** Received signal strength indicator in percent
+			 * @version 6.1
+			*/
+			%read-only int32 RSSI;
+
+			/** The number of packets that had to be re-transmitted, from
+			 *  the last 100 packets sent to the access point.
+			 *  Multiple re-transmissions of the same packet count as
+			 *  one.*/
+			%read-only uint32 Retransmissions{
+				on action validate call check_range { min = 0, max = 100 };
+			}
+
+			/**
+			 * Number of packets received by the endpoint.
+			 * @version 9.1
+			 */
+			%read-only uint32 RxPacketCount;
+
+			/*
+			 * Number of packets sent by the endpoint.
+			 * @version 9.1
+			 */
+			%read-only uint32 TxPacketCount;
+
+			/*
+			 * Number of bytes sent by the endpoint.
+			 * @version 9.1
+			 */
+			%read-only uint64 TxBytes;
+
+			/*
+			 * Number of bytes received by the endpoint.
+			 * @version 9.1
+			 */
+			%read-only uint64 RxBytes;
+
+			/** Number of received retransmissions.
+			 * @version 9.1
+			 */
+			%read-only uint32 Rx_Retransmissions;
+
+			/** Number of sent retransmissions.
+			 * @version 9.1
+			 */
+			%read-only uint32 Tx_Retransmissions;
+			
+			/**
+			 * The link bandwidth of the current link
+			 * @version 10.0
+			 */
+			%read-only string LinkBandwidth{
+				on action validate call check_enum ["Unknown","20MHz","40MHz","80MHz","160MHz"];
+				default "Unknown";
+			}
+			
+			/**
+			 * The operating standard that this endpoint is connected with. Enumeration of:
+			 * * a ([802.11a-1999])
+			 * * b ([802.11b-1999])
+			 * * g ([802.11g-2003])
+			 * * n ([802.11n-2009])
+			 * * ac ([802.11ac-2013])
+			 * * ax ([802.11ax]) 
+			 * @version 10.0
+			 */
+			%read-only string OperatingStandard{
+				on action validate call check_enum ["Unknown","a","b","g","n","ac","ax"];
+				default "Unknown";
+			}
+			
+			/**
+			 * list of modulation and coding scheme (MCS) supported by the associated device,
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedMCS;
+			
+			
+			/**
+			 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedVhtMCS;
+
+			/**
+			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedHeMCS;
+
+			/**
+			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * for 160MHz bandwidth supported by the associated device.
+			 * Format is comma separated list of integers.
+			 * @version 10.0
+			 */
+			%read-only string SupportedHe160MCS;
+
+			/**
+			 * Vendor OUI of the associated device.
+			 * format: AA:BB:CC,DD:EE:FF,....
+			 * @version 10.0
+			 */
+			%read-only string VendorOUI;
+			
+			/**
+			 * The security mode of the current link.
+			 * @version 10.0
+			 */
+			%read-only string SecurityModeEnabled{
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+				default "None";
+			}
+			
+			/**
+			 * The encryption mode of the current link.
+			 * @version 10.0
+			 */
+			%read-only string EncryptionMode{
+				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
+				default "Default";
+			}
+			
+			/**
+			 * HT Capabilities of the associated device.
+			 * It can be a single or combination of following values:
+			 * "40MHz", "SGI20", "SGI40"
+			 * @version 10.0
+			 */
+			%read-only string HtCapabilities;
+
+			/**
+			 * VHT Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SGI80", "SU-BFR", "SU-BFE", "MU-BFR", "MU-BFE"
+			 * @version 10.0
+			 */
+			%read-only string VhtCapabilities;
+
+			/**
+			 * HE Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "SU-BFR", "SU&amp;MU-BFE", "MU-BFR"
+			 * @version 10.0
+			 */
+			%read-only string HeCapabilities;
+			
+			/**
+			 * Frequency Capabilities
+			 * Comma-separated list of strings.
+			 * It can be a single or combination of following values:
+			 * "2.4GHz","5GHz","6GHz",
+			 * @version 10.0
+			 */
+			%read-only string FrequencyCapabilities;
+			
+			/**
+			 * The maximum number of receive spatial streams available on this link
+			 * @version 10.0
+			 */
+			%read-only uint32 MaxRxSpatialStreamsSupported;
+			
+			/**
+			 * The maximum number of transmit spatial streams available on this link
+			 * @version 10.0
+			 */
+			%read-only uint32 MaxTxSpatialStreamsSupported;
+		}
+		/**
+		 * Retrieve the stats from the driver and update datamodel
+		 * @version 6.1
+		 */
+		void getStats();
+
+		/**This object contains security related parameters that apply
+		 * to a WiFi end point.  */
+		%persistent object Security{
+			/**
+			 *  <p>Comma-separated list of strings. Indicates which security
+			 *  modes this EndPoint  instance is capable of supporting. Each
+			*   list item is an enumeration of:</p>
+			*   <ul>
+			*     <li> None </li>
+			*     <li> WEP-64 </li>
+			*     <li> WEP-128 </li>
+			*     <li> <b>WEP-128iv</b> </li>
+			*     <li> WPA-Personal </li>
+			*     <li> WPA2-Personal </li>
+			*     <li> WPA-WPA2-Personal </li>
+			*     <li> WPA-Enterprise </li>
+			*     <li> WPA2-Enterprise </li>
+			*     <li> WPA-WPA2-Enterprise </li>
+			*   </ul>
+			*   */
+			%read-only string ModesSupported {
+				default "";
+			}
+			/*
+			 * Indicates which security mode is enabled.
+			 * Usefull in case Auto detection is active
+			 * @version 6.1
+			 */
+			%persistent %read-only string ModeEnabled {
+				default "";
+			}
+		}
+		/** EndPoint Profile table.
+		 *  At most one entry in this table (regardless of whether or
+		 *  not it is enabled) can exist with a given value for Alias.
+		 *  On creation of a new table entry, the CPE MUST choose an
+		 *  initial value for Alias such that the new entry does not
+		 *  conflict with any existing entries.
+		 *  At most one enabled entry in this table can exist with all
+		 *  the same values for SSID, Location and Priority.*/
+		%persistent object Profile[]{
+			on action del-inst call wld_endpoint_deleteProfileInstance_odf;
+			on action add-inst call wld_endpoint_addProfileInstance_ocf;
+
+			/** Enables or disables this Profile.
+			 *  <p>When there are multiple WiFi EndPoint Profiles, e.g. each
+			 *  instance supports a different SSID and/or different
+			 *  security configuration, this parameter can be used to
+			 *  control which of the instances are currently enabled.</p>*/
+			%persistent bool Enable{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
+			/**  Indicates the status of this Profile. Enumeration of:
+			*   <ul>
+			*     <li> Active </li>
+			*     <li> Available </li>
+			*     <li> Error (OPTIONAL) </li>
+			*     <li> Disabled  </li>
+			*   </ul>
+			*   The Active value is reserved for the instance that is
+			*   actively connected. The Available value represents an
+			*   instance that is not currently active, but is also not
+			*   disabled or in error. The Error value MAY be used by the
+			*   CPE to indicate a locally defined error condition.*/
+			string Status{
+				on action validate call check_enum ["Active","Available","Error","Disabled"];
+				default "Disabled";
+				on action write call wld_endpoint_setProfile_pwf;
+			}
+			/** A non-volatile handle used to reference this instance. Alias
+			 *  provides a mechanism for an ACS to label this instance for
+			 *  future reference. An initial unique value MUST be assigned
+			 *  when the CPE creates an instance of this object.*/
+			%persistent string Alias{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
+			/** The profile identifier in use by the connection. The SSID is
+			 *  an identifier that is attached to packets sent over the
+			 *  wireless LAN that functions as an ID for joining a
+			 *  particular radio network (BSS).*/
+			%persistent string SSID{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
+			/**
+			 * Specify the MAC address of the AccessPoint to connect to
+			 */
+			string ForceBSSID{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
+			/** Location of the profile. This value serves as a reminder
+			 *  from the user, describing the location of the profile. For
+			 *  example: "Home", "Office", "Neighbor House", "Airport",
+			 *  etc. An empty string is also valid.*/
+			%persistent string Location{
+			   on action write call wld_endpoint_setProfile_pwf;
+			}
+			/** The profile Priority defines one of the criteria used by the
+			 *  End Point to automatically select the "best" AP when several
+			 *  APs with known profiles are simultaneously available for
+			 *  association. In this situation, the End Point has to select
+			 *  the AP with the higher priority in its profile. If there are
+			 *  several APs with the same priority, providing different SSID
+			 *  or the same SSID, then the wireless end point has to select
+			 *  the APs according to other criteria like signal quality,
+			 *  SNR, etc. <p>0 is the highest priority.</p>*/
+			%persistent uint32 Priority{
+				on action validate call check_range { min = 0, max = 255 };
+				on action write call wld_endpoint_setProfile_pwf;
+				default 0;
+			}
+
+			/** This object contains security related parameters that apply
+			 *  to a WiFi End Point profile.*/
+			%persistent object Security{
+				/** The value MUST be a member of the list reported by the
+				 *  Security.ModesSupported  parameter. Indicates which
+				 *  security mode is enabled.*/
+				%persistent string ModeEnabled {
+				on action validate call check_enum ["None", "OWE",
+						"WEP-64","WEP-128","WEP-128iv",
+						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+						"WPA3-Personal","WPA2-WPA3-Personal",
+						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+					default "None";
+					on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+
+				/** A WEP key expressed as a hexadecimal string.
+				 *  WEPKey is used only if ModeEnabled is set to WEP-64 or
+				 *  WEP-128. A 5 byte WEPKey corresponds to security mode WEP-64
+				 *  and a 13 byte WEPKey corresponds to security mode WEP-128.
+				 *  When read, this parameter returns an empty string,
+				 *  regardless of the actual value.*/
+				%persistent string WEPKey{
+				    on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+				/** A literal PreSharedKey (PSK) expressed as a hexadecimal
+				 *  string. PreSharedKey is only used if ModeEnabled is set to
+				 *  WPA-Personal or WPA2-Personal or WPA-WPA2-Personal. If
+				 *  KeyPassPhrase is written, then PreSharedKey is immediately
+				 *  generated. The ACS SHOULD NOT set both the KeyPassPhrase and
+				 *  the PreSharedKey directly (the result of doing this is
+				 *  undefined). When read, this parameter returns an empty
+				 *  string, regardless of the actual value.*/
+				%persistent string PreSharedKey{
+				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+				
+				/** 
+				 * A passphrase from which the PreSharedKey  is to be
+				 * generated, for WPA-Personal  or WPA2-Personal  or
+				 * WPA-WPA2-Personal  security modes. If KeyPassPhrase is
+				 * written, then PreSharedKey is immediately generated. The ACS
+				 * SHOULD NOT set both the KeyPassPhrase and the PreSharedKey
+				 * directly (the result of doing this is undefined). The key is
+				 * generated as specified by WPA, which uses PBKDF2 from PKCS
+				 * #5: Password-based Cryptography Specification Version 2.0
+				 * [RFC2898]. When read, this parameter returns an empty
+				 * string, regardless of the actual value.
+				 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
+				 * or 256 bit secret, entered as a 64 characters hex key.*/
+				%persistent string KeyPassPhrase{
+				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+
+				/** A passphrase for WPA3-Personal or WPA3-Personal-Transition
+			         *  security modes.
+			         *
+			         *  NOTE: this parameter is for WPA3. WPA2 PreSharedKey is generated
+			         *  from KeyPassphrase.
+			         *
+			         *  When read, this parameter returns an empty string, regardless of
+			         *  the actual value.
+			         */
+				%persistent string SAEPassphrase{
+				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+
+				/** Management Frame Protection configuration applicable when ModeEnabled is set
+				 * to WPA2-Personal or WPA2-Enterprise. Enumeration of:
+				 *     * Disabled
+				 *     * Optional
+				 *     * Required
+				 */
+				string MFPConfig{
+					on action validate call check_enum ["Disabled",
+							"Optional",
+							"Required"];
+					default "Disabled";
+					on action write call wld_endpoint_setProfileSecurity_pwf;
+				}
+			}
+		}
+
+		/** This object contains parameters related to Wi-Fi
+		 *  Protected Setup [WPSv1.0] for this end point. */
+		%persistent object WPS{
+			/** Enables or disables WPS functionality for this endpoint. */
+			%persistent bool Enable{
+				default false;
+				on action write call wld_endpoint_setWPSEnable_pwf;
+			}
+			/** Comma-separated list of strings. Indicates the WPS
+			 *  configuration methods supported by the device. Each list
+			 *   item is an enumeration of:
+			 *  <ul>
+			 *    <li>USBFlashDrive</li>
+			 *    <li>Ethernet</li>
+			 *    <li>Label</li>
+			 *    <li>Display</li>
+			 *    <li>ExternalNFCToken</li>
+			 *    <li>IntegratedNFCToken</li>
+			 *    <li>NFCInterface</li>
+			 *    <li>PushButton</li>
+			 *    <li>PIN</li>
+			 *    <li>PhysicalPushButton</li>
+			 *    <li>PhysicalDisplay</li>
+			 *    <li>VirtualPushButton</li>
+			 *    <li>VirtualDisplay</li>
+			 *  </ul>
+			 *   This parameter corresponds directly to the "Config
+			 *   Methods" attribute of the WPS specification [WPSv2.0].
+			 *   The USBFlashDrive and Ethernet are only applicable in WPS 1.0 and are deprecated in WPS 2.x.
+			 *   The PhysicalPushButton, VirtualPushButton, PhysicalDisplay and VirtualDisplay are applicable to WPS 2.x only.
+			 */
+			%read-only string ConfigMethodsSupported;
+			/*
+				on action validate call check_enum ["USB","Ethernet","Label","Display",
+				                 "ExternalNFCToken","InternalNFCToken","NFCInterface","PushButton",
+				                 "PIN"];
+			*/
+			/** Comma-separated list of strings. Each list item MUST be a
+			 *  member of the list reported by the ConfigMethodsSupported
+			 *  parameter. Indicates the WPS configuration methods enabled
+			 *  on the device.*/
+			%persistent string ConfigMethodsEnabled {
+				on action write call wld_endpoint_setWPSConfigMethodsEnabled_pwf;
+			}
+
+			/**
+			This function is for WPS enrollment
+			If no arguments are given, this starts the PushButton scenario.
+			Notice that the corresponding config method needs to be enabled by ConfigMethodsEnabled.
+			* @param clientPIN optional argument to use clientPIN, give a 4-digit or 8-digit WPS PIN code.
+			* @param ssid restrict the wps session to a certain ssid
+			* @param bssid restrict the wps session to the AP with this BSSID
+			* @version 6.1
+			*/
+			void pushButton(string ssid, string bssid, string clientPIN);
+
+			/**
+			* Cancel WPS registrar if it was runnning.
+			* @version 6.1
+			*/
+			void cancelPairing();
+			
+			/**
+			 * Indicates whether WPS pairing is busy.
+			 * This is after pushButton() is called and before pairing with a device has completed or the registrar timer expired.
+			 */
+			%read-only bool PairingInProgress;
+		}
+		
+		/**
+		 * Assocation statistics.
+		 * @version 10.0
+		 */
+		%read-only object AssocStats{
+			/**
+			 * The number of times the endpoint attempted to association.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrAssocAttempts;
+			
+			/**
+			 * The number of times the endpoint attempted to association since the last disconnection.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrAssocAttempsSinceDc;
+			
+			/**
+			 * The number of times the endpoint successfully associated.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrAssociations;
+			
+			/**
+			 * The number of seconds after boot that the endpoint last associated.
+			 * This is expressed in seconds after boot, as time sync
+			 * is not available at time of association.
+			 * @version 10.0
+			 */
+			%read-only uint32 AssocTime;
+			
+			/**
+			 * The number of seconds after boot that the endpoint last disassociated.
+			 * This is expressed in seconds after boot, to allow comparison with AssocTime.
+			 * @version 10.0
+			 */
+			%read-only uint32 DisassocTime;
+		}
+
+		/** When this is toggled, we must check for updating the full
+		 *  config!
+		 *  <p>Enables or disables this Profile.
+		 *  When there are multiple WiFi EndPoint Profiles, e.g. each
+		 *  instance supports a different SSID and/or different
+		 *  security configuration, this parameter can be used to
+		 *  control which of the instances are currently enabled.</p> */
+		%persistent bool Enable{
+			default false;
+			on action write call wld_endpoint_setEnable_pwf;
+		}
+
+		/**
+		 * Retrieve a debug hashmap containing the internal state
+		 * @version 9.1
+		 */
+		void getDebug();
+
+		/**
+		 * Perform debug commands to check internal state.
+		 */
+		void debug();
+	} /* object EndPoint */
+    }
+}
+

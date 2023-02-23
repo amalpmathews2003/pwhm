@@ -1,0 +1,2235 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+
+/*
+define spectruminfo_channel_t {
+	int32   channel;
+	int32   bandwidth;
+	int32   availability;
+	int32   noiselevel;
+	int32   accesspoints;
+}
+
+define scanresult_t {
+	string  SSID;
+	string  BSSID;
+	int32   SignalNoiseRatio;
+	int32   Noise;
+	int32   RSSI;
+	int32   Channel;		// The primary channel
+	int32   CentreChannel;	// The centre channel
+	int32   Bandwidth;
+	string	SecurityModeEnabled;
+	string	WPSConfigMethodsSupported;
+	int32   SignalStrength; // Signal and RSSI are different units of measurement that both represent the same thing: signal strength.
+							// The difference is that RSSI is a relative index, while dBm is an absolute number representing power levels in mW (milliwatts).
+	string	EncryptionMode;
+}
+
+//Specify the airstat struct.
+//Note that all time indication is driver specific, and ranges are
+//currently reported as given by driver. As such they can vary from plugin to plugin.
+define airstat_t {
+	uint16	Load; // Percentage of load. Range: [0,100]
+	int32	Noise; // Noise reading in db: [-100,0]
+	uint16	TxTime; // Time spent transmitting
+	uint16	RxTime; // Time spent receiving from stations in the bss
+	uint16	IntTime; // Interference time: both receiving data from other AP's on the channel, or interference from other sources
+	uint16	FreeTime; // Time available for sending
+	// Short preamble interference level detected on the radio.
+	// Value is between 0-100 and is a representation of the interference level on the radio.
+	// Short preamble interference could be non Wi-Fi related.
+	// 0 : no interference.
+	// 100 : high interference.
+	uint8	ShortPreambleErrorPercentage;
+	// Long preamble interference level detected on the radio.
+	// Value is between 0-100 and is a representation of the interference level on the radio.
+	// Long preamble interference will be related to Wi-Fi frame corruptions.
+	// 0 : no interference.
+	// 100 : high interference.
+	uint8	LongPreambleErrorPercentage;
+}
+
+define probeinfo_t{
+	string MacAddress; // colon seperatated MAC address of the station which corresponds to the probe info element
+	int32 RSSI; // the received signal strenght of the probe request.
+	datetime TimeStamp; // the UTC time when this probe request was received.
+}
+
+define probelist_t{
+	// The UTC timestamp when this probelist was generated. All probe info elements will be
+	// either before or at this timestamp
+	datetime TimeStamp;
+	// The UTC timestamp of the minimal time when this timestamp was taken.
+	// all probe info elements will either be after or at this timestamp.
+	datetime FromTime;
+	// The list of probe info elements. List of type probeinfo_t
+	list StaList;
+}
+*/
+
+%define {
+    select WiFi {
+	/**
+	   This object models an 802.11 wireless radio on a device (a
+	   stackable interface object as described in [section
+	   4.2/TR-181i2]).
+	   If the device can establish more than one connection
+	   simultaneously (e.g. a dual radio device), a separate Radio
+	   instance MUST be used for each physical radio of the device.
+	   Note: A dual-band single-radio device can be configured to
+	   operate at 2.4 or 5 GHz frequency bands but only a single
+	   frequency band is used to transmit/receive at a given time.
+	   Therefore, a single Radio instance is used even for a
+	   dual-band radio.
+	   W.o.w. This object handles the RADIO data/parameters for
+	   every physical wireless card. Note it's only the WLD
+	   plugin that will create the RADIO interface when started and
+	   destroy it when the plugin stops.
+	    */
+	%persistent object Radio[] {
+		/**
+		 * getSpectrumInfo() returns a list of channels the radio
+		 * supports, along with quality parameters
+		 * @param update Set to true to force a spectrum scan (WARNING:
+		 * this will interfere with the communication on the Radio!)
+		 */
+		void getSpectrumInfo(%in bool update);
+		/**
+		 * edit() is used for blocking the STATE-Machine to be started on Enable event.
+		 * When set, the registered actions are commited from the moment commit() is called.
+		 * The goal of this is to update the configuration of the full Radio (including
+		 * also the VAP changes) at once. When TR69 or TR98 mode is used, a toggle on the
+		 * object Enable fields is OK.
+		 */
+		bool edit();
+		/**
+		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
+		 * <p> Real function <b>bool verify(...)</b></p>
+		 * Verify 'all' or 'selected' the Radio-object parameters
+		 * @param Radio Name of the Radio interface that will be verified.
+		 * @param &lt;user param&gt; In case empty, the current given parameters are verified.
+		 * If the parameter is filled in (strin=value) it must be one of the Radio object strings:
+		 * Alias, LastChange, OperatingFrequencyBand, OperatingStandards, Channel,
+		 * AutoChannelEnable, AutoChannelRefreshPeriod, OperatingChannelBandwidth,
+		 * ExtensionChannel, GuardInterval, MCS, TransmitPower, IEEE80211hEnabled,
+		 * RegulatoryDomain, Enable
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		 */
+		bool verify();
+
+		/**
+		 * <p> Real function <b>bool commit(...)</b></p>
+		 * The function will start the RADIO state machine to configure all registered data.
+		 * No extra parameters are needed anymore. The return value is returned when the full
+		 * config is done on this physical Radio device (including also all the attached VAP's).
+		 * It will also un-mark the edit lock.
+		 * @param cm Commit mode, Or'ed value of following bit fields:
+			SET(1), NO_COMMIT(2), DIRECT(4). Note SET is set by default!
+		 * @param &lt;user param&gt; In case empty, the current parameters are re-parsed.
+		 * If the parameter is filled in (string=value) it must be one of the Radio object strings:
+		 * Alias, LastChange, OperatingFrequencyBand, OperatingStandards, Channel,
+		 * AutoChannelEnable, AutoChannelRefreshPeriod, OperatingChannelBandwidth,
+		 * ExtensionChannel, GuardInterval, MCS, TransmitPower, IEEE80211hEnabled,
+		 * RegulatoryDomain, Enable
+		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
+		*/
+		bool commit();
+
+		/**
+		 * <p> Real function <b>startACS(...)</b></p>
+		 * The function will start an Autochannel sequence when autochannel is enabled!
+		 */
+		bool startACS();
+
+		/**
+		 * Start a scan all possible channels of the radio is configured for
+		 * This function returns immediately, the results must be retrieved manually.
+		 * 1. By default all possible channels of the radio will be scanned.
+		 * 2. if SSID is specified: Scan the SSID in the spectrum the radio is configured for.
+		 * 3. if channel is specified: scan only the channel in the spectrum.
+		 * All channels must be part of the PossibleChannels list.
+		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param BSSID: optional particular BSSID of the Access Point to scan for.
+		 * @param channels: optional comma seperated list of channels.
+		 * @param scanReason: optional string indicates the scan reason.
+		 * Default scan reason is "Ssid".
+		 * @return a list of scanresult_t.
+		 * @version 10.3
+		 * @error function_exec_error "Invalid Channels in the List" if list contains a channels otherthan PossibleChannels list.
+		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
+		 * @error function_exec_error "A scan is already running" if a scan is already active.
+		 */
+		void startScan(%in string SSID, %in string BSSID,%in string channels, %in string scanReason, %in bool forceFast, %in bool updateUsage);
+
+		/**
+		 * Stop a running scan for SSID's.
+		 * @version 7.0
+		 */
+		void stopScan();
+		/**
+		 * Start a scan based on all possible channels of the radio or specified ssid/channel list.
+		 * 1. By default all possible channels of the radio will be scanned.
+		 * 2. if SSID is specified: Scan the SSID in the spectrum the radio is configured for.
+		 * 3. if channel is specified: scan only the channel in the spectrum.
+		 * All Channels must be part of the PossibleChannels list.
+		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param BSSID: optional particular BSSID of the Access Point to scan for.
+		 * @param channels: optional comma seperated list of channels.
+		 * @version 9.2
+		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
+		 * @version 10.0
+		 * @param scanReason: optional string indicates the scan reason.
+		 * Default scan reason is "Ssid".
+		 * @version 10.3
+		 * @return a list of scanresult_t.
+		 * @error function_exec_error "Invalid Channels in the List" if list contains a channels otherthan PossibleChannels list.
+		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
+		 * @error function_exec_error "A scan is already running" if a scan is already active.
+		 */
+		list scan(%in string SSID, %in string BSSID,%in string channels, %in int32 min_rssi, %in string scanReason);
+
+		/**
+		 * Return a list scanresult_t describing the accesspoints discovered
+		 * during the previous scan
+		 * @version 7.0
+		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
+		 * @version 10.0
+		 */
+		list getScanResults(%in int32 min_rssi, %in out variant results);
+
+		/* event ScanComplete is sent on the radio instance when scan results are received */
+		/* event NOTIFY_SCAN_DONE name = "ScanComplete"
+		{
+			//no parameters
+		}
+		*/
+
+		/**
+		 * Request a re-send of all previous ProbeRequest notifications.
+		 * This is useful for a newly (re)started or re-configured BandSteering
+		 * daemon.
+		 * @version 7.0
+		 */
+		void refreshProbeRequests();
+
+		/**
+		 * Retrieve the probe requests since a given timestamp.
+		 * If no timestamp is given, all probe requests are returned.
+		 * Returns an object of the probelist_t type.
+		 * All timestamps will be in UTC time.
+		 */
+		 void getProbeRequests(%in datetime fromTime);
+
+		/**
+		 * Air quality statistics for this interface.
+		 */
+		void getRadioAirStats();
+
+		/**
+		 * Packets statistics for this interface.
+		 */
+		void getRadioStats();
+
+		/**
+		 * Get the RSSI value per antenna for the radio, and test for radio defect.
+		 */
+		void getPerAntennaRssi();
+
+		/**
+		 * Get the latest TX Power value for each antenna of the radio.
+		 */
+		void getLatestPower();
+		
+		/**
+		 * Returns a map containing this SSID's status histogram information.
+		 * The map contains:
+		 * LastStatusChange: Timestamp when status changed for last time.
+		 * NrStatusChanges: Number of times status changed.
+		 * StatusHistogram: String of comma separated values, containing seconds how long interface has spent in that state
+		 * LastStatusHistogramUpdate
+		 * LastEnableTime: The timestamp of the last time that radio was set to enable.
+		 * LastDisableTime: The timestamp of the last time that radio was set to disable.
+		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
+		 */
+		void getStatusHistogram();
+
+		/**
+		* The current operational state of the radio (see [Section 4.2.2/TR-181i2]).
+		* <p>Enumeration of:</p>
+		<ul>
+			<li>Up</li>
+			<li>Down</li>
+			<li>Unknown</li>
+			<li>Dormant</li>
+			<li>NotPresent</li>
+			<li>LowerLayerDown</li>
+			<li>Error (OPTIONAL)</li>
+		</ul>
+		* <p>When Enable is false then Status SHOULD normally be Down (or
+		* NotPresent or Error if there is a fault condition on the
+		* interface). </p>
+		* <p>When Enable is changed to true then Status SHOULD change to Up
+		* if and only if the interface is able to transmit and receive
+		* network traffic; it SHOULD change to Dormant if and only if the
+		* interface is operable but is waiting for external actions
+		* before it can transmit and receive network traffic (and
+		* subsequently change to Up if still operable when the expected
+		* actions have completed); it SHOULD change to LowerLayerDown if
+		* and only if the interface is prevented from entering the Up
+		* state because one or more of the interfaces beneath it is down;
+		* it SHOULD remain in the Error state if there is an error or
+		* other fault condition detected on the interface; it SHOULD
+		* remain in the NotPresent state if the interface has missing
+		* (typically hardware) components; it SHOULD change to Unknown if
+		* the state of the interface can not be determined for some
+		* reason. This parameter is based on ifOperStatus from [RFC2863]. </p>
+		*/
+		%read-only string Status{
+			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
+			default "Down";
+		}
+		
+				
+		/**
+		 * Timestamp of the last time status changed.
+		 */
+		%read-only datetime LastStatusChangeTimeStamp;
+		
+		/** <p>SoftAtHome parameter. This is used for configuring a
+		 *  MAC address on thr RADIO interface. It's important to know
+		 *  that it can only be used before the VAP's are created! </p>*/
+		string BaseMACAddress {
+			default "$(WAN_ADDR)";
+		}
+		/** <p>A non-volatile handle used to reference this instance.
+		 *  Alias provides a mechanism for an ACS to label this
+		 *  instance for future reference. An initial unique value
+		 *  MUST be assigned when the CPE creates an instance of this
+		 *  object.</p> */
+		%persistent %unique %key string Alias;
+		/**
+		 *  <p>The textual name of the radio as assigned by
+		 *  the CPE.</p> Internal vendor string (<B>DEBUG</B>)   */
+		%read-only string Name;
+		/**
+		 * <p>Vendor PCI Signature value.(<B>DEBUG</B>) This is the only
+		 * way to find out what kind of vendor driver is used for this
+		 * RADIO interface.
+		 * </p>
+		 */
+		%read-only string VendorPCISig;
+		/**
+		 * <p>The accumulated time in seconds since the radio entered
+		 * its current operational state.</p>
+		 */
+		/*uint32 LastChange;*/
+
+		/**
+		 * <p>List of Path Names of an interface objects that are stacked 
+		 * immediately below this interface object.
+		 * Note: Since Radio is a layer 1 interface, it is expected that 
+		 * LowerLayers will not be used.</p>
+		 */
+		string LowerLayers;
+
+		/**
+		 * (<B>DEBUG</B>) Contains the NETFINDEX value of the interface.
+		 */
+		%read-only uint32 Index;
+
+		/**
+		 * <p>Indicates whether the interface points towards the Internet
+		 * (true) or towards End Devices (false).</p>
+		 * For example:
+		 * For an Internet Gateway Device, Upstream will be true for all
+		 * WAN interfaces and false for all LAN interfaces. For a
+		 * standalone WiFi Access Point that is connected via Ethernet
+		 * to an Internet Gateway Device, Upstream will be true for the
+		 * Ethernet interface and false for the WiFi Radio interface.
+		 * For an End Device, Upstream will be true for all interfaces.
+		 */
+		%read-only bool Upstream;
+
+		/**
+		 * <p> Indicates wheter the RADIO is in AP mode </p>
+		 */
+		%persistent bool AP_Mode {
+			on action write call wld_rad_setAPMode_pwf;
+			default true;
+		}
+
+		/**
+		 * <p> Indicates wheter the RADIO is in STATION mode </p>
+		 */
+		%persistent bool STA_Mode {
+			on action write call wld_rad_setSTAMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Indicates wheter the RADIO is in WDS support mode </p>
+		 */
+		%persistent bool WDS_Mode {
+			on action write call wld_rad_setWDSMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Indicates wheter the RADIO is in WET support mode </p>
+		 */
+		%persistent bool WET_Mode {
+			on action write call wld_rad_setWETMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Indicates wheter STATION mode is supported on this RADIO </p>
+		 */
+		%persistent bool STASupported_Mode {
+			on action write call wld_rad_setStaSupMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Set WPS Enrollee mode when STA is active </p>
+		 */
+		%persistent bool WPS_Enrollee_Mode {
+			on action write call wld_rad_setWPSEnrolMode_pwf;
+			default false;
+		}
+
+		/**
+		 * <p> Kick a station, when it roams between AP's of the same radio.
+		 * This will cause a station, when it associates to a given vap of a radio,
+		 * that it will be kicked from all other vaps on the same radio. </p>
+		 */
+		%persistent bool KickRoamingStation = true {
+			on action write call wld_rad_setKickRoamSta_pwf;
+		}
+
+		/**
+		 * <p>The maximum PHY bit rate supported by this interface
+		 * (expressed in Mbps).</p>
+		 */
+		%read-only uint32 MaxBitRate;
+
+		/**
+		*  Comma-separated list of strings.
+		*  List items indicate the frequency bands at which the radio
+		*  can operate. Each list item is an enumeration of:
+		*  <ul>
+		*   <li>2.4GHz</li>
+		*   <li>5GHz</li>
+		*   <li>6GHz</li>
+		*  </ul>
+		*/
+		%read-only string SupportedFrequencyBands;
+
+		/**
+		 * <p>The value MUST be a member of the list reported by the
+		 * SupportedFrequencyBands  parameter. Indicates the frequency
+		 * band at which the radio is operating. </p>
+		 * <p>If the radio supports multiple bands, and
+		 * OperatingFrequencyBand is changed, then all parameters whose
+		 * value is not valid for the new frequency band (e.g. Channel)
+		 * MUST be set to a valid value (according to some CPE
+		 * vendor-specific behavior).</p>
+		 */
+		%persistent string OperatingFrequencyBand{
+			on action write call wld_rad_setOperatingFrequencyBand_pwf;
+		}
+		/**
+		 * <p>Comma-separated list of strings. List items indicate which
+		 * IEEE 802.11 standards this Radio  instance can support
+		 * simultaneously, in the frequency band specified by
+		 * OperatingFrequencyBand. Each list item is an enumeration
+		 * of:</p>
+		 * <ul>
+		 *  <li>a ([802.11a-1999])</li>
+		 *  <li>b ([802.11b-1999])</li>
+		 *  <li>g ([802.11g-2003])</li>
+		 *  <li>n ([802.11n-2009])</li>
+		 *  <li>ac ([802.11ac-2013])</li>
+		 *  <li>ax ([802.11ax])</li>
+		 * </ul>
+		 * <p>Each value indicates support for the indicated standard.
+		 * If OperatingFrequencyBand is set to 2.4GHz, only values b, g,
+		 * n, ax are allowed. If OperatingFrequencyBand is set to 5GHz, only
+		 * values a, n, ac, ax are allowed.</p>
+		 * <p>Diverging from the TR-181 standard, if OperatingStandardsFormat is Legacy,
+		 * then list items can also be: "bg", "gn", "bgn", "an", and "abgn".</p>
+ 		 */
+		%read-only string SupportedStandards;
+		
+		/**
+		   <p>Comma-separated list of strings. Each list item MUST be a
+		   member of the list reported by the SupportedStandards
+		   parameter. List items indicate which IEEE 802.11 standard
+		   this Radio  instance is configured for. Each value indicates
+		   support for the indicated standard.</p>
+		   <p>If OperatingFrequencyBand is set to 2.4GHz, only values b,
+		   g, n, ac, ax are allowed.</p>
+		   <p>If OperatingFrequencyBand is set to 5GHz, only values a, n,
+		   ac, ax are allowed.</p>
+		   <p>For example, a value of "g,b" (or "b,g" - order is not
+		   important) means that the 802.11g standard [802.11g-2003] is
+		   used with a backwards-compatible mode for 802.11b
+		   [802.11b-1999]. A value of "g" means that only the 802.11g
+		   standard can be used.</p>
+		   <p>Diverging from the TR-181 standard, the value "auto"
+		   can be used as well.</p>
+		   <p>Diverging from the TR-181 standard, when
+		   OperatingStandardsFormat is "Legacy", then "ac" and "ax"
+		   are interpreted differently and for some combinations no comma is written
+		   -- see documentation of OperatingStandardsFormat.
+		   </p>
+		   <p>Diverging from the TR-181 standard described above, we currently only support
+		   the following combinations (were "ax" means "ax"-only and "ac" "ac-only"):
+		   "a", "b", "g", "n", "b,g", "g,n", "b,g,n", "a,n", "a,b,g,n", "a,n,ac",
+		   "a,b,g,n,ac,ax", "n,ac", "ac", "ax", "a,n,ac,ax",
+		   "b,g,n,ax".
+		   </p>
+		 */
+		%persistent string OperatingStandards = "auto" {
+			on action write call wld_rad_setOperatingStandards_pwf;
+		}
+		
+		/**
+		 * Format used to interpret the OperatingStandards string.
+		 *
+		 * If "Legacy", then for OperatingStandards 
+		 * "ac" will be interpreted as 802.11ac plus 802.11a if supported plus 802.11n if supported
+		 * (according to the SupportedStandards string);
+		 * and "ax" as 802.11ax plus all lower supported standards (802.11a,b,g,n,ac).
+		 * For the following combinations, no commas are written between radio standards:
+		 * "bg", "gn", "bgn", "an", and "abgn" (no other order, so no "gb").
+		 * 
+		 * If "Standard", the value of OperatingStandards will be interpreted according to
+		 * the TR-181 standard, i.e. enable the standards mentioned in the value and disable
+		 * all other radio standards, and use commas between radio standards without
+		 * particular ordering (e.g. "b,g,n" or "g,b,n").
+ 		 * 
+ 		 * Independently of the value of OperatingStandardsFormat, one can write to
+ 		 * OperatingStandars in either Legacy or Standard Format. Only the value "ax" and
+ 		 * "ac" will be interpreted differently depending on OperatingStandardsFormat.
+		 * When setting OperatingStandardsFormat, the value of OperatingStandards is parsed
+		 * again with the new Format.
+		 * So the meaning is the same when you first write to OperatingStandards and then to
+		 * OperatingStandardsFormat or the other way around.
+		 *
+		 * OperatingStandardsFormat also impacts SupportedStandards, see its documentation.
+		 *
+		 * This field is not supposed to (be) change(d) after startup.
+ 		 */
+		%persistent string OperatingStandardsFormat = "Legacy" {
+			on action write call wld_rad_setOperatingStandardsFormat_pwf;
+			on action validate call check_enum ["Legacy", "Standard"];
+		}
+		
+		/**
+		 * <p>Comma-separated list (maximum length 1024) of strings. List
+		 * items represent possible radio channels for the wireless
+		 * standard (a, b, g, n) and the regulatory domain.
+		 * Ranges in the form "n-m" are permitted. For example, for
+		 * 802.11b and North America, would be "1-11". <b>NOT SUPPORTED
+		 * YET</b> </p>
+		 */
+		%read-only string PossibleChannels;
+
+		/**
+		 * The operating class of this radio.
+		 */
+		%read-only uint32 OperatingClass {
+			default 0;
+		}
+
+		/**
+		 * <p>Comma-separated list (maximum length 1024) of strings. List
+		 * items represent channels that the radio determines to be
+		 * currently in use (including any that it is using itself).
+		 * Ranges in the form "n-m" are permitted. </p>
+		 */
+		string ChannelsInUse;
+
+		/**
+		 * <p>Indicates whether automatic channel selection is supported
+		 * by this radio. If false, then AutoChannelEnable  MUST be
+		 * false. </p> */
+		%read-only bool AutoChannelSupported;
+
+		/**
+		 * <p>Enable or disable automatic channel selection. Set to
+		 * false to disable the automatic channel selection procedure,
+		 * in which case the currently selected channel remains
+		 * selected. Set to true to enable the automatic channel
+		 * selection procedure. This procedure MUST automatically select
+		 * the channel, and MAY also change it subsequently.
+		 * AutoChannelEnable MUST automatically change to false whenever
+		 * the channel is manually selected, i.e. whenever the Channel
+		 * parameter is written. Whenever AutoChannelEnable is true, the
+		 * value of the Channel parameter MUST be the channel selected
+		 * by the automatic channel selection procedure. </p>
+		 */
+		%persistent bool AutoChannelEnable{
+			on action write call wld_rad_setAutoChannelEnable_pwf;
+			default true;
+		}
+		
+		/**
+		 * <p>The time period in seconds between two consecutive
+		 * automatic channel selections. A value of 0 means that the
+		 * automatic channel selection is done only at boot time. This
+		 * parameter is significant only if AutoChannelEnable is set to
+		 * true. </p> */
+		%persistent uint32 AutoChannelRefreshPeriod;
+
+		/**
+		 * <p>Rerun auto channel selection explicitly, if it was enabled. </p>
+		 */
+		void startAutoChannelSelection();
+
+		/** <p>The current radio channel used by the connection. To
+			 request automatic channel selection, set AutoChannelEnable
+			 to true. Whenever AutoChannelEnable is true, the value of
+			 the Channel parameter MUST be the channel selected by the
+			 automatic channel selection procedure.</p>
+			 <p>Note: Valid Channel values depend on the
+			 OperatingFrequencyBand and RegulatoryDomain values
+			 specified.</p>
+			 # For Atomic write... set channel after autochannel!
+		*/
+		%persistent uint32 Channel = 6 {
+			on action validate call check_range { min = 1, max = 255 };
+			on action validate call wld_rad_validateChannel_pvf;
+			on action write call wld_rad_setChannel_pwf;
+		}
+
+		/**
+		 * <p>The desired channel bandwidth (applicable to 802.11n specifications
+		 * only). Enumeration of: </p>
+		 * <ul>
+		 * <li>20MHz</li>
+		 * <li>40MHz (wide mode)</li>
+		 * <li>80MHz (802.11ac only) </li>
+		 * <li>160MHz (802.11ac only) </li>
+		 * <li>Auto</li>
+		 * </ul>
+		 */
+		%persistent string OperatingChannelBandwidth{   /* Selected by channel */
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+			on action validate call wld_rad_validateOperatingChannelBandwidth_pvf;
+			default "Auto";
+			on action write call wld_rad_setOperatingChannelBandwidth_pwf;      /* Set Radio ChannelBandwidth (if supported) */
+		}
+
+		/**
+		 * The channel bandwidth currently in use. Enumeration of:
+		 * <ul>
+		 * <li>20MHz</li>
+		 * <li>40MHz (wide mode)</li>
+		 * <li>80MHz</li>
+		 * <li>160MHz</li>
+		 * </ul>
+		 * @version 9.1
+		 */
+		%read-only string CurrentOperatingChannelBandwidth{
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+			default "20MHz";
+		}
+
+		/**
+		* Last channel's bandwidth change reason on this radio.
+		*/
+		%read-only string ChannelBandwidthChangeReason;
+
+		/**
+		 * The maximum supported channel bandwidth. Enumeration of:
+		 * <ul>
+		 * <li>20MHz</li>
+		 * <li>40MHz (wide mode)</li>
+		 * <li>80MHz</li>
+		 * <li>160MHz</li>
+		 * </ul>
+		 * @version 9.1
+		 */
+		%read-only string MaxChannelBandwidth{
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+			default "20MHz";
+		}
+
+		/**
+		 * Mode used for the targeted bandwidth when the user selects a fixed channel and OperatingChannelBandwidth is set to Auto.
+		 * Possible values:
+		 * MaxAvailable. The targeted bandwidth is the MaxChannelBandwidth
+		 * MaxCleared. The targeted bandwidth is the MaxChannelBandwidth if it is cleared and available.
+		 * Default. In other cases when autochannel is disabled, targeted bandwidth is 80MHz for 5GHz.
+		 * @version 10.0
+		 */
+		string AutoBandwidthSelectMode {
+			on action validate call check_enum ["MaxAvailable","MaxCleared","Default"];
+			default "Default";
+			on action write call wld_rad_setAutoBandwidthSelectMode_pwf;
+		}
+
+		/**
+		 * <p>The secondary extension channel position, applicable when
+		 * operating in wide channel mode (i.e. when
+		 * OperatingChannelBandwidth  is set to 40MHz  or Auto).
+		 * Enumeration of: </p>
+		 * <ul>
+		 *  <li> AboveControlChannel </li>
+		 *  <li> BelowControlChannel </li>
+		 *  <li> Auto </li>
+		 * </ul>
+		 */
+		%persistent string ExtensionChannel{
+			on action validate call check_enum ["AboveControlChannel","BelowControlChannel","Auto"];
+			default "Auto";
+			on action write call wld_rad_setExtensionChannel_pwf;      /* Set Radio ExtensionChannel (if supported) */
+		}
+
+		/**
+		 * <p>Enable or disable the coexistence Channel Bandwidth
+		 * set to true allow the change of bandwidth following the environment
+		 * Only applicable on 2.4GHz </p>
+		 */
+		%persistent bool ObssCoexistenceEnable{
+			on action write call wld_rad_setObssCoexistenceEnable_pwf;
+			default false;
+		}
+
+		/**
+		 * <p>The guard interval value between OFDM symbols (applicable
+		 * to 802.11n specifications only). Enumeration of: </p>
+		 * <ul>
+		 * <li> 400nsec </li>
+		 * <li> 800nsec </li>
+		 * <li> Auto </li>
+		 * </ul>
+		 */
+		%persistent string GuardInterval{
+			on action validate call check_enum ["400nsec","800nsec","Auto"];
+			default "Auto";
+			on action write call wld_rad_setGuardInterval_pwf;
+		}
+
+		/**
+		 * <p>The Modulation Coding Scheme index (applicable to 802.11n
+		 * specifications only). Values from 0 to 15 MUST be supported
+		 * ([802.11n-2009]). A value of -1 indicates automatic selection
+		 * of the MCS index. </p>
+		 */
+		%persistent int32 MCS{
+			on action validate call check_range { min = -1, max = 31 };
+		}
+
+		/**
+		 * <p>Comma-separated list (maximum length 64) of integers
+		 * (value
+		 * -1 to 100). List items represent supported transmit power
+		 *  levels as percentage  of full power. For example,
+		 *  "0,25,50,75,100".</p>
+		 *  <p>A -1 item indicates auto mode (automatic decision by
+		 *  CPE). Auto mode allows the Radio to adjust transmit power
+		 *  accordingly. For example, this can be useful for power-save
+		 *  modes such as EU-CoC, where the Radio can adjust power
+		 *  according to activity in the CPE.</p>
+		 */
+		%read-only string TransmitPowerSupported;/* Updated by Radio_Init() */
+
+		/**
+		 * <p>Indicates the current transmit power level as a percentage
+		 * of full power. The value MUST be one of the values reported
+		 * by the TransmitPowerSupported  parameter. A value of -1
+		 * indicates auto mode (automatic decision by CPE). </p>
+		 */
+		%persistent int32 TransmitPower = -1 {
+			on action validate call check_range { min = -1, max = 100 };
+			on action validate call wld_rad_validateTxPower_pvf;
+			on action read call wld_rad_getTxPower_prf;
+			on action write call wld_rad_setTxPower_pwf;
+		}
+
+		/**
+		 * <p>Indicates a bit pattern of the current of active transmit/receive
+		 * antennas. The value MUST be in range of supported driver. Based on 2th wave
+		 * of 11AC targets the MAX is set on 8 Antennas == 255. The PLUGIN default is -1
+		 * and will be translated by driver default. Note that if RxChainCtrl or TxChainCtrl is set,
+		 * the value set here will be overwritten by the specific controls</p>
+		 */
+		%persistent int32 ActiveAntennaCtrl{
+			on action validate call check_range { min = -1, max = 255 };       /* Max support for 8 antennas (2th wave of 11AC) */
+			on action write call wld_rad_setAntennaCtrl_pwf;  /* Direct dirver interaction for antennas control */
+			default -1;
+		}
+
+		/**
+		 * Bit pattern of the current of active receive antennas.
+		 * The value MUST be in range of supported driver. Based on 2th wave
+		 * of 11AC targets the MAX is set on 8 Antennas == 255. Set to -1 to allow default
+		 * or setting by ActiveAntennaCtrl.
+		 * @version 9.2
+		 */
+		%persistent int32 RxChainCtrl{
+			on action validate call check_range { min = -1, max = 255 };
+			default -1;
+			on action write call wld_rad_setRxChainCtrl_pwf;
+		}
+		
+		/**
+		 * Bit pattern of the current of active transmit antennas.
+		 * The value MUST be in range of supported driver. Based on 2th wave
+		 * of 11AC targets the MAX is set on 8 Antennas == 255. Set to -1 to allow default
+		 * or setting by ActiveAntennaCtrl.
+		 * @version 9.2
+		 */
+		%persistent int32 TxChainCtrl{
+			on action validate call check_range { min = -1, max = 255 };
+			default -1;
+			on action write call wld_rad_setTxChainCtrl_pwf;
+		}
+		
+		/**
+		* Retry Limit
+		* The maximum number of retransmissions of a short packet
+		* i.e. a packet that is no longer than the RTSThreshold.
+		* This corresponds to IEEE 802.11 parameter dot11ShortRetryLimit [802.11-2012].
+		* @version 9.1
+		*/
+		%persistent uint8 RetryLimit{
+			on action write call wld_rad_setRetryLimit_pwf;  /* Set Retry Limit */
+			default 15;
+		}
+
+		/**
+		* Long Retry Limit
+		* This indicates the maximum number of transmission attempts of a frame,
+		* the length of which is greater than RTSThreshold,
+		* that will be made before a failure condition is indicated.
+		* This parameter is based on dot11LongRetryLimit from [802.11-2012].
+		* @version 9.1
+		*/
+		%persistent uint8 LongRetryLimit{
+			on action write call wld_rad_setLongRetryLimit_pwf;  /* Set Long Retry Limit */
+			default 6;
+		}
+
+		/**
+		* Time interval between transmitting beacons (expressed in milliseconds).
+		* This parameter is based on dot11BeaconPeriod from [802.11-2012].
+		*
+		* @version 9.2
+		*/
+		%persistent uint32 BeaconPeriod{
+			on action write call wld_rad_setBeaconPeriod_pwf;
+			default 100;
+		}
+
+		/**
+		* This specifies the number of beacon intervals that elapse between transmission
+		* of Beacon frames containing a TIM element whose DTIM Count field is 0. This parameter
+		* is based on dot11DTIMPeriod from [802.11-2012].
+		*
+		* @version 9.2
+		*/
+		%persistent uint32 DTIMPeriod{
+			on action write call wld_rad_setDtimPeriod_pwf;
+			default 3;
+		}
+
+		/**
+		 * Target Wake Time is an 11ax feature that allows the AP to
+		 * communicate with stations when and how often they will need
+		 * to send and receive data to increase battery life.
+		 *
+		 * @version 9.1
+		 */
+		%persistent bool TargetWakeTimeEnable{
+			default false;
+			on action write call wld_rad_setTargetWakeTimeEnable_pwf;
+		}
+
+		/**
+		 * This indicates whether the 11ax feature Orthogonal frequency-division
+		 * multiple access is enabled.
+		 */
+		%persistent bool OfdmaEnable{
+			default true;
+			on action write call wld_rad_setOfdmaEnable_pwf;
+		}
+
+		/**
+		 * Comma-separated list of strings containing which 11AX HE features are supported.
+		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
+		 */
+		%read-only string HeCapsSupported;
+
+		/**
+		 * Comma-separated list of strings containing which 11AX HE features are enabled.
+		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
+		 */
+		%persistent string HeCapsEnabled{
+			on action write call wld_rad_setHeCaps_pwf;
+		}
+
+		/**
+		 * <p>Indicates whether IEEE 802.11h functionality is supported
+		 * by this radio. The value can be true only if the 802.11a or
+		 * the 802.11n at 5GHz standard is supported (i.e.
+		 * SupportedFrequencyBands  includes 5GHz  and
+		 * SupportedStandards includes a and/or n). </p>
+		 */
+		%read-only bool IEEE80211hSupported;
+
+		/**
+		 * <p>Indicates whether IEEE 802.11h functionality is enabled on
+		 * this radio. The value can be true only if the 802.11a or the
+		 * 802.11n at 5GHz standard is supported and enabled (i.e.
+		 * OperatingFrequencyBand  is 5GHz  and OperatingStandards
+		 * includes a  and/or n). </p>
+		 */
+		bool IEEE80211hEnabled{
+			on action write call wld_rad_set80211hEnable_pwf; /* Spectrum Managed 802.11a DFS/TPC */
+		}
+
+		/**
+		 * Indicates whether IEEE 802.11k functionality is supported
+		 * by this radio.
+		 * @version 9.0
+		 */
+		%read-only bool IEEE80211kSupported;
+
+		/**
+		 * Indicates whether IEEE 802.11r functionality is supported
+		 * by this radio.
+		 * @version 9.1
+		 */
+		%read-only bool IEEE80211rSupported;
+
+		/**
+		 * Supported IEEE 1905 types, coma separated.
+		 * @version 9.2
+		 * Supported options are : "FronthaulBSS", "BackhaulBSS", "BackhaulSTA".
+		 */
+		%read-only string MultiAPTypesSupported;
+
+		/** <p>The 802.11d Regulatory Domain. First two octets are
+		 * two-character country code. The third octet is either " "
+		 * (space) (all environments), "O" (outside) or "I" (inside).
+		 * Possible patterns: </p>
+		 * <li>[A-Z][A-Z][ OI]</li>
+		 */
+		%persistent string RegulatoryDomain{
+			on action write call wld_rad_setCountryCode_pwf;   /* Set the country code - Fix set   */
+		}
+
+		/** <p>Indicates if implicit beam forming is supported by this
+		 * hardware. This feature is also known as 'AnyBeam' on
+		 * Broadcom hardware.</p>
+		 * @version 6.1
+		 */
+		%read-only bool ImplicitBeamFormingSupported;
+
+		/** <p>Indicates if implicit beam forming is enabled on this
+ 		 * radio. </p>
+		 * @version 6.1
+		 */
+		%persistent bool ImplicitBeamFormingEnabled {
+			default true;
+			on action write call wld_rad_setImplicitBeamForming_pwf;
+		}
+
+		/** <p> Indicates if explicit beam forming is supported by this
+		 * hardware.</p>
+		 * @version 6.1
+		 */
+		%read-only bool ExplicitBeamFormingSupported;
+
+		/** <p> Indicates if explicit beam forming is enabled on this
+ 		 * radio. </p>
+		 * @version 6.1
+		 */
+		%persistent bool ExplicitBeamFormingEnabled {
+			default false;
+			on action write call wld_rad_setExplicitBeamForming_pwf;
+		}
+		
+		/**
+		 * Receive beamforming capabilities available. List of
+		 * Possible values are: 
+		 * * VHT_SU_BF : single user beamforming for VTH
+		 * * VHT_MU_BF : multi user beamforming for VTH
+		 * * HE_SU_BF : single user beamforming for HE
+		 * * HE_MU_BF : multi user beamforming for HE
+		 * * HE_CQI_BF : Channel Quality Information
+		 * @version 10.0
+		 */
+		%read-only string RxBeamformingCapsAvailable;
+		
+		/**
+		 * Receive beamforming capabilities enabled. List of strings
+		 * as defined in RxBeamformingCapsAvailable.
+		 * A special value of this is "DEFAULT" which will just use
+		 * whatever the default configuration is.
+		 * Note that for MU features, MultiUserMIMOEnabled must be true,
+		 * and for HE Features, the relevant HE caps must be enabled.
+		 * @version 10.0
+		 */
+		string RxBeamformingCapsEnabled{
+			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF";
+			on action write call wld_rad_setRxBfCapsEnabled_pwf;
+		}
+		
+		/**
+		 * Transmit beamforming capabilities available. List of
+		 * Possible values are: 
+		 * * VHT_SU_BF : single user beamforming for VTH
+		 * * VHT_MU_BF : multi user beamforming for VTH
+		 * * HE_SU_BF : single user beamforming for HE
+		 * * HE_MU_BF : multi user beamforming for HE
+		 * * HE_CQI_BF : Channel Quality Information
+		 * @version 10.0
+		 */
+		%read-only string TxBeamformingCapsAvailable;
+		
+		/**
+		 * Transmit beamforming capabilities enabled. List of strings
+		 * as defined in RxBeamformingCapsAvailable. 
+		 * A special value of this is "DEFAULT" which will just use
+		 * whatever the driver has enabled by default.
+		 * Note that for MU features, MultiUserMIMOEnabled must be true,
+		 * and for HE Features, the relevant HE caps must be enabled.
+		 * @version 10.0
+		 */
+		string TxBeamformingCapsEnabled{
+			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF,HE_CQI_BF";
+			on action write call wld_rad_setTxBfCapsEnabled_pwf;
+		}
+		
+		/** <p> Indicates if Reduced Interframe Space is enabled.</p>
+		 * Default = keep the current mode
+		 * Auto = let the driver to manage the RIFS
+		 * Off = disable the RIFS
+		 * On = enable the RIFS
+		 * @version 10.0
+		 */
+		string RIFSEnabled {
+			on action validate call check_enum ["Default", "Auto", "Off", "On"];
+			default "Default";
+			on action write call wld_rad_setRIFS_pwf;
+		}
+
+		/** <p> Indicates if Air Time Fairness is enabled.</p>
+		 * @version 7.0
+		 */
+		%persistent bool AirtimeFairnessEnabled {
+			default false;
+			on action write call wld_rad_setAirTimeFairness_pwf;
+		}
+
+		/**
+		 * Indicates if receive chain power save is enabled. Note that
+		 * this will be overruled by RxPowerSaveRepeaterEnable when there is an Enabled repeater on this radio.
+		 * @version 8.0
+		 */
+		bool RxPowerSaveEnabled {
+			default false;
+			on action write call wld_rad_setRxPowerSave_pwf;
+		}
+
+		/**
+		 * Indicates if receive chain power save should be enabled while in repeater mode, i.e. when there is an Enabled
+		 * Repeater present on this interface.
+		 * @version 9.3
+		 */
+		bool RxPowerSaveRepeaterEnable {
+			default false;
+			on action write call wld_rad_setRxPowerSaveRepeater_pwf;
+		}
+
+		/** Indicates if Multi-User MIMO is supported.
+		 * @version 7.0
+		 */
+		%read-only bool MultiUserMIMOSupported;
+
+		/** <p> Indicates if Multi-User MIMO is enabled.</p>
+		 * @version 7.0
+		 */
+		%persistent bool MultiUserMIMOEnabled {
+			default false;
+			on action write call wld_rad_setMultiUserMIMO_pwf;
+		}
+
+		/** <p> Automation Testing - Force a DFS radar trigger in the driver </p> */
+		int32 DFS_drvdbg(%in string dbg_action);
+
+		/** <p> DFS channel change event counter on this radio. </p>
+		 * @version 6.1
+		*/
+		%read-only uint32 DFSChannelChangeEventCounter=0;
+
+		/** <p> DFS channel change timestamp on this radio. </p>
+		 * @version 6.1
+		 */
+		%read-only datetime DFSChannelChangeEventTimestamp;
+
+		/** <p> Last channel change reason on this radio. </p>
+		 * @version 6.1
+		 */
+		%read-only string ChannelChangeReason;
+
+		/**
+		 * Object representing radar detection events log.
+		 * @version 9.1
+		 */
+		%persistent object DFS {
+			/* Event instance created when radar detected */
+			object Event[] {
+				/* Timestamp of detected radar */
+				%read-only datetime TimeStamp;
+				/* Channel of detected radar */
+				%read-only uint32 Channel;
+				/* Bandwidth of detected radar */
+				%read-only string Bandwidth{
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					default "Auto";
+				}
+				/* Channel to which the radio went after DFS detection */
+				%read-only uint32 NewChannel;
+				
+				/* Bandwidth to which the radio went after DFS detection */
+				%read-only string NewBandwidth{
+					constraint enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					default "Auto";
+				}
+				
+				/* List of channels on which radar was actually detected */
+				%read-only string DFSRadarDetectionList;
+				/* Detected radar's zone */
+				%read-only string RadarZone{
+					constraint enum["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
+					default "NONE";
+				}
+				/* Detected radar's index */
+				%read-only uint8 RadarIndex;
+			}
+			/** The maximum number of detected radar events kept in
+			 * dfsEvents log file.
+			 */
+			%persistent uint8 FileLogLimit {
+				default 4;
+				on action write call wld_rad_setFileLogLimit_pwf;
+				on action validate call check_range { min = 0, max = 20 };
+			}
+			/** The maximum number of detected radar events kept in
+			 * data model as Event object instances.
+			 */
+			%persistent uint8 EventLogLimit {
+				default 4;
+				on action write call wld_rad_setEventLogLimit_pwf;
+				on action validate call check_range { min = 0, max = 20 };
+			}
+		}
+
+		/**
+		 * <B>DEBUG</B> Contains the string that shows the supported
+		 * capabilities of the driver. It's a comma separated list of
+		 * (IEEE802.11) tokens:
+		 * <ul>
+		 * "WEP","TKIP","AES","AES_CCM","CKIP","FF","TURBOP","IBSS","PMGT","HOSTAP",
+		 * "AHDEMO","SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE","MONITOR","TKIPMIC",
+		 * "WPA1","WPA2","BURST","WME","WDS","WME_TKIPMIC","BGSCAN","UAPSD","FASTCC"
+		 * </ul>
+		 */
+		%read-only string IEEE80211_Caps;     /* Supported vendor caps */
+
+		/**
+		 * The noti
+		 */
+		%persistent string ProbeRequestNotify = "FirstRSSI" {
+			on action validate call check_enum ["NoUpdate","First","FirstRSSI","Always","AlwaysRSSI"];
+			on action write call wld_prbReq_setNotify_pwf;
+		}
+
+		/**
+		 * After receiving a Probe Request in AlwaysRSSI mode,
+		 * define the number of milliseconds before send out all recently received Probe Requests.
+		 * @version 9.1
+		 */
+		%persistent uint32 ProbeRequestAggregationTimer{
+			on action write call wld_prbReq_setNotifyAggregationTimer_pwf;
+			default 1000;
+		}
+
+		/**
+		 * The maximum number of devices that can simultaneously be connected to the radio.
+		 *
+		 * value of 0 means that there is no specific limit.
+		 * @version 9.1
+		 */
+		%persistent uint32 MaxAssociatedDevices{
+			default 64;
+			on action write call wld_rad_setMaxStations_pwf;
+		}
+
+		/**
+		 * The number of devices currently connected to this radio.
+		 * @version 9.1
+		 */
+		%read-only uint32 ActiveAssociatedDevices;
+
+		/**
+		 * <B>DEBUG</B>
+		 *  Enable extra debugging output by vendor deamon applications
+		 *  The content of this one is for developpers only and not meant to export for clients.
+		 */
+		int32 dbgRADEnable{
+			default 0;
+			on action write call wld_rad_setDbgEnable_pwf;
+		}
+		string dbgRADFile{
+			on action write call wld_rad_setDbgFile_pwf;
+		}
+
+		/**
+		 * <p>Throughput statistics for this interface.
+		 * The CPE MUST reset the interface's Stats parameters (unless
+		 * otherwise stated in individual object or parameter
+		 * descriptions) either when the interface becomes operationally
+		 * down due to a previous administrative down (i.e. the
+		 * interface's Status parameter transitions to a down state
+		 * after the interface is disabled) or when the interface
+		 * becomes administratively up (i.e. the interface's Enable
+		 * parameter transitions from false to true). Administrative and
+		 * operational interface status is discussed in [Section
+		 * 4.2.2/TR-181i2]. </p>
+		 */
+		%read-only object Stats{
+			on action read call wld_radio_getStats_orf;
+													   
+			/** The total number of bytes transmitted out of the
+			 *  interface, including framing characters. */
+			%read-only uint64 BytesSent;
+
+			/**The total number of bytes received on the interface,
+			 * including framing characters. */
+			%read-only uint64 BytesReceived;
+
+			/**The total number of packets transmitted out of the
+			 * interface.  */
+			%read-only uint64 PacketsSent;
+
+			/** The total number of packets received on the interface.  */
+			%read-only uint64 PacketsReceived;
+
+			/** The total number of outbound packets that could not
+			 *  be transmitted because of errors. */
+			%read-only uint32 ErrorsSent;
+
+			/** The total number of transmitted packets which were retransmissions. 
+			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
+			%read-only uint32 RetransCount;
+
+			/** The total number of inbound packets that contained errors
+			 * preventing them from being delivered to a higher-layer
+			 * protocol.*/
+			%read-only uint32 ErrorsReceived;
+
+			/** The total number of outbound packets which were chosen to
+			 * be discarded even though no errors had been detected to
+			 * prevent their being transmitted. One possible reason for
+			 * discarding such a packet could be to free up buffer space.*/
+			%read-only uint32 DiscardPacketsSent;
+
+			/** The total number of inbound packets which were chosen to be
+			 *  discarded even though no errors had been detected to prevent
+			 *  their being delivered. One possible reason for discarding
+			 *  such a packet could be to free up buffer space. */
+			%read-only uint32 DiscardPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  multicast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			%read-only uint32 UnicastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were not addressed to a
+			 *  multicast or broadcast address at this layer.*/
+			%read-only uint32 UnicastPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  multicast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			%read-only uint32 MulticastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  multicast address at this layer.*/
+			%read-only uint32 MulticastPacketsReceived;
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission and which were addressed to a
+			 *  broadcast address at this layer, including those that were
+			 *  discarded or not sent.*/
+			%read-only uint32 BroadcastPacketsSent;
+
+			/** The total number of received packets, delivered by this
+			 *  layer to a higher layer, which were addressed to a
+			 *  broadcast address at this layer. */
+			%read-only uint32 BroadcastPacketsReceived;
+			
+			/** The total number of packets received via the interface which
+			 *  were discarded because of an unknown or unsupported
+			 *  protocol.*/
+			%read-only uint32 UnknownProtoPacketsReceived;
+			
+			/** The number of packets that were not transmitted successfully
+			 *  due to the number of retransmission attempts
+			 *  exceeding an 802.11 retry limit.*/
+			%read-only uint32 FailedRetransCount;
+
+			/** The number of packets that were successfully transmitted after one or more retransmissions*/
+			%read-only uint32 RetryCount;
+
+			/** The number of packets that were successfully transmitted after more than one retransmission*/
+			%read-only uint32 MultipleRetryCount;
+			
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			%read-only object WmmPacketsSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			%read-only object WmmFailedSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface ordered by wmm category*/
+			%read-only object WmmPacketsReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** The total number of packets received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			%read-only object WmmFailedReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission ordered by wmm category*/
+			%read-only object WmmBytesSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes that higher-level protocols
+			 *  requested for transmission, but failed to be sent ordered by wmm category*/
+			%read-only object WmmFailedbytesSent {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** The total number of bytes received on this interface ordered by wmm category*/
+			%read-only object WmmBytesReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+			
+			/** The total number of bytes received on this interface, but failed to be sent to the
+					higher layers, ordered by wmm category*/
+			%read-only object WmmFailedBytesReceived {
+				%read-only uint32 AC_BE;
+				%read-only uint32 AC_BK;
+				%read-only uint32 AC_VO;
+				%read-only uint32 AC_VI;
+			}
+
+			/** 
+			 * The chip's temperature(degrees Celsius).
+			 * As per TR-181, value should not be less than -274. 
+			 * Default value is -274 which is INVALID value.
+			 */
+			%read-only int32 Temperature{
+				default -274;
+				constraint minvalue -274;
+			}
+			
+			/**
+			* An indicator of average noise strength received at this radio, measured in dBm.
+			* This measurement of non-IEEE 802.11 noise power is made by sampling the channel
+			* when virtual carrier sense indicates idle and this radio is neither transmitting
+			* nor receiving a frame.
+			*/
+			%read-only int32 Noise{
+					default 0;
+			}
+		}
+
+		/**
+		 * Vendor specific data for the radio
+		 * Vendor plugins can add fields to this object to allow vendor specific
+		 * data and configuration to be made available.
+		 * Triggers a callback in the vendor plugin
+		 */
+		%persistent object Vendor;
+
+		/**
+		 * Percentage of time that the channel is unavailable for sending. This can be
+		 * either because we are sending, are receiving data from other stations,
+		 * or due to interference. Updated on getRadioAirStats().
+		 * range [0,100]
+		 */
+		%read-only uint16 ChannelLoad;
+
+		/**
+		 * Percentage of time that the channel is unavailable due to outside factors.
+		 * This can be other accesspoints / bssid's sending or receiving, or other atmospheric
+		 * interferences. Updated on getReadioAirStats()
+		 * range [0,100]
+		 */
+		%read-only uint16 Interference;
+
+		/**
+		 * Radio noise level in dB. Updated on getReadioAirStats()
+		 */
+		%read-only int32 Noise;
+
+		/**
+		 * Object representing the results of an accesspoint scan
+		 */
+		%read-only object ScanResults{
+
+			/**
+			 * The amount of accesspoints that are currently on the same channel as we are
+			 */
+			%read-only uint16 NrCoChannelAP;
+
+			/**
+			 * Accesspoints from the scan are grouped per channel
+			 */
+			object SurroundingChannels[]{
+
+				/**
+				 * The channel on which all the accesspoints in this object operate.
+				 */
+				%read-only uint16 Channel;
+
+				/**
+				 * Resulting accesspoint from the scan. Multiple BSSID's from the same accesspoint
+				 * should be grouped under this accesspoints. To group bssids, we check that they only
+				 * differ in 1 byte, and that their RSSI values are the same, and broadcast on the same channel.
+				 */
+				%read-only object Accesspoint[]{
+
+					/**
+					 * The first observed BSSID of this accesspoint. Other bssid's are compared against this
+					 * bssid to check if they are potentially the same accesspoint
+					 */
+					%read-only string BSSID;
+
+					/**
+					 * The received signal strength indicator of this access point.
+					 * Range [-100,-1]
+					 */
+					%read-only int16 RSSI;
+
+					/**
+					 * An SSID broadcasted by this access point
+					 */
+					%read-only object SSID[]{
+
+						/**
+						 * The name if this ssid
+						 */
+						%read-only string SSID;
+
+						/**
+						 * The bandwidth of this ssid
+						 */
+						%read-only uint16 Bandwidth;
+
+						/**
+						 * The bssid identifier.
+						 */
+						%read-only string BSSID;
+					}
+				}
+
+			}
+		}
+
+		/**
+		 * <p>Enable the intelligent airtime scheduling, where stations
+		 * are scheduled based on their device type. </p>
+		 */
+		%persistent bool IntelligentAirtimeSchedulingEnable{
+			default false;
+			on action write call wld_rad_setIntelligentAirtime_pwf;
+		}
+
+		/** Enables or Disables the radio */
+		%persistent bool Enable{
+			default false;
+			on action write call wld_rad_setEnable_pwf;
+		}
+
+		/**
+		 * Time in seconds while BSS broadcast should be delayed during Wi-Fi configuration
+		 * after radio goes from down to up.
+		 * APs will be kept down for this duration, untill the timer expires, or the function
+		 * wld_rad_delayMgr_apDelayUpDone is called
+		 *
+		 * @version 10.0
+		 */
+		%persistent uint32 DelayApUpPeriod {
+			default 10;
+			on action write call wld_rad_delayMgr_setDelayApUpPeriod_pwf;
+		}
+
+		/**
+		 * Abort timer of DelayApUpPeriod triggered by DelayApUp mechanism
+		 */
+		void apDelayUpDone();
+
+		/**
+		 * Object containing the capabilities of this radio.
+		 * Each radio may have different capabilities, depending on the vendor which implements the radio,
+		 * and the type of radio. The radio capabilities shows which capabilities are available for the radio
+		 * and allows the dynamic enabling and disabling of these capabilities.
+		 *
+		 * @version 8.0
+		 **/
+		%persistent object RadCaps{
+
+			/**
+			 * A list of strings, which encode which capabilities are currently being offered by this radio.
+			 * This list may differ from radio to radio. Vendor feature names may differ from vendor to vendor
+			 * while offering similar functionality.
+			 * Encoded as space separated string list.
+			 */
+			%read-only string Available{
+			  default "";
+			}
+
+			/**
+			 * A list of space separated strings, which shows which capabilities
+			 * are currenlty being requested to be enabled.
+			 * While being requested it does not mean that those feature are actually currently active.
+			 * To check if a feature is active, see status field.
+			 * The enable field is allowed to contain strings which do not match a capability of the radio.
+			 * These strings will be ignored.
+			 */
+			%persistent string Enabled{
+			  default "";
+			  on action write call wld_rad_capability_setEnable;
+			}
+
+			/**
+			 * A list of strings, showing which capabilities are currently active on the radio.
+			 */
+			%read-only string Status{
+			  default "";
+			}
+
+			/**
+			 * Enable a capability. This will append the enable string with the capability requested.
+			 * The enable string will be rewritten to only contain those capabilities which are enabled and
+			 * available.
+			 */
+			void Enable(%in string Capability);
+
+			/**
+			 * Disable a capability. This will remove all occurences of the given capability string
+			 * from the enable string.
+			 * The enable string will be rewritten to only contain those capabilities which are enabled and
+			 * available.
+			 */
+			void Disable(%in string Capability);
+		} /* object RadCaps */
+
+		object ChannelMgt{
+			/**
+			 * List of currently cleared channels.
+			 * Note that this will only contain channel that require radar. Non radar sensitive channels
+			 * will not be added to this list. Format is comma separated list of numbers.
+			 */
+			%read-only string ClearedDfsChannels{
+				default "";
+			}
+
+			/**
+			 * List of dfs channels where a radar pulse has been
+			 * detected and we're currently waiting for the channel to be released.
+			 * Format is comma separated list.
+			 */
+			%read-only string RadarTriggeredDfsChannels{
+				default "";
+			}
+			
+		}
+
+		/**
+		 * Object encapsulating non associated device statistics system.
+		 * @version V9.0
+		 */
+		%persistent object NaStaMonitor {
+			/** Update the statistics in of the NonAssociatedDevice[] objects in the datamodel,
+			 * @return list of variant maps with the NonAssociatedDevice values
+			 * @version 9.0
+			*/
+			void getNaStationStats();
+
+			/**
+			 * <b>createNonAssociatedDevice</b>
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			 * <p> Create a new entry in NonAssociatedDevice table </p>
+			*/
+			void createNonAssociatedDevice(%in string macaddress);
+
+			/**
+			 * <b>deleteNonAssociatedDevice</b>
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			 * <p> Delete an entry in NonAssociatedDevice table </p>
+			*/
+			void deleteNonAssociatedDevice(%in string macaddress);
+
+			/**
+			 * <p> Clear all non associated devices</p>
+			*/
+			void clearNonAssociatedDevices();
+
+
+			/** Update the statistics of MonitorDevice[] objects in the datamodel,
+			 * @return list of variant maps with latest MonitorDevice values
+			 * @version 9.2
+			*/
+			void getMonitorDeviceStats();
+
+			/**
+			 * Create a new entry in MonitorDevice table
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			*/
+			void createMonitorDevice(%in string macaddress);
+
+			/**
+			 * Delete an entry in MonitorDevice table
+			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			*/
+			void deleteMonitorDevice(%in string macaddress);
+
+			/**
+			 * Clear all non associated devices
+			*/
+			void clearMonitorDevices();
+
+			/**
+			 * Enable non associated station statistics retrieval.
+			 */
+			%persistent bool Enable {
+				default true;
+				on action write call wld_radStaMon_setEnable_pwf;
+			}
+
+			/**
+			 * <p> A table of the devices currently monitored with the accesspoint.</p>
+			 * @version 9.0
+			*/
+			%read-only object NonAssociatedDevice[]{
+
+				on action del-inst call wld_rad_staMon_deleteNaSta_odf;
+				on action add-inst call wld_rad_staMon_addNaSta_ocf;
+
+				/** A non-volatile handle used to reference this instance. Alias
+				*  provides a mechanism for an ACS to label this instance for
+				*  future reference. An initial unique value MUST be assigned
+				*  when the CPE creates an instance of this object.*/
+				%unique %key string Alias;
+
+				/**
+				 * [MACAddress] The MAC address of an monitored device.
+				 * @version 9.0
+				 */
+				%read-only string MACAddress;
+
+				/**
+				 * An indicator of radio signal strength of the uplink from the
+				 * monitored device to the access point, measured in dBm.
+				 * device.
+				 * @version 9.0
+				 */
+				%read-only uint8 SignalStrength{
+					on action validate call check_range { min = 0, max = 220 };
+				}
+
+				/**
+				 * The timestamp when the last update occurred
+				 * @version 9.0
+				 */
+				%read-only datetime TimeStamp;
+
+				/**
+				 * Channel used when the measurement was done
+				 * @version 9.0
+				 */
+				%read-only uint8 Channel;
+
+				/**
+				 * Operating_class of the radio when the measurement was done
+				 * @version 9.0
+				 */
+				%read-only uint8 OperatingClass;
+			}
+
+			/**
+			 * A table of the high priority devices currently monitored with the accesspoint.
+			 * Devices in this list will gain priority over non associated devices list.
+			 * Probe requests received of these devices will be immediately broadcasted.
+			 * @version 9.2
+			*/
+			%read-only object MonitorDevice[]{
+				on action del-inst call wld_rad_staMon_deleteNastaMonDev_odf;
+				on action add-inst call wld_rad_staMon_addNastaMonDev_ocf;
+
+				/** A non-volatile handle used to reference this instance. Alias
+				*  provides a mechanism for an ACS to label this instance for
+				*  future reference. An initial unique value MUST be assigned
+				*  when the CPE creates an instance of this object.*/
+				%unique %key string Alias;
+
+				/**
+				 * [MACAddress] The MAC address of an monitored device.
+				 * @version 9.2
+				 */
+				%read-only string MACAddress;
+
+				/**
+				 * An indicator of radio signal strength of the uplink from the
+				 * monitored device to the access point, measured in dBm.
+				 * device.
+				 * @version 9.2
+				 */
+				%read-only int32 SignalStrength{
+					on action validate call check_range { min = -200, max = 0 };
+				}
+
+				/**
+				 * The timestamp when the last update occurred
+				 * @version 9.2
+				 */
+				%read-only datetime TimeStamp;
+			}
+
+			/**
+			 * Perform event based RSSi Monitoring. When a significant "step" has been detected
+			 * compared to the previous value, an event is sent out.
+			 * This way, upper layers can be notified within very few seconds when significant changes
+			 * of rssi have taken place
+			 */
+			%persistent object RssiEventing{
+
+				on action write call wld_radStaMon_setRssiEventing_owf;
+
+				/**
+				 * Enable the rssi eventing
+				 */
+				%persistent bool Enable{
+					on action write call mon_enableWriteHandler;
+					default false;
+				}
+
+				/**
+				 * The minimal level of difference required before an event is sent out.
+				 * Expressed in dbm.
+				 */
+				%persistent uint32 RssiInterval{
+					constraint minvalue 1;
+					default 10;
+				}
+
+				/**
+				 * The system shall average out measurements, to avoid spikes in the data.
+				 * Upon measurement, newval is calculated as follows:
+				 * NewValue = (OldValue * (1000 - AveragingFactor) + AveragingFactor * Measurement) / 1000
+				 *
+				 * A value of 1000 would always take the latest value.
+				 */
+				%persistent uint32 AveragingFactor{
+					on action validate call check_range { min = 1, max = 1000 };
+					default 500;
+				}
+
+				/**
+				 * The interval with which the monitor will call the underlying layer to retrieve
+				 * the latest Rssi measurement.
+				 * Expressed in milliseconds.
+				 */
+				%persistent uint32 Interval{
+					default 1000;
+					on action write call mon_intervalWriteHandler;
+					constraint minvalue 100;
+				}
+			}
+		}
+
+		/**
+		 * List of event counters.
+		 * This list aims will track the number of events that happen
+		 * Either inside the WLD, or in the Vendor plugin.
+		 * These counters are mostly aimed at generic and vendor specific error event counters
+		 * @version 9.1
+		 */
+		%read-only object EventCounter[] {
+
+			/**
+			 * The key name of the radio event counter.
+			 * @version 9.1
+			 */
+			%read-only string Key;
+
+			/**
+			 * The value of the radio event counter.
+			 * @version 9.1
+			 */
+			%read-only uint32 Value;
+
+			/**
+			 * The last time this event happened
+			 * @version 9.1
+			 */
+			%read-only datetime LastOccurrence;
+
+			/**
+			 * Extra information given by counter. Must be interpreted on per counter basis.
+			 * @version 9.1
+			 */
+			%read-only string Info;
+		}
+
+		void debug();
+		
+		/**
+		 * List of fields for advanced driver config. Ensure that
+		 * for all these fields "No change from default" is the default.
+		 * @version 9.2
+		 */
+		%persistent object DriverConfig{
+			on action write call wld_rad_setDriverConfig_owf;
+			
+			/**
+			 * Enable / disable tx bursting. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 TxBurst{
+				default -1;
+			}
+			
+			
+			/**
+			 * Enable / disable amsdu. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 Amsdu{
+				default -1;
+			}
+			
+			/**
+			 * Enable / disable ampdu. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 Ampdu{
+				default -1;
+			}
+			
+			/**
+			 * Configure fragmentation threshold. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 FragmentationThreshold{
+				default -1;
+			}
+			
+			/**
+			 * Configure request to send threshold. Set to -1 to allow default.
+			 * @version 9.2
+			 */
+			%persistent int32 RtsThreshold{
+				default -1;
+			}
+
+			/**
+			 * Configure Tx Beamforming options
+			 * -1 : driver default
+			 * 0 : force beamforming always off
+			 * 1 : automatic beamforming
+			 * 2 : force beamforming on
+			 * @version 9.2
+			 */
+			%persistent int32 TxBeamforming{
+				default -1;
+			}
+			
+			/**
+			 * Enable or disable the Operating Mode Notification frames
+			 * in the driver. These frames are used to notify stations that
+			 * the HGW is temporarily running with reduced tx and rx chains 
+			 * potentially due to background DFS clearing.
+			 */
+			%persistent int32 VhtOmnEnabled{
+				default 1;
+			}
+			
+			/**
+			 * Configure the driver to broadcast the maximum bandwidth capability
+			 * in beacons. e.g. if driver is 160MHz capable, radio should broadcast
+			 * that 160MHz capable, even though it may only be configured to use 80MHz.
+			 * Note that if this is disabled, changing bandwidth will likely require radio toggle.
+			 * Set to -1 to allow driver default.
+			 */
+			%persistent int32 BroadcastMaxBwCapability{
+				default -1;
+			}
+
+			/**
+			 * Transmit Power Control management
+			 * It is the capability to reduce the power of the AP and/or the STA
+			 * Auto = let the driver to manage this part (do nothing if set)
+			 * Off = disable the transmit power control
+			 * Ap = Enable the AP to set itself to a lower transmit power
+			 * Sta = Ask the station to set to a lower transmit power
+			 * ApSta = combination of both previous behaviour
+			 * @version 10.0
+			 */
+			%persistent string TPCMode{
+				on action validate call check_enum ["Auto", "Off", "Ap", "Sta", "ApSta"];
+				default "Auto";
+			}
+		}
+		
+		/**
+		 * Configuration regarding how MAC Addresses should be generated for this radio.
+		 * Note that this shall only be updated if currently no APs were created on this
+		 * radio.
+		 * @version 10.0
+		 */
+		%persistent object MACConfig{
+		
+			/**
+			 * The number of BSS required for this radio. This allows certain checks to be done
+			 * ensuring proper ofsetting of base MAC when needed.
+			 * Set to 0 to disable offsetting.
+			 * Will also allow to move multi radio BSSIDs closer together when possible.
+			 */
+			%persistent uint32 NrBssRequired{
+				on action write call wld_rad_setMACConfig_pwf;
+				default 0;
+			}
+	
+			/**
+			 * Whether to use a simple base mac offset to set the MAC of this radio.
+			 * If enabled, the base mac shall just be determined based on the base offset.
+			 * No other calculation should be done, so offset must adhere to MAC Assignment rules.
+			 * If not enabled, then potential driver specific logic may apply, and
+			 * by default the Radio Base MAC Addr will be WAN_ADDR + Radio Index.
+			 */
+			%persistent bool UseBaseMacOffset{
+				on action write call wld_rad_setMACConfig_pwf;
+				default false;
+			}
+			
+			/**
+			 * Offset that the radio base mac addr should have from the WAN Address.
+			 * Enable UseBaseMacOffset to have this enacted in compatible drivers.
+			 */
+			%persistent int64 BaseMacOffset{
+				on action write call wld_rad_setMACConfig_pwf;
+				default 0;
+			}
+			
+			/**
+			 * Whether to generate guest BSSIDs with the local bit set.
+			 * When set, these BSSIDs may overlap, so it is 
+			 */
+			%persistent bool UseLocalBitForGuest{
+				on action write call wld_rad_setMACConfig_pwf;
+				default false;
+			}
+			
+			/**
+			 * Additional offset for the guest mac, per radio index + 1.
+			 * So the guest MACS will go on RadioBaseMac + LogalGuestMacOffset for the first radio.
+			 * and to RadioBaseMac + 2 * LocalGuestMaccOfset for the second radio.
+			 * When configuring radio's of different vendors, please ensure non overlapping
+			 * offsets.
+			 */
+			%persistent int64 LocalGuestMacOffset{
+				on action write call wld_rad_setMACConfig_pwf;
+				default 256;
+			}
+		}
+		
+		/**
+		 * Information with regards to radio driver capabilities and status.
+		 * @version 10.0
+		 */
+		%read-only object DriverStatus{
+			/**
+			 * The number of available antenna for tx on this radio.
+			 * -1 means data unavailable.
+			 */
+			%read-only int32 NrTxAntenna{
+				default -1;
+			}
+
+			/**
+			 * The number of available antenna for rx on this radio.
+			 * -1 means data unavailable.
+			 */
+			%read-only int32 NrRxAntenna{
+				default -1;
+			}
+
+			/**
+			 * The number of antenna actively used.
+			 * -1 means data unavailable.
+			 */
+			%read-only int32 NrActiveTxAntenna{
+				default -1;
+			}
+
+			/**
+			 * The number of rx antenna actively used.
+			 * -1 means data unavailable.
+			 */
+			%read-only int32 NrActiveRxAntenna{
+				default -1;
+			}
+		}
+
+		/**
+		 * Scan config
+		 * @version 10.0
+		 */
+		%persistent object ScanConfig{
+			on action write call wld_rad_writeScanConfig;
+
+			/**
+			 * Number of channels sent to the driver per scan request when stations are not present.
+			 * -1 means default config from driver.
+			 * @version 10.2
+			 */
+			%persistent int32 MaxChannelsPerScan{
+				default -1;
+			}
+			/**
+			 * Number of channels sent to the driver per scan request when stations are present.
+			 * -1 means default config from driver.
+			 * @version 10.2
+			 */
+			%persistent int32 ScanChannelCount{
+				default -1;
+			}
+			/**
+			 * Time interval between two scan requests to driver when stations are present.
+			 * -1 means default config from driver.
+			 * @version 10.2
+			 */
+			%persistent int32 ScanRequestInterval{
+				default -1;
+			}
+			/**
+			 * Time spent on current channel.
+			 * -1 means default config from driver.
+			 * @version 10.0
+			 */
+			%persistent int32 HomeTime{
+				default -1;
+			}
+
+			/**
+			 * Time spent sending probe request on channels.
+			 * -1 means default config from driver.
+			 * @version 10.0
+			 */
+			%persistent int32 ActiveChannelTime{
+				default -1;
+			}
+
+			/**
+			 * Time spent listening for beacons on channels.
+			 * -1 means default config from driver.
+			 * @version 10.0
+			 */
+			%persistent int32 PassiveChannelTime{
+				default -1;
+			}
+
+			/**
+			 * Block scan feature configuration
+			 * Disable : never block scan.
+			 * Prio : block scan if prio traffic is busy.
+			 * All : block scan if either prio or normal traffic is busy.
+			 * @version 10.0
+			 */
+			%persistent string BlockScanMode{
+				on action validate call check_enum ["Disable","Prio","All"];
+				default "Disable";
+			}
+			
+			/**
+			 * When scans started for these reasons, the scan will be 
+			 * forced as fast, so any "slow scan" interruption mitigation will be disabled.
+			 *
+			 * Entered as a list of scan reason strings. Default a standard scan requested through the bus will be 
+			 * run as fast.
+			 *
+			 * @version 10.0
+			 */
+			%persistent string FastScanReasons{
+				default "Ssid";
+			}
+		}
+
+		/**
+		 * Scan statistics
+		 * @version 10.0
+		 */
+		%read-only object ScanStats{
+			/**
+			 * Number of scans requested to the driver.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrScanRequested{
+				default 0;
+			}
+			/**
+			 * Number of scans done reported by the driver.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrScanDone{
+				default 0;
+			}
+			/**
+			 * Number of scans not being triggered because of errors.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrScanError{
+				default 0;
+			}
+			/**
+			 * Number of scans not being triggered because of internal protections.
+			 * @version 10.0
+			 */
+			%read-only uint32 NrScanBlocked{
+				default 0;
+			}
+
+			%read-only object ScanReason[]{
+				/* Name of the ScanReason, This be a string for which reason scan is triggered.
+				 * @version 10.3
+				 */
+				%read-only string Name{
+					default "";
+				}
+				/**
+				 * Number of scans triggered for the scan Reason.
+				 * @version 10.3
+				 */
+				%read-only uint32 NrScanRequested{
+					default 0;
+				}
+				/**
+				 * Number of scans done for the scan Reason.
+				 * @version 10.3
+				 */
+				%read-only uint32 NrScanDone{
+					default 0;
+				}
+			}
+		}
+
+	} /* object Radio */
+    }
+}
+
