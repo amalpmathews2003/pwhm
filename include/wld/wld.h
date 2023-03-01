@@ -536,9 +536,10 @@ typedef enum {
 } FSM_STATE;
 
 typedef struct {
-    int CountryCode;
-    char* FullCountryName;
-    char* ShortCountryName;
+    int countryCode;
+    char* fullCountryName;
+    char* shortCountryName;
+    swl_opClassCountry_e countryZone;
 } T_COUNTRYCODE;
 
 extern const T_COUNTRYCODE Rad_CountryCode[]; // wld_util.c

@@ -139,27 +139,6 @@ struct operating_class_table {
     uint8_t chan_set[64];
 };
 
-
-/*
- * Return the operating class
- * See 802.11-2021.pdf Table E-*—Operating classes
- */
-int wld_channel_getOperatingClass(char* fullCountryName, swl_chanspec_t chanspec) {
-
-    int operClass = 0;
-    if((fullCountryName != NULL) && swl_str_startsWith(fullCountryName, "United States")) {
-        SAH_TRACEZ_INFO(ME, "this FullCountryName code is  %s", fullCountryName);
-        operClass = swl_chanspec_getLocalOperClass(&chanspec, SWL_OP_CLASS_COUNTRY_USA);
-    } else if((fullCountryName != NULL) && swl_str_startsWith(fullCountryName, "Japan")) {
-        SAH_TRACEZ_INFO(ME, "this FullCountryName code is  %s", fullCountryName);
-        operClass = swl_chanspec_getLocalOperClass(&chanspec, SWL_OP_CLASS_COUNTRY_JP);
-    } else {
-        operClass = swl_chanspec_getLocalOperClass(&chanspec, SWL_OP_CLASS_COUNTRY_EU);
-    }
-    SAH_TRACEZ_ERROR(ME, "OperatingClass  found for %d is %d", chanspec.channel, operClass);
-    return operClass;
-}
-
 /**
  * Fill in the list with the amount of channels in the band
  */

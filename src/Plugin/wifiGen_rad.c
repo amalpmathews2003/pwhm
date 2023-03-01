@@ -497,7 +497,7 @@ int wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
     if(set & SET) {
         if(pRad->regulatoryDomainIdx >= 0) {
             swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain),
-                         Rad_CountryCode[pRad->regulatoryDomainIdx].ShortCountryName);
+                         Rad_CountryCode[pRad->regulatoryDomainIdx].shortCountryName);
             setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         } else {
             SAH_TRACEZ_ERROR(ME, "regulatoryDomainIdx %d not valid!", pRad->regulatoryDomainIdx);

@@ -112,7 +112,6 @@ int wld_channel_get_interference_list(swl_chanspec_t chanspec,
 
 int wld_get_nr_channels_in_band(swl_chanspec_t chanspec);
 
-int wld_channel_getOperatingClass(char* fullCountryName, swl_chanspec_t chanspec);
 int wld_channel_getComplementaryBaseChannel(swl_chanspec_t chanspec);
 bool wld_channel_areAdjacent(swl_chanspec_t chanspec1, swl_chanspec_t chanspec2);
 bool wld_channel_areBandsOverlapping(swl_chanspec_t band1, swl_chanspec_t band2);

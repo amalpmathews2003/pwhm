@@ -283,6 +283,7 @@ int getCountryParam(const char* instr, int CC, int* idx);
 char* getFullCountryName(int idx);
 char* getShortCountryName(int idx);
 int getCountryCode(int idx);
+swl_opClassCountry_e getCountryZone(int idx);
 
 char* wldu_copyStr(char* dest, const char* src, size_t destsize);
 char* wldu_catStr(char* dest, const char* src, size_t destsize);
