@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.22.1 - 2023-03-02(07:49:30 +0000)
+
+### Other
+
+- Add Operating Classes for United States and Japan
+
 ## Release v2.22.0 - 2023-02-27(11:11:02 +0000)
 
 ### Other
