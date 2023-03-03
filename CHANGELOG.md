@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.22.3 - 2023-03-03(15:15:38 +0000)
+
+### Other
+
+- deauth connected stations when disabling host rad/vap
+
 ## Release v2.22.2 - 2023-03-03(14:23:11 +0000)
 
 ### Other
