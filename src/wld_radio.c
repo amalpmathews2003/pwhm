@@ -211,7 +211,7 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
 
     ASSERT_NULL(pRadioObj->priv, amxd_status_unknown_error, ME, "pRadioObj->priv not NULL %s", pRad->Name);
 
-    wld_util_getObjName(pRad->instanceName, sizeof(pRad->instanceName), pRadioObj);
+    swl_str_copy(pRad->instanceName, sizeof(pRad->instanceName), amxd_object_get_name(pRadioObj, AMXD_OBJECT_NAMED));
     SAH_TRACEZ_WARNING(ME, "Mapping new Radio instance [%s:%s]", pRad->Name, pRad->instanceName);
 
     /* General initializations */

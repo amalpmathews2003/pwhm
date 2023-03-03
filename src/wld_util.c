@@ -2649,19 +2649,6 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
     return true;
 }
 
-bool wld_util_getObjName(char* objName, size_t objNameSize, amxd_object_t* obj) {
-    char* pathWithName = amxd_object_get_path(obj, AMXD_OBJECT_NAMED);
-    ASSERTS_STR(pathWithName, false, ME, "empty");
-    char* name = pathWithName;
-    char* lastField = strrchr(pathWithName, '.');
-    if((lastField != NULL) && (lastField[1] != 0)) {
-        name = &lastField[1];
-    }
-    swl_str_copy(objName, objNameSize, name);
-    free(pathWithName);
-    return true;
-}
-
 amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats) {
     ASSERT_NOT_NULL(obj, false, ME, "NULL");
     ASSERT_NOT_NULL(stats, false, ME, "NULL");

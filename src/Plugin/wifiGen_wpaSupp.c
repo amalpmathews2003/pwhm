@@ -72,8 +72,7 @@
 #define WPASUPP_CTRL_IFACE_DIR "/var/run/wpa_supplicant"
 
 swl_rc_ne s_writeWpaSupArgsToBuf(char* args, size_t argsSize, char* confFilePath, size_t confFilePathSize, T_EndPoint* pEP) {
-    T_Radio* pRad = pEP->pRadio;
-    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
+    ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
     bool ret;
     char cfgPath[128] = {0};
     ret = swl_str_catFormat(cfgPath, sizeof(cfgPath), WPASUPP_CONF_FILE_PATH_FORMAT, pEP->Name);
@@ -84,6 +83,7 @@ swl_rc_ne s_writeWpaSupArgsToBuf(char* args, size_t argsSize, char* confFilePath
         ASSERTI_TRUE(ret, SWL_RC_ERROR, ME, "%s: writing wpaSupplicantConfigPath error", pEP->Name);
     }
 
+    swl_str_copy(args, argsSize, "\0");
     if(!swl_str_isEmpty(pEP->bridgeName)) {
         ret = swl_str_catFormat(args, argsSize, WPASUPP_ARGS_FORMAT_EXT, pEP->bridgeName, pEP->Name, cfgPath);
     } else {

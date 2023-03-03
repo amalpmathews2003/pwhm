@@ -126,6 +126,7 @@ swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
  */
 swl_rc_ne wifiGen_ep_disconnect(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_secDmn_isRunning(pEP->wpaSupp), SWL_RC_OK, ME, "%s: wpaSupp not started", pEP->Name);
     return wld_wpaSupp_ep_disconnect(pEP);
 }
 

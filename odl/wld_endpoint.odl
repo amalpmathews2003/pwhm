@@ -157,7 +157,7 @@
 		 *  provides a mechanism for an ACS to label this instance for
 		 *  future reference. An initial unique value MUST be assigned
 		 *  when the CPE creates an instance of this object. */
-		string Alias;
+		%persistent %unique %key string Alias;
 		/** Index in the EndPoint object tree */
 		%read-only uint32 Index;
 		/** The value MUST be the path name of a row in the Profile

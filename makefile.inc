@@ -29,6 +29,9 @@ CC_NAME = $(word $(words $(CC_PARTS)),$(CC_PARTS))
 
 # Target
 COMPONENT = pwhm
+ifeq ($(CONFIG_GATEWAY)$(CONFIG_ACCESPOINT),)
+CONFIG_GATEWAY=y
+endif
 
 # Extra variables
 WIFIROOT = WiFiDRV

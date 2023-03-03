@@ -197,8 +197,9 @@ void wld_plugin_syncDm() {
         }
         T_EndPoint* pEP;
         wld_rad_forEachEp(pEP, pRad) {
-            pSSID = (T_SSID*) pEP->pSSID;
+            wld_endpoint_reconfigure(pEP);
             pRad->pFA->mfn_sync_ep(pEP);
+            pSSID = (T_SSID*) pEP->pSSID;
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
     }

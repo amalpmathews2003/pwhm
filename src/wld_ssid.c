@@ -116,6 +116,7 @@ T_SSID* s_createSsid(amxd_object_t* obj) {
     pSSID->pBus = obj;
     obj->priv = pSSID;
     pSSID->debug = SSID_POINTER;
+    swl_str_copy(pSSID->Name, sizeof(pSSID->Name), amxd_object_get_name(obj, AMXD_OBJECT_NAMED));
     sprintf(pSSID->SSID, "PWHM_SSID%d", amxd_object_get_index(obj));
     amxc_llist_append(&sSsidList, &pSSID->it);
     amxp_timer_new(&pSSID->enableSyncTimer, s_syncEnable, pSSID);
@@ -526,7 +527,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             swl_str_copy(TBuf, sizeof(TBuf), pAP->alias);
             ifIndex = pAP->index;
         } else if(pEP != NULL) {
-            swl_str_copy(TBuf, sizeof(TBuf), pEP->alias);
+            swl_str_copy(TBuf, sizeof(TBuf), pEP->Name);
             ifIndex = pEP->index;
         }
         amxd_trans_set_cstring_t(&trans, "Name", TBuf);
@@ -630,18 +631,6 @@ T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP) {
 
     return pSSID;
 }
-
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object) {
-    ASSERT_NOT_NULL(instance_object, WLD_ERROR, ME, "NULL");
-    ASSERT_NOT_NULL(pSSID, WLD_ERROR, ME, "NULL");
-    ASSERT_NOT_NULL(pSSID->AP_HOOK, WLD_ERROR, ME, "NULL");
-    wld_util_getObjName(pSSID->Name, sizeof(pSSID->Name), instance_object);
-
-    instance_object->priv = pSSID;
-    pSSID->pBus = instance_object;
-    return WLD_OK;
-}
-
 
 void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");

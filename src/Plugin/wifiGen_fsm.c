@@ -294,6 +294,11 @@ static bool s_doRadDisable(T_Radio* pRad) {
 }
 
 static bool s_doRadEnable(T_Radio* pRad) {
+    ASSERTS_TRUE(pRad->enable, true, ME, "%s: rad disabled", pRad->Name);
+    bool upperEnabled = (wld_rad_hasEnabledEp(pRad));
+    // When VAPs are enabled, Rad enable requires no config
+    // as Hostapd takes care of enabling required interfaces
+    ASSERTS_TRUE(upperEnabled, true, ME, "%s: rad has no upperL enabled", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: Enable rad", pRad->Name);
     if(pRad->isSTA) {
         wld_rad_nl80211_setSta(pRad);

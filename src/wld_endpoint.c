@@ -1222,16 +1222,14 @@ void wld_endpoint_sync_connection(T_EndPoint* pEP, bool connected, wld_epError_e
 
     T_Radio* pR = pEP->pRadio;
 
-    if(error) {
-        connectionStatus = (error == EPE_SSID_NOT_FOUND) || (error == EPE_ERROR_MISCONFIGURED) ? EPCS_IDLE : EPCS_ERROR;
-    } else if(pEP->enable && pR->enable) {
-        if(connected) {
-            connectionStatus = EPCS_CONNECTED;
-        } else {
-            connectionStatus = EPCS_IDLE;
-        }
-    } else {
+    if(!pEP->enable || !pR->enable) {
         connectionStatus = EPCS_DISABLED;
+    } else if(error) {
+        connectionStatus = (error == EPE_SSID_NOT_FOUND) || (error == EPE_ERROR_MISCONFIGURED) ? EPCS_IDLE : EPCS_ERROR;
+    } else if(connected) {
+        connectionStatus = EPCS_CONNECTED;
+    } else {
+        connectionStatus = EPCS_IDLE;
     }
 
     wld_endpoint_setConnectionStatus(pEP, connectionStatus, error);
@@ -1536,20 +1534,20 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
     ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pEP->Name);
     if(pEP->status != status) {
         amxd_trans_set_value(cstring_t, &trans, "Status", cstr_EndPoint_status[status]);
-        pEP->status = status;
         changed = true;
     }
     if(pEP->connectionStatus != connectionStatus) {
         amxd_trans_set_value(cstring_t, &trans, "ConnectionStatus", cstr_EndPoint_connectionStatus[connectionStatus]);
-        pEP->connectionStatus = connectionStatus;
         changed = true;
     }
     if(pEP->error != error) {
         amxd_trans_set_value(cstring_t, &trans, "LastError", cstr_EndPoint_lastError[error]);
-        pEP->error = error;
         changed = true;
     }
     ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pEP->Name);
+    pEP->status = status;
+    pEP->connectionStatus = connectionStatus;
+    pEP->error = error;
 
     wld_status_e ssidStatus = RST_DOWN;
     if(pEP->connectionStatus == EPCS_CONNECTED) {
@@ -1931,6 +1929,7 @@ bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer) {
 }
 
 void wld_endpoint_destroy(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
     T_Radio* pR = pEP->pRadio;
     wld_tinyRoam_cleanup(pEP);
     if(pR->pFA->mfn_wendpoint_destroy_hook(pEP) < SWL_RC_OK) {
@@ -1946,14 +1945,11 @@ void wld_endpoint_destroy(T_EndPoint* pEP) {
     /* Try to delete the requested interface by calling the HW function */
     pR->pFA->mfn_wrad_delendpointif(pR, pEP->Name);
 
-    T_SSID* pSSID = pEP->pSSID;
-    if(pSSID != NULL) {
-        amxd_object_t* object = pSSID->pBus;
-        amxc_llist_it_take(&pSSID->it);
-        free(pSSID);
-        if(object != NULL) {
-            object->priv = NULL;
-        }
+    if(pEP->pSSID != NULL) {
+        pEP->pSSID->ENDP_HOOK = NULL;
+    }
+    if(pEP->pBus != NULL) {
+        pEP->pBus->priv = NULL;
     }
 
 
@@ -2013,8 +2009,8 @@ static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
 
         ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
         pEP = wld_endpoint_create(pRad, epName, pRad->Name, pRad->index, object);
-
-
+        ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
+        memcpy(pSSID->MACAddress, pRad->MACAddr, sizeof(pRad->MACAddr));
 
         SAH_TRACEZ_INFO(ME, "%s: add ep %s", pRad->Name, epName);
     }
@@ -2028,10 +2024,6 @@ static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     }
     pSSID->ENDP_HOOK = pEP;
     pEP->pSSID = pSSID;
-    pSsidObj->priv = pSSID;
-    pSSID->pBus = pSsidObj;
-
-    wld_util_getObjName(pSSID->Name, sizeof(pSSID->Name), pSsidObj);
 
     /* Get defined paramater values from the default instance */
     pRad->pFA->mfn_sync_ssid(pSsidObj, pSSID, GET);

@@ -66,7 +66,6 @@
 #include "wld.h"
 
 void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
-int32_t wld_ssid_initObjAp(T_SSID* pSSID, amxd_object_t* instance_object);
 void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
 
 void wld_ssid_cleanAll();

@@ -156,7 +156,6 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     wld_ap_init(pAP);
 
     //Finalize AP/SSID mapping
-    wld_ssid_initObjAp(pSSID, pSsidObj);
     /* Get defined paramater values from the default instance */
     pRad->pFA->mfn_sync_ssid(pSsidObj, pSSID, GET);
     pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
