@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.22.2 - 2023-03-03(14:23:11 +0000)
+
+### Other
+
+- fix disabled endpoint interface name and status on boot
+
 ## Release v2.22.1 - 2023-03-02(07:49:30 +0000)
 
 ### Other
