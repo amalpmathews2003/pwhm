@@ -4620,7 +4620,6 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
             ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
             amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
             swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pRad->changeInfo.lastStatusChange);
-            wld_dm_transaction_apply(&trans, get_wld_plugin_dm());
             ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
         }
     }

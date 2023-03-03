@@ -261,6 +261,7 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     if((rc = wld_ap_hostapd_setEnableVap(pAP, enable)) < SECDMN_ACTION_OK_DONE) {
         SAH_TRACEZ_ERROR(ME, "%s: fail to save enable %d", pAP->alias, enable);
     } else if(!enable) {
+        wld_ap_hostapd_deauthAllStations(pAP);
         if((rc = wld_ap_hostapd_enableVap(pAP, false)) == SECDMN_ACTION_OK_DONE) {
             /*
              * in hostapd older than 2.10, disabling one bss leads
@@ -289,6 +290,10 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
 
 static bool s_doRadDisable(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: disable rad", pRad->Name);
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        wld_ap_hostapd_deauthAllStations(pAP);
+    }
     wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
     return true;
 }

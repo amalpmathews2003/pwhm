@@ -292,7 +292,7 @@ static void s_scanDoneCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED
     SAH_TRACEZ_INFO(ME, "scan done on wiphy:%d iface:%d", wiphy, ifIndex);
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    ASSERTW_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
+    ASSERTI_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: getting scan async results", pRad->Name);
     wld_rad_nl80211_getScanResults(pRad, pRad, s_scanResultsCb);
 }
@@ -301,7 +301,7 @@ static void s_scanAbortedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNU
     SAH_TRACEZ_INFO(ME, "scan aborted on wiphy:%d iface:%d", wiphy, ifIndex);
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    ASSERTW_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
+    ASSERTI_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
     wld_scan_done(pRad, false);
 }
 
@@ -395,24 +395,23 @@ static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* m
     wld_ap_bss_done(pAP, mac, (int) replyCode);
 }
 
-static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t stype, char* data) {
+static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, swl_80211_mgmtFrame_t* mgmtFrame, size_t frameLen, char* frameStr) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: Received frame %d", pAP->alias, stype);
-    if((stype == SWL_IEEE80211_FC_STYPE_ASSOC_REQ) || (stype == SWL_IEEE80211_FC_STYPE_REASSOC_REQ)) {
+    ASSERT_NOT_NULL(mgmtFrame, , ME, "NULL");
+    uint16_t mgtFrameType = (mgmtFrame->fc.subType << 4);
+    SAH_TRACEZ_INFO(ME, "%s: Received frame type (0x%x)", pAP->alias, mgtFrameType);
+    if((mgtFrameType == SWL_80211_MGT_FRAME_TYPE_ASSOC_REQUEST) ||
+       (mgtFrameType == SWL_80211_MGT_FRAME_TYPE_REASSOC_REQUEST)) {
         // save last assoc frame
-        char buf[12] = {0};
-        memcpy(buf, &data[24], 12);
 
-        swl_macBin_t mac;
-        swl_macBin_t bssid;
-        swl_hex_toBytes(mac.bMac, SWL_MAC_BIN_LEN, buf, 12);
-        memset(bssid.bMac, 0, SWL_MAC_BIN_LEN);
+        swl_macBin_t mac = mgmtFrame->transmitter;
+        swl_macBin_t bssid = mgmtFrame->bssid;
         if(pAP->pSSID->BSSID) {
             memcpy(bssid.bMac, pAP->pSSID->BSSID, SWL_MAC_BIN_LEN);
         }
         swl_timeReal_t timestamp = swl_time_getRealSec();
-        wld_vap_assocTableStruct_t tuple = {mac, bssid, (data + 4), timestamp, stype};
+        wld_vap_assocTableStruct_t tuple = {mac, bssid, frameStr, timestamp, mgmtFrame->fc.subType};
         swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
         SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "SWL_MAC_FMT, pAP->alias,
                         SWL_MAC_ARG(mac.bMac));
@@ -421,11 +420,10 @@ static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, uint16_t
         T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &mac);
         ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(mac.bMac));
 
+        wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, mgmtFrame, frameLen);
+        W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
 
         wld_ad_add_connection_try(pAP, pAD);
-
-        wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, data);
-        W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
     }
 }
 

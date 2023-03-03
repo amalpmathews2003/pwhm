@@ -66,6 +66,7 @@
 #include "swla/swla_chanspec.h"
 #include "swla/swla_mac.h"
 #include "swl/swl_ieee802_1x_defs.h"
+#include "swl/swl_80211.h"
 #include "swl/swl_returnCode.h"
 
 typedef struct {
@@ -91,7 +92,7 @@ typedef void (* wld_wpaCtrl_wpsFailMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCredReceivedMsg_f)(void* userData, char* ifName, void* creds, swl_rc_ne status);
 typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status);
-typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, uint16_t stype, char* data);
+typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, swl_80211_mgmtFrame_t* frame, size_t frameLen, char* frameStr);
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
 typedef void (* wld_wpaCtrl_stationScanFailedCb_f)(void* userData, char* ifName, int error);
 typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse);

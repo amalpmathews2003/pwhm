@@ -565,6 +565,20 @@ swl_rc_ne wld_ap_hostapd_kickStation(T_AccessPoint* pAP, swl_macBin_t* mac, swl_
 }
 
 /**
+ * @brief deauthenticate all AP's stations
+ * (default reason AUTH_NO_LONGER_VALID)
+ *
+ * @param pAP accesspoint
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_ap_hostapd_deauthAllStations(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(pAP->ActiveAssociatedDeviceNumberOfEntries > 0, SWL_RC_OK, ME, "%s: AP has not active stations", pAP->alias);
+    return wld_ap_hostapd_kickStation(pAP, (swl_macBin_t*) &g_swl_macBin_bCast, SWL_IEEE80211_DEAUTH_REASON_AUTH_NO_LONGER_VALID);
+}
+
+/**
  * @brief Transfer a station from a Bss to another
  *
  * @param pAP accesspoint

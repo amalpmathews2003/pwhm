@@ -62,6 +62,7 @@
 #include "swla/swla_table.h"
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
+#include "swl/swl_genericFrameParser.h"
 #include "wld_channel.h"
 #include "wld_wps.h"
 #include "wld_wpaCtrlInterface_priv.h"
@@ -458,13 +459,18 @@ static void s_radDfsNewChannelEvt(wld_wpaCtrlInterface_t* pInterface, char* even
 
 static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: <3>AP-MGMT-FRAME-RECEIVED buf=b0003c0000000000001012d4159a59e7000000000010a082000001000000
-    char frameControl[4];
-    int fc;
-    memcpy(frameControl, &params[4], 4);
-    sscanf(frameControl, "%x", &fc);
-    uint16_t stype = (fc & 0xF000) >> 12;
-    SAH_TRACEZ_INFO(ME, "%s MGMT-FRAME stype=%x", pInterface->name, stype);
-    CALL_INTF(pInterface, fMgtFrameReceivedCb, stype, params);
+    char data[swl_str_len(params) + 1];
+    memset(data, 0, sizeof(data));
+    size_t len = wld_wpaCtrl_getValueStr(params, "buf", data, sizeof(data));
+    ASSERT_TRUE(len > 1, , ME, "%s: frame buf field empty", pInterface->name);
+    size_t binLen = len / 2;
+    swl_bit8_t binData[binLen];
+    bool success = swl_hex_toBytesSep(binData, sizeof(binData), data, len, 0, &binLen);
+    ASSERT_TRUE(success, , ME, "%s: frame HEX CONVERT FAIL", pInterface->name);
+    swl_80211_mgmtFrame_t* mgmtFrame = swl_80211_getMgmtFrame(binData, binLen);
+    ASSERT_NOT_NULL(mgmtFrame, , ME, "%s: invalid mgmt frame (length:%zu)", pInterface->name, binLen);
+    SAH_TRACEZ_INFO(ME, "%s MGMT-FRAME stype=0x%x", pInterface->name, mgmtFrame->fc.subType);
+    CALL_INTF(pInterface, fMgtFrameReceivedCb, mgmtFrame, binLen, data);
 }
 
 static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {

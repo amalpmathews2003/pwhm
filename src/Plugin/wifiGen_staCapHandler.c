@@ -81,45 +81,32 @@ static void s_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_cap
     cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;
 }
 
-static swl_rc_ne s_processAssocFrame(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* data, size_t len) {
-    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_NOT_NULL(data, SWL_RC_INVALID_PARAM, ME, "NULL");
+void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_80211_mgmtFrame_t* frame, size_t frameLen) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_TRUE(frameLen > SWL_80211_MGMT_FRAME_HEADER_LEN, , ME, "Frame Too short");
+    ASSERT_EQUALS(frame->fc.type, 0, , ME, "Not mgmt Frame");
 
-    size_t binLen = len / 2;
-    swl_bit8_t binData[binLen];
-    bool success = swl_hex_toBytes(binData, binLen, data, len);
-    ASSERT_TRUE(success, SWL_RC_ERROR, ME, "HEX CONVERT FAIL");
+    SAH_TRACEZ_INFO(ME, "PKT sta:"SWL_MAC_FMT " len:%zu", SWL_MAC_ARG(pAD->MACAddress), frameLen);
+    uint8_t mgtFrameType = (frame->fc.subType << 4);
+    if((mgtFrameType != SWL_80211_MGT_FRAME_TYPE_ASSOC_REQUEST) &&
+       (mgtFrameType != SWL_80211_MGT_FRAME_TYPE_REASSOC_REQUEST)) {
+        SAH_TRACEZ_ERROR(ME, "%s: sta:"SWL_MAC_FMT " mgmt frame type(0x%x) is not (re)assocReq", pAP->alias, SWL_MAC_ARG(pAD->MACAddress), mgtFrameType);
+        return;
+    }
+    pAD->capabilities = 0;
+    pAD->assocCaps.updateTime = swl_time_getMonoSec();
+    pAD->lastSampleTime = swl_timespec_getMonoVal();
+    size_t iesLen = 0;
+    swl_bit8_t* iesData = swl_80211_getInfoElementsOfMgmtFrame(&iesLen, (swl_bit8_t*) frame, frameLen);
 
-    //skip Mgmt Frame header and jump to tagged parameters (IEs)
-    size_t iesPos = SWL_80211_MGMT_FRAME_TAGGED_IES_OFFSET;
-    ssize_t iesLen = binLen - iesPos;
-    ASSERT_FALSE(iesLen < 0, SWL_RC_ERROR, ME, "Too short");
-
-    swl_bit8_t* iesData = &binData[iesPos];
+    swl_wirelessDevice_infoElements_t wirelessDevIE;
     swl_parsingArgs_t parsingArgs = {
         .seenOnChanspec = SWL_CHANSPEC_NEW(pAP->pRadio->channel, pAP->pRadio->runningChannelBandwidth, pAP->pRadio->operatingFrequencyBand),
     };
-    swl_wirelessDevice_infoElements_t wirelessDevIE;
     ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
-    ASSERT_FALSE(parsedLen < (ssize_t) iesLen, SWL_RC_ERROR, ME, "Partial IEs parsing");
+    ASSERTW_FALSE(parsedLen < (ssize_t) iesLen, , ME, "Partial IEs parsing (%zi/%zu) of mgmt frame type(0x%x)", parsedLen, iesLen, mgtFrameType);
 
     s_copyAssocDevInfoFromIEs(pAD, &pAD->assocCaps, &wirelessDevIE);
-
-    return SWL_RC_OK;
-}
-
-void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* data) {
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    ASSERT_NOT_NULL(pAD, , ME, "NULL");
-    ASSERT_NOT_NULL(data, , ME, "NULL");
-
-    char* pkt = strchr(data, '=');
-    ASSERT_NOT_NULL(pkt, , ME, "NULL");
-    pkt = pkt + 1;
-    size_t len = swl_str_len(pkt);
-
-    SAH_TRACEZ_INFO(ME, "PKT sta:"SWL_MAC_FMT " len:%zu", SWL_MAC_ARG(pAD->MACAddress), len);
-    pAD->capabilities = 0;
-    s_processAssocFrame(pAP, pAD, pkt, len);
 }
