@@ -67,6 +67,7 @@
 #define INCLUDE_WLD_WLD_NL80211_API_H_
 
 #include "wld_nl80211_core.h"
+#include "wld_nl80211_attr.h"
 #include "wld_nl80211_types.h"
 
 /*
@@ -405,5 +406,28 @@ swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifInde
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_setRegDomain(wld_nl80211_state_t* state, uint32_t wiphy, const char* alpha2);
+
+/*
+ * @brief common function to send vendor sub command
+ *
+ * @param state nl80211 socket manager context
+ * @param oui vendor driver identifier
+ * @param subcmd vendor sub command to be sent
+ * @param data optional depending on sent sub command
+ * @param dataLen length of sent data
+ * @param isSync flag to send sync/async request
+ * @param withAck flag to wait for acknowledgment request
+ * @param flags optional nl80211 msg flags
+ * @param ifIndex interface net dev index (ignored if ifIndex is null)
+ * @param wDevId interface wdev index
+ * @param handler callback invoked when a reply is available
+ * @param priv private data to pass in to the handler
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_sendVendorSubCmd(wld_nl80211_state_t* state, uint32_t oui, int subcmd, void* data, int dataLen,
+                                       bool isSync, bool withAck, uint32_t flags, uint32_t ifIndex, uint64_t wDevId,
+                                       wld_nl80211_handler_f handler, void* priv);
 
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

@@ -172,3 +172,13 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_ap_nl80211_sendVendorSubCmd(T_AccessPoint* pAP, uint32_t oui, int subcmd, void* data, int dataLen,
+                                          bool isSync, bool withAck, uint32_t flags, wld_nl80211_handler_f handler, void* priv) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pAP, rc, ME, "NULL");
+
+    rc = wld_nl80211_sendVendorSubCmd(wld_nl80211_getSharedState(), oui, subcmd, data, dataLen, isSync, withAck,
+                                      flags, pAP->index, pAP->wDevId, handler, priv);
+
+    return rc;
+}

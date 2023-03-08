@@ -65,6 +65,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					VendorModule/wld_vendorModule_mgr.o \
 					VendorModule/wld_vendorModule.o \
 					nl80211/wld_nl80211_core.o \
+					nl80211/wld_nl80211_attr.o \
 					nl80211/wld_nl80211_api.o \
 					nl80211/wld_nl80211_events.o \
 					nl80211/wld_nl80211_parser.o \

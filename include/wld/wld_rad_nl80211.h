@@ -314,4 +314,25 @@ swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResult
  */
 swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2);
 
+/*
+ * @brief common function to send vendor sub command
+ *
+ * @param pRadio pointer to radio context
+ * @param ifIndex interface net dev index (ignored if ifIndex is null)
+ * @param oui vendor driver identifier
+ * @param subcmd vendor sub command to be sent
+ * @param data optional depending on sent sub command
+ * @param dataLen length of sent data
+ * @param isSync flag to send sync/async request
+ * @param withAck flag to wait for acknowledgment request
+ * @param flags optional nl80211 msg flags
+ * @param handler callback invoked when a reply is available
+ * @param priv private data to pass in to the handler
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_sendVendorSubCmd(T_Radio* pRadio, uint32_t oui, int subcmd, void* data, int dataLen, bool isSync,
+                                           bool withAck, uint32_t flags, wld_nl80211_handler_f handler, void* priv);
+
 #endif /* INCLUDE_WLD_WLD_RAD_NL80211_H_ */

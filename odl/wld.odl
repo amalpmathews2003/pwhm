@@ -127,6 +127,7 @@
                    "netUtil" = 200,
                    "nlAP" = 200,
                    "nlApi" = 200,
+                   "nlAttr" = 200,
                    "nlCore" = 200,
                    "nlDbg" = 200,
                    "nlEvt" = 200,

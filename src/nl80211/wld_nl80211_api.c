@@ -739,3 +739,32 @@ swl_rc_ne wld_nl80211_setRegDomain(wld_nl80211_state_t* state, uint32_t wiphy, c
     return rc;
 }
 
+swl_rc_ne wld_nl80211_sendVendorSubCmd(wld_nl80211_state_t* state, uint32_t oui, int subcmd, void* data, int dataLen,
+                                       bool isSync, bool withAck, uint32_t flags, uint32_t ifIndex, uint64_t wDevId,
+                                       wld_nl80211_handler_f handler, void* priv) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(state, rc, ME, "NULL");
+    ASSERT_FALSE((wDevId == 0) && (ifIndex == 0), rc, ME, "devices wDevId and index are 0");
+
+    NL_ATTRS(attribs,
+             ARR(
+                 NL_ATTR_VAL(NL80211_ATTR_VENDOR_ID, oui),
+                 NL_ATTR_VAL(NL80211_ATTR_VENDOR_SUBCMD, subcmd)
+                 )
+             );
+    if(wDevId) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WDEV, wDevId));
+    }
+    if(dataLen) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_VENDOR_DATA, dataLen, data));
+    }
+
+    if(withAck) {
+        rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_VENDOR, flags, ifIndex, &attribs);
+    } else {
+        rc = wld_nl80211_sendCmd(isSync, state, NL80211_CMD_VENDOR, flags, ifIndex, &attribs, handler, priv, NULL);
+    }
+    NL_ATTRS_CLEAR(&attribs);
+
+    return rc;
+}

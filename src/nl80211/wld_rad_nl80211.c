@@ -374,3 +374,13 @@ swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {
     return rc;
 }
 
+swl_rc_ne wld_rad_nl80211_sendVendorSubCmd(T_Radio* pRadio, uint32_t oui, int subcmd, void* data, int dataLen,
+                                           bool isSync, bool withAck, uint32_t flags, wld_nl80211_handler_f handler, void* priv) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+
+    rc = wld_nl80211_sendVendorSubCmd(wld_nl80211_getSharedState(), oui, subcmd, data, dataLen, isSync, withAck,
+                                      flags, pRadio->index, pRadio->wDevId, handler, priv);
+
+    return rc;
+}

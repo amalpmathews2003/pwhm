@@ -63,6 +63,7 @@
 #ifndef INCLUDE_PRIV_NL80211_WLD_NL80211_API_PRIV_H_
 #define INCLUDE_PRIV_NL80211_WLD_NL80211_API_PRIV_H_
 
+#include "wld_nl80211_attr.h"
 #include "wld_nl80211_core_priv.h"
 #include "swl/swl_common.h"
 #include "swl/swl_unLiList.h"
@@ -75,62 +76,6 @@
 #define REQUEST_ASYNC_TIMEOUT 10 //longer timeout: shall be enough
 
 /*
- * @brief description of nl80211 attribute
- */
-typedef swl_unLiList_t wld_nl80211_nlAttrList_t;
-typedef struct {
-    uint32_t type; //attribute type
-    bool nested;   //flag for nested attribute
-    //attribute data
-    union {
-        //raw data
-        struct {
-            uint32_t len;
-            const void* ptr;
-        } raw;
-        //nested attributes
-        wld_nl80211_nlAttrList_t attribs;
-    } data;
-} wld_nl80211_nlAttr_t;
-
-/*
- * @brief initialize nl attribute
- *
- * @param pAttr pointer to nl attribute
- *
- * @return void
- */
-void wld_nl80211_initNlAttr(wld_nl80211_nlAttr_t* pAttr);
-
-/*
- * @brief clean nl attribute
- * (recursive function through nested attributes)
- *
- * @param pAttr pointer to nl attribute
- *
- * @return void
- */
-void wld_nl80211_cleanNlAttr(wld_nl80211_nlAttr_t* pAttr);
-
-/*
- * @brief initialize nl attributes unlinked list
- *
- * @param pAttr pointer to nl attributes unlinked list
- *
- * @return void
- */
-void wld_nl80211_initNlAttrList(wld_nl80211_nlAttrList_t* pAttrList);
-
-/*
- * @brief clean nl attributes unlinked list
- *
- * @param pAttr pointer to nl attribute unlinked list
- *
- * @return void
- */
-void wld_nl80211_cleanNlAttrList(wld_nl80211_nlAttrList_t* pAttrList);
-
-/*
  * @brief recursive function to add simple and nested nl attributes
  * to nl message
  *
@@ -141,86 +86,6 @@ void wld_nl80211_cleanNlAttrList(wld_nl80211_nlAttrList_t* pAttrList);
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_addNlAttrs(struct nl_msg* msg, wld_nl80211_nlAttrList_t* const pAttrList);
-
-/*
- * @brief macro to initialize nl attributes list with array of attribute values
- */
-#define NL_ATTRS_SET(pAttrList, attrValues) \
-    wld_nl80211_initNlAttrList(pAttrList); \
-    do { \
-        wld_nl80211_nlAttr_t attrArray[] = attrValues; \
-        for(uint32_t i = 0; i < SWL_ARRAY_SIZE(attrArray); i++) { \
-            swl_unLiList_add(pAttrList, &(attrArray[i])); \
-        }; \
-    } while(0);
-
-/*
- * @brief macro to add nl attribute to attributes list
- */
-#define NL_ATTRS_ADD(pAttrList, attrVal) \
-    do { \
-        wld_nl80211_nlAttr_t attr = attrVal; \
-        swl_unLiList_add(pAttrList, &attr); \
-    } while(0);
-
-/*
- * @brief macro to define nl attributes list and fill it with array of attribute values
- */
-#define NL_ATTRS(attrList, attrValues) \
-    wld_nl80211_nlAttrList_t attrList; \
-    wld_nl80211_initNlAttrList(&attrList); \
-    do { \
-        wld_nl80211_nlAttr_t attrArray[] = attrValues; \
-        for(uint32_t i = 0; i < SWL_ARRAY_SIZE(attrArray); i++) { \
-            swl_unLiList_add(&attrList, &(attrArray[i])); \
-        }; \
-    } while(0);
-
-/*
- * @brief define nl attribute with type sized value
- */
-#define NL_ATTR_VAL(t, v) {.type = t, .data = {.raw = {.len = sizeof(v), .ptr = &(v)}}}
-
-/*
- * @brief define nl attribute with sized data buffer
- */
-#define NL_ATTR_DATA(t, l, p) {.type = t, .data = {.raw = {.len = (l), .ptr = (p)}}}
-
-/*
- * @brief define nl attribute with no data
- */
-#define NL_ATTR(t) {.type = t}
-
-/*
- * @brief define nested nl attribute with no data
- */
-#define NL_ATTR_NESTED(attr, t) \
-    wld_nl80211_nlAttr_t attr; \
-    wld_nl80211_initNlAttr(&attr); \
-    attr.type = t; \
-    attr.nested = true;
-
-/*
- * @brief macro to clear nl attributes list
- */
-#define NL_ATTRS_CLEAR(pAttrList) \
-    wld_nl80211_cleanNlAttrList(pAttrList)
-
-/*
- * @brief prototype of handler for request reply
- * (and for all chunks of multipart answer message)
- *
- * @param rc result of initial checks of the reply
- * @param nlh netlink header of received msg, to be parsed
- * @param priv user data provided when sending the request
- *
- * @return SWL_RC_OK when message is valid, handled, but waiting for next parts
- *         SWL_RC_CONTINUE when message is valid, but ignored
- *         SWL_RC_DONE when message is processed and all reply parts are received:
- *                     request is terminated and can be cleared
- *         SWL_RC_ERROR in case of error: request will be cancelled
- */
-typedef swl_rc_ne (* wld_nl80211_handler_f) (swl_rc_ne rc, struct nlmsghdr* nlh, void* priv);
 
 /*
  * @brief common function to send request

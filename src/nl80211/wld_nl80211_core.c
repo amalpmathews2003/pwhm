@@ -63,6 +63,7 @@
 #include "wld_nl80211_core_priv.h"
 #include "wld_nl80211_events_priv.h"
 #include "wld_nl80211_api_priv.h"
+#include "wld_nl80211_attr.h"
 #include <linux/netlink.h>
 #include "swla/swla_time.h"
 
@@ -880,37 +881,6 @@ static swl_rc_ne s_sendMsgSync(wld_nl80211_state_t* state, struct nl_msg* msg, w
     }
     SAH_TRACEZ_OUT(ME);
     return rc;
-}
-
-void wld_nl80211_initNlAttrList(wld_nl80211_nlAttrList_t* pAttrList) {
-    swl_unLiList_init(pAttrList, sizeof(wld_nl80211_nlAttr_t));
-}
-void wld_nl80211_initNlAttr(wld_nl80211_nlAttr_t* pAttr) {
-    ASSERTS_NOT_NULL(pAttr, , ME, "NULL");
-    pAttr->type = NL80211_ATTR_UNSPEC;
-    pAttr->nested = false;
-    memset(&pAttr->data, 0, sizeof(pAttr->data));
-    wld_nl80211_initNlAttrList(&pAttr->data.attribs);
-}
-void wld_nl80211_cleanNlAttr(wld_nl80211_nlAttr_t* pAttr) {
-    ASSERTS_NOT_NULL(pAttr, , ME, "NULL");
-    if(pAttr->nested) {
-        wld_nl80211_cleanNlAttrList(&pAttr->data.attribs);
-    } else {
-        wld_nl80211_initNlAttr(pAttr);
-    }
-}
-
-void wld_nl80211_cleanNlAttrList(wld_nl80211_nlAttrList_t* pAttrList) {
-    ASSERTW_NOT_NULL(pAttrList, , ME, "NULL");
-    wld_nl80211_nlAttr_t* pAttr = NULL;
-    uint32_t nAttr = swl_unLiList_size(pAttrList);
-    for(int32_t i = nAttr - 1; i >= 0; i--) {
-        pAttr = (wld_nl80211_nlAttr_t*) swl_unLiList_get(pAttrList, i);
-        wld_nl80211_cleanNlAttr(pAttr);
-        swl_unLiList_remove(pAttrList, i);
-    }
-    wld_nl80211_initNlAttrList(pAttrList);
 }
 
 swl_rc_ne wld_nl80211_addNlAttrs(struct nl_msg* msg, wld_nl80211_nlAttrList_t* const pAttrList) {
