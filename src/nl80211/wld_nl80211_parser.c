@@ -934,7 +934,7 @@ swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData) {
         return SWL_RC_ERROR;
     }
 
-    if(pSinfo[NL80211_SURVEY_INFO_IN_USE]) {
+    if(pSinfo[NL80211_SURVEY_INFO_IN_USE] && pSinfo[NL80211_SURVEY_INFO_NOISE]) {
         SAH_TRACEZ_INFO(ME, "\tnoise level :\t\t\t\t%d dBm\n",
                         (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]));
         *requestData = (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]);
