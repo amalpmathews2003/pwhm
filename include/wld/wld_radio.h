@@ -140,9 +140,9 @@ bool wld_radio_scanresults_cleanup(T_ScanResults* results);
 void wld_notifyProbeRequest(T_Radio* pR, const unsigned char* macStr);
 void wld_notifyProbeRequest_rssi(T_Radio* pR, const unsigned char* macStr, int rssi);
 int wld_prbReq_getRssi(T_Radio* pR, const unsigned char* macStr);
-void wld_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* scanReason);
 void wld_scan_done(T_Radio* pR, bool success);
 bool wld_scan_isRunning(T_Radio* pR);
+swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type);
 swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad);
 void wld_scan_cleanupScanResultSSID(T_ScanResult_SSID* ssid);
 void wld_scan_cleanupScanResults(T_ScanResults* res);
@@ -189,8 +189,6 @@ bool wld_rad_isDoingDfsScan(T_Radio* pRad);
 bool wld_rad_isUpAndReady(T_Radio* pRad);
 bool wld_rad_isUpExt(T_Radio* pRad);
 swl_bandwidth_e wld_rad_verify_bandwidth(T_Radio* pRad, swl_bandwidth_e targetbandwidth);
-void wld_rad_get_update_running_bandwidth(T_Radio* pRad);
-void wld_rad_setRunningChannelBandwidth(T_Radio* pRad, swl_bandwidth_e newBw);
 swl_bandwidth_e wld_rad_getBaseConfigBw(T_Radio* pRad);
 swl_bandwidth_e wld_rad_get_target_bandwidth(T_Radio* pRad);
 void wld_rad_write_possible_channels(T_Radio* pRad);
@@ -210,7 +208,6 @@ void wld_rad_updateActiveDevices(T_Radio* pRad);
 
 T_Radio* wld_rad_get_radio(const char* ifname);
 void wld_rad_chan_update_model(T_Radio* pRad);
-void wld_rad_chan_notification(T_Radio* pRad, int newChannelValue, int newBandwidthValue);
 void wld_rad_updateOperatingClass(T_Radio* pRad);
 
 void wld_rad_init_counters(T_Radio* pRad, T_EventCounterList* counters, const char** defaults);
@@ -227,6 +224,7 @@ void wld_rad_resetStatusHistogram(T_Radio* pRad);
 void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate);
 
 T_AccessPoint* wld_radio_getVapFromRole(T_Radio* pRad, wld_apRole_e role);
+swl_freqBand_e wld_rad_getFreqBand(T_Radio* pRad);
 
 T_AccessPoint* wld_rad_firstAp(T_Radio* pRad);
 T_AccessPoint* wld_rad_nextAp(T_Radio* pRad, T_AccessPoint* pAP);
@@ -242,4 +240,5 @@ void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t 
     for(epPtr = wld_rad_firstEp(radPtr); epPtr; epPtr = wld_rad_nextEp(radPtr, epPtr))
 
 amxd_object_t* wld_rad_getObject(T_Radio* pRad);
+bool wld_rad_firstCommitFinished(T_Radio* pRad);
 #endif /* __WLD_RADIO_H__ */

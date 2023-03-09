@@ -112,7 +112,8 @@ int wld_th_mfn_wrad_intelligentAirtime(T_Radio* rad _UNUSED, int val _UNUSED, in
 }
 
 swl_channel_t possibleChannels2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-swl_channel_t possibleChannels5[] = {36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128};
+swl_channel_t possibleChannels5[] = {36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140};
+swl_channel_t possibleChannels6[] = {1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, };
 
 
 void s_readChanInfo(T_Radio* pRad) {
@@ -136,7 +137,16 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
     // after which it commits the PCB object, which fails if the band is invalid.
     // So write the band here, so it's synced, so the commit succeeds.
     printf("SUPP TEST -%s-\n", rad->Name);
-    if(swl_str_matches(rad->Name, "wifi1")) {
+    if(swl_str_matches(rad->Name, "wifi2")) {
+        rad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_6GHZ;
+        rad->supportedFrequencyBands = M_SWL_FREQ_BAND_6GHZ;
+        memcpy(rad->possibleChannels, possibleChannels6, SWL_ARRAY_SIZE(possibleChannels6));
+        rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels6);
+        rad->maxChannelBandwidth = SWL_BW_160MHZ;
+        rad->operatingChannelBandwidth = SWL_BW_80MHZ;
+        rad->channel = 1;
+        rad->supportedStandards = M_SWL_RADSTD_AX;
+    } else if(swl_str_matches(rad->Name, "wifi1")) {
         rad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_5GHZ;
         rad->supportedFrequencyBands = M_SWL_FREQ_BAND_5GHZ;
         memcpy(rad->possibleChannels, possibleChannels5, SWL_ARRAY_SIZE(possibleChannels5));
@@ -183,7 +193,7 @@ T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t*
     return radio;
 }
 
-int wld_th_wrad_fsm(T_Radio* rad) {
+FSM_STATE wld_th_wrad_fsm(T_Radio* rad) {
     assert_non_null(rad);
     printf("%s: do commit\n", rad->Name);
     rad->detailedState = rad->enable ? CM_RAD_UP : CM_RAD_DOWN;
@@ -201,7 +211,7 @@ int wld_th_wrad_fsm(T_Radio* rad) {
     }
 
     wld_rad_updateState(rad, true);
-    return 0;
+    return FSM_IDLE;
 }
 
 int wld_th_rad_enable(T_Radio* rad, int val, int set) {
@@ -223,7 +233,7 @@ void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit) {
     }
 }
 
-int wld_th_rad_startScanExt(T_Radio* rad, T_ScanArgs* args _UNUSED) {
+int wld_th_rad_startScan(T_Radio* rad) {
     assert_non_null(rad);
     return SWL_RC_OK;
 }

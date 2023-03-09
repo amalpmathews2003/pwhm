@@ -93,8 +93,8 @@ typedef struct {
     uint32_t nrFsmBits;
 } wld_fsmMngr_t;
 
-int wld_rad_fsm(T_Radio* rad);
-int wld_rad_fsm_reset(T_Radio* rad);
+FSM_STATE wld_rad_fsm(T_Radio* rad);
+swl_rc_ne wld_rad_fsm_reset(T_Radio* rad);
 
 void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
 

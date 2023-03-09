@@ -414,12 +414,7 @@ static bool s_doSetChannel(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: set channel %d", pRad->Name, pRad->channel);
     if(pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) {
-        swl_chanspec_t currChanSpec = {
-            .band = pRad->operatingFrequencyBand,
-            .channel = pRad->channel,
-            .bandwidth = pRad->runningChannelBandwidth,
-        };
-        if((wld_channel_is_band_usable(currChanSpec)) ||
+        if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
            (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
             wld_rad_hostapd_switchChannel(pRad);
             return true;

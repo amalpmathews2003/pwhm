@@ -107,7 +107,7 @@ static void test_startstop(void** state _UNUSED) {
 
     char* data = swl_typeCharPtr_fromObjectParamDef(obj, "PossibleChannels", NULL);
     printf("chan: %s\n", data);
-    assert_string_equal("36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128", data);
+    assert_string_equal("36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140", data);
     free(data);
 
     s_checkChannels(rad, "", "");

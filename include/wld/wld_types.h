@@ -89,4 +89,21 @@ typedef enum {
     WLD_AC_MAX
 } wld_ac_e;
 
+
+typedef enum {
+    FSM_IDLE,       /* Task not yet created */
+    FSM_WAIT,       /* Task is active, but waits for extra input */
+    FSM_RESTART,    /* Do some extra state checks on VAP & Radio */
+    FSM_SYNC_RAD,   /* Sync the Radio states --> T_Radio */
+    FSM_SYNC_VAP,   /* Sync VAP interfaces --> T_AccessPoint & T_SSID */
+    FSM_DEPENDENCY, /* Task checks dependency on the to-do list */
+    FSM_RUN,        /* Run through the to-do list */
+    FSM_COMPEND,    /* Check if a new commit is pending? */
+    FSM_WAIT_RAD,   /* Wait for other radio's to finish config */
+    FSM_FINISH,     /* To-do list is empty, all went fine */
+    FSM_ERROR,      /* We've failed to execute the to-do list */
+    FSM_UNKNOWN,    /* ? A state we don't like and don't know how to get rid of it.*/
+    FSM_FATAL       /* Really hard issue... we can only fix this by restarting the system or driver */
+} FSM_STATE;
+
 #endif /* SRC_INCLUDE_WLD_WLD_TYPES_H_ */

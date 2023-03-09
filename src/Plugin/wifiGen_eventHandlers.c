@@ -75,6 +75,7 @@
 #include "wld/wld_util.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_endpoint.h"
+#include "wld/wld_chanmgt.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_genericFrameParser.h"
@@ -83,23 +84,20 @@
 #include <errno.h>
 #define ME "genEvt"
 
-static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec) {
+static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_channelChangeReason_e reason) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pChanSpec, , ME, "NULL");
     ASSERTS_TRUE(pChanSpec->channel > 0, , ME, "invalid chan");
-    if((pChanSpec->channel != pRad->channel) ||
-       (pChanSpec->bandwidth != pRad->runningChannelBandwidth)) {
-        wld_rad_chan_notification(pRad, pChanSpec->channel, pChanSpec->bandwidth);
-    }
-    wld_rad_chan_update_model(pRad);
+    swl_rc_ne rc = wld_chanmgt_reportCurrentChanspec(pRad, *pChanSpec, reason);
+    ASSERTS_FALSE(rc < SWL_RC_OK, , ME, "no changes to be reported");
     wld_rad_updateOperatingClass(pRad);
 }
 
-static void s_syncCurrentChannel(T_Radio* pRad) {
+static void s_syncCurrentChannel(T_Radio* pRad, wld_channelChangeReason_e reason) {
     swl_chanspec_t chanSpec;
     ASSERTS_FALSE(wld_rad_nl80211_getChannel(pRad, &chanSpec) < SWL_RC_OK, ,
                   ME, "%s: fail to get channel", pRad->Name);
-    s_saveChanChanged(pRad, &chanSpec);
+    s_saveChanChanged(pRad, &chanSpec, reason);
 }
 
 static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
@@ -107,7 +105,7 @@ static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t*
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "%s: channel switch event central_chan=%d bandwidth=%d band=%d", pRad->Name,
                        chanSpec->channel, chanSpec->bandwidth, chanSpec->band);
-    s_saveChanChanged(pRad, chanSpec);
+    s_saveChanChanged(pRad, chanSpec, pRad->targetChanspec.reason);
 }
 
 static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
@@ -124,7 +122,8 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     if(wld_rad_vap_from_name(pRad, ifName) != NULL) {
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
-        s_syncCurrentChannel(pRad);
+        //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
+        s_syncCurrentChannel(pRad, CHAN_REASON_PERSISTANCE);
         //update rad status from hapd main iface state
         if((wifiGen_hapd_updateRadState(pRad) >= SWL_RC_OK) &&
            (pRad->detailedState == CM_RAD_UP)) {
@@ -144,7 +143,8 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     pRad->detailedState = CM_RAD_UP;
-    s_syncCurrentChannel(pRad);
+    // when main iface setup is completed, current chanspec is the last applied target chanspec
+    s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
     setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
     wld_rad_doCommitIfUnblocked(pRad);
@@ -166,7 +166,11 @@ static void s_dfsCacStartedCb(void* userData, char* ifName, swl_chanspec_t* chan
     SAH_TRACEZ_WARNING(ME, "%s: CAC started on channel %d for %d sec", ifName, chanSpec->channel, cac_time);
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    s_syncCurrentChannel(pRad);
+    wld_channelChangeReason_e reason = pRad->targetChanspec.reason;
+    if(wld_channel_is_radar_detected(pRad->currentChanspec.chanspec)) {
+        reason = CHAN_REASON_DFS;
+    }
+    s_syncCurrentChannel(pRad, reason);
     wld_channel_mark_passive_band(*chanSpec);
     if(wld_channel_is_chan_in_band(wld_rad_getSwlChanspec(pRad), chanSpec->channel)) {
         pRad->detailedState = CM_RAD_FG_CAC;
@@ -184,6 +188,7 @@ static void s_dfsCacDoneCb(void* userData, char* ifName, swl_chanspec_t* chanSpe
     currChanSpec.bandwidth = pRad->runningChannelBandwidth;
     if(success) {
         wld_channel_clear_passive_band(currChanSpec);
+        wld_chanmgt_writeDfsChannels(pRad);
     } else if(wld_rad_isDoingDfsScan(pRad) && wld_channel_is_chan_in_band(currChanSpec, pRad->channel)) {
         // CAC aborted: so mark temporary radio as down, until fallback to alternative channel (eg: non-dfs)
         // Radio detailed status will then be rectified
@@ -198,6 +203,7 @@ static void s_dfsCacExpiredCb(void* userData, char* ifName, swl_chanspec_t* chan
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     wld_channel_mark_passive_channel(*chanSpec);
     wld_rad_updateState(pRad, false);
+    wld_chanmgt_writeDfsChannels(pRad);
 }
 
 static void s_dfsRadarDetectedCb(void* userData, char* ifName, swl_chanspec_t* chanSpec) {
@@ -206,12 +212,16 @@ static void s_dfsRadarDetectedCb(void* userData, char* ifName, swl_chanspec_t* c
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     wld_channel_mark_radar_detected_band(*chanSpec);
     wld_rad_updateState(pRad, false);
+    wld_chanmgt_writeDfsChannels(pRad);
 }
 
 static void s_dfsNopFinishedCb(void* userData _UNUSED, char* ifName, swl_chanspec_t* chanSpec) {
     SAH_TRACEZ_WARNING(ME, "%s: DFS Non-Occupancy Period is over on channel %d", ifName, chanSpec->channel);
     wld_channel_clear_radar_detected_channel(*chanSpec);
     wld_channel_mark_passive_channel(*chanSpec);
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    wld_chanmgt_writeDfsChannels(pRad);
 }
 
 static void s_dfsNewChannelCb(void* userData, char* ifName, swl_chanspec_t* chanSpec) {
@@ -220,8 +230,7 @@ static void s_dfsNewChannelCb(void* userData, char* ifName, swl_chanspec_t* chan
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     swl_chanspec_t currChanSpec = *chanSpec;
     currChanSpec.bandwidth = pRad->runningChannelBandwidth;
-    pRad->channelChangeReason = CHAN_REASON_DFS;
-    s_saveChanChanged(pRad, &currChanSpec);
+    s_saveChanChanged(pRad, &currChanSpec, CHAN_REASON_DFS);
 }
 
 static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Radio* pRad) {
@@ -550,7 +559,7 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
     // update radio datamodel
     swl_chanspec_t chanSpec;
     wld_rad_nl80211_getChannel(pRad, &chanSpec);
-    s_saveChanChanged(pRad, &chanSpec);
+    s_saveChanChanged(pRad, &chanSpec, CHAN_REASON_EP_MOVE);
     wld_channel_clear_passive_band(chanSpec);
     wld_rad_updateState(pRad, true);
 

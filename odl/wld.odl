@@ -184,6 +184,7 @@
                    "utilMon" = 200,
                    "wld" = 200,
                    "wld_acm" = 200,
+                   "wldChan" = 200,
                    "wldDly" = 200,
                    "wldDmn" = 200,
                    "wldFsm" = 200,

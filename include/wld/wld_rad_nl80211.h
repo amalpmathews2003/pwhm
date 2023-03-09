@@ -274,12 +274,11 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
  * - frequencies to use
  *
  * @param pRadio pointer to radio context
- * @param args scan options (ssid, channels)
  *
  * @return SWL_RC_OK in case of success (scan trigger acknowledged)
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio, T_ScanArgs* args);
+swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio);
 
 /*
  * @brief abort a running neighbor scan

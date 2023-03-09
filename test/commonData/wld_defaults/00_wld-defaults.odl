@@ -51,6 +51,29 @@
                 parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "a,n,ac,ax";
             }
+            instance add ("wifi2") {
+                parameter OperatingFrequencyBand = "6GHz";
+                parameter Enable = 1;
+                parameter AutoChannelEnable = 0;
+                parameter Channel = 1;
+                parameter RegulatoryDomain = "DE";
+                parameter AP_Mode = 1;
+                parameter WDS_Mode = 1;
+                parameter AirtimeFairnessEnabled = 1;
+                parameter IntelligentAirtimeSchedulingEnable = 1;
+                parameter MultiUserMIMOEnabled = 1;
+                parameter RxPowerSaveEnabled = 1;
+                parameter RetryLimit = 7;
+                parameter TargetWakeTimeEnable = 1;
+                parameter RxBeamformingCapsEnabled = "DEFAULT";
+                parameter TxBeamformingCapsEnabled = "DEFAULT";
+                parameter MCS = -1;
+                object RadCaps {
+                    parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
+                }
+                parameter ProbeRequestNotify = "AlwaysRSSI";
+                parameter OperatingStandards = "ax";
+            }
         }
         object SSID {
             instance add ("wlan0") {
@@ -65,6 +88,12 @@
                 parameter SSID = "prplMesh-WHM-5g";
                 parameter Enable = 1;
             }
+            instance add ("wlan2") {
+                parameter LowerLayers = "WiFi.Radio.wifi2";
+                parameter MACAddress = "AA:BB:CC:DD:EE:21";
+                parameter SSID = "prplMesh-WHM-6g";
+                parameter Enable = 1;
+            }
             instance add ("sta0") {
                 parameter LowerLayers = "WiFi.Radio.wifi0";
                 parameter MACAddress = "AA:BB:CC:DD:EE:00";
@@ -75,6 +104,12 @@
                 parameter LowerLayers = "WiFi.Radio.wifi1";
                 parameter MACAddress = "AA:BB:CC:DD:EE:10";
                 parameter SSID = "prplMesh-WHM-5g";
+                parameter Enable = 1;
+            }
+            instance add ("sta2") {
+                parameter LowerLayers = "WiFi.Radio.wifi2";
+                parameter MACAddress = "AA:BB:CC:DD:EE:20";
+                parameter SSID = "prplMesh-WHM-6g";
                 parameter Enable = 1;
             }
         }
@@ -176,6 +211,54 @@
                     parameter HistoryLen = 3;
                 }
             }
+            instance add ("wlan2") {
+                parameter SSIDReference = "WiFi.SSID.wlan2";
+                parameter Enable = 1;
+                parameter RetryLimit = 3;
+                parameter WMMEnable = 0;
+                parameter UAPSDEnable = 0;
+                parameter MCEnable = 0;
+                parameter DefaultDeviceType = "Data";
+                parameter BridgeInterface = "br-lan";
+                parameter IEEE80211kEnabled = 0;
+                parameter WDSEnable = 0;
+                parameter MBOEnable = 0;
+                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter ApRole = "Off";
+                parameter SSIDAdvertisementEnabled = 1;
+                object Security {
+                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
+                    parameter WEPKey = "123456789ABCD";
+                    parameter PreSharedKey = "";
+                    parameter KeyPassPhrase = "prplMesh";
+                    parameter RekeyingInterval = 0;
+                    parameter OWETransitionInterface = "";
+                    parameter TransitionDisable = "0";
+                    parameter SAEPassphrase = "";
+                    parameter EncryptionMode = "Default";
+                    parameter SHA256Enable = 0;
+                    parameter RadiusServerIPAddr = "";
+                    parameter RadiusServerPort = 1812;
+                    parameter RadiusSecret = "";
+                    parameter RadiusDefaultSessionTimeout = 0;
+                    parameter RadiusNASIdentifier = "";
+                    parameter RadiusCalledStationId = "";
+                    parameter RadiusChargeableUserId = 0;
+                    parameter ModeEnabled = "WPA2-Personal";
+                }
+                object WPS {
+                    parameter Enable = 1;
+                    parameter RelayCredentialsEnable = 0;
+                    parameter RestartOnRequest = 0;
+                }
+                object DriverConfig {
+                    parameter BssMaxIdlePeriod = -1;
+                }
+                object RssiEventing {
+                    parameter Enable = false;
+                    parameter HistoryLen = 3;
+                }
+            }
         }
         object EndPoint {
             instance add ("sta0") {
@@ -216,6 +299,39 @@
                 parameter Enable = 1;
                 parameter RadioReference = "WiFi.Radio.wifi1";
                 parameter ProfileReference = "WiFi.EndPoint.sta1.Profile.prof1";
+                object Stats {
+                    parameter TxBytes = 12991;
+                    parameter TxPacketCount = 65;
+                    parameter SecurityModeEnabled = "WPA2-Personal";
+                }
+                object Profile {
+                    instance add ("prof1"){
+                        parameter Alias = "prof1";
+                        parameter Enable = 1;
+                        parameter SSID = "prplMesh-WHM-5g";
+                        object Security {
+                            parameter ModeEnabled = "WPA2-Personal";
+                            parameter KeyPassPhrase = "prplMesh";
+                        }
+                    }
+                    instance add ("prof3"){
+                        parameter Alias = "prof3";
+                        parameter Enable = 0;
+                        parameter SSID = "prplMesh-WHM-5g";
+                        object Security {
+                            parameter ModeEnabled = "WPA2-Personal";
+                            parameter KeyPassPhrase = "prplMesh";
+                        }
+                    }
+                }
+            }
+        }
+        object EndPoint {
+            instance add ("sta2") {
+                parameter SSIDReference = "WiFi.SSID.sta2";
+                parameter Enable = 1;
+                parameter RadioReference = "WiFi.Radio.wifi2";
+                parameter ProfileReference = "WiFi.EndPoint.sta2.Profile.prof1";
                 object Stats {
                     parameter TxBytes = 12991;
                     parameter TxPacketCount = 65;

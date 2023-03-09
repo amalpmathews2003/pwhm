@@ -312,6 +312,22 @@ define probelist_t{
 		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
 		 */
 		void getStatusHistogram();
+		
+		
+		/**
+		 * Request to change the chanspec
+		 * @param channel: target channel.
+		 * @param bandwidth: optional target bandwidth (default 2.4:20MHz, 5/6:80MHz).
+		 * @param frequency: optional target frequency.
+		 * @param reason: optional string indicates the channel change reason (default: manual).
+		 * @param direct: option bool indicates if channel change must be perform immediately (default: false)
+		 * @param reasonExt: option string indicates more details about channel change reason for logging purpose
+		 * @return Success.
+		 * @error function_exec_error "Invalid chanspec" if one of channel, bandwidth or frequency do not match radio constraint.
+		 * @error function_exec_error "Unable to change channel" if the radio is unavailable.
+		 */
+		void setChanspec(%mandatory uint16 channel, string bandwidth, string frequency, string reason, bool direct, string reasonExt);
+		
 
 		/**
 		* The current operational state of the radio (see [Section 4.2.2/TR-181i2]).
@@ -1708,6 +1724,205 @@ define probelist_t{
 		} /* object RadCaps */
 
 		object ChannelMgt{
+
+			/**
+			 * Indicate what Device.WiFi.Radio[].Channel is currently showing. Enumeration of :
+			 *   - Current : radio is operating on the exposed channel
+			 *   - Target : radio will switch to the exposed channel
+			 *   - Sync : the exposed channel is currently used by the radio and matches target channel
+			 */
+			%read-only string ChanspecShowing{
+				constraint enum ["Current", "Target", "Sync"];
+				default "Current";
+			}
+		
+			/**
+			 * Object describing the currenlty desired channel, as received by the middleware
+			 */
+			%read-only object TargetChanspec{
+				/**
+				 * Desired channel
+				 */
+				%read-only uint16 Channel;
+
+				/**
+				 * Target channel bandwidth by the radio in order to switch on it. Enumeration of:
+				 * <ul>
+				 * <li>Auto</li>
+				 * <li>20MHz</li>
+				 * <li>40MHz (wide mode)</li>
+				 * <li>80MHz</li>
+				 * <li>160MHz</li>
+				 * </ul>
+				 */
+				%read-only string Bandwidth {
+					constraint enum ["20MHz","40MHz","80MHz","160MHz", "Auto"];
+					default "Auto";
+				}
+
+				/**
+				 * Frequency band of the target chanspec
+				 */
+				%read-only string Frequency;
+
+				/**
+				 * Reason to switch to the desired channel. Enumeration of :
+				 * <ul>
+				 * <li>Invalid</li>
+				 * <li>Unknown</li>
+				 * <li>Initial</li>
+				 * <li>CSM</li>
+				 * <li>DFS</li>
+				 * <li>Manual</li>
+				 * <li>Reentry</li>
+				 * <li>OBSS Coex</li>
+				 * </ul>
+				 */
+				%read-only string Reason;
+
+				/**
+				 * Reason details for the channel switch
+				 */
+				%read-only string ReasonExt{
+					default "";
+				}
+				
+				/**
+				 * The last time the target chanspec changed, so either Channel or Bandwidth.
+				 */
+				%read-only datetime LastChangeTime;
+			}
+
+			/**
+			 * Object describing the current channel used by the driver
+			 */
+			%read-only object CurrentChanspec{
+				/**
+				 * Current channel by the radio
+				 */
+				%read-only uint16 Channel;
+
+				/**
+				 * Current channel bandwidth by the radio in order to switch on it. Enumeration of:
+				 * <ul>
+				 * <li>20MHz</li>
+				 * <li>40MHz (wide mode)</li>
+				 * <li>80MHz</li>
+				 * <li>160MHz</li>
+				 * </ul>
+				 */
+				%read-only string Bandwidth {
+					constraint enum ["20MHz","40MHz","80MHz","160MHz"];
+					default "20MHz";
+				}
+
+				/**
+				 * Frequency band of the current chanspec
+				 */
+				%read-only string Frequency;
+
+				/**
+				 * Reason to use the current channel. Enumeration of :
+				 * <li>Invalid</li>
+				 * <li>Unknown</li>
+				 * <li>Initial</li>
+				 * <li>CSM</li>
+				 * <li>DFS</li>
+				 * <li>Manual</li>
+				 * <li>Reentry</li>
+				 * <li>OBSS Coex</li>
+				 */
+				%read-only string Reason;
+
+				/**
+				 * Reason details for the channel switch
+				 */
+				%read-only string ReasonExt{
+					default "";
+				}
+				
+				/**
+				 * The last time the current chanspec changed, so either Channel or Bandwidth.
+				 */
+				%read-only datetime LastChangeTime;
+			}
+		
+
+			/**
+			 * Log of recent channel changes.
+			 * This lists all changes, including those from channel selection, manual changes, DFS, and OBSS.
+			 */
+			%read-only object ChannelChanges[]{
+				/**
+				 * Timestamp of when the channel change took place.
+				 */
+				%read-only datetime TimeStamp;
+				
+				/**
+				 * The previous or old channel, the channel which was moved away from.
+				 */
+				%read-only uint32 OldChannel;
+				
+				/**
+				 * The bandwidth of the old channel, in MHz notation, e.g. "20MHz".
+				 */
+				%read-only string OldBandwidth;
+				
+				/**
+				 * The new channel, the channel to which the radio moved.
+				 */
+				%read-only uint32 NewChannel;
+				
+				/**
+				 * The bandwidth of the new channel, in MHz notation, e.g. "20MHz".
+				 */
+				%read-only string NewBandwidth;
+
+				/**
+				 * The reason why the channel changed. Possible reasons are:
+				 * *INVALID : previous channel was somehow invalid.
+				 * *UNKNOWN: change reason is unknown.
+				 * *INITIAL: change is the "first set" of values.
+				 * *PERSISTANCE: change caused by loading stored values.
+				 * *CSM: change caused by channel selection module (auto channel).
+				 * *DFS: change caused by DFS radar detection.
+				 * *MANUAL: change caused by user manually selecting channel.
+				 * *REENTRY: change caused by going back to previously configured DFS channel.
+				 * *OBSS_COEX: change caused by obss coexistance.
+				 * *EP_MOVE: change caused by endpoint moving allong with master BSS.
+				 * *RESET: change caused by request to reset channel to default.
+				 */
+				%read-only string ChannelChangeReason;
+
+				/**
+				 * Extended info for channel change reason. No specific format.
+				 */
+				%read-only string ChannelChangeReasonExt;
+				
+				/**
+				 * The target channel, as last configured.
+				 */
+				%read-only uint32 TargetChannel;
+				
+				/**
+				 * The bandwidth of the target chanspec, in MHz notation, e.g. "20MHz".
+				 */
+				%read-only string TargetBandwidth;
+				
+				/**
+				 * The timestamp when the target chanspec was last set.
+				 */
+				%read-only datetime TargetChangeTime;
+			}
+			
+			/**
+			 * The size of the channel changes log.
+			 */
+			%persistent uint32 ChangeLogSize{
+				default 10;
+				on action write call wld_rad_setChannelChangeLogSize_pwf;
+			}
+		
 			/**
 			 * List of currently cleared channels.
 			 * Note that this will only contain channel that require radar. Non radar sensitive channels
@@ -1725,7 +1940,6 @@ define probelist_t{
 			%read-only string RadarTriggeredDfsChannels{
 				default "";
 			}
-			
 		}
 
 		/**

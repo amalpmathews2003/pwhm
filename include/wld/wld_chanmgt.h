@@ -64,10 +64,39 @@
 #define _WLD_CHANMGT_PCB_H_
 
 #include "wld.h"
+#include "swl/swl_returnCode.h"
+
+typedef struct {
+    amxc_llist_it_t it;
+    amxd_object_t* object;
+    T_Radio* pRad;
+    swl_chanspec_t old;
+    swl_chanspec_t new;
+    swl_chanspec_t target;
+    swl_timeMono_t changeTime;
+    swl_timeMono_t targetChangeTime;
+    wld_channelChangeReason_e reason;
+    char reasonExt[128];
+    uint16_t nrSta;
+    uint16_t nrVid;
+} wld_rad_chanChange_t;
+
+
+void wld_chanmgt_cleanup(T_Radio* pRad);
 
 /**
  * Write the currently cleared dfs channels to pcb
  */
 void wld_chanmgt_writeDfsChannels(T_Radio* pRad);
+
+swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason);
+swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bool direct, wld_channelChangeReason_e reason, const char* reasonExt);
+
+void wld_chanmgt_saveChanges(T_Radio* pRad);
+void wld_chanmgt_checkInitChannel(T_Radio* pRad);
+swl_channel_t wld_chanmgt_getCurChannel(T_Radio* pRad);
+swl_bandwidth_e wld_chanmgt_getCurBw(T_Radio* pRad);
+swl_channel_t wld_chanmgt_getTgtChannel(T_Radio* pRad);
+swl_bandwidth_e wld_chanmgt_getTgtBw(T_Radio* pRad);
 
 #endif /* _WLD_CHANMGT_PCB_H_ */

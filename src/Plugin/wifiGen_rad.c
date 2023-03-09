@@ -434,7 +434,6 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     pRad->transmitPower = 100;
     pRad->setRadio80211hEnable = (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ || pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) ? TRUE : FALSE;
-    wld_rad_chan_notification(pRad, pRad->channel, pRad->runningChannelBandwidth);
     swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), s_defaultRegDomain);
     getCountryParam(pRad->regulatoryDomain, 0, &pRad->regulatoryDomainIdx);
     pRad->m_multiAPTypesSupported = M_MULTIAP_ALL;
@@ -589,18 +588,14 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
     }
 
 }
-int wifiGen_rad_channel(T_Radio* pRad, int val, int set) {
+swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
 
-    SAH_TRACEZ_INFO(ME, "%s: val:%d-->%d bw=%d - set:%d", pRad->Name, pRad->channel, val, pRad->runningChannelBandwidth, set);
-
-    if(set & SET) {
-        pRad->channel = val;
-        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
-        if(set & DIRECT) {
-            wld_rad_doCommitIfUnblocked(pRad);
-        }
+    SAH_TRACEZ_INFO(ME, "%s: direct:%d", pRad->Name, direct);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
+    if(DIRECT) {
+        wld_rad_doCommitIfUnblocked(pRad);
     }
-    return pRad->channel;
+    return SWL_RC_OK;
 }
 
 uint32_t s_writeAntennaCtrl(T_Radio* pRad, com_dir_e comdir) {
@@ -642,18 +637,6 @@ int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards) {
     return 1;
 }
 
-int wifiGen_rad_ochbw(T_Radio* pRad, int val, int set) {
-    if(set & SET) {
-        pRad->operatingChannelBandwidth = val;
-        wld_rad_get_update_running_bandwidth(pRad);
-        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
-    } else {
-        return pRad->operatingChannelBandwidth;
-    }
-    SAH_TRACEZ_INFO(ME, "%p %.8x %d", pRad, val, set);
-    return 0;
-}
-
 void wifiGen_rad_initBands(T_Radio* pRad) {
     int i = 0;
     for(i = 0; i < pRad->nrPossibleChannels; i++) {
@@ -689,14 +672,6 @@ int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad) {
     wld_rad_updateState(pRad, true);
     pRad->fsmRad.TODC = 0;
     return 0;
-}
-
-swl_rc_ne wifiGen_rad_startScanExt(T_Radio* pRad, T_ScanArgs* args) {
-    return wld_rad_nl80211_startScan(pRad, args);
-}
-
-swl_rc_ne wifiGen_rad_stopScan(T_Radio* pRad) {
-    return wld_rad_nl80211_abortScan(pRad);
 }
 
 swl_rc_ne wifiGen_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {

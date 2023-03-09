@@ -67,6 +67,7 @@
 #include "swl/map/swl_mapCharFmt.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgFile.h"
+#include "wld_chanmgt.h"
 
 #define ME "hapdCfg"
 
@@ -126,16 +127,16 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     ASSERTS_NOT_NULL(radConfigMap, , ME, "NULL");
     swl_mapChar_add(radConfigMap, "driver", "nl80211");
     swl_mapChar_add(radConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
-    swl_mapCharFmt_addValInt32(radConfigMap, "channel", pRad->channel);
+    swl_channel_t tgtChan = wld_chanmgt_getTgtChannel(pRad);
+    swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);
     swl_mapChar_add(radConfigMap, "country_code", pRad->regulatoryDomain);
     swl_mapChar_add(radConfigMap, "ieee80211d", "1");
     swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211h", pRad->IEEE80211hSupported && pRad->setRadio80211hEnable);
 
-    swl_bandwidth_e tgtChW = pRad->runningChannelBandwidth;
+    swl_bandwidth_e tgtChW = wld_chanmgt_getTgtBw(pRad);
     SAH_TRACEZ_INFO(ME, "%s: operStd:0x%x suppStd:0x%x operChw:%d maxChW:%d tgtChW:%d chan:%d",
                     pRad->Name, pRad->operatingStandards, pRad->supportedStandards,
-                    pRad->operatingChannelBandwidth, pRad->maxChannelBandwidth, tgtChW, pRad->channel
-                    );
+                    pRad->operatingChannelBandwidth, pRad->maxChannelBandwidth, tgtChW, tgtChan);
 
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
         swl_mapChar_add(radConfigMap, "ieee80211n", "1");
@@ -162,12 +163,8 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         }
     }
     uint32_t* pChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 0, 1, &tgtChW);
-    swl_chanspec_t chanspec = {
-        .band = pRad->operatingFrequencyBand,
-        .bandwidth = tgtChW,
-        .channel = pRad->channel,
-    };
-    swl_channel_t centerChan = swl_chanspec_getCentreChannel(&chanspec);
+
+    swl_channel_t centerChan = swl_chanspec_getCentreChannel(&pRad->targetChanspec.chanspec);
     bool implicitBf = (pRad->implicitBeamFormingSupported && pRad->implicitBeamFormingEnabled);
     bool explicitBf = (pRad->explicitBeamFormingSupported && pRad->explicitBeamFormingEnabled);
     bool muMimo = (pRad->multiUserMIMOSupported && pRad->multiUserMIMOEnabled);

@@ -79,11 +79,10 @@
 #include "wld_rad_stamon.h"
 #include "wld_eventing.h"
 #include "wld_prbReq.h"
+#include "wld_chanmgt.h"
 #include "Utils/wld_autoCommitMgr.h"
 
 #define ME "wld"
-
-const char* Wld_ErrorMsgs[] = {"OK", "Error", "Invalid parameter", "Invalid State", "Not implemented"};
 
 amxb_bus_ctx_t* wld_plugin_amx = NULL;
 amxd_dm_t* wld_plugin_dm = NULL;
@@ -414,6 +413,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     SAH_TRACEZ_INFO(ME, "%s: max bw: %u", pR->Name, pR->maxChannelBandwidth);
     pR->autoBwSelectMode = BW_SELECT_MODE_DEFAULT;
 
+    amxc_llist_init(&pR->channelChangeList);
+
     pR->DFSChannelChangeEventCounter = 0;
     pR->dfsEventNbr = 0;
     pR->dfsFileEventNbr = 0;
@@ -433,6 +434,9 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     // update macStr as macBin may be shifted inside vendor
     SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
 
+    wld_chanmgt_checkInitChannel(pR);
+    pR->isReady = true;
+
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u, baseMac %s", name, vendor->name, idx, macStr);
 
     return 0;
@@ -450,11 +454,13 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     wld_prbReq_destroy(pRad);
 
     amxc_llist_for_each(it, &pRad->scanState.stats.extendedStat) {
-        wld_brief_stats_t* stat = amxc_llist_it_get_data(it, wld_brief_stats_t, it);
+        wld_scanReasonStats_t* stat = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);
         amxc_llist_it_take(&stat->it);
         free(stat->scanReason);
         free(stat);
     }
+
+    wld_chanmgt_cleanup(pRad);
 
     free(pRad->scanState.cfg.fastScanReasons);
     pRad->scanState.cfg.fastScanReasons = NULL;

@@ -83,11 +83,11 @@ int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
 int wld_th_mfn_wrad_airtimefairness(T_Radio* rad, int val, int set);
 int wld_th_mfn_wrad_intelligentAirtime(T_Radio* rad, int val, int set);
-int wld_th_wrad_fsm(T_Radio* rad);
+FSM_STATE wld_th_wrad_fsm(T_Radio* rad);
 int wld_th_rad_enable(T_Radio* rad, int val, int set);
 
 
 void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit);
-int wld_th_rad_startScanExt(T_Radio* rad, T_ScanArgs* args);
+int wld_th_rad_startScan(T_Radio* rad);
 int wld_th_rad_getScanResults(T_Radio* rad, T_ScanResults* results);
 #endif

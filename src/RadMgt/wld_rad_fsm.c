@@ -314,7 +314,7 @@ static void s_fsmRun_thf(amxp_timer_t* timer _UNUSED, void* userdata) {
     SAH_TRACEZ_OUT(ME);
 }
 
-int wld_rad_fsm(T_Radio* rad) {
+FSM_STATE wld_rad_fsm(T_Radio* rad) {
     T_AccessPoint* pAP;
     T_EndPoint* pEP;
     int delay;
@@ -565,7 +565,7 @@ int wld_rad_fsm(T_Radio* rad) {
     return (rad->fsmRad.FSM_State);
 }
 
-int wld_rad_fsm_reset(T_Radio* rad) {
+swl_rc_ne wld_rad_fsm_reset(T_Radio* rad) {
     int bitmask = (1 << rad->ref_index);
     if((s_radioFSMLock & RADIO_INDEX_MASK) & bitmask) {
         SAH_TRACEZ_ERROR(ME, "%s: resetting radio which has lock", rad->Name);
@@ -575,7 +575,7 @@ int wld_rad_fsm_reset(T_Radio* rad) {
 }
 
 // For Broadcom FSM is ready when... both RADIOS are ready!
-static int s_fsmState(T_Radio* rad) {
+static FSM_STATE s_fsmState(T_Radio* rad) {
     return rad->fsmRad.FSM_State;
 }
 

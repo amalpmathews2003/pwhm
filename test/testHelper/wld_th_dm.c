@@ -68,6 +68,8 @@
 #include "wld_accesspoint.h"
 #include "wld_assocdev.h"
 #include "wld_ssid.h"
+#include "wld_eventing.h"
+#include "swla/swla_lib.h"
 #include "swl/fileOps/swl_fileUtils.h"
 #include "test-toolbox/ttb_amx.h"
 #include "test-toolbox/ttb_mockTimer.h"
@@ -104,9 +106,13 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 
     setenv("WAN_ADDR", "AA:BB:CC:DD:EE:FF", 0);
 
+
     ttb_amx_loadDm(dm->ttbBus, "../../test/commonData/wld.odl", "WiFi");
 
     assert_int_equal(_wld_main(AMXO_START, &dm->ttbBus->dm, &dm->ttbBus->parser), 0);
+
+
+    swl_lib_initialize(dm->ttbBus->bus_ctx);
 
     dm->mockVendor = wld_th_mockVendor_create("MockVendor");
     wld_th_mockVendor_register(dm->mockVendor);
@@ -117,10 +123,9 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
     assert_int_equal(amxb_get(dm->ttbBus->bus_ctx, "WiFi.", INT32_MAX, &ret, 5), AMXB_STATUS_OK);
     amxc_var_clean(&ret);
 
-    char* radNames[2] = {"wifi0", "wifi1"};
-    char* vapNames[2] = {"wlan0", "wlan1"};
-    char* epNames[2] = {"sta0", "sta1"};
-    swl_channel_t channels[2] = {1, 36};
+    char* radNames[3] = {"wifi0", "wifi1", "wifi2"};
+    char* vapNames[3] = {"wlan0", "wlan1", "wlan2"};
+    char* epNames[3] = {"sta0", "sta1", "sta2"};
 
     for(size_t i = 0; i < SWL_FREQ_BAND_MAX && i < SWL_ARRAY_SIZE(radNames); i++) {
         wld_th_dmBand_t* band = &dm->bandList[i];
@@ -138,7 +143,7 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
                radNames[i], vapNames[i], epNames[i]);
         wld_th_dmBand_t* band = &dm->bandList[i];
         assert_true(band->rad->enable);
-        assert_int_equal(band->rad->channel, channels[i]);
+        assert_int_equal(band->rad->channel, swl_channel_defaults[i]);
 
 
         band->radObj = band->rad->pBus;
@@ -178,7 +183,11 @@ void wld_th_dm_destroy(wld_th_dm_t* dm) {
     assert_int_equal(_wld_main(AMXO_STOP, &dm->ttbBus->dm, &dm->ttbBus->parser), 0);
     wld_mockVendor_destroy(dm->mockVendor);
 
+    swl_lib_cleanup();
+
     ttb_amx_cleanup(dm->ttbBus);
+
+
 }
 
 void wld_th_dm_handleEvents(wld_th_dm_t* dm _UNUSED) {

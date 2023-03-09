@@ -238,25 +238,23 @@ enum {
 
 
 //Generic OK return
-#define WLD_OK 0
+#define WLD_OK SWL_RC_OK
 
 
 //Return ok and work is done
-#define WLD_OK_DONE 1
+#define WLD_OK_DONE SWL_RC_DONE
 
 //Return ok and work is continueing
-#define WLD_OK_CONTINUE 2
+#define WLD_OK_CONTINUE SWL_RC_CONTINUE
 
 //Generic wld error state
-#define WLD_ERROR -1
+#define WLD_ERROR SWL_RC_ERROR
 //Invalid parameter
-#define WLD_ERROR_INVALID_PARAM -2
+#define WLD_ERROR_INVALID_PARAM SWL_RC_INVALID_PARAM
 //Invalid state
-#define WLD_ERROR_INVALID_STATE -3
+#define WLD_ERROR_INVALID_STATE SWL_RC_INVALID_STATE
 //Requested function not implemented
-#define WLD_ERROR_NOT_IMPLEMENTED -4
-
-extern const char* Wld_ErrorMsgs[];
+#define WLD_ERROR_NOT_IMPLEMENTED SWL_RC_NOT_IMPLEMENTED
 
 /* FSM_BW */
 #if (FSM_BW == 4)
@@ -518,22 +516,6 @@ typedef enum {
     AP_ROLE_REMOTE,
     AP_ROLE_MAX
 } wld_apRole_e;
-
-typedef enum {
-    FSM_IDLE,       /* Task not yet created */
-    FSM_WAIT,       /* Task is active, but waits for extra input */
-    FSM_RESTART,    /* Do some extra state checks on VAP & Radio */
-    FSM_SYNC_RAD,   /* Sync the Radio states --> T_Radio */
-    FSM_SYNC_VAP,   /* Sync VAP interfaces --> T_AccessPoint & T_SSID */
-    FSM_DEPENDENCY, /* Task checks dependency on the to-do list */
-    FSM_RUN,        /* Run through the to-do list */
-    FSM_COMPEND,    /* Check if a new commit is pending? */
-    FSM_WAIT_RAD,   /* Wait for other radio's to finish config */
-    FSM_FINISH,     /* To-do list is empty, all went fine */
-    FSM_ERROR,      /* We've failed to execute the to-do list */
-    FSM_UNKNOWN,    /* ? A state we don't like and don't know how to get rid of it.*/
-    FSM_FATAL       /* Really hard issue... we can only fix this by restarting the system or driver */
-} FSM_STATE;
 
 typedef struct {
     int countryCode;
@@ -1019,11 +1001,14 @@ typedef enum {
     CHAN_REASON_INVALID,
     CHAN_REASON_UNKNOWN,
     CHAN_REASON_INITIAL,
-    CHAN_REASON_AUTO,    //Automatic channel's selection algorith
+    CHAN_REASON_PERSISTANCE, // Load of first saved channel
+    CHAN_REASON_AUTO,        //Automatic channel's selection algorith
     CHAN_REASON_DFS,
     CHAN_REASON_MANUAL,
     CHAN_REASON_REENTRY,
-    CHAN_REASON_OBSS_COEX,//coexistence activated
+    CHAN_REASON_OBSS_COEX, //coexistence activated
+    CHAN_REASON_EP_MOVE,   // Endpoint moving
+    CHAN_REASON_RESET,     // plugin reset channel if an invalid change occurred
     CHAN_REASON_MAX
 } wld_channelChangeReason_e;
 extern const char* g_wld_channelChangeReason_str[];
@@ -1125,10 +1110,10 @@ extern const char* g_str_wld_blockScanMode[];
 
 //Note : scan type is more of what triggered the scanning not what the result has!
 typedef enum {
-    SCAN_TYPE_NONE,
-    SCAN_TYPE_SSID,
-    SCAN_TYPE_SPECTRUM,
-    SCAN_TYPE_INTERNAL,//Internal middleware to know AP environment (either CSM or ApRoaming or something else)
+    SCAN_TYPE_NONE,     // Default none type
+    SCAN_TYPE_SSID,     // Scan done to get SSID list => need to update SSID ODl
+    SCAN_TYPE_SPECTRUM, // Scan done to get Spectrum info => need to update spectrum info
+    SCAN_TYPE_INTERNAL, //Internal middleware to know AP environment (either CSM or ApRoaming or something else)
     SCAN_TYPE_MAX
 } wld_scan_type_e;
 
@@ -1137,8 +1122,10 @@ typedef struct {
     char* scanReason;
     uint32_t totalCount;
     uint32_t successCount;
+    uint32_t errorCount;
     amxc_llist_it_t it;
-} wld_brief_stats_t;
+    amxd_object_t* object;
+} wld_scanReasonStats_t;
 
 typedef struct {
     uint8_t ssidLen;
@@ -1355,6 +1342,20 @@ SWL_ARRAY_TYPE_H(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX);
 
 SWL_NTT_H(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO, );
 
+typedef enum {
+    CHANNEL_INTERNAL_STATUS_CURRENT,
+    CHANNEL_INTERNAL_STATUS_TARGET,
+    CHANNEL_INTERNAL_STATUS_SYNC,
+    CHANNEL_INTERNAL_STATUS_MAX,
+} wld_rad_channelInternalStatus_e;
+
+typedef struct {
+    swl_chanspec_t chanspec;
+    wld_channelChangeReason_e reason;
+    char reasonExt[128];
+    swl_timeMono_t changeTime;
+} wld_rad_detailedChanState_t;
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;
@@ -1363,6 +1364,7 @@ struct WLD_RADIO {
     int maxBitRate;
     int index;                          /* Network device number */
     int ref_index;                      /* Radio index number (0=wifi0,1=wifi1,...) */
+    bool isReady;                       /* Radio is ready for config and management (i.e. caps have been filled in, struct init done) */
     swl_freqBandExt_m supportedFrequencyBands;
     swl_freqBandExt_e operatingFrequencyBand;
 
@@ -1397,7 +1399,7 @@ struct WLD_RADIO {
     bool isWPSEnrol;                               /* Set WPS Enrollee mode when STA is active! */
 
     char channelsInUse[32];                        /* String presentation of used channels */
-    int channel;                                   /* When set we set autoChannelEnable FALSE */
+    swl_channel_t channel;                         /* When set we set autoChannelEnable FALSE */
     wld_channelChangeReason_e channelChangeReason; /* The cause of the last channel change */
     int autoChannelSupported;
     /**
@@ -1411,6 +1413,14 @@ struct WLD_RADIO {
     swl_bandwidth_e runningChannelBandwidth;                /* bandwidth currently configured */
     wld_channelChangeReason_e channelBandwidthChangeReason; /* The cause of the last channel's Bandwidth change */
     swl_bandwidth_e maxChannelBandwidth;                    /* max available bandwidth */
+    wld_rad_channelInternalStatus_e channelShowing;
+    wld_rad_detailedChanState_t targetChanspec;
+    wld_rad_detailedChanState_t currentChanspec;
+    uint16_t totalNrTargetChanspecChanges;                  /* Total number of target chanspec changes */
+    uint16_t totalNrCurrentChanspecChanges;                 /* Total number of current chanspec changes */
+    uint16_t channelChangeCounters[CHAN_REASON_MAX];        /* Counter for channel changes */
+    uint32_t channelChangeListSize;                         /* Maximum number of channel changes entries */
+    amxc_llist_t channelChangeList;                         /* List of channel changes */
     wld_rad_bwSelectMode_e autoBwSelectMode;                /* channel bandwidth pushed for a fixed channel */
     bool obssCoexistenceEnabled;                            /* Enable the coexistence Bandwidth */
     bool obssCoexistenceActive;                             /* Obss coexistence activated */
@@ -1511,6 +1521,7 @@ struct WLD_RADIO {
     int ignoreWPSEvents;                /* Ignore commands received from wpa_talk when this is set */
     amxc_llist_it_t it;
     amxd_object_t* pBus;                /* Keep a copy of the amxd_object_t */
+    bool hasDmReady;                    /* Radio datamodel is ready for write actions */
     void* vendorData;                   /* Additional vendor specific data */
     const T_Radio_Capability* capabilities;
     T_Radio_Cap_Item* cap_status;
@@ -1929,8 +1940,6 @@ typedef int (APIENTRY* PFN_WRAD_ADDENDPOINTIF)(T_Radio* rad, char* endpoint, int
 typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);
 
 typedef amxd_status_t (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, uint64_t call_id, amxc_var_t* retval);
-typedef swl_rc_ne (APIENTRY* PFN_WRAD_START_SCAN_EXT)(T_Radio* rad, T_ScanArgs* args);
-typedef swl_rc_ne (APIENTRY* PFN_WRAD_STOP_SCAN)(T_Radio* rad);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, T_ScanResults* results);
 
 /* Our common function table that all VENDOR WIFI drivers must be able to handle... */
@@ -2024,7 +2033,7 @@ typedef struct {
 } wld_rrmReq_t;
 typedef int (APIENTRY* PFN_WRAD_PER_ANTENNA_RSSI)(T_Radio* rad, T_ANTENNA_RSSI*);
 typedef int (APIENTRY* PFN_WRAD_LATEST_POWER)(T_Radio* rad, T_ANTENNA_POWER*);
-typedef int (APIENTRY* PFN_WRAD_UPDATE_CHANINFO)(T_Radio* rad);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_UPDATE_CHANINFO)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_UPDATE_MON_STATS)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_SETUP_STAMON)(T_Radio* rad, bool enable);
 typedef int (APIENTRY* PFN_WRAD_ADD_STAMON)(T_Radio* rad, T_NonAssociatedDevice* pMD);
@@ -2090,9 +2099,8 @@ typedef int (APIENTRY* PFN_WVAP_FSM_STATE)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_FSM)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_FSM_NODELAY)(T_AccessPoint* vap);
 
-/* The NeMo action functions... will handle full Radio COMMIT! */
-typedef int (APIENTRY* PFN_WRAD_FSM_STATE)(T_Radio* rad);
-typedef int (APIENTRY* PFN_WRAD_FSM)(T_Radio* rad);
+typedef FSM_STATE (APIENTRY* PFN_WRAD_FSM_STATE)(T_Radio* rad);
+typedef FSM_STATE (APIENTRY* PFN_WRAD_FSM)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_FSM_NODELAY)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_FSM_DELAY_COMMIT)(T_Radio* rad);
 
@@ -2142,8 +2150,14 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_SUPFREQBANDS mfn_wrad_supfreqbands;             /**< Get the supported frequence bands */
     PFN_WRAD_SUPSTD mfn_wrad_supstd;                         /**< Supported Standards */
     PFN_WRAD_POSCHANS mfn_wrad_poschans;                     /**< Get HW possible channels (scan) */
-    PFN_WRAD_CHANSINUSE mfn_wrad_chansinuse;                 /**< ??? Get Scan list of all used channels */
-    PFN_WRAD_CHANNEL mfn_wrad_channel;                       /**< Set/Get Channel selection */
+
+    /**
+     * Notify vendor plugin that a new target chanspec is set.
+     * If direct is set, then the vendor plugin should immediately update the channel, and not
+     * wait for commit.
+     */
+    swl_rc_ne (* mfn_wrad_setChanspec)(T_Radio* rad, bool direct);
+
     PFN_WRAD_SUPPORTS mfn_wrad_supports;                     /**< Update all ReadOnly Radio states */
     PFN_WRAD_AUTOCHANNELENABLE mfn_wrad_autochannelenable;   /**< Set/Get Auto Channel Enable */
     PFN_WRAD_STARTACS mfn_wrad_startacs;                     /**< Trigger Autochannel scan to start! */
@@ -2153,7 +2167,6 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_BGDFS_STOP mfn_wrad_bgdfs_stop;                 /**< Stop bg dfs clear */
 
     PFN_WRAD_ACHREFPERIOD mfn_wrad_achrefperiod;             /**< Set/Get Auto Channel Refresh Period */
-    PFN_WRAD_OCHBW mfn_wrad_ochbw;                           /**< Set/Get Operating Channel Bandwidth (Auto/20/40) */
     PFN_WRAD_EXTCHAN mfn_wrad_extchan;                       /**< Set/Get secondary extension channel position (+1/Auto/-1) */
     PFN_WRAD_GUARDINTVAL mfn_wrad_guardintval;               /**< Set/Get guard interval between OFDM symbols */
     PFN_WRAD_MCS mfn_wrad_mcs;                               /**< Set/Get MCS */
@@ -2264,8 +2277,17 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_SYNC_EP mfn_sync_ep;                             /**< Resync data with our internal EndPoint structure */
 
     PFN_WRAD_GETSPECTRUMINFO mfn_wrad_getspectruminfo;
-    PFN_WRAD_START_SCAN_EXT mfn_wrad_start_scan_ext;
-    PFN_WRAD_STOP_SCAN mfn_wrad_stop_scan;
+
+    /**
+     * Start a scan, using the scanState.cfg.scanArguments data in T_Radio to complete it.
+     */
+    swl_rc_ne (* mfn_wrad_start_scan)(T_Radio* pRad);
+
+    /**
+     * Stop a currently active scan.
+     */
+    swl_rc_ne (* mfn_wrad_stop_scan)(T_Radio* pRad);
+
     PFN_WRAD_SCAN_RESULTS mfn_wrad_scan_results;
 
     /* <<ADD Functions that do combined task or no HW related >> */

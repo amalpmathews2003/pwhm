@@ -86,14 +86,15 @@ const char* g_str_wld_blockScanMode[BLOCKSCANMODE_MAX] = {
     "All",
 };
 
-void wld_scan_stat_initialize(T_Radio* pRad, const char* scanReason) {
+static amxd_object_t* s_scanStatsInitialize(T_Radio* pRad, const char* scanReason) {
     amxd_object_t* scanStatsTemp = amxd_object_get(pRad->pBus, "ScanStats.ScanReason");
-    ASSERTS_NOT_NULL(scanStatsTemp, , ME, "ScanReason Obj NULL");
+    ASSERTS_NOT_NULL(scanStatsTemp, NULL, ME, "ScanReason Obj NULL");
     amxd_object_t* obj = amxd_object_get(scanStatsTemp, scanReason);
     if(obj == NULL) {
         amxd_object_new_instance(&obj, scanStatsTemp, scanReason, 0, NULL);
-        ASSERTS_NOT_NULL(obj, , ME, "Failed to create object: %s", scanReason);
+        ASSERTS_NOT_NULL(obj, NULL, ME, "Failed to create object: %s", scanReason);
     }
+    return obj;
 }
 
 amxd_status_t _wld_rad_writeScanConfig(amxd_object_t* object) {
@@ -122,7 +123,7 @@ amxd_status_t _wld_rad_writeScanConfig(amxd_object_t* object) {
     return amxd_status_ok;
 }
 
-void wld_radio_update_ScanStats(T_Radio* pRad) {
+static void s_updateScanStats(T_Radio* pRad) {
     amxd_object_t* objScanStats = amxd_object_findf(pRad->pBus, "ScanStats");
     ASSERTS_NOT_NULL(objScanStats, , ME, "ScanStats Obj NULL");
     amxd_object_set_uint32_t(objScanStats, "NrScanRequested", pRad->scanState.stats.nrScanRequested);
@@ -130,14 +131,12 @@ void wld_radio_update_ScanStats(T_Radio* pRad) {
     amxd_object_set_uint32_t(objScanStats, "NrScanError", pRad->scanState.stats.nrScanError);
     amxd_object_set_uint32_t(objScanStats, "NrScanBlocked", pRad->scanState.stats.nrScanBlocked);
 
-    amxd_object_t* obj = amxd_object_findf(pRad->pBus, "ScanStats.ScanReason");
-    ASSERTS_NOT_NULL(obj, , ME, "NULL");
     amxc_llist_for_each(it, &(pRad->scanState.stats.extendedStat)) {
-        wld_brief_stats_t* stats = amxc_llist_it_get_data(it, wld_brief_stats_t, it);
-        amxd_object_t* objExtendedStats = amxd_object_findf(obj, "%s", stats->scanReason);
-        amxd_object_set_cstring_t(objExtendedStats, "Name", stats->scanReason);
-        amxd_object_set_uint32_t(objExtendedStats, "NrScanRequested", stats->totalCount);
-        amxd_object_set_uint32_t(objExtendedStats, "NrScanDone", stats->successCount);
+        wld_scanReasonStats_t* stats = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);
+        amxd_object_set_cstring_t(stats->object, "Name", stats->scanReason);
+        amxd_object_set_uint32_t(stats->object, "NrScanRequested", stats->totalCount);
+        amxd_object_set_uint32_t(stats->object, "NrScanDone", stats->successCount);
+        amxd_object_set_uint32_t(stats->object, "NrScanError", stats->errorCount);
     }
 }
 
@@ -214,12 +213,12 @@ bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, T_ScanResult_SSID
     return isEntryFound;
 }
 
-wld_brief_stats_t* wld_getScanStatsByReason(T_Radio* pRad, const char* reason) {
+wld_scanReasonStats_t* wld_getScanStatsByReason(T_Radio* pRad, const char* reason) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     ASSERT_NOT_NULL(reason, NULL, ME, "NULL");
     amxc_llist_it_t* it;
     amxc_llist_for_each(it, &(pRad->scanState.stats.extendedStat)) {
-        wld_brief_stats_t* stats = amxc_llist_it_get_data(it, wld_brief_stats_t, it);
+        wld_scanReasonStats_t* stats = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);
         if(swl_str_matches(stats->scanReason, reason)) {
             return stats;
         }
@@ -227,42 +226,55 @@ wld_brief_stats_t* wld_getScanStatsByReason(T_Radio* pRad, const char* reason) {
     return NULL;
 }
 
-static wld_brief_stats_t* s_getOrCreateStats(T_Radio* pRad, const char* reason) {
+static wld_scanReasonStats_t* s_getOrCreateStats(T_Radio* pRad, const char* reason) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     ASSERT_NOT_NULL(reason, NULL, ME, "NULL");
-    wld_brief_stats_t* stats = wld_getScanStatsByReason(pRad, reason);
+    wld_scanReasonStats_t* stats = wld_getScanStatsByReason(pRad, reason);
     if(stats == NULL) {
         amxc_llist_t* statList = &(pRad->scanState.stats.extendedStat);
-        stats = calloc(1, sizeof(wld_brief_stats_t));
-        if(stats != NULL) {
-            swl_str_copyMalloc(&(stats->scanReason), reason);
-            SAH_TRACEZ_INFO(ME, "ScanReason %s added", stats->scanReason);
-            amxc_llist_append(statList, &stats->it);
-        }
+        stats = calloc(1, sizeof(wld_scanReasonStats_t));
+        ASSERT_NOT_NULL(stats, NULL, ME, "NULL");
+
+        swl_str_copyMalloc(&(stats->scanReason), reason);
+        SAH_TRACEZ_INFO(ME, "ScanReason %s added", stats->scanReason);
+        amxc_llist_append(statList, &stats->it);
+        stats->object = s_scanStatsInitialize(pRad, reason);
+
     }
     return stats;
 }
 
-void wld_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* scanReason) {
+static void s_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* scanReason, swl_rc_ne resultCode) {
+
+    if(scanReason == NULL) {
+        scanReason = "Unknown";
+    }
+
     SAH_TRACEZ_INFO(ME, "%s: starting scan %s", pRad->Name, scanReason);
 
-    wld_scanEvent_t ev;
-    ev.pRad = pRad;
-    ev.start = true;
-    ev.scanType = type;
-    ev.scanReason = scanReason;
-    wld_event_trigger_callback(gWld_queue_rad_onScan_change, &ev);
-
-    pRad->scanState.scanType = type;
     pRad->scanState.stats.nrScanRequested++;
-    pRad->scanState.lastScanTime = swl_time_getMonoSec();
-
-    swl_str_copy(pRad->scanState.scanReason, sizeof(pRad->scanState.scanReason), scanReason);
-    wld_brief_stats_t* stats = s_getOrCreateStats(pRad, scanReason);
+    wld_scanReasonStats_t* stats = s_getOrCreateStats(pRad, scanReason);
     ASSERTS_NOT_NULL(stats, , ME, "NULL");
     stats->totalCount++;
-    wld_scan_stat_initialize(pRad, scanReason);
-    wld_radio_update_ScanStats(pRad);
+
+    if((resultCode == SWL_RC_OK) || (resultCode == SWL_RC_CONTINUE)) {
+        wld_scanEvent_t ev;
+        ev.pRad = pRad;
+        ev.start = true;
+        ev.scanType = type;
+        ev.scanReason = scanReason;
+        wld_event_trigger_callback(gWld_queue_rad_onScan_change, &ev);
+
+        pRad->scanState.scanType = type;
+        pRad->scanState.lastScanTime = swl_time_getMonoSec();
+
+        swl_str_copy(pRad->scanState.scanReason, sizeof(pRad->scanState.scanReason), scanReason);
+    } else {
+        pRad->scanState.stats.nrScanError++;
+        stats->errorCount++;
+    }
+
+    s_updateScanStats(pRad);
 }
 
 static amxd_status_t _startScan(amxd_object_t* object,
@@ -299,7 +311,6 @@ static amxd_status_t _startScan(amxd_object_t* object,
     const char* scanReason = GET_CHAR(args, "scanReason");
 
 
-    bool extendedScanRequired = false;
     T_ScanArgs* scanArgs = &pR->scanState.cfg.scanArguments;
     size_t len = 0;
 
@@ -315,7 +326,6 @@ static amxd_status_t _startScan(amxd_object_t* object,
             goto error;
         }
         scanArgs->chanCount = len;
-        extendedScanRequired = true;
     }
 
     if(ssid != NULL) {
@@ -328,9 +338,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
 
         swl_str_copy(scanArgs->ssid, SSID_NAME_LEN, ssid);
         scanArgs->ssidLen = len;
-        extendedScanRequired = true;
     }
-    wld_scan_type_e type = SCAN_TYPE_INTERNAL;
     if(!swl_str_isEmpty(bssid)) {
         swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
         memcpy(macChar.cMac, bssid, sizeof(swl_macChar_t));
@@ -339,13 +347,10 @@ static amxd_status_t _startScan(amxd_object_t* object,
             errorCode = amxd_status_invalid_function_argument;
             goto error;
 
-        } else {
-            extendedScanRequired = true;
         }
     }
 
     if(scanReason == NULL) {
-        type = SCAN_TYPE_SSID;
         reason = strdup("ScanCall");
     } else {
         reason = strdup(scanReason);
@@ -354,7 +359,6 @@ static amxd_status_t _startScan(amxd_object_t* object,
     bool updateUsageData = GET_BOOL(args, "updateUsage");
     if(updateUsageData) {
         scanArgs->updateUsageStats = true;
-        extendedScanRequired = true;
     }
 
     bool hasForceFast = GET_BOOL(args, "forceFast");
@@ -362,37 +366,28 @@ static amxd_status_t _startScan(amxd_object_t* object,
         scanArgs->fastScan = (swl_str_find(pR->scanState.cfg.fastScanReasons, reason) > 0);
     }
 
-    if(scanArgs->fastScan) {
-        extendedScanRequired = true;
-    }
-
     if((pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_ALL)
        || ( pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_PRIO)) {
         SAH_TRACEZ_ERROR(ME, "Scan blocked");
         pR->scanState.stats.nrScanBlocked++;
-        wld_radio_update_ScanStats(pR);
+        s_updateScanStats(pR);
         free(reason);
         return amxd_status_unknown_error;
     }
 
-    if(extendedScanRequired) {
-        scanArgs->reason = reason;
-    }
+    swl_rc_ne scanResult = wld_scan_start(pR, SCAN_TYPE_SSID);
 
-    swl_rc_ne scanResult = pR->pFA->mfn_wrad_start_scan_ext(pR, extendedScanRequired ? scanArgs : NULL);
+
 
     if(scanResult < 0) {
         goto error;
     } else {
-        wld_notifyStartScan(pR, type, reason);
         free(reason);
         return amxd_status_deferred;
     }
 
 error:
     free(reason);
-    pR->scanState.stats.nrScanError++;
-    wld_radio_update_ScanStats(pR);
     return errorCode;
 }
 
@@ -474,6 +469,8 @@ amxd_status_t _scan(amxd_object_t* object,
  */
 static bool s_filterScanResultsBasedOnArgs(T_Radio* pRad, T_ScanResult_SSID* pResult) {
     T_ScanArgs* pScanArgs = &pRad->scanState.cfg.scanArguments;
+    ASSERT_NOT_NULL(pResult, false, ME, "NULL");
+    ASSERT_NOT_NULL(pScanArgs, false, ME, "NULL");
 
     if((pScanArgs->ssid != NULL) && (pScanArgs->ssidLen > 0)) {
         char ssidStr[SSID_NAME_LEN];
@@ -673,11 +670,15 @@ amxd_object_t* wld_scan_update_get_channel(amxd_object_t* objScan, uint16_t chan
     return chanObj;
 }
 
+/**
+ * Trigger an internal only scan to update chanim info.
+ */
 swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad) {
 
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    int retVal = pRad->pFA->mfn_wrad_update_chaninfo(pRad);
+    swl_rc_ne retVal = pRad->pFA->mfn_wrad_update_chaninfo(pRad);
+    s_notifyStartScan(pRad, SCAN_TYPE_INTERNAL, "ChanimInfo", retVal);
     return retVal;
 }
 
@@ -695,10 +696,11 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
     uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
     amxd_status_t retVal = pR->pFA->mfn_wrad_getspectruminfo(pR, update, call_id, retval);
     if(retVal != amxd_status_deferred) {
+        s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum", SWL_RC_ERROR);
         return retVal;
     }
 
-    wld_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum");
+    s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum", SWL_RC_OK);
 
     pR->scanState.call_id = call_id;
     return amxd_status_deferred;
@@ -860,13 +862,21 @@ void wld_scan_done(T_Radio* pR, bool success) {
         return;
     }
 
-    pR->scanState.stats.nrScanDone++;
-
-    wld_brief_stats_t* stats = wld_getScanStatsByReason(pR, pR->scanState.scanReason);
-    if(stats != NULL) {
-        stats->successCount++;
+    if(success) {
+        pR->scanState.stats.nrScanDone++;
+    } else {
+        pR->scanState.stats.nrScanError++;
     }
-    wld_radio_update_ScanStats(pR);
+
+    wld_scanReasonStats_t* stats = wld_getScanStatsByReason(pR, pR->scanState.scanReason);
+    if(stats != NULL) {
+        if(success) {
+            stats->successCount++;
+        } else {
+            stats->errorCount++;
+        }
+    }
+    s_updateScanStats(pR);
 
     if(success && (pR->scanState.scanType == SCAN_TYPE_SSID)) {
         wld_scan_update_obj_results(pR);
@@ -1104,5 +1114,11 @@ error:
     s_addDiagRadiosStatusToMap(retval);
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
+}
+
+swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type) {
+    swl_rc_ne error = pRad->pFA->mfn_wrad_start_scan(pRad);
+    s_notifyStartScan(pRad, type, pRad->scanState.cfg.scanArguments.reason, error);
+    return error;
 }
 

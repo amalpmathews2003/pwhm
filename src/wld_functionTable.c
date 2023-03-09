@@ -86,10 +86,9 @@ static swl_rc_ne TRAP_mfn_wrad_scan_results(T_Radio* rad, T_ScanResults* results
     return SWL_RC_ERROR;
 }
 
-static swl_rc_ne TRAP_mfn_wrad_start_scan_ext(T_Radio* rad, T_ScanArgs* args) {
+static swl_rc_ne TRAP_mfn_wrad_start_scan(T_Radio* rad) {
     _UNUSED_(rad);
-    _UNUSED_(args);
-    SAH_TRACEZ_NOTICE(ME, "%p, %p", rad, args);
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
@@ -145,6 +144,14 @@ static void TRAP_mfn_wvap_set_config_driver(T_AccessPoint* ap, wld_vap_driverCfg
         return -1; \
     }
 
+#define DEF_TRAP_bool(type, func) \
+    static int TRAP_ ## func(type * obj, bool a) { \
+        _UNUSED_(obj); \
+        _UNUSED_(a); \
+        SAH_TRACEZ_NOTICE(ME, "%p %u", obj, a); \
+        return -1; \
+    }
+
 #define DEF_TRAP_char_int(type, func) \
     static int TRAP_ ## func(type * obj, char* a, int b) { \
         _UNUSED_(obj); \
@@ -173,12 +180,18 @@ static void TRAP_mfn_wvap_set_config_driver(T_AccessPoint* ap, wld_vap_driverCfg
         return -1; \
     }
 
+#define DEF_TRAP_RET(type, func, retType, retVal) \
+    static retType TRAP_ ## func(type * obj) { \
+        _UNUSED_(obj); \
+        SAH_TRACEZ_NOTICE(ME, "%p", obj); \
+        return retVal; \
+    }
+
 DEF_TRAP_enum(T_Radio, mfn_wrad_dfsradartrigger, dfstrigger_rad_state);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_enable);
-DEF_TRAP_int_int(T_Radio, mfn_wrad_channel);
+DEF_TRAP_bool(T_Radio, mfn_wrad_setChanspec);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_autochannelenable);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_achrefperiod);
-DEF_TRAP_int_int(T_Radio, mfn_wrad_ochbw);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_txpow);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_antennactrl);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_rifs);
@@ -191,7 +204,6 @@ DEF_TRAP_int(T_Radio, mfn_wrad_sync);
 DEF_TRAP_char_int(T_Radio, mfn_wrad_addvapif);
 DEF_TRAP_char_int(T_Radio, mfn_wrad_supfreqbands);
 DEF_TRAP_uint32(T_Radio, mfn_wrad_supstd);
-DEF_TRAP_char_int(T_Radio, mfn_wrad_chansinuse);
 DEF_TRAP_char_int(T_Radio, mfn_wrad_supports);
 DEF_TRAP_char_int_int(T_Radio, mfn_wrad_extchan);
 DEF_TRAP_char_int_int(T_Radio, mfn_wrad_guardintval);
@@ -199,8 +211,8 @@ DEF_TRAP_char_int_int(T_Radio, mfn_wrad_mcs);
 DEF_TRAP_char_int_int(T_Radio, mfn_wrad_regdomain);
 DEF_TRAP(T_Radio, mfn_wrad_radio_status);
 DEF_TRAP(T_Radio, mfn_wrad_maxbitrate);
-DEF_TRAP(T_Radio, mfn_wrad_fsm_state);
-DEF_TRAP(T_Radio, mfn_wrad_fsm);
+DEF_TRAP_RET(T_Radio, mfn_wrad_fsm_state, FSM_STATE, FSM_UNKNOWN);
+DEF_TRAP_RET(T_Radio, mfn_wrad_fsm, FSM_STATE, FSM_UNKNOWN);
 DEF_TRAP(T_Radio, mfn_wrad_fsm_nodelay);
 DEF_TRAP(T_Radio, mfn_wrad_update_chaninfo);
 DEF_TRAP(T_Radio, mfn_wrad_update_prob_req);
@@ -554,8 +566,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_supfreqbands);
     FTA_ASSIGN(mfn_wrad_supstd);
     FTA_ASSIGN(mfn_wrad_poschans);
-    FTA_ASSIGN(mfn_wrad_chansinuse);
-    FTA_ASSIGN(mfn_wrad_channel);
+    FTA_ASSIGN(mfn_wrad_setChanspec);
     FTA_ASSIGN(mfn_wrad_supports);
     FTA_ASSIGN(mfn_wrad_autochannelenable);
     FTA_ASSIGN(mfn_wrad_startacs);
@@ -564,7 +575,6 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_bgdfs_start_ext);
     FTA_ASSIGN(mfn_wrad_bgdfs_stop);
     FTA_ASSIGN(mfn_wrad_achrefperiod);
-    FTA_ASSIGN(mfn_wrad_ochbw);
     FTA_ASSIGN(mfn_wrad_extchan);
     FTA_ASSIGN(mfn_wrad_guardintval);
     FTA_ASSIGN(mfn_wrad_mcs);
@@ -582,7 +592,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_latest_power);
     FTA_ASSIGN(mfn_wrad_sync);
     FTA_ASSIGN(mfn_wrad_getspectruminfo);
-    FTA_ASSIGN(mfn_wrad_start_scan_ext);
+    FTA_ASSIGN(mfn_wrad_start_scan);
     FTA_ASSIGN(mfn_wrad_stop_scan);
     FTA_ASSIGN(mfn_wrad_scan_results);
     FTA_ASSIGN(mfn_wrad_update_mon_stats);

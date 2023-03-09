@@ -84,6 +84,7 @@
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_epProfile.h"
 #include "wld_dm_trans.h"
+#include "wld_chanmgt.h"
 
 /* Function prototypes for helpers. */
 static void s_setEndpointStatus(T_EndPoint* pEP,
@@ -1870,7 +1871,10 @@ static void endpoint_reconnect_handler(amxp_timer_t* timer _UNUSED, void* userda
     if(pEP->reconnect_count >= pEP->reconnect_rad_trigger) {
         SAH_TRACEZ_WARNING(ME, "%s: perform radio toggle, try %u", pRad->Name, pEP->assocStats.nrAssocAttemptsSinceDc);
         pRad->pFA->mfn_wrad_enable(pRad, 1, SET);
-        pRad->pFA->mfn_wrad_channel(pRad, 0, SET);
+
+        swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(swl_channel_defaults[pRad->operatingFrequencyBand],
+                                                   pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
+        wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_EP_MOVE, NULL);
         pEP->reconnect_count = 0;
     }
 }

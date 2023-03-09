@@ -156,15 +156,19 @@ const char* g_str_wld_rad_bf_cap[RAD_BF_CAP_MAX] = {
     "HE_CQI_BF"
 };
 
-const char* g_wld_channelChangeReason_str[CHAN_REASON_MAX] = {
+const char* g_wld_channelChangeReason_str[CHAN_REASON_MAX + 1] = {
     "INVALID",
     "UNKNOWN",
     "INITIAL",
+    "PERSISTANCE",
     "AUTO",
     "DFS",
     "MANUAL",
     "REENTRY",
-    "OBSS_COEX"
+    "OBSS_COEX",
+    "EP_MOVE",
+    "RESET",
+    NULL
 };
 
 const char* g_str_wld_tpcMode[TPCMODE_MAX] = {
@@ -393,58 +397,51 @@ amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
     }
 
     T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
 
     SAH_TRACEZ_IN(ME);
     int32_t channel = amxc_var_dyncast(int32_t, args);
-    ASSERTI_NOT_NULL(pR, amxd_status_ok, ME, "Invalid radio");
 
-    SAH_TRACEZ_INFO(ME, "set RadioChannel %p %p %d", pR, wifiRad, channel);
+    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "NULL or not radio pointer");
 
-    if(pR && debugIsRadPointer(pR)) {
-        SAH_TRACEZ_INFO(ME, "STATUS %d %d %d",
-                        pR->channel,
-                        pR->autoChannelEnable,
-                        pR->autoChannelSetByUser);
-        if(channel) {
-            /* Disable autochannel if the selected channel isn't valid
-            ** FIX ME: Have an issue here in 5GHz channels...
-            ** If it was disabled by user, be sure it's fully disabled!
-            */
-            if(!pR->autoChannelSetByUser && pR->autoChannelEnable) {
-                pR->pFA->mfn_wrad_autochannelenable(pR, 0, SET);
-            }
-            /**
-             * Find if any EP from the radio is connected in order
-             * to avoid any channel that may lose connection with
-             * AP
-             */
-            T_EndPoint* ep = wld_rad_getEnabledEndpoint(pR);
-            if(ep && (ep->connectionStatus == EPCS_CONNECTED)) {
-                epConnected = true;
-                SAH_TRACEZ_INFO(ME, "%s: EP %s connected, not change channel", pR->Name, ep->Name);
-            }
-            /* If we're in auto channel mode, the given channel is probably
-            ** the one we've returned during the commit() state.
-            */
-            if(!pR->autoChannelEnable && !epConnected) {
-                if(channel != pR->channel) {
-                    pR->pFA->mfn_wrad_channel(pR, channel, SET);
-                    wld_autoCommitMgr_notifyRadEdit(pR);
-                    pR->channelChangeReason = CHAN_REASON_MANUAL;
-                    wld_rad_chan_notification(pR, channel, pR->runningChannelBandwidth);
-                }
-            } else {
-                pR->channel = channel;
-                pR->channelChangeReason = CHAN_REASON_AUTO;
-            }
-        } else {
-            pR->pFA->mfn_wrad_autochannelenable(pR, 1, SET);
+    SAH_TRACEZ_INFO(ME, "%s: set RadioChannel %d", pR->Name, channel);
+    SAH_TRACEZ_INFO(ME, "STATUS %d %d %d",
+                    pR->channel,
+                    pR->autoChannelEnable,
+                    pR->autoChannelSetByUser);
+
+    ASSERTI_TRUE(channel != pR->channel, amxd_status_ok, ME, "Same channel, exit");
+
+    if(channel) {
+        /**
+         * Find if any EP from the radio is connected in order
+         * to avoid any channel that may lose connection with
+         * AP
+         */
+        T_EndPoint* ep = wld_rad_getEnabledEndpoint(pR);
+        if(ep && (ep->connectionStatus == EPCS_CONNECTED)) {
+            SAH_TRACEZ_INFO(ME, "%s: EP %s connected, not change channel", pR->Name, ep->Name);
+            SAH_TRACEZ_OUT(ME);
+            return amxd_status_ok;
         }
-        SAH_TRACEZ_INFO(ME, "STATUS %d %d %d",
-                        pR->channel,
-                        pR->autoChannelEnable,
-                        pR->autoChannelSetByUser);
+
+        /* Disable autochannel if valid channel and first commit has been done
+         * I.e. use case where user writes channel manually.
+         */
+        if(!pR->autoChannelEnable && wld_rad_firstCommitFinished(pR)) {
+            amxd_object_set_bool(pR->pBus, "AutoChannelEnable", 0);
+        }
+
+        pR->channelChangeReason = CHAN_REASON_MANUAL;
+        swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
+        swl_rc_ne retcode = wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
+        if(retcode < SWL_RC_OK) {
+            /* If target channel is not valid, reset channel entry */
+            wld_rad_chan_update_model(pR);
+        }
+
+        wld_autoCommitMgr_notifyRadEdit(pR);
+    } else {
+        amxd_object_set_bool(pR->pBus, "AutoChannelEnable", 1);
     }
 
     SAH_TRACEZ_OUT(ME);
@@ -726,11 +723,13 @@ amxd_status_t _wld_rad_setOperatingChannelBandwidth_pwf(amxd_object_t* object _U
     const char* OCBW = amxc_var_constcast(cstring_t, args);
 
     swl_bandwidth_e radBw = swl_conv_charToEnum(OCBW, Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
+    pRad->operatingChannelBandwidth = radBw;
     bool autoBwChange = (pRad->operatingChannelBandwidth == SWL_BW_AUTO || radBw == SWL_BW_AUTO);
     pRad->channelBandwidthChangeReason = CHAN_REASON_MANUAL;
 
-    int ret = pRad->pFA->mfn_wrad_ochbw(pRad, radBw, SET);
-    SAH_TRACEZ_INFO(ME, "%s set OCBW %u : %u, %u", pRad->Name, radBw, autoBwChange, ret);
+    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->channel, radBw, pRad->operatingFrequencyBand);
+    wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
+    SAH_TRACEZ_INFO(ME, "%s set OCBW %u : %u", pRad->Name, radBw, autoBwChange);
 
     if(autoBwChange) {
         // if autobandwidth is enabled, and going from or to autobw, trigger autochannelEnable
@@ -1586,7 +1585,7 @@ amxd_status_t _validateIEEE80211hEnabled(amxd_param_t* parameter, void* validati
     return ((pR->IEEE80211hSupported && flag) == flag);
 }
 
-swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
+static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
     ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_FALSE(swl_str_isEmpty(countryCode), SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_FALSE(swl_str_matches(countryCode, " "), SWL_RC_ERROR, ME, "NULL");
@@ -2332,7 +2331,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
 
         amxd_object_set_cstring_t(object, "VendorPCISig", pR->vendor->name);
-        amxd_object_set_cstring_t(object, "Name", pR->Name);
+        //datamodel is ready for internal updates, when it is writable (i.e no ongoing transactions)
+        pR->hasDmReady = (amxd_object_set_cstring_t(object, "Name", pR->Name) == amxd_status_ok);
 
         amxd_object_set_cstring_t(object, "BaseMACAddress", macStr);
         /* 'Status' The current operational state of the radio */
@@ -2433,17 +2433,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
          *  1024) of strings. List items represent possible radio
          *  channels for the wireless standard (a,b,g,n) and the
          *  regulatory domain. */
-        TBuf[0] = '\0';
-        for(idx = 0; !idx || pR->possibleChannels[idx]; idx++) {
-            if(idx && TBuf[0]) {
-                wldu_catStr(TBuf, ",", sizeof(TBuf));
-            }
-            itoa(pR->possibleChannels[idx], ValBuf, 10);
-            wldu_catStr(TBuf, ValBuf, sizeof(TBuf));
-        }
-        amxd_object_set_cstring_t(object, "PossibleChannels", TBuf);
-        /* This one isn't clear? */
-        //set_OBJ_ParameterHelper(TPH_INT32,  amxd_object_t, "ChannelsInUse", &pR->ChannelsInUse);
+        wld_rad_write_possible_channels(pR);
         /* 'Channel' The current radio channel used by the
          *  connection. To request automatic channel selection, set
          *  AutoChannelEnable to TRUE. Whenever AutoChannelEnale is
@@ -2455,7 +2445,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             wld_rad_chan_update_model(pR);
             wld_rad_updateOperatingClass(pR);
         }
-        wld_rad_get_update_running_bandwidth(pR);
+
         /* 'AutoChannelSupported' Indicates whether automatic
          *  channel selection is supported by this  radio. IF false,
          *  then AutoChannelEnable MUST be FALSE! */
@@ -2558,8 +2548,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_object_set_bool(object, "AirtimeFairnessEnabled", pR->airtimeFairnessEnabled);
         amxd_object_set_uint32_t(object, "DFSChannelChangeEventCounter", pR->DFSChannelChangeEventCounter);
         swl_time_objectParamSetReal(object, "DFSChannelChangeEventTimestamp", pR->DFSChannelChangeEventTimestamp);
-        amxd_object_set_cstring_t(object, "ChannelChangeReason", g_wld_channelChangeReason_str[pR->channelChangeReason]);
-        amxd_object_set_cstring_t(object, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pR->channelBandwidthChangeReason]);
+        wld_chanmgt_saveChanges(pR);
 
         /* 'IEEE80211_Caps' S@H, shows the supported driver capabilities.
            When a VAP is attached, this field is update so don't fake it!
@@ -2628,8 +2617,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         tmp_int32 = amxd_object_get_int32_t(object, "Channel", NULL);
         if(pR->channel != tmp_int32) {
             if(!pR->autoChannelEnable) {
-                wld_rad_chan_notification(pR, tmp_int32, pR->runningChannelBandwidth);
-                pR->pFA->mfn_wrad_channel(pR, tmp_int32, SET);
+                swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(tmp_int32, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
+                wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
                 wld_autoCommitMgr_notifyRadEdit(pR);
             } else {
                 pR->channelChangeReason = CHAN_REASON_AUTO;
@@ -4252,38 +4241,6 @@ swl_bandwidth_e wld_rad_get_target_bandwidth(T_Radio* pRad) {
     return targetBandwidth;
 }
 
-void wld_rad_get_update_running_bandwidth(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, , ME, "Radio NULL");
-    swl_bandwidth_e targetBandwidth = wld_rad_get_target_bandwidth(pRad);
-    if(targetBandwidth != SWL_BW_AUTO) {
-        if(pRad->runningChannelBandwidth != targetBandwidth) {
-            wld_rad_chan_notification(pRad, pRad->channel, targetBandwidth);
-            wld_rad_setRunningChannelBandwidth(pRad, targetBandwidth);
-        }
-    } else {
-        SAH_TRACEZ_ERROR(ME, "Requested bw %u for rad %s not available on current channel %u (%u, %u)"
-                         , pRad->operatingChannelBandwidth, pRad->Name, pRad->channel, pRad->runningChannelBandwidth, targetBandwidth);
-    }
-}
-
-void wld_rad_setRunningChannelBandwidth(T_Radio* pRad, swl_bandwidth_e newBw) {
-    ASSERTI_NOT_EQUALS(newBw, pRad->runningChannelBandwidth, , ME, "%s : bw same %u", pRad->Name, newBw);
-
-    SAH_TRACEZ_INFO(ME, "%s set runBw from %u to %u", pRad->Name, pRad->runningChannelBandwidth, newBw);
-    if(wld_rad_is_24ghz(pRad)
-       && pRad->obssCoexistenceEnabled
-       && (pRad->operatingChannelBandwidth == SWL_BW_40MHZ)
-       && (pRad->runningChannelBandwidth == SWL_BW_40MHZ)
-       && (newBw == SWL_BW_20MHZ)) {
-        pRad->obssCoexistenceActive = true;
-        SAH_TRACEZ_WARNING(ME, "%s : enabling obss coexistence %u / %u => %u", pRad->Name, pRad->channel,
-                           pRad->runningChannelBandwidth, newBw);
-    }
-    pRad->runningChannelBandwidth = newBw;
-
-    wld_rad_update_operating_standard(pRad);
-}
-
 void wld_rad_write_possible_channels(T_Radio* pRad) {
     int idx = 0;
     char TBuf[320] = {'\0'};
@@ -4373,6 +4330,13 @@ void wld_rad_chan_update_model(T_Radio* pRad) {
     amxc_string_clean(&operatingStandardsText);
     amxd_object_set_cstring_t(pRad->pBus, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
 
+    amxd_object_set_cstring_t(pRad->pBus, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
+    amxd_object_set_cstring_t(pRad->pBus, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);
+    amxd_object_t* statsObj = amxd_object_get_child(pRad->pBus, "Stats");
+    amxd_object_set_uint32_t(statsObj, "TotalTargetChannelChangeCount", pRad->totalNrCurrentChanspecChanges);
+    amxd_object_set_uint32_t(statsObj, "TotalChannelChangeCount", pRad->totalNrCurrentChanspecChanges);
+    swl_type_arrayObjectParamSetChar(statsObj, "DetailedChannelChangeCountList", swl_type_uint16, pRad->channelChangeCounters, CHAN_REASON_MAX);
+
 }
 
 void wld_rad_updateOperatingClass(T_Radio* pRad) {
@@ -4413,42 +4377,6 @@ void _wld_rad_setVendorData_ocf(const char* const sig_name _UNUSED,
     ASSERT_TRUE(debugIsRadPointer(pR), , ME, "NO radio Ctx");
     SAH_TRACEZ_INFO(ME, "%s: %s rad vendor data (%s)", pR->Name, sig_name, GET_CHAR(data, "object"));
     pR->pFA->mfn_wifi_supvend_modes(pR, NULL, object, GET_ARG(data, "parameters"));
-}
-
-void wld_rad_chan_notification(T_Radio* pRad, int newChannelValue, int newBandwidthValue) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-
-    amxc_var_t params;
-    amxc_var_init(&params);
-    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
-
-    amxc_var_t* my_map = amxc_var_add_key(amxc_htable_t, &params, "Updates", NULL);
-
-    time_t now = time(NULL);
-    struct tm now_timestamp;
-    gmtime_r(&now, &now_timestamp);
-    amxc_ts_t ts;
-    amxc_var_add_key(amxc_ts_t, my_map, "TimeStamp", &ts);
-
-    amxc_var_add_key(uint32_t, my_map, "OldChannel", pRad->channel);
-    amxc_var_add_key(uint32_t, my_map, "NewChannel", newChannelValue);
-    amxc_var_add_key(cstring_t, my_map, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
-    amxc_var_add_key(cstring_t, my_map, "OldBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
-    amxc_var_add_key(cstring_t, my_map, "NewBandwidth", Rad_SupBW[newBandwidthValue]);
-    amxc_var_add_key(cstring_t, my_map, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);
-
-    amxc_var_add_key(uint32_t, my_map, "NrAssociatedStations", wld_rad_get_nb_active_stations(pRad));
-    amxc_var_add_key(uint32_t, my_map, "NrAssociatedVideoStations", wld_rad_get_nb_active_video_stations(pRad));
-
-    amxd_object_trigger_signal(pRad->pBus, "Channel change event", &params);
-
-    SAH_TRACEZ_INFO(ME, "Send channel change notification");
-
-    // Switch values
-    pRad->channel = newChannelValue;
-    pRad->runningChannelBandwidth = newBandwidthValue;
-
-    amxc_var_clean(&params);
 }
 
 void wld_rad_init_counters(T_Radio* pRad, T_EventCounterList* counters, const char** defaults) {
@@ -4611,6 +4539,9 @@ void wld_rad_resetStatusHistogram(T_Radio* pRad) {
     memset(&pRad->changeInfo.statusHistogram.data, 0, sizeof(pRad->changeInfo.statusHistogram.data));
 }
 
+swl_freqBand_e wld_rad_getFreqBand(T_Radio* pRad) {
+    return swl_chanspec_freqBandExtToFreqBand(pRad->operatingFrequencyBand, SWL_FREQ_BAND_2_4GHZ, NULL);
+}
 
 void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
     ASSERTI_NOT_NULL(pRad, , ME, "Radio null");
@@ -4760,6 +4691,16 @@ void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t 
 
 amxd_object_t* wld_rad_getObject(T_Radio* pRad) {
     return pRad->pBus;
+}
+
+bool wld_rad_firstCommitFinished(T_Radio* pRad) {
+    if(pRad->counterList[WLD_RAD_EV_FSM_COMMIT].counter == 0) {
+        return false;
+    }
+    if(pRad->counterList[WLD_RAD_EV_FSM_COMMIT].counter > 1) {
+        return true;
+    }
+    return pRad->fsmRad.FSM_State == FSM_IDLE;
 }
 
 

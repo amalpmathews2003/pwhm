@@ -147,11 +147,7 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
     T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
     ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    swl_chanspec_t chanspec = {
-        .channel = pR->channel,
-        .bandwidth = pR->runningChannelBandwidth,
-        .band = pR->operatingFrequencyBand
-    };
+    swl_chanspec_t chanspec = pR->targetChanspec.chanspec;
 
     uint32_t freq;
     uint32_t center_freq;
@@ -178,8 +174,8 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
     swl_strlst_catFormat(cmd, sizeof(cmd), " ", "%d", freq);
 
     swl_strlst_catFormat(cmd, sizeof(cmd), " ", "bandwidth=%d", bw);
+    swl_strlst_catFormat(cmd, sizeof(cmd), " ", "center_freq1=%d", center_freq);
     if(bw > 20) {
-        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "center_freq1=%d", center_freq);
         swl_strlst_catFormat(cmd, sizeof(cmd), " ", "sec_channel_offset=%d", sec_channel_offset);
     }
 
@@ -191,8 +187,7 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
     if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_N)) {
         swl_strlst_catFormat(cmd, sizeof(cmd), " ", "ht");
     }
-    //hostapd complains when setting vht cap in chan_switch with bw 20MHz
-    if((bw > 20) && (SWL_BIT_IS_SET(operStd, SWL_RADSTD_AC))) {
+    if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_AC)) {
         swl_strlst_catFormat(cmd, sizeof(cmd), " ", "vht");
     }
     if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_AX)) {

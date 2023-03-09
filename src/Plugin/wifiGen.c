@@ -63,6 +63,7 @@
 #include "wld/wld.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_nl80211_api.h"
+#include "wld/wld_rad_nl80211.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_vap.h"
 #include "wifiGen_ep.h"
@@ -101,14 +102,13 @@ bool wifiGen_init() {
     fta.mfn_wrad_sync = wifiGen_rad_sync;
     fta.mfn_wrad_regdomain = wifiGen_rad_regDomain;
     fta.mfn_wrad_txpow = wifiGen_rad_txpow;
-    fta.mfn_wrad_channel = wifiGen_rad_channel;
+    fta.mfn_wrad_setChanspec = wifiGen_rad_setChanspec;
     fta.mfn_wrad_antennactrl = wifiGen_rad_antennactrl;
     fta.mfn_wrad_supstd = wifiGen_rad_supstd;
-    fta.mfn_wrad_ochbw = wifiGen_rad_ochbw;
     fta.mfn_wrad_stats = wifiGen_rad_stats;
     fta.mfn_wrad_fsm_delay_commit = wifiGen_rad_delayedCommitUpdate;
-    fta.mfn_wrad_start_scan_ext = wifiGen_rad_startScanExt;
-    fta.mfn_wrad_stop_scan = wifiGen_rad_stopScan;
+    fta.mfn_wrad_start_scan = wld_rad_nl80211_startScan;
+    fta.mfn_wrad_stop_scan = wld_rad_nl80211_abortScan;
     fta.mfn_wrad_scan_results = wifiGen_rad_getScanResults;
     fta.mfn_wrad_airstats = wifiGen_rad_getAirStats;
 

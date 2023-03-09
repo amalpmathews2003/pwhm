@@ -300,7 +300,8 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
     return rc;
 }
 
-swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio, T_ScanArgs* args) {
+swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio) {
+    T_ScanArgs* args = &pRadio->scanState.cfg.scanArguments;
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
