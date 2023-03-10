@@ -360,6 +360,7 @@ include "wld_accesspoint.odl";
 include "wld_endpoint.odl";
 
 %populate {
+	on event "app:start" call app_start;
 	on event "dm:instance-added" call wld_radio_addInstance_ocf
 		filter 'path == "WiFi.Radio."';
 	on event regexp("dm:object-(added|changed)") call wld_rad_setVendorData_ocf

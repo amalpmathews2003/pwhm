@@ -147,6 +147,7 @@
                    "swlConv" = 200,
                    "swlCryp" = 200,
                    "swlCTbl" = 200,
+                   "swlExec" = 200,
                    "swlFile" = 200,
                    "swlHash" = 200,
                    "swlHex" = 200,
@@ -206,12 +207,7 @@
     };
 
     import-dirs = [
-        ".",
-        "../../odl/",
-        "../../src/",
         "../../src/Plugin/",
-        "${prefix}${plugin-dir}/${name}",
-        "${prefix}${plugin-dir}/modules",
         "${prefix}/usr/lib/amx/${name}",
         "${prefix}/usr/lib/amx/modules"
     ];
@@ -226,7 +222,3 @@ include "${definition_file}";
     entry-point wld.wld_main;
 }
 
-%populate {
-    on event "dm:object-changed" call wld_rad_setOperatingClass
-        filter 'path matches "WiFi\.Radio\.[a-zA-Z0-9_-]\." && (contains("parameters.OperatingChannelBandwidth") || contains("parameters.Channel"))';
-}

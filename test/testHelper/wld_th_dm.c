@@ -130,6 +130,7 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 
     swl_timeMono_t createTime = swl_time_getMonoSec();
 
+    amxp_sigmngr_trigger_signal(&dm->ttbBus->dm.sigmngr, "app:start", NULL);
     ttb_mockTimer_goToFutureMs(10000);
 
     for(size_t i = 0; i < SWL_FREQ_BAND_MAX && i < SWL_ARRAY_SIZE(radNames); i++) {

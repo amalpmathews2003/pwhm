@@ -119,8 +119,10 @@ static bool s_loadDmConf() {
     return true;
 }
 
-static void s_delayLoadDmConf(amxp_timer_t* timer, void* userdata _UNUSED) {
-    amxp_timer_delete(&timer);
+void _app_start(const char* const event_name _UNUSED,
+                const amxc_var_t* const event_data _UNUSED,
+                void* const priv _UNUSED) {
+    SAH_TRACEZ_WARNING(ME, "data model is loaded");
     s_loadDmConf();
 }
 
@@ -155,13 +157,6 @@ int _wld_main(int reason,
         wld_vendorModuleMgr_initAll(&initInfo);
         wifiGen_addRadios();
 
-        /*
-         * Delay loading DM config to let plugin enter event loop
-         * and be ready for timer signals
-         */
-        amxp_timer_t* timer = NULL;
-        amxp_timer_new(&timer, s_delayLoadDmConf, NULL);
-        amxp_timer_start(timer, 250);
         break;
     case 1:     // STOP
         SAH_TRACEZ_WARNING(ME, "WLD plugin stopped");
