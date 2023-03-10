@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.23.0 - 2023-03-10(12:33:50 +0000)
+
+### Other
+
+- make configurable pwhm coredump generation
+
 ## Release v2.22.3 - 2023-03-03(15:15:38 +0000)
 
 ### Other
