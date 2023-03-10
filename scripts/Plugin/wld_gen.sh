@@ -1,4 +1,6 @@
 #!/bin/sh
+[ -f /etc/environment ] && source /etc/environment
+ulimit -c ${ULIMIT_CONFIGURATION:-0}
 
 prevent_netifd_to_configure_wireless()
 {
