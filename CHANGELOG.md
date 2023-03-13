@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.23.2 - 2023-03-13(09:23:11 +0000)
+
+### Other
+
+- remove initial arbitrary timer for dm conf loading
+
 ## Release v2.23.1 - 2023-03-13(09:03:16 +0000)
 
 ### Other
