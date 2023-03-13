@@ -153,7 +153,11 @@ define rrm_t{
 		 * a reply of -1 is returned.</p>
 		 *
 		 */
-		bool sendBssTransferRequest(%in string mac, %in string target, %in int32 class, %in int32 channel, %in int32 wait, %in int32 retries, %in int32 validity, %in int32 disassoc, %in uint32 bssidInfo, %in int32 transitionReason, %in uint8 mode);
+		int32 sendBssTransferRequest(
+			%in %mandatory string mac, %in %mandatory string target,
+			%in %mandatory uint8 class, %in %mandatory uint8 channel, 
+			%in uint32 wait, %in uint32 retries, %in int32 validity, %in int32 disassoc,
+			%in uint32 bssidInfo, %in int32 transitionReason, %in uint8 mode);
 
 		/**
 		 * <b>sendPublicAction</b>

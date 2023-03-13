@@ -263,19 +263,8 @@ int wifiGen_vap_multiap_update_type(T_AccessPoint* pAP) {
     return 0;
 }
 
-int wifiGen_vap_sta_transfer_ext(T_AccessPoint* pAP, wld_transferStaArgs_t* params) {
+swl_rc_ne wifiGen_vap_sta_transfer(T_AccessPoint* pAP, wld_transferStaArgs_t* params) {
     return wld_ap_hostapd_transferStation(pAP, params);
-}
-
-int wifiGen_vap_sta_transfer(T_AccessPoint* pAP, char* sta, char* bssid, int operClass, int channel) {
-    wld_transferStaArgs_t params;
-    swl_mac_charToStandard(&params.sta, sta);
-    swl_mac_charToStandard(&params.targetBssid, bssid);
-    params.operClass = operClass;
-    params.channel = channel;
-    params.disassoc = 15;
-    params.validity = 0;
-    return wifiGen_vap_sta_transfer_ext(pAP, &params);
 }
 
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {

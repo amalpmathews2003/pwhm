@@ -738,6 +738,9 @@ typedef struct {
     uint8_t nssMcsNbr[WLD_MAX_NSS];
 } wld_sta_supMCS_adv_t;
 
+/*
+ * @brief arguments for BSS Transfer request
+ */
 typedef struct {
     swl_macChar_t sta;                    /* MAC of the station to steer */
     swl_macChar_t targetBssid;            /* Bss transition request's target BSSID */
@@ -1760,7 +1763,7 @@ typedef struct SWL_PACKED {
     swl_macBin_t mac;
     swl_macBin_t bssid;
     char* frame;
-    swl_timeReal_t timestamp;
+    swl_timeMono_t timestamp;
     uint16_t stype;
 } wld_vap_assocTableStruct_t;
 
@@ -2046,8 +2049,7 @@ typedef int (APIENTRY* PFN_WVAP_MF_SYNC)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_PF_SYNC)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_KICK_STA)(T_AccessPoint* vap, char* buf, int bufsize, int set);
 typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, int bufsize, int reason);
-typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA)(T_AccessPoint* vap, char* sta, char* bssid, int operClass, int channel);
-typedef int (APIENTRY* PFN_WVAP_TRANSFER_STA_EXT)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
+
 typedef int (APIENTRY* PFN_WVAP_SEND_PUBLIC_ACTION)(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data);
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef int (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
@@ -2200,8 +2202,16 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_PF_SYNC mfn_wvap_pf_sync;                           /**< Sync ProbeFiltering parameters */
     PFN_WVAP_KICK_STA mfn_wvap_kick_sta;                         /**< Disconnect a connected Station from the VAP */
     PFN_WVAP_KICK_STA_REASON mfn_wvap_kick_sta_reason;           /**< Disconnect a connected Station from the VAP with reason code */
-    PFN_WVAP_TRANSFER_STA mfn_wvap_transfer_sta;                 /**< Send a WNM transfer request */
-    PFN_WVAP_TRANSFER_STA_EXT mfn_wvap_transfer_sta_ext;         /**< Send an extended WNM transfer request */
+
+    /*
+     * @brief FTA handler for sending BTM request (11v)
+     *
+     * @param vap accesspoint hosting the station to be transferred
+     * @param params BSS transfer request arguments
+     * @return SWL_RC_OK on success (i.e request sent), error code otherwise
+     */
+    swl_rc_ne (* mfn_wvap_transfer_sta)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
+
     PFN_WVAP_SEND_PUBLIC_ACTION mfn_wvap_sendPublicAction;       /**< Send a public action frame */
     PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
     PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */

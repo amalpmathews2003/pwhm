@@ -123,7 +123,6 @@ bool wifiGen_init() {
     fta.mfn_wvap_get_single_station_stats = wifiGen_get_single_station_stats;
     fta.mfn_wvap_sec_sync = wifiGen_vap_sec_sync;
     fta.mfn_wvap_transfer_sta = wifiGen_vap_sta_transfer;
-    fta.mfn_wvap_transfer_sta_ext = wifiGen_vap_sta_transfer_ext;
     fta.mfn_wvap_mf_sync = wifiGen_vap_mf_sync;
     fta.mfn_wvap_pf_sync = wifiGen_vap_mf_sync;
     fta.mfn_wvap_wps_sync = wifiGen_vap_wps_sync;

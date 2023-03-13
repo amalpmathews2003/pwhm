@@ -110,7 +110,6 @@ static void ap_bss_done(bss_wait_t* wait, int reply_code) {
  */
 void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code) {
     SAH_TRACEZ_INFO(ME, "bss done %s", mac->cMac);
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &bss_wait_list) {
         bss_wait_t* wait = amxc_llist_it_get_data(it, bss_wait_t, it);
         if((wait->ap == ap) && swl_mac_charMatches(mac, &wait->params.sta)) {
@@ -123,26 +122,18 @@ void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code
 /**
  * Timeout handler for bss transfer frame retry.
  */
-static void bss_tranfer_timeout_handler(amxp_timer_t* timer _UNUSED, void* userdata) {
+static void s_bssTransferTimeoutHandler(amxp_timer_t* timer _UNUSED, void* userdata) {
     ASSERT_NOT_NULL(userdata, , ME, "NULL");
-    bss_wait_t* wait_item = (bss_wait_t*) userdata;
+    bss_wait_t* waitItem = (bss_wait_t*) userdata;
     int cmdRetval = WLD_ERROR;
-    if(wait_item->retries > wait_item->done_retries) {
-        SAH_TRACEZ_INFO(ME, "retry %s %s %u / %u", wait_item->ap->alias, wait_item->params.sta.cMac, wait_item->done_retries, wait_item->retries);
-        wait_item->done_retries++;
-        cmdRetval = wait_item->ap->pFA->mfn_wvap_transfer_sta_ext(wait_item->ap, &wait_item->params);
-        if(cmdRetval == WLD_ERROR_NOT_IMPLEMENTED) {
-            wait_item->ap->pFA->mfn_wvap_transfer_sta(
-                wait_item->ap,
-                wait_item->params.sta.cMac,
-                wait_item->params.targetBssid.cMac,
-                wait_item->params.operClass,
-                wait_item->params.channel);
-        }
+    if(waitItem->retries > waitItem->done_retries) {
+        SAH_TRACEZ_INFO(ME, "retry %s %s %u / %u", waitItem->ap->alias, waitItem->params.sta.cMac, waitItem->done_retries, waitItem->retries);
+        waitItem->done_retries++;
+        waitItem->ap->pFA->mfn_wvap_transfer_sta(waitItem->ap, &waitItem->params);
 
-        amxp_timer_start(wait_item->timer, wait_item->timeout);
+        amxp_timer_start(waitItem->timer, waitItem->timeout);
     } else {
-        ap_bss_done(wait_item, -1);
+        ap_bss_done(waitItem, -1);
     }
 }
 
@@ -158,28 +149,26 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
 
     SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_status_ok;
+    wld_transferStaArgs_t params;
+    memset(&params, 0, sizeof(params));
 
     const char* mac = GET_CHAR(args, "mac");
-    const char* bssid = GET_CHAR(args, "target");
-
-    uint32_t ms_wait_time;
-    uint32_t retries;
-
-    int cmdRetval = WLD_ERROR;
-
-    wld_transferStaArgs_t params;
+    ASSERT_TRUE(swl_typeMacChar_fromChar(&params.sta, mac), amxd_status_invalid_function_argument,
+                ME, "invalid mac argument %s", mac);
+    ASSERT_TRUE(swl_mac_charIsValidStaMac(&params.sta), amxd_status_invalid_function_argument,
+                ME, "invalid station mac %s", params.sta.cMac);
 
     amxc_var_t* operClass = amxc_var_get_key(args, "class", AMXC_VAR_FLAG_DEFAULT);
-    params.operClass = (operClass == NULL) ? 0 : amxc_var_dyncast(int8_t, operClass);
+    params.operClass = (operClass == NULL) ? 0 : amxc_var_dyncast(uint8_t, operClass);
 
     amxc_var_t* channel = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
-    params.channel = (channel == NULL) ? 0 : amxc_var_dyncast(int8_t, channel);
+    params.channel = (channel == NULL) ? 0 : amxc_var_dyncast(uint8_t, channel);
 
     amxc_var_t* ms_wait_timeVar = amxc_var_get_key(args, "wait", AMXC_VAR_FLAG_DEFAULT);
-    ms_wait_time = (ms_wait_timeVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, ms_wait_timeVar);
+    uint32_t ms_wait_time = (ms_wait_timeVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, ms_wait_timeVar);
 
     amxc_var_t* retriesVar = amxc_var_get_key(args, "retries", AMXC_VAR_FLAG_DEFAULT);
-    retries = (retriesVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, retriesVar);
+    uint32_t retries = (retriesVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, retriesVar);
 
     amxc_var_t* validity = amxc_var_get_key(args, "validity", AMXC_VAR_FLAG_DEFAULT);
     params.validity = (validity == NULL) ? 0 : amxc_var_dyncast(int32_t, validity);
@@ -199,56 +188,39 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
         M_SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT :
         amxc_var_dyncast(uint8_t, mode);
 
-    if(!mac || !bssid || (params.channel == 0)) {
-        SAH_TRACEZ_ERROR(ME, "Invalid argument");
-        status = amxd_status_invalid_function_argument;
-        goto end;
-    }
-
-    swl_typeMacChar_fromChar(&params.sta, mac);
-    swl_typeMacChar_fromChar(&params.targetBssid, bssid);
+    const char* bssid = GET_CHAR(args, "target");
+    ASSERT_TRUE(swl_typeMacChar_fromChar(&params.targetBssid, bssid), amxd_status_invalid_function_argument,
+                ME, "invalid target argument %s", bssid);
+    ASSERT_TRUE(swl_mac_charIsValidStaMac(&params.targetBssid), amxd_status_invalid_function_argument,
+                ME, "invalid target mac %s", bssid);
+    ASSERT_NOT_EQUALS(params.channel, 0, amxd_status_invalid_function_argument, ME, "invalid channel argument");
+    ASSERT_NOT_EQUALS(params.operClass, 0, amxd_status_invalid_function_argument, ME, "invalid operClass argument");
 
     SAH_TRACEZ_NOTICE(ME, "Steer %s @ %s 2 %s/%u:%u retry %u x %u ms",
                       params.sta.cMac, pAP->alias, params.targetBssid.cMac,
                       params.operClass, params.channel, retries, ms_wait_time);
 
-    cmdRetval = pAP->pFA->mfn_wvap_transfer_sta_ext(pAP, &params);
-    if(cmdRetval == WLD_ERROR_NOT_IMPLEMENTED) {
-        cmdRetval = pAP->pFA->mfn_wvap_transfer_sta(pAP, params.sta.cMac, params.targetBssid.cMac,
-                                                    params.operClass, params.channel);
-        SAH_TRACEZ_INFO(ME, "Extended Function not supported");
-    }
-    if(cmdRetval == WLD_ERROR_NOT_IMPLEMENTED) {
-        SAH_TRACEZ_ERROR(ME, "Function not supported");
-        status = amxd_status_function_not_implemented;
-    } else if(cmdRetval < 0) {
-        SAH_TRACEZ_ERROR(ME, "Error during execution");
-        status = amxd_status_unknown_error;
-    } else if(ms_wait_time > 0) {
+    swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_transfer_sta(pAP, &params);
+    ASSERT_NOT_EQUALS(cmdRetval, SWL_RC_NOT_IMPLEMENTED, amxd_status_function_not_implemented, ME, "Function not supported");
+    ASSERT_FALSE(cmdRetval < SWL_RC_OK, amxd_status_unknown_error, ME, "Error during execution");
+    if(ms_wait_time > 0) {
         SAH_TRACEZ_INFO(ME, "Waiting %u", ms_wait_time);
-        bss_wait_t* wait_item = calloc(1, sizeof(bss_wait_t));
-        if(!wait_item) {
-            SAH_TRACEZ_ERROR(ME, "wait_item is NULL");
-            status = amxd_status_out_of_mem;
-            goto end;
-        }
-        wait_item->ap = pAP;
-        wait_item->params = params;
-        wait_item->retries = retries;
-        wait_item->timeout = ms_wait_time;
-        amxp_timer_new(&wait_item->timer, bss_tranfer_timeout_handler, wait_item);
-        wait_item->timer->priv = wait_item;
-        amxp_timer_start(wait_item->timer, ms_wait_time);
-        amxc_llist_append(&bss_wait_list, &(wait_item->it));
-        wait_item->call_id = amxc_var_dyncast(uint64_t, ret);
-        amxd_function_defer(func, &wait_item->call_id, ret, NULL, NULL);
-        status = amxd_status_deferred;
-    } else {
-        amxc_var_init(ret);
-        amxc_var_set(int32_t, ret, -1);
+        bss_wait_t* waitItem = calloc(1, sizeof(bss_wait_t));
+        ASSERT_NOT_NULL(waitItem, amxd_status_out_of_mem, ME, "waitItem is NULL");
+        waitItem->ap = pAP;
+        waitItem->params = params;
+        waitItem->retries = retries;
+        waitItem->timeout = ms_wait_time;
+        amxp_timer_new(&waitItem->timer, s_bssTransferTimeoutHandler, waitItem);
+        waitItem->timer->priv = waitItem;
+        amxp_timer_start(waitItem->timer, ms_wait_time);
+        amxc_llist_append(&bss_wait_list, &(waitItem->it));
+        amxd_function_defer(func, &waitItem->call_id, ret, NULL, NULL);
+        return amxd_status_deferred;
     }
+    amxc_var_init(ret);
+    amxc_var_set(int32_t, ret, -1);
 
-end:
     SAH_TRACEZ_OUT(ME);
-    return status;
+    return amxd_status_ok;
 }

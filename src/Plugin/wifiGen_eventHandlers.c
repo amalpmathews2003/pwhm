@@ -77,6 +77,7 @@
 #include "wld/wld_endpoint.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
+#include "swl/swl_genericFrameParser.h"
 #include <amxc/amxc.h>
 #include "wifiGen_staCapHandler.h"
 #include <errno.h>
@@ -395,36 +396,72 @@ static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* m
     wld_ap_bss_done(pAP, mac, (int) replyCode);
 }
 
-static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, swl_80211_mgmtFrame_t* mgmtFrame, size_t frameLen, char* frameStr) {
+static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame, size_t frameLen, swl_bit8_t* iesData, size_t iesLen) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(pAP->pSSID, , ME, "%s: Ap has No SSID", pAP->alias);
+    ASSERT_TRUE(SWL_MAC_BIN_MATCHES(pAP->pSSID->BSSID, &frame->bssid), ,
+                ME, "%s: bssid does not match ap("MAC_PRINT_FMT ") frame("MAC_PRINT_FMT ")",
+                pAP->alias, MAC_PRINT_ARG(pAP->pSSID->BSSID), MAC_PRINT_ARG(frame->bssid.bMac));
+
+    T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &frame->transmitter);
+    ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac));
+    wld_vap_saveAssocReq(pAP, (swl_bit8_t*) frame, frameLen);
+
+    wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, iesData, iesLen);
+    W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
+
+    wld_ad_add_connection_try(pAP, pAD);
+}
+
+static void s_assocReqCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen, swl_80211_assocReqFrameBody_t* assocReq, size_t assocReqDataLen) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(assocReq, , ME, "NULL");
+    s_commonAssocReqCb(pAP, frame, frameLen, assocReq->data, assocReqDataLen);
+}
+
+static void s_reassocReqCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen, swl_80211_reassocReqFrameBody_t* reassocReq, size_t reassocReqDataLen) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(reassocReq, , ME, "NULL");
+    s_commonAssocReqCb(pAP, frame, frameLen, reassocReq->data, reassocReqDataLen);
+}
+
+static void s_btmQueryCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen _UNUSED, swl_80211_wnmActionBTMQueryFrameBody_t* btmQuery, size_t btmQueryDataLen _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(btmQuery, , ME, "NULL");
+    swl_macChar_t mac;
+    SWL_MAC_BIN_TO_CHAR(&mac, &frame->transmitter);
+    SAH_TRACEZ_INFO(ME, "%s BSS-TM-QUERY %s reason %d", pAP->alias, mac.cMac, btmQuery->reason);
+}
+
+static void s_btmRespCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen _UNUSED, swl_80211_wnmActionBTMResponseFrameBody_t* btmResp, size_t btmRespDataLen _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(btmResp, , ME, "NULL");
+    uint8_t replyCode = btmResp->statusCode;
+    swl_macChar_t mac;
+    SWL_MAC_BIN_TO_CHAR(&mac, &frame->transmitter);
+    SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d", pAP->alias, mac.cMac, replyCode);
+    s_btmReplyEvt(pAP, pAP->alias, &mac, replyCode);
+}
+
+static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameHandlers = {
+    .fProcAssocReq = s_assocReqCb,
+    .fProcReAssocReq = s_reassocReqCb,
+    .fProcBtmQuery = s_btmQueryCb,
+    .fProcBtmResp = s_btmRespCb,
+};
+
+static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, swl_80211_mgmtFrame_t* mgmtFrame, size_t frameLen, char* frameStr _UNUSED) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(mgmtFrame, , ME, "NULL");
-    uint16_t mgtFrameType = (mgmtFrame->fc.subType << 4);
-    SAH_TRACEZ_INFO(ME, "%s: Received frame type (0x%x)", pAP->alias, mgtFrameType);
-    if((mgtFrameType == SWL_80211_MGT_FRAME_TYPE_ASSOC_REQUEST) ||
-       (mgtFrameType == SWL_80211_MGT_FRAME_TYPE_REASSOC_REQUEST)) {
-        // save last assoc frame
-
-        swl_macBin_t mac = mgmtFrame->transmitter;
-        swl_macBin_t bssid = mgmtFrame->bssid;
-        if(pAP->pSSID->BSSID) {
-            memcpy(bssid.bMac, pAP->pSSID->BSSID, SWL_MAC_BIN_LEN);
-        }
-        swl_timeReal_t timestamp = swl_time_getRealSec();
-        wld_vap_assocTableStruct_t tuple = {mac, bssid, frameStr, timestamp, mgmtFrame->fc.subType};
-        swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
-        SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "SWL_MAC_FMT, pAP->alias,
-                        SWL_MAC_ARG(mac.bMac));
-
-
-        T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &mac);
-        ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(mac.bMac));
-
-        wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, mgmtFrame, frameLen);
-        W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
-
-        wld_ad_add_connection_try(pAP, pAD);
-    }
+    swl_80211_handleMgmtFrame(userData, (swl_bit8_t*) mgmtFrame, frameLen, &s_mgmtFrameHandlers);
 }
 
 static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse) {

@@ -79,6 +79,8 @@
 #include "swl/swl_assert.h"
 #include "swl/swl_string.h"
 #include "swl/swl_ieee802_1x_defs.h"
+#include "swl/swl_hex.h"
+#include "swl/swl_genericFrameParser.h"
 #include "swl/swl_staCap.h"
 #include "wld_ap_rssiMonitor.h"
 #include "wld_eventing.h"
@@ -2301,6 +2303,27 @@ amxd_status_t __CommitAccessPoint(amxd_object_t* object _UNUSED,
                                   amxc_var_t* args _UNUSED,
                                   amxc_var_t* ret _UNUSED) {
     return amxd_status_ok;
+}
+
+swl_rc_ne wld_vap_saveAssocReq(T_AccessPoint* pAP, swl_bit8_t* frameBin, size_t frameLen) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_80211_mgmtFrame_t* frame = swl_80211_getMgmtFrame(frameBin, frameLen);
+    ASSERT_NOT_NULL(frame, SWL_RC_INVALID_PARAM, ME, "NULL");
+    uint8_t mgtFrameType = swl_80211_mgtFrameType(&frame->fc);
+    if((mgtFrameType != SWL_80211_MGT_FRAME_TYPE_ASSOC_REQUEST) &&
+       (mgtFrameType != SWL_80211_MGT_FRAME_TYPE_REASSOC_REQUEST)) {
+        SAH_TRACEZ_ERROR(ME, "%s: not (re)assoc frame type (0x%x)", pAP->alias, frame->fc.subType);
+        return SWL_RC_INVALID_PARAM;
+    }
+    char frameStr[(frameLen * 2) + 1];
+    bool ret = swl_hex_fromBytesSep(frameStr, sizeof(frameStr), frameBin, frameLen, false, 0, NULL);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: fail to hex dump frame type %d (len:%zu)", pAP->alias, frame->fc.subType, frameLen)
+    swl_timeMono_t timestamp = swl_time_getMonoSec();
+    wld_vap_assocTableStruct_t tuple = {frame->transmitter, frame->bssid, frameStr, timestamp, frame->fc.subType};
+    swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
+    SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "SWL_MAC_FMT, pAP->alias,
+                    SWL_MAC_ARG(frame->transmitter.bMac));
+    return SWL_RC_OK;
 }
 
 swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {

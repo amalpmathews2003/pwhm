@@ -595,20 +595,43 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
     SAH_TRACEZ_INFO(ME, "%s: Send tranfer from %s to %s of %s", pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac);
 
     char cmd[256] = {'\0'};
-    snprintf(cmd, sizeof(cmd), "BSS_TM_REQ"
-             " %s"
-             " disassoc_timer=%d"
-             " valid_int=%d"
-             " neighbor=%s"
-             ",%u,%d,%d,%d"   //<bssidInfo>,<operClass>,<channel>,<phyType>
-             " pref=%u abridged=%u disassoc_imminent=%u"
-             " mbo=%d:%d:%d"  //mbo=<reason>:<reassoc_delay>:<cell_pref>
-             , params->sta.cMac, params->disassoc, params->validity, params->targetBssid.cMac, params->bssidInfo, params->operClass, params->channel,
-             swl_chanspec_operClassToPhyMode(params->operClass),
-             SWL_BIT_IS_SET(params->reqModeMask, M_SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL),
-             SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_ABRIDGED),
-             SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT),
-             params->transitionReason, params->disassoc ? 100 : 0, 0);
+    swl_str_catFormat(cmd, sizeof(cmd), "BSS_TM_REQ"
+                      " %s"
+                      " pref=%u abridged=%u"
+                      , params->sta.cMac,
+                      SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL),
+                      SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_ABRIDGED));
+    if(params->transitionReason >= 0) {
+        swl_str_catFormat(cmd, sizeof(cmd),
+                          " mbo=%d:%d:%d"  //mbo=<reason>:<reassoc_delay>:<cell_pref>
+                          , params->transitionReason, (params->disassoc > 0) ? 100 : 0, 0);
+    }
+    if(params->disassoc > 0) {
+        swl_str_catFormat(cmd, sizeof(cmd),
+                          " disassoc_imminent=%u"
+                          " disassoc_timer=%d"
+                          , SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT),
+                          params->disassoc);
+    }
+    if(params->validity > 0) {
+        //80211: validity interval 0 is a reserved value:
+        //in this case, let hostapd/driver set the default number of beacon transmission times (TBTTs)
+        //until the BSS transition candidate list is no longer valid
+        swl_str_catFormat(cmd, sizeof(cmd),
+                          " valid_int=%d"
+                          , params->validity);
+    }
+    if(swl_mac_charIsValidStaMac(&params->targetBssid)) {
+        swl_str_catFormat(cmd, sizeof(cmd),
+                          " neighbor=%s"
+                          ",%u,%d,%d,%d"   //<bssidInfo>,<operClass>,<channel>,<phyType>
+                          , params->targetBssid.cMac
+                          , params->bssidInfo, params->operClass, params->channel, swl_chanspec_operClassToPhyMode(params->operClass));
+        if(SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL)) {
+            //add highest preference for the bss candidate: Tlv: Len:3,candidate:1,pref:255
+            swl_str_catFormat(cmd, sizeof(cmd), ",0301ff");
+        }
+    }
 
     bool ret = s_sendHostapdCommand(pAP, cmd, "bss transition management");
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: btm from %s to %s of station %s failed", pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac);

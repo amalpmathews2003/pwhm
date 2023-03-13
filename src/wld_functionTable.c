@@ -323,16 +323,17 @@ static void TRAP_mfn_wvap_destroy_hook(T_AccessPoint* vap) {
     // Ignore silently. Destructor hooks are optional.
 }
 
-static int TRAP_mfn_wvap_transfer_sta(T_AccessPoint* vap _UNUSED, char* sta _UNUSED, char* targetBssid _UNUSED,
-                                      int operClass _UNUSED, int channel _UNUSED) {
-    SAH_TRACEZ_NOTICE(ME, "%p %s %s %d %d", vap, sta, targetBssid, operClass, channel);
-    return WLD_ERROR_NOT_IMPLEMENTED;
-}
-
-static int TRAP_mfn_wvap_transfer_sta_ext(T_AccessPoint* vap, wld_transferStaArgs_t* params) {
+/*
+ * @brief trap fta handler for sending BTM request (11v)
+ *
+ * @param vap accesspoint hosting the station to be transferred
+ * @param params BSS transfer request arguments
+ * @return SWL_RC_OK on success (i.e request sent), error code otherwise
+ */
+static swl_rc_ne TRAP_mfn_wvap_transfer_sta(T_AccessPoint* vap, wld_transferStaArgs_t* params) {
     SAH_TRACEZ_NOTICE(ME, "%p %s %s %d %d %d %d", vap, params->sta.cMac, params->targetBssid.cMac,
                       params->operClass, params->channel, params->validity, params->disassoc);
-    return WLD_ERROR_NOT_IMPLEMENTED;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wvap_sendPublicAction(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data) {
@@ -622,7 +623,6 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_set_discovery_method);
     FTA_ASSIGN(mfn_wvap_set_config_driver);
     FTA_ASSIGN(mfn_wvap_transfer_sta);
-    FTA_ASSIGN(mfn_wvap_transfer_sta_ext);
     FTA_ASSIGN(mfn_wvap_sendPublicAction);
     FTA_ASSIGN(mfn_wvap_fsm_state);
     FTA_ASSIGN(mfn_wvap_fsm);
