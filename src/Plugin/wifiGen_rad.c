@@ -661,11 +661,13 @@ void wifiGen_rad_initBands(T_Radio* pRad) {
 
 swl_rc_ne wifiGen_rad_stats(T_Radio* pRad) {
     swl_rc_ne ret;
-    if(wld_linuxIfStats_getRadioStats(pRad, &pRad->stats)) {
+    T_Stats stats;
+    memset(&stats, 0, sizeof(stats));
+    if(wld_linuxIfStats_getRadioStats(pRad, &stats)) {
         ret = SWL_RC_OK;
-        SAH_TRACEZ_INFO(ME, "get stats for radio %d OK", pRad->index);
+        memcpy(&pRad->stats, &stats, sizeof(stats));
     } else {
-        SAH_TRACEZ_INFO(ME, "get stats for radio %d fail", pRad->index);
+        SAH_TRACEZ_WARNING(ME, "%s: get stats for radio fail", pRad->Name);
         ret = SWL_RC_ERROR;
     }
     return ret;

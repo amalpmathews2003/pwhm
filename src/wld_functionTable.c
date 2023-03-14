@@ -402,10 +402,8 @@ static int TRAP_mfn_wvap_deleted_neighbour(T_AccessPoint* vap, T_ApNeighbour* ne
     return -1;
 }
 
-static swl_rc_ne TRAP_mfn_wvap_update_ap_stats(T_Radio* rad, T_AccessPoint* vap) {
-    _UNUSED_(rad);
-    _UNUSED_(vap);
-    SAH_TRACEZ_NOTICE(ME, "%p %p", rad, vap);
+static swl_rc_ne TRAP_mfn_wvap_update_ap_stats(T_AccessPoint* vap _UNUSED) {
+    SAH_TRACEZ_NOTICE(ME, "%p", vap);
     return SWL_RC_NOT_IMPLEMENTED;
 }
 

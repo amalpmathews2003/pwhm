@@ -70,6 +70,7 @@
 
 #include "swl/swl_assert.h"
 #include "swla/swla_conversion.h"
+#include "swla/swla_object.h"
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
 
@@ -2649,86 +2650,65 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
     return true;
 }
 
-amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats) {
-    ASSERT_NOT_NULL(obj, false, ME, "NULL");
-    ASSERT_NOT_NULL(stats, false, ME, "NULL");
-
-    amxd_object_set_uint64_t(obj, "BytesSent", stats->BytesSent);
-    amxd_object_set_uint64_t(obj, "BytesReceived", stats->BytesReceived);
-    amxd_object_set_uint64_t(obj, "PacketsSent", stats->PacketsSent);
-    amxd_object_set_uint64_t(obj, "PacketsReceived", stats->PacketsReceived);
-    amxd_object_set_uint32_t(obj, "ErrorsSent", stats->ErrorsSent);
-    amxd_object_set_uint32_t(obj, "RetransCount", stats->RetransCount);
-    amxd_object_set_uint32_t(obj, "ErrorsReceived", stats->ErrorsReceived);
-    amxd_object_set_uint32_t(obj, "DiscardPacketsSent", stats->DiscardPacketsSent);
-    amxd_object_set_uint32_t(obj, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
-    amxd_object_set_uint32_t(obj, "UnicastPacketsSent", stats->UnicastPacketsSent);
-    amxd_object_set_uint32_t(obj, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
-    amxd_object_set_uint32_t(obj, "MulticastPacketsSent", stats->MulticastPacketsSent);
-    amxd_object_set_uint32_t(obj, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
-    amxd_object_set_uint32_t(obj, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
-    amxd_object_set_uint32_t(obj, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
-    amxd_object_set_uint32_t(obj, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
-    amxd_object_set_uint32_t(obj, "FailedRetransCount", stats->FailedRetransCount);
-    amxd_object_set_uint32_t(obj, "RetryCount", stats->RetryCount);
-    amxd_object_set_uint32_t(obj, "MultipleRetryCount", stats->MultipleRetryCount);
-    amxd_object_set_uint32_t(obj, "Temperature", stats->TemperatureDegreesCelsius);
-    amxd_object_set_int32_t(obj, "Noise", stats->noise);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t wld_util_stats2Var(amxc_var_t* map, T_Stats* stats) {
-    amxc_var_add_key(uint64_t, map, "BytesSent", stats->BytesSent);
-    amxc_var_add_key(uint64_t, map, "BytesReceived", stats->BytesReceived);
-    amxc_var_add_key(uint64_t, map, "PacketsSent", stats->PacketsSent);
-    amxc_var_add_key(uint64_t, map, "PacketsReceived", stats->PacketsReceived);
-    amxc_var_add_key(uint32_t, map, "ErrorsSent", stats->ErrorsSent);
-    amxc_var_add_key(uint32_t, map, "ErrorsReceived", stats->ErrorsReceived);
-    amxc_var_add_key(uint32_t, map, "RetransCount", stats->RetransCount);
-    amxc_var_add_key(uint32_t, map, "DiscardPacketsSent", stats->DiscardPacketsSent);
-    amxc_var_add_key(uint32_t, map, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
-    amxc_var_add_key(uint32_t, map, "UnicastPacketsSent", stats->UnicastPacketsSent);
-    amxc_var_add_key(uint32_t, map, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
-    amxc_var_add_key(uint32_t, map, "MulticastPacketsSent", stats->MulticastPacketsSent);
-    amxc_var_add_key(uint32_t, map, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
-    amxc_var_add_key(uint32_t, map, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
-    amxc_var_add_key(uint32_t, map, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
-    amxc_var_add_key(uint32_t, map, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
-    amxc_var_add_key(uint32_t, map, "FailedRetransCount", stats->FailedRetransCount);
-    amxc_var_add_key(uint32_t, map, "RetryCount", stats->RetryCount);
-    amxc_var_add_key(uint32_t, map, "MultipleRetryCount", stats->MultipleRetryCount);
-    amxc_var_add_key(uint32_t, map, "Temperature", stats->TemperatureDegreesCelsius);
-    amxc_var_add_key(int64_t, map, "Noise", stats->noise);
-
-    return amxd_status_ok;
-}
-
-void wld_util_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
+static void s_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
     amxd_object_t* object = amxd_object_get(parentObj, objectName);
     ASSERT_NOT_NULL(object, , ME, "No object named <%s>", objectName);
-    amxd_object_set_uint64_t(object, "AC_BE", stats[WLD_AC_BE]);
-    amxd_object_set_uint64_t(object, "AC_BK", stats[WLD_AC_BK]);
-    amxd_object_set_uint64_t(object, "AC_VO", stats[WLD_AC_VO]);
-    amxd_object_set_uint64_t(object, "AC_VI", stats[WLD_AC_VI]);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_BE", stats[WLD_AC_BE]);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_BK", stats[WLD_AC_BK]);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_VO", stats[WLD_AC_VO]);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_VI", stats[WLD_AC_VI]);
 }
 
-void wld_util_addWmmStats(amxd_object_t* parentObj, amxc_var_t* map _UNUSED, const char* name) {
-    amxd_object_t* object = amxd_object_get(parentObj, name);
-    ASSERT_NOT_NULL(object, , ME, "No object named <%s>", name);
-    amxc_var_t my_map;
-    amxc_var_init(&my_map);
-    //Add data
-    amxc_var_clean(&my_map);
+amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats) {
+    ASSERT_NOT_NULL(obj, amxd_status_unknown_error, ME, "NULL");
+    ASSERT_NOT_NULL(stats, amxd_status_unknown_error, ME, "NULL");
+
+    SWLA_OBJECT_SET_PARAM_UINT64(obj, "BytesSent", stats->BytesSent);
+    SWLA_OBJECT_SET_PARAM_UINT64(obj, "BytesReceived", stats->BytesReceived);
+    SWLA_OBJECT_SET_PARAM_UINT64(obj, "PacketsSent", stats->PacketsSent);
+    SWLA_OBJECT_SET_PARAM_UINT64(obj, "PacketsReceived", stats->PacketsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsSent", stats->ErrorsSent);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "RetransCount", stats->RetransCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsReceived", stats->ErrorsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "DiscardPacketsSent", stats->DiscardPacketsSent);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastPacketsSent", stats->UnicastPacketsSent);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastPacketsSent", stats->MulticastPacketsSent);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "FailedRetransCount", stats->FailedRetransCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "RetryCount", stats->RetryCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MultipleRetryCount", stats->MultipleRetryCount);
+    SWLA_OBJECT_SET_PARAM_INT32(obj, "Temperature", stats->TemperatureDegreesCelsius);
+    SWLA_OBJECT_SET_PARAM_INT32(obj, "Noise", stats->noise);
+
+    s_writeWmmStats(obj, "WmmPacketsSent", stats->WmmPacketsSent);
+    s_writeWmmStats(obj, "WmmPacketsReceived", stats->WmmPacketsReceived);
+    s_writeWmmStats(obj, "WmmFailedSent", stats->WmmFailedSent);
+    s_writeWmmStats(obj, "WmmFailedReceived", stats->WmmFailedReceived);
+    s_writeWmmStats(obj, "WmmBytesSent", stats->WmmBytesSent);
+    s_writeWmmStats(obj, "WmmFailedbytesSent", stats->WmmFailedBytesSent);
+    s_writeWmmStats(obj, "WmmBytesReceived", stats->WmmBytesReceived);
+    s_writeWmmStats(obj, "WmmFailedBytesReceived", stats->WmmFailedBytesReceived);
+
+    return amxd_status_ok;
 }
 
-void wld_util_updateWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
-    amxd_object_t* object = amxd_object_get(parentObj, objectName);
-
-    WLD_SET_VAR_UINT64(object, "AC_BE", stats[WLD_AC_BE]);
-    WLD_SET_VAR_UINT64(object, "AC_BK", stats[WLD_AC_BK]);
-    WLD_SET_VAR_UINT64(object, "AC_VO", stats[WLD_AC_VO]);
-    WLD_SET_VAR_UINT64(object, "AC_VI", stats[WLD_AC_VI]);
+amxd_status_t wld_util_statsObj2Var(amxc_var_t* map, amxd_object_t* statsObj) {
+    amxd_status_t status = swla_object_paramsToMap(map, statsObj);
+    ASSERTS_EQUALS(status, amxd_status_ok, status, ME, "fail dump stat params");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmPacketsSent");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmPacketsReceived");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmFailedSent");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmFailedReceived");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmBytesSent");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmFailedbytesSent");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmBytesReceived");
+    swla_object_addChildParamsToMap(map, statsObj, "WmmFailedBytesReceived");
+    return status;
 }
 
 void wld_util_updateStatusChangeInfo(wld_status_changeInfo_t* info, wld_status_e status) {

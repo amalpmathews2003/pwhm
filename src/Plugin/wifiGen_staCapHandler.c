@@ -79,6 +79,7 @@ static void s_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_cap
     cap->rrmCapabilities = pWirelessDevIE->rrmCapabilities;
     cap->rrmOnChannelMaxDuration = pWirelessDevIE->rrmOnChannelMaxDuration;
     cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;
+    cap->currentSecurity = pWirelessDevIE->secModeEnabled;
 }
 
 void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_80211_mgmtFrame_t* frame, size_t frameLen) {

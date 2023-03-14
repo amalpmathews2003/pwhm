@@ -75,6 +75,7 @@
 #include "wld/wld_assocdev.h"
 #include "wld/wld_hostapd_ap_api.h"
 #include "wifiGen_fsm.h"
+#include "wifiGen_rad.h"
 #include "wld/wld_statsmon.h"
 
 #define ME "genVap"
@@ -145,6 +146,29 @@ int wifiGen_vap_sync(T_AccessPoint* pAP, int set) {
     return ret;
 }
 
+static void s_fillAssocDevInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_nl80211_stationInfo_t* pStationInfo) {
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    wld_ap_nl80211_copyStationInfoToAssocDev(pAP, pAD, pStationInfo);
+    pAD->AvgSignalStrengthByChain = wld_ad_getAvgSignalStrengthByChain(pAD);
+    pAD->noise = pAP->pRadio->stats.noise;
+    if((pAD->noise != 0) && (pAD->SignalStrength != 0) && (pAD->SignalStrength > pAD->noise)) {
+        pAD->SignalNoiseRatio = pAD->SignalStrength - pAD->noise;
+    } else {
+        pAD->SignalNoiseRatio = 0;
+    }
+}
+
+static void s_resetAssocDevSignalNoise(T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    pAD->noise = 0;
+    pAD->SignalStrength = 0;
+    for(int j = 0; j < MAX_NR_ANTENNA; j++) {
+        pAD->SignalStrengthByChain[j] = 0;
+    }
+    pAD->SignalNoiseRatio = 0;
+}
+
 static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
 
     uint32_t nStations = 0;
@@ -152,8 +176,7 @@ static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
     swl_rc_ne retVal = wld_ap_nl80211_getAllStationsInfo(pAP, &pAllStaInfo, &nStations);
     ASSERT_FALSE(retVal < SWL_RC_OK, retVal, ME, "%s: fail to get all stations info", pAP->alias);
 
-    int32_t noise = 0;
-    wld_rad_nl80211_getNoise(pAP->pRadio, &noise);
+    wld_rad_nl80211_getNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
 
     T_AssociatedDevice* pAD;
     wld_nl80211_stationInfo_t* pStationInfo = NULL;
@@ -169,15 +192,9 @@ static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
             SAH_TRACEZ_WARNING(ME, "%s: created missing AD %s", pAP->alias, pAD->Name);
         }
         pAD->seen = true;
-        wld_ap_nl80211_copyStationInfoToAssocDev(pAP, pAD, pStationInfo);
+        s_fillAssocDevInfo(pAP, pAD, pStationInfo);
         if((!pAD->AuthenticationState) && (pStationInfo->flags.authenticated == SWL_TRL_TRUE)) {
             wld_ad_add_connection_success(pAP, pAD);
-        }
-        pAD->noise = noise;
-        if((noise != 0) && (pAD->SignalStrength != 0) && (pAD->SignalStrength > pAD->noise)) {
-            pAD->SignalNoiseRatio = pAD->SignalStrength - pAD->noise;
-        } else {
-            pAD->SignalNoiseRatio = 0;
         }
     }
     free(pAllStaInfo);
@@ -195,16 +212,11 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
 
         T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
         if(!pAD) {
-            SAH_TRACEZ_ERROR(ME, "nullpointer! %p", pAD);
+            SAH_TRACEZ_ERROR(ME, "%s: null AD", pAP->alias);
             return SWL_RC_ERROR;
         }
         if(!pAD->seen) {
-            pAD->SignalStrength = 0;
-            for(int j = 0; j < MAX_NR_ANTENNA; j++) {
-                pAD->SignalStrengthByChain[j] = 0;
-            }
-            pAD->SignalNoiseRatio = 0;
-            SAH_TRACEZ_WARNING(ME, "Skip unseen sta %s", pAD->Name);
+            s_resetAssocDevSignalNoise(pAD);
             continue;
         }
         wld_ap_hostapd_getStaInfo(pAP, pAD);
@@ -218,22 +230,20 @@ swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
     T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(amxd_object_get_parent(pAD->object))->priv;
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
-
-    wld_vap_mark_all_stations_unseen(pAP);
-    s_getNetlinkAllStaInfo(pAP);
+    ASSERTI_TRUE(pAD->Active, SWL_RC_OK, ME, "assocdev no more active");
 
     SAH_TRACEZ_INFO(ME, "pAP->alias = %s", pAP->alias);
     SAH_TRACEZ_INFO(ME, "pAD->Name = %s", pAD->Name);
 
-    if(!pAD->seen) {
-        pAD->SignalStrength = 0;
-        for(int j = 0; j < MAX_NR_ANTENNA; j++) {
-            pAD->SignalStrengthByChain[j] = 0;
-        }
-        pAD->SignalNoiseRatio = 0;
+    wld_nl80211_stationInfo_t stationInfo;
+    swl_rc_ne rc = wld_ap_nl80211_getStationInfo(pAP, (swl_macBin_t*) pAD->MACAddress, &stationInfo);
+    if(rc >= SWL_RC_OK) {
+        wld_rad_nl80211_getNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
+        s_fillAssocDevInfo(pAP, pAD, &stationInfo);
+        wld_ap_hostapd_getStaInfo(pAP, pAD);
+    } else {
+        s_resetAssocDevSignalNoise(pAD);
     }
-    wld_ap_hostapd_getStaInfo(pAP, pAD);
-    wld_vap_update_seen(pAP);
     return SWL_RC_OK;
 }
 
@@ -372,24 +382,13 @@ int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set _UN
     return wifiGen_vap_kick_sta_reason(pAP, buf, bufsize, SWL_IEEE80211_DEAUTH_REASON_AUTH_NO_LONGER_VALID);
 }
 
-int wifiGen_vap_updateApStats(T_Radio* rad, T_AccessPoint* vap) {
-    _UNUSED_(vap);
-    //TODO : wiphyInfo.suppCmds.survey is not registred in NL80211_ATTR_SUPPORTED_COMMANDS in kernel version 4.19
-    wld_rad_nl80211_getNoise(rad, &rad->stats.noise);
-    wld_updateRadioStats(rad, NULL);
-    return 0;
-}
-
-swl_rc_ne wifiGen_update_ap_stats(T_Radio* rad _UNUSED, T_AccessPoint* pAP) {
-    swl_rc_ne ret;
-    if(wld_linuxIfStats_getInterfaceStats(pAP->alias, &pAP->pSSID->stats)) {
-        ret = SWL_RC_OK;
-        SAH_TRACEZ_INFO(ME, "get stats for %s OK", pAP->alias);
-    } else {
-        SAH_TRACEZ_INFO(ME, "get stats for %s fail", pAP->alias);
-        ret = SWL_RC_ERROR;
-    }
-    return ret;
+int wifiGen_vap_updateApStats(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(pAP->index > 0, SWL_RC_ERROR, ME, "%s: iface not found", pAP->alias);
+    ASSERT_NOT_NULL(pAP->pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(wld_linuxIfStats_getInterfaceStats(pAP->alias, &pAP->pSSID->stats), SWL_RC_ERROR,
+                ME, "Fail to get stats for AP %s", pAP->alias);
+    return SWL_RC_OK;
 }
 
 swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, wld_rrmReq_t* req) {

@@ -881,7 +881,9 @@ SWL_TABLE(sAkmSuiteSelectorMap,
 swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
     // when failing to get sta info from hostpad, consider security mode unknown
-    pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_UNKNOWN;
+    if(!swl_security_isApModeValid(pAD->assocCaps.currentSecurity)) {
+        pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_UNKNOWN;
+    }
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     char buff[WLD_L_BUF] = {0};

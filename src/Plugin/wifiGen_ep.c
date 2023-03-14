@@ -261,13 +261,16 @@ swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP) {
            - SWL_RC_OK, if success to get stats, SWL_RC_ERROR if not
  */
 swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
-    ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
-    ASSERT_NOT_NULL(stats, SWL_RC_ERROR, ME, "NULL");
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pEP->pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_EQUALS(pEP->connectionStatus, EPCS_CONNECTED, SWL_RC_INVALID_STATE, ME, "%s: not connected %u", pEP->Name, pEP->connectionStatus);
+    ASSERT_NOT_NULL(stats, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     // interface station dump
-    wld_nl80211_stationInfo_t stationInfo;
     swl_macBin_t bssid;
     memcpy(bssid.bMac, pEP->pSSID->BSSID, SWL_MAC_BIN_LEN);
+    ASSERTI_FALSE(swl_mac_binIsNull(&bssid), SWL_RC_INVALID_STATE, ME, "%s: no remote bssid", pEP->Name);
+    wld_nl80211_stationInfo_t stationInfo;
     if(wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), pEP->index, &bssid, &stationInfo) < SWL_RC_OK) {
         SAH_TRACEZ_INFO(ME, "get stats for %s fail", pEP->Name);
         return SWL_RC_ERROR;

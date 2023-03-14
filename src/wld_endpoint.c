@@ -1075,6 +1075,7 @@ bool syncData_OBJ2EndPoint(amxd_object_t* object) {
         SAH_TRACEZ_ERROR(ME, "WPS object not found");
         return false;
     }
+    wpsobject->priv = &pEP->wpsSessionInfo;
 
     pEP->WPS_Enable = amxd_object_get_bool(wpsobject, "Enable", NULL);
     SAH_TRACEZ_INFO(ME, "Endpoint.WPS.enable = %d", pEP->WPS_Enable);
@@ -1390,7 +1391,7 @@ bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats) {
         return false;
     }
     amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(obj, &trans, SWL_RC_ERROR, ME, "trans init failure");
+    ASSERT_TRANSACTION_INIT(obj, &trans, false, ME, "trans init failure");
 
 
     amxd_trans_set_uint32_t(&trans, "LastDataDownlinkRate", stats->LastDataDownlinkRate);
@@ -1412,7 +1413,7 @@ bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats) {
     amxd_trans_set_uint32_t(&trans, "MaxTxSpatialStreamsSupported", stats->maxTxStream);
     wld_ad_syncCapabilities(&trans, &stats->assocCaps);
 
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "trans apply failure");
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), false, ME, "trans apply failure");
 
 
     return true;
@@ -1985,9 +1986,13 @@ T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, const char* i
     wld_endpoint_create_reconnect_timer(pEP);
     wld_tinyRoam_init(pEP);
 
-    amxd_object_t* wpsinstance = amxd_object_get(object, "WPS");
     pEP->wpsSessionInfo.intfObj = object;
-    wpsinstance->priv = &pEP->wpsSessionInfo;
+    amxd_object_t* wpsinstance = amxd_object_get(object, "WPS");
+    if(wpsinstance == NULL) {
+        SAH_TRACEZ_WARNING(ME, "%s: WPS subObj is not available", pEP->Name);
+    } else {
+        wpsinstance->priv = &pEP->wpsSessionInfo;
+    }
     object->priv = pEP;
     return pEP;
 }

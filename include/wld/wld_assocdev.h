@@ -108,6 +108,8 @@ bool wld_ad_has_active_video_stations(T_AccessPoint* pAP);
 bool wld_rad_has_active_stations(T_Radio* pRad);
 bool wld_rad_has_active_video_stations(T_Radio* pRad);
 int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD);
+void wld_ad_printSignalStrengthHistory(T_AssociatedDevice* pAD, char* buf, uint32_t bufSize);
+void wld_ad_printSignalStrengthByChain(T_AssociatedDevice* pAD, char* buf, uint32_t bufSize);
 
 bool wld_ad_has_assocdev(T_AccessPoint* pAP, const unsigned char macAddress[ETHER_ADDR_LEN]);
 T_AccessPoint* wld_rad_get_associated_ap(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]);

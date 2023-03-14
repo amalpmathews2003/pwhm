@@ -690,7 +690,7 @@ define rrm_t{
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 						"WPA3-Personal","WPA2-WPA3-Personal",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
-						"WPA3-Enterprise","WPA2-WPA3-Enterprise", "Unknown"];
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 				on action write call wld_ap_setModeEnabled_pwf;
 			}
 
@@ -1161,7 +1161,7 @@ define rrm_t{
 			 * This will also be a value between 0 and 100.
 			 * @version 6.0
 			 */
-			%read-only uint32 Retransmissions;
+			%volatile %read-only uint32 Retransmissions;
 
 			/** <p>Whether or not this node is currently present in the WiFi
 			 *  AccessPoint network.</p>
@@ -1185,79 +1185,79 @@ define rrm_t{
 			/** The time elapsed since the station was last active, in seconds
 			 * @version 6.0
 			*/
-			%read-only uint32 Inactive;
+			%volatile %read-only uint32 Inactive;
 			/** Number of packets received by the station
 			 * @version 6.0
 			*/
-			%read-only uint32 RxPacketCount;
+			%volatile %read-only uint32 RxPacketCount;
 
 			/** Number of packets sent by the station
 			 * @version 6.0
 			*/
-			%read-only uint32 TxPacketCount;
+			%volatile %read-only uint32 TxPacketCount;
 
 			/** 
-                         * Number of unicast packets received by the station
+			 * Number of unicast packets received by the station
 			 * @version 9.2 
-			*/
-                        %read-only uint32 RxUnicastPacketCount;
-
-
-			/** 
-                         * Number of unicast packets sent by the station
-			 * @version 9.2 
-			*/
-			%read-only uint32 TxUnicastPacketCount;
+			 */
+			%volatile %read-only uint32 RxUnicastPacketCount;
 
 
 			/** 
-                         * Number of Multicast packets received by the station
+			 * Number of unicast packets sent by the station
 			 * @version 9.2 
-			*/
-			%read-only uint32 RxMulticastPacketCount;
+			 */
+			%volatile %read-only uint32 TxUnicastPacketCount;
 
 
 			/** 
-                         * Number of Multicast packets sent by the station
+			 * Number of Multicast packets received by the station
 			 * @version 9.2 
-			*/
-			%read-only uint32 TxMulticastPacketCount;
+			 */
+			%volatile %read-only uint32 RxMulticastPacketCount;
+
+
+			/** 
+			 * Number of Multicast packets sent by the station
+			 * @version 9.2 
+			 */
+			%volatile %read-only uint32 TxMulticastPacketCount;
 
 			/** Number of bytes sent by the station
 			 * @version 6.0
-			*/
-			%read-only uint64 TxBytes;
+			 */
+			%volatile %read-only uint64 TxBytes;
 
 			/** Number of bytes received by the station
 			 * @version 6.0
-			*/
-			%read-only uint64 RxBytes;
+			 */
+			%volatile %read-only uint64 RxBytes;
 
 			/** Number of packets errors
 			 * @version 9.0
-			*/
-			%read-only uint32 TxErrors;
+			 */
+			%volatile %read-only uint32 TxErrors;
 
 			/** Number of received retransmissions.
 			 * @version 6.0
-			*/
-			%read-only uint32 Rx_Retransmissions;
+			 */
+			%volatile %read-only uint32 Rx_Retransmissions;
 			
 			/** Number of failed receive retransmissions.
 			 * @version 9.0
-			*/
-			%read-only uint32 Rx_RetransmissionsFailed;
-			
+			 */
+			%volatile %read-only uint32 Rx_RetransmissionsFailed;
+
 
 			/** Number of retransmissions we sent out ourselves.
 			 * @version 6.0
-			*/
-			%read-only uint32 Tx_Retransmissions;
+			 */
+			%volatile %read-only uint32 Tx_Retransmissions;
 
 			/** Number of failed retransmissions.
 			 * @version 9.0
-			*/
-			%read-only uint32 Tx_RetransmissionsFailed;
+			 */
+			%volatile %read-only uint32 Tx_RetransmissionsFailed;
 
 			/** MCS Id of the station's uplink */
 			%read-only uint32 UplinkMCS;
@@ -1347,7 +1347,7 @@ define rrm_t{
 			 * Connection Duration in seconds
 			 * @version 9.0
 			*/
-			%read-only uint32 ConnectionDuration;
+			%volatile %read-only uint32 ConnectionDuration;
 
 			/**
 			 * The type of device.
@@ -1404,13 +1404,13 @@ define rrm_t{
 			 * Instant count of packets sent as MU to the device. 
 			 * @version 9.2
 			 */
-			%read-only uint32 MUMimoTxPktsCount;
+			%volatile %read-only uint32 MUMimoTxPktsCount;
 			
 			/**
 			 * Instant percentage of packets sent as MU to the device. 
 			 * @version 9.2
 			 */
-			%read-only uint32 MUMimoTxPktsPercentage;
+			%volatile %read-only uint32 MUMimoTxPktsPercentage;
 
 			/**
 			 * list of HT modulation and coding scheme (MCS) supported by the associated device.
@@ -1460,8 +1460,8 @@ define rrm_t{
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 						"WPA3-Personal","WPA2-WPA3-Personal",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
-						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
-				default "None";
+						"WPA3-Enterprise","WPA2-WPA3-Enterprise","Unknown"];
+				default "Unknown";
 			}
 
 			/**
@@ -1600,8 +1600,8 @@ define rrm_t{
 							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
 							"WPA3-Personal","WPA2-WPA3-Personal",
 							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
-							"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
-					default "None";
+							"WPA3-Enterprise","WPA2-WPA3-Enterprise","Unknown"];
+					default "Unknown";
 				}
 
 				/**

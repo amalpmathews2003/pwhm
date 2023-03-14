@@ -137,6 +137,11 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     } else if(pStationInfo->rxRate.bitrate > 0) {
         pAD->seen = true;
     }
+    if(pStationInfo->flags.authorized != SWL_TRL_UNKNOWN) {
+        if(!swl_security_isApModeValid(pAD->assocCaps.currentSecurity)) {
+            pAD->assocCaps.currentSecurity = pAP->secModeEnabled;
+        }
+    }
 
     SAH_TRACEZ_INFO(ME, "%s: Downlink MCS %s", pAD->Name, swl_typeMcs_toBuf32(pStationInfo->txRate.mcsInfo).buf);
     SAH_TRACEZ_INFO(ME, "%s: Uplink MCS %s", pAD->Name, swl_typeMcs_toBuf32(pStationInfo->rxRate.mcsInfo).buf);

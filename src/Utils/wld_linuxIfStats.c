@@ -133,15 +133,12 @@ static bool s_getRtmNewLinkInterfaceStats(const struct nlmsghdr* pMsg, const cha
         switch(attribute->rta_type) {
         case IFLA_IFNAME:
             // This message contains the stats for the interface we are interested in
-            SAH_TRACEZ_INFO(ME, "case IFLA_IFNAME: This message contains the stats for the interface we are interested in (%s = ? %s)", pIfaceName, (char*) (RTA_DATA(attribute)));
             if(swl_str_nmatches(pIfaceName, (char*) (RTA_DATA(attribute)), strlen(pIfaceName) + 1)) {
-                SAH_TRACEZ_INFO(ME, "ifaceNameMatched == true");
                 ifaceNameMatched = true;
             }
             break;
 
         case IFLA_STATS:
-            SAH_TRACEZ_INFO(ME, "case IFLA_STATS: and ifaceNameMatched == %d", ifaceNameMatched);
             if(ifaceNameMatched) {
                 struct rtnl_link_stats* stats = (struct rtnl_link_stats*) (RTA_DATA(attribute));
 
@@ -307,7 +304,6 @@ bool wld_linuxIfStats_getInterfaceStats(const char* pIfaceName, T_Stats* pInterf
             for(pMsg = (struct nlmsghdr*) reply;
                 NLMSG_OK(pMsg, length);
                 pMsg = NLMSG_NEXT(pMsg, length)) {
-                SAH_TRACEZ_INFO(ME, "pMsg->nlmsg_type == %d", pMsg->nlmsg_type);
                 switch(pMsg->nlmsg_type) {
                 case NLMSG_DONE:
                     // This is the special meaning NLMSG_DONE message we asked for by using NLM_F_DUMP flag
@@ -357,6 +353,9 @@ bool wld_linuxIfStats_getAllVapStats(T_Radio* pRadio, T_Stats* pAllVapStats) {
 
         SAH_TRACEZ_INFO(ME, "Radio AP interface = %s", pAP->alias);
 
+        if(pAP->index <= 0) {
+            continue;
+        }
         if(!wld_linuxIfStats_getInterfaceStats(pAP->alias, &interfaceStats)) {
             SAH_TRACEZ_ERROR(ME, "Failed to get interface statistics for interface %s", pAP->alias);
             result |= false;
@@ -390,8 +389,11 @@ bool wld_linuxIfStats_getAllEpStats(T_Radio* pRadio, T_Stats* pAllEpStats) {
     for(it = (amxc_llist_it_t*) amxc_llist_get_first(&pRadio->llEndPoints); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
         pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
 
-        SAH_TRACEZ_INFO(ME, "Radio AP interface = %s", pEP->Name);
+        SAH_TRACEZ_INFO(ME, "Radio EP interface = %s", pEP->Name);
 
+        if(pEP->index <= 0) {
+            continue;
+        }
         if(!wld_linuxIfStats_getInterfaceStats(pEP->Name, &interfaceStats)) {
             SAH_TRACEZ_ERROR(ME, "Failed to get interface statistics for interface %s", pEP->Name);
             result |= false;

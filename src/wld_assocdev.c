@@ -575,39 +575,62 @@ T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl
     return wld_ad_create_associatedDevice(pAP, macAddress);
 }
 
+static void s_updateStationStatsHistory(T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    if(pAD->SignalStrength < pAD->minSignalStrength) {
+        pAD->minSignalStrength = pAD->SignalStrength;
+        pAD->minSignalStrengthTime = swl_time_getMonoSec();
+    }
+    if(pAD->SignalStrength > pAD->maxSignalStrength) {
+        pAD->maxSignalStrength = pAD->SignalStrength;
+        pAD->maxSignalStrengthTime = swl_time_getMonoSec();
+    }
+    pAD->nrMeanSignalStrength++;
+    pAD->meanSignalStrengthLinearAccumulator += pAD->SignalStrength;
+    pAD->meanSignalStrength = pAD->meanSignalStrengthLinearAccumulator / (int32_t) pAD->nrMeanSignalStrength;
+
+    pAD->meanSignalStrengthExpAccumulator = wld_util_performFactorStep(pAD->meanSignalStrengthExpAccumulator, pAD->SignalStrength, 50);
+    if((uint32_t) pAD->LastDataDownlinkRate > pAD->MaxDownlinkRateReached) {
+        pAD->MaxDownlinkRateReached = pAD->LastDataDownlinkRate;
+    }
+    if((uint32_t) pAD->LastDataUplinkRate > pAD->MaxUplinkRateReached) {
+        pAD->MaxUplinkRateReached = pAD->LastDataUplinkRate;
+    }
+
+    if(pAD->downLinkRateSpec.standard > SWL_MCS_STANDARD_LEGACY) {
+        memcpy(&pAD->lastNonLegacyDownlinkMCS, &pAD->downLinkRateSpec, sizeof(swl_mcs_t));
+        pAD->lastNonLegacyDownlinkTime = pAD->lastSampleTime.tv_sec;
+    }
+    if(pAD->upLinkRateSpec.standard > SWL_MCS_STANDARD_LEGACY) {
+        memcpy(&pAD->lastNonLegacyUplinkMCS, &pAD->upLinkRateSpec, sizeof(swl_mcs_t));
+        pAD->lastNonLegacyUplinkTime = pAD->lastSampleTime.tv_sec;
+    }
+}
+
+void wld_ad_printSignalStrengthHistory(T_AssociatedDevice* pAD, char* buf, uint32_t bufSize) {
+    ASSERTS_TRUE((buf != NULL) && (bufSize > 0), , ME, "empty");
+    snprintf(buf, bufSize, "%i,%i,%i,%i",
+             pAD->minSignalStrength, pAD->maxSignalStrength,
+             pAD->meanSignalStrength, WLD_ACC_TO_VAL(pAD->meanSignalStrengthExpAccumulator));
+}
+
+void wld_ad_printSignalStrengthByChain(T_AssociatedDevice* pAD, char* buf, uint32_t bufSize) {
+    ASSERTS_TRUE((buf != NULL) && (bufSize > 0), , ME, "empty");
+    char ValBuf[7] = {'\0'};//Example : -100.0
+    for(uint32_t idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
+        if(idx && buf[0]) {
+            wldu_catStr(buf, ",", bufSize);
+        }
+        snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
+        wldu_catStr(buf, ValBuf, bufSize);
+    }
+}
+
 static void wld_update_station_stats(T_AccessPoint* pAP) {
     int i = 0;
     T_AssociatedDevice* pAD;
     for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
-        pAD = pAP->AssociatedDevice[i];
-        if(pAD->SignalStrength < pAD->minSignalStrength) {
-            pAD->minSignalStrength = pAD->SignalStrength;
-            pAD->minSignalStrengthTime = swl_time_getMonoSec();
-        }
-        if(pAD->SignalStrength > pAD->maxSignalStrength) {
-            pAD->maxSignalStrength = pAD->SignalStrength;
-            pAD->maxSignalStrengthTime = swl_time_getMonoSec();
-        }
-        pAD->nrMeanSignalStrength++;
-        pAD->meanSignalStrengthLinearAccumulator += pAD->SignalStrength;
-        pAD->meanSignalStrength = pAD->meanSignalStrengthLinearAccumulator / (int32_t) pAD->nrMeanSignalStrength;
-
-        pAD->meanSignalStrengthExpAccumulator = wld_util_performFactorStep(pAD->meanSignalStrengthExpAccumulator, pAD->SignalStrength, 50);
-        if((uint32_t) pAD->LastDataDownlinkRate > pAD->MaxDownlinkRateReached) {
-            pAD->MaxDownlinkRateReached = pAD->LastDataDownlinkRate;
-        }
-        if((uint32_t) pAD->LastDataUplinkRate > pAD->MaxUplinkRateReached) {
-            pAD->MaxUplinkRateReached = pAD->LastDataUplinkRate;
-        }
-
-        if(pAD->downLinkRateSpec.standard > SWL_MCS_STANDARD_LEGACY) {
-            memcpy(&pAD->lastNonLegacyDownlinkMCS, &pAD->downLinkRateSpec, sizeof(swl_mcs_t));
-            pAD->lastNonLegacyDownlinkTime = pAD->lastSampleTime.tv_sec;
-        }
-        if(pAD->upLinkRateSpec.standard > SWL_MCS_STANDARD_LEGACY) {
-            memcpy(&pAD->lastNonLegacyUplinkMCS, &pAD->upLinkRateSpec, sizeof(swl_mcs_t));
-            pAD->lastNonLegacyUplinkTime = pAD->lastSampleTime.tv_sec;
-        }
+        s_updateStationStatsHistory(pAP->AssociatedDevice[i]);
     }
 }
 
@@ -763,23 +786,50 @@ amxd_status_t _getSingleStationStats(amxd_object_t* const object,
     swl_rc_ne ret = pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
 
     if(ret >= SWL_RC_OK) {
-        WLD_SET_VAR_CSTRING(object, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
-        WLD_SET_VAR_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
-        WLD_SET_VAR_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
-        WLD_SET_VAR_INT32(object, "SignalStrength", pAD->SignalStrength);
-        WLD_SET_VAR_INT32(object, "Noise", pAD->noise);
-        WLD_SET_VAR_UINT32(object, "TxBytes", pAD->TxBytes);
-        WLD_SET_VAR_UINT32(object, "RxBytes", pAD->RxBytes);
-        WLD_SET_VAR_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
-        WLD_SET_VAR_UINT32(object, "RxPacketCount", pAD->RxPacketCount);
-        WLD_SET_VAR_UINT32(object, "TxErrors", pAD->TxFailures);
-        WLD_SET_VAR_UINT32(object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
-        WLD_SET_VAR_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
-        WLD_SET_VAR_BOOL(object, "AuthenticationState", pAD->AuthenticationState);
+        s_updateStationStatsHistory(pAD);
+        SWLA_OBJECT_SET_PARAM_CSTRING(object, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "ConnectionDuration", pAD->connectionDuration);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "Inactive", pAD->Inactive);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "MaxUplinkRateReached", pAD->MaxUplinkRateReached);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkMCS", pAD->UplinkMCS);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkBandwidth", pAD->UplinkBandwidth);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkShortGuard", pAD->UplinkShortGuard);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkMCS", pAD->DownlinkMCS);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkBandwidth", pAD->DownlinkBandwidth);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkShortGuard", pAD->DownlinkShortGuard);
 
-        swl_time_objectParamSetMono(object, "LastStateChange", pAD->latestStateChangeTime);
-        swl_time_objectParamSetMono(object, "AssociationTime", pAD->associationTime);
-        swl_time_objectParamSetMono(object, "DisassociationTime", pAD->disassociationTime);
+        SWLA_OBJECT_SET_PARAM_INT32(object, "SignalStrength", pAD->SignalStrength);
+        SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
+        SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
+        char TBuf[64] = {'\0'};
+        wld_ad_printSignalStrengthByChain(pAD, TBuf, sizeof(TBuf));
+        SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthByChain", TBuf);
+        char rssiHistory[64] = {'\0'};
+        wld_ad_printSignalStrengthHistory(pAD, rssiHistory, sizeof(rssiHistory));
+        SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthHistory", rssiHistory);
+        SWLA_OBJECT_SET_PARAM_INT32(object, "Noise", pAD->noise);
+        SWLA_OBJECT_SET_PARAM_INT32(object, "SignalNoiseRatio", pAD->SignalNoiseRatio);
+
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "Retransmissions", pAD->Retransmissions);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "Rx_Retransmissions", pAD->Rx_Retransmissions);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "RxPacketCount", pAD->RxPacketCount);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
+        SWLA_OBJECT_SET_PARAM_UINT64(object, "TxBytes", pAD->TxBytes);
+        SWLA_OBJECT_SET_PARAM_UINT64(object, "RxBytes", pAD->RxBytes);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxErrors", pAD->TxFailures);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
+        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
     }
 
     status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
@@ -1097,6 +1147,7 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
                            timeOnline, pAD->SignalNoiseRatio, deauthReason);
         pAD->latestStateChangeTime = swl_time_getMonoSec();
         pAD->disassociationTime = swl_time_getMonoSec();
+        pAD->connectionDuration = timeOnline;
 
         wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
         if(log == NULL) {
@@ -1124,7 +1175,7 @@ void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) 
     ASSERTI_FALSE(pAD->AuthenticationState, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
 
     if(!pAD->Active) {
-        s_activate(pAP, pAD);
+        wld_ad_add_connection_try(pAP, pAD);
     }
 
     wld_ad_dcLog_t* entry = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
@@ -1134,12 +1185,16 @@ void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) 
     pAD->Inactive = 0;
     pAD->latestStateChangeTime = swl_time_getMonoSec();
     s_incrementAssocCounter(pAP, "Success");
+    if(!swl_security_isApModeValid(pAD->assocCaps.currentSecurity)) {
+        pAD->assocCaps.currentSecurity = pAP->secModeEnabled;
+    }
     //Update device type when connection succeeds.
     pAP->pFA->mfn_wvap_update_assoc_dev(pAP, pAD);
 
     if(entry != NULL) {
         s_dcEntryConnected(pAP, entry);
     }
+    wld_vap_sync_device(pAP, pAD);
 }
 
 

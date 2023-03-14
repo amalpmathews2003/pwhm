@@ -4,10 +4,6 @@
         "notification": "dm:object-changed",
         "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
         "parameters": {
-            "Inactive": {
-                "from": 7,
-                "to": 0
-            },
             "AuthenticationState": {
                 "from": true,
                 "to": false

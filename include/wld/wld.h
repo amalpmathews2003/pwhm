@@ -2061,7 +2061,6 @@ typedef void (APIENTRY* PFN_WVAP_SET_CONFIG_DRV)(T_AccessPoint* vap, wld_vap_dri
 /*********** Vendor Misc driver settings *********************/
 typedef int (APIENTRY* PFN_WRAD_HASSUPPORT)(T_Radio* rad, T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_VAP_BSSID)(T_Radio* rad, T_AccessPoint* vap, unsigned char* buf, int bufsize, int set);
-typedef swl_rc_ne (APIENTRY* PFN_WVAP_UPDATE_AP_STATS)(T_Radio* rad, T_AccessPoint* vap);
 
 /*********** Vendor Endpoint driver settings *********************/
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_CREATE_HOOK)(T_EndPoint* endpoint);
@@ -2183,7 +2182,8 @@ typedef struct S_CWLD_FUNC_TABLE {
     swl_rc_ne (* mfn_wvap_get_single_station_stats)(T_AssociatedDevice* pAD);
 
     PFN_WVAP_VAP_UPDATE_ADL mfn_wvap_update_rssi_stats;          /**< Update rssi of associated devices */
-    PFN_WVAP_UPDATE_AP_STATS mfn_wvap_update_ap_stats;           /**< Update the stats counters of Radio or req SSID */
+    /** Update the stats counters of requested accesspoint BSS */
+    swl_rc_ne (* mfn_wvap_update_ap_stats)(T_AccessPoint* vap);
 
     PFN_WVAP_VAP_ENABLE mfn_wvap_enable;                         /**< Set/Get VAP Enable/Disable state */
     PFN_WVAP_VAP_ENABLE_WMM mfn_wvap_enable_wmm;                 /**< Set/Get WMM state */

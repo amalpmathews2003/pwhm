@@ -895,6 +895,19 @@ amxd_status_t _wld_rad_setGuardInterval_pwf(amxd_object_t* object _UNUSED,
     return rv;
 }
 
+static void s_updateRadioStatsValues(T_Radio* pR, amxd_object_t* stats) {
+    ASSERT_NOT_NULL(pR, , ME, "pRadio NULL");
+
+    int ret = pR->pFA->mfn_wrad_stats(pR);
+    // Update the stats with Linux counters if we don't handle them in the plugin.
+    if(ret < 0) {
+        wld_updateRadioStats(pR, NULL);
+    }
+
+    ASSERT_NOT_NULL(stats, , ME, "stats NULL");
+    wld_util_stats2Obj(stats, &pR->stats);
+}
+
 amxd_status_t _getRadioStats(amxd_object_t* object,
                              amxd_function_t* func _UNUSED,
                              amxc_var_t* args _UNUSED,
@@ -905,63 +918,13 @@ amxd_status_t _getRadioStats(amxd_object_t* object,
 
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NULL");
-    amxd_object_t* stats = amxd_object_get(pR->pBus, "Stats");
+    amxd_object_t* stats = amxd_object_get(object, "Stats");
 
-    if(pR->pFA->mfn_wrad_stats(pR) < 0) {
-        wld_updateRadioStats(pR, NULL);
-    }
-
-    wld_util_stats2Obj(stats, &pR->stats);
-    wld_util_stats2Var(retval, &pR->stats);
-
-    wld_util_writeWmmStats(stats, "WmmPacketsSent", pR->stats.WmmPacketsSent);
-    wld_util_writeWmmStats(stats, "WmmPacketsReceived", pR->stats.WmmPacketsReceived);
-    wld_util_writeWmmStats(stats, "WmmFailedSent", pR->stats.WmmFailedSent);
-    wld_util_writeWmmStats(stats, "WmmFailedReceived", pR->stats.WmmFailedReceived);
-    wld_util_writeWmmStats(stats, "WmmBytesSent", pR->stats.WmmBytesSent);
-    wld_util_writeWmmStats(stats, "WmmFailedbytesSent", pR->stats.WmmFailedBytesSent);
-    wld_util_writeWmmStats(stats, "WmmBytesReceived", pR->stats.WmmBytesReceived);
-    wld_util_writeWmmStats(stats, "WmmFailedBytesReceived", pR->stats.WmmFailedBytesReceived);
+    // Update the stats object
+    s_updateRadioStatsValues(pR, stats);
+    wld_util_statsObj2Var(retval, stats);
 
     return amxd_status_ok;
-}
-
-static void s_updateRadioStatsvalues(T_Radio* pR, amxd_object_t* stats) {
-    ASSERT_NOT_NULL(pR, , ME, "pRadio NULL");
-    ASSERT_NOT_NULL(stats, , ME, "stats NULL");
-
-    if(pR->pFA->mfn_wrad_stats(pR) < 0) {
-        wld_updateRadioStats(pR, NULL);
-    }
-
-    WLD_SET_VAR_UINT64(stats, "BytesSent", pR->stats.BytesSent);
-    WLD_SET_VAR_UINT64(stats, "BytesReceived", pR->stats.BytesReceived);
-    WLD_SET_VAR_UINT64(stats, "PacketsSent", pR->stats.PacketsSent);
-    WLD_SET_VAR_UINT64(stats, "PacketsReceived", pR->stats.PacketsReceived);
-    WLD_SET_VAR_UINT32(stats, "ErrorsSent", pR->stats.ErrorsSent);
-    WLD_SET_VAR_UINT32(stats, "RetransCount", pR->stats.RetransCount);
-    WLD_SET_VAR_UINT32(stats, "ErrorsReceived", pR->stats.ErrorsReceived);
-    WLD_SET_VAR_UINT32(stats, "UnicastPacketsSent", pR->stats.UnicastPacketsSent);
-    WLD_SET_VAR_UINT32(stats, "UnicastPacketsReceived", pR->stats.UnicastPacketsReceived);
-    WLD_SET_VAR_UINT32(stats, "DiscardPacketsSent", pR->stats.DiscardPacketsSent);
-    WLD_SET_VAR_UINT32(stats, "DiscardPacketsReceived", pR->stats.DiscardPacketsReceived);
-    WLD_SET_VAR_UINT32(stats, "MulticastPacketsSent", pR->stats.MulticastPacketsSent);
-    WLD_SET_VAR_UINT32(stats, "MulticastPacketsReceived", pR->stats.MulticastPacketsReceived);
-    WLD_SET_VAR_UINT32(stats, "BroadcastPacketsSent", pR->stats.BroadcastPacketsSent);
-    WLD_SET_VAR_UINT32(stats, "BroadcastPacketsReceived", pR->stats.BroadcastPacketsReceived);
-    WLD_SET_VAR_UINT32(stats, "UnknownProtoPacketsReceived", pR->stats.UnknownProtoPacketsReceived);
-    WLD_SET_VAR_UINT32(stats, "FailedRetransCount", pR->stats.FailedRetransCount);
-    WLD_SET_VAR_UINT32(stats, "RetryCount", pR->stats.RetryCount);
-    WLD_SET_VAR_UINT32(stats, "MultipleRetryCount", pR->stats.MultipleRetryCount);
-
-    wld_util_updateWmmStats(stats, "WmmPacketsSent", pR->stats.WmmPacketsSent);
-    wld_util_updateWmmStats(stats, "WmmPacketsReceived", pR->stats.WmmPacketsReceived);
-    wld_util_updateWmmStats(stats, "WmmFailedSent", pR->stats.WmmFailedSent);
-    wld_util_updateWmmStats(stats, "WmmFailedReceived", pR->stats.WmmFailedReceived);
-    wld_util_updateWmmStats(stats, "WmmBytesSent", pR->stats.WmmBytesSent);
-    wld_util_updateWmmStats(stats, "WmmFailedbytesSent", pR->stats.WmmFailedBytesSent);
-    wld_util_updateWmmStats(stats, "WmmBytesReceived", pR->stats.WmmBytesReceived);
-    wld_util_updateWmmStats(stats, "WmmFailedBytesReceived", pR->stats.WmmFailedBytesReceived);
 }
 
 amxd_status_t _wld_radio_getStats_orf(amxd_object_t* const object,
@@ -982,7 +945,7 @@ amxd_status_t _wld_radio_getStats_orf(amxd_object_t* const object,
     ASSERT_NOT_NULL(parentObj, amxd_status_ok, ME, "parentObj is NULL");
 
     T_Radio* pR = (T_Radio*) parentObj->priv;
-    s_updateRadioStatsvalues(pR, object);
+    s_updateRadioStatsValues(pR, object);
 
     status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
     return status;

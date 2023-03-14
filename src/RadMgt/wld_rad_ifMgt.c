@@ -376,9 +376,13 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     }
     endpoint = (T_EndPoint*) endpointinstance->priv;
 
-    wpsinstance = amxd_object_get(endpointinstance, "WPS");
     endpoint->wpsSessionInfo.intfObj = endpointinstance;
-    wpsinstance->priv = &endpoint->wpsSessionInfo;
+    wpsinstance = amxd_object_get(endpointinstance, "WPS");
+    if(wpsinstance == NULL) {
+        SAH_TRACEZ_WARNING(ME, "%s: WPS subObj is not available", endpoint->Name);
+    } else {
+        wpsinstance->priv = &endpoint->wpsSessionInfo;
+    }
     //function_setHandler(object_getFunction(wpsinstance, "pushButton"), __EndPoint_WPS_pushButton);
     //function_setHandler(object_getFunction(wpsinstance, "cancelPairing"), __EndPoint_WPS_cancelPairing);
 

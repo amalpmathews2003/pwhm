@@ -1041,6 +1041,9 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         /** 'Enable' Enables or disables WPS functionality for this
          *  accesspoint. */
+        if(wpsObj) {
+            wpsObj->priv = &pAP->wpsSessionInfo;
+        }
         amxd_object_set_int32_t(wpsObj, "Enable", pAP->WPS_Enable);
         amxd_object_set_cstring_t(wpsObj, "Status", cstr_AP_status[pAP->WPS_Status]);
         amxd_object_set_cstring_t(wpsObj, "SelfPIN", g_wpsConst.DefaultPin);
@@ -1161,7 +1164,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
-        if(strncmp(pAP->WEPKey, wepKey, strlen(pAP->WEPKey))) {
+        if(!swl_str_nmatches(pAP->WEPKey, wepKey, swl_str_len(pAP->WEPKey))) {
             if(isValidWEPKey(wepKey)) {
                 wldu_copyStr(pAP->WEPKey, wepKey, sizeof(pAP->WEPKey));
                 wld_ap_sec_doSync(pAP);
@@ -1170,7 +1173,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         free(wepKey);
 
         char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
-        if(strncmp(pAP->preSharedKey, pskKey, strlen(pAP->preSharedKey))) {
+        if(!swl_str_nmatches(pAP->preSharedKey, pskKey, swl_str_len(pAP->preSharedKey))) {
             if(isValidPSKKey(pskKey)) {
                 wldu_copyStr(pAP->preSharedKey, pskKey, sizeof(pAP->preSharedKey));
                 wld_ap_sec_doSync(pAP);
@@ -1179,7 +1182,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         free(pskKey);
 
         char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
-        if(strncmp(pAP->keyPassPhrase, keyPassPhrase, strlen(pAP->keyPassPhrase))) {
+        if(!swl_str_nmatches(pAP->keyPassPhrase, keyPassPhrase, swl_str_len(pAP->keyPassPhrase))) {
             if(isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
                 wldu_copyStr(pAP->keyPassPhrase, keyPassPhrase, sizeof(pAP->keyPassPhrase));
                 wld_ap_sec_doSync(pAP);
@@ -1188,7 +1191,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         free(keyPassPhrase);
 
         char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
-        if(strncmp(pAP->saePassphrase, saePassphrase, strlen(pAP->saePassphrase))) {
+        if(!swl_str_nmatches(pAP->saePassphrase, saePassphrase, swl_str_len(pAP->saePassphrase))) {
             if(isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN)) {
                 wldu_copyStr(pAP->saePassphrase, saePassphrase, sizeof(pAP->saePassphrase));
                 wld_ap_sec_doSync(pAP);
@@ -1197,8 +1200,8 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         free(saePassphrase);
 
         char* encryption = amxd_object_get_cstring_t(secObj, "EncryptionMode", NULL);
-        if(strncmp(cstr_AP_EncryptionMode[pAP->encryptionModeEnabled], encryption,
-                   strlen(cstr_AP_EncryptionMode[pAP->encryptionModeEnabled]))) {
+        if(!swl_str_nmatches(cstr_AP_EncryptionMode[pAP->encryptionModeEnabled], encryption,
+                             swl_str_len(cstr_AP_EncryptionMode[pAP->encryptionModeEnabled]))) {
             pAP->encryptionModeEnabled = conv_strToEnum(cstr_AP_EncryptionMode, encryption, APEMI_MAX, APEMI_DEFAULT);
             wld_ap_sec_doSync(pAP);
         }
@@ -1211,8 +1214,8 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         char* radSvrIp = amxd_object_get_cstring_t(secObj, "RadiusServerIPAddr", NULL);
-        if(strncmp(pAP->radiusServerIPAddr, radSvrIp, strlen(pAP->radiusServerIPAddr))) {
-            wldu_copyStr(pAP->radiusServerIPAddr, radSvrIp, sizeof(pAP->radiusServerIPAddr));
+        if(!swl_str_nmatches(pAP->radiusServerIPAddr, radSvrIp, swl_str_len(pAP->radiusServerIPAddr))) {
+            swl_str_copy(pAP->radiusServerIPAddr, sizeof(pAP->radiusServerIPAddr), radSvrIp);
             wld_ap_sec_doSync(pAP);
         }
         free(radSvrIp);
@@ -1224,8 +1227,8 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         char* radSecret = amxd_object_get_cstring_t(secObj, "RadiusSecret", NULL);
-        if(strncmp(pAP->radiusSecret, radSecret, strlen(pAP->radiusSecret))) {
-            wldu_copyStr(pAP->radiusSecret, radSecret, sizeof(pAP->radiusSecret));
+        if(!swl_str_nmatches(pAP->radiusSecret, radSecret, swl_str_len(pAP->radiusSecret))) {
+            swl_str_copy(pAP->radiusSecret, sizeof(pAP->radiusSecret), radSecret);
             wld_ap_sec_doSync(pAP);
         }
         free(radSecret);
@@ -1237,22 +1240,22 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         char* radOwnIp = amxd_object_get_cstring_t(secObj, "RadiusOwnIPAddress", NULL);
-        if(strncmp(pAP->radiusOwnIPAddress, radOwnIp, strlen(pAP->radiusOwnIPAddress))) {
-            wldu_copyStr(pAP->radiusOwnIPAddress, radOwnIp, sizeof(pAP->radiusOwnIPAddress));
+        if(!swl_str_nmatches(pAP->radiusOwnIPAddress, radOwnIp, swl_str_len(pAP->radiusOwnIPAddress))) {
+            swl_str_copy(pAP->radiusOwnIPAddress, sizeof(pAP->radiusOwnIPAddress), radOwnIp);
             wld_ap_sec_doSync(pAP);
         }
         free(radOwnIp);
 
         char* radNasId = amxd_object_get_cstring_t(secObj, "RadiusNASIdentifier", NULL);
-        if(strncmp(pAP->radiusNASIdentifier, radNasId, strlen(pAP->radiusNASIdentifier))) {
-            wldu_copyStr(pAP->radiusNASIdentifier, radNasId, sizeof(pAP->radiusNASIdentifier));
+        if(!swl_str_nmatches(pAP->radiusNASIdentifier, radNasId, swl_str_len(pAP->radiusNASIdentifier))) {
+            swl_str_copy(pAP->radiusNASIdentifier, sizeof(pAP->radiusNASIdentifier), radNasId);
             wld_ap_sec_doSync(pAP);
         }
         free(radNasId);
 
         char* radStaId = amxd_object_get_cstring_t(secObj, "RadiusCalledStationId", NULL);
-        if(strncmp(pAP->radiusCalledStationId, radStaId, strlen(pAP->radiusCalledStationId))) {
-            wldu_copyStr(pAP->radiusCalledStationId, radStaId, sizeof(pAP->radiusCalledStationId));
+        if(!swl_str_nmatches(pAP->radiusCalledStationId, radStaId, swl_str_len(pAP->radiusCalledStationId))) {
+            swl_str_copy(pAP->radiusCalledStationId, sizeof(pAP->radiusCalledStationId), radStaId);
             wld_ap_sec_doSync(pAP);
         }
         free(radStaId);
@@ -1285,7 +1288,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         char* oweTransIntf = amxd_object_get_cstring_t(secObj, "OWETransitionInterface", NULL);
-        if(strncmp(pAP->oweTransModeIntf, oweTransIntf, strlen(pAP->oweTransModeIntf))) {
+        if(!swl_str_nmatches(pAP->oweTransModeIntf, oweTransIntf, swl_str_len(pAP->oweTransModeIntf))) {
             swl_str_copy(pAP->oweTransModeIntf, sizeof(pAP->oweTransModeIntf), oweTransIntf);
             wld_ap_sec_doSync(pAP);
         }
@@ -2090,8 +2093,9 @@ int32_t wld_ap_initObj(T_AccessPoint* pAP, amxd_object_t* instance_object) {
     instance_object->priv = pAP;
     pAP->pBus = instance_object;
 
-    amxd_object_t* wpsinstance = amxd_object_get(instance_object, "WPS");
     pAP->wpsSessionInfo.intfObj = instance_object;
+    amxd_object_t* wpsinstance = amxd_object_get(instance_object, "WPS");
+    ASSERTW_NOT_NULL(wpsinstance, WLD_OK, ME, "%s: WPS subObj is not available", pAP->name);
     wpsinstance->priv = &pAP->wpsSessionInfo;
 
     return WLD_OK;
@@ -2345,21 +2349,11 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_set_value(int32_t, &trans, "SignalStrength", pAD->SignalStrength);
 
         char rssiHistory[64] = {'\0'};
-        snprintf(rssiHistory, sizeof(rssiHistory), "%i,%i,%i,%i", pAD->minSignalStrength, pAD->maxSignalStrength, pAD->meanSignalStrength, WLD_ACC_TO_VAL(pAD->meanSignalStrengthExpAccumulator));
+        wld_ad_printSignalStrengthHistory(pAD, rssiHistory, sizeof(rssiHistory));
         amxd_trans_set_value(cstring_t, &trans, "SignalStrengthHistory", rssiHistory);
 
-        int idx = 0;
         char TBuf[64] = {'\0'};
-        char ValBuf[7] = {'\0'};//Example : -100.0
-        for(idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
-            if(idx && TBuf[0]) {
-                wldu_catStr(TBuf, ",", sizeof(TBuf));
-            }
-            snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
-            wldu_catStr(TBuf, ValBuf, sizeof(TBuf));
-        }
-
-        pAD->AvgSignalStrengthByChain = wld_ad_getAvgSignalStrengthByChain(pAD);
+        wld_ad_printSignalStrengthByChain(pAD, TBuf, sizeof(TBuf));
 
         amxd_trans_set_value(int32_t, &trans, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
         amxd_trans_set_value(cstring_t, &trans, "SignalStrengthByChain", TBuf);
@@ -2406,7 +2400,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
         amxd_trans_set_value(cstring_t, &trans, "DeviceType", cstr_DEVICE_TYPES[pAD->deviceType]);
         amxd_trans_set_value(int32_t, &trans, "DevicePriority", pAD->devicePriority);
-        char buffer[32] = {0};
+        char buffer[128] = {0};
         wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
         amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
         amxd_trans_set_value(uint32_t, &trans, "ConnectionDuration", pAD->connectionDuration);
@@ -2421,9 +2415,10 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
         amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 
-        //wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
+        wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
 
-        swl_conv_objectParamSetMask(object, "UNIIBandsCapabilities", pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX);
+        swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX),
+        amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
 
         ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
 
@@ -2844,6 +2839,7 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
     if(!strcasecmp(feature, "RssiMon")) {
         wld_ap_rssiEv_debug(pAP, retMap);
     } else if(!strcasecmp(feature, "recentDcs")) {
+        amxc_var_set_type(retMap, AMXC_VAR_ID_LIST);
         wld_assocDev_listRecentDisconnects(pAP, retMap);
     } else if(!strcasecmp(feature, "SSIDAdvertisementEnabled")) {
         bool enable = GET_BOOL(args, "enable");

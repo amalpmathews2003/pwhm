@@ -1,8 +1,8 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.1.",
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
         "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
         "parameters": {
             "AuthenticationState": {
                 "from": false,
@@ -13,6 +13,6 @@
                 "to": "WPA2-Personal"
             }
         },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.1."
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
     }
 }

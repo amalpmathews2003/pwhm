@@ -379,6 +379,7 @@ static swl_rc_ne s_getStationInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* pr
 
 swl_rc_ne wld_nl80211_getStationInfo(wld_nl80211_state_t* state, uint32_t ifIndex, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo) {
 
+    ASSERT_NOT_NULL(pMac, SWL_RC_INVALID_PARAM, ME, "NULL");
     NL_ATTRS(attribs, ARR(NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pMac)));
 
     struct getStationData_s requestData = {
@@ -391,8 +392,8 @@ swl_rc_ne wld_nl80211_getStationInfo(wld_nl80211_state_t* state, uint32_t ifInde
     NL_ATTRS_CLEAR(&attribs);
 
     if(requestData.nrStation == 0) {
-        SAH_TRACEZ_ERROR(ME, "no Station device with ifIndex(%d)", ifIndex);
-        rc = SWL_RC_ERROR;
+        SAH_TRACEZ_NOTICE(ME, "no Station " SWL_MAC_FMT " with ifIndex(%d)", SWL_MAC_ARG(pMac->bMac), ifIndex);
+        rc = SWL_RC_INVALID_PARAM;
     } else if(pStationInfo) {
         memcpy(pStationInfo, requestData.pStationInfo, sizeof(wld_nl80211_stationInfo_t));
     }
@@ -411,8 +412,8 @@ swl_rc_ne wld_nl80211_getAllStationsInfo(wld_nl80211_state_t* state, uint32_t if
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_STATION, NLM_F_DUMP, ifIndex, NULL, s_getStationInfoCb, &requestData);
 
     if(requestData.nrStation == 0) {
-        SAH_TRACEZ_ERROR(ME, "no Station device with ifIndex(%d)", ifIndex);
-        rc = SWL_RC_ERROR;
+        SAH_TRACEZ_NOTICE(ME, "no Station device with ifIndex(%d)", ifIndex);
+        rc = SWL_RC_OK;
     } else if((ppStationInfo != NULL) && (pnStation != NULL)) {
         *ppStationInfo = calloc(requestData.nrStation, sizeof(wld_nl80211_stationInfo_t));
         if(*ppStationInfo == NULL) {

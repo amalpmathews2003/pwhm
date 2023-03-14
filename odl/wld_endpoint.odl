@@ -245,7 +245,7 @@
 			 *  the last 100 packets sent to the access point.
 			 *  Multiple re-transmissions of the same packet count as
 			 *  one.*/
-			%read-only uint32 Retransmissions{
+			%volatile %read-only uint32 Retransmissions{
 				on action validate call check_range { min = 0, max = 100 };
 			}
 
@@ -253,35 +253,35 @@
 			 * Number of packets received by the endpoint.
 			 * @version 9.1
 			 */
-			%read-only uint32 RxPacketCount;
+			%volatile %read-only uint32 RxPacketCount;
 
 			/*
 			 * Number of packets sent by the endpoint.
 			 * @version 9.1
 			 */
-			%read-only uint32 TxPacketCount;
+			%volatile %read-only uint32 TxPacketCount;
 
 			/*
 			 * Number of bytes sent by the endpoint.
 			 * @version 9.1
 			 */
-			%read-only uint64 TxBytes;
+			%volatile %read-only uint64 TxBytes;
 
 			/*
 			 * Number of bytes received by the endpoint.
 			 * @version 9.1
 			 */
-			%read-only uint64 RxBytes;
+			%volatile %read-only uint64 RxBytes;
 
 			/** Number of received retransmissions.
 			 * @version 9.1
 			 */
-			%read-only uint32 Rx_Retransmissions;
+			%volatile %read-only uint32 Rx_Retransmissions;
 
 			/** Number of sent retransmissions.
 			 * @version 9.1
 			 */
-			%read-only uint32 Tx_Retransmissions;
+			%volatile %read-only uint32 Tx_Retransmissions;
 			
 			/**
 			 * The link bandwidth of the current link

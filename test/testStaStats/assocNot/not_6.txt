@@ -1,8 +1,8 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.1.",
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
         "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
         "parameters": {
             "UplinkRateSpec": {
                 "from": "",
@@ -18,7 +18,7 @@
             },
             "MACAddress": {
                 "from": "",
-                "to": "18:58:80:C2:FC:A0"
+                "to": "18:58:80:C2:FC:A1"
             },
             "SignalStrengthHistory": {
                 "from": "",
@@ -37,6 +37,6 @@
                 "to": "auto"
             }
         },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.1."
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
     }
 }

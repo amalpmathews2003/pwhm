@@ -285,7 +285,7 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
     ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_VHT_CAPA], SWL_RC_OK, ME, "no vht cap");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_VHT_MCS_SET], SWL_RC_OK, ME, "no vht mcs set");
-    ASSERTW_NOT_EQUALS(pBand->freqBand, SWL_FREQ_BAND_2_4GHZ, SWL_RC_OK, ME, "invalid vht cap in 2.4g band");
+    ASSERTI_NOT_EQUALS(pBand->freqBand, SWL_FREQ_BAND_2_4GHZ, SWL_RC_OK, ME, "skip vht cap in 2.4g band");
     swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_VHT];
     vhtCapabilityInfo_t vhtCapInfo;
     NLA_GET_DATA(&vhtCapInfo, tbBand[NL80211_BAND_ATTR_VHT_CAPA], sizeof(vhtCapInfo));
@@ -727,8 +727,7 @@ static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wl
     } else if(pRinfo[NL80211_RATE_INFO_BITRATE]) {
         pRate->bitrate = 100 * nla_get_u16(pRinfo[NL80211_RATE_INFO_BITRATE]);
     } else {
-        SAH_TRACEZ_ERROR(ME, "NL80211_RATE_INFO_BITRATE attribute is missing");
-        rc = SWL_RC_ERROR;
+        SAH_TRACEZ_NOTICE(ME, "NL80211_RATE_INFO_BITRATE attribute is missing");
     }
 
     // Get protocol info
@@ -857,8 +856,8 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
     } else if(pSinfo[NL80211_STA_INFO_RX_BYTES]) {
         pStation->rxBytes = nla_get_u32(pSinfo[NL80211_STA_INFO_RX_BYTES]);
     }
-    if(pSinfo[NL80211_STA_INFO_RX_BYTES64]) {
-        pStation->txBytes = nla_get_u64(pSinfo[NL80211_STA_INFO_RX_BYTES64]);
+    if(pSinfo[NL80211_STA_INFO_TX_BYTES64]) {
+        pStation->txBytes = nla_get_u64(pSinfo[NL80211_STA_INFO_TX_BYTES64]);
     } else if(pSinfo[NL80211_STA_INFO_TX_BYTES]) {
         pStation->txBytes = nla_get_u32(pSinfo[NL80211_STA_INFO_TX_BYTES]);
     }
