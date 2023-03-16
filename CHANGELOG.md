@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.24.0 - 2023-03-16(11:02:14 +0000)
+
+### Other
+
+- cleanup & improv saving stats in dm
+
 ## Release v2.23.3 - 2023-03-16(08:38:15 +0000)
 
 ### Other
