@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.24.2 - 2023-03-16(14:28:29 +0000)
+
+### Other
+
+- - Use SWL defined macro WPS notification
+
 ## Release v2.24.1 - 2023-03-16(12:47:52 +0000)
 
 ### Other
