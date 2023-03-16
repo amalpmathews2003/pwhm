@@ -948,7 +948,7 @@ define probelist_t{
 		 * OperatingFrequencyBand  is 5GHz  and OperatingStandards
 		 * includes a  and/or n). </p>
 		 */
-		bool IEEE80211hEnabled{
+		%persistent bool IEEE80211hEnabled{
 			on action write call wld_rad_set80211hEnable_pwf; /* Spectrum Managed 802.11a DFS/TPC */
 		}
 

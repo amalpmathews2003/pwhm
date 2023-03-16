@@ -1549,7 +1549,7 @@ amxd_status_t _wld_rad_set80211hEnable_pwf(amxd_object_t* object _UNUSED,
     bool flag = amxc_var_dyncast(bool, args);
     SAH_TRACEZ_INFO(ME, "set 80211hEnable %d", flag);
     if(pR && debugIsRadPointer(pR)) {
-        bool newValue = pR->IEEE80211hSupported & flag;
+        bool newValue = pR->IEEE80211hSupported && flag;
         if(newValue != pR->setRadio80211hEnable) {
             wld_rad_doSync(pR); // Force a resync of the structure (FIX ME)
         }

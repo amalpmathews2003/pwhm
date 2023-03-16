@@ -33,6 +33,7 @@
                 parameter Enable = 1;
                 parameter AutoChannelEnable = 0;
                 parameter Channel = 36;
+                parameter IEEE80211hEnabled = true;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;
                 parameter WDS_Mode = 1;
