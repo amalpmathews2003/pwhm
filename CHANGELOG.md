@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.24.1 - 2023-03-16(12:47:52 +0000)
+
+### Other
+
+- fix missing btm response notification
+
 ## Release v2.24.0 - 2023-03-16(11:02:14 +0000)
 
 ### Other
