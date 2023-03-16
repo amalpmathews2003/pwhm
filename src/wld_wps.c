@@ -203,14 +203,14 @@ void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason, const
     amxc_var_init(&notifMap);
     amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
 
-    amxc_var_add_key(cstring_t, &notifMap, "reason", reason);
+    amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_REASON, reason);
     if(macAddress) {
-        amxc_var_add_key(cstring_t, &notifMap, "macAddress", macAddress);
+        amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_MACADDRESS, macAddress);
     }
     if(credentials) {
-        amxc_var_add_key(cstring_t, &notifMap, "SSID", credentials->ssid);
-        amxc_var_add_key(cstring_t, &notifMap, "securitymode", swl_security_apModeToString(credentials->secMode, SWL_SECURITY_APMODEFMT_LEGACY));
-        amxc_var_add_key(cstring_t, &notifMap, "KeyPassPhrase", credentials->key);
+        amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_SSID, credentials->ssid);
+        amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_SECURITYMODE, swl_security_apModeToString(credentials->secMode, SWL_SECURITY_APMODEFMT_LEGACY));
+        amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_KEYPASSPHRASE, credentials->key);
     }
     SAH_TRACEZ_WARNING(ME, "notif %s, reason=%s, macAddress=%s}", name, reason, macAddress);
 
