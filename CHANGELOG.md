@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.25.0 - 2023-03-24(15:57:07 +0000)
+
+### Other
+
+- get radio air stats using nl80211 chan survey
+
 ## Release v2.24.2 - 2023-03-16(14:28:29 +0000)
 
 ### Other
