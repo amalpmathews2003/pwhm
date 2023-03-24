@@ -918,28 +918,43 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
     return rc;
 }
 
-swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData) {
-    ASSERT_NOT_NULL(requestData, SWL_RC_ERROR, ME, "No request data");
-    *requestData = 0;
+swl_rc_ne wld_nl80211_parseChanSurveyInfo(struct nlattr* tb[], wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo) {
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pChanSurveyInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_rc_ne rc = SWL_RC_OK;
+
     struct nlattr* pSinfo[NL80211_SURVEY_INFO_MAX + 1];
 
     static struct nla_policy sp[NL80211_SURVEY_INFO_MAX + 1] = {
         [NL80211_SURVEY_INFO_FREQUENCY] = { .type = NLA_U32 },
         [NL80211_SURVEY_INFO_NOISE] = { .type = NLA_U8  },
+        [NL80211_SURVEY_INFO_CHANNEL_TIME] = { .type = NLA_U64 },
+        [NL80211_SURVEY_INFO_CHANNEL_TIME_BUSY] = { .type = NLA_U64 },
+        [NL80211_SURVEY_INFO_CHANNEL_TIME_EXT_BUSY] = { .type = NLA_U64 },
+        [NL80211_SURVEY_INFO_CHANNEL_TIME_RX] = { .type = NLA_U64 },
+        [NL80211_SURVEY_INFO_CHANNEL_TIME_TX] = { .type = NLA_U64 },
     };
+    sp[NL80211_SURVEY_INFO_TIME_SCAN].type = NLA_U64;
+    sp[NL80211_SURVEY_INFO_TIME_BSS_RX].type = NLA_U64;
 
     if(nla_parse_nested(pSinfo, NL80211_SURVEY_INFO_MAX, tb[NL80211_ATTR_SURVEY_INFO], sp) != SWL_RC_OK) {
-        SAH_TRACEZ_ERROR(ME, "Failed to parse nested STA attributes!");
+        SAH_TRACEZ_ERROR(ME, "Failed to parse nested survey info attributes!");
         return SWL_RC_ERROR;
     }
 
-    if(pSinfo[NL80211_SURVEY_INFO_IN_USE] && pSinfo[NL80211_SURVEY_INFO_NOISE]) {
-        SAH_TRACEZ_INFO(ME, "\tnoise level :\t\t\t\t%d dBm\n",
-                        (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]));
-        *requestData = (int8_t) nla_get_u8(pSinfo[NL80211_SURVEY_INFO_NOISE]);
-        return SWL_RC_DONE;
-    }
-    return SWL_RC_CONTINUE;
+    ASSERT_NOT_NULL(pSinfo[NL80211_SURVEY_INFO_FREQUENCY], SWL_RC_ERROR, ME, "SURVEY_INFO_FREQUENCY attribute is missing");
+    pChanSurveyInfo->inUse = !!pSinfo[NL80211_SURVEY_INFO_IN_USE];
+    NLA_GET_VAL(pChanSurveyInfo->frequencyMHz, nla_get_u32, pSinfo[NL80211_SURVEY_INFO_FREQUENCY]);
+    NLA_GET_VAL(pChanSurveyInfo->noiseDbm, (int8_t) nla_get_u8, pSinfo[NL80211_SURVEY_INFO_NOISE]);
+    NLA_GET_VAL(pChanSurveyInfo->timeOn, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_CHANNEL_TIME]);
+    NLA_GET_VAL(pChanSurveyInfo->timeBusy, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_CHANNEL_TIME_BUSY]);
+    NLA_GET_VAL(pChanSurveyInfo->timeExtBusy, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_CHANNEL_TIME_EXT_BUSY]);
+    NLA_GET_VAL(pChanSurveyInfo->timeRx, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_CHANNEL_TIME_RX]);
+    NLA_GET_VAL(pChanSurveyInfo->timeTx, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_CHANNEL_TIME_TX]);
+    NLA_GET_VAL(pChanSurveyInfo->timeScan, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_TIME_SCAN]);
+    NLA_GET_VAL(pChanSurveyInfo->timeRxInBss, nla_get_u64, pSinfo[NL80211_SURVEY_INFO_TIME_BSS_RX]);
+    return rc;
 }
 
 static void s_copyScanInfoFromIEs(T_ScanResult_SSID* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
@@ -949,7 +964,7 @@ static void s_copyScanInfoFromIEs(T_ScanResult_SSID* pResult, swl_wirelessDevice
     pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
     swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
     pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
-    pResult->ssidLen = SWL_MIN((uint8_t) SSID_NAME_LEN, pWirelessDevIE->ssidLen);
+    pResult->ssidLen = SWL_MIN((uint8_t) sizeof(pResult->ssid), pWirelessDevIE->ssidLen);
     memcpy(pResult->ssid, pWirelessDevIE->ssid, pResult->ssidLen);
     pResult->operatingStandards = pWirelessDevIE->operatingStandards;
     pResult->secModeEnabled = pWirelessDevIE->secModeEnabled;
@@ -984,7 +999,7 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], T_ScanResult_SSID* pR
         return rc;
     }
     ASSERT_NOT_NULL(bss[NL80211_BSS_BSSID], rc, ME, "missing bssid in scan result");
-    memcpy(pResult->bssid.bMac, nla_data(bss[NL80211_BSS_BSSID]), ETHER_ADDR_LEN);
+    memcpy(pResult->bssid.bMac, nla_data(bss[NL80211_BSS_BSSID]), SWL_MAC_BIN_LEN);
 
     // get signal strength, signal strength units not specified, scaled to 0-100
     if(bss[NL80211_BSS_SIGNAL_UNSPEC]) {

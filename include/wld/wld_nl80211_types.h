@@ -217,4 +217,18 @@ typedef struct {
     const uint8_t* ies;   //extra Information Elements to add in probeReq
 } wld_nl80211_scanParams_t;
 
+struct wld_nl80211_channelSurveyInfo {
+    uint32_t frequencyMHz; // Center frequency of channel
+    uint64_t timeOn;       // Amount of time (in ms) that the radio was turned on (on channel or globally)
+    uint64_t timeBusy;     // Amount of the time (in ms) the primary channel was sensed busy
+                           // (either due to activity or energy detect).
+    uint64_t timeExtBusy;  // Amount of time (in ms) the extension channel was sensed busy.
+    uint64_t timeRx;       // Amount of time (in ms) the radio spent receiving data (on channel or globally)
+    uint64_t timeTx;       // Amount of time (in ms) the radio spent transmitting data (on channel or globally).
+    uint64_t timeScan;     // Time (in ms) the radio spent for scan (on this channel or globally).
+    uint64_t timeRxInBss;  // time the radio spent receiving frames destined to the local BSS
+    bool inUse;            // Channel is currently being used.
+    int8_t noiseDbm;       // Noise level of channel (u8, dBm).
+};
+
 #endif /* INCLUDE_WLD_WLD_NL80211_TYPES_H_ */

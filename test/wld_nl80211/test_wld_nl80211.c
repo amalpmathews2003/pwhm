@@ -568,6 +568,12 @@ typedef struct {
     void* expectedData;
 } cmdMockTest_t;
 
+typedef struct {
+    stateMock_t stateMock;
+    void* expectedData;
+    size_t nExpectedElts;
+} cmdMockTestMultiElt_t;
+
 cmdMockTest_t mockGetIfaceInfo;
 extern swl_table_t sChannelWidthMap;
 static int s_nlSend_ifaceInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
@@ -999,6 +1005,96 @@ static void test_wld_nl80211_getScanResults(void** mockaState _UNUSED) {
     assert_true(amxc_llist_is_empty(&resultingList->ssids));
 }
 
+cmdMockTestMultiElt_t mockGetChanSurvey;
+static int s_nlSend_chanSurveyInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
+    int fd = mockGetChanSurvey.stateMock.pipeFds[1];
+    wld_nl80211_channelSurveyInfo_t* pExpectedChansInfo = (wld_nl80211_channelSurveyInfo_t*) mockGetChanSurvey.expectedData;
+    uint32_t wiphy = 1;
+    uint32_t ifIndex = 14;
+    bool hasMulti = (mockGetChanSurvey.nExpectedElts > 1);
+    for(size_t i = 0; i < mockGetChanSurvey.nExpectedElts; i++) {
+        wld_nl80211_channelSurveyInfo_t* pElt = &pExpectedChansInfo[i];
+        struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_SURVEY_RESULTS, hasMulti ? NLM_F_MULTI : 0);
+        NL_ATTRS(attribs,
+                 ARR(NL_ATTR_VAL(NL80211_ATTR_IFINDEX, ifIndex),
+                     NL_ATTR_VAL(NL80211_ATTR_WIPHY, wiphy)));
+
+        NL_ATTR_NESTED(infoaAttr, NL80211_ATTR_SURVEY_INFO);
+        NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR_VAL(NL80211_SURVEY_INFO_FREQUENCY, pElt->frequencyMHz));
+        uint8_t noise = pElt->noiseDbm;
+        NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR_VAL(NL80211_SURVEY_INFO_NOISE, noise));
+        if(pElt->inUse) {
+            NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR(NL80211_SURVEY_INFO_IN_USE));
+        }
+        NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR_VAL(NL80211_SURVEY_INFO_TIME, pElt->timeOn));
+        NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR_VAL(NL80211_SURVEY_INFO_TIME_BUSY, pElt->timeBusy));
+        NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR_VAL(NL80211_SURVEY_INFO_TIME_RX, pElt->timeRx));
+        NL_ATTRS_ADD(&infoaAttr.data.attribs, NL_ATTR_VAL(NL80211_SURVEY_INFO_TIME_TX, pElt->timeTx));
+        swl_unLiList_add(&attribs, &infoaAttr);
+        wld_nl80211_addNlAttrs(msgReply, &attribs);
+        write(fd, (void*) nlmsg_hdr(msgReply), nlmsg_hdr(msgReply)->nlmsg_len);
+        nlmsg_free(msgReply);
+        NL_ATTRS_CLEAR(&attribs);
+    }
+
+    if(hasMulti) {
+        struct nl_msg* msgReply = s_mirrorNlMsgExt(msg, NLMSG_DONE, 0, NLM_F_MULTI);
+        write(fd, (void*) nlmsg_hdr(msgReply), nlmsg_hdr(msgReply)->nlmsg_len);
+        nlmsg_free(msgReply);
+    }
+    return 0;
+}
+
+static void test_wld_nl80211_getChanSurveyInfo(void** mockaState _UNUSED) {
+    assert_true(s_stateMockInit(&mockGetChanSurvey.stateMock));
+    //tweak: override nl_send API to catch request and build reply locally
+    mockGetChanSurvey.stateMock.state->fNlSendPriv = s_nlSend_chanSurveyInfo;
+    wld_nl80211_channelSurveyInfo_t expectedList[] = {
+        {
+            .frequencyMHz = 5180,
+        },
+        {
+            .frequencyMHz = 5200,
+        },
+        {
+            .frequencyMHz = 5220,
+            .noiseDbm = -104,
+            .timeOn = 56546072,
+            .timeBusy = 28262392,
+            .timeRx = 27749,
+            .timeTx = 27694016,
+            .inUse = true,
+        },
+        {
+            .frequencyMHz = 5240,
+            .noiseDbm = -101,
+            .timeOn = 136,
+            .timeBusy = 5,
+        },
+        {
+            .frequencyMHz = 5260,
+        },
+    };
+    mockGetChanSurvey.expectedData = expectedList;
+    mockGetChanSurvey.nExpectedElts = SWL_ARRAY_SIZE(expectedList);
+    wld_nl80211_channelSurveyInfo_t* pResChanSurveyInfo = NULL;
+    uint32_t nResChanSurveyInfo = 0;
+    swl_rc_ne rc = wld_nl80211_getSurveyInfo(mockGetChanSurvey.stateMock.state, 14, &pResChanSurveyInfo, &nResChanSurveyInfo);
+    assert_true(rc >= SWL_RC_OK);
+    assert_int_equal(nResChanSurveyInfo, mockGetChanSurvey.nExpectedElts);
+    for(uint32_t i = 0; i < nResChanSurveyInfo; i++) {
+        assert_int_equal(pResChanSurveyInfo[i].frequencyMHz, expectedList[i].frequencyMHz);
+        assert_int_equal(pResChanSurveyInfo[i].noiseDbm, expectedList[i].noiseDbm);
+        assert_int_equal(pResChanSurveyInfo[i].inUse, expectedList[i].inUse);
+        assert_int_equal(pResChanSurveyInfo[i].timeOn, expectedList[i].timeOn);
+        assert_int_equal(pResChanSurveyInfo[i].timeBusy, expectedList[i].timeBusy);
+        assert_int_equal(pResChanSurveyInfo[i].timeRx, expectedList[i].timeRx);
+        assert_int_equal(pResChanSurveyInfo[i].timeTx, expectedList[i].timeTx);
+    }
+    free(pResChanSurveyInfo);
+    s_stateMockDeInit(&mockGetChanSurvey.stateMock);
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceOpen(__FILE__, TRACE_TYPE_STDERR);
     if(!sahTraceIsOpen()) {
@@ -1019,6 +1115,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_nl80211_getIfaceInfo),
         cmocka_unit_test(test_wld_nl80211_getWiphyInfo),
         cmocka_unit_test_setup_teardown(test_wld_nl80211_getScanResults, s_test_getScanResults_setup, s_test_getScanResults_teardown),
+        cmocka_unit_test(test_wld_nl80211_getChanSurveyInfo),
     };
     int rc = cmocka_run_group_tests(tests, setup_suite, teardown_suite);
     sahTraceClose();

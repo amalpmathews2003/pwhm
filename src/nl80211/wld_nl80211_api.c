@@ -428,13 +428,21 @@ swl_rc_ne wld_nl80211_getAllStationsInfo(wld_nl80211_state_t* state, uint32_t if
     return rc;
 }
 
-static swl_rc_ne s_getNoiseCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
+struct getSurveyInfoData_s {
+    const uint32_t nrChanSurveyInfoMax;
+    uint32_t nrChanSurveyInfo;
+    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo;
+};
+
+static swl_rc_ne s_getChanSurveyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
     ASSERTS_FALSE((rc <= SWL_RC_ERROR), rc, ME, "Request error");
     ASSERT_NOT_NULL(nlh, SWL_RC_ERROR, ME, "NULL");
     ASSERTI_EQUALS(nlh->nlmsg_type, g_nl80211DriverIDs.family_id, SWL_RC_OK, ME, "skip msgtype %d", nlh->nlmsg_type);
     struct genlmsghdr* gnlh = (struct genlmsghdr*) nlmsg_data(nlh);
     ASSERTI_EQUALS(gnlh->cmd, NL80211_CMD_NEW_SURVEY_RESULTS, SWL_RC_OK, ME, "unexpected cmd %d", gnlh->cmd);
 
+    struct getSurveyInfoData_s* requestData = (struct getSurveyInfoData_s*) priv;
+    ASSERT_NOT_NULL(requestData, SWL_RC_ERROR, ME, "No request data");
 
     struct nlattr* tb[NL80211_ATTR_MAX + 1] = {};
 
@@ -449,15 +457,51 @@ static swl_rc_ne s_getNoiseCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
     }
 
     // Parse the netlink message
-    return wld_nl80211_parseNoise(tb, (int32_t*) priv);
+    wld_nl80211_channelSurveyInfo_t chanSurveyInfo;
+    memset(&chanSurveyInfo, 0, sizeof(chanSurveyInfo));
+    rc = wld_nl80211_parseChanSurveyInfo(tb, &chanSurveyInfo);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "parsing channel survey info failed");
+
+    if((requestData->pChanSurveyInfo == NULL) || (requestData->nrChanSurveyInfoMax == 0)) {
+        SAH_TRACEZ_INFO(ME, "No memory available for saving channel survey info");
+        return SWL_RC_OK;
+    }
+    if(requestData->nrChanSurveyInfo >= requestData->nrChanSurveyInfoMax) {
+        SAH_TRACEZ_INFO(ME, "Result skipped: maxChanInfo %d reached", requestData->nrChanSurveyInfoMax);
+        return SWL_RC_DONE;
+    }
+
+    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo = &requestData->pChanSurveyInfo[requestData->nrChanSurveyInfo];
+    memcpy(pChanSurveyInfo, &chanSurveyInfo, sizeof(*pChanSurveyInfo));
+    requestData->nrChanSurveyInfo++;
+
+    return rc;
 }
 
+swl_rc_ne wld_nl80211_getSurveyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnChanSurveyInfo) {
 
-swl_rc_ne wld_nl80211_getNoise(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* noise) {
+    struct getSurveyInfoData_s requestData = {
+        .nrChanSurveyInfoMax = WLD_MAX_POSSIBLE_CHANNELS,
+        .nrChanSurveyInfo = 0,
+        .pChanSurveyInfo = calloc(WLD_MAX_POSSIBLE_CHANNELS, sizeof(wld_nl80211_channelSurveyInfo_t)),
+    };
 
-    NL_ATTRS(attribs, ARR());
-    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_SURVEY, NLM_F_DUMP, ifIndex, &attribs, s_getNoiseCb, noise);
-    NL_ATTRS_CLEAR(&attribs);
+    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_SURVEY, NLM_F_DUMP, ifIndex, NULL, s_getChanSurveyInfoCb, &requestData);
+
+    if(requestData.nrChanSurveyInfo == 0) {
+        SAH_TRACEZ_INFO(ME, "no Channel survey info with ifIndex(%d)", ifIndex);
+        rc = SWL_RC_OK;
+    } else if((ppChanSurveyInfo != NULL) && (pnChanSurveyInfo != NULL)) {
+        *ppChanSurveyInfo = calloc(requestData.nrChanSurveyInfo, sizeof(wld_nl80211_channelSurveyInfo_t));
+        if(*ppChanSurveyInfo == NULL) {
+            SAH_TRACEZ_ERROR(ME, "Fail to allocate memory for station info results");
+            rc = SWL_RC_ERROR;
+        } else {
+            *pnChanSurveyInfo = requestData.nrChanSurveyInfo;
+            memcpy(*ppChanSurveyInfo, requestData.pChanSurveyInfo, requestData.nrChanSurveyInfo * sizeof(wld_nl80211_channelSurveyInfo_t));
+        }
+    }
+    free(requestData.pChanSurveyInfo);
     return rc;
 }
 

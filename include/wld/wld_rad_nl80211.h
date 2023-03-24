@@ -165,15 +165,29 @@ swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP);
 swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t* pWiphyInfo);
 
 /*
- * @brief get info and statistics of station device
+ * @brief get survey info of all radio channels
  *
  * @param pRadio pointer to radio context
- * @param noise pointer to result noise
+ * @param ppChanSurveyInfo (output) array of channel survey info, dynamically allocated
+ * (need to be freed by user)
+ * @param pnChanSurveyInfo (output) number of available survey info
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_rad_nl80211_getNoise(T_Radio* pRadio, int32_t* noise);
+swl_rc_ne wld_rad_nl80211_getSurveyInfo(T_Radio* pRadio, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnrChanSurveyInfo);
+
+/*
+ * @brief get radio air statistics of the central channel being used
+ * The channel load is defined as the percentage of time that the AP sensed the medium was busy.
+ *
+ * @param pRadio pointer to radio context
+ * @param stats pointer to result
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRad, T_Airstats* stats);
 
 /*
  * @brief configure radio's tx/rx antennas

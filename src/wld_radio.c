@@ -858,6 +858,27 @@ swl_chanspec_t wld_rad_getSwlChanspec(T_Radio* pRad) {
     return chanspec;
 }
 
+/*
+ * @brief get current radio noise level (in dbm) using air statistics handler
+ *
+ * @param pRadio pointer to radio context
+ * @param pNoise pointer to result noise
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_getCurrentNoise(T_Radio* pRad, int32_t* pNoise) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pNoise, SWL_RC_INVALID_PARAM, ME, "NULL");
+    *pNoise = 0;
+    T_Airstats airStats;
+    memset(&airStats, 0, sizeof(airStats));
+    swl_rc_ne rc = pRad->pFA->mfn_wrad_airstats(pRad, &airStats);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to get air stats", pRad->Name);
+    *pNoise = airStats.noise;
+    return SWL_RC_OK;
+}
+
 amxd_status_t _wld_rad_setGuardInterval_pwf(amxd_object_t* object _UNUSED,
                                             amxd_param_t* parameter _UNUSED,
                                             amxd_action_t reason _UNUSED,
@@ -949,6 +970,28 @@ amxd_status_t _wld_radio_getStats_orf(amxd_object_t* const object,
 
     status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
     return status;
+}
+
+amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,
+                                          amxd_param_t* param,
+                                          amxd_action_t reason,
+                                          const amxc_var_t* const args _UNUSED,
+                                          amxc_var_t* const retval,
+                                          void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_unknown_error;
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
+    uint16_t channelLoad = 0;
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
+    T_Radio* pR = (T_Radio*) object->priv;
+    ASSERTS_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "no radio mapped");
+    SAH_TRACEZ_IN(ME);
+    T_Airstats airStats = {0};
+    swl_rc_ne rc = pR->pFA->mfn_wrad_airstats(pR, &airStats);
+    if(rc == SWL_RC_OK) {
+        channelLoad = airStats.load;
+    }
+    amxc_var_set(uint16_t, retval, channelLoad);
+    return amxd_status_ok;
 }
 
 amxd_status_t _getRadioTxPower(amxd_object_t* object _UNUSED,
@@ -3556,10 +3599,7 @@ amxd_status_t _getRadioAirStats(amxd_object_t* object,
 
     T_Radio* pR = object->priv;
 
-    if(pR->enable == 0) {
-        SAH_TRACEZ_INFO(ME, "No air statistics when disabled");
-        return amxd_status_ok;
-    }
+    ASSERTI_TRUE(wld_rad_isActive(pR), amxd_status_ok, ME, "%s : not ready", pR->Name);
 
     T_Airstats stats;
     bzero(&stats, sizeof(stats));
@@ -3568,9 +3608,9 @@ amxd_status_t _getRadioAirStats(amxd_object_t* object,
     amxc_var_init(&vendorStats);
     stats.vendorStats = &vendorStats;
 
-    int ret = pR->pFA->mfn_wrad_airstats(pR, &stats);
+    swl_rc_ne ret = pR->pFA->mfn_wrad_airstats(pR, &stats);
 
-    if(ret < 0) {
+    if(ret < SWL_RC_OK) {
         SAH_TRACEZ_ERROR(ME, "Failed to get Air statistics");
         amxc_var_clean(&vendorStats);
         return amxd_status_unknown_error;

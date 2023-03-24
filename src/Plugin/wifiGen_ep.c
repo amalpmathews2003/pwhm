@@ -262,6 +262,7 @@ swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP) {
  */
 swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pEP->pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pEP->pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTI_EQUALS(pEP->connectionStatus, EPCS_CONNECTED, SWL_RC_INVALID_STATE, ME, "%s: not connected %u", pEP->Name, pEP->connectionStatus);
     ASSERT_NOT_NULL(stats, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -276,10 +277,9 @@ swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
         return SWL_RC_ERROR;
     }
 
-    int32_t noise = 0;
-    wld_rad_nl80211_getNoise(pEP->pRadio, &noise);
+    wld_rad_getCurrentNoise(pEP->pRadio, &pEP->pRadio->stats.noise);
     stats->SignalStrength = stationInfo.rssiDbm;
-    stats->noise = noise;
+    stats->noise = pEP->pRadio->stats.noise;
     stats->SignalNoiseRatio = 0;
     if((stats != 0) && (stats->SignalStrength != 0) && (stats->SignalStrength > stats->noise)) {
         stats->SignalNoiseRatio = stats->SignalStrength - stats->noise;

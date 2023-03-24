@@ -29,7 +29,7 @@ CC_NAME = $(word $(words $(CC_PARTS)),$(CC_PARTS))
 
 # Target
 COMPONENT = pwhm
-ifeq ($(CONFIG_GATEWAY)$(CONFIG_ACCESPOINT),)
+ifeq ($(CONFIG_GATEWAY)$(CONFIG_ACCESSPOINT),)
 CONFIG_GATEWAY=y
 endif
 

@@ -1525,16 +1525,18 @@ struct WLD_RADIO {
     T_EventCounterList vendorCounters;
     T_EventCounter counterList[WLD_RAD_EV_MAX];
     T_EventCounterList genericCounters;
-    int dbgEnable;                           /* Enable Deamon debugging */
-    char* dbgOutput;                         /* Filename to store data  */
+    int dbgEnable;                                /* Enable Deamon debugging */
+    char* dbgOutput;                              /* Filename to store data  */
     T_RssiEventing naStaRssiMonitor;
-    wld_rad_muMimoInfo_t radMuMimoInfo;      /* MU MIMO Info. */
-    wld_driverCfg_t driverCfg;               /* Detailed driver config options */
-    wld_macCfg_t macCfg;                     /* Detailed driver config options */
+    wld_rad_muMimoInfo_t radMuMimoInfo;           /* MU MIMO Info. */
+    wld_driverCfg_t driverCfg;                    /* Detailed driver config options */
+    wld_macCfg_t macCfg;                          /* Detailed driver config options */
     wld_rad_delayMgr_t delayMgr;
-    wld_autoCommitRadData_t autoCommitData;  /* struct for managing auto commiting */
-    wld_nl80211_listener_t* nl80211Listener; /* nl80211 events listener */
-    wld_secDmn_t* hostapd;                   /* hostapd daemon context. */
+    wld_autoCommitRadData_t autoCommitData;       /* struct for managing auto commiting */
+    wld_nl80211_listener_t* nl80211Listener;      /* nl80211 events listener */
+    wld_secDmn_t* hostapd;                        /* hostapd daemon context. */
+    uint32_t wiphy;                               /* nl80211 wireless physical device id */
+    wld_nl80211_channelSurveyInfo_t* pLastSurvey; /* last active chan survey result (cached) */
 };
 
 typedef struct {
@@ -1993,7 +1995,6 @@ typedef struct {
     uint8_t long_preamble_error_percentage;
     amxc_var_t* vendorStats;
 } T_Airstats;
-typedef int (APIENTRY* PFN_WRAD_AIRSTATS)(T_Radio* rad, T_Airstats*);
 typedef int (APIENTRY* PFN_WRAD_UPDATE_PROB_REQ)(T_Radio* rad);
 
 #define DEFAULT_BASE_RSSI -200.0
@@ -2162,7 +2163,10 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_RXPOWERSAVE mfn_wrad_rx_powersave;              /**< Set/Get Power Save status */
     PFN_WRAD_INTELLIGENTAIRTIME mfn_wrad_intelligentAirtime; /**< Set/Get Intelligent airtime scheduler status */
     PFN_WRAD_MULTIUSERMIMO mfn_wrad_multiusermimo;           /**< Set/Get MultiUserMIMO status */
-    PFN_WRAD_AIRSTATS mfn_wrad_airstats;                     /**< Get Air usage statistics */
+
+    /**< Get Air usage statistics */
+    swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, T_Airstats* pStats);
+
     PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;       /**< Update probe requests */
     PFN_WRAD_SYNC mfn_wrad_sync;                             /**< Sync Enable/channel/band-mode/... */
     PFN_WRAD_PER_ANTENNA_RSSI mfn_wrad_per_ant_rssi;         /**< Get the RSSI values of each antenna*/

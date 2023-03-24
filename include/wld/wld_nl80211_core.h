@@ -78,6 +78,12 @@ struct wld_nl80211_listener;
 typedef struct wld_nl80211_listener wld_nl80211_listener_t;
 
 /*
+ * @brief abstract types of common nl80211 structures used in public APIs
+ * (detailed definitions in wld_nl80211_types.h)
+ */
+typedef struct wld_nl80211_channelSurveyInfo wld_nl80211_channelSurveyInfo_t;
+
+/*
  * @brief statistic counters of nl80211 socket manager
  */
 typedef struct {

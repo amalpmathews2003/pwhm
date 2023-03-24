@@ -118,15 +118,16 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
 
 
 /*
- * @brief get channel's noise from nl msg attributes
+ * @brief get channel's survey info from nl msg attributes
  *
  * @param tb array of attributes from parsed nl msg
- * @param requestData pointer to the noise level
+ * @param requestData pointer to channel survey info  struct to be filled
  *
  * @return SWL_RC_DONE parsing done successfully
- *         SWL_RC_CONTINUE if we are not pointing into the used channel
+ *         SWL_RC_OK parsing done but some fields are missing
+ *         <= SWL_RC_ERROR parsing error
  */
-swl_rc_ne wld_nl80211_parseNoise(struct nlattr* tb[], int32_t* requestData);
+swl_rc_ne wld_nl80211_parseChanSurveyInfo(struct nlattr* tb[], wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo);
 
 /*
  * @brief parse nl msg attributes into scan result struct

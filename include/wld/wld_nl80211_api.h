@@ -253,17 +253,19 @@ swl_rc_ne wld_nl80211_getStationInfo(wld_nl80211_state_t* state, uint32_t ifInde
 swl_rc_ne wld_nl80211_getAllStationsInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation);
 
 /*
- * @brief get radio noise
+ * @brief get survey info of all radio channels
  * (Synchronous api)
  *
  * @param state nl80211 socket manager context
- * @param ifIndex radio index
- * @param noise pointer to noise
+ * @param ifIndex wiphy main iface index
+ * @param ppChanSurveyInfo (output) array of channel survey info, dynamically allocated
+ * (need to be freed by user)
+ * @param pnChanSurveyInfo (output) number of available survey info
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_nl80211_getNoise(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* noise);
+swl_rc_ne wld_nl80211_getSurveyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnChanSurveyInfo);
 
 /*
  * @brief configure tx/rx antennas

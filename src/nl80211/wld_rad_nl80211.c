@@ -65,6 +65,7 @@
 
 #include "wld_rad_nl80211.h"
 #include "swl/swl_common.h"
+#include "swl/swl_common_time.h"
 #include "wld_radio.h"
 
 #define ME "nlRad"
@@ -142,10 +143,93 @@ swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t*
     return wld_nl80211_getWiphyInfo(wld_nl80211_getSharedState(), pRadio->index, pWiphyInfo);
 }
 
-swl_rc_ne wld_rad_nl80211_getNoise(T_Radio* pRadio, int32_t* noise) {
+swl_rc_ne wld_rad_nl80211_getSurveyInfo(T_Radio* pRadio, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnrChanSurveyInfo) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_getNoise(wld_nl80211_getSharedState(), pRadio->index, noise);
+    return wld_nl80211_getSurveyInfo(wld_nl80211_getSharedState(), pRadio->index, ppChanSurveyInfo, pnrChanSurveyInfo);
 }
+
+swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRadio, T_Airstats* pStats) {
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pStats, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    memset(pStats, 0, sizeof(*pStats));
+    uint32_t nChanSurveyInfo = 0;
+    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList = NULL;
+    swl_rc_ne retVal = wld_rad_nl80211_getSurveyInfo(pRadio, &pChanSurveyInfoList, &nChanSurveyInfo);
+    if(retVal < SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to get survey info info", pRadio->Name);
+        free(pChanSurveyInfoList);
+        return retVal;
+    }
+
+    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo;
+    for(uint32_t id = 0; id < nChanSurveyInfo; id++) {
+        pChanSurveyInfo = &pChanSurveyInfoList[id];
+        if(!pChanSurveyInfo->inUse) {
+            continue;
+        }
+        if((pChanSurveyInfo->timeOn == 0) ||
+           (pChanSurveyInfo->timeBusy > pChanSurveyInfo->timeOn)) {
+            SAH_TRACEZ_ERROR(ME, "\t%s: Center Freq %dMHz: wrong time activity values",
+                             pRadio->Name, pChanSurveyInfo->frequencyMHz);
+            retVal = SWL_RC_ERROR;
+            break;
+        }
+
+        /*
+         * cache last active chan survey info, per radio
+         * as nl80211 survey info include cumulative time values
+         * => for a proper runtime channel load calculation,
+         * we need to diff with last meas before
+         */
+        if(pRadio->pLastSurvey == NULL) {
+            pRadio->pLastSurvey = calloc(1, sizeof(wld_nl80211_channelSurveyInfo_t));
+            if(pRadio->pLastSurvey == NULL) {
+                SAH_TRACEZ_ERROR(ME, "%s: fail to alloc survey cache", pRadio->Name);
+                retVal = SWL_RC_ERROR;
+                break;
+            }
+        }
+        wld_nl80211_channelSurveyInfo_t* pLastActiveChanSurveyInfo = pRadio->pLastSurvey;
+        wld_nl80211_channelSurveyInfo_t currChanSurveyInfo;
+        memcpy(&currChanSurveyInfo, pChanSurveyInfo, sizeof(*pChanSurveyInfo));
+        if((pLastActiveChanSurveyInfo->frequencyMHz == currChanSurveyInfo.frequencyMHz) &&
+           (pLastActiveChanSurveyInfo->timeOn > 0) &&
+           (pLastActiveChanSurveyInfo->timeOn < currChanSurveyInfo.timeOn)) {
+            currChanSurveyInfo.timeOn -= pLastActiveChanSurveyInfo->timeOn;
+            currChanSurveyInfo.timeBusy -= pLastActiveChanSurveyInfo->timeBusy;
+            currChanSurveyInfo.timeExtBusy -= pLastActiveChanSurveyInfo->timeExtBusy;
+            currChanSurveyInfo.timeRx -= pLastActiveChanSurveyInfo->timeRx;
+            currChanSurveyInfo.timeTx -= pLastActiveChanSurveyInfo->timeTx;
+            currChanSurveyInfo.timeScan -= pLastActiveChanSurveyInfo->timeScan;
+            currChanSurveyInfo.timeRxInBss -= pLastActiveChanSurveyInfo->timeRxInBss;
+        }
+        memcpy(pLastActiveChanSurveyInfo, pChanSurveyInfo, sizeof(*pChanSurveyInfo));
+
+        pChanSurveyInfo = &currChanSurveyInfo;
+        pStats->timestamp = swl_time_getMonoSec();
+        pStats->noise = pChanSurveyInfo->noiseDbm;
+        //use ratio, when timeOn value is beyond total_time variable max type value
+        uint64_t base = SWL_MIN(pChanSurveyInfo->timeOn, SWL_BIT_SHIFT(SWL_BIT_SIZE(pStats->total_time)) - 1);
+
+        pStats->total_time = base; // eqv. all pChanSurveyInfo->timeOn;
+        pStats->bss_transmit_time = (pChanSurveyInfo->timeTx * base) / pChanSurveyInfo->timeOn;
+        pStats->bss_receive_time = (pChanSurveyInfo->timeRx * base) / pChanSurveyInfo->timeOn;
+        if(pChanSurveyInfo->timeRxInBss > 0) {
+            pStats->other_bss_time = ((pChanSurveyInfo->timeRx - pChanSurveyInfo->timeRxInBss) * base) / pChanSurveyInfo->timeOn;
+        }
+        uint64_t wifiTime = pChanSurveyInfo->timeTx + pChanSurveyInfo->timeRx + pChanSurveyInfo->timeScan;
+        if(pChanSurveyInfo->timeBusy > wifiTime) {
+            pStats->other_time = ((pChanSurveyInfo->timeBusy - wifiTime) * base) / pChanSurveyInfo->timeOn;
+        }
+        pStats->free_time = ((pChanSurveyInfo->timeOn - pChanSurveyInfo->timeBusy) * base) / pChanSurveyInfo->timeOn;
+        pStats->load = (pChanSurveyInfo->timeBusy * 100) / pChanSurveyInfo->timeOn;
+        break;
+    }
+    free(pChanSurveyInfoList);
+    return retVal;
+}
+
 swl_rc_ne wld_rad_nl80211_setAntennas(T_Radio* pRadio, uint32_t txMapAnt, uint32_t rxMapAnt) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_nl80211_setWiphyAntennas(wld_nl80211_getSharedState(), pRadio->index, txMapAnt, rxMapAnt);

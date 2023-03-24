@@ -225,6 +225,7 @@ SWL_TABLE(sNl80211Msgs,
               {MSG_ID_NAME(NL80211_CMD_GET_STATION), NULL, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_GET_SCAN), NULL, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_ABORT_SCAN), NULL, OFFSET_UNDEF},
+              {MSG_ID_NAME(NL80211_CMD_GET_SURVEY), NULL, OFFSET_UNDEF},
               /* Events */
               /* NL80211_MCGRP_SCAN */
               {MSG_ID_NAME(NL80211_CMD_TRIGGER_SCAN), s_scanStartedCb, offsetof(wld_nl80211_evtHandlers_cb, fScanStartedCb)},

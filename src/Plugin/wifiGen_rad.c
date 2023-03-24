@@ -124,6 +124,7 @@ int wifiGen_rad_createHook(T_Radio* pRad) {
 void wifiGen_rad_destroyHook(T_Radio* pRad) {
     wifiGen_hapd_cleanup(pRad);
     wld_rad_nl80211_delEvtListener(pRad);
+    free(pRad->pLastSurvey);
     if(pRad->wlRadio_SK > 0) {
         close(pRad->wlRadio_SK);
         pRad->wlRadio_SK = -1;
@@ -383,6 +384,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     wld_nl80211_ifaceInfo_t ifaceInfo;
     rc = wld_rad_nl80211_getInterfaceInfo(pRad, &ifaceInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "Fail to get nl80211 rad iface info");
+    pRad->wiphy = ifaceInfo.wiphy;
 
     pRad->isAP = wiphyInfo.suppAp;
     if(pRad->isAP) {
@@ -708,5 +710,11 @@ swl_rc_ne wifiGen_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {
         amxc_llist_append(&results->ssids, &pCopy->it);
     }
     return SWL_RC_OK;
+}
+
+swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, T_Airstats* pStats) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pStats, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_rad_nl80211_getAirstats(pRad, pStats);
 }
 

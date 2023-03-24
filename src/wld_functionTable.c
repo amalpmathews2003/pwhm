@@ -291,11 +291,11 @@ static amxd_status_t TRAP_mfn_wrad_getspectruminfo(T_Radio* rad, bool update, ui
     return amxd_status_unknown_error;
 }
 
-static int TRAP_mfn_wrad_airstats(T_Radio* rad, T_Airstats* stats) {
+static swl_rc_ne TRAP_mfn_wrad_airstats(T_Radio* rad, T_Airstats* stats) {
     _UNUSED_(rad);
     _UNUSED_(stats);
     SAH_TRACEZ_NOTICE(ME, "%p %p", rad, stats);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static int TRAP_mfn_wrad_per_ant_rssi(T_Radio* rad, T_ANTENNA_RSSI* stats) {

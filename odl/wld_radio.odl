@@ -1458,10 +1458,12 @@ define probelist_t{
 		/**
 		 * Percentage of time that the channel is unavailable for sending. This can be
 		 * either because we are sending, are receiving data from other stations,
-		 * or due to interference. Updated on getRadioAirStats().
+		 * or due to interference. Updated on reading or on getRadioAirStats().
 		 * range [0,100]
 		 */
-		%read-only uint16 ChannelLoad;
+		%volatile %read-only uint16 ChannelLoad {
+			on action read call wld_rad_getChannelLoad_prf;
+		}
 
 		/**
 		 * Percentage of time that the channel is unavailable due to outside factors.

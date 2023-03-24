@@ -176,7 +176,7 @@ static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
     swl_rc_ne retVal = wld_ap_nl80211_getAllStationsInfo(pAP, &pAllStaInfo, &nStations);
     ASSERT_FALSE(retVal < SWL_RC_OK, retVal, ME, "%s: fail to get all stations info", pAP->alias);
 
-    wld_rad_nl80211_getNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
+    wld_rad_getCurrentNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
 
     T_AssociatedDevice* pAD;
     wld_nl80211_stationInfo_t* pStationInfo = NULL;
@@ -238,7 +238,7 @@ swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
     wld_nl80211_stationInfo_t stationInfo;
     swl_rc_ne rc = wld_ap_nl80211_getStationInfo(pAP, (swl_macBin_t*) pAD->MACAddress, &stationInfo);
     if(rc >= SWL_RC_OK) {
-        wld_rad_nl80211_getNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
+        wld_rad_getCurrentNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
         s_fillAssocDevInfo(pAP, pAD, &stationInfo);
         wld_ap_hostapd_getStaInfo(pAP, pAD);
     } else {
