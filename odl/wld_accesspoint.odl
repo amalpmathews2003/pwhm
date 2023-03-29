@@ -729,7 +729,6 @@ define rrm_t{
 
 		/** This object contains parameters related to MAC-address based filtering for this access point.  */
 		%persistent object MACFiltering {
-			on action write call wld_ap_setMACFiltering_owf;
 			/** The MAC-address based filtering mode. Enumeration of:
 			  * <ul>
 			  *   <li><b>Off</b> All MAC-addresses are allowed.</li>
@@ -740,16 +739,19 @@ define rrm_t{
 			  * temp entry list is independent of this mode setting.
 			  */
 			%persistent string Mode {
-				on action validate call check_enum [ "Off", "WhiteList", "BlackList"];
+				on action validate call check_enum ["Off","WhiteList","BlackList"];
 				default "Off";
+				on action write call wld_ap_setMACFilteringMode_pwf;
 			}
 
 			/** This is the list of MAC-addresses to be allowed/denied depending on the MAC-filtering mode. */
 			%persistent object Entry[] {
-				on action write call wld_ap_setMACFilteringEntry_owf;
 				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
 				/** The MAC-address of this table entry. */
-				string MACAddress;
+				%persistent string MACAddress {
+				    on action write call wld_ap_setMACFilteringEntry_pwf;
+				    default "";
+				}
 			}
 
 			/**
@@ -761,6 +763,7 @@ define rrm_t{
 			 */
 			%persistent bool TempBlacklistEnable{
 				default true;
+                               on action write call wld_ap_setMACFilteringTempBlacklistEnable_pwf;
 			}
 
 			/**
@@ -770,9 +773,11 @@ define rrm_t{
 			 * only.
 			 **/
 			object TempEntry[] {
-				on action write call wld_ap_setMACFilteringEntry_owf;
 				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
-				string MACAddress;
+				%persistent string MACAddress {
+				    on action write call wld_ap_setMACFilteringTempEntry_pwf;
+				    default "";
+				}
 			}
 
 			/**
