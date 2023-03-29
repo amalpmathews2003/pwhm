@@ -302,6 +302,11 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AX)) {
         pRad->heCapsSupported = M_HE_CAP_DL_OFDMA | M_HE_CAP_UL_OFDMA | M_HE_CAP_DL_MUMIMO;
     }
+    //updating capabilities
+    pRad->htCapabilities = pOperBand->htCapabilities;
+    pRad->vhtCapabilities = pOperBand->vhtCapabilities;
+    pRad->hePhyCapabilities = pOperBand->hePhyCapabilities;
+
 }
 
 void s_readChanInfo(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {

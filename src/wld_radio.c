@@ -100,6 +100,7 @@
 #include "wld_linuxIfStats.h"
 #include "wld_linuxIfUtils.h"
 #include "wld_dm_trans.h"
+#include <swl/swl_base64.h>
 
 #define GETENV(x, var) \
     { \
@@ -2372,6 +2373,50 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         swl_conv_maskToChar(TBuf, sizeof(TBuf), pR->bfCapsSupported[COM_DIR_RECEIVE], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
         amxd_object_set_cstring_t(object, "RxBeamformingCapsAvailable", TBuf);
+
+        ssize_t outputSize = 0;
+        //HT capabilities
+        char capBuffer[256] = {0};
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->htCapabilities, sizeof(pR->htCapabilities));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_object_set_cstring_t(object, "HTCapabilities", capBuffer);
+        }
+        outputSize = swl_80211_htCapMaskToChar(capBuffer, sizeof(capBuffer), pR->htCapabilities);
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        }
+        amxd_object_set_cstring_t(object, "RadCapabilitiesHTStr", capBuffer);
+
+        //VHT capabilities
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->vhtCapabilities, sizeof(pR->vhtCapabilities));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_object_set_cstring_t(object, "VHTCapabilities", capBuffer);
+        }
+        outputSize = swl_80211_vhtCapMaskToChar(capBuffer, sizeof(capBuffer), pR->vhtCapabilities);
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        }
+        amxd_object_set_cstring_t(object, "RadCapabilitiesVHTStr", capBuffer);
+
+        //HE Physical Capabilities
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->hePhyCapabilities, sizeof(pR->hePhyCapabilities));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_object_set_cstring_t(object, "HECapabilities", capBuffer);
+        }
+        // pR->hePhyCapabilities.cap is 10 bytes, the last 2 bytes are empty, thus we can just read the first 8 bytes
+        swl_80211_hePhyCapInfo_m heCap = 0;
+        memcpy(&heCap, pR->hePhyCapabilities.cap, sizeof(swl_80211_hePhyCapInfo_m));
+        outputSize = swl_80211_hePhyCapMaskToChar(capBuffer, sizeof(capBuffer), heCap);
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        }
+        amxd_object_set_cstring_t(object, "RadCapabilitiesHePhysStr", capBuffer);
 
 
         amxd_object_set_cstring_t(object, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));

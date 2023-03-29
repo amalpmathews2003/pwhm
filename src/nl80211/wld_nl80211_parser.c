@@ -234,7 +234,7 @@ swl_rc_ne s_parseHtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_HT_CAPA], SWL_RC_OK, ME, "no ht cap");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_HT_MCS_SET], SWL_RC_OK, ME, "no ht mcs set");
     swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_HT];
-    htCapabilityInfo_t htCapInfo;
+    htCapabilityInfo_t htCapInfo = {0};
     NLA_GET_DATA(&htCapInfo, tbBand[NL80211_BAND_ATTR_HT_CAPA], sizeof(htCapInfo));
     pMcsStd->standard = SWL_MCS_STANDARD_HT;
     //HT20 / HT40
@@ -243,6 +243,9 @@ swl_rc_ne s_parseHtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         pMcsStd->bandwidth = SWL_BW_40MHZ;
         pBand->chanWidthMask |= M_SWL_BW_40MHZ;
     }
+
+    memcpy(&pBand->htCapabilities, &htCapInfo, sizeof(pBand->htCapabilities));// since structures are the same, safe to do a memcpy
+
     //RX HT20 SGI / RX HT40 SGI
     pMcsStd->guardInterval = SWL_SGI_800;
     if(htCapInfo.short_gi20mhz || htCapInfo.short_gi40mhz) {
@@ -287,7 +290,7 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_VHT_MCS_SET], SWL_RC_OK, ME, "no vht mcs set");
     ASSERTI_NOT_EQUALS(pBand->freqBand, SWL_FREQ_BAND_2_4GHZ, SWL_RC_OK, ME, "skip vht cap in 2.4g band");
     swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_VHT];
-    vhtCapabilityInfo_t vhtCapInfo;
+    vhtCapabilityInfo_t vhtCapInfo = {0};
     NLA_GET_DATA(&vhtCapInfo, tbBand[NL80211_BAND_ATTR_VHT_CAPA], sizeof(vhtCapInfo));
     pMcsStd->standard = SWL_MCS_STANDARD_VHT;
     //Supported Channel Width
@@ -324,6 +327,8 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
     if(vhtCapInfo.mu_beamformee) {
         pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_VHT_MU;
     }
+
+    memcpy(&pBand->vhtCapabilities, &vhtCapInfo, sizeof(pBand->vhtCapabilities));// since structures are the same, safe to do a memcpy
 
     /*
      * As defined in 9.4.2.157.3 Supported VHT-MCS and NSS Set field: B0..B63
@@ -386,7 +391,7 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         /*
          * As defined in 9.4.2.248.3 HE PHY Capabilities Information field: B0..B87
          */
-        hePhyCapInfo_t htPhyCapInfo;
+        hePhyCapInfo_t htPhyCapInfo = {0};
         NLA_GET_DATA(&htPhyCapInfo, heCapPhyAttr, sizeof(htPhyCapInfo));
         uint64_t phyCap[2] = { 0 };
         NLA_GET_DATA(phyCap, heCapPhyAttr, 11);
@@ -450,6 +455,8 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
 
         pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
         pBand->radStdsMask |= M_SWL_RADSTD_AX;
+
+        memcpy(&pBand->hePhyCapabilities, &htPhyCapInfo, sizeof(pBand->hePhyCapabilities));// since structures are the same, safe to do a memcpy
     }
     ASSERTS_EQUALS(pMcsStd->standard, SWL_MCS_STANDARD_HE, SWL_RC_OK, ME, "Missing HE caps");
     return SWL_RC_DONE;

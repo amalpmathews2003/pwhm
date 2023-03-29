@@ -1065,7 +1065,83 @@ define probelist_t{
 			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF,HE_CQI_BF";
 			on action write call wld_rad_setTxBfCapsEnabled_pwf;
 		}
-		
+
+		/** 
+		 *	Radio 802.11n HT(High Throughput) capabilities, raw values,in base64 as per the Tr181 Spec.
+		 *   See standard section "9.4.2.55.2 HT Capability Information field" for bits details.
+		*/
+		%read-only string HTCapabilities;
+
+		/** 
+		 * Radio 802.11n HT(High Throughput) capabilities. List of strings  with these
+		 * possible values: 
+		 * * LPDC
+		 * * CAP_40
+		 * * POWER_SAVE
+		 * * GREEN_FIELD
+		 * * SHORT_GI_20
+		 * * SHORT_GI_40
+		 * * TX_STBC
+		 * * HT_DELAY_BA
+		 * * MAX_AMSDU
+		 * * MODE_40
+		 * * INTOL_40
+		 * * LSIG_PROT
+		*/
+		%read-only string RadCapabilitiesHTStr;
+
+		/** Radio 802.11n VHT(Very High Throughput) capabilities, raw values,in base64 as per the Tr181 Spec.
+		*   See standard section "9.4.2.157.2 VHT Capabilities Information field" for bits details. 
+		*/
+		%read-only string VHTCapabilities;
+
+		/** 
+		 * Radio 802.11n VHT(Very High Throughput) capabilities. List of strings  with these
+		 * possible values: 
+		 * * MAX_MPDU
+         * * SUP_WIDTH
+		 * * RX_LDPC
+		 * * SGI_80
+		 * * SGI_160
+		 * * TX_STBC
+		 * * RX_STBC
+		 * * SU_BFR
+		 * * SU_BFE
+		 * * BFE_STS_CAP
+		 * * NR_SDIM
+		 * * MU_BFR
+		 * * MU_BFE
+		 * * TXOP_PS
+		 * * MAX_AMPDU_EXP
+		 * * LINK_ADAPT_CAP
+		 * * RX_ANT_PAT_CONS
+		 * * TX_ANT_PAT_CONS
+		 * * EXT_NSS_SUP
+		*/
+		%read-only string RadCapabilitiesVHTStr;
+
+		/** 
+		 * Radio 802.11ax HE(High Efficiency) physical capabilities, raw values, in base64 as per the Tr181 Spec.
+	     * See standard section "9.4.2.248.3 HE PHY Capabilities Information field" for bits details.
+		*/
+		%read-only string HECapabilities;
+
+		/** 
+		 * Radio 802.11ax HE(High Efficiency) physical capabilities. List of strings  with these
+		 * possible values: 
+		 * * PHY_B0
+         * * 40MHZ_2_4GHZ
+         * * 40_80MHZ_5GHZ
+		 * * 160MHZ_5GHZ
+		 * * 160_80_80_MHZ_5GHZ
+		 * * SU_BEAMFORMER
+		 * * SU_BEAMFORMEE
+		 * * MU_BEAMFORMEE
+		 * * BEAMFORMEE_STS_LE_80MHZ
+		 * * BEAMFORMEE_STD_GT_80MHZ
+		*/
+		%read-only string RadCapabilitiesHePhysStr;
+
 		/** <p> Indicates if Reduced Interframe Space is enabled.</p>
 		 * Default = keep the current mode
 		 * Auto = let the driver to manage the RIFS
@@ -2234,4 +2310,3 @@ define probelist_t{
 	} /* object Radio */
     }
 }
-
