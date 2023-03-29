@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v2.26.0 - 2023-03-29(12:14:58 +0000)
+
+### Other
+
+- - [prplMesh_WHM] Exposing VHT,HT and HE radio capabilities in the datamodel
+
 ## Release v2.25.0 - 2023-03-24(15:57:07 +0000)
 
 ### Other
