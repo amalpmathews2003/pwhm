@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.0.1 - 2023-04-03(13:16:06 +0000)
+
+### Other
+
+- - MACFiltering doesnt work
+
 ## Release v3.0.0 - 2023-04-03(12:53:14 +0000)
 
 ### Other
