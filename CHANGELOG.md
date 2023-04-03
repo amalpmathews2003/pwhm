@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.0.0 - 2023-04-03(12:53:14 +0000)
+
+### Other
+
+- - Update channel mgt and radio statistics
+
 ## Release v2.26.0 - 2023-03-29(12:14:58 +0000)
 
 ### Other
