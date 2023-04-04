@@ -2,6 +2,8 @@
 [ -f /etc/environment ] && source /etc/environment
 ulimit -c ${ULIMIT_CONFIGURATION:-0}
 
+MAX_SIGTERM_RETRIES=3
+
 prevent_netifd_to_configure_wireless()
 {
     if [ -e "/etc/config/wireless" ]; then
@@ -27,6 +29,28 @@ get_base_wan_address()
     export WAN_ADDR=$(cat /sys/class/net/br-lan/address 2> /dev/null)
 }
 
+kill_process()
+{
+    # kill process with PID == $1
+    # try a SIGTERM for MAX_SIGTERM_RETRIES tries, then SIGKILL
+    # SIGTERM : 15 ; SIGKILL : 9
+
+    exit_condition=false
+    echo "killing PID" $1
+    tries=0
+    max_tries=$MAX_SIGTERM_RETRIES
+    while [[ $exit_condition = false && $((tries++)) -lt $max_tries ]] ; do
+        # try sigterm : 15 first
+        kill -0 $1 2>/dev/null && kill -SIGTERM $1 && exit_condition=true && echo "killed with sigterm"
+        sleep 1
+    done
+    # if still running, try sigkill
+    kill -0 $1 2>/dev/null && kill -SIGKILL $1 && echo "killed with sigkill"
+
+    # kill -0 returns true if PID is running and we can send signals to it
+    # && command linking executes the next if previous command returns true
+}
+
 case $1 in
     start|boot)
         get_base_wan_address
@@ -36,7 +60,8 @@ case $1 in
         ;;
     stop)
         if [ -f /var/run/wld.pid ]; then
-            kill `cat /var/run/wld.pid`
+            echo "stopping whm"
+            kill_process `cat /var/run/wld.pid`
         fi
         ;;
     restart)
