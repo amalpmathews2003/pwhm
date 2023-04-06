@@ -2655,6 +2655,13 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         //if(get_OBJ_ParameterHelper(TPH_INT32, object, "TransmitPower", &pR->transmitPower))
         //	pR->pFA->mfn_wrad_txpow(pR,pR->transmitPower,SET);
 
+        tmp_int32 = amxd_object_get_int32_t(object, "MaxAssociatedDevices", NULL);
+        if(pR->maxStations != tmp_int32) {
+            pR->maxStations = tmp_int32;
+            pR->pFA->mfn_wrad_sync(pR, SET);
+            commit = true;
+        }
+
         tmp_bool = amxd_object_get_bool(object, "IEEE80211hEnabled", NULL);
         if(pR->setRadio80211hEnable != tmp_bool) {
             pR->setRadio80211hEnable = tmp_bool;
