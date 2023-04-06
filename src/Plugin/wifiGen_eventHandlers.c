@@ -149,6 +149,7 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
     wld_rad_doCommitIfUnblocked(pRad);
     wld_rad_updateState(pRad, true);
+    pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
 }
 
 static void s_mainApDisabledCb(void* userData, char* ifName) {

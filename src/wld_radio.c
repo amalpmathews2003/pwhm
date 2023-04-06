@@ -1587,15 +1587,19 @@ amxd_status_t _validateIEEE80211hEnabled(amxd_param_t* parameter, void* validati
 
 static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
     ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_FALSE(swl_str_isEmpty(countryCode), SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_FALSE(swl_str_matches(countryCode, " "), SWL_RC_ERROR, ME, "NULL");
+    ASSERT_FALSE(swl_str_isEmpty(countryCode), SWL_RC_INVALID_PARAM, ME, "%s: Empty country", pR->Name);
+    ASSERT_FALSE(swl_str_matches(countryCode, " "), SWL_RC_ERROR, ME, "%s: invalid country(%s)", pR->Name, countryCode);
     int indexCountryCode = atoi(countryCode);
-    int idx;
+    int idx = 0;
+    int rc = -1;
     if(!indexCountryCode) {
-        getCountryParam(countryCode, 0, &idx);
+        char subCC[3];
+        swl_str_copy(subCC, sizeof(subCC), countryCode);
+        rc = getCountryParam(subCC, 0, &idx);
     } else {
-        getCountryParam(NULL, indexCountryCode, &idx);
+        rc = getCountryParam(NULL, indexCountryCode, &idx);
     }
+    ASSERT_FALSE(rc < 0, SWL_RC_ERROR, ME, "%s: invalid country (%s)", pR->Name, countryCode);
     pR->regulatoryDomainIdx = idx;
     pR->pFA->mfn_wrad_regdomain(pR, NULL, 0, SET);
     return SWL_RC_OK;
@@ -1613,16 +1617,17 @@ amxd_status_t _wld_rad_setCountryCode_pwf(amxd_object_t* object _UNUSED,
     if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
         return rv;
     }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
     rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
     if(rv != amxd_status_ok) {
         return rv;
     }
 
+    T_Radio* pR = (T_Radio*) wifiRad->priv;
+    ASSERT_NOT_NULL(pR, rv, ME, "NULL");
+
     SAH_TRACEZ_IN(ME);
     CC = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "set CountryCode %s", CC);
+    SAH_TRACEZ_INFO(ME, "%s: set CountryCode (%s)", pR->Name, CC);
 
     if(s_setCountryCode(pR, CC) == SWL_RC_OK) {
         wld_autoCommitMgr_notifyRadEdit(pR);
@@ -4242,18 +4247,17 @@ swl_bandwidth_e wld_rad_get_target_bandwidth(T_Radio* pRad) {
 }
 
 void wld_rad_write_possible_channels(T_Radio* pRad) {
-    int idx = 0;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: radio dm obj not ready for updates", pRad->Name);
     char TBuf[320] = {'\0'};
-    char ValBuf[32] = {'\0'};
-    for(idx = 0; pRad->possibleChannels[idx]; idx++) {
-        if(idx && TBuf[0]) {
-            wldu_catStr(TBuf, ",", sizeof(TBuf));
-        }
-        wldu_catStr(TBuf, itoa(pRad->possibleChannels[idx], ValBuf, 10), sizeof(TBuf));
-    }
+    swl_conv_uint8ArrayToChar(TBuf, sizeof(TBuf), pRad->possibleChannels, pRad->nrPossibleChannels);
 
-    amxd_object_set_cstring_t(pRad->pBus, "PossibleChannels", TBuf);
-    amxd_object_set_cstring_t(pRad->pBus, "MaxChannelBandwidth", Rad_SupBW[pRad->maxChannelBandwidth]);
+    SAH_TRACEZ_INFO(ME, "%s: saving possible channels (%s)", pRad->Name, TBuf);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
+    amxd_trans_set_value(cstring_t, &trans, "PossibleChannels", TBuf);
+    amxd_trans_set_value(cstring_t, &trans, "MaxChannelBandwidth", Rad_SupBW[pRad->maxChannelBandwidth]);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
 }
 
 bool wld_rad_has_endpoint_enabled(T_Radio* rad) {
@@ -4356,6 +4360,17 @@ void _wld_rad_setOperatingClass(const char* const sig_name _UNUSED,
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
     wld_rad_updateOperatingClass(pRad);
+}
+
+void _wld_rad_updatePossibleChannels_ocf(const char* const sig_name _UNUSED,
+                                         const amxc_var_t* const data,
+                                         void* const priv _UNUSED) {
+    amxd_object_t* object = amxd_dm_signal_get_object(get_wld_plugin_dm(), data);
+    ASSERTS_NOT_NULL(object, , ME, "NULL");
+    T_Radio* pRad = (T_Radio*) object->priv;
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
+    pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
 }
 
 void s_selectRadio(amxd_object_t* const object, int32_t depth _UNUSED, void* priv) {

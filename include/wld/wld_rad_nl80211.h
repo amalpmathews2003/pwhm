@@ -302,4 +302,16 @@ swl_rc_ne wld_rad_nl80211_abortScan(T_Radio* pRadio);
  */
 swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResultsCb_f fScanResultsCb);
 
+/*
+ * @brief set regulatory ISO/IEC 3166-1 alpha2 country code
+ * (applicable as global or on radio device)
+ *
+ * @param pRadio pointer to radio context
+ * @param alpha2 ISO/IEC 3166-1 alpha2 country code
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2);
+
 #endif /* INCLUDE_WLD_WLD_RAD_NL80211_H_ */

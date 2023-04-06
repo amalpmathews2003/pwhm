@@ -92,8 +92,7 @@ SWL_TABLE(sPowerTable,
               {-1, 0},
               ));
 
-static const char* s_defaultRegDomain = "EU";
-static const int s_defaultChan[] = {1, 36, 1};
+static const char* s_defaultRegDomain = "DE";
 
 int wifiGen_rad_miscHasSupport(T_Radio* pRad, T_AccessPoint* pAp, char* buf, int bufsize) {
     ASSERTS_NOT_NULL(buf, 0, ME, "NULL");
@@ -341,9 +340,16 @@ swl_rc_ne s_updateChannels(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
         swl_chanspec_t chanSpec;
         if((swl_chanspec_channelFromMHz(&chanSpec, pChan->ctrlFreq) < SWL_RC_OK) ||
            (chanSpec.channel == 0)) {
+            SAH_TRACEZ_WARNING(ME, "%s: skip unknown freq %d", pRad->Name, pChan->ctrlFreq);
             continue;
         }
-        pRad->possibleChannels[pRad->nrPossibleChannels++] = chanSpec.channel;
+        if(pRad->nrPossibleChannels == (int) SWL_ARRAY_SIZE(pRad->possibleChannels)) {
+            SAH_TRACEZ_WARNING(ME, "%s: skip saving supported chan %d freq %d (out of limit)",
+                               pRad->Name, chanSpec.channel, pChan->ctrlFreq);
+            continue;
+        }
+        pRad->possibleChannels[pRad->nrPossibleChannels] = chanSpec.channel;
+        pRad->nrPossibleChannels++;
     }
     wld_channel_init_channels(pRad);
     s_readChanInfo(pRad, pOperBand);
@@ -410,7 +416,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     //rad->channelInUse;      /* 32 Bit pattern that will mark all channels? */
     if(pRad->channel == 0) {
-        pRad->channel = s_defaultChan[pRad->operatingFrequencyBand];
+        pRad->channel = swl_channel_defaults[wld_rad_getFreqBand(pRad)];
     }
     s_updateChannels(pRad, pOperBand);
 
@@ -501,10 +507,14 @@ int wifiGen_rad_sync(T_Radio* pRad, int set) {
 
 int wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
     if(set & SET) {
-        if(pRad->regulatoryDomainIdx >= 0) {
-            swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain),
-                         Rad_CountryCode[pRad->regulatoryDomainIdx].shortCountryName);
-            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        const char* countryName = getShortCountryName(pRad->regulatoryDomainIdx);
+        if(!swl_str_isEmpty(countryName)) {
+            swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), countryName);
+            if(set & DIRECT) {
+                wld_rad_nl80211_setRegDomain(pRad, countryName);
+            } else {
+                setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE);
+            }
         } else {
             SAH_TRACEZ_ERROR(ME, "regulatoryDomainIdx %d not valid!", pRad->regulatoryDomainIdx);
         }

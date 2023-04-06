@@ -364,3 +364,11 @@ swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResult
     return wld_nl80211_getScanResults(wld_nl80211_getSharedState(), pRadio->index, priv, fScanResultsCb);
 }
 
+swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+    SAH_TRACEZ_WARNING(ME, "%s: setting reg domain %s", pRadio->Name, alpha2);
+    rc = wld_nl80211_setRegDomain(wld_nl80211_getSharedState(), pRadio->ref_index, alpha2);
+    return rc;
+}
+

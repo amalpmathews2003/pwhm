@@ -380,4 +380,17 @@ typedef void (* scanResultsCb_f) (void* priv, swl_rc_ne rc, T_ScanResults* resul
  */
 swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb);
 
+/*
+ * @brief set regulatory ISO/IEC 3166-1 alpha2 country code
+ * (applicable as global or on phy device)
+ *
+ * @param state nl80211 socket manager context
+ * @param wiphy phy device index (use WLD_NL80211_ID_ANY to set global reg domain)
+ * @param alpha2 ISO/IEC 3166-1 alpha2 country code
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_setRegDomain(wld_nl80211_state_t* state, uint32_t wiphy, const char* alpha2);
+
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

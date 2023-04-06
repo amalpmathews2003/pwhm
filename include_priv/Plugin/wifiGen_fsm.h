@@ -68,6 +68,7 @@ typedef enum {
     GEN_FSM_STOP_HOSTAPD,         /* Stop hostapd */
     GEN_FSM_STOP_WPASUPP,         /* Stop wpa_supplicant */
     GEN_FSM_DISABLE_HOSTAPD,      /* disable hostapd main interface*/
+    GEN_FSM_MOD_COUNTRYCODE,      /* Modify the country code */
     GEN_FSM_MOD_BSSID,            /* Modify the BSSID */
     GEN_FSM_MOD_SEC,              /* Set AP Security */
     GEN_FSM_MOD_AP,               /* Sync AP non-security params */

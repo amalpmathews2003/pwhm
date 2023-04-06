@@ -357,6 +357,11 @@ static bool s_doEnableHostapd(T_Radio* pRad) {
     return true;
 }
 
+static bool s_doSetCountryCode(T_Radio* pRad) {
+    pRad->pFA->mfn_wrad_regdomain(pRad, NULL, 0, SET | DIRECT);
+    return true;
+}
+
 static bool s_doSetBssid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTI_TRUE(pAP && pAP->pSSID && !swl_mac_binIsNull((swl_macBin_t*) pAP->pSSID->BSSID),
                  true, ME, "Null mac");
@@ -575,6 +580,10 @@ static void s_checkRadDependency(T_Radio* pRad) {
         s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
     }
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE)) {
+        s_schedNextAction(SECDMN_ACTION_OK_NEED_TOGGLE, NULL, pRad);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+    }
     if((s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
        (s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
@@ -597,6 +606,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_STOP_HOSTAPD), .doRadFsmAction = s_doStopHostapd},
     {FSM_ACTION(GEN_FSM_STOP_WPASUPP), .doEpFsmAction = s_doStopWpaSupp},
     {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},
+    {FSM_ACTION(GEN_FSM_MOD_COUNTRYCODE), .doRadFsmAction = s_doSetCountryCode},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
     {FSM_ACTION(GEN_FSM_MOD_SEC), .doVapFsmAction = s_doSetApSec},
     {FSM_ACTION(GEN_FSM_MOD_AP), .doVapFsmAction = s_doSyncAp},
