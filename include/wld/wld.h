@@ -1164,7 +1164,6 @@ struct wld_scanArgs {
     int chanCount;
     bool updateUsageStats;
     bool fastScan;
-    const char* reason;
 };
 
 #define SCAN_REASON_MAX 5

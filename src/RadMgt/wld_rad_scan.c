@@ -375,7 +375,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
         return amxd_status_unknown_error;
     }
 
-    swl_rc_ne scanResult = wld_scan_start(pR, SCAN_TYPE_SSID);
+    swl_rc_ne scanResult = wld_scan_start(pR, SCAN_TYPE_SSID, reason);
 
 
 
@@ -1116,9 +1116,9 @@ error:
     return amxd_status_ok;
 }
 
-swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type) {
+swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason) {
     swl_rc_ne error = pRad->pFA->mfn_wrad_start_scan(pRad);
-    s_notifyStartScan(pRad, type, pRad->scanState.cfg.scanArguments.reason, error);
+    s_notifyStartScan(pRad, type, reason, error);
     return error;
 }
 
