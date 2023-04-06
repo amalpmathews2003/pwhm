@@ -299,12 +299,12 @@ swl_rc_ne wld_nl80211_setTxPowerAuto(wld_nl80211_state_t* state, uint32_t ifInde
  *
  * @param state nl80211 socket manager context
  * @param ifIndex wiphy main iface index
- * @param mbm transmit power level where mbm = (dbm * 100)
+ * @param mbm transmit power level in dbm
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_nl80211_setTxPowerFixed(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t mbm);
+swl_rc_ne wld_nl80211_setTxPowerFixed(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t dbm);
 
 /*
  * @brief configure limited transmit power level
@@ -312,12 +312,12 @@ swl_rc_ne wld_nl80211_setTxPowerFixed(wld_nl80211_state_t* state, uint32_t ifInd
  *
  * @param state nl80211 socket manager context
  * @param ifIndex wiphy main iface index
- * @param mbm transmit power level where mbm = (dbm * 100)
+ * @param mbm transmit power level in dbm
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t mbm);
+swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t dbm);
 
 /*
  * @brief get transmit power level

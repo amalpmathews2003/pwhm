@@ -514,10 +514,11 @@ swl_rc_ne wld_nl80211_setWiphyAntennas(wld_nl80211_state_t* state, uint32_t ifIn
     return rc;
 }
 
-static swl_rc_ne s_setTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, enum nl80211_tx_power_setting type, int32_t mbm) {
+static swl_rc_ne s_setTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, enum nl80211_tx_power_setting type, int32_t dbm) {
     NL_ATTRS(attribs, ARR(NL_ATTR_VAL(NL80211_ATTR_WIPHY_TX_POWER_SETTING, type)));
     if(type != NL80211_TX_POWER_AUTOMATIC) {
-        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY_TX_POWER_LEVEL, mbm));
+        dbm *= 100;
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY_TX_POWER_LEVEL, dbm));
     }
     swl_rc_ne rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_SET_WIPHY, 0, ifIndex, &attribs);
     NL_ATTRS_CLEAR(&attribs);
@@ -528,19 +529,19 @@ swl_rc_ne wld_nl80211_setTxPowerAuto(wld_nl80211_state_t* state, uint32_t ifInde
     return s_setTxPower(state, ifIndex, NL80211_TX_POWER_AUTOMATIC, 0);
 }
 
-swl_rc_ne wld_nl80211_setTxPowerFixed(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t mbm) {
-    return s_setTxPower(state, ifIndex, NL80211_TX_POWER_FIXED, mbm);
+swl_rc_ne wld_nl80211_setTxPowerFixed(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t dbm) {
+    return s_setTxPower(state, ifIndex, NL80211_TX_POWER_FIXED, dbm);
 }
 
-swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t mbm) {
-    return s_setTxPower(state, ifIndex, NL80211_TX_POWER_LIMITED, mbm);
+swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t dbm) {
+    return s_setTxPower(state, ifIndex, NL80211_TX_POWER_LIMITED, dbm);
 }
 
-swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* mbm) {
+swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* dbm) {
     wld_nl80211_ifaceInfo_t ifaceInfo;
     swl_rc_ne rc = wld_nl80211_getInterfaceInfo(state, ifIndex, &ifaceInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get radio main iface info");
-    *mbm = ifaceInfo.txPower;
+    *dbm = ifaceInfo.txPower;
     return rc;
 }
 

@@ -467,7 +467,7 @@ int wifiGen_rad_status(T_Radio* pRad) {
          * In this situation, some channel clearing must be done, or is on going
          * The radio detailed status is updated through the driver/hostapd eventing.
          */
-        SAH_TRACEZ_INFO(ME, "%s: curr band(c:%d/b:%d) is not yet unusable",
+        SAH_TRACEZ_INFO(ME, "%s: curr band(c:%d/b:%d) is not yet usable",
                         pRad->Name, currChanSpec.channel, swl_chanspec_bwToInt(currChanSpec.bandwidth));
     } else if(wld_rad_hasActiveIface(pRad)) {
         /*
@@ -530,7 +530,9 @@ int32_t s_getMaxPow(T_Radio* pRad) {
 
     swl_rc_ne ret = wld_rad_nl80211_getWiphyInfo(pRad, &pWiphyInfo);
     ASSERT_TRUE(ret == SWL_RC_OK, 0, ME, "Err %i", ret);
-    uint32_t curFreq = wld_rad_getCurrentFreq(pRad);
+    uint32_t curFreq = 0;
+    swl_chanspec_t spec = wld_rad_getSwlChanspec(pRad);
+    swl_chanspec_channelToMHz(&spec, &curFreq);
 
     for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
         if(pWiphyInfo.bands[i].nChans == 0) {
@@ -549,7 +551,7 @@ int32_t s_getMaxPow(T_Radio* pRad) {
 int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
     if(set & SET) {
         pRad->transmitPower = val;
-        ASSERTI_TRUE(wld_rad_hasActiveIface(pRad), SWL_RC_ERROR, ME, "%s not ready", pRad->Name);
+        ASSERTS_TRUE(wld_rad_hasActiveIface(pRad), SWL_RC_ERROR, ME, "%s not ready", pRad->Name);
 
         if(val == -1) {
             return wld_rad_nl80211_setTxPowerAuto(pRad);
@@ -557,13 +559,11 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
 
         int8_t srcVal = val;
         int32_t* tgtVal = (int32_t*) swl_table_getMatchingValue(&sPowerTable, 1, 0, &srcVal);
-        if(tgtVal == NULL) {
-            return WLD_ERROR;
-        }
+        ASSERT_NOT_NULL(tgtVal, SWL_RC_ERROR, ME, "%s: unknown txPow percentage %d", pRad->Name, val);
 
 
         int32_t maxPow = s_getMaxPow(pRad);
-        ASSERT_TRUE(maxPow != 0, WLD_ERROR, ME, "%s maxPow unknown", pRad->Name);
+        ASSERT_NOT_EQUALS(maxPow, 0, SWL_RC_ERROR, ME, "%s maxPow unknown", pRad->Name);
 
         int32_t tgtPow = (*tgtVal > maxPow ? 0 : maxPow - *tgtVal);
 
@@ -575,25 +575,25 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
 
         return (retVal == SWL_RC_OK ? WLD_OK : WLD_ERROR);
     } else {
-        ASSERTI_TRUE(wld_rad_hasActiveIface(pRad), pRad->transmitPower, ME, "%s not ready", pRad->Name);
-        int32_t maxPow = s_getMaxPow(pRad) * 100;
-        ASSERT_TRUE(maxPow != 0, SWL_RC_ERROR, ME, "ERROR");
+        ASSERTS_TRUE(wld_rad_hasActiveIface(pRad), pRad->transmitPower, ME, "%s not ready", pRad->Name);
+        int32_t maxPow = s_getMaxPow(pRad);
+        ASSERT_NOT_EQUALS(maxPow, 0, SWL_RC_ERROR, ME, "%s: maxPow unknown", pRad->Name);
 
         int32_t curDbm;
         swl_rc_ne retVal = wld_rad_nl80211_getTxPower(pRad, &curDbm);
-        ASSERT_TRUE(retVal == SWL_RC_OK, SWL_RC_ERROR, ME, "ERROR");
+        ASSERT_EQUALS(retVal, SWL_RC_OK, SWL_RC_ERROR, ME, "%s: fail to read curr txPow", pRad->Name);
 
         if(curDbm == 0) {
             //auto set as 0
             return -1;
         }
-        int32_t diff = (maxPow - curDbm) / 100;
+        int32_t diff = (maxPow - curDbm);
 
         int8_t* tgtVal = (int8_t*) swl_table_getMatchingValue(&sPowerTable, 0, 1, &diff);
-        ASSERT_NOT_NULL(tgtVal, SWL_RC_ERROR, ME, "%s: no tgtVal %i (%i/%i)", pRad->Name, diff, curDbm, maxPow);
+        ASSERTI_NOT_NULL(tgtVal, pRad->transmitPower, ME, "%s: no tgtVal %i (%i/%i)", pRad->Name, diff, curDbm, maxPow);
 
 
-        SAH_TRACEZ_ERROR(ME, "%s: getPow %i max %i diff %i => %i", pRad->Name, curDbm, maxPow, diff, *tgtVal);
+        SAH_TRACEZ_INFO(ME, "%s: getPow %i max %i diff %i => %i", pRad->Name, curDbm, maxPow, diff, *tgtVal);
         return *tgtVal;
     }
 

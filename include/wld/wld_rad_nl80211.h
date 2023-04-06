@@ -216,23 +216,23 @@ swl_rc_ne wld_rad_nl80211_setTxPowerAuto(T_Radio* pRadio);
  * @brief configure fixed transmit power level
  *
  * @param pRadio pointer to radio context
- * @param mbm transmit power level where mbm = (dbm * 100)
+ * @param mbm transmit power level in dbm
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_rad_nl80211_setTxPowerFixed(T_Radio* pRadio, int32_t mbm);
+swl_rc_ne wld_rad_nl80211_setTxPowerFixed(T_Radio* pRadio, int32_t dbm);
 
 /*
  * @brief configure limited transmit power level
  *
  * @param pRadio pointer to radio context
- * @param mbm transmit power level where mbm = (dbm * 100)
+ * @param mbm transmit power level in dbm
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t mbm);
+swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t dbm);
 
 /*
  * @brief get transmit power level

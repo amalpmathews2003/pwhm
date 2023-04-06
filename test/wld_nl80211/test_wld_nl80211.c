@@ -602,7 +602,7 @@ static int s_nlSend_ifaceInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _
                  NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pIfaceInfo->mac.bMac),
                  ));
     if(pIfaceInfo->txPower > 0) {
-        uint32_t txPowMbm = pIfaceInfo->txPower;
+        uint32_t txPowMbm = pIfaceInfo->txPower * 100;
         NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY_TX_POWER_LEVEL, txPowMbm));
     }
     if(pIfaceInfo->ssid[0]) {
@@ -637,7 +637,7 @@ static void test_wld_nl80211_getIfaceInfo(void** mockaState _UNUSED) {
         .isMain = true,
         .isAp = true,
         .isSta = false,
-        .txPower = 2000, //mbm: 1/100 of dbm
+        .txPower = 20, // dbm
         .ssid = "ssid_wl1",
         .chanSpec = {
             .ctrlFreq = 5500,

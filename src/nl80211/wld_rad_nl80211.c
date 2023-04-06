@@ -240,19 +240,19 @@ swl_rc_ne wld_rad_nl80211_setTxPowerAuto(T_Radio* pRadio) {
     return wld_nl80211_setTxPowerAuto(wld_nl80211_getSharedState(), pRadio->index);
 }
 
-swl_rc_ne wld_rad_nl80211_setTxPowerFixed(T_Radio* pRadio, int32_t mbm) {
+swl_rc_ne wld_rad_nl80211_setTxPowerFixed(T_Radio* pRadio, int32_t dbm) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_setTxPowerFixed(wld_nl80211_getSharedState(), pRadio->index, mbm);
+    return wld_nl80211_setTxPowerFixed(wld_nl80211_getSharedState(), pRadio->index, dbm);
 }
 
-swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t mbm) {
+swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t dbm) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_setTxPowerLimited(wld_nl80211_getSharedState(), pRadio->index, mbm);
+    return wld_nl80211_setTxPowerLimited(wld_nl80211_getSharedState(), pRadio->index, dbm);
 }
 
-swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* mbm) {
+swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* dbm) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_getTxPower(wld_nl80211_getSharedState(), pRadio->index, mbm);
+    return wld_nl80211_getTxPower(wld_nl80211_getSharedState(), pRadio->index, dbm);
 }
 
 swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo) {

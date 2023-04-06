@@ -112,7 +112,6 @@ int wifiGen_vap_ssid(T_AccessPoint* pAP, char* buf, int bufsize, int set) {
 }
 
 int wifiGen_vap_status(T_AccessPoint* pAP) {
-    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), false, ME, "%s: wpactrl iface not ready", pAP->alias);
     ASSERTI_TRUE(pAP->index > 0, false, ME, "%s: iface has no netdev index", pAP->alias);
     int ret = wld_linuxIfUtils_getLinkState(wld_rad_getSocket(pAP->pRadio), pAP->alias);
     ASSERTI_FALSE(ret <= 0, false, ME, "%s: link down", pAP->alias);

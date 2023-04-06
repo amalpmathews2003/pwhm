@@ -102,7 +102,7 @@ typedef struct {
     bool isSta;                      //flag when interface is endpoint
     bool use4Mac;                    //enabled 4mac mode
     wld_nl80211_chanSpec_t chanSpec; //channel info
-    uint32_t txPower;                //current tx power in mbm
+    uint32_t txPower;                //current tx power in dbm
     char ssid[SSID_NAME_LEN];        //bss/ess ssid
 } wld_nl80211_ifaceInfo_t;
 

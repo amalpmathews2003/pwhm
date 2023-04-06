@@ -152,6 +152,7 @@ swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceI
     NLA_GET_DATA(pWlIface->mac.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
     wld_nl80211_parseChanSpec(tb, &pWlIface->chanSpec);
     NLA_GET_VAL(pWlIface->txPower, nla_get_u32, tb[NL80211_ATTR_WIPHY_TX_POWER_LEVEL]);
+    pWlIface->txPower /= 100;
     NLA_GET_VAL(pWlIface->use4Mac, nla_get_u8, tb[NL80211_ATTR_4ADDR]);
     NLA_GET_DATA(pWlIface->ssid, tb[NL80211_ATTR_SSID], (sizeof(pWlIface->ssid) - 1));
     return SWL_RC_OK;
