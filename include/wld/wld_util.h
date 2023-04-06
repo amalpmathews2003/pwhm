@@ -281,8 +281,8 @@ int debugIsSsidPointer(void* p);
 int get_random(unsigned char* buf, size_t len);
 int get_randomstr(unsigned char* buf, size_t len);
 int get_randomhexstr(unsigned char* buf, size_t len);
-int makeUUID_fromrandom(uint8_t*);
-int uuid_bin2str(const uint8_t*, char*, size_t);
+int makeUUID_fromrandom(uint8_t uuid[UUID_LEN]);
+int uuid_bin2str(const uint8_t bin[UUID_LEN], char* str, size_t max_len);
 
 char* stripOutToken(char* pD, const char* pT);
 char** stripString(char** pTL, int nrTL, char* pD, const char* pT);

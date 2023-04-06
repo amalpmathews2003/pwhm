@@ -1992,7 +1992,7 @@ int makeUUID_fromrandom(uint8_t* uuid) {
 }
 
 /** @deprecated Use `swl_uuid_binToStr` instead */
-int uuid_bin2str(const uint8_t* bin, char* str, size_t max_len) {
+int uuid_bin2str(const uint8_t bin[UUID_LEN], char* str, size_t max_len) {
     int len;
     len = snprintf(str, max_len, "%02x%02x%02x%02x-%02x%02x-%02x%02x-"
                    "%02x%02x-%02x%02x%02x%02x%02x%02x",
