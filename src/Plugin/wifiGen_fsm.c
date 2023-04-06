@@ -290,32 +290,30 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
 
 static bool s_doRadDisable(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: disable rad", pRad->Name);
-    T_AccessPoint* pAP;
-    wld_rad_forEachAp(pAP, pRad) {
-        wld_ap_hostapd_deauthAllStations(pAP);
-    }
-    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
+    pRad->pFA->mfn_wrad_enable(pRad, false, SET | DIRECT);
     return true;
 }
 
 static bool s_doRadEnable(T_Radio* pRad) {
     ASSERTS_TRUE(pRad->enable, true, ME, "%s: rad disabled", pRad->Name);
-    bool upperEnabled = (wld_rad_hasEnabledEp(pRad));
-    // When VAPs are enabled, Rad enable requires no config
-    // as Hostapd takes care of enabling required interfaces
-    ASSERTS_TRUE(upperEnabled, true, ME, "%s: rad has no upperL enabled", pRad->Name);
-    SAH_TRACEZ_INFO(ME, "%s: Enable rad", pRad->Name);
-    if(pRad->isSTA) {
-        wld_rad_nl80211_setSta(pRad);
-    } else if(pRad->isAP) {
-        wld_rad_nl80211_setAp(pRad);
-    }
-    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, true);
+    pRad->pFA->mfn_wrad_enable(pRad, true, SET | DIRECT);
+    return true;
+}
+
+static bool s_doRadSync(T_Radio* pRad) {
+    SAH_TRACEZ_INFO(ME, "%s: sync rad conf", pRad->Name);
+    pRad->pFA->mfn_wrad_sync(pRad, SET | DIRECT);
     return true;
 }
 
 static bool s_doStopHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hapd stopped", pRad->Name);
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD)) {
+        T_AccessPoint* pAP;
+        wld_rad_forEachAp(pAP, pRad) {
+            wld_ap_hostapd_deauthAllStations(pAP);
+        }
+    }
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
     wifiGen_hapd_stopDaemon(pRad);
     pRad->fsmRad.timeout_msec = 100;
@@ -359,6 +357,12 @@ static bool s_doEnableHostapd(T_Radio* pRad) {
 
 static bool s_doSetCountryCode(T_Radio* pRad) {
     pRad->pFA->mfn_wrad_regdomain(pRad, NULL, 0, SET | DIRECT);
+    //Here radio shall be down: so toggle shortly to force reloading nl80211 wiphy channels
+    if(wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pRad->Name) == 0) {
+        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 1);
+        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 0);
+    }
+    pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
     return true;
 }
 
@@ -580,8 +584,10 @@ static void s_checkRadDependency(T_Radio* pRad) {
         s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
     }
-    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE)) {
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE) ||
+       isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_SYNC_RAD)) {
         s_schedNextAction(SECDMN_ACTION_OK_NEED_TOGGLE, NULL, pRad);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
     if((s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
@@ -602,10 +608,11 @@ void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
 }
 
 wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
-    {FSM_ACTION(GEN_FSM_DISABLE_RAD), .doRadFsmAction = s_doRadDisable},
     {FSM_ACTION(GEN_FSM_STOP_HOSTAPD), .doRadFsmAction = s_doStopHostapd},
     {FSM_ACTION(GEN_FSM_STOP_WPASUPP), .doEpFsmAction = s_doStopWpaSupp},
     {FSM_ACTION(GEN_FSM_DISABLE_HOSTAPD), .doRadFsmAction = s_doDisableHostapd},
+    {FSM_ACTION(GEN_FSM_DISABLE_RAD), .doRadFsmAction = s_doRadDisable},
+    {FSM_ACTION(GEN_FSM_SYNC_RAD), .doRadFsmAction = s_doRadSync},
     {FSM_ACTION(GEN_FSM_MOD_COUNTRYCODE), .doRadFsmAction = s_doSetCountryCode},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
     {FSM_ACTION(GEN_FSM_MOD_SEC), .doVapFsmAction = s_doSetApSec},

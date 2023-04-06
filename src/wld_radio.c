@@ -275,7 +275,7 @@ amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* wifiRad,
     bool flag = amxc_var_dyncast(bool, args);
 
     SAH_TRACEZ_INFO(ME, "set Enable - %s: %d --> %d", pR->Name, pR->enable, flag);
-    pR->pFA->mfn_wrad_enable(pR, flag, SET | DIRECT);   // Fix Bug 20729
+    pR->pFA->mfn_wrad_enable(pR, flag, SET);
 
     wld_autoCommitMgr_notifyRadEdit(pR);
 

@@ -271,7 +271,7 @@ int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
     if(set & DIRECT) {
         return wld_ap_hostapd_setMacFilteringList(vap);
     } else {
-        setBitLongArray(vap->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        setBitLongArray(vap->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
     }
     return 0;
 }

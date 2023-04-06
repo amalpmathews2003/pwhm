@@ -484,15 +484,48 @@ int wifiGen_rad_status(T_Radio* pRad) {
     return (pRad->detailedState != CM_RAD_DOWN);
 }
 
-int wifiGen_rad_enable(T_Radio* rad, int val, int set) {
+static bool s_doRadDisable(T_Radio* pRad) {
+    SAH_TRACEZ_INFO(ME, "%s: disable rad", pRad->Name);
+    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
+    return true;
+}
+
+static bool s_doRadEnable(T_Radio* pRad) {
+    bool upperEnabled = (wld_rad_hasEnabledEp(pRad));
+    // When VAPs are enabled, Rad enable requires no config
+    // as Hostapd takes care of enabling required interfaces
+    ASSERTS_TRUE(upperEnabled, true, ME, "%s: rad has no upperL enabled", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: Enable rad", pRad->Name);
+    if(pRad->isSTA) {
+        wld_rad_nl80211_setSta(pRad);
+    } else if(pRad->isAP) {
+        wld_rad_nl80211_setAp(pRad);
+    }
+    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, true);
+    return true;
+}
+
+int wifiGen_rad_enable(T_Radio* rad, int val, int flag) {
     int ret;
-    SAH_TRACEZ_INFO(ME, "%d --> %d -  %d", rad->enable, val, set);
-    if(set & SET) {
-        ret = rad->enable = val;
-        setBitLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
+    SAH_TRACEZ_INFO(ME, "%d --> %d -  %d", rad->enable, val, flag);
+    if(flag & SET) {
+        ret = val;
+        if(flag & DIRECT) {
+            if(val) {
+                s_doRadEnable(rad);
+            } else {
+                s_doRadDisable(rad);
+            }
+        } else {
+            setBitLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
+        }
     } else {
         /* GET */
-        ret = rad->enable;
+        if(flag & DIRECT) {
+            ret = (wld_linuxIfUtils_getState(wld_rad_getSocket(rad), rad->Name) == true);
+        } else {
+            ret = rad->enable;
+        }
     }
     return ret;
 }
@@ -501,8 +534,10 @@ int wifiGen_rad_sync(T_Radio* pRad, int set) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_TRUE(set & SET, SWL_RC_INVALID_PARAM, ME, "Get Only");
     SAH_TRACEZ_INFO(ME, "%s : set rad_sync", pRad->Name);
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
-    return 0;
+    // Rad sync: just toggles and re-apply current config with secDmn
+    ASSERTI_FALSE(set & DIRECT, SWL_RC_OK, ME, "%s: no rad conf can be directly applied/synced out of secDmn", pRad->Name);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_RAD);
+    return SWL_RC_OK;
 }
 
 int wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
@@ -643,7 +678,7 @@ int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards) {
 
     SAH_TRACEZ_INFO(ME, "%s : Set standards %#x", pRad->Name, radioStandards);
     pRad->operatingStandards = radioStandards;
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_RAD);
     return 1;
 }
 
