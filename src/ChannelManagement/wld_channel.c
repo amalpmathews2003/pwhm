@@ -360,6 +360,7 @@ size_t wld_channel_get_radartriggered_channels(T_Radio* pRad, swl_channel_t* lis
     size_t nr_cleared_channels = 0;
     wld_channel_data* channel;
     for(i = 0; (i < band->nr_channels) && (nr_cleared_channels < list_size); i++) {
+        ASSERTS_NOT_NULL(band->channels, 0, ME, "null channel list");
         channel = &(band->channels[i]);
         if(chandata_has_flag(channel, WLD_CHAN_RADAR_DETECTED)) {
             list[nr_cleared_channels] = channel->channel;

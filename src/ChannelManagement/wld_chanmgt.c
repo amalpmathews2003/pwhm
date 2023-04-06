@@ -75,18 +75,27 @@
 #include "wld_accesspoint.h"
 #include "wld_assocdev.h"
 #include "swla/swla_delayExec.h"
+#include "wld_dm_trans.h"
 
 #define ME "chanMgt"
 
 
-static void s_writeClearedChannels(T_Radio* pRad, amxd_object_t* chanObject) {
+static void s_saveClearedChannels(T_Radio* pRad, amxd_trans_t* pTrans) {
     swl_channel_t clearList[50];
     memset(clearList, 0, sizeof(clearList));
     size_t nr_chans = wld_channel_get_cleared_channels(pRad, clearList, sizeof(clearList));
-    swl_typeUInt8_arrayObjectParamSetChar(chanObject, "ClearedDfsChannels", clearList, nr_chans);
+    char buf[256] = {0};
+    swl_conv_uint8ArrayToChar(buf, sizeof(buf), clearList, nr_chans);
+    amxd_trans_set_value(cstring_t, pTrans, "ClearedDfsChannels", buf);
 }
 
-static void s_writeRadarChannels(T_Radio* pRad, amxd_object_t* chanObject) {
+static void s_saveRadarChannels(T_Radio* pRad, amxd_trans_t* pTrans) {
+    char buf[256] = {0};
+    swl_conv_uint8ArrayToChar(buf, sizeof(buf), pRad->radarDetectedChannels, pRad->nrRadarDetectedChannels);
+    amxd_trans_set_value(cstring_t, pTrans, "RadarTriggeredDfsChannels", buf);
+}
+
+static void s_writeRadarChannels(T_Radio* pRad) {
     uint8_t nrLastChannels = pRad->nrRadarDetectedChannels;
     swl_channel_t currDfsChannels[WLD_MAX_POSSIBLE_CHANNELS];
     memcpy(currDfsChannels, pRad->radarDetectedChannels, WLD_MAX_POSSIBLE_CHANNELS);
@@ -95,19 +104,28 @@ static void s_writeRadarChannels(T_Radio* pRad, amxd_object_t* chanObject) {
 
     pRad->nrRadarDetectedChannels = wld_channel_get_radartriggered_channels(pRad, pRad->radarDetectedChannels, WLD_MAX_POSSIBLE_CHANNELS);
 
-    swl_typeUInt8_arrayObjectParamSetChar(chanObject, "RadarTriggeredDfsChannels", pRad->radarDetectedChannels, pRad->nrRadarDetectedChannels);
-
     if(!swl_typeUInt8_arrayEquals(currDfsChannels, nrLastChannels, pRad->radarDetectedChannels, pRad->nrRadarDetectedChannels)) {
         pRad->nrLastRadarChannelsAdded = swl_typeUInt8_arrayDiff(pRad->lastRadarChannelsAdded, SWL_BW_CHANNELS_MAX,
                                                                  pRad->radarDetectedChannels, pRad->nrRadarDetectedChannels, currDfsChannels, nrLastChannels);
     }
 }
 
+static void s_saveDfsChanInfo(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: radio dm obj not ready for updates", pRad->Name);
+    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
+    ASSERTI_NOT_NULL(chanObject, , ME, "NULL");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(chanObject, &trans, , ME, "%s : trans init failure", pRad->Name);
+    s_saveClearedChannels(pRad, &trans);
+    s_saveRadarChannels(pRad, &trans);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+}
+
 void wld_chanmgt_writeDfsChannels(T_Radio* pRad) {
     ASSERTI_NOT_NULL(pRad, , ME, "Radio null");
-    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
-    s_writeClearedChannels(pRad, chanObject);
-    s_writeRadarChannels(pRad, chanObject);
+    s_writeRadarChannels(pRad);
+    s_saveDfsChanInfo(pRad);
 }
 
 static void s_sendNotification(wld_rad_chanChange_t* change) {

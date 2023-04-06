@@ -4351,10 +4351,15 @@ void wld_rad_chan_update_model(T_Radio* pRad) {
 }
 
 void wld_rad_updateOperatingClass(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: radio dm obj not ready for updates", pRad->Name);
     swl_chanspec_t chanspec = wld_rad_getSwlChanspec(pRad);
     swl_opClassCountry_e countryZone = getCountryZone(pRad->regulatoryDomainIdx);
     pRad->operatingClass = swl_chanspec_getLocalOperClass(&chanspec, countryZone);
-    amxd_object_set_uint32_t(pRad->pBus, "OperatingClass", pRad->operatingClass);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
+    amxd_trans_set_value(uint32_t, &trans, "OperatingClass", pRad->operatingClass);
+    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: set operatingClass to %d", pRad->Name, pRad->operatingClass);
 }
 
