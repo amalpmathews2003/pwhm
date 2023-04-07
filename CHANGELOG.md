@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.1.0 - 2023-04-07(15:48:13 +0000)
+
+### Other
+
+- move chanspec applying code from fsm to fta
+
 ## Release v3.0.3 - 2023-04-07(15:34:27 +0000)
 
 ### Other
