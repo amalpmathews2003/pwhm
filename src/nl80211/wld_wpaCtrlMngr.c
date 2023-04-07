@@ -164,6 +164,17 @@ bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld
     return true;
 }
 
+bool wld_wpaCtrlMngr_getEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void** userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers) {
+    ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
+    if(userdata != NULL) {
+        *userdata = pMgr->userData;
+    }
+    if(pHandlers != NULL) {
+        *pHandlers = pMgr->handlers;
+    }
+    return true;
+}
+
 /**
  * @brief register wpa_ctrl interface to wpa_ctrl manager
  *

@@ -94,4 +94,9 @@ void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn);
 
+#define CALL_SECDMN_MGR_EXT(pSecDmn, fName, ifName, ...) \
+    if(pSecDmn != NULL) { \
+        CALL_MGR_EXT(pSecDmn->wpaCtrlMngr, fName, ifName, __VA_ARGS__) \
+    }
+
 #endif /* INCLUDE_WLD_WLD_SECDMN_H_ */

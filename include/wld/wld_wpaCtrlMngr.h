@@ -69,6 +69,7 @@ typedef struct wld_wpaCtrlMngr wld_wpaCtrlMngr_t;
 
 bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr, struct wld_secDmn* pSecDmn);
 bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers);
+bool wld_wpaCtrlMngr_getEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void** userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers);
 bool wld_wpaCtrlMngr_connect(wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_disconnect(wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr);
@@ -79,5 +80,14 @@ bool wld_wpaCtrlMngr_registerInterface(wld_wpaCtrlMngr_t* pMgr, wld_wpaCtrlInter
 bool wld_wpaCtrlMngr_unregisterInterface(wld_wpaCtrlMngr_t* pMgr, wld_wpaCtrlInterface_t* pIface);
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterface(wld_wpaCtrlMngr_t* pMgr, int32_t pos);
 bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr);
+
+#define CALL_MGR_EXT(pMgr, fName, ifName, ...) \
+    { \
+        void* userdata = NULL; \
+        wld_wpaCtrl_radioEvtHandlers_cb handlers = {0}; \
+        if(wld_wpaCtrlMngr_getEvtHandlers(pMgr, &userdata, &handlers)) { \
+            SWL_CALL(handlers.fName, userdata, ifName, __VA_ARGS__); \
+        } \
+    }
 
 #endif /* __WLD_WPA_CTRL_MNGR_H__ */
