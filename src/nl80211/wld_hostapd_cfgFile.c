@@ -393,8 +393,9 @@ static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap)
          */
         //hostapd requires backhaul_ssid included in double quotes
         swl_mapCharFmt_addValStr(vapConfigMap, "multi_ap_backhaul_ssid", "\"%s\"", swl_mapChar_get(vapConfigMap, "ssid"));
-        swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_psk", swl_mapChar_get(vapConfigMap, "wpa_psk"));
-        swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_passphrase", swl_mapChar_get(vapConfigMap, "wpa_passphrase"));
+        if(!swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_passphrase", swl_mapChar_get(vapConfigMap, "wpa_passphrase"))) {
+            swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_psk", swl_mapChar_get(vapConfigMap, "wpa_psk"));
+        }
     }
 }
 
@@ -653,10 +654,10 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     swl_mapCharFmt_addValStr(vapConfigMap, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
     amxc_string_t configMethodsStr;
-    amxc_string_init(&configMethodsStr, 0);
+    amxc_string_init(&configMethodsStr, 128);
     bitmask_to_string(&configMethodsStr, s_hostapd_WPS_configMethods_str, ' ', pAP->WPS_ConfigMethodsEnabled);
     if(!amxc_string_is_empty(&configMethodsStr)) {
-        swl_mapChar_add(vapConfigMap, "config_methods", (char*) configMethodsStr.buffer);
+        swl_mapChar_add(vapConfigMap, "config_methods", (char*) amxc_string_get(&configMethodsStr, 0));
     }
     amxc_string_clean(&configMethodsStr);
 

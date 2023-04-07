@@ -603,7 +603,7 @@ void s_processEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
 void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len) {
     ASSERTS_NOT_NULL(pInterface, , ME, "NULL");
     ASSERTS_NOT_NULL(msgData, , ME, "NULL");
-    SAH_TRACEZ_WARNING(ME, "%s: process event len: %zu (%s)", wld_wpaCtrlInterface_getName(pInterface), len, msgData);
+    SAH_TRACEZ_NOTICE(ME, "%s: receive event len: %zu (%s)", wld_wpaCtrlInterface_getName(pInterface), len, msgData);
     s_processEvent(pInterface, msgData);
     //if custom event handler was registered, then call it
     NOTIFY(pInterface, fProcEvtMsg, msgData);

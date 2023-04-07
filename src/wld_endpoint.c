@@ -927,12 +927,15 @@ amxd_status_t _wld_endpoint_setWPSConfigMethodsEnabled_pwf(amxd_object_t* object
     }
 
     SAH_TRACEZ_IN(ME);
-    bool wps_cfgm = amxc_var_dyncast(bool, args);
+    const char* StrParm = amxc_var_constcast(cstring_t, args);
 
-    SAH_TRACEZ_INFO(ME, "EndpointWPSConfigMethodsEnabled changed");
+    SAH_TRACEZ_INFO(ME, "set WPS ConfigMethodsEnabled %s", StrParm);
 
     /* It's up to the RADIO settings when both (STA & AP) have WPS active set. */
     if(pEP && debugIsEpPointer(pEP)) {
+        wld_wps_cfgMethod_m wps_cfgm;
+        wld_wps_ConfigMethods_string_to_mask(&wps_cfgm, StrParm, ',');
+
         T_Radio* pR = pEP->pRadio;
         pEP->WPS_ConfigMethodsEnabled = wps_cfgm;
 

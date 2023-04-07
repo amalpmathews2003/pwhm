@@ -99,9 +99,11 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
     swl_mapCharFmt_addValStr(global, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
     swl_mapChar_add(global, "device_type", "6-0050F204-1");
     amxc_string_t configMethodsStr;
-    amxc_string_init(&configMethodsStr, 0);
+    amxc_string_init(&configMethodsStr, 128);
     bitmask_to_string(&configMethodsStr, wld_wpsConfigMethods, ' ', pEP->WPS_ConfigMethodsEnabled);
-    swl_mapChar_add(global, "config_methods", (char*) configMethodsStr.buffer);
+    if(!amxc_string_is_empty(&configMethodsStr)) {
+        swl_mapChar_add(global, "config_methods", (char*) amxc_string_get(&configMethodsStr, 0));
+    }
     amxc_string_clean(&configMethodsStr);
     /* By default for endpoint, wps_cred_processing should be set to 2
      * to process received credentials internally and pass them over ctrl_iface

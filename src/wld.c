@@ -424,6 +424,9 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->multiUserMIMOEnabled = 0;
     pR->operatingClass = 0;
 
+    pR->macCfg.useLocalBitForGuest = 0;
+    pR->macCfg.localGuestMacOffset = 256;
+
     amxc_llist_init(&pR->scanState.stats.extendedStat);
 
     amxc_llist_append(&g_radios, &pR->it);
@@ -612,13 +615,10 @@ T_Radio* wld_getRadioByAddress(unsigned char* macAddress) {
  * get the first radio interface for given frequency.
  */
 T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand) {
-    T_Radio* radio = NULL;
-    amxc_llist_it_t* rad_it = NULL;
-    amxc_llist_for_each(rad_it, &g_radios) {
-        radio = amxc_llist_it_get_data(rad_it, T_Radio, it);
-
-        if(radio->operatingFrequencyBand == (swl_freqBandExt_e) freqBand) {
-            return radio;
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        if(pRad->operatingFrequencyBand == (swl_freqBandExt_e) freqBand) {
+            return pRad;
         }
     }
     return NULL;

@@ -99,7 +99,7 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
 
     const char* radioname = GET_CHAR(args, "radio");
     const char* vapname = GET_CHAR(args, "vap");
-    SAH_TRACEZ_ERROR(ME, "NEW VAP %s %s", radioname, vapname);
+    SAH_TRACEZ_WARNING(ME, "NEW VAP %s %s", radioname, vapname);
     /* uint32 addVAPIntf(string vap, string radio); */
 
     /* Get our T_Radio pointer of the selected radio */

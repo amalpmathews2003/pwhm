@@ -788,10 +788,11 @@ amxd_status_t _wld_rad_setObssCoexistenceEnable_pwf(amxd_object_t* object _UNUSE
     if(rv != amxd_status_ok) {
         return rv;
     }
+    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "NULL");
 
     bool flag = amxc_var_dyncast(bool, args);
     SAH_TRACEZ_INFO(ME, "set ObssCoexistenceEnable %d", flag);
-    if(pR && debugIsRadPointer(pR)) {
+    if(pR->obssCoexistenceEnabled != flag) {
         pR->obssCoexistenceEnabled = flag;
         wld_rad_doSync(pR);
     }
@@ -4435,6 +4436,7 @@ void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint
     struct tm lastTime;
     wld_util_time_monotonic_to_tm(value->lastEventTime, &lastTime);
     amxc_ts_t ts;
+    amxc_ts_from_tm(&ts, &lastTime);
     amxd_object_set_value(amxc_ts_t, value->object, "LastOccurrence", &ts);
     amxd_object_set_cstring_t(value->object, "Info", info);
 }

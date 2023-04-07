@@ -913,9 +913,9 @@ swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
     snprintf(buff, sizeof(buff), "STA %.17s", pAD->Name);
     bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, buff, ret);
-    ASSERT_TRUE(swl_str_nmatchesIgnoreCase(buff, pAD->Name, strlen(pAD->Name)), SWL_RC_ERROR,
-                ME, "%s: wrong sta %s info: received(%s)",
-                pAP->alias, pAD->Name, buff);
+    ASSERTI_TRUE(swl_str_nmatchesIgnoreCase(buff, pAD->Name, strlen(pAD->Name)), SWL_RC_ERROR,
+                 ME, "%s: wrong sta %s info: received(%s)",
+                 pAP->alias, pAD->Name, buff);
 
     char valStr[WLD_M_BUF] = {0};
     int32_t val = 0;
