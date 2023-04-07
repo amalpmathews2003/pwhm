@@ -636,8 +636,31 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
 swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
 
     SAH_TRACEZ_INFO(ME, "%s: direct:%d", pRad->Name, direct);
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
-    if(DIRECT) {
+    if(!direct) {
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
+        return SWL_RC_OK;
+    }
+    bool needCommit = (pRad->fsmRad.FSM_State != FSM_RUN);
+    unsigned long* actionArray = (needCommit ? pRad->fsmRad.FSM_BitActionArray : pRad->fsmRad.FSM_AC_BitActionArray);
+    if(wifiGen_hapd_isRunning(pRad)) {
+        if(pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) {
+            if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
+               (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
+                wld_rad_hostapd_switchChannel(pRad);
+                return SWL_RC_DONE;
+            }
+        }
+        /*
+         * channel can not be warm applied (with CSA)
+         * then hostapd must be toggled for cold applying (with DFS clearing if needed)
+         */
+        wld_rad_hostapd_setChannel(pRad);
+        setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        setBitLongArray(actionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+    }
+    /* update conf file */
+    setBitLongArray(actionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+    if(needCommit) {
         wld_rad_doCommitIfUnblocked(pRad);
     }
     return SWL_RC_OK;

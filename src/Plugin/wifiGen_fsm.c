@@ -95,7 +95,6 @@ static const wifiGen_fsmStates_e sApplyActions[] = {
  */
 static const wifiGen_fsmStates_e sDynConfActions[] = {
     GEN_FSM_MOD_SSID,
-    GEN_FSM_MOD_CHANNEL,
     GEN_FSM_ENABLE_AP,
     GEN_FSM_MOD_SEC,
     GEN_FSM_MOD_AP,
@@ -420,17 +419,8 @@ static bool s_doUpdateBeacon(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
 }
 
 static bool s_doSetChannel(T_Radio* pRad) {
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: set channel %d", pRad->Name, pRad->channel);
-    if(pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) {
-        if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
-           (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
-            wld_rad_hostapd_switchChannel(pRad);
-            return true;
-        }
-    }
-    wld_secDmn_action_rc_ne rc = wld_rad_hostapd_setChannel(pRad);
-    s_schedNextAction(rc, NULL, pRad);
+    pRad->pFA->mfn_wrad_setChanspec(pRad, true);
     return true;
 }
 
@@ -591,7 +581,8 @@ static void s_checkRadDependency(T_Radio* pRad) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
     if((s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
-       (s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0)) {
+       (s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
+       (isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL))) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
 }
