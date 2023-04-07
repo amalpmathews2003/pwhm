@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.0.2 - 2023-04-07(08:20:33 +0000)
+
+### Other
+
+- support setting regDomain before starting hostapd
+- fix regression in wifi neighbour scan
+
 ## Release v3.0.1 - 2023-04-03(13:16:06 +0000)
 
 ### Other
