@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.0.3 - 2023-04-07(15:34:27 +0000)
+
+### Other
+
+- fix wps config methods in hapd conf
+
 ## Release v3.0.2 - 2023-04-07(08:20:33 +0000)
 
 ### Other
