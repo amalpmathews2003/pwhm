@@ -668,16 +668,14 @@ static void test_wld_nl80211_getIfaceInfo(void** mockaState _UNUSED) {
 uint32_t s_getMask(uint32_t val) {
     return (1 << val) - 1;
 }
-cmdMockTest_t mockGetWiphyInfo;
+cmdMockTestMultiElt_t mockGetWiphyInfo;
 extern swl_table_t sChanDfsStatusMap;
-static int s_nlSend_wiphyInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
-    int fd = mockGetWiphyInfo.stateMock.pipeFds[1];
-    wld_nl80211_wiphyInfo_t* pWiphyInfo = (wld_nl80211_wiphyInfo_t*) mockGetWiphyInfo.expectedData;
+static int s_nlSend_wiphyInfoChunk(int fd, wld_nl80211_wiphyInfo_t* pWiphyInfo, struct nl_msg* msg, bool hasMulti) {
     uint8_t maxScanSsids = pWiphyInfo->maxScanSsids;
     uint32_t antMask[COM_DIR_MAX] = ARR(s_getMask(pWiphyInfo->nrAntenna[COM_DIR_TRANSMIT]), s_getMask(pWiphyInfo->nrAntenna[COM_DIR_RECEIVE]));
     uint32_t actAntMask[COM_DIR_MAX] = ARR(s_getMask(pWiphyInfo->nrActiveAntenna[COM_DIR_TRANSMIT]), s_getMask(pWiphyInfo->nrActiveAntenna[COM_DIR_RECEIVE]));
     uint32_t genId = 2;
-    struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_WIPHY, 0);
+    struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_WIPHY, hasMulti ? NLM_F_MULTI : 0);
     NL_ATTRS(attribs,
              ARR(NL_ATTR_VAL(NL80211_ATTR_GENERATION, genId),
                  NL_ATTR_VAL(NL80211_ATTR_WIPHY, pWiphyInfo->wiphy),
@@ -700,47 +698,55 @@ static int s_nlSend_wiphyInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _
     swl_unLiList_add(&attribs, &ifTypeAttr);
 
     NL_ATTR_NESTED(bandsAttr, NL80211_ATTR_WIPHY_BANDS);
-    NL_ATTR_NESTED(bandAttr, NL80211_BAND_5GHZ);
-
-    uint16_t htCapa = 0x19ef;
-    NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_VAL(NL80211_BAND_ATTR_HT_CAPA, htCapa));
-    uint8_t htMcs[] = {0xff, 0xff, 0, 0, 0, 0, 0, 0, 0, 0};
-    NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_ATTR_HT_MCS_SET, sizeof(htMcs), htMcs));
-
-    uint32_t vhtCapa = 0x039071f6;
-    NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_VAL(NL80211_BAND_ATTR_VHT_CAPA, vhtCapa));
-    uint8_t vhtMcs[] = {0xfa, 0xff, 0, 0, 0xfa, 0xff, 0, 0};
-    NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_ATTR_VHT_MCS_SET, sizeof(vhtMcs), vhtMcs));
-
-    NL_ATTR_NESTED(bandIfTypeDataAttr, NL80211_BAND_ATTR_IFTYPE_DATA);
-    NL_ATTR_NESTED(bandIfTypeDataApAttr, 1);
-    uint8_t heCapPhy[] = {0x0e, 0x3f, 0x02, 0x00, 0xfd, 0x09, 0x80, 0x0e, 0xcf, 0xf2, 0x00, };
-    NL_ATTRS_ADD(&bandIfTypeDataApAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_IFTYPE_ATTR_HE_CAP_PHY, sizeof(heCapPhy), heCapPhy));
-    uint8_t heMcsMapLe80[] = {0xfa, 0xff, 0xfa, 0xff};
-    NL_ATTRS_ADD(&bandIfTypeDataApAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET, sizeof(heMcsMapLe80), heMcsMapLe80));
-    swl_unLiList_add(&bandIfTypeDataAttr.data.attribs, &bandIfTypeDataApAttr);
-    swl_unLiList_add(&bandAttr.data.attribs, &bandIfTypeDataAttr);
-
-    NL_ATTR_NESTED(bandFreqAttr, NL80211_BAND_ATTR_FREQS);
-    wld_nl80211_bandDef_t* pBand = &pWiphyInfo->bands[SWL_FREQ_BAND_5GHZ];
-    uint32_t maxTxPower = pBand->chans[0].maxTxPwr * 100;
-    for(uint32_t i = 0; i < pBand->nChans; i++) {
-        NL_ATTR_NESTED(bandChanAttr, i + 1);
-        NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_FREQ, pBand->chans[i].ctrlFreq));
-        NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_MAX_TX_POWER, maxTxPower));
-        if(pBand->chans[i].isDfs) {
-            NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR(NL80211_FREQUENCY_ATTR_RADAR));
-            NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_DFS_TIME, pBand->chans[i].dfsTime));
-            NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_DFS_CAC_TIME, pBand->chans[i].dfsCacTime));
-            uint32_t* pStateVal = (uint32_t*) swl_table_getMatchingValue(&sChanDfsStatusMap, 0, 1, &pBand->chans[i].status);
-            if(pStateVal) {
-                NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_DATA(NL80211_FREQUENCY_ATTR_DFS_STATE, sizeof(*pStateVal), pStateVal));
-            }
+    uint32_t nlBand[SWL_FREQ_BAND_MAX] = {NL80211_BAND_2GHZ, NL80211_BAND_5GHZ, NL80211_BAND_6GHZ};
+    for(uint32_t b = 0; b < SWL_FREQ_BAND_MAX; b++) {
+        wld_nl80211_bandDef_t* pBand = &pWiphyInfo->bands[b];
+        if(!pBand->radStdsMask) {
+            continue;
         }
-        swl_unLiList_add(&bandFreqAttr.data.attribs, &bandChanAttr);
+        NL_ATTR_NESTED(bandAttr, nlBand[pBand->freqBand]);
+        if(SWL_BIT_IS_SET(pBand->radStdsMask, SWL_RADSTD_N)) {
+            uint16_t htCapa = 0x19ef;
+            NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_VAL(NL80211_BAND_ATTR_HT_CAPA, htCapa));
+            uint8_t htMcs[] = {0xff, 0xff, 0, 0, 0, 0, 0, 0, 0, 0};
+            NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_ATTR_HT_MCS_SET, sizeof(htMcs), htMcs));
+        }
+        if(SWL_BIT_IS_SET(pBand->radStdsMask, SWL_RADSTD_AC)) {
+            uint32_t vhtCapa = 0x039071f6;
+            NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_VAL(NL80211_BAND_ATTR_VHT_CAPA, vhtCapa));
+            uint8_t vhtMcs[] = {0xfa, 0xff, 0, 0, 0xfa, 0xff, 0, 0};
+            NL_ATTRS_ADD(&bandAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_ATTR_VHT_MCS_SET, sizeof(vhtMcs), vhtMcs));
+        }
+        if(SWL_BIT_IS_SET(pBand->radStdsMask, SWL_RADSTD_AX)) {
+            NL_ATTR_NESTED(bandIfTypeDataAttr, NL80211_BAND_ATTR_IFTYPE_DATA);
+            NL_ATTR_NESTED(bandIfTypeDataApAttr, 1);
+            uint8_t heCapPhy[] = {0x0e, 0x3f, 0x02, 0x00, 0xfd, 0x09, 0x80, 0x0e, 0xcf, 0xf2, 0x00, };
+            NL_ATTRS_ADD(&bandIfTypeDataApAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_IFTYPE_ATTR_HE_CAP_PHY, sizeof(heCapPhy), heCapPhy));
+            uint8_t heMcsMapLe80[] = {0xfa, 0xff, 0xfa, 0xff};
+            NL_ATTRS_ADD(&bandIfTypeDataApAttr.data.attribs, NL_ATTR_DATA(NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET, sizeof(heMcsMapLe80), heMcsMapLe80));
+            swl_unLiList_add(&bandIfTypeDataAttr.data.attribs, &bandIfTypeDataApAttr);
+            swl_unLiList_add(&bandAttr.data.attribs, &bandIfTypeDataAttr);
+        }
+        NL_ATTR_NESTED(bandFreqAttr, NL80211_BAND_ATTR_FREQS);
+        uint32_t maxTxPower = pBand->chans[0].maxTxPwr * 100;
+        for(uint32_t i = 0; i < pBand->nChans; i++) {
+            NL_ATTR_NESTED(bandChanAttr, i + 1);
+            NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_FREQ, pBand->chans[i].ctrlFreq));
+            NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_MAX_TX_POWER, maxTxPower));
+            if(pBand->chans[i].isDfs) {
+                NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR(NL80211_FREQUENCY_ATTR_RADAR));
+                NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_DFS_TIME, pBand->chans[i].dfsTime));
+                NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_VAL(NL80211_FREQUENCY_ATTR_DFS_CAC_TIME, pBand->chans[i].dfsCacTime));
+                uint32_t* pStateVal = (uint32_t*) swl_table_getMatchingValue(&sChanDfsStatusMap, 0, 1, &pBand->chans[i].status);
+                if(pStateVal) {
+                    NL_ATTRS_ADD(&bandChanAttr.data.attribs, NL_ATTR_DATA(NL80211_FREQUENCY_ATTR_DFS_STATE, sizeof(*pStateVal), pStateVal));
+                }
+            }
+            swl_unLiList_add(&bandFreqAttr.data.attribs, &bandChanAttr);
+        }
+        swl_unLiList_add(&bandAttr.data.attribs, &bandFreqAttr);
+        swl_unLiList_add(&bandsAttr.data.attribs, &bandAttr);
     }
-    swl_unLiList_add(&bandAttr.data.attribs, &bandFreqAttr);
-    swl_unLiList_add(&bandsAttr.data.attribs, &bandAttr);
     swl_unLiList_add(&attribs, &bandsAttr);
 
     wld_nl80211_addNlAttrs(msgReply, &attribs);
@@ -750,11 +756,98 @@ static int s_nlSend_wiphyInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _
     return 0;
 }
 
-static void test_wld_nl80211_getWiphyInfo(void** mockaState _UNUSED) {
-    assert_true(s_stateMockInit(&mockGetWiphyInfo.stateMock));
-    //tweak: override nl_send API to catch request and build reply locally
-    mockGetWiphyInfo.stateMock.state->fNlSendPriv = s_nlSend_wiphyInfo;
-    wld_nl80211_wiphyInfo_t expectedWiphyInfo = {
+static int s_nlSend_wiphyInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
+    int fd = mockGetWiphyInfo.stateMock.pipeFds[1];
+    wld_nl80211_wiphyInfo_t* pAllWiphyInfo = (wld_nl80211_wiphyInfo_t*) mockGetWiphyInfo.expectedData;
+    bool hasMulti = (mockGetWiphyInfo.nExpectedElts > 1);
+    for(int32_t i = mockGetWiphyInfo.nExpectedElts - 1; i >= 0; i--) {
+        wld_nl80211_wiphyInfo_t* pWiphyInfo = &pAllWiphyInfo[i];
+        s_nlSend_wiphyInfoChunk(fd, pWiphyInfo, msg, hasMulti);
+    }
+
+    if(hasMulti) {
+        struct nl_msg* msgReply = s_mirrorNlMsgExt(msg, NLMSG_DONE, 0, NLM_F_MULTI);
+        write(fd, (void*) nlmsg_hdr(msgReply), nlmsg_hdr(msgReply)->nlmsg_len);
+        nlmsg_free(msgReply);
+    }
+    return 0;
+}
+
+static void s_checkWiphyInfo(wld_nl80211_wiphyInfo_t* pRetWiphyInfo, const wld_nl80211_wiphyInfo_t* pExpectedWiphyInfo) {
+    wld_nl80211_dumpWiphyInfo(pRetWiphyInfo, NULL);
+    assert_int_equal(pRetWiphyInfo->wiphy, pExpectedWiphyInfo->wiphy);
+    assert_string_equal(pRetWiphyInfo->name, pExpectedWiphyInfo->name);
+    assert_int_equal(pRetWiphyInfo->maxScanSsids, pExpectedWiphyInfo->maxScanSsids);
+    assert_int_equal(pRetWiphyInfo->maxScanIeLen, pExpectedWiphyInfo->maxScanIeLen);
+    assert_int_equal(pRetWiphyInfo->nrAntenna[COM_DIR_TRANSMIT], pExpectedWiphyInfo->nrAntenna[COM_DIR_TRANSMIT]);
+    assert_int_equal(pRetWiphyInfo->nrAntenna[COM_DIR_RECEIVE], pExpectedWiphyInfo->nrAntenna[COM_DIR_RECEIVE]);
+    assert_int_equal(pRetWiphyInfo->nrActiveAntenna[COM_DIR_TRANSMIT], pExpectedWiphyInfo->nrActiveAntenna[COM_DIR_TRANSMIT]);
+    assert_int_equal(pRetWiphyInfo->nrActiveAntenna[COM_DIR_RECEIVE], pExpectedWiphyInfo->nrActiveAntenna[COM_DIR_RECEIVE]);
+    assert_int_equal(pRetWiphyInfo->suppAp, pExpectedWiphyInfo->suppAp);
+    assert_int_equal(pRetWiphyInfo->suppEp, pExpectedWiphyInfo->suppEp);
+    assert_int_equal(pRetWiphyInfo->nCipherSuites, pExpectedWiphyInfo->nCipherSuites);
+    assert_memory_equal(pRetWiphyInfo->cipherSuites, pExpectedWiphyInfo->cipherSuites, pExpectedWiphyInfo->nCipherSuites * sizeof(pExpectedWiphyInfo->cipherSuites[0]));
+    assert_int_equal(pRetWiphyInfo->nSSMax, pExpectedWiphyInfo->nSSMax);
+    assert_int_equal(pRetWiphyInfo->freqBandsMask, pExpectedWiphyInfo->freqBandsMask);
+    for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
+        assert_int_equal(pRetWiphyInfo->bands[i].freqBand, pExpectedWiphyInfo->bands[i].freqBand);
+        assert_int_equal(pRetWiphyInfo->bands[i].radStdsMask, pExpectedWiphyInfo->bands[i].radStdsMask);
+        assert_int_equal(pRetWiphyInfo->bands[i].chanWidthMask, pExpectedWiphyInfo->bands[i].chanWidthMask);
+        assert_int_equal(pRetWiphyInfo->bands[i].nSSMax, pExpectedWiphyInfo->bands[i].nSSMax);
+        assert_int_equal(pRetWiphyInfo->bands[i].nChans, pExpectedWiphyInfo->bands[i].nChans);
+        assert_memory_equal(pRetWiphyInfo->bands[i].chans, pExpectedWiphyInfo->bands[i].chans, pExpectedWiphyInfo->bands[i].nChans * sizeof(pExpectedWiphyInfo->bands[i].chans[0]));
+        assert_int_equal(pRetWiphyInfo->bands[i].bfCapsSupported[COM_DIR_TRANSMIT], pExpectedWiphyInfo->bands[i].bfCapsSupported[COM_DIR_TRANSMIT]);
+        assert_int_equal(pRetWiphyInfo->bands[i].bfCapsSupported[COM_DIR_RECEIVE], pExpectedWiphyInfo->bands[i].bfCapsSupported[COM_DIR_RECEIVE]);
+        for(uint32_t j = 0; j < SWL_MCS_STANDARD_MAX; j++) {
+            assert_int_equal(pRetWiphyInfo->bands[i].mcsStds[j].standard, pExpectedWiphyInfo->bands[i].mcsStds[j].standard);
+            assert_int_equal(pRetWiphyInfo->bands[i].mcsStds[j].mcsIndex, pExpectedWiphyInfo->bands[i].mcsStds[j].mcsIndex);
+            assert_int_equal(pRetWiphyInfo->bands[i].mcsStds[j].bandwidth, pExpectedWiphyInfo->bands[i].mcsStds[j].bandwidth);
+            assert_int_equal(pRetWiphyInfo->bands[i].mcsStds[j].numberOfSpatialStream, pExpectedWiphyInfo->bands[i].mcsStds[j].numberOfSpatialStream);
+            assert_int_equal(pRetWiphyInfo->bands[i].mcsStds[j].guardInterval, pExpectedWiphyInfo->bands[i].mcsStds[j].guardInterval);
+        }
+    }
+}
+
+static wld_nl80211_wiphyInfo_t sTestWiphyInfo[] = {
+    {
+        .wiphy = 0,
+        .name = "phy0",
+        .maxScanSsids = 16,
+        .maxScanIeLen = 2048,
+        .nrAntenna = {2, 2},
+        .nrActiveAntenna = {2, 2},
+        .nSSMax = 2,
+        .suppUAPSD = true,
+        .suppAp = true,
+        .suppEp = true,
+        .nCipherSuites = 4,
+        .cipherSuites = ARR(0x000fac01, 0x000fac05, 0x000fac02, 0x000fac04),
+        .freqBandsMask = M_SWL_FREQ_BAND_2_4GHZ,
+        .bands = ARR({.freqBand = SWL_FREQ_BAND_2_4GHZ,
+                         .radStdsMask = M_SWL_RADSTD_B | M_SWL_RADSTD_G | M_SWL_RADSTD_N,
+                         .chanWidthMask = M_SWL_BW_20MHZ | M_SWL_BW_40MHZ,
+                         .nSSMax = 2,
+                         .nChans = 11,
+                         .chans = ARR({.ctrlFreq = 2412, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2417, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2422, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2427, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2432, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2437, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2442, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2447, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2452, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2457, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20},
+                                      {.ctrlFreq = 2462, .status = WLD_NL80211_CHAN_AVAILABLE, .maxTxPwr = 20}, ),
+                         .bfCapsSupported = ARR(0, 0),
+                         .mcsStds = ARR({}, {},
+                                        {.standard = SWL_MCS_STANDARD_HT,
+                                            .mcsIndex = 15,
+                                            .bandwidth = SWL_BW_40MHZ,
+                                            .numberOfSpatialStream = 2,
+                                            .guardInterval = SWL_SGI_400, }), }, ),
+    },
+    {
         .wiphy = 1,
         .name = "phy1",
         .maxScanSsids = 10,
@@ -794,43 +887,36 @@ static void test_wld_nl80211_getWiphyInfo(void** mockaState _UNUSED) {
                                             .bandwidth = SWL_BW_160MHZ,
                                             .numberOfSpatialStream = 2,
                                             .guardInterval = SWL_SGI_800, }), }),
-    };
-    mockGetWiphyInfo.expectedData = &expectedWiphyInfo;
+    },
+};
+static void test_wld_nl80211_getWiphyInfo(void** mockaState _UNUSED) {
+    assert_true(s_stateMockInit(&mockGetWiphyInfo.stateMock));
+    //tweak: override nl_send API to catch request and build reply locally
+    mockGetWiphyInfo.stateMock.state->fNlSendPriv = s_nlSend_wiphyInfo;
+    mockGetWiphyInfo.expectedData = &sTestWiphyInfo[1];
+    mockGetWiphyInfo.nExpectedElts = 1;
 
     wld_nl80211_wiphyInfo_t retWiphyInfo = {};
     swl_rc_ne rc = wld_nl80211_getWiphyInfo(mockGetWiphyInfo.stateMock.state, 1, &retWiphyInfo);
     assert_true(rc >= SWL_RC_OK);
-    wld_nl80211_dumpWiphyInfo(&retWiphyInfo, NULL);
-    assert_int_equal(retWiphyInfo.wiphy, expectedWiphyInfo.wiphy);
-    assert_string_equal(retWiphyInfo.name, expectedWiphyInfo.name);
-    assert_int_equal(retWiphyInfo.maxScanSsids, expectedWiphyInfo.maxScanSsids);
-    assert_int_equal(retWiphyInfo.maxScanIeLen, expectedWiphyInfo.maxScanIeLen);
-    assert_int_equal(retWiphyInfo.nrAntenna[COM_DIR_TRANSMIT], expectedWiphyInfo.nrAntenna[COM_DIR_TRANSMIT]);
-    assert_int_equal(retWiphyInfo.nrAntenna[COM_DIR_RECEIVE], expectedWiphyInfo.nrAntenna[COM_DIR_RECEIVE]);
-    assert_int_equal(retWiphyInfo.nrActiveAntenna[COM_DIR_TRANSMIT], expectedWiphyInfo.nrActiveAntenna[COM_DIR_TRANSMIT]);
-    assert_int_equal(retWiphyInfo.nrActiveAntenna[COM_DIR_RECEIVE], expectedWiphyInfo.nrActiveAntenna[COM_DIR_RECEIVE]);
-    assert_int_equal(retWiphyInfo.suppAp, expectedWiphyInfo.suppAp);
-    assert_int_equal(retWiphyInfo.suppEp, expectedWiphyInfo.suppEp);
-    assert_int_equal(retWiphyInfo.nCipherSuites, expectedWiphyInfo.nCipherSuites);
-    assert_memory_equal(retWiphyInfo.cipherSuites, expectedWiphyInfo.cipherSuites, expectedWiphyInfo.nCipherSuites * sizeof(expectedWiphyInfo.cipherSuites[0]));
-    assert_int_equal(retWiphyInfo.nSSMax, expectedWiphyInfo.nSSMax);
-    assert_int_equal(retWiphyInfo.freqBandsMask, expectedWiphyInfo.freqBandsMask);
-    for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
-        assert_int_equal(retWiphyInfo.bands[i].freqBand, expectedWiphyInfo.bands[i].freqBand);
-        assert_int_equal(retWiphyInfo.bands[i].radStdsMask, expectedWiphyInfo.bands[i].radStdsMask);
-        assert_int_equal(retWiphyInfo.bands[i].chanWidthMask, expectedWiphyInfo.bands[i].chanWidthMask);
-        assert_int_equal(retWiphyInfo.bands[i].nSSMax, expectedWiphyInfo.bands[i].nSSMax);
-        assert_int_equal(retWiphyInfo.bands[i].nChans, expectedWiphyInfo.bands[i].nChans);
-        assert_memory_equal(retWiphyInfo.bands[i].chans, expectedWiphyInfo.bands[i].chans, expectedWiphyInfo.bands[i].nChans * sizeof(expectedWiphyInfo.bands[i].chans[0]));
-        assert_int_equal(retWiphyInfo.bands[i].bfCapsSupported[COM_DIR_TRANSMIT], expectedWiphyInfo.bands[i].bfCapsSupported[COM_DIR_TRANSMIT]);
-        assert_int_equal(retWiphyInfo.bands[i].bfCapsSupported[COM_DIR_RECEIVE], expectedWiphyInfo.bands[i].bfCapsSupported[COM_DIR_RECEIVE]);
-        for(uint32_t j = 0; j < SWL_MCS_STANDARD_MAX; j++) {
-            assert_int_equal(retWiphyInfo.bands[i].mcsStds[j].standard, expectedWiphyInfo.bands[i].mcsStds[j].standard);
-            assert_int_equal(retWiphyInfo.bands[i].mcsStds[j].mcsIndex, expectedWiphyInfo.bands[i].mcsStds[j].mcsIndex);
-            assert_int_equal(retWiphyInfo.bands[i].mcsStds[j].bandwidth, expectedWiphyInfo.bands[i].mcsStds[j].bandwidth);
-            assert_int_equal(retWiphyInfo.bands[i].mcsStds[j].numberOfSpatialStream, expectedWiphyInfo.bands[i].mcsStds[j].numberOfSpatialStream);
-            assert_int_equal(retWiphyInfo.bands[i].mcsStds[j].guardInterval, expectedWiphyInfo.bands[i].mcsStds[j].guardInterval);
-        }
+    s_checkWiphyInfo(&retWiphyInfo, mockGetWiphyInfo.expectedData);
+    s_stateMockDeInit(&mockGetWiphyInfo.stateMock);
+}
+
+static void test_wld_nl80211_getAllWiphyInfo(void** mockaState _UNUSED) {
+    assert_true(s_stateMockInit(&mockGetWiphyInfo.stateMock));
+    //tweak: override nl_send API to catch request and build reply locally
+    mockGetWiphyInfo.stateMock.state->fNlSendPriv = s_nlSend_wiphyInfo;
+    mockGetWiphyInfo.expectedData = sTestWiphyInfo;
+    mockGetWiphyInfo.nExpectedElts = SWL_ARRAY_SIZE(sTestWiphyInfo);
+
+    wld_nl80211_wiphyInfo_t retWiphyInfo[mockGetWiphyInfo.nExpectedElts];
+    uint32_t nrWiphyInfo = 0;
+    swl_rc_ne rc = wld_nl80211_getAllWiphyInfo(mockGetWiphyInfo.stateMock.state, mockGetWiphyInfo.nExpectedElts, retWiphyInfo, &nrWiphyInfo);
+    assert_true(rc >= SWL_RC_OK);
+    assert_int_equal(nrWiphyInfo, mockGetWiphyInfo.nExpectedElts);
+    for(uint32_t i = 0; i < nrWiphyInfo; i++) {
+        s_checkWiphyInfo(&retWiphyInfo[i], &sTestWiphyInfo[i]);
     }
     s_stateMockDeInit(&mockGetWiphyInfo.stateMock);
 }
@@ -1114,6 +1200,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_nl80211_callEvtListeners),
         cmocka_unit_test(test_wld_nl80211_getIfaceInfo),
         cmocka_unit_test(test_wld_nl80211_getWiphyInfo),
+        cmocka_unit_test(test_wld_nl80211_getAllWiphyInfo),
         cmocka_unit_test_setup_teardown(test_wld_nl80211_getScanResults, s_test_getScanResults_setup, s_test_getScanResults_teardown),
         cmocka_unit_test(test_wld_nl80211_getChanSurveyInfo),
     };

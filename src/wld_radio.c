@@ -4805,6 +4805,17 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         } else {
             wld_nl80211_dumpWiphyInfo(&wiphyInfo, retval);
         }
+    } else if(!strcasecmp(feature, "nl80211AllWiphyInfo")) {
+        uint32_t nrWiphy;
+        wld_nl80211_wiphyInfo_t wiphyInfo[MAXNROF_RADIO];
+        if((wld_nl80211_getAllWiphyInfo(wld_nl80211_getSharedState(), MAXNROF_RADIO, wiphyInfo, &nrWiphy) < SWL_RC_OK) ||
+           (!nrWiphy)) {
+            amxc_var_add_key(cstring_t, retval, "Error", "Fail to get nl80211 all wiphy info");
+        } else {
+            for(uint32_t i = 0; i < nrWiphy; i++) {
+                wld_nl80211_dumpWiphyInfo(&wiphyInfo[i], amxc_var_add_key(amxc_htable_t, retval, wiphyInfo[i].name, NULL));
+            }
+        }
     } else if(swl_str_matchesIgnoreCase(feature, "RadioLinuxStats")) {
 
         T_Stats radioStats;

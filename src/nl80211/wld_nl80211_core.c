@@ -923,7 +923,7 @@ swl_rc_ne wld_nl80211_addNlAttrs(struct nl_msg* msg, wld_nl80211_nlAttrList_t* c
     swl_unLiList_for_each(it, pAttrList) {
         wld_nl80211_nlAttr_t* pAttr = swl_unLiList_data(&it, wld_nl80211_nlAttr_t*);
         //skip empty/unspecified attributes
-        if((pAttr == NULL) || (pAttr->type == 0)) {
+        if(pAttr == NULL) {
             continue;
         }
         //manage nested attributes
@@ -935,7 +935,7 @@ swl_rc_ne wld_nl80211_addNlAttrs(struct nl_msg* msg, wld_nl80211_nlAttrList_t* c
             struct nlattr* nestedAttr = nla_nest_start(msg, pAttr->type);
             ASSERT_NOT_NULL(nestedAttr, rc, ME, "fail to start nested attr(%d)", pAttr->type);
             rc = wld_nl80211_addNlAttrs(msg, &pAttr->data.attribs);
-            ASSERTS_EQUALS(rc, SWL_RC_OK, rc, "fail to add nested attr(%d)", pAttr->type)
+            ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "fail to add nested attr(%d)", pAttr->type)
             nla_nest_end(msg, nestedAttr);
             continue;
         }

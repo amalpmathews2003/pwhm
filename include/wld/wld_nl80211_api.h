@@ -223,6 +223,19 @@ swl_rc_ne wld_nl80211_setInterfaceUse4Mac(wld_nl80211_state_t* state, uint32_t i
 swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_wiphyInfo_t* pWiphyInfo);
 
 /*
+ * @brief get all wiphy interfaces
+ * (Synchronous api)
+ *
+ * @param nrWiphyMax max wiphy value to fetch (i.e max radios)
+ * @param pWiphyIfs (output) array of wiphy interfaces
+ * @param pNrWiphy (output) number of detected wiphy interfaces
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t nrWiphyMax, wld_nl80211_wiphyInfo_t pWiphyIfs[nrWiphyMax], uint32_t* pNrWiphy);
+
+/*
  * @brief get station info: rx/tx bytes, rx/tx packets, rssi, ...
  * (Synchronous api)
  *

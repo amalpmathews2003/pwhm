@@ -266,6 +266,7 @@ struct getWiphyData_s {
     const uint32_t nrWiphyMax;
     uint32_t nrWiphy;
     wld_nl80211_wiphyInfo_t* pWiphys;
+    uint32_t ifIndex;
 };
 static swl_rc_ne s_getWiphyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
     ASSERTS_FALSE((rc <= SWL_RC_ERROR), rc, ME, "Request error");
@@ -290,11 +291,11 @@ static swl_rc_ne s_getWiphyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv
     uint32_t wiphy = wld_nl80211_getWiphy(tb);
     if((pWiphy->genId > 0) &&
        (((pWiphy->genId != genId) && (pWiphy->wiphy == wiphy)) ||
-        ((pWiphy->genId == genId) && (pWiphy->wiphy != wiphy)))) {
+        ((pWiphy->genId == genId) && (pWiphy->wiphy != wiphy) && (requestData->ifIndex != 0)))) {
         SAH_TRACEZ_ERROR(ME, "invalid genId(%d) for received msg of wiphy(%d)", genId, wiphy);
         return SWL_RC_ERROR;
     }
-    if(pWiphy->genId != genId) {
+    if((pWiphy->genId != genId) || ((requestData->ifIndex == 0) && (pWiphy->wiphy != wiphy))) {
         if(requestData->nrWiphy >= requestData->nrWiphyMax) {
             SAH_TRACEZ_INFO(ME, "wiphy(%d) skipped: maxWiphys %d reached", wiphy, requestData->nrWiphyMax);
             return SWL_RC_DONE;
@@ -313,6 +314,7 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
         .nrWiphyMax = 1,
         .nrWiphy = 0,
         .pWiphys = calloc(1, sizeof(wld_nl80211_wiphyInfo_t)),
+        .ifIndex = ifIndex,
     };
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_WIPHY, NLM_F_DUMP,
                                            ifIndex, &attribs, s_getWiphyInfoCb, &requestData);
@@ -322,6 +324,35 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
         rc = SWL_RC_ERROR;
     } else if(pWiphyInfo) {
         memcpy(pWiphyInfo, &requestData.pWiphys[0], sizeof(wld_nl80211_wiphyInfo_t));
+    }
+    free(requestData.pWiphys);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t nrWiphyMax, wld_nl80211_wiphyInfo_t pWiphyIfs[nrWiphyMax], uint32_t* pNrWiphy) {
+    memset(pWiphyIfs, 0, nrWiphyMax * sizeof(wld_nl80211_wiphyInfo_t));
+    NL_ATTRS(attribs,
+             ARR(NL_ATTR(NL80211_ATTR_SPLIT_WIPHY_DUMP)));
+    struct getWiphyData_s requestData = {
+        .nrWiphyMax = nrWiphyMax,
+        .nrWiphy = 0,
+        .pWiphys = calloc(nrWiphyMax, sizeof(wld_nl80211_wiphyInfo_t)),
+        .ifIndex = 0,
+    };
+    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_WIPHY, NLM_F_DUMP,
+                                           0, &attribs, s_getWiphyInfoCb, &requestData);
+    NL_ATTRS_CLEAR(&attribs);
+    if(pNrWiphy != NULL) {
+        *pNrWiphy = requestData.nrWiphy;
+    }
+    if(requestData.nrWiphy == 0) {
+        SAH_TRACEZ_ERROR(ME, "no Wiphy found");
+        rc = SWL_RC_ERROR;
+    } else if(nrWiphyMax > 0) {
+        //reverse copy to restore proper detection order
+        for(uint32_t i = 0; i < requestData.nrWiphy; i++) {
+            pWiphyIfs[i] = requestData.pWiphys[requestData.nrWiphy - i - 1];
+        }
     }
     free(requestData.pWiphys);
     return rc;
