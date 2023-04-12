@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.4.0 - 2023-04-12(12:24:39 +0000)
+
+### Other
+
+- : centralize internal ssid ctx creation
+
 ## Release v3.3.0 - 2023-04-12(10:54:40 +0000)
 
 ### Other
