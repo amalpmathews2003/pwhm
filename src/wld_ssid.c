@@ -108,22 +108,39 @@ static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
 }
 
 
-
-T_SSID* s_createSsid(amxd_object_t* obj) {
-    ASSERT_NOT_NULL(obj, NULL, ME, "NULL");
+T_SSID* s_createSsid(const char* name, uint32_t id) {
+    ASSERT_STR(name, NULL, ME, "Empty name");
     T_SSID* pSSID = calloc(1, sizeof(T_SSID));
     ASSERT_NOT_NULL(pSSID, NULL, ME, "NULL");
-    pSSID->pBus = obj;
-    obj->priv = pSSID;
     pSSID->debug = SSID_POINTER;
-    swl_str_copy(pSSID->Name, sizeof(pSSID->Name), amxd_object_get_name(obj, AMXD_OBJECT_NAMED));
-    sprintf(pSSID->SSID, "PWHM_SSID%d", amxd_object_get_index(obj));
+    swl_str_copy(pSSID->Name, sizeof(pSSID->Name), name);
+    snprintf(pSSID->SSID, SSID_NAME_LEN, "PWHM_SSID%d", id);
     amxc_llist_append(&sSsidList, &pSSID->it);
     amxp_timer_new(&pSSID->enableSyncTimer, s_syncEnable, pSSID);
     pSSID->enable = 0;
     pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
     return pSSID;
 }
+
+T_SSID* s_createSsidFromObj(amxd_object_t* obj) {
+    ASSERT_NOT_NULL(obj, NULL, ME, "NULL");
+    T_SSID* pSSID = s_createSsid(amxd_object_get_name(obj, AMXD_OBJECT_NAMED), amxd_object_get_index(obj));
+    ASSERT_NOT_NULL(pSSID, NULL, ME, "NULL");
+    pSSID->pBus = obj;
+    obj->priv = pSSID;
+    return pSSID;
+}
+
+T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+    T_SSID* pSSID = s_createSsid(pAP->name, pAP->ref_index);
+    ASSERT_NOT_NULL(pSSID, NULL, ME, "NULL");
+    pSSID->RADIO_PARENT = pAP->pRadio;
+    pSSID->AP_HOOK = pAP;
+    pAP->pSSID = pSSID;
+    return pSSID;
+}
+
 
 static void s_cleanSSID(T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
@@ -177,7 +194,7 @@ amxd_status_t _wld_ssid_addInstance_ocf(amxd_object_t* object,
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance %s (status %d)", name, status);
     amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
     ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
-    s_createSsid(instance);
+    s_createSsidFromObj(instance);
     return status;
 }
 
@@ -599,20 +616,6 @@ amxd_status_t _wld_ssid_setMacAddress_pwf(amxd_object_t* object _UNUSED,
     }
     free(pMacStr);
     return rv;
-}
-
-T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP) {
-    T_SSID* pSSID = calloc(1, sizeof(T_SSID));
-    ASSERT_NOT_NULL(pSSID, NULL, ME, "NULL");
-
-    pSSID->RADIO_PARENT = pAP->pRadio;
-    pSSID->AP_HOOK = pAP;
-    pAP->pSSID = pSSID;
-
-    pSSID->debug = SSID_POINTER;
-    sprintf(pSSID->SSID, "NeMo_SSID%d", pAP->ref_index);
-
-    return pSSID;
 }
 
 void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit) {

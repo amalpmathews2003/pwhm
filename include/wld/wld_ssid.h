@@ -71,4 +71,6 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
 void wld_ssid_cleanAll();
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
 
+T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
+
 #endif /* __WLD_SSID_H__ */
