@@ -261,6 +261,11 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
             if(!wld_ap_hostapd_updateBeacon(pAP, "syncAp")) {
                 ret = SWL_RC_ERROR;
             }
+            /*
+             * As iface has been stopped, nl80211 level has lost the station list, but not hostapd.
+             * So stations need to re-authenticate to be able to retrieve connection status and stats from nl80211.
+             */
+            wld_ap_hostapd_deauthAllStations(pAP);
         }
         wld_vap_updateState(pAP);
     }
