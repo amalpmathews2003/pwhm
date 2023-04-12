@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.3.0 - 2023-04-12(10:54:40 +0000)
+
+### Other
+
+- add nl80211 api get all wiphy devices info
+
 ## Release v3.2.0 - 2023-04-07(15:58:11 +0000)
 
 ### Other
