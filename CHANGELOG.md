@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.4.2 - 2023-04-13(11:39:51 +0000)
+
+### Other
+
+- update nl80211 iface event listener when ifIndex changes
+
 ## Release v3.4.1 - 2023-04-12(13:50:00 +0000)
 
 ### Other
