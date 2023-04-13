@@ -295,6 +295,10 @@ static bool s_doRadDisable(T_Radio* pRad) {
 
 static bool s_doRadEnable(T_Radio* pRad) {
     ASSERTS_TRUE(pRad->enable, true, ME, "%s: rad disabled", pRad->Name);
+    bool upperEnabled = (wld_rad_hasEnabledEp(pRad));
+    // When VAPs are enabled, Rad enable requires no config
+    // as Hostapd takes care of enabling required interfaces
+    ASSERTS_TRUE(upperEnabled, true, ME, "%s: rad has no upperL enabled", pRad->Name);
     pRad->pFA->mfn_wrad_enable(pRad, true, SET | DIRECT);
     return true;
 }
@@ -311,6 +315,11 @@ static bool s_doStopHostapd(T_Radio* pRad) {
         T_AccessPoint* pAP;
         wld_rad_forEachAp(pAP, pRad) {
             wld_ap_hostapd_deauthAllStations(pAP);
+            /*
+             * as we are stopping hostapd, no need to wait for deauth notif
+             * so we can cleanup ap's AD list
+             */
+            wld_vap_remove_all(pAP);
         }
     }
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);

@@ -118,6 +118,7 @@ wld_assocDevInfo_t wld_rad_get_associatedDeviceInfo(T_Radio* pRad, const unsigne
 
 void wld_vap_mark_all_stations_unseen(T_AccessPoint* pAP);
 void wld_vap_update_seen(T_AccessPoint* pAP);
+void wld_vap_remove_all(T_AccessPoint* pAP);
 
 const char* wld_ad_getMode(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_getHeMCS(uint16_t he_mcs, wld_sta_supMCS_adv_t* supportedHeMCS);
