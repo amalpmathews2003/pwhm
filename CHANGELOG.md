@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.4.3 - 2023-04-13(15:35:39 +0000)
+
+### Other
+
+- cleanup all APs assocDev lists when stopping hostapd
+
 ## Release v3.4.2 - 2023-04-13(11:39:51 +0000)
 
 ### Other
