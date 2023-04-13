@@ -81,6 +81,7 @@
 #include "wld_prbReq.h"
 #include "wld_chanmgt.h"
 #include "Utils/wld_autoCommitMgr.h"
+#include "wld_nl80211_types.h"
 
 #define ME "wld"
 
@@ -349,6 +350,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     static uint32_t index = 0;
     pR->index = index++;
     pR->ref_index = idx;
+    pR->wiphy = WLD_NL80211_ID_UNDEF;
     pR->detailedState = CM_RAD_UNKNOWN;
     pR->detailedStatePrev = CM_RAD_UNKNOWN;
     pR->status = RST_UNKNOWN;

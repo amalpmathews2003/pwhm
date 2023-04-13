@@ -263,6 +263,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
     if(pAP != NULL) {
         pAP->index = pIfaceInfo->ifIndex;
+        wifiGen_setVapEvtHandlers(pAP);
         wld_vap_updateState(pAP);
     }
 }
@@ -274,6 +275,7 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     SAH_TRACEZ_NOTICE(ME, "%s: interface deleted (devIdx:%d)", pIfaceInfo->name, pIfaceInfo->ifIndex);
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
     if(pAP != NULL) {
+        wld_ap_nl80211_delEvtListener(pAP);
         pAP->index = 0;
         wld_vap_updateState(pAP);
     }

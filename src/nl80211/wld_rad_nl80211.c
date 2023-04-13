@@ -76,7 +76,8 @@ swl_rc_ne wld_rad_nl80211_setEvtListener(T_Radio* pRadio, void* pData, const wld
     if((rc == SWL_RC_OK) && (handlers == NULL)) {
         return rc;
     }
-    uint32_t wiphy = pRadio->ref_index;
+    uint32_t wiphy = pRadio->wiphy;
+    ASSERTI_NOT_EQUALS(wiphy, WLD_NL80211_ID_UNDEF, SWL_RC_INVALID_PARAM, ME, "%s: undefined wiphy id", pRadio->Name);
     uint32_t ifIndex = WLD_NL80211_ID_ANY;
     SAH_TRACEZ_INFO(ME, "rad(%s): add evt listener wiphy(%d)/ifIndex(%d)", pRadio->Name, wiphy, ifIndex);
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
@@ -368,7 +369,7 @@ swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "%s: setting reg domain %s", pRadio->Name, alpha2);
-    rc = wld_nl80211_setRegDomain(wld_nl80211_getSharedState(), pRadio->ref_index, alpha2);
+    rc = wld_nl80211_setRegDomain(wld_nl80211_getSharedState(), pRadio->wiphy, alpha2);
     return rc;
 }
 
