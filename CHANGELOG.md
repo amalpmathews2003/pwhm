@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.5.0 - 2023-04-14(16:36:41 +0000)
+
+### Other
+
+- make getLastAssocFrame rpc callable from AssocDev obj
+
 ## Release v3.4.3 - 2023-04-13(15:35:39 +0000)
 
 ### Other
