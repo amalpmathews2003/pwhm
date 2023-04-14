@@ -111,6 +111,8 @@ const char* wld_vendorIe_frameType_str[] = {"Beacon", "ProbeResp", "AssocResp", 
 const char* g_str_wld_ap_dm[] = {"Default", "Disabled", "RNR", "UPR", "FILSDiscovery"};
 
 SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_macBin, swl_type_charPtr, swl_type_timeReal, swl_type_uint16))
+static const char* s_assocTableNames[] = {"mac", "bssid", "frame", "timestamp", "request_type"};
+SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_assocTableNames) == SWL_ARRAY_SIZE(assocTableTypes), "s_assocTableNames not correctly defined");
 
 
 static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
@@ -2809,7 +2811,7 @@ amxd_status_t _wld_ap_setDriverConfig_owf(amxd_object_t* object) {
 
 swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld_vap_assocTableStruct_t** data) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_NOT_NULL(macStation, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_STR(macStation, SWL_RC_INVALID_PARAM, ME, "empty mac");
     ASSERT_NOT_NULL(data, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     swl_macBin_t bMac;
@@ -2818,6 +2820,22 @@ swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld
     *data = swl_circTable_getMatchingTuple(&(pAP->lastAssocReq), 0, &bMac);
     ASSERT_NOT_NULL(*data, SWL_RC_ERROR, ME, "NULL");
     return SWL_RC_OK;
+}
+
+static amxd_status_t s_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, amxc_var_t* retval) {
+    wld_vap_assocTableStruct_t* tuple = NULL;
+    swl_rc_ne ret = wld_ap_getLastAssocReq(pAP, macStation, &tuple);
+    ASSERT_TRUE(swl_rc_isOk(ret), amxd_status_unknown_error, ME, "Error during execution");
+
+    amxc_var_init(retval);
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    for(size_t i = 0; i < assocTable.nrTypes; i++) {
+        swl_type_t* type = assocTable.types[i];
+        swl_typeData_t* tmpValue = swl_tupleType_getValue(&assocTable, tuple, i);
+        amxc_var_t* tmpVar = amxc_var_add_new_key(retval, s_assocTableNames[i]);
+        swl_type_toVariant(type, tmpVar, tmpValue);
+    }
+    return amxd_status_ok;
 }
 
 /**
@@ -2833,30 +2851,24 @@ amxd_status_t _AccessPoint_getLastAssocReq(amxd_object_t* object,
                                            amxd_function_t* func _UNUSED,
                                            amxc_var_t* args,
                                            amxc_var_t* retval) {
-
-    SAH_TRACEZ_IN(ME);
-    amxd_status_t status = amxd_status_ok;
     T_AccessPoint* pAP = object->priv;
-
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "invalid AP");
     const char* macStation = GET_CHAR(args, "mac");
     ASSERT_NOT_NULL(macStation, amxd_status_parameter_not_found, ME, "No mac station given");
+    return s_getLastAssocReq(pAP, macStation, retval);
+}
 
-    wld_vap_assocTableStruct_t* tuple = NULL;
-    swl_rc_ne ret = wld_ap_getLastAssocReq(pAP, macStation, &tuple);
-    ASSERT_TRUE(swl_rc_isOk(ret), amxd_status_unknown_error, ME, "Error during execution");
-
-    amxc_var_init(retval);
-    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
-    char* names[5] = {"mac", "bssid", "frame", "timestamp", "request_type"};
-    for(size_t i = 0; i < assocTable.nrTypes; i++) {
-        swl_type_t* type = assocTable.types[i];
-        swl_typeData_t* tmpValue = swl_tupleType_getValue(&assocTable, tuple, i);
-        amxc_var_t* tmpVar = amxc_var_add_new_key(retval, names[i]);
-        swl_type_toVariant(type, tmpVar, tmpValue);
-    }
-
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+amxd_status_t _AssociatedDevice_getLastAssocReq(amxd_object_t* object,
+                                                amxd_function_t* func _UNUSED,
+                                                amxc_var_t* args _UNUSED,
+                                                amxc_var_t* retval) {
+    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(wifiVap, amxd_status_unknown_error, ME, "NULL");
+    T_AccessPoint* pAP = wifiVap->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "invalid AP parent");
+    const char* macStation = amxd_object_get_cstring_t(object, "MACAddress", NULL);
+    ASSERT_NOT_NULL(macStation, amxd_status_parameter_not_found, ME, "No mac station given");
+    return s_getLastAssocReq(pAP, macStation, retval);
 }
 
 amxd_status_t _AccessPoint_debug(amxd_object_t* obj,

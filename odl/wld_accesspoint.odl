@@ -195,7 +195,7 @@ define rrm_t{
 		 * Otherwise an error is returned
 		 * @version 11.1
 		 */
-		bool getLastAssocReq(%in string mac);
+		htable getLastAssocReq(%in %mandatory string mac);
 
 		/** Indicates the status of this access point. Enumeration of:
 		*  <ul>
@@ -1687,6 +1687,14 @@ define rrm_t{
 				 */
 				%read-only string FrequencyCapabilities;
 			}
+			/**
+			 * get the last assoc request sent by a station to a vap
+			 * @return
+			 * a variant map containing ASSOC_REQ or REASSOC_REQ frames
+			 * Otherwise an error is returned
+			 * @version 11.1
+			 */
+			htable getLastAssocReq();
 		}
 
 		/**
