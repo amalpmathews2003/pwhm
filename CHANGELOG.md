@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.6.0 - 2023-04-14(18:25:53 +0000)
+
+### Other
+
+- move vap enabling code to fta isof fsm state
+
 ## Release v3.5.0 - 2023-04-14(16:36:41 +0000)
 
 ### Other
