@@ -127,9 +127,26 @@ int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set) {
     int ret;
     SAH_TRACEZ_INFO(ME, "VAP:%s State:%d-->%d - Set:%d", pAP->alias, pAP->enable, enable, set);
     if(set & SET) {
-        ret = pAP->enable = enable;
+        if(set & DIRECT) {
+            /*
+             * we need to disable passive bss net ifaces (except the radio interface),
+             * that were implicitly enabled by hostapd startup
+             * (although not broadcasting)
+             */
+            if((enable) ||
+               (pAP->ref_index > 0) ||
+               (pAP->pRadio->isSTA && pAP->pRadio->isSTASup) ||
+               (!pAP->pRadio->enable)) {
+                wld_linuxIfUtils_setState(wld_rad_getSocket(pAP->pRadio), pAP->alias, enable);
+            }
+            return (wld_linuxIfUtils_getState(wld_rad_getSocket(pAP->pRadio), pAP->alias) > 0);
+        }
+        ret = enable;
         setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_AP);
     } else {
+        if(set & DIRECT) {
+            return (wld_linuxIfUtils_getState(wld_rad_getSocket(pAP->pRadio), pAP->alias) > 0);
+        }
         ret = pAP->enable;
     }
     return ret;

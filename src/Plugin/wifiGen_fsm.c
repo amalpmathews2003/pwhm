@@ -271,14 +271,14 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
             setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
         }
     } else {
-        int currState = wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias);
+        int currState = pAP->pFA->mfn_wvap_enable(pAP, enable, GET | DIRECT);
         if(!currState) {
             // we have to re-enable bss net interface before trying to (re)start beaconing
-            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, true);
+            pAP->pFA->mfn_wvap_enable(pAP, enable, SET | DIRECT);
         }
         if(((rc = wld_ap_hostapd_enableVap(pAP, true)) < SECDMN_ACTION_OK_DONE) && (!currState)) {
             //if failed to start beaconing, restore the net iface disabled state.
-            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, false);
+            pAP->pFA->mfn_wvap_enable(pAP, currState, SET | DIRECT);
         }
     }
     wld_vap_updateState(pAP);

@@ -242,22 +242,16 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
             continue;
         }
         if((!pAP->enable) &&
-           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias) > 0)) {
-            /*
-             * we need to disable passive bss net ifaces (except the radio interface),
-             * that were implicitly enabled by hostapd startup
-             * (although not broadcasting)
-             */
-            if(pAP->ref_index > 0) {
+           (pAP->pFA->mfn_wvap_enable(pAP, pAP->enable, GET | DIRECT) > 0)) {
+            if(pAP->pFA->mfn_wvap_enable(pAP, pAP->enable, SET | DIRECT) == 0) {
                 SAH_TRACEZ_INFO(ME, "%s: sync disable vap", pAP->alias);
-                wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, false);
             }
         } else if((pAP->enable) &&
                   (pAP->pFA->mfn_wvap_status(pAP) == 0) && (wld_rad_isUpAndReady(pRad))) {
             //need to restart broadcasting the enabled bss,
             //that were potentially stopped by hapd when disabling one AP
             SAH_TRACEZ_INFO(ME, "%s: sync enable vap", pAP->alias);
-            wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, true);
+            pAP->pFA->mfn_wvap_enable(pAP, pAP->enable, SET | DIRECT);
             if(!wld_ap_hostapd_updateBeacon(pAP, "syncAp")) {
                 ret = SWL_RC_ERROR;
             }
