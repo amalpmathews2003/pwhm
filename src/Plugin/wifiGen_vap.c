@@ -283,6 +283,14 @@ swl_rc_ne wifiGen_vap_sta_transfer(T_AccessPoint* pAP, wld_transferStaArgs_t* pa
     return wld_ap_hostapd_transferStation(pAP, params);
 }
 
+swl_rc_ne wifiGen_vap_deleted_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
+    return wld_ap_hostapd_removeNeighbor(pAP, pApNeighbor);
+}
+
+swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
+    return wld_ap_hostapd_setNeighbor(pAP, pApNeighbor);
+}
+
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
     ASSERTS_TRUE(set & SET, 0, ME, "Only do set");
     if(set & DIRECT) {

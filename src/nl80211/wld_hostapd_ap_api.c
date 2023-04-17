@@ -66,11 +66,38 @@
 #include "wld_hostapd_ap_api.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_accesspoint.h"
+#include "swl/swl_hex.h"
+#include "swl/swl_common_mac.h"
 
 #define ME "hapdAP"
 
 #define WPS_START  "WPS_PBC"
 #define WPS_CANCEL "WPS_CANCEL"
+#define NR_SIZE  36
+typedef struct {
+    char neighReport[NR_SIZE];
+} wld_neighReport_t;
+static void s_generateNeighReportField(swl_macChar_t bssid, uint32_t BssidInfo, uint8_t operClass, uint8_t channel, uint8_t phyType, wld_neighReport_t* result) {
+    unsigned int MAC[8];
+    unsigned char CMAC[SWL_MAC_BIN_LEN];
+
+    memset(result->neighReport, 0, NR_SIZE);
+    if(sscanf(bssid.cMac, "%x:%x:%x:%x:%x:%x",
+              &MAC[0], &MAC[1], &MAC[2],
+              &MAC[3], &MAC[4], &MAC[5]) == 6) {
+        CMAC[0] = MAC[0];
+        CMAC[1] = MAC[1];
+        CMAC[2] = MAC[2];
+        CMAC[3] = MAC[3];
+        CMAC[4] = MAC[4];
+        CMAC[5] = MAC[5];
+        SAH_TRACEZ_INFO(ME, "%2.2x %2.2x %2.2x %2.2x %2.2x %2.2x \n",
+                        CMAC[0], CMAC[1], CMAC[2], CMAC[3], CMAC[4], CMAC[5]);
+        snprintf(result->neighReport, 30, "%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x%08x%02x%02x%02x", CMAC[0], CMAC[1], CMAC[2], CMAC[3], CMAC[4], CMAC[5], BssidInfo, operClass, channel, phyType);
+    }
+
+
+}
 
 bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
@@ -102,6 +129,67 @@ bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason) {
  */
 bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason) {
     return s_sendHostapdCommand(pAP, "RELOAD_WPA_PSK", reason);
+}
+
+/**
+ * @brief delete neighbor
+ *
+ * @param pAP accesspoint
+ * @param pApNeighbor :Neighbor to be removed
+ * @return true when the remove_neighbor cmd is executed successfully. Otherwise false.
+ */
+swl_rc_ne wld_ap_hostapd_removeNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
+
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pApNeighbor, false, ME, "NULL");
+    ASSERTS_STR(pApNeighbor->ssid, false, ME, "empty ssid");
+    char cmd[128];
+    swl_macChar_t macStr;
+    char hexSSSID[strlen(pApNeighbor->ssid) * 2 + 1 ];
+
+    wldu_convMac2Str((unsigned char*) pApNeighbor->bssid, ETHER_ADDR_LEN, macStr.cMac, ETHER_ADDR_STR_LEN);
+
+    swl_hex_fromBytes(hexSSSID, sizeof(hexSSSID), (uint8_t*) pApNeighbor->ssid, sizeof(pApNeighbor->ssid), 0);
+    hexSSSID[strlen(pApNeighbor->ssid) * 2] = '\0';
+
+    snprintf(cmd, sizeof(cmd), "REMOVE_NEIGHBOR %s ssid=%s", macStr.cMac, hexSSSID);
+    SAH_TRACEZ_INFO(ME, "sending cmd : %s", cmd);
+    bool ret = s_sendHostapdCommand(pAP, cmd, "remove_neighbor");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: remove_neighbor failed", pAP->alias);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief set neighbor
+ *
+ * @param pAP accesspoint
+ * @param pApNeighbor :Neighbor to be added
+ * @return true when the set_neighbor cmd is executed successfully. Otherwise false.
+ */
+swl_rc_ne wld_ap_hostapd_setNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
+
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pApNeighbor, false, ME, "NULL");
+    ASSERTS_STR(pApNeighbor->ssid, false, ME, "empty ssid");
+    char cmd[128];
+    swl_macChar_t macStr;
+    wld_neighReport_t nrResult;
+    char hexSSSID[strlen(pApNeighbor->ssid) * 2 + 1 ];
+
+
+    wldu_convMac2Str((unsigned char*) pApNeighbor->bssid, ETHER_ADDR_LEN, macStr.cMac, ETHER_ADDR_STR_LEN);
+
+    swl_hex_fromBytes(hexSSSID, sizeof(hexSSSID), (uint8_t*) pApNeighbor->ssid, sizeof(pApNeighbor->ssid), 0);
+    hexSSSID[strlen(pApNeighbor->ssid) * 2] = '\0';
+
+    s_generateNeighReportField(macStr, pApNeighbor->information, pApNeighbor->operatingClass, pApNeighbor->channel, pApNeighbor->phyType, &nrResult);
+
+    snprintf(cmd, sizeof(cmd), "SET_NEIGHBOR %s ssid=%s nr=%s %s %s %s", macStr.cMac, hexSSSID, nrResult.neighReport, "", "", "");
+    SAH_TRACEZ_INFO(ME, "sending cmd : %s", cmd);
+
+    bool ret = s_sendHostapdCommand(pAP, cmd, "set_neighbor");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: set_neighbor failed", pAP->alias);
+    return SWL_RC_OK;
 }
 
 /**

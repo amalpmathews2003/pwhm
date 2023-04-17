@@ -81,6 +81,8 @@ bool wld_ap_hostapd_setParamValue(T_AccessPoint* pAP, const char* field, const c
 bool wld_ap_hostapd_sendCommand(T_AccessPoint* pAP, char* cmd, const char* reason);
 bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason);
 bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason);
+swl_rc_ne wld_ap_hostapd_setNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor);
+swl_rc_ne wld_ap_hostapd_removeNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor);
 
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* ssid);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP);

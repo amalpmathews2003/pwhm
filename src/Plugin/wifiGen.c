@@ -146,6 +146,9 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_wps_start = wifiGen_ep_wpsStart;
     fta.mfn_wendpoint_wps_cancel = wifiGen_ep_wpsCancel;
 
+    fta.mfn_wvap_updated_neighbour = wifiGen_vap_updated_neighbor;
+    fta.mfn_wvap_deleted_neighbour = wifiGen_vap_deleted_neighbor;
+
 
     s_vendor = wld_nl80211_registerVendor(&fta);
     wld_nl80211_getSharedState();

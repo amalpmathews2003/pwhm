@@ -2035,42 +2035,65 @@ define rrm_t{
 		 */
 		%persistent object Neighbour[]{
 
-			on action del-inst call wld_ap_delete_neigh;
-			on action write call wld_ap_update_neigh;
-			on action add-inst call wld_ap_add_neigh;
+			on action del-inst call wld_ap_delete_neigh_odf;
+			on action add-inst call wld_ap_add_neigh_ocf;
 
 			/**
 			 * The BSSID of the neighbour accesspoint.
 			 */
-			string BSSID;
+			%persistent string BSSID{
+				on action write call wld_ap_setNeighbourBSSID_pwf;
+				default "";
+			}
 			/**
 			 * The SSID of the neighbour accesspoint.
 			 */
-			string SSID;
+			%persistent string SSID{
+				on action write call wld_ap_setNeighbourSSID_pwf;
+				default "";
+			}
 			/**
 			 * The BSSID Information field.
 			 */
-			int32 Information;
+			%persistent int32 Information{
+				on action write call  wld_ap_setNeighbourInformation_pwf;
+				default 0;
+			}
 			/**
 			 * The neighbour accesspoint operating class.
 			 */
-			int32 OperatingClass;
+			%persistent int32 OperatingClass{
+				on action write call  wld_ap_setNeighbourOperatingClass_pwf;
+				default 0;
+			}
 			/**
 			 * The current channel of the neighbour accesspoint
 			 */
-			int32 Channel;
+			%persistent int32 Channel{
+				on action write call wld_ap_setNeighbourChannel_pwf;
+				default 0;
+			}
 			/**
 			 * The phy type of the neighbour accesspoint.
 			 */
-			int32 PhyType;
+			%persistent int32 PhyType{
+				on action write call wld_ap_setNeighbourPhyType_pwf;
+				default 0;
+			}
 			/**
 			 * The NAS Identifier of the neighbour accesspoint.
 			 */
-			string NASIdentifier;
+			%persistent string NASIdentifier{
+				on action write call wld_ap_setNeighbourNASIdentifier_pwf;
+				default "";
+			}
 			/**
 			 * The R0KHKey of the neighbour accesspoint.
 			 */
-			string R0KHKey;
+			%persistent string R0KHKey{
+				on action write call  wld_ap_setNeighbourR0KHKey_pwf;
+				default "";
+			}
 		}
 
 		/**

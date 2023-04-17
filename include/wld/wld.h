@@ -2323,12 +2323,12 @@ typedef struct S_CWLD_FUNC_TABLE {
      * A neighbour has been added or updated on the AP. The system should add the new neighbour
      * to the list of supported neighbours
      */
-    int (* mfn_wvap_updated_neighbour)(T_AccessPoint* pAP, T_ApNeighbour* newNeighbour);
+    swl_rc_ne (* mfn_wvap_updated_neighbour)(T_AccessPoint* pAP, T_ApNeighbour* newNeighbour);
     /**
      * A neighbour has been removed from the list of neighbours of this AP. The system
      * should remove the AP from its list.
      */
-    int (* mfn_wvap_deleted_neighbour)(T_AccessPoint* pAP, T_ApNeighbour* newNeighbour);
+    swl_rc_ne (* mfn_wvap_deleted_neighbour)(T_AccessPoint* pAP, T_ApNeighbour* newNeighbour);
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {
