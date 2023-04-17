@@ -206,7 +206,7 @@
 		 *   - Result: uint32: zero on success, non-zero on errors or after all roam
 		 *             attempts timed out.
 		 */
-		variant roamTo(%in mandatory string bssid, %in int32 tries, %in int32 timeoutInSec);
+		variant roamTo(%in %mandatory string bssid, %in int32 tries, %in int32 timeoutInSec);
 
 		/** Throughput statistics for this end point.  <b>Not
 		 *  clear how we can handle this? ToBe Defined!!!</b> */

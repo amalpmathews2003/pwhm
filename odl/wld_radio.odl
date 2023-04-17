@@ -1251,7 +1251,7 @@ define probelist_t{
 				
 				/* Bandwidth to which the radio went after DFS detection */
 				%read-only string NewBandwidth{
-					constraint enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
 					default "Auto";
 				}
 				
@@ -1259,7 +1259,7 @@ define probelist_t{
 				%read-only string DFSRadarDetectionList;
 				/* Detected radar's zone */
 				%read-only string RadarZone{
-					constraint enum["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
+					on action validate call check_enum ["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
 					default "NONE";
 				}
 				/* Detected radar's index */
@@ -1525,7 +1525,7 @@ define probelist_t{
 			 */
 			%read-only int32 Temperature{
 				default -274;
-				constraint minvalue -274;
+				on action validate call check_minimum -274;
 			}
 			
 			/**
@@ -1732,7 +1732,7 @@ define probelist_t{
 			 *   - Sync : the exposed channel is currently used by the radio and matches target channel
 			 */
 			%read-only string ChanspecShowing{
-				constraint enum ["Current", "Target", "Sync"];
+				on action validate call check_enum ["Current", "Target", "Sync"];
 				default "Current";
 			}
 		
@@ -1756,7 +1756,7 @@ define probelist_t{
 				 * </ul>
 				 */
 				%read-only string Bandwidth {
-					constraint enum ["20MHz","40MHz","80MHz","160MHz", "Auto"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz", "Auto"];
 					default "Auto";
 				}
 
@@ -1812,7 +1812,7 @@ define probelist_t{
 				 * </ul>
 				 */
 				%read-only string Bandwidth {
-					constraint enum ["20MHz","40MHz","80MHz","160MHz"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
 					default "20MHz";
 				}
 
@@ -2116,7 +2116,7 @@ define probelist_t{
 				 * Expressed in dbm.
 				 */
 				%persistent uint32 RssiInterval{
-					constraint minvalue 1;
+					on action validate call check_minimum 1;
 					default 10;
 				}
 
@@ -2140,7 +2140,7 @@ define probelist_t{
 				%persistent uint32 Interval{
 					default 1000;
 					on action write call mon_intervalWriteHandler;
-					constraint minvalue 100;
+					on action validate call check_minimum 100;
 				}
 			}
 		}

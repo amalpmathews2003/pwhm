@@ -84,7 +84,7 @@
 	 * @return Success if &gt;=0, the value represents the
 	 *         NETFINDEX. When 0 it's representing an error number.
 	 */
-	uint32 addVAPIntf(%in mandatory string vap, %in mandatory string radio); /* use WIFI_addVAPIntf */
+	uint32 addVAPIntf(%in %mandatory string vap, %in %mandatory string radio); /* use WIFI_addVAPIntf */
 	/**
 	 * Delete a VAP interface from the physical radio interface.
 	 * Update also AccessPoint and SSID object fields. Before this
@@ -95,7 +95,7 @@
 	 * @return If &lt;0 it's representing an error.
 	 * &gt;=0 is success.
 	 */
-	uint32 delVAPIntf(%in mandatory string vap);               /* use WIFI_delVAPIntf */
+	uint32 delVAPIntf(%in %mandatory string vap);               /* use WIFI_delVAPIntf */
 
 	/**
 	 * Creates an EndPoint interface on the RADIO and updates the
@@ -108,7 +108,7 @@
 	 *         NETFINDEX. When 0 it's representing an error number.
 	 * @version 6.1
 	 */
-	uint32 addEndPointIntf(%in mandatory string radio, %in mandatory string endpoint);
+	uint32 addEndPointIntf(%in %mandatory string radio, %in %mandatory string endpoint);
 	/**
 	 * Delete an EndPoint interface from the physical radio interface.
 	 * Update also EndPoint and SSID object fields. Before this
@@ -120,7 +120,7 @@
 	 * &gt;=0 is success.
 	 * @version 6.1
 	 */
-	uint32 delEndPointIntf(%in mandatory string endpoint);
+	uint32 delEndPointIntf(%in %mandatory string endpoint);
 
 
 	/**

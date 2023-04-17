@@ -2121,7 +2121,7 @@ define rrm_t{
 				%persistent uint32 RssiInterval{
 					default 10;
 					on action write call wld_ap_setRssiInterval_pwf;
-					constraint minvalue 1;
+					on action validate call check_minimum 1;
 				}
 
 				/**
@@ -2145,7 +2145,7 @@ define rrm_t{
 				%persistent uint32 Interval{
 					default 1000;
 					on action write call mon_intervalWriteHandler;
-					constraint minvalue 100;
+					on action validate call check_minimum 100;
 				}
 
 				/**
@@ -2164,7 +2164,7 @@ define rrm_t{
 				%persistent uint32 HistoryLen{
 					default 10;
 					on action write call wld_ap_setHistoryLen_pwf;
-					constraint minvalue 1;
+					on action validate call check_minimum 1;
 				}
 
 				/**
@@ -2186,7 +2186,7 @@ define rrm_t{
 				%persistent uint32 HistoryIntervalCoeff{
 					default 1;
 					on action write call wld_ap_setHistoryIntervalCoeff_pwf;
-					constraint minvalue 1;
+					on action validate call check_minimum 1;
 				}
 
 				/**
