@@ -1980,33 +1980,7 @@ bool wldu_strStartsWith(const char* msg, const char* prefix) {
     return strncmp(msg, prefix, strlen(prefix)) == 0;
 }
 
-/** @deprecated Use `swl_uuid_fromMacAddress` instead */
-/* The following functions have been borrowed and adapted from hostapd*/
-/* Offset added for making a different UUID on Radio base */
-int makeUUID_fromMACaddress(uint8_t uuid[UUID_LEN], char MACaddr[18], int offset) { //ex:E8:F1:B0:CE:07:D4
-    int i, j;
-
-    //copy the 12 chars of the mac address, in loop, until the UUID is filled.
-    for(i = 0, j = 0; i < UUID_LEN; i++) {
-        if((MACaddr[j] == ':') || (MACaddr[j] == '-')) {
-            j++;  //skip semicolons and dashes.
-        }
-        uuid[i] = (MACaddr[j] + offset);
-
-        if(++j > 16) {
-            j = 0;
-        }
-    }
-
-    /* See BUG53938: At least on Celeno Windows7 is unhappy with version
-     * 4/variant 8 UUIDs.  It does accept version f/variant f. */
-    uuid[6] &= 0x0f; uuid[6] |= (0xf << 4);
-    uuid[8] &= 0x3f; uuid[8] |= 0xf0;
-    SAH_TRACEZ_INFO(ME, "uuid:%s, MACaddr:%s", uuid, MACaddr);
-    return 0;
-}
-
-int makeUUID_fromrandom(uint8_t uuid[UUID_LEN]) {
+int makeUUID_fromrandom(uint8_t* uuid) {
     if(!get_random(uuid, UUID_LEN)) {
         return -1;
     }

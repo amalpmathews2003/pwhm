@@ -844,7 +844,7 @@ void wld_apRssiMon_sendStaHistoryAll(T_AccessPoint* pAP) {
         for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
             T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
             if(pAD == NULL) {
-                SAH_TRACEZ_ERROR(ME, "%s: Null device", (char*) pAD->Name);
+                SAH_TRACEZ_ERROR(ME, "NULL");
                 continue;
             }
             if(pAD->staHistory == NULL) {

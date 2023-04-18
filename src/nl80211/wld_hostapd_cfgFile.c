@@ -631,6 +631,8 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     T_Radio* pRad = pAP->pRadio;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->wpsConst, , ME, "NULL");
+
     if(!pAP->WPS_Enable || (pAP->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P)) {
         swl_mapChar_add(vapConfigMap, "wps_state", "0");
         return;
@@ -643,7 +645,7 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     swl_mapChar_add(vapConfigMap, "wps_independent", "1");
     swl_mapChar_add(vapConfigMap, "ap_setup_locked", "1");
     swl_mapChar_add(vapConfigMap, "uuid", pRad->wpsConst->UUID);
-    char* deviceName = (pRad->wpsConst->DevName && !strcmp(pRad->wpsConst->DevName, "") ? "unknownAp" : pRad->wpsConst->DevName);
+    char* deviceName = swl_str_isEmpty(pRad->wpsConst->DevName) ? "unknownAp" : pRad->wpsConst->DevName;
     swl_mapChar_add(vapConfigMap, "device_name", deviceName);
     swl_mapChar_add(vapConfigMap, "manufacturer", pRad->wpsConst->Manufacturer);
     swl_mapChar_add(vapConfigMap, "model_name", pRad->wpsConst->ModelName);

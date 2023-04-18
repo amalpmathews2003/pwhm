@@ -282,7 +282,6 @@ int get_random(unsigned char* buf, size_t len);
 int get_randomstr(unsigned char* buf, size_t len);
 int get_randomhexstr(unsigned char* buf, size_t len);
 int makeUUID_fromrandom(uint8_t*);
-int makeUUID_fromMACaddress(uint8_t*, char*, int);
 int uuid_bin2str(const uint8_t*, char*, size_t);
 
 char* stripOutToken(char* pD, const char* pT);

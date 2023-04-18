@@ -472,7 +472,7 @@ static bool s_filterScanResultsBasedOnArgs(T_Radio* pRad, T_ScanResult_SSID* pRe
     ASSERT_NOT_NULL(pResult, false, ME, "NULL");
     ASSERT_NOT_NULL(pScanArgs, false, ME, "NULL");
 
-    if((pScanArgs->ssid != NULL) && (pScanArgs->ssidLen > 0)) {
+    if(pScanArgs->ssidLen > 0) {
         char ssidStr[SSID_NAME_LEN];
         memset(ssidStr, 0, sizeof(ssidStr));
         convSsid2Str(pResult->ssid, pResult->ssidLen, ssidStr, sizeof(ssidStr));
