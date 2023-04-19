@@ -95,6 +95,7 @@ typedef struct {
 typedef struct {
     uint32_t wiphy;                  //wiphy id
     uint32_t ifIndex;                //net dev index
+    uint64_t wDevId;                 //nl80211 wireless device id
     char name[IFNAMSIZ];             //net dev name
     swl_macBin_t mac;                //interface mac
     bool isMain;                     //flag when interface is main (primVap, mainEP)

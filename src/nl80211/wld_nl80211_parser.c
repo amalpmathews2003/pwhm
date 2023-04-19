@@ -148,6 +148,7 @@ swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceI
     pWlIface->isSta = (ifType == NL80211_IFTYPE_STATION);
     uint64_t wdev_id = 0;
     NLA_GET_VAL(wdev_id, nla_get_u64, tb[NL80211_ATTR_WDEV]);
+    pWlIface->wDevId = wdev_id;
     pWlIface->isMain = ((wdev_id & 0xffffffff) == 1);
     NLA_GET_DATA(pWlIface->mac.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
     wld_nl80211_parseChanSpec(tb, &pWlIface->chanSpec);

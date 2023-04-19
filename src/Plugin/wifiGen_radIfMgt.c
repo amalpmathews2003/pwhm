@@ -245,6 +245,7 @@ static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex) {
     if(!apIndex) {
         rc = wld_rad_nl80211_setAp(pRad);
         pAP->index = pRad->index;
+        pAP->wDevId = pRad->wDevId;
     } else {
         rc = wld_rad_nl80211_addVapInterface(pRad, pAP);
     }

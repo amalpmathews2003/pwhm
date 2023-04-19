@@ -1363,6 +1363,7 @@ struct WLD_RADIO {
     wld_status_changeInfo_t changeInfo;
     int maxBitRate;
     int index;                          /* Network device number */
+    uint64_t wDevId;                    /* nl80211 wireless device id */
     int ref_index;                      /* Radio index number (0=wifi0,1=wifi1,...) */
     bool isReady;                       /* Radio is ready for config and management (i.e. caps have been filled in, struct init done) */
     swl_freqBandExt_m supportedFrequencyBands;
@@ -1659,6 +1660,7 @@ struct S_ACCESSPOINT {
     char alias[AP_NAME_SIZE];        /* Contains the netdev name of this interface */
     char bridgeName[IFNAMSIZ];       /* Contains the name of the bridge which contains this vap interface */
     int index;                       /* Network device number */
+    uint64_t wDevId;                 /* nl80211 wireless device id */
     int ref_index;                   /* VAP index number, basically the index of the VAP in the radio's AP list */
     int SSIDReference;               /* Index # in the T_SSID entry table */
 

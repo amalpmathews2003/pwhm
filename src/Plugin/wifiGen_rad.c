@@ -396,6 +396,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     rc = wld_rad_nl80211_getInterfaceInfo(pRad, &ifaceInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "Fail to get nl80211 rad iface info");
     pRad->wiphy = ifaceInfo.wiphy;
+    pRad->wDevId = ifaceInfo.wDevId;
     wifiGen_setRadEvtHandlers(pRad);
 
     pRad->isAP = wiphyInfo.suppAp;

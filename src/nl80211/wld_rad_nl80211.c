@@ -136,6 +136,7 @@ swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP) {
     }
     ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add VAP(%s) on radio(%s)", pAP->alias, pRadio->Name);
     pAP->index = ifaceInfo.ifIndex;
+    pAP->wDevId = ifaceInfo.wDevId;
     return rc;
 }
 
