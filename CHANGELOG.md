@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.7.1 - 2023-04-20(11:59:27 +0000)
+
+### Other
+
+- - Implementing delNeighbourAP and addNeighbourAP API using Linux Std APIs
+
 ## Release v3.7.0 - 2023-04-20(07:12:59 +0000)
 
 ### Fixes
