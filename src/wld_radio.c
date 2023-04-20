@@ -3914,15 +3914,16 @@ bool wld_rad_hasOnlyActiveEP(T_Radio* pRad) {
     amxc_llist_it_t* it = NULL;
 
 
-    /* Do we've an active EP? */
+  /* Do we've an active EP? */
     it = amxc_llist_get_first(&pRad->llEndPoints);
     if(it) {
         pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
+        SAH_TRACEZ_ERROR(ME,"wissemmmm pRad->isSTA=%d pRad->enable=%d pEP->enable=%d",pRad->isSTA,pRad->enable,pEP->enable);
         if(!(pRad->isSTA && pRad->enable && pEP->enable)) {
             return false;
         }
     }
-
+    SAH_TRACEZ_ERROR(ME,"wissemmmm wld_rad_hasActiveVap=%d",wld_rad_hasActiveVap(pRad));
     return !wld_rad_hasActiveVap(pRad);
 }
 

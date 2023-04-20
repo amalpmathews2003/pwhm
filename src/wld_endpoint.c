@@ -1272,6 +1272,7 @@ amxd_status_t _pushButton(amxd_object_t* obj,
         return amxd_status_unknown_error;
     }
 
+    SAH_TRACEZ_ERROR(ME,"wissemmmm 1");
     uint64_t call_id;
     amxd_function_defer(func, &call_id, retval, NULL, NULL);
     if(pR->pFA->mfn_wrad_fsm_state(pR) != FSM_IDLE) {
@@ -1300,10 +1301,12 @@ amxd_status_t _pushButton(amxd_object_t* obj,
     }
 
     if(pEP->WPS_PBC_Delay.call_id != 0) {
+        SAH_TRACEZ_ERROR(ME,"wissemmmm 2");
         return amxd_status_deferred;
     }
 
     swl_rc_ne ret = endpoint_wps_start(pEP, pEP->WPS_PBC_Delay.call_id, args);
+    SAH_TRACEZ_ERROR(ME,"wissemmmm 3 %d",ret);
     return swl_rc_isOk(ret) ? amxd_status_ok : amxd_status_unknown_error;
 }
 
