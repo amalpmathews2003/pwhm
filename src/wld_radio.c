@@ -4434,8 +4434,10 @@ void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint
     value->lastEventTime = wld_util_time_monotonic_sec();
     amxd_object_set_uint32_t(value->object, "Value", value->counter);
     struct tm lastTime;
+    memset(&lastTime, 0, sizeof(struct tm));
     wld_util_time_monotonic_to_tm(value->lastEventTime, &lastTime);
     amxc_ts_t ts;
+    memset(&ts, 0, sizeof(amxc_ts_t));
     amxc_ts_from_tm(&ts, &lastTime);
     amxd_object_set_value(amxc_ts_t, value->object, "LastOccurrence", &ts);
     amxd_object_set_cstring_t(value->object, "Info", info);

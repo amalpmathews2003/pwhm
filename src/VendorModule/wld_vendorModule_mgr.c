@@ -261,8 +261,10 @@ int wld_vendorModuleMgr_loadExternalDir(const char* soDirPath) {
     ASSERT_NOT_EQUALS(n, -1, SWL_RC_ERROR, ME, "fail to scan dir %s", soDirPath);
     while(n--) {
         const char* fname = namelist[n]->d_name;
-        char fullPath[swl_str_len(soDirPath) + swl_str_len(fname) + 2];
-        snprintf(fullPath, sizeof(fullPath), "%s/%s", soDirPath, fname);
+        size_t fullPathLen = swl_str_len(soDirPath) + swl_str_len(fname) + 2;
+        char fullPath[fullPathLen];
+        memset(fullPath, 0, sizeof(fullPath));
+        snprintf(fullPath, sizeof fullPath, "%s/%s", soDirPath, fname);
         int ret = wld_vendorModuleMgr_loadExternal(fullPath);
         if(ret < 0) {
             SAH_TRACEZ_ERROR(ME, "Fail to load file %s", fullPath);
