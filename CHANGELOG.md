@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.7.2 - 2023-04-27(07:52:27 +0000)
+
+### Other
+
+- - solve uninitialised values from valgrind
+
 ## Release v3.7.1 - 2023-04-20(11:59:27 +0000)
 
 ### Other
