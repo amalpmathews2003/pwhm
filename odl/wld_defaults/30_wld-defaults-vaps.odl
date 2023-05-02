@@ -24,7 +24,7 @@
         }
         object AccessPoint {
             instance add ("vap2g0priv") {
-                parameter SSIDReference = "WiFi.SSID.vap2g0priv";
+                parameter SSIDReference = "Device.SSID.1.";
                 parameter Enable = 0;
                 parameter RetryLimit = 3;
                 parameter WMMEnable = 1;
@@ -66,7 +66,7 @@
                 }
             }
             instance add ("vap5g0priv") {
-                parameter SSIDReference = "WiFi.SSID.vap5g0priv";
+                parameter SSIDReference = "Device.SSID.2.";
                 parameter Enable = 0;
                 parameter RetryLimit = 3;
                 parameter WMMEnable = 1;
@@ -108,7 +108,7 @@
                 }
             }
             instance add ("vap2g0guest") {
-                parameter SSIDReference = "WiFi.SSID.vap2g0guest";
+                parameter SSIDReference = "Device.SSID.3.";
                 parameter Enable = 0;
                 parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
@@ -135,7 +135,7 @@
                 }
             }
             instance add ("vap5g0guest") {
-                parameter SSIDReference = "WiFi.SSID.vap5g0guest";
+                parameter SSIDReference = "WiFi.SSID.4";
                 parameter Enable = 0;
                 parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";

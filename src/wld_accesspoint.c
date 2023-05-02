@@ -890,9 +890,9 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
          *  parameter value MUST be set to an empty string. */
         TBuf[0] = 0;
         if(pAP->pSSID) {
-            char* path = amxd_object_get_path(pAP->pSSID->pBus, AMXD_OBJECT_NAMED);
-            swl_str_copy(TBuf, sizeof(TBuf), path);
-            free(path);
+            char* ssid_path = amxd_object_get_path(pAP->pSSID->pBus, AMXD_OBJECT_INDEXED);
+            swl_str_copy(TBuf, sizeof(TBuf), ssid_path);
+            free(ssid_path);
         }
         amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
         TBuf[0] = 0;
