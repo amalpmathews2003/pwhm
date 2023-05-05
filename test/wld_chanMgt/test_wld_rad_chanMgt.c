@@ -222,8 +222,6 @@ static void test_wld_reportCurrentChanspec(void** state _UNUSED) {
     radObj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].radObj;
     curChanObj = ttb_object_getChildObject(radObj, "ChannelMgt.CurrentChanspec");
     swl_chanspec_t chanspec5 = SWL_CHANSPEC_NEW(100, SWL_BW_80MHZ, SWL_FREQ_BAND_EXT_5GHZ);
-    assert_int_equal(SWL_RC_OK, s_setTargetAndWait(rad, chanspec5, false, CHAN_REASON_MANUAL, NULL));
-    printf("SET %u \n", swl_typeChanspecExt_equals(rad->targetChanspec.chanspec, rad->targetChanspec.chanspec));
 
     assert_int_equal(SWL_RC_OK, wld_chanmgt_reportCurrentChanspec(rad, chanspec5, CHAN_REASON_MANUAL));
     swl_ttb_assertTypeEquals(&gtSwl_type_chanspec, &rad->currentChanspec.chanspec, &chanspec5);
@@ -321,10 +319,14 @@ static void test_wld_checkSync(void** state _UNUSED) {
     ttb_object_t* radObj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].radObj;
     ttb_object_t* chanMgtObj = ttb_object_getChildObject(radObj, "ChannelMgt");
 
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(52, SWL_BW_80MHZ, SWL_FREQ_BAND_EXT_5GHZ);
+    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(100, SWL_BW_80MHZ, SWL_FREQ_BAND_EXT_5GHZ);
+    wld_channel_clear_radar_detected_band(chanspec);
+    chanspec.channel = 52;
+    wld_channel_clear_radar_detected_band(chanspec);
+
     s_setTargetAndWait(rad, chanspec, true, CHAN_REASON_MANUAL, NULL);
     char* data = swl_typeCharPtr_fromObjectParamDef(chanMgtObj, "ChanspecShowing", NULL);
-    assert_string_equal("Current", data);
+    assert_string_equal("Sync", data);
     free(data);
 
     wld_chanmgt_reportCurrentChanspec(rad, chanspec, CHAN_REASON_MANUAL);
@@ -394,12 +396,13 @@ static void test_wld_setChanspec(void** state _UNUSED) {
     ttb_var_t* arg = ttb_object_createArgs();
     amxc_var_add_new_key_int32_t(arg, "channel", 11);
     amxc_var_add_new_key_cstring_t(arg, "bandwidth", "40MHz");
+    amxc_var_add_new_key_bool(arg, "direct", true);
     amxc_var_add_new_key_cstring_t(arg, "reason", "AUTO");
     amxc_var_add_new_key_cstring_t(arg, "reasonExt", "Just testing...");
 
     ttb_var_t* replyVar;
     reply = ttb_object_callFun(dm.ttbBus, rad->pBus, "setChanspec", &arg, &replyVar);
-    assert_true(ttb_object_replySuccess(reply));
+    assert_true(ttb_object_isReplyDeferred(reply));
     ttb_object_cleanReply(&reply, &replyVar);
 
 
@@ -428,11 +431,12 @@ static void test_wld_checkChannelChange(void** state _UNUSED) {
     amxc_var_add_new_key_int32_t(arg, "channel", 11);
     amxc_var_add_new_key_cstring_t(arg, "bandwidth", "40MHz");
     amxc_var_add_new_key_cstring_t(arg, "reason", "MANUAL");
-    amxc_var_add_new_key_bool(arg, "direct", true);
+    amxc_var_add_new_key_cstring_t(arg, "reasonExt", "Just testing...");
+    amxc_var_add_new_key_bool(arg, "direct", false);
 
     ttb_var_t* replyVar;
     ttb_reply_t* myReply = ttb_object_callFun(dm.ttbBus, rad->pBus, "setChanspec", &arg, &replyVar);
-    assert_true(ttb_object_replySuccess(myReply));
+    assert_true(ttb_object_isReplyDeferred(myReply));
     ttb_object_cleanReply(&myReply, &replyVar);
 
 

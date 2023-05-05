@@ -181,6 +181,8 @@ const char* g_str_wld_tpcMode[TPCMODE_MAX] = {
 
 static const char* Rad_RIFS_MODE[RIFS_MODE_MAX] = {"Default", "Auto", "Off", "On"};
 
+static const char* g_wld_radFeatures_str[WLD_FEATURE_MAX] = {"Seamless DFS", "Background DFS"};
+
 amxc_llist_t g_radios = { NULL, NULL };
 
 SWL_ARRAY_TYPE_C(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX, true, true);
@@ -1567,6 +1569,12 @@ void wld_rad_updateDiscoveryMethod6GHz() {
     }
 }
 
+static void s_listRadioFeatures(T_Radio* pRad, amxc_var_t* map) {
+    for(int i = 0; i < WLD_FEATURE_MAX; i++) {
+        amxc_var_add_key(uint32_t, map, g_wld_radFeatures_str[i], pRad->features[i]);
+    }
+}
+
 void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
     int idx;
     char ValBuf[32];
@@ -1809,6 +1817,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         wld_rad_parse_cap(pR);
         wld_rad_update_operating_standard(pR);
         wld_radio_updateAntenna(pR);
+        wld_bgdfs_update(pR);
     } else {
         int32_t tmp_int32 = 0;
         bool tmp_bool = false;
@@ -1865,7 +1874,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         swl_bandwidth_e radBw = swl_conv_objectParamEnum(object, "OperatingChannelBandwidth", Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
         tmp_int32 = amxd_object_get_int32_t(object, "Channel", NULL);
-        if((pR->channel != tmp_int32) || (pR->operatingChannelBandwidth != radBw)) {
+        if(((pR->channel != tmp_int32) || (pR->operatingChannelBandwidth != radBw)) &&
+           ((pR->channelShowing == CHANNEL_INTERNAL_STATUS_SYNC) || (pR->channelShowing == CHANNEL_INTERNAL_STATUS_TARGET))) {
             pR->operatingChannelBandwidth = radBw;
             if(!pR->autoChannelEnable) {
                 swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(tmp_int32, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
@@ -2226,6 +2236,7 @@ T_DEBUG_OBJ_STR VerifyRadio[] = {
     {TPH_STR, "ChannelChangeReason", TPH_STR, offsetof(T_Radio, channelChangeReason)},
     {TPH_STR, "ChannelBandwidthChangeReason", TPH_STR, offsetof(T_Radio, channelBandwidthChangeReason)},
     {TPH_INT32, "ActiveAssociatedDevices", TPH_INT32, offsetof(T_Radio, currentStations)},
+    {TPH_INT32, "ActiveVideoAssociatedDevices", TPH_INT32, offsetof(T_Radio, currentStations)},
     {TPH_INT32, "MaxAssociatedDevices", TPH_INT32, offsetof(T_Radio, maxStations)},
     {TPH_BOOL, "KickRoamingStation", TPH_BOOL, offsetof(T_Radio, kickRoamStaEnabled)},
     {TPH_INT32, "dbgRADEnable", TPH_INT32, offsetof(T_Radio, dbgEnable)},
@@ -2592,6 +2603,17 @@ static void rad_delayed_commit_time_handler(amxp_timer_t* timer, void* userdata)
 void wld_rad_doSync(T_Radio* pRad) {
     pRad->pFA->mfn_wrad_sync(pRad, SET);
     wld_autoCommitMgr_notifyRadEdit(pRad);
+}
+
+amxd_status_t _sync(amxd_object_t* object,
+                    amxd_function_t* func _UNUSED,
+                    amxc_var_t* args _UNUSED,
+                    amxc_var_t* retval _UNUSED) {
+
+    T_Radio* pR = object->priv;
+    wld_rad_doSync(pR);
+
+    return amxd_status_ok;
 }
 
 int wld_rad_doRadioCommit(T_Radio* pRad) {
@@ -3244,90 +3266,10 @@ void do_updateOperatingChannelBandwidth5GHz(T_Radio* pRad) {
     }
 }
 
-/*
-   Based on a selected channel and BandWidth, we create a string that presents the used channels.
-   In 2.4 if you practically cover multiple channels. Ex channel 3 will cover 1,2,3,4,5!
-   Still we present it as channel 3. When 40MHz BandWidth is selected we will show the string
-   3..7. Still in reallity we've 1,2,3,4,5,6,7,8,9 used. But it's hard to show channel 0 and -1?
-   or 14 and 15? just to present the freq spectrum.
-
-   String we will return:
-   20 MHz : 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 (, 14)
-   40 MHz : 1..5, 2..6, 3..7, 4..8, 5..9, 6..10, 7..11, 8..12, 9..13, 10..14
-
-   In the 5GHz we can clearly show the selected channels used When BW mode
-   20 MHz: 36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140,144
-   40 MHz: 36-40, 40-48, 52-56, 60-64, 100-104, 108-112, 116-120, 124-128, 132-136, 140-144
-   80 MHz: 36-40-44-48, 52-56-60-64, 100-104-108-112, 116-120-124-128, 132-136-140-144
-   160 MHz: 36-40-44-48-52-56-60-64, 100-104-108-112-116-120-124-128
-
-   Start thinking how to present futures 160 MHz? And 80+80 modes... Due country restrictions not
-   all channels are aviable!
- */
-
-char* getChannelsInUseStr(T_Radio* pRad) {
-    int chidx;
-
-    if(pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_2_4GHZ) {
-        /* 5GHz and 6GHz, find channel index */
-        for(chidx = 0;
-            pRad->possibleChannels[chidx] && pRad->possibleChannels[chidx] != pRad->channel;
-            chidx++) {
-        }
-
-        if(!pRad->possibleChannels[chidx]) {
-            SAH_TRACEZ_ERROR(ME, "%s has an unsupported fix channel %d",
-                             pRad->Name,
-                             pRad->channel);
-            return "ERROR";
-        }
-
-        int index = pRad->runningChannelBandwidth;
-        if((index == SWL_BW_AUTO) && (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ)) {
-            index = SWL_BW_80MHZ;
-        }
-        if((index == SWL_BW_AUTO) && (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ)) {
-            index = SWL_BW_160MHZ;
-        }
-        int val = 1;
-        if(index > 1) {
-            val = 2 << (index - 2);
-            chidx -= chidx % val;
-        }
-        SAH_TRACEZ_INFO(ME, "%s: index <%d> cbw <%d> val <%d>", pRad->Name, index, pRad->runningChannelBandwidth, val);
-
-        int i = 0;
-        pRad->channelsInUse[0] = 0;
-        for(i = 0; i < val; i++) {
-            swl_strlst_catFormat(pRad->channelsInUse, sizeof(pRad->channelsInUse), ",", "%d", pRad->possibleChannels[chidx + i]);
-        }
-    } else {
-        // 2.4
-        switch(pRad->runningChannelBandwidth) {
-        case SWL_BW_40MHZ:
-            if(pRad->channel <= 6) {
-                /* Lower channel has been used as primary */
-                snprintf(pRad->channelsInUse, sizeof(pRad->channelsInUse),
-                         "%d..%d", pRad->channel, pRad->channel + 4);
-            } else {
-                /* Upper channels has been used as primary */
-                snprintf(pRad->channelsInUse, sizeof(pRad->channelsInUse),
-                         "%d..%d", pRad->channel - 4, pRad->channel);
-            }
-            break;
-        case SWL_BW_AUTO:
-        case SWL_BW_20MHZ:
-            snprintf(pRad->channelsInUse, sizeof(pRad->channelsInUse),
-                     "%d", pRad->channel);
-            break;
-        default:
-            SAH_TRACEZ_ERROR(ME, "%s 2.4GHz don't know BandWidth mode %x",
-                             pRad->Name,
-                             pRad->runningChannelBandwidth);
-            break;
-        }
-    }
-    return pRad->channelsInUse;
+void wld_rad_updateChannelsInUse(T_Radio* pRad) {
+    swl_channel_t chanInUse[SWL_BW_CHANNELS_MAX] = {0};
+    uint8_t nbChanInUse = swl_chanspec_getChannelsInChanspec(&pRad->currentChanspec.chanspec, chanInUse, SWL_BW_CHANNELS_MAX);
+    swl_typeUInt8_arrayToChar(pRad->channelsInUse, sizeof(pRad->channelsInUse), chanInUse, nbChanInUse);
 }
 
 bool wld_rad_is_6ghz(const T_Radio* pRad) {
@@ -3530,12 +3472,16 @@ void wld_rad_updateActiveDevices(T_Radio* pRad) {
     T_AccessPoint* pAP;
 
     int nrActiveDevices = 0;
+    uint32_t nrActiveVideoDevices = 0;
 
     wld_rad_forEachAp(pAP, pRad) {
         nrActiveDevices += pAP->ActiveAssociatedDeviceNumberOfEntries;
+        nrActiveVideoDevices += wld_ad_get_nb_active_video_stations(pAP);
     }
     pRad->currentStations = nrActiveDevices;
+    pRad->currentVideoStations = nrActiveVideoDevices;
     amxd_object_set_int32_t(pRad->pBus, "ActiveAssociatedDevices", pRad->currentStations);
+    amxd_object_set_uint32_t(pRad->pBus, "ActiveVideoAssociatedDevices", pRad->currentVideoStations);
 }
 
 T_Radio* wld_rad_get_radio(const char* ifname) {
@@ -3552,11 +3498,12 @@ T_Radio* wld_rad_get_radio(const char* ifname) {
 void wld_rad_chan_update_model(T_Radio* pRad) {
     /* Update object fields directly if changed */
     amxd_object_set_uint32_t(pRad->pBus, "Channel", pRad->channel);
-    amxd_object_set_cstring_t(pRad->pBus, "ChannelsInUse", (void*) getChannelsInUseStr(pRad));
+    amxd_object_set_cstring_t(pRad->pBus, "ChannelsInUse", pRad->channelsInUse);
 
     char operatingStandardsText[64] = {};
     swl_radStd_toChar(operatingStandardsText, sizeof(operatingStandardsText), pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
     amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", operatingStandardsText);
+    amxd_object_set_cstring_t(pRad->pBus, "OperatingChannelBandwidth", Rad_SupBW[pRad->operatingChannelBandwidth]);
     amxd_object_set_cstring_t(pRad->pBus, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
 
     amxd_object_set_cstring_t(pRad->pBus, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
@@ -4016,6 +3963,8 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         } else {
             amxc_var_add_key(cstring_t, retval, "Error", "No delay commit function");
         }
+    } else if(!strcasecmp(feature, "listFeatures")) {
+        s_listRadioFeatures(pR, retval);
     } else if(!strcasecmp(feature, "hapdCfg")) {
         char tmpName[128];
         snprintf(tmpName, sizeof(tmpName), "%s-%s.tmp.txt", "/tmp/hostapd", pR->Name);

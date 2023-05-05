@@ -1103,9 +1103,10 @@ extern const char* g_str_wld_blockScanMode[];
 //Note : scan type is more of what triggered the scanning not what the result has!
 typedef enum {
     SCAN_TYPE_NONE,     // Default none type
-    SCAN_TYPE_SSID,     // Scan done to get SSID list => need to update SSID ODl
+    SCAN_TYPE_INTERNAL, // Internal middleware to know AP environment => no ODL update
+    SCAN_TYPE_SSID,     // Scan done to get SSID list => need to update SSID ODL
     SCAN_TYPE_SPECTRUM, // Scan done to get Spectrum info => need to update spectrum info
-    SCAN_TYPE_INTERNAL, //Internal middleware to know AP environment (either CSM or ApRoaming or something else)
+    SCAN_TYPE_COMBINED, // Scan done to get SSID list and spectrum info => update ODL
     SCAN_TYPE_MAX
 } wld_scan_type_e;
 
@@ -1181,7 +1182,7 @@ typedef struct {
 
 typedef struct {
     uint64_t call_id;
-    int32_t min_rssi;
+    int32_t minRssi;
     char scanReason[16];
     wld_scan_type_e scanType;
     wld_scan_stats_t stats;
@@ -1408,6 +1409,8 @@ struct WLD_RADIO {
     swl_bandwidth_e maxChannelBandwidth;                    /* max available bandwidth */
     wld_rad_channelInternalStatus_e channelShowing;
     wld_rad_detailedChanState_t targetChanspec;
+    uint64_t callIdReqChanspec;
+    amxp_timer_t* timerReqChanspec;
     wld_rad_detailedChanState_t currentChanspec;
     uint16_t totalNrTargetChanspecChanges;                  /* Total number of target chanspec changes */
     uint16_t totalNrCurrentChanspecChanges;                 /* Total number of current chanspec changes */
@@ -1473,6 +1476,7 @@ struct WLD_RADIO {
     T_Stats stats;                                  /* Radio statistics */
     T_CONST_WPS* wpsConst;                          /* WPS constant strings (Build defined) */
     int currentStations;                            /* Stat the current # of endpoints connected to this radio */
+    uint32_t currentVideoStations;                  /* Stat the current # of video endpoints connected to to this radio */
     int maxStations;                                /* Stat the MAX # of endpoints this radio can handle */
     uint32_t maxNrHwBss;                            /* The max nr of Bss that radio can create (determined by hardware) */
 

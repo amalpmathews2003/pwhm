@@ -645,8 +645,8 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
         if(pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) {
             if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
                (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
-                wld_rad_hostapd_switchChannel(pRad);
-                return SWL_RC_DONE;
+                swl_rc_ne rc = wld_rad_hostapd_switchChannel(pRad);
+                return (rc < SWL_RC_OK) ? SWL_RC_ERROR : SWL_RC_DONE;
             }
         }
         /*

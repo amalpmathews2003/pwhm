@@ -285,31 +285,31 @@ static void s_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* s
     s_updateScanStats(pRad);
 }
 
-static amxd_status_t _startScan(amxd_object_t* object,
-                                amxd_function_t* func _UNUSED,
-                                amxc_var_t* args,
-                                amxc_var_t* ret _UNUSED) {
-    T_Radio* pR = object->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
-    char* reason = NULL;
-    amxd_status_t errorCode = amxd_status_unknown_error;
-
+static bool s_isScanRequestReady(T_Radio* pR) {
     if(wld_scan_isRunning(pR)) {
         SAH_TRACEZ_ERROR(ME, "%s: scan is already running", pR->Name);
-        goto error;
+        return false;
     }
 
     if(!wld_rad_isUpAndReady(pR)) {
         SAH_TRACEZ_ERROR(ME, "%s: rad not ready for scan (state:%s)",
                          pR->Name, cstr_chanmgt_rad_state[pR->detailedState]);
-        errorCode = amxd_status_unknown_error;
-        goto error;
+        return false;
     }
+    return true;
+}
 
-    if(pR->scanState.scanType != SCAN_TYPE_NONE) {
-        SAH_TRACEZ_ERROR(ME, "%s: rad has ongoing scan type(%d)",
-                         pR->Name, pR->scanState.scanType);
-        errorCode = amxd_status_unknown_error;
+static amxd_status_t s_startScan(amxd_object_t* object,
+                                 amxd_function_t* func _UNUSED,
+                                 amxc_var_t* args,
+                                 amxc_var_t* ret _UNUSED,
+                                 wld_scan_type_e scanType) {
+    T_Radio* pR = object->priv;
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+    amxd_status_t errorCode = amxd_status_unknown_error;
+
+    if(!s_isScanRequestReady(pR)) {
+        SAH_TRACEZ_ERROR(ME, "%s: not ready for scan", pR->Name);
         goto error;
     }
 
@@ -317,7 +317,6 @@ static amxd_status_t _startScan(amxd_object_t* object,
     const char* bssid = GET_CHAR(args, "BSSID");
     const char* channels = GET_CHAR(args, "channels");
     const char* scanReason = GET_CHAR(args, "scanReason");
-
 
     T_ScanArgs* scanArgs = &pR->scanState.cfg.scanArguments;
     size_t len = 0;
@@ -358,17 +357,10 @@ static amxd_status_t _startScan(amxd_object_t* object,
         }
     }
 
-    if(scanReason == NULL) {
-        reason = strdup("ScanCall");
-    } else {
-        reason = strdup(scanReason);
-    }
-
     bool updateUsageData = GET_BOOL(args, "updateUsage");
-    if(updateUsageData) {
-        scanArgs->updateUsageStats = true;
-    }
+    scanArgs->updateUsageStats = (updateUsageData || (scanType == SCAN_TYPE_COMBINED));
 
+    const char* reason = scanReason ? : "ScanCall";
     bool hasForceFast = GET_BOOL(args, "forceFast");
     if(!hasForceFast) {
         scanArgs->fastScan = (swl_str_find(pR->scanState.cfg.fastScanReasons, reason) > 0);
@@ -379,38 +371,23 @@ static amxd_status_t _startScan(amxd_object_t* object,
         SAH_TRACEZ_ERROR(ME, "Scan blocked");
         pR->scanState.stats.nrScanBlocked++;
         s_updateScanStats(pR);
-        free(reason);
-        return amxd_status_unknown_error;
-    }
-
-    swl_rc_ne scanResult = wld_scan_start(pR, SCAN_TYPE_SSID, reason);
-
-
-
-    if(scanResult < 0) {
+        errorCode = amxd_status_unknown_error;
         goto error;
-    } else {
-        free(reason);
-        return amxd_status_deferred;
     }
+
+    swl_rc_ne scanResult = wld_scan_start(pR, scanType, reason);
+    if(scanResult < SWL_RC_OK) {
+        errorCode = amxd_status_unknown_error;
+        goto error;
+    }
+
+    /* Ok */
+    return amxd_status_deferred;
 
 error:
-    free(reason);
+    SAH_TRACEZ_ERROR(ME, "%s: error in starting scan", pR->Name);
+    pR->scanState.scanType = SCAN_TYPE_NONE;
     return errorCode;
-}
-
-amxd_status_t _Radio_startScan(amxd_object_t* object,
-                               amxd_function_t* func _UNUSED,
-                               amxc_var_t* args,
-                               amxc_var_t* retval) {
-
-    amxd_status_t res = _startScan(object, func, args, retval);
-
-    if(res == amxd_status_deferred) {
-        return amxd_status_ok;
-    } else {
-        return res;
-    }
 }
 
 amxd_status_t _stopScan(amxd_object_t* object,
@@ -421,8 +398,8 @@ amxd_status_t _stopScan(amxd_object_t* object,
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
     if(!wld_scan_isRunning(pR)) {
-        SAH_TRACEZ_ERROR(ME, "Scan not running");
-        return amxd_status_unknown_error;
+        SAH_TRACEZ_ERROR(ME, "%s: no scan running", pR->Name);
+        return amxd_status_invalid_action;
     }
 
     if(pR->pFA->mfn_wrad_stop_scan(pR) < 0) {
@@ -443,32 +420,60 @@ amxd_status_t _stopScan(amxd_object_t* object,
     ASSERT_NOT_NULL(pR, , ME, "NULL");
 
     pR->scanState.fcall = NULL;
-    pR->scanState.min_rssi = INT32_MIN;
+    pR->scanState.minRssi = INT32_MIN;
    }
  */
+
+static amxd_status_t s_scanRequest(T_Radio* pR,
+                                   amxd_object_t* object,
+                                   amxd_function_t* func,
+                                   amxc_var_t* args,
+                                   amxc_var_t* retval,
+                                   wld_scan_type_e scanType) {
+    ASSERT_TRUE(scanType < SCAN_TYPE_MAX, amxd_status_invalid_function_argument,
+                ME, "Invalid scan type index %u", scanType);
+
+    /* start the scan */
+    amxd_status_t res = s_startScan(object, func, args, retval, scanType);
+    ASSERT_EQUALS(res, amxd_status_deferred, res, ME, "%s: scan failed", pR->Name);
+
+    pR->scanState.minRssi = INT32_MIN;
+    amxc_var_t* minRssiVar = GET_ARG(args, "minRssi");
+    if(minRssiVar != NULL) {
+        pR->scanState.minRssi = amxc_var_dyncast(int32_t, minRssiVar);
+    }
+    amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
+    return amxd_status_deferred;
+}
 
 amxd_status_t _scan(amxd_object_t* object,
                     amxd_function_t* func,
                     amxc_var_t* args,
                     amxc_var_t* retval) {
-
     T_Radio* pR = object->priv;
-
-    amxd_status_t res = _startScan(object, func, args, retval);
-    if(res != amxd_status_deferred) {
-        return res;
-    }
-
-    pR->scanState.min_rssi = INT32_MIN;
-    amxc_var_t* minRssiVar = GET_ARG(args, "min_rssi");
-    if(minRssiVar != NULL) {
-        pR->scanState.min_rssi = amxc_var_dyncast(int32_t, minRssiVar);
-    }
-    amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
-
-    return amxd_status_deferred;
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+    return s_scanRequest(pR, object, func, args, retval, SCAN_TYPE_SSID);
 }
 
+amxd_status_t _scanCombinedData(amxd_object_t* object,
+                                amxd_function_t* func,
+                                amxc_var_t* args,
+                                amxc_var_t* retval) {
+    T_Radio* pR = object->priv;
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+    return s_scanRequest(pR, object, func, args, retval, SCAN_TYPE_COMBINED);
+}
+
+amxd_status_t _Radio_startScan(amxd_object_t* object,
+                               amxd_function_t* func _UNUSED,
+                               amxc_var_t* args,
+                               amxc_var_t* retval) {
+    T_Radio* pR = object->priv;
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+    amxd_status_t res = s_scanRequest(pR, object, NULL, args, retval, SCAN_TYPE_SSID);
+    /* return OK when deferred */
+    return (res == amxd_status_deferred) ? amxd_status_ok : res;
+}
 
 /**
  * Filters out the scan Results if the scan was run with a matching filter
@@ -509,7 +514,7 @@ static bool s_filterScanResultsBasedOnArgs(T_Radio* pRad, T_ScanResult_SSID* pRe
 
 
 
-static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rssi) {
+static bool s_getScanResults(T_Radio* pR, amxc_var_t* retval, int32_t minRssi) {
     T_ScanResults res;
 
     amxc_llist_init(&res.ssids);
@@ -530,7 +535,7 @@ static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rs
             continue;
         }
 
-        if(ssid->rssi < min_rssi) {
+        if(ssid->rssi < minRssi) {
             continue;
         }
 
@@ -574,6 +579,41 @@ static bool wld_get_scan_results(T_Radio* pR, amxc_var_t* retval, int32_t min_rs
     return true;
 }
 
+static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERT_NOT_NULL(pOutVar, , ME, "NULL");
+
+    amxc_llist_t* results = &pR->scanState.spectrumResults;
+
+    amxc_var_set_type(pOutVar, AMXC_VAR_ID_LIST);
+    amxc_llist_for_each(it, results) {
+        amxc_var_t* varEntry = amxc_var_add(amxc_htable_t, pOutVar, NULL);
+        spectrumChannelInfoEntry_t* llEntry = amxc_llist_it_get_data(it, spectrumChannelInfoEntry_t, it);
+        amxc_var_add_key(uint32_t, varEntry, "channel", llEntry->channel);
+        amxc_var_add_key(cstring_t, varEntry, "bandwidth", swl_bandwidth_str[llEntry->bandwidth]);
+        amxc_var_add_key(uint32_t, varEntry, "availability", llEntry->availability);
+        amxc_var_add_key(uint32_t, varEntry, "ourUsage", llEntry->ourUsage);
+        amxc_var_add_key(int32_t, varEntry, "noiselevel", llEntry->noiselevel);
+        amxc_var_add_key(uint32_t, varEntry, "nrCoChannelAP", llEntry->nrCoChannelAP);
+    }
+}
+
+static bool s_getLatestSpectrumInfo(T_Radio* pRad, amxc_var_t* map) {
+    s_prepareSpectrumOutput(pRad, map);
+    return true;
+}
+
+static bool s_getAllScanMeasurements(T_Radio* pR, amxc_var_t* retval, int32_t minRssi) {
+    ASSERTI_NOT_NULL(pR, false, ME, "rad null");
+    ASSERTI_NOT_NULL(retval, false, ME, "retval null");
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    amxc_var_t* varScanResults = amxc_var_add_key(amxc_htable_t, retval, "BSS", NULL);
+    s_getScanResults(pR, varScanResults, minRssi);
+    amxc_var_t* varSpectrum = amxc_var_add_key(amxc_htable_t, retval, "Spectrum", NULL);
+    s_getLatestSpectrumInfo(pR, varSpectrum);
+    return true;
+}
+
 amxd_status_t _getScanResults(amxd_object_t* object,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args,
@@ -583,19 +623,18 @@ amxd_status_t _getScanResults(amxd_object_t* object,
 
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    int32_t min_rssi = INT32_MIN;
-    amxc_var_t* minRssiVar = GET_ARG(args, "min_rssi");
+    int32_t minRssi = INT32_MIN;
+    amxc_var_t* minRssiVar = GET_ARG(args, "minRssi");
     if(minRssiVar != NULL) {
-        min_rssi = amxc_var_dyncast(int32_t, minRssiVar);
+        minRssi = amxc_var_dyncast(int32_t, minRssiVar);
     }
 
-    if(!wld_get_scan_results(pR, retval, min_rssi)) {
+    if(!s_getScanResults(pR, retval, minRssi)) {
         return amxd_status_unknown_error;
     }
 
     return amxd_status_ok;
 }
-
 
 /**
  * Send ScanComplete notification which includes the Result("done" OR "error") to all subscribers
@@ -614,23 +653,6 @@ static void wld_rad_scan_SendDoneNotification(T_Radio* pR, bool success) {
     free(path);
 }
 
-static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
-    ASSERT_NOT_NULL(pR, , ME, "NULL");
-    ASSERT_NOT_NULL(pOutVar, , ME, "NULL");
-
-    amxc_llist_t* results = &pR->scanState.spectrumResults;
-
-    amxc_var_set_type(pOutVar, AMXC_VAR_ID_LIST);
-    amxc_llist_for_each(it, results) {
-        amxc_var_t* varEntry = amxc_var_add(amxc_htable_t, pOutVar, NULL);
-        spectrumChannelInfoEntry_t* llEntry = amxc_llist_it_get_data(it, spectrumChannelInfoEntry_t, it);
-        amxc_var_add_key(uint32_t, varEntry, "channel", llEntry->channel);
-        amxc_var_add_key(uint32_t, varEntry, "nrCoChannelAP", llEntry->nrCoChannelAP);
-        amxc_var_add_key(cstring_t, varEntry, "bandwidth", swl_bandwidth_str[llEntry->bandwidth]);
-        amxc_var_add_key(int32_t, varEntry, "noiselevel", llEntry->noiselevel);
-    }
-}
-
 /**
  * Send scan results back to the caller and reset the scanState call_id.
  **/
@@ -644,7 +666,7 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
 
     switch(pR->scanState.scanType) {
     case SCAN_TYPE_SSID:
-        if(!wld_get_scan_results(pR, &ret, pR->scanState.min_rssi)) {
+        if(!s_getScanResults(pR, &ret, pR->scanState.minRssi)) {
             *success = false;
         }
         break;
@@ -652,6 +674,9 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
         if(*success) {
             s_prepareSpectrumOutput(pR, &ret);
         }
+        break;
+    case SCAN_TYPE_COMBINED:
+        s_getAllScanMeasurements(pR, &ret, pR->scanState.minRssi);
         break;
     default:
         SAH_TRACEZ_ERROR(ME, "%s scan type unknown %s", pR->Name, pR->scanState.scanReason);
@@ -662,7 +687,7 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
 
     amxc_var_clean(&ret);
     pR->scanState.call_id = 0;
-    pR->scanState.min_rssi = INT32_MIN;
+    pR->scanState.minRssi = INT32_MIN;
 }
 
 /**
@@ -942,7 +967,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
     }
     s_updateScanStats(pR);
 
-    if(success && ((pR->scanState.scanType == SCAN_TYPE_SSID) || (pR->scanState.scanType == SCAN_TYPE_SPECTRUM))) {
+    if(success && (pR->scanState.scanType > SCAN_TYPE_INTERNAL)) {
         wld_scan_update_obj_results(pR);
     }
 
@@ -971,6 +996,24 @@ bool wld_scan_isRunning(T_Radio* pR) {
 
 static void s_sendNeighboringWifiDiagnosticResult();
 
+static void s_scanStatus_cbf(const wld_scanEvent_t* scanEvent) {
+    ASSERT_NOT_NULL(scanEvent, , ME, "NULL");
+
+    T_Radio* pRad = scanEvent->pRad;
+    char* path = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
+    amxc_var_t map;
+    amxc_var_init(&map);
+    amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
+    amxc_var_t* tmpMap = amxc_var_add_key(amxc_htable_t, &map, "Event", NULL);
+    amxc_var_add_key(bool, tmpMap, "IsRunning", scanEvent->start);
+    amxc_var_add_key(bool, tmpMap, "Success", scanEvent->success);
+    amxc_var_add_key(int32_t, tmpMap, "ScanType", scanEvent->scanType);
+    SAH_TRACEZ_INFO(ME, "%s: notif scan status change @ path=%s %s}", pRad->Name, path, "ScanChange");
+    amxd_object_trigger_signal(pRad->pBus, "ScanChange", &map);
+    amxc_var_clean(&map);
+    free(path);
+}
+
 static void s_radScanStatusUpdateCb(wld_scanEvent_t* event) {
     ASSERT_NOT_NULL(event, , ME, "NULL");
     T_Radio* pRadio = event->pRad;
@@ -993,6 +1036,7 @@ static void s_radScanStatusUpdateCb(wld_scanEvent_t* event) {
             break;
         }
     }
+
     //all diag scans are answered: send deferred reply
     if(amxc_llist_is_empty(&g_neighWiFiDiag.runningRads)) {
         /* Send the Neighboring WiFi Diagnostic Result list */
@@ -1161,7 +1205,7 @@ amxd_status_t _NeighboringWiFiDiagnostic(amxd_object_t* pWifiObj,
             continue;
         }
         T_Radio* pRadio = radObj->priv;
-        status = _startScan(pRadio->pBus, func, &localArgs, retval);
+        status = s_startScan(pRadio->pBus, func, &localArgs, retval, SCAN_TYPE_INTERNAL);
         if(status != amxd_status_deferred) {
             amxc_llist_add_string(&g_neighWiFiDiag.failedRads, pRadio->Name);
         }
@@ -1181,8 +1225,25 @@ error:
 }
 
 swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason) {
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(type < SCAN_TYPE_MAX, SWL_RC_INVALID_PARAM, ME, "invalid scan type");
+
     swl_rc_ne error = pRad->pFA->mfn_wrad_start_scan(pRad);
+    ASSERT_TRUE(error == SWL_RC_OK, error, ME, "scan start failed");
+
     s_notifyStartScan(pRad, type, reason, error);
     return error;
+}
+
+static wld_event_callback_t s_scanStatus_cb = {
+    .callback = (wld_event_callback_fun) s_scanStatus_cbf
+};
+
+void wld_scan_init(T_Radio* pRad _UNUSED) {
+    wld_event_add_callback(gWld_queue_rad_onScan_change, &s_scanStatus_cb);
+}
+
+void wld_scan_destroy(T_Radio* pRad _UNUSED) {
+    wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_scanStatus_cb);
 }
 

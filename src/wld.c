@@ -338,6 +338,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     SAH_TRACEZ_WARNING(ME, "Creating new Radio context [%s]", pR->Name);
 
     wld_prbReq_init(pR);
+    wld_scan_init(pR);
+    wld_chanmgt_init(pR);
     wld_autoCommitMgr_init(pR);
 
     if(pR->pFA->mfn_wrad_create_hook(pR)) {
@@ -418,6 +420,7 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     wld_autoCommitMgr_destroy(pRad);
     wld_rad_clearSuppDrvCaps(pRad);
     wld_prbReq_destroy(pRad);
+    wld_scan_destroy(pRad);
 
     amxc_llist_for_each(it, &pRad->scanState.stats.extendedStat) {
         wld_scanReasonStats_t* stat = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);

@@ -226,6 +226,23 @@ void wld_bgdfs_setAvailable(T_Radio* pRad, bool available) {
     amxd_object_set_cstring_t(bgDfsObject, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
 }
 
+void wld_bgdfs_update(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
+
+    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
+    ASSERT_NOT_NULL(chanObject, , ME, "NULL");
+
+    amxd_object_t* bgDfsObject = amxd_object_findf(chanObject, "BgDfs");
+    ASSERT_NOT_NULL(bgDfsObject, , ME, "NULL");
+
+    amxd_object_set_bool(bgDfsObject, "Available", pRad->bgdfs_config.available);
+    pRad->bgdfs_config.status = pRad->bgdfs_config.available ? BGDFS_STATUS_IDLE : BGDFS_STATUS_OFF;
+    amxd_object_set_cstring_t(bgDfsObject, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
+    wld_bgdfs_writeChannel(pRad);
+    wld_bgdfs_writeStatistics(pRad);
+}
+
 swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
     bool legacy = false;
     swl_rc_ne ret = pRad->pFA->mfn_wrad_bgdfs_start_ext(pRad, args);
@@ -281,7 +298,7 @@ static void s_setBgdfsProvider_pwf(void* priv _UNUSED, amxd_object_t* object, am
 }
 
 SWLA_DM_HDLRS(sRadBgDfsDmHdlrs,
-              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
+              ARR(SWLA_DM_PARAM_HDLR("PreclearEnable", s_setEnable_pwf),
                   SWLA_DM_PARAM_HDLR("AllowProvider", s_setBgdfsProvider_pwf),
                   ));
 

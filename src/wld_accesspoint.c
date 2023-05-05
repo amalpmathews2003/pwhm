@@ -286,7 +286,7 @@ static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uin
     return true;
 }
 
-T_AccessPoint* s_createAp(T_Radio* pRad, const char* vapName, uint32_t idx, amxd_object_t* vapObj) {
+static T_AccessPoint* s_createAp(T_Radio* pRad, const char* vapName, uint32_t idx, amxd_object_t* vapObj) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     T_AccessPoint* pAP = calloc(1, sizeof(T_AccessPoint));
     ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");

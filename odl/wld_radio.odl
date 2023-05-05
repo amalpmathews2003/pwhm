@@ -223,7 +223,7 @@ define probelist_t{
 		 * @param BSSID: optional particular BSSID of the Access Point to scan for.
 		 * @param channels: optional comma seperated list of channels.
 		 * @version 9.2
-		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
+		 * @param minRssi: minimal RSSI required to return scanned Access Points.
 		 * @version 10.0
 		 * @param scanReason: optional string indicates the scan reason.
 		 * Default scan reason is "Ssid".
@@ -233,7 +233,29 @@ define probelist_t{
 		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
 		 * @error function_exec_error "A scan is already running" if a scan is already active.
 		 */
-		list scan(%in string SSID, %in string BSSID,%in string channels, %in int32 min_rssi, %in string scanReason);
+		list scan(%in string SSID, %in string BSSID, %in string channels, %in int32 minRssi, %in string scanReason);
+
+		/**
+		 * Start a scan based on all possible channels of the radio or specified ssid/channel list.
+		 * 1. By default all possible channels of the radio will be scanned.
+		 * 2. if SSID is specified: Scan the SSID in the spectrum the radio is configured for.
+		 * 3. if channel is specified: scan only the channel in the spectrum.
+		 * All Channels must be part of the PossibleChannels list.
+		 * @param SSID: optional SSID of the Access Point to scan for.
+		 * @param BSSID: optional particular BSSID of the Access Point to scan for.
+		 * @param channels: optional comma seperated list of channels.
+		 * @version 9.2
+		 * @param minRssi: minimal RSSI required to return scanned Access Points.
+		 * @version 10.0
+		 * @param scanReason: optional string indicates the scan reason.
+		 * Default scan reason is "Ssid".
+		 * @version 10.3
+		 * @return a list of scan result and the radio air stats across all scanned channels.
+		 * @error function_exec_error "Invalid Channels in the List" if list contains a channels otherthan PossibleChannels list.
+		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
+		 * @error function_exec_error "A scan is already running" if a scan is already active.
+		 */
+		list scanCombinedData(%in string SSID, %in string BSSID, %in string channels, %in int32 minRssi, %in string scanReason);
 
 		/**
 		 * Return a list scanresult_t describing the accesspoints discovered
@@ -305,7 +327,6 @@ define probelist_t{
 		 * Request to change the chanspec
 		 * @param channel: target channel.
 		 * @param bandwidth: optional target bandwidth (default 2.4:20MHz, 5/6:80MHz).
-		 * @param frequency: optional target frequency.
 		 * @param reason: optional string indicates the channel change reason (default: manual).
 		 * @param direct: option bool indicates if channel change must be perform immediately (default: false)
 		 * @param reasonExt: option string indicates more details about channel change reason for logging purpose
@@ -313,7 +334,7 @@ define probelist_t{
 		 * @error function_exec_error "Invalid chanspec" if one of channel, bandwidth or frequency do not match radio constraint.
 		 * @error function_exec_error "Unable to change channel" if the radio is unavailable.
 		 */
-		void setChanspec(%mandatory uint16 channel, string bandwidth, string frequency, string reason, bool direct, string reasonExt);
+		void setChanspec(%mandatory uint16 channel, string bandwidth, string reason, bool direct, string reasonExt);
 		
 
 		/**

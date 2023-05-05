@@ -93,7 +93,7 @@ int wld_ad_getIndex(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 bool wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index);
 bool wld_ad_has_far_station(T_AccessPoint* pAP, int threshold);
-int wld_ad_get_nb_far_station(T_AccessPoint* pAP, int threshold);
+uint16_t wld_ad_getFarStaCount(T_AccessPoint* pAP, int threshold);
 
 void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD);

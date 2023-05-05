@@ -78,6 +78,7 @@
 #include "wld_th_vap.h"
 #include "wld_th_ep.h"
 #include "wld_radio.h"
+#include "wld_chanmgt.h"
 #include "swl/swl_common_chanspec.h"
 
 static int s_getNextIndex() {
@@ -255,6 +256,14 @@ int wld_th_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {
         amxc_llist_it_init(&pCopy->it);
         amxc_llist_append(&results->ssids, &pCopy->it);
     }
+    return SWL_RC_OK;
+}
+
+int wld_th_rad_setChanspec(T_Radio* rad, bool direct) {
+    if(!direct) {
+        return SWL_RC_OK;
+    }
+    wld_chanmgt_reportCurrentChanspec(rad, rad->targetChanspec.chanspec, rad->targetChanspec.reason);
     return SWL_RC_OK;
 }
 

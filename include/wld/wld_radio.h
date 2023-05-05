@@ -144,6 +144,8 @@ void wld_notifyProbeRequest_rssi(T_Radio* pR, const unsigned char* macStr, int r
 int wld_prbReq_getRssi(T_Radio* pR, const unsigned char* macStr);
 void wld_prbReq_setNotify_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
 void wld_prbReq_setNotifyAggregationTimer_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
+void wld_scan_init(T_Radio* pR);
+void wld_scan_destroy(T_Radio* pR);
 void wld_scan_done(T_Radio* pR, bool success);
 bool wld_scan_isRunning(T_Radio* pR);
 swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason);
@@ -167,7 +169,7 @@ void wld_rad_clearSuppDrvCaps(T_Radio* pRad);
 bool wld_rad_hasWeatherChannels(T_Radio* pRad);
 bool wld_rad_hasChannel(T_Radio* pRad, int chan);
 void do_updateOperatingChannelBandwidth5GHz(T_Radio* pRad);
-char* getChannelsInUseStr(T_Radio* pRad);
+void wld_rad_updateChannelsInUse(T_Radio* pRad);
 bool wld_rad_hasChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW);
 wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad);
 

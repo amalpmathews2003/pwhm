@@ -76,9 +76,12 @@
 #include "wld_assocdev.h"
 #include "swla/swla_delayExec.h"
 #include "wld_dm_trans.h"
+#include "Utils/wld_autoCommitMgr.h"
 
 #define ME "chanMgt"
 
+/* timeout in msec for the setChanspec */
+#define WLD_CHANMGT_REQ_CHANGE_CS_TIMEOUT 10000
 
 static void s_saveClearedChannels(T_Radio* pRad, amxd_trans_t* pTrans) {
     swl_channel_t clearList[50];
@@ -242,6 +245,7 @@ static void s_saveCurrentChanspec(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     s_updateCurrentChanspec(pRad);
     s_updateChannelShowing(pRad);
+    wld_rad_updateChannelsInUse(pRad);
     wld_rad_chan_update_model(pRad);
 }
 
@@ -290,11 +294,33 @@ static const char* s_isTargetChanspecValid(T_Radio* pR, swl_chanspec_t chanspec)
         return "same chanspec";
     }
 
-    if(wld_channel_is_radar_detected(chanspec)) {
+    if(wld_channel_is_band_radar_detected(chanspec)) {
         return "Chanspec not available due to radar";
     }
 
     return NULL;
+}
+
+static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERTS_NOT_EQUALS(pR->callIdReqChanspec, 0, , ME, "%s no call_id", pR->Name);
+
+    amxc_var_t ret;
+    amxc_var_init(&ret);
+    amxc_var_set_type(&ret, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(bool, &ret, "Result", (status == amxd_status_ok));
+
+    SAH_TRACEZ_INFO(ME, "%s: setChanspec() call end: %u", pR->Name, status);
+    amxd_function_deferred_done(pR->callIdReqChanspec, status, NULL, &ret);
+
+    SAH_TRACEZ_INFO(ME, "%s: notify channel switch done, Result=%u",
+                    pR->Name, (status == amxd_status_ok));
+    amxd_object_trigger_signal(pR->pBus, "ChannelSwitchComplete", &ret);
+
+    amxc_var_clean(&ret);
+    amxp_timer_delete(&pR->timerReqChanspec);
+    pR->timerReqChanspec = NULL;
+    pR->callIdReqChanspec = 0;
 }
 
 swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
@@ -328,6 +354,16 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
     pR->totalNrCurrentChanspecChanges++;
     pR->channelChangeCounters[reason]++;
 
+    if(pR->callIdReqChanspec != 0) {
+        bool success = swl_type_equals(swl_type_chanspec, &pR->targetChanspec.chanspec, &chanspec);
+        success &= (pR->targetChanspec.reason == reason);
+        amxd_status_t status = success ? amxd_status_ok : amxd_status_unknown_error;
+        s_setChanspecDone(pR, status);
+        //update operating channel bandwidth when set via rpc setChanspec
+        if(pR->operatingChannelBandwidth != SWL_BW_AUTO) {
+            pR->operatingChannelBandwidth = chanspec.bandwidth;
+        }
+    }
     pR->currentChanspec.chanspec = chanspec;
     pR->currentChanspec.reason = reason;
     pR->currentChanspec.changeTime = swl_time_getMonoSec();
@@ -389,6 +425,7 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
     ASSERT_TRUE(pR->isReady || reason == CHAN_REASON_INITIAL, SWL_RC_ERROR, ME, "%s: radio is not configured yet", pR->Name)
 
+    swl_rc_ne rc = SWL_RC_OK;
     const char* checkReason = s_isTargetChanspecValid(pR, chanspec);
     ASSERT_NULL(checkReason, SWL_RC_ERROR, ME, "%s: %s <%s>", pR->Name, checkReason, swl_type_toBuf32(&gtSwl_type_chanspecExt, &chanspec).buf);
 
@@ -442,7 +479,7 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
 
     /* Change channel */
     if(reason != CHAN_REASON_INITIAL) {
-        pR->pFA->mfn_wrad_setChanspec(pR, direct);
+        rc = pR->pFA->mfn_wrad_setChanspec(pR, direct);
     }
 
 
@@ -452,77 +489,85 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
 
     swla_delayExec_add(s_updateTargetDm, pR);
 
-    return SWL_RC_OK;
+    return rc;
 }
 
+static void s_setChanspecCanceled(uint64_t callId, void* const priv) {
+    T_Radio* pR = (T_Radio*) priv;
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERT_EQUALS(pR->callIdReqChanspec, callId, , ME, "not matching callId");
+    s_setChanspecDone(pR, amxd_status_unknown_error);
+}
+
+static void s_setChanspecTimeout(amxp_timer_t* timer, void* userdata) {
+    T_Radio* pR = (T_Radio*) userdata;
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERT_EQUALS(pR->timerReqChanspec, timer, , ME, "INVALID");
+    SAH_TRACEZ_WARNING(ME, "%s: chanspec timeout", pR->Name);
+    s_setChanspecDone(pR, amxd_status_timeout);
+}
 
 amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
-                                 amxd_function_t* func _UNUSED,
+                                 amxd_function_t* func,
                                  amxc_var_t* args,
-                                 amxc_var_t* ret _UNUSED) {
+                                 amxc_var_t* ret) {
     T_Radio* pR = obj->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    amxd_status_t res = amxd_status_ok;
-
     uint16_t channel = GET_UINT32(args, "channel");
     const char* bandwidth_str = GET_CHAR(args, "bandwidth");
-    const char* freqBand_str = GET_CHAR(args, "frequency");
     const char* reason_str = GET_CHAR(args, "reason");
     const char* reasonExt = GET_CHAR(args, "reasonExt");
     bool direct = GET_BOOL(args, "direct");
 
-
     if(!wld_rad_hasChannel(pR, channel)) {
         SAH_TRACEZ_ERROR(ME, "%s: Invalid channel %d", pR->Name, channel);
-        res = amxd_status_invalid_arg;
-        goto exit;
+        return amxd_status_invalid_arg;
     }
 
-    swl_freqBandExt_e freqBand = swl_conv_charToEnum(freqBand_str, swl_freqBandExt_str, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_AUTO);
-    if(freqBand == SWL_FREQ_BAND_EXT_AUTO) {
-        freqBand = pR->operatingFrequencyBand;
-    } else if((freqBand != pR->operatingFrequencyBand) && !((1 << freqBand) & pR->supportedFrequencyBands)) {
-        SAH_TRACEZ_ERROR(ME, "%s: frequency %d band not supported (sup: %d)", pR->Name, freqBand, pR->supportedFrequencyBands);
-        res = amxd_status_invalid_arg;
-        goto exit;
-    }
+    swl_freqBandExt_e freqBand = pR->operatingFrequencyBand;
 
     swl_bandwidth_e bandwidth = swl_conv_charToEnum(bandwidth_str, swl_bandwidth_str, SWL_BW_MAX, SWL_BW_AUTO);
     if(bandwidth >= SWL_BW_MAX) {
         SAH_TRACEZ_ERROR(ME, "%s: Invalid bandwidth %d (max: %d)", pR->Name, bandwidth, SWL_BW_160MHZ);
-        res = amxd_status_invalid_arg;
-        goto exit;
+        return amxd_status_invalid_arg;
     }
-    if((freqBand == SWL_FREQ_BAND_EXT_2_4GHZ) && (bandwidth > SWL_BW_40MHZ)) {
-        SAH_TRACEZ_ERROR(ME, "%s: Invalid 2.4GHz bandwidth %d (max: %d)", pR->Name, bandwidth, SWL_BW_40MHZ);
-        res = amxd_status_invalid_arg;
-        goto exit;
-    } else if((freqBand != SWL_FREQ_BAND_EXT_2_4GHZ) && (bandwidth > SWL_BW_160MHZ)) {
-        SAH_TRACEZ_ERROR(ME, "%s: Invalid 5/6GHz bandwidth %d (max: %d)", pR->Name, bandwidth, SWL_BW_160MHZ);
-        res = amxd_status_invalid_arg;
-        goto exit;
+
+    if(swl_chanspec_bwToInt(bandwidth) > swl_chanspec_bwToInt(pR->maxChannelBandwidth)) {
+        SAH_TRACEZ_ERROR(ME, "%s: Invalid bandwidth %s (max: %s)", pR->Name,
+                         swl_bandwidth_str[bandwidth], swl_bandwidth_str[pR->maxChannelBandwidth]);
+        return amxd_status_invalid_arg;
     }
 
     swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, bandwidth, freqBand);
-
-    const char* invalidReason = s_isTargetChanspecValid(pR, chanspec);
-
-    if(invalidReason != NULL) {
-        SAH_TRACEZ_ERROR(ME, "%s: %s <%s>", pR->Name, invalidReason, swl_type_toBuf32(&gtSwl_type_chanspecExt, &chanspec).buf);
-        res = amxd_status_invalid_arg;
-        goto exit;
-    }
-
     wld_channelChangeReason_e reason = swl_conv_charToEnum(reason_str, g_wld_channelChangeReason_str, CHAN_REASON_MAX, CHAN_REASON_MANUAL);
 
     SAH_TRACEZ_INFO(ME, "%s: request chanspec <%s> reason <%s> direct <%d>",
                     pR->Name, swl_type_toBuf32(&gtSwl_type_chanspecExt, &chanspec).buf, g_wld_channelChangeReason_str[reason], direct);
 
+    swl_rc_ne rc = wld_chanmgt_setTargetChanspec(pR, chanspec, direct, reason, reasonExt);
+    ASSERT_FALSE(rc < SWL_RC_OK, amxd_status_unknown_error,
+                 ME, "%s: fail to set channel %d", pR->Name, channel);
 
+    /* release/notify old call, if any.*/
+    amxd_function_deferred_remove(pR->callIdReqChanspec);
 
-    wld_chanmgt_setTargetChanspec(pR, chanspec, direct, reason, reasonExt);
-    amxd_object_set_uint8_t(pR->pBus, "Channel", pR->channel);
+    /* register callId & cancel callback */
+    amxd_function_defer(func, &pR->callIdReqChanspec, ret,
+                        s_setChanspecCanceled, pR);
+
+    /* set timeout for the call
+     * if the band is cleared use default timeout
+     * if not, wait clear time in addition */
+    uint32_t timeout = WLD_CHANMGT_REQ_CHANGE_CS_TIMEOUT;
+    timeout += wld_channel_is_band_passive(chanspec) ? wld_channel_get_band_clear_time(chanspec) : 0;
+    amxp_timer_new(&pR->timerReqChanspec, s_setChanspecTimeout, pR);
+    amxp_timer_start(pR->timerReqChanspec, timeout);
+
+    if(!direct) {
+        /* schedule action */
+        wld_autoCommitMgr_notifyRadEdit(pR);
+    }
 
     /* Used for extra logging */
     if(reasonExt) {
@@ -530,8 +575,7 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
         SAH_TRACEZ_INFO(ME, "\t%s", reasonExt);
     }
 
-exit:
-    return res;
+    return amxd_status_deferred;
 }
 
 static void s_setChannelChangeLogSize_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
@@ -624,4 +668,6 @@ void _wld_chanmgt_setConf_ocf(const char* const sig_name,
     swla_dm_procObjEvtOfLocalDm(&sChanMgtDmHdlrs, sig_name, data, priv);
 }
 
-
+void wld_chanmgt_init(T_Radio* pR) {
+    pR->callIdReqChanspec = 0;
+}

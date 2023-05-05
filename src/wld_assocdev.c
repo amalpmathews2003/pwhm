@@ -1018,11 +1018,11 @@ bool wld_rad_has_assocdev(T_Radio* pRad, const unsigned char macAddress[ETHER_AD
  * @param threshold
  *  the RSSI threshold in dbm below which a station is considered far
  */
-int wld_ad_get_nb_far_station(T_AccessPoint* pAP, int threshold) {
+uint16_t wld_ad_getFarStaCount(T_AccessPoint* pAP, int threshold) {
     int i = 0;
     int count = 0;
     T_AssociatedDevice* pAD;
-    for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+    for(i = 0; i < pAP->ActiveAssociatedDeviceNumberOfEntries; i++) {
         pAD = pAP->AssociatedDevice[i];
         if(pAD == NULL) {
             SAH_TRACEZ_ERROR(ME, "Null assoc dev on ap %s", pAP->alias);
@@ -1033,6 +1033,19 @@ int wld_ad_get_nb_far_station(T_AccessPoint* pAP, int threshold) {
     return count;
 }
 
+amxd_status_t _getFarAssociatedDevicesCount(amxd_object_t* object,
+                                            amxd_function_t* func _UNUSED,
+                                            amxc_var_t* args,
+                                            amxc_var_t* retval) {
+    T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
+
+    int32_t threshold = INT32_MIN;
+    threshold = GET_UINT32(args, "threshold");
+    amxc_var_set_type(retval, AMXC_VAR_ID_INT32);
+    amxc_var_add_new_int32_t(retval, wld_ad_getFarStaCount(pAP, threshold));
+
+    return amxd_status_ok;
+}
 
 void wld_ad_checkRoamSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;

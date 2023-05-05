@@ -82,6 +82,7 @@ typedef struct {
 } wld_rad_chanChange_t;
 
 
+void wld_chanmgt_init(T_Radio* pRad);
 void wld_chanmgt_cleanup(T_Radio* pRad);
 
 /**

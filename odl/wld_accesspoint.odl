@@ -1071,8 +1071,19 @@ define rrm_t{
 		*/
 		list getStationStats();
 
+		/** Retrieve number of far associated devices
+		 *  Return the number of associated devices which have been measured
+		 *  below the provided RSSI threshold (in dBm)
+		 *  @param RSSI threshold
+		 *  @return count of far associated devices
+		 */
+		uint32 getFarAssociatedDevicesCount(int32 threshold);
+
 		/** The number of active entries in the AssociatedDevice table.  */
 		%read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
+
+		/** The number of active entries in the AssociatedDevice table reported as video device. */
+		%read-only uint32 ActiveVideoAssociatedDeviceNumberOfEntries;
 		
 		/** The number of entries in the AssociatedDevice table. */
 		%read-only uint32 AssociatedDeviceNumberOfEntries;
