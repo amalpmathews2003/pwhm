@@ -1940,6 +1940,29 @@ define probelist_t{
 			%read-only string RadarTriggeredDfsChannels{
 				default "";
 			}
+
+			/**
+			 * Detailed radio status. This radio state will show the current operating mode of the radio.
+			 * Options are:
+			 *  Unknown: detailed status not implemented or unknown.
+			 *  Down: radio is down.
+			 *  Up: radio is up and fully available
+			 *  FG_CAC: radio performing a foreground channel availability check, and as such is dormant.
+			 *  BG_CAC: radio performing a background channel availability check, expecting to move there when done.
+			 *  BG_CAC_EXT: radio performing a background channel availability check by external provider, expecting to move there when done.
+			 *  BG_CAC_NS: radio performing a background channel availability check, not switching when done.
+			 *  BG_CAC_EXT_NS: radio performing a background channel availability check by external provider, not switching when done.
+			 *  Configuring: radio currently undergoing configuration.
+			 *  DeepPowerDown: radio in deep power down state.
+			 *  DelayApUp: radio is starting and AP broadcast must be delayed.
+			 *  Error: error state.
+			 */
+			%read-only string RadioStatus{
+				on action validate call check_enum ["Unknown","Down","Up",
+					"FG_CAC","BG_CAC","BG_CAC_EXT","BG_CAC_NS","BG_CAC_EXT_NS",
+					"Configuring","DeepPowerDown","DelayApUp","Error"];
+				default "Unknown";
+			}
 		}
 
 		/**

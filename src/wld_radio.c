@@ -4607,8 +4607,13 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
     //Update object
     if(pRad->detailedState != pRad->detailedStatePrev) {
         pRad->detailedStatePrev = pRad->detailedState;
-        amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
-        amxd_object_set_cstring_t(chanObject, "RadioStatus", cstr_chanmgt_rad_state[pRad->detailedState]);
+        amxd_object_t* chanObject = amxd_object_get_child(pRad->pBus, "ChannelMgt");
+        if((chanObject != NULL) && (pRad->hasDmReady)) {
+            amxd_trans_t trans;
+            ASSERT_TRANSACTION_INIT(chanObject, &trans, , ME, "%s : trans init failure", pRad->Name);
+            amxd_trans_set_value(cstring_t, &trans, "RadioStatus", cstr_chanmgt_rad_state[pRad->detailedState]);
+            ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+        }
 
     }
 
@@ -4625,7 +4630,7 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
         pRad->changeInfo.lastStatusChange = swl_time_getMonoSec();
         pRad->changeInfo.nrStatusChanges++;
 
-        if(pRad->pBus != NULL) {
+        if((pRad->pBus != NULL) && (pRad->hasDmReady)) {
             amxd_trans_t trans;
             ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
             amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
