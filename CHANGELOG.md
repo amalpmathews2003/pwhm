@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.7.3 - 2023-05-05(13:59:17 +0000)
+
+### Other
+
+- add detailed radioStatus to datamodel
+
 ## Release v3.7.2 - 2023-04-27(07:52:27 +0000)
 
 ### Other
