@@ -2620,8 +2620,10 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             commit = true;
         }
 
+        swl_bandwidth_e radBw = swl_conv_objectParamEnum(object, "OperatingChannelBandwidth", Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
         tmp_int32 = amxd_object_get_int32_t(object, "Channel", NULL);
-        if(pR->channel != tmp_int32) {
+        if((pR->channel != tmp_int32) || (pR->operatingChannelBandwidth != radBw)) {
+            pR->operatingChannelBandwidth = radBw;
             if(!pR->autoChannelEnable) {
                 swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(tmp_int32, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
                 wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
