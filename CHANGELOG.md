@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.8.0 - 2023-05-11(09:11:57 +0000)
+
+### Other
+
+- -Tests Failing dur to wrong "WiFi.AccessPoint.*.SSIDReference" 's mapping
+
 ## Release v3.7.3 - 2023-05-05(13:59:17 +0000)
 
 ### Other
