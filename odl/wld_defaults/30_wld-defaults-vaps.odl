@@ -135,7 +135,7 @@
                 }
             }
             instance add ("vap5g0guest") {
-                parameter SSIDReference = "WiFi.SSID.4";
+                parameter SSIDReference = "WiFi.SSID.4.";
                 parameter Enable = 0;
                 parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
