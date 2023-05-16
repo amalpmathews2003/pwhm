@@ -568,6 +568,7 @@ define probelist_t{
 		 */
 		%persistent string OperatingStandards = "auto" {
 			on action write call wld_rad_setOperatingStandards_pwf;
+			userflags %upc;
 		}
 		
 		/**
@@ -649,6 +650,7 @@ define probelist_t{
 		%persistent bool AutoChannelEnable{
 			on action write call wld_rad_setAutoChannelEnable_pwf;
 			default true;
+			userflags %upc;
 		}
 		
 		/**
@@ -678,6 +680,7 @@ define probelist_t{
 			on action validate call check_range { min = 1, max = 255 };
 			on action validate call wld_rad_validateChannel_pvf;
 			on action write call wld_rad_setChannel_pwf;
+			userflags %upc;
 		}
 
 		/**
@@ -824,6 +827,7 @@ define probelist_t{
 			on action validate call wld_rad_validateTxPower_pvf;
 			on action read call wld_rad_getTxPower_prf;
 			on action write call wld_rad_setTxPower_pwf;
+			userflags %upc;
 		}
 
 		/**
@@ -1647,6 +1651,7 @@ define probelist_t{
 		%persistent bool Enable{
 			default false;
 			on action write call wld_rad_setEnable_pwf;
+			userflags %upc;
 		}
 
 		/**

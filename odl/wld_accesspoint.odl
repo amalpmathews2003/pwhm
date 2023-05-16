@@ -236,6 +236,7 @@ define rrm_t{
 		%persistent bool SSIDAdvertisementEnabled{
 			on action write call wld_ap_setCommonParam_pwf;
 			default true;
+			userflags %upc;
 		}
 		/** The maximum number of retransmission for a packet. This
 		 *  corresponds to IEEE 802.11 parameter
@@ -308,6 +309,7 @@ define rrm_t{
 		%persistent bool Enable{
 			default false;
 			on action write call wld_ap_setEnable_pwf;
+			userflags %upc;
 		}
 
 		/**
@@ -532,6 +534,7 @@ define rrm_t{
 			%persistent string PreSharedKey{
 				on action validate call wld_ap_validatePreSharedKey_pvf;
 				on action write call wld_ap_setPreSharedKey_pwf;
+				userflags %upc;
 			}
 			/** <p>A passphrase from which the PreSharedKey  is to be
 			 *  generated, for WPA-Personal  or WPA2-Personal  or
@@ -548,6 +551,7 @@ define rrm_t{
 			%persistent string KeyPassPhrase = "password" {
 				on action validate call wld_ap_validateKeyPassPhrase_pvf;
 				on action write call wld_ap_setKeyPassPhrase_pwf;
+				userflags %upc;
 			}
 			/**  <p>The interval (expressed in seconds) in which the keys are
 			 *   re-generated. This is applicable to WPA, WPA2 and Mixed
@@ -607,6 +611,7 @@ define rrm_t{
 				on action validate call wld_ap_validateSaePassphrase_pvf;
 				on action write call wld_ap_setSaePassphrase_pwf;
 				default "";
+				userflags %upc;
 			}
 			/**  <p>WPA-key encryption Mode</p>*/
 			%persistent string EncryptionMode = "Default" {
@@ -696,6 +701,7 @@ define rrm_t{
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 				on action write call wld_ap_setModeEnabled_pwf;
+				userflags %upc;
 			}
 
 			/** Management Frame Protection configuration applicable when ModeEnabled is set
@@ -742,6 +748,7 @@ define rrm_t{
 				on action validate call check_enum ["Off","WhiteList","BlackList"];
 				default "Off";
 				on action write call wld_ap_setMACFilteringMode_pwf;
+				userflags %upc;
 			}
 
 			/** This is the list of MAC-addresses to be allowed/denied depending on the MAC-filtering mode. */
@@ -749,8 +756,9 @@ define rrm_t{
 				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
 				/** The MAC-address of this table entry. */
 				%persistent string MACAddress {
-				    on action write call wld_ap_setMACFilteringEntry_pwf;
-				    default "";
+					on action write call wld_ap_setMACFilteringEntry_pwf;
+					default "";
+					userflags %upc;
 				}
 			}
 
@@ -763,7 +771,8 @@ define rrm_t{
 			 */
 			%persistent bool TempBlacklistEnable{
 				default true;
-                               on action write call wld_ap_setMACFilteringTempBlacklistEnable_pwf;
+				on action write call wld_ap_setMACFilteringTempBlacklistEnable_pwf;
+				userflags %upc;
 			}
 
 			/**
@@ -774,9 +783,9 @@ define rrm_t{
 			 **/
 			object TempEntry[] {
 				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
-				%persistent string MACAddress {
-				    on action write call wld_ap_setMACFilteringTempEntry_pwf;
-				    default "";
+				string MACAddress {
+					on action write call wld_ap_setMACFilteringTempEntry_pwf;
+					default "";
 				}
 			}
 
@@ -855,6 +864,7 @@ define rrm_t{
 			%persistent bool Enable{
 				default false;
 				on action write call wld_ap_setWPSEnable_pwf;
+				userflags %upc;
 			}
 			/** Keeps track of current (real) WPS activation status.
 			 *  Some configurations modes disable WPS!
@@ -893,6 +903,7 @@ define rrm_t{
 			 *  configuration methods enabled on the device.*/
 			%persistent string ConfigMethodsEnabled{
 				on action write call wld_ap_setWpsConfigMethodsEnabled_pwf;
+				userflags %upc;
 			}
 
 			bool CertModeEnable{

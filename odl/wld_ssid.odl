@@ -216,6 +216,7 @@
 			on action validate call wld_ssid_validateSSID_pvf;
 			on action write call wld_ssid_setSSID_pwf;
 			default "SSID_NOT_SET";
+			userflags %upc;
 		}
 
 		%read-only object Stats{

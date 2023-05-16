@@ -471,6 +471,7 @@
 			 *  control which of the instances are currently enabled.</p>*/
 			%persistent bool Enable{
 			   on action write call wld_endpoint_setProfile_pwf;
+			   userflags %upc;
 			}
 			/**  Indicates the status of this Profile. Enumeration of:
 			*   <ul>
@@ -495,6 +496,7 @@
 			 *  when the CPE creates an instance of this object.*/
 			%persistent string Alias{
 			   on action write call wld_endpoint_setProfile_pwf;
+			   userflags %upc;
 			}
 			/** The profile identifier in use by the connection. The SSID is
 			 *  an identifier that is attached to packets sent over the
@@ -502,6 +504,7 @@
 			 *  particular radio network (BSS).*/
 			%persistent string SSID{
 			   on action write call wld_endpoint_setProfile_pwf;
+			   userflags %upc;
 			}
 			/**
 			 * Specify the MAC address of the AccessPoint to connect to
@@ -515,6 +518,7 @@
 			 *  etc. An empty string is also valid.*/
 			%persistent string Location{
 			   on action write call wld_endpoint_setProfile_pwf;
+			   userflags %upc;
 			}
 			/** The profile Priority defines one of the criteria used by the
 			 *  End Point to automatically select the "best" AP when several
@@ -529,6 +533,7 @@
 				on action validate call check_range { min = 0, max = 255 };
 				on action write call wld_endpoint_setProfile_pwf;
 				default 0;
+				userflags %upc;
 			}
 
 			/** This object contains security related parameters that apply
@@ -538,14 +543,15 @@
 				 *  Security.ModesSupported  parameter. Indicates which
 				 *  security mode is enabled.*/
 				%persistent string ModeEnabled {
-				on action validate call check_enum ["None", "OWE",
-						"WEP-64","WEP-128","WEP-128iv",
-						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
-						"WPA3-Personal","WPA2-WPA3-Personal",
-						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
-						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+					on action validate call check_enum ["None", "OWE",
+							"WEP-64","WEP-128","WEP-128iv",
+							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
+							"WPA3-Personal","WPA2-WPA3-Personal",
+							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
+							"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 					default "None";
 					on action write call wld_endpoint_setProfileSecurity_pwf;
+					userflags %upc;
 				}
 
 				/** A WEP key expressed as a hexadecimal string.
@@ -567,6 +573,7 @@
 				 *  string, regardless of the actual value.*/
 				%persistent string PreSharedKey{
 				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				   userflags %upc;
 				}
 				
 				/** 
@@ -584,6 +591,7 @@
 				 * or 256 bit secret, entered as a 64 characters hex key.*/
 				%persistent string KeyPassPhrase{
 				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				   userflags %upc;
 				}
 
 				/** A passphrase for WPA3-Personal or WPA3-Personal-Transition
@@ -597,6 +605,7 @@
 			         */
 				%persistent string SAEPassphrase{
 				   on action write call wld_endpoint_setProfileSecurity_pwf;
+				   userflags %upc;
 				}
 
 				/** Management Frame Protection configuration applicable when ModeEnabled is set
