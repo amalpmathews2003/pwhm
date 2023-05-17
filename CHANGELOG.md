@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.10.2 - 2023-05-17(08:08:26 +0000)
+
+### Other
+
+- persistent storage on parameters mark
+
 ## Release v3.10.1 - 2023-05-16(10:18:54 +0000)
 
 ## Release v3.10.0 - 2023-05-15(09:41:43 +0000)
