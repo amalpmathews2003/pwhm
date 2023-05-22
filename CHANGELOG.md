@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.10.3 - 2023-05-22(11:53:04 +0000)
+
+### Other
+
+- - Solve invalid hostapd conf on 6GHz
+
 ## Release v3.10.2 - 2023-05-17(08:08:26 +0000)
 
 ### Other
