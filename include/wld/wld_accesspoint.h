@@ -102,7 +102,7 @@ T_AssociatedDevice* wld_vap_get_existing_station(T_AccessPoint* pAP, swl_macBin_
 bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP);
 bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid, int len);
 
-void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code);
+void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code, const swl_macChar_t* targetBssid);
 void wld_ap_rrm_item(T_AccessPoint* ap, const swl_macChar_t* mac, amxc_var_t* result);
 
 void wld_ap_notifyToggle(T_AccessPoint* pAP);

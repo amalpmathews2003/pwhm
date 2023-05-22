@@ -90,6 +90,34 @@ typedef struct {
 amxc_llist_t bss_wait_list;
 
 /**
+ * Function forwarding "BSS-TM-RESP" event to all subscribers
+ * @param pAP  pointer to the AccesPoint object
+ * @param stationMac  Station mac address
+ * @param reply_code is received in the 802.11v request. It will have the value "-1" if the "BSS-TM-RESP" has not been received during the wait duration set in the BSS request.
+ * The user can then deduce that the "BSS-TM-RESP" has not been received!
+ * @param targetBssid  target BSSID. If not received, it will have a value of "00:00:00:00:00:00"
+ *
+ */
+static void s_bssTransferForwardBssResponseNotif(T_AccessPoint* pAP, const swl_macChar_t* stationMac, uint8_t reply_code, const swl_macChar_t* targetBssid) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    const char* name = "BSS-TM-RESP";
+    amxc_var_t notifMap;
+    amxc_var_init(&notifMap);
+    amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
+
+    amxc_var_add_key(cstring_t, &notifMap, "PeerMacAddress", stationMac->cMac);
+
+    amxc_var_add_key(cstring_t, &notifMap, "TargetBssid", targetBssid->cMac);
+    amxc_var_add_key(int32_t, &notifMap, "StatusCode", reply_code);
+
+    SAH_TRACEZ_INFO(ME, "notif %s, sta_macAddress= %s, TargetBssid= %s, StatusCode= %d ",
+                    name, stationMac->cMac, targetBssid->cMac, reply_code);
+
+    amxd_object_trigger_signal(pAP->pBus, name, &notifMap);
+    amxc_var_clean(&notifMap);
+}
+
+/**
  * Generate reply when request is done
  */
 static void ap_bss_done(bss_wait_t* wait, int reply_code) {
@@ -108,8 +136,9 @@ static void ap_bss_done(bss_wait_t* wait, int reply_code) {
  * Callback function for vendor plug-ins to indicate a given mac provided a reply.
  * Reply code should come from 802.11v request
  */
-void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code) {
+void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code, const swl_macChar_t* targetBssid) {
     SAH_TRACEZ_INFO(ME, "bss done %s", mac->cMac);
+    s_bssTransferForwardBssResponseNotif(ap, mac, reply_code, targetBssid);
     amxc_llist_for_each(it, &bss_wait_list) {
         bss_wait_t* wait = amxc_llist_it_get_data(it, bss_wait_t, it);
         if((wait->ap == ap) && swl_mac_charMatches(mac, &wait->params.sta)) {

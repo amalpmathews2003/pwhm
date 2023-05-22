@@ -288,9 +288,12 @@ static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
 
     uint8_t replyCode = wld_wpaCtrl_getValueInt(params, "status_code");
 
-    SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d", pInterface->name, mac.cMac, replyCode);
+    swl_macChar_t targetBssid = g_swl_macChar_null;
+    wld_wpaCtrl_getValueStr(params, "target_bssid", targetBssid.cMac, sizeof(targetBssid));
 
-    CALL_INTF(pInterface, fBtmReplyCb, &mac, replyCode);
+    SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d target_bssid =%s", pInterface->name, mac.cMac, replyCode, targetBssid.cMac);
+
+    CALL_INTF(pInterface, fBtmReplyCb, &mac, replyCode, &targetBssid);
 }
 
 SWL_TABLE(sChWidthMaps,

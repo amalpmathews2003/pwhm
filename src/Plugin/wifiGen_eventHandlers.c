@@ -405,9 +405,9 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     wld_ad_add_disconnection(pAP, pAD);
 }
 
-static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode) {
+static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode, swl_macChar_t* targetBssid) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
-    wld_ap_bss_done(pAP, mac, (int) replyCode);
+    wld_ap_bss_done(pAP, mac, (int) replyCode, targetBssid);
 }
 
 static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame, size_t frameLen, swl_bit8_t* iesData, size_t iesLen) {
@@ -460,8 +460,17 @@ static void s_btmRespCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t fra
     uint8_t replyCode = btmResp->statusCode;
     swl_macChar_t mac;
     SWL_MAC_BIN_TO_CHAR(&mac, &frame->transmitter);
-    SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d", pAP->alias, mac.cMac, replyCode);
-    s_btmReplyEvt(pAP, pAP->alias, &mac, replyCode);
+    swl_macChar_t targetBssid = g_swl_macChar_null;
+    /*The Target BSSID field is the BSSID of the BSS that the non-AP STA transitions to. This field is present if
+       the Status code subfield contains 0, and not present otherwise.*/
+    if((replyCode == 0) && (btmRespDataLen >= (offsetof(swl_80211_wnmActionBTMResponseFrameBody_t, data) + SWL_MAC_BIN_LEN))) {
+        SWL_MAC_BIN_TO_CHAR(&targetBssid, &btmResp->data);
+        SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d targetBssid= %s", pAP->alias, mac.cMac, replyCode, targetBssid.cMac);
+    } else {
+        SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d", pAP->alias, mac.cMac, replyCode);
+    }
+
+    s_btmReplyEvt(pAP, pAP->alias, &mac, replyCode, &targetBssid);
 }
 
 static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameHandlers = {
