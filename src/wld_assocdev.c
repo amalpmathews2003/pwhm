@@ -1338,22 +1338,6 @@ int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD) {
     return (int32_t) avgRssiByChain;
 }
 
-const char* wld_ad_getMode(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    ASSERTS_NOT_NULL(pAD, "Unknown", ME, "NULL");
-    const char* mode = NULL;
-    if(pAD->operatingStandard == SWL_RADSTD_N) {
-        if(wld_rad_is_24ghz(pAP->pRadio)) {
-            mode = SWL_RADSTD_LEGACY_B_G_N;
-        } else {
-            mode = SWL_RADSTD_LEGACY_A_N;
-        }
-    }
-    if(mode == NULL) {
-        mode = (char*) swl_table_getMatchingValue(&modeToStandard, 1, 0, &pAD->operatingStandard);
-    }
-    return mode != NULL ? mode : "Unknown";
-}
-
 void wld_ad_getHeMCS(uint16_t he_mcs, wld_sta_supMCS_adv_t* supportedHeMCS) {
     int nss;
     uint8_t mcsList[] = {7, 9, 11, 0};

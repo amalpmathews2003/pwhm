@@ -2445,7 +2445,6 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         swl_typeTimeMono_toTransParam(&trans, "AssociationTime", pAD->associationTime);
         swl_typeTimeMono_toTransParam(&trans, "DisassociationTime", pAD->disassociationTime);
         amxd_trans_set_value(bool, &trans, "PowerSave", pAD->powerSave);
-        amxd_trans_set_value(cstring_t, &trans, "Mode", wld_ad_getMode(pAP, pAD));
         amxd_trans_set_value(cstring_t, &trans, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
         amxd_trans_set_value(uint32_t, &trans, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
         amxd_trans_set_value(uint32_t, &trans, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);

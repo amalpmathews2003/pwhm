@@ -1326,12 +1326,6 @@ define rrm_t{
 				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
 				default "Unknown";
 			}
-
-			/** Mode of the connected station : deprecated: please use tr-181 field operatingStandard */
-			%read-only string Mode{
-				on action validate call check_enum ["auto","a","an","b","bg","bgn","ac","ax","Unknown"];
-				default "Unknown";
-			}
 			
 			/**
 			 * The operating standard that this associated device is connected with. Enumeration of:
