@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.12.0 - 2023-05-24(13:59:15 +0000)
+
+### Other
+
+- - expose attribute management tools
+
 ## Release v3.10.3 - 2023-05-22(11:53:04 +0000)
 
 ### Other
