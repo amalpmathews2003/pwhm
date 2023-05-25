@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.13.0 - 2023-05-25(15:42:20 +0000)
+
+### Other
+
+- - Vendor events architecture
+
 ## Release v3.12.1 - 2023-05-25(13:50:08 +0000)
 
 ### Other
