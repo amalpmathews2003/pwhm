@@ -94,6 +94,20 @@ typedef void (* wld_nl80211_genIfaceEvtCb_f)(void* pRef, void* pData, uint32_t w
  */
 typedef void (* wld_nl80211_ifaceInfoEvtCb_f)(void* pRef, void* pData, wld_nl80211_ifaceInfo_t* pIfaceInfo);
 
+
+/*
+ * @brief generic callback for nl80211 event
+ *
+ * @param pRef user private reference provided when registering handlers
+ * @param pData user private data provided when registering handlers
+ * @param nlh pointer to netlink msg header
+ * @param tb pointer to the entire data bloc
+ *
+ * @return void
+ *
+ */
+typedef void (* wld_nl80211_vendorEvtCb_f)(void* pRef, void* pData, struct nlmsghdr* nlh, struct nlattr* tb[]);
+
 /*
  * @brief structure of event handlers
  */
@@ -104,6 +118,7 @@ typedef struct {
     wld_nl80211_genIfaceEvtCb_f fScanStartedCb;   // scan is started successfully and running
     wld_nl80211_genIfaceEvtCb_f fScanAbortedCb;   // running scan was aborted
     wld_nl80211_genIfaceEvtCb_f fScanDoneCb;      // scan is terminated and results can be retrieved
+    wld_nl80211_vendorEvtCb_f fVendorEvtCb;       // vendor event is reported
 } wld_nl80211_evtHandlers_cb;
 
 /*
@@ -163,5 +178,21 @@ wld_nl80211_listener_t* wld_nl80211_addGlobalEvtListener(wld_nl80211_state_t* st
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_delEvtListener(wld_nl80211_listener_t** ppListener);
+
+/*
+ * @brief create a listener for vendor reported events, received from a selection of wiphy/iface.
+ * Received events are notified to the listener when:
+ * - listener has a dedicated valid handler function (i.e not null)
+ * - source wiphy/ifIndex match with the listener filter
+ *
+ * @param state pointer to nl80211 socket manager, on which socket the event would be received
+ * @param pListener pointer to listener context
+ * @param handler Pointer to vendor events callback function, handling the received events
+ *
+ * @return pointer to updated listener
+ */
+wld_nl80211_listener_t* wld_nl80211_addVendorEvtListener(wld_nl80211_state_t* state,
+                                                         wld_nl80211_listener_t* pListener,
+                                                         wld_nl80211_vendorEvtCb_f handler);
 
 #endif /* INCLUDE_WLD_WLD_NL80211_EVENTS_H_ */

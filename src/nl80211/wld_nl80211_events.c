@@ -125,6 +125,23 @@ static swl_rc_ne s_newInterfaceEvtCb(swl_unLiList_t* pListenerList, struct nlmsg
     return SWL_RC_DONE;
 }
 
+static swl_rc_ne s_vendorEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.vendor_grp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
+    SAH_TRACEZ_INFO(ME, "vendor event received on w:%d,i:%d", wiphy, ifIndex);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fVendorEvtCb(pListener->pRef, pListener->pData, nlh, tb);
+    });
+    return SWL_RC_DONE;
+}
+
 static swl_rc_ne s_delInterfaceEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
     swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
     ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
@@ -268,6 +285,8 @@ SWL_TABLE(sNl80211Msgs,
               {MSG_ID_NAME(NL80211_CMD_UNEXPECTED_FRAME), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_UNEXPECTED_4ADDR_FRAME), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_FRAME), s_commonEvtCb, OFFSET_UNDEF},
+              /* vendor command */
+              {MSG_ID_NAME(NL80211_CMD_VENDOR), s_vendorEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fVendorEvtCb)},
               )
           );
 

@@ -76,6 +76,7 @@ wld_nl80211_driverIds_t g_nl80211DriverIDs = {
     .scan_mcgrp_id = -1,
     .config_mcgrp_id = -1,
     .mlme_mcgrp_id = -1,
+    .vendor_grp_id = -1,
 };
 
 swl_rc_ne s_learnDriverIDs(struct nl_sock* pNlSock) {
@@ -92,6 +93,9 @@ swl_rc_ne s_learnDriverIDs(struct nl_sock* pNlSock) {
     }
     if(g_nl80211DriverIDs.config_mcgrp_id < 0) {
         g_nl80211DriverIDs.config_mcgrp_id = genl_ctrl_resolve_grp(pNlSock, NL80211_GENL_NAME, NL80211_MULTICAST_GROUP_CONFIG);
+    }
+    if(g_nl80211DriverIDs.vendor_grp_id < 0) {
+        g_nl80211DriverIDs.vendor_grp_id = genl_ctrl_resolve_grp(pNlSock, NL80211_GENL_NAME, NL80211_MULTICAST_GROUP_VENDOR);
     }
     return SWL_RC_OK;
 }
@@ -619,6 +623,19 @@ wld_nl80211_listener_t* wld_nl80211_addGlobalEvtListener(wld_nl80211_state_t* st
     return wld_nl80211_addEvtListener(state, WLD_NL80211_ID_ANY, WLD_NL80211_ID_ANY, pRef, pData, handlers);
 }
 
+wld_nl80211_listener_t* wld_nl80211_addVendorEvtListener(wld_nl80211_state_t* state,
+                                                         wld_nl80211_listener_t* pListener,
+                                                         wld_nl80211_vendorEvtCb_f handler) {
+    ASSERT_NOT_NULL(pListener, NULL, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "Add vendor's events listener %p", pListener);
+    pListener->handlers.fVendorEvtCb = handler;
+    if(nl_socket_add_membership(state->nl_sock, g_nl80211DriverIDs.vendor_grp_id) != 0) {
+        SAH_TRACEZ_ERROR(ME, "failed to add vendor's events listener %p", pListener);
+    }
+
+    return pListener;
+}
+
 swl_rc_ne wld_nl80211_delEvtListener(wld_nl80211_listener_t** ppListener) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERTS_NOT_NULL(ppListener, rc, ME, "NULL");
@@ -638,6 +655,9 @@ static void s_clearEvtHandlers(wld_nl80211_state_t* state) {
         nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.scan_mcgrp_id);
         nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.config_mcgrp_id);
         //nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.mlme_mcgrp_id);
+        if(g_nl80211DriverIDs.vendor_grp_id >= 0) {
+            nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.vendor_grp_id);
+        }
     }
 }
 
