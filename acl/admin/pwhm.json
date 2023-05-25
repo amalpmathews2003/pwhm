@@ -1,0 +1,58 @@
+{
+    "Device.WiFi.": {
+        "Order": 1,
+        "Param": "r--n"
+    },
+    "Device.WiFi.AccessPoint.*.Enable": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.AccessPoint.*.SSIDAdvertisementEnabled": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.AccessPoint.*.Security.ModeEnabled": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.AccessPoint.*.Security.KeyPassPhrase": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.AccessPoint.*.Security.WEPKey": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.AccessPoint.*.WPS.Enable": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.SSID.*.SSID": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.Radio.*.Channel": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.Radio.*.AutoChannelEnable": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.Radio.*.Enable": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.Radio.*.OperatingStandards": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.Radio.*.OperatingChannelBandwidth": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.WiFi.Radio.*.TransmitPower": {
+        "Order": 2,
+        "Param": "rw-n"
+    }
+}

@@ -45,6 +45,7 @@ install: all
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(DEST)/etc/amx/wld/wld_endpoint.odl
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
 	$(foreach odl,$(wildcard odl/wld_defaults/*.odl), $(INSTALL) -D -p -m 0644 $(odl) $(DEST)/etc/amx/wld/wld_defaults/;)
+	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(DEST)$(ACLDIR)/admin/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(DEST)$(LIBDIR)/amx/wld/wld.so
@@ -71,6 +72,7 @@ package: all
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(PKGDIR)/etc/amx/wld/wld_endpoint.odl
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/*.odl $(PKGDIR)/etc/amx/wld/wld_defaults/
+	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKGDIR)$(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(PKGDIR)$(LIBDIR)/amx/wld/wld.so
