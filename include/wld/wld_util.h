@@ -390,6 +390,22 @@ amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats);
  */
 amxd_status_t wld_util_statsObj2Var(amxc_var_t* map, amxd_object_t* statsObj);
 
+/*
+ * @brief get real reference path:
+ * when input Reference path (from upper layer instance) is available
+ * then check it against currently referenced object path (regardless referencePath has indexed/named formats).
+ * If different (empty, or pointing somewhere else), then set the output reference Path with the indexed format path
+ * of the pointed referenced object.
+ *
+ * @param outRefPath (out) target buffer for referenced object path (dot terminated (as per tr181-usp standard))
+ * @param outRefPathSize (out) target buffer size
+ * @param currRefPath (in) currently saved reference path from datamodel
+ * @param currRefObj (in) currently referenced object pointed by the upper layer (AP/EP => SSID or SSID => Radio)
+ *
+ * @return SWL_RC_OK if successful (target path set), error code otherwise
+ */
+swl_rc_ne wld_util_getRealReferencePath(char* outRefPath, size_t outRefPathSize, const char* currRefPath, amxd_object_t* currRefObj);
+
 #ifdef __cplusplus
 }/* extern "C" */
 #endif

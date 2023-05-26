@@ -399,13 +399,19 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     pSSID->ENDP_HOOK = endpoint;
 
     /* Relate both objects with eachother */
-    objpath = amxd_object_get_path(ssidinstance, AMXD_OBJECT_NAMED);
+    objpath = amxd_object_get_path(ssidinstance, AMXD_OBJECT_INDEXED);
     if(!objpath) {
         SAH_TRACEZ_ERROR(ME, "Failed to get object path from ssidinstance");
         goto leave;
     }
     amxd_object_set_cstring_t(endpointinstance, "SSIDReference", objpath);
     free(objpath);
+
+    objpath = amxd_object_get_path(pR->pBus, AMXD_OBJECT_INDEXED);
+    if(objpath) {
+        amxd_object_set_cstring_t(ssidinstance, "LowerLayers", objpath);
+        free(objpath);
+    }
 
     objpath = amxd_object_get_path(pR->pBus, AMXD_OBJECT_NAMED);
     if(objpath) {

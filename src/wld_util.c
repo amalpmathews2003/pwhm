@@ -2697,3 +2697,29 @@ void wld_util_updateStatusChangeInfo(wld_status_changeInfo_t* info, wld_status_e
     info->statusHistogram.data[status] += timeDiff;
     info->lastStatusHistogramUpdate = now;
 }
+
+swl_rc_ne wld_util_getRealReferencePath(char* outRefPath, size_t outRefPathSize, const char* currRefPath, amxd_object_t* currRefObj) {
+    ASSERT_NOT_NULL(outRefPath, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(outRefPathSize > 0, SWL_RC_INVALID_PARAM, ME, "wrong size");
+    outRefPath[0] = 0;
+
+    amxd_object_t* refObj = swla_object_getReferenceObject(get_wld_object(), currRefPath);
+    amxd_object_type_t pathType = amxd_object_get_type(refObj);
+    amxd_object_type_t objType = amxd_object_get_type(currRefObj);
+
+    if((objType != amxd_object_instance) || (refObj == currRefObj)) {
+        ASSERT_EQUALS(pathType, amxd_object_instance, SWL_RC_ERROR, ME, "No possible reference to instance object");
+        // searched object is a valid instance: then keep the current path format as provided
+        swl_str_copy(outRefPath, outRefPathSize, currRefPath);
+    } else {
+        // keep the indexed format path of current referenced object
+        char* path = amxd_object_get_path(currRefObj, AMXD_OBJECT_INDEXED);
+        swl_str_copy(outRefPath, outRefPathSize, path);
+        free(path);
+    }
+    if(!swl_str_isEmpty(outRefPath) && (outRefPath[strlen(outRefPath) - 1] != '.')) {
+        swl_str_cat(outRefPath, outRefPathSize, ".");
+    }
+    return SWL_RC_OK;
+}
+

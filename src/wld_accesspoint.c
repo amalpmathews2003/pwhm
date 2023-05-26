@@ -209,10 +209,7 @@ amxd_status_t _wld_ap_setSSIDRef_pwf(amxd_object_t* object,
                     ssidRef);
     free(path);
 
-    amxd_object_t* pSsidObj = NULL;
-    if(ssidRef && ssidRef[0]) {
-        pSsidObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", ssidRef);
-    }
+    amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
     rv = _linkApSsid(object, pSsidObj);
     free(ssidRef);
 
@@ -889,10 +886,10 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
          *  the SSID table. If the referenced object is deleted, the
          *  parameter value MUST be set to an empty string. */
         TBuf[0] = 0;
-        if(pAP->pSSID) {
-            char* ssid_path = amxd_object_get_path(pAP->pSSID->pBus, AMXD_OBJECT_INDEXED);
-            swl_str_copy(TBuf, sizeof(TBuf), ssid_path);
-            free(ssid_path);
+        if(pAP->pSSID != NULL) {
+            char* currSsidRef = amxd_object_get_cstring_t(pAP->pBus, "SSIDReference", NULL);
+            wld_util_getRealReferencePath(TBuf, sizeof(TBuf), currSsidRef, pAP->pSSID->pBus);
+            free(currSsidRef);
         }
         amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
         TBuf[0] = 0;

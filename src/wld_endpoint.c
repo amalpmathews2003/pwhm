@@ -1137,19 +1137,21 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
     }
 
     TBuf[0] = 0;
-    if(pEP->pSSID) {
-        char* path = amxd_object_get_path(pEP->pSSID->pBus, AMXD_OBJECT_NAMED);
-        swl_str_copy(TBuf, sizeof(TBuf), path);
-        free(path);
+    if(pEP->pSSID != NULL) {
         T_Radio* pRad = pEP->pSSID->RADIO_PARENT;
-        if(pRad) {
+        if((pRad != NULL) && (pRad->pBus != NULL)) {
+            char* currRadRef = amxd_object_get_cstring_t(pEP->pSSID->pBus, "LowerLayers", NULL);
+            wld_util_getRealReferencePath(TBuf, sizeof(TBuf), currRadRef, pRad->pBus);
+            amxd_object_set_cstring_t(pEP->pSSID->pBus, "LowerLayers", TBuf);
+            free(currRadRef);
             char* radObjPath = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
-            if(radObjPath) {
-                SAH_TRACEZ_INFO(ME, "%s: radObjPath %s", pRad->Name, radObjPath);
-                amxd_object_set_cstring_t(pEP->pBus, "RadioReference", radObjPath);
-                free(radObjPath);
-            }
+            amxd_object_set_cstring_t(pEP->pBus, "RadioReference", radObjPath);
+            free(radObjPath);
         }
+        TBuf[0] = 0;
+        char* currSsidRef = amxd_object_get_cstring_t(pEP->pBus, "SSIDReference", NULL);
+        wld_util_getRealReferencePath(TBuf, sizeof(TBuf), currSsidRef, pEP->pSSID->pBus);
+        free(currSsidRef);
     }
     amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
 
