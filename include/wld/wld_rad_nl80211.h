@@ -272,6 +272,7 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
  * It is possible to indicate scan options:
  * - ssids to fetch
  * - frequencies to use
+ * Every call flushes the previous scan cache
  *
  * @param pRadio pointer to radio context
  *
@@ -279,6 +280,20 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio);
+
+/*
+ * @brief initiate a neighbor scan with selected scan flags
+ * It is possible to indicate scan options:
+ * - ssids to fetch
+ * - frequencies to use
+ *
+ * @param pRadio pointer to radio context
+ * @param pFlags pointer to scan flags struct
+ *
+ * @return SWL_RC_OK in case of success (scan trigger acknowledged)
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags);
 
 /*
  * @brief abort a running neighbor scan

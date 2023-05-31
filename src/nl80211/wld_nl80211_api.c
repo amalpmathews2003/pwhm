@@ -576,14 +576,27 @@ swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, i
     return rc;
 }
 
+static uint32_t s_getScanFlags(wld_nl80211_scanFlags_t* pFlags) {
+    uint32_t flags = 0;
+    ASSERTS_NOT_NULL(pFlags, flags, ME, "NULL");
+    if(pFlags->flush) {
+        flags |= NL80211_SCAN_FLAG_FLUSH;
+    }
+    if(pFlags->force) {
+        flags |= NL80211_SCAN_FLAG_AP;
+    }
+    return flags;
+}
 swl_rc_ne wld_nl80211_startScan(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_scanParams_t* params) {
     SAH_TRACEZ_IN(ME);
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
-    uint32_t flags = NL80211_SCAN_FLAG_FLUSH;
-    NL_ATTRS(attribs,
-             ARR(NL_ATTR_VAL(NL80211_ATTR_SCAN_FLAGS, flags)));
-    SAH_TRACEZ_INFO(ME, "iface:%d, added scan flags attribute(%d)", ifIndex, swl_unLiList_size(&attribs));
+    NL_ATTRS(attribs, ARR());
     if(params) {
+        uint32_t flags = s_getScanFlags(&params->flags);
+        if(flags) {
+            NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_SCAN_FLAGS, flags));
+            SAH_TRACEZ_INFO(ME, "iface:%d, added scan flags attribute(%d)", ifIndex, swl_unLiList_size(&attribs));
+        }
         swl_unLiListIt_t it;
         if(swl_unLiList_size(&params->ssids) > 0) {
             NL_ATTR_NESTED(ssidsAttr, NL80211_ATTR_SCAN_SSIDS);

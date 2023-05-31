@@ -302,7 +302,7 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
     return rc;
 }
 
-swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio) {
+swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags) {
     T_ScanArgs* args = &pRadio->scanState.cfg.scanArguments;
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
@@ -337,6 +337,9 @@ swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio) {
             params.bssid = args->bssid;
         }
     }
+    if(pFlags != NULL) {
+        memcpy(&params.flags, pFlags, sizeof(wld_nl80211_scanFlags_t));
+    }
     /*
      * start_scan command has to be sent to enabled interface (UP)
      * (even when secondary VAP, while primary is disabled)
@@ -347,6 +350,11 @@ scan_error:
     swl_unLiList_destroy(&params.ssids);
     swl_unLiList_destroy(&params.freqs);
     return rc;
+}
+
+swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio) {
+    wld_nl80211_scanFlags_t flags = {.flush = true};
+    return wld_rad_nl80211_startScanExt(pRadio, &flags);
 }
 
 swl_rc_ne wld_rad_nl80211_abortScan(T_Radio* pRadio) {

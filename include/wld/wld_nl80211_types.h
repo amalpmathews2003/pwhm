@@ -213,12 +213,23 @@ typedef struct {
 
 } wld_nl80211_stationInfo_t;
 
+/*
+ * nl80211_scan_flags -  scan request control flags
+ */
+typedef struct SWL_PACKED {
+    uint32_t flush : 1; // flush cache before scanning
+    uint32_t force : 1; // force a scan even if the interface is configured
+                        // as AP and the beaconing has already been configured
+    // Can be extended with additional nl80211 flags
+} wld_nl80211_scanFlags_t;
+
 typedef struct {
-    swl_unLiList_t ssids; //list of ssids (char*) to scan for them
-    swl_macBin_t bssid;   //bssid of the AP to scan for.
-    swl_unLiList_t freqs; //list of frequencies (uint32_t) to use
-    uint32_t iesLen;      //length of extra Information Elements to add in probeReq
-    const uint8_t* ies;   //extra Information Elements to add in probeReq
+    swl_unLiList_t ssids;          //list of ssids (char*) to scan for them
+    swl_macBin_t bssid;            //bssid of the AP to scan for.
+    swl_unLiList_t freqs;          //list of frequencies (uint32_t) to use
+    uint32_t iesLen;               //length of extra Information Elements to add in probeReq
+    const uint8_t* ies;            //extra Information Elements to add in probeReq
+    wld_nl80211_scanFlags_t flags; //nl80211 scan flags
 } wld_nl80211_scanParams_t;
 
 struct wld_nl80211_channelSurveyInfo {
