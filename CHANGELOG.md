@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.15.0 - 2023-06-01(14:09:37 +0000)
+
+### Other
+
+- Add missing odl templates files
+
 ## Release v3.14.0 - 2023-05-31(17:04:09 +0000)
 
 ### Other
