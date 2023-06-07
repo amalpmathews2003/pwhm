@@ -422,7 +422,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP) {
     swl_mapChar_t newVapParams;
     swl_mapChar_t* pNewVapParams = &newVapParams;
     swl_mapChar_init(pNewVapParams);
-    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
     wld_secDmn_action_rc_ne action = s_ap_hostapd_setSecretKeyExt(pAP, pCurrVapParams, pNewVapParams);
     swl_mapChar_cleanup(pNewVapParams);
     wld_hostapd_deleteConfig(config);
@@ -459,7 +459,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP) {
     swl_mapChar_t newVapParams;
     swl_mapChar_t* pNewVapParams = &newVapParams;
     swl_mapChar_init(pNewVapParams);
-    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
     wld_secDmn_action_rc_ne action = s_ap_hostapd_setSecurityModeExt(pAP, pCurrVapParams, pNewVapParams);
     swl_mapChar_cleanup(pNewVapParams);
     wld_hostapd_deleteConfig(config);
@@ -485,7 +485,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP) {
     swl_mapChar_t newVapParams;
     swl_mapChar_t* pNewVapParams = &newVapParams;
     swl_mapChar_init(pNewVapParams);
-    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
 
     action = SWL_MAX(action, s_ap_hostapd_setSecurityModeExt(pAP, pCurrVapParams, pNewVapParams));
@@ -570,7 +570,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     swl_mapChar_t newVapParams;
     swl_mapChar_t* pNewVapParams = &newVapParams;
     swl_mapChar_init(pNewVapParams);
-    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams);
+    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     const char* params[] = {
         "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",

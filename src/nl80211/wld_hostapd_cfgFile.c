@@ -371,31 +371,55 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     }
 }
 
-static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
+#define M_HOSTAPD_MULTI_AP_BBSS     0x1
+#define M_HOSTAPD_MULTI_AP_FBSS     0x2
+
+static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap, swl_mapChar_t* multiAPConfig) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
-    uint32_t multiApType = 0;          /* 0 = disabled (default) */
+    uint32_t hapdMultiApType = 0;          /* 0 = disabled (default) */
     if(SWL_BIT_IS_SET(pAP->multiAPType, MULTIAP_BACKHAUL_BSS)) {
-        W_SWL_BIT_SET(multiApType, 0); /* 1 = AP support backhaul BSS */
+        hapdMultiApType |= M_HOSTAPD_MULTI_AP_BBSS;
     }
     if(SWL_BIT_IS_SET(pAP->multiAPType, MULTIAP_FRONTHAUL_BSS)) {
-        W_SWL_BIT_SET(multiApType, 1); /* 2 = AP support fronthaul BSS */
+        hapdMultiApType |= M_HOSTAPD_MULTI_AP_FBSS;
     }
-    /* 3 = AP supports both backhaul BSS and fronthaul BSS */
-    swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap", multiApType);
+
+    swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap", hapdMultiApType);
     char* wpsState = swl_mapChar_get(vapConfigMap, "wps_state");
-    if((!swl_str_isEmpty(wpsState)) && (!swl_str_matches(wpsState, "0")) && (multiApType >= 2)) {
+    if((!swl_str_isEmpty(wpsState)) && (!swl_str_matches(wpsState, "0")) && (hapdMultiApType & M_HOSTAPD_MULTI_AP_FBSS)) {
         /*
-         * Multi-AP backhaul BSS config: Used in WPS when multi_ap=2 or 3.
+         * Multi-AP backhaul BSS config: Used in WPS when multi_ap=2 or 3. (i.e. Fronthaul or Fronthaul + Backhaul)
          * It defines "backhaul BSS" credentials.
          * These are passed in WPS M8 instead of the normal (fronthaul) credentials
          * if the Enrollee has the Multi-AP subelement set. Backhaul SSID is formatted
          * like ssid2. The key is set like wpa_psk or wpa_passphrase.
          */
-        //hostapd requires backhaul_ssid included in double quotes
-        swl_mapCharFmt_addValStr(vapConfigMap, "multi_ap_backhaul_ssid", "\"%s\"", swl_mapChar_get(vapConfigMap, "ssid"));
-        if(!swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_passphrase", swl_mapChar_get(vapConfigMap, "wpa_passphrase"))) {
-            swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_psk", swl_mapChar_get(vapConfigMap, "wpa_psk"));
+
+        swl_mapChar_t* sourceCfg = NULL;
+
+        if(hapdMultiApType & M_HOSTAPD_MULTI_AP_BBSS) { // if BBSS flag is also set : combined FH/BH
+            SAH_TRACEZ_INFO(ME, "VAP %s configured as FH and BH use self conf", pAP->alias);
+            sourceCfg = vapConfigMap;
+            // use self-config if hybrid mode enabled;
+        } else {
+            SAH_TRACEZ_INFO(ME, "VAP %s configured as pure FH try secondary config", pAP->alias);
+            if(multiAPConfig != NULL) {
+                sourceCfg = multiAPConfig;
+                // use provided Multi-AP config if pure FH enabled
+            } else {
+                SAH_TRACEZ_WARNING(ME, "VAP %s configured as pure FH but no BH config provided", pAP->alias);
+            }
+        }
+        if(sourceCfg != NULL) {
+            SAH_TRACEZ_INFO(ME, "VAP %s configured as FH BSS, set BH creds as %s", pAP->alias, swl_mapChar_get(sourceCfg, "ssid"));
+
+            swl_mapCharFmt_addValStr(vapConfigMap, "multi_ap_backhaul_ssid", "\"%s\"", swl_mapChar_get(sourceCfg, "ssid"));
+            //hostapd requires backhaul_ssid included in double quotes
+
+            if(!swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_passphrase", swl_mapChar_get(sourceCfg, "wpa_passphrase"))) {
+                swl_mapChar_add(vapConfigMap, "multi_ap_backhaul_wpa_psk", swl_mapChar_get(sourceCfg, "wpa_psk"));
+            }
         }
     }
 }
@@ -678,17 +702,18 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
  * @brief set a vap parameters. A vap configuration could be either an interface or a bss
  *
  * @param pAP a vap
- * @param cfgF a pointer to the the configuration file of the hostapd
+ * @param cfgF a pointer to the the configuration file of the hostapd; map refers to data type not multi-AP
+ * @param multiAPCfg a pointer for backhaul config (ssid/passphrase)
  *
  * @return void
  */
-void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
+void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap, swl_mapChar_t* multiAPConfig) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
 
     s_setVapCommonConfig(pAP, vapConfigMap);
     s_setVapWpsConfig(pAP, vapConfigMap);
-    s_setVapMultiApConf(pAP, vapConfigMap);
+    s_setVapMultiApConf(pAP, vapConfigMap, multiAPConfig);
 }
 
 /**
@@ -708,12 +733,29 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
     ASSERT_TRUE(ret, , ME, "Bad config");
     swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
     wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
+
+    swl_mapChar_t* multiAPConfig = NULL;
+
     amxc_llist_it_t* ap_it;
     amxc_llist_for_each(ap_it, &pRad->llAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
-        SAH_TRACEZ_INFO(ME, "%s: Write config %s %u", pRad->Name, pAp->alias, pAp->ref_index);
-        swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
-        wld_hostapd_cfgFile_setVapConfig(pAp, vapConfigMap);
+        if(SWL_BIT_IS_ONLY_SET(pAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
+            SAH_TRACEZ_INFO(ME, "AP %s configured as pure BackhaulBSS, save config for later", pAp->alias);
+            multiAPConfig = wld_hostapd_getConfigMap(config, pAp->alias);
+            wld_hostapd_cfgFile_setVapConfig(pAp, multiAPConfig, multiAPConfig);
+        }
+        // extracting last backhaul BSS config into multiAPConfig
+        // where last - according to the order of amxc_llist_for_each iterator
+    }
+
+    amxc_llist_for_each(ap_it, &pRad->llAP) {
+        T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
+        if(!SWL_BIT_IS_ONLY_SET(pAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
+            SAH_TRACEZ_INFO(ME, "AP %s not configured as pure BackhaulBSS", pAp->alias);
+
+            swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
+            wld_hostapd_cfgFile_setVapConfig(pAp, vapConfigMap, multiAPConfig);
+        }
     }
     wld_hostapd_writeConfig(config, cfgFileName);
     wld_hostapd_deleteConfig(config);
