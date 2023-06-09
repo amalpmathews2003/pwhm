@@ -263,7 +263,9 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
     swl_security_mfpMode_e mfp = swl_security_getTargetMfpMode(epProfile->secModeEnabled, epProfile->mfpConfig);
     swl_mapCharFmt_addValInt32(network, "ieee80211w", mfp);
 
-    swl_mapChar_add(network, "multi_ap_backhaul_sta", "1");
+    if(pEP->multiAPEnable) {
+        swl_mapChar_add(network, "multi_ap_backhaul_sta", "1");
+    }
     swl_mapChar_add(network, "beacon_int", "100");
     return SWL_RC_OK;
 }

@@ -245,25 +245,19 @@ amxd_status_t _wld_endpoint_setReconnectInterval_pwf(amxd_object_t* object _UNUS
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_endpoint_setMultiAPEnable_pwf(amxd_object_t* object _UNUSED,
+amxd_status_t _wld_endpoint_setMultiAPEnable_pwf(amxd_object_t* object,
                                                  amxd_param_t* parameter,
-                                                 amxd_action_t reason _UNUSED,
-                                                 const amxc_var_t* const args _UNUSED,
-                                                 amxc_var_t* const retval _UNUSED,
-                                                 void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+                                                 amxd_action_t reason,
+                                                 const amxc_var_t* const args,
+                                                 amxc_var_t* const retval,
+                                                 void* priv) {
+    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "Failed to write param");
+    ASSERTI_EQUALS(amxd_object_get_type(object), amxd_object_instance, rv, ME, "not EP instance");
 
     SAH_TRACEZ_IN(ME);
 
+    T_EndPoint* pEP = (T_EndPoint*) object->priv;
     bool new_multiAPEnable = amxc_var_dyncast(bool, args);
     ASSERT_TRUE(debugIsEpPointer(pEP), amxd_status_ok, ME, "INVALID");
     if(pEP->multiAPEnable != new_multiAPEnable) {

@@ -312,4 +312,10 @@ swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wifiGen_ep_multiApEnable(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
+    return SWL_RC_OK;
+}
 

@@ -125,10 +125,13 @@ swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
  *         - Otherwise SWL_RC_ERROR
  */
 swl_rc_ne wld_wpaSupp_ep_startWpsPbc(T_EndPoint* pEP, swl_macChar_t* bssid) {
-    SAH_TRACEZ_INFO(ME, "%s: send wps_pbc", pEP->Name);
+    SAH_TRACEZ_INFO(ME, "EndPoint %s %s send wps_pbc", pEP->alias, pEP->Name);
 
     char cmd[64] = {0};
     swl_str_catFormat(cmd, sizeof(cmd), "WPS_PBC");
+    if(pEP->multiAPEnable) {
+        swl_str_catFormat(cmd, sizeof(cmd), " multi_ap=1");
+    }
     if(!swl_mac_charIsNull(bssid)) {
         swl_str_catFormat(cmd, sizeof(cmd), " %s", bssid->cMac);
     }

@@ -145,6 +145,7 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_status = wifiGen_ep_status;
     fta.mfn_wendpoint_wps_start = wifiGen_ep_wpsStart;
     fta.mfn_wendpoint_wps_cancel = wifiGen_ep_wpsCancel;
+    fta.mfn_wendpoint_multiap_enable = wifiGen_ep_multiApEnable;
 
     fta.mfn_wvap_updated_neighbour = wifiGen_vap_updated_neighbor;
     fta.mfn_wvap_deleted_neighbour = wifiGen_vap_deleted_neighbor;
