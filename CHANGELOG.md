@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.15.1 - 2023-06-09(10:17:04 +0000)
+
+### Other
+
+- - MultiAP wps on EndPoint
+
 ## Release v3.15.0 - 2023-06-01(14:09:37 +0000)
 
 ### Other
