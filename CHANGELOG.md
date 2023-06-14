@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.16.0 - 2023-06-14(15:04:44 +0000)
+
+### Other
+
+- WFA Easy Mesh certification - 4.8.1 fail on client steering
+
 ## Release v3.15.2 - 2023-06-14(14:46:48 +0000)
 
 ### Other
