@@ -120,6 +120,11 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     if(wld_rad_vap_from_name(pRad, ifName) != NULL) {
+        /**
+         * Radio is ready, listening to mgmt frames is possible.
+         * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
+         */
+        wld_rad_nl80211_registerFrame(pRad, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0);
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
         //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
@@ -326,6 +331,54 @@ static void s_scanStartedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNU
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
 }
 
+typedef struct {
+    T_Radio* pRad;
+    int32_t rssi;
+} wld_mgmtFrameExtra_t;
+
+static void s_probeRequestReceived(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen _UNUSED, swl_80211_probeReqFrameBody_t* probeReq, size_t probeReqDataLen) {
+    wld_mgmtFrameExtra_t* extra = (wld_mgmtFrameExtra_t*) userData;
+    ASSERT_NOT_NULL(extra, , ME, "NULL");
+    ASSERTS_NOT_NULL(extra->pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(probeReq, , ME, "NULL");
+    T_Radio* pRad = extra->pRad;
+
+    swl_macChar_t macStr = SWL_MAC_CHAR_NEW();
+    swl_mac_binToChar(&macStr, &frame->transmitter);
+
+    wld_notifyProbeRequest_rssi(pRad, (const unsigned char*) macStr.cMac, extra->rssi);
+
+    //Update ProbeReq capabilities for the associatedDevice if known
+    T_AssociatedDevice* pAD = wld_rad_getAssociatedDevice(pRad, &frame->transmitter);
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+
+    swl_wirelessDevice_infoElements_t results;
+    memset(&results, 0, sizeof(swl_wirelessDevice_infoElements_t));
+    ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&results, NULL, probeReqDataLen, (swl_bit8_t*) probeReq);
+    ASSERTW_FALSE(parsedLen < (ssize_t) probeReqDataLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, probeReqDataLen);
+
+    wifiGen_staCap_copyAssocDevInfoFromIEs(pAD, &pAD->probeReqCaps, &results);
+    pAD->probeReqCaps.updateTime = swl_time_getMonoSec();
+}
+
+static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameNl80211Handlers = {
+    .fProcProbeReq = s_probeRequestReceived,
+};
+
+static void s_frameReceivedCb(void* pRef, void* pData _UNUSED, size_t frameLen, swl_80211_mgmtFrame_t* frame, int32_t rssi) {
+    T_Radio* pRad = (T_Radio*) pRef;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+
+    wld_mgmtFrameExtra_t extra;
+    memset(&extra, 0, sizeof(wld_mgmtFrameExtra_t));
+    extra.pRad = pRad;
+    extra.rssi = rssi;
+
+    swl_80211_handleMgmtFrame(&extra, (swl_bit8_t*) frame, frameLen, &s_mgmtFrameNl80211Handlers);
+}
+
 swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pRad->hostapd, SWL_RC_ERROR, ME, "NULL");
@@ -340,6 +393,7 @@ swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     nl80211RadEvtHandlers.fScanStartedCb = s_scanStartedCb;
     nl80211RadEvtHandlers.fScanAbortedCb = s_scanAbortedCb;
     nl80211RadEvtHandlers.fScanDoneCb = s_scanDoneCb;
+    nl80211RadEvtHandlers.fMgtFrameEvtCb = s_frameReceivedCb;
     wld_rad_nl80211_setEvtListener(pRad, NULL, &nl80211RadEvtHandlers);
 
     return SWL_RC_OK;

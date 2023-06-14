@@ -184,6 +184,20 @@ swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t IfIndex,
 swl_rc_ne wld_nl80211_delInterface(wld_nl80211_state_t* state, uint32_t ifIndex);
 
 /*
+ * @brief register to frames
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex interface net dev index
+ * @param type packet type to be received
+ * @param pattern first bytes of the packet (optional)
+ * @param patternLen pattern's length (optional)
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_registerFrame(wld_nl80211_state_t* state, uint32_t ifIndex, uint16_t type, const char* pattern, size_t patternLen);
+
+/*
  * @brief configure interface as AccessPoint or Station
  * (Synchronous api)
  *

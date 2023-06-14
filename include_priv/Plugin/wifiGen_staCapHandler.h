@@ -67,6 +67,6 @@
 #include "swl/swl_80211.h"
 
 void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen);
-
+void wifiGen_staCap_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
 
 #endif /* SRC_INCLUDE_PRIV_PLUGIN_WIFIGEN_STACAPHANDLER_H_ */

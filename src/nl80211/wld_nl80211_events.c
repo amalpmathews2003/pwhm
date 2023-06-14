@@ -91,6 +91,31 @@ static swl_rc_ne s_commonEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* n
     return SWL_RC_OK;
 }
 
+static swl_rc_ne s_mgmtFrameEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if(nlh->nlmsg_type != g_nl80211DriverIDs.family_id) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
+
+    SAH_TRACEZ_INFO(ME, "frame received on w:%d,i:%d", wiphy, ifIndex);
+
+    wld_nl80211_mgmtFrame_t mgmtFrame;
+    memset(&mgmtFrame, 0, sizeof(wld_nl80211_mgmtFrame_t));
+
+    rc = wld_nl80211_parseMgmtFrame(tb, &mgmtFrame);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "Invalid frame");
+
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fMgtFrameEvtCb(pListener->pRef, pListener->pData, mgmtFrame.frameLen, mgmtFrame.frame, mgmtFrame.rssi);
+    });
+
+    return SWL_RC_DONE;
+}
+
 static swl_rc_ne s_unspecEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
     swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
     ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
@@ -284,7 +309,7 @@ SWL_TABLE(sNl80211Msgs,
               /* unicast */
               {MSG_ID_NAME(NL80211_CMD_UNEXPECTED_FRAME), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_UNEXPECTED_4ADDR_FRAME), s_commonEvtCb, OFFSET_UNDEF},
-              {MSG_ID_NAME(NL80211_CMD_FRAME), s_commonEvtCb, OFFSET_UNDEF},
+              {MSG_ID_NAME(NL80211_CMD_ACTION), s_mgmtFrameEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fMgtFrameEvtCb)},
               /* vendor command */
               {MSG_ID_NAME(NL80211_CMD_VENDOR), s_vendorEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fVendorEvtCb)},
               )
@@ -320,6 +345,7 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
         pListener->handlers.fScanStartedCb = handlers->fScanStartedCb;
         pListener->handlers.fScanAbortedCb = handlers->fScanAbortedCb;
         pListener->handlers.fScanDoneCb = handlers->fScanDoneCb;
+        pListener->handlers.fMgtFrameEvtCb = handlers->fMgtFrameEvtCb;
     }
     if(pListener->ifIndex != WLD_NL80211_ID_UNDEF) {
         //Iface events handlers to be set here

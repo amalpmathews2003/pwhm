@@ -242,6 +242,15 @@ swl_rc_ne wld_nl80211_delInterface(wld_nl80211_state_t* state, uint32_t ifIndex)
     return wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_DEL_INTERFACE, 0, ifIndex, NULL);
 }
 
+swl_rc_ne wld_nl80211_registerFrame(wld_nl80211_state_t* state, uint32_t ifIndex, uint16_t type, const char* pattern, size_t patternLen) {
+    NL_ATTRS(attribs,
+             ARR(NL_ATTR_VAL(NL80211_ATTR_FRAME_TYPE, type),
+                 NL_ATTR_DATA(NL80211_ATTR_FRAME_MATCH, patternLen, pattern)));
+    swl_rc_ne rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_REGISTER_ACTION, 0, ifIndex, &attribs);
+    NL_ATTRS_CLEAR(&attribs);
+    return rc;
+}
+
 swl_rc_ne wld_nl80211_setInterfaceType(wld_nl80211_state_t* state, uint32_t ifIndex, bool isAp, bool isSta) {
     ASSERT_TRUE((isAp || isSta), WLD_ERROR, ME, "invalid type");
     //no nl80211 interface type for mixed apsta mode

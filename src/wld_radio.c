@@ -4455,6 +4455,19 @@ void wld_rad_incrementCounterStr(T_Radio* pRad, T_EventCounterList* counters, ui
     wld_rad_increment_counter(pRad, counters, index, buffer);
 }
 
+T_AssociatedDevice* wld_rad_getAssociatedDevice(T_Radio* pRad, swl_macBin_t* macBin) {
+    ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
+    ASSERTS_NOT_NULL(macBin, NULL, ME, "NULL");
+    amxc_llist_for_each(it, &pRad->llAP) {
+        T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+        T_AssociatedDevice* pAD = wld_vap_get_existing_station(pAP, (swl_macBin_t*) macBin);
+        if(pAD != NULL) {
+            return pAD;
+        }
+    }
+    return NULL;
+}
+
 /**
  * Whether radio is available for commands
  */

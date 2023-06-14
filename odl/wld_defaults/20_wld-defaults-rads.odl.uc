@@ -21,6 +21,7 @@
                 parameter TxBeamformingCapsEnabled = "DEFAULT";
                 parameter ObssCoexistenceEnable = 1;
                 parameter ProbeRequestNotify = "AlwaysRSSI";
+                parameter ProbeRequestAggregationTimer = 1000;
                 parameter OperatingStandards = "auto";
                 parameter OperatingChannelBandwidth = "20MHz";
                 object MACConfig {
@@ -55,6 +56,7 @@
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
                 parameter ProbeRequestNotify = "AlwaysRSSI";
+                parameter ProbeRequestAggregationTimer = 1000;
                 parameter OperatingStandards = "auto";
                 parameter AutoBandwidthSelectMode="MaxAvailable";
                 parameter OperatingChannelBandwidth="Auto";
@@ -91,6 +93,7 @@
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
                 parameter ProbeRequestNotify = "AlwaysRSSI";
+                parameter ProbeRequestAggregationTimer = 1000;
                 parameter OperatingStandards = "auto";
                 parameter AutoBandwidthSelectMode="MaxAvailable";
                 parameter OperatingChannelBandwidth="Auto";

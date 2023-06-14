@@ -1300,11 +1300,16 @@ define probelist_t{
 		%read-only string IEEE80211_Caps;     /* Supported vendor caps */
 
 		/**
-		 * The noti
+		 * Define how a probe request is sent through notifications.
+		 * NoUpdate : probe request notifications are not sent.
+		 * First : a probe request is sent only if RSSI equals 0 and if probe request transmitter MACAddress is seen for the first time.
+		 * FirstRSSI : a probe request is sent only if RSSI is valid and if probe request transmitter MACAddress is seen for the first time.
+		 * Always : a probe request is sent only if RSSI equals 0.
+		 * AlwaysRSSI : a probe request is sent only if RSSI is valid.
 		 */
 		%persistent string ProbeRequestNotify = "FirstRSSI" {
-			on action validate call check_enum ["NoUpdate","First","FirstRSSI","Always","AlwaysRSSI"];
 			on action write call wld_prbReq_setNotify_pwf;
+			on action validate call check_enum ["NoUpdate","First","FirstRSSI","Always","AlwaysRSSI"];
 		}
 
 		/**
@@ -1313,8 +1318,8 @@ define probelist_t{
 		 * @version 9.1
 		 */
 		%persistent uint32 ProbeRequestAggregationTimer{
-			on action write call wld_prbReq_setNotifyAggregationTimer_pwf;
 			default 1000;
+			on action write call wld_prbReq_setNotifyAggregationTimer_pwf;
 		}
 
 		/**

@@ -68,9 +68,9 @@
 
 #define ME "genStaC"
 
-static void s_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
-    pDev->capabilities = pWirelessDevIE->capabilities;
-    pDev->uniiBandsCapabilities = pWirelessDevIE->uniiBandsCapabilities;
+void wifiGen_staCap_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+    pDev->capabilities |= pWirelessDevIE->capabilities;
+    pDev->uniiBandsCapabilities |= pWirelessDevIE->uniiBandsCapabilities;
     cap->freqCapabilities = pWirelessDevIE->freqCapabilities;
     memcpy(&cap->vendorOUI, &pWirelessDevIE->vendorOUI, sizeof(swl_oui_list_t));
     cap->htCapabilities = pWirelessDevIE->htCapabilities;
@@ -99,5 +99,5 @@ void wifiGen_staCapHandler_receiveAssocMsg(T_AccessPoint* pAP, T_AssociatedDevic
     ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
     ASSERTW_FALSE(parsedLen < (ssize_t) iesLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, iesLen);
 
-    s_copyAssocDevInfoFromIEs(pAD, &pAD->assocCaps, &wirelessDevIE);
+    wifiGen_staCap_copyAssocDevInfoFromIEs(pAD, &pAD->assocCaps, &wirelessDevIE);
 }

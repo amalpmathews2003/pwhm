@@ -135,6 +135,19 @@ swl_rc_ne wld_nl80211_parseChanSpec(struct nlattr* tb[], wld_nl80211_chanSpec_t*
     return SWL_RC_DONE;
 }
 
+swl_rc_ne wld_nl80211_parseMgmtFrame(struct nlattr* tb[], wld_nl80211_mgmtFrame_t* mgmtFrame) {
+    ASSERTS_NOT_NULL(mgmtFrame, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    mgmtFrame->frameLen = nla_len(tb[NL80211_ATTR_FRAME]);
+    mgmtFrame->frame = swl_80211_getMgmtFrame((swl_bit8_t*) nla_data(tb[NL80211_ATTR_FRAME]), mgmtFrame->frameLen);
+    ASSERTS_NOT_NULL(mgmtFrame->frame, SWL_RC_INVALID_PARAM, ME, "Invalid frame");
+    uint32_t rssi = 0;
+    NLA_GET_VAL(rssi, nla_get_u32, tb[NL80211_ATTR_RX_SIGNAL_DBM]);
+    ASSERTS_NOT_EQUALS(rssi, 0, SWL_RC_INVALID_PARAM, ME, "Invalid RSSI");
+    mgmtFrame->rssi = (int32_t) rssi;
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceInfo_t* pWlIface) {
     ASSERT_NOT_NULL(pWlIface, SWL_RC_INVALID_PARAM, ME, "NULL");
     memset(pWlIface, 0, sizeof(*pWlIface));

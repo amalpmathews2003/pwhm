@@ -350,4 +350,17 @@ swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2);
 swl_rc_ne wld_rad_nl80211_sendVendorSubCmd(T_Radio* pRadio, uint32_t oui, int subcmd, void* data, int dataLen, bool isSync,
                                            bool withAck, uint32_t flags, wld_nl80211_handler_f handler, void* priv);
 
+/*
+ * @brief common function to register to frame
+ *
+ * @param pRadio pointer to radio context
+ * @param type packet type to be received
+ * @param pattern first bytes of the packet (optional)
+ * @param patternLen pattern's length (optional)
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_registerFrame(T_Radio* pRadio, uint16_t type, const char* pattern, size_t patternLen);
+
 #endif /* INCLUDE_WLD_WLD_RAD_NL80211_H_ */

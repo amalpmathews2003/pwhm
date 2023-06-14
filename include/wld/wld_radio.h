@@ -216,6 +216,7 @@ void wld_rad_incrementCounterStr(T_Radio* pRad, T_EventCounterList* counters, ui
 
 void wld_radio_copySsidsToResult(T_ScanResults* results, amxc_llist_t* ssid_list);
 
+T_AssociatedDevice* wld_rad_getAssociatedDevice(T_Radio* pRad, swl_macBin_t* macBin);
 bool wld_rad_isAvailable(T_Radio* pRad);
 bool wld_rad_isActive(T_Radio* pRad);
 bool wld_rad_isUp(T_Radio* pRad);

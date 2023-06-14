@@ -357,7 +357,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     swl_timeMono_t now = swl_time_getMonoSec();
     pR->changeInfo.lastStatusChange = now;
     pR->changeInfo.lastStatusHistogramUpdate = now;
-    pR->probeRequestMode = WLD_PRB_NO_UPDATE;
+    pR->probeRequestMode = WLD_PRB_FIRST_RSSI;
     pR->probeRequestAggregationTime = 1000;
     pR->aggregationTimer = NULL;
     pR->genericCounters.nrCounters = WLD_RAD_EV_MAX;

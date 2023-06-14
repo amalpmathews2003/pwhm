@@ -109,6 +109,20 @@ typedef void (* wld_nl80211_ifaceInfoEvtCb_f)(void* pRef, void* pData, wld_nl802
 typedef void (* wld_nl80211_vendorEvtCb_f)(void* pRef, void* pData, struct nlmsghdr* nlh, struct nlattr* tb[]);
 
 /*
+ * @brief generic mgmt frame callback
+ *
+ * @param pRef user private reference provided when registering handlers
+ * @param pData user private data provided when registering handlers
+ * @param frameLen the size of the mgmt frame
+ * @param frame pointer to a mgmt frame
+ * @param frameRssi the RSSI of the mgmt frame
+ *
+ * @return void
+ *
+ */
+typedef void (* wld_nl80211_mgmtFrameEvtCb_f)(void* pRef, void* pData, size_t frameLen, swl_80211_mgmtFrame_t* frame, int32_t frameRssi);
+
+/*
  * @brief structure of event handlers
  */
 typedef struct {
@@ -119,6 +133,7 @@ typedef struct {
     wld_nl80211_genIfaceEvtCb_f fScanAbortedCb;   // running scan was aborted
     wld_nl80211_genIfaceEvtCb_f fScanDoneCb;      // scan is terminated and results can be retrieved
     wld_nl80211_vendorEvtCb_f fVendorEvtCb;       // vendor event is reported
+    wld_nl80211_mgmtFrameEvtCb_f fMgtFrameEvtCb;  // a management frame is reported
 } wld_nl80211_evtHandlers_cb;
 
 /*
