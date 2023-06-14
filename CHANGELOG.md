@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.15.2 - 2023-06-14(14:46:48 +0000)
+
+### Other
+
+- - pwhm: Propagate bBSS config to fBSS
+
 ## Release v3.15.1 - 2023-06-09(10:17:04 +0000)
 
 ### Other
