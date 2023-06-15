@@ -238,7 +238,7 @@ define rrm_t{
 		/** Indicates whether or not beacons include the SSID name. */
 		%persistent bool SSIDAdvertisementEnabled{
 			default true;
-			userflags %upc;
+			userflags %usersetting;
 		}
 		/** The maximum number of retransmission for a packet. This
 		 *  corresponds to IEEE 802.11 parameter
@@ -300,7 +300,7 @@ define rrm_t{
 		/** Enables or disables this access point.*/
 		%persistent bool Enable{
 			default false;
-			userflags %upc;
+			userflags %usersetting;
 		}
 
 		/**
@@ -544,7 +544,7 @@ define rrm_t{
 			 * or 256 bit secret, entered as a 64 characters hex key.*/
 			%persistent string KeyPassPhrase = "password" {
 				on action validate call wld_ap_validateKeyPassPhrase_pvf;
-				userflags %upc;
+				userflags %usersetting;
 			}
 			/**  <p>The interval (expressed in seconds) in which the keys are
 			 *   re-generated. This is applicable to WPA, WPA2 and Mixed
@@ -679,7 +679,7 @@ define rrm_t{
 						"WPA3-Personal","WPA2-WPA3-Personal",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
-				userflags %upc;
+				userflags %usersetting;
 			}
 
 			/** Management Frame Protection configuration applicable when ModeEnabled is set

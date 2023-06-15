@@ -196,7 +196,7 @@
 		%persistent string SSID{
 			on action validate call wld_ssid_validateSSID_pvf;
 			default "SSID_NOT_SET";
-			userflags %upc;
+			userflags %usersetting;
 		}
 
 		%read-only object Stats{
