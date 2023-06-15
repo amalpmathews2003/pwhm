@@ -73,6 +73,7 @@
 #include "swla/swla_object.h"
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
+#include "swl/swl_common_chanspec.h"
 
 #include "wld_linuxIfUtils.h"
 
@@ -2723,3 +2724,39 @@ swl_rc_ne wld_util_getRealReferencePath(char* outRefPath, size_t outRefPathSize,
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_util_getManagementFrameParameters(T_Radio* pRad, wld_util_managementFrame_t* mgmtFrame, amxc_var_t* args) {
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(mgmtFrame, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(args, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    const char* macStr = GET_CHAR(args, "mac");
+    bool ok = SWL_MAC_CHAR_TO_BIN(&mgmtFrame->mac, macStr);
+    ASSERTS_TRUE(ok, SWL_RC_INVALID_PARAM, ME, "Fail to convert mac");
+
+    const char* frameControlStr = GET_CHAR(args, "fc");
+    ASSERT_NOT_NULL(frameControlStr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    size_t frameControlStrLen = swl_str_len(frameControlStr) / 2;
+    ASSERT_EQUALS(frameControlStrLen, 2, SWL_RC_INVALID_PARAM, ME, "Invalid frame control size");
+    bool success = swl_hex_toBytes((swl_bit8_t*) &mgmtFrame->fc, (sizeof(swl_80211_mgmtFrameControl_t) + 1), frameControlStr, frameControlStrLen);
+    ASSERTS_TRUE(success, SWL_RC_INVALID_PARAM, ME, "hex to bytes error");
+
+    uint8_t channel = 0;
+    amxc_var_t* typeVar = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
+    channel = (typeVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, typeVar);
+    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, SWL_BW_20MHZ, pRad->operatingFrequencyBand);
+    memcpy(&mgmtFrame->chanspec, &chanspec, sizeof(swl_chanspec_t));
+
+    const char* data = GET_CHAR(args, "data");
+    ASSERT_NOT_NULL(data, SWL_RC_INVALID_PARAM, ME, "NULL");
+    size_t dataLen = swl_str_len(data);
+    mgmtFrame->dataLen = dataLen / 2;
+    mgmtFrame->data = calloc(1, mgmtFrame->dataLen);
+    ASSERT_NOT_NULL(mgmtFrame->data, SWL_RC_INVALID_PARAM, ME, "NULL");
+    success = swl_hex_toBytes(mgmtFrame->data, mgmtFrame->dataLen + 1, data, dataLen);
+    if(!success) {
+        free(mgmtFrame->data);
+        return SWL_RC_INVALID_PARAM;
+    }
+
+    return SWL_RC_OK;
+}

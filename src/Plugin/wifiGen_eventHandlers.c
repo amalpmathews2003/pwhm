@@ -527,11 +527,31 @@ static void s_btmRespCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t fra
     s_btmReplyEvt(pAP, pAP->alias, &mac, replyCode, &targetBssid);
 }
 
+static void s_actionVendorSpecificCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen _UNUSED, swl_80211_vendorIdEl_t* vendor, size_t vendorLen) {
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(vendor, , ME, "NULL");
+
+    swl_macChar_t sourceMAC = SWL_MAC_CHAR_NEW();
+    swl_mac_binToChar(&sourceMAC, &frame->transmitter);
+    swl_macChar_t receiverMAC = SWL_MAC_CHAR_NEW();
+    swl_mac_binToChar(&receiverMAC, &frame->destination);
+
+    size_t dataLen = vendorLen - SWL_OUI_BYTE_LEN;
+    char dataHex[dataLen + 1];
+    memset(&dataHex, 0, dataLen + 1);
+    swl_hex_fromBytes(dataHex, dataLen + 1, vendor->data, dataLen, true);
+
+    wld_rad_notifyVendorSpecificAction(pRad, &sourceMAC, &receiverMAC, (swl_oui_t*) &vendor->oui, dataHex);
+}
+
 static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameHandlers = {
     .fProcAssocReq = s_assocReqCb,
     .fProcReAssocReq = s_reassocReqCb,
     .fProcBtmQuery = s_btmQueryCb,
     .fProcBtmResp = s_btmRespCb,
+    .fProcActionVs = s_actionVendorSpecificCb,
 };
 
 static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, swl_80211_mgmtFrame_t* mgmtFrame, size_t frameLen, char* frameStr _UNUSED) {

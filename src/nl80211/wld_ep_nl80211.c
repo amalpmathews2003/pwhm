@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,23 +59,25 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+/*
+ * This file implements wrapper functions to use nl80211 generic apis with T_EndPoint context
+ */
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
+#include "wld_rad_nl80211.h"
+#include "swl/swl_common.h"
+#include "swl/swl_common_time.h"
+#include "wld_radio.h"
 
-#include "wld/wld.h"
+#define ME "nlEp"
 
-swl_rc_ne wifiGen_ep_createHook(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_destroyHook(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_enable(T_EndPoint* endpoint, bool enable);
-swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile);
-swl_rc_ne wifiGen_ep_disconnect(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid);
-swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_wpsStart(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid, swl_macChar_t* bssid);
-swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats);
-swl_rc_ne wifiGen_ep_multiApEnable(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_sendManagementFrame(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
+swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen, swl_chanspec_t* chanspec,
+                                                uint32_t flags) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pEP, rc, ME, "NULL");
+    T_SSID* pSSID = pEP->pSSID;
+    ASSERT_NOT_NULL(pSSID, rc, ME, "NULL");
 
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */
+    return wld_nl80211_sendManagementFrameCmd(wld_nl80211_getSharedState(), fc, dataBytes, dataBytesLen, chanspec,
+                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &g_swl_macBin_bCast, flags, pEP->index);
+}
+

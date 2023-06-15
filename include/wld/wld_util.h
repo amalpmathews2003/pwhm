@@ -111,6 +111,14 @@ extern "C" {
 #define WLD_SEC_PER_DAY 86400
 
 typedef struct {
+    swl_80211_mgmtFrameControl_t fc;
+    swl_chanspec_t chanspec;
+    swl_macBin_t mac;
+    swl_bit8_t* data;
+    size_t dataLen;
+} wld_util_managementFrame_t;
+
+typedef struct {
     char buf[WLD_S_BUF];
 } wld_sbuf_t;
 
@@ -405,6 +413,8 @@ amxd_status_t wld_util_statsObj2Var(amxc_var_t* map, amxd_object_t* statsObj);
  * @return SWL_RC_OK if successful (target path set), error code otherwise
  */
 swl_rc_ne wld_util_getRealReferencePath(char* outRefPath, size_t outRefPathSize, const char* currRefPath, amxd_object_t* currRefObj);
+
+swl_rc_ne wld_util_getManagementFrameParameters(T_Radio* pRad, wld_util_managementFrame_t* mgmtFrame, amxc_var_t* args);
 
 #ifdef __cplusplus
 }/* extern "C" */

@@ -124,6 +124,7 @@ bool wifiGen_init() {
     fta.mfn_wvap_get_single_station_stats = wifiGen_get_single_station_stats;
     fta.mfn_wvap_sec_sync = wifiGen_vap_sec_sync;
     fta.mfn_wvap_transfer_sta = wifiGen_vap_sta_transfer;
+    fta.mfn_wvap_sendManagementFrame = wifiGen_vap_sendManagementFrame;
     fta.mfn_wvap_mf_sync = wifiGen_vap_mf_sync;
     fta.mfn_wvap_pf_sync = wifiGen_vap_mf_sync;
     fta.mfn_wvap_wps_sync = wifiGen_vap_wps_sync;
@@ -146,6 +147,7 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_wps_start = wifiGen_ep_wpsStart;
     fta.mfn_wendpoint_wps_cancel = wifiGen_ep_wpsCancel;
     fta.mfn_wendpoint_multiap_enable = wifiGen_ep_multiApEnable;
+    fta.mfn_wendpoint_sendManagementFrame = wifiGen_ep_sendManagementFrame;
 
     fta.mfn_wvap_updated_neighbour = wifiGen_vap_updated_neighbor;
     fta.mfn_wvap_deleted_neighbour = wifiGen_vap_deleted_neighbor;

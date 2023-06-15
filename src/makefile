@@ -48,13 +48,14 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					ApMgt/wld_ap_neighbours.o\
 					ApMgt/wld_ap_macfilter.o\
 					ApMgt/wld_ap_bss_transfer.o\
-					ApMgt/wld_ap_public_action.o\
+					ApMgt/wld_apMgmt.o\
 					ApMgt/wld_ap_rrm.o \
 					ApMgt/wld_ap_rssiMonitor.o \
 					ApMgt/wld_ap_security.o \
 					EpMgt/wld_tinyRoam.o \
 					EpMgt/wld_tinyRoam_bus.o \
 					EpMgt/wld_epProfile.o \
+					EpMgt/wld_epMgmt.o \
 					Utils/wld_eventing.o \
 					Utils/wld_monitor.o \
 					Utils/wld_autoCommitMgr.o \
@@ -72,6 +73,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					nl80211/wld_nl80211_debug.o \
 					nl80211/wld_rad_nl80211.o \
 					nl80211/wld_ap_nl80211.o \
+					nl80211/wld_ep_nl80211.o \
 					nl80211/wld_wpaCtrlInterface.o \
 					nl80211/wld_wpaCtrlMngr.o \
 					nl80211/wld_wpaCtrl_events.o \

@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,23 +59,44 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#define _GNU_SOURCE
+#include <stdbool.h>
+#include "wld.h"
+#include "wld_endpoint.h"
+#include "wld_util.h"
+#include "swl/swl_common.h"
+#include "swl/swl_hex.h"
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
+#define ME "epMgmt"
 
-#include "wld/wld.h"
+amxd_status_t _EndPoint_sendManagementFrame(amxd_object_t* object,
+                                            amxd_function_t* func _UNUSED,
+                                            amxc_var_t* args,
+                                            amxc_var_t* ret _UNUSED) {
+    amxd_status_t status = amxd_status_ok;
+    T_EndPoint* pEP = (T_EndPoint*) object->priv;
+    ASSERT_NOT_NULL(pEP, status, ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERT_NOT_NULL(pRad, status, ME, "NULL");
 
-swl_rc_ne wifiGen_ep_createHook(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_destroyHook(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_enable(T_EndPoint* endpoint, bool enable);
-swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile);
-swl_rc_ne wifiGen_ep_disconnect(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid);
-swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_wpsStart(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid, swl_macChar_t* bssid);
-swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats);
-swl_rc_ne wifiGen_ep_multiApEnable(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_sendManagementFrame(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
+    SAH_TRACEZ_IN(ME);
 
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */
+    wld_util_managementFrame_t mgmtFrame;
+    memset(&mgmtFrame, 0, sizeof(wld_util_managementFrame_t));
+
+    swl_rc_ne rc = wld_util_getManagementFrameParameters(pRad, &mgmtFrame, args);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, amxd_status_unknown_error, ME, "%s: Error in getting management frame params", pEP->alias);
+
+    swl_rc_ne res = pEP->pFA->mfn_wendpoint_sendManagementFrame(pEP, &mgmtFrame.fc, &mgmtFrame.mac, mgmtFrame.data, mgmtFrame.dataLen, &mgmtFrame.chanspec);
+    if(res == SWL_RC_NOT_IMPLEMENTED) {
+        SAH_TRACEZ_ERROR(ME, "Function not supported");
+        status = amxd_status_function_not_implemented;
+    } else if(res < 0) {
+        SAH_TRACEZ_ERROR(ME, "Error during execution");
+        status = amxd_status_unknown_error;
+    }
+
+    free(mgmtFrame.data);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}

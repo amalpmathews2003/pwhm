@@ -59,23 +59,52 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <debug/sahtrace.h>
+#include <assert.h>
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_
+#include "wld.h"
+#include "wld_util.h"
+#include "wld_accesspoint.h"
+#include "wld_ssid.h"
+#include "wld_radio.h"
+#include "swl/swl_assert.h"
+#include "swl/swl_hex.h"
+#include "swla/swla_oui.h"
 
-#include "wld/wld.h"
+#define ME "apMgmt"
 
-swl_rc_ne wifiGen_ep_createHook(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_destroyHook(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_enable(T_EndPoint* endpoint, bool enable);
-swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile);
-swl_rc_ne wifiGen_ep_disconnect(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid);
-swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_wpsStart(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid, swl_macChar_t* bssid);
-swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats);
-swl_rc_ne wifiGen_ep_multiApEnable(T_EndPoint* pEP);
-swl_rc_ne wifiGen_ep_sendManagementFrame(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
+amxd_status_t _AccessPoint_sendManagementFrame(amxd_object_t* object,
+                                               amxd_function_t* func _UNUSED,
+                                               amxc_var_t* args,
+                                               amxc_var_t* ret _UNUSED) {
+    amxd_status_t status = amxd_status_ok;
+    T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
+    ASSERT_NOT_NULL(pAP, status, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, status, ME, "NULL");
 
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_EP_H_ */
+    SAH_TRACEZ_IN(ME);
+
+    wld_util_managementFrame_t mgmtFrame;
+    memset(&mgmtFrame, 0, sizeof(wld_util_managementFrame_t));
+
+    swl_rc_ne rc = wld_util_getManagementFrameParameters(pRad, &mgmtFrame, args);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, amxd_status_unknown_error, ME, "%s: Error in getting management frame params", pAP->alias);
+
+    swl_rc_ne res = pAP->pFA->mfn_wvap_sendManagementFrame(pAP, &mgmtFrame.fc, &mgmtFrame.mac, mgmtFrame.data, mgmtFrame.dataLen, &mgmtFrame.chanspec);
+    if(res == SWL_RC_NOT_IMPLEMENTED) {
+        SAH_TRACEZ_ERROR(ME, "Function not supported");
+        status = amxd_status_function_not_implemented;
+    } else if(res < 0) {
+        SAH_TRACEZ_ERROR(ME, "Error during execution");
+        status = amxd_status_unknown_error;
+    }
+
+    free(mgmtFrame.data);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}

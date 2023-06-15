@@ -2065,7 +2065,6 @@ typedef int (APIENTRY* PFN_WVAP_PF_SYNC)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_KICK_STA)(T_AccessPoint* vap, char* buf, int bufsize, int set);
 typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, int bufsize, int reason);
 
-typedef int (APIENTRY* PFN_WVAP_SEND_PUBLIC_ACTION)(T_AccessPoint* vap, swl_macBin_t* sta, swl_oui_t oui, uint8_t type, uint8_t subtype, char* data);
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef int (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);
@@ -2233,36 +2232,36 @@ typedef struct S_CWLD_FUNC_TABLE {
      * @return SWL_RC_OK on success (i.e request sent), error code otherwise
      */
     swl_rc_ne (* mfn_wvap_transfer_sta)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
+    swl_rc_ne (* mfn_wvap_sendManagementFrame)(T_AccessPoint* vap, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
 
-    PFN_WVAP_SEND_PUBLIC_ACTION mfn_wvap_sendPublicAction;       /**< Send a public action frame */
-    PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
-    PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */
-    PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;   /**< Set MultiAP type */
-    PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                   /**< Set AccessPoint role */
-    PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;               /**< Add vendor IE */
-    PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;               /**< Del vendor IE */
-    PFN_WVAP_ENAB_VENDOR_IE mfn_wvap_enab_vendor_ie;             /**< Enable vendor IEs */
-    PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method; /**< Set BSS discovery method */
-    PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;          /**< Set Config Driver */
+    PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;              /**< Send a 802.11k remote measurement request */
+    PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                         /**< Cleanup a non connected station from the VAP */
+    PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;     /**< Set MultiAP type */
+    PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                     /**< Set AccessPoint role */
+    PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;                 /**< Add vendor IE */
+    PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;                 /**< Del vendor IE */
+    PFN_WVAP_ENAB_VENDOR_IE mfn_wvap_enab_vendor_ie;               /**< Enable vendor IEs */
+    PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method;   /**< Set BSS discovery method */
+    PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;            /**< Set Config Driver */
 
-    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                    /**< bool, for driver capabilities
-                                                                    "WEP","TKIP","AES","AES_CCM",
-                                                                    "CKIP","FF","TURBOP","NOTUSED"
-                                                                    "IBSS","PMGT","HOSTAP","AHDEMO",
-                                                                    "SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE",
-                                                                    "MONITOR","TKIPMIC","WPA1","WPA2",
-                                                                    "WPA","BURST","WME","WDS",
-                                                                    "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
-                                                                    "EXPL_BF", "IMPL_BF",
-                                                                    "DFS_OFFLOAD","CSA","SAE","SAE_PWE" */
+    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                      /**< bool, for driver capabilities
+                                                                      "WEP","TKIP","AES","AES_CCM",
+                                                                      "CKIP","FF","TURBOP","NOTUSED"
+                                                                      "IBSS","PMGT","HOSTAP","AHDEMO",
+                                                                      "SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE",
+                                                                      "MONITOR","TKIPMIC","WPA1","WPA2",
+                                                                      "WPA","BURST","WME","WDS",
+                                                                      "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
+                                                                      "EXPL_BF", "IMPL_BF",
+                                                                      "DFS_OFFLOAD","CSA","SAE","SAE_PWE" */
 
-    PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                       /**< Get the FSM state of the VAP */
-    PFN_WVAP_FSM mfn_wvap_fsm;                                   /**< Do the tasks in parts (use of callback timer) */
-    PFN_WVAP_FSM_NODELAY mfn_wvap_fsm_nodelay;                   /**< Do all at once... */
+    PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                         /**< Get the FSM state of the VAP */
+    PFN_WVAP_FSM mfn_wvap_fsm;                                     /**< Do the tasks in parts (use of callback timer) */
+    PFN_WVAP_FSM_NODELAY mfn_wvap_fsm_nodelay;                     /**< Do all at once... */
 
-    PFN_WRAD_FSM_STATE mfn_wrad_fsm_state;                       /**< Get the FSM state of the RADIO */
-    PFN_WRAD_FSM mfn_wrad_fsm;                                   /**< Do the tasks in parts (use of callback timer) */
-    PFN_WRAD_FSM_NODELAY mfn_wrad_fsm_nodelay;                   /**< Do all at once... */
+    PFN_WRAD_FSM_STATE mfn_wrad_fsm_state;                         /**< Get the FSM state of the RADIO */
+    PFN_WRAD_FSM mfn_wrad_fsm;                                     /**< Do the tasks in parts (use of callback timer) */
+    PFN_WRAD_FSM_NODELAY mfn_wrad_fsm_nodelay;                     /**< Do all at once... */
 
     /**
      * Request the driver to reset the current fsm commit of the given radio
@@ -2316,6 +2315,8 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WENDPOINT_MULTIAP_ENABLE mfn_wendpoint_multiap_enable;         /**< Set MultiAP BackhaulSTA */
     PFN_WENDPOINT_SET_MAC_ADDR mfn_wendpoint_set_mac_address;          /**< Set Mac address on an endpoint interface */
     PFN_WEP_STATUS mfn_wendpoint_status;
+
+    swl_rc_ne (* mfn_wendpoint_sendManagementFrame)(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
 
     PFN_WVAP_UPDATE_STA_INFO mfn_wvap_update_assoc_dev;      /** Update settable changed to associated devices */
 

@@ -160,16 +160,14 @@ define rrm_t{
 			%in uint32 bssidInfo, %in int32 transitionReason, %in uint8 mode);
 
 		/**
-		 * <b>sendPublicAction</b>
-		 * Send a public action frame to a station with a custom data content.
-		 * Send a public action frame to a station with a custom data content.
+		 * <b>sendManagementFrame</b>
+		 * Send a management frame.
 		 * @param mac : format xx:xx:xx:xx:xx:xx destination MACAddress.
-		 * @param oui : format xx:xx:xx OUI to be write into the management frame.
-		 * @param type : category of the vendor public action frame.
-		 * @param subtype : subcategory of the vendor public action frame.
-		 * @param data : custom data to be sent.
+		 * @param fc : content of the frame control, in hexadecimal string format.
+		 * @param channel : target channel for the frame to be sent.
+		 * @param data : content of the management frame, in hexadecimal string format.
 		 */
-		bool sendPublicAction(string mac, string oui, uint8 type, uint8 subtype, string data);
+		bool sendManagementFrame(string mac, string fc, uint8 channel, string data);
 
 		/**
 		 * send a 802.11k remote measurement request

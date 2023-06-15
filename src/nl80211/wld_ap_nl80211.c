@@ -182,3 +182,14 @@ swl_rc_ne wld_ap_nl80211_sendVendorSubCmd(T_AccessPoint* pAP, uint32_t oui, int 
 
     return rc;
 }
+
+swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen, swl_chanspec_t* chanspec,
+                                                uint32_t flags) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pAP, rc, ME, "NULL");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERT_NOT_NULL(pSSID, rc, ME, "NULL");
+
+    return wld_nl80211_sendManagementFrameCmd(wld_nl80211_getSharedState(), fc, dataBytes, dataBytesLen, chanspec,
+                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &pSSID->BSSID, flags, pAP->index);
+}

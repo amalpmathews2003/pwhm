@@ -283,6 +283,10 @@ swl_rc_ne wifiGen_vap_sta_transfer(T_AccessPoint* pAP, wld_transferStaArgs_t* pa
     return wld_ap_hostapd_transferStation(pAP, params);
 }
 
+swl_rc_ne wifiGen_vap_sendManagementFrame(T_AccessPoint* pAP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec) {
+    return wld_ap_nl80211_sendManagementFrameCmd(pAP, fc, tgtMac, data, dataLen, chanspec, 0);
+}
+
 swl_rc_ne wifiGen_vap_deleted_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
     return wld_ap_hostapd_removeNeighbor(pAP, pApNeighbor);
 }

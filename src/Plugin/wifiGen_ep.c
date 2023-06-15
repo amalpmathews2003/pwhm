@@ -61,6 +61,7 @@
 ****************************************************************************/
 #include "wld/wld.h"
 #include "wld/wld_rad_nl80211.h"
+#include "wld/wld_ep_nl80211.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_linuxIfStats.h"
 #include "wld/wld_radio.h"
@@ -319,3 +320,6 @@ swl_rc_ne wifiGen_ep_multiApEnable(T_EndPoint* pEP) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wifiGen_ep_sendManagementFrame(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec) {
+    return wld_ep_nl80211_sendManagementFrameCmd(pEP, fc, tgtMac, data, dataLen, chanspec, 0);
+}

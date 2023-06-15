@@ -208,6 +208,16 @@
 		 */
 		variant roamTo(%in %mandatory string bssid, %in int32 tries, %in int32 timeoutInSec);
 
+		/**
+		 * <b>sendManagementFrame</b>
+		 * Send a management frame.
+		 * @param mac : format xx:xx:xx:xx:xx:xx destination MACAddress.
+		 * @param fc : content of the frame control, in hexadecimal string format.
+		 * @param channel : target channel for the frame to be sent.
+		 * @param data : content of the management frame, in hexadecimal string format.
+		 */
+		bool sendManagementFrame(string mac, string fc, uint8 channel, string data);
+
 		/** Throughput statistics for this end point.  <b>Not
 		 *  clear how we can handle this? ToBe Defined!!!</b> */
 		%read-only object Stats{

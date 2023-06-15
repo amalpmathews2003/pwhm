@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,74 +59,19 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <debug/sahtrace.h>
-#include <assert.h>
+/*
+ * This file defines wrapper functions to use nl80211 generic apis with T_EndPoint context
+ */
+
+#ifndef INCLUDE_WLD_WLD_EP_NL80211_H_
+#define INCLUDE_WLD_WLD_EP_NL80211_H_
 
 #include "wld.h"
-#include "wld_util.h"
-#include "wld_accesspoint.h"
-#include "wld_ssid.h"
-#include "wld_radio.h"
-#include "swl/swl_assert.h"
-#include "swl/swl_hex.h"
-#include "swla/swla_oui.h"
+#include "wld_nl80211_api.h"
+#include "wld_nl80211_events.h"
+#include "wld_nl80211_debug.h"
 
-#define ME "apPub"
+swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen, swl_chanspec_t* chanspec,
+                                                uint32_t flags);
 
-amxd_status_t _sendPublicAction(amxd_object_t* object,
-                                amxd_function_t* func _UNUSED,
-                                amxc_var_t* args,
-                                amxc_var_t* ret _UNUSED) {
-    T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_ok, ME, "NULL");
-
-    SAH_TRACEZ_IN(ME);
-    amxd_status_t status = amxd_status_ok;
-
-    const char* macStr = GET_CHAR(args, "mac");
-    swl_macBin_t mac = SWL_MAC_BIN_NEW();
-    bool ok = SWL_MAC_CHAR_TO_BIN(&mac, macStr);
-    if(!ok) {
-        SAH_TRACEZ_ERROR(ME, "Fail to convert mac");
-        return amxd_status_invalid_function_argument;
-    }
-
-    const char* data = GET_CHAR(args, "data");
-    const char* ouiStr = GET_CHAR(args, "oui");
-
-    uint8_t type = 0;
-    uint8_t subtype = 0;
-    amxc_var_t* typeVar = amxc_var_get_key(args, "type", AMXC_VAR_FLAG_DEFAULT);
-    type = (typeVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, typeVar);
-    amxc_var_t* subTypeVar = amxc_var_get_key(args, "subtype", AMXC_VAR_FLAG_DEFAULT);
-    subtype = (subTypeVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, subTypeVar);
-
-    if(!data || !ouiStr) {
-        SAH_TRACEZ_ERROR(ME, "Invalid argument");
-        return amxd_status_invalid_function_argument;
-    }
-
-    swl_oui_t oui;
-    memset(&oui, 0, sizeof(swl_oui_t));
-    ok = swl_hex_toBytesSep(oui.ouiBytes, SWL_ARRAY_SIZE(oui.ouiBytes), ouiStr, SWL_OUI_STR_LEN, ':', NULL);
-    if(!ok) {
-        SAH_TRACEZ_ERROR(ME, "Invalid OUI");
-        return amxd_status_invalid_function_argument;
-    }
-
-    swl_rc_ne res = pAP->pFA->mfn_wvap_sendPublicAction(pAP, &mac, oui, type, subtype, (char*) data);
-    if(res == SWL_RC_NOT_IMPLEMENTED) {
-        SAH_TRACEZ_ERROR(ME, "Function not supported");
-        status = amxd_status_function_not_implemented;
-    } else if(res < 0) {
-        SAH_TRACEZ_ERROR(ME, "Error during execution");
-        status = amxd_status_unknown_error;
-    }
-
-    SAH_TRACEZ_OUT(ME);
-    return status;
-}
+#endif /* INCLUDE_WLD_WLD_EP_NL80211_H_ */

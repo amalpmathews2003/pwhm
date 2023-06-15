@@ -233,7 +233,7 @@ T_EndPoint* wld_rad_firstEp(T_Radio* pRad);
 T_EndPoint* wld_rad_nextEp(T_Radio* pRad, T_EndPoint* pEP);
 T_Radio* wld_rad_fromIt(amxc_llist_it_t* it);
 void wld_rad_triggerChangeEvent(T_Radio* pRad, wld_rad_changeEvent_e event, void* data);
-void wld_rad_notifyPublicAction(T_Radio* pRad, swl_macChar_t* macStr, swl_oui_t oui, uint8_t type, uint8_t subtype, uint8_t* data);
+void wld_rad_notifyVendorSpecificAction(T_Radio* pRad, swl_macChar_t* receiverMAC, swl_macChar_t* sourceMAC, swl_oui_t* oui, char* dataHex);
 
 #define wld_rad_forEachAp(apPtr, radPtr) \
     for(apPtr = wld_rad_firstAp(radPtr); apPtr; apPtr = wld_rad_nextAp(radPtr, apPtr))

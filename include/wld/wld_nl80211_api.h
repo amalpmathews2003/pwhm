@@ -444,4 +444,23 @@ swl_rc_ne wld_nl80211_sendVendorSubCmd(wld_nl80211_state_t* state, uint32_t oui,
                                        bool isSync, bool withAck, uint32_t flags, uint32_t ifIndex, uint64_t wDevId,
                                        wld_nl80211_handler_f handler, void* priv);
 
+/*
+ * @brief common function to send a management frame cmd
+ *
+ * @param state nl80211 socket manager context
+ * @param fc frame control content
+ * @param data data to be sent
+ * @param chanspec destination channel to send the frame
+ * @param src source MACAddress to be written in header
+ * @param dst destination MACAddress to be written in header
+ * @param bssid BSSID MACAddress to be written in header
+ * @param flags optional nl80211 msg flags
+ * @param ifIndex interface net dev index
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_80211_mgmtFrameControl_t* fc, swl_bit8_t* data, size_t dataLen,
+                                             swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags, uint32_t ifIndex);
+
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

@@ -790,3 +790,36 @@ swl_rc_ne wld_nl80211_sendVendorSubCmd(wld_nl80211_state_t* state, uint32_t oui,
 
     return rc;
 }
+
+swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_80211_mgmtFrameControl_t* fc, swl_bit8_t* data, size_t dataLen,
+                                             swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags, uint32_t ifIndex) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(state, rc, ME, "NULL");
+    ASSERT_NOT_NULL(chanspec, rc, ME, "NULL");
+    ASSERT_NOT_NULL(dst, rc, ME, "NULL");
+    ASSERT_NOT_NULL(src, rc, ME, "NULL");
+    ASSERT_NOT_NULL(bssid, rc, ME, "NULL");
+    uint32_t frequency = 0;
+    rc = swl_chanspec_channelToMHz(chanspec, &frequency);
+    ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "NULL");
+
+    size_t frameLen = sizeof(swl_80211_mgmtFrame_t) - 1 + dataLen;
+    swl_bit8_t frame[frameLen];
+    memset(&frame, 0, frameLen);
+    swl_80211_mgmtFrame_t* hdr = (swl_80211_mgmtFrame_t*) &frame;
+    memcpy(&hdr->fc, fc, sizeof(swl_80211_mgmtFrameControl_t));
+    memcpy(&hdr->destination, dst->bMac, SWL_MAC_BIN_LEN);
+    memcpy(&hdr->transmitter, src->bMac, SWL_MAC_BIN_LEN);
+    memcpy(&hdr->bssid, bssid->bMac, SWL_MAC_BIN_LEN);
+    memcpy(&hdr->data, data, dataLen);
+
+    NL_ATTRS(attribs,
+             ARR(NL_ATTR_VAL(NL80211_ATTR_WIPHY_FREQ, frequency),
+                 NL_ATTR(NL80211_ATTR_OFFCHANNEL_TX_OK),
+                 NL_ATTR(NL80211_ATTR_TX_NO_CCK_RATE),
+                 NL_ATTR(NL80211_ATTR_DONT_WAIT_FOR_ACK),
+                 NL_ATTR_DATA(NL80211_ATTR_FRAME, frameLen, frame)));
+    rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_ACTION, flags, ifIndex, &attribs);
+    NL_ATTRS_CLEAR(&attribs);
+    return rc;
+}

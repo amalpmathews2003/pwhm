@@ -180,4 +180,21 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
 swl_rc_ne wld_ap_nl80211_sendVendorSubCmd(T_AccessPoint* pAP, uint32_t oui, int subcmd, void* data, int dataLen, bool isSync, bool withAck,
                                           uint32_t flags, wld_nl80211_handler_f handler, void* priv);
 
+/*
+ * @brief common function to send a management frame cmd
+ *
+ * @param pAP pointer to radio context
+ * @param fc frame control content
+ * @param tgtMac destination MACAddress
+ * @param dataBytes data to be sent
+ * @param dataBytesLen length of sent data
+ * @param chanspec destination channel to send the frame
+ * @param flags optional nl80211 msg flags
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen,
+                                                swl_chanspec_t* chanspec, uint32_t flags);
+
 #endif /* INCLUDE_WLD_WLD_AP_NL80211_H_ */
