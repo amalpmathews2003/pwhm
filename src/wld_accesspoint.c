@@ -2394,7 +2394,7 @@ swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld
     swl_macBin_t bMac;
     SWL_MAC_CHAR_TO_BIN(&bMac, macStation);
 
-    *data = swl_circTable_getMatchingTuple(&(pAP->lastAssocReq), 0, &bMac);
+    *data = swl_circTable_getMatchingTupleInRange(&(pAP->lastAssocReq), 0, &bMac, -1, 0, -1);
     ASSERT_NOT_NULL(*data, SWL_RC_ERROR, ME, "NULL");
     return SWL_RC_OK;
 }
