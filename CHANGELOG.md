@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.16.2 - 2023-06-23(09:11:33 +0000)
+
+### Other
+
+- Unable to restart prplmesh_whm script
+
 ## Release v3.16.1 - 2023-06-16(07:48:36 +0000)
 
 ### Other
