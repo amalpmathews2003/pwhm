@@ -1980,7 +1980,7 @@ bool wldu_strStartsWith(const char* msg, const char* prefix) {
     return strncmp(msg, prefix, strlen(prefix)) == 0;
 }
 
-int makeUUID_fromrandom(uint8_t* uuid) {
+int makeUUID_fromrandom(uint8_t uuid[UUID_LEN]) {
     if(!get_random(uuid, UUID_LEN)) {
         return -1;
     }
