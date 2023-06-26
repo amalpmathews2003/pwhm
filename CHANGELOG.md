@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.16.3 - 2023-06-26(07:25:38 +0000)
+
+### Other
+
+- - Fix ME in header
+- - rewrite swl_crypto for openssl 3.0 support
+- add ref type fun for val types
+- - sub second timestamps sometimes float in dm
+- Update TBTT length values
+- : Add management frame sending
+- Generate gcovr txt report and upload reports to documentation server
+
 ## Release v3.16.2 - 2023-06-23(09:11:33 +0000)
 
 ### Other
