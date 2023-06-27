@@ -100,7 +100,6 @@ static T_ProbeRequest* wld_getProbeRequest(const T_Radio* pR, const unsigned cha
     ASSERT_NOT_NULL(pR, NULL, ME, "NULL");
     ASSERT_NOT_NULL(macStr, NULL, ME, "NULL");
 
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pR->llProbeRequests) {
         T_ProbeRequest* req = amxc_llist_it_get_data(it, T_ProbeRequest, it);
         if(!memcmp(macStr, req->macStr, ETHER_ADDR_STR_LEN)) {
@@ -131,7 +130,6 @@ void wld_prb_req_populate_channelInfoMap(amxc_var_t* sta_list, const T_ProbeRequ
 void wld_prb_req_populate_sta_list(T_Radio* pR, time_t ref_timestamp, amxc_var_t* sta_list) {
     ASSERT_NOT_NULL(sta_list, , ME, "NULL");
 
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pR->llProbeRequests) {
         T_ProbeRequest* req = amxc_llist_it_get_data(it, T_ProbeRequest, it);
         if(ref_timestamp <= req->timestamp) {
@@ -204,7 +202,6 @@ amxd_status_t _refreshProbeRequests(amxd_object_t* object,
 
     pR->pFA->mfn_wrad_update_prob_req(pR);
 
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pR->llProbeRequests) {
         T_ProbeRequest* req = amxc_llist_it_get_data(it, T_ProbeRequest, it);
         wld_sendProbeRequestNotify(pR, req);

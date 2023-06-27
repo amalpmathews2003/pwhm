@@ -82,7 +82,7 @@ void debugPrintNeighbour(T_ApNeighbour* neigh) {
     char bssid[ETHER_ADDR_STR_LEN];
     (void) neigh;
     (void) bssid;
-    convMac2Str((unsigned char*) neigh->bssid, ETHER_ADDR_LEN, (unsigned char*) bssid, ETHER_ADDR_STR_LEN);
+    wldu_convMac2Str((unsigned char*) neigh->bssid, ETHER_ADDR_LEN, bssid, ETHER_ADDR_STR_LEN);
 
     SAH_TRACEZ_INFO(ME, "Neigh %s : %u %u %u %u", bssid,
                     neigh->information, neigh->operatingClass, neigh->channel, neigh->phyType);
@@ -91,11 +91,11 @@ void debugPrintNeighbour(T_ApNeighbour* neigh) {
 static T_ApNeighbour* find_neigh(T_AccessPoint* vap, const char* bssid_str) {
     char bssid[ETHER_ADDR_LEN];
     if((bssid_str != NULL) && (strlen(bssid_str) == ETHER_ADDR_STR_LEN - 1)) {
-        convStr2Mac((unsigned char*) bssid, ETHER_ADDR_LEN, (unsigned char*) bssid_str, ETHER_ADDR_STR_LEN);
+        wldu_convStr2Mac((unsigned char*) bssid, ETHER_ADDR_LEN, (char*) bssid_str, ETHER_ADDR_STR_LEN);
     } else {
         return NULL;
     }
-    amxc_llist_it_t* it;
+
     amxc_llist_for_each(it, &vap->neighbours) {
         T_ApNeighbour* neigh = amxc_llist_it_get_data(it, T_ApNeighbour, it);
         if(memcmp(bssid, neigh->bssid, ETHER_ADDR_LEN) == 0) {
@@ -111,7 +111,6 @@ static T_ApNeighbour* find_neigh(T_AccessPoint* vap, const char* bssid_str) {
  */
 static T_ApNeighbour* s_find_neighByObjIndex(T_AccessPoint* vap, amxd_object_t* object) {
 
-    amxc_llist_it_t* llit = NULL;
     amxc_llist_for_each(llit, &vap->neighbours) {
         T_ApNeighbour* neigh = amxc_llist_it_get_data(llit, T_ApNeighbour, it);
         if(swl_str_matches(amxd_object_get_name(neigh->obj, 0), amxd_object_get_name(object, 0))) {
@@ -306,7 +305,7 @@ amxd_status_t _wld_ap_setNeighbourBSSID_pwf(amxd_object_t* object,
         return amxd_status_unknown_error;
     }
     SAH_TRACEZ_INFO(ME, "set Neighbour  BSSID = %s", bssid_str);
-    convStr2Mac((unsigned char*) bssid, ETHER_ADDR_LEN, (unsigned char*) bssid_str, ETHER_ADDR_STR_LEN);
+    wldu_convStr2Mac((unsigned char*) bssid, ETHER_ADDR_LEN, (char*) bssid_str, ETHER_ADDR_STR_LEN);
 
     T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
     if(neigh == NULL) {

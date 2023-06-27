@@ -87,7 +87,6 @@ amxd_status_t _EndPoint_WPS_cancelPairing(amxd_object_t* obj,
                                           amxc_var_t* ret);
 void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP);
 void wld_endpoint_reconfigure(T_EndPoint* pEP);
-void wld_endpoint_performConnect(T_EndPoint* pEP);
 void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit);
 swl_rc_ne wld_endpoint_getBssidBin(T_EndPoint* pEP, swl_macBin_t* tgtMac);
 

@@ -359,7 +359,7 @@ int wld_ad_remove_assocdev_from_bridge(T_AccessPoint* pAP, T_AssociatedDevice* p
     SAH_TRACEZ_INFO(ME, "Kicking dev "MAC_PRINT_FMT " out of rad %s on bridge %s",
                     MAC_PRINT_ARG(pAD->MACAddress), pRad->Name, brName);
 
-    wldu_copyStr(ifr.ifr_ifrn.ifrn_name, brName, IFNAMSIZ);
+    swl_str_copy(ifr.ifr_ifrn.ifrn_name, IFNAMSIZ, brName);
     ifr.ifr_ifru.ifru_data = (char*) args;
 
     err = ioctl(pRad->wlRadio_SK, SIOCDEVPRIVATE, &ifr);
@@ -619,17 +619,15 @@ void wld_ad_printSignalStrengthByChain(T_AssociatedDevice* pAD, char* buf, uint3
     char ValBuf[7] = {'\0'};//Example : -100.0
     for(uint32_t idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
         if(idx && buf[0]) {
-            wldu_catStr(buf, ",", bufSize);
+            swl_str_cat(buf, bufSize, ",");
         }
         snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
-        wldu_catStr(buf, ValBuf, bufSize);
+        swl_str_cat(buf, bufSize, ValBuf);
     }
 }
 
 static void wld_update_station_stats(T_AccessPoint* pAP) {
-    int i = 0;
-    T_AssociatedDevice* pAD;
-    for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
         s_updateStationStatsHistory(pAP->AssociatedDevice[i]);
     }
 }
@@ -907,7 +905,6 @@ bool wld_ad_has_active_video_stations(T_AccessPoint* pAP) {
 
 bool wld_rad_has_active_stations(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
         if(wld_ad_has_active_stations(pAP)) {
@@ -919,7 +916,6 @@ bool wld_rad_has_active_stations(T_Radio* pRad) {
 
 bool wld_rad_has_active_video_stations(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
         if(wld_ad_has_active_video_stations(pAP)) {
@@ -962,7 +958,6 @@ int wld_rad_get_nb_active_stations(T_Radio* pRad) {
 
 int wld_rad_get_nb_active_video_stations(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
     int nr_sta = 0;
 
     amxc_llist_for_each(it, &pRad->llAP) {
@@ -989,7 +984,6 @@ bool wld_ad_has_assocdev(T_AccessPoint* pAP, const unsigned char macAddress[ETHE
 
 T_AccessPoint* wld_rad_get_associated_ap(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
@@ -1009,7 +1003,6 @@ wld_assocDevInfo_t wld_rad_get_associatedDeviceInfo(T_Radio* pRad, const unsigne
     assocDevInfo.pAP = NULL;
     assocDevInfo.pAD = NULL;
 
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
         pAD = wld_vap_find_asociatedDevice(pAP, (void*) macAddress);
@@ -1052,10 +1045,8 @@ int wld_ad_get_nb_far_station(T_AccessPoint* pAP, int threshold) {
 
 void wld_ad_checkRoamSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
-    amxc_llist_it_t* rad_it = NULL;
     amxc_llist_for_each(rad_it, &g_radios) {
         T_Radio* testRad = amxc_llist_it_get_data(rad_it, T_Radio, it);
-        amxc_llist_it_t* ap_it = NULL;
         amxc_llist_for_each(ap_it, &testRad->llAP) {
             T_AccessPoint* testAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
             if(testAp == pAP) {
@@ -1280,7 +1271,6 @@ static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
     amxc_string_set(output, buffer);
 }
 
-
 void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
     ASSERT_NOT_NULL(trans, , ME, "NULL");
     ASSERT_NOT_NULL(caps, , ME, "NULL");
@@ -1303,17 +1293,16 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     amxd_trans_set_cstring_t(trans, "SecurityModeEnabled", swl_security_apModeToString(caps->currentSecurity, SWL_SECURITY_APMODEFMT_LEGACY));
     amxd_trans_set_cstring_t(trans, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
 
-
-
     amxd_trans_set_cstring_t(trans, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
-    bitmask_to_string(&TBufStr, swl_staCapHt_str, ',', caps->htCapabilities);
-    amxd_trans_set_cstring_t(trans, "HtCapabilities", amxc_string_get(&TBufStr, 0));
-    bitmask_to_string(&TBufStr, swl_staCapVht_str, ',', caps->vhtCapabilities);
-    amxd_trans_set_cstring_t(trans, "VhtCapabilities", amxc_string_get(&TBufStr, 0));
-    bitmask_to_string(&TBufStr, swl_staCapHe_str, ',', caps->heCapabilities);
-    amxd_trans_set_cstring_t(trans, "HeCapabilities", amxc_string_get(&TBufStr, 0));
-    bitmask_to_string(&TBufStr, swl_staCapRrm_str, ',', caps->rrmCapabilities);
-    amxd_trans_set_cstring_t(trans, "RrmCapabilities", amxc_string_get(&TBufStr, 0));
+    char buffer[256];
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->htCapabilities, swl_staCapHt_str, SWL_ARRAY_SIZE(swl_staCapHt_str));
+    amxd_trans_set_cstring_t(trans, "HtCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->vhtCapabilities, swl_staCapVht_str, SWL_ARRAY_SIZE(swl_staCapVht_str));
+    amxd_trans_set_cstring_t(trans, "VhtCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->heCapabilities, swl_staCapHe_str, SWL_ARRAY_SIZE(swl_staCapHe_str));
+    amxd_trans_set_cstring_t(trans, "HeCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->rrmCapabilities, swl_staCapRrm_str, SWL_ARRAY_SIZE(swl_staCapRrm_str));
+    amxd_trans_set_cstring_t(trans, "RrmCapabilities", buffer);
     amxd_trans_set_uint32_t(trans, "RrmOnChannelMaxDuration", caps->rrmOnChannelMaxDuration);
     amxd_trans_set_uint32_t(trans, "RrmOffChannelMaxDuration", caps->rrmOffChannelMaxDuration);
     char frequencyCapabilitiesStr[128] = {0};

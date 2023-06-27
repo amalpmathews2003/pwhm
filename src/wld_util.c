@@ -448,7 +448,7 @@ bool convIntArrToString(char* str, int str_size, const int* int_list, int list_s
     str[0] = 0;
     ASSERTS_TRUE(list_size > 0, true, ME, "null list size");
     for(i = 0; (i < list_size) && ((int) strlen(str) < (str_size - 1)); i++) {
-        wldu_catFormat(str, str_size, "%s%i", (i ? "," : ""), int_list[i]);
+        swl_str_catFormat(str, str_size, "%s%i", (i ? "," : ""), int_list[i]);
     }
     ASSERTI_EQUALS(i, list_size, false, ME, "Int array not fully converted to string: str buf too small");
     return true;
@@ -492,7 +492,7 @@ bool convStrArrToStr(char* str, int str_size, const char** strList, int list_siz
     str[0] = 0;
     ASSERTS_TRUE(list_size > 0, true, ME, "null list size");
     for(i = 0; (i < list_size) && ((int) strlen(str) < (str_size - 1)); i++) {
-        wldu_catFormat(str, str_size, "%s%s", (i ? "," : ""), strList[i]);
+        swl_str_catFormat(str, str_size, "%s%s", (i ? "," : ""), strList[i]);
     }
     ASSERTI_EQUALS(i, list_size, false, ME, "Int array not fully converted to string: str buf too small");
     return true;
@@ -587,15 +587,6 @@ long conv_ModeIndexStr(const char** enumStrList, const char* str) {
     }
 
     return WLD_ERROR;
-}
-
-uint32_t conv_strToMaskSep(const char* str, const char** enumStrList, uint32_t maxVal, char separator) {
-    return swl_conv_charToMaskSep(str, enumStrList, maxVal, separator, NULL);
-}
-
-/** @deprecated in favor of #swl_conv_charToMask */
-uint32_t conv_strToMask(const char* str, const char** enumStrList, uint32_t maxVal) {
-    return conv_strToMaskSep(str, enumStrList, maxVal, ',');
 }
 
 bool conv_maskToStrSep(uint32_t mask, const char** enumStrList, uint32_t maxVal, char* str, uint32_t strSize, char separator) {
@@ -1471,42 +1462,8 @@ int32_t wldu_convStr2Mac(unsigned char* mac, uint32_t sizeofmac, const char* str
     return 0;
 }
 
-/* This function is deprecated. Please use wldu_convStr2Mac now */
-int convStr2Mac(unsigned char* mac, unsigned int sizeofmac, const unsigned char* str, unsigned int sizeofstr) {
-    return wldu_convStr2Mac(mac, sizeofmac, (char*) str, sizeofstr);
-}
-
 bool wldu_convMac2Str(unsigned char* mac, uint32_t sizeofmac, char* str, uint32_t sizeofstr) {
     return swl_hex_fromBytesSep(str, sizeofstr, mac, sizeofmac, false, ':', NULL);
-}
-
-/* This function is deprecated. Please use wldu_convMac2Str now */
-int convMac2Str(unsigned char* mac, unsigned int sizeofmac, unsigned char* str, unsigned int sizeofstr) {
-    return wldu_convMac2Str(mac, sizeofmac, (char*) str, sizeofstr);
-}
-
-/** @deprecated Use `swl_hex.h` */
-int convHex2Str(const unsigned char* hex, size_t maxhexlen, unsigned char* str, size_t maxstrlen, int upper) {
-    unsigned int i, ch;
-    char* hexChar = (upper) ? "0123456789ABCDEF" : "0123456789abcdef";
-
-    if(maxstrlen - 1 < maxhexlen * 2) {
-        SAH_TRACEZ_ERROR(ME, "Not enough str storage for convert req octets (Hex %d, Str %d, need %d)",
-                         (int) maxhexlen,
-                         (int) maxstrlen,
-                         (int) (maxhexlen * 2) + 1);
-        return 0;
-    }
-
-    for(i = 0; i < maxhexlen; i++) {
-        ch = hex[i];
-        str[2 * i + 0] = hexChar[ch / 16];
-        str[2 * i + 1] = hexChar[ch % 16];
-    }
-
-    str[i * 2] = '\0';
-
-    return (2 * i + 1);
 }
 
 static int s_convStrToInt8(const char* numSrcStr, void* numDstBuf, uint8_t base) {
@@ -1621,62 +1578,6 @@ int wldu_convStrToNum(const char* numSrcStr, void* numDstBuf, uint8_t numDstByte
     }
     SAH_TRACEZ_ERROR(ME, "unsupp num byte size (%d)", numDstByteSize);
     return WLD_ERROR;
-}
-
-static int s_parseFullHexStrToNum(const char* src, void* numDstBuf, uint8_t numDstNBytes) {
-    ASSERT_NOT_NULL(src, WLD_ERROR, ME, "NULL");
-    uint8_t base = 16;
-    if(strncasecmp(src, "0x", 2) == 0) {
-        src += 2;
-    }
-    uint8_t hexlen = numDstNBytes * 2;
-    ASSERTS_FALSE((strlen(src) < hexlen), WLD_OK, ME, "not a full size hex num str (%d < %d digits)", strlen(src), hexlen);
-    char buf[hexlen + 1];
-    wldu_copyStr(buf, src, sizeof(buf)); \
-    return wldu_convStrToNum(buf, numDstBuf, numDstNBytes, base, false);
-}
-
-/** @deprecated Use `swl_hex.h` */
-uint8_t wldu_parsehexToUint8(const char* src) {
-    ASSERT_NOT_NULL(src, 0, ME, "NULL");
-    uint8_t res = 0;
-    s_parseFullHexStrToNum(src, &res, sizeof(res));
-    return res;
-}
-
-/** @deprecated Use `swl_hex.h` */
-uint16_t wldu_parseHexToUint16(const char* src) {
-    ASSERT_NOT_NULL(src, 0, ME, "NULL");
-    uint16_t res = 0;
-    s_parseFullHexStrToNum(src, &res, sizeof(res));
-    return res;
-}
-
-/** @deprecated Use `swl_hex.h` */
-uint32_t wldu_parseHexToUint32(const char* src) {
-    ASSERT_NOT_NULL(src, 0, ME, "NULL");
-    uint32_t res = 0;
-    s_parseFullHexStrToNum(src, &res, sizeof(res));
-    return res;
-}
-
-uint64_t wldu_parseHexToUint64(const char* src) {
-    ASSERT_NOT_NULL(src, 0, ME, "NULL");
-    uint64_t res = 0;
-    s_parseFullHexStrToNum(src, &res, sizeof(res));
-    return res;
-}
-
-/** @deprecated Use `swl_hex.h` instead. */
-int convStr2Hex(const char* str, size_t maxStrlen, char* hex, size_t maxHexLen) {
-    size_t indexSrc = 0;
-    size_t indexTgt = 0;
-    while(indexSrc < (maxStrlen - 1) && indexTgt < maxHexLen) {
-        hex[indexTgt] = (char) wldu_parsehexToUint8(&str[indexSrc]);
-        indexSrc += 2;
-        indexTgt += 1;
-    }
-    return indexTgt;
 }
 
 /**
@@ -1872,144 +1773,6 @@ swl_opClassCountry_e getCountryZone(int idx) {
 }
 
 /**
- * @deprecated use #swl_str_copy
- *
- * @brief A safe version to copy a string to a destination buffer
- *
- * @deprecated Use `swl_string.h` instead.
- *
- * The downside of strncpy is that is will not terminate the string,
- * when the size of the src is larger then destination, we end up with a buffer that is not null terminated,
- * i.e not a valid string
- * This version will do strncpy and write a terminating NULL character at the end
- *
- * @param dest destination string buffer
- * @param src source string
- * @param destsize size of the destination buffer
- * @return char* destination buffer
- */
-char* wldu_copyStr(char* dest, const char* src, size_t destsize) {
-    swl_str_copy(dest, destsize, src);
-    return dest;
-}
-
-/**
- * @brief A safe version to concatenate two strings
- *
- * @deprecated Use `swl_string.h` instead.
- *
- * The downside of strncat is that is will not terminate the string,
- * when the size of the src is larger then destination, we end up with a buffer that is not null terminated,
- * i.e not a valid string
- * This version will append the source string to its destination,
- * by calling wldu_copyStr at the end of the destination string
- *
- * @param dest destination string buffer
- * @param src source string to append
- * @param destsize size of the destination buffer
- * @return char* destination string buffer
- */
-char* wldu_catStr(char* dest, const char* src, size_t destsize) {
-    if(!dest || !destsize) {
-        return dest;
-    }
-
-    dest[destsize - 1] = '\0';
-    int curDestLen = strlen(dest);
-
-    wldu_copyStr(&dest[curDestLen], src, (destsize - curDestLen));
-    return dest;
-}
-
-/**
- * @brief A safe version to concatenate formatted strings.
- *
- * @deprecated Use `swl_string.h` instead.
- *
- * @param dest destination buffer
- * @param destsize size of destination buffer
- * @param format output string format
- * @return char* destination string buffer
- */
-char* wldu_catFormat(char* dest, size_t destsize, const char* format, ...) {
-    va_list args;
-    int ret = -1;
-    ASSERT_NOT_NULL(dest, dest, ME, "NULL");
-    ASSERT_NOT_NULL(format, dest, ME, "NULL");
-    ASSERT_TRUE(destsize > 0, dest, ME, "null destsize");
-    uint32_t curDestLen = strlen(dest);
-    ASSERT_TRUE(destsize > curDestLen, dest, ME, "dest already full or not initialized");
-
-    va_start(args, format);
-    ret = vsnprintf(&dest[curDestLen], (destsize - curDestLen), format, args);
-    va_end(args);
-    ASSERTI_TRUE(ret > 0, dest, ME, "nothing written");
-    ASSERTI_FALSE(ret >= (int) (destsize - curDestLen), dest, ME, "output was truncated");
-    return dest;
-}
-
-/**
- * @brief Count the number of times a given character appears in string.
- *
- * @deprecated Use `swl_string.h` instead.
- *
- * @param src source string
- * @param tgt the character to count
- * @return uint32_t number of times tgt appears in src
- */
-uint32_t wldu_countChar(const char* src, char tgt) {
-    ASSERT_NOT_NULL(src, 0, ME, "NULL");
-
-    uint32_t count = 0;
-    uint32_t i = 0;
-
-    while(src[i] != '\0') {
-        if(src[i] == tgt) {
-            count++;
-        }
-        i++;
-    }
-
-    return count;
-}
-
-/** @deprecated Use `swl_string.h` instead */
-bool wldu_strStartsWith(const char* msg, const char* prefix) {
-    if((msg == NULL) || (prefix == NULL)) {
-        return (msg == NULL) && (prefix == NULL);
-    }
-    return strncmp(msg, prefix, strlen(prefix)) == 0;
-}
-
-int makeUUID_fromrandom(uint8_t* uuid) {
-    if(!get_random(uuid, UUID_LEN)) {
-        return -1;
-    }
-
-    /* Replace certain bits as specified in rfc4122 or X.667 */
-    uuid[6] &= 0x0f; uuid[6] |= (4 << 4);   /* version 4 == random gen */
-    uuid[8] &= 0x3f; uuid[8] |= 0x80;
-    return 0;
-}
-
-/** @deprecated Use `swl_uuid_binToStr` instead */
-int uuid_bin2str(const uint8_t bin[UUID_LEN], char* str, size_t max_len) {
-    int len;
-    len = snprintf(str, max_len, "%02x%02x%02x%02x-%02x%02x-%02x%02x-"
-                   "%02x%02x-%02x%02x%02x%02x%02x%02x",
-                   bin[0], bin[1], bin[2], bin[3],
-                   bin[4], bin[5], bin[6], bin[7],
-                   bin[8], bin[9], bin[10], bin[11],
-                   bin[12], bin[13], bin[14], bin[15]);
-    SAH_TRACEZ_INFO(ME, "uuid:%s, len:%d, max_len:%d", str, len, (int) max_len);
-    if((len < 0) || ((size_t) len >= max_len)) {
-        return -1;
-    }
-    SAH_TRACEZ_INFO(ME, "uuid:%s", str);
-    return 0;
-}
-
-/**
  * @details stripOutToken
  *
  * @date (6/28/2012)
@@ -2073,73 +1836,6 @@ char** stripString(char** pTL, int nrTL, char* pD, const char* pT) {
         }
     }
     return NULL;
-}
-
-bool bitmask_to_string(amxc_string_t* output, const char** strings, const char separator, const uint32_t bitmask) {
-    int i, bit;
-    size_t currentLength = 0;
-    size_t newLength = 0;
-
-    amxc_string_reset(output);
-
-    if(!output || !strings) {
-        SAH_TRACEZ_ERROR(ME, "argument is NULL");
-        return false;
-    }
-
-    for(i = 0; strings[i]; i++) {
-        bit = 1 << i;
-        if((bitmask & bit) && (strings[i][0])) {
-            int ret = 0;
-            if(amxc_string_is_empty(output) || (separator == '\0')) {
-                ret = amxc_string_append(output, strings[i], strlen(strings[i]));
-            } else {
-                ret = amxc_string_appendf(output, "%c%s", separator, strings[i]);
-            }
-            if((ret != 0) || ((newLength = amxc_string_text_length(output)) == currentLength)) {
-                SAH_TRACEZ_ERROR(ME, "length %d stays for '%s' + '%s'", (int) currentLength, output->buffer, strings[i]);
-                return false;
-            }
-            currentLength = newLength;
-        }
-    }
-    return true;
-}
-
-/* build a bitmask from a list of strings
- * for each string found, the corresponding bitmask will be or'ed into the result
- * if a separator is given, the elements will be required to be properly separated.
- * if no masks are given, a one will be used, shifted left by the index the found string has in the list.
- *
- * @precondition: no element in `strings` is a substring of another element.
- *
- * @deprecated, Use `swl_conv_charToMaskSep` instead
- * Error: return false when a string appears more than one time in the input.
- */
-bool string_to_bitmask(uint32_t* output, const char* input, const char** strings, const uint32_t* masks, const char separator) {
-    int i;
-    uint32_t r = 0;
-    const char* pos;
-    if(!output || !input || !strings) {
-        return false;
-    }
-    for(i = 0; strings[i] && (!masks || masks[i]); i++) {
-        pos = strstr(input, strings[i]);
-        if(!pos) {
-            continue;
-        }
-
-        if(masks) {
-            r |= masks[i];
-        } else {
-            r |= 1 << i;
-        }
-        if((pos != input) && (separator != '\0') && (*(pos - 1) != separator)) {
-            return false;
-        }
-    }
-    *output = r;
-    return true;
 }
 
 /**
@@ -2274,7 +1970,7 @@ int wld_writeCapsToString(char* buffer, uint32_t size, const char* const* strArr
     for(i = 0; i < maxCaps; i++) {
         mask = (1 << i);
         if((mask & caps) != 0) {
-            wldu_catFormat(buffer, size, "%s%s", (strlen(buffer) ? "," : ""), strArray[i]);
+            swl_str_catFormat(buffer, size, "%s%s", (strlen(buffer) ? "," : ""), strArray[i]);
             if(strlen(buffer) >= (size - 1)) {
                 return -1;
             }
@@ -2282,7 +1978,6 @@ int wld_writeCapsToString(char* buffer, uint32_t size, const char* const* strArr
     }
     return 0;
 }
-
 
 /**
  * @brief wld_bitmaskToCSValues
@@ -2301,9 +1996,9 @@ void wld_bitmaskToCSValues(char* string, size_t stringsize, const int bitmask, c
         bitchk = 1 << idx;
         if(bitmask & bitchk) {
             if(idx && string[0]) {
-                wldu_catStr(string, ",", stringsize);
+                swl_str_cat(string, stringsize, ",");
             }
-            wldu_catStr(string, strings[idx], stringsize);
+            swl_str_cat(string, stringsize, strings[idx]);
         }
     }
 }
@@ -2494,7 +2189,7 @@ bool wldu_tuple_convStrToMaskByMask(wld_tuplelist_t* pList, const amxc_string_t*
     ASSERTS_NOT_EQUALS(pList->size, 0, false, ME, "empty list");
     wld_tuple_t* pTuple;
     char selection[amxc_string_text_length(pNames) + 1];
-    wldu_copyStr(selection, pNames->buffer, sizeof(selection));
+    swl_str_copy(selection, sizeof(selection), pNames->buffer);
     char* p = selection;
     char* tk = NULL;
     while((tk = strsep(&p, ",")) != NULL) {
@@ -2585,12 +2280,17 @@ swl_bandwidth_e wld_util_getMaxBwCap(wld_assocDev_capabilities_t* caps) {
 /**
  * Create a new MD5 hash string based on ssid and key string.
  */
-void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, int md5_size) {
+void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, size_t md5_size) {
     char newKeyPassPhrase_md5[PSK_KEY_SIZE_LEN - 1] = {'\0'};
     PKCS5_PBKDF2_HMAC_SHA1(key, strlen(key),
-                           (unsigned char*) ssid, strlen(ssid), 4096,
+                           (const unsigned char*) ssid, strlen(ssid), 4096,
                            sizeof(newKeyPassPhrase_md5), (unsigned char*) newKeyPassPhrase_md5);
-    convHex2Str((unsigned char*) newKeyPassPhrase_md5, sizeof(newKeyPassPhrase_md5), (unsigned char*) md5, md5_size, FALSE);
+
+    bool result = swl_hex_fromBytes(md5, md5_size, (const swl_bit8_t*) newKeyPassPhrase_md5, sizeof(newKeyPassPhrase_md5), false);
+
+    if(!result) {
+        md5[0] = '\0';
+    }
 }
 
 /**

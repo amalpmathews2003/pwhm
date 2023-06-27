@@ -342,7 +342,7 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     SAH_TRACEZ_IN(ME);
 
     /* Use a fix sized buffer... */
-    wldu_copyStr(endpointnamebuf, endpointname, sizeof(endpointnamebuf));
+    swl_str_copy(endpointnamebuf, sizeof(endpointnamebuf), endpointname);
 
     /* Get our T_Radio pointer of the selected radio */
     pR = wld_getRadioDataHandler(wifi, radioname);

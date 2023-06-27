@@ -143,7 +143,7 @@ static void s_updateScanStats(T_Radio* pRad) {
 void wld_radio_copySsidsToResult(T_ScanResults* results, amxc_llist_t* ssid_list) {
     ASSERTS_NOT_NULL(results, , ME, "NULL");
     ASSERTS_NOT_NULL(ssid_list, , ME, "NULL");
-    amxc_llist_it_t* item = NULL;
+
     amxc_llist_for_each(item, ssid_list) {
         T_ScanResult_SSID* cur_ssid = amxc_llist_it_get_data(item, T_ScanResult_SSID, it);
         T_ScanResult_SSID* ssid_new = calloc(1, sizeof(T_ScanResult_SSID));
@@ -216,7 +216,7 @@ bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, T_ScanResult_SSID
 wld_scanReasonStats_t* wld_getScanStatsByReason(T_Radio* pRad, const char* reason) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     ASSERT_NOT_NULL(reason, NULL, ME, "NULL");
-    amxc_llist_it_t* it;
+
     amxc_llist_for_each(it, &(pRad->scanState.stats.extendedStat)) {
         wld_scanReasonStats_t* stats = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);
         if(swl_str_matches(stats->scanReason, reason)) {

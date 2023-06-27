@@ -518,7 +518,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             snprintf(TBuf, sizeof(TBuf), WLD_EMPTY_MAC_ADDRESS);
             memset(pS->BSSID, 0, ETHER_ADDR_LEN);
         } else {
-            convStr2Mac(pS->BSSID, ETHER_ADDR_LEN, (unsigned char*) TBuf, ETHER_ADDR_STR_LEN);
+            wldu_convStr2Mac(pS->BSSID, ETHER_ADDR_LEN, (char*) TBuf, ETHER_ADDR_STR_LEN);
         }
         amxd_trans_set_cstring_t(&trans, "BSSID", TBuf);
         TBuf[0] = 0;

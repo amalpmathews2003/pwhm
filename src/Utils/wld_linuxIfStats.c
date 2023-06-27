@@ -342,13 +342,12 @@ bool wld_linuxIfStats_getAllVapStats(T_Radio* pRadio, T_Stats* pAllVapStats) {
     bool result = false;
 
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     T_Stats interfaceStats;
     memset(&interfaceStats, 0, sizeof(interfaceStats));
 
     // Get APs stats
-    for(it = (amxc_llist_it_t*) amxc_llist_get_first(&pRadio->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
+    for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pRadio->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
         pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
 
         SAH_TRACEZ_INFO(ME, "Radio AP interface = %s", pAP->alias);
@@ -380,13 +379,12 @@ bool wld_linuxIfStats_getAllEpStats(T_Radio* pRadio, T_Stats* pAllEpStats) {
     bool result = false;
 
     T_EndPoint* pEP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     T_Stats interfaceStats;
     memset(&interfaceStats, 0, sizeof(interfaceStats));
 
     // Get EPs Stats
-    for(it = (amxc_llist_it_t*) amxc_llist_get_first(&pRadio->llEndPoints); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
+    for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pRadio->llEndPoints); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
         pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
 
         SAH_TRACEZ_INFO(ME, "Radio EP interface = %s", pEP->Name);

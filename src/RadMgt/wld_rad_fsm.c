@@ -113,13 +113,10 @@ static void s_printFsmBits(T_Radio* rad) {
 
 static void s_cleanFsmBits(T_Radio* rad) {
     longArrayClean(rad->fsmRad.FSM_BitActionArray, FSM_BW);
-    amxc_llist_it_t* it;
-
     amxc_llist_for_each(it, &rad->llAP) {
         T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
         longArrayClean(pAP->fsm.FSM_BitActionArray, FSM_BW);
     }
-
     amxc_llist_for_each(it, &rad->llEndPoints) {
         T_EndPoint* pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
         longArrayClean(pEP->fsm.FSM_BitActionArray, FSM_BW);

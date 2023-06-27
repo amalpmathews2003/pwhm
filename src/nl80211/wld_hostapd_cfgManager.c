@@ -122,7 +122,6 @@ bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP) 
     // Init the header map
     swl_mapChar_init(&(config->header));
     amxc_llist_init(&config->vaps);
-    amxc_llist_it_t* ap_it;
     amxc_llist_for_each(ap_it, pllAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
         bool isInterface = (pAp->ref_index == 0);
@@ -278,7 +277,6 @@ bool wld_hostapd_writeConfig(wld_hostapd_config_t* conf, char* path) {
     }
 
     // Write vaps list into into temporary file
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &conf->vaps) {
         wld_hostapdVapInfo_t* vapInfo = amxc_llist_it_get_data(it, wld_hostapdVapInfo_t, it);
         if(vapInfo->isInterface) {
@@ -327,7 +325,6 @@ bool wld_hostapd_addConfigParam(wld_hostapd_config_t* conf, const char* bssName,
     if(bssName == NULL) {
         ret = swl_map_addOrSet(&conf->header, (char*) key, (char*) value);
     } else {
-        amxc_llist_it_t* it;
         amxc_llist_for_each(it, &conf->vaps) {
             wld_hostapdVapInfo_t* vapInfo = amxc_llist_it_get_data(it, wld_hostapdVapInfo_t, it);
             if(swl_str_matches(vapInfo->bssName, bssName)) {
@@ -365,7 +362,6 @@ bool wld_hostapd_delConfigParam(wld_hostapd_config_t* conf, char* bssName, char*
         ASSERT_TRUE(ret, false, ME, "key %s doesn't exist", key);
         swl_map_delete(&conf->header, key);
     } else {
-        amxc_llist_it_t* it;
         amxc_llist_for_each(it, &conf->vaps) {
             wld_hostapdVapInfo_t* vapInfo = amxc_llist_it_get_data(it, wld_hostapdVapInfo_t, it);
             if(swl_str_matches(vapInfo->bssName, bssName)) {
@@ -394,7 +390,6 @@ swl_mapChar_t* wld_hostapd_getConfigMap(wld_hostapd_config_t* conf, char* bssNam
     if(bssName == NULL) {
         return &(conf->header);
     } else {
-        amxc_llist_it_t* it;
         amxc_llist_for_each(it, &conf->vaps) {
             wld_hostapdVapInfo_t* vapInfo = amxc_llist_it_get_data(it, wld_hostapdVapInfo_t, it);
             if(swl_str_matches(vapInfo->bssName, bssName)) {

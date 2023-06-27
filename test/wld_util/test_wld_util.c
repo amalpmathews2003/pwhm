@@ -255,99 +255,6 @@ static void test_wldu_convStrToNum(void** state _UNUSED) {
     assert_true((uint64_t) llng == ULLONG_MAX);
 }
 
-static void test_wldu_parseHexToUint64(void** state _UNUSED) {
-    assert_true(wldu_parseHexToUint64("000000000000a1b2") == 41394LL);
-    assert_true(wldu_parseHexToUint64("0000000000001234") == 4660);
-    assert_true(wldu_parseHexToUint64("000000000000000f") == 15);
-    assert_true(wldu_parseHexToUint64("00000000000000f0") == 240);
-    assert_true(wldu_parseHexToUint64("0000000000000f00") == 3840);
-    assert_true(wldu_parseHexToUint64("000000000000f000") == 61440);
-    assert_true(wldu_parseHexToUint64("00000000ffffffff") == 4294967295);
-    assert_true(wldu_parseHexToUint64("0000000200000000") == 1LL << 33);
-    assert_true(wldu_parseHexToUint64("ffffffffffffffff") == (uint64_t) -1);
-    assert_true(wldu_parseHexToUint64("fffffffffffffff") == 0);
-    assert_true(wldu_parseHexToUint64("f") == 0);
-    assert_true(wldu_parseHexToUint64("") == 0);
-}
-
-static void test_wldu_parseHexToUint32(void** state _UNUSED) {
-    assert_int_equal(wldu_parseHexToUint32("0000a1b2"), 41394);
-    assert_int_equal(wldu_parseHexToUint32("00001234"), 4660);
-    assert_int_equal(wldu_parseHexToUint32("0000000f"), 15);
-    assert_int_equal(wldu_parseHexToUint32("000000f0"), 240);
-    assert_int_equal(wldu_parseHexToUint32("00000f00"), 3840);
-    assert_int_equal(wldu_parseHexToUint32("0000f000"), 61440);
-    assert_int_equal(wldu_parseHexToUint32("0000ffff"), 65535);
-    assert_int_equal(wldu_parseHexToUint32("ffffffff"), 4294967295);
-    assert_int_equal(wldu_parseHexToUint32("fffffff"), 0);
-    assert_int_equal(wldu_parseHexToUint32("ffffff"), 0);
-    assert_int_equal(wldu_parseHexToUint32("fffff"), 0);
-    assert_int_equal(wldu_parseHexToUint32("ffff"), 0);
-    assert_int_equal(wldu_parseHexToUint32("fff"), 0);
-    assert_int_equal(wldu_parseHexToUint32("ff"), 0);
-    assert_int_equal(wldu_parseHexToUint32("f"), 0);
-    assert_int_equal(wldu_parseHexToUint32(""), 0);
-}
-
-static void test_wldu_parseHexToUint16(void** state _UNUSED) {
-    assert_int_equal(wldu_parseHexToUint16("a1b2"), 41394);
-    assert_int_equal(wldu_parseHexToUint16("1234"), 4660);
-    assert_int_equal(wldu_parseHexToUint16("000f"), 15);
-    assert_int_equal(wldu_parseHexToUint16("00f0"), 240);
-    assert_int_equal(wldu_parseHexToUint16("0f00"), 3840);
-    assert_int_equal(wldu_parseHexToUint16("f000"), 61440);
-    assert_int_equal(wldu_parseHexToUint16("ffffffff"), 65535);
-    assert_int_equal(wldu_parseHexToUint16("ffff"), 65535);
-    assert_int_equal(wldu_parseHexToUint16("fff"), 0);
-    assert_int_equal(wldu_parseHexToUint16("ff"), 0);
-    assert_int_equal(wldu_parseHexToUint16("f"), 0);
-    assert_int_equal(wldu_parseHexToUint16(""), 0);
-}
-
-
-static void test_wldu_parseHexToUint8(void** state _UNUSED) {
-    assert_int_equal(wldu_parsehexToUint8("11"), 17);
-    assert_int_equal(wldu_parsehexToUint8("ffff"), 255);
-    assert_int_equal(wldu_parsehexToUint8("ff"), 255);
-    assert_int_equal(wldu_parsehexToUint8("0f"), 15);
-    assert_int_equal(wldu_parsehexToUint8("f0"), 240);
-    assert_int_equal(wldu_parsehexToUint8("f"), 0);
-    assert_int_equal(wldu_parsehexToUint8(""), 0);
-}
-
-static void test_convStr2Hex(void** state _UNUSED) {
-    char buffer[64];
-    int size = sizeof(buffer);
-    char* test1 = "000102030405060708090a0b0c0d0e0f";
-    uint8_t test1Result[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    int resultSize = convStr2Hex(test1, strlen(test1), buffer, size);
-    assert_int_equal(16, resultSize);
-    assert_memory_equal(buffer, test1Result, 16);
-
-    char* test2 = "102030405060708090a0b0c0d0e0f0";
-    uint8_t test2Result[15] = {16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240};
-    resultSize = convStr2Hex(test2, strlen(test2), buffer, size);
-    assert_int_equal(15, resultSize);
-    assert_memory_equal(buffer, test2Result, 15);
-
-    char* test3 = "0112233445566778899aabbccddeeffedcba9876543210f";
-    uint8_t test3Result[23] = {1, 18, 35, 52, 69, 86, 103, 120, 137, 154, 171, 188, 205, 222, 239, 254, 220, 186, 152, 118, 84, 50, 16};
-    resultSize = convStr2Hex(test3, strlen(test3), buffer, size);
-    assert_int_equal(23, resultSize);
-    assert_memory_equal(buffer, test3Result, 23);
-}
-
-static void test_wldu_strStartsWith(void** state _UNUSED) {
-    assert_true(wldu_strStartsWith("abc", "ab"));
-    assert_true(wldu_strStartsWith("1234abcdef", "1234"));
-
-
-    assert_false(wldu_strStartsWith("ab", "abc"));
-    assert_false(wldu_strStartsWith("abcd", "dcba"));
-    assert_false(wldu_strStartsWith("abcd", "bcd"));
-}
-
-
 static void test_isValidSSID(void** state _UNUSED) {
     assert_false(isValidSSID(NULL));
     assert_false(isValidSSID(""));
@@ -416,7 +323,7 @@ static const char* strList[] = {"bla", "bla2", "foo", "bar", "foobar", "barfoo"}
 
 static void test_conv_maskToStrGo(char* input, uint32_t expectedMask, char* expectedOutput) {
     char buffer[128];
-    uint32_t mask = conv_strToMask(input, strList, WLD_ARRAY_SIZE(strList));
+    uint32_t mask = swl_conv_charToMaskSep(input, strList, WLD_ARRAY_SIZE(strList), ',', NULL);
     assert_int_equal(mask, expectedMask);
     conv_maskToStr(mask, strList, WLD_ARRAY_SIZE(strList), buffer, sizeof(buffer));
     if(expectedOutput == NULL) {
@@ -434,22 +341,6 @@ static void test_conv_maskToStr(void** state _UNUSED) {
     test_conv_maskToStrGo("bla,bla2,foo,bar,foobar,barfoo", 0x3f, NULL);
     test_conv_maskToStrGo("abla", 0x0, "");
     test_conv_maskToStrGo("abla,rabarblafoo,foo,foobarbar", 0x4, "foo");
-}
-
-static void test_conv_strToMaskGo(uint32_t input, char* expectedChar, uint32_t output) {
-    char buffer[128];
-    conv_maskToStr(input, strList, WLD_ARRAY_SIZE(strList), buffer, sizeof(buffer));
-    assert_string_equal(buffer, expectedChar);
-    uint32_t mask = conv_strToMask(buffer, strList, WLD_ARRAY_SIZE(strList));
-    assert_int_equal(mask, output);
-
-}
-
-static void test_conv_strToMask(void** state _UNUSED) {
-    test_conv_strToMaskGo(0x1, "bla", 0x1);
-    test_conv_strToMaskGo(0x25, "bla,foo,barfoo", 0x25);
-    test_conv_strToMaskGo(0x3f, "bla,bla2,foo,bar,foobar,barfoo", 0x3f);
-    test_conv_strToMaskGo(0xff, "bla,bla2,foo,bar,foobar,barfoo", 0x3f);
 }
 
 static void test_isPower(void** state _UNUSED) {
@@ -542,16 +433,9 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_ssid_to_string_hex),
         cmocka_unit_test(test_ssid_to_string_zero_byte),
         cmocka_unit_test(test_wldu_convStrToNum),
-        cmocka_unit_test(test_wldu_parseHexToUint64),
-        cmocka_unit_test(test_wldu_parseHexToUint32),
-        cmocka_unit_test(test_wldu_parseHexToUint16),
-        cmocka_unit_test(test_wldu_parseHexToUint8),
-        cmocka_unit_test(test_convStr2Hex),
         cmocka_unit_test(test_wldu_convStrToUInt8Arr),
-        cmocka_unit_test(test_wldu_strStartsWith),
         cmocka_unit_test(test_isValidSSID),
         cmocka_unit_test(test_conv_maskToStr),
-        cmocka_unit_test(test_conv_strToMask),
         cmocka_unit_test(test_isPower),
         cmocka_unit_test(test_tuple),
         cmocka_unit_test(test_isValidAesKey),

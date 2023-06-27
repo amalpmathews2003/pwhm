@@ -139,7 +139,9 @@ static bool sync_changes(amxd_object_t* mf, const char* objectName, unsigned cha
         }
         amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
         const char* macstr = amxd_object_get_cstring_t(mfentry, "MACAddress", NULL);
-        if(convStr2Mac(macbin, ETHER_ADDR_LEN, (unsigned char*) (macstr ? : ""), strlen(macstr ? : ""))) {
+        swl_macChar_t macAddr_char = {.cMac = {0}};
+        strncpy(macAddr_char.cMac, macstr ? : "", sizeof(macAddr_char.cMac) - 1);
+        if(swl_mac_charToBin((swl_macBin_t*) macbin, &macAddr_char)) {
             if(memcmp(macbin, maclist[idx], ETHER_ADDR_LEN)) {
                 changes++;
                 memcpy(maclist[idx], macbin, ETHER_ADDR_LEN);
@@ -169,7 +171,7 @@ void wld_ap_macfilter_updateMACFilterAddressList(T_AccessPoint* pAP) {
         for(i = 0; i < pAP->MF_EntryCount; i++) {
             char macStr[ETHER_ADDR_STR_LEN] = {'\0'};
             wldu_convMac2Str(pAP->MF_Entry[i], ETHER_ADDR_LEN, macStr, ETHER_ADDR_STR_LEN);
-            wldu_catFormat(pAP->MF_AddressList, size, "%s%s", macStr, (i + 1 == pAP->MF_EntryCount) ? "" : ",");
+            swl_str_catFormat(pAP->MF_AddressList, size, "%s%s", macStr, (i + 1 == pAP->MF_EntryCount) ? "" : ",");
         }
     }
     if(pAP->MF_AddressList) {
@@ -522,7 +524,7 @@ static bool addEntry(
         return false;
     }
 
-    if(!convStr2Mac(macBin, ETHER_ADDR_LEN, (unsigned char*) macStr, strlen(macStr))) {
+    if(!wldu_convStr2Mac(macBin, ETHER_ADDR_LEN, (char*) macStr, strlen(macStr))) {
         SAH_TRACEZ_ERROR(ME, "Unable to parse %s", macStr);
         return false;
     }
@@ -558,7 +560,9 @@ static bool delEntry(
     const char* macStr = GET_CHAR(args, "mac");
 
     unsigned char mac[ETHER_ADDR_LEN];
-    if(!convStr2Mac(mac, sizeof(mac), (unsigned char*) macStr, strlen(macStr))) {
+    swl_macChar_t macAddr_char = {.cMac = {0}};
+    strncpy(macAddr_char.cMac, macStr, sizeof(macAddr_char.cMac) - 1);
+    if(!swl_mac_charToBin((swl_macBin_t*) mac, &macAddr_char)) {
         SAH_TRACEZ_ERROR(ME, "Unable to parse %s", macStr);
         return false;
     }

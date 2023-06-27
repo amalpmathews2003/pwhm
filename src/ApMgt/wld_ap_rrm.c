@@ -110,7 +110,7 @@ static void rrm_timeout_handler(amxp_timer_t* timer _UNUSED, void* userdata) {
  */
 void wld_ap_rrm_item(T_AccessPoint* ap, const swl_macChar_t* mac, amxc_var_t* result) {
     SAH_TRACEZ_INFO(ME, "rrm data %s %s", ap->alias, mac->cMac);
-    amxc_llist_it_t* it;
+
     amxc_llist_for_each(it, &rrm_wait_list) {
         rrm_wait_t* wait = amxc_llist_it_get_data(it, rrm_wait_t, it);
         if((wait->ap == ap) && swl_mac_charMatches(mac, &wait->mac)) {

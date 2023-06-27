@@ -132,7 +132,6 @@ static wld_nl80211_state_t* sSharedState = NULL;
  */
 bool s_isValidState(const wld_nl80211_state_t* state) {
     ASSERTS_NOT_NULL(state, false, ME, "NULL");
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &gStates) {
         if(state == amxc_llist_it_get_data(it, wld_nl80211_state_t, it)) {
             return true;
@@ -167,7 +166,6 @@ static void s_freeRequest(nlRequest_t* pReq) {
 static nlRequest_t* s_findRequest(const wld_nl80211_state_t* state, uint32_t seqId) {
     ASSERTS_NOT_NULL(state, NULL, ME, NULL);
     nlRequest_t* pReq = NULL;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &state->requests) {
         pReq = amxc_llist_it_get_data(it, nlRequest_t, it);
         if(pReq->seqId == seqId) {
@@ -221,7 +219,6 @@ static void s_freeListenerList(amxc_llist_t* pListenerList) {
 static wld_nl80211_listener_t* s_findListener(wld_nl80211_state_t* state, wld_nl80211_listener_t* pListener) {
     ASSERTS_NOT_NULL(state, NULL, ME, NULL);
     ASSERTS_NOT_NULL(pListener, NULL, ME, NULL);
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &state->listeners) {
         if(pListener == amxc_llist_it_get_data(it, wld_nl80211_listener_t, it)) {
             return pListener;
@@ -240,7 +237,6 @@ static wld_nl80211_listener_t* s_findListener(wld_nl80211_state_t* state, wld_nl
 static wld_nl80211_listener_t* s_findListenerExt(wld_nl80211_listener_t* pListener) {
     ASSERTS_NOT_NULL(pListener, NULL, ME, NULL);
     wld_nl80211_state_t* state;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &gStates) {
         state = amxc_llist_it_get_data(it, wld_nl80211_state_t, it);
         if(s_findListener(state, pListener)) {
@@ -285,7 +281,6 @@ static swl_rc_ne s_findListenersOfEvent(wld_nl80211_state_t* state, uint32_t wip
     ASSERTS_FALSE(amxc_llist_is_empty(&state->listeners), SWL_RC_OK, ME, "No listeners");
     uint32_t nSelectedListeners = 0;
     wld_nl80211_listener_t* selectedListeners[amxc_llist_size(&state->listeners)];
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &state->listeners) {
         wld_nl80211_listener_t* pL = amxc_llist_it_get_data(it, wld_nl80211_listener_t, it);
         if(!wld_nl80211_hasEventHandler(pL, cmd)) {
@@ -519,7 +514,6 @@ static void s_clearExpiredRequests(wld_nl80211_state_t* state) {
 
 void wld_nl80211_clearAllExpiredRequests() {
     wld_nl80211_state_t* state;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &gStates) {
         state = amxc_llist_it_get_data(it, wld_nl80211_state_t, it);
         s_clearExpiredRequests(state);
@@ -763,7 +757,6 @@ swl_rc_ne wld_nl80211_getAllCounters(wld_nl80211_stateCounters_t* pCounters) {
     memset(pCounters, 0, sizeof(*pCounters));
     wld_nl80211_stateCounters_t counters;
     wld_nl80211_state_t* state;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &gStates) {
         state = amxc_llist_it_get_data(it, wld_nl80211_state_t, it);
         if(wld_nl80211_getStateCounters(state, &counters) == SWL_RC_OK) {

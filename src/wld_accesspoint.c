@@ -933,8 +933,9 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_object_set_bool(object, "WDSEnable", pAP->wdsEnable);
 
-        bitmask_to_string(&TBufStr, cstr_MultiAPType, ',', pAP->multiAPType);
-        amxd_object_set_cstring_t(object, "MultiAPType", TBufStr.buffer);
+        char buffer[256] = {0};
+        swl_conv_maskToChar(buffer, sizeof(buffer), pAP->multiAPType, cstr_MultiAPType, SWL_ARRAY_SIZE(cstr_MultiAPType));
+        amxd_object_set_cstring_t(object, "MultiAPType", buffer);
 
         amxd_object_set_cstring_t(amxd_object_findf(object, "IEEE80211r"),
                                   "NASIdentifier", pAP->NASIdentifier);
@@ -1179,7 +1180,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         char* wepKey = amxd_object_get_cstring_t(secObj, "WEPKey", NULL);
         if(!swl_str_nmatches(pAP->WEPKey, wepKey, swl_str_len(pAP->WEPKey))) {
             if(isValidWEPKey(wepKey)) {
-                wldu_copyStr(pAP->WEPKey, wepKey, sizeof(pAP->WEPKey));
+                swl_str_copy(pAP->WEPKey, sizeof(pAP->WEPKey), wepKey);
                 wld_ap_sec_doSync(pAP);
             }
         }
@@ -1188,7 +1189,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         char* pskKey = amxd_object_get_cstring_t(secObj, "PreSharedKey", NULL);
         if(!swl_str_nmatches(pAP->preSharedKey, pskKey, swl_str_len(pAP->preSharedKey))) {
             if(isValidPSKKey(pskKey)) {
-                wldu_copyStr(pAP->preSharedKey, pskKey, sizeof(pAP->preSharedKey));
+                swl_str_copy(pAP->preSharedKey, sizeof(pAP->preSharedKey), pskKey);
                 wld_ap_sec_doSync(pAP);
             }
         }
@@ -1197,7 +1198,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
         if(!swl_str_nmatches(pAP->keyPassPhrase, keyPassPhrase, swl_str_len(pAP->keyPassPhrase))) {
             if(isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
-                wldu_copyStr(pAP->keyPassPhrase, keyPassPhrase, sizeof(pAP->keyPassPhrase));
+                swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), keyPassPhrase);
                 wld_ap_sec_doSync(pAP);
             }
         }
@@ -1206,7 +1207,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         char* saePassphrase = amxd_object_get_cstring_t(secObj, "SAEPassphrase", NULL);
         if(!swl_str_nmatches(pAP->saePassphrase, saePassphrase, swl_str_len(pAP->saePassphrase))) {
             if(isValidAESKey(saePassphrase, SAE_KEY_SIZE_LEN)) {
-                wldu_copyStr(pAP->saePassphrase, saePassphrase, sizeof(pAP->saePassphrase));
+                swl_str_copy(pAP->saePassphrase, sizeof(pAP->saePassphrase), saePassphrase);
                 wld_ap_sec_doSync(pAP);
             }
         }
@@ -1438,12 +1439,8 @@ amxd_status_t _wld_ap_setMultiAPType_pwf(amxd_object_t* object _UNUSED,
 
     ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
     char* new_multiAPType = amxc_var_dyncast(cstring_t, args);
-    uint32_t m_multiAPType = 0;
-    if(new_multiAPType && new_multiAPType[0]) {
-        string_to_bitmask(&m_multiAPType, new_multiAPType, cstr_MultiAPType, NULL, ',');
-    } else {
-        m_multiAPType = 0;
-    }
+    uint32_t m_multiAPType = (new_multiAPType && new_multiAPType[0]) ?
+        swl_conv_charToMaskSep(new_multiAPType, cstr_MultiAPType, WLD_ARRAY_SIZE(cstr_MultiAPType), ',', NULL) : 0;
     free(new_multiAPType);
     if(pAP->multiAPType != m_multiAPType) {
         pAP->multiAPType = m_multiAPType;
@@ -1540,7 +1537,6 @@ static wld_vendorIe_t* getVendorIE(T_AccessPoint* pAP, const char* oui, const ch
     ASSERT_NOT_NULL(data, NULL, ME, "NULL");
     ASSERTI_FALSE(swl_str_matches("", oui) || swl_str_matches("", data), NULL, ME, "empty string");
 
-    amxc_llist_it_t* llit = NULL;
     amxc_llist_for_each(llit, &pAP->vendorIEs) {
         wld_vendorIe_t* vendor_ie_elt = amxc_llist_it_get_data(llit, wld_vendorIe_t, it);
         if(swl_str_matches(vendor_ie_elt->oui, oui) && swl_str_matches(vendor_ie_elt->data, data)) {
@@ -1574,7 +1570,7 @@ amxd_status_t _wld_ap_setVendorIE_owf(amxd_object_t* instance_object) {
     const char* oui = NULL;
     const char* data = NULL;
     const char* frame_type_var = NULL;
-    uint32_t frame_type;
+    swl_mask_m frame_type;
 
     ASSERTS_FALSE(amxd_object_get_type(instance_object) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
     amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(instance_object)));
@@ -1600,7 +1596,7 @@ amxd_status_t _wld_ap_setVendorIE_owf(amxd_object_t* instance_object) {
 
     frame_type_var = amxd_object_get_cstring_t(instance_object, "FrameType", NULL);
     ASSERT_TRUE(isVendorIEValid(oui, data), amxd_status_unknown_error, ME, "Input are invalid");
-    frame_type = conv_strToMaskSep(frame_type_var, wld_vendorIe_frameType_str, VENDOR_IE_MAX, ',');
+    frame_type = swl_conv_charToMaskSep(frame_type_var, wld_vendorIe_frameType_str, VENDOR_IE_MAX, ',', NULL);
 
     swl_str_copy(vendor_ie->oui, SWL_OUI_STR_LEN, oui);
     swl_str_copy(vendor_ie->data, WLD_VENDORIE_T_DATA_SIZE, data);
@@ -1946,7 +1942,6 @@ amxd_status_t _wld_ap_setDiscoveryMethod_pwf(amxd_object_t* object _UNUSED,
      * method is present on other bands (2.4/5GHz). Check if RNR is present
      */
     bool rnrEnabled = false;
-    amxc_llist_it_t* llit = NULL;
     amxc_llist_for_each(llit, &g_radios) {
         T_Radio* pOtherRad = amxc_llist_it_get_data(llit, T_Radio, it);
         if((swl_str_matches(pRad->Name, pOtherRad->Name)) ||
@@ -2028,11 +2023,11 @@ T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
     snprintf(pAP->alias, sizeof(pAP->alias), "%s", vapName);
     pAP->fsm.FSM_SyncAll = TRUE;
 
-    wldu_copyStr(pAP->keyPassPhrase, "password", sizeof(pAP->keyPassPhrase));
-    wldu_copyStr(pAP->WEPKey, "123456789ABCDEF0123456789A", sizeof(pAP->WEPKey));
+    swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), "password");
+    swl_str_copy(pAP->WEPKey, sizeof(pAP->WEPKey), "123456789ABCDEF0123456789A");
     sprintf(pAP->preSharedKey, "password_%d", idx);
     sprintf(pAP->radiusSecret, "RadiusPassword_%d", idx);
-    wldu_copyStr(pAP->radiusServerIPAddr, "127.0.0.1", sizeof(pAP->radiusServerIPAddr));
+    swl_str_copy(pAP->radiusServerIPAddr, sizeof(pAP->radiusServerIPAddr), "127.0.0.1");
     pAP->radiusServerPort = 1812;
     pAP->radiusDefaultSessionTimeout = 0;
     pAP->radiusOwnIPAddress[0] = '\0';
@@ -2675,7 +2670,6 @@ amxd_status_t _dbgClearInactiveEntries(amxd_object_t* object,
 }
 
 T_AccessPoint* wld_vap_get_vap(const char* ifname) {
-    amxc_llist_it_t* llit = NULL;
     amxc_llist_for_each(llit, &g_radios) {
         T_Radio* pRad = amxc_llist_it_get_data(llit, T_Radio, it);
         amxc_llist_it_t* it;
@@ -2691,7 +2685,6 @@ T_AccessPoint* wld_vap_get_vap(const char* ifname) {
 }
 
 T_AccessPoint* wld_ap_getVapByName(const char* name) {
-    amxc_llist_it_t* llit = NULL;
     amxc_llist_for_each(llit, &g_radios) {
         T_Radio* pRad = amxc_llist_it_get_data(llit, T_Radio, it);
         amxc_llist_it_t* it;
@@ -2887,20 +2880,17 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
     } else if(!strcasecmp(feature, "SSIDAdvertisementEnabled")) {
         bool enable = GET_BOOL(args, "enable");
         wld_ap_hostapd_setSSIDAdvertisement(pAP, enable);
-    } else if(swl_str_matches(feature, "setSsid")) {
-        const char* ssid = GET_CHAR(args, "ssid");
-        bool ret = wld_ap_hostapd_setSsid(pAP, ssid);
     } else if(!strcasecmp(feature, "setKey")) {
         const char* key = GET_CHAR(args, "key");
         const char* value = GET_CHAR(args, "value");
         if(!strcasecmp(key, "wep_key")) {
-            wldu_copyStr(pAP->WEPKey, value, sizeof(pAP->WEPKey));
+            swl_str_copy(pAP->WEPKey, sizeof(pAP->WEPKey), value);
         } else if(!strcasecmp(key, "wpa_psk")) {
-            wldu_copyStr(pAP->preSharedKey, value, sizeof(pAP->preSharedKey));
+            swl_str_copy(pAP->preSharedKey, sizeof(pAP->preSharedKey), value);
         } else if(!strcasecmp(key, "wpa_passphrase")) {
-            wldu_copyStr(pAP->keyPassPhrase, value, sizeof(pAP->keyPassPhrase));
+            swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), value);
         } else if(!strcasecmp(key, "sae_password")) {
-            wldu_copyStr(pAP->saePassphrase, value, sizeof(pAP->saePassphrase));
+            swl_str_copy(pAP->saePassphrase, sizeof(pAP->saePassphrase), value);
         }
         wld_ap_hostapd_setSecretKey(pAP);
     } else if(!strcasecmp(feature, "nl80211IfaceInfo")) {
@@ -2938,7 +2928,6 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
         if(reason == 0) {
             reason = SWL_IEEE80211_DEAUTH_REASON_UNSPECIFIED;
         }
-        swl_macChar_t cMac;
         swl_macBin_t bMac;
 
         SWL_MAC_CHAR_TO_BIN(&bMac, sta);

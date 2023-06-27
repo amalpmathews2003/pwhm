@@ -137,7 +137,10 @@ bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const wld_wps_c
         amxc_string_appendf(output, "None");
         return true;
     }
-    return bitmask_to_string(output, cstr_WPS_CM_Supported, ',', configMethods);
+    char buffer[256] = {0};
+    bool ret = swl_conv_maskToChar(buffer, sizeof(buffer), configMethods, cstr_WPS_CM_Supported, SWL_ARRAY_SIZE(cstr_WPS_CM_Supported));
+    amxc_string_set(output, buffer);
+    return ret;
 }
 
 bool wld_wps_ConfigMethods_mask_to_charBuf(char* string, size_t stringsize, const wld_wps_cfgMethod_m configMethods) {
@@ -267,7 +270,6 @@ void wld_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* 
  */
 void s_syncWpsConstToObject() {
     amxc_llist_it_t* itRad = NULL;
-    amxc_llist_it_t* it = NULL;
     bool ret;
 
     /* Update wps_DefParam */
@@ -279,7 +281,7 @@ void s_syncWpsConstToObject() {
     for(itRad = amxc_llist_get_first(&g_radios); itRad; itRad = amxc_llist_it_get_next(itRad)) {
         T_Radio* pRad = amxc_llist_it_get_data(itRad, T_Radio, it);
         assert(pRad);
-
+        amxc_llist_it_t* it;
         for(it = amxc_llist_get_first(&pRad->llAP); it; it = amxc_llist_it_get_next(it)) {
             T_AccessPoint* pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
             assert(pAP);

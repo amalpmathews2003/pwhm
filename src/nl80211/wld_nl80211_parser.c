@@ -563,9 +563,7 @@ swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy
     ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(tb[NL80211_ATTR_WIPHY_BANDS], SWL_RC_OK, ME, "No attr to parse");
     struct nlattr* nlBand;
-    struct nlattr* nlFreq;
     int remBand;
-    int remFreq;
     struct nlattr* tbBand[NL80211_BAND_ATTR_MAX + 1];
     nla_for_each_nested(nlBand, tb[NL80211_ATTR_WIPHY_BANDS], remBand) {
         uint32_t nlFreqBand = nlBand->nla_type;

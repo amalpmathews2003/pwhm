@@ -126,7 +126,7 @@ static int getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pT, 0, ME, "NULL");
     *pT = '\0';
     SKIP_WSP(pCh);
-    wldu_copyStr(intfStats.intfName, pCh, IFNAMSIZ);
+    swl_str_copy(intfStats.intfName, IFNAMSIZ, pCh);
     *pT = ':';
     pT++;
     sscanf(pT, "%llu %llu %lu %lu %lu %lu %lu %lu %llu %llu %lu %lu %lu %lu %lu %lu",
@@ -179,7 +179,6 @@ static int getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
  */
 static int wld_statsmon_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
     FILE* hf;
-    unsigned int i;
     char buf[512];
 
     if((time(NULL) - latestStateChangeTime) < TIMEOUT_LINUX_INTF_STATS) {

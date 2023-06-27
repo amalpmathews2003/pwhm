@@ -94,7 +94,6 @@ static amxm_shared_object_t* s_selfSo() {
 
 // Vendor module name is a unique key
 static wld_vendorModule_t* s_findVendorModule(const char* modName) {
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &sVendorModulesList) {
         wld_vendorModule_t* pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
         if(swl_str_matches(pVendorModule->name, modName)) {
@@ -107,7 +106,6 @@ static wld_vendorModule_t* s_findVendorModule(const char* modName) {
 // returns counter of vendor modules per source shared object.
 static int s_countVendorModules(amxm_shared_object_t* pSoSrc) {
     int count = 0;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &sVendorModulesList) {
         wld_vendorModule_t* pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
         if(pVendorModule->so == pSoSrc) {
@@ -278,8 +276,8 @@ int wld_vendorModuleMgr_loadExternalDir(const char* soDirPath) {
 }
 
 int wld_vendorModuleMgr_unloadAll() {
-    amxc_llist_it_t* it = NULL;
     wld_vendorModule_t* pVendorModule = NULL;
+    amxc_llist_it_t* it;
     while((it = amxc_llist_get_first(&sVendorModulesList))) {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
         s_unloadVendorModule(pVendorModule);
@@ -288,7 +286,6 @@ int wld_vendorModuleMgr_unloadAll() {
 }
 
 swl_rc_ne wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo) {
-    amxc_llist_it_t* it = NULL;
     wld_vendorModule_t* pVendorModule = NULL;
     amxc_llist_for_each(it, &sVendorModulesList) {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
@@ -298,7 +295,6 @@ swl_rc_ne wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo) {
 }
 
 swl_rc_ne wld_vendorModuleMgr_deinitAll() {
-    amxc_llist_it_t* it = NULL;
     wld_vendorModule_t* pVendorModule = NULL;
     amxc_llist_for_each(it, &sVendorModulesList) {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
@@ -308,7 +304,6 @@ swl_rc_ne wld_vendorModuleMgr_deinitAll() {
 }
 
 swl_rc_ne wld_vendorModuleMgr_loadDefaultsAll() {
-    amxc_llist_it_t* it = NULL;
     wld_vendorModule_t* pVendorModule = NULL;
     amxc_llist_for_each(it, &sVendorModulesList) {
         pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);

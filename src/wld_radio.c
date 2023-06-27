@@ -329,7 +329,6 @@ amxd_status_t _getSupportedFrequencyBands(amxd_object_t* object _UNUSED,
     T_Radio* pR = NULL;
     char TBuf[128];
     char* pSFB;
-    int idx;
 
     SAH_TRACEZ_IN(ME);
     SAH_TRACEZ_INFO(ME, "getSupportedFrequencyBands %p", parameter);
@@ -337,16 +336,7 @@ amxd_status_t _getSupportedFrequencyBands(amxd_object_t* object _UNUSED,
     wifiRad = amxd_param_get_owner(parameter);
     pR = (T_Radio*) wifiRad->priv;
     if(pR && debugIsRadPointer(pR)) {
-        /* Update also the supported Band selection (Shop Shop) */
-        TBuf[0] = '\0';
-        for(idx = 0; idx < SWL_FREQ_BAND_MAX; idx++) {
-            if(pR->supportedFrequencyBands & (1 << idx)) {
-                if(idx && TBuf[0]) {
-                    wldu_catStr(TBuf, ",", sizeof(TBuf));
-                }
-                wldu_catStr(TBuf, swl_freqBandExt_str[idx], sizeof(TBuf));   // 0 == NONE !
-            }
-        }
+        wld_bitmaskToCSValues(TBuf, sizeof(TBuf), pR->supportedFrequencyBands, swl_freqBandExt_str);
         pSFB = wld_getVendorParam(pR, "SupportedFrequencyBands", TBuf);
         amxc_var_t value;
         amxc_var_init(&value);
@@ -365,7 +355,6 @@ amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
                                            const amxc_var_t* const args,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
-    amxd_status_t status = amxd_status_invalid_value;
     T_Radio* pRad = (T_Radio*) object->priv;
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     uint32_t currentValue = amxc_var_dyncast(uint32_t, &param->value);
@@ -383,8 +372,6 @@ amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
                                       const amxc_var_t* const args _UNUSED,
                                       amxc_var_t* const retval _UNUSED,
                                       void* priv _UNUSED) {
-
-    bool epConnected = false;
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
     if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
@@ -979,7 +966,6 @@ amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,
                                           const amxc_var_t* const args _UNUSED,
                                           amxc_var_t* const retval,
                                           void* priv _UNUSED) {
-    amxd_status_t status = amxd_status_unknown_error;
     ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
     uint16_t channelLoad = 0;
     ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
@@ -1046,7 +1032,6 @@ amxd_status_t _wld_rad_getTxPower_prf(amxd_object_t* object,
                                       const amxc_var_t* const args _UNUSED,
                                       amxc_var_t* const retval,
                                       void* priv _UNUSED) {
-    amxd_status_t status = amxd_status_unknown_error;
     ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
     int32_t percentage = -1;
     ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
@@ -1526,7 +1511,7 @@ amxd_status_t _wld_rad_setHeCaps_pwf(amxd_object_t* object _UNUSED,
 
     const char* caps = amxc_var_constcast(cstring_t, args);
 
-    pRad->heCapsEnabled = conv_strToMask(caps, g_str_wld_he_cap, HE_CAP_MAX);
+    pRad->heCapsEnabled = swl_conv_charToMaskSep(caps, g_str_wld_he_cap, HE_CAP_MAX, ',', NULL);
     wld_rad_doSync(pRad);
 
     SAH_TRACEZ_OUT(ME);
@@ -1612,7 +1597,6 @@ amxd_status_t _wld_rad_setCountryCode_pwf(amxd_object_t* object _UNUSED,
                                           amxc_var_t* const retval _UNUSED,
                                           void* priv _UNUSED) {
     const char* CC = NULL;
-    int iCC = 0, idx = 0;
     amxd_status_t rv = amxd_status_ok;
     amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
     if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
@@ -2276,7 +2260,6 @@ amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
 /**************************************************************************************************/
 /**************************************************************************************************/
 T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn) {
-    char FullPath[128];
     amxd_object_t* radio;
     amxd_object_t* inst;
     if(pobj) {
@@ -2494,9 +2477,9 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         TBuf[0] = '\0';
         for(idx = 0; !idx || pR->transmitPowerSupported[idx]; idx++) {
             if(idx && TBuf[0]) {
-                wldu_catStr(TBuf, ",", sizeof(TBuf));
+                swl_str_cat(TBuf, sizeof(TBuf), ",");
             }
-            wldu_catStr(TBuf, itoa(pR->transmitPowerSupported[idx], ValBuf, 10), sizeof(TBuf));
+            swl_str_cat(TBuf, sizeof(TBuf), itoa(pR->transmitPowerSupported[idx], ValBuf, 10));
         }
         amxd_object_set_cstring_t(object, "TransmitPowerSupported", TBuf);
         /* 'TransmitPower' Indicates the current transmit power
@@ -3049,7 +3032,6 @@ int DebugObjStructPrint(void* pData) {
     amxd_object_t* selObj = NULL;
     T_Radio* pR = NULL;
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
     char* pHR = NULL;
     char* pTmp = NULL;
     int i, val_int;
@@ -3118,9 +3100,9 @@ int DebugObjStructPrint(void* pData) {
             sprintf(objbuf, "Object %s = %u", VerifyRadio[i].ObjStr, val_uint);
             break;
         case TPH_STR:
-            wldu_copyStr(fullbuffer,
-                         amxd_object_get_cstring_t(pR->pBus, VerifyRadio[i].ObjStr, NULL),
-                         sizeof(fullbuffer));
+            swl_str_copy(fullbuffer,
+                         sizeof(fullbuffer),
+                         amxd_object_get_cstring_t(pR->pBus, VerifyRadio[i].ObjStr, NULL));
             sprintf(objbuf, "Object %s = %s", VerifyRadio[i].ObjStr, fullbuffer);
             break;
         default:
@@ -3159,7 +3141,7 @@ int DebugObjStructPrint(void* pData) {
                      pR->blockCommit, pR->pFA->mfn_wrad_fsm_state(pR));
 
     /* Do this also for the VAP's */
-    for(it = (amxc_llist_it_t*) amxc_llist_get_first(&pR->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
+    for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pR->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
         pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
         pHR = (char*) pAP;
         selObj = pAP->pBus;
@@ -3244,9 +3226,9 @@ int DebugObjStructPrint(void* pData) {
                 sprintf(objbuf, "Object %s = %u", VerifyAccessPoint[i].ObjStr, val_int);
                 break;
             case TPH_STR:
-                wldu_copyStr(fullbuffer,
-                             amxd_object_get_cstring_t(selObj, VerifyAccessPoint[i].ObjStr, NULL),
-                             sizeof(fullbuffer));
+                swl_str_copy(fullbuffer,
+                             sizeof(fullbuffer),
+                             amxd_object_get_cstring_t(selObj, VerifyAccessPoint[i].ObjStr, NULL));
                 sprintf(objbuf, "Object %s = %s", VerifyAccessPoint[i].ObjStr, fullbuffer);
                 break;
             default:
@@ -3278,7 +3260,6 @@ static void doRadioReset(T_Radio* pRad) {
     SAH_TRACEZ_ERROR(ME, "Radio reset %s ", pRad->Name);
     int fsmState = pRad->pFA->mfn_wrad_fsm_state(pRad);
     SAH_TRACEZ_ERROR(ME, "BloCom %u State %u", pRad->blockCommit, fsmState);
-    amxc_llist_it_t* it;
     T_AccessPoint* pAP;
     /* collect all dependencies on all attached ep interfaces, mirror it on the RAD interface */
     amxc_llist_for_each(it, &pRad->llEndPoints) {
@@ -3290,7 +3271,7 @@ static void doRadioReset(T_Radio* pRad) {
     }
 
     /* collect all dependencies on all attached vap interfaces, mirror it on the RAD interface */
-    for(it = (amxc_llist_it_t*) amxc_llist_get_first(&pRad->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
+    for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pRad->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
         pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
         if(pAP && debugIsVapPointer(pAP)) {
             SAH_TRACEZ_ERROR(ME, "Reset ap %s: 0x%lx 0x%lx // 0x%lx 0x%lx",
@@ -3326,7 +3307,6 @@ static void doRadioReset(T_Radio* pRad) {
 
 
 static void doAllRadioReset() {
-    amxc_llist_it_t* it;
     T_Radio* pRad = NULL;
     amxc_llist_for_each(it, &g_radios) {
         pRad = amxc_llist_it_get_data(it, T_Radio, it);
@@ -3558,7 +3538,6 @@ T_EndPoint* wld_rad_getFirstEp(T_Radio* pR) {
 /* find VAP with matching name */
 T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &pR->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
@@ -3572,7 +3551,6 @@ T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname) {
 /* find EP with matching name */
 T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
     T_EndPoint* pEP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &pR->llEndPoints) {
         pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
@@ -3585,7 +3563,6 @@ T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
 
 T_Radio* wld_rad_from_name(const char* ifname) {
     T_Radio* pR;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &g_radios) {
         pR = amxc_llist_it_get_data(it, T_Radio, it);
@@ -3601,7 +3578,6 @@ T_Radio* wld_rad_from_name(const char* ifname) {
 T_AccessPoint* wld_vap_from_name(const char* ifname) {
     T_Radio* pR;
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &g_radios) {
         pR = amxc_llist_it_get_data(it, T_Radio, it);
@@ -3617,7 +3593,6 @@ T_AccessPoint* wld_vap_from_name(const char* ifname) {
 T_EndPoint* wld_vep_from_name(const char* ifname) {
     T_Radio* pR;
     T_EndPoint* pEP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &g_radios) {
         pR = amxc_llist_it_get_data(it, T_Radio, it);
@@ -3627,9 +3602,6 @@ T_EndPoint* wld_vep_from_name(const char* ifname) {
     }
 
     return pEP;
-}
-bool wld_rad_SupFreqBands_mask_to_string(amxc_string_t* output, uint32_t supportedFrequencyBands) {
-    return bitmask_to_string(output, swl_freqBandExt_str, ',', supportedFrequencyBands);
 }
 
 bool wld_radio_notify_scanresults(amxd_object_t* obj) {
@@ -3829,7 +3801,6 @@ wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad) {
 
 bool wld_rad_hasEnabledEp(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    amxc_llist_it_t* it = NULL;
     T_EndPoint* pEP = NULL;
 
     /* Check if NO AP is active */
@@ -3844,7 +3815,6 @@ bool wld_rad_hasEnabledEp(T_Radio* pRad) {
 
 bool wld_rad_hasConnectedEp(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    amxc_llist_it_t* it = NULL;
     T_EndPoint* pEP = NULL;
 
     /* Check if NO AP is active */
@@ -3859,7 +3829,6 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
 
 bool wld_rad_hasEnabledVap(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    amxc_llist_it_t* it = NULL;
     T_AccessPoint* pAP = NULL;
 
     /* Check if NO AP is active */
@@ -3874,7 +3843,6 @@ bool wld_rad_hasEnabledVap(T_Radio* pRad) {
 
 bool wld_rad_hasActiveVap(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    amxc_llist_it_t* it = NULL;
     T_AccessPoint* pAP = NULL;
 
     /* Check if NO AP is active */
@@ -3960,11 +3928,8 @@ bool wld_rad_hasOnlyActiveEP(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
 
     T_EndPoint* pEP = NULL;
-    amxc_llist_it_t* it = NULL;
-
-
     /* Do we've an active EP? */
-    it = amxc_llist_get_first(&pRad->llEndPoints);
+    amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llEndPoints);
     if(it) {
         pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
         if(!(pRad->isSTA && pRad->enable && pEP->enable)) {
@@ -4074,7 +4039,7 @@ char* getChannelsInUseStr(T_Radio* pRad) {
         int i = 0;
         pRad->channelsInUse[0] = 0;
         for(i = 0; i < val; i++) {
-            wldu_catFormat(pRad->channelsInUse, sizeof(pRad->channelsInUse), "%d,", pRad->possibleChannels[chidx + i]);
+            swl_str_catFormat(pRad->channelsInUse, sizeof(pRad->channelsInUse), "%d,", pRad->possibleChannels[chidx + i]);
         }
     } else {
         // 2.4
@@ -4277,7 +4242,6 @@ bool wld_rad_has_endpoint_enabled(T_Radio* rad) {
 T_EndPoint* wld_rad_getEnabledEndpoint(T_Radio* rad) {
     ASSERT_NOT_NULL(rad, NULL, ME, "NULL");
     T_EndPoint* pEndpoint;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &rad->llEndPoints) {
         pEndpoint = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
 
@@ -4295,7 +4259,6 @@ bool wld_rad_hasWpsActiveEndpoint(T_Radio* rad) {
 T_EndPoint* wld_rad_getWpsActiveEndpoint(T_Radio* rad) {
     ASSERT_NOT_NULL(rad, NULL, ME, "NULL");
     T_EndPoint* pEndpoint;
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &rad->llEndPoints) {
         pEndpoint = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
 
@@ -4308,7 +4271,6 @@ T_EndPoint* wld_rad_getWpsActiveEndpoint(T_Radio* rad) {
 
 void wld_rad_updateActiveDevices(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    amxc_llist_it_t* it = NULL;
     T_AccessPoint* pAP;
 
     int nrActiveDevices = 0;
@@ -4323,7 +4285,6 @@ void wld_rad_updateActiveDevices(T_Radio* pRad) {
 
 T_Radio* wld_rad_get_radio(const char* ifname) {
     T_Radio* pRad = NULL;
-    amxc_llist_it_t* llit = NULL;
     amxc_llist_for_each(llit, &g_radios) {
         pRad = amxc_llist_it_get_data(llit, T_Radio, it);
         if(pRad && !strcmp(pRad->Name, ifname)) {
@@ -4483,7 +4444,6 @@ bool wld_rad_isAvailable(T_Radio* pRad) {
 
 T_AccessPoint* wld_radio_getVapFromRole(T_Radio* pRad, wld_apRole_e role) {
     ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
-    amxc_llist_it_t* it = NULL;
     amxc_llist_for_each(it, &pRad->llAP) {
         T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
         if(pAP->apRole == role) {
@@ -4667,7 +4627,6 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
     //Update VAPs
 
     T_AccessPoint* pAP = NULL;
-    amxc_llist_it_t* it = NULL;
 
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);

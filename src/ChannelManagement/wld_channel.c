@@ -320,12 +320,10 @@ void wld_channel_cleanAll() {
  * clear all flags of the radio band of the given radio.
  */
 void wld_channel_clear_flags(T_Radio* rad) {
-    unsigned int i = 0;
-    wld_channel_data* channel = NULL;
     wld_band_data* band = get_band(rad->operatingFrequencyBand);
     ASSERTS_NOT_NULL(band, , ME, "null freqband");
     ASSERTS_NOT_NULL(band->channels, , ME, "null channel");
-    for(i = 0; i < band->nr_channels; i++) {
+    for(uint32_t i = 0; i < band->nr_channels; i++) {
         band->channels[i].flags = WLD_CHAN_INIT;
     }
 }

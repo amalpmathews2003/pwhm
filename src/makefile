@@ -21,7 +21,6 @@ CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra  \
 		-I../include/ $(addprefix -I ,$(INCDIRS)) \
 		-I../include_priv/nl80211/ \
 		-DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
-CFLAGS += -Wformat -Wformat-security -Wimplicit-function-declaration -Wl,--no-undefined -Wno-unused-variable
 LDFLAGS += $(STAGING_LIBDIR) -lsahtrace -lswlc -lswla -lcrypto -lssl -lnl-3 -lnl-genl-3 -lrt -lm -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd -ldl
 
 ifeq ($(COVERAGE),y)

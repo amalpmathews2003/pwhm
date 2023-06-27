@@ -121,7 +121,7 @@ void wld_rad_parse_status(T_Radio* pR) {
     int i = 0;
     for(i = 0; i < pR->nrCapabilities; i++) {
         if(pR->cap_status[i].status) {
-            wldu_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
+            swl_str_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
         }
     }
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
@@ -140,7 +140,7 @@ static void wld_rad_parse_enable(T_Radio* pR, int includeIndex, int excludeIndex
     int i = 0;
     for(i = 0; i < pR->nrCapabilities; i++) {
         if((i == includeIndex) || (pR->cap_status[i].enable && (i != excludeIndex))) {
-            wldu_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
+            swl_str_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
         }
     }
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
@@ -161,7 +161,7 @@ void wld_rad_parse_cap(T_Radio* pR) {
     int i = 0;
     for(i = 0; i < pR->nrCapabilities; i++) {
         if(pR->cap_status[i].capable) {
-            wldu_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
+            swl_str_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
         }
     }
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");

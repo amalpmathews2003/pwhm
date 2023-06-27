@@ -346,7 +346,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     /* Attach T_Radio to object*/
     pR->debug = RAD_POINTER;
     pR->pFA = &vendor->fta;                         // Attach our vendor function table on it!
-    wldu_copyStr(pR->Name, name, sizeof(pR->Name)); // Name of the RADIO!
+    swl_str_copy(pR->Name, sizeof(pR->Name), name); // Name of the RADIO!
     static uint32_t index = 0;
     pR->index = index++;
     pR->ref_index = idx;
@@ -687,10 +687,6 @@ int wld_getVendorParam_int(const T_Radio* pR, const char* parameter, const int d
 }
 
 bool wld_isInternalBssidBin(const swl_macBin_t* bssid) {
-    amxc_llist_it_t* rad_it;
-    amxc_llist_it_t* ap_it;
-    char strMacAddress[ETHER_ADDR_STR_LEN];
-
     /* Search in all my radio 2.4GhZ and 5Ghz */
     amxc_llist_for_each(rad_it, &g_radios) {
         T_Radio* pRad = amxc_llist_it_get_data(rad_it, T_Radio, it);

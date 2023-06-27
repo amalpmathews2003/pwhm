@@ -130,7 +130,6 @@ T_AccessPoint* wld_rad_getVapByIndex(T_Radio* pRad, int index);
 T_EndPoint* wld_rad_getEpByIndex(T_Radio* pRad, int index);
 
 amxd_object_t* ssid_create(amxd_object_t* pBus, T_Radio* pR, const char* name);
-bool wld_rad_SupFreqBands_mask_to_string(amxc_string_t* output, uint32_t supportedFrequencyBands);
 bool radio_scanresults_to_variant(T_Radio* radio, amxc_var_t* variant_out);
 bool wld_radio_notify_scanresults(amxd_object_t* obj);
 bool wld_radio_stats_to_variant(T_Radio* a, T_Stats* stats, amxc_var_t* map);

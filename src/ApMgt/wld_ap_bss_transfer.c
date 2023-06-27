@@ -154,7 +154,6 @@ void wld_ap_bss_done(T_AccessPoint* ap, const swl_macChar_t* mac, int reply_code
 static void s_bssTransferTimeoutHandler(amxp_timer_t* timer _UNUSED, void* userdata) {
     ASSERT_NOT_NULL(userdata, , ME, "NULL");
     bss_wait_t* waitItem = (bss_wait_t*) userdata;
-    int cmdRetval = WLD_ERROR;
     if(waitItem->retries > waitItem->done_retries) {
         SAH_TRACEZ_INFO(ME, "retry %s %s %u / %u", waitItem->ap->alias, waitItem->params.sta.cMac, waitItem->done_retries, waitItem->retries);
         waitItem->done_retries++;
@@ -177,7 +176,6 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     ASSERT_NOT_NULL(pAP, amxd_status_ok, ME, "NULL");
 
     SAH_TRACEZ_IN(ME);
-    amxd_status_t status = amxd_status_ok;
     wld_transferStaArgs_t params;
     memset(&params, 0, sizeof(params));
 

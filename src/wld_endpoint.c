@@ -338,7 +338,7 @@ amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
     SAH_TRACEZ_INFO(ME, "Profile reference found - Setting Current Profile for [%s]", newProfileRef);
     pEP->currentProfile = newProfile;
 
-    wldu_copyStr(pEP->pSSID->SSID, pEP->currentProfile->SSID, sizeof(pEP->pSSID->SSID));
+    swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), pEP->currentProfile->SSID);
     if(credentialsChanged) {
         wld_endpoint_reconfigure(pEP);
     }
@@ -520,8 +520,8 @@ static void s_setDefaults(T_EndPoint* pEP, const char* endpointname, const char*
     SAH_TRACEZ_INFO(ME, "%s: Setting Endpoint Defaults", endpointname);
 
 
-    wldu_copyStr(pEP->alias, endpointname, sizeof(pEP->alias));
-    wldu_copyStr(pEP->Name, intfname, sizeof(pEP->Name));
+    swl_str_copy(pEP->alias, sizeof(pEP->alias), endpointname);
+    swl_str_copy(pEP->Name, sizeof(pEP->Name), intfname);
     pEP->index = idx;
 
     pEP->status = APSTI_DISABLED;
@@ -609,7 +609,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
     if(strncmp(ssid, pProfile->SSID, SSID_NAME_LEN)) {
         changed |= 1;
-        wldu_copyStr(pProfile->SSID, ssid, sizeof(pProfile->SSID));
+        swl_str_copy(pProfile->SSID, sizeof(pProfile->SSID), ssid);
     }
     free(ssid);
 
@@ -626,19 +626,21 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     //These 2 parameters have no effect on the actual connection and should not cause
     //a connection change.
     char* alias = amxd_object_get_cstring_t(object, "Alias", NULL);
-    wldu_copyStr(pProfile->alias, alias,
-                 sizeof(pProfile->alias));
+    swl_str_copy(pProfile->alias,
+                 sizeof(pProfile->alias),
+                 alias);
     free(alias);
     char* location = amxd_object_get_cstring_t(object, "Location", NULL);
-    wldu_copyStr(pProfile->location, location,
-                 sizeof(pProfile->location));
+    swl_str_copy(pProfile->location,
+                 sizeof(pProfile->location),
+                 location);
     free(location);
 
     char* mode = amxd_object_get_cstring_t(secObj, "ModeEnabled", NULL);
     if(!strncmp(mode, rollbackBuffer, 256)) {
         rollbackBuffer[0] = '\0';
     } else {
-        wldu_copyStr(rollbackBuffer, mode, sizeof(rollbackBuffer));
+        swl_str_copy(rollbackBuffer, sizeof(rollbackBuffer), mode);
     }
     free(mode);
 
@@ -654,7 +656,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - WEPKey is not in a valid format");
         } else {
             changed |= 1;
-            wldu_copyStr(pProfile->WEPKey, wepKey, sizeof(pProfile->WEPKey));
+            swl_str_copy(pProfile->WEPKey, sizeof(pProfile->WEPKey), wepKey);
         }
     }
     free(wepKey);
@@ -666,7 +668,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - PreSharedKey is not in a valid format");
         } else {
             changed |= 1;
-            wldu_copyStr(pProfile->preSharedKey, pskKey, sizeof(pProfile->preSharedKey));
+            swl_str_copy(pProfile->preSharedKey, sizeof(pProfile->preSharedKey), pskKey);
         }
     }
     free(pskKey);
@@ -678,7 +680,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - KeyPassPhrase is not in a valid format");
         } else {
             changed |= !(wldu_key_matches(pProfile->SSID, pProfile->keyPassPhrase, keyPassPhrase));
-            wldu_copyStr(pProfile->keyPassPhrase, keyPassPhrase, sizeof(pProfile->keyPassPhrase));
+            swl_str_copy(pProfile->keyPassPhrase, sizeof(pProfile->keyPassPhrase), keyPassPhrase);
         }
     }
     free(keyPassPhrase);
@@ -690,7 +692,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
             SAH_TRACEZ_WARNING(ME, "Sync Failure - SAEPassphrase is not in a valid format");
         } else {
             changed |= 1;
-            wldu_copyStr(pProfile->saePassphrase, saePassphrase, sizeof(pProfile->saePassphrase));
+            swl_str_copy(pProfile->saePassphrase, sizeof(pProfile->saePassphrase), saePassphrase);
         }
     }
     free(saePassphrase);
@@ -1063,7 +1065,7 @@ bool syncData_OBJ2EndPoint(amxd_object_t* object) {
 
     char* alias = amxd_object_get_cstring_t(object, "Alias", NULL);
     if(!swl_str_isEmpty(alias)) {
-        wldu_copyStr(pEP->alias, alias, sizeof(pEP->alias));
+        swl_str_copy(pEP->alias, sizeof(pEP->alias), alias);
     }
     free(alias);
 
@@ -1182,7 +1184,7 @@ void wld_endpoint_setConnectionStatus(T_EndPoint* pEP, wld_epConnectionStatus_e 
         s_setProfileStatus(pEP->currentProfile, connected);
         if(connected) {
             //update enpoint's SSID  with the current connected profile.
-            wldu_copyStr(pEP->pSSID->SSID, pEP->currentProfile->SSID, sizeof(pEP->pSSID->SSID));
+            swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), pEP->currentProfile->SSID);
         }
     }
 
@@ -1675,12 +1677,6 @@ void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
 
     SAH_TRACEZ_OUT(ME);
 
-}
-
-//Deprecated
-void wld_endpoint_performConnect(T_EndPoint* pEP) {
-    SAH_TRACEZ_WARNING(ME, "DEPRECATED");
-    wld_endpoint_performConnectCommit(pEP, false);
 }
 
 /**

@@ -281,7 +281,6 @@ static void s_setVapIeee80211rConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfi
 
     ASSERTS_TRUE(pAP->IEEE80211rFTOverDSEnable, , ME, "FT over DS disabled");
 
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, &pAP->neighbours) {
         T_ApNeighbour* neighbour = amxc_llist_it_get_data(it, T_ApNeighbour, it);
         swl_macChar_t bssidStr;
@@ -680,13 +679,12 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     sscanf(pRad->wpsConst->OsVersion, "%i.%i.%i.%i", &tmpver[0], &tmpver[1], &tmpver[2], &tmpver[3]);
     swl_mapCharFmt_addValStr(vapConfigMap, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
-    amxc_string_t configMethodsStr;
-    amxc_string_init(&configMethodsStr, 128);
-    bitmask_to_string(&configMethodsStr, s_hostapd_WPS_configMethods_str, ' ', pAP->WPS_ConfigMethodsEnabled);
-    if(!amxc_string_is_empty(&configMethodsStr)) {
-        swl_mapChar_add(vapConfigMap, "config_methods", (char*) amxc_string_get(&configMethodsStr, 0));
+
+    char configMethodsStr[256] = {0};
+    swl_conv_maskToChar(configMethodsStr, sizeof(configMethodsStr), pAP->WPS_ConfigMethodsEnabled, s_hostapd_WPS_configMethods_str, SWL_ARRAY_SIZE(s_hostapd_WPS_configMethods_str));
+    if(strlen(configMethodsStr) > 0) {
+        swl_mapChar_add(vapConfigMap, "config_methods", configMethodsStr);
     }
-    amxc_string_clean(&configMethodsStr);
 
     swl_mapChar_add(vapConfigMap, "wps_cred_processing", pAP->WPS_Configured ? "2" : "0");
     //Label: STATIC 8 digit PIN, typically available on device.
@@ -736,7 +734,6 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
 
     swl_mapChar_t* multiAPConfig = NULL;
 
-    amxc_llist_it_t* ap_it;
     amxc_llist_for_each(ap_it, &pRad->llAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
         if(SWL_BIT_IS_ONLY_SET(pAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {

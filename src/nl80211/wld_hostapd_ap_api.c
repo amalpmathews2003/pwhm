@@ -1092,7 +1092,6 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
             ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding AP Channel Report subelement failed");
         }
 
-        amxc_llist_it_t* it;
         amxc_llist_for_each(it, &pAP->neighbours) {
             T_ApNeighbour* neigh = amxc_llist_it_get_data(it, T_ApNeighbour, it);
             if(channel != neigh->channel) {

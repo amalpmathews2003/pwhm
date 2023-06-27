@@ -88,9 +88,8 @@ wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devL
 
     unsigned char macAddr[ETHER_ADDR_LEN];
     memset(macAddr, 0, sizeof(macAddr));
-    convStr2Mac(macAddr, ETHER_ADDR_LEN, (unsigned char*) macAddrStr, ETHER_ADDR_STR_LEN);
+    wldu_convStr2Mac(macAddr, ETHER_ADDR_LEN, (char*) macAddrStr, ETHER_ADDR_STR_LEN);
 
-    amxc_llist_it_t* it;
     amxc_llist_for_each(it, devList) {
         wld_nasta_t* pMD = amxc_llist_it_get_data(it, wld_nasta_t, it);
         if(memcmp(macAddr, pMD->MACAddress, ETHER_ADDR_LEN) == 0) {
@@ -123,7 +122,7 @@ amxd_status_t wld_rad_staMon_addDevice(T_Radio* pRad, amxd_object_t* instance_ob
     amxc_llist_append(devList, &pMD->it);
     instance_object->priv = pMD;
 
-    convStr2Mac(pMD->MACAddress, ETHER_ADDR_LEN, (unsigned char*) macAddrStr, ETHER_ADDR_STR_LEN);
+    wldu_convStr2Mac(pMD->MACAddress, ETHER_ADDR_LEN, (char*) macAddrStr, ETHER_ADDR_STR_LEN);
 
     pMD->SignalStrength = 0;
     pMD->TimeStamp = 0;
@@ -394,7 +393,7 @@ amxd_status_t _wld_radStaMon_setEnable_pwf(amxd_object_t* object _UNUSED,
 
 static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, amxc_llist_t* devList) {
     int nrUpdates = 0;
-    amxc_llist_it_t* it;
+
     amxc_llist_for_each(it, devList) {
         wld_nasta_t* pMD = amxc_llist_it_get_data(it, wld_nasta_t, it);
 
@@ -410,9 +409,19 @@ static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, a
             amxc_var_t myMap;
             amxc_var_init(&myMap);
             amxc_var_add_key(int32_t, &myMap, "SignalStrength", pMD->monRssi);
-            unsigned char buffer[ETHER_ADDR_STR_LEN];
-            convMac2Str(pMD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
-            amxc_var_add_key(cstring_t, &myMap, "MACAddress", (char*) buffer);
+            char buffer[ETHER_ADDR_STR_LEN];
+            wldu_convMac2Str(pMD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
+            amxc_var_add_key(cstring_t, &myMap, "MACAddress", buffer);
+
+            swl_macBin_t mac;
+            swl_macChar_t macAddr_char = {.cMac = {0}};
+            strncpy(macAddr_char.cMac, (const char*) pMD->MACAddress, sizeof(macAddr_char.cMac) - 1);
+            if(!swl_mac_charToBin(&mac, &macAddr_char)) {
+                SAH_TRACEZ_ERROR(ME, "Unable to parse %s", pMD->MACAddress);
+                return false;
+            }
+
+            swl_typeMacBin_addToMap(&myMap, "MACAddress", mac);
 
             struct tm now_tm;
             time_t now = time(NULL);
@@ -472,7 +481,7 @@ void wld_radStaMon_init(T_Radio* pRad) {
 
 void wld_radStaMon_destroy(T_Radio* pRad) {
     SAH_TRACEZ_IN(ME);
-    amxc_llist_it_t* it = NULL;
+    amxc_llist_it_t* it;
     while(!amxc_llist_is_empty(&pRad->naStations)) {
         it = amxc_llist_get_first(&pRad->naStations);
         wld_nasta_t* pNaSta = amxc_llist_it_get_data(it, wld_nasta_t, it);

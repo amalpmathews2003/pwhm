@@ -166,10 +166,10 @@ static void timeHandler(void* userdata) {
             amxc_var_init(&myMap);
             amxc_var_add_key(int32_t, &myMap, "SignalStrength", rssi_val);
             amxc_var_add_key(int32_t, &myMap, "Noise", pAD->noise);
-            unsigned char buffer[ETHER_ADDR_STR_LEN];
-            convMac2Str(pAD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
+            char buffer[ETHER_ADDR_STR_LEN];
+            wldu_convMac2Str(pAD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
 
-            amxc_var_add_key(cstring_t, &myMap, "MACAddress", (char*) buffer);
+            amxc_var_add_key(cstring_t, &myMap, "MACAddress", buffer);
             amxc_var_move(&myList, &myMap);
             amxc_var_clean(&myMap);
             nrUpdates++;
@@ -783,7 +783,6 @@ void wld_apRssiMon_sendHistoryOnAssocEvent(T_AccessPoint* pAP, T_AssociatedDevic
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
 
-    bool historyEnable = pAP->rssiEventing.historyEnable;
     bool enable = (pAP->rssiEventing.historyEnable == 1) &&
         (pAP->rssiEventing.sendEventOnAssoc == 1) &&
         (pAD->AuthenticationState == 1);

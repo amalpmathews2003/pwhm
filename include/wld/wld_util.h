@@ -187,8 +187,6 @@ bool set_OBJ_ParameterHelper(int type, amxd_object_t* obj, char* rpath, const vo
 bool get_OBJ_ParameterHelper(int type, amxd_object_t* obj, const char* crpath, void* pdata);
 unsigned long conv_ModeBitStr(char** enumStrList, char* str);
 long conv_ModeIndexStr(const char** enumStrList, const char* str);
-uint32_t conv_strToMaskSep(const char* str, const char** enumStrList, uint32_t maxVal, char separator);
-uint32_t conv_strToMask(const char* str, const char** enumStrList, uint32_t maxVal);
 bool conv_maskToStrSep(uint32_t mask, const char** enumStrList, uint32_t maxVal, char* str, uint32_t strSize, char separator);
 bool conv_maskToStr(uint32_t mask, const char** enumStrList, uint32_t maxVal, char* str, uint32_t strSize);
 uint32_t conv_strToEnum(const char** enumStrList, const char* str, uint32_t maxVal, uint32_t defaultVal);
@@ -232,16 +230,8 @@ int wpsPinValid(unsigned long PIN);
 bool wldu_checkWpsPinStr(const char* pinStr);
 
 int wldu_convStrToNum(const char* numSrcStr, void* numDstBuf, uint8_t numDstByteSize, uint8_t base, bool isSigned);
-uint64_t wldu_parseHexToUint64(const char* src);
-uint32_t wldu_parseHexToUint32(const char* src);
-uint16_t wldu_parseHexToUint16(const char* src);
-uint8_t wldu_parsehexToUint8(const char* src);
-int convStr2Mac(unsigned char* mac, unsigned int sizeofmac, const unsigned char* str, unsigned int sizeofstr);
-int convMac2Str(unsigned char* mac, unsigned int sizeofmac, unsigned char* str, unsigned int sizeofstr);
 int32_t wldu_convStr2Mac(unsigned char* mac, uint32_t sizeofmac, const char* str, uint32_t sizeofstr);
 bool wldu_convMac2Str(unsigned char* mac, uint32_t sizeofmac, char* str, uint32_t sizeofstr);
-int convHex2Str(const unsigned char* hex, size_t maxhexlen, unsigned char* str, size_t maxstrlen, int upper);
-int convStr2Hex(const char* str, size_t maxStrlen, char* hex, size_t maxHexLen);
 int mac2str(char* str, const unsigned char* mac, size_t maxstrlen);
 int convQuality2Signal(int quality);
 int convSignal2Quality(int dBm);
@@ -273,30 +263,18 @@ char* getShortCountryName(int idx);
 int getCountryCode(int idx);
 swl_opClassCountry_e getCountryZone(int idx);
 
-char* wldu_copyStr(char* dest, const char* src, size_t destsize);
-char* wldu_catStr(char* dest, const char* src, size_t destsize);
-char* wldu_catFormat(char* dest, size_t destsize, const char* format, ...);
-uint32_t wldu_countChar(const char* src, char tgt);
-bool wldu_strStartsWith(const char* msg, const char* prefix);
-
 int debugIsVapPointer(void* p);
 int debugIsEpPointer(void* p);
 int debugIsRadPointer(void* p);
 int debugIsSsidPointer(void* p);
 
-/** Deprecated. Use `SWL_UUID_BIN_SIZE` from `swl_uuid.h`. */
-#define UUID_LEN 16
 int get_random(unsigned char* buf, size_t len);
 int get_randomstr(unsigned char* buf, size_t len);
 int get_randomhexstr(unsigned char* buf, size_t len);
-int makeUUID_fromrandom(uint8_t uuid[UUID_LEN]);
-int uuid_bin2str(const uint8_t bin[UUID_LEN], char* str, size_t max_len);
 
 char* stripOutToken(char* pD, const char* pT);
 char** stripString(char** pTL, int nrTL, char* pD, const char* pT);
 
-bool bitmask_to_string(amxc_string_t* output, const char** strings, const char separator, const uint32_t bitmask);
-bool string_to_bitmask(uint32_t* output, const char* input, const char** strings, const uint32_t* masks, const char separator);
 void convStrToHex(uint8_t* pbDest, int destSize, const char* pbSrc, int srcSize);
 int get_pattern_string(const char* arg, uint8_t* pattern);
 
@@ -374,7 +352,7 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
 #define WLD_TUPLE_GEN(ID) {ID,#ID}
 #define WLD_TUPLE_DEF_STR ""
 
-void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, int md5_size);
+void wldu_convCreds2MD5(const char* ssid, const char* key, char* md5, size_t md5_size);
 
 void wld_util_updateStatusChangeInfo(wld_status_changeInfo_t* info, wld_status_e status);
 

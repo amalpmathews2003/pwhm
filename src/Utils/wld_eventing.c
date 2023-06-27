@@ -196,7 +196,6 @@ void wld_event_remove_callback(wld_event_queue_t* queue, wld_event_callback_t* c
 void wld_event_trigger_callback(wld_event_queue_t* queue, const void* data) {
     ASSERT_NOT_NULL(queue, , ME, "NULL");
 
-    amxc_llist_it_t* it;
     wld_event_callback_t* callback;
     SAH_TRACEZ_INFO(ME, "Trigger callback to queue %s %zu", queue->name, amxc_llist_size(&queue->subscribers));
     amxc_llist_for_each(it, &queue->subscribers) {
