@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.17.0 - 2023-06-29(07:26:04 +0000)
+
+### Other
+
+- [pwhm] Support for GCC 12.1 and removal of deprecated functions
+
 ## Release v3.16.3 - 2023-06-26(07:25:38 +0000)
 
 ### Other
