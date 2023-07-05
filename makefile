@@ -21,12 +21,14 @@ endef
 # targets
 all:
 	$(MAKE) -C src all
+	$(MAKE) -C odl all
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(MAKE) -C src/Plugin all
 endif
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C odl clean
 	$(MAKE) -C doc clean
 	$(MAKE) -C src/Plugin clean
 

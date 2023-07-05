@@ -221,6 +221,10 @@
         "${prefix}${plugin-dir}/modules"
     ];
 
+    m4_ifelse(MOD_AMXB_USP_ENABLED,y,
+    listen = [ 'usp:/var/run/pwhm_usp.sock' ];
+    )
+
     //persistent storage
     pcm_svc_config = {
         "Objects" = "WiFi"
