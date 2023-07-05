@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.17.1 - 2023-07-05(12:57:54 +0000)
+
+### Fixes
+
+- Fix syntax in 30_wld-defaults-vaps.odl.uc
+
 ## Release v3.17.0 - 2023-06-29(07:26:04 +0000)
 
 ### Other
