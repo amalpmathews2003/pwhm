@@ -195,6 +195,7 @@ if (RadioIndex >= 0) : %}
                     parameter ModeEnabled = "WPA3-Personal";
                     parameter SPPAmsdu = 0;
                 }
+            }
 {% endif %}
 {% endif; endfor; %}
         }
