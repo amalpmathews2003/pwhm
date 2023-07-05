@@ -60,10 +60,15 @@
 **
 ****************************************************************************/
 
-#ifndef _WLD_CHANMGT_BGDFS_H_
-#define _WLD_CHANMGT_BGDFS_H_
+#ifndef _WLD_BGDFS_H_
+#define _WLD_BGDFS_H_
 
 #include "wld_types.h"
+
+typedef struct {
+    swl_channel_t channel;
+    swl_bandwidth_e bandwidth;
+} wld_startBgdfsArgs_t;
 
 
 typedef enum {
@@ -104,7 +109,7 @@ typedef struct wld_rad_bgdfs_config {
     /**
      * Channel currently being cleared
      */
-    int channel;
+    swl_channel_t channel;
 
     /**
      * The bandwidth currently being cleared
@@ -114,7 +119,17 @@ typedef struct wld_rad_bgdfs_config {
     /**
      * timestamp when clear started
      */
-    time_t clearStartTime;
+    swl_timeSpecMono_t clearStartTime;
+
+    /**
+     * timestamp when clear last finished
+     */
+    swl_timeSpecMono_t clearEndTime;
+
+    /**
+     * The last result
+     */
+    wld_dfsResult_e lastResult;
 
     /**
      * Estimated time clear would take
@@ -131,25 +146,26 @@ typedef struct {
     uint32_t nrClearFailOtherExt;
 } wld_rad_bgdfs_stats_t;
 
-/**
- * Update the background dfs channel currently being cleared
- */
-void wld_bgdfs_write_channel(T_Radio* pRad);
 
 /**
  * Update the background dfs feature availability
  */
-void wld_bgdfs_write_available(T_Radio* pRad);
+void wld_bgdfs_setAvailable(T_Radio* pRad, bool available);
 
 /**
  * Start a bgdfs clear with given channel and bw, and whether it's external
  */
-void wld_bgdfs_startClear(T_Radio* pRad, int channel, swl_bandwidth_e bandwidth, bool externalClear);
+void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_bandwidth_e bandwidth, bool externalClear);
 
 /**
  * Stop a bgdfs clear
  */
-void wld_bgdfs_endClear(T_Radio* pRad, wld_dfsResult_e result);
+void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result);
+
+/**
+ * Function for other modules to call, to start a bgDfs
+ */
+swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args);
 
 /**
  * Return elapsed clear time
@@ -161,4 +177,4 @@ uint32_t wld_bgdfs_clearTimeEllapsed(T_Radio* pRad);
  */
 bool wld_bgdfs_isRunning(T_Radio* pRad);
 
-#endif /* _WLD_CHANMGT_BGDFS_H_ */
+#endif /* _WLD_BGDFS_H_ */

@@ -95,7 +95,7 @@
 
 #include "wld_types.h"
 #include "wld_channel_types.h"
-#include "wld_chanmgt_bgdfs.h"
+#include "wld_bgdfs.h"
 #include "wld_rad_delayMgr.h"
 #include "wld_fsm.h"
 #include "Utils/wld_autoCommitRadData.h"
@@ -1966,11 +1966,6 @@ typedef int (APIENTRY* PFN_WRAD_AUTOCHANNELENABLE)(T_Radio* rad, int enable, int
 typedef int (APIENTRY* PFN_WRAD_STARTACS)(T_Radio* rad, int set);
 typedef int (APIENTRY* PFN_WRAD_BGDFS_ENABLE)(T_Radio* rad, int enable);
 typedef int (APIENTRY* PFN_WRAD_BGDFS_START)(T_Radio* rad, int channel);
-
-typedef struct {
-    uint32_t channel;
-    swl_bandwidth_e bandwidth;
-} wld_startBgdfsArgs_t;
 
 typedef int (APIENTRY* PFN_WRAD_BGDFS_START_EXT)(T_Radio* rad, wld_startBgdfsArgs_t* args);
 typedef int (APIENTRY* PFN_WRAD_BGDFS_STOP)(T_Radio* rad);

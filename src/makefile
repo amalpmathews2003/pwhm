@@ -35,6 +35,7 @@ OBJS-libwld.so = wld.o wld_accesspoint.o wld_endpoint.o wld_radio.o \
 		
 OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					ChannelManagement/wld_chanmgt.o \
+					ChannelManagement/wld_bgdfs.o \
 					ChannelManagement/wld_channel_info.o \
 					RadMgt/wld_prb_req.o\
 					RadMgt/wld_rad_stamon.o\

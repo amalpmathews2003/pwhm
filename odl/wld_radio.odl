@@ -1973,6 +1973,111 @@ define probelist_t{
 					"Configuring","DeepPowerDown","DelayApUp","Error"];
 				default "Unknown";
 			}
+
+			/**
+			 * Background DFS clearing feature
+			 * Based on chipset vendor capabilities, BgDfs will try to clear all DFS channels
+			 * and flag them as available for CSM.
+			 */
+			%persistent object BgDfs{
+				/**
+				 * If BgDfs is supported on this radio
+				 */
+				%read-only bool Available{
+					default false;
+				}
+
+				/**
+				 * Set BgDfs enable on this radio
+				 * This parameter will allow the system to preclear DFS channels
+				 */
+				%persistent bool PreclearEnable{
+					on action write call setBgdfsEnable;
+					default false;
+				}
+
+				/**
+				 * Set BgDfs allow provider on this radio
+				 * This parameter will allow the system to use an external bgdfs provider
+				 * to do its bgdfs clear
+				 */
+				%persistent bool AllowProvider{
+					on action write call setBgdfsProvider;
+					default true;
+				}
+
+				/**
+				 * Channel currently being cleared by BgDfs
+				 * 0 means no BgDfs running
+				 */
+				%read-only uint32 Channel{
+					on action validate call check_range { min = 0, max = 255 };
+					default 0;
+				}
+
+				/**
+				 * Bandwidth currently being cleared by BgDfs
+				 * Auto means no BgDfs running
+				 */
+				%read-only string Bandwidth{
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					default "Auto";
+				}
+
+				/**
+				 * Current status of bg dfs clearing
+				 */
+				%read-only string Status{
+					on action validate call check_enum ["Off","Idle","Clearing","ExtClearing"];
+					default "Off";
+				}
+
+				/**
+				 * The number of successfull clears
+				 */
+				%read-only uint32 NrClearSuccess;
+
+				/**
+				 * The number of failed clears due to radar detected
+				 */
+				%read-only uint32 NrClearFailRadar;
+
+				/**
+				 * The number of failed clears due to other reasons
+				 */
+				%read-only uint32 NrClearFailOther;
+
+				/**
+				 * The number of successfull clears using external provider
+				 */
+				%read-only uint32 NrClearSuccessExt;
+
+				/**
+				 * The number of failed clears due to radar detected using external provider
+				 */
+				%read-only uint32 NrClearFailRadarExt;
+
+				/**
+				 * The number of failed clears due to other reasons using external provider
+				 */
+				%read-only uint32 NrClearFailOtherExt;
+
+				/**
+				 * Start BgDfs
+				 * Currently targetted for testing only. PreclearEnable is not necessary to be enabled in order this to work,
+				 * but BgDfs must be available.
+				 * @param channel: the channel to clear
+				 * @param bandwidth: optional bandwidth in MHz to clear. Set to 0 for auto
+				 */
+				void startBgDfsClear(%in uint8 channel, %in uint32 bandwidth);
+
+				/**
+				 * Stop BgDfs
+				 * Stop any active BgDFS clearing. This can be both due to manual trigger, as automatic trigger.
+				 */
+				void stopBgDfsClear();
+			}
+
 		}
 
 		/**
