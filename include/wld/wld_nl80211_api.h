@@ -445,6 +445,28 @@ swl_rc_ne wld_nl80211_sendVendorSubCmd(wld_nl80211_state_t* state, uint32_t oui,
                                        wld_nl80211_handler_f handler, void* priv);
 
 /*
+ * @brief common function to send vendor sub command with attributes inside vendor data
+ *
+ * @param state nl80211 socket manager context
+ * @param oui vendor driver identifier
+ * @param subcmd vendor sub command to be sent
+ * @param vendorAttr list of attributes to be added inside the vendor data attributes.
+ * @param isSync flag to send sync/async request
+ * @param withAck flag to wait for acknowledgment request
+ * @param flags optional nl80211 msg flags
+ * @param ifIndex interface net dev index (ignored if ifIndex is null)
+ * @param wDevId interface wdev index
+ * @param handler callback invoked when a reply is available
+ * @param priv private data to pass in to the handler
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_sendVendorSubCmdAttr(wld_nl80211_state_t* state, uint32_t oui, int subcmd, wld_nl80211_nlAttr_t* vendorAttr,
+                                           bool isSync, bool withAck, uint32_t flags, uint32_t ifIndex, uint64_t wDevId,
+                                           wld_nl80211_handler_f handler, void* priv);
+
+/*
  * @brief common function to send a management frame cmd
  *
  * @param state nl80211 socket manager context

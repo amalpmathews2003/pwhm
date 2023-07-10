@@ -65,6 +65,10 @@
 
 #include "wld.h"
 
+#include "swl/swl_hex.h"
+#include "swl/swl_ieee802_1x_defs.h"
+#include "swl/swl_genericFrameParser.h"
+
 typedef struct {
     T_Radio* pRad;
     T_AccessPoint* pAP;
@@ -125,5 +129,7 @@ void wld_ad_getHeMCS(uint16_t he_mcs, wld_sta_supMCS_adv_t* supportedHeMCS);
 void wld_assocDev_initAp(T_AccessPoint* pAP);
 void wld_assocDev_cleanAp(T_AccessPoint* pAP);
 void wld_assocDev_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant);
+void wld_assocDev_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen);
+void wld_assocDev_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
 
 #endif /* SRC_INCLUDE_WLD_WLD_ASSOCDEV_H_ */

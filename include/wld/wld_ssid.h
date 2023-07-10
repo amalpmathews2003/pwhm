@@ -70,6 +70,8 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
 
 void wld_ssid_cleanAll();
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
+void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex, swl_macBin_t* macBin);
+void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin);
 
 T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
 

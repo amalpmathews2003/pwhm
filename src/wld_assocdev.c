@@ -1365,3 +1365,37 @@ void wld_assocDev_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant)
     swl_unLiTable_toListOfMaps(&pAP->staDcList, variant, tupleNames);
 }
 
+void wld_assocDev_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+    pDev->capabilities |= pWirelessDevIE->capabilities;
+    pDev->uniiBandsCapabilities |= pWirelessDevIE->uniiBandsCapabilities;
+    cap->freqCapabilities = pWirelessDevIE->freqCapabilities;
+    memcpy(&cap->vendorOUI, &pWirelessDevIE->vendorOUI, sizeof(swl_oui_list_t));
+    cap->htCapabilities = pWirelessDevIE->htCapabilities;
+    cap->vhtCapabilities = pWirelessDevIE->vhtCapabilities;
+    cap->heCapabilities = pWirelessDevIE->heCapabilities;
+    cap->rrmCapabilities = pWirelessDevIE->rrmCapabilities;
+    cap->rrmOnChannelMaxDuration = pWirelessDevIE->rrmOnChannelMaxDuration;
+    cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;
+    cap->currentSecurity = pWirelessDevIE->secModeEnabled;
+}
+
+void wld_assocDev_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "PKT sta:"SWL_MAC_FMT " iesLen:%zu", SWL_MAC_ARG(pAD->MACAddress), iesLen);
+    ASSERT_TRUE((iesData != NULL) && (iesLen > 0), , ME, "missing IEs in mgmt Frame");
+
+    pAD->capabilities = 0;
+    pAD->assocCaps.updateTime = swl_time_getMonoSec();
+    pAD->lastSampleTime = swl_timespec_getMonoVal();
+
+    swl_wirelessDevice_infoElements_t wirelessDevIE;
+    swl_parsingArgs_t parsingArgs = {
+        .seenOnChanspec = SWL_CHANSPEC_NEW(pAP->pRadio->channel, pAP->pRadio->runningChannelBandwidth, pAP->pRadio->operatingFrequencyBand),
+    };
+    ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
+    ASSERTW_FALSE(parsedLen < (ssize_t) iesLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, iesLen);
+
+    wld_assocDev_copyAssocDevInfoFromIEs(pAD, &pAD->assocCaps, &wirelessDevIE);
+}
+

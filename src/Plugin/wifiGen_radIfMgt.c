@@ -65,6 +65,7 @@
 #include "wld/wld.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_util.h"
+#include "wld/wld_ssid.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_rad_nl80211.h"
 #include "swl/swl_common.h"
@@ -138,48 +139,6 @@ static void s_updateRadBaseMac(T_Radio* pRad) {
     }
 
     SAH_TRACEZ_INFO(ME, "%s: set MAC "SWL_MAC_FMT " %u %p", pRad->Name, SWL_MAC_ARG(pRad->MACAddr), pRad->macCfg.useBaseMacOffset, prevListIt);
-}
-
-static void s_updateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex) {
-
-    T_SSID* pSSID = pAP->pSSID;
-
-    // Sync with the MAC created by BSSID!
-    // Create our Virtual MAC
-    uint32_t nrMaskBit = swl_bit32_getHighest(pRad->maxNrHwBss);
-
-    unsigned char* baseMacAddr = pRad->MACAddr;
-    if(apIndex > 0) {
-        baseMacAddr = pRad->mbssBaseMACAddr.bMac;
-    }
-    memcpy(pSSID->BSSID, baseMacAddr, ETHER_ADDR_LEN);
-
-    uint8_t bitMask = baseMacAddr[5] % pRad->maxNrHwBss;
-
-    if((baseMacAddr[5] % pRad->maxNrHwBss) == pRad->maxNrHwBss - 1) {
-        nrMaskBit = -1;
-    } else if(bitMask + apIndex >= pRad->maxNrHwBss) {
-        SAH_TRACEZ_ERROR(ME, "%s error has not enough vaps %u + %u >= %u. Cycling BSS",
-                         pRad->Name, apIndex, bitMask, pRad->maxNrHwBss);
-    }
-
-    swl_mac_binAddVal((swl_macBin_t*) pSSID->BSSID, apIndex, nrMaskBit);
-    //if mac shift occured, then skip generated mac matching the mbss base mac bitmask
-    //as bcrm drv verifies that there isn't a collision with any other bss configs (including primary bss).
-    if(memcmp(baseMacAddr, pRad->MACAddr, ETHER_ADDR_LEN) &&
-       ((pSSID->BSSID[5] % pRad->maxNrHwBss) >= (pRad->MACAddr[5] % pRad->maxNrHwBss))) {
-        swl_mac_binAddVal((swl_macBin_t*) pSSID->BSSID, 1, nrMaskBit);
-    }
-
-    /* IEEE standardized MAC address assignation on 6GHz and 5 1/2 bytes must be the same */
-    if(apIndex && pRad->macCfg.useLocalBitForGuest && (pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ)) {
-        pSSID->BSSID[0] |= 0x02;    // Set on guest interfaces the locally administered bit.
-        // Only allow offset when using local mac
-        swl_mac_binAddVal((swl_macBin_t*) pSSID->BSSID, pRad->macCfg.localGuestMacOffset * (1 + pRad->ref_index), -1);
-    }
-    memcpy(pSSID->MACAddress, pSSID->BSSID, sizeof(pSSID->MACAddress));
-    SAH_TRACEZ_INFO(ME, "%s: gen BSSID "SWL_MAC_FMT " Base "SWL_MAC_FMT " maskBit %u, supBss %u",
-                    pAP->alias, SWL_MAC_ARG(pSSID->BSSID), SWL_MAC_ARG(baseMacAddr), nrMaskBit, pRad->maxNrHwBss);
 }
 
 static int s_setMacAddress(T_Radio* pRad, char* intfName, swl_macBin_t* macAddress) {
@@ -295,7 +254,9 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
             // actually: only secondary interfaces are impacted (i.e: the radio base mac addr does not change)
             T_AccessPoint* tmpAp = NULL;
             wld_rad_forEachAp(tmpAp, pRad) {
-                s_updateBssid(pRad, tmpAp, s_bssIndex(tmpAp));
+                swl_macBin_t macBin = SWL_MAC_BIN_NEW();
+                wld_ssid_generateBssid(pRad, tmpAp, s_bssIndex(tmpAp), &macBin);
+                wld_ssid_setBssid(tmpAp->pSSID, &macBin);
                 tmpAp->pFA->mfn_sync_ssid(tmpAp->pSSID->pBus, tmpAp->pSSID, SET);
                 wifiGen_vap_setBssid(tmpAp);
             }
@@ -308,7 +269,9 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     // actually create AP, and update netdev index.
     s_createAp(pRad, pAP, apIndex);
 
-    s_updateBssid(pRad, pAP, apIndex);
+    swl_macBin_t macBin = SWL_MAC_BIN_NEW();
+    wld_ssid_generateBssid(pRad, pAP, apIndex, &macBin);
+    wld_ssid_setBssid(pAP->pSSID, &macBin);
 
     /* Set network address! */
     wifiGen_vap_setBssid(pAP);

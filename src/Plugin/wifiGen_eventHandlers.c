@@ -80,7 +80,6 @@
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_genericFrameParser.h"
 #include <amxc/amxc.h>
-#include "wifiGen_staCapHandler.h"
 #include <errno.h>
 #define ME "genEvt"
 
@@ -358,7 +357,7 @@ static void s_probeRequestReceived(void* userData, swl_80211_mgmtFrame_t* frame,
     ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&results, NULL, probeReqDataLen, (swl_bit8_t*) probeReq);
     ASSERTW_FALSE(parsedLen < (ssize_t) probeReqDataLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, probeReqDataLen);
 
-    wifiGen_staCap_copyAssocDevInfoFromIEs(pAD, &pAD->probeReqCaps, &results);
+    wld_assocDev_copyAssocDevInfoFromIEs(pAD, &pAD->probeReqCaps, &results);
     pAD->probeReqCaps.updateTime = swl_time_getMonoSec();
 }
 
@@ -476,7 +475,7 @@ static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame,
     ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac));
     wld_vap_saveAssocReq(pAP, (swl_bit8_t*) frame, frameLen);
 
-    wifiGen_staCapHandler_receiveAssocMsg(pAP, pAD, iesData, iesLen);
+    wld_assocDev_handleAssocMsg(pAP, pAD, iesData, iesLen);
     W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
 
     wld_ad_add_connection_try(pAP, pAD);

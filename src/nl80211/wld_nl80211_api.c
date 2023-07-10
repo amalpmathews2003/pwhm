@@ -791,6 +791,35 @@ swl_rc_ne wld_nl80211_sendVendorSubCmd(wld_nl80211_state_t* state, uint32_t oui,
     return rc;
 }
 
+swl_rc_ne wld_nl80211_sendVendorSubCmdAttr(wld_nl80211_state_t* state, uint32_t oui, int subcmd, wld_nl80211_nlAttr_t* vendorAttr,
+                                           bool isSync, bool withAck, uint32_t flags, uint32_t ifIndex, uint64_t wDevId,
+                                           wld_nl80211_handler_f handler, void* priv) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(state, rc, ME, "NULL");
+    ASSERT_FALSE((wDevId == 0) && (ifIndex == 0), rc, ME, "devices wDevId and index are 0");
+
+    NL_ATTRS(attribs,
+             ARR(
+                 NL_ATTR_VAL(NL80211_ATTR_VENDOR_ID, oui),
+                 NL_ATTR_VAL(NL80211_ATTR_VENDOR_SUBCMD, subcmd)
+                 )
+             );
+    if(wDevId) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WDEV, wDevId));
+    }
+
+    swl_unLiList_add(&attribs, vendorAttr);
+
+    if(withAck) {
+        rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_VENDOR, flags, ifIndex, &attribs);
+    } else {
+        rc = wld_nl80211_sendCmd(isSync, state, NL80211_CMD_VENDOR, flags, ifIndex, &attribs, handler, priv, NULL);
+    }
+    NL_ATTRS_CLEAR(&attribs);
+
+    return rc;
+}
+
 swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_80211_mgmtFrameControl_t* fc, swl_bit8_t* data, size_t dataLen,
                                              swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags, uint32_t ifIndex) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;

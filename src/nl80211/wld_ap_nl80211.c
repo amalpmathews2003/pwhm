@@ -183,6 +183,17 @@ swl_rc_ne wld_ap_nl80211_sendVendorSubCmd(T_AccessPoint* pAP, uint32_t oui, int 
     return rc;
 }
 
+swl_rc_ne wld_ap_nl80211_sendVendorSubCmdAttr(T_AccessPoint* pAP, uint32_t oui, int subcmd, wld_nl80211_nlAttr_t* vendorAttr,
+                                              bool isSync, bool withAck, uint32_t flags, wld_nl80211_handler_f handler, void* priv) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pAP, rc, ME, "NULL");
+
+    rc = wld_nl80211_sendVendorSubCmdAttr(wld_nl80211_getSharedState(), oui, subcmd, vendorAttr, isSync, withAck,
+                                          flags, pAP->index, pAP->wDevId, handler, priv);
+
+    return rc;
+}
+
 swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen, swl_chanspec_t* chanspec,
                                                 uint32_t flags) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
