@@ -304,6 +304,8 @@ static void s_writeMfConfig(T_AccessPoint* vap, swl_mapChar_t* vapConfigMap) {
     char fileBuf[64];
     snprintf(fileBuf, sizeof(fileBuf), "/tmp/hostap_%s.acl", vap->alias);
     FILE* tmpFile = fopen(fileBuf, "w");
+    ASSERTS_NOT_NULL(tmpFile, , ME, "NULL");
+
     if(vap->MF_Mode == APMFM_WHITELIST) {
         swl_mapChar_add(vapConfigMap, "macaddr_acl", "1");
         swl_mapChar_add(vapConfigMap, "accept_mac_file", fileBuf);
@@ -641,6 +643,10 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_neighbor_report", isIEEE80211k);
     // Enable beacon report via radio measurements
     swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_beacon_report", isIEEE80211k);
+    // Multiband Operation (MBO)
+    if(pAP->mboEnable) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "mbo", pAP->mboEnable);
+    }
 }
 
 /**
