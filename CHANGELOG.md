@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.17.3 - 2023-07-17(14:23:08 +0000)
+
+### Other
+
+- MBO IE element is missing in the beacons
+
 ## Release v3.17.2 - 2023-07-17(12:56:02 +0000)
 
 ## Release v3.17.1 - 2023-07-05(12:57:54 +0000)
