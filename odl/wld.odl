@@ -215,6 +215,8 @@
         "${prefix}${plugin-dir}/${name}",
         "${prefix}${plugin-dir}/modules"
     ];
+    
+    listen = [ 'usp:/var/run/pwhm_usp.sock' ];
 
     //persistent storage
     pcm_svc_config = {
