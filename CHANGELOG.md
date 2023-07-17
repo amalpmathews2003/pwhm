@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.18.0 - 2023-07-17(14:48:08 +0000)
+
+### Other
+
+- - Channel Clearing information missing when BG_CAC
+
 ## Release v3.17.3 - 2023-07-17(14:23:08 +0000)
 
 ### Other
