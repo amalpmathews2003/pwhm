@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.18.1 - 2023-07-18(12:24:10 +0000)
+
+### Other
+
+- : Add new Vendor attributes function
+
 ## Release v3.18.0 - 2023-07-17(14:48:08 +0000)
 
 ### Other
