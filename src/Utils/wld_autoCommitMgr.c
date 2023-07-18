@@ -181,19 +181,9 @@ static void s_cleanAutoCommit() {
     }
 }
 
-amxd_status_t _wld_autoCommitMgt_setEnable_pwf(amxd_object_t* object,
-                                               amxd_param_t* parameter,
-                                               amxd_action_t reason,
-                                               const amxc_var_t* const args,
-                                               amxc_var_t* const retval,
-                                               void* priv) {
-    bool newEnable = amxc_var_dyncast(bool, args);
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERTI_NOT_EQUALS(newEnable, s_mgr.enable, amxd_status_ok, ME, "EQUAL");
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    bool newEnable = amxc_var_dyncast(bool, newValue);
+    ASSERTI_NOT_EQUALS(newEnable, s_mgr.enable, , ME, "EQUAL");
     SAH_TRACEZ_INFO(ME, "Update enable %u to %u", s_mgr.enable, newEnable);
     s_mgr.enable = newEnable;
 
@@ -202,79 +192,60 @@ amxd_status_t _wld_autoCommitMgt_setEnable_pwf(amxd_object_t* object,
     } else {
         s_cleanAutoCommit();
     }
-    return amxd_status_ok;
 }
 
-
-amxd_status_t _wld_autoCommitMgt_setDelayTime_pwf(amxd_object_t* object _UNUSED,
-                                                  amxd_param_t* parameter,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
-    uint32_t newDelay = amxc_var_dyncast(uint32_t, args);
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    ASSERTI_NOT_EQUALS(newDelay, s_mgr.delay, amxd_status_ok, ME, "EQUAL");
+static void s_setDelayTime_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    uint32_t newDelay = amxc_var_dyncast(uint32_t, newValue);
+    ASSERTI_NOT_EQUALS(newDelay, s_mgr.delay, , ME, "EQUAL");
     SAH_TRACEZ_INFO(ME, "Update delay %u to %u", s_mgr.delay, newDelay);
     s_mgr.delay = newDelay;
     if(s_mgr.enable) {
         s_initAutoCommit();
     }
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_autoCommitMgt_setBootDelayTime_pwf(amxd_object_t* object,
-                                                      amxd_param_t* parameter,
-                                                      amxd_action_t reason,
-                                                      const amxc_var_t* const args,
-                                                      amxc_var_t* const retval,
-                                                      void* priv) {
-    uint32_t newDelay = amxc_var_dyncast(uint32_t, args);
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    ASSERTI_NOT_EQUALS(newDelay, s_mgr.bootDelay, amxd_status_ok, ME, "EQUAL");
+static void s_setBootDelayTime_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    uint32_t newDelay = amxc_var_dyncast(uint32_t, newValue);
+    ASSERTI_NOT_EQUALS(newDelay, s_mgr.bootDelay, , ME, "EQUAL");
     SAH_TRACEZ_INFO(ME, "Update BootDelay %u to %u", s_mgr.bootDelay, newDelay);
     s_mgr.bootDelay = newDelay;
     if(s_mgr.enable) {
         s_initAutoCommit();
     }
-    return amxd_status_ok;
 }
 
+SWLA_DM_HDLRS(sAutoCommitMgrDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("DelayTime", s_setDelayTime_pwf),
+                  SWLA_DM_PARAM_HDLR("BootDelayTime", s_setBootDelayTime_pwf),
+                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf)));
 
-amxd_status_t _debug(amxd_object_t* obj _UNUSED,
-                     amxd_function_t* func _UNUSED,
-                     amxc_var_t* args,
-                     amxc_var_t* retMap) {
+void _wld_autoCommitMgr_setConf_ocf(const char* const sig_name,
+                                    const amxc_var_t* const data,
+                                    void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sAutoCommitMgrDmHdlrs, sig_name, data, priv);
+}
+
+amxd_status_t _AutoCommitMgr_debug(amxd_object_t* obj _UNUSED,
+                                   amxd_function_t* func _UNUSED,
+                                   amxc_var_t* args,
+                                   amxc_var_t* retMap) {
 
     const char* feature = GET_CHAR(args, "op");
     amxc_var_init(retMap);
     amxc_var_set_type(retMap, AMXC_VAR_ID_HTABLE);
 
-    if(swl_str_matchesIgnoreCase(feature, "")) {
+    if(swl_str_isEmpty(feature)) {
         amxc_var_add_key(bool, retMap, "Enable", s_mgr.enable);
         amxc_var_add_key(uint32_t, retMap, "Delay", s_mgr.delay);
         amxc_var_add_key(uint32_t, retMap, "BootDelay", s_mgr.bootDelay);
+        amxc_var_t* myList = amxc_var_add_key(amxc_llist_t, retMap, "RadioInfo", NULL);
         T_Radio* pRad;
-        amxc_var_t myList;
-        amxc_var_init(&myList);
-        amxc_var_set_type(&myList, AMXC_VAR_ID_LIST);
         wld_for_eachRad(pRad) {
-            amxc_var_t myMap;
-            amxc_var_init(&myMap);
-            amxc_var_add_key(cstring_t, &myMap, "RadioName", pRad->Name);
-            amxc_var_add_key(bool, &myMap, "HasTimer", pRad->autoCommitData.timer != NULL);
-            amxc_var_add_key(uint32_t, &myMap, "Timer", amxp_timer_remaining_time(pRad->autoCommitData.timer));
-            amxc_var_move(&myList, &myMap);
-            amxc_var_clean(&myMap);
+            amxc_var_t* myMap = amxc_var_add(amxc_htable_t, myList, NULL);
+            amxc_var_add_key(cstring_t, myMap, "RadioName", pRad->Name);
+            amxc_var_add_key(bool, myMap, "HasTimer", pRad->autoCommitData.timer != NULL);
+            amxc_var_add_key(uint32_t, myMap, "Timer", amxp_timer_remaining_time(pRad->autoCommitData.timer));
         }
-        amxc_var_add_key(amxc_llist_t, retMap, "RadioInfo", amxc_var_get_const_amxc_llist_t(&myList));
-        amxc_var_clean(&myList);
     } else {
         char buffer[32];
         snprintf(buffer, sizeof(buffer), "Feature unknown -%s-", feature);

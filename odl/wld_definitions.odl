@@ -323,12 +323,12 @@
 	 * @version 10.2
 	 */
 	%persistent object AutoCommitMgr{
+		on event "*" call wld_autoCommitMgr_setConf_ocf;
 	
 		/**
 		 * Whether auto committing should be enabled
 		 */
 		%persistent bool Enable{
-			on action write call wld_autoCommitMgt_setEnable_pwf;
 			default 0;
 		}
 		
@@ -338,7 +338,6 @@
 		 * Note that due to timer restrictions, timers less then 100ms will be rounded up to 100ms.
 		 */
 		%persistent uint32 DelayTime{
-			on action write call wld_autoCommitMgt_setDelayTime_pwf;
 			default 250;
 		}
 		
@@ -347,9 +346,10 @@
 		 * the component got initialized, to avoid potential clashes.
 		 */
 		%persistent uint32 BootDelayTime{
-			on action write call wld_autoCommitMgt_setBootDelayTime_pwf;
 			default 4000;
 		}
+		
+		htable debug(%in string op);
 	}
     }
 }
