@@ -1316,197 +1316,255 @@ static void s_setApRole_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_ap_enableVendorIEs(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
+static void s_enableVendorIEs_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "VAP Object is NULL");
 
-    ASSERTI_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "VAP Object is NULL");
-
-    pAP->enableVendorIEs = amxc_var_dyncast(bool, args);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
+    pAP->enableVendorIEs = amxc_var_dyncast(bool, newValue);
     pAP->pFA->mfn_wvap_enab_vendor_ie(pAP, pAP->enableVendorIEs);
 
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
 }
 
-static bool isVendorIEValid(const char* oui, const char* data) {
-    if(!oui || (strlen(oui) != SWL_OUI_STR_LEN - 1)) {
-        SAH_TRACEZ_ERROR(ME, "OUI is invalid (null or wrong length)");
-        return false;
-    }
+SWLA_DM_HDLRS(sApVendorIEsDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_enableVendorIEs_pwf)),
+              );
 
-    if(!data || (strlen(data) <= 2) || (strlen(data) > WLD_VENDORIE_T_DATA_SIZE) || (strlen(data) % 2 != 0)) {
-        SAH_TRACEZ_ERROR(ME, "Data is invalid (null or wrong length)");
-        return false;
-    }
-    const char* p = data;
-    unsigned int i;
-    for(i = 0; i < strlen(data); i++) {
-        if(!isxdigit(p[i])) {
-            SAH_TRACEZ_ERROR(ME, "Data is invalid (not hexa)");
-            return false;
-        }
-    }
+void _wld_ap_setVendorIEsConf_ocf(const char* const sig_name,
+                                  const amxc_var_t* const data,
+                                  void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApVendorIEsDmHdlrs, sig_name, data, priv);
+}
+
+static bool s_isVendorIEValid(const char* oui, const char* data) {
+    swl_oui_t ouiBin;
+    ASSERT_TRUE(swl_typeOui_fromChar(&ouiBin, oui), false, ME, "Invalid OUI(%s)", oui);
+    size_t dataLen = swl_str_len(data);
+    ASSERT_FALSE(((dataLen <= 2) || (dataLen > WLD_VENDORIE_T_DATA_SIZE) || (dataLen % 2 != 0)), false,
+                 ME, "Invalid data len(%zu) (%s)", dataLen, data);
+    ASSERT_TRUE(swl_hex_isHexChar(data, dataLen), false, ME, "Invalid hex data (%s)", data);
     return true;
 }
 
-static wld_vendorIe_t* getVendorIE(T_AccessPoint* pAP, const char* oui, const char* data) {
-    ASSERTS_NOT_NULL(pAP, NULL, ME, "NULL");
-    ASSERT_NOT_NULL(oui, NULL, ME, "NULL");
-    ASSERT_NOT_NULL(data, NULL, ME, "NULL");
-    ASSERTI_FALSE(swl_str_matches("", oui) || swl_str_matches("", data), NULL, ME, "empty string");
-
-    amxc_llist_for_each(llit, &pAP->vendorIEs) {
-        wld_vendorIe_t* vendor_ie_elt = amxc_llist_it_get_data(llit, wld_vendorIe_t, it);
-        if(swl_str_matches(vendor_ie_elt->oui, oui) && swl_str_matches(vendor_ie_elt->data, data)) {
-            return vendor_ie_elt;
+static wld_vendorIe_t* s_getVendorIE(amxd_object_t* templateObj, const char* oui, const char* data, amxd_object_t* optExclObj) {
+    ASSERTS_NOT_NULL(templateObj, NULL, ME, "NULL");
+    ASSERTS_STR(oui, NULL, ME, "NULL");
+    ASSERTS_STR(data, NULL, ME, "NULL");
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* vIeObj = amxc_container_of(it, amxd_object_t, it);
+        if(optExclObj == vIeObj) {
+            continue;
+        }
+        char* entryOui = amxd_object_get_cstring_t(vIeObj, "OUI", NULL);
+        char* entryData = amxd_object_get_cstring_t(vIeObj, "Data", NULL);
+        bool match = (!swl_str_isEmpty(entryOui) && !swl_str_isEmpty(entryData) &&
+                      swl_str_matchesIgnoreCase(entryOui, oui) && swl_str_matchesIgnoreCase(entryData, data));
+        free(entryOui);
+        free(entryData);
+        if(match) {
+            return vIeObj->priv;
         }
     }
 
     return NULL;
 }
 
-static wld_vendorIe_t* addVendorIEEntry(T_AccessPoint* pAP, amxd_object_t* instance_object) {
-    ASSERTS_NOT_NULL(pAP, NULL, ME, "NULL");
-    wld_vendorIe_t* new_vendor_ie = calloc(1, sizeof(wld_vendorIe_t));
-    ASSERTS_NOT_NULL(new_vendor_ie, NULL, ME, "NULL");
-    new_vendor_ie->object = instance_object;
-    instance_object->priv = new_vendor_ie;
-    amxc_llist_append(&pAP->vendorIEs, &new_vendor_ie->it);
-    return new_vendor_ie;
+static void s_updateVendorIE (T_AccessPoint* pAP, wld_vendorIe_t* vendorIe) {
+    ASSERTI_FALSE(swl_str_isEmpty(vendorIe->oui), , ME, "empty oui");
+    ASSERTI_FALSE(swl_str_isEmpty(vendorIe->data), , ME, "empty data");
+    ASSERTI_NOT_EQUALS(vendorIe->frame_type, 0, , ME, "no frame type mask");
+    pAP->pFA->mfn_wvap_add_vendor_ie(pAP, vendorIe);
+    SAH_TRACEZ_INFO(ME, "%s: Updated vendorIE", pAP->alias);
 }
 
-amxd_status_t _wld_ap_addVendorIE_ocf(amxd_object_t* template_object _UNUSED, amxd_object_t* instance_object) {
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(instance_object)));
-    ASSERTS_FALSE(amxd_object_get_type(wifiVap) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
-    T_AccessPoint* pAP = wifiVap->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "pAP NULL");
-    addVendorIEEntry(pAP, instance_object);
-    return amxd_status_ok;
+static void s_removeVendorIE (T_AccessPoint* pAP, wld_vendorIe_t* vendorIe) {
+    ASSERTI_FALSE(swl_str_isEmpty(vendorIe->oui), , ME, "empty oui");
+    ASSERTI_FALSE(swl_str_isEmpty(vendorIe->data), , ME, "empty data");
+    ASSERTI_NOT_EQUALS(vendorIe->frame_type, 0, , ME, "no frame type mask");
+    pAP->pFA->mfn_wvap_del_vendor_ie(pAP, vendorIe);
+    SAH_TRACEZ_INFO(ME, "%s: Deleted vendorIE", pAP->alias);
 }
 
-amxd_status_t _wld_ap_setVendorIE_owf(amxd_object_t* instance_object) {
+amxd_status_t _wld_ap_validateVendorIE_ovf(amxd_object_t* object,
+                                           amxd_param_t* param _UNUSED,
+                                           amxd_action_t reason _UNUSED,
+                                           const amxc_var_t* const args _UNUSED,
+                                           amxc_var_t* const retval _UNUSED,
+                                           void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "Not instance");
 
-    ASSERTS_FALSE(amxd_object_get_type(instance_object) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(instance_object)));
-    ASSERTS_FALSE(amxd_object_get_type(wifiVap) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
+    amxc_var_t params;
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+    swla_object_paramsToMap(&params, object);
 
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    wld_vendorIe_t* vendor_ie = (wld_vendorIe_t*) instance_object->priv;
+    bool valid = false;
+    const char* ouiStr = GET_CHAR(&params, "OUI");
+    const char* dataStr = GET_CHAR(&params, "Data");
+    size_t dataLen = swl_str_len(dataStr);
+    const char* frameTypeMaskStr = GET_CHAR(&params, "FrameType");
 
-    if(vendor_ie == NULL) {
-        vendor_ie = addVendorIEEntry(pAP, instance_object);
-    }
-
-    ASSERTS_NOT_NULL(vendor_ie, amxd_status_unknown_error, ME, "NULL");
-
-    amxd_status_t status = amxd_status_ok;
-
-    char* oui = amxd_object_get_cstring_t(instance_object, "OUI", NULL);
-    char* data = amxd_object_get_cstring_t(instance_object, "Data", NULL);
-
-    if(getVendorIE(pAP, oui, data)) {
-        SAH_TRACEZ_ERROR(ME, "Vendor IE already present or can not be modified");
-    } else if(!isVendorIEValid(oui, data)) {
-        SAH_TRACEZ_ERROR(ME, "Input are invalid");
-        status = amxd_status_unknown_error;
+    swl_oui_t ouiBin;
+    if(!swl_str_isEmpty(ouiStr) && !swl_typeOui_fromChar(&ouiBin, (char*) ouiStr)) {
+        SAH_TRACEZ_ERROR(ME, "Invalid OUI(%s)", ouiStr);
+    } else if(!swl_str_isEmpty(dataStr) && ((dataLen <= 2) || (dataLen > WLD_VENDORIE_T_DATA_SIZE) || (dataLen % 2 != 0) || (!swl_hex_isHexChar((char*) dataStr, dataLen)))) {
+        SAH_TRACEZ_ERROR(ME, "Invalid Data (len:%zu / (%s))", dataLen, dataStr);
+    } else if(!swl_str_isEmpty(frameTypeMaskStr) && !swl_conv_charToMask(frameTypeMaskStr, wld_vendorIe_frameType_str, VENDOR_IE_MAX)) {
+        SAH_TRACEZ_ERROR(ME, "Invalid FrameType Mask (%s))", frameTypeMaskStr);
     } else {
-        swl_str_copy(vendor_ie->oui, SWL_OUI_STR_LEN, oui);
-        swl_str_copy(vendor_ie->data, WLD_VENDORIE_T_DATA_SIZE, data);
-        char* frame_type_var = amxd_object_get_cstring_t(instance_object, "FrameType", NULL);
-        vendor_ie->frame_type = swl_conv_charToMask(frame_type_var, wld_vendorIe_frameType_str, VENDOR_IE_MAX);
-        pAP->pFA->mfn_wvap_add_vendor_ie(pAP, vendor_ie);
-        free(frame_type_var);
+        amxd_object_t* tmplObj = amxd_object_get_parent(object);
+        wld_vendorIe_t* duplVdrIe = s_getVendorIE(tmplObj, ouiStr, dataStr, object);
+        if(duplVdrIe != NULL) {
+            SAH_TRACEZ_ERROR(ME, "vendorIE[%d] info oui(%s)/Data(%s) already exist", amxd_object_get_index(duplVdrIe->object), ouiStr, dataStr);
+        } else {
+            valid = true;
+        }
     }
-    free(oui);
-    free(data);
+    amxc_var_clean(&params);
 
-    return status;
+    SAH_TRACEZ_OUT(ME);
+    return (valid ? amxd_status_ok : amxd_status_invalid_value);
 }
 
-amxd_status_t _wld_ap_delVendorIE_odf(amxd_object_t* template_object _UNUSED, amxd_object_t* instance_object) {
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(instance_object)));
-    ASSERTS_FALSE(amxd_object_get_type(wifiVap) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
-    T_AccessPoint* pAP = wifiVap->priv;
+static void s_addVendorIE_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const intialParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
 
-    wld_vendorIe_t* vendor_ie = (wld_vendorIe_t*) instance_object->priv;
-    ASSERT_NOT_NULL(vendor_ie, amxd_status_unknown_error, ME, "Failed to write vendor IE, no user data obj");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
 
-    pAP->pFA->mfn_wvap_del_vendor_ie(pAP, vendor_ie);
-    amxc_llist_it_take(&vendor_ie->it);
-    free(vendor_ie);
-    SAH_TRACEZ_INFO(ME, "Deleted vendor IE");
+    SAH_TRACEZ_INFO(ME, "%s: Adding Vendor IE", pAP->alias);
+    wld_vendorIe_t* newVendorIe = calloc(1, sizeof(wld_vendorIe_t));
+    ASSERTS_NOT_NULL(newVendorIe, , ME, "NULL");
 
-    return amxd_status_ok;
+    amxc_llist_it_init(&newVendorIe->it);
+    amxc_llist_append(&pAP->vendorIEs, &newVendorIe->it);
+    newVendorIe->object = object;
+    object->priv = newVendorIe;
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setVendorIEConf_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+
+    wld_vendorIe_t* vendorIe = object->priv;
+    ASSERT_NOT_NULL(vendorIe, , ME, "NULL");
+
+    s_removeVendorIE(pAP, vendorIe);
+
+    amxc_var_for_each(newValue, newParamValues) {
+        char* valStr = NULL;
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "OUI")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set vendorIE OUI = %s", valStr);
+            swl_str_copy(vendorIe->oui, SWL_OUI_STR_LEN, valStr);
+        } else if(swl_str_matches(pname, "Data")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set vendorIE Data = %s", valStr);
+            swl_str_copy(vendorIe->data, WLD_VENDORIE_T_DATA_SIZE, valStr);
+        } else if(swl_str_matches(pname, "FrameType")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            vendorIe->frame_type = swl_conv_charToMask(valStr, wld_vendorIe_frameType_str, VENDOR_IE_MAX);
+            SAH_TRACEZ_INFO(ME, "set vendorIE FrameType mask(0x%x)(%s)", vendorIe->frame_type, valStr);
+        } else {
+            continue;
+        }
+        free(valStr);
+    }
+
+    s_updateVendorIE(pAP, vendorIe);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sApVendorIeDmHdlrs,
+              ARR(),
+              .instAddedCb = s_addVendorIE_oaf,
+              .objChangedCb = s_setVendorIEConf_ocf,
+              );
+
+void _wld_ap_setVendorIE_ocf(const char* const sig_name,
+                             const amxc_var_t* const data,
+                             void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApVendorIeDmHdlrs, sig_name, data, priv);
+}
+
+amxd_status_t _wld_ap_delVendorIE_odf(amxd_object_t* object,
+                                      amxd_param_t* param,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args,
+                                      amxc_var_t* const retval,
+                                      void* priv) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy vendorIe entry st:%d", status);
+
+    wld_vendorIe_t* vendorIe = (wld_vendorIe_t*) object->priv;
+    object->priv = NULL;
+    ASSERTS_NOT_NULL(vendorIe, amxd_status_ok, ME, "No internal ctx");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
+    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
+
+    amxc_llist_it_take(&(vendorIe->it));
+
+    s_removeVendorIE(pAP, vendorIe);
+    free(vendorIe);
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 amxd_status_t _createVendorIE(amxd_object_t* obj,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args,
                               amxc_var_t* ret _UNUSED) {
+    SAH_TRACEZ_IN(ME);
 
-    int res = amxd_status_unknown_error;
-    amxd_object_t* object;
+    const char* apName = amxd_object_get_name(amxd_object_get_parent(obj), AMXD_OBJECT_NAMED);
     const char* oui = GET_CHAR(args, "oui");
     const char* data = GET_CHAR(args, "data");
-    const char* frame_type_var = GET_CHAR(args, "frame_type");
+    ASSERT_TRUE(s_isVendorIEValid(oui, data), amxd_status_unknown_error, ME, "invalid args");
 
-    amxd_object_t* wifiVap = amxd_object_get_parent(obj);
-    ASSERTS_FALSE(amxd_object_get_type(wifiVap) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
-    T_AccessPoint* pAP = wifiVap->priv;
+    amxd_trans_t trans;
+    amxd_object_t* templateObj = amxd_object_findf(obj, "VendorIE");
+    wld_vendorIe_t* vendorIe = s_getVendorIE(templateObj, oui, data, NULL);
 
-    if(!isVendorIEValid(oui, data)) {
-        goto exit;
+    if(vendorIe != NULL) {
+        SAH_TRACEZ_INFO(ME, "VendorIE with oui[%s]/data[%s] found in VdrIEs list", oui, data);
+        ASSERT_TRANSACTION_INIT(vendorIe->object, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", apName);
+    } else {
+        SAH_TRACEZ_INFO(ME, "Create new VendorIE with oui[%s]/data[%s]", oui, data);
+        ASSERT_TRANSACTION_INIT(templateObj, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", apName);
+        amxd_trans_add_inst(&trans, 0, NULL);
+        amxd_trans_set_value(cstring_t, &trans, "OUI", oui);
+        amxd_trans_set_value(cstring_t, &trans, "Data", data);
     }
 
-    if(getVendorIE(pAP, oui, data)) {
-        SAH_TRACEZ_ERROR(ME, "Vendor IE already present");
-        goto exit;
+    SAH_TRACEZ_INFO(ME, "Updating VendorIE object with provided arguments");
+    amxc_var_for_each(newValue, args) {
+        char* valStr = NULL;
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "frame_type")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            amxd_trans_set_value(cstring_t, &trans, "FrameType", valStr);
+        } else {
+            continue;
+        }
+        free(valStr);
     }
 
-    amxd_object_t* vendor_ie_template = amxd_object_findf(pAP->pBus, "VendorIEs.VendorIE");
-    if(!vendor_ie_template) {
-        SAH_TRACEZ_ERROR(ME, "NULL");
-        goto exit;
-    }
-    char name[16];
-    snprintf(name, sizeof(name), "%s_%.6s", oui, data);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_unknown_error, ME, "%s : trans apply failure", apName);
 
-    object = amxd_object_findf(vendor_ie_template, "%s", name);
-    if(object) {
-        SAH_TRACEZ_ERROR(ME, "Object already exists");
-        goto exit;
-    }
-
-    amxd_object_new_instance(&object, vendor_ie_template, name, 0, NULL);
-    if(!object) {
-        SAH_TRACEZ_ERROR(ME, "failed to create new vendor IE object");
-        goto exit;
-    }
-
-    amxd_object_set_cstring_t(object, "OUI", oui);
-    amxd_object_set_cstring_t(object, "Data", data);
-    amxd_object_set_cstring_t(object, "FrameType", frame_type_var);
-
-    res = amxd_status_ok;
-
-exit:
-    return res;
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
 }
 
 amxd_status_t _deleteVendorIE(amxd_object_t* obj,
@@ -1515,29 +1573,24 @@ amxd_status_t _deleteVendorIE(amxd_object_t* obj,
                               amxc_var_t* ret _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    int res = amxd_status_unknown_error;
+    amxd_status_t status = amxd_status_unknown_error;
+    const char* apName = amxd_object_get_name(amxd_object_get_parent(obj), AMXD_OBJECT_NAMED);
     const char* oui = GET_CHAR(args, "oui");
     const char* data = GET_CHAR(args, "data");
+    ASSERT_TRUE(s_isVendorIEValid(oui, data), status, ME, "%s: invalid args", apName);
 
-    amxd_object_t* wifiVap = amxd_object_get_parent(obj);
-    T_AccessPoint* pAP = wifiVap->priv;
-    ASSERTS_FALSE(amxd_object_get_type(wifiVap) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
+    amxd_object_t* templateObj = amxd_object_findf(obj, "VendorIE");
+    wld_vendorIe_t* vendorIe = s_getVendorIE(templateObj, oui, data, NULL);
 
-    if(!isVendorIEValid(oui, data)) {
-        goto exit;
-    }
-
-    wld_vendorIe_t* vendor_ie = getVendorIE(pAP, oui, data);
-    if(vendor_ie) {
-        amxd_object_delete(&vendor_ie->object);
+    if(vendorIe == NULL) {
+        SAH_TRACEZ_INFO(ME, "%s: Could not find VendorIE with oui(%s)/data(%s)", apName, oui, data);
+        status = amxd_status_ok;
     } else {
-        SAH_TRACEZ_INFO(ME, "Vendor IE not found");
+        status = swl_object_delInstWithTransOnLocalDm(vendorIe->object);
     }
 
-    res = amxd_status_ok;
-
-exit:
-    return res;
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 static void s_setHotSpotEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {

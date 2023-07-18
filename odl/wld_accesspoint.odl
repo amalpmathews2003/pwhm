@@ -1672,14 +1672,12 @@ define rrm_t{
 		 * @version 10.0
 		 */
 		%persistent object VendorIEs {
+			on event "*" call wld_ap_setVendorIEsConf_ocf;
 			/**
 			 * Enable or disable the vendor IEs support
 			 * @version 10.0
 			 */
-			%persistent bool Enable {
-				on action write call wld_ap_enableVendorIEs;
-				default false;
-			}
+			%persistent bool Enable;
 
 			/**
 			 * Add a specific vendor IE with the given OUI and the given
@@ -1705,23 +1703,27 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			%persistent object VendorIE[]{
-				on action add-inst call wld_ap_addVendorIE_ocf;
-				on action write call wld_ap_setVendorIE_owf;
-				on action del-inst call wld_ap_delVendorIE_odf;
+				on action validate call wld_ap_validateVendorIE_ovf;
+				on action destroy call wld_ap_delVendorIE_odf;
+				on event "*" call wld_ap_setVendorIE_ocf;
 
 				/**
 				 * Vendor OUI
 				 * Format must be 3 bytes separated by a colon: "xx:xx:xx"
 				 * @version 10.0
 				 */
-				%persistent string OUI;
+				%persistent string OUI {
+					on action validate call matches_regexp "([0-9A-Fa-f]{2}:){2}[0-9A-Fa-f]{2}";
+				}
 
 				/**
 				 * Data broadcasted in the IE
 				 * Format must be in hexadecimal, multiple of bytes
 				 * @version 10.0
 				 */
-				%persistent string Data;
+				%persistent string Data {
+					on action validate call matches_regexp "^[0-9A-Fa-f]+$";
+				}
 
 				/**
 				 * The list of frame types that include the vendor IE:
