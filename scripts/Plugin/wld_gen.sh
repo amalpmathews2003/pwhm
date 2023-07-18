@@ -1,7 +1,7 @@
 #!/bin/sh
 [ -f /etc/environment ] && source /etc/environment
 ulimit -c ${ULIMIT_CONFIGURATION:-0}
-
+name="wld"
 MAX_SIGTERM_RETRIES=3
 
 prevent_netifd_to_configure_wireless()
@@ -39,10 +39,10 @@ kill_process()
     echo "killing PID" $1
     tries=0
     max_tries=$MAX_SIGTERM_RETRIES
-    while [[ $exit_condition = false && $((tries++)) -lt $max_tries ]] ; do
+    kill -0 $1 2>/dev/null
+    while [[ $? -eq 0 && $((tries++)) -lt $max_tries ]] ; do
         # try sigterm : 15 first
-        kill -0 $1 2>/dev/null && kill -SIGTERM $1 && exit_condition=true && echo "killed with sigterm"
-        sleep 1
+        kill -SIGTERM $1 && sleep 1 && kill -0 $1 2>/dev/null
     done
     # if still running, try sigkill
     kill -0 $1 2>/dev/null && kill -SIGKILL $1 && echo "killed with sigkill"
@@ -55,13 +55,14 @@ case $1 in
     start|boot)
         get_base_wan_address
         prevent_netifd_to_configure_wireless
-        mkdir -p /var/lib/wld
-        amxrt /etc/amx/wld/wld.odl &
+        mkdir -p /var/lib/${name}
+        touch /var/lib/${name}/${name}_config.odl
+        amxrt /etc/amx/${name}/${name}.odl &
         ;;
-    stop)
-        if [ -f /var/run/wld.pid ]; then
-            echo "stopping whm"
-            kill_process `cat /var/run/wld.pid`
+    stop|shutdown)
+        if [ -f /var/run/${name}.pid ]; then
+            echo "stopping ${name}"
+            kill_process `cat /var/run/${name}.pid`
         fi
         ;;
     restart)
@@ -72,9 +73,9 @@ case $1 in
         ubus-cli "WiFi.?"
         ;;
     log)
-        echo "log wld"
+        echo "log ${name}"
         ;;
     *)
-        echo "Usage : $0 [start|boot|stop|debuginfo|log]"
+        echo "Usage : $0 [start|boot|stop|shutdown|restart|debuginfo|log]"
         ;;
 esac
