@@ -619,6 +619,7 @@ typedef struct {
     char nasIdentifier[NAS_IDENTIFIER_MAX_LEN];
     char r0khkey[KHKEY_MAX_LEN];
     char r1khkey[KHKEY_MAX_LEN];
+    bool colocatedAp;
     amxd_object_t* obj;
 } T_ApNeighbour;
 

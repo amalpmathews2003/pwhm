@@ -1518,6 +1518,55 @@ void wld_radio_updateAntenna(T_Radio* pRad) {
     amxd_object_set_int32_t(hwObject, "NrActiveRxAntenna", pRad->nrActiveAntenna[COM_DIR_RECEIVE]);
 }
 
+/**
+ * Return appropriate discovery method for one radio
+ *
+ * If all APs are disabled, return DISABLED
+ *
+ * If any AP is configured as NON default, it should configured
+ * the non default value of first AP
+ *
+ * If all APs are configured as default then:
+ * - If 2.4 / 5GHz it returns RNR
+ * - If 6GHz, if any AP is not annouced in RNR on 2.4 or 5, return
+ *   UPR otherwise DISABLED
+ */
+wld_ap_dm_m wld_rad_getDiscoveryMethod(T_Radio* pR) {
+    ASSERTI_NOT_NULL(pR, M_AP_DM_DEFAULT, ME, "NULL");
+    wld_ap_dm_m dm = M_AP_DM_DISABLED;
+
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pR) {
+        if(pAP->status != APSTI_ENABLED) {
+            continue;
+        }
+        if(pAP->discoveryMethod != M_AP_DM_DEFAULT) {
+            return pAP->discoveryMethod;
+        }
+
+        dm = wld_ap_getDiscoveryMethod(pAP);
+        /* If at least on 6GHz BSS needs UPR, apply it */
+        if((pR->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) &&
+           (dm == M_AP_DM_UPR)) {
+            break;
+        }
+    }
+    char dmStr[64] = {0};
+    swl_conv_maskToCharSep(dmStr, sizeof(dmStr), dm, g_str_wld_ap_dm, AP_DM_MAX, ',');
+    SAH_TRACEZ_INFO(ME, "%s: Apply DM <%s>", pR->Name, dmStr);
+    return dm;
+}
+
+void wld_rad_updateDiscoveryMethod6GHz() {
+    T_Radio* pR = wld_getRadioByFrequency(SWL_FREQ_BAND_6GHZ);
+    ASSERTI_NOT_NULL(pR, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: 6G radio needs discovery method update", pR->Name);
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pR) {
+        pAP->pFA->mfn_wvap_set_discovery_method(pAP);
+    }
+}
+
 void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
     int idx;
     char ValBuf[32];

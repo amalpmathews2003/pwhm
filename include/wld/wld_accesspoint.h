@@ -117,6 +117,9 @@ T_AccessPoint* wld_ap_getVapByName(const char* name);
 T_AccessPoint* wld_ap_fromIt(amxc_llist_it_t* it);
 void wld_station_stats_done(T_AccessPoint* pAP, bool success);
 bool wld_ap_getDesiredState(T_AccessPoint* pAp);
+void wld_ap_updateDiscoveryMethod(T_AccessPoint* pAP);
+wld_ap_dm_m wld_ap_getDiscoveryMethod(T_AccessPoint* pAP);
+T_ApNeighbour* wld_ap_findNeigh(T_AccessPoint* vap, const char* bssid_str);
 
 void wld_ap_doSync(T_AccessPoint* pAP);
 void wld_ap_doWpsSync(T_AccessPoint* pAP);

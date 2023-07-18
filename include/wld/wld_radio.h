@@ -86,6 +86,8 @@ T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn);
 
 int radio_libsync_status_cb(T_Radio* rad);
 void wld_radio_updateAntenna(T_Radio* pRad);
+wld_ap_dm_m wld_rad_getDiscoveryMethod(T_Radio* pR);
+void wld_rad_updateDiscoveryMethod6GHz();
 
 void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set);
 void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set);

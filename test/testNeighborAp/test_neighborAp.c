@@ -83,6 +83,7 @@ static void s_removeNeighbourAp(T_AccessPoint* vap, neighbourAp_t* pNeigh) {
     assert_true(ttb_object_replySuccess(reply));
 
     ttb_object_cleanReply(&reply, &replyVar);
+    ttb_mockTimer_goToFutureMs(1);
     free(pNeigh);
     pNeigh = NULL;
 }
@@ -107,6 +108,7 @@ static void s_addNeighbourAp(T_AccessPoint* vap, neighbourAp_t* pNeigh) {
     assert_true(ttb_object_replySuccess(reply));
 
     ttb_object_cleanReply(&reply, &replyVar);
+    ttb_mockTimer_goToFutureMs(1);
 }
 
 static neighbourAp_t** s_fillNeighbourData(T_AccessPoint* vap, int count) {

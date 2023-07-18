@@ -79,401 +79,101 @@
 #define ME "apNeigh"
 
 void debugPrintNeighbour(T_ApNeighbour* neigh) {
-    char bssid[ETHER_ADDR_STR_LEN];
-    (void) neigh;
-    (void) bssid;
-    wldu_convMac2Str((unsigned char*) neigh->bssid, ETHER_ADDR_LEN, bssid, ETHER_ADDR_STR_LEN);
-
-    SAH_TRACEZ_INFO(ME, "Neigh %s : %u %u %u %u", bssid,
-                    neigh->information, neigh->operatingClass, neigh->channel, neigh->phyType);
+    SAH_TRACEZ_INFO(ME, "Neigh %s : %u %u %u %u %u", swl_typeMacBin_toBuf32Ref((swl_macBin_t* ) neigh->bssid).buf,
+                    neigh->information, neigh->operatingClass, neigh->channel, neigh->phyType, neigh->colocatedAp);
 }
 
-static T_ApNeighbour* find_neigh(T_AccessPoint* vap, const char* bssid_str) {
-    char bssid[ETHER_ADDR_LEN];
-    if((bssid_str != NULL) && (strlen(bssid_str) == ETHER_ADDR_STR_LEN - 1)) {
-        wldu_convStr2Mac((unsigned char*) bssid, ETHER_ADDR_LEN, (char*) bssid_str, ETHER_ADDR_STR_LEN);
-    } else {
-        return NULL;
-    }
-
-    amxc_llist_for_each(it, &vap->neighbours) {
-        T_ApNeighbour* neigh = amxc_llist_it_get_data(it, T_ApNeighbour, it);
-        if(memcmp(bssid, neigh->bssid, ETHER_ADDR_LEN) == 0) {
-            return neigh;
+static T_ApNeighbour* s_findNeigh(amxd_object_t* templateObj, const char* bssidStr, amxd_object_t* optExclObj) {
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* neighObj = amxc_container_of(it, amxd_object_t, it);
+        if(optExclObj == neighObj) {
+            continue;
+        }
+        char* entryBssid = amxd_object_get_cstring_t(neighObj, "BSSID", NULL);
+        bool match = (!swl_str_isEmpty(entryBssid) && SWL_MAC_CHAR_MATCHES(entryBssid, bssidStr));
+        free(entryBssid);
+        if(match) {
+            return neighObj->priv;
         }
     }
     return NULL;
-
 }
 
-/**
- *  Get neighbour by object reference
- */
-static T_ApNeighbour* s_find_neighByObjIndex(T_AccessPoint* vap, amxd_object_t* object) {
-
-    amxc_llist_for_each(llit, &vap->neighbours) {
-        T_ApNeighbour* neigh = amxc_llist_it_get_data(llit, T_ApNeighbour, it);
-        if(swl_str_matches(amxd_object_get_name(neigh->obj, 0), amxd_object_get_name(object, 0))) {
-            return neigh;
-        }
-    }
-    return NULL;
-
+T_ApNeighbour* wld_ap_findNeigh(T_AccessPoint* pAP, const char* bssidStr) {
+    return s_findNeigh(amxd_object_get(pAP->pBus, "Neighbour"), bssidStr, NULL);
 }
 
 static void s_updateNeighbor (T_AccessPoint* pAP, T_ApNeighbour* neigh) {
 
-    ASSERTS_STR(neigh->ssid, , ME, "empty ssid");
+    ASSERTI_FALSE(swl_mac_binIsNull((swl_macBin_t*) neigh->bssid), , ME, "empty bssid");
     pAP->pFA->mfn_wvap_updated_neighbour(pAP, neigh);
     wld_autoCommitMgr_notifyVapEdit(pAP);
+    SAH_TRACEZ_INFO(ME, "%s: Updated neigh", pAP->alias);
     debugPrintNeighbour(neigh);
 }
 
 static void s_removeNeighbor (T_AccessPoint* pAP, T_ApNeighbour* neigh) {
 
-    ASSERTS_STR(neigh->ssid, , ME, "empty ssid");
+    ASSERTI_FALSE(swl_mac_binIsNull((swl_macBin_t*) neigh->bssid), , ME, "empty bssid");
     pAP->pFA->mfn_wvap_deleted_neighbour(pAP, neigh);
+    SAH_TRACEZ_INFO(ME, "%s: Deleted neigh", pAP->alias);
+    debugPrintNeighbour(neigh);
 }
 
-static amxd_status_t s_checkStartCallVap(T_AccessPoint** pAP, amxd_object_t* wifiObj, amxd_object_t* object,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(wifiObj) != amxd_object_instance) {
-        SAH_TRACEZ_ERROR(ME, "obj is not an instance");
-        return amxd_status_unknown_error;
-    }
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "unable to write the param");
-        return rv;
-    }
-
-    *pAP = (T_AccessPoint*) wifiObj->priv;
-
-    if((*pAP == NULL)) {
-        return amxd_status_unknown_error;
-    }
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setNeighbourPhyType_pwf(amxd_object_t* object,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    int phyType = amxc_var_dyncast(int32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "set Neighbour  phyType = %d", phyType);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-    neigh->phyType = phyType;
-    s_updateNeighbor(pAP, neigh);
-    return amxd_status_ok;
-}
-amxd_status_t _wld_ap_setNeighbourChannel_pwf(amxd_object_t* object,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    int channel = amxc_var_dyncast(int32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "set Neighbour  Channel = %d", channel);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    neigh->channel = channel;
-    s_updateNeighbor(pAP, neigh);
-    return amxd_status_ok;
-}
-
-
-
-amxd_status_t _wld_ap_setNeighbourOperatingClass_pwf(amxd_object_t* object,
-                                                     amxd_param_t* parameter _UNUSED,
-                                                     amxd_action_t reason _UNUSED,
-                                                     const amxc_var_t* const args,
-                                                     amxc_var_t* const retval _UNUSED,
-                                                     void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    int operatingClass = amxc_var_dyncast(int32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "set Neighbour  operatingClass = %d", operatingClass);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    neigh->operatingClass = operatingClass;
-    s_updateNeighbor(pAP, neigh);
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setNeighbourInformation_pwf(amxd_object_t* object,
-                                                  amxd_param_t* parameter _UNUSED,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    int bssidInfo = amxc_var_dyncast(int32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "set Neighbour BSSID Info = %d", bssidInfo);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    neigh->information = bssidInfo;
-    s_updateNeighbor(pAP, neigh);
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setNeighbourBSSID_pwf(amxd_object_t* object,
-                                            amxd_param_t* parameter _UNUSED,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    char bssid[ETHER_ADDR_LEN];
-    memset(bssid, 0, ETHER_ADDR_LEN);
-
-    const char* bssid_str = amxc_var_constcast(cstring_t, args);
-    if((bssid_str == NULL) || (strlen(bssid_str) != ETHER_ADDR_STR_LEN - 1)) {
-        return amxd_status_unknown_error;
-    }
-    SAH_TRACEZ_INFO(ME, "set Neighbour  BSSID = %s", bssid_str);
-    wldu_convStr2Mac((unsigned char*) bssid, ETHER_ADDR_LEN, (char*) bssid_str, ETHER_ADDR_STR_LEN);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    memcpy(neigh->bssid, bssid, ETHER_ADDR_LEN);
-    s_updateNeighbor(pAP, neigh);
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setNeighbourSSID_pwf(amxd_object_t* object,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    const char* ssid_str = amxc_var_constcast(cstring_t, args);
-    if(ssid_str == NULL) {
-        return amxd_status_unknown_error;
-    }
-    SAH_TRACEZ_INFO(ME, "set Neighbour  SSID = %s", ssid_str);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    swl_str_copy(neigh->ssid, SSID_NAME_LEN, ssid_str);
-    s_updateNeighbor(pAP, neigh);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setNeighbourR0KHKey_pwf(amxd_object_t* object,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    const char* r0khkey = amxc_var_constcast(cstring_t, args);
-    if(r0khkey == NULL) {
-        return amxd_status_unknown_error;
-    }
-    SAH_TRACEZ_INFO(ME, "set Neighbour r0khkey = %s", r0khkey);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    snprintf(neigh->r0khkey, sizeof(neigh->r0khkey), "%s", r0khkey);
-    s_updateNeighbor(pAP, neigh);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setNeighbourNASIdentifier_pwf(amxd_object_t* object,
-                                                    amxd_param_t* parameter _UNUSED,
-                                                    amxd_action_t reason _UNUSED,
-                                                    const amxc_var_t* const args,
-                                                    amxc_var_t* const retval _UNUSED,
-                                                    void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    const char* nasIdentifier = amxc_var_constcast(cstring_t, args);
-    if(nasIdentifier == NULL) {
-        return amxd_status_unknown_error;
-    }
-    SAH_TRACEZ_INFO(ME, "set Neighbour  nasIdentifier = %s", nasIdentifier);
-
-    T_ApNeighbour* neigh = s_find_neighByObjIndex(pAP, object);
-    if(neigh == NULL) {
-        return amxd_status_unknown_error;
-    }
-
-    s_removeNeighbor(pAP, neigh);
-
-    snprintf(neigh->nasIdentifier, sizeof(neigh->nasIdentifier), "%s", nasIdentifier);
-    s_updateNeighbor(pAP, neigh);
-
-    return amxd_status_ok;
-}
 /**
- * Called when an exception is deleted
+ * Called when an neighbor instance is destroyed
  */
-amxd_status_t _wld_ap_delete_neigh_odf(amxd_object_t* template_object, amxd_object_t* instance_object) {
-    T_ApNeighbour* neigh = (T_ApNeighbour*) instance_object->priv;
+amxd_status_t _wld_ap_delete_neigh_odf(amxd_object_t* object,
+                                       amxd_param_t* param,
+                                       amxd_action_t reason,
+                                       const amxc_var_t* const args,
+                                       amxc_var_t* const retval,
+                                       void* priv) {
+    SAH_TRACEZ_IN(ME);
 
-    amxd_object_t* obj_vap = amxd_object_get_parent(template_object);
-    T_AccessPoint* ap = (T_AccessPoint*) obj_vap->priv;
-    ASSERT_NOT_NULL(neigh, amxd_status_unknown_error, ME, "NULL");
-    ASSERT_NOT_NULL(ap, amxd_status_unknown_error, ME, "NULL");
+    amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy neigh entry st:%d", status);
+
+    T_ApNeighbour* neigh = (T_ApNeighbour*) object->priv;
+    object->priv = NULL;
+    ASSERTS_NOT_NULL(neigh, amxd_status_ok, ME, "No internal ctx");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
     amxc_llist_it_take(&(neigh->it));
-    ap->pFA->mfn_wvap_deleted_neighbour(ap, neigh);
-    wld_autoCommitMgr_notifyVapEdit(ap);
 
-    SAH_TRACEZ_INFO(ME, "Deleted neigh");
-    debugPrintNeighbour(neigh);
+    /* If a 6GHz BSS is removed, update discovery method */
+    if(swl_chanspec_operClassToFreq(neigh->operatingClass) == SWL_FREQ_BAND_EXT_6GHZ) {
+        wld_rad_updateDiscoveryMethod6GHz();
+    }
 
+    s_removeNeighbor(pAP, neigh);
     free(neigh);
 
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 /**
- * Called when a new exception is added.
+ * Called when a new neighbor instance is added.
  */
-amxd_status_t _wld_ap_add_neigh_ocf(amxd_object_t* object,
-                                    amxd_param_t* param,
-                                    amxd_action_t reason,
-                                    const amxc_var_t* const args,
-                                    amxc_var_t* const retval,
-                                    void* priv) {
-    amxd_status_t status = amxd_status_ok;
-    amxd_object_t* obj_vap = amxd_object_get_parent(object);
-    T_AccessPoint* ap = (T_AccessPoint*) obj_vap->priv;
-    ASSERT_NOT_NULL(ap, amxd_status_unknown_error, ME, "NULL");
-    status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
+static void s_addNeighInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const intialParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
 
-    if(status != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "Adding neigh failed");
-        return status;
-    }
-    amxd_object_t* instance_object = NULL;
-    instance_object = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+
     T_ApNeighbour* neigh = calloc(1, sizeof(T_ApNeighbour));
-    ASSERT_NOT_NULL(neigh, amxd_status_unknown_error, ME, "NULL");
+    ASSERT_NOT_NULL(neigh, , ME, "NULL");
 
+    SAH_TRACEZ_INFO(ME, "%s: Adding neigh", pAP->alias);
     amxc_llist_it_init(&neigh->it);
-    amxc_llist_append(&ap->neighbours, &neigh->it);
-    instance_object->priv = neigh;
+    amxc_llist_append(&pAP->neighbours, &neigh->it);
+    object->priv = neigh;
+    neigh->obj = object;
 
-    SAH_TRACEZ_INFO(ME, "Adding neigh");
-    neigh->obj = instance_object;
-
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
 }
-
 
 /**
  * Function call to create an exception.
@@ -484,73 +184,40 @@ amxd_status_t _setNeighbourAP(amxd_object_t* obj,
                               amxc_var_t* ret _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    T_AccessPoint* pAP = obj->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(obj);
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
     const char* bssid = GET_CHAR(args, "BSSID");
-    const char* ssid = GET_CHAR(args, "SSID");
-    uint32_t info = GET_UINT32(args, "Information");
-    uint32_t operatingClass = GET_UINT32(args, "OperatingClass");
-    uint32_t channel = GET_UINT32(args, "Channel");
-    uint32_t phyType = GET_UINT32(args, "PhyType");
-    const char* nasIdentifier = GET_CHAR(args, "NASIdentifier");
-    const char* r0khkey = GET_CHAR(args, "R0KHKey");
+    swl_macChar_t cBssidStd;
+    ASSERT_TRUE(swl_mac_charToStandard(&cBssidStd, bssid), amxd_status_unknown_error, ME, "BSSID is invalid (%s)", bssid);
 
-    ASSERT_NOT_NULL(bssid, amxd_status_unknown_error, ME, "BSSID is not filled in");
+    amxd_trans_t trans;
+    T_ApNeighbour* neigh = wld_ap_findNeigh(pAP, cBssidStd.cMac);
 
-    swl_macChar_t cMacStd;
-    cMacStd.cMac[0] = 0;
-    if(!swl_mac_charToStandard(&cMacStd, (const char*) bssid)) {
-        SAH_TRACEZ_ERROR(ME, "BSSID is INVALID %s", bssid);
-        return amxd_status_unknown_error;
-    }
-
-    amxd_object_t* object;
-    T_ApNeighbour* neigh = find_neigh(pAP, cMacStd.cMac);
     if(neigh != NULL) {
-        SAH_TRACEZ_INFO(ME, "Neigbour with bssid [%s] found in neighbour list", cMacStd.cMac);
-        object = neigh->obj;
+        SAH_TRACEZ_INFO(ME, "Neighbor with bssid [%s] found in neighbour list", bssid);
+        ASSERT_TRANSACTION_INIT(neigh->obj, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pAP->alias);
     } else {
-        amxd_object_t* exception_template = amxd_object_get(obj, "Neighbour");
-        amxd_object_new_instance(&object, exception_template, NULL, 0, NULL);
-        if(object == NULL) {
-            SAH_TRACEZ_ERROR(ME, "Failed to create new Neighbour instance");
-            return amxd_status_unknown_error;
+        SAH_TRACEZ_INFO(ME, "Create new Neighbor with bssid [%s]", bssid);
+        ASSERT_TRANSACTION_INIT(amxd_object_get(pAP->pBus, "Neighbour"), &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pAP->alias);
+        amxd_trans_add_inst(&trans, 0, NULL);
+    }
+
+    SAH_TRACEZ_INFO(ME, "Updating neighbour object with provided arguments");
+    const char* validArgs = "BSSID,SSID,Information,Channel,OperatingClass,PhyType,NASIdentifier,R0KHKey,ColocatedAP";
+    amxc_var_for_each(newValue, args) {
+        const char* pname = amxc_var_key(newValue);
+        //skip arguments not matching instance's parameter names
+        //to avoid transaction applying issue
+        if(!swl_strlst_contains(validArgs, ",", pname)) {
+            SAH_TRACEZ_WARNING(ME, "skip unknown argument %s", pname);
+            continue;
         }
-        T_ApNeighbour* neigh = calloc(1, sizeof(T_ApNeighbour));
-        ASSERT_NOT_NULL(neigh, amxd_status_unknown_error, ME, "NULL");
-        amxc_llist_it_init(&neigh->it);
-        amxc_llist_append(&pAP->neighbours, &neigh->it);
-
-        neigh->obj = object;
-
-        object->priv = neigh;
-        SAH_TRACEZ_INFO(ME, "Create new neighbour with bssid [%s]", cMacStd.cMac);
-        amxd_object_set_cstring_t(object, "BSSID", cMacStd.cMac);
+        //we assume known args and obj params types are matching
+        amxd_trans_set_param(&trans, pname, newValue);
     }
 
-    SAH_TRACEZ_INFO(ME, "Updating neighbour object with provide arguments");
-    if(ssid) {
-        amxd_object_set_cstring_t(object, "SSID", ssid);
-    }
-    if(info != 0) {
-        amxd_object_set_int32_t(object, "Information", info);
-    }
-    if(operatingClass != 0) {
-        amxd_object_set_int32_t(object, "OperatingClass", operatingClass);
-    }
-    if(channel != 0) {
-        amxd_object_set_int32_t(object, "Channel", channel);
-    }
-    if(phyType != 0) {
-        amxd_object_set_int32_t(object, "PhyType", phyType);
-    }
-    if(nasIdentifier != NULL) {
-        amxd_object_set_cstring_t(object, "NASIdentifier", nasIdentifier);
-    }
-    if(r0khkey != NULL) {
-        amxd_object_set_cstring_t(object, "R0KHKey", r0khkey);
-    }
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_unknown_error, ME, "%s : trans apply failure", pAP->alias);
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -561,31 +228,120 @@ amxd_status_t _delNeighbourAP(amxd_object_t* obj,
                               amxc_var_t* args _UNUSED,
                               amxc_var_t* ret _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    T_AccessPoint* pAP = obj->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
+
+    amxd_status_t status = amxd_status_unknown_error;
+    T_AccessPoint* pAP = wld_ap_fromObj(obj);
+    ASSERT_NOT_NULL(pAP, status, ME, "NULL");
 
     const char* bssid = GET_CHAR(args, "BSSID");
-    ASSERT_NOT_NULL(bssid, amxd_status_unknown_error, ME, "BSSID is not filled in");
+    swl_macChar_t cBssidStd;
+    ASSERT_TRUE(swl_mac_charToStandard(&cBssidStd, bssid), status, ME, "BSSID is invalid (%s)", bssid);
 
-    T_ApNeighbour* neigh = find_neigh(pAP, bssid);
-    if(!neigh) {
-        SAH_TRACEZ_INFO(ME, "Could not find neighbour with bssid %s", bssid);
-        return amxd_status_unknown_error;
+    T_ApNeighbour* neigh = wld_ap_findNeigh(pAP, cBssidStd.cMac);
+    ASSERT_NOT_NULL(neigh, status, ME, "Could not find neighbour with bssid %s", bssid);
+
+    status = swl_object_delInstWithTransOnLocalDm(neigh->obj);
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _wld_ap_validateNeighBssid_pvf(amxd_object_t* object,
+                                             amxd_param_t* param _UNUSED,
+                                             amxd_action_t reason _UNUSED,
+                                             const amxc_var_t* const args,
+                                             amxc_var_t* const retval _UNUSED,
+                                             void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_status_invalid_value;
+    amxd_object_t* tmplObj = amxd_object_get_parent(object);
+
+    const char* currBssidStr = amxc_var_constcast(cstring_t, &param->value);
+    const char* newBssidStr = amxc_var_constcast(cstring_t, args);
+    if(swl_str_isEmpty(newBssidStr) || SWL_MAC_CHAR_MATCHES(newBssidStr, currBssidStr)) {
+        return amxd_status_ok;
+    }
+    T_ApNeighbour* duplNeigh = s_findNeigh(tmplObj, newBssidStr, object);
+    if(duplNeigh != NULL) {
+        SAH_TRACEZ_ERROR(ME, "neigh entry[%d] bssid (%s) already exist", amxd_object_get_index(duplNeigh->obj), newBssidStr);
+    } else {
+        status = amxd_status_ok;
     }
 
-    amxd_object_delete(&neigh->obj);
-
-    amxc_llist_it_take(&(neigh->it));
-    pAP->pFA->mfn_wvap_deleted_neighbour(pAP, neigh);
-    wld_autoCommitMgr_notifyVapEdit(pAP);
-
-    SAH_TRACEZ_INFO(ME, "Deleted neigh");
-    debugPrintNeighbour(neigh);
-
-    free(neigh);
-
-    return amxd_status_ok;
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+    return status;
+}
+
+static void s_setNeighConf_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+
+    T_ApNeighbour* neigh = object->priv;
+    ASSERT_NOT_NULL(neigh, , ME, "NULL");
+
+    s_removeNeighbor(pAP, neigh);
+
+    amxc_var_for_each(newValue, newParamValues) {
+        char* valStr = NULL;
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "BSSID")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour  BSSID = %s", valStr);
+            swl_typeMacBin_fromChar((swl_macBin_t*) neigh->bssid, valStr);
+        } else if(swl_str_matches(pname, "SSID")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour  SSID = %s", valStr);
+            swl_str_copy(neigh->ssid, SSID_NAME_LEN, valStr);
+        } else if(swl_str_matches(pname, "Information")) {
+            neigh->information = amxc_var_dyncast(int32_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour BSSID Info = %d", neigh->information);
+        } else if(swl_str_matches(pname, "OperatingClass")) {
+            neigh->operatingClass = amxc_var_dyncast(int32_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour  operatingClass = %d", neigh->operatingClass);
+        } else if(swl_str_matches(pname, "Channel")) {
+            neigh->channel = amxc_var_dyncast(int32_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour Channel = %d", neigh->channel);
+        } else if(swl_str_matches(pname, "PhyType")) {
+            neigh->phyType = amxc_var_dyncast(int32_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour phyType = %d", neigh->phyType);
+        } else if(swl_str_matches(pname, "NASIdentifier")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour nasIdentifier = %s", valStr);
+            swl_str_copy(neigh->nasIdentifier, sizeof(neigh->nasIdentifier), valStr);
+        } else if(swl_str_matches(pname, "R0KHKey")) {
+            valStr = amxc_var_dyncast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour r0khkey = %s", valStr);
+            swl_str_copy(neigh->r0khkey, sizeof(neigh->r0khkey), valStr);
+        } else if(swl_str_matches(pname, "ColocatedAP")) {
+            neigh->colocatedAp = amxc_var_dyncast(bool, newValue);
+            SAH_TRACEZ_INFO(ME, "set Neighbour colocatedAp = %d", neigh->colocatedAp);
+        } else {
+            continue;
+        }
+        free(valStr);
+    }
+    /* If a 6GHz BSS is added, update discovery method */
+    if(swl_chanspec_operClassToFreq(neigh->operatingClass) == SWL_FREQ_BAND_EXT_6GHZ) {
+        wld_rad_updateDiscoveryMethod6GHz();
+    }
+
+    s_updateNeighbor(pAP, neigh);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sApNeighDmHdlrs,
+              ARR(),
+              .instAddedCb = s_addNeighInst_oaf,
+              .objChangedCb = s_setNeighConf_ocf,
+              );
+
+void _wld_ap_set_neigh_ocf(const char* const sig_name,
+                           const amxc_var_t* const data,
+                           void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApNeighDmHdlrs, sig_name, data, priv);
 }
 

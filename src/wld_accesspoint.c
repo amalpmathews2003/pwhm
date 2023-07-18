@@ -1695,6 +1695,40 @@ amxd_status_t _wld_ap_validateDiscoveryMethod_pvf(amxd_object_t* object,
     return amxd_status_ok;
 }
 
+void wld_ap_updateDiscoveryMethod(T_AccessPoint* pAP) {
+    ASSERTI_NOT_NULL(pAP, , ME, "NULL");
+    pAP->pFA->mfn_wvap_set_discovery_method(pAP);
+}
+
+wld_ap_dm_m wld_ap_getDiscoveryMethod(T_AccessPoint* pAP) {
+    ASSERTI_NOT_NULL(pAP, M_AP_DM_DEFAULT, ME, "NULL");
+    wld_ap_dm_m dm = pAP->discoveryMethod;
+    if(pAP->pRadio->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) {
+        return dm == M_AP_DM_DEFAULT ? M_AP_DM_RNR : dm;
+    }
+
+    char macStr[SWL_MAC_CHAR_LEN] = {0};
+    SWL_MAC_BIN_TO_CHAR(macStr, pAP->pSSID->BSSID);
+
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+            continue;
+        }
+        T_AccessPoint* pApTmp = NULL;
+        wld_rad_forEachAp(pApTmp, pRad) {
+            T_ApNeighbour* neigh = wld_ap_findNeigh(pApTmp, macStr);
+            if((pApTmp->status == APSTI_ENABLED) &&
+               (wld_ap_getDiscoveryMethod(pApTmp) == M_AP_DM_RNR) &&
+               (neigh != NULL) &&
+               neigh->colocatedAp) {
+                return dm == M_AP_DM_DEFAULT ? M_AP_DM_DISABLED : dm;
+            }
+        }
+    }
+    return dm == M_AP_DM_DEFAULT ? M_AP_DM_UPR : dm;
+}
+
 static void s_setDiscoveryMethod_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
@@ -1717,6 +1751,10 @@ static void s_setDiscoveryMethod_pwf(void* priv _UNUSED, amxd_object_t* object, 
     SAH_TRACEZ_INFO(ME, "%s: Configure discovery method: %d", pAP->alias, pAP->discoveryMethod);
 
     pAP->pFA->mfn_wvap_set_discovery_method(pAP);
+
+    if(pAP->pRadio->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) {
+        wld_rad_updateDiscoveryMethod6GHz();
+    }
 
     SAH_TRACEZ_OUT(ME);
 }

@@ -1945,7 +1945,7 @@ define rrm_t{
 		 * @version 9.0
 		 */
 		void setNeighbourAP(
-			string BSSID,
+			%mandatory string BSSID,
 			string SSID,
 			int32 Information,
 			int32 OperatingClass,
@@ -1960,7 +1960,7 @@ define rrm_t{
 		 * @return no return
 		 * @version 9.0
 		 */
-		void delNeighbourAP(string BSSID);
+		void delNeighbourAP(%in %mandatory string BSSID);
 
 		/**
 		 * The list of neighbour access points. All the accesspoints listed here should belong to the
@@ -1969,65 +1969,56 @@ define rrm_t{
 		 */
 		%persistent object Neighbour[]{
 
-			on action del-inst call wld_ap_delete_neigh_odf;
-			on action add-inst call wld_ap_add_neigh_ocf;
+			on action destroy call wld_ap_delete_neigh_odf;
+			on event "*" call wld_ap_set_neigh_ocf;
 
 			/**
 			 * The BSSID of the neighbour accesspoint.
 			 */
 			%persistent string BSSID{
-				on action write call wld_ap_setNeighbourBSSID_pwf;
-				default "";
+				on action validate call is_valid_macaddr;
+				on action validate call wld_ap_validateNeighBssid_pvf;
 			}
+
 			/**
 			 * The SSID of the neighbour accesspoint.
 			 */
-			%persistent string SSID{
-				on action write call wld_ap_setNeighbourSSID_pwf;
-				default "";
-			}
+			%persistent string SSID;
+
 			/**
 			 * The BSSID Information field.
 			 */
-			%persistent int32 Information{
-				on action write call  wld_ap_setNeighbourInformation_pwf;
-				default 0;
-			}
+			%persistent int32 Information;
+
 			/**
 			 * The neighbour accesspoint operating class.
 			 */
-			%persistent int32 OperatingClass{
-				on action write call  wld_ap_setNeighbourOperatingClass_pwf;
-				default 0;
-			}
+			%persistent int32 OperatingClass;
+
 			/**
 			 * The current channel of the neighbour accesspoint
 			 */
-			%persistent int32 Channel{
-				on action write call wld_ap_setNeighbourChannel_pwf;
-				default 0;
-			}
+			%persistent int32 Channel;
+
 			/**
 			 * The phy type of the neighbour accesspoint.
 			 */
-			%persistent int32 PhyType{
-				on action write call wld_ap_setNeighbourPhyType_pwf;
-				default 0;
-			}
+			%persistent int32 PhyType;
+
 			/**
 			 * The NAS Identifier of the neighbour accesspoint.
 			 */
-			%persistent string NASIdentifier{
-				on action write call wld_ap_setNeighbourNASIdentifier_pwf;
-				default "";
-			}
+			%persistent string NASIdentifier;
+
 			/**
 			 * The R0KHKey of the neighbour accesspoint.
 			 */
-			%persistent string R0KHKey{
-				on action write call  wld_ap_setNeighbourR0KHKey_pwf;
-				default "";
-			}
+			%persistent string R0KHKey;
+
+			/**
+			 * Neighbour accesspoint is located on the same device of the current accesspoint.
+			 */
+			%persistent bool ColocatedAP;
 		}
 
 		/**
