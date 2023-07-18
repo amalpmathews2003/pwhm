@@ -57,6 +57,7 @@ if (RadioIndex >= 0) : %}
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Data";
+                parameter IEEE80211kEnabled = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
                     parameter ModeEnabled = "WPA2-Personal";
@@ -74,6 +75,7 @@ if (RadioIndex >= 0) : %}
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Data";
+                parameter IEEE80211kEnabled = 1;
                 parameter WDSEnable = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {

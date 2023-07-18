@@ -230,6 +230,8 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"wep_key2", SECDMN_ACTION_OK_NEED_RESTART},
               {"wep_key3", SECDMN_ACTION_OK_NEED_RESTART},
               {"wps_state", SECDMN_ACTION_OK_NEED_RESTART},
+              //params set and applied with main iface toggle
+              {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_TOGGLE},
               //params set and applied with global saved hostapd conf reloading
               {"wpa", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"wpa_pairwise", SECDMN_ACTION_OK_NEED_SIGHUP},
@@ -576,6 +578,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",
         "ft_over_ds", "multi_ap",
         "wps_state", "config_methods", "uuid",
+        "rrm_neighbor_report",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
@@ -1089,7 +1092,7 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
     bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, cmd, reply, sizeof(reply));
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail to send %s : ret %u", pAP->alias, cmd, ret);
     int32_t token;
-    swl_typeInt32_fromChar(&token, reply);
-    ASSERT_TRUE(token >= 0, SWL_RC_ERROR, ME, "%s: Bad response %s : token %u", pAP->alias, cmd, token);
+    ok = swl_typeInt32_fromChar(&token, reply);
+    ASSERT_TRUE(ok && (token >= 0), SWL_RC_ERROR, ME, "%s: Bad response %s : token %u reply(%s)", pAP->alias, cmd, token, reply);
     return SWL_RC_OK;
 }

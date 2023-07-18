@@ -27,6 +27,7 @@
                 parameter SSIDReference = "Device.WiFi.SSID.1.";
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Data";
+                parameter IEEE80211kEnabled = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
                     parameter ModeEnabled = "WPA2-Personal";
@@ -43,6 +44,7 @@
                 parameter SSIDReference = "Device.WiFi.SSID.2.";
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Data";
+                parameter IEEE80211kEnabled = 1;
                 parameter WDSEnable = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {

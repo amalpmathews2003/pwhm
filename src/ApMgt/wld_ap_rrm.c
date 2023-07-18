@@ -125,21 +125,32 @@ void wld_ap_rrm_item(T_AccessPoint* ap, const swl_macChar_t* mac, amxc_var_t* re
     }
 }
 
+#define BEACON_MEASURE_DEFAULT_MEAS_MODE SWL_IEEE802_RRM_BEACON_REQ_MODE_PASSIVE
+#define BEACON_MEASURE_DEFAULT_TIMEOUT 1000
+static const uint16_t s_defaultMeasDurationByMode[SWL_IEEE802_RRM_BEACON_REQ_MODE_MAX] = {50, 120, 120};
+SWL_TABLE(sRrmBeaconCapModeMap,
+          ARR(uint32_t swlRrmBeaconCap; uint32_t swlRrmBeaconMode; ),
+          ARR(swl_type_uint32, swl_type_uint32),
+          ARR({SWL_STACAP_RRM_BEACON_ACTIVE_ME, SWL_IEEE802_RRM_BEACON_REQ_MODE_ACTIVE},
+              {SWL_STACAP_RRM_BEACON_PASSIVE_ME, SWL_IEEE802_RRM_BEACON_REQ_MODE_PASSIVE},
+              {SWL_STACAP_RRM_BEACON_TABLE_ME, SWL_IEEE802_RRM_BEACON_REQ_MODE_TABLE})
+          );
 amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
                                           amxd_function_t* func _UNUSED,
                                           amxc_var_t* args,
                                           amxc_var_t* ret) {
-    T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
     ASSERT_NOT_NULL(pAP, amxd_status_ok, ME, "NULL");
+    const char* macStr = GET_CHAR(args, "mac");
+    swl_macChar_t cStation;
+    ASSERT_TRUE(swl_mac_charToStandard(&cStation, macStr), amxd_status_invalid_function_argument, ME, "invalid mac (%s)", macStr);
+    ASSERT_TRUE(swl_mac_charIsValidStaMac(&cStation), amxd_status_invalid_function_argument, ME, "invalid sta mac (%s)", macStr);
     ASSERT_TRUE(pAP->IEEE80211kEnable, amxd_status_invalid_value, ME, "IEEE802.11k not enabled");
 
     SAH_TRACEZ_IN(ME);
 
     wld_rrmReq_t reqCall;
     memset(&reqCall, 0, sizeof(reqCall));
-
-    const char* macStr = GET_CHAR(args, "mac");
-    ASSERTS_NOT_NULL(macStr, amxd_status_invalid_function_argument, ME, "NULL");
 
     const char* bssid = GET_CHAR(args, "bssid");
     const char* ssid = GET_CHAR(args, "ssid");
@@ -157,10 +168,32 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
     reqCall.channel = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
 
     tpVar = amxc_var_get_key(args, "timeout", AMXC_VAR_FLAG_DEFAULT);
-    uint32_t timeout = (tpVar == NULL) ? 1000 : amxc_var_dyncast(uint32_t, tpVar);
+    uint32_t timeout = (tpVar == NULL) ? BEACON_MEASURE_DEFAULT_TIMEOUT : amxc_var_dyncast(uint32_t, tpVar);
 
     tpVar = amxc_var_get_key(args, "mode", AMXC_VAR_FLAG_DEFAULT);
-    reqCall.mode = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
+    if((tpVar == NULL) || ((reqCall.mode = amxc_var_dyncast(uint8_t, tpVar)) >= SWL_IEEE802_RRM_BEACON_REQ_MODE_MAX)) {
+        //as mode arg is optional: explicitly use default request mode when argument is missing or unknown
+        SAH_TRACEZ_WARNING(ME, "%s: assume default rrm beacon meas mode %d because missing/invalid user conf(%d)", pAP->alias, BEACON_MEASURE_DEFAULT_MEAS_MODE, reqCall.mode);
+        reqCall.mode = BEACON_MEASURE_DEFAULT_MEAS_MODE;
+    }
+
+    swl_macBin_t macStaBin;
+    swl_mac_charToBin(&macStaBin, &cStation);
+    T_AssociatedDevice* pAD = wld_vap_get_existing_station(pAP, &macStaBin);
+    if(pAD != NULL) {
+        swl_mask_m rrmBeaconCaps = pAD->assocCaps.rrmCapabilities & (M_SWL_STACAP_RRM_BEACON_ACTIVE_ME | M_SWL_STACAP_RRM_BEACON_PASSIVE_ME | M_SWL_STACAP_RRM_BEACON_TABLE_ME);
+        swl_staCapRrmCap_e* rrmCap = (swl_staCapRrmCap_e*) swl_table_getMatchingValue(&sRrmBeaconCapModeMap, 0, 1, &reqCall.mode);
+        if((rrmCap != NULL) && (!SWL_BIT_IS_SET(pAD->assocCaps.rrmCapabilities, *rrmCap))) {
+            int32_t lPos = swl_bit32_getLowest(rrmBeaconCaps);
+            swl_ieee802_rrmBeaconReqMode_e* mode = (swl_ieee802_rrmBeaconReqMode_e*) swl_table_getMatchingValue(&sRrmBeaconCapModeMap, 1, 0, &lPos);
+            if(mode == NULL) {
+                SAH_TRACEZ_WARNING(ME, "%s: sta %s caps does not include any rrm beacon mode: keep set %d", pAP->alias, pAD->Name, reqCall.mode);
+            } else {
+                SAH_TRACEZ_WARNING(ME, "%s: rectify rrm beacon mode of sta %s with supported mode %d (isof %d)", pAP->alias, pAD->Name, *mode, reqCall.mode);
+                reqCall.mode = *mode;
+            }
+        }
+    }
 
     tpVar = amxc_var_get_key(args, "modeMask", AMXC_VAR_FLAG_DEFAULT);
     reqCall.modeMask = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
@@ -169,7 +202,12 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
     reqCall.token = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
 
     tpVar = amxc_var_get_key(args, "duration", AMXC_VAR_FLAG_DEFAULT);
-    reqCall.duration = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint16_t, tpVar);
+    if((tpVar == NULL) || ((reqCall.duration = amxc_var_dyncast(uint16_t, tpVar)) == 0)) {
+        //as duration arg is optional: explicitly use default duration (by mode) when argument is missing or null
+        //Most stations reject RRM Beacon request when duration is undefined
+        reqCall.duration = s_defaultMeasDurationByMode[reqCall.mode];
+        SAH_TRACEZ_WARNING(ME, "%s: assume default meas duration(%d) for mode(%d)", pAP->alias, reqCall.duration, reqCall.mode);
+    }
 
     tpVar = amxc_var_get_key(args, "interval", AMXC_VAR_FLAG_DEFAULT);
     reqCall.interval = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint16_t, tpVar);
@@ -179,8 +217,6 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
 
     amxd_status_t status = amxd_status_ok;
 
-    swl_macChar_t cStation;
-    swl_mac_charToStandard(&cStation, macStr);
     swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_request_rrm_report(pAP, &cStation, &reqCall);
 
     if(cmdRetval == SWL_RC_NOT_IMPLEMENTED) {
