@@ -1930,6 +1930,7 @@ define probelist_t{
 			 * and flag them as available for CSM.
 			 */
 			%persistent object BgDfs{
+				on event "*" call wld_radBgDfs_setConf_ocf;
 				/**
 				 * If BgDfs is supported on this radio
 				 */
@@ -1942,7 +1943,6 @@ define probelist_t{
 				 * This parameter will allow the system to preclear DFS channels
 				 */
 				%persistent bool PreclearEnable{
-					on action write call setBgdfsEnable;
 					default false;
 				}
 
@@ -1952,7 +1952,6 @@ define probelist_t{
 				 * to do its bgdfs clear
 				 */
 				%persistent bool AllowProvider{
-					on action write call setBgdfsProvider;
 					default true;
 				}
 
@@ -2019,7 +2018,7 @@ define probelist_t{
 				 * @param channel: the channel to clear
 				 * @param bandwidth: optional bandwidth in MHz to clear. Set to 0 for auto
 				 */
-				void startBgDfsClear(%in uint8 channel, %in uint32 bandwidth);
+				void startBgDfsClear(%in %mandatory uint8 channel, %in uint32 bandwidth);
 
 				/**
 				 * Stop BgDfs

@@ -67,6 +67,7 @@
 #include "wld.h"
 #include "wld_util.h"
 #include "swl/swl_assert.h"
+#include "wld_radio.h"
 #include "wld_channel_types.h"
 #include "wld_chanmgt.h"
 #include "wld_bgdfs.h"
@@ -229,7 +230,7 @@ swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
     bool legacy = false;
     swl_rc_ne ret = pRad->pFA->mfn_wrad_bgdfs_start_ext(pRad, args);
     if(ret < 0) {
-        if(ret == WLD_ERROR_NOT_IMPLEMENTED) {
+        if(ret == SWL_RC_NOT_IMPLEMENTED) {
             // if not implemented, try normal one
             ret = pRad->pFA->mfn_wrad_bgdfs_start(pRad, args->channel);
             legacy = true;
@@ -241,63 +242,35 @@ swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
 }
 
 
-amxd_status_t _setBgdfsEnable(amxd_object_t* object,
-                              amxd_param_t* parameter,
-                              amxd_action_t reason,
-                              const amxc_var_t* const args,
-                              amxc_var_t* const retval,
-                              void* priv) {
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_object_t* bgdfsObject = amxd_object_get_parent(object);
-
-    amxd_object_t* radObject = amxd_object_get_parent(bgdfsObject);
-    ASSERT_NOT_NULL(radObject, amxd_status_ok, ME, "radObject is NULL");
-
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR");
-
-    T_Radio* pR = radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
+    ASSERTI_NOT_EQUALS(pR->bgdfs_config.enable, enabled, , ME, "EQUALS");
 
     if(wld_bgdfs_isRunning(pR)) {
         wld_bgdfs_notifyClearEnded(pR, DFS_RESULT_OTHER);
     }
 
-    pR->bgdfs_config.enable = amxc_var_dyncast(bool, args);
+    pR->bgdfs_config.enable = enabled;
 
-    SAH_TRACEZ_ERROR(ME,
-                     "%s: BgDfs preclear enable changed to %s",
-                     pR->Name,
-                     pR->bgdfs_config.enable ? "true" : "false");
+    SAH_TRACEZ_INFO(ME,
+                    "%s: BgDfs preclear enable changed to %s",
+                    pR->Name,
+                    pR->bgdfs_config.enable ? "true" : "false");
 
     SAH_TRACEZ_OUT(ME);
-
-    return amxd_status_ok;
 }
 
-amxd_status_t _setBgdfsProvider(amxd_object_t* object,
-                                amxd_param_t* parameter,
-                                amxd_action_t reason,
-                                const amxc_var_t* const args,
-                                amxc_var_t* const retval,
-                                void* priv) {
+static void s_setBgdfsProvider_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_object_t* bgdfsObject = amxd_object_get_parent(object);
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
 
-    amxd_object_t* radObject = amxd_object_get_parent(bgdfsObject);
-    ASSERT_NOT_NULL(radObject, amxd_status_ok, ME, "radObject is NULL");
-
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR");
-
-    T_Radio* pR = radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-
-
-
-    pR->bgdfs_config.useProvider = amxc_var_dyncast(bool, args);
+    pR->bgdfs_config.useProvider = amxc_var_dyncast(bool, newValue);
 
     SAH_TRACEZ_INFO(ME,
                     "%s: BgDfs useProvider changed to %s",
@@ -305,15 +278,24 @@ amxd_status_t _setBgdfsProvider(amxd_object_t* object,
                     pR->bgdfs_config.useProvider ? "true" : "false");
 
     SAH_TRACEZ_OUT(ME);
+}
 
-    return amxd_status_ok;
+SWLA_DM_HDLRS(sRadBgDfsDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("AllowProvider", s_setBgdfsProvider_pwf),
+                  ));
+
+void _wld_radBgDfs_setConf_ocf(const char* const sig_name,
+                               const amxc_var_t* const data,
+                               void* const priv _UNUSED) {
+    swla_dm_procObjEvtOfLocalDm(&sRadBgDfsDmHdlrs, sig_name, data, priv);
 }
 
 amxd_status_t bgdfs_startClear(T_Radio* pR,
                                uint32_t bandwidth,
                                swl_channel_t channel,
                                wld_startBgdfsArgs_t* dfsArgs) {
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "Radio Object is NULL");
+    ASSERTI_NOT_NULL(pR, amxd_status_unknown_error, ME, "INVALID");
 
     if(!pR->bgdfs_config.enable || !pR->bgdfs_config.available || (pR->bgdfs_config.channel != 0)) {
         SAH_TRACEZ_ERROR(ME, "%s config error %d %d %d", pR->Name,
@@ -338,7 +320,7 @@ amxd_status_t bgdfs_startClear(T_Radio* pR,
 }
 
 amxd_status_t bgdfs_stopClear(T_Radio* pRad) {
-    ASSERTI_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "INVALID");
+    ASSERTI_NOT_NULL(pRad, amxd_status_unknown_error, ME, "INVALID");
 
     if(!pRad->bgdfs_config.enable || !pRad->bgdfs_config.available || (pRad->bgdfs_config.channel == 0)) {
         SAH_TRACEZ_ERROR(ME, "%s config error %d %d %d", pRad->Name,
@@ -359,12 +341,8 @@ amxd_status_t _startBgDfsClear(amxd_object_t* object,
                                amxc_var_t* retval _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_object_t* bgdfsObject = amxd_object_get_parent(object);
-
-    amxd_object_t* radObject = amxd_object_get_parent(bgdfsObject);
-    ASSERT_NOT_NULL(radObject, amxd_status_ok, ME, "radObject is NULL");
-
-    T_Radio* pR = (T_Radio*) radObject->priv;
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "No mapped radio ctx");
 
     swl_channel_t channel = (swl_channel_t) GET_UINT32(args, "channel");
     uint32_t bandwidth = GET_UINT32(args, "bandwidth");
@@ -386,12 +364,9 @@ amxd_status_t _stopBgDfsClear(amxd_object_t* object,
                               amxc_var_t* retval _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_object_t* bgdfsObject = amxd_object_get_parent(object);
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "No mapped radio ctx");
 
-    amxd_object_t* radObject = amxd_object_get_parent(bgdfsObject);
-    ASSERT_NOT_NULL(radObject, amxd_status_ok, ME, "radObject is NULL");
-
-    T_Radio* pR = radObject->priv;
     amxd_status_t status = bgdfs_stopClear(pR);
 
     SAH_TRACEZ_OUT(ME);

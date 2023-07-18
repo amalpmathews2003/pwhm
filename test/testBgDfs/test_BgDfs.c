@@ -430,7 +430,6 @@ static void test_setAvailableSucceeds(void** state _UNUSED) {
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
-    sahTraceAddZone(TRACE_LEVEL_APP_INFO, "ssid");
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_isRunningReturnsFalseWhenIdle),
         cmocka_unit_test(test_isRunningReturnsFalseWhenOff),
