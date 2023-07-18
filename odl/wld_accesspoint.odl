@@ -440,6 +440,9 @@ define rrm_t{
 		/** This object contains security related parameters that apply
 		 * to a CPE acting as an Access Point */
 		%persistent object Security{
+			on action validate call wld_ap_validateSecurity_ovf;
+			on event "*" call wld_ap_security_setConf_ocf;
+			
 			/** <p>Comma-separated list of strings. Indicates which security
 			 *  modes this AccessPoint  instance is capable of supporting.
 			 *  Each list item is an enumeration of:</p>
@@ -482,9 +485,8 @@ define rrm_t{
 			 *  </ul>
 			 * @version 9.2
 			 *  */
-			%persistent string ModesAvailable{
-				on action write call wld_ap_setModesAvailable_pwf;
-			}
+			%persistent string ModesAvailable;
+
 			/**A WEP key expressed as a hexadecimal string.
 			 * WEPKey is used only if ModeEnabled is set to WEP-64 or
 			 * WEP-128.
@@ -496,7 +498,6 @@ define rrm_t{
 			%persistent string WEPKey{  /* Must be hexbinary? */
 				default "123456789ABCD";
 				on action validate call wld_ap_validateWEPKey_pvf;
-				on action write call wld_ap_setWEPKey_pwf;
 			}
 
 			/** <p>A literal PreSharedKey (PSK) expressed as a hexadecimal
@@ -510,7 +511,6 @@ define rrm_t{
 			    regardless of the actual value.</i>*/
 			%persistent string PreSharedKey{
 				on action validate call wld_ap_validatePreSharedKey_pvf;
-				on action write call wld_ap_setPreSharedKey_pwf;
 				userflags %upc;
 			}
 			/** <p>A passphrase from which the PreSharedKey  is to be
@@ -527,7 +527,6 @@ define rrm_t{
 			 * or 256 bit secret, entered as a 64 characters hex key.*/
 			%persistent string KeyPassPhrase = "password" {
 				on action validate call wld_ap_validateKeyPassPhrase_pvf;
-				on action write call wld_ap_setKeyPassPhrase_pwf;
 				userflags %upc;
 			}
 			/**  <p>The interval (expressed in seconds) in which the keys are
@@ -535,8 +534,8 @@ define rrm_t{
 			 *   (WPA-WPA2) modes in Personal or Enterprise mode (i.e.
 			 *   when ModeEnabled is set to a value other than None or
 			 *   WEP-64 WEP-128 or WEP-128uv.</p>*/
-			%persistent uint32 RekeyingInterval = 3600 {
-				on action write call wld_ap_setRekeyInterval_pwf;
+			%persistent uint32 RekeyingInterval {
+				default 3600;
 			}
 			/** Transition interface for OWE Transition Mode
 			 *  Link current VAP to the other VAP needed for transition
@@ -544,9 +543,8 @@ define rrm_t{
 			 *
 			 *  @version 10.0
 			 */
-			%persistent string OWETransitionInterface{
-				on action write call wld_ap_setOweTransitionIntf_pwf;
-			}
+			%persistent string OWETransitionInterface;
+			
 			/** Transition Disable indication
 			 *  The AP can notify authenticated stations to disable transition mode in their
 			 *  network profiles when the network has completed transition steps, i.e., once
@@ -568,9 +566,9 @@ define rrm_t{
 			 *  @version 10.0
 			 */
 			%persistent string TransitionDisable{
-				on action write call wld_ap_setTransitionDisable_pwf;
 				default "";
 			}
+
 			/**  A passphrase for WPA3-Personal or WPA2-WPA3-Personal 
 			 *   security modes.
 			 *
@@ -586,18 +584,15 @@ define rrm_t{
 			 */
 			%persistent string SAEPassphrase{
 				on action validate call wld_ap_validateSaePassphrase_pvf;
-				on action write call wld_ap_setSaePassphrase_pwf;
 				default "";
 				userflags %upc;
 			}
 			/**  <p>WPA-key encryption Mode</p>*/
 			%persistent string EncryptionMode = "Default" {
 				on action validate call check_enum ["Default", "AES", "TKIP", "TKIP-AES"];
-				on action write call wld_ap_setEncryptionMode_pwf;
 			}
 			/**  <p>Enable extra WPA-key encryption protection..</p>*/
 			%persistent bool SHA256Enable{
-				on action write call wld_ap_setSHA256Enable_pwf;
 				default false;
 			}
 			/** <p>[IPAddress] The IP Address of the RADIUS server used for
@@ -606,30 +601,26 @@ define rrm_t{
 			 *  WPA2-Enterprise  or
 			 *  WPA-WPA2-Enterprise).</p>*/
 			%persistent string RadiusServerIPAddr{
-				on action write call wld_ap_setRadiusInfo_pwf;
+				on action validate call is_valid_ip;
 			}
 			/** <p> The port number of the RADIUS server used for WLAN
 			 *  security. RadiusServerPort is only applicable when
 			 *  ModeEnabled  is an Enterprise type (i.e. WPA-Enterprise,
 			 *  WPA2-Enterprise  or WPA-WPA2-Enterprise). </p> */
-			%persistent uint32 RadiusServerPort = 1812 {
-				on action write call wld_ap_setRadiusInfo_pwf;
+			%persistent uint32 RadiusServerPort {
+				default 1812;
 			}
 			/** <p> The secret used for handshaking with the RADIUS
 			 *  server </p> <i>When read, this parameter returns an empty
 			 *  string, regardless of the actual value.</i>*/
-			%persistent string RadiusSecret{
-				on action write call wld_ap_setRadiusInfo_pwf;
-			}
+			%persistent string RadiusSecret;
 
 			/** Default Session-Timeout (expressed in seconds). If set, it will be used
 			 *  as the default Session-Timeout if no timeout is set by the radius server.
 			 *  RadiusDefaultSessionTimeout is only applicable when ModeEnabled is an Enterprise
 			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
 			 */
-			%persistent uint32 RadiusDefaultSessionTimeout {
-				on action write call wld_ap_setRadiusInfo_pwf;
-			}
+			%persistent uint32 RadiusDefaultSessionTimeout;
 
 			/** IP address to use for NAS-IP-Address or NAS-IPv6-Address.
 			 *  If set, it will overrule the address of the interface.
@@ -637,32 +628,26 @@ define rrm_t{
 			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
 			 */
 			string RadiusOwnIPAddress {
-				on action write call wld_ap_setRadiusInfo_pwf;
+				on action validate call is_valid_ip;
 			}
 
 			/** Optional NAS-Identifier string for RADIUS messages.
 			 *  RadiusNASIdentifier is only applicable when ModeEnabled is an Enterprise
 			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
 			 */
-			%persistent string RadiusNASIdentifier {
-				on action write call wld_ap_setRadiusInfo_pwf;
-			}
+			%persistent string RadiusNASIdentifier;
 
 			/** If set, it will override Called-Station-Id in the radius messages.
 			 *  RadiusCalledStationId is only applicable when ModeEnabled is an Enterprise
 			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
 			 */
-			%persistent string RadiusCalledStationId {
-				on action write call wld_ap_setRadiusInfo_pwf;
-			}
+			%persistent string RadiusCalledStationId;
 
 			/** Request Chargeable-User-Identity (RFC 4372)
 			 *  RadiusChargeableUserId is only applicable when ModeEnabled is an Enterprise
 			 *  type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
 			 */
-			%persistent bool RadiusChargeableUserId {
-				on action write call wld_ap_setRadiusInfo_pwf;
-			}
+			%persistent bool RadiusChargeableUserId;
 
 			/**The value MUST be a member of the list reported by the
 			 * ModesSupported  parameter. Indicates which security mode is
@@ -677,7 +662,6 @@ define rrm_t{
 						"WPA3-Personal","WPA2-WPA3-Personal",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
-				on action write call wld_ap_setModeEnabled_pwf;
 				userflags %upc;
 			}
 
@@ -691,7 +675,6 @@ define rrm_t{
 				on action validate call check_enum ["Disabled",
 						"Optional",
 						"Required"];
-				on action write call wld_ap_setMFPConfig_pwf;
 			}
 
 			/**
@@ -706,6 +689,7 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			int32 SPPAmsdu {
+                               on action validate call check_range { min = -1, max = 2 };
 				default -1;
 			}
 		}

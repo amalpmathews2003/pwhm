@@ -23,13 +23,9 @@ if (RadioIndex >= 0) : %}
                 parameter DefaultDeviceType = "Guest";
                 object Security {
                     parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
-                    parameter WEPKey = "123456789ABCD";
-                    parameter PreSharedKey = "";
+                    parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "passwordGuest";
                     parameter RekeyingInterval = 0;
-                    parameter SAEPassphrase = "";
-                    parameter EncryptionMode = "Default";
-                    parameter ModeEnabled = "WPA2-Personal";
                 }
                 object WPS {
                     parameter Enable = 0;
@@ -44,13 +40,9 @@ if (RadioIndex >= 0) : %}
                 parameter DefaultDeviceType = "Guest";
                 object Security {
                     parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
-                    parameter WEPKey = "123456789ABCD";
-                    parameter PreSharedKey = "";
+                    parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "passwordGuest";
                     parameter RekeyingInterval = 0;
-                    parameter SAEPassphrase = "";
-                    parameter EncryptionMode = "Default";
-                    parameter ModeEnabled = "WPA2-Personal";
                 }
                 object WPS {
                     parameter Enable = 0;
@@ -67,23 +59,9 @@ if (RadioIndex >= 0) : %}
                 parameter DefaultDeviceType = "Data";
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
-                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
-                    parameter WEPKey = "123456789ABCD";
-                    parameter PreSharedKey = "";
+                    parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "password";
                     parameter RekeyingInterval = 0;
-                    parameter OWETransitionInterface = "";
-                    parameter SAEPassphrase = "";
-                    parameter EncryptionMode = "Default";
-                    parameter SHA256Enable = 0;
-                    parameter RadiusServerIPAddr = "";
-                    parameter RadiusServerPort = 1812;
-                    parameter RadiusSecret = "";
-                    parameter RadiusDefaultSessionTimeout = 0;
-                    parameter RadiusNASIdentifier = "";
-                    parameter RadiusCalledStationId = "";
-                    parameter RadiusChargeableUserId = 0;
-                    parameter ModeEnabled = "WPA2-Personal";
                 }
                 object WPS {
                     parameter Enable = 1;
@@ -99,23 +77,9 @@ if (RadioIndex >= 0) : %}
                 parameter WDSEnable = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
-                    parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
-                    parameter WEPKey = "123456789ABCD";
-                    parameter PreSharedKey = "";
+                    parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "password";
                     parameter RekeyingInterval = 0;
-                    parameter OWETransitionInterface = "";
-                    parameter SAEPassphrase = "";
-                    parameter EncryptionMode = "Default";
-                    parameter SHA256Enable = 0;
-                    parameter RadiusServerIPAddr = "";
-                    parameter RadiusServerPort = 1812;
-                    parameter RadiusSecret = "";
-                    parameter RadiusDefaultSessionTimeout = 0;
-                    parameter RadiusNASIdentifier = "";
-                    parameter RadiusCalledStationId = "";
-                    parameter RadiusChargeableUserId = 0;
-                    parameter ModeEnabled = "WPA2-Personal";
                 }
                 object WPS {
                     parameter Enable = 1;
@@ -133,22 +97,10 @@ if (RadioIndex >= 0) : %}
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
                     parameter ModesAvailable = "WPA3-Personal";
-                    parameter WEPKey = "123456789ABCD";
-                    parameter PreSharedKey = "";
+                    parameter ModeEnabled = "WPA3-Personal";
                     parameter KeyPassPhrase = "password";
                     parameter RekeyingInterval = 0;
-                    parameter OWETransitionInterface = "";
                     parameter SAEPassphrase = "";
-                    parameter EncryptionMode = "Default";
-                    parameter SHA256Enable = 0;
-                    parameter RadiusServerIPAddr = "";
-                    parameter RadiusServerPort = 1812;
-                    parameter RadiusSecret="";
-                    parameter RadiusDefaultSessionTimeout = 0;
-                    parameter RadiusNASIdentifier="";
-                    parameter RadiusCalledStationId = "";
-                    parameter RadiusChargeableUserId = 0;
-                    parameter ModeEnabled = "WPA3-Personal";
                     parameter SPPAmsdu = 0;
                 }
             }
