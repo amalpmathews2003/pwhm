@@ -88,7 +88,10 @@
 		entry in this table can exist with a given value for
 		SSIDReference.</p>*/
 	%persistent object EndPoint[]{
-		on action add-inst call wld_ep_addInstance_ocf;
+		on action add-inst call wld_ep_addInstance_oaf;
+		on action destroy call wld_ep_delInstance_odf;
+		on event "*" call wld_ep_setConf_ocf;
+
 		/** <p>Indicates the status of this end point. Enumeration
 		*   of:</p>
 		*   <ul>
@@ -123,7 +126,6 @@
 		 */
 		uint32 ReconnectDelay {
 			default 15;
-			on action write call wld_endpoint_setReconnectDelay_pwf;
 		}
 
 		/**
@@ -131,17 +133,13 @@
 		 */
 		uint32 ReconnectInterval {
 			default 15;
-			on action write call wld_endpoint_setReconnectInterval_pwf;
 		}
 
 		/**
 		 * Enable IEEE 1905 BackhaulSTA extension.
 		 * @version 9.2
 		 */
-		%persistent bool MultiAPEnable {
-			on action write call wld_endpoint_setMultiAPEnable_pwf;
-			default false;
-		}
+		%persistent bool MultiAPEnable;
 
 		/**
 		 * The threshold for the number of reconnects at which we perform a radio toggle
@@ -149,7 +147,6 @@
 		 */
 		uint32 ReconnectRadioToggleThreshold {
 			default 8;
-			on action write call wld_endpoint_setRadToggleThreshold_pwf;
 		}
 
 
@@ -167,7 +164,6 @@
 		 *  settings to be used by the end point.*/
 		%persistent string ProfileReference {
 			default "";
-			on action write call wld_endpoint_setProfileReference_pwf;
 		}
 		/** The value MUST be the path name of a row in the SSID table.
 		 *  If the referenced object is deleted, the parameter value
@@ -185,10 +181,8 @@
 		/* The name of the underlying interface of this endpoint */
 		%read-only string IntfName;
 
-		/** Unused in this version of wld */
-		%persistent string BridgeInterface{
-			on action write call wld_endpoint_setBridgeInterface_pwf;
-		}
+		/* Name of the bridge interface used with this endpoint. */
+		%persistent string BridgeInterface;
 
 		/**
 		 * Connect to specific accesspoint.
@@ -471,8 +465,8 @@
 		 *  At most one enabled entry in this table can exist with all
 		 *  the same values for SSID, Location and Priority.*/
 		%persistent object Profile[]{
-			on action del-inst call wld_endpoint_deleteProfileInstance_odf;
-			on action add-inst call wld_endpoint_addProfileInstance_ocf;
+			on action destroy call wld_endpoint_deleteProfileInstance_odf;
+			on event "*" call wld_ep_setProfileConf_ocf;
 
 			/** Enables or disables this Profile.
 			 *  <p>When there are multiple WiFi EndPoint Profiles, e.g. each
@@ -480,7 +474,6 @@
 			 *  security configuration, this parameter can be used to
 			 *  control which of the instances are currently enabled.</p>*/
 			%persistent bool Enable{
-			   on action write call wld_endpoint_setProfile_pwf;
 			   userflags %upc;
 			}
 			/**  Indicates the status of this Profile. Enumeration of:
@@ -495,17 +488,15 @@
 			*   instance that is not currently active, but is also not
 			*   disabled or in error. The Error value MAY be used by the
 			*   CPE to indicate a locally defined error condition.*/
-			string Status{
+			%read-only string Status{
 				on action validate call check_enum ["Active","Available","Error","Disabled"];
 				default "Disabled";
-				on action write call wld_endpoint_setProfile_pwf;
 			}
 			/** A non-volatile handle used to reference this instance. Alias
 			 *  provides a mechanism for an ACS to label this instance for
 			 *  future reference. An initial unique value MUST be assigned
 			 *  when the CPE creates an instance of this object.*/
 			%persistent string Alias{
-			   on action write call wld_endpoint_setProfile_pwf;
 			   userflags %upc;
 			}
 			/** The profile identifier in use by the connection. The SSID is
@@ -513,21 +504,19 @@
 			 *  wireless LAN that functions as an ID for joining a
 			 *  particular radio network (BSS).*/
 			%persistent string SSID{
-			   on action write call wld_endpoint_setProfile_pwf;
 			   userflags %upc;
 			}
 			/**
 			 * Specify the MAC address of the AccessPoint to connect to
 			 */
 			string ForceBSSID{
-			   on action write call wld_endpoint_setProfile_pwf;
+			   on action validate call is_valid_macaddr;
 			}
 			/** Location of the profile. This value serves as a reminder
 			 *  from the user, describing the location of the profile. For
 			 *  example: "Home", "Office", "Neighbor House", "Airport",
 			 *  etc. An empty string is also valid.*/
 			%persistent string Location{
-			   on action write call wld_endpoint_setProfile_pwf;
 			   userflags %upc;
 			}
 			/** The profile Priority defines one of the criteria used by the
@@ -541,7 +530,6 @@
 			 *  SNR, etc. <p>0 is the highest priority.</p>*/
 			%persistent uint32 Priority{
 				on action validate call check_range { min = 0, max = 255 };
-				on action write call wld_endpoint_setProfile_pwf;
 				default 0;
 				userflags %upc;
 			}
@@ -549,6 +537,7 @@
 			/** This object contains security related parameters that apply
 			 *  to a WiFi End Point profile.*/
 			%persistent object Security{
+				on event "*" call wld_ep_setProfileSecurityConf_ocf;
 				/** The value MUST be a member of the list reported by the
 				 *  Security.ModesSupported  parameter. Indicates which
 				 *  security mode is enabled.*/
@@ -560,7 +549,6 @@
 							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 							"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 					default "None";
-					on action write call wld_endpoint_setProfileSecurity_pwf;
 					userflags %upc;
 				}
 
@@ -570,9 +558,8 @@
 				 *  and a 13 byte WEPKey corresponds to security mode WEP-128.
 				 *  When read, this parameter returns an empty string,
 				 *  regardless of the actual value.*/
-				%persistent string WEPKey{
-				    on action write call wld_endpoint_setProfileSecurity_pwf;
-				}
+				%persistent string WEPKey;
+
 				/** A literal PreSharedKey (PSK) expressed as a hexadecimal
 				 *  string. PreSharedKey is only used if ModeEnabled is set to
 				 *  WPA-Personal or WPA2-Personal or WPA-WPA2-Personal. If
@@ -582,7 +569,6 @@
 				 *  undefined). When read, this parameter returns an empty
 				 *  string, regardless of the actual value.*/
 				%persistent string PreSharedKey{
-				   on action write call wld_endpoint_setProfileSecurity_pwf;
 				   userflags %upc;
 				}
 				
@@ -600,7 +586,6 @@
 				 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
 				 * or 256 bit secret, entered as a 64 characters hex key.*/
 				%persistent string KeyPassPhrase{
-				   on action write call wld_endpoint_setProfileSecurity_pwf;
 				   userflags %upc;
 				}
 
@@ -614,7 +599,6 @@
 			         *  the actual value.
 			         */
 				%persistent string SAEPassphrase{
-				   on action write call wld_endpoint_setProfileSecurity_pwf;
 				   userflags %upc;
 				}
 
@@ -629,7 +613,6 @@
 							"Optional",
 							"Required"];
 					default "Disabled";
-					on action write call wld_endpoint_setProfileSecurity_pwf;
 				}
 			}
 		}
@@ -637,11 +620,10 @@
 		/** This object contains parameters related to Wi-Fi
 		 *  Protected Setup [WPSv1.0] for this end point. */
 		%persistent object WPS{
+			on event "*" call wld_ep_setWpsConf_ocf;
 			/** Enables or disables WPS functionality for this endpoint. */
-			%persistent bool Enable{
-				default false;
-				on action write call wld_endpoint_setWPSEnable_pwf;
-			}
+			%persistent bool Enable;
+
 			/** Comma-separated list of strings. Indicates the WPS
 			 *  configuration methods supported by the device. Each list
 			 *   item is an enumeration of:
@@ -675,9 +657,7 @@
 			 *  member of the list reported by the ConfigMethodsSupported
 			 *  parameter. Indicates the WPS configuration methods enabled
 			 *  on the device.*/
-			%persistent string ConfigMethodsEnabled {
-				on action write call wld_endpoint_setWPSConfigMethodsEnabled_pwf;
-			}
+			%persistent string ConfigMethodsEnabled;
 
 			/**
 			This function is for WPS enrollment
@@ -749,10 +729,7 @@
 		 *  instance supports a different SSID and/or different
 		 *  security configuration, this parameter can be used to
 		 *  control which of the instances are currently enabled.</p> */
-		%persistent bool Enable{
-			default false;
-			on action write call wld_endpoint_setEnable_pwf;
-		}
+		%persistent bool Enable;
 
 		/**
 		 * Retrieve a debug hashmap containing the internal state
@@ -763,7 +740,7 @@
 		/**
 		 * Perform debug commands to check internal state.
 		 */
-		void debug();
+		htable debug(%in string op);
 	} /* object EndPoint */
     }
 }

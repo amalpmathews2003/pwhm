@@ -68,7 +68,10 @@
 void syncData_EndPoint2OBJ(T_EndPoint* endpoint);
 bool syncData_OBJ2EndPoint(amxd_object_t* object);
 
+T_EndPoint* wld_ep_fromObj(amxd_object_t* epObj);
+void wld_endpoint_setProfile_ocf(void* priv, amxd_object_t* object, const amxc_var_t* const newParamValues);
 void wld_endpoint_setCurrentProfile(amxd_object_t* endpointObject, T_EndPointProfile* Profile);
+void wld_endpoint_setProfileSecurity_ocf(void* priv, amxd_object_t* object, const amxc_var_t* const newParamValues);
 
 bool wld_endpoint_isReady(T_EndPoint* pEP);
 bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats);
@@ -96,6 +99,6 @@ bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer);
 
 T_EndPoint* wld_endpoint_fromIt(amxc_llist_it_t* it);
 
-T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, const char* intfname, int idx, amxd_object_t* object);
+T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, amxd_object_t* object);
 void wld_endpoint_destroy(T_EndPoint* pEP);
 #endif /* __WLD_ENDPOINT_H__ */

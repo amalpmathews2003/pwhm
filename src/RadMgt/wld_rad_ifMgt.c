@@ -182,121 +182,10 @@ amxd_status_t _delVAPIntf(amxd_object_t* wifi,
 }
 
 /**
- * @brief ssid_create
- *
- * Create a new SSID instance based on the SSID name
- * and set default SSID parameters like SSID and MAC
- *
- * @param pBus root Wifi object
- * @param pR pointer to the radio struct
- * @param name the name of the ssid we want to create
- * @return ssid object
- */
-amxd_object_t* ssid_create(amxd_object_t* pBus, T_Radio* pR, const char* name) {
-    if(!pBus || !pR || !name) {
-        SAH_TRACEZ_ERROR(ME, "Bad usage of function : !pBus||!pR||!name");
-        return NULL;
-    }
-
-    SAH_TRACEZ_INFO(ME, "Creating a new SSID instance - ssid_name:[%s]", name);
-
-    /* Create a new SSID instance */
-    amxd_object_t* ssidobject = amxd_object_get_child(pBus, "SSID");
-    if(!ssidobject) {
-        SAH_TRACEZ_ERROR(ME, "SSID object not found");
-        return NULL;
-    }
-    amxd_object_t* ssidinstance;
-    amxd_object_add_instance(&ssidinstance, ssidobject, name, 0, NULL);
-    if(!ssidinstance) {
-        SAH_TRACEZ_ERROR(ME, "Unable to create SSID instance");
-        return NULL;
-    }
-
-    /* Set the T_SSID struct to the new instance */
-    ssidinstance->priv = calloc(1, sizeof(T_SSID));
-    T_SSID* pSSID = (T_SSID*) ssidinstance->priv;
-    if(!pSSID) {
-        amxd_object_delete(&ssidinstance);
-        SAH_TRACEZ_ERROR(ME, "Unable to set T_SSID struct to the new instance");
-        return NULL;
-    }
-
-    /* Interlinking */
-    pSSID->debug = SSID_POINTER;
-    pSSID->pBus = ssidinstance;
-    pSSID->RADIO_PARENT = pR;
-    pSSID->status = RST_DOWN;
-
-    /* Set the SSID MACAddress as the Radio Base MAC */
-    memcpy(pSSID->MACAddress, pR->MACAddr, sizeof(pR->MACAddr));
-
-    /* Set a custom SSID name */
-    sprintf(pSSID->SSID, "NeMo_SSID%d", amxd_object_get_instance_count(ssidobject));
-
-    /* Sync constant parameters : name -> Datamodel */
-    amxd_object_set_cstring_t(ssidinstance, "Name", name);
-    swl_str_copy(pSSID->Name, sizeof(pSSID->Name), name);
-
-    /* Sync dynamic parameters : T_SSID -> Datamodel */
-    pR->pFA->mfn_sync_ssid(ssidinstance, pSSID, SET | NO_COMMIT);
-    return ssidinstance;
-}
-
-/**
- * @brief endpoint_create
- *
- * Create a new Endpoint instance based on the Endpoint name
- * and set default Endpoint parameters
- *
- * @param pBus root Wifi object
- * @param pR pointer to the radio struct
- * @param endpointname the name of the endpoint we want to create
- * @param intfname the name of the interface for the endpoint
- * @param intfNr interface number
- * @return endpoint object
- */
-amxd_object_t* endpoint_create(amxd_object_t* pBus, T_Radio* pR, const char* endpointname, const char* intfname, int intfNr) {
-    if(!pBus || !pR || !endpointname) {
-        SAH_TRACEZ_ERROR(ME, "Bad usage of function : !pBus||!pR||!endpointname");
-        return NULL;
-    }
-
-    SAH_TRACEZ_INFO(ME, "Creating a new Endpoint instance - endpointname:[%s]", endpointname);
-
-    /* Create a new SSID instance */
-    amxd_object_t* endpointobject = amxd_object_get_child(pBus, "EndPoint");
-    if(!endpointobject) {
-        SAH_TRACEZ_ERROR(ME, "Endpoint object not found");
-        return NULL;
-    }
-    amxd_object_t* endpointinstance;
-    amxd_object_add_instance(&endpointinstance, endpointobject, endpointname, 0, NULL);
-    if(!endpointinstance) {
-        SAH_TRACEZ_ERROR(ME, "Unable to create Endpoint instance");
-        return NULL;
-    }
-
-    /* Set the T_Endpoint struct to the new instance */
-    T_EndPoint* endpoint = wld_endpoint_create(pR, endpointname, intfname, intfNr, endpointinstance);
-    if(!endpoint) {
-        amxd_object_delete(&endpointinstance);
-        SAH_TRACEZ_ERROR(ME, "Unable to set T_Endpoint struct to the new instance");
-        return NULL;
-    }
-
-    /* Sync dynamic parameters : T_Endpoint -> Datamodel */
-    pR->pFA->mfn_sync_ep(endpoint);
-
-    return endpointinstance;
-}
-
-/**
  * @brief _addEndPointIntf
  *
  * Creates an EndPoint interface on the RADIO and updates the EndPoint and SSID object fields
  *
- * @param fcall function call context
  * @param args argument list
  *     - radio : Name of the RADIO interface that derrives the endpoint interface. (wifi0, wifi1,...)
  *     - endpoint : Name of the EndPoint interface that will be created. (wln0, wln1, ...)
@@ -308,111 +197,61 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
                                amxd_function_t* func _UNUSED,
                                amxc_var_t* args,
                                amxc_var_t* retval) {
-    const char* radioname = GET_CHAR(args, "radio");
-    const char* endpointname = GET_CHAR(args, "endpoint");
-    char* objpath = NULL;
-    amxd_object_t* endpointinstance = NULL;
-    amxd_object_t* ssidinstance = NULL;
-    amxd_object_t* wpsinstance = NULL;
-
-    T_Radio* pR = NULL;
-    T_EndPoint* endpoint = NULL;
-    T_SSID* pSSID = NULL;
-
-    char endpointnamebuf[64];
-    int32_t intfNr;
-
-    swl_rc_ne ret = SWL_RC_ERROR;
-
     SAH_TRACEZ_IN(ME);
 
-    /* Use a fix sized buffer... */
-    swl_str_copy(endpointnamebuf, sizeof(endpointnamebuf), endpointname);
-
+    amxd_status_t status = amxd_status_unknown_error;
+    const char* radioname = GET_CHAR(args, "radio");
     /* Get our T_Radio pointer of the selected radio */
-    pR = wld_getRadioDataHandler(wifi, radioname);
-    if(!pR) {
-        SAH_TRACEZ_ERROR(ME, "Radio structure for radio [%s] is missing", radioname);
-        goto leave;
-    }
+    T_Radio* pR = wld_getRadioDataHandler(wifi, radioname);
+    ASSERT_NOT_NULL(pR, status, ME, "Radio structure for radio [%s] is missing", radioname);
+    const char* endpointname = GET_CHAR(args, "endpoint");
+    ASSERT_STR(endpointname, status, ME, "missing endpoint instance alias");
+    amxd_object_t* epObjTmpl = amxd_object_get(wifi, "EndPoint");
+    amxd_object_t* ssidObjTmpl = amxd_object_get(wifi, "SSID");
+    amxd_object_t* endpointObj = amxd_object_get_instance(epObjTmpl, endpointname, 0);
 
-    /* Try to create the requested interface by calling the HW function */
-    SAH_TRACEZ_INFO(ME, "Try to execute HW implementation of addEndPointIntf - radio:[%s] endpoint:[%s]",
-                    radioname, endpointname);
-    intfNr = pR->pFA->mfn_wrad_addendpointif(pR, endpointnamebuf, sizeof(endpointnamebuf));
-
-    /* Note that we must use the updated endpointnamebuf - Some vendors
-     * don't allow us to change the interface name as we request!
-     * The intfNr value contains the system interface index value.
-     * ((ip link)) */
-    if(intfNr < 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to execute HW implementation of addEndPointIntf - radio:[%s] endpoint:[%s]",
-                         radioname, endpointname);
-        goto leave;
-    }
-    /* If we succeed on this one, we must also create an SSID
-    *  and AccessPoint entry in our data model (see TR181) */
-
-    /* Reserve the VAP interface + SSID */
-    endpointinstance = endpoint_create(wifi, pR, endpointname, endpointnamebuf, intfNr);
-    if(!endpointinstance) {
-        SAH_TRACEZ_ERROR(ME, "Failed to create endpoint instance");
-        goto leave;
-    }
-    endpoint = (T_EndPoint*) endpointinstance->priv;
-
-    endpoint->wpsSessionInfo.intfObj = endpointinstance;
-    wpsinstance = amxd_object_get(endpointinstance, "WPS");
-    if(wpsinstance == NULL) {
-        SAH_TRACEZ_WARNING(ME, "%s: WPS subObj is not available", endpoint->Name);
+    char ssidRef[128] = {0};
+    amxd_object_t* ssidObj = amxd_object_get_instance(ssidObjTmpl, endpointname, 0);
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
+    if(ssidObj == NULL) {
+        amxd_object_t* lastSsidInst = amxc_container_of(amxc_llist_get_last(&ssidObjTmpl->instances), amxd_object_t, it);
+        uint32_t newSsidIdx = amxd_object_get_index(lastSsidInst) + 1;
+        amxd_trans_select_object(&trans, ssidObjTmpl);
+        amxd_trans_add_inst(&trans, newSsidIdx, endpointname);
+        char* ssidTmplPath = amxd_object_get_path(ssidObjTmpl, AMXD_OBJECT_INDEXED);
+        swl_str_catFormat(ssidRef, sizeof(ssidRef), "%s.%d.", ssidTmplPath, newSsidIdx);
+        free(ssidTmplPath);
+        SAH_TRACEZ_INFO(ME, "%s: set trans to add new ssid instance (%s) at index (%d)", pR->Name, endpointname, newSsidIdx);
     } else {
-        wpsinstance->priv = &endpoint->wpsSessionInfo;
+        amxd_trans_select_object(&trans, ssidObj);
+        wld_util_getRealReferencePath(ssidRef, sizeof(ssidRef), "", ssidObj);
+        SAH_TRACEZ_INFO(ME, "%s: select trans existing ssid instance (%s)", pR->Name, endpointname);
     }
-    //function_setHandler(object_getFunction(wpsinstance, "pushButton"), __EndPoint_WPS_pushButton);
-    //function_setHandler(object_getFunction(wpsinstance, "cancelPairing"), __EndPoint_WPS_cancelPairing);
+    char lowerLayers[128] = {0};
+    wld_util_getRealReferencePath(lowerLayers, sizeof(lowerLayers), "", pR->pBus);
+    SAH_TRACEZ_INFO(ME, "%s: set trans ssidInst(%s) lowerLayers(%s)", pR->Name, endpointname, lowerLayers);
+    amxd_trans_set_value(cstring_t, &trans, "LowerLayers", lowerLayers);
 
-    ssidinstance = ssid_create(wifi, pR, endpointname);
-    if(!ssidinstance) {
-        SAH_TRACEZ_ERROR(ME, "Failed to create ssid instance");
-        goto leave;
+    if(endpointObj == NULL) {
+        amxd_trans_select_object(&trans, epObjTmpl);
+        amxd_trans_add_inst(&trans, 0, endpointname);
+        SAH_TRACEZ_INFO(ME, "%s: set trans to add new ep instance (%s)", pR->Name, endpointname);
+    } else {
+        amxd_trans_select_object(&trans, endpointObj);
+        SAH_TRACEZ_INFO(ME, "%s: select trans existing ep instance (%s)", pR->Name, endpointname);
     }
+    SAH_TRACEZ_INFO(ME, "%s: set trans epInst(%s) SSIDReference(%s)", pR->Name, endpointname, ssidRef);
+    amxd_trans_set_value(cstring_t, &trans, "SSIDReference", ssidRef);
+    SAH_TRACEZ_INFO(ME, "%s: apply trans to add endpoint (%s)", pR->Name, endpointname);
+    status = amxd_trans_apply(&trans, get_wld_plugin_dm());
+    amxd_trans_clean(&trans);
 
-    pSSID = (T_SSID*) ssidinstance->priv;
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "%s: fail to apply trans to add ep (%s)", pR->Name, endpointname);
+    amxc_var_set(bool, retval, true);
 
-    /* Interlink */
-    endpoint->pSSID = pSSID;
-    pSSID->ENDP_HOOK = endpoint;
-
-    /* Relate both objects with eachother */
-    objpath = amxd_object_get_path(ssidinstance, AMXD_OBJECT_INDEXED);
-    if(!objpath) {
-        SAH_TRACEZ_ERROR(ME, "Failed to get object path from ssidinstance");
-        goto leave;
-    }
-    amxd_object_set_cstring_t(endpointinstance, "SSIDReference", objpath);
-    free(objpath);
-
-    objpath = amxd_object_get_path(pR->pBus, AMXD_OBJECT_INDEXED);
-    if(objpath) {
-        amxd_object_set_cstring_t(ssidinstance, "LowerLayers", objpath);
-        free(objpath);
-    }
-
-    objpath = amxd_object_get_path(pR->pBus, AMXD_OBJECT_NAMED);
-    if(objpath) {
-        amxd_object_set_cstring_t(endpointinstance, "RadioReference", objpath);
-        free(objpath);
-    }
-
-    ret = pR->pFA->mfn_wendpoint_create_hook(endpoint);
-    if(!swl_rc_isOk(ret)) {
-        SAH_TRACEZ_ERROR(ME, "%s: pEP create hook failed", endpoint->Name);
-    }
-
-leave:
-    amxc_var_set(bool, retval, swl_rc_isOk(ret));
     SAH_TRACEZ_OUT(ME);
-    return (swl_rc_isOk(ret) ? amxd_status_ok : amxd_status_unknown_error);
+    return status;
 }
 
 /**
@@ -431,67 +270,28 @@ amxd_status_t _delEndPointIntf(amxd_object_t* wifi,
                                amxd_function_t* func _UNUSED,
                                amxc_var_t* args,
                                amxc_var_t* retval) {
-    const char* endpointname = GET_CHAR(args, "endpoint");
-
-    amxd_object_t* epObj = NULL;
-    amxd_object_t* ssidObj = NULL;
-    T_Radio* pR = NULL;
-    T_EndPoint* pEP = NULL;
-
-    bool ret = false;
-
     SAH_TRACEZ_IN(ME);
 
-    epObj = amxd_object_findf(wifi, "EndPoint.%s", endpointname);
-    if(!epObj) {
-        SAH_TRACEZ_ERROR(ME, "Endpoint instance not found");
-        goto leave;
-    }
-    ssidObj = amxd_object_findf(wifi, "SSID.%s", endpointname);
-    if(!ssidObj) {
-        SAH_TRACEZ_ERROR(ME, "SSID instance not found");
-        goto leave;
-    }
+    amxd_status_t status = amxd_status_unknown_error;
+    const char* endpointname = GET_CHAR(args, "endpoint");
+    amxd_object_t* epObj = amxd_object_findf(wifi, "EndPoint.%s", endpointname);
+    ASSERT_NOT_NULL(epObj, status, ME, "Endpoint instance (%s) not found", endpointname);
+    amxd_object_t* ssidObj = amxd_object_findf(wifi, "SSID.%s", endpointname);
+    ASSERT_NOT_NULL(ssidObj, status, ME, "Endpoint instance (%s) not found", endpointname);
 
-    /* Get our Radio system handler */
-    pEP = (T_EndPoint*) epObj->priv;
-    if(!pEP) {
-        SAH_TRACEZ_ERROR(ME, "Endpoint structure for endpoint [%s] is missing", endpointname);
-        goto leave;
-    }
-    pR = (T_Radio*) pEP->pRadio;
-    if(!pR) {
-        SAH_TRACEZ_ERROR(ME, "Radio structure for endpoint [%s] is missing", endpointname);
-        goto leave;
-    }
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
+    amxd_trans_select_object(&trans, amxd_object_get_parent(epObj));
+    amxd_trans_del_inst(&trans, amxd_object_get_index(epObj), NULL);
+    amxd_trans_select_object(&trans, amxd_object_get_parent(ssidObj));
+    amxd_trans_del_inst(&trans, amxd_object_get_index(ssidObj), NULL);
+    status = amxd_trans_apply(&trans, get_wld_plugin_dm());
+    amxd_trans_clean(&trans);
 
-    wld_endpoint_destroy(pEP);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "fail to apply trans to del ep (%s)", endpointname);
+    amxc_var_set(bool, retval, true);
 
-    /* Try to delete the requested interface by calling the HW function */
-    if(pR->pFA->mfn_wrad_delendpointif(pR, (char*) endpointname) < 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to execute HW implementation to delete the interface - endpoint:[%s]",
-                         endpointname);
-        goto leave;
-    }
-
-    /* Remove our object entry out of the SSID and ENDPOINT table */
-    amxd_object_delete(&epObj);
-    amxd_object_delete(&ssidObj);
-
-
-    if(!(wifi)) {
-        SAH_TRACEZ_ERROR(ME, "Failed to commit");
-        goto leave;
-    }
-
-    ret = true;
-leave:
-    if(false == ret) {
-        /* ERROR! */
-    }
-
-    amxc_var_set(bool, retval, ret);
     SAH_TRACEZ_OUT(ME);
-    return ret ? amxd_status_ok : amxd_status_unknown_error;
+    return status;
 }
 

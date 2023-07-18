@@ -174,22 +174,6 @@ bool wld_plugin_start() {
     return true;
 }
 
-void wld_plugin_syncDm() {
-    SAH_TRACEZ_WARNING(ME, "Syncing Objects RAD/SSID/AP/EP");
-    T_Radio* pRad;
-    wld_for_eachRad(pRad) {
-        T_SSID* pSSID;
-        T_EndPoint* pEP;
-        wld_rad_forEachEp(pEP, pRad) {
-            wld_endpoint_reconfigure(pEP);
-            pRad->pFA->mfn_sync_ep(pEP);
-            pSSID = (T_SSID*) pEP->pSSID;
-            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
-        }
-    }
-    SAH_TRACEZ_WARNING(ME, "Syncing Done");
-}
-
 vendor_t* wld_getVendorByName(const char* name) {
     ASSERTS_STR(name, NULL, ME, "Invalid");
     amxc_llist_for_each(it, &vendors) {

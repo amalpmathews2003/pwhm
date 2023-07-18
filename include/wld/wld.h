@@ -2391,7 +2391,6 @@ T_Radio* wld_nextRad(T_Radio* pRad);
 
 bool wld_plugin_start();
 void wld_plugin_init(amxd_dm_t* dm, amxo_parser_t* parser);
-void wld_plugin_syncDm();
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -112,6 +112,18 @@ const char* cstr_EndPoint_lastError[] = {"None", "SSID_Not_Found", "Invalid_Pass
 /* Possible EndpointProfile Status values */
 const char* cstr_EndPointProfile_status[] = {"Active", "Available", "Error", "Disabled", NULL};
 
+T_EndPoint* wld_ep_fromObj(amxd_object_t* epObj) {
+    ASSERTS_EQUALS(amxd_object_get_type(epObj), amxd_object_instance, NULL, ME, "Not instance");
+    amxd_object_t* parentObj = amxd_object_get_parent(epObj);
+    ASSERT_EQUALS(get_wld_object(), amxd_object_get_parent(parentObj), NULL, ME, "wrong location");
+    const char* parentName = amxd_object_get_name(parentObj, AMXD_OBJECT_NAMED);
+    ASSERT_TRUE(swl_str_matches(parentName, "EndPoint"), NULL, ME, "invalid parent obj(%s)", parentName);
+    T_EndPoint* pEP = (T_EndPoint*) epObj->priv;
+    ASSERTS_TRUE(pEP, NULL, ME, "NULL");
+    ASSERT_TRUE(debugIsEpPointer(pEP), NULL, ME, "INVALID");
+    return pEP;
+}
+
 int32_t wld_endpoint_isProfileIdentical(T_EndPointProfile* currentProfile, T_EndPointProfile* newProfile) {
     ASSERTS_NOT_NULL(currentProfile, LFALSE, ME, "currentProfile is NULL");
     ASSERTS_NOT_NULL(newProfile, LFALSE, ME, "newProfile is NULL");
@@ -134,198 +146,94 @@ int32_t wld_endpoint_isProfileIdentical(T_EndPointProfile* currentProfile, T_End
  * @brief wld_endpoint_setRadToggleThreshold_pwf
  *
  * Parameter handler to handle Endpoint radio toggle parameter
- *
- * @param parameter endpoint threshold parameter
- * @param oldvalue previous value
- * @return  true on success, otherwise false
  */
-amxd_status_t _wld_endpoint_setRadToggleThreshold_pwf(amxd_object_t* object _UNUSED,
-                                                      amxd_param_t* parameter,
-                                                      amxd_action_t reason _UNUSED,
-                                                      const amxc_var_t* const args _UNUSED,
-                                                      amxc_var_t* const retval _UNUSED,
-                                                      void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setRadToggleThreshold_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "EndpointRadToggleThreshold changed");
 
-    if(!pEP) {
-        SAH_TRACEZ_ERROR(ME, "NULL");
-        return amxd_status_ok;
-    }
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    pEP->reconnect_rad_trigger = amxc_var_dyncast(uint32_t, args);
+    SAH_TRACEZ_INFO(ME, "%s: EndpointRadToggleThreshold changed", pEP->Name);
+    pEP->reconnect_rad_trigger = amxc_var_dyncast(uint32_t, newValue);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
  * @brief wld_endpoint_setReconnectDelay_pwf
  *
  * Parameter handler to handle Endpoint reconnect delay time parameter
- *
- * @param parameter endpoint timeout parameter
- * @param oldvalue previous value
- * @return  true on success, otherwise false
  */
-amxd_status_t _wld_endpoint_setReconnectDelay_pwf(amxd_object_t* object _UNUSED,
-                                                  amxd_param_t* parameter,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setReconnectDelay_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    ASSERTI_NOT_NULL(pEP, amxd_status_ok, ME, "NULL");
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    pEP->reconnectDelay = amxc_var_dyncast(uint32_t, args);
+    pEP->reconnectDelay = amxc_var_dyncast(uint32_t, newValue);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
  * @brief wld_endpoint_setReconnectInterval_pwf
  *
  * Parameter handler to handle Endpoint reconnect interval time parameter
- *
- * @param parameter endpoint timeout parameter
- * @param oldvalue previous value
- * @return  true on success, otherwise false
  */
-amxd_status_t _wld_endpoint_setReconnectInterval_pwf(amxd_object_t* object _UNUSED,
-                                                     amxd_param_t* parameter,
-                                                     amxd_action_t reason _UNUSED,
-                                                     const amxc_var_t* const args _UNUSED,
-                                                     amxc_var_t* const retval _UNUSED,
-                                                     void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setReconnectInterval_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "EndpointReconnectInterval changed");
 
-    ASSERTS_NOT_NULL(pEP, amxd_status_ok, ME, "NULL");
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    pEP->reconnectInterval = amxc_var_dyncast(uint32_t, args);
+    SAH_TRACEZ_INFO(ME, "%s: EndpointReconnectInterval changed", pEP->Name);
+
+    pEP->reconnectInterval = amxc_var_dyncast(uint32_t, newValue);
     amxp_timer_set_interval(pEP->reconnectTimer, pEP->reconnectInterval * 1000);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_endpoint_setMultiAPEnable_pwf(amxd_object_t* object,
-                                                 amxd_param_t* parameter,
-                                                 amxd_action_t reason,
-                                                 const amxc_var_t* const args,
-                                                 amxc_var_t* const retval,
-                                                 void* priv) {
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "Failed to write param");
-    ASSERTI_EQUALS(amxd_object_get_type(object), amxd_object_instance, rv, ME, "not EP instance");
-
+static void s_setMultiAPEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    T_EndPoint* pEP = (T_EndPoint*) object->priv;
-    bool new_multiAPEnable = amxc_var_dyncast(bool, args);
-    ASSERT_TRUE(debugIsEpPointer(pEP), amxd_status_ok, ME, "INVALID");
-    if(pEP->multiAPEnable != new_multiAPEnable) {
-        pEP->multiAPEnable = new_multiAPEnable;
-        pEP->pFA->mfn_wendpoint_multiap_enable(pEP);
-        wld_autoCommitMgr_notifyEpEdit(pEP);
-    }
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
+
+    bool multiAPEnable = amxc_var_dyncast(bool, newValue);
+    ASSERTS_NOT_EQUALS(pEP->multiAPEnable, multiAPEnable, , ME, "EQUALS");
+    pEP->multiAPEnable = multiAPEnable;
+    pEP->pFA->mfn_wendpoint_multiap_enable(pEP);
+    wld_autoCommitMgr_notifyEpEdit(pEP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
  * @brief wld_endpoint_setProfileReference_pwf
  *
  * Set the Current Profile
- *
- * @param parameter profile reference parameter
- * @param oldvalue previous value
- * @return true on success, false otherwise
  */
-amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
-                                                    amxd_param_t* parameter,
-                                                    amxd_action_t reason,
-                                                    const amxc_var_t* const args,
-                                                    amxc_var_t* const retval,
-                                                    void* priv) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = object;
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setProfileReference_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    if(!pEP) {
-        //Not having an EndPoint yet is a valid scenario here, but becomes an
-        //error later on in the function.
-        return amxd_status_ok;
-    }
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    if(pEP->internalChange) {
-        return amxd_status_ok;
-    }
+    ASSERTS_FALSE(pEP->internalChange, , ME, "ignore internal change");
 
-    const char* newProfileRef = amxc_var_constcast(cstring_t, args);
-    if(swl_str_isEmpty(newProfileRef)) {
-        SAH_TRACEZ_WARNING(ME, "profile Ref is not yet set");
-        return amxd_status_ok;
-    }
+    const char* newProfileRef = amxc_var_constcast(cstring_t, newValue);
+    ASSERTW_FALSE(swl_str_isEmpty(newProfileRef), , ME, "profile Ref is not yet set");
 
-    SAH_TRACEZ_INFO(ME, "setProfileReference - %s", newProfileRef);
+    SAH_TRACEZ_INFO(ME, "%s: setProfileReference - %s", pEP->Name, newProfileRef);
 
     bool credentialsChanged = false;
     T_EndPointProfile* oldProfile = pEP->currentProfile;
     pEP->currentProfile = NULL;
 
     amxd_object_t* newProfileObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", newProfileRef);
-    if(!newProfileObj) {
-        SAH_TRACEZ_ERROR(ME, "No profile found matching the profileRef [%s]", newProfileRef);
-        return amxd_status_ok;
-    }
+    ASSERT_NOT_NULL(newProfileObj, , ME, "No profile found matching the profileRef [%s]", newProfileRef);
+
     T_EndPointProfile* newProfile = (T_EndPointProfile*) newProfileObj->priv;
     int comparison = wld_endpoint_isProfileIdentical(oldProfile, newProfile);
     if(comparison < 0) {
@@ -338,51 +246,33 @@ amxd_status_t _wld_endpoint_setProfileReference_pwf(amxd_object_t* object,
     SAH_TRACEZ_INFO(ME, "Profile reference found - Setting Current Profile for [%s]", newProfileRef);
     pEP->currentProfile = newProfile;
 
-    swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), pEP->currentProfile->SSID);
+    if((pEP->pSSID != NULL) && (newProfile != NULL) &&
+       ((newProfile->status == EPPS_ACTIVE) || (newProfile->status == EPPS_AVAILABLE))) {
+        swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), newProfile->SSID);
+    }
     if(credentialsChanged) {
         wld_endpoint_reconfigure(pEP);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
-
 
 /**
  * The function is used to map an interface on a bridge. Some vendor deamons
  * depends on it for proper functionallity.
  */
-amxd_status_t _wld_endpoint_setBridgeInterface_pwf(amxd_object_t* object,
-                                                   amxd_param_t* parameter,
-                                                   amxd_action_t reason,
-                                                   const amxc_var_t* const args,
-                                                   amxc_var_t* const retval,
-                                                   void* priv) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = object;
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setBridgeInterface_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    const char* pstr_BridgeName = amxc_var_constcast(cstring_t, args);
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
+    const char* pstr_BridgeName = amxc_var_constcast(cstring_t, newValue);
     SAH_TRACEZ_INFO(ME, "%s: set BridgeInterface %s", pEP->Name, pstr_BridgeName);
-
-    ASSERT_TRUE(debugIsEpPointer(pEP), amxd_status_ok, ME, "INVALID");
-    ASSERT_NOT_NULL(pstr_BridgeName, amxd_status_ok, ME, "NULL");
-
-    snprintf(pEP->bridgeName, sizeof(pEP->bridgeName), "%s", pstr_BridgeName);
+    ASSERTS_FALSE(swl_str_matches(pEP->bridgeName, pstr_BridgeName), , ME, "EQUALS");
+    swl_str_copy(pEP->bridgeName, sizeof(pEP->bridgeName), pstr_BridgeName);
     wld_endpoint_reconfigure(pEP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 static void s_writeStats(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_var_t* variant, T_EndPointStats* stats) {
@@ -492,12 +382,11 @@ void wld_endpoint_setCurrentProfile(amxd_object_t* endpointObject, T_EndPointPro
     if(swl_str_matches(profileRefStr, profileRef) || swl_str_matches(profileRefStr, profileName)) {
         SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] : setting as currentProfile",
                           profileRef);
+        EndPoint->currentProfile = Profile;
     } else {
         SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] does not match the profileRefStr [%s] - not setting currentProfile",
                           profileRef, profileRefStr);
     }
-
-    EndPoint->currentProfile = Profile;
 
     free(profileRef);
     free(profileRefStr);
@@ -511,18 +400,14 @@ void wld_endpoint_setCurrentProfile(amxd_object_t* endpointObject, T_EndPointPro
  *
  * @param EndPoint pointer to the struct
  * @param endpointname name of the endpoint
- * @param intfname name of interface of the endpoint
- * @param idx index number given to the endpoint
  */
-static void s_setDefaults(T_EndPoint* pEP, const char* endpointname, const char* intfname, int idx) {
+static void s_setDefaults(T_EndPoint* pEP, const char* endpointname) {
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
 
     SAH_TRACEZ_INFO(ME, "%s: Setting Endpoint Defaults", endpointname);
 
 
     swl_str_copy(pEP->alias, sizeof(pEP->alias), endpointname);
-    swl_str_copy(pEP->Name, sizeof(pEP->Name), intfname);
-    pEP->index = idx;
 
     pEP->status = APSTI_DISABLED;
     pEP->connectionStatus = EPCS_DISABLED;
@@ -546,24 +431,73 @@ static void s_setDefaults(T_EndPoint* pEP, const char* endpointname, const char*
 }
 
 /**
- * @brief t_destroy_handler_EP
+ * @brief s_deinitEP
  *
- * Clear our attached memory structure on the endpoint instance
+ * Clear out resources of the endpoint internal context
  *
- * @param object endpoint object
+ * @param endpoint context
  */
-void t_destroy_handler_EP(amxd_object_t* object) {
-    T_EndPoint* pEP = (T_EndPoint*) object->priv;
-    ASSERT_TRUE(debugIsEpPointer(pEP), , ME, "INVALID");
-
-    SAH_TRACEZ_INFO(ME, "%s: destroy EP", pEP->Name);
-
+static void s_deinitEP(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, , ME, "NULL");
+    SAH_TRACEZ_IN(ME);
+    //assume disable ep
+    pEP->enable = false;
+    T_Radio* pR = pEP->pRadio;
+    T_SSID* pSSID = pEP->pSSID;
+    if(pR) {
+        if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
+            pR->pFA->mfn_wendpoint_disconnect(pEP);
+            pR->pFA->mfn_wendpoint_enable(pEP, false);
+            wld_rad_doRadioCommit(pR);
+            wld_endpoint_reconfigure(pEP);
+            pR->pFA->mfn_wendpoint_destroy_hook(pEP);
+            /* Try to delete the requested interface by calling the HW function */
+            pR->pFA->mfn_wrad_delendpointif(pR, pEP->Name);
+        }
+        pEP->Name[0] = 0;
+        pEP->index = 0;
+        /* Take EP also out the Radio */
+        amxc_llist_it_take(&pEP->it);
+        pEP->pRadio = NULL;
+        pEP->pFA = NULL;
+    }
+    if(pSSID != NULL) {
+        memset(pSSID->MACAddress, 0, ETHER_ADDR_LEN);
+        pSSID->ENDP_HOOK = NULL;
+        if(pR) {
+            pR->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+        }
+        pEP->pSSID = NULL;
+    }
     wld_tinyRoam_cleanup(pEP);
-
     amxp_timer_delete(&pEP->reconnectTimer);
+    pEP->reconnectTimer = NULL;
+    SAH_TRACEZ_OUT(ME);
+}
 
-    free(pEP);
-    object->priv = NULL;
+/**
+ * @brief s_initEp
+ *
+ * reserve and initialize resources for endpoint internal context
+ *
+ * @param endpoint context
+ */
+static bool s_initEp(T_EndPoint* pEP, T_Radio* pRad, const char* epName) {
+    ASSERTS_NOT_NULL(pEP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+
+    SAH_TRACEZ_IN(ME);
+    pEP->debug = ENDP_POINTER;
+    pEP->pRadio = pRad;
+    pEP->pFA = pRad->pFA;
+    s_setDefaults(pEP, epName);
+
+    amxc_llist_append(&pRad->llEndPoints, &pEP->it);
+    wld_endpoint_create_reconnect_timer(pEP);
+    wld_tinyRoam_init(pEP);
+
+    SAH_TRACEZ_OUT(ME);
+    return true;
 }
 
 /**
@@ -607,7 +541,7 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     }
 
     char* ssid = amxd_object_get_cstring_t(object, "SSID", NULL);
-    if(strncmp(ssid, pProfile->SSID, SSID_NAME_LEN)) {
+    if(!swl_str_matches(ssid, pProfile->SSID)) {
         changed |= 1;
         swl_str_copy(pProfile->SSID, sizeof(pProfile->SSID), ssid);
     }
@@ -719,54 +653,30 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
  * Sync object data to the EndPontProfile structure
  *
  */
-amxd_status_t _wld_endpoint_setProfile_pwf(amxd_object_t* object,
-                                           amxd_param_t* parameter,
-                                           amxd_action_t reason,
-                                           const amxc_var_t* const args,
-                                           amxc_var_t* const retval,
-                                           void* priv) {
+void wld_endpoint_setProfile_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    T_EndPointProfile* pProfile = (T_EndPointProfile*) object->priv;
+    ASSERT_NOT_NULL(pProfile, , ME, "Profile is not yet set");
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERT_EQUALS(pProfile->endpoint, pEP, , ME, "Failed to find Endpoint structure");
+    ASSERTS_FALSE(pEP->internalChange, , ME, "ignore internal change");
+
     bool profileEnableChanged = false;
     bool profileChanged = false;
-    amxd_status_t rv = amxd_status_ok;
 
-    if(amxd_object_get_type(object) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    SAH_TRACEZ_IN(ME);
-    T_EndPointProfile* pProfile = (T_EndPointProfile*) object->priv;
-    ASSERT_NOT_NULL(pProfile, amxd_status_ok, ME, "Profile is not yet set");
-
-    T_EndPoint* pEP = pProfile->endpoint;
-    ASSERT_NOT_NULL(pProfile, amxd_status_ok, ME, "Failed to find Endpoint structure");
-
-    if(pEP->internalChange) {
-        goto leave;
-    }
-
-    SAH_TRACEZ_INFO(ME, "Syncing : EndpointProfile enable parameter --> T_EndpointProfile");
-    bool tmp_res = amxd_object_get_bool(object, "Enable", NULL);
-    if(tmp_res != pProfile->enable) {
+    SAH_TRACEZ_INFO(ME, "%s: Syncing : EndpointProfile enable parameter --> T_EndpointProfile", pEP->Name);
+    bool tmpBool = amxd_object_get_bool(object, "Enable", NULL);
+    if(tmpBool != pProfile->enable) {
         profileEnableChanged = true;
-        pProfile->enable = tmp_res;
+        pProfile->enable = tmpBool;
     }
 
     SAH_TRACEZ_INFO(ME, "Syncing : EndpointProfile object --> T_EndpointProfile");
     profileChanged = syncData_Object2EndPointProfile(object);
-
-    if(pEP->currentProfile != pProfile) {
-        SAH_TRACEZ_INFO(ME, "Changed profile is not currently selected : done");
-        goto leave;
-    }
-
-    if(!profileEnableChanged && !profileChanged) {
-        SAH_TRACEZ_INFO(ME, "Profile enabled field and profile parameters not changed : done");
-        goto leave;
-    }
+    ASSERTI_EQUALS(pEP->currentProfile, pProfile, , ME, "Changed profile is not currently selected : done");
+    ASSERTI_TRUE(profileEnableChanged || profileChanged, , ME, "Profile enabled field and profile parameters not changed : done");
 
     if(profileEnableChanged) {
         s_setProfileStatus(pProfile, false);
@@ -776,9 +686,7 @@ amxd_status_t _wld_endpoint_setProfile_pwf(amxd_object_t* object,
         wld_endpoint_reconfigure(pEP);
     }
 
-leave:
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
@@ -786,168 +694,100 @@ leave:
  *
  * Write handler on the Endpoint Profile Security parameters
  * Sync object data to the EndPontProfile structure
- *
  */
-amxd_status_t _wld_endpoint_setProfileSecurity_pwf(amxd_object_t* object,
-                                                   amxd_param_t* parameter,
-                                                   amxd_action_t reason,
-                                                   const amxc_var_t* const args,
-                                                   amxc_var_t* const retval,
-                                                   void* priv) {
-
+void wld_endpoint_setProfileSecurity_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
     SAH_TRACEZ_IN(ME);
-
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "Invalid action (%d)", rv);
 
     amxd_object_t* profileObject = amxd_object_get_parent(object);
     T_EndPointProfile* pProfile = (T_EndPointProfile*) profileObject->priv;
-    ASSERT_NOT_NULL(pProfile, amxd_status_unknown_error, ME, "Profile is not yet set");
+    ASSERT_NOT_NULL(pProfile, , ME, "Profile is not yet set");
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(amxd_object_get_parent(profileObject)));
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
 
-    T_EndPoint* pEP = pProfile->endpoint;
-    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
-
-    SAH_TRACEZ_INFO(ME, "pProfile(%p), pEP->currentProfile(%p)", pProfile, pEP->currentProfile);
+    SAH_TRACEZ_INFO(ME, "%s: pProfile(%p), pEP->currentProfile(%p)", pEP->Name, pProfile, pEP->currentProfile);
 
     bool profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
 
     if(profileChanged) {
         wld_endpoint_reconfigure(pEP);
     }
+
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_endpoint_setProfileSecurity_owf(amxd_object_t* object) {
-    bool profileChanged = false;
-    amxd_object_t* profileObject = amxd_object_get_parent(object);
-
-    if(amxd_object_get_type(profileObject) == amxd_object_template) {
-        SAH_TRACEZ_INFO(ME, "Initial template run, skip");
-        return amxd_status_unknown_error;
-    }
-
-    SAH_TRACEZ_IN(ME);
-    T_EndPointProfile* pProfile = (T_EndPointProfile*) profileObject->priv;
-    if(!pProfile) {
-        SAH_TRACEZ_WARNING(ME, "Profile is not yet set");
-        return amxd_status_unknown_error;
-    }
-
-    T_EndPoint* pEP = pProfile->endpoint;
-    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
-    profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
-
-    if(profileChanged) {
-        wld_endpoint_reconfigure(pEP);
-    }
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
  * @brief wld_endpoint_setWPSEnable_pwf
  *
  * Write handler on the Endpoint WPS "Enable" parameter
- *
- * @param parameter Endpoint WPS Enable parameter
- * @param oldvalue previous value
- * @return true on success, false on failure
  */
-amxd_status_t _wld_endpoint_setWPSEnable_pwf(amxd_object_t* object _UNUSED,
-                                             amxd_param_t* parameter,
-                                             amxd_action_t reason _UNUSED,
-                                             const amxc_var_t* const args _UNUSED,
-                                             amxc_var_t* const retval _UNUSED,
-                                             void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setWpsEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool enable = amxc_var_dyncast(bool, args);
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    SAH_TRACEZ_INFO(ME, "EndpointWPSEnable changed");
+    bool enable = amxc_var_dyncast(bool, newValue);
 
-    /* It's up to the RADIO settings when both (STA & AP) have WPS active set. */
-    if(pEP && debugIsEpPointer(pEP)) {
-        T_Radio* pR = pEP->pRadio;
-        pEP->WPS_Enable = enable;
+    SAH_TRACEZ_INFO(ME, "%s: EndpointWPSEnable changed => (%d)", pEP->Name, enable);
+    pEP->WPS_Enable = enable;
+    T_Radio* pR = pEP->pRadio;
+    ASSERT_NOT_NULL(pR, , ME, "%s: no mapped Radio", pEP->Name);
 
-        /* Ignore and give warning when not properly set */
-        if(pR->isSTA && pR->isWPSEnrol) {
-            pR->fsmRad.FSM_SyncAll = TRUE;
-        } else {
-            SAH_TRACEZ_INFO(ME, "ignore WPS change - Radio STA mode (%d) and Enrollee (%d) not correct set",
-                            pR->isSTA,
-                            pR->isWPSEnrol);
-        }
+    /* Ignore and give warning when not properly set */
+    if(pR->isSTA && pR->isWPSEnrol) {
+        pR->fsmRad.FSM_SyncAll = TRUE;
+    } else {
+        SAH_TRACEZ_INFO(ME, "ignore WPS change - Radio STA mode (%d) and Enrollee (%d) not correct set",
+                        pR->isSTA,
+                        pR->isWPSEnrol);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
+
 
 /**
  * @brief wld_endpoint_setWPSConfigMethodsEnabled_pwf
  *
  * Write handler on the Endpoint WPS "ConfigMethodsEnabled" parameter
- *
- * @param parameter Endpoint WPS ConfigMethodsEnabled parameter
- * @param oldvalue previous value
- * @return true on success, false on failure
  */
-amxd_status_t _wld_endpoint_setWPSConfigMethodsEnabled_pwf(amxd_object_t* object _UNUSED,
-                                                           amxd_param_t* parameter,
-                                                           amxd_action_t reason _UNUSED,
-                                                           const amxc_var_t* const args _UNUSED,
-                                                           amxc_var_t* const retval _UNUSED,
-                                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiEp = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiEp) != amxd_object_instance) {
-        return rv;
-    }
-    T_EndPoint* pEP = (T_EndPoint*) wifiEp->priv;
-    rv = amxd_action_param_write(wifiEp, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setWPSConfigMethodsEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    const char* StrParm = amxc_var_constcast(cstring_t, args);
 
-    SAH_TRACEZ_INFO(ME, "set WPS ConfigMethodsEnabled %s", StrParm);
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    /* It's up to the RADIO settings when both (STA & AP) have WPS active set. */
-    if(pEP && debugIsEpPointer(pEP)) {
-        wld_wps_cfgMethod_m wps_cfgm;
-        wld_wps_ConfigMethods_string_to_mask(&wps_cfgm, StrParm, ',');
+    const char* StrParm = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set WPS ConfigMethodsEnabled %s", pEP->Name, StrParm);
+    wld_wps_cfgMethod_m wps_cfgm;
+    wld_wps_ConfigMethods_string_to_mask(&wps_cfgm, StrParm, ',');
+    pEP->WPS_ConfigMethodsEnabled = wps_cfgm;
 
-        T_Radio* pR = pEP->pRadio;
-        pEP->WPS_ConfigMethodsEnabled = wps_cfgm;
+    T_Radio* pR = pEP->pRadio;
+    ASSERT_NOT_NULL(pR, , ME, "%s: no mapped Radio", pEP->Name);
 
-        /* Ignore and give warning when not properly set */
-        if(pR->isSTA && pR->isWPSEnrol) {
-            pR->fsmRad.FSM_SyncAll = TRUE;
-        } else {
-            SAH_TRACEZ_INFO(ME, "ignore WPS change - Radio STA mode (%d) and Enrollee (%d) not correct set",
-                            pR->isSTA,
-                            pR->isWPSEnrol);
-        }
+    /* Ignore and give warning when not properly set */
+    if(pR->isSTA && pR->isWPSEnrol) {
+        pR->fsmRad.FSM_SyncAll = TRUE;
+    } else {
+        SAH_TRACEZ_INFO(ME, "ignore WPS change - Radio STA mode (%d) and Enrollee (%d) not correct set",
+                        pR->isSTA,
+                        pR->isWPSEnrol);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+}
 
+SWLA_DM_HDLRS(sEpWpsDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setWpsEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("ConfigMethodsEnabled", s_setWPSConfigMethodsEnabled_pwf),
+                  ),
+              );
+
+void _wld_ep_setWpsConf_ocf(const char* const sig_name,
+                            const amxc_var_t* const data,
+                            void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sEpWpsDmHdlrs, sig_name, data, priv);
 }
 
 
@@ -978,37 +818,19 @@ bool wld_endpoint_isReady(T_EndPoint* pEP) {
  * @brief wld_endpoint_setEnable_pwf
  *
  * Write handler on the Endpoint "Enable" parameter
- *
- * @param parameter Endpoint Enable parameter
- * @param oldvalue previous value
- * @return true on success, otherwise false
  */
-amxd_status_t _wld_endpoint_setEnable_pwf(amxd_object_t* object,
-                                          amxd_param_t* parameter,
-                                          amxd_action_t reason,
-                                          const amxc_var_t* const args,
-                                          amxc_var_t* const retval,
-                                          void* priv) {
-
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_object_type_t objectType = amxd_object_get_type(object);
-    ASSERT_EQUALS(objectType, amxd_object_instance, amxd_status_invalid_type, ME, "Invalid type (%d)", objectType);
 
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "Invalid action (%d)", rv);
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "Endpoint is not yet set");
 
-    T_EndPoint* pEP = (T_EndPoint*) object->priv;
-    ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "Endpoint is not yet set");
-
-    bool enable = amxc_var_dyncast(bool, args);
+    bool enable = amxc_var_dyncast(bool, newValue);
 
     SAH_TRACEZ_INFO(ME, "%s: enable %d", pEP->alias, enable);
 
     T_Radio* pRad = pEP->pRadio;
-    if(pRad == NULL) {
-        SAH_TRACEZ_ERROR(ME, "Failed to get the T_Radio struct from Endpoint [%s]", pEP->alias);
-        return amxd_status_unknown_error;
-    }
+    ASSERT_NOT_NULL(pRad, , ME, "Failed to get the T_Radio struct from Endpoint [%s]", pEP->alias);
 
     /* Sync datamodel to internal endpoint struct */
     if(enable) {
@@ -1026,7 +848,6 @@ amxd_status_t _wld_endpoint_setEnable_pwf(amxd_object_t* object,
     wld_ssid_syncEnable(pEP->pSSID, false);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
@@ -1370,7 +1191,9 @@ amxd_status_t _cancelPairing(amxd_object_t* obj,
 }
 
 void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP) {
-    amxp_timer_new(&pEP->reconnectTimer, endpoint_reconnect_handler, pEP);
+    if(pEP->reconnectTimer == NULL) {
+        amxp_timer_new(&pEP->reconnectTimer, endpoint_reconnect_handler, pEP);
+    }
     amxp_timer_set_interval(pEP->reconnectTimer, pEP->reconnectInterval * 1000);
 }
 
@@ -1689,7 +1512,7 @@ void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
  */
 void wld_endpoint_reconfigure(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, , ME, "null Endpoint");
-    ASSERT_NOT_NULL(pEP->pRadio, , ME, "null radio");
+    ASSERTI_NOT_NULL(pEP->pRadio, , ME, "null radio");
 
     T_Radio* pR = pEP->pRadio;
 
@@ -1917,12 +1740,15 @@ bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer) {
     ASSERT_NOT_NULL(pEP, false, ME, "NULL");
     T_EndPointProfile* pEpProf = pEP->currentProfile;
     ASSERTI_NOT_NULL(pEpProf, false, ME, "NULL");
+    ASSERTI_NOT_NULL(macBuffer, false, ME, "NULL");
 
     if(!SWL_MAC_BIN_MATCHES(pEpProf->BSSID, &g_swl_macBin_null)) {
         memcpy(macBuffer->bMac, pEpProf->BSSID, ETHER_ADDR_LEN);
         return true;
     } else if(wld_tinyRoam_isRoaming(pEP)) {
-        *macBuffer = *wld_tinyRoam_targetBssid(pEP);
+        const swl_macBin_t* pTrTgtBssid = wld_tinyRoam_targetBssid(pEP);
+        ASSERT_NOT_NULL(pTrTgtBssid, false, ME, "NULL");
+        memcpy(macBuffer->bMac, pTrTgtBssid, ETHER_ADDR_LEN);
         return true;
     }
     return false;
@@ -1930,11 +1756,7 @@ bool wld_endpoint_getTargetBssid(T_EndPoint* pEP, swl_macBin_t* macBuffer) {
 
 void wld_endpoint_destroy(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
-    T_Radio* pR = pEP->pRadio;
-    wld_tinyRoam_cleanup(pEP);
-    if(pR->pFA->mfn_wendpoint_destroy_hook(pEP) < SWL_RC_OK) {
-        SAH_TRACEZ_ERROR(ME, "%s: pEP destroy hook failed", pEP->Name);
-    }
+    s_deinitEP(pEP);
 
     while(amxc_llist_size(&pEP->llProfiles) > 0) {
         amxc_llist_it_t* it = amxc_llist_take_first(&pEP->llProfiles);
@@ -1942,49 +1764,26 @@ void wld_endpoint_destroy(T_EndPoint* pEP) {
         wld_epProfile_delete(pEP, pEpProf);
     }
 
-    /* Try to delete the requested interface by calling the HW function */
-    pR->pFA->mfn_wrad_delendpointif(pR, pEP->Name);
-
-    if(pEP->pSSID != NULL) {
-        pEP->pSSID->ENDP_HOOK = NULL;
-    }
     if(pEP->pBus != NULL) {
         pEP->pBus->priv = NULL;
+        pEP->pBus = NULL;
     }
 
-
-    /* Take EP also out the Radio */
-    amxc_llist_it_take(&pEP->it);
     free(pEP);
 }
 
-T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, const char* intfname,
-                                int idx, amxd_object_t* object) {
+T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, amxd_object_t* object) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     T_EndPoint* pEP = calloc(1, sizeof(T_EndPoint));
     ASSERT_NOT_NULL(pEP, NULL, ME, "NULL");
 
-    pEP->debug = ENDP_POINTER;
-    pEP->pRadio = pRad;
-    pEP->pFA = pRad->pFA;
-    s_setDefaults(pEP, epName, intfname, idx);
-
-    // init ep obj
-    pEP->pBus = object;
-
-
-    swl_rc_ne ret = pRad->pFA->mfn_wendpoint_create_hook(pEP);
-    if(ret < SWL_RC_OK) {
-        SAH_TRACEZ_ERROR(ME, "%s: ep create hook failed %d", pEP->alias, ret);
+    if(!s_initEp(pEP, pRad, epName)) {
         free(pEP);
         return NULL;
     }
 
-
-    amxc_llist_append(&pRad->llEndPoints, &pEP->it);
-    wld_endpoint_create_reconnect_timer(pEP);
-    wld_tinyRoam_init(pEP);
-
+    // init ep obj
+    pEP->pBus = object;
     pEP->wpsSessionInfo.intfObj = object;
     amxd_object_t* wpsinstance = amxd_object_get(object, "WPS");
     if(wpsinstance == NULL) {
@@ -1998,51 +1797,63 @@ T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, const char* i
 
 static amxd_status_t _linkEpSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
     ASSERT_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
+    const char* epName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    ASSERT_NOT_NULL(epName, amxd_status_unknown_error, ME, "NULL");
     T_SSID* pSSID = NULL;
     if(pSsidObj) {
         pSSID = (T_SSID*) pSsidObj->priv;
     }
-    ASSERT_NOT_NULL(pSsidObj, amxd_status_unknown_error, ME, "NULL");
-
     T_EndPoint* pEP = (T_EndPoint*) object->priv;
-    T_Radio* pRad = pSSID->RADIO_PARENT;
-    if(pEP == NULL) {
-        const char* epName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
-        ASSERT_NOT_NULL(epName, amxd_status_unknown_error, ME, "NULL");
-        ASSERTI_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
-
-        ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
-        pEP = wld_endpoint_create(pRad, epName, pRad->Name, pRad->index, object);
-        ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "NULL");
-        memcpy(pSSID->MACAddress, pRad->MACAddr, sizeof(pRad->MACAddr));
-
-        SAH_TRACEZ_INFO(ME, "%s: add ep %s", pRad->Name, epName);
+    if(pEP) {
+        ASSERTI_NOT_EQUALS(pSSID, pEP->pSSID, amxd_status_ok, ME, "same ssid reference");
+        s_deinitEP(pEP);
     }
+    ASSERTI_NOT_NULL(pSSID, amxd_status_ok, ME, "No SSID Ctx");
+    T_Radio* pRad = pSSID->RADIO_PARENT;
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
+    SAH_TRACEZ_INFO(ME, "pSSID(%p) pRad(%p)", pSSID, pRad);
 
-
-    char* radObjPath = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
-    if(radObjPath) {
-        SAH_TRACEZ_INFO(ME, "%s: radObjPath %s", pRad->Name, radObjPath);
-        amxd_object_set_cstring_t(pEP->pBus, "RadioReference", radObjPath);
-        free(radObjPath);
+    if(pEP != NULL) {
+        bool ret = s_initEp(pEP, pRad, epName);
+        ASSERT_EQUALS(ret, true, amxd_status_unknown_error, ME, "%s: fail to re-create endpoint", epName);
+    } else {
+        pEP = wld_endpoint_create(pRad, epName, object);
+        ASSERT_NOT_NULL(pEP, amxd_status_unknown_error, ME, "%s: fail to create endpoint", epName);
     }
     pSSID->ENDP_HOOK = pEP;
     pEP->pSSID = pSSID;
 
-    /* Get defined paramater values from the default instance */
-    pRad->pFA->mfn_sync_ssid(pSsidObj, pSSID, GET);
-    syncData_OBJ2EndPoint(object);
-    syncData_VendorWPS2OBJ(NULL, pRad, GET);
-    /* DM will be synced with internal Ctxs later (on event or after dm load completed) */
+    SAH_TRACEZ_INFO(ME, "%s: add ep %s", pRad->Name, epName);
+
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ep_addInstance_ocf(amxd_object_t* object,
+amxd_status_t _wld_ep_delInstance_odf(amxd_object_t* object,
                                       amxd_param_t* param,
                                       amxd_action_t reason,
                                       const amxc_var_t* const args,
                                       amxc_var_t* const retval,
                                       void* priv) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy obj instance st:%d", status);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, status, ME, "obj is not instance");
+    const char* name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_INFO(ME, "%s: destroy instance object(%p)", name, object);
+    wld_endpoint_destroy(object->priv);
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _wld_ep_addInstance_oaf(amxd_object_t* object,
+                                      amxd_param_t* param,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args,
+                                      amxc_var_t* const retval,
+                                      void* priv) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_status_ok;
     status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
@@ -2050,7 +1861,113 @@ amxd_status_t _wld_ep_addInstance_ocf(amxd_object_t* object,
     ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
     amxd_object_t* pSsidObj = amxd_object_findf(get_wld_object(), "SSID.%s", amxd_object_get_name(instance, AMXD_OBJECT_NAMED));
     _linkEpSsid(instance, pSsidObj);
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
+}
+
+static void s_syncEpSSIDDm(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, , ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERTS_NOT_NULL(pRad, , ME, "No mapped Rad Ctx");
+    T_SSID* pSSID = pEP->pSSID;
+    ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
+
+    SAH_TRACEZ_IN(ME);
+
+    bool enable = amxd_object_get_bool(pEP->pBus, "Enable", NULL);
+    if(enable && !pEP->enable) {
+        /* restore enable flag */
+        pEP->enable = enable;
+        pRad->pFA->mfn_wendpoint_enable(pEP, pEP->enable);
+        wld_autoCommitMgr_notifyEpEdit(pEP);
+    }
+    wld_endpoint_reconfigure(pEP);
+
+    pRad->pFA->mfn_sync_ep(pEP);
+    pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+/*
+ * finalize AP interface creation and MAC/BSSID reading
+ */
+static bool s_finalizeEpCreation(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, false, ME, "NULL");
+    T_Radio* pRad = pEP->pRadio;
+    ASSERTS_NOT_NULL(pRad, false, ME, "No mapped Rad Ctx");
+    T_SSID* pSSID = pEP->pSSID;
+    ASSERTS_NOT_NULL(pSSID, false, ME, "No mapped SSID Ctx");
+
+    SAH_TRACEZ_IN(ME);
+
+    char epIfName[IFNAMSIZ] = {0};
+    int epIfIndex = -1;
+    int ret = -1;
+    if(pRad->isSTASup && pRad->isSTA) {
+        swl_str_copy(epIfName, sizeof(epIfName), pRad->Name);
+        epIfIndex = pRad->index;
+        int ret = pRad->pFA->mfn_wrad_addendpointif(pRad, epIfName, sizeof(epIfName));
+        ASSERT_FALSE(ret < 0, false, ME, "%s: fail to add endpoint iface", pRad->Name);
+        if(ret > 0) {
+            epIfIndex = ret;
+        }
+        SAH_TRACEZ_WARNING(ME, "set ep iface(%s) (ifIndex:%d) on radio(%s)", epIfName, epIfIndex, pRad->Name);
+        swl_str_copy(pEP->Name, sizeof(pEP->Name), epIfName);
+        pEP->index = epIfIndex;
+    }
+
+    ret = pRad->pFA->mfn_wendpoint_create_hook(pEP);
+    ASSERT_FALSE(ret < 0, false, ME, "%s: ep create hook failed %d", pEP->alias, ret);
+
+    //default EP iface mac when not defined by the implementation, is base rad mac
+    if((epIfIndex != -1) && (swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
+        memcpy(pSSID->MACAddress, pRad->MACAddr, sizeof(pRad->MACAddr));
+    }
+
+    /* Get defined paramater values from the default instance */
+    pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
+
+    //delay sync AP and SSID Dm after all conf has been loaded
+    swla_delayExec_add((swla_delayExecFun_cbf) s_syncEpSSIDDm, pEP);
+
+    SAH_TRACEZ_OUT(ME);
+    return true;
+}
+
+/*
+ * AP instance addition event handler
+ * late handling only to finalize AP interface creation (using twin ssid instance)
+ * when SSIDReference is not explicitely provided by user conf
+ */
+static void s_addEpInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const initialParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    if(GET_ARG(initialParamValues, "SSIDReference") == NULL) {
+        /*
+         * As user conf does not include specific SSIDReference
+         * then use the default twin ssid mapping already initiated in the early action handler
+         */
+        s_finalizeEpCreation(object->priv);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    ASSERTI_EQUALS(amxd_object_get_type(object), amxd_object_instance, , ME, "Not instance");
+    const char* ssidRef = amxc_var_constcast(cstring_t, newValue);
+    const char* oname = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_INFO(ME, "%s: ssidRef(%s)", oname, ssidRef);
+
+    amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
+    ASSERT_EQUALS(_linkEpSsid(object, pSsidObj), amxd_status_ok, , ME, "%s: fail to link Ep to SSID (%s)", oname, ssidRef);
+
+    s_finalizeEpCreation(object->priv);
+
+    SAH_TRACEZ_OUT(ME);
 }
 
 amxd_status_t _EndPoint_debug(amxd_object_t* object,
@@ -2148,4 +2065,22 @@ amxd_status_t _EndPoint_debug(amxd_object_t* object,
     }
 
     return amxd_status_ok;
+}
+
+SWLA_DM_HDLRS(sEpDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("SSIDReference", s_setSSIDRef_pwf),
+                  SWLA_DM_PARAM_HDLR("ReconnectDelay", s_setReconnectDelay_pwf),
+                  SWLA_DM_PARAM_HDLR("ReconnectInterval", s_setReconnectInterval_pwf),
+                  SWLA_DM_PARAM_HDLR("MultiAPEnable", s_setMultiAPEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("ReconnectRadioToggleThreshold", s_setRadToggleThreshold_pwf),
+                  SWLA_DM_PARAM_HDLR("ProfileReference", s_setProfileReference_pwf),
+                  SWLA_DM_PARAM_HDLR("BridgeInterface", s_setBridgeInterface_pwf),
+                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
+                  ),
+              .instAddedCb = s_addEpInst_oaf, );
+
+void _wld_ep_setConf_ocf(const char* const sig_name,
+                         const amxc_var_t* const data,
+                         void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sEpDmHdlrs, sig_name, data, priv);
 }

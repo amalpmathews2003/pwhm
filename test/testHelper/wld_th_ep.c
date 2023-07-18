@@ -119,9 +119,12 @@ amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name) {
     amxd_object_t* epObj = ep->pBus;
     assert_non_null(epObj);
     amxd_object_t* profilesObj = amxd_object_findf(epObj, "Profile");
-    amxd_object_t* obj;
-    amxd_object_add_instance(&obj, profilesObj, name, 0, NULL);
-    return obj;
+    amxd_trans_t trans;
+    swl_object_prepareTransaction(&trans, profilesObj);
+    amxd_trans_add_inst(&trans, 0, name);
+    assert_int_equal(swl_object_finalizeTransactionOnLocalDm(&trans), amxd_status_ok);
+    ttb_mockTimer_goToFutureMs(1);
+    return amxd_object_get_instance(profilesObj, name, 0);
 }
 
 void wld_th_ep_doFsmClean(T_EndPoint* pEP) {

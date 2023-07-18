@@ -79,8 +79,6 @@
 
 #define ME "wldEPrf"
 
-
-
 /**
  * @brief setEndPointProfileDefaults
  *
@@ -106,7 +104,6 @@ static void s_setDefaults(T_EndPointProfile* profile) {
     profile->secModeEnabled = SWL_SECURITY_APMODE_NONE;
 }
 
-
 /**
  * @brief wld_endpoint_addProfileInstance_ocf
  *
@@ -118,32 +115,19 @@ static void s_setDefaults(T_EndPointProfile* profile) {
  * @param instance_object EndpointProfile instance object
  * @return true on success, false otherwise
  */
-amxd_status_t _wld_endpoint_addProfileInstance_ocf(amxd_object_t* object,
-                                                   amxd_param_t* param,
-                                                   amxd_action_t reason,
-                                                   const amxc_var_t* const args,
-                                                   amxc_var_t* const retval,
-                                                   void* priv) {
-    amxd_status_t status = amxd_status_ok;
-    status = amxd_action_object_add_inst(object, param, reason, args, retval, priv);
-    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to create instance");
-    amxd_object_t* instance = amxd_object_get_instance(object, NULL, GET_UINT32(retval, "index"));
-    ASSERT_NOT_NULL(instance, amxd_status_unknown_error, ME, "Fail to get instance");
-    amxd_object_t* endpointObject = amxd_object_get_parent(object);
-    ASSERT_NOT_NULL(endpointObject, amxd_status_unknown_error, ME, "NULL");
-    T_EndPoint* pEP = (T_EndPoint*) endpointObject->priv;
-    if(!pEP) {
-        SAH_TRACEZ_ERROR(ME, "Failed to find Endpoint structure");
-        return amxd_status_unknown_error;
-    }
+static void s_addEpProfileInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const intialParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pEP, , ME, "Failed to find Endpoint structure");
+
     /* Set the T_EndPointProfile struct to the new instance */
     T_EndPointProfile* profile = (T_EndPointProfile*) calloc(1, sizeof(T_EndPointProfile));
-    if(profile == NULL) {
-        SAH_TRACEZ_ERROR(ME, "Failed to allocate T_EndpointProfile structure");
-        return amxd_status_unknown_error;
-    }
-    instance->priv = profile;
-    profile->pBus = instance;
+    ASSERT_NOT_NULL(profile, , ME, "Failed to allocate T_EndpointProfile structure");
+
+    object->priv = profile;
+    profile->pBus = object;
+
     /* Interlinking */
     amxc_llist_append(&pEP->llProfiles, &profile->it);
     profile->endpoint = pEP;
@@ -151,12 +135,10 @@ amxd_status_t _wld_endpoint_addProfileInstance_ocf(amxd_object_t* object,
     /* Set some defaults to the endpoint profile struct */
     s_setDefaults(profile);
     /* Set the current profile when a matching profile reference is set */
-    wld_endpoint_setCurrentProfile(endpointObject, profile);
+    wld_endpoint_setCurrentProfile(pEP->pBus, profile);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
-
 
 /**
  * @brief wld_endpoint_deleteProfileInstance_odf
@@ -168,17 +150,22 @@ amxd_status_t _wld_endpoint_addProfileInstance_ocf(amxd_object_t* object,
  * @param instance_object
  * @return true on success, false otherwise
  */
-amxd_status_t _wld_endpoint_deleteProfileInstance_odf(amxd_object_t* template_object, amxd_object_t* instance_object) {
+amxd_status_t _wld_endpoint_deleteProfileInstance_odf(amxd_object_t* object,
+                                                      amxd_param_t* param,
+                                                      amxd_action_t reason,
+                                                      const amxc_var_t* const args,
+                                                      amxc_var_t* const retval,
+                                                      void* priv) {
     SAH_TRACEZ_IN(ME);
-    amxd_object_t* endpointObject = amxd_object_get_parent(template_object);
-    T_EndPointProfile* pProf = (T_EndPointProfile*) instance_object->priv;
-    T_EndPoint* pEP = (T_EndPoint*) endpointObject->priv;
 
-    if(pProf == NULL) {
-        //If no priv data, internal clean already done.
-        return amxd_status_ok;
-    }
-    instance_object->priv = NULL;
+    amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy ep profile st:%d", status);
+
+    T_EndPointProfile* pProf = (T_EndPointProfile*) object->priv;
+    object->priv = NULL;
+    ASSERTS_NOT_NULL(pProf, amxd_status_ok, ME, "No internal ctx");
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+
     pProf->pBus = NULL;
 
     wld_epProfile_delete(pEP, pProf);
@@ -186,7 +173,6 @@ amxd_status_t _wld_endpoint_deleteProfileInstance_odf(amxd_object_t* template_ob
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
-
 
 swl_rc_ne wld_epProfile_delete(T_EndPoint* pEP, T_EndPointProfile* pProfile) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -204,7 +190,7 @@ swl_rc_ne wld_epProfile_delete(T_EndPoint* pEP, T_EndPointProfile* pProfile) {
 
     if(pProfile->pBus != NULL) {
         pProfile->pBus->priv = NULL;
-        amxd_object_delete(&pProfile->pBus);
+        swl_object_delInstWithTransOnLocalDm(pProfile->pBus);
     }
 
     amxc_llist_it_take(&pProfile->it);
@@ -218,6 +204,29 @@ T_EndPointProfile* wld_epProfile_fromIt(amxc_llist_it_t* it) {
     ASSERTS_NOT_NULL(it, NULL, ME, "NULL");
 
     return amxc_llist_it_get_data(it, T_EndPointProfile, it);
+}
+
+SWLA_DM_HDLRS(sEpProfileDmHdlrs,
+              ARR(),
+              .instAddedCb = s_addEpProfileInst_oaf,
+              .objChangedCb = wld_endpoint_setProfile_ocf,
+              );
+
+void _wld_ep_setProfileConf_ocf(const char* const sig_name,
+                                const amxc_var_t* const data,
+                                void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sEpProfileDmHdlrs, sig_name, data, priv);
+}
+
+SWLA_DM_HDLRS(sEpProfileSecDmHdlrs,
+              ARR(),
+              .objChangedCb = wld_endpoint_setProfileSecurity_ocf,
+              );
+
+void _wld_ep_setProfileSecurityConf_ocf(const char* const sig_name,
+                                        const amxc_var_t* const data,
+                                        void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sEpProfileSecDmHdlrs, sig_name, data, priv);
 }
 
 

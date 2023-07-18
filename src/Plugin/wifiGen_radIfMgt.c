@@ -293,6 +293,24 @@ int wifiGen_rad_delvapif(T_Radio* pRad, char* vapName) {
     return SWL_RC_OK;
 }
 
+int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(buf, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(bufsize > 0, SWL_RC_INVALID_PARAM, ME, "null size");
+
+    // assumption: endpoint interface is the MAIN radio interface
+    const char* epIfname = pRad->Name;
+    T_EndPoint* pEpExist = wld_rad_ep_from_name(pRad, epIfname);
+    ASSERT_NULL(pEpExist, SWL_RC_ERROR, ME, "%s: already created EP[%s] with ifname(%s)", pRad->Name, pEpExist->alias, pEpExist->Name);
+    swl_str_copy(buf, bufsize, epIfname);
+    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), (char*) epIfname, false);
+    wld_rad_nl80211_setSta(pRad);
+    wld_rad_nl80211_set4Mac(pRad, true);
+
+    /* Return the radio index number */
+    return pRad->index;
+}
+
 int wifiGen_vap_bssid(T_Radio* pRad, T_AccessPoint* pAP, unsigned char* buf, int bufsize, int set) {
     ASSERT_FALSE((pRad == NULL) && (pAP == NULL), SWL_RC_INVALID_PARAM, ME, "NULL");
     T_SSID* pSSID = NULL;

@@ -113,8 +113,6 @@ static bool s_loadDmConf() {
                          amxo_parser_get_message(parser));
         return false;
     }
-    /* Fill DM with learned values */
-    wld_plugin_syncDm();
     SAH_TRACEZ_OUT(ME);
     return true;
 }

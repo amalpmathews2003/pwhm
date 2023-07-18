@@ -279,7 +279,8 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
 
     // Check the endpoint profile reference
     // Named profile reference
-    assert_int_equal(amxd_object_set_cstring_t(ep->pBus, "ProfileReference", "WiFi.EndPoint.sta0.Profile.prof0"), 0);
+    assert_int_equal(swl_typeCharPtr_commitObjectParam(ep->pBus, "ProfileReference", "WiFi.EndPoint.sta0.Profile.prof0"), true);
+    ttb_mockTimer_goToFutureMs(1);
     assert_non_null(ep->currentProfile);
     char* profileAlias = swl_typeCharPtr_fromObjectParamDef(ep->currentProfile->pBus, "Alias", 0);
     assert_string_equal(profileAlias, "prof0");
@@ -291,7 +292,8 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
     free(profileRef);
     free(epProfileRef);
     // Indexed profile reference
-    assert_int_equal(amxd_object_set_cstring_t(ep->pBus, "ProfileReference", "WiFi.EndPoint.1.Profile.2"), 0);
+    assert_int_equal(swl_typeCharPtr_commitObjectParam(ep->pBus, "ProfileReference", "WiFi.EndPoint.1.Profile.2"), true);
+    ttb_mockTimer_goToFutureMs(1);
     assert_non_null(ep->currentProfile);
     profileAlias = swl_typeCharPtr_fromObjectParamDef(ep->currentProfile->pBus, "Alias", 0);
     assert_string_equal(profileAlias, "prof2");
