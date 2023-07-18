@@ -74,5 +74,6 @@ void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex,
 void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin);
 
 T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
+T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
 
 #endif /* __WLD_SSID_H__ */

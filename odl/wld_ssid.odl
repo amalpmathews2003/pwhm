@@ -81,33 +81,9 @@
 	value for SSID, or with a given value for BSSID. </p>
 	*/
 	%persistent object SSID[]{
-		on action add-inst call wld_ssid_addInstance_ocf;
-		on action del-inst call wld_ssid_delInstance_odf;
-		
-		/**
-		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-		 * <p> Real function <b>bool VerifySSID(string SSID, ...)</b></p>
-		 * Verify 'all' or 'selected' the SSID-object parameters
-		 * @param SSID Name of the SSID interface that will be verified.
-		 * @param &lt;user param&gt; In case empty, the current given parameters are verified.
-		 * If the parameter is filled in (strin=value) it must be one of the SSID object strings:
-		 * Alias, LastChange, LowerLayers, BSSID, SSID or Enable.
-		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-		 */
-		bool VerifySSID();
-		/**
-		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-		 * <p> Real function <b>bool CommitSSID(string SSID, uint32_t cm, ...)</b></p>
-		 * Sets main SSID data. The function can only be used for setting DATA (not get)!
-		 * @param SSID Name of the SSID interface that will be modified. Needed input field.
-		 * @param cm Commit mode, Or'ed value of following bit fields:
-			SET(1), NO_COMMIT(2), DIRECT(4). Noet SET is set by default!
-		 * @param ... A sequence of the SSID object parameters.
-			If nothing is set the current SSID-object config is reparsed.
-		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-		*/
-		bool CommitSSID(%in uint32 cm);
-		
+		on action add-inst call wld_ssid_addInstance_oaf;
+		on action destroy call wld_ssid_delInstance_odf;
+		on event "*" call wld_ssid_setConf_ocf;	
 		
 		/**
 		 * Returns a map containing this SSID's status histogram information.
@@ -120,7 +96,7 @@
 		 * LastDisableTime: The timestamp of the last time that radio was set to disable.
 		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
 		 */
-		void getStatusHistogram();
+		htable getStatusHistogram();
 
 		/**
 		 * <p>The current operational state of the SSID entry (see
@@ -169,6 +145,7 @@
 		 * be assigned when the CPE creates an instance of this
 		 * object.</p> */
 		%persistent %unique %key string Alias;
+		
 		/**
 		 * <p> The textual name of the SSID entry as assigned by the
 		 * CPE.</p> */
@@ -187,7 +164,10 @@
 		%persistent string LowerLayers{
 			on action write call wld_ssid_setLowerLayers_pwf;
 		}
-		%read-only uint32 Index;      /* (DEBUG) Index in the SSID tree                     */
+		
+		/* Network device Index */
+		%read-only uint32 Index;
+		
 		/**
 		 * <p>[MACAddress] The Basic Service Set ID.</p>
 		 * <p>This is the MAC address of the access point, which can
@@ -195,6 +175,7 @@
 		 * SSID) or remote (when this instance models an end point
 		 * SSID). </p> */
 		%persistent %read-only string BSSID;
+		
 		/**
 		 * <p>[MACAddress] The MAC address of this interface.</p>
 		 * <p>If this instance models an access point SSID, MACAddress is
@@ -204,7 +185,7 @@
 		 * modeled via the Ethernet.Link.{i}.MACAddress parameter. </p>
 		 */
 		%persistent string MACAddress{
-			on action write call wld_ssid_setMacAddress_pwf;
+			on action validate call is_valid_macaddr;
 		}
 		/**
 		 *  <p> The current service set identifier in use by the
@@ -214,7 +195,6 @@
 		 */
 		%persistent string SSID{
 			on action validate call wld_ssid_validateSSID_pvf;
-			on action write call wld_ssid_setSSID_pwf;
 			default "SSID_NOT_SET";
 			userflags %upc;
 		}
@@ -384,12 +364,11 @@
 		/**
 		 *  Packets statistics per SSID
 		 */
-		void getSSIDStats();
+		htable getSSIDStats();
 
 		/**
 		 * Enables or disables the SSID entry.  */
 		%persistent bool Enable{
-			on action write call wld_ssid_setEnable_pwf;
 			default false;
 		}
 	} /* object SSID */

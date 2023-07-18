@@ -211,17 +211,21 @@ swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP) {
 void wld_th_vap_setSSIDEnable(T_AccessPoint* pAP, bool enable, bool commit) {
     assert_non_null(pAP);
     T_SSID* pSSID = pAP->pSSID;
-    swl_typeUInt32_toObjectParam(pSSID->pBus, "Enable", enable);
     if(commit) {
+        swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", enable);
         ttb_mockTimer_goToFutureMs(10);
+    } else {
+        swl_typeUInt8_toObjectParam(pSSID->pBus, "Enable", enable);
     }
 }
 
 void wld_th_vap_setApEnable(T_AccessPoint* pAP, bool enable, bool commit) {
     assert_non_null(pAP);
-    swl_typeUInt32_toObjectParam(pAP->pBus, "Enable", enable);
     if(commit) {
+        swl_typeUInt8_commitObjectParam(pAP->pBus, "Enable", enable);
         ttb_mockTimer_goToFutureMs(10);
+    } else {
+        swl_typeUInt8_toObjectParam(pAP->pBus, "Enable", enable);
     }
 }
 
