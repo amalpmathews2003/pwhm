@@ -74,6 +74,7 @@
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_assocdev.h"
 #include "wld/wld_hostapd_ap_api.h"
+#include "wld/wld_hostapd_cfgFile.h"
 #include "wifiGen_fsm.h"
 #include "wifiGen_rad.h"
 #include "wld/wld_statsmon.h"
@@ -300,13 +301,15 @@ swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNei
 }
 
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
-    ASSERTS_TRUE(set & SET, 0, ME, "Only do set");
+    swl_rc_ne rc = SWL_RC_OK;
+    ASSERTS_TRUE(set & SET, rc, ME, "Only do set");
     if(set & DIRECT) {
-        return wld_ap_hostapd_setMacFilteringList(vap);
+        rc = wld_ap_hostapd_setMacFilteringList(vap);
+        wld_hostapd_cfgFile_createExt(vap->pRadio);
     } else {
-        setBitLongArray(vap->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
+        setBitLongArray(vap->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_MF_LIST);
     }
-    return 0;
+    return rc;
 }
 
 swl_rc_ne wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set) {

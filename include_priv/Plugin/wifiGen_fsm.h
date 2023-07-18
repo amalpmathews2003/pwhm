@@ -74,6 +74,7 @@ typedef enum {
     GEN_FSM_MOD_SEC,              /* Set AP Security */
     GEN_FSM_MOD_AP,               /* Sync AP non-security params */
     GEN_FSM_MOD_SSID,             /* Set SSID */
+    GEN_FSM_MOD_MF_LIST,          /* Set Mac filtering list */
     GEN_FSM_MOD_CHANNEL,          /* Set Channel */
     GEN_FSM_MOD_HOSTAPD,          /* Write config of hostapd */
     GEN_FSM_MOD_WPASUPP,          /* Write config of wpa_supplicant */

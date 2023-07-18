@@ -342,7 +342,7 @@ define rrm_t{
 		 * @version 9.3
 		 */
 		string MACFilterAddressList{
-			on action write call wld_apMacFilter_setAddressList_pwf;
+			on action validate call wld_ap_validateAddressList_pvf;
 		}
 
 		/**
@@ -696,6 +696,9 @@ define rrm_t{
 
 		/** This object contains parameters related to MAC-address based filtering for this access point.  */
 		%persistent object MACFiltering {
+			
+			on event "*" call wld_apMacFilter_setConf_ocf;
+			
 			/** The MAC-address based filtering mode. Enumeration of:
 			  * <ul>
 			  *   <li><b>Off</b> All MAC-addresses are allowed.</li>
@@ -708,17 +711,18 @@ define rrm_t{
 			%persistent string Mode {
 				on action validate call check_enum ["Off","WhiteList","BlackList"];
 				default "Off";
-				on action write call wld_ap_setMACFilteringMode_pwf;
 				userflags %upc;
 			}
 
 			/** This is the list of MAC-addresses to be allowed/denied depending on the MAC-filtering mode. */
 			%persistent object Entry[] {
-				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
+				on action destroy call wld_ap_deleteMACFilteringEntry_odf;
+				on event "*" call wld_apMacFilterEntry_setConf_ocf;
+
 				/** The MAC-address of this table entry. */
 				%persistent string MACAddress {
-					on action write call wld_ap_setMACFilteringEntry_pwf;
-					default "";
+					on action validate call is_valid_macaddr;
+					on action validate call wld_ap_validateMfMac_pvf;
 					userflags %upc;
 				}
 			}
@@ -732,7 +736,6 @@ define rrm_t{
 			 */
 			%persistent bool TempBlacklistEnable{
 				default true;
-				on action write call wld_ap_setMACFilteringTempBlacklistEnable_pwf;
 				userflags %upc;
 			}
 
@@ -743,10 +746,13 @@ define rrm_t{
 			 * only.
 			 **/
 			object TempEntry[] {
-				on action del-inst call wld_ap_deleteMACFilteringEntry_odf;
+				on action destroy call wld_ap_deleteMACFilteringEntry_odf;
+				on event "*" call wld_apMacFilterEntry_setConf_ocf;
+
+				/** The MAC-address of this table entry. */
 				string MACAddress {
-					on action write call wld_ap_setMACFilteringTempEntry_pwf;
-					default "";
+					on action validate call is_valid_macaddr;
+					on action validate call wld_ap_validateMfMac_pvf;
 				}
 			}
 
@@ -756,7 +762,7 @@ define rrm_t{
 			 * <p> Add a MACFiltering entry. This does not require a commit() to become active.</p>
 			 * @version 7.0
 			 */
-			void addEntry(%in string mac);
+			void addEntry(%in %mandatory string mac);
 
 			/**
 			 * <b>delEntry</b>
@@ -764,7 +770,7 @@ define rrm_t{
 			 * <p> Remove a MACFiltering entry. This does not require a commit() to become active.</p>
 			 * @version 7.0
 			 */
-			void delEntry(%in string mac);
+			void delEntry(%in %mandatory string mac);
 
 			/**
 			 * <b>addTempEntry</b>
@@ -772,7 +778,7 @@ define rrm_t{
 			 * <p> Add a temporary MACFiltering entry. This does not require a commit() to become active.</p>
 			 * @version 7.0
 			 */
-			void addTempEntry(%in string mac);
+			void addTempEntry(%in %mandatory string mac);
 
 			/**
 			 * <b>delTempEntry</b>
@@ -780,7 +786,7 @@ define rrm_t{
 			 * <p> Remove a temporary MACFiltering entry. This does not require a commit() to become active.</p>
 			 * @version 7.0
 			 */
-			void delTempEntry(%in string mac);
+			void delTempEntry(%in %mandatory string mac);
 		}
 
 		/**
@@ -794,9 +800,14 @@ define rrm_t{
 			 * @version 9.1
 			 **/
 			object TempEntry[] {
-				on action write call wld_ap_setProbeFilteringEntry_owf;
-				on action del-inst call wld_ap_deleteProbeFilteringEntry_odf;
-				string MACAddress;
+				on action destroy call wld_ap_deleteMACFilteringEntry_odf;
+				on event "*" call wld_apMacFilterEntry_setConf_ocf;
+
+				/** The MAC-address of this table entry. */
+				string MACAddress {
+					on action validate call is_valid_macaddr;
+					on action validate call wld_ap_validateMfMac_pvf;
+				}
 			}
 
 			/**
@@ -805,7 +816,7 @@ define rrm_t{
 			 * <p> Add a temporary ProbeFiltering entry. This does not require a commit() to become active.</p>
 			 * @version 9.1
 			 */
-			void addTempEntry(%in string mac);
+			void addTempEntry(%in %mandatory string mac);
 
 			/**
 			 * <b>delTempEntry</b>
@@ -813,7 +824,7 @@ define rrm_t{
 			 * <p> Remove a temporary ProbeFiltering entry. This does not require a commit() to become active.</p>
 			 * @version 9.1
 			 */
-			void delTempEntry(%in string mac);
+			void delTempEntry(%in %mandatory string mac);
 		}
 
 		/** This object contains parameters related to Wi-Fi Protected

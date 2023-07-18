@@ -2840,6 +2840,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("DiscoveryMethodEnabled", s_setDiscoveryMethod_pwf),
                   SWLA_DM_PARAM_HDLR("dbgAPEnable", s_setDbgEnable_pwf),
                   SWLA_DM_PARAM_HDLR("dbgAPFile", s_setDbgFile_pwf),
+                  SWLA_DM_PARAM_HDLR("MACFilterAddressList", wld_apMacFilter_setAddressList_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setApEnable_pwf),
                   ),
               .instAddedCb = s_addApInst_oaf, );

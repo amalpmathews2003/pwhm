@@ -808,6 +808,7 @@ swl_rc_ne wld_ap_hostapd_stopWps(T_AccessPoint* pAP) {
 }
 
 static swl_rc_ne s_opEntryAcl(T_AccessPoint* pAP, char* macStr, const char* acl, const char* op) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -817,31 +818,23 @@ static swl_rc_ne s_opEntryAcl(T_AccessPoint* pAP, char* macStr, const char* acl,
     } else {
         snprintf(cmd, sizeof(cmd), "%s %s", acl, op);
     }
-    bool ret = s_sendHostapdCommand(pAP, cmd, cmd);
+    bool ret = wld_wpaCtrl_sendCmdCheckResponse(pAP->wpaCtrlInterface, cmd, "OK");
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: %s failed", pR->Name, cmd);
     return SWL_RC_OK;
 }
-static swl_rc_ne s_addEntryAcceptAcl(T_AccessPoint* pAP, char* macStr) {
-    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_NOT_NULL(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return s_opEntryAcl(pAP, macStr, "ACCEPT_ACL", "ADD_MAC");
+
+static swl_rc_ne s_addEntryAcl(T_AccessPoint* pAP, char* macStr, bool useAcceptAcl) {
+    ASSERTS_STR(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return s_opEntryAcl(pAP, macStr, (useAcceptAcl ? "ACCEPT_ACL" : "DENY_ACL"), "ADD_MAC");
 }
 
-static swl_rc_ne s_addEntryDenyAcl(T_AccessPoint* pAP, char* macStr) {
-    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_NOT_NULL(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return s_opEntryAcl(pAP, macStr, "DENY_ACL", "ADD_MAC");
-}
-static swl_rc_ne s_delEntryAcceptAcl(T_AccessPoint* pAP, char* macStr) {
-    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_NOT_NULL(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return s_opEntryAcl(pAP, macStr, "ACCEPT_ACL", "DEL_MAC");
+static swl_rc_ne s_delEntryAcl(T_AccessPoint* pAP, char* macStr, bool useAcceptAcl) {
+    ASSERTS_STR(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return s_opEntryAcl(pAP, macStr, (useAcceptAcl ? "ACCEPT_ACL" : "DENY_ACL"), "DEL_MAC");
 }
 
-static swl_rc_ne s_delEntryDenyAcl(T_AccessPoint* pAP, char* macStr) {
-    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_NOT_NULL(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return s_opEntryAcl(pAP, macStr, "DENY_ACL", "DEL_MAC");
+static swl_rc_ne s_clearAcl(T_AccessPoint* pAP, bool useAcceptAcl) {
+    return s_opEntryAcl(pAP, NULL, (useAcceptAcl ? "ACCEPT_ACL" : "DENY_ACL"), "CLEAR");
 }
 
 /**
@@ -850,11 +843,11 @@ static swl_rc_ne s_delEntryDenyAcl(T_AccessPoint* pAP, char* macStr) {
  */
 swl_rc_ne wld_ap_hostapd_delAllMacFilteringEntries(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    swl_rc_ne ret = s_opEntryAcl(pAP, NULL, "ACCEPT_ACL", "CLEAR");
-    ASSERT_TRUE(ret == SWL_RC_OK, SWL_RC_ERROR, ME, "accept_acl clearing failed");
-    ret = s_opEntryAcl(pAP, NULL, "DENY_ACL", "CLEAR");
-    ASSERT_TRUE(ret == SWL_RC_OK, SWL_RC_ERROR, ME, "deny_acl clearing failed");
-    return SWL_RC_OK;
+    swl_rc_ne ret = s_clearAcl(pAP, true);
+    ASSERT_EQUALS(ret, SWL_RC_OK, ret, ME, "%s: accept_acl clearing failed", pAP->alias);
+    ret = s_clearAcl(pAP, false);
+    ASSERT_EQUALS(ret, SWL_RC_OK, ret, ME, "%s: deny_acl clearing failed", pAP->alias);
+    return ret;
 }
 
 /**
@@ -865,43 +858,28 @@ swl_rc_ne wld_ap_hostapd_setMacFilteringList(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), SWL_RC_INVALID_STATE, ME, "%s: wpaCtrl disconnected", pAP->alias);
 
-    // clear accept and deny access lists
+    wld_banlist_t banList;
+    //hostapd/nl80211 do not support probe filtering, so assume PF entries in dynamic MF
+    wld_apMacFilter_getBanList(pAP, &banList, true);
+
+    bool useAcceptAcl = (pAP->MF_Mode == APMFM_WHITELIST);
     wld_ap_hostapd_delAllMacFilteringEntries(pAP);
 
-    if(pAP->MF_Mode == APMFM_WHITELIST) {
-        bool ret = wld_ap_hostapd_setParamValue(pAP, "macaddr_acl", "1", "macaddr_acl");
-        ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: error when setting macaddr_acl", pAP->alias);
+    bool ret = wld_ap_hostapd_setParamValue(pAP, "macaddr_acl", (useAcceptAcl ? "1" : "0"), "macaddr_acl");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: error when setting macaddr_acl", pAP->alias);
 
-        for(int i = 0; i < pAP->MF_EntryCount; i++) {
-            if(!pAP->MF_TempBlacklistEnable
-               || (!wldu_is_mac_in_list(pAP->MF_Entry[i], pAP->MF_Temp_Entry, pAP->MF_TempEntryCount))) {
-                // add entry either if temporary blacklisting is disabled, or entry not in temp blaclist
-                char macStr[ETHER_ADDR_STR_LEN] = {'\0'};
-                SWL_MAC_BIN_TO_CHAR(macStr, pAP->MF_Entry[i]);
-                s_addEntryAcceptAcl(pAP, macStr);
-            }
-        }
-    } else {
-        bool ret = wld_ap_hostapd_setParamValue(pAP, "macaddr_acl", "0", "macaddr_acl");
-        ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: error when setting macaddr_acl", pAP->alias);
+    for(uint32_t i = 0; i < banList.staToBan; i++) {
+        s_addEntryAcl(pAP, swl_typeMacBin_toBuf32Ref(&banList.banList[i]).buf, useAcceptAcl);
+    }
 
-        if(pAP->MF_Mode == APMFM_BLACKLIST) {
-            for(int i = 0; i < pAP->MF_EntryCount; i++) {
-                char macStr[ETHER_ADDR_STR_LEN] = {'\0'};
-                SWL_MAC_BIN_TO_CHAR(macStr, pAP->MF_Entry[i]);
-                s_addEntryDenyAcl(pAP, macStr);
-            }
+    for(uint32_t i = 0; i < banList.staToKick; i++) {
+        swl_IEEE80211deauthReason_ne reason = SWL_IEEE80211_DEAUTH_REASON_UNSPECIFIED_QOS;
+        if(swl_typeMacBin_arrayContainsRef((swl_macBin_t*) pAP->MF_Entry, pAP->MF_EntryCount, &banList.kickList[i])) {
+            reason = SWL_IEEE80211_DEAUTH_REASON_AUTH_NO_LONGER_VALID;
         }
-        if(pAP->MF_TempBlacklistEnable) {
-            for(int i = 0; i < pAP->MF_TempEntryCount; i++) {
-                char macStr[ETHER_ADDR_STR_LEN] = {'\0'};
-                SWL_MAC_BIN_TO_CHAR(macStr, pAP->MF_Temp_Entry[i]);
-                s_addEntryDenyAcl(pAP, macStr);
-            }
-        }
-
-        //Note hostapd currently does not support probe filtering, as it will auto kick additions to list
+        wld_ap_hostapd_kickStation(pAP, &banList.kickList[i], reason);
     }
     return SWL_RC_OK;
 }
@@ -916,7 +894,7 @@ swl_rc_ne wld_ap_hostapd_addMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_NOT_NULL(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc = SWL_RC_OK;
     switch(pAP->MF_Mode) {
     //All MAC-addresses are allowed
     case APMFM_OFF:
@@ -925,20 +903,22 @@ swl_rc_ne wld_ap_hostapd_addMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
     //Access is granted only for MAC-addresses occurring in the Entry table
     case APMFM_WHITELIST:
     {
-        s_addEntryAcceptAcl(pAP, macStr);
+        ASSERTI_STR(macStr, SWL_RC_INVALID_PARAM, ME, "Empty");
+        rc = s_addEntryAcl(pAP, macStr, true);
     }
     break;
     //Access is granted for all MAC-addresses except for the ones occurring in the Entry table
     case APMFM_BLACKLIST:
     {
-        s_addEntryDenyAcl(pAP, macStr);
+        ASSERTI_STR(macStr, SWL_RC_INVALID_PARAM, ME, "Empty");
+        rc = s_addEntryAcl(pAP, macStr, false);
     }
     break;
     default:
         SAH_TRACEZ_ERROR(ME, "%s: Unknown MacFiltering mode %d", pR->Name, pAP->MF_Mode);
         return SWL_RC_ERROR;
     }
-    return SWL_RC_OK;
+    return rc;
 }
 
 /**
@@ -951,7 +931,7 @@ swl_rc_ne wld_ap_hostapd_delMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_NOT_NULL(macStr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc = SWL_RC_OK;
     switch(pAP->MF_Mode) {
     //All MAC-addresses are allowed
     case APMFM_OFF:
@@ -960,20 +940,22 @@ swl_rc_ne wld_ap_hostapd_delMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
     //Access is granted only for MAC-addresses occurring in the Entry table
     case APMFM_WHITELIST:
     {
-        s_delEntryAcceptAcl(pAP, macStr);
+        ASSERTI_STR(macStr, SWL_RC_INVALID_PARAM, ME, "Empty");
+        rc = s_delEntryAcl(pAP, macStr, true);
     }
     break;
     //Access is granted for all MAC-addresses except for the ones occurring in the Entry table
     case APMFM_BLACKLIST:
     {
-        s_delEntryDenyAcl(pAP, macStr);
+        ASSERTI_STR(macStr, SWL_RC_INVALID_PARAM, ME, "Empty");
+        rc = s_delEntryAcl(pAP, macStr, false);
     }
     break;
     default:
         SAH_TRACEZ_ERROR(ME, "%s: Unknown MacFiltering mode %d", pR->Name, pAP->MF_Mode);
         return SWL_RC_ERROR;
     }
-    return SWL_RC_OK;
+    return rc;
 }
 
 /* Ref. WPA3_Specification_v3.0 */

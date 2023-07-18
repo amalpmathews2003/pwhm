@@ -499,27 +499,6 @@ bool convStrArrToStr(char* str, int str_size, const char** strList, int list_siz
 }
 
 /**
- * Return whether a binary mac is in a given list.
- *
- * @arg macAddr : the mac to check, in binary format
- * @arg macList : the list of macs to check against, in binary format.
- * @arg listSize : the number of entries of the macList
- *
- * if an entry of macList is bitwise identical to macAddr, this function returns true.
- * otherwise it returns false.
- */
-bool wldu_is_mac_in_list(unsigned char macAddr[ETHER_ADDR_LEN], unsigned char macList[][ETHER_ADDR_LEN], int listSize) {
-    int i = 0;
-    for(i = 0; i < listSize; i++) {
-        if(memcmp(macAddr, macList[i], ETHER_ADDR_LEN) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-/**
  * Internal function to free all elements in a linked listed. Preferably to be called with the
  * macro llist_freeData
  * Offset needs to be the offset of iterator in the list object structure
@@ -1237,7 +1216,7 @@ int get_randomstr(unsigned char* buf, size_t len) {
     for(i = 0; i < len; i++) {
         buf[i] = RND_ASCII[ (buf[i] & 0x3f) ];
     }
-    buf[i] = '\0';
+    buf[len] = '\0';
 
     return i;
 }
@@ -1260,7 +1239,7 @@ int get_randomhexstr(unsigned char* buf, size_t len) {
     for(i = 0; i < len; i++) {
         buf[i] = RND_HEX[ (buf[i] & 0xf) ];
     }
-    buf[i] = '\0';
+    buf[len] = '\0';
 
     return i;
 }
@@ -1998,51 +1977,6 @@ void wld_bitmaskToCSValues(char* string, size_t stringsize, const int bitmask, c
             swl_strlst_cat(string, stringsize, ",", strings[idx]);
         }
     }
-}
-
-int wld_util_getBanList(T_AccessPoint* pAP, wld_macfilterList_t* macList) {
-
-    int nr_entries = 0;
-    int i;
-    if(pAP->MF_Mode == APMFM_WHITELIST) {
-        macList->status = MF_ALLOW;
-        for(i = 0; i < pAP->MF_EntryCount; i++) {
-            if(!pAP->MF_TempBlacklistEnable
-               || (!wldu_is_mac_in_list(pAP->MF_Entry[i], pAP->MF_Temp_Entry, pAP->MF_TempEntryCount)
-                   && !wldu_is_mac_in_list(pAP->MF_Entry[i], pAP->PF_Temp_Entry, pAP->PF_TempEntryCount))) {
-                // add entry either if temporary blacklisting is disabled, or entry not in temp blaclist
-                memcpy(macList->macAddressList[nr_entries], pAP->MF_Entry[i], ETHER_ADDR_LEN);
-                nr_entries++;
-            }
-        }
-    } else if((pAP->MF_Mode == APMFM_BLACKLIST)
-              || (pAP->MF_TempBlacklistEnable && ((pAP->MF_TempEntryCount > 0) || (pAP->PF_TempEntryCount > 0)))) {
-        macList->status = MF_DENY;
-        if(pAP->MF_Mode == APMFM_BLACKLIST) {
-            for(i = 0; i < pAP->MF_EntryCount; i++) {
-                memcpy(macList->macAddressList[nr_entries], pAP->MF_Entry[i], ETHER_ADDR_LEN);
-                nr_entries++;
-            }
-        }
-        if(pAP->MF_TempBlacklistEnable) {
-            for(i = 0; i < pAP->MF_TempEntryCount; i++) {
-                memcpy(macList->macAddressList[nr_entries], pAP->MF_Temp_Entry[i], ETHER_ADDR_LEN);
-                nr_entries++;
-            }
-            for(i = 0; i < pAP->PF_TempEntryCount; i++) {
-                memcpy(macList->macAddressList[nr_entries], pAP->PF_Temp_Entry[i], ETHER_ADDR_LEN);
-                nr_entries++;
-            }
-        }
-    } else {
-        macList->status = MF_DISABLED;
-    }
-    SAH_TRACEZ_INFO(ME, "Ban mode %u, has %u entries", macList->status, nr_entries);
-    for(i = 0; i < (int) nr_entries; i++) {
-        SAH_TRACEZ_INFO(ME, "Entry %u "MAC_PRINT_FMT, i, MAC_PRINT_ARG((unsigned char*) &macList->macAddressList[i]));
-    }
-    macList->nrStaInList = nr_entries;
-    return WLD_OK;
 }
 
 bool wld_util_areAllVapsDisabled(T_Radio* pRad) {

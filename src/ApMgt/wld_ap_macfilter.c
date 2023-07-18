@@ -78,59 +78,16 @@
 
 #define ME "apMf"
 
-
-static amxd_status_t s_checkStartCallVap(T_AccessPoint** pAP, amxd_object_t* wifiObj, amxd_object_t* object,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(wifiObj) != amxd_object_instance) {
-        SAH_TRACEZ_ERROR(ME, "obj is not an instance");
-        return amxd_status_unknown_error;
-    }
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "unable to write the param");
-        return rv;
-    }
-
-    *pAP = (T_AccessPoint*) wifiObj->priv;
-
-    if((*pAP == NULL) || !debugIsVapPointer(*pAP)) {
-        return amxd_status_unknown_error;
-    }
-
-    return amxd_status_ok;
-}
-
-static void delay_WPS_disable(amxp_timer_t* timer, void* userdata) {
-    amxd_object_t* object = (amxd_object_t*) userdata;
-    T_AccessPoint* pAP = object->priv;
-    amxd_object_t* wpsObj = amxd_object_findf(object, "WPS");
-    amxd_object_set_int32_t(wpsObj, "Enable", pAP->WPS_Enable);
-    amxp_timer_delete(&timer);
-}
-
-static int32_t findEntry(unsigned char maclist[][ETHER_ADDR_LEN], int32_t length, unsigned char mac[ETHER_ADDR_LEN]) {
-    int32_t idx = 0;
-    while(idx < length) {
-        if(memcmp(mac, maclist[idx], ETHER_ADDR_LEN) == 0) {
-            break;
-        } else {
-            idx++;
-        }
-    }
-    return idx;
+static void delay_WPS_disable(void* userdata) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userdata;
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    amxd_object_t* apWpsObj = amxd_object_get(pAP->pBus, "WPS");
+    swl_typeUInt8_commitObjectParam(apWpsObj, "Enable", pAP->WPS_Enable);
 }
 
 static bool sync_changes(amxd_object_t* mf, const char* objectName, unsigned char maclist[][ETHER_ADDR_LEN], int* count, int maxentries) {
     int idx = 0;
     int changes = 0;
-    unsigned char macbin[ETHER_ADDR_LEN];
     amxd_object_t* templateObj = amxd_object_get(mf, objectName);
 
     amxd_object_for_each(instance, it, templateObj) {
@@ -138,46 +95,56 @@ static bool sync_changes(amxd_object_t* mf, const char* objectName, unsigned cha
             break;
         }
         amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
-        const char* macstr = amxd_object_get_cstring_t(mfentry, "MACAddress", NULL);
-        swl_macChar_t macAddr_char = {.cMac = {0}};
-        strncpy(macAddr_char.cMac, macstr ? : "", sizeof(macAddr_char.cMac) - 1);
-        if(swl_mac_charToBin((swl_macBin_t*) macbin, &macAddr_char)) {
-            if(memcmp(macbin, maclist[idx], ETHER_ADDR_LEN)) {
+        if(mfentry->priv == NULL) {
+            continue;
+        }
+        char* macstr = amxd_object_get_cstring_t(mfentry, "MACAddress", NULL);
+        swl_macBin_t macBin;
+        if(swl_typeMacBin_fromChar(&macBin, macstr)) {
+            if(!SWL_MAC_BIN_MATCHES(&macBin, maclist[idx])) {
                 changes++;
-                memcpy(maclist[idx], macbin, ETHER_ADDR_LEN);
+                memcpy(maclist[idx], macBin.bMac, ETHER_ADDR_LEN);
             }
             idx++;
         }
+        free(macstr);
     }
 
     if(idx != *count) {
         *count = idx;
         changes++;
     }
+    for(; idx < maxentries; idx++) {
+        memset(maclist[idx], 0, ETHER_ADDR_LEN);
+    }
+
+    SAH_TRACEZ_INFO(ME, "%s.%s internal Count %d", amxd_object_get_name(mf, AMXD_OBJECT_NAMED), objectName, *count);
+    for(idx = 0; idx < *count; idx++) {
+        SAH_TRACEZ_INFO(ME, "internal %s[%d].Mac = %s", objectName, idx, swl_typeMacBin_toBuf32Ref((swl_macBin_t* ) maclist[idx]).buf);
+    }
+
     return changes != 0;
 }
 
-void wld_ap_macfilter_updateMACFilterAddressList(T_AccessPoint* pAP) {
+static void s_updateMACFilterAddressList(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_FALSE(pAP->MF_AddressListBlockSync, , ME, "Sync blocked");
     if(pAP->MF_AddressList != NULL) {
         free(pAP->MF_AddressList);
         pAP->MF_AddressList = NULL;
     }
-    int size = (ETHER_ADDR_STR_LEN + 1) * pAP->MF_EntryCount;
-    if(size != 0) {
+    const char* newList = "";
+    if(pAP->MF_EntryCount > 0) {
+        size_t size = (ETHER_ADDR_STR_LEN * pAP->MF_EntryCount) + 1;
         pAP->MF_AddressList = calloc(1, size);
-        int i = 0;
-        for(i = 0; i < pAP->MF_EntryCount; i++) {
-            char macStr[ETHER_ADDR_STR_LEN] = {'\0'};
-            wldu_convMac2Str(pAP->MF_Entry[i], ETHER_ADDR_LEN, macStr, ETHER_ADDR_STR_LEN);
-            swl_str_catFormat(pAP->MF_AddressList, size, "%s%s", macStr, (i + 1 == pAP->MF_EntryCount) ? "" : ",");
+        ASSERT_NOT_NULL(pAP->MF_AddressList, , ME, "NULL");
+        for(int i = 0; i < pAP->MF_EntryCount; i++) {
+            swl_strlst_cat(pAP->MF_AddressList, size, ",", swl_typeMacBin_toBuf32Ref((swl_macBin_t* ) pAP->MF_Entry[i]).buf);
         }
-    }
-    if(pAP->MF_AddressList) {
         swl_str_toUpper(pAP->MF_AddressList, strlen(pAP->MF_AddressList));
+        newList = pAP->MF_AddressList;
     }
-    amxd_object_set_cstring_t(pAP->pBus, "MACFilterAddressList", pAP->MF_AddressList ? pAP->MF_AddressList : "");
+    swl_typeCharPtr_toObjectParam(pAP->pBus, "MACFilterAddressList", (char*) newList);
 }
 
 /**
@@ -186,429 +153,428 @@ void wld_ap_macfilter_updateMACFilterAddressList(T_AccessPoint* pAP) {
  * Note that the mac list changes are only set in the driver, but not executed. One must perform a commit on the radio
  * to sync the plugin mac list with driver mac list.
  */
-static void syncMACFiltering(amxd_object_t* object) {
+static void s_syncMACFiltering(amxd_object_t* object) {
     SAH_TRACEZ_IN(ME);
 
-
-    ASSERTI_FALSE(amxd_object_get_type(object) == amxd_object_template, , ME, "Template");
-
-    T_AccessPoint* pAP = object->priv;
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
 
     amxd_object_t* mf = amxd_object_get(object, "MACFiltering");
 
-    const char* mfModeStr = amxd_object_get_cstring_t(mf, "Mode", NULL);
-    int idx = conv_ModeIndexStr(cstr_AP_MFMode, (mfModeStr != NULL) ? mfModeStr : "Off");
-    if(idx != (int) pAP->MF_Mode) {
-        pAP->MF_Mode = idx;
+    bool needSyncToHw = false;
+    char* mfModeStr = amxd_object_get_cstring_t(mf, "Mode", NULL);
+    wld_mfMode_e mfMode = swl_conv_charToEnum(mfModeStr, cstr_AP_MFMode, APMFM_COUNT, APMFM_OFF);
+    free(mfModeStr);
+    if(mfMode != pAP->MF_Mode) {
+        SAH_TRACEZ_INFO(ME, "%s: Update Mac Filtering Mode from %u to %u", pAP->alias, pAP->MF_Mode, mfMode);
+        pAP->MF_Mode = mfMode;
+        needSyncToHw = true;
     }
 
     bool tempBlacklistEnable = amxd_object_get_bool(mf, "TempBlacklistEnable", NULL);
     if(tempBlacklistEnable != pAP->MF_TempBlacklistEnable) {
+        SAH_TRACEZ_INFO(ME, "%s: Update MF TempBlacklistEnable to %u", pAP->alias, tempBlacklistEnable);
         pAP->MF_TempBlacklistEnable = tempBlacklistEnable;
+        needSyncToHw = true;
     }
 
+    swl_mask_m flag = SET;
     if((pAP->MF_Mode != APMFM_OFF) || pAP->MF_TempBlacklistEnable) {
         int prev_WPS_Enable = pAP->WPS_Enable;
         if(!pAP->WPS_CertMode && (pAP->MF_Mode == APMFM_WHITELIST)) {
             /* We can't have WPS enabled if MAC filtering is set on white list. Disable it. */
             /* For Certification we keep WPS active */
+            SAH_TRACEZ_WARNING(ME, "%s: Force disabling WPS because of enabled MF mode WhiteList", pAP->alias);
             pAP->WPS_Enable = 0;
             wld_ap_doWpsSync(pAP);
         }
 
         if(prev_WPS_Enable != pAP->WPS_Enable) {
             /* Update the data model *after* this commit finishes */
-            amxp_timer_t* timer = NULL;
-            amxp_timer_new(&timer, delay_WPS_disable, object);
-            amxp_timer_start(timer, 0);
+            swla_delayExec_add(delay_WPS_disable, pAP);
         }
 
         if(sync_changes(mf, "Entry", pAP->MF_Entry, &pAP->MF_EntryCount, MAXNROF_MFENTRY)) {
-            wld_ap_macfilter_updateMACFilterAddressList(pAP);
+            swla_delayExec_add((swla_delayExecFun_cbf) s_updateMACFilterAddressList, pAP);
+            needSyncToHw = true;
         }
         if(sync_changes(mf, "TempEntry", pAP->MF_Temp_Entry, &pAP->MF_TempEntryCount, MAXNROF_MFENTRY)) {
+            //mf temp entries require dynamic acl handling, without need to commit fsm on each change
+            flag |= DIRECT;
+            needSyncToHw = true;
         }
     }
 
-    SAH_TRACEZ_ERROR(ME, "Syncing mac entries to HW");
-    pAP->pFA->mfn_wvap_mf_sync(pAP, SET);
+    ASSERTI_TRUE(needSyncToHw, , ME, "%s: no need for mf hw sync", pAP->alias);
+    SAH_TRACEZ_WARNING(ME, "%s: Syncing mac entries to HW", pAP->alias);
+    pAP->pFA->mfn_wvap_mf_sync(pAP, flag);
     wld_autoCommitMgr_notifyVapEdit(pAP);
 
     SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_ap_setMACFilteringTempBlacklistEnable_pwf(amxd_object_t* object,
-                                                             amxd_param_t* parameter _UNUSED,
-                                                             amxd_action_t reason _UNUSED,
-                                                             const amxc_var_t* const args _UNUSED,
-                                                             amxc_var_t* const retval _UNUSED,
-                                                             void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
+/**
+ * This function syncs the Probe filtering list for an access point object
+ * E.g. WiFiABC.AccessPoint.wl0
+ * Note that the mac list changes are only set in the driver, but not executed. One must perform a commit on the radio
+ * to sync the plugin mac list with driver mac list.
+ */
+static void s_syncProbeFiltering(amxd_object_t* object) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+
+    amxd_object_t* pf = amxd_object_get(object, "ProbeFiltering");
+    if(sync_changes(pf, "TempEntry", pAP->PF_Temp_Entry, &pAP->PF_TempEntryCount, MAXNROF_PFENTRY)) {
+        SAH_TRACEZ_INFO(ME, "%s: Syncing mac entries to HW", pAP->alias);
+        pAP->pFA->mfn_wvap_pf_sync(pAP, SET | DIRECT);
     }
 
-    bool tempBlacklistEnable = amxc_var_dyncast(bool, args);
-
-    if(tempBlacklistEnable != pAP->MF_TempBlacklistEnable) {
-        SAH_TRACEZ_INFO(ME, "Updating  Mac Filtring TempBlacklistEnable from %d to %d", pAP->MF_TempBlacklistEnable, tempBlacklistEnable);
-        pAP->MF_TempBlacklistEnable = tempBlacklistEnable;
-        syncMACFiltering(amxd_object_get_parent(object));
-    } else {
-        SAH_TRACEZ_ERROR(ME, " Mac Filtring TempBlacklistEnable -%d- same value ", tempBlacklistEnable);
-    }
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_ap_setMACFilteringMode_pwf(amxd_object_t* object,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args _UNUSED,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    const char* newMACFilterMode_param = amxc_var_constcast(cstring_t, args);
+static void s_setMfConf_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
 
-    if(newMACFilterMode_param == NULL) {
-        return amxd_status_unknown_error;
-    }
+    amxd_object_t* apObj = amxd_object_get_parent(object);
+    s_syncMACFiltering(apObj);
 
-    int modeIndex = conv_ModeIndexStr(cstr_AP_MFMode, newMACFilterMode_param);
-
-    if(modeIndex != (int) pAP->MF_Mode) {
-        SAH_TRACEZ_ERROR(ME, "Update  Mac Filtring Mode from %u to %u", pAP->MF_Mode, modeIndex);
-        pAP->MF_Mode = modeIndex;
-        syncMACFiltering(amxd_object_get_parent(object));
-    } else {
-        SAH_TRACEZ_ERROR(ME, " Mac Filtring Mode -%s- same value ", newMACFilterMode_param);
-    }
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_ap_setMACFilteringTempEntry_pwf(amxd_object_t* object,
-                                                   amxd_param_t* parameter _UNUSED,
-                                                   amxd_action_t reason _UNUSED,
-                                                   const amxc_var_t* const args _UNUSED,
-                                                   amxc_var_t* const retval _UNUSED,
-                                                   void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object)));
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
+SWLA_DM_HDLRS(sApMfDmHdlrs, ARR(), .objChangedCb = s_setMfConf_ocf, );
+
+void _wld_apMacFilter_setConf_ocf(const char* const sig_name,
+                                  const amxc_var_t* const data,
+                                  void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApMfDmHdlrs, sig_name, data, priv);
+}
+
+amxd_status_t _wld_ap_deleteMACFilteringEntry_odf(amxd_object_t* object,
+                                                  amxd_param_t* param,
+                                                  amxd_action_t reason,
+                                                  const amxc_var_t* const args,
+                                                  amxc_var_t* const retval,
+                                                  void* priv) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy object st:%d", status);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, status, ME, "obj is not instance");
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
+    amxd_object_t* categFObj = amxd_object_get_parent(amxd_object_get_parent(object));
+    const char* categF = amxd_object_get_name(categFObj, AMXD_OBJECT_NAMED);
+    amxd_object_t* apObj = amxd_object_get_parent(categFObj);
+    const char* apName = amxd_object_get_name(apObj, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_INFO(ME, "%s: destroy instance %s", apName, path);
+    free(path);
+    object->priv = NULL;
+    if(swl_str_matches(categF, "MACFiltering")) {
+        s_syncMACFiltering(apObj);
+    } else if(swl_str_matches(categF, "ProbeFiltering")) {
+        s_syncProbeFiltering(apObj);
     }
 
-    syncMACFiltering(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
-amxd_status_t _wld_ap_setMACFilteringEntry_pwf(amxd_object_t* object,
-                                               amxd_param_t* parameter _UNUSED,
-                                               amxd_action_t reason _UNUSED,
-                                               const amxc_var_t* const args _UNUSED,
-                                               amxc_var_t* const retval _UNUSED,
-                                               void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object)));
-
-    rv = s_checkStartCallVap(&pAP, wifiVap, object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
+static void s_setMACFilteringEntry_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
+    amxd_object_t* categFObj = amxd_object_get_parent(amxd_object_get_parent(object));
+    const char* categF = amxd_object_get_name(categFObj, AMXD_OBJECT_NAMED);
+    amxd_object_t* apObj = amxd_object_get_parent(categFObj);
+    const char* apName = amxd_object_get_name(apObj, AMXD_OBJECT_NAMED);
+    const char* pname = amxd_param_get_name(param);
+    char* pvalue = swl_typeCharPtr_fromVariantDef((amxc_var_t*) newValue, NULL);
+    SAH_TRACEZ_INFO(ME, "%s: %s.%s = %s", apName, path, pname, pvalue);
+    free(pvalue);
+    free(path);
+    object->priv = object;
+    if(swl_str_matches(categF, "MACFiltering")) {
+        s_syncMACFiltering(apObj);
+    } else if(swl_str_matches(categF, "ProbeFiltering")) {
+        s_syncProbeFiltering(apObj);
     }
 
-    syncMACFiltering(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _destroyMACFilteringEntry(amxd_object_t* object) {
-    syncMACFiltering(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-    return amxd_status_ok;
+SWLA_DM_HDLRS(sApMfEntryDmHdlrs, ARR(SWLA_DM_PARAM_HDLR("MACAddress", s_setMACFilteringEntry_pwf)));
+
+void _wld_apMacFilterEntry_setConf_ocf(const char* const sig_name,
+                                       const amxc_var_t* const data,
+                                       void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApMfEntryDmHdlrs, sig_name, data, priv);
 }
 
-amxd_status_t _wld_ap_deleteMACFilteringEntry_odf(amxd_object_t* template_object _UNUSED, amxd_object_t* instance_object _UNUSED) {
-    //nothing to do , as delete flag is not yet set in this obj instance
-    //set the destroy handler for this object, to do sync at that moment
-    return amxd_status_ok;
-}
-
-void wld_ap_macfilter_deleteAllEntries(T_AccessPoint* pAP, char* listname) {
+static void s_deleteAllEntries(T_AccessPoint* pAP, char* listname) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_NOT_NULL(listname, , ME, "NULL");
     amxd_object_t* mfObject = amxd_object_get(pAP->pBus, "MACFiltering");
     ASSERTS_NOT_NULL(mfObject, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "Deleting all object entries");
+    SAH_TRACEZ_INFO(ME, "%s: Deleting all %s entries", pAP->alias, listname);
     pAP->MF_AddressListBlockSync = true;
     amxd_object_t* templateObj = amxd_object_get(mfObject, listname);
-    amxd_object_for_each(instance, it, templateObj) {
-        amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
-        amxd_object_delete(&mfentry);
+    if(amxd_object_get_instance_count(templateObj) > 0) {
+        amxd_trans_t trans;
+        swl_object_prepareTransaction(&trans, templateObj);
+        amxd_object_for_each(instance, it, templateObj) {
+            amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
+            amxd_trans_del_inst(&trans, amxd_object_get_index(mfentry), NULL);
+        }
+        swl_object_finalizeTransactionOnLocalDm(&trans);
     }
     pAP->MF_AddressListBlockSync = false;
 }
 
-void wld_ap_macfilter_addEntryObject(T_AccessPoint* pAP,
-                                     const char* objName,
-                                     const char* listName,
-                                     const char* macStr) {
+static bool s_addEntryObject(T_AccessPoint* pAP,
+                             const char* objName,
+                             const char* listName,
+                             const char* macStr) {
     amxd_object_t* mfObject = amxd_object_get(pAP->pBus, objName);
-    ASSERTS_NOT_NULL(mfObject, , ME, "NULL");
-    amxd_object_t* entry = amxd_object_get(mfObject, listName);
-    ASSERTS_NOT_NULL(entry, , ME, "NULL");
-    amxd_object_t* new_entry_obj;
-    amxd_object_new_instance(&new_entry_obj, entry, NULL, 0, NULL);
-    ASSERTS_NOT_NULL(new_entry_obj, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: add sta %s to %s.%s", pAP->alias, objName, listName, macStr);
-    amxd_object_set_cstring_t(new_entry_obj, "MACAddress", macStr);
-    SAH_TRACEZ_INFO(ME, "Add object entry %s", macStr);
-}
-
-bool wld_ap_macfilter_entry_exist(T_AccessPoint* pAP, char* listname, char* macStr) {
-    amxd_object_t* mfObject = amxd_object_get(pAP->pBus, "MACFiltering");
     ASSERTS_NOT_NULL(mfObject, false, ME, "NULL");
-    amxd_object_t* templateObj = amxd_object_get(mfObject, listname);
-    amxd_object_for_each(instance, it, templateObj) {
-        amxd_object_t* mf_entry = amxc_container_of(it, amxd_object_t, it);
-        const char* entry_str = amxd_object_get_cstring_t(mf_entry, "MACAddress", NULL);
-        if(strncasecmp(macStr, entry_str, ETHER_ADDR_STR_LEN) == 0) {
-            SAH_TRACEZ_INFO(ME, "Entry exist %s", macStr);
-            return true;
-        }
-    }
-    return false;
+    amxd_object_t* entry = amxd_object_get(mfObject, listName);
+    ASSERTS_NOT_NULL(entry, false, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: adding sta %s to %s.%s", pAP->alias, macStr, objName, listName);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(entry, &trans, false, ME, "%s: trans init failure", pAP->alias);
+    amxd_trans_add_inst(&trans, 0, NULL);
+    amxd_trans_set_value(cstring_t, &trans, "MACAddress", macStr);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, false, ME, "%s : trans apply failure", pAP->alias);
+    SAH_TRACEZ_INFO(ME, "%s: Added %s entry %s", pAP->alias, listName, macStr);
+    return true;
 }
 
-void wld_ap_macfilter_delete_unused_entry(T_AccessPoint* pAP, char* listname) {
+static amxd_object_t* s_fetchEntryExt(amxd_object_t* templateObj, const char* macStr, amxd_object_t* optExclObj, size_t* pLastPos) {
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* mfEntry = amxc_container_of(it, amxd_object_t, it);
+        char* entryStr = amxd_object_get_cstring_t(mfEntry, "MACAddress", NULL);
+        if(pLastPos) {
+            *pLastPos += (!swl_str_isEmpty(entryStr));
+        }
+        if(mfEntry == optExclObj) {
+            free(entryStr);
+            continue;
+        }
+        bool match = (!swl_str_isEmpty(entryStr) && SWL_MAC_CHAR_MATCHES(entryStr, macStr));
+        free(entryStr);
+        if(match) {
+            return mfEntry;
+        }
+    }
+    return NULL;
+}
+
+static amxd_object_t* s_fetchEntry(T_AccessPoint* pAP, const char* categF, const char* listname, const char* macStr) {
+    return s_fetchEntryExt(amxd_object_findf(pAP->pBus, "%s.%s", categF, listname), macStr, NULL, NULL);
+}
+
+static bool s_doesEntryExist(T_AccessPoint* pAP, const char* categF, const char* listname, const char* macStr) {
+    return (s_fetchEntry(pAP, categF, listname, macStr) != NULL);
+}
+
+static void s_deleteUnusedEntries(T_AccessPoint* pAP, char* listname) {
     amxd_object_t* mfObject = amxd_object_get(pAP->pBus, "MACFiltering");
     ASSERTS_NOT_NULL(mfObject, , ME, "NULL");
+    uint32_t nMatch = 0;
+    amxd_trans_t trans;
     amxd_object_t* templateObj = amxd_object_get(mfObject, listname);
     amxd_object_for_each(instance, it, templateObj) {
-        amxd_object_t* mf_entry = amxc_container_of(it, amxd_object_t, it);
-        const char* entry_str = amxd_object_get_cstring_t(mf_entry, "MACAddress", NULL);
-        if(pAP->MF_AddressList && !strcasestr(pAP->MF_AddressList, entry_str)) {
-            SAH_TRACEZ_INFO(ME, "Deleting entry %s", entry_str);
-            amxd_object_delete(&mf_entry);
+        amxd_object_t* mfEntry = amxc_container_of(it, amxd_object_t, it);
+        char* entryMac = amxd_object_get_cstring_t(mfEntry, "MACAddress", NULL);
+        if((swl_str_isEmpty(entryMac)) ||
+           ((pAP->MF_AddressList != NULL) && (strcasestr(pAP->MF_AddressList, entryMac) == NULL))) {
+            SAH_TRACEZ_INFO(ME, "%s: Deleting MF %s entry (%s)", pAP->alias, listname, entryMac);
+            nMatch++;
+            if(nMatch == 1) {
+                swl_object_prepareTransaction(&trans, templateObj);
+            }
+            amxd_trans_del_inst(&trans, amxd_object_get_index(mfEntry), NULL);
         }
+        free(entryMac);
+    }
+    if(nMatch > 0) {
+        swl_object_finalizeTransactionOnLocalDm(&trans);
     }
 }
 
-static void wld_ap_macfilter_syncAddressList(T_AccessPoint* pAP) {
+static void s_syncAddressList(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP->MF_AddressList, , ME, "NULL");
     pAP->MF_AddressListBlockSync = true;
     char* allowed_str_list = strdup(pAP->MF_AddressList);
     char* allowed_str = allowed_str_list;
-    while(allowed_str) {
-        char macStr[ETHER_ADDR_STR_LEN] = {'\0'};
-        memcpy(&macStr, allowed_str, ETHER_ADDR_STR_LEN - 1);
-        if(!wld_ap_macfilter_entry_exist(pAP, "Entry", macStr)) {
-            wld_ap_macfilter_addEntryObject(pAP, "MACFiltering", "Entry", macStr);
+    while(allowed_str != NULL) {
+        char* macStr = strsep(&allowed_str, ",");
+        //skip empty fields
+        if(swl_str_isEmpty(macStr)) {
+            continue;
         }
-        char* end_str = strstr(allowed_str, ",");
-        if(!end_str) {
-            break;
+        if(!s_doesEntryExist(pAP, "MACFiltering", "Entry", macStr)) {
+            s_addEntryObject(pAP, "MACFiltering", "Entry", macStr);
         }
-        allowed_str = end_str + 1;
     }
-    if(allowed_str_list != NULL) {
-        free(allowed_str_list);
-    }
-    wld_ap_macfilter_delete_unused_entry(pAP, "Entry");
+    free(allowed_str_list);
+    s_deleteUnusedEntries(pAP, "Entry");
     pAP->MF_AddressListBlockSync = false;
 }
 
-void wld_ap_macfilter_cleanupMACFilterAddressList(T_AccessPoint* pAP) {
+static void s_cleanupMACFilterAddressList(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP->MF_AddressList, , ME, "NULL");
     free(pAP->MF_AddressList);
     pAP->MF_AddressList = NULL;
-    wld_ap_macfilter_deleteAllEntries(pAP, "Entry");
+    s_deleteAllEntries(pAP, "Entry");
 }
 
-bool validateMACFilterAddressList(amxd_param_t* parameter, void* validationData _UNUSED) {
-    amxc_var_t value;
-    amxc_var_init(&value);
-    amxd_param_get_value(parameter, &value);
-    const char* newMACFilterAddressList_param = amxc_var_get_cstring_t(&value);
-    amxc_var_clean(&value);
-    ASSERTS_NOT_NULL(newMACFilterAddressList_param, false, ME, "NULL");
-    int len = strlen(newMACFilterAddressList_param);
-    if(len == 0) {
-        return true;
-    }
-    if(!strstr(newMACFilterAddressList_param, ",") && (len > (ETHER_ADDR_STR_LEN - 1))) {
-        SAH_TRACEZ_INFO(ME, "Multiple entries without separator %s", newMACFilterAddressList_param);
-        return false;
-    }
-    if(((len + 1) % ETHER_ADDR_STR_LEN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Invalid MACFilterAddressList parameter len=%d param=%s", len, newMACFilterAddressList_param);
-        return false;
-    }
-    return true;
-}
-
-static void delay_sync_mf_addressList(amxp_timer_t* timer, void* userdata) {
-    T_AccessPoint* pAP = (T_AccessPoint*) userdata;
-    wld_ap_macfilter_syncAddressList(pAP);
-    amxp_timer_delete(&timer);
-}
-
-amxd_status_t _wld_apMacFilter_setAddressList_pwf(amxd_object_t* object,
-                                                  amxd_param_t* parameter,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
+amxd_status_t _wld_ap_validateMfMac_pvf(amxd_object_t* object,
+                                        amxd_param_t* param,
+                                        amxd_action_t reason _UNUSED,
+                                        const amxc_var_t* const args,
+                                        amxc_var_t* const retval _UNUSED,
+                                        void* priv _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    ASSERTI_EQUALS(amxd_object_get_type(wifiVap), amxd_object_instance, rv, ME, "Not instance");
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "Invalid AP Ctx");
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR status:%d", rv);
 
-    char* newMACFilterAddressList_param = amxc_var_dyncast(cstring_t, args);
-    ASSERTS_NOT_NULL(newMACFilterAddressList_param, amxd_status_unknown_error, ME, "NULL");
+    amxd_status_t status = amxd_status_invalid_value;
+    amxd_object_t* tmplObj = amxd_object_get_parent(object);
+    const char* tmplName = amxd_object_get_name(tmplObj, AMXD_OBJECT_NAMED);
 
-    if(swl_str_matches(pAP->MF_AddressList, newMACFilterAddressList_param)) {
-        SAH_TRACEZ_INFO(ME, "Same MACFilterAddressList");
-    } else if(swl_str_isEmpty(newMACFilterAddressList_param)) {
-        wld_ap_macfilter_cleanupMACFilterAddressList(pAP);
+    const char* currMacStr = amxc_var_constcast(cstring_t, &param->value);
+    const char* newMacStr = amxc_var_constcast(cstring_t, args);
+    if(swl_str_isEmpty(newMacStr) || SWL_MAC_CHAR_MATCHES(newMacStr, currMacStr)) {
+        return amxd_status_ok;
+    }
+    size_t count = 0;
+    amxd_object_t* duplMfEntry = s_fetchEntryExt(tmplObj, newMacStr, object, &count);
+    if(duplMfEntry != NULL) {
+        SAH_TRACEZ_ERROR(ME, "%s entry pos(%zu) mac (%s) already exist", tmplName, count, newMacStr);
+    } else if((count >= MAXNROF_MFENTRY) && (!swl_str_isEmpty(newMacStr)) && (swl_str_isEmpty(currMacStr))) {
+        //New mac value (not empty), set to current empty entry (ie new filter data):
+        //=> need to check internal storing max count
+        SAH_TRACEZ_ERROR(ME, "%s max entries reached %zu", tmplName, count);
     } else {
-        swl_str_copyMalloc(&pAP->MF_AddressList, newMACFilterAddressList_param);
+        status = amxd_status_ok;
+    }
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _wld_ap_validateAddressList_pvf(amxd_object_t* object,
+                                              amxd_param_t* param,
+                                              amxd_action_t reason _UNUSED,
+                                              const amxc_var_t* const args,
+                                              amxc_var_t* const retval _UNUSED,
+                                              void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* oname = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
+    bool validF = false;
+    const char* newValue = amxc_var_constcast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
+    if(swl_str_matchesIgnoreCase(currentValue, newValue) || (swl_str_isEmpty(newValue))) {
+        validF = true;
+    } else {
+        swl_macChar_t mac = SWL_MAC_CHAR_NEW();
+        char strBuf[swl_str_len(newValue) + 1];
+        swl_str_copy(strBuf, sizeof(strBuf), newValue);
+        uint32_t index = 0;
+        for(char* strPtr = strBuf; strPtr != NULL; index++) {
+            char* field = strsep(&strPtr, ",");
+            validF = (swl_typeMacChar_fromChar(&mac, field) && swl_mac_charIsValidStaMac(&mac));
+            if(!validF) {
+                SAH_TRACEZ_ERROR(ME, "%s: invalid address field[%d](%s)", oname, index, field);
+                break;
+            }
+        }
+    }
+
+    if(validF) {
+        status = amxd_status_ok;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "%s: invalid address list (%s)", oname, newValue);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+void wld_apMacFilter_setAddressList_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "Invalid AP Ctx");
+
+    char* newMACFilterAddressList = amxc_var_dyncast(cstring_t, newValue);
+    ASSERT_NOT_NULL(newMACFilterAddressList, , ME, "NULL");
+    if(swl_str_matches(pAP->MF_AddressList, newMACFilterAddressList)) {
+        SAH_TRACEZ_INFO(ME, "%s: Same MACFilterAddressList", pAP->alias);
+    } else if(swl_str_isEmpty(newMACFilterAddressList)) {
+        s_cleanupMACFilterAddressList(pAP);
+    } else {
+        swl_str_copyMalloc(&pAP->MF_AddressList, newMACFilterAddressList);
         SAH_TRACEZ_INFO(ME, "%s: Set new MF_AddressList %s", pAP->alias, pAP->MF_AddressList);
         /* delay syncing mf addressList string with mf obj entries list
          * to give time for nemo to push its entries to plugin side.
          * This avoid duplicating MF entries.
          */
-        amxp_timer_t* timer = NULL;
-        amxp_timer_new(&timer, delay_sync_mf_addressList, pAP);
-        amxp_timer_start(timer, 0);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_syncAddressList, pAP);
     }
-    free(newMACFilterAddressList_param);
+    free(newMACFilterAddressList);
+
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 static bool addEntry(
     T_AccessPoint* pAP,
     const char* objName,
     amxc_var_t* args,
-    const char* listname,
-    unsigned char maclist[][ETHER_ADDR_LEN],
-    int* count,
-    int maxEntries,
-    int (* sync_function)(T_AccessPoint*, int)) {
+    const char* listname) {
 
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
     ASSERT_NOT_NULL(objName, false, ME, "NULL");
 
     const char* macStr = GET_CHAR(args, "mac");
-    unsigned char macBin[ETHER_ADDR_LEN];
-
-    if(*count >= maxEntries) {
-        SAH_TRACEZ_ERROR(ME, "Maximum number of mac filter entries reached.");
+    swl_macBin_t macBin;
+    if(!swl_typeMacBin_fromChar(&macBin, macStr)) {
+        SAH_TRACEZ_ERROR(ME, "wrong mac %s", macStr);
         return false;
     }
 
-    if(!wldu_convStr2Mac(macBin, ETHER_ADDR_LEN, (char*) macStr, strlen(macStr))) {
-        SAH_TRACEZ_ERROR(ME, "Unable to parse %s", macStr);
-        return false;
-    }
-
-    int32_t index = findEntry(maclist, *count, macBin);
-    if(index != *count) {
-        SAH_TRACEZ_INFO(ME, "Mac exists %s", macStr);
+    if(s_doesEntryExist(pAP, objName, listname, macStr)) {
+        SAH_TRACEZ_INFO(ME, "%s: %s.%s Mac exists %s", pAP->alias, objName, listname, macStr);
         return true;
     }
 
-    (*count)++;
-
     /* Create the data model object */
-    wld_ap_macfilter_addEntryObject(pAP, objName, listname, macStr);
-
-    sync_function(pAP, SET | DIRECT);
-    wld_autoCommitMgr_notifyVapEdit(pAP);
-
-    return true;
+    return s_addEntryObject(pAP, objName, listname, macStr);
 }
 
 static bool delEntry(
     T_AccessPoint* pAP,
-    amxd_object_t* obj,
+    amxd_object_t* obj _UNUSED,
     amxc_var_t* args,
-    const char* listname,
-    unsigned char maclist[][ETHER_ADDR_LEN],
-    int* count,
-    int (* sync_function)(T_AccessPoint* vap, int set)) {
+    const char* listname) {
 
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
 
     const char* macStr = GET_CHAR(args, "mac");
-
-    unsigned char mac[ETHER_ADDR_LEN];
-    swl_macChar_t macAddr_char = {.cMac = {0}};
-    strncpy(macAddr_char.cMac, macStr, sizeof(macAddr_char.cMac) - 1);
-    if(!swl_mac_charToBin((swl_macBin_t*) mac, &macAddr_char)) {
-        SAH_TRACEZ_ERROR(ME, "Unable to parse %s", macStr);
+    swl_macBin_t macBin;
+    if(!swl_typeMacBin_fromChar(&macBin, macStr)) {
+        SAH_TRACEZ_ERROR(ME, "wrong mac %s", macStr);
         return false;
     }
 
-    int32_t idx = findEntry(maclist, *count, mac);
-
-    if(idx == *count) {
-        SAH_TRACEZ_INFO(ME, "MAC address %s not found in the MACFiltering entries.",
-                        macStr);
-        return true;
-    }
-
-    /* Overwrite entry at 'idx' with the last one. */
-    memmove(maclist[idx], maclist[*count - 1], ETHER_ADDR_LEN);
-    (*count)--;
+    const char* categF = amxd_object_get_name(obj, 0);
+    amxd_object_t* mfEntry = s_fetchEntry(pAP, categF, listname, macStr);
+    ASSERTI_NOT_NULL(mfEntry, true, ME, "MAC address %s not found in the %s entries.", macStr, listname);
 
     /* Delete the object entry */
-    amxd_object_t* template_obj = amxd_object_get(obj, listname);
-    if(!template_obj) {
-        SAH_TRACEZ_ERROR(ME, "NULL");
-        return false;
-    }
-
-    amxd_object_t* entry_obj = NULL;
-    amxd_object_for_each(instance, it, template_obj) {
-        amxd_object_t* mfentry = amxc_container_of(it, amxd_object_t, it);
-        const char* entry_str = amxd_object_get_cstring_t(mfentry, "MACAddress", NULL);
-        if(strncmp(macStr, entry_str, ETHER_ADDR_STR_LEN) == 0) {
-            entry_obj = mfentry;
-            break;
-        }
-    }
-
-    if(entry_obj != NULL) {
-        amxd_object_delete(&entry_obj);
-    } else {
-        SAH_TRACEZ_ERROR(ME, "MAC address %s not found in the %s MACFiltering table.",
-                         macStr, pAP->alias);
-    }
-
-    wld_ap_macfilter_updateMACFilterAddressList(pAP);
-
-    sync_function(pAP, SET | DIRECT);
-    wld_autoCommitMgr_notifyVapEdit(pAP);
-
-    return true;
+    return (swl_object_delInstWithTransOnLocalDm(mfEntry) == amxd_status_ok);
 }
 
 amxd_status_t _MACFiltering_addEntry(amxd_object_t* obj,
@@ -616,16 +582,14 @@ amxd_status_t _MACFiltering_addEntry(amxd_object_t* obj,
                                      amxc_var_t* args,
                                      amxc_var_t* ret _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(obj));
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
-    if(!addEntry(pAP, amxd_object_get_name(obj, 0), args, "Entry", pAP->MF_Entry, &pAP->MF_EntryCount, MAXNROF_MFENTRY, pAP->pFA->mfn_wvap_mf_sync)) {
+    if(!addEntry(pAP, amxd_object_get_name(obj, 0), args, "Entry")) {
         SAH_TRACEZ_ERROR(ME, "Failed to add Entry");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
     }
-    wld_ap_macfilter_updateMACFilterAddressList(pAP);
-    syncMACFiltering(amxd_object_get_parent(obj));
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -636,15 +600,14 @@ amxd_status_t _MACFiltering_addTempEntry(amxd_object_t* obj,
                                          amxc_var_t* ret _UNUSED) {
 
     SAH_TRACEZ_IN(ME);
-    T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(obj));
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
-    if(!addEntry(pAP, amxd_object_get_name(obj, 0), args, "TempEntry", pAP->MF_Temp_Entry, &pAP->MF_TempEntryCount, MAXNROF_MFENTRY, pAP->pFA->mfn_wvap_mf_sync)) {
+    if(!addEntry(pAP, amxd_object_get_name(obj, 0), args, "TempEntry")) {
         SAH_TRACEZ_ERROR(ME, "Failed to add TempEntry");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
     }
-    syncMACFiltering(amxd_object_get_parent(obj));
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -656,15 +619,14 @@ amxd_status_t _MACFiltering_delEntry(amxd_object_t* obj,
 
     SAH_TRACEZ_IN(ME);
 
-    T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(obj));
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
-    if(!delEntry(pAP, obj, args, "Entry", pAP->MF_Entry, &pAP->MF_EntryCount, pAP->pFA->mfn_wvap_mf_sync)) {
+    if(!delEntry(pAP, obj, args, "Entry")) {
         SAH_TRACEZ_ERROR(ME, "Failed to delete Entry");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
     }
-    syncMACFiltering(amxd_object_get_parent(obj));
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -676,55 +638,15 @@ amxd_status_t _MACFiltering_delTempEntry(amxd_object_t* obj,
 
     SAH_TRACEZ_IN(ME);
 
-    T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(obj));
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
-    if(!delEntry(pAP, obj, args, "TempEntry", pAP->MF_Temp_Entry, &pAP->MF_TempEntryCount, pAP->pFA->mfn_wvap_mf_sync)) {
+    if(!delEntry(pAP, obj, args, "TempEntry")) {
         SAH_TRACEZ_ERROR(ME, "Failed to delete TempEntry");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
     }
-    syncMACFiltering(amxd_object_get_parent(obj));
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
-}
-
-/**
- * This function syncs the Probe filtering list for an access point object
- * E.g. WiFiABC.AccessPoint.wl0
- * Note that the mac list changes are only set in the driver, but not executed. One must perform a commit on the radio
- * to sync the plugin mac list with driver mac list.
- */
-static void syncProbeFiltering(amxd_object_t* object) {
-    SAH_TRACEZ_IN(ME);
-
-    ASSERTI_FALSE(amxd_object_get_type(object) == amxd_object_template, , ME, "Template");
-
-    T_AccessPoint* pAP = object->priv;
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
-
-    amxd_object_t* pf = amxd_object_get(object, "ProbeFiltering");
-    if(sync_changes(pf, "TempEntry", pAP->PF_Temp_Entry, &pAP->PF_TempEntryCount, MAXNROF_PFENTRY)) {
-        SAH_TRACEZ_INFO(ME, "Syncing mac entries to HW");
-        pAP->pFA->mfn_wvap_pf_sync(pAP, SET | DIRECT);
-    }
-
-    SAH_TRACEZ_OUT(ME);
-}
-
-amxd_status_t _wld_ap_setProbeFilteringEntry_owf(amxd_object_t* object) {
-    ASSERTS_TRUE(amxd_object_get_type(object) == amxd_object_instance, amxd_status_unknown_error, ME, "Object is not an instance");
-    syncProbeFiltering(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-    return amxd_status_ok;
-}
-
-void destroyProbeFilteringEntry(amxd_object_t* object) {
-    syncProbeFiltering(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-}
-
-amxd_status_t _wld_ap_deleteProbeFilteringEntry_odf(amxd_object_t* template_object _UNUSED, amxd_object_t* instance_object _UNUSED) {
-    //nothing to do , as delete flag is not yet set in this obj instance
-    //set the destroy handler for this object, to do sync at that moment
     return amxd_status_ok;
 }
 
@@ -735,12 +657,10 @@ amxd_status_t _ProbeFiltering_addTempEntry(amxd_object_t* obj,
 
     SAH_TRACEZ_IN(ME);
 
-    T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(obj));
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
 
-    if(!addEntry(pAP, amxd_object_get_name(obj, 0), args,
-                 "TempEntry", pAP->PF_Temp_Entry,
-                 &pAP->PF_TempEntryCount, MAXNROF_PFENTRY, pAP->pFA->mfn_wvap_pf_sync)) {
+    if(!addEntry(pAP, amxd_object_get_name(obj, 0), args, "TempEntry")) {
         SAH_TRACEZ_ERROR(ME, "Failed to add TempEntry");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
@@ -757,9 +677,9 @@ amxd_status_t _ProbeFiltering_delTempEntry(amxd_object_t* obj,
 
     SAH_TRACEZ_IN(ME);
 
-    T_AccessPoint* pAP = amxd_object_get_parent(obj)->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(obj));
 
-    if(!delEntry(pAP, obj, args, "TempEntry", pAP->PF_Temp_Entry, &pAP->PF_TempEntryCount, pAP->pFA->mfn_wvap_pf_sync)) {
+    if(!delEntry(pAP, obj, args, "TempEntry")) {
         SAH_TRACEZ_ERROR(ME, "Failed to delete TempEntry");
         SAH_TRACEZ_OUT(ME);
         return amxd_status_unknown_error;
@@ -797,9 +717,9 @@ void wld_apMacFilter_getBanList(T_AccessPoint* vap, wld_banlist_t* banlist, bool
 
     if(vap->MF_Mode == APMFM_WHITELIST) {
         for(int i = 0; i < vap->MF_EntryCount; i++) {
-            if(!vap->MF_TempBlacklistEnable
-               || (!wldu_is_mac_in_list(vap->MF_Entry[i], vap->MF_Temp_Entry, vap->MF_TempEntryCount)
-                   && !wldu_is_mac_in_list(vap->MF_Entry[i], vap->PF_Temp_Entry, vap->PF_TempEntryCount))) {
+            if((!swl_typeMacBin_arrayContainsRef((swl_macBin_t*) vap->PF_Temp_Entry, vap->PF_TempEntryCount, (swl_macBin_t*) vap->MF_Entry[i])) &&
+               ((!vap->MF_TempBlacklistEnable) ||
+                (!swl_typeMacBin_arrayContainsRef((swl_macBin_t*) vap->MF_Temp_Entry, vap->MF_TempEntryCount, (swl_macBin_t*) vap->MF_Entry[i])))) {
                 // add entry either if temporary blacklisting is disabled, or entry not in temp blaclist
                 s_addMfEntry(banlist, vap->MF_Entry[i]);
             }
@@ -810,13 +730,13 @@ void wld_apMacFilter_getBanList(T_AccessPoint* vap, wld_banlist_t* banlist, bool
         for(int i = 0; i < vap->AssociatedDeviceNumberOfEntries; i++) {
             if(vap->AssociatedDevice[i]->Active
                && !swl_typeMacBin_arrayContainsRef(banlist->banList, banlist->staToBan, (swl_macBin_t*) vap->AssociatedDevice[i]->MACAddress)
-               && !wldu_is_mac_in_list(vap->AssociatedDevice[i]->MACAddress, vap->PF_Temp_Entry, vap->PF_TempEntryCount)) {
+               && !swl_typeMacBin_arrayContainsRef((swl_macBin_t*) vap->PF_Temp_Entry, vap->PF_TempEntryCount, (swl_macBin_t*) vap->AssociatedDevice[i]->MACAddress)) {
                 s_addKickEntry(banlist, vap->AssociatedDevice[i]->MACAddress);
             }
         }
     } else if((vap->MF_Mode == APMFM_BLACKLIST)
               || (vap->MF_TempBlacklistEnable && (vap->MF_TempEntryCount > 0))
-              || (vap->PF_TempEntryCount > 0)) {
+              || (includePf && (vap->PF_TempEntryCount > 0))) {
         if(vap->MF_Mode == APMFM_BLACKLIST) {
             for(int i = 0; i < vap->MF_EntryCount; i++) {
                 s_addMfEntry(banlist, vap->MF_Entry[i]);

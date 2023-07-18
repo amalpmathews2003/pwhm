@@ -62,6 +62,7 @@
 #include "wld.h"
 #include "wld_accesspoint.h"
 #include "wld_radio.h"
+#include "wld_accesspoint.h"
 #include "wld_util.h"
 #include "swl/swl_hex.h"
 #include "swl/map/swl_mapCharFmt.h"
@@ -294,45 +295,39 @@ static void s_setVapIeee80211rConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfi
     }
 }
 
+static void s_delConfMapEntry(swl_mapChar_t* configMap, const char* key) {
+    swl_mapEntry_t* entry = swl_mapChar_getEntry(configMap, (char*) key);
+    if(entry != NULL) {
+        swl_mapChar_deleteEntry(configMap, entry);
+    }
+}
 static void s_writeMfConfig(T_AccessPoint* vap, swl_mapChar_t* vapConfigMap) {
-    if((vap->MF_Mode == APMFM_OFF) && !vap->MF_TempBlacklistEnable) {
-        swl_mapChar_delete(vapConfigMap, "macaddr_acl");
-        swl_mapChar_delete(vapConfigMap, "accept_mac_file");
-        swl_mapChar_delete(vapConfigMap, "deny_mac_file");
+    wld_banlist_t banList;
+    //hostapd/nl80211 do not support probe filtering, so assume PF entries in dynamic MF
+    wld_apMacFilter_getBanList(vap, &banList, true);
+
+    if((vap->MF_Mode == APMFM_OFF) && !banList.staToBan) {
+        s_delConfMapEntry(vapConfigMap, "macaddr_acl");
+        s_delConfMapEntry(vapConfigMap, "accept_mac_file");
+        s_delConfMapEntry(vapConfigMap, "deny_mac_file");
         return;
     }
+
     char fileBuf[64];
     snprintf(fileBuf, sizeof(fileBuf), "/tmp/hostap_%s.acl", vap->alias);
     FILE* tmpFile = fopen(fileBuf, "w");
-    ASSERTS_NOT_NULL(tmpFile, , ME, "NULL");
-
+    ASSERT_NOT_NULL(tmpFile, , ME, "%s: fail to create acl file (%s)", vap->alias, fileBuf);
     if(vap->MF_Mode == APMFM_WHITELIST) {
+        s_delConfMapEntry(vapConfigMap, "deny_mac_file");
         swl_mapChar_add(vapConfigMap, "macaddr_acl", "1");
         swl_mapChar_add(vapConfigMap, "accept_mac_file", fileBuf);
-
-        for(int i = 0; i < vap->MF_EntryCount; i++) {
-            if(!vap->MF_TempBlacklistEnable
-               || (!wldu_is_mac_in_list(vap->MF_Entry[i], vap->MF_Temp_Entry, vap->MF_TempEntryCount))) {
-                // add entry either if temporary blacklisting is disabled, or entry not in temp blaclist
-                // Probe filtering currently not supported
-                fprintf(tmpFile, SWL_MAC_FMT "\n", SWL_MAC_ARG(vap->MF_Entry[i]));
-            }
-        }
     } else {
+        s_delConfMapEntry(vapConfigMap, "accept_mac_file");
         swl_mapChar_add(vapConfigMap, "macaddr_acl", "0");
         swl_mapChar_add(vapConfigMap, "deny_mac_file", fileBuf);
-
-        if(vap->MF_Mode == APMFM_BLACKLIST) {
-            for(int i = 0; i < vap->MF_EntryCount; i++) {
-                fprintf(tmpFile, SWL_MAC_FMT "\n", SWL_MAC_ARG(vap->MF_Entry[i]));
-            }
-        }
-        if(vap->MF_TempBlacklistEnable) {
-            for(int i = 0; i < vap->MF_TempEntryCount; i++) {
-                fprintf(tmpFile, SWL_MAC_FMT "\n", SWL_MAC_ARG(vap->MF_Temp_Entry[i]));
-            }
-        }
-        // Probe filtering currently not supported.
+    }
+    for(uint32_t i = 0; i < banList.staToBan; i++) {
+        fprintf(tmpFile, "%s\n", swl_typeMacBin_toBuf32Ref(&banList.banList[i]).buf);
     }
 
     fclose(tmpFile);

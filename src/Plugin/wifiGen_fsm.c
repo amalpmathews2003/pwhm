@@ -98,6 +98,7 @@ static const wifiGen_fsmStates_e sDynConfActions[] = {
     GEN_FSM_ENABLE_AP,
     GEN_FSM_MOD_SEC,
     GEN_FSM_MOD_AP,
+    GEN_FSM_MOD_MF_LIST,
 };
 /*
  * returns the index of the first met fsm action (among provided actionArray),
@@ -394,6 +395,14 @@ static bool s_doSetSsid(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     return true;
 }
 
+static bool s_doSetMfList(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    SAH_TRACEZ_INFO(ME, "%s: sync ACL", pAP->alias);
+    wld_ap_hostapd_setMacFilteringList(pAP);
+    return true;
+}
+
 static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
@@ -618,6 +627,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_MOD_SEC), .doVapFsmAction = s_doSetApSec},
     {FSM_ACTION(GEN_FSM_MOD_AP), .doVapFsmAction = s_doSyncAp},
     {FSM_ACTION(GEN_FSM_MOD_SSID), .doVapFsmAction = s_doSetSsid},
+    {FSM_ACTION(GEN_FSM_MOD_MF_LIST), .doVapFsmAction = s_doSetMfList},
     {FSM_ACTION(GEN_FSM_MOD_CHANNEL), .doRadFsmAction = s_doSetChannel},
     {FSM_ACTION(GEN_FSM_MOD_HOSTAPD), .doRadFsmAction = s_doConfHostapd},
     {FSM_ACTION(GEN_FSM_MOD_WPASUPP), .doEpFsmAction = s_doConfWpaSupp},
@@ -645,5 +655,6 @@ wld_fsmMngr_t mngr = {
 };
 
 void wifiGen_fsm_doInit(vendor_t* vendor) {
+    ASSERT_NOT_NULL(vendor, , ME, "NULL");
     wld_fsm_init(vendor, &mngr);
 }

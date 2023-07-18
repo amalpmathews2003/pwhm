@@ -182,7 +182,6 @@ int findStrInArrayN(const char* str, const char** strarray, int size, int defaul
 bool convIntArrToString(char* str, int str_size, const int* int_list, int list_size);
 bool convStrArrToStr(char* str, int str_size, const char** strList, int list_size);
 bool convStrToIntArray(int* int_list, size_t list_size, const char* str, int* outSize);
-bool wldu_is_mac_in_list(unsigned char macAddr[ETHER_ADDR_LEN], unsigned char macList[][ETHER_ADDR_LEN], int listSize);
 bool set_OBJ_ParameterHelper(int type, amxd_object_t* obj, char* rpath, const void* pdata);
 bool get_OBJ_ParameterHelper(int type, amxd_object_t* obj, const char* crpath, void* pdata);
 unsigned long conv_ModeBitStr(char** enumStrList, char* str);
@@ -239,22 +238,6 @@ int convSignal2Quality(int dBm);
 /* SSID manipulation */
 char* wld_ssid_to_string(const uint8_t* ssid, uint8_t len);
 int convSsid2Str(const uint8_t* ssid, uint8_t ssidLen, char* str, size_t maxStrSize);
-
-/* MacFiltering APIs */
-#define MAX_ADDR_IN_FILTER_LIST 64
-typedef enum {
-    MF_DISABLED,
-    MF_ALLOW,
-    MF_DENY
-} wld_macfilterStatus_e;
-
-typedef struct {
-    wld_macfilterStatus_e status;
-    unsigned char macAddressList[MAX_ADDR_IN_FILTER_LIST][ETHER_ADDR_LEN];
-    int nrStaInList;
-} wld_macfilterList_t;
-
-int wld_util_getBanList(T_AccessPoint* pAP, wld_macfilterList_t* macList);
 
 void fsm_delay_reply(uint64_t call_id, amxd_status_t state, int* errval);
 int getCountryParam(const char* instr, int CC, int* idx);
