@@ -2046,6 +2046,8 @@ define rrm_t{
 			 */
 			%persistent object RssiEventing{
 
+				on event "*" call wld_ap_setRssiEventing_ocf;
+
 				/**
 				 * Getting the history statistics for a specific station or for all stations connected to the AP.
 				 * @param : optional mac address of the connected station (format xx:xx:xx:xx:xx:xx)
@@ -2059,10 +2061,7 @@ define rrm_t{
 				/**
 				 * Enable the rssi eventing
 				 */
-				%persistent bool Enable{
-					on action write call mon_enableWriteHandler;
-					default false;
-				}
+				%persistent bool Enable;
 
 				/**
 				 * The minimal level of difference required before an event is sent out.
@@ -2070,7 +2069,6 @@ define rrm_t{
 				 */
 				%persistent uint32 RssiInterval{
 					default 10;
-					on action write call wld_ap_setRssiInterval_pwf;
 					on action validate call check_minimum 1;
 				}
 
@@ -2084,7 +2082,6 @@ define rrm_t{
 				%persistent uint32 AveragingFactor{
 					on action validate call check_range { min = 1, max = 1000 };
 					default 500;
-					on action write call wld_ap_setAveragingFactor_pwf;
 				}
 
 				/**
@@ -2094,7 +2091,6 @@ define rrm_t{
 				 */
 				%persistent uint32 Interval{
 					default 1000;
-					on action write call mon_intervalWriteHandler;
 					on action validate call check_minimum 100;
 				}
 
@@ -2104,7 +2100,6 @@ define rrm_t{
 				 */
 				%persistent bool HistoryEnable{
 					default true;
-					on action write call wld_ap_setHistoryEnable_pwf;
 				}
 
 				/**
@@ -2113,7 +2108,6 @@ define rrm_t{
 				 */
 				%persistent uint32 HistoryLen{
 					default 10;
-					on action write call wld_ap_setHistoryLen_pwf;
 					on action validate call check_minimum 1;
 				}
 
@@ -2135,7 +2129,6 @@ define rrm_t{
 				 */
 				%persistent uint32 HistoryIntervalCoeff{
 					default 1;
-					on action write call wld_ap_setHistoryIntervalCoeff_pwf;
 					on action validate call check_minimum 1;
 				}
 
@@ -2145,10 +2138,7 @@ define rrm_t{
 				 * every "RssiMonitorInterval x HistoryIntervalCoeff x HistoryLen" (seconds).
 				 * @version 10.1
 				 */
-				%persistent bool SendPeriodicEvent{
-					on action write call wld_ap_setSendPeriodicEvent_pwf;
-					default false;
-				}
+				%persistent bool SendPeriodicEvent;
 
 				/**
 				 * Send a history event containing single station data
@@ -2158,7 +2148,6 @@ define rrm_t{
 				 */
 				%persistent bool SendEventOnAssoc{
 					default true;
-					on action write call wld_ap_setSendEventOnAssoc_pwf;
 				}
 
 				/**
@@ -2169,9 +2158,7 @@ define rrm_t{
 				 */
 				%persistent bool SendEventOnDisassoc{
 					default true;
-					on action write call wld_ap_setSendEventOnDisassoc_pwf;
 				}
-
 			}
 
 		/**

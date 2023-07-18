@@ -103,8 +103,8 @@ static void test_getStats(void** state _UNUSED) {
 
     s_checkHistory(vap, evObj, "historyEmpty.txt");
 
-    assert_true(swl_typeUInt32_toObjectParam(evObj, "HistoryLen", 3));
-    assert_true(swl_typeUInt32_toObjectParam(evObj, "Enable", 1));
+    assert_true(swl_typeUInt32_commitObjectParam(evObj, "HistoryLen", 3));
+    assert_true(swl_typeUInt32_commitObjectParam(evObj, "Enable", 1));
 
     amxd_object_t* templateObject = amxd_object_get(vapObj, "AssociatedDevice");
 

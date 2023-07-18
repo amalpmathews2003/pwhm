@@ -238,225 +238,102 @@ void wld_ap_rssiMonDestroy(T_AccessPoint* pAP) {
     wld_mon_destroyMon(&pAP->rssiEventing.monitor);
 }
 
-amxd_status_t _wld_ap_setRssiInterval_pwf(amxd_object_t* object,
-                                          amxd_param_t* parameter,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
+static void s_setApRssiEventing_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues) {
+    SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "No AP Ctx");
+
+    SAH_TRACEZ_INFO(ME, "%s: Update rssiMon", pAP->alias);
+
     T_RssiEventing* ev = &pAP->rssiEventing;
+    ASSERT_NOT_NULL(ev, , ME, "NULL");
 
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    bool cleanHist = false;
+    bool updateHist = false;
 
-    ev->rssiInterval = amxc_var_dyncast(uint32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "Update rssiInterval %d", ev->rssiInterval);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setAveragingFactor_pwf(amxd_object_t* object,
-                                             amxd_param_t* parameter,
-                                             amxd_action_t reason _UNUSED,
-                                             const amxc_var_t* const args _UNUSED,
-                                             amxc_var_t* const retval _UNUSED,
-                                             void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    T_RssiEventing* ev = &pAP->rssiEventing;
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ev->averagingFactor = amxc_var_dyncast(uint32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "Update averagingFactor %d", ev->averagingFactor);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setSendPeriodicEvent_pwf(amxd_object_t* object,
-                                               amxd_param_t* parameter,
-                                               amxd_action_t reason _UNUSED,
-                                               const amxc_var_t* const args _UNUSED,
-                                               amxc_var_t* const retval _UNUSED,
-                                               void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    T_RssiEventing* ev = &pAP->rssiEventing;
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ev->sendPeriodicEvent = amxc_var_dyncast(bool, args);
-
-    SAH_TRACEZ_INFO(ME, "Update sendPeriodicEvent %d", ev->sendPeriodicEvent);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setSendEventOnAssoc_pwf(amxd_object_t* object,
-                                              amxd_param_t* parameter,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args _UNUSED,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    T_RssiEventing* ev = &pAP->rssiEventing;
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ev->sendEventOnAssoc = amxc_var_dyncast(bool, args);
-
-    SAH_TRACEZ_INFO(ME, "Update sendEventOnAssoc %d", ev->sendEventOnAssoc);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setSendEventOnDisassoc_pwf(amxd_object_t* object,
-                                                 amxd_param_t* parameter,
-                                                 amxd_action_t reason _UNUSED,
-                                                 const amxc_var_t* const args _UNUSED,
-                                                 amxc_var_t* const retval _UNUSED,
-                                                 void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    T_RssiEventing* ev = &pAP->rssiEventing;
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ev->sendEventOnDisassoc = amxc_var_dyncast(bool, args);
-
-    SAH_TRACEZ_INFO(ME, "Update sendEventOnDisassoc %d", ev->sendEventOnDisassoc);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setHistoryEnable_pwf(amxd_object_t* object,
-                                           amxd_param_t* parameter,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    T_RssiEventing* ev = &pAP->rssiEventing;
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    bool historyEnable = amxc_var_dyncast(bool, args);
-    if(ev->historyEnable != historyEnable) {
-        ev->historyEnable = historyEnable;
-        wld_apRssiMon_cleanStaHistoryAll(pAP);
-        if(ev->historyEnable) {
-            wld_apRssiMon_updateHistoryLen(pAP);
+    amxc_var_for_each(newValue, newParamValues) {
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "RssiInterval")) {
+            ev->rssiInterval = amxc_var_dyncast(uint32_t, newValue);
+            SAH_TRACEZ_INFO(ME, "Update rssiInterval %d", ev->rssiInterval);
+        } else if(swl_str_matches(pname, "AveragingFactor")) {
+            ev->averagingFactor = amxc_var_dyncast(uint32_t, newValue);
+            SAH_TRACEZ_INFO(ME, "Update averagingFactor %d", ev->averagingFactor);
+        } else if(swl_str_matches(pname, "Interval")) {
+            wld_mon_setInterval_pwf(&ev->monitor, newValue);
+        } else if(swl_str_matches(pname, "SendPeriodicEvent")) {
+            ev->sendPeriodicEvent = amxc_var_dyncast(bool, newValue);
+            SAH_TRACEZ_INFO(ME, "Update sendPeriodicEvent %d", ev->sendPeriodicEvent);
+        } else if(swl_str_matches(pname, "HistoryIntervalCoeff")) {
+            uint32_t historyIntervalCoeff = amxc_var_dyncast(uint32_t, newValue);
+            if(ev->historyIntervalCoeff != historyIntervalCoeff) {
+                ev->historyIntervalCoeff = historyIntervalCoeff;
+                SAH_TRACEZ_INFO(ME, "%s: Update historyIntervalCoeff to %d", pAP->alias, historyIntervalCoeff);
+                cleanHist = true;
+            }
+        } else if(swl_str_matches(pname, "HistoryLen")) {
+            uint32_t historyLen = amxc_var_dyncast(uint32_t, newValue);
+            if(ev->historyLen != historyLen) {
+                ev->historyLen = historyLen;
+                SAH_TRACEZ_INFO(ME, "%s: Update historyLen to %d", pAP->alias, historyLen);
+                updateHist = true;
+            }
+        } else if(swl_str_matches(pname, "SendEventOnAssoc")) {
+            ev->sendEventOnAssoc = amxc_var_dyncast(bool, newValue);
+            SAH_TRACEZ_INFO(ME, "Update sendEventOnAssoc %d", ev->sendEventOnAssoc);
+        } else if(swl_str_matches(pname, "SendEventOnDisassoc")) {
+            ev->sendEventOnDisassoc = amxc_var_dyncast(bool, newValue);
+            SAH_TRACEZ_INFO(ME, "Update sendEventOnDisassoc %d", ev->sendEventOnDisassoc);
+        } else if(swl_str_matches(pname, "HistoryEnable")) {
+            bool historyEnable = amxc_var_dyncast(bool, newValue);
+            if(ev->historyEnable != historyEnable) {
+                ev->historyEnable = historyEnable;
+                SAH_TRACEZ_INFO(ME, "Update historyEnable %d", ev->historyEnable);
+                cleanHist = true;
+                updateHist = ev->historyEnable;
+            }
         }
     }
 
-    SAH_TRACEZ_INFO(ME, "Update historyEnable %d", ev->historyEnable);
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_setHistoryLen_pwf(amxd_object_t* object,
-                                        amxd_param_t* parameter,
-                                        amxd_action_t reason _UNUSED,
-                                        const amxc_var_t* const args _UNUSED,
-                                        amxc_var_t* const retval _UNUSED,
-                                        void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    T_RssiEventing* ev = &pAP->rssiEventing;
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
+    if(cleanHist) {
+        wld_apRssiMon_cleanStaHistoryAll(pAP);
     }
-
-    uint32_t historyLen = amxc_var_dyncast(uint32_t, args);
-    if(ev->historyLen != historyLen) {
-        ev->historyLen = historyLen;
-        SAH_TRACEZ_INFO(ME, "%s: Update historyLen to %d", pAP->alias, historyLen);
+    if(updateHist) {
         wld_apRssiMon_updateHistoryLen(pAP);
     }
 
-    return amxd_status_ok;
+    amxc_var_t* val = GET_ARG(newParamValues, "Enable");
+    if(val != NULL) {
+        wld_mon_setEnable_pwf(&ev->monitor, val);
+    }
+
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_ap_setHistoryIntervalCoeff_pwf(amxd_object_t* object,
-                                                  amxd_param_t* parameter,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
+static void s_setApRssiEventingEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* apObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(apObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_AccessPoint* pAP = (T_AccessPoint*) apObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "No AP Ctx");
     T_RssiEventing* ev = &pAP->rssiEventing;
+    ASSERT_NOT_NULL(ev, , ME, "NULL");
 
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    wld_mon_setEnable_pwf(&ev->monitor, newValue);
 
-    uint32_t historyIntervalCoeff = amxc_var_dyncast(uint32_t, args);
-    if(ev->historyIntervalCoeff != historyIntervalCoeff) {
-        ev->historyIntervalCoeff = historyIntervalCoeff;
-        SAH_TRACEZ_INFO(ME, "%s: Update historyIntervalCoeff to %d", pAP->alias, historyIntervalCoeff);
-        wld_apRssiMon_cleanStaHistoryAll(pAP);
-    }
+    SAH_TRACEZ_OUT(ME);
+}
 
-    return amxd_status_ok;
+SWLA_DM_HDLRS(sApRssiEventingConfigDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setApRssiEventingEnable_pwf),
+                  ),
+              .objChangedCb = s_setApRssiEventing_ocf
+              );
+
+void _wld_ap_setRssiEventing_ocf(const char* const sig_name,
+                                 const amxc_var_t* const data,
+                                 void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApRssiEventingConfigDmHdlrs, sig_name, data, priv);
 }
 
 void wld_ap_rssiEv_debug(T_AccessPoint* pAP, amxc_var_t* retMap) {

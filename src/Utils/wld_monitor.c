@@ -128,6 +128,7 @@ static void wld_mon_updateEnabled(T_Monitor* pMon) {
 
 void wld_mon_setEnable_pwf(T_Monitor* pMon, const amxc_var_t* const newValue) {
     ASSERTS_NOT_NULL(pMon, , ME, "NULL");
+    ASSERTS_NOT_NULL(newValue, , ME, "NULL");
     pMon->enabled = amxc_var_dyncast(bool, newValue);
     SAH_TRACEZ_INFO(ME, "Update enable %s %u", pMon->name, pMon->enabled);
     wld_mon_updateEnabled(pMon);
@@ -135,65 +136,13 @@ void wld_mon_setEnable_pwf(T_Monitor* pMon, const amxc_var_t* const newValue) {
 
 void wld_mon_setInterval_pwf(T_Monitor* pMon, const amxc_var_t* const newValue) {
     ASSERTS_NOT_NULL(pMon, , ME, "NULL");
+    ASSERTS_NOT_NULL(newValue, , ME, "NULL");
     pMon->interval = amxc_var_dyncast(uint32_t, newValue);
     SAH_TRACEZ_INFO(ME, "Update interval %s %u", pMon->name, pMon->interval);
 
     if(pMon->running) {
         amxp_timer_set_interval(pMon->timer, pMon->interval);
     }
-}
-
-amxd_status_t _mon_enableWriteHandler(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* topObject = amxd_param_get_owner(parameter);
-    ASSERTS_NOT_NULL(topObject, amxd_status_unknown_error, ME, "NULL");
-    ASSERTS_FALSE(amxd_object_get_type(topObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_Monitor* pMon = (T_Monitor*) topObject->priv;
-    ASSERTS_NOT_NULL(pMon, amxd_status_unknown_error, ME, "NULL");
-    rv = amxd_action_param_write(topObject, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    pMon->enabled = amxc_var_dyncast(bool, args);
-
-    SAH_TRACEZ_INFO(ME, "Update enable %s %u", pMon->name, pMon->enabled);
-
-    wld_mon_updateEnabled(pMon);
-    return amxd_status_ok;
-}
-
-amxd_status_t _mon_intervalWriteHandler(amxd_object_t* object _UNUSED,
-                                        amxd_param_t* parameter,
-                                        amxd_action_t reason _UNUSED,
-                                        const amxc_var_t* const args _UNUSED,
-                                        amxc_var_t* const retval _UNUSED,
-                                        void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* topObject = amxd_param_get_owner(parameter);
-    ASSERTS_NOT_NULL(topObject, amxd_status_unknown_error, ME, "NULL");
-    ASSERTS_FALSE(amxd_object_get_type(topObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-    T_Monitor* pMon = (T_Monitor*) topObject->priv;
-    ASSERTS_NOT_NULL(pMon, amxd_status_unknown_error, ME, "NULL");
-    rv = amxd_action_param_write(topObject, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    pMon->interval = amxc_var_dyncast(uint32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "Update interval %s %u", pMon->name, pMon->interval);
-
-    if(pMon->running) {
-        amxp_timer_set_interval(pMon->timer, pMon->interval);
-    }
-    return amxd_status_ok;
 }
 
 static amxd_status_t s_objDelete(amxd_object_t* const object _UNUSED,    // the object
