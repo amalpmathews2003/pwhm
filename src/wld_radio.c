@@ -4232,7 +4232,7 @@ void wld_rad_write_possible_channels(T_Radio* pRad) {
     ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
     amxd_trans_set_value(cstring_t, &trans, "PossibleChannels", TBuf);
     amxd_trans_set_value(cstring_t, &trans, "MaxChannelBandwidth", Rad_SupBW[pRad->maxChannelBandwidth]);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
 }
 
 bool wld_rad_has_endpoint_enabled(T_Radio* rad) {
@@ -4320,10 +4320,8 @@ void wld_rad_updateOperatingClass(T_Radio* pRad) {
     swl_chanspec_t chanspec = wld_rad_getSwlChanspec(pRad);
     swl_opClassCountry_e countryZone = getCountryZone(pRad->regulatoryDomainIdx);
     pRad->operatingClass = swl_chanspec_getLocalOperClass(&chanspec, countryZone);
-    amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
-    amxd_trans_set_value(uint32_t, &trans, "OperatingClass", pRad->operatingClass);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+    ASSERT_TRUE(swl_typeUInt32_commitObjectParam(pRad->pBus, "OperatingClass", pRad->operatingClass), ,
+                ME, "%s: fail to commit operating class (%d)", pRad->Name, pRad->operatingClass);
     SAH_TRACEZ_INFO(ME, "%s: set operatingClass to %d", pRad->Name, pRad->operatingClass);
 }
 
@@ -4584,10 +4582,8 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
         pRad->detailedStatePrev = pRad->detailedState;
         amxd_object_t* chanObject = amxd_object_get_child(pRad->pBus, "ChannelMgt");
         if((chanObject != NULL) && (pRad->hasDmReady)) {
-            amxd_trans_t trans;
-            ASSERT_TRANSACTION_INIT(chanObject, &trans, , ME, "%s : trans init failure", pRad->Name);
-            amxd_trans_set_value(cstring_t, &trans, "RadioStatus", cstr_chanmgt_rad_state[pRad->detailedState]);
-            ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+            ASSERT_TRUE(swl_typeCharPtr_commitObjectParam(chanObject, "RadioStatus", (char*) cstr_chanmgt_rad_state[pRad->detailedState]), ,
+                        ME, "%s: fail to commit channelMgt radioStatus", pRad->Name);
         }
 
     }
@@ -4610,7 +4606,7 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
             ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, , ME, "%s : trans init failure", pRad->Name);
             amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pRad->status]);
             swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pRad->changeInfo.lastStatusChange);
-            ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+            ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
         }
     }
 

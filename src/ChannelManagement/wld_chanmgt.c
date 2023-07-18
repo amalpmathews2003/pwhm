@@ -119,7 +119,7 @@ static void s_saveDfsChanInfo(T_Radio* pRad) {
     ASSERT_TRANSACTION_INIT(chanObject, &trans, , ME, "%s : trans init failure", pRad->Name);
     s_saveClearedChannels(pRad, &trans);
     s_saveRadarChannels(pRad, &trans);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pRad->Name);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
 }
 
 void wld_chanmgt_writeDfsChannels(T_Radio* pRad) {

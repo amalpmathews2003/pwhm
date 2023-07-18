@@ -253,10 +253,8 @@ void wld_ap_doWpsSync(T_AccessPoint* pAP) {
 }
 
 void s_saveMaxStations(T_AccessPoint* pAP) {
-    amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(pAP->pBus, &trans, , ME, "%s : trans init failure", pAP->alias);
-    amxd_trans_set_value(uint32_t, &trans, "MaxAssociatedDevices", pAP->MaxStations);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pAP->alias);
+    ASSERT_TRUE(swl_typeUInt32_commitObjectParam(pAP->pBus, "MaxAssociatedDevices", pAP->MaxStations), ,
+                ME, "%s: fail to commit maxAssocDevices (%d)", pAP->alias, pAP->MaxStations);
 }
 
 amxd_status_t _wld_ap_setMaxStations_pwf(amxd_object_t* object _UNUSED,
@@ -2352,7 +2350,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
         amxd_trans_add_inst(&trans, nextDevIndex, NULL);
 
-        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
 
         pAD->object = amxd_object_get_instance(templateObject, NULL, nextDevIndex);
         ASSERT_NOT_NULL(pAD->object, SWL_RC_ERROR, ME, "%s: failure to create object", pAD->Name);
@@ -2448,7 +2446,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX),
         amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
 
-        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
 
         pAD->lastSampleSyncTime = pAD->lastSampleTime;
     }
@@ -2460,7 +2458,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_t trans;
         ASSERT_TRANSACTION_INIT(probeReqCapsObject, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
         wld_ad_syncCapabilities(&trans, &pAD->probeReqCaps);
-        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
         pAD->lastProbeCapUpdateTime = pAD->probeReqCaps.updateTime;
     }
 
@@ -2485,7 +2483,7 @@ void wld_vap_syncNrDev(T_AccessPoint* pAP) {
     amxd_trans_set_value(int32_t, &trans, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
     pAP->ActiveAssociatedDeviceNumberOfEntries = active;
     amxd_trans_set_value(int32_t, &trans, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pAP->alias);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->alias);
 
     wld_rad_updateActiveDevices((T_Radio*) pAP->pRadio);
 }
@@ -2736,10 +2734,8 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
     pAP->lastStatusChange = swl_time_getMonoSec();
     wld_ssid_setStatus(pSSID, newSsidStatus, true);
 
-    amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(pAP->pBus, &trans, , ME, "%s : trans init failure", pAP->alias);
-    amxd_trans_set_value(cstring_t, &trans, "Status", cstr_AP_status[pAP->status]);
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pAP->alias);
+    ASSERT_TRUE(swl_typeCharPtr_commitObjectParam(pAP->pBus, "Status", (char*) cstr_AP_status[pAP->status]), ,
+                ME, "%s: fail to commit status (%s)", pAP->alias, cstr_AP_status[pAP->status]);
 
     wld_vap_status_change_event_t vapUpdate;
     vapUpdate.vap = pAP;

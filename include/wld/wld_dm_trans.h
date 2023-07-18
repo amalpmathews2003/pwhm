@@ -64,18 +64,18 @@
 #define __WLD_DM_TRANS_H__
 
 #include "wld.h"
-
-bool wld_dm_transaction_init(const amxd_object_t* object, amxd_trans_t* const transaction);
-bool wld_dm_transaction_apply(amxd_trans_t* const transaction, amxd_dm_t* const dm);
+#include "swla/swla_object.h"
 
 #define ASSERT_TRANSACTION_INIT(object, transaction, toReturn, zone, errMsg, ...){ \
-        bool ret = wld_dm_transaction_init(object, transaction); \
-        ASSERT_TRUE(ret, toReturn, zone, errMsg, ## __VA_ARGS__); \
+        ASSERT_EQUALS(swl_object_prepareTransaction(transaction, object), amxd_status_ok, toReturn, zone, errMsg, ## __VA_ARGS__); \
 }
 
 #define ASSERT_TRANSACTION_END(transaction, dm, toReturn, zone, errMsg, ...){ \
-        bool ret = wld_dm_transaction_apply(transaction, dm); \
-        ASSERT_TRUE(ret, toReturn, zone, errMsg, ## __VA_ARGS__); \
+        ASSERT_EQUALS(swl_object_finalizeTransaction(transaction, dm), amxd_status_ok, toReturn, zone, errMsg, ## __VA_ARGS__); \
+}
+
+#define ASSERT_TRANSACTION_LOCAL_DM_END(transaction, toReturn, zone, errMsg, ...){ \
+        ASSERT_EQUALS(swl_object_finalizeTransactionOnLocalDm(transaction), amxd_status_ok, toReturn, zone, errMsg, ## __VA_ARGS__); \
 }
 
 #endif /* __WLD_DM_TRANS_H__ */

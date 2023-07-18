@@ -30,7 +30,7 @@ endif
 
 OBJS-libwld.so = wld.o wld_accesspoint.o wld_endpoint.o wld_radio.o \
 		wld_ssid.o wld_util.o wld_wps.o wld_assocdev.o wld_statsmon.o \
-		wld_functionTable.o wld_dm_trans.o \
+		wld_functionTable.o \
 		wld_radioOperatingStandards.o 
 		
 OBJS-libwld.so += 	ChannelManagement/wld_channel.o \

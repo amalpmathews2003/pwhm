@@ -388,7 +388,7 @@ bool wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
                 ASSERT_TRANSACTION_INIT(adObjTempl, &trans, false, ME, "%s : trans init failure", pAD->Name);
                 amxd_trans_del_inst(&trans, index, NULL);
                 pAD->object->priv = NULL;
-                if(!wld_dm_transaction_apply(&trans, get_wld_plugin_dm())) {
+                if(swl_object_finalizeTransactionOnLocalDm(&trans) != amxd_status_ok) {
                     SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pAD->Name);
                     pAD->object->priv = pAD;
                     return false;

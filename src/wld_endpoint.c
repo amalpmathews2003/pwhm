@@ -1415,7 +1415,7 @@ bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats) {
     amxd_trans_set_uint32_t(&trans, "MaxTxSpatialStreamsSupported", stats->maxTxStream);
     wld_ad_syncCapabilities(&trans, &stats->assocCaps);
 
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), false, ME, "trans apply failure");
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, false, ME, "trans apply failure");
 
 
     return true;
@@ -1547,7 +1547,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
         amxd_trans_set_value(cstring_t, &trans, "LastError", cstr_EndPoint_lastError[error]);
         changed = true;
     }
-    ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pEP->Name);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pEP->Name);
     pEP->status = status;
     pEP->connectionStatus = connectionStatus;
     pEP->error = error;

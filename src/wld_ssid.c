@@ -584,7 +584,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
         amxd_trans_set_cstring_t(&trans, "Name", TBuf);
         amxd_trans_set_int32_t(&trans, "Index", ifIndex);
 
-        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pS->Name);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pS->Name);
     } else {
         /* Get AP data from OBJ to AP */
         bool tmpEnable = amxd_object_get_bool(object, "Enable", NULL);
@@ -682,7 +682,7 @@ void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit) {
         ASSERT_TRANSACTION_INIT(pSSID->pBus, &trans, , ME, "%s : trans init failure", pSSID->Name);
         amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pSSID->status]);
         swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pSSID->changeInfo.lastStatusChange);
-        ASSERT_TRANSACTION_END(&trans, get_wld_plugin_dm(), , ME, "%s : trans apply failure", pSSID->Name);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pSSID->Name);
     }
 }
 

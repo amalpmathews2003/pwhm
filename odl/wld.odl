@@ -148,6 +148,7 @@
                    "swlConv" = 200,
                    "swlCryp" = 200,
                    "swlCTbl" = 200,
+                   "swlDmEv" = 200,
                    "swlExec" = 200,
                    "swlFile" = 200,
                    "swlHash" = 200,
