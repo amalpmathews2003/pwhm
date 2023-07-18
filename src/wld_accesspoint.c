@@ -1540,209 +1540,104 @@ exit:
     return res;
 }
 
-amxd_status_t _wld_ap_setHotSpotEnable_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setHotSpotEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool CB = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set HotSpotEnable %d", CB);
-    if(pAP) {
-        pAP->pFA->mfn_hspot_enable(pAP, CB, SET);
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "Invalid AP Ctx");
+
+    bool flag = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set HotSpotEnable %d", pAP->alias, flag);
+    ASSERTI_NOT_EQUALS(pAP->HotSpot2.enable, flag, , ME, "EQUALS");
+    pAP->HotSpot2.enable = flag;
+    pAP->pFA->mfn_hspot_enable(pAP, flag, SET);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+amxd_status_t _wld_ap_validateHotSpot2Requirements(amxd_object_t* object,
+                                                   amxd_param_t* param _UNUSED,
+                                                   amxd_action_t reason _UNUSED,
+                                                   const amxc_var_t* const args,
+                                                   amxc_var_t* const retval _UNUSED,
+                                                   void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_status_invalid_value;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "VAP Object is NULL");
+
+    bool flag = amxc_var_dyncast(bool, args);
+    if(!flag) {
+        status = amxd_status_ok;
+    } else if(!pAP->enable) {
+        SAH_TRACEZ_INFO(ME, "%s: Access point is disabled", pAP->alias);
+    } else if(pAP->secModeEnabled != SWL_SECURITY_APMODE_WPA2_E) {
+        /* Broadcom requires that wpa2 is used when starting Hotspot. This only applies for 4.12.
+         *  Later version don't have this requirement */
+        SAH_TRACEZ_INFO(ME, "%s: secModeEnabled is not WPA2_E ", pAP->alias);
+    } else {
+        status = amxd_status_ok;
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+    return status;
 }
 
-
-amxd_status_t _validateHotSpot2Requirements(amxd_param_t* parameter) {
-    T_AccessPoint* pAP = NULL;
-    amxd_object_t* wifiVap = NULL;
-
-    wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    pAP = wifiVap->priv;
-    ASSERTI_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "VAP Object is NULL");
-
-    if(!pAP->enable) {
-        SAH_TRACEZ_INFO(ME, "Error: Access point is disabled");
-        SAH_TRACEZ_OUT(ME);
-        return amxd_status_unknown_error;
-    }
-
-/* Broadcom requires that wpa2 is used when starting Hotspot. This only applies for 4.12.
- *  Later version don't have this requirement */
-    if(pAP->secModeEnabled != SWL_SECURITY_APMODE_WPA2_E) {
-        SAH_TRACEZ_INFO(ME, "Error: secModeEnabled is not WPA2_E ");
-        SAH_TRACEZ_OUT(ME);
-        return amxd_status_unknown_error;
-    }
-
-    return amxd_status_ok;
-}
-
-static const char* HotSpot_Config_ObjParam[] = {
-    "bool Enable",
-    "bool DgafDisable",
-    "string L2TrafficInspect",
-    "bool IcmpV4Echo",
-    "%persistent uint32 Interworking",
-    "bool Internet",
-    "%persistent uint32 Additional",
-    "bool Hs2Ie",
-    "bool P2PEnable",
-    "int32 GasDelay",
-    "uint8 AccessNetworkType",
-    "uint8 VenueType",
-    "uint8 VenueGroup",
-    "string VenueName",
-    "string HeSSID",
-    "string RoamingConsortium",
-    "string DomainName",
-    "string Anqp3gpp_CellNet",
-    "read-only string WanMetrics",
-    "string OperatingClass",
-    NULL,
-};
-
-typedef enum {
-    HS_ENABLE,
-    HS_DGAF_DISABLE,
-    HS_L2_TRAFFIC_INSPECT,
-    HS_ICMPV4_ECHO,
-    HS_INTERWORKING,
-    HS_INTERNET,
-    HS_ADDITIONAL,
-    HS_HS2_IE,
-    HS_P2P_ENABLE,
-    HS_GAS_DELAY,
-    HS_ACCESS_NETWORK_TYPE,
-    HS_VENUE_TYPE,
-    HS_VENUE_GROUP,
-    HS_VENUE_NAME,
-    HS_HESSID,
-    HS_ROAMING_CONSORTIUM,
-    HS_DOMAIN_NAME,
-    HS_ANQP_3GPP_CELLNET,
-    HS_WAN_METRICS,
-    HS_OPERATING_CLASS,
-    HS_END_TOKEN
-} hotspotstates_t;
-
-amxd_status_t _wld_ap_configHotSpot_pwf(amxd_object_t* object _UNUSED,
-                                        amxd_param_t* parameter _UNUSED,
-                                        amxd_action_t reason _UNUSED,
-                                        const amxc_var_t* const args _UNUSED,
-                                        amxc_var_t* const retval _UNUSED,
-                                        void* priv _UNUSED) {
-
-    int idx = 0;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setHotSpotConf_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    const char* pname = parameter->name;
-    SAH_TRACEZ_INFO(ME, "configHotSpot %s", pname);
+    bool needSyncHS = false;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "Invalid AP Ctx");
 
-    if(pAP && pname && findStrInArray(pname, HotSpot_Config_ObjParam, &idx)) {
-        SAH_TRACEZ_INFO(ME, "switch case idx = %d ('%s') PAP %p  ", idx, pname, pAP);
-        switch(idx) {
-        case HS_DGAF_DISABLE:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.dgaf_disable = CB;
-            break;
+    amxc_var_for_each(newValue, newParamValues) {
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "DgafDisable")) {
+            pAP->HotSpot2.dgaf_disable = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "L2TrafficInspect")) {
+            const char* valStr = amxc_var_constcast(cstring_t, newValue);
+            pAP->HotSpot2.l2_traffic_inspect = !swl_str_isEmpty(valStr);
+        } else if(swl_str_matches(pname, "IcmpV4Echo")) {
+            pAP->HotSpot2.icmpv4_echo = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "Interworking")) {
+            pAP->HotSpot2.interworking = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "Internet")) {
+            pAP->HotSpot2.internet = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "Hs2Ie")) {
+            pAP->HotSpot2.hs2_ie = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "P2PEnable")) {
+            pAP->HotSpot2.p2p_enable = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "GasDelay")) {
+            pAP->HotSpot2.gas_delay = amxc_var_dyncast(int32_t, newValue);
+        } else if(swl_str_matches(pname, "AccessNetworkType")) {
+            pAP->HotSpot2.access_network_type = amxc_var_dyncast(int8_t, newValue);
+        } else if(swl_str_matches(pname, "VenueType")) {
+            pAP->HotSpot2.venue_type = amxc_var_dyncast(int8_t, newValue);
+        } else if(swl_str_matches(pname, "VenueGroup")) {
+            pAP->HotSpot2.venue_group = amxc_var_dyncast(int8_t, newValue);
+        } else {
+            continue;
         }
-        case HS_L2_TRAFFIC_INSPECT:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.l2_traffic_inspect = CB;
-            break;
-        }
-        case HS_ICMPV4_ECHO:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.icmpv4_echo = CB;
-            break;
-        }
-        case HS_INTERWORKING:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.interworking = CB;
-            break;
-        }
-        case HS_INTERNET:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.internet = CB;
-            break;
-        }
-        case HS_HS2_IE:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.hs2_ie = CB;
-            break;
-        }
-        case HS_P2P_ENABLE:
-        {
-            bool CB = amxc_var_dyncast(bool, args);
-            pAP->HotSpot2.p2p_enable = CB;
-            break;
-        }
-        case HS_GAS_DELAY:
-        {
-            int CB = amxc_var_dyncast(int32_t, args);
-            pAP->HotSpot2.gas_delay = CB;
-            break;
-        }
-        case HS_ACCESS_NETWORK_TYPE:
-        {
-            int8_t CB = amxc_var_dyncast(int8_t, args);
-            pAP->HotSpot2.access_network_type = CB;
-            break;
-        }
-        case HS_VENUE_TYPE:
-        {
-            int8_t CB = amxc_var_dyncast(int8_t, args);
-            pAP->HotSpot2.venue_type = CB;
-            break;
-        }
-        case HS_VENUE_GROUP:
-        {
-            int8_t CB = amxc_var_dyncast(int8_t, args);
-            pAP->HotSpot2.venue_group = CB;
-            break;
-        }
-        default:
-            break;
-        }
+        needSyncHS = true;
+    }
+
+    if(needSyncHS) {
         pAP->pFA->mfn_hspot_config(pAP, SET);
     }
 
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sApHotSpotDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setHotSpotEnable_pwf)),
+              .objChangedCb = s_setHotSpotConf_ocf,
+              );
+
+void _wld_ap_setHotSpotConf_ocf(const char* const sig_name,
+                                const amxc_var_t* const data,
+                                void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApHotSpotDmHdlrs, sig_name, data, priv);
 }
 
 static bool s_chechRnrEnabledOnOtherRadios(T_Radio* pRad) {

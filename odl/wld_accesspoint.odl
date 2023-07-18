@@ -1736,12 +1736,14 @@ define rrm_t{
 
 		/* This object contains parameters for HotSpot2.0 */
 		%persistent object HotSpot2 {
+			on event "*" call wld_ap_setHotSpotConf_ocf;
+
 			/**
 			# Enable Hotspot 2.0 support
 			*/
 			%persistent bool Enable{
 				default false;
-				on action write call wld_ap_setHotSpotEnable_pwf;
+				on action validate call wld_ap_validateHotSpot2Requirements;
 			}
 
 			/**
@@ -1751,11 +1753,7 @@ define rrm_t{
 			each station to prevent associated stations from forging such frames to other
 			stations in the BSS.
 			*/
-			%persistent bool DgafDisable {
-				default false;
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 1 };
-			}
+			%persistent bool DgafDisable;
 
 			/**
 			 Connection Capability  [multiple entries separated by ';']
@@ -1766,18 +1764,43 @@ define rrm_t{
 			 Unknown Each hs20_conn_capab line is added to the list of advertised tuples.
 			 ex: hs20_conn_capab=17:5060:0
 			*/
-			%persistent string L2TrafficInspect {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			%persistent string L2TrafficInspect;
 
 			/**
 			 * Don't find anything on this?
 			 */
 			%persistent bool IcmpV4Echo {
 				default true;
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 1 };
 			}
+
+			/* Enable Interworking service 802.11u */
+			%persistent bool Interworking {
+				default true;
+			}
+
+			/**
+			# Whether the network provides connectivity to the Internet
+			# 0 = Unspecified
+			# 1 = Network provides connectivity to the Internet
+			*/
+			%persistent bool Internet;
+
+			/**
+			# Additional Step Required for Access
+			# Note: This is only used with open network, i.e., ASRA shall ne set to 0 if
+			# RSN is used. (Hotspot 2.0 Release 1 doesn't allow an open network)
+			*/
+			%persistent bool Additional;
+
+			/** Doesn't sound logic? */
+			%persistent bool Hs2Ie;
+			/**
+			# P2P Device management, allow cross connection
+			*/
+			%persistent bool P2PEnable;
+
+			%persistent int32 GasDelay;
+			
 			/**
 			# Access Network Type
 			# 0 = Private network
@@ -1789,54 +1812,9 @@ define rrm_t{
 			# 14 = Test or experimental
 			# 15 = Wildcard
 			*/
-			%persistent uint32 Interworking {
-				default 1;
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 15 };
-			}
-
-			/**
-			# Whether the network provides connectivity to the Internet
-			# 0 = Unspecified
-			# 1 = Network provides connectivity to the Internet
-			*/
-			%persistent bool Internet {
-				default false;
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 1 };
-			}
-
-			/**
-			# Additional Step Required for Access
-			# Note: This is only used with open network, i.e., ASRA shall ne set to 0 if
-			# RSN is used. (Hotspot 2.0 Release 1 doesn't allow an open network)
-			*/
-			%persistent uint32 Additional {
-				default 0;
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 1 };
-			}
-
-			/** Doesn't sound logic? */
-			%persistent bool Hs2Ie {
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 1 };
-			}
-			/**
-			# P2P Device management, allow cross connection
-			*/
-			%persistent bool P2PEnable {
-				on action write call wld_ap_configHotSpot_pwf;
-				on action validate call check_range { min = 0, max = 1 };
-			}
-
-			%persistent int32 GasDelay {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
-
 			%persistent uint8 AccessNetworkType {
 				default 2;
-				on action write call wld_ap_configHotSpot_pwf;
+				on action validate call check_range { min = 0, max = 15 };
 			}
 
 			/**
@@ -1852,11 +1830,9 @@ define rrm_t{
 			*/
 			%persistent uint8 VenueType {
 				default 8;
-				on action write call wld_ap_configHotSpot_pwf;
 			}
 			%persistent uint8 VenueGroup {
 				default 2;
-				on action write call wld_ap_configHotSpot_pwf;
 			}
 
 			/**
@@ -1872,9 +1848,8 @@ define rrm_t{
 			# (double quoted string, printf-escaped string)
 			#venue_name=P"eng:Example\nvenue"
 			*/
-			%persistent string VenueName {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			%persistent string VenueName;
+			
 			/**
 			# Homogeneous ESS identifier (optional; dot11HESSID)
 			# If set, this shall be identifical to one of the BSSIDs in the homogeneous
@@ -1882,9 +1857,7 @@ define rrm_t{
 			# ESS. (Mandatory to support this according to the testplan although the setting is optional)
 			# (Can be set to our own BSSID, this is also what the test does)
 			*/
-			%persistent string HeSSID {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			%persistent string HeSSID;
 
 			/**
 			# Roaming Consortium List &lt;multiple entries separated by ';'&gt; # Arbitrary
@@ -1894,25 +1867,19 @@ define rrm_t{
 			queries. Each OI is between 3 and 15 octets and is configured as # a hexstring.
 			# (Mandatory to support this according to the testplan although the setting is optional)
 			*/
-			%persistent string RoamingConsortium {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			%persistent string RoamingConsortium;
 
 			/**
 			# Domain Name
 			# format: &lt;variable-octet str&gt;[,&lt;variable-octet str&gt;]
 			*/
-			%persistent string DomainName {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			%persistent string DomainName;
 
 			/**
 			# 3GPP Ce"PRIu64"lar Network information
 			# format: &lt;MCC1,MNC1&gt;[;&lt;MCC2,MNC2&gt;][;...]
 			*/
-			string Anqp3gpp_CellNet {
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			string Anqp3gpp_CellNet;
 
 			/**
 			WAN Metrics
@@ -1939,9 +1906,7 @@ define rrm_t{
 			# channels 36-48):
 			# hs20_operating_class=5173
 			*/
-			string OperatingClass{
-				on action write call wld_ap_configHotSpot_pwf;
-			}
+			string OperatingClass;
 		}
 
 		/**
