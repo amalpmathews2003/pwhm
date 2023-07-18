@@ -20,14 +20,7 @@ if (RadioIndex >= 0) : %}
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
-                parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
-                parameter IEEE80211kEnabled = 0;
-                parameter WDSEnable = 0;
-                parameter MBOEnable = 0;
-                parameter MultiAPType = "";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter WEPKey = "123456789ABCD";
@@ -48,14 +41,7 @@ if (RadioIndex >= 0) : %}
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
-                parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
-                parameter IEEE80211kEnabled = 0;
-                parameter WDSEnable = 0;
-                parameter MBOEnable = 0;
-                parameter MultiAPType = "";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter WEPKey = "123456789ABCD";
@@ -78,17 +64,8 @@ if (RadioIndex >= 0) : %}
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
-                parameter RetryLimit = 3;
-                parameter WMMEnable = 1;
-                parameter UAPSDEnable = 0;
-                parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
-                parameter IEEE80211kEnabled = 0;
-                parameter WDSEnable = 0;
-                parameter MBOEnable = 0;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
                     parameter WEPKey = "123456789ABCD";
@@ -112,26 +89,15 @@ if (RadioIndex >= 0) : %}
                     parameter Enable = 1;
                     parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
                     parameter Configured = 1;
-                }
-                object DriverConfig {
-                    parameter BssMaxIdlePeriod = -1;
                 }
             }
 {% elif (Itf.OperatingFrequency == "5GHz") : %}
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
-                parameter RetryLimit = 3;
-                parameter WMMEnable = 1;
-                parameter UAPSDEnable = 0;
-                parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
-                parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 1;
-                parameter MBOEnable = 0;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
                     parameter WEPKey = "123456789ABCD";
@@ -156,25 +122,15 @@ if (RadioIndex >= 0) : %}
                     parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
                     parameter Configured = 1;
                 }
-                object DriverConfig {
-                    parameter BssMaxIdlePeriod = -1;
-                }
             }
 {% elif (Itf.OperatingFrequency == "6GHz") : %}
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 1;
-                parameter RetryLimit = 3;
-                parameter WMMEnable = 1;
-                parameter UAPSDEnable = 0;
-                parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
                 parameter IEEE80211kEnabled = 1;
                 parameter WDSEnable = 1;
-                parameter MBOEnable = 0;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "WPA3-Personal";
                     parameter WEPKey = "123456789ABCD";

@@ -114,6 +114,177 @@ SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_macBin, swl_type_ch
 static const char* s_assocTableNames[] = {"mac", "bssid", "frame", "timestamp", "request_type"};
 SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_assocTableNames) == SWL_ARRAY_SIZE(assocTableTypes), "s_assocTableNames not correctly defined");
 
+T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj) {
+    ASSERTS_EQUALS(amxd_object_get_type(apObj), amxd_object_instance, NULL, ME, "Not instance");
+    amxd_object_t* parentObj = amxd_object_get_parent(apObj);
+    ASSERT_EQUALS(get_wld_object(), amxd_object_get_parent(parentObj), NULL, ME, "wrong location");
+    const char* parentName = amxd_object_get_name(parentObj, AMXD_OBJECT_NAMED);
+    ASSERT_TRUE(swl_str_matches(parentName, "AccessPoint"), NULL, ME, "invalid parent obj(%s)", parentName);
+    T_AccessPoint* pAP = (T_AccessPoint*) apObj->priv;
+    ASSERTS_TRUE(pAP, NULL, ME, "NULL");
+    ASSERT_TRUE(debugIsVapPointer(pAP), NULL, ME, "INVALID");
+    return pAP;
+}
+
+static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uint32_t idx) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    pAP->debug = VAP_POINTER;
+    pAP->index = 0;
+    pAP->enable = 0;
+    pAP->ref_index = idx;
+
+    pAP->pRadio = pRad;
+    pAP->pFA = pRad->pFA;
+    swl_str_copy(pAP->name, sizeof(pAP->name), vapName);
+    swl_str_copy(pAP->alias, sizeof(pAP->alias), vapName);
+    pAP->fsm.FSM_SyncAll = TRUE;
+
+    swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), "password");
+    swl_str_copy(pAP->WEPKey, sizeof(pAP->WEPKey), "123456789ABCDEF0123456789A");
+    sprintf(pAP->preSharedKey, "password_%d", idx);
+    sprintf(pAP->radiusSecret, "RadiusPassword_%d", idx);
+    swl_str_copy(pAP->radiusServerIPAddr, sizeof(pAP->radiusServerIPAddr), "127.0.0.1");
+    pAP->radiusServerPort = 1812;
+    pAP->radiusDefaultSessionTimeout = 0;
+    pAP->radiusOwnIPAddress[0] = '\0';
+    pAP->radiusNASIdentifier[0] = '\0';
+    pAP->radiusCalledStationId[0] = '\0';
+    pAP->radiusChargeableUserId = 0;
+    pAP->rekeyingInterval = WLD_SEC_PER_H;
+    pAP->retryLimit = 3;
+    pAP->SSIDAdvertisementEnabled = 1;
+    pAP->status = APSTI_DISABLED;
+    pAP->secModesSupported = M_SWL_SECURITY_APMODE_NONE;
+    pAP->MaxStations = -1;
+
+    pAP->UAPSDCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "UAPSD", 0);
+    pAP->WMMCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WME", 0);
+    pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WEP", 0)) ?
+        (M_SWL_SECURITY_APMODE_WEP64 | M_SWL_SECURITY_APMODE_WEP128 | M_SWL_SECURITY_APMODE_WEP128IV) : 0;
+    pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "AES", 0)) ?
+        (M_SWL_SECURITY_APMODE_WPA_P | M_SWL_SECURITY_APMODE_WPA2_P | M_SWL_SECURITY_APMODE_WPA_WPA2_P |
+         M_SWL_SECURITY_APMODE_WPA_E | M_SWL_SECURITY_APMODE_WPA2_E | M_SWL_SECURITY_APMODE_WPA_WPA2_E) : 0;
+    if(pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "SAE", 0)) {
+        pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA3_P;
+        if(pAP->secModesSupported & M_SWL_SECURITY_APMODE_WPA2_P) {
+            pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA2_WPA3_P;
+        }
+    }
+    pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "OWE", 0)) ?
+        (M_SWL_SECURITY_APMODE_OWE) : 0;
+    if(!pAP->MCEnable) {
+        /* Init this interface... */
+        T_Radio* pR = (T_Radio*) pAP->pRadio;
+        pAP->MCEnable = (pR->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) ? TRUE : FALSE;
+        pAP->doth = (pR->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) ? TRUE : FALSE; //marianna: hardcoded false on 2.4GHz and true on 5GHz, not on WiFiATH
+    }
+
+    if(pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+        pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA3_P;
+    } else {
+        pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA2_P;
+    }
+    pAP->secModesAvailable = pAP->secModesSupported;
+    pAP->mfpConfig = SWL_SECURITY_MFPMODE_DISABLED;
+    pAP->MF_AddressList = NULL;
+    pAP->MF_AddressListBlockSync = false;
+
+    /* In case we've support for them, enable it by default. */
+    pAP->UAPSDEnable = (pAP->UAPSDCapability) ? 1 : 0;
+    pAP->WMMEnable = (pAP->WMMCapability) ? 1 : 0;
+    pAP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
+    pAP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_PIN);
+    pAP->WPS_Configured = TRUE;
+    pAP->WPS_Enable = 0; /* Disable by default. Only '1' VAP can enable the WPS */
+    pAP->defaultDeviceType = DEVICE_TYPE_DATA;
+    memset(pAP->NASIdentifier, 0, NAS_IDENTIFIER_MAX_LEN);
+    get_randomhexstr((unsigned char*) pAP->NASIdentifier, NAS_IDENTIFIER_MAX_LEN - 1);
+    memset(pAP->R0KHKey, 0, KHKEY_MAX_LEN);
+    get_randomhexstr((unsigned char*) pAP->R0KHKey, KHKEY_MAX_LEN - 1);
+    pAP->addRelayApCredentials = false;
+    pAP->wpsRestartOnRequest = false;
+    pAP->cfg11u.interworkingEnable = false;
+    memset(pAP->cfg11u.qosMapSet, 0, QOS_MAP_SET_MAX_LEN);
+}
+
+/**
+ * @brief s_deinitAP
+ *
+ * Clear out resources of the accesspoint internal context
+ *
+ * @param accesspoint context
+ */
+static void s_deinitAP(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    SAH_TRACEZ_IN(ME);
+    //assume disable ap
+    pAP->enable = false;
+    T_Radio* pR = pAP->pRadio;
+    T_SSID* pSSID = pAP->pSSID;
+    if(pR) {
+        if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
+            if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
+                /* Deauthentify all stations */
+                SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
+                pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
+            }
+            /* Destroy vap*/
+            pR->pFA->mfn_wvap_destroy_hook(pAP);
+            /* Try to delete the requested interface by calling the HW function */
+            pR->pFA->mfn_wrad_delvapif(pR, pAP->alias);
+        }
+        pAP->alias[0] = 0;
+        pAP->index = 0;
+        /* Take EP also out the Radio */
+        amxc_llist_it_take(&pAP->it);
+        pAP->pRadio = NULL;
+        pAP->pFA = NULL;
+    }
+    for(int i = pAP->AssociatedDeviceNumberOfEntries - 1; i >= 0; i--) {
+        wld_ad_destroy_associatedDevice(pAP, i);
+    }
+    pAP->ActiveAssociatedDeviceNumberOfEntries = 0;
+    wld_assocDev_cleanAp(pAP);
+    wld_ap_rssiMonDestroy(pAP);
+
+    swl_circTable_destroy(&(pAP->lastAssocReq));
+
+    free(pAP->dbgOutput);
+    pAP->dbgOutput = NULL;
+
+    if(pSSID != NULL) {
+        memset(pSSID->MACAddress, 0, ETHER_ADDR_LEN);
+        pSSID->AP_HOOK = NULL;
+        if(pR) {
+            pR->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+        }
+        pAP->pSSID = NULL;
+    }
+    SAH_TRACEZ_OUT(ME);
+}
+
+/**
+ * @brief s_initAp
+ *
+ * reserve and initialize resources for accesspoint internal context
+ *
+ * @param accesspoint context
+ */
+static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName) {
+    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERT_STR(vapName, false, ME, "No vap name");
+    s_setDefaults(pAP, pRad, vapName, amxc_llist_size(&pRad->llAP));
+    /* Add pAP on linked list of pR */
+    amxc_llist_append(&pRad->llAP, &pAP->it);
+
+    wld_ap_rssiMonInit(pAP);
+    wld_assocDev_initAp(pAP);
+
+    swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
+    return true;
+}
 
 static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
     ASSERT_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
@@ -122,13 +293,9 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
         pSSID = (T_SSID*) pSsidObj->priv;
     }
     T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
-    if(pAP) {
+    if(pAP != NULL) {
         ASSERTI_NOT_EQUALS(pSSID, pAP->pSSID, amxd_status_ok, ME, "same ssid reference");
-        amxd_object_set_cstring_t(object, "RadioReference", "");
-        pAP->pSSID->AP_HOOK = NULL;
-        wld_ap_destroy(pAP);
-        object->priv = NULL;
-        pAP = NULL;
+        s_deinitAP(pAP);
     }
     const char* vapName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
     ASSERT_NOT_NULL(vapName, amxd_status_unknown_error, ME, "NULL");
@@ -136,39 +303,89 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     T_Radio* pRad = pSSID->RADIO_PARENT;
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
     SAH_TRACEZ_INFO(ME, "pSSID(%p) pRad(%p)", pSSID, pRad);
-    pAP = wld_ap_create(pRad, vapName, amxc_llist_size(&pRad->llAP));
-    int ret = wld_ap_initObj(pAP, object);
-    if(ret < 0) {
-        SAH_TRACEZ_ERROR(ME, "wld_ap_initObj error %i", ret);
-        return amxd_status_unknown_error;
+    if(pAP != NULL) {
+        bool ret = s_initAp(pAP, pRad, vapName);
+        ASSERT_EQUALS(ret, true, amxd_status_unknown_error, ME, "%s: fail to re-create accesspoint", vapName);
+    } else {
+        pAP = wld_ap_create(pRad, vapName, object);
+        ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "%s: fail to create accesspoint", vapName);
     }
-    SAH_TRACEZ_INFO(ME, "%s: add vap %s : %i", pRad->Name, vapName, ret);
-    char* radObjPath = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
-    if(radObjPath) {
-        amxd_object_set_cstring_t(pAP->pBus, "RadioReference", radObjPath);
-        free(radObjPath);
-    }
+
+    SAH_TRACEZ_INFO(ME, "%s: add vap %s", pRad->Name, vapName);
     pSSID->AP_HOOK = pAP;
     pAP->pSSID = pSSID;
 
-    ret = wld_ap_initializeVendor(pRad, pAP, pSSID);
-    if(ret < 0) {
-        SAH_TRACEZ_ERROR(ME, "%s: wld_ap_initializeVendor error add vap %s : %i", pRad->Name, vapName, ret);
-        return amxd_status_unknown_error;
-    }
-
-    wld_ap_init(pAP);
-
-    //Finalize AP/SSID mapping
-    /* Get defined paramater values from the default instance */
-    pRad->pFA->mfn_sync_ssid(pSsidObj, pSSID, GET);
-    pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
-    syncData_VendorWPS2OBJ(NULL, pRad, GET); // init WPS
-    /* DM will be synced with internal Ctxs later (on event or after dm load completed) */
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_addInstance_ocf(amxd_object_t* object,
+static void s_syncApSSIDDm(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, , ME, "No mapped AP Ctx");
+    ASSERTS_NOT_NULL(pAP->pRadio, , ME, "No mapped Rad Ctx");
+
+    SAH_TRACEZ_IN(ME);
+
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
+    pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
+    pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+
+    SAH_TRACEZ_OUT(ME);
+
+}
+
+/*
+ * finalize AP interface creation and MAC/BSSID reading
+ */
+static bool s_finalizeApCreation(T_AccessPoint* pAP) {
+    SAH_TRACEZ_IN(ME);
+
+    ASSERTS_NOT_NULL(pAP, false, ME, "No mapped AP Ctx");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERT_NOT_NULL(pSSID, false, ME, "%s: No mapped SSID Ctx", pAP->alias);
+    ASSERT_NOT_NULL(pAP->pRadio, false, ME, "No lower radio");
+
+    swl_rc_ne rc = pAP->pRadio->pFA->mfn_wvap_create_hook(pAP);
+    ASSERT_FALSE(rc < SWL_RC_OK, false, ME, "%s: VAP create hook failed (rc:%d)", pAP->alias, rc);
+
+    if(!pAP->index) {
+        SAH_TRACEZ_INFO(ME, "%s: initialize ap interface", pAP->alias);
+        wld_ap_initializeVendor(pAP->pRadio, pAP, pSSID);
+    }
+    //Finalize SSID mapping
+    pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
+
+    //delay sync AP and SSID Dm after all conf has been loaded
+    swla_delayExec_add((swla_delayExecFun_cbf) s_syncApSSIDDm, pAP);
+
+    SAH_TRACEZ_OUT(ME);
+    return true;
+}
+
+amxd_status_t _wld_ap_delInstance_odf(amxd_object_t* object,
+                                      amxd_param_t* param,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args,
+                                      amxc_var_t* const retval,
+                                      void* priv) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy obj instance st:%d", status);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, status, ME, "obj is not instance");
+    const char* name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_INFO(ME, "%s: destroy instance object(%p)", name, object);
+    wld_ap_destroy(object->priv);
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+/*
+ * AP instance addition action handler
+ * early handling to early create map with internal ssid ctx
+ * Needed for smooth dm conf loading as ssid may require knowing relative AP/EP
+ */
+amxd_status_t _wld_ap_addInstance_oaf(amxd_object_t* object,
                                       amxd_param_t* param,
                                       amxd_action_t reason,
                                       const amxc_var_t* const args,
@@ -187,40 +404,46 @@ amxd_status_t _wld_ap_addInstance_ocf(amxd_object_t* object,
     return status;
 }
 
-amxd_status_t _wld_ap_setSSIDRef_pwf(amxd_object_t* object,
-                                     amxd_param_t* parameter,
-                                     amxd_action_t reason,
-                                     const amxc_var_t* const args,
-                                     amxc_var_t* const retval,
-                                     void* priv) {
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    if(amxd_object_get_type(object) != amxd_object_instance) {
-        return amxd_status_unknown_error;
-    }
-
+/*
+ * AP instance addition event handler
+ * late handling only to finalize AP interface creation (using twin ssid instance)
+ * when SSIDReference is not explicitely provided by user conf
+ */
+static void s_addApInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const initialParamValues _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    char* ssidRef = amxc_var_dyncast(cstring_t, args);
-    char* path = amxd_object_get_path(object, AMXD_OBJECT_NAMED);
-    SAH_TRACEZ_INFO(ME, "apObj(%p:%s:%s) ssidRef(%s)",
-                    object, amxd_object_get_name(object, AMXD_OBJECT_NAMED), path,
-                    ssidRef);
-    free(path);
 
-    amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
-    rv = _linkApSsid(object, pSsidObj);
-    free(ssidRef);
+    if(GET_ARG(initialParamValues, "SSIDReference") == NULL) {
+        /*
+         * As user conf does not include specific SSIDReference
+         * then use the default twin ssid mapping already initiated in the early action handler
+         */
+        s_finalizeApCreation(object->priv);
+    }
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
+}
+
+static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    ASSERTI_EQUALS(amxd_object_get_type(object), amxd_object_instance, , ME, "Not instance");
+    const char* ssidRef = amxc_var_constcast(cstring_t, newValue);
+    const char* oname = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    SAH_TRACEZ_INFO(ME, "%s: ssidRef(%s)", oname, ssidRef);
+
+    amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
+    ASSERT_EQUALS(_linkApSsid(object, pSsidObj), amxd_status_ok, , ME, "%s: fail to link Ap to SSID (%s)", oname, ssidRef);
+
+    s_finalizeApCreation(object->priv);
+
+    SAH_TRACEZ_OUT(ME);
 }
 
 int wld_ap_initializeVendor(T_Radio* pR, T_AccessPoint* pAP, T_SSID* pSSID) {
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
     int ret = pR->pFA->mfn_wrad_addVapExt(pR, pAP);
 
-    if(ret == WLD_ERROR_NOT_IMPLEMENTED) {
+    if(ret == SWL_RC_NOT_IMPLEMENTED) {
         char vapnamebuf[32] = {0};
         swl_str_copy(vapnamebuf, sizeof(vapnamebuf), pAP->alias);
         /* Try to create the requested interface by calling the HW function */
@@ -230,16 +453,13 @@ int wld_ap_initializeVendor(T_Radio* pR, T_AccessPoint* pAP, T_SSID* pSSID) {
             snprintf(pAP->alias, sizeof(pAP->alias), "%s", vapnamebuf);
         }
     }
-
-    if(ret < 0) {
-        return ret;
-    }
+    ASSERTS_FALSE(ret < SWL_RC_OK, ret, ME, "fail to add vap iface");
 
     // Plugin has create the BSSID, be sure we update/select that one.
     pAP->pFA->mfn_wvap_bssid(NULL, pAP, NULL, 0, GET);
     memcpy(pSSID->MACAddress, pSSID->BSSID, sizeof(pSSID->MACAddress));
 
-    return WLD_OK;
+    return SWL_RC_OK;
 }
 
 void wld_ap_doSync(T_AccessPoint* pAP) {
@@ -257,79 +477,42 @@ void s_saveMaxStations(T_AccessPoint* pAP) {
                 ME, "%s: fail to commit maxAssocDevices (%d)", pAP->alias, pAP->MaxStations);
 }
 
-amxd_status_t _wld_ap_setMaxStations_pwf(amxd_object_t* object _UNUSED,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    int flag = amxc_var_dyncast(int32_t, args);
-    SAH_TRACEZ_INFO(ME, "set MaxStations %d", flag);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    // Set MaxStations supported and update Radio object param !
-    if(pAP && debugIsVapPointer(pAP)) {
-        ASSERTS_NOT_EQUALS(pAP->MaxStations, flag, amxd_status_ok, ME, "same value");
-        pAP->MaxStations = (flag > MAXNROF_STAENTRY || flag < 0) ? MAXNROF_STAENTRY : flag;
-        wld_ap_doSync(pAP);   // Force a resync of the structure (FIX ME)
-        if(pAP->MaxStations != flag) {
-            swla_delayExec_add((swla_delayExecFun_cbf) s_saveMaxStations, pAP);
-        }
+    int flag = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set MaxStations %d", pAP->alias, flag);
+    ASSERTS_NOT_EQUALS(pAP->MaxStations, flag, , ME, "same value");
+    pAP->MaxStations = (flag > MAXNROF_STAENTRY || flag < 0) ? MAXNROF_STAENTRY : flag;
+    wld_ap_doSync(pAP);
+    if(pAP->MaxStations != flag) {
+        swla_delayExec_add((swla_delayExecFun_cbf) s_saveMaxStations, pAP);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
  * The function is used to map an interface on a bridge. Some vendor deamons
- * depends on it for proper functionallity.
+ * depends on it for proper functionality.
  */
-amxd_status_t _wld_ap_setBridgeInterface_pwf(amxd_object_t* object,
-                                             amxd_param_t* parameter _UNUSED,
-                                             amxd_action_t reason _UNUSED,
-                                             const amxc_var_t* const args _UNUSED,
-                                             amxc_var_t* const retval _UNUSED,
-                                             void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setBridgeInterface_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    const char* pstr_BridgeName = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "set BridgeInterface %s", pstr_BridgeName);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    if(pAP && debugIsVapPointer(pAP) && pstr_BridgeName) {
-        // We've a dependency on a bridge interface that we must check!
-        snprintf(pAP->bridgeName, sizeof(pAP->bridgeName), "%s", pstr_BridgeName);
-        // For the moment... the plugin must track if bridgeName has been used (== not empty)?
-        pAP->pFA->mfn_on_bridge_state_change(pAP->pRadio, pAP, SET);
-    }
+    const char* bridgeName = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(bridgeName, , ME, "NULL");
+    ASSERTI_FALSE(swl_str_matches(bridgeName, pAP->bridgeName), , ME, "%s: same bridgeName %s", pAP->alias, bridgeName);
+    SAH_TRACEZ_INFO(ME, "%s: set BridgeInterface %s", pAP->alias, bridgeName);
+    swl_str_copy(pAP->bridgeName, sizeof(pAP->bridgeName), bridgeName);
+    pAP->pFA->mfn_on_bridge_state_change(pAP->pRadio, pAP, SET);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
@@ -337,40 +520,21 @@ amxd_status_t _wld_ap_setBridgeInterface_pwf(amxd_object_t* object,
  * The value of the defaultDeviceType will only affect future devices connecting to the AP.
  * It will NOT be retroactively set to all connected devices.
  */
-amxd_status_t _wld_ap_setDefaultDeviceType_pwf(amxd_object_t* object,
-                                               amxd_param_t* parameter _UNUSED,
-                                               amxd_action_t reason _UNUSED,
-                                               const amxc_var_t* const args _UNUSED,
-                                               amxc_var_t* const retval _UNUSED,
-                                               void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setDefaultDeviceType_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    const char* default_devicetype_name = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "set DefaultDeviceType %s", default_devicetype_name);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    if(pAP && debugIsVapPointer(pAP) && default_devicetype_name) {
-        int newDeviceType = conv_ModeIndexStr(cstr_DEVICE_TYPES, default_devicetype_name);
-        if(newDeviceType >= 0) {
-            SAH_TRACEZ_INFO(ME, "Updating device type from %u to %u", pAP->defaultDeviceType, newDeviceType);
-            pAP->defaultDeviceType = newDeviceType;
-        } else {
-            SAH_TRACEZ_ERROR(ME, "Device type -%s- is not valid", default_devicetype_name);
-        }
-    }
+    const char* deviceTypeStr = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(deviceTypeStr, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: set DefaultDeviceType %s", pAP->alias, deviceTypeStr);
+    swl_enum_e newDeviceType = swl_conv_charToEnum(deviceTypeStr, cstr_DEVICE_TYPES, DEVICE_TYPE_MAX, DEVICE_TYPE_DATA);
+    ASSERTI_NOT_EQUALS(pAP->defaultDeviceType, (int) newDeviceType, , ME, "%s: same bridgeName %s", pAP->alias, deviceTypeStr);
+    SAH_TRACEZ_INFO(ME, "%s: Updating device type from %u to %u", pAP->alias, pAP->defaultDeviceType, newDeviceType);
+    pAP->defaultDeviceType = newDeviceType;
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
@@ -378,323 +542,188 @@ amxd_status_t _wld_ap_setDefaultDeviceType_pwf(amxd_object_t* object,
  * The goal of this is only for developpers!
  * We need a way to have/enable a better view how things are managed by some deamons.
  */
-amxd_status_t _wld_ap_setDbgEnable_pwf(amxd_object_t* object _UNUSED,
-                                       amxd_param_t* parameter _UNUSED,
-                                       amxd_action_t reason _UNUSED,
-                                       const amxc_var_t* const args _UNUSED,
-                                       amxc_var_t* const retval _UNUSED,
-                                       void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setDbgEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    int dbgAPEnable = amxc_var_dyncast(int32_t, args);
-    SAH_TRACEZ_INFO(ME, "setdbgAPEnable %d", dbgAPEnable);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    if(pAP && debugIsVapPointer(pAP)) {
-        pAP->dbgEnable = dbgAPEnable;
-    }
+    bool dbgAPEnable = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setdbgAPEnable %d", pAP->alias, dbgAPEnable);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setDbgFile_pwf(amxd_object_t* object _UNUSED,
-                                     amxd_param_t* parameter _UNUSED,
-                                     amxd_action_t reason _UNUSED,
-                                     const amxc_var_t* const args _UNUSED,
-                                     amxc_var_t* const retval _UNUSED,
-                                     void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setDbgFile_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    const char* dbgFile = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "setdbgAPFile %s", dbgFile);
-    if(pAP && debugIsVapPointer(pAP) && dbgFile) {
-        if(pAP->dbgOutput) {
-            free(pAP->dbgOutput);
-        }
-        pAP->dbgOutput = strdup(dbgFile);
-    }
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    const char* dbgFile = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setdbgAPFile %s", pAP->alias, dbgFile);
+    swl_str_copyMalloc(&pAP->dbgOutput, dbgFile);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_set80211kEnabled_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    bool new_value = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "setAp80211kEnable %d", new_value);
-
-    if(pAP && debugIsVapPointer(pAP)) {
-        pAP->IEEE80211kEnable = new_value;
-        wld_ap_doSync(pAP);
-    }
-
-    return amxd_status_ok;
-}
-
-amxd_status_t _validateIEEE80211rEnabled(amxd_param_t* parameter _UNUSED, void* validationData _UNUSED) {
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_ap_set80211rEnabled_pwf(amxd_object_t* object,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_set80211kEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool new_value = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set 80211rEnable %d", new_value);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
-
-    pAP->IEEE80211rEnable = new_value;
+    bool enable = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setAp80211kEnable %d", pAP->alias, enable);
+    pAP->IEEE80211kEnable = enable;
     wld_ap_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setFTOverDSEnable_pwf(amxd_object_t* object _UNUSED,
-                                            amxd_param_t* parameter _UNUSED,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args _UNUSED,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
+amxd_status_t _wld_ap_validateIEEE80211rEnabled_pvf(amxd_object_t* object _UNUSED,
+                                                    amxd_param_t* param _UNUSED,
+                                                    amxd_action_t reason _UNUSED,
+                                                    const amxc_var_t* const args,
+                                                    amxc_var_t* const retval _UNUSED,
+                                                    void* priv _UNUSED) {
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "No AP mapped");
+    T_Radio* pRad = (T_Radio*) pAP->pRadio;
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio mapped");
+    bool flag = amxc_var_dyncast(bool, args);
+    if((!flag) || (pRad->IEEE80211rSupported)) {
+        return amxd_status_ok;
     }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    SAH_TRACEZ_ERROR(ME, "%s: invalid IEEE80211rEnabled %d", pRad->Name, flag);
+    return amxd_status_invalid_value;
+}
 
+static void s_set80211rEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool new_value = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set FTOverDSEnable %d", new_value);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
+    bool enabled = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set 80211rEnable %d", pAP->alias, enabled);
+    pAP->IEEE80211rEnable = enabled;
+    wld_ap_doSync(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setFTOverDSEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    bool new_value = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set FTOverDSEnable %d", pAP->alias, new_value);
     pAP->IEEE80211rFTOverDSEnable = new_value;
     wld_ap_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setMobilityDomain_pwf(amxd_object_t* object _UNUSED,
-                                            amxd_param_t* parameter _UNUSED,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args _UNUSED,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setMobilityDomain_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    uint16_t mobility_domain = amxc_var_dyncast(uint16_t, args);
-    SAH_TRACEZ_INFO(ME, "setMobilityDomain %d", mobility_domain);
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+    uint16_t mobilityDomain = amxc_var_dyncast(uint16_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setMobilityDomain %d", pAP->alias, mobilityDomain);
 
-    pAP->mobilityDomain = mobility_domain;
+    pAP->mobilityDomain = mobilityDomain;
     wld_ap_sec_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setInterworkingEnable_pwf(amxd_object_t* object _UNUSED,
-                                                amxd_param_t* parameter _UNUSED,
-                                                amxd_action_t reason _UNUSED,
-                                                const amxc_var_t* const args _UNUSED,
-                                                amxc_var_t* const retval _UNUSED,
-                                                void* priv _UNUSED) {
+SWLA_DM_HDLRS(sAp11rDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("FTOverDSEnable", s_setFTOverDSEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MobilityDomain", s_setMobilityDomain_pwf),
+                  SWLA_DM_PARAM_HDLR("Enabled", s_set80211rEnabled_pwf),
+                  ));
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+void _wld_ap_11r_setConf_ocf(const char* const sig_name,
+                             const amxc_var_t* const data,
+                             void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sAp11rDmHdlrs, sig_name, data, priv);
+}
 
+static void s_setInterworkingEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool new_value = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set InterworkingEnable %d", new_value);
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
-
-    pAP->cfg11u.interworkingEnable = new_value;
+    bool enabled = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set InterworkingEnable %d", pAP->alias, enabled);
+    pAP->cfg11u.interworkingEnable = enabled;
     wld_ap_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setQosMapSet_pwf(amxd_object_t* object _UNUSED,
-                                       amxd_param_t* parameter _UNUSED,
-                                       amxd_action_t reason _UNUSED,
-                                       const amxc_var_t* const args _UNUSED,
-                                       amxc_var_t* const retval _UNUSED,
-                                       void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setQosMapSet_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    const char* new_qosMapSet = amxc_var_constcast(cstring_t, args);
-    if(new_qosMapSet && new_qosMapSet[0] && !swl_str_matches(pAP->cfg11u.qosMapSet, new_qosMapSet)) {
-        snprintf(pAP->cfg11u.qosMapSet, QOS_MAP_SET_MAX_LEN, "%s", new_qosMapSet);
+    char* qosMapStr = amxc_var_dyncast(cstring_t, newValue);
+    ASSERT_NOT_NULL(qosMapStr, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: set QoS Map %s", pAP->alias, qosMapStr);
+    if(!swl_str_matches(pAP->cfg11u.qosMapSet, qosMapStr)) {
+        swl_str_copy(pAP->cfg11u.qosMapSet, QOS_MAP_SET_MAX_LEN, qosMapStr);
         wld_ap_doSync(pAP);
     }
+    free(qosMapStr);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-/* Check with ODL file if order and string format of VAP_AccessPoint_ObjParam is matching! */
-const char* VAP_AccessPoint_ObjParam[] = {
-    /* 0 */ "SSIDAdvertisementEnabled",
-    /* 1 */ "RetryLimit",
-    /* 2 */ "WMMEnable",
-    /* 3 */ "UAPSDEnable",
-    /* 4 */ "MCEnable",
-    /* 5 */ "APBridgeDisable",
-    /* 6 */ "IsolationEnable",
-    NULL
-};
+SWLA_DM_HDLRS(sAp11uDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("QoSMapSet", s_setQosMapSet_pwf),
+                  SWLA_DM_PARAM_HDLR("InterworkingEnable", s_setInterworkingEnable_pwf),
+                  ));
 
-amxd_status_t _wld_ap_setCommonParam_pwf(amxd_object_t* object _UNUSED,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
+void _wld_ap_11u_setConf_ocf(const char* const sig_name,
+                             const amxc_var_t* const data,
+                             void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sAp11uDmHdlrs, sig_name, data, priv);
+}
 
-    int idx = 0;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setSsidAdvEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    const char* pname = parameter->name;
-    int new_value = amxc_var_dyncast(int32_t, args);
-    SAH_TRACEZ_INFO(ME, "set Param %s %d", pname, new_value);
-
-    /* It's a bit stupid... but this should be the 'proper' way. */
-    if(pAP && pname && findStrInArray(pname, VAP_AccessPoint_ObjParam, &idx)) {
-        T_SSID* pSSID = pAP->pSSID;
-        switch(idx) {
-        case 0: /* SSIDAdvertisementEnabled - Needs also a resync of SSID */
-            if(debugIsSsidPointer(pSSID)) {
-                pAP->pFA->mfn_wvap_ssid(pAP, (char*) pSSID->SSID, strlen(pSSID->SSID), SET);
-                wld_autoCommitMgr_notifyVapEdit(pAP);
-            }
-            wld_ap_doSync(pAP);
-            break;
-        case 1: /* RetryLimit */
-        case 2: /* WMMEnable */
-        case 3: /* UAPSDEnable */
-        case 4: /* MCEnable */
-        case 5: /* APBridgeDisable */
-        case 6: /* IsolationEnable */
-            wld_ap_doSync(pAP);
-            break;
-        default:
-            SAH_TRACEZ_ERROR(ME, "Unhandled param %s", pname);
-            break;
-        }
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+    T_SSID* pSSID = pAP->pSSID;
+    /* SSIDAdvertisementEnabled - Needs also a resync of SSID */
+    bool newEnable = amxc_var_dyncast(bool, newValue);
+    pAP->SSIDAdvertisementEnabled = newEnable;
+    if(debugIsSsidPointer(pSSID)) {
+        pAP->pFA->mfn_wvap_ssid(pAP, (char*) pSSID->SSID, strlen(pSSID->SSID), SET);
+        wld_autoCommitMgr_notifyVapEdit(pAP);
     }
+    wld_ap_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
+static void s_setApCommonParam_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+    SAH_TRACEZ_INFO(ME, "%s: set Param %s", pAP->alias, amxd_param_get_name(param));
+    wld_ap_doSync(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
 
 amxd_status_t _wld_ap_setWPSEnable_pwf(amxd_object_t* object _UNUSED,
                                        amxd_param_t* parameter _UNUSED,
@@ -931,9 +960,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_object_set_bool(object, "WDSEnable", pAP->wdsEnable);
 
-        char buffer[256] = {0};
-        swl_conv_maskToChar(buffer, sizeof(buffer), pAP->multiAPType, cstr_MultiAPType, SWL_ARRAY_SIZE(cstr_MultiAPType));
-        amxd_object_set_cstring_t(object, "MultiAPType", buffer);
+        swl_conv_objectParamSetMask(object, "MultiAPType", pAP->multiAPType, cstr_MultiAPType, MULTIAP_MAX);
 
         amxd_object_set_cstring_t(amxd_object_findf(object, "IEEE80211r"),
                                   "NASIdentifier", pAP->NASIdentifier);
@@ -1355,130 +1382,67 @@ amxd_status_t _validateWPSenable(amxd_param_t* parameter) {
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setWDSEnable_pwf(amxd_object_t* object _UNUSED,
-                                       amxd_param_t* parameter _UNUSED,
-                                       amxd_action_t reason _UNUSED,
-                                       const amxc_var_t* const args _UNUSED,
-                                       amxc_var_t* const retval _UNUSED,
-                                       void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setWDSEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool new_value = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set WDSEnable %d", new_value);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
-    pAP->wdsEnable = new_value;
+    bool newEnable = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: WDSEnable %d", pAP->alias, newEnable);
+
+    pAP->wdsEnable = newEnable;
     wld_ap_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setMBOEnable_pwf(amxd_object_t* object _UNUSED,
-                                       amxd_param_t* parameter _UNUSED,
-                                       amxd_action_t reason _UNUSED,
-                                       const amxc_var_t* const args _UNUSED,
-                                       amxc_var_t* const retval _UNUSED,
-                                       void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setMBOEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool new_value = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set MBOEnable %d", new_value);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
-    pAP->mboEnable = new_value;
+    bool newEnable = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: MBOEnable %d", pAP->alias, newEnable);
+
+    pAP->mboEnable = newEnable;
     wld_ap_doSync(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setMultiAPType_pwf(amxd_object_t* object _UNUSED,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setMultiAPType_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
-    char* new_multiAPType = amxc_var_dyncast(cstring_t, args);
-    uint32_t m_multiAPType = (new_multiAPType && new_multiAPType[0]) ?
-        swl_conv_charToMaskSep(new_multiAPType, cstr_MultiAPType, WLD_ARRAY_SIZE(cstr_MultiAPType), ',', NULL) : 0;
-    free(new_multiAPType);
-    if(pAP->multiAPType != m_multiAPType) {
-        pAP->multiAPType = m_multiAPType;
-        pAP->pFA->mfn_wvap_multiap_update_type(pAP);
-        wld_autoCommitMgr_notifyVapEdit(pAP);
-    }
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    const char* multiApTypeStr = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(multiApTypeStr, , ME, "NULL");
+    wld_multiap_type_m multiApTypeMask = swl_conv_charToMask(multiApTypeStr, cstr_MultiAPType, MULTIAP_MAX);
+    ASSERTI_NOT_EQUALS(multiApTypeMask, pAP->multiAPType, , ME, "%s: same MultiAPType %s", pAP->alias, multiApTypeStr);
+    pAP->multiAPType = multiApTypeMask;
+    pAP->pFA->mfn_wvap_multiap_update_type(pAP);
+    wld_autoCommitMgr_notifyVapEdit(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setRole_pwf(amxd_object_t* object _UNUSED,
-                                  amxd_param_t* parameter _UNUSED,
-                                  amxd_action_t reason _UNUSED,
-                                  const amxc_var_t* const args _UNUSED,
-                                  amxc_var_t* const retval _UNUSED,
-                                  void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setApRole_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
-    const char* new_str_apRole = amxc_var_constcast(cstring_t, args);
-    uint32_t new_apRole = conv_ModeIndexStr(wld_apRole_str, new_str_apRole);
-    if(pAP->apRole != new_apRole) {
-        pAP->apRole = new_apRole;
-        pAP->pFA->mfn_wvap_set_ap_role(pAP);
-    }
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    const char* apRoleStr = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(apRoleStr, , ME, "NULL");
+    wld_apRole_e newApRole = swl_conv_charToEnum(apRoleStr, wld_apRole_str, AP_ROLE_MAX, AP_ROLE_OFF);
+    ASSERTI_NOT_EQUALS(pAP->apRole, newApRole, , ME, "%s: same AP Role %s", pAP->alias, apRoleStr);
+    pAP->apRole = newApRole;
+    pAP->pFA->mfn_wvap_set_ap_role(pAP);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 amxd_status_t _wld_ap_enableVendorIEs(amxd_object_t* object _UNUSED,
@@ -1565,10 +1529,6 @@ amxd_status_t _wld_ap_addVendorIE_ocf(amxd_object_t* template_object _UNUSED, am
 }
 
 amxd_status_t _wld_ap_setVendorIE_owf(amxd_object_t* instance_object) {
-    const char* oui = NULL;
-    const char* data = NULL;
-    const char* frame_type_var = NULL;
-    swl_mask_m frame_type;
 
     ASSERTS_FALSE(amxd_object_get_type(instance_object) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
     amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(instance_object)));
@@ -1578,30 +1538,34 @@ amxd_status_t _wld_ap_setVendorIE_owf(amxd_object_t* instance_object) {
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
     wld_vendorIe_t* vendor_ie = (wld_vendorIe_t*) instance_object->priv;
 
-    if(!vendor_ie) {
+    if(vendor_ie == NULL) {
         vendor_ie = addVendorIEEntry(pAP, instance_object);
     }
 
     ASSERTS_NOT_NULL(vendor_ie, amxd_status_unknown_error, ME, "NULL");
 
-    oui = amxd_object_get_cstring_t(instance_object, "OUI", NULL);
-    data = amxd_object_get_cstring_t(instance_object, "Data", NULL);
+    amxd_status_t status = amxd_status_ok;
+
+    char* oui = amxd_object_get_cstring_t(instance_object, "OUI", NULL);
+    char* data = amxd_object_get_cstring_t(instance_object, "Data", NULL);
 
     if(getVendorIE(pAP, oui, data)) {
         SAH_TRACEZ_ERROR(ME, "Vendor IE already present or can not be modified");
-        return amxd_status_ok;
+    } else if(!isVendorIEValid(oui, data)) {
+        SAH_TRACEZ_ERROR(ME, "Input are invalid");
+        status = amxd_status_unknown_error;
+    } else {
+        swl_str_copy(vendor_ie->oui, SWL_OUI_STR_LEN, oui);
+        swl_str_copy(vendor_ie->data, WLD_VENDORIE_T_DATA_SIZE, data);
+        char* frame_type_var = amxd_object_get_cstring_t(instance_object, "FrameType", NULL);
+        vendor_ie->frame_type = swl_conv_charToMask(frame_type_var, wld_vendorIe_frameType_str, VENDOR_IE_MAX);
+        pAP->pFA->mfn_wvap_add_vendor_ie(pAP, vendor_ie);
+        free(frame_type_var);
     }
+    free(oui);
+    free(data);
 
-    frame_type_var = amxd_object_get_cstring_t(instance_object, "FrameType", NULL);
-    ASSERT_TRUE(isVendorIEValid(oui, data), amxd_status_unknown_error, ME, "Input are invalid");
-    frame_type = swl_conv_charToMaskSep(frame_type_var, wld_vendorIe_frameType_str, VENDOR_IE_MAX, ',', NULL);
-
-    swl_str_copy(vendor_ie->oui, SWL_OUI_STR_LEN, oui);
-    swl_str_copy(vendor_ie->data, WLD_VENDORIE_T_DATA_SIZE, data);
-    vendor_ie->frame_type = frame_type;
-    pAP->pFA->mfn_wvap_add_vendor_ie(pAP, vendor_ie);
-
-    return amxd_status_ok;
+    return status;
 }
 
 amxd_status_t _wld_ap_delVendorIE_odf(amxd_object_t* template_object _UNUSED, amxd_object_t* instance_object) {
@@ -1910,91 +1874,95 @@ amxd_status_t _wld_ap_configHotSpot_pwf(amxd_object_t* object _UNUSED,
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setDiscoveryMethod_pwf(amxd_object_t* object _UNUSED,
-                                             amxd_param_t* parameter _UNUSED,
-                                             amxd_action_t reason _UNUSED,
-                                             const amxc_var_t* const args _UNUSED,
-                                             amxc_var_t* const retval _UNUSED,
-                                             void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
+static bool s_chechRnrEnabledOnOtherRadios(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    T_Radio* pOtherRad;
+    wld_for_eachRad(pOtherRad) {
+        if((swl_str_matches(pRad->Name, pOtherRad->Name)) ||
+           (pOtherRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ)) {
+            continue;
+        }
+        T_AccessPoint* pAPTmp;
+        wld_rad_forEachAp(pAPTmp, pOtherRad) {
+            if(pAPTmp->discoveryMethod & M_AP_DM_RNR) {
+                return true;
+            }
+        }
     }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    return false;
+}
 
+amxd_status_t _wld_ap_validateDiscoveryMethod_pvf(amxd_object_t* object,
+                                                  amxd_param_t* param,
+                                                  amxd_action_t reason _UNUSED,
+                                                  const amxc_var_t* const args,
+                                                  amxc_var_t* const retval _UNUSED,
+                                                  void* priv _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "pAP NULL");
-
-    T_Radio* pRad = (T_Radio*) pAP->pRadio;
-
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* oname = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     const char* dmStr = amxc_var_constcast(cstring_t, args);
+    if(swl_str_matches(currentValue, dmStr)) {
+        return amxd_status_ok;
+    }
+    wld_ap_dm_m discoveryMethod = swl_conv_charToMask(dmStr, g_str_wld_ap_dm, AP_DM_MAX);
+    ASSERT_NOT_EQUALS(discoveryMethod, 0, status, ME, "%s: invalid value (%s)", oname, dmStr);
+    ASSERT_FALSE((discoveryMethod & M_AP_DM_DISABLED) && (discoveryMethod & ~M_AP_DM_DISABLED), status, ME, "%s: Can not set disabled with other methods", oname);
+    ASSERT_FALSE((discoveryMethod & M_AP_DM_UPR) && (discoveryMethod & M_AP_DM_FD), status, ME, "%s: Unsolicited Probe Response and FILS Discovery must not be enabled at the same time", oname);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "%s: no AP ctx", oname);
+    T_Radio* pRad = (T_Radio*) pAP->pRadio;
+    ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "%s: no mapped Radio ctx", oname);
+
+    /* Discovery method (UPR/FILS) is mandatory on 6GHz if no discovery
+     * method is present on other bands (2.4/5GHz). Check if RNR is present
+     */
+    bool rnrEnabled = s_chechRnrEnabledOnOtherRadios(pRad);
+    ASSERT_FALSE(rnrEnabled && (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod == M_AP_DM_DISABLED), status, ME, "%s: Disabled is not valid for 6GHz AP", oname);
+    ASSERT_FALSE((pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod & M_AP_DM_UPR), status, ME, "%s: Unsolicted Probe Responses method is 6GHz AP only", oname);
+
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
+static void s_setDiscoveryMethod_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "pAP NULL");
+    T_Radio* pRad = (T_Radio*) pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, , ME, "No mapped radio");
+
+    const char* dmStr = amxc_var_constcast(cstring_t, newValue);
     wld_ap_dm_m discoveryMethod = swl_conv_charToMask(dmStr, g_str_wld_ap_dm, AP_DM_MAX);
 
     /* Discovery method (UPR/FILS) is mandatory on 6GHz if no discovery
      * method is present on other bands (2.4/5GHz). Check if RNR is present
      */
-    bool rnrEnabled = false;
-    amxc_llist_for_each(llit, &g_radios) {
-        T_Radio* pOtherRad = amxc_llist_it_get_data(llit, T_Radio, it);
-        if((swl_str_matches(pRad->Name, pOtherRad->Name)) ||
-           (pOtherRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ)) {
-            continue;
-        }
-        amxc_llist_it_t* it;
-        for(it = amxc_llist_get_first(&pRad->llAP); it; it = amxc_llist_it_get_next(it)) {
-            T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
-            if(pAP->discoveryMethod & M_AP_DM_RNR) {
-                rnrEnabled = true;
-                break;
-            }
-        }
-    }
-
-    ASSERTI_NOT_EQUALS(discoveryMethod, pAP->discoveryMethod, amxd_status_ok, ME, "%s: no change", pAP->alias);
-    ASSERTI_FALSE((discoveryMethod & M_AP_DM_DISABLED) && (discoveryMethod & ~M_AP_DM_DISABLED), amxd_status_unknown_error, ME, "Can not set disabled with other methods");
-    ASSERTI_FALSE(rnrEnabled && (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod == M_AP_DM_DISABLED), amxd_status_unknown_error, ME, "Disabled is not valid for 6GHz AP");
-    ASSERTI_FALSE((pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod & M_AP_DM_UPR), amxd_status_unknown_error, ME, "Unsolicted Probe Responses method is 6GHz AP only");
-    ASSERTI_FALSE((discoveryMethod & M_AP_DM_UPR) && (discoveryMethod & M_AP_DM_FD), amxd_status_unknown_error, ME, "Unsolicited Probe Response and FILS Discovery must not be enabled at the same time");
+    bool rnrEnabled = s_chechRnrEnabledOnOtherRadios(pRad);
+    ASSERT_FALSE(rnrEnabled && (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod == M_AP_DM_DISABLED), , ME, "%s: Disabled is not valid for 6GHz AP", pAP->alias);
+    ASSERT_FALSE((pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) && (discoveryMethod & M_AP_DM_UPR), , ME, "%s: Unsolicted Probe Responses method is 6GHz AP only", pAP->alias);
 
     pAP->discoveryMethod = discoveryMethod;
+    SAH_TRACEZ_INFO(ME, "%s: Configure discovery method: %d", pAP->alias, pAP->discoveryMethod);
+
     pAP->pFA->mfn_wvap_set_discovery_method(pAP);
 
-    SAH_TRACEZ_INFO(ME, "Configure discovery method: %d", pAP->discoveryMethod);
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setEnable_pwf(amxd_object_t* object _UNUSED,
-                                    amxd_param_t* parameter _UNUSED,
-                                    amxd_action_t reason _UNUSED,
-                                    const amxc_var_t* const args _UNUSED,
-                                    amxc_var_t* const retval _UNUSED,
-                                    void* priv _UNUSED) {
-
+static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = object;
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-
-    bool newEnable = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "setAccessPointEnable %d", newEnable);
-
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NOT VAP");
+    bool newEnable = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setAccessPointEnable %d", pAP->alias, newEnable);
 
     pAP->enable = newEnable;
     pAP->pFA->mfn_wvap_enable(pAP, newEnable, SET);
@@ -2002,127 +1970,27 @@ amxd_status_t _wld_ap_setEnable_pwf(amxd_object_t* object _UNUSED,
     wld_ssid_syncEnable(pAP->pSSID, false);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
+T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, amxd_object_t* vapObj) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     T_AccessPoint* pAP = calloc(1, sizeof(T_AccessPoint));
     ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
 
-    pAP->debug = VAP_POINTER;
-    pAP->index = 0;
-    pAP->enable = 0;
-    pAP->ref_index = idx;
-
-    pAP->pRadio = pRad;
-    pAP->pFA = pRad->pFA;
-    snprintf(pAP->name, sizeof(pAP->name), "%s", vapName);
-    snprintf(pAP->alias, sizeof(pAP->alias), "%s", vapName);
-    pAP->fsm.FSM_SyncAll = TRUE;
-
-    swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), "password");
-    swl_str_copy(pAP->WEPKey, sizeof(pAP->WEPKey), "123456789ABCDEF0123456789A");
-    sprintf(pAP->preSharedKey, "password_%d", idx);
-    sprintf(pAP->radiusSecret, "RadiusPassword_%d", idx);
-    swl_str_copy(pAP->radiusServerIPAddr, sizeof(pAP->radiusServerIPAddr), "127.0.0.1");
-    pAP->radiusServerPort = 1812;
-    pAP->radiusDefaultSessionTimeout = 0;
-    pAP->radiusOwnIPAddress[0] = '\0';
-    pAP->radiusNASIdentifier[0] = '\0';
-    pAP->radiusCalledStationId[0] = '\0';
-    pAP->radiusChargeableUserId = 0;
-    pAP->rekeyingInterval = WLD_SEC_PER_H;
-    pAP->retryLimit = 3;
-    pAP->SSIDAdvertisementEnabled = 1;
-    pAP->status = APSTI_DISABLED;
-    pAP->secModesSupported = M_SWL_SECURITY_APMODE_NONE;
-    pAP->MaxStations = -1;
-
-    pAP->UAPSDCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "UAPSD", 0);
-    pAP->WMMCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WME", 0);
-    pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WEP", 0)) ?
-        (M_SWL_SECURITY_APMODE_WEP64 | M_SWL_SECURITY_APMODE_WEP128 | M_SWL_SECURITY_APMODE_WEP128IV) : 0;
-    pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "AES", 0)) ?
-        (M_SWL_SECURITY_APMODE_WPA_P | M_SWL_SECURITY_APMODE_WPA2_P | M_SWL_SECURITY_APMODE_WPA_WPA2_P |
-         M_SWL_SECURITY_APMODE_WPA_E | M_SWL_SECURITY_APMODE_WPA2_E | M_SWL_SECURITY_APMODE_WPA_WPA2_E) : 0;
-    if(pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "SAE", 0)) {
-        pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA3_P;
-        if(pAP->secModesSupported & M_SWL_SECURITY_APMODE_WPA2_P) {
-            pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA2_WPA3_P;
-        }
-    }
-    pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "OWE", 0)) ?
-        (M_SWL_SECURITY_APMODE_OWE) : 0;
-    pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, NULL, 0); // Update the Drv CAP value!
-    pAP->pFA->mfn_wrad_poschans(pAP->pRadio, NULL, 0);         // Update Radio Bands...
-    if(!pAP->MCEnable) {
-        /* Init this interface... */
-        T_Radio* pR = (T_Radio*) pAP->pRadio;
-        pAP->MCEnable = (pR->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) ? TRUE : FALSE;
-        pAP->doth = (pR->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) ? TRUE : FALSE; //marianna: hardcoded false on 2.4GHz and true on 5GHz, not on WiFiATH
+    pAP->pBus = vapObj;
+    if(!s_initAp(pAP, pRad, vapName)) {
+        free(pAP);
+        return NULL;
     }
 
-    if(pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
-        pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA3_P;
-    } else {
-        pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA2_P;
-    }
-    pAP->secModesAvailable = pAP->secModesSupported;
-    pAP->mfpConfig = SWL_SECURITY_MFPMODE_DISABLED;
-    pAP->MF_AddressList = NULL;
-    pAP->MF_AddressListBlockSync = false;
+    vapObj->priv = pAP;
 
-    /* In case we've support for them, enable it by default. */
-    pAP->UAPSDEnable = (pAP->UAPSDCapability) ? 1 : 0;
-    pAP->WMMEnable = (pAP->WMMCapability) ? 1 : 0;
-    pAP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
-    pAP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_PIN);
-    pAP->WPS_Configured = TRUE;
-    pAP->WPS_Enable = 0; /* Disable by default. Only '1' VAP can enable the WPS */
-    pAP->defaultDeviceType = DEVICE_TYPE_DATA;
-    memset(pAP->NASIdentifier, 0, NAS_IDENTIFIER_MAX_LEN);
-    get_randomhexstr((unsigned char*) pAP->NASIdentifier, NAS_IDENTIFIER_MAX_LEN - 1);
-    memset(pAP->R0KHKey, 0, KHKEY_MAX_LEN);
-    get_randomhexstr((unsigned char*) pAP->R0KHKey, KHKEY_MAX_LEN - 1);
-    pAP->addRelayApCredentials = false;
-    pAP->wpsRestartOnRequest = false;
-    pAP->cfg11u.interworkingEnable = false;
-    memset(pAP->cfg11u.qosMapSet, 0, QOS_MAP_SET_MAX_LEN);
-    return pAP;
-}
-
-int32_t wld_ap_initObj(T_AccessPoint* pAP, amxd_object_t* instance_object) {
-    ASSERT_NOT_NULL(instance_object, WLD_ERROR, ME, "NULL");
-    ASSERT_NOT_NULL(pAP, WLD_ERROR, ME, "NULL");
-
-    instance_object->priv = pAP;
-    pAP->pBus = instance_object;
-
-    pAP->wpsSessionInfo.intfObj = instance_object;
-    amxd_object_t* wpsinstance = amxd_object_get(instance_object, "WPS");
-    ASSERTW_NOT_NULL(wpsinstance, WLD_OK, ME, "%s: WPS subObj is not available", pAP->name);
+    pAP->wpsSessionInfo.intfObj = vapObj;
+    amxd_object_t* wpsinstance = amxd_object_get(vapObj, "WPS");
+    ASSERTW_NOT_NULL(wpsinstance, pAP, ME, "%s: WPS subObj is not available", pAP->name);
     wpsinstance->priv = &pAP->wpsSessionInfo;
 
-    return WLD_OK;
-}
-
-int wld_ap_init(T_AccessPoint* pAP) {
-    int ret = -1;
-    T_Radio* pR = pAP->pRadio;
-
-    /* Add pAP on linked list of pR */
-    amxc_llist_append(&pR->llAP, &pAP->it);
-
-    wld_ap_rssiMonInit(pAP);
-    wld_assocDev_initAp(pAP);
-
-    swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
-
-    if((ret = pR->pFA->mfn_wvap_create_hook(pAP))) {
-        SAH_TRACEZ_ERROR(ME, "%s: VAP create hook failed %d", pAP->alias, ret);
-    }
-    return ret;
+    return pAP;
 }
 
 /**
@@ -2130,38 +1998,13 @@ int wld_ap_init(T_AccessPoint* pAP) {
  * first deauthentify all associated stations, destroy vap then deletes the accesspoint.
  */
 void wld_ap_destroy(T_AccessPoint* pAP) {
-    T_Radio* pR = (T_Radio*) pAP->pRadio;
-    /* Deauthentify all stations */
-    SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
-    pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
-
-    /* Destroy vap*/
-    pR->pFA->mfn_wvap_destroy_hook(pAP);
-
-    for(int i = pAP->AssociatedDeviceNumberOfEntries - 1; i >= 0; i--) {
-        wld_ad_destroy_associatedDevice(pAP, i);
-    }
-
-    wld_assocDev_cleanAp(pAP);
-    wld_ap_rssiMonDestroy(pAP);
-
-    swl_circTable_destroy(&(pAP->lastAssocReq));
-
-    /* Try to delete the requested interface by calling the HW function */
-    pR->pFA->mfn_wrad_delvapif(pR, pAP->name);
-
-    free(pAP->dbgOutput);
-    pAP->dbgOutput = NULL;
-
-    /* Take VAP also out the Radio */
-    amxc_llist_it_take(&pAP->it);
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    s_deinitAP(pAP);
 
     if(pAP->pBus != NULL) {
         pAP->pBus->priv = NULL;
     }
-    if(pAP->pSSID != NULL) {
-        pAP->pSSID->AP_HOOK = NULL;
-    }
+
     free(pAP);
 }
 
@@ -2415,6 +2258,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
         amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateSupported", pAD->MaxUplinkRateSupported);
         amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateReached", pAD->MaxUplinkRateReached);
+        amxd_trans_set_value(cstring_t, &trans, "LinkBandwidth", swl_bandwidth_unknown_str[pAD->assocCaps.linkBandwidth]);
 
         swl_bandwidth_e maxBw = pAD->MaxBandwidthSupported;
         if(maxBw == SWL_BW_AUTO) {
@@ -2640,40 +2484,31 @@ T_AccessPoint* wld_ap_fromIt(amxc_llist_it_t* it) {
 
 amxd_status_t _dbgClearInactiveEntries(amxd_object_t* object,
                                        amxd_function_t* func _UNUSED,
-                                       amxc_var_t* args,
+                                       amxc_var_t* args _UNUSED,
                                        amxc_var_t* ret _UNUSED) {
-
-    amxd_object_t* obj;
-    T_AccessPoint* pAP;
-    _UNUSED_(args);
-
-
     SAH_TRACEZ_IN(ME);
-    obj = object;
-    pAP = obj->priv;
 
-    int AssociatedDeviceIdx;
-    T_AssociatedDevice* dev;
-    for(AssociatedDeviceIdx = 0; AssociatedDeviceIdx < pAP->AssociatedDeviceNumberOfEntries; AssociatedDeviceIdx++) {
-        dev = pAP->AssociatedDevice[AssociatedDeviceIdx];
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, amxd_status_ok, ME, "NULL");
+
+    for(int AssociatedDeviceIdx = 0; AssociatedDeviceIdx < pAP->AssociatedDeviceNumberOfEntries; AssociatedDeviceIdx++) {
+        T_AssociatedDevice* dev = pAP->AssociatedDevice[AssociatedDeviceIdx];
         if((dev != NULL) && !dev->Active) {
             wld_ad_destroy(pAP, dev);
         }
     }
     wld_vap_sync_assoclist(pAP);
 
-
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
 T_AccessPoint* wld_vap_get_vap(const char* ifname) {
-    amxc_llist_for_each(llit, &g_radios) {
-        T_Radio* pRad = amxc_llist_it_get_data(llit, T_Radio, it);
-        amxc_llist_it_t* it;
-        for(it = amxc_llist_get_first(&pRad->llAP); it; it = amxc_llist_it_get_next(it)) {
-            T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
-            if(pAP && !strcmp(pAP->alias, ifname)) {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pAP;
+        wld_rad_forEachAp(pAP, pRad) {
+            if(pAP && swl_str_matches(pAP->alias, ifname)) {
                 return pAP;
             }
         }
@@ -2683,11 +2518,10 @@ T_AccessPoint* wld_vap_get_vap(const char* ifname) {
 }
 
 T_AccessPoint* wld_ap_getVapByName(const char* name) {
-    amxc_llist_for_each(llit, &g_radios) {
-        T_Radio* pRad = amxc_llist_it_get_data(llit, T_Radio, it);
-        amxc_llist_it_t* it;
-        for(it = amxc_llist_get_first(&pRad->llAP); it; it = amxc_llist_it_get_next(it)) {
-            T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pAP;
+        wld_rad_forEachAp(pAP, pRad) {
             if(pAP && swl_str_matches(pAP->name, name)) {
                 return pAP;
             }
@@ -2765,23 +2599,37 @@ bool wld_ap_getDesiredState(T_AccessPoint* pAp) {
     return true;
 }
 
-amxd_status_t _wld_ap_setDriverConfig_owf(amxd_object_t* object) {
+static void s_setApDriverConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    amxd_object_t* vapObject = amxd_object_get_parent(object);
-    ASSERTS_FALSE(amxd_object_get_type(vapObject) == amxd_object_template, amxd_status_unknown_error, ME, "Template");
-    T_AccessPoint* pAP = (T_AccessPoint*) vapObject->priv;
-    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s update driver config", pAP->alias);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pAP, , ME, "NULL");
+
     wld_vap_driverCfgChange_m params = 0;
-    int32_t tmp_int32 = amxd_object_get_int32_t(object, "BssMaxIdlePeriod", NULL);
-    if(pAP->driverCfg.bssMaxIdlePeriod != tmp_int32) {
-        SAH_TRACEZ_INFO(ME, "Update BssMaxIdlePeriod");
-        pAP->driverCfg.bssMaxIdlePeriod = tmp_int32;
-        params |= M_WLD_VAP_DRIVER_CFG_CHANGE_BSS_MAX_IDLE_PERIOD;
+    amxc_var_for_each(newValue, newParamValues) {
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "BssMaxIdlePeriod")) {
+            int32_t tmpInt32 = amxc_var_dyncast(int32_t, newValue);
+            if(tmpInt32 != pAP->driverCfg.bssMaxIdlePeriod) {
+                pAP->driverCfg.bssMaxIdlePeriod = tmpInt32;
+                params |= M_WLD_VAP_DRIVER_CFG_CHANGE_BSS_MAX_IDLE_PERIOD;
+            }
+        }
     }
-    pAP->pFA->mfn_wvap_set_config_driver(pAP, params);
+    if(params) {
+        SAH_TRACEZ_INFO(ME, "%s update driver config (0x%x)", pAP->alias, params);
+        pAP->pFA->mfn_wvap_set_config_driver(pAP, params);
+    }
+
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+}
+
+SWLA_DM_HDLRS(sApDriverConfigDmHdlrs, ARR(), .objChangedCb = s_setApDriverConfig_ocf);
+
+void _wld_ap_setDriverConfig_ocf(const char* const sig_name,
+                                 const amxc_var_t* const data,
+                                 void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApDriverConfigDmHdlrs, sig_name, data, priv);
 }
 
 /**
@@ -2847,20 +2695,21 @@ amxd_status_t _AssociatedDevice_getLastAssocReq(amxd_object_t* object,
                                                 amxd_function_t* func _UNUSED,
                                                 amxc_var_t* args _UNUSED,
                                                 amxc_var_t* retval) {
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(wifiVap, amxd_status_unknown_error, ME, "NULL");
-    T_AccessPoint* pAP = wifiVap->priv;
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "invalid AP parent");
-    const char* macStation = amxd_object_get_cstring_t(object, "MACAddress", NULL);
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "invalid AP parent");
+    char* macStation = amxd_object_get_cstring_t(object, "MACAddress", NULL);
     ASSERT_NOT_NULL(macStation, amxd_status_parameter_not_found, ME, "No mac station given");
-    return s_getLastAssocReq(pAP, macStation, retval);
+    amxd_status_t status = s_getLastAssocReq(pAP, macStation, retval);
+    free(macStation);
+    return status;
 }
 
 amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
                                  amxd_function_t* func _UNUSED,
                                  amxc_var_t* args,
                                  amxc_var_t* retMap) {
-    T_AccessPoint* pAP = obj->priv;
+    T_AccessPoint* pAP = wld_ap_fromObj(obj);
+    ASSERT_NOT_NULL(pAP, amxd_status_ok, ME, "No AP Ctx");
 
     const char* feature = GET_CHAR(args, "op");
     ASSERT_NOT_NULL(feature, amxd_status_unknown_error, ME, "No argument given");
@@ -2969,3 +2818,35 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
 
     return amxd_status_ok;
 }
+
+SWLA_DM_HDLRS(sApDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("SSIDReference", s_setSSIDRef_pwf),
+                  SWLA_DM_PARAM_HDLR("SSIDAdvertisementEnabled", s_setSsidAdvEnabled_pwf),
+                  SWLA_DM_PARAM_HDLR("RetryLimit", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("WMMEnable", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("RetryLimit", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("UAPSDEnable", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("MCEnable", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("APBridgeDisable", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("IsolationEnable", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("BridgeInterface", s_setBridgeInterface_pwf),
+                  SWLA_DM_PARAM_HDLR("DefaultDeviceType", s_setDefaultDeviceType_pwf),
+                  SWLA_DM_PARAM_HDLR("IEEE80211kEnabled", s_set80211kEnabled_pwf),
+                  SWLA_DM_PARAM_HDLR("WDSEnable", s_setWDSEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MBOEnable", s_setMBOEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MultiAPType", s_setMultiAPType_pwf),
+                  SWLA_DM_PARAM_HDLR("ApRole", s_setApRole_pwf),
+                  SWLA_DM_PARAM_HDLR("MaxAssociatedDevices", s_setMaxStations_pwf),
+                  SWLA_DM_PARAM_HDLR("DiscoveryMethodEnabled", s_setDiscoveryMethod_pwf),
+                  SWLA_DM_PARAM_HDLR("dbgAPEnable", s_setDbgEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("dbgAPFile", s_setDbgFile_pwf),
+                  SWLA_DM_PARAM_HDLR("Enable", s_setApEnable_pwf),
+                  ),
+              .instAddedCb = s_addApInst_oaf, );
+
+void _wld_ap_setConf_ocf(const char* const sig_name,
+                         const amxc_var_t* const data,
+                         void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApDmHdlrs, sig_name, data, priv);
+}
+

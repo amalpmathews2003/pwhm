@@ -26,17 +26,8 @@
             instance add ("vap2g0priv") {
                 parameter SSIDReference = "Device.WiFi.SSID.1.";
                 parameter Enable = 0;
-                parameter RetryLimit = 3;
-                parameter WMMEnable = 1;
-                parameter UAPSDEnable = 0;
-                parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
-                parameter IEEE80211kEnabled = 0;
-                parameter WDSEnable = 0;
-                parameter MBOEnable = 0;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
                     parameter WEPKey = "123456789ABCD";
@@ -60,25 +51,14 @@
                     parameter Enable = 1;
                     parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
                     parameter Configured = 1;
-                }
-                object DriverConfig {
-                    parameter BssMaxIdlePeriod = -1;
                 }
             }
             instance add ("vap5g0priv") {
                 parameter SSIDReference = "Device.WiFi.SSID.2.";
                 parameter Enable = 0;
-                parameter RetryLimit = 3;
-                parameter WMMEnable = 1;
-                parameter UAPSDEnable = 0;
-                parameter MCEnable = 0;
                 parameter DefaultDeviceType = "Data";
-                parameter IEEE80211kEnabled = 0;
                 parameter WDSEnable = 1;
-                parameter MBOEnable = 0;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,OWE,WEP-64,WEP-128,WEP-128iv,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal,E-None,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
                     parameter WEPKey = "123456789ABCD";
@@ -103,21 +83,11 @@
                     parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
                     parameter Configured = 1;
                 }
-                object DriverConfig {
-                    parameter BssMaxIdlePeriod = -1;
-                }
             }
             instance add ("vap2g0guest") {
                 parameter SSIDReference = "Device.WiFi.SSID.3.";
                 parameter Enable = 0;
-                parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
-                parameter IEEE80211kEnabled = 0;
-                parameter WDSEnable = 0;
-                parameter MBOEnable = 0;
-                parameter MultiAPType = "";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter WEPKey = "123456789ABCD";
@@ -137,14 +107,7 @@
             instance add ("vap5g0guest") {
                 parameter SSIDReference = "Device.WiFi.SSID.4.";
                 parameter Enable = 0;
-                parameter WMMEnable = 1;
                 parameter DefaultDeviceType = "Guest";
-                parameter IEEE80211kEnabled = 0;
-                parameter WDSEnable = 0;
-                parameter MBOEnable = 0;
-                parameter MultiAPType = "";
-                parameter ApRole = "Off";
-                parameter SSIDAdvertisementEnabled = 1;
                 object Security {
                     parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter WEPKey = "123456789ABCD";

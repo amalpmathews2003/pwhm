@@ -71,8 +71,8 @@
 #define NR_OF_STICKY_UNAUTHORIZED_STATIONS 1
 
 void t_destroy_handler_AP (amxd_object_t* object);
-T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx);
-int32_t wld_ap_initObj(T_AccessPoint* pAP, amxd_object_t* instance_object);
+T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, amxd_object_t* vapObj);
+T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj);
 int wld_ap_initializeVendor(T_Radio* pR, T_AccessPoint* pAP, T_SSID* pSSID);
 int wld_ap_init(T_AccessPoint* pAP);
 void wld_ap_destroy(T_AccessPoint* pAP);

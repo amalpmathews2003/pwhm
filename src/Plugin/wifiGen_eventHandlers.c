@@ -113,6 +113,26 @@ static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t
     SAH_TRACEZ_INFO(ME, "%s: csa finished to new_chan=%d", pRad->Name, chanSpec->channel);
 }
 
+static void s_newInterfaceCb(void* pRef, void* pData, wld_nl80211_ifaceInfo_t* pIfaceInfo);
+static void s_delInterfaceCb(void* pRef, void* pData, wld_nl80211_ifaceInfo_t* pIfaceInfo);
+static void s_refreshVapsIfIdx(T_Radio* pRad) {
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        wld_nl80211_ifaceInfo_t ifaceInfo;
+        ifaceInfo.ifIndex = pAP->index;
+        swl_rc_ne rc = wld_ap_nl80211_getInterfaceInfo(pAP, &ifaceInfo);
+        if((pAP->index > 0) && ((rc < SWL_RC_OK) || (pAP->index != (int) ifaceInfo.ifIndex))) {
+            wld_nl80211_ifaceInfo_t oldIfaceInfo;
+            swl_str_copy(oldIfaceInfo.name, sizeof(oldIfaceInfo.name), pAP->alias);
+            oldIfaceInfo.ifIndex = pAP->index;
+            oldIfaceInfo.wDevId = pAP->wDevId;
+            s_delInterfaceCb(pRad, NULL, &oldIfaceInfo);
+        }
+        if((rc >= SWL_RC_OK) && (ifaceInfo.ifIndex > 0) && (pAP->index != (int) ifaceInfo.ifIndex)) {
+            s_newInterfaceCb(pRad, NULL, &ifaceInfo);
+        }
+    }
+}
 static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
     ASSERTS_TRUE(isReady, , ME, "Not ready");
@@ -123,7 +143,9 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
          * Radio is ready, listening to mgmt frames is possible.
          * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
          */
-        wld_rad_nl80211_registerFrame(pRad, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0);
+        if(wld_rad_nl80211_registerFrame(pRad, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
+            SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pRad->Name);
+        }
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
         //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
@@ -134,6 +156,9 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
+            //in case we missed BSS re-creation nl80211 event, refresh relative info
+            //as wpactrl mgr is ready and enabled
+            s_refreshVapsIfIdx(pRad);
             setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
             wld_rad_doCommitIfUnblocked(pRad);
             return;
@@ -150,6 +175,9 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     // when main iface setup is completed, current chanspec is the last applied target chanspec
     s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
+    //in case we missed BSS re-creation nl80211 event, refresh relative info
+    //as wpactrl mgr is ready and enabled
+    s_refreshVapsIfIdx(pRad);
     setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
     wld_rad_doCommitIfUnblocked(pRad);
     wld_rad_updateState(pRad, true);
@@ -605,8 +633,10 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
     wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
 
-    ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),
-                SWL_RC_ERROR, ME, "%s: fail to set interface wpa evt handlers", pAP->alias);
+    if(pAP->wpaCtrlInterface != NULL) {
+        ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),
+                    SWL_RC_ERROR, ME, "%s: fail to set interface wpa evt handlers", pAP->alias);
+    }
 
     wld_nl80211_evtHandlers_cb nl80211VapEvtHandlers;
     memset(&nl80211VapEvtHandlers, 0, sizeof(nl80211VapEvtHandlers));

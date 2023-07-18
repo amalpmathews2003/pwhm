@@ -95,105 +95,90 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
                           amxd_function_t* func _UNUSED,
                           amxc_var_t* args,
                           amxc_var_t* retval) {
-    int ret = WLD_ERROR;
+    SAH_TRACEZ_IN(ME);
 
+    amxd_status_t status = amxd_status_unknown_error;
     const char* radioname = GET_CHAR(args, "radio");
-    const char* vapname = GET_CHAR(args, "vap");
-    SAH_TRACEZ_WARNING(ME, "NEW VAP %s %s", radioname, vapname);
-    /* uint32 addVAPIntf(string vap, string radio); */
-
     /* Get our T_Radio pointer of the selected radio */
-    T_Radio* pR = wld_getRadioDataHandler(get_wld_object(), radioname);
+    T_Radio* pR = wld_getRadioDataHandler(wifi, radioname);
+    ASSERT_NOT_NULL(pR, status, ME, "Radio structure for radio [%s] is missing", radioname);
+    const char* apname = GET_CHAR(args, "vap");
+    ASSERT_STR(apname, status, ME, "missing accesspoint instance alias");
+    amxd_object_t* apObjTmpl = amxd_object_get(wifi, "AccessPoint");
+    amxd_object_t* ssidObjTmpl = amxd_object_get(wifi, "SSID");
+    amxd_object_t* apObj = amxd_object_get_instance(apObjTmpl, apname, 0);
 
-    if(pR == NULL) {
-        goto leave;
-    }
-
-    T_AccessPoint* pAP = wld_ap_getVapByName(vapname);
-    if(pAP != NULL) {
-        SAH_TRACEZ_ERROR(ME, "vap with name %s is already created", vapname);
-        goto leave;
-    }
-
-    amxd_object_t* apParentObject = amxd_object_get_child(get_wld_object(), "AccessPoint");
-    amxd_object_t* apObj;
-    amxd_object_add_instance(&apObj, apParentObject, vapname, 0, NULL);
-    if(apObj == NULL) {
-        SAH_TRACEZ_ERROR(ME, "amxd_object_add_instance() failed");
-        goto leave;
-    }
-
-    char* apObjPath = amxd_object_get_path(pR->pBus, AMXD_OBJECT_NAMED);
-    if(apObjPath != NULL) {
-        amxd_object_set_cstring_t(apObj, "RadioReference", apObjPath);
-        free(apObjPath);
-    }
-
-    if(!(apParentObject)) {
-        SAH_TRACEZ_ERROR(ME, "Failed to commit");
-        goto leave;
-    }
-
-    amxd_object_t* ssidParentObject = amxd_object_get_child(get_wld_object(), "SSID");
-    amxd_object_t* ssidObj;
-    amxd_object_add_instance(&ssidObj, ssidParentObject, vapname, 0, NULL);
+    char ssidRef[128] = {0};
+    amxd_object_t* ssidObj = amxd_object_get_instance(ssidObjTmpl, apname, 0);
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
     if(ssidObj == NULL) {
-        SAH_TRACEZ_ERROR(ME, "amxd_object_add_instance() failed");
-        goto leave;
+        amxd_object_t* lastSsidInst = amxc_container_of(amxc_llist_get_last(&ssidObjTmpl->instances), amxd_object_t, it);
+        uint32_t newSsidIdx = amxd_object_get_index(lastSsidInst) + 1;
+        amxd_trans_select_object(&trans, ssidObjTmpl);
+        amxd_trans_add_inst(&trans, newSsidIdx, apname);
+        char* ssidTmplPath = amxd_object_get_path(ssidObjTmpl, AMXD_OBJECT_INDEXED);
+        swl_str_catFormat(ssidRef, sizeof(ssidRef), "%s.%d.", ssidTmplPath, newSsidIdx);
+        free(ssidTmplPath);
+        SAH_TRACEZ_INFO(ME, "%s: set trans to add new ssid instance (%s) at index (%d)", pR->Name, apname, newSsidIdx);
+    } else {
+        amxd_trans_select_object(&trans, ssidObj);
+        wld_util_getRealReferencePath(ssidRef, sizeof(ssidRef), "", ssidObj);
+        SAH_TRACEZ_INFO(ME, "%s: select trans existing ssid instance (%s)", pR->Name, apname);
     }
+    char lowerLayers[128] = {0};
+    wld_util_getRealReferencePath(lowerLayers, sizeof(lowerLayers), "", pR->pBus);
+    SAH_TRACEZ_INFO(ME, "%s: set trans ssidInst(%s) lowerLayers(%s)", pR->Name, apname, lowerLayers);
+    amxd_trans_set_value(cstring_t, &trans, "LowerLayers", lowerLayers);
 
-    char ssid[SSID_NAME_LEN] = {'\0'};
-    snprintf(ssid, SSID_NAME_LEN, "NeMo_SSID%d", amxd_object_get_instance_count(ssidParentObject));
-    amxd_object_set_cstring_t(ssidObj, "SSID", ssid);
-
-    if(!(ssidParentObject)) {
-        SAH_TRACEZ_ERROR(ME, "Failed to commit");
-        goto leave;
+    if(apObj == NULL) {
+        amxd_trans_select_object(&trans, apObjTmpl);
+        amxd_trans_add_inst(&trans, 0, apname);
+        SAH_TRACEZ_INFO(ME, "%s: set trans to add new ap instance (%s)", pR->Name, apname);
+    } else {
+        amxd_trans_select_object(&trans, apObj);
+        SAH_TRACEZ_INFO(ME, "%s: select trans existing ap instance (%s)", pR->Name, apname);
     }
+    SAH_TRACEZ_INFO(ME, "%s: set trans apInst(%s) SSIDReference(%s)", pR->Name, apname, ssidRef);
+    amxd_trans_set_value(cstring_t, &trans, "SSIDReference", ssidRef);
+    SAH_TRACEZ_INFO(ME, "%s: apply trans to add accesspoint (%s)", pR->Name, apname);
+    status = amxd_trans_apply(&trans, get_wld_plugin_dm());
+    amxd_trans_clean(&trans);
 
-    ret = WLD_OK;
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "%s: fail to apply trans to add ap (%s)", pR->Name, apname);
+    amxc_var_set(bool, retval, true);
 
-leave:
-    if(ret < 0) {
-        /* ERROR! */
-        SAH_TRACEZ_ERROR(ME, "addVAPIntf failed");
-    }
-    amxc_var_set(int32_t, retval, ret);
-
-    return (ret < 0) ? amxd_status_unknown_error : amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 amxd_status_t _delVAPIntf(amxd_object_t* wifi,
                           amxd_function_t* func _UNUSED,
                           amxc_var_t* args,
                           amxc_var_t* retval _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    amxd_status_t status = amxd_status_unknown_error;
     const char* vapname = GET_CHAR(args, "vap");
+    amxd_object_t* apObj = amxd_object_findf(wifi, "AccessPoint.%s", vapname);
+    ASSERT_NOT_NULL(apObj, status, ME, "AccessPoint instance (%s) not found", vapname);
+    amxd_object_t* ssidObj = amxd_object_findf(wifi, "SSID.%s", vapname);
+    ASSERT_NOT_NULL(ssidObj, status, ME, "Endpoint instance (%s) not found", vapname);
 
-    if(vapname == NULL) {
-        SAH_TRACEZ_ERROR(ME, "no vapname found");
-        return amxd_status_unknown_error;
-    }
-    /* remove our object entry out of the SSID and ACCESSPOINT table */
-    amxd_object_t* apChild = amxd_object_get_child(wifi, "AccessPoint");
-    amxd_object_t* apObj = amxd_object_get_instance(apChild, vapname, 0);
-    amxd_object_t* ssidChild = amxd_object_get_child(wifi, "SSID");
-    amxd_object_t* ssidObj = amxd_object_get_instance(ssidChild, vapname, 0);
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
+    amxd_trans_select_object(&trans, amxd_object_get_parent(apObj));
+    amxd_trans_del_inst(&trans, amxd_object_get_index(apObj), NULL);
+    amxd_trans_select_object(&trans, amxd_object_get_parent(ssidObj));
+    amxd_trans_del_inst(&trans, amxd_object_get_index(ssidObj), NULL);
+    status = amxd_trans_apply(&trans, get_wld_plugin_dm());
+    amxd_trans_clean(&trans);
 
-    if(!apObj || !ssidObj) {
-        SAH_TRACEZ_ERROR(ME, "%s: no vap object found", vapname);
-        return amxd_status_unknown_error;
-    }
+    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "fail to apply trans to del ap (%s)", vapname);
+    amxc_var_set(bool, retval, true);
 
-    T_AccessPoint* pAP = (T_AccessPoint*) apObj->priv;
-    if(pAP) {
-        wld_ap_destroy(pAP);
-    } else {
-        SAH_TRACEZ_ERROR(ME, "%s: no vap data found", vapname);
-    }
-
-    amxd_object_delete(&apObj);
-    amxd_object_delete(&ssidObj);
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 /**

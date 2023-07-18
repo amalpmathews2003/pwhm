@@ -190,7 +190,11 @@ static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
     uint32_t nStations = 0;
     wld_nl80211_stationInfo_t* pAllStaInfo = NULL;
     swl_rc_ne retVal = wld_ap_nl80211_getAllStationsInfo(pAP, &pAllStaInfo, &nStations);
-    ASSERT_FALSE(retVal < SWL_RC_OK, retVal, ME, "%s: fail to get all stations info", pAP->alias);
+    if(retVal < SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to get all stations info", pAP->alias);
+        free(pAllStaInfo);
+        return retVal;
+    }
 
     wld_rad_getCurrentNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
 

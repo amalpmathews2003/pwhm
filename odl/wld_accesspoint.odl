@@ -100,7 +100,9 @@ define rrm_t{
 	 *  entry in this table can exist with a given value for
 	 *  SSIDReference.</p>*/
 	%persistent object AccessPoint[]{
-		on action add-inst call wld_ap_addInstance_ocf;
+		on action add-inst call wld_ap_addInstance_oaf;
+		on action destroy call wld_ap_delInstance_odf;
+		on event "*" call wld_ap_setConf_ocf;
 
 		/**
 		 * <b>kickStation</b>
@@ -206,12 +208,11 @@ define rrm_t{
 		*  configuration value is undefined or invalid. The Error value
 		*  MAY be used by the CPE to indicate a locally defined error
 		*  condition.*/
-		%read-only string Status;
-/*		{
+		%read-only string Status{
 			on action validate call check_enum ["Disabled","Enabled","Error_Misconfigured","Error"];
 			default "Disabled";
 		}
-*/
+
 		/** A non-volatile handle used to reference this instance. Alias
 		 *  provides a mechanism for an ACS to label this instance for
 		 *  future reference. An initial unique value MUST be assigned
@@ -227,12 +228,10 @@ define rrm_t{
 		/** The value MUST be the path name of a row in the SSID table.
 		 *  If the referenced object is deleted, the parameter value
 		 *  MUST be set to an empty string.  */
-		%persistent string SSIDReference{
-			on action write call wld_ap_setSSIDRef_pwf;
-		}
+		%persistent string SSIDReference;
+
 		/** Indicates whether or not beacons include the SSID name. */
 		%persistent bool SSIDAdvertisementEnabled{
-			on action write call wld_ap_setCommonParam_pwf;
 			default true;
 			userflags %upc;
 		}
@@ -240,7 +239,7 @@ define rrm_t{
 		 *  corresponds to IEEE 802.11 parameter
 		 *  dot11ShortRetryLimit. */
 		%persistent uint32 RetryLimit{
-			on action write call wld_ap_setCommonParam_pwf;
+			default 3;
 		}
 		/** Indicates whether this access point supports WiFi
 		 *  Multimedia (WMM) Access Categories (AC).  */
@@ -252,35 +251,27 @@ define rrm_t{
 		/** Whether WMM support is currently enabled. When enabled,
 		 *  this is indicated in beacon frames.*/
 		%persistent bool WMMEnable{
-			on action write call wld_ap_setCommonParam_pwf;
+			default true;
 		}
 		/** <p>Whether U-APSD support is currently enabled. When
 		 *  enabled, this is indicated in beacon frames.</p> Note:
 		 *  U-APSD can only be enabled if WMM is also enabled. */
-		%persistent bool UAPSDEnable{
-			on action write call wld_ap_setCommonParam_pwf;
-		}
+		%persistent bool UAPSDEnable;
 
 		/** <p>Enable / Disable the MultiCast feature on the interface
 		On a 5GHz by default enabled </p>
 		*/
-		%persistent bool MCEnable{
-			on action write call wld_ap_setCommonParam_pwf;
-		}
+		%persistent bool MCEnable;
 
 		/** <p>APBridgeDisable Disable the Bridged traffic of
 		STA connected on the same VAP. </p>
 		*/
-		%persistent bool APBridgeDisable{
-			on action write call wld_ap_setCommonParam_pwf;
-		}
+		%persistent bool APBridgeDisable;
 
 		/** <p> Name of the bridge interface used with this VAP.
 		Some vendor deamons depend on this so we can track it.</p>
 		 */
-		%persistent string BridgeInterface{
-			on action write call wld_ap_setBridgeInterface_pwf;
-		}
+		%persistent string BridgeInterface;
 
 		/**
 		 * The wlan device type which will be assigned to devices connecting to this vap.
@@ -290,7 +281,6 @@ define rrm_t{
 		%persistent string DefaultDeviceType{
 			on action validate call check_enum ["Video","Data","Guest"];
 			default "Data";
-			on action write call wld_ap_setDefaultDeviceType_pwf;
 		}
 
 		/**
@@ -299,14 +289,12 @@ define rrm_t{
 		 * @version 9.0
 		 */
 		%persistent bool IEEE80211kEnabled{
-			on action write call wld_ap_set80211kEnabled_pwf;
 			default false;
 		}
 
 		/** Enables or disables this access point.*/
 		%persistent bool Enable{
 			default false;
-			on action write call wld_ap_setEnable_pwf;
 			userflags %upc;
 		}
 
@@ -316,7 +304,6 @@ define rrm_t{
 		 */
 		%persistent bool WDSEnable{
 			default false;
-			on action write call wld_ap_setWDSEnable_pwf;
 		}
 
 		/**
@@ -325,7 +312,6 @@ define rrm_t{
 		 */
 		%persistent bool MBOEnable{
 			default false;
-			on action write call wld_ap_setMBOEnable_pwf;
 		}
 
 		/**
@@ -336,7 +322,6 @@ define rrm_t{
 		 */
 		%persistent string MultiAPType {
 			default "Off";
-			on action write call wld_ap_setMultiAPType_pwf;
 		}
 
 		/**
@@ -349,7 +334,6 @@ define rrm_t{
 		 */
 		%persistent string ApRole {
 			default "Off";
-			on action write call wld_ap_setRole_pwf;
 			on action validate call check_enum ["Off","Main","Relay","Remote"];
 		}
 
@@ -366,13 +350,14 @@ define rrm_t{
 		 * @version 9.1
 		 */
 		%persistent object IEEE80211r {
+			on event "*" call wld_ap_11r_setConf_ocf;
 			/**
 			 * Indicates whether IEEE 802.11r functionality is enabled
 			 * on this accesspoint. It must be supported by the radio of this accesspoint.
 			 * @version 9.1
 			 */
 			%persistent bool Enabled{
-				on action write call wld_ap_set80211rEnabled_pwf;
+				on action validate call wld_ap_validateIEEE80211rEnabled_pvf;
 				default false;
 			}
 
@@ -382,7 +367,6 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			%persistent bool FTOverDSEnable{
-				on action write call wld_ap_setFTOverDSEnable_pwf;
 				default false;
 			}
 
@@ -404,7 +388,6 @@ define rrm_t{
 			*/
 			%persistent uint16 MobilityDomain{
 				on action validate call check_range { min = 0, max = 65535 };
-				on action write call wld_ap_setMobilityDomain_pwf;
 				default 0;
 			}
 		}
@@ -414,12 +397,12 @@ define rrm_t{
 		 * @version 10.0
 		 */
 		%persistent object IEEE80211u {
+			on event "*" call wld_ap_11u_setConf_ocf;
 			/**
 			 * Indicates whether IEEE 802.11u interworking feature is enabled
 			 * @version 10.0
 			 */
 			%persistent bool InterworkingEnable{
-				on action write call wld_ap_setInterworkingEnable_pwf;
 				default false;
 			}
 
@@ -431,9 +414,7 @@ define rrm_t{
 			 * [<DSCP Exceptions[DSCP,UP]>,]<UP 0 range[low,high]>,...<UP 7 range[low,high]>
 			 * @version 10.0
 			 */
-			%persistent string QoSMapSet {
-				on action write call wld_ap_setQosMapSet_pwf;
-			}
+			%persistent string QoSMapSet;
 		}
 
 		/**
@@ -444,7 +425,6 @@ define rrm_t{
 		 */
 		uint32 MaxAssociatedDevices{
 			default 32;
-			on action write call wld_ap_setMaxStations_pwf;
 		}
 
 		/** 
@@ -455,7 +435,6 @@ define rrm_t{
 		 */
 		%persistent bool IsolationEnable{
 			default false;
-			on action write call wld_ap_setCommonParam_pwf;
 		}
 
 		/** This object contains security related parameters that apply
@@ -1983,7 +1962,7 @@ define rrm_t{
 		 * @version 10.0
 		 */
 		%persistent object DriverConfig {
-		on action write call wld_ap_setDriverConfig_owf;
+			on event "*" call wld_ap_setDriverConfig_ocf;
 			/**
 			 * The BSS Max Idle period is the time frame during which an access point (AP) does not disassociate a client
 			 * due to non-receipt of frames from the connectedclient.
@@ -2101,17 +2080,17 @@ define rrm_t{
 
 		/**
 		 * In band discovery methods enabled (mandatory for 6GHz). It is a comma-seperated
-         * list of strings. It can be one or more options of the following:
+		 * list of strings. It can be one or more options of the following:
 		 * - Default value from driver: "Default"
 		 * - Disabled: "Disabled"
-         * - Reduced Neigbor Report: "RNR"
+		 * - Reduced Neigbor Report: "RNR"
 		 * - Unsolicited Probe Response (6GHz only): "UPR"
 		 * - FILS Discovery: "FILSDiscovery"
 		 * @version 10.0
 		 */
 		%persistent string DiscoveryMethodEnabled{
 			default "Default";
-			on action write call wld_ap_setDiscoveryMethod_pwf;
+			on action validate call wld_ap_validateDiscoveryMethod_pvf;
 		}
 
 			/**
@@ -2259,17 +2238,13 @@ define rrm_t{
 		 *  Enable extra debugging output by vendor deamon applications
 		 *  The content of this one is for developpers only and not meant to export for clients.
 		 */
-		int32 dbgAPEnable{
-			default 0;
-			on action write call wld_ap_setDbgEnable_pwf;
-		}
-		string dbgAPFile{
-			on action write call wld_ap_setDbgFile_pwf;
-		}
+		int32 dbgAPEnable;
+		
+		string dbgAPFile;
 
 		void dbgClearInactiveEntries();
 
-		void debug();
+		htable debug(%in string op);
 
 
 	} /* object AccessPoint */

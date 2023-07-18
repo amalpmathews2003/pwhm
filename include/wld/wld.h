@@ -1664,7 +1664,7 @@ struct S_ACCESSPOINT {
     T_SSID* pSSID;                   /* Contains a direct pointer to the created SSID for this VAP */
     T_Radio* pRadio;                 /* Contains a direct pointer to the parent of this VAP */
 
-    int SSIDAdvertisementEnabled;
+    bool SSIDAdvertisementEnabled;
     int retryLimit;
     bool WMMCapability;
     bool UAPSDCapability;

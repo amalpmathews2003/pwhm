@@ -178,18 +178,7 @@ void wld_plugin_syncDm() {
     SAH_TRACEZ_WARNING(ME, "Syncing Objects RAD/SSID/AP/EP");
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
-        T_AccessPoint* pAP;
         T_SSID* pSSID;
-        /*
-         * SSID obj DM params was synced to internal when setting relative AP/EP instances
-         * Now we push updated SSID params to DM
-         */
-        wld_rad_forEachAp(pAP, pRad) {
-            pSSID = (T_SSID*) pAP->pSSID;
-            pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
-            pRad->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
-            pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
-        }
         T_EndPoint* pEP;
         wld_rad_forEachEp(pEP, pRad) {
             wld_endpoint_reconfigure(pEP);
