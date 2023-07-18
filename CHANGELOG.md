@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.18.2 - 2023-07-18(16:25:14 +0000)
+
+### Other
+
+- revert listening for usp sock in pwhm, causing crash
+
 ## Release v3.18.1 - 2023-07-18(12:24:10 +0000)
 
 ### Other
