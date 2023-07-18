@@ -156,6 +156,7 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
         //check instance match
         assert_ptr_equal(devList[i], wld_vap_find_asociatedDevice(vap, &binAddr));
         wld_ad_add_connection_try(vap, devList[i]);
+        ttb_mockTimer_goToFutureMs(1);
 
         s_checkDevEntries(vap, i + 1, i + 1);
 
@@ -212,6 +213,7 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
         printf("Add %u\n", i);
         devList[i] = wld_vap_findOrCreateAssociatedDevice(vap, &binAddr);
         wld_ad_add_connection_try(vap, devList[i]);
+        ttb_mockTimer_goToFutureMs(1);
 
         s_checkDevEntries(vap, SWL_MIN(i + 2, NR_TEST_DEV), i + 1);
 

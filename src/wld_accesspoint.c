@@ -1879,60 +1879,6 @@ void wld_ap_destroy(T_AccessPoint* pAP) {
     free(pAP);
 }
 
-/**
- * Write handler for associated devices.
- *
- * This function will retrieve the deviceType and devicePriority from the data model.
- * It will then call the plugin to update it's internal model with the change.
- *
- * Success or failure of plugin call is ignored.
- */
-amxd_status_t _wld_ap_updateAssocDev(amxd_object_t* object _UNUSED,
-                                     amxd_param_t* parameter _UNUSED,
-                                     amxd_action_t reason _UNUSED,
-                                     const amxc_var_t* const args _UNUSED,
-                                     amxc_var_t* const retval _UNUSED,
-                                     void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* station = object;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_object_get_parent(station));
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    T_AssociatedDevice* assocDev = (T_AssociatedDevice*) station->priv;
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-
-    SAH_TRACEZ_IN(ME);
-
-    if(!(pAP && assocDev && debugIsVapPointer(pAP))) {
-        SAH_TRACEZ_INFO(ME, "ap not yet init: ap %p dev %p", pAP, assocDev);
-        return amxd_status_unknown_error;
-    }
-
-    char* deviceType = amxd_object_get_cstring_t(station, "DeviceType", NULL);
-    int newDeviceType = conv_ModeIndexStr(cstr_DEVICE_TYPES, deviceType);
-    free(deviceType);
-    int newDevicePriority = amxd_object_get_int32_t(station, "DevicePriority", NULL);
-
-    if((newDeviceType != assocDev->deviceType) || (newDevicePriority != assocDev->devicePriority)) {
-        assocDev->deviceType = newDeviceType;
-        assocDev->devicePriority = newDevicePriority;
-
-        pAP->pFA->mfn_wvap_update_assoc_dev(pAP, assocDev);
-        SAH_TRACEZ_INFO(ME, "update assocdev %s type %u prio %d", assocDev->Name, assocDev->deviceType, assocDev->devicePriority);
-    }
-
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
-}
-
-
 
 // This function will kick a STA with given MAC from the VAP interface.
 amxd_status_t _kickStation(amxd_object_t* obj_AP,
@@ -2157,6 +2103,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 
         wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
+        wld_ad_syncRrmCapabilities(&trans, &pAD->assocCaps);
 
         swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX),
         amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
@@ -2173,6 +2120,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_t trans;
         ASSERT_TRANSACTION_INIT(probeReqCapsObject, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
         wld_ad_syncCapabilities(&trans, &pAD->probeReqCaps);
+        wld_ad_syncRrmCapabilities(&trans, &pAD->probeReqCaps);
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "%s : trans apply failure", pAD->Name);
         pAD->lastProbeCapUpdateTime = pAD->probeReqCaps.updateTime;
     }

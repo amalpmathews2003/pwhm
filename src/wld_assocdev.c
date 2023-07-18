@@ -616,13 +616,9 @@ void wld_ad_printSignalStrengthHistory(T_AssociatedDevice* pAD, char* buf, uint3
 
 void wld_ad_printSignalStrengthByChain(T_AssociatedDevice* pAD, char* buf, uint32_t bufSize) {
     ASSERTS_TRUE((buf != NULL) && (bufSize > 0), , ME, "empty");
-    char ValBuf[7] = {'\0'};//Example : -100.0
     for(uint32_t idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
-        if(idx && buf[0]) {
-            swl_str_cat(buf, bufSize, ",");
-        }
-        snprintf(ValBuf, sizeof(ValBuf), "%.1f", pAD->SignalStrengthByChain[idx]);
-        swl_str_cat(buf, bufSize, ValBuf);
+        //Example : -100.0
+        swl_strlst_catFormat(buf, bufSize, ",", "%.1f", pAD->SignalStrengthByChain[idx]);
     }
 }
 
@@ -905,8 +901,7 @@ bool wld_ad_has_active_video_stations(T_AccessPoint* pAP) {
 
 bool wld_rad_has_active_stations(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         if(wld_ad_has_active_stations(pAP)) {
             return true;
         }
@@ -916,8 +911,7 @@ bool wld_rad_has_active_stations(T_Radio* pRad) {
 
 bool wld_rad_has_active_video_stations(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         if(wld_ad_has_active_video_stations(pAP)) {
             return true;
         }
@@ -960,8 +954,7 @@ int wld_rad_get_nb_active_video_stations(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
     int nr_sta = 0;
 
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         nr_sta += wld_ad_get_nb_active_video_stations(pAP);
     }
     return nr_sta;
@@ -985,8 +978,7 @@ bool wld_ad_has_assocdev(T_AccessPoint* pAP, const unsigned char macAddress[ETHE
 T_AccessPoint* wld_rad_get_associated_ap(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]) {
     T_AccessPoint* pAP = NULL;
 
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         if(wld_ad_has_assocdev(pAP, macAddress)) {
             return pAP;
         }
@@ -1003,8 +995,7 @@ wld_assocDevInfo_t wld_rad_get_associatedDeviceInfo(T_Radio* pRad, const unsigne
     assocDevInfo.pAP = NULL;
     assocDevInfo.pAD = NULL;
 
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         pAD = wld_vap_find_asociatedDevice(pAP, (void*) macAddress);
         if(pAD) {
             assocDevInfo.pAP = pAP;
@@ -1045,10 +1036,10 @@ int wld_ad_get_nb_far_station(T_AccessPoint* pAP, int threshold) {
 
 void wld_ad_checkRoamSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
-    amxc_llist_for_each(rad_it, &g_radios) {
-        T_Radio* testRad = amxc_llist_it_get_data(rad_it, T_Radio, it);
-        amxc_llist_for_each(ap_it, &testRad->llAP) {
-            T_AccessPoint* testAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
+    T_Radio* testRad;
+    wld_for_eachRad(testRad) {
+        T_AccessPoint* testAp;
+        wld_rad_forEachAp(testAp, testRad) {
             if(testAp == pAP) {
                 continue;
             }
@@ -1220,47 +1211,75 @@ void wld_ad_add_sec_failNoDc(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     }
 }
 
-amxd_status_t _doAssociationCountReset(amxd_object_t* object _UNUSED,
-                                       amxd_param_t* parameter _UNUSED,
-                                       amxd_action_t reason _UNUSED,
-                                       const amxc_var_t* const args _UNUSED,
-                                       amxc_var_t* const retval _UNUSED,
-                                       void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setResetCounters_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool valid = amxc_var_dyncast(bool, args);
-
-    if(valid) {  // Only when TRUE
-        if(!(pAP && debugIsVapPointer(pAP))) {
-            return amxd_status_unknown_error;
-        }
-
-        amxd_object_t* object = (amxd_object_t*) pAP->pBus;
-        amxd_object_t* counter = amxd_object_findf(object, "AssociationCount");
-
+    bool flag = amxc_var_dyncast(bool, newValue);
+    if(flag) {
         // Reset On Write
-        amxd_object_set_bool(counter, "ResetCounters", 0);
+        amxd_object_set_bool(object, "ResetCounters", 0);
         // Reset Association Counters on 0!
-        amxd_object_set_uint32_t(counter, "Success", 0);
-        amxd_object_set_uint32_t(counter, "Fail", 0);
-        amxd_object_set_uint32_t(counter, "FailSecurity", 0);
-        amxd_object_set_uint32_t(counter, "Disconnect", 0);
+        amxd_object_set_uint32_t(object, "Success", 0);
+        amxd_object_set_uint32_t(object, "Fail", 0);
+        amxd_object_set_uint32_t(object, "FailSecurity", 0);
+        amxd_object_set_uint32_t(object, "Disconnect", 0);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+}
+
+SWLA_DM_HDLRS(sApAssocCountDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("ResetCounters", s_setResetCounters_pwf)));
+
+void _wld_ap_setAssocCountConf_ocf(const char* const sig_name,
+                                   const amxc_var_t* const data,
+                                   void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApAssocCountDmHdlrs, sig_name, data, priv);
+}
+
+static void s_updateAssocDev_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues) {
+    SAH_TRACEZ_IN(ME);
+
+    bool needSyncAd = false;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pAP, , ME, "Invalid AP Ctx");
+    T_AssociatedDevice* assocDev = (T_AssociatedDevice*) object->priv;
+    ASSERT_NOT_EQUALS(wld_ad_getIndex(pAP, assocDev), -1, , ME, "%s: Invalid AD Ctx (%p)", pAP->alias, assocDev);
+    amxc_var_for_each(newValue, newParamValues) {
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "DeviceType")) {
+            const char* valStr = amxc_var_constcast(cstring_t, newValue);
+            int newDeviceType = swl_conv_charToEnum(valStr, cstr_DEVICE_TYPES, DEVICE_TYPE_MAX, DEVICE_TYPE_DATA);
+            if(newDeviceType == assocDev->deviceType) {
+                continue;
+            }
+            assocDev->deviceType = newDeviceType;
+        } else if(swl_str_matches(pname, "DevicePriority")) {
+            int newDevicePriority = amxc_var_dyncast(int32_t, newValue);
+            if(newDevicePriority == assocDev->devicePriority) {
+                continue;
+            }
+            assocDev->devicePriority = newDevicePriority;
+        } else {
+            continue;
+        }
+        needSyncAd = true;
+    }
+
+    if(needSyncAd) {
+        SAH_TRACEZ_INFO(ME, "%s: update assocdev %s type %u prio %u", pAP->alias, assocDev->Name, assocDev->deviceType, assocDev->devicePriority);
+        pAP->pFA->mfn_wvap_update_assoc_dev(pAP, assocDev);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sApAssocDevDmHdlrs, ARR(), .objChangedCb = s_updateAssocDev_ocf, );
+
+void _wld_ap_setAssocDevConf_ocf(const char* const sig_name,
+                                 const amxc_var_t* const data,
+                                 void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApAssocDevDmHdlrs, sig_name, data, priv);
 }
 
 static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
@@ -1295,20 +1314,27 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
 
     amxd_trans_set_cstring_t(trans, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
     char buffer[256];
-    swl_conv_maskToChar(buffer, sizeof(buffer), caps->htCapabilities, swl_staCapHt_str, SWL_ARRAY_SIZE(swl_staCapHt_str));
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->htCapabilities, swl_staCapHt_str, SWL_STACAP_HT_MAX);
     amxd_trans_set_cstring_t(trans, "HtCapabilities", buffer);
-    swl_conv_maskToChar(buffer, sizeof(buffer), caps->vhtCapabilities, swl_staCapVht_str, SWL_ARRAY_SIZE(swl_staCapVht_str));
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->vhtCapabilities, swl_staCapVht_str, SWL_STACAP_VHT_MAX);
     amxd_trans_set_cstring_t(trans, "VhtCapabilities", buffer);
-    swl_conv_maskToChar(buffer, sizeof(buffer), caps->heCapabilities, swl_staCapHe_str, SWL_ARRAY_SIZE(swl_staCapHe_str));
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->heCapabilities, swl_staCapHe_str, SWL_STACAP_HE_MAX);
     amxd_trans_set_cstring_t(trans, "HeCapabilities", buffer);
-    swl_conv_maskToChar(buffer, sizeof(buffer), caps->rrmCapabilities, swl_staCapRrm_str, SWL_ARRAY_SIZE(swl_staCapRrm_str));
-    amxd_trans_set_cstring_t(trans, "RrmCapabilities", buffer);
-    amxd_trans_set_uint32_t(trans, "RrmOnChannelMaxDuration", caps->rrmOnChannelMaxDuration);
-    amxd_trans_set_uint32_t(trans, "RrmOffChannelMaxDuration", caps->rrmOffChannelMaxDuration);
+
     char frequencyCapabilitiesStr[128] = {0};
     swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);
     amxd_trans_set_cstring_t(trans, "FrequencyCapabilities", frequencyCapabilitiesStr);
     amxc_string_clean(&TBufStr);
+}
+
+void wld_ad_syncRrmCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
+    ASSERT_NOT_NULL(trans, , ME, "NULL");
+    ASSERT_NOT_NULL(caps, , ME, "NULL");
+    char buffer[256];
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->rrmCapabilities, swl_staCapRrm_str, SWL_STACAP_RRM_MAX);
+    amxd_trans_set_cstring_t(trans, "RrmCapabilities", buffer);
+    amxd_trans_set_uint32_t(trans, "RrmOnChannelMaxDuration", caps->rrmOnChannelMaxDuration);
+    amxd_trans_set_uint32_t(trans, "RrmOffChannelMaxDuration", caps->rrmOffChannelMaxDuration);
 }
 
 int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD) {

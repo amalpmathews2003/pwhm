@@ -994,6 +994,8 @@ define rrm_t{
 		 */
 		object AssociationCount {
 
+			on event "*" call wld_ap_setAssocCountConf_ocf;
+
 			/**
 			 * The amount of successful connection attempts since last reset.
 			 */
@@ -1041,16 +1043,14 @@ define rrm_t{
 			 * This param does a reset of AssociationCounts params when TRUE.
 			 * But is visibly always FALSE!
 			 */
-			bool ResetCounters{
-				on action write call doAssociationCountReset;
-			}
+			bool ResetCounters;
 		}
 
 		/** Update the statistics in of the AssociatedDevice[] objects in the datamodel,
 		 * @return list of variant maps with the AssociatedDevice values
 		 * @version 6.0
 		*/
-		void getStationStats();
+		list getStationStats();
 
 		/** The number of active entries in the AssociatedDevice table.  */
 		%read-only uint32 ActiveAssociatedDeviceNumberOfEntries;
@@ -1065,6 +1065,7 @@ define rrm_t{
 		  */
 		%read-only object AssociatedDevice[]{
 			on action read call getSingleStationStats;
+			on event "*" call wld_ap_setAssocDevConf_ocf;
 
 			/** CUI based on Chargeable-User-Identity attribute in Access-Accept
 			 * @version 6.0  */
@@ -1334,7 +1335,6 @@ define rrm_t{
 			string DeviceType{
 				on action validate call check_enum ["Video","Data","Guest"];
 				default "Data";
-				on action write call wld_ap_updateAssocDev;
 			}
 
 			/**
@@ -1342,7 +1342,6 @@ define rrm_t{
 			 */
 			uint32 DevicePriority{
 				default 1;
-				on action write call wld_ap_updateAssocDev;
 			}
 
 			/**
