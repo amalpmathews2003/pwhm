@@ -448,7 +448,7 @@ bool convIntArrToString(char* str, int str_size, const int* int_list, int list_s
     str[0] = 0;
     ASSERTS_TRUE(list_size > 0, true, ME, "null list size");
     for(i = 0; (i < list_size) && ((int) strlen(str) < (str_size - 1)); i++) {
-        swl_str_catFormat(str, str_size, "%s%i", (i ? "," : ""), int_list[i]);
+        swl_strlst_catFormat(str, str_size, ",", "%i", int_list[i]);
     }
     ASSERTI_EQUALS(i, list_size, false, ME, "Int array not fully converted to string: str buf too small");
     return true;
@@ -492,7 +492,7 @@ bool convStrArrToStr(char* str, int str_size, const char** strList, int list_siz
     str[0] = 0;
     ASSERTS_TRUE(list_size > 0, true, ME, "null list size");
     for(i = 0; (i < list_size) && ((int) strlen(str) < (str_size - 1)); i++) {
-        swl_str_catFormat(str, str_size, "%s%s", (i ? "," : ""), strList[i]);
+        swl_strlst_cat(str, str_size, ",", strList[i]);
     }
     ASSERTI_EQUALS(i, list_size, false, ME, "Int array not fully converted to string: str buf too small");
     return true;
@@ -1970,7 +1970,7 @@ int wld_writeCapsToString(char* buffer, uint32_t size, const char* const* strArr
     for(i = 0; i < maxCaps; i++) {
         mask = (1 << i);
         if((mask & caps) != 0) {
-            swl_str_catFormat(buffer, size, "%s%s", (strlen(buffer) ? "," : ""), strArray[i]);
+            swl_strlst_cat(buffer, size, ",", strArray[i]);
             if(strlen(buffer) >= (size - 1)) {
                 return -1;
             }
@@ -1995,10 +1995,7 @@ void wld_bitmaskToCSValues(char* string, size_t stringsize, const int bitmask, c
     for(idx = 0; strings[idx]; idx++) {
         bitchk = 1 << idx;
         if(bitmask & bitchk) {
-            if(idx && string[0]) {
-                swl_str_cat(string, stringsize, ",");
-            }
-            swl_str_cat(string, stringsize, strings[idx]);
+            swl_strlst_cat(string, stringsize, ",", strings[idx]);
         }
     }
 }

@@ -121,7 +121,7 @@ void wld_rad_parse_status(T_Radio* pR) {
     int i = 0;
     for(i = 0; i < pR->nrCapabilities; i++) {
         if(pR->cap_status[i].status) {
-            swl_str_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
+            swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
     }
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
@@ -140,7 +140,7 @@ static void wld_rad_parse_enable(T_Radio* pR, int includeIndex, int excludeIndex
     int i = 0;
     for(i = 0; i < pR->nrCapabilities; i++) {
         if((i == includeIndex) || (pR->cap_status[i].enable && (i != excludeIndex))) {
-            swl_str_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
+            swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
     }
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
@@ -161,7 +161,7 @@ void wld_rad_parse_cap(T_Radio* pR) {
     int i = 0;
     for(i = 0; i < pR->nrCapabilities; i++) {
         if(pR->cap_status[i].capable) {
-            swl_str_catFormat(cap_string, sizeof(cap_string), "%s ", pR->capabilities[i].Name);
+            swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
     }
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
@@ -273,34 +273,15 @@ static void wld_rad_setCapabilityIndex(T_Radio* pR, int index, bool status) {
  * This function will retrieve the enable string, cut it into parts.
  * Then it will go over all capabilities, and check whether or not it's in the requested capabilities list.
  */
-amxd_status_t _wld_rad_capability_setEnable(amxd_object_t* wifi_cap,
-                                            amxd_param_t* parameter,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args _UNUSED,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_object_get_parent(wifi_cap);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(wifi_cap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERTI_TRUE(pR->nrCapabilities > 0, amxd_status_ok, ME, "%s: No specific radio caps", pR->Name);
-
+static void s_setEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    char* capabilities = amxc_var_dyncast(cstring_t, args);
-    ASSERT_NOT_NULL(capabilities, amxd_status_unknown_error, ME, "NULL");
-
-    SAH_TRACEZ_INFO(ME, "Setting capabilities [%s] on radio [%s]", capabilities, pR->Name);
-
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERTI_TRUE(pR->nrCapabilities > 0, , ME, "%s: No specific radio caps", pR->Name);
+    char* capabilities = amxc_var_dyncast(cstring_t, newValue);
+    ASSERT_NOT_NULL(capabilities, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: Setting capabilities [%s]", pR->Name, capabilities);
     char* capabilityList[1 + pR->nrCapabilities];
     int nrValues = wld_rad_parseList(capabilities, capabilityList, pR->nrCapabilities);
     free(capabilities);
@@ -323,7 +304,6 @@ amxd_status_t _wld_rad_capability_setEnable(amxd_object_t* wifi_cap,
     wld_rad_parse_status(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 /**
@@ -494,5 +474,14 @@ void wld_rad_clearSuppDrvCaps(T_Radio* pRad) {
         free(pRad->suppDrvCaps[i]);
         pRad->suppDrvCaps[i] = NULL;
     }
+}
+
+SWLA_DM_HDLRS(sRadCapsDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enabled", s_setEnabled_pwf)));
+
+void _wld_radCaps_setConf_ocf(const char* const sig_name,
+                              const amxc_var_t* const data,
+                              void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sRadCapsDmHdlrs, sig_name, data, priv);
 }
 

@@ -130,7 +130,7 @@ static void test_radioStatus(void** state _UNUSED) {
     wld_th_dmBand_t* bandInfo = &dm.bandList[SWL_FREQ_BAND_5GHZ];
     T_Radio* pRad = dm.bandList[SWL_FREQ_BAND_5GHZ].rad;
     T_SSID* pSSID = dm.bandList[SWL_FREQ_BAND_5GHZ].vapPrivSSID;
-    wld_th_ep_setEnable(bandInfo->ep, false, false);
+    wld_th_ep_setEnable(bandInfo->ep, false, true);
 
     wld_status_changeInfo_t radTargetData;
     memset(&radTargetData, 0, sizeof(wld_status_changeInfo_t));

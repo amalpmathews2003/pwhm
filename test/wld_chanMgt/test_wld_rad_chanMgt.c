@@ -286,7 +286,7 @@ static void test_wld_setChannel(void** state _UNUSED) {
     ttb_object_t* radObj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].radObj;
     ttb_object_t* targetObj = ttb_object_getChildObject(radObj, "ChannelMgt.TargetChanspec");
 
-    amxd_object_set_uint8_t(radObj, "Channel", 112);
+    swl_typeUInt8_commitObjectParam(radObj, "Channel", 112);
 
     ttb_amx_handleEvents();
     ttb_mockTimer_goToFutureMs(1);
@@ -302,7 +302,8 @@ static void test_wld_setChannel(void** state _UNUSED) {
     assert_int_equal(112, test);
 
     /* Invalid channel (must not change) */
-    amxd_object_set_uint8_t(radObj, "Channel", 37);
+    swl_typeUInt8_commitObjectParam(radObj, "Channel", 37);
+    ttb_mockTimer_goToFutureMs(1);
     assert_int_equal(112, rad->channel);
     assert_int_equal(112, rad->targetChanspec.chanspec.channel);
     assert_int_equal(112, swl_typeUInt8_fromObjectParamDef(radObj, "Channel", 0));
@@ -331,7 +332,7 @@ static void test_wld_checkSync(void** state _UNUSED) {
     assert_string_equal("Sync", data);
     free(data);
 
-    amxd_object_set_uint8_t(radObj, "Channel", 100);
+    swl_typeUInt8_commitObjectParam(radObj, "Channel", 100);
     ttb_mockTimer_goToFutureMs(1);
     data = swl_typeCharPtr_fromObjectParamDef(chanMgtObj, "ChanspecShowing", NULL);
     assert_string_equal("Target", data);

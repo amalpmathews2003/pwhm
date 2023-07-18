@@ -111,6 +111,11 @@ int wld_th_mfn_wrad_intelligentAirtime(T_Radio* rad _UNUSED, int val _UNUSED, in
     return 0; \
 }
 
+int wld_th_mfn_wrad_supstd(T_Radio* rad, swl_radioStandard_m radioStandards) {
+    rad->operatingStandards = radioStandards;
+    return 1;
+}
+
 swl_channel_t possibleChannels2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 swl_channel_t possibleChannels5[] = {36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140};
 swl_channel_t possibleChannels6[] = {1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, };
@@ -169,7 +174,6 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
     wld_channel_init_channels(rad);
     s_readChanInfo(rad);
     wld_rad_write_possible_channels(rad);
-    swl_typeUInt32_toObjectParam(rad->pBus, "Channel", rad->channel);
 
 
     rad->detailedState = CM_RAD_DOWN;
@@ -227,9 +231,11 @@ int wld_th_rad_enable(T_Radio* rad, int val, int set) {
 
 void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit) {
     assert_non_null(rad);
-    swl_typeUInt32_toObjectParam(rad->pBus, "Enable", enable);
     if(commit) {
+        swl_typeUInt8_commitObjectParam(rad->pBus, "Enable", enable);
         ttb_mockTimer_goToFutureMs(10);
+    } else {
+        swl_typeUInt8_toObjectParam(rad->pBus, "Enable", enable);
     }
 }
 

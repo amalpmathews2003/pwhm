@@ -17,8 +17,6 @@
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
-                parameter RxBeamformingCapsEnabled = "DEFAULT";
-                parameter TxBeamformingCapsEnabled = "DEFAULT";
                 parameter ObssCoexistenceEnable = 1;
                 parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "b,g,n,ax";
@@ -42,9 +40,6 @@
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
-                parameter RxBeamformingCapsEnabled = "DEFAULT";
-                parameter TxBeamformingCapsEnabled = "DEFAULT";
-                parameter MCS = -1;
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
@@ -65,9 +60,6 @@
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
-                parameter RxBeamformingCapsEnabled = "DEFAULT";
-                parameter TxBeamformingCapsEnabled = "DEFAULT";
-                parameter MCS = -1;
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }

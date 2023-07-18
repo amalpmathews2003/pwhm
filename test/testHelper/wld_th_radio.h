@@ -63,6 +63,7 @@
 #define __WLD_TESTHELPER_RADIO_H__
 #include "wld_types.h"
 #include "wld_th_types.h"
+#include "swl/swl_common_radioStandards.h"
 
 #include <amxc/amxc_macros.h>
 #include <amxc/amxc.h>
@@ -83,6 +84,7 @@ int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
 int wld_th_mfn_wrad_airtimefairness(T_Radio* rad, int val, int set);
 int wld_th_mfn_wrad_intelligentAirtime(T_Radio* rad, int val, int set);
+int wld_th_mfn_wrad_supstd(T_Radio* rad, swl_radioStandard_m radioStandards);
 FSM_STATE wld_th_wrad_fsm(T_Radio* rad);
 int wld_th_rad_enable(T_Radio* rad, int val, int set);
 

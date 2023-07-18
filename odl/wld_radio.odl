@@ -147,6 +147,7 @@ define probelist_t{
 	   destroy it when the plugin stops.
 	    */
 	%persistent object Radio[] {
+		on event "*" call wld_radio_setConf_ocf;
 		/**
 		 * getSpectrumInfo() returns a list of channels the radio
 		 * supports, along with quality parameters
@@ -162,20 +163,6 @@ define probelist_t{
 		 * object Enable fields is OK.
 		 */
 		bool edit();
-		/**
-		 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-		 * <p> Real function <b>bool verify(...)</b></p>
-		 * Verify 'all' or 'selected' the Radio-object parameters
-		 * @param Radio Name of the Radio interface that will be verified.
-		 * @param &lt;user param&gt; In case empty, the current given parameters are verified.
-		 * If the parameter is filled in (strin=value) it must be one of the Radio object strings:
-		 * Alias, LastChange, OperatingFrequencyBand, OperatingStandards, Channel,
-		 * AutoChannelEnable, AutoChannelRefreshPeriod, OperatingChannelBandwidth,
-		 * ExtensionChannel, GuardInterval, MCS, TransmitPower, IEEE80211hEnabled,
-		 * RegulatoryDomain, Enable
-		 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-		 */
-		bool verify();
 
 		/**
 		 * <p> Real function <b>bool commit(...)</b></p>
@@ -283,22 +270,22 @@ define probelist_t{
 		/**
 		 * Air quality statistics for this interface.
 		 */
-		void getRadioAirStats();
+		htable getRadioAirStats();
 
 		/**
 		 * Packets statistics for this interface.
 		 */
-		void getRadioStats();
+		htable getRadioStats();
 
 		/**
 		 * Get the RSSI value per antenna for the radio, and test for radio defect.
 		 */
-		void getPerAntennaRssi();
+		htable getPerAntennaRssi();
 
 		/**
 		 * Get the latest TX Power value for each antenna of the radio.
 		 */
-		void getLatestPower();
+		htable getLatestPower();
 		
 		/**
 		 * Returns a map containing this SSID's status histogram information.
@@ -311,7 +298,7 @@ define probelist_t{
 		 * LastDisableTime: The timestamp of the last time that radio was set to disable.
 		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
 		 */
-		void getStatusHistogram();
+		htable getStatusHistogram();
 		
 		
 		/**
@@ -430,7 +417,6 @@ define probelist_t{
 		 * <p> Indicates wheter the RADIO is in AP mode </p>
 		 */
 		%persistent bool AP_Mode {
-			on action write call wld_rad_setAPMode_pwf;
 			default true;
 		}
 
@@ -438,7 +424,6 @@ define probelist_t{
 		 * <p> Indicates wheter the RADIO is in STATION mode </p>
 		 */
 		%persistent bool STA_Mode {
-			on action write call wld_rad_setSTAMode_pwf;
 			default false;
 		}
 
@@ -446,7 +431,6 @@ define probelist_t{
 		 * <p> Indicates wheter the RADIO is in WDS support mode </p>
 		 */
 		%persistent bool WDS_Mode {
-			on action write call wld_rad_setWDSMode_pwf;
 			default false;
 		}
 
@@ -454,7 +438,6 @@ define probelist_t{
 		 * <p> Indicates wheter the RADIO is in WET support mode </p>
 		 */
 		%persistent bool WET_Mode {
-			on action write call wld_rad_setWETMode_pwf;
 			default false;
 		}
 
@@ -462,7 +445,6 @@ define probelist_t{
 		 * <p> Indicates wheter STATION mode is supported on this RADIO </p>
 		 */
 		%persistent bool STASupported_Mode {
-			on action write call wld_rad_setStaSupMode_pwf;
 			default false;
 		}
 
@@ -470,7 +452,6 @@ define probelist_t{
 		 * <p> Set WPS Enrollee mode when STA is active </p>
 		 */
 		%persistent bool WPS_Enrollee_Mode {
-			on action write call wld_rad_setWPSEnrolMode_pwf;
 			default false;
 		}
 
@@ -479,8 +460,8 @@ define probelist_t{
 		 * This will cause a station, when it associates to a given vap of a radio,
 		 * that it will be kicked from all other vaps on the same radio. </p>
 		 */
-		%persistent bool KickRoamingStation = true {
-			on action write call wld_rad_setKickRoamSta_pwf;
+		%persistent bool KickRoamingStation {
+			default true;
 		}
 
 		/**
@@ -499,7 +480,9 @@ define probelist_t{
 		*   <li>6GHz</li>
 		*  </ul>
 		*/
-		%read-only string SupportedFrequencyBands;
+		%read-only string SupportedFrequencyBands {
+			on action read call wld_rad_getSupportedFrequencyBands_prf;
+		}
 
 		/**
 		 * <p>The value MUST be a member of the list reported by the
@@ -512,8 +495,10 @@ define probelist_t{
 		 * vendor-specific behavior).</p>
 		 */
 		%persistent string OperatingFrequencyBand{
+			on action validate call wld_rad_validateOperatingFrequencyBand_pvf;
 			on action write call wld_rad_setOperatingFrequencyBand_pwf;
 		}
+
 		/**
 		 * <p>Comma-separated list of strings. List items indicate which
 		 * IEEE 802.11 standards this Radio  instance can support
@@ -567,7 +552,7 @@ define probelist_t{
 		   </p>
 		 */
 		%persistent string OperatingStandards = "auto" {
-			on action write call wld_rad_setOperatingStandards_pwf;
+			on action validate call wld_rad_validateOperatingStandards_pvf;
 			userflags %upc;
 		}
 		
@@ -599,7 +584,6 @@ define probelist_t{
 		 * This field is not supposed to (be) change(d) after startup.
  		 */
 		%persistent string OperatingStandardsFormat = "Legacy" {
-			on action write call wld_rad_setOperatingStandardsFormat_pwf;
 			on action validate call check_enum ["Legacy", "Standard"];
 		}
 		
@@ -648,7 +632,6 @@ define probelist_t{
 		 * by the automatic channel selection procedure. </p>
 		 */
 		%persistent bool AutoChannelEnable{
-			on action write call wld_rad_setAutoChannelEnable_pwf;
 			default true;
 			userflags %upc;
 		}
@@ -679,7 +662,6 @@ define probelist_t{
 		%persistent uint32 Channel = 6 {
 			on action validate call check_range { min = 1, max = 255 };
 			on action validate call wld_rad_validateChannel_pvf;
-			on action write call wld_rad_setChannel_pwf;
 			userflags %upc;
 		}
 
@@ -698,7 +680,6 @@ define probelist_t{
 			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
 			on action validate call wld_rad_validateOperatingChannelBandwidth_pvf;
 			default "Auto";
-			on action write call wld_rad_setOperatingChannelBandwidth_pwf;      /* Set Radio ChannelBandwidth (if supported) */
 		}
 
 		/**
@@ -747,7 +728,6 @@ define probelist_t{
 		string AutoBandwidthSelectMode {
 			on action validate call check_enum ["MaxAvailable","MaxCleared","Default"];
 			default "Default";
-			on action write call wld_rad_setAutoBandwidthSelectMode_pwf;
 		}
 
 		/**
@@ -764,7 +744,6 @@ define probelist_t{
 		%persistent string ExtensionChannel{
 			on action validate call check_enum ["AboveControlChannel","BelowControlChannel","Auto"];
 			default "Auto";
-			on action write call wld_rad_setExtensionChannel_pwf;      /* Set Radio ExtensionChannel (if supported) */
 		}
 
 		/**
@@ -773,7 +752,6 @@ define probelist_t{
 		 * Only applicable on 2.4GHz </p>
 		 */
 		%persistent bool ObssCoexistenceEnable{
-			on action write call wld_rad_setObssCoexistenceEnable_pwf;
 			default false;
 		}
 
@@ -789,7 +767,6 @@ define probelist_t{
 		%persistent string GuardInterval{
 			on action validate call check_enum ["400nsec","800nsec","Auto"];
 			default "Auto";
-			on action write call wld_rad_setGuardInterval_pwf;
 		}
 
 		/**
@@ -798,7 +775,7 @@ define probelist_t{
 		 * ([802.11n-2009]). A value of -1 indicates automatic selection
 		 * of the MCS index. </p>
 		 */
-		%persistent int32 MCS{
+		%persistent int32 MCS = -1{
 			on action validate call check_range { min = -1, max = 31 };
 		}
 
@@ -826,7 +803,6 @@ define probelist_t{
 			on action validate call check_range { min = -1, max = 100 };
 			on action validate call wld_rad_validateTxPower_pvf;
 			on action read call wld_rad_getTxPower_prf;
-			on action write call wld_rad_setTxPower_pwf;
 			userflags %upc;
 		}
 
@@ -839,7 +815,6 @@ define probelist_t{
 		 */
 		%persistent int32 ActiveAntennaCtrl{
 			on action validate call check_range { min = -1, max = 255 };       /* Max support for 8 antennas (2th wave of 11AC) */
-			on action write call wld_rad_setAntennaCtrl_pwf;  /* Direct dirver interaction for antennas control */
 			default -1;
 		}
 
@@ -853,7 +828,6 @@ define probelist_t{
 		%persistent int32 RxChainCtrl{
 			on action validate call check_range { min = -1, max = 255 };
 			default -1;
-			on action write call wld_rad_setRxChainCtrl_pwf;
 		}
 		
 		/**
@@ -866,7 +840,6 @@ define probelist_t{
 		%persistent int32 TxChainCtrl{
 			on action validate call check_range { min = -1, max = 255 };
 			default -1;
-			on action write call wld_rad_setTxChainCtrl_pwf;
 		}
 		
 		/**
@@ -877,7 +850,6 @@ define probelist_t{
 		* @version 9.1
 		*/
 		%persistent uint8 RetryLimit{
-			on action write call wld_rad_setRetryLimit_pwf;  /* Set Retry Limit */
 			default 15;
 		}
 
@@ -890,7 +862,6 @@ define probelist_t{
 		* @version 9.1
 		*/
 		%persistent uint8 LongRetryLimit{
-			on action write call wld_rad_setLongRetryLimit_pwf;  /* Set Long Retry Limit */
 			default 6;
 		}
 
@@ -901,7 +872,6 @@ define probelist_t{
 		* @version 9.2
 		*/
 		%persistent uint32 BeaconPeriod{
-			on action write call wld_rad_setBeaconPeriod_pwf;
 			default 100;
 		}
 
@@ -913,7 +883,6 @@ define probelist_t{
 		* @version 9.2
 		*/
 		%persistent uint32 DTIMPeriod{
-			on action write call wld_rad_setDtimPeriod_pwf;
 			default 3;
 		}
 
@@ -926,7 +895,6 @@ define probelist_t{
 		 */
 		%persistent bool TargetWakeTimeEnable{
 			default false;
-			on action write call wld_rad_setTargetWakeTimeEnable_pwf;
 		}
 
 		/**
@@ -935,7 +903,6 @@ define probelist_t{
 		 */
 		%persistent bool OfdmaEnable{
 			default true;
-			on action write call wld_rad_setOfdmaEnable_pwf;
 		}
 
 		/**
@@ -948,9 +915,7 @@ define probelist_t{
 		 * Comma-separated list of strings containing which 11AX HE features are enabled.
 		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
 		 */
-		%persistent string HeCapsEnabled{
-			on action write call wld_rad_setHeCaps_pwf;
-		}
+		%persistent string HeCapsEnabled;
 
 		/**
 		 * <p>Indicates whether IEEE 802.11h functionality is supported
@@ -969,7 +934,7 @@ define probelist_t{
 		 * includes a  and/or n). </p>
 		 */
 		%persistent bool IEEE80211hEnabled{
-			on action write call wld_rad_set80211hEnable_pwf; /* Spectrum Managed 802.11a DFS/TPC */
+			on action validate call wld_rad_validateIEEE80211hEnabled_pvf;
 		}
 
 		/**
@@ -999,9 +964,7 @@ define probelist_t{
 		 * Possible patterns: </p>
 		 * <li>[A-Z][A-Z][ OI]</li>
 		 */
-		%persistent string RegulatoryDomain{
-			on action write call wld_rad_setCountryCode_pwf;   /* Set the country code - Fix set   */
-		}
+		%persistent string RegulatoryDomain;
 
 		/** <p>Indicates if implicit beam forming is supported by this
 		 * hardware. This feature is also known as 'AnyBeam' on
@@ -1015,8 +978,8 @@ define probelist_t{
 		 * @version 6.1
 		 */
 		%persistent bool ImplicitBeamFormingEnabled {
+			on action validate call wld_rad_validateImplicitBeamForming_pvf;
 			default true;
-			on action write call wld_rad_setImplicitBeamForming_pwf;
 		}
 
 		/** <p> Indicates if explicit beam forming is supported by this
@@ -1030,8 +993,8 @@ define probelist_t{
 		 * @version 6.1
 		 */
 		%persistent bool ExplicitBeamFormingEnabled {
+			on action validate call wld_rad_validateExplicitBeamForming_pvf;
 			default false;
-			on action write call wld_rad_setExplicitBeamForming_pwf;
 		}
 		
 		/**
@@ -1047,17 +1010,16 @@ define probelist_t{
 		%read-only string RxBeamformingCapsAvailable;
 		
 		/**
-		 * Receive beamforming capabilities enabled. List of strings
-		 * as defined in RxBeamformingCapsAvailable.
-		 * A special value of this is "DEFAULT" which will just use
+		 * Receive beamforming capabilities enabled. List of comma separated strings
+		 * as defined in RxBeamformingCapsAvailable above.
+		 * An additional special value to these is "DEFAULT" which will just use
 		 * whatever the default configuration is.
 		 * Note that for MU features, MultiUserMIMOEnabled must be true,
 		 * and for HE Features, the relevant HE caps must be enabled.
 		 * @version 10.0
 		 */
 		string RxBeamformingCapsEnabled{
-			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF";
-			on action write call wld_rad_setRxBfCapsEnabled_pwf;
+			default "DEFAULT";
 		}
 		
 		/**
@@ -1073,17 +1035,16 @@ define probelist_t{
 		%read-only string TxBeamformingCapsAvailable;
 		
 		/**
-		 * Transmit beamforming capabilities enabled. List of strings
-		 * as defined in RxBeamformingCapsAvailable. 
-		 * A special value of this is "DEFAULT" which will just use
+		 * Transmit beamforming capabilities enabled. List of comma separated strings
+		 * as defined in RxBeamformingCapsAvailable above. 
+		 * An additional special value to these is "DEFAULT" which will just use
 		 * whatever the driver has enabled by default.
 		 * Note that for MU features, MultiUserMIMOEnabled must be true,
 		 * and for HE Features, the relevant HE caps must be enabled.
 		 * @version 10.0
 		 */
 		string TxBeamformingCapsEnabled{
-			default "VHT_SU_BF,VHT_MU_BF,HE_SU_BF,HE_MU_BF,HE_CQI_BF";
-			on action write call wld_rad_setTxBfCapsEnabled_pwf;
+			default "DEFAULT";
 		}
 
 		/** 
@@ -1172,7 +1133,6 @@ define probelist_t{
 		string RIFSEnabled {
 			on action validate call check_enum ["Default", "Auto", "Off", "On"];
 			default "Default";
-			on action write call wld_rad_setRIFS_pwf;
 		}
 
 		/** <p> Indicates if Air Time Fairness is enabled.</p>
@@ -1180,7 +1140,6 @@ define probelist_t{
 		 */
 		%persistent bool AirtimeFairnessEnabled {
 			default false;
-			on action write call wld_rad_setAirTimeFairness_pwf;
 		}
 
 		/**
@@ -1190,7 +1149,6 @@ define probelist_t{
 		 */
 		bool RxPowerSaveEnabled {
 			default false;
-			on action write call wld_rad_setRxPowerSave_pwf;
 		}
 
 		/**
@@ -1200,7 +1158,6 @@ define probelist_t{
 		 */
 		bool RxPowerSaveRepeaterEnable {
 			default false;
-			on action write call wld_rad_setRxPowerSaveRepeater_pwf;
 		}
 
 		/** Indicates if Multi-User MIMO is supported.
@@ -1213,7 +1170,6 @@ define probelist_t{
 		 */
 		%persistent bool MultiUserMIMOEnabled {
 			default false;
-			on action write call wld_rad_setMultiUserMIMO_pwf;
 		}
 
 		/** <p> Automation Testing - Force a DFS radar trigger in the driver </p> */
@@ -1239,6 +1195,8 @@ define probelist_t{
 		 * @version 9.1
 		 */
 		%persistent object DFS {
+			on event "*" call wld_rad_setDFSConfig_ocf;
+
 			/* Event instance created when radar detected */
 			object Event[] {
 				/* Timestamp of detected radar */
@@ -1274,7 +1232,6 @@ define probelist_t{
 			 */
 			%persistent uint8 FileLogLimit {
 				default 4;
-				on action write call wld_rad_setFileLogLimit_pwf;
 				on action validate call check_range { min = 0, max = 20 };
 			}
 			/** The maximum number of detected radar events kept in
@@ -1282,7 +1239,6 @@ define probelist_t{
 			 */
 			%persistent uint8 EventLogLimit {
 				default 4;
-				on action write call wld_rad_setEventLogLimit_pwf;
 				on action validate call check_range { min = 0, max = 20 };
 			}
 		}
@@ -1308,7 +1264,6 @@ define probelist_t{
 		 * AlwaysRSSI : a probe request is sent only if RSSI is valid.
 		 */
 		%persistent string ProbeRequestNotify = "FirstRSSI" {
-			on action write call wld_prbReq_setNotify_pwf;
 			on action validate call check_enum ["NoUpdate","First","FirstRSSI","Always","AlwaysRSSI"];
 		}
 
@@ -1319,7 +1274,6 @@ define probelist_t{
 		 */
 		%persistent uint32 ProbeRequestAggregationTimer{
 			default 1000;
-			on action write call wld_prbReq_setNotifyAggregationTimer_pwf;
 		}
 
 		/**
@@ -1330,7 +1284,6 @@ define probelist_t{
 		 */
 		%persistent uint32 MaxAssociatedDevices{
 			default 64;
-			on action write call wld_rad_setMaxStations_pwf;
 		}
 
 		/**
@@ -1346,11 +1299,9 @@ define probelist_t{
 		 */
 		int32 dbgRADEnable{
 			default 0;
-			on action write call wld_rad_setDbgEnable_pwf;
 		}
-		string dbgRADFile{
-			on action write call wld_rad_setDbgFile_pwf;
-		}
+
+		string dbgRADFile;
 
 		/**
 		 * <p>Throughput statistics for this interface.
@@ -1649,13 +1600,11 @@ define probelist_t{
 		 */
 		%persistent bool IntelligentAirtimeSchedulingEnable{
 			default false;
-			on action write call wld_rad_setIntelligentAirtime_pwf;
 		}
 
 		/** Enables or Disables the radio */
 		%persistent bool Enable{
 			default false;
-			on action write call wld_rad_setEnable_pwf;
 			userflags %upc;
 		}
 
@@ -1669,7 +1618,6 @@ define probelist_t{
 		 */
 		%persistent uint32 DelayApUpPeriod {
 			default 10;
-			on action write call wld_rad_delayMgr_setDelayApUpPeriod_pwf;
 		}
 
 		/**
@@ -1687,6 +1635,8 @@ define probelist_t{
 		 **/
 		%persistent object RadCaps{
 
+			on event "*" call wld_radCaps_setConf_ocf;
+			
 			/**
 			 * A list of strings, which encode which capabilities are currently being offered by this radio.
 			 * This list may differ from radio to radio. Vendor feature names may differ from vendor to vendor
@@ -1707,7 +1657,6 @@ define probelist_t{
 			 */
 			%persistent string Enabled{
 			  default "";
-			  on action write call wld_rad_capability_setEnable;
 			}
 
 			/**
@@ -1734,6 +1683,8 @@ define probelist_t{
 		} /* object RadCaps */
 
 		object ChannelMgt{
+
+			on event "*" call wld_chanmgt_setConf_ocf;
 
 			/**
 			 * Indicate what Device.WiFi.Radio[].Channel is currently showing. Enumeration of :
@@ -1930,7 +1881,6 @@ define probelist_t{
 			 */
 			%persistent uint32 ChangeLogSize{
 				default 10;
-				on action write call wld_rad_setChannelChangeLogSize_pwf;
 			}
 		
 			/**
@@ -2085,6 +2035,9 @@ define probelist_t{
 		 * @version V9.0
 		 */
 		%persistent object NaStaMonitor {
+
+			on event "*" call wld_radStaMon_setConf_ocf;
+			
 			/** Update the statistics in of the NonAssociatedDevice[] objects in the datamodel,
 			 * @return list of variant maps with the NonAssociatedDevice values
 			 * @version 9.0
@@ -2139,7 +2092,6 @@ define probelist_t{
 			 */
 			%persistent bool Enable {
 				default true;
-				on action write call wld_radStaMon_setEnable_pwf;
 			}
 
 			/**
@@ -2239,13 +2191,12 @@ define probelist_t{
 			 */
 			%persistent object RssiEventing{
 
-				on action write call wld_radStaMon_setRssiEventing_owf;
+				on event "*" call wld_radStaMon_setRssiEventing_ocf;
 
 				/**
 				 * Enable the rssi eventing
 				 */
 				%persistent bool Enable{
-					on action write call mon_enableWriteHandler;
 					default false;
 				}
 
@@ -2277,7 +2228,6 @@ define probelist_t{
 				 */
 				%persistent uint32 Interval{
 					default 1000;
-					on action write call mon_intervalWriteHandler;
 					on action validate call check_minimum 100;
 				}
 			}
@@ -2325,7 +2275,7 @@ define probelist_t{
 		 * @version 9.2
 		 */
 		%persistent object DriverConfig{
-			on action write call wld_rad_setDriverConfig_owf;
+			on event "*" call wld_rad_setDriverConfig_ocf;
 			
 			/**
 			 * Enable / disable tx bursting. Set to -1 to allow default.
@@ -2424,7 +2374,8 @@ define probelist_t{
 		 * @version 10.0
 		 */
 		%persistent object MACConfig{
-		
+			on event "*" call wld_rad_setMACConfig_ocf;
+
 			/**
 			 * The number of BSS required for this radio. This allows certain checks to be done
 			 * ensuring proper ofsetting of base MAC when needed.
@@ -2432,7 +2383,6 @@ define probelist_t{
 			 * Will also allow to move multi radio BSSIDs closer together when possible.
 			 */
 			%persistent uint32 NrBssRequired{
-				on action write call wld_rad_setMACConfig_pwf;
 				default 0;
 			}
 	
@@ -2444,7 +2394,6 @@ define probelist_t{
 			 * by default the Radio Base MAC Addr will be WAN_ADDR + Radio Index.
 			 */
 			%persistent bool UseBaseMacOffset{
-				on action write call wld_rad_setMACConfig_pwf;
 				default false;
 			}
 			
@@ -2453,7 +2402,6 @@ define probelist_t{
 			 * Enable UseBaseMacOffset to have this enacted in compatible drivers.
 			 */
 			%persistent int64 BaseMacOffset{
-				on action write call wld_rad_setMACConfig_pwf;
 				default 0;
 			}
 			
@@ -2462,7 +2410,6 @@ define probelist_t{
 			 * When set, these BSSIDs may overlap, so it is 
 			 */
 			%persistent bool UseLocalBitForGuest{
-				on action write call wld_rad_setMACConfig_pwf;
 				default false;
 			}
 			
@@ -2474,7 +2421,6 @@ define probelist_t{
 			 * offsets.
 			 */
 			%persistent int64 LocalGuestMacOffset{
-				on action write call wld_rad_setMACConfig_pwf;
 				default 256;
 			}
 		}
@@ -2522,7 +2468,7 @@ define probelist_t{
 		 * @version 10.0
 		 */
 		%persistent object ScanConfig{
-			on action write call wld_rad_writeScanConfig;
+			on event "*" call wld_rad_setScanConfig_ocf;
 
 			/**
 			 * Number of channels sent to the driver per scan request when stations are not present.

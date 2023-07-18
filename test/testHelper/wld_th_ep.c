@@ -131,9 +131,11 @@ void wld_th_ep_doFsmClean(T_EndPoint* pEP) {
 
 void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit) {
     assert_non_null(pEP);
-    swl_typeUInt32_toObjectParam(pEP->pBus, "Enable", enable);
     if(commit) {
+        swl_typeUInt8_commitObjectParam(pEP->pBus, "Enable", enable);
         ttb_mockTimer_goToFutureMs(10);
+    } else {
+        swl_typeUInt8_toObjectParam(pEP->pBus, "Enable", enable);
     }
 }
 

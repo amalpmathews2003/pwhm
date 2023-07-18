@@ -352,11 +352,6 @@ typedef enum {
 extern const char* Rad_SupCExt[];
 
 extern const char* Rad_SupGI[];
-enum {
-    RGI_AUTO,
-    RGI_400NSEC,
-    RGI_800NSEC
-};
 
 extern const char* cstr_AP_status[];
 extern const char* cstr_EndPoint_status[];
@@ -1429,7 +1424,7 @@ struct WLD_RADIO {
     bool obssCoexistenceActive;                             /* Obss coexistence activated */
     swl_operatingClass_t operatingClass;
     wld_channel_extensionPos_e extensionChannel;
-    int guardInterval;
+    swl_guardinterval_e guardInterval;
     int MCS;                                    /* Modulation Coding Scheme index */
     int8_t transmitPowerSupported[64];          /* Steps that can be set */
     int transmitPower;                          /* Percentual transmit power [0..100] */

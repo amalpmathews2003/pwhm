@@ -126,6 +126,23 @@ static void wld_mon_updateEnabled(T_Monitor* pMon) {
     }
 }
 
+void wld_mon_setEnable_pwf(T_Monitor* pMon, const amxc_var_t* const newValue) {
+    ASSERTS_NOT_NULL(pMon, , ME, "NULL");
+    pMon->enabled = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "Update enable %s %u", pMon->name, pMon->enabled);
+    wld_mon_updateEnabled(pMon);
+}
+
+void wld_mon_setInterval_pwf(T_Monitor* pMon, const amxc_var_t* const newValue) {
+    ASSERTS_NOT_NULL(pMon, , ME, "NULL");
+    pMon->interval = amxc_var_dyncast(uint32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "Update interval %s %u", pMon->name, pMon->interval);
+
+    if(pMon->running) {
+        amxp_timer_set_interval(pMon->timer, pMon->interval);
+    }
+}
+
 amxd_status_t _mon_enableWriteHandler(amxd_object_t* object _UNUSED,
                                       amxd_param_t* parameter,
                                       amxd_action_t reason _UNUSED,

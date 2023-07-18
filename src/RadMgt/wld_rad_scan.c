@@ -97,12 +97,11 @@ static amxd_object_t* s_scanStatsInitialize(T_Radio* pRad, const char* scanReaso
     return obj;
 }
 
-amxd_status_t _wld_rad_writeScanConfig(amxd_object_t* object) {
-    amxd_object_t* radObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(radObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
+static void s_setScanConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
 
-    T_Radio* pRad = (T_Radio*) radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "Radio object is NULL");
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s update scan config", pRad->Name);
 
     pRad->scanState.cfg.homeTime = amxd_object_get_int32_t(object, "HomeTime", NULL);
@@ -120,7 +119,16 @@ amxd_status_t _wld_rad_writeScanConfig(amxd_object_t* object) {
         pRad->scanState.cfg.fastScanReasons = NULL;
     }
     pRad->scanState.cfg.fastScanReasons = amxd_object_get_cstring_t(object, "FastScanReasons", NULL);
-    return amxd_status_ok;
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sScanConfigDmHdlrs, ARR(), .objChangedCb = s_setScanConfig_ocf);
+
+void _wld_rad_setScanConfig_ocf(const char* const sig_name,
+                                const amxc_var_t* const data,
+                                void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sScanConfigDmHdlrs, sig_name, data, priv);
 }
 
 static void s_updateScanStats(T_Radio* pRad) {
@@ -291,7 +299,7 @@ static amxd_status_t _startScan(amxd_object_t* object,
         goto error;
     }
 
-    if(!wld_rad_isUpExt(pR)) {
+    if(!wld_rad_isUpAndReady(pR)) {
         SAH_TRACEZ_ERROR(ME, "%s: rad not ready for scan (state:%s)",
                          pR->Name, cstr_chanmgt_rad_state[pR->detailedState]);
         errorCode = amxd_status_unknown_error;

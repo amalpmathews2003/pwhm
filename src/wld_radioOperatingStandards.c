@@ -60,12 +60,8 @@
 **
 ****************************************************************************/
 
-#define ME "ROpStd"
-
 #include <stdlib.h>
 #include <debug/sahtrace.h>
-
-
 
 #include <string.h>
 #include <assert.h>
@@ -79,23 +75,34 @@
 
 #include "wld_radioOperatingStandards.h"
 
+#define ME "radOStd"
+
 // Checks whether given value is allowed for `OperatingStandards`.
 // Callback called by the datamodel, see `.odl` file.
-amxd_status_t validateRadioOperatingStandards(amxd_param_t* parameter, void* oldValue _UNUSED) {
-    T_Radio* pRadio = amxd_param_get_owner(parameter)->priv;
-    ASSERTS_NOT_NULL(pRadio, amxd_status_ok, ME, "NULL");
-
-    amxc_var_t value;
-    amxc_var_init(&value);
-    amxd_param_get_value(parameter, &value);
-    const char* radioStandardsString = amxc_var_get_cstring_t(&value);
-    amxc_var_clean(&value);
-
+amxd_status_t _wld_rad_validateOperatingStandards_pvf(amxd_object_t* object _UNUSED,
+                                                      amxd_param_t* param,
+                                                      amxd_action_t reason _UNUSED,
+                                                      const amxc_var_t* const args,
+                                                      amxc_var_t* const retval _UNUSED,
+                                                      void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    T_Radio* pRadio = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRadio, amxd_status_ok, ME, "No radio mapped");
+    const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
     swl_radioStandard_m radioStandards;
-
-    return swl_radStd_fromCharAndValidate(&radioStandards, radioStandardsString,
-                                          pRadio->operatingStandardsFormat, pRadio->supportedStandards,
-                                          "validateRadioOperatingStandards");
+    if((swl_str_matches(currentValue, newValue)) ||
+       (swl_radStd_fromCharAndValidate(&radioStandards, newValue,
+                                       pRadio->operatingStandardsFormat, pRadio->supportedStandards,
+                                       "validateRadioOperatingStandards"))) {
+        status = amxd_status_ok;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "%s: unsupported Operating Stds(%s)", pRadio->Name, newValue);
+    }
+    free(newValue);
+    return status;
 }
 
 static void s_processOperatingStandards(T_Radio* pR, const char* newVal) {
@@ -119,70 +126,36 @@ static void s_processOperatingStandards(T_Radio* pR, const char* newVal) {
 }
 
 // Callback called when `OperatingStandardsFormat` is set.
-amxd_status_t _wld_rad_setOperatingStandardsFormat_pwf(amxd_object_t* object,
-                                                       amxd_param_t* parameter,
-                                                       amxd_action_t reason,
-                                                       const amxc_var_t* const args,
-                                                       amxc_var_t* const retval,
-                                                       void* priv) {
+void wld_rad_setOperatingStandardsFormat_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(object) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
 
-    T_Radio* pR = object->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
-
-    const char* newValChar = amxc_var_constcast(cstring_t, args);
-    ASSERTW_STR(newValChar, amxd_status_unknown_error, ME, "Missing param");
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    const char* newValChar = amxc_var_constcast(cstring_t, newValue);
+    ASSERTW_STR(newValChar, , ME, "Missing param");
     const swl_radStd_format_e newVal = swl_radStd_charToFormat(newValChar);
-    ASSERTI_NOT_EQUALS(newVal, pR->operatingStandardsFormat, amxd_status_ok, ME, "same value");
+    ASSERTI_NOT_EQUALS(newVal, pR->operatingStandardsFormat, , ME, "same value");
     pR->operatingStandardsFormat = newVal;
 
     // How to interpret the argument value of the "OperatingStandards" parameter could have changed,
     // so parse it again.
-    amxc_var_t value;
-    amxc_var_init(&value);
-    amxd_object_get_param(object, "OperatingStandards", &value);
-    s_processOperatingStandards(pR, amxc_var_constcast(cstring_t, &value));
-    amxc_var_clean(&value);
+    char* operStds = amxd_object_get_cstring_t(object, "OperatingStandards", NULL);
+    s_processOperatingStandards(pR, operStds);
+    free(operStds);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 // Callback called when `OperatingStandards` is set.
-amxd_status_t _wld_rad_setOperatingStandards_pwf(amxd_object_t* object,
-                                                 amxd_param_t* parameter,
-                                                 amxd_action_t reason,
-                                                 const amxc_var_t* const args,
-                                                 amxc_var_t* const retval,
-                                                 void* priv) {
+void wld_rad_setOperatingStandards_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(object) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
 
-    T_Radio* pR = object->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
-
-    const char* newValChar = amxc_var_constcast(cstring_t, args);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    const char* newValChar = amxc_var_constcast(cstring_t, newValue);
     s_processOperatingStandards(pR, newValChar);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 // In case `operatingStandards` is "auto", set it to the default (which is the `supportedStandards`).

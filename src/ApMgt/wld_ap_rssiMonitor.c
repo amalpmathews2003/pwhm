@@ -468,7 +468,7 @@ void wld_ap_rssiEv_debug(T_AccessPoint* pAP, amxc_var_t* retMap) {
 
 void wld_apRssiMon_createStaHistory(T_AssociatedDevice* pAD, uint32_t historyLen) {
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
-    ASSERT_TRUE(historyLen > 0, , ME, "INVALID");
+    ASSERTS_TRUE(historyLen > 0, , ME, "No history samples");
 
     pAD->staHistory = (wld_assocDev_history_t*) calloc(1, sizeof(wld_assocDev_history_t));
     if(pAD->staHistory == NULL) {

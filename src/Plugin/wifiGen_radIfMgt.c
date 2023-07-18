@@ -235,10 +235,8 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
 
     wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 0);
 
-    //Update base mac when adding first interface
-    if(apIndex == 0) {
-        s_updateRadBaseMac(pRad);
-    } else {
+    //check need for updating base mac when adding next interface
+    if(apIndex > 0) {
         bool changed = s_shiftMbssIfNotEnoughVaps(pRad, apIndex + 1);
         if(changed) {
             SAH_TRACEZ_WARNING(ME, "%s: Shifting previous %u vap interfaces after mbss mac shift ", pRad->Name, (apIndex - pRad->isSTASup));
@@ -286,7 +284,8 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
 
 int wifiGen_rad_delvapif(T_Radio* pRad, char* vapName) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_NOT_NULL(vapName, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_STR(vapName, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTW_FALSE(swl_str_matches(pRad->Name, vapName), SWL_RC_OK, ME, "%s: avoid deleting main rad iface", vapName);
     int ifIndex = if_nametoindex(vapName);
     ASSERT_TRUE(ifIndex > 0, SWL_RC_INVALID_PARAM, ME, "unknown iface (%s)", vapName);
     swl_rc_ne rc = wld_nl80211_delInterface(wld_nl80211_getSharedState(), ifIndex);

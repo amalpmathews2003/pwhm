@@ -96,7 +96,7 @@ SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_hostapd_WPS_configMethods_str) == (WPS_CFG_MT
 static bool s_checkSGI(T_Radio* pRad, int guardInterval _UNUSED) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
     //check rad caps (sgi by mcs mode) and match with required guardInterval
-    return ((pRad->guardInterval == RGI_AUTO) || (pRad->guardInterval == RGI_400NSEC));
+    return ((pRad->guardInterval == SWL_SGI_AUTO) || (pRad->guardInterval == SWL_SGI_400));
 }
 
 /*
@@ -149,11 +149,11 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             } else if(extChanPos == WLD_CHANNEL_EXTENTION_POS_BELOW) {
                 swl_str_cat(htCaps, sizeof(htCaps), "[HT40-]");
             }
-            if(s_checkSGI(pRad, RGI_400NSEC)) {
+            if(s_checkSGI(pRad, SWL_SGI_400)) {
                 swl_str_cat(htCaps, sizeof(htCaps), "[SHORT-GI-40]");
             }
         }
-        if(s_checkSGI(pRad, RGI_400NSEC)) {
+        if(s_checkSGI(pRad, SWL_SGI_400)) {
             swl_str_cat(htCaps, sizeof(htCaps), "[SHORT-GI-20]");
         }
         /*
@@ -179,25 +179,25 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_160MHZ)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[VHT160]");
         }
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_80MHZ) && s_checkSGI(pRad, RGI_400NSEC)) {
+        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_80MHZ) && s_checkSGI(pRad, SWL_SGI_400)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SHORT-GI-80]");
         }
         if(implicitBf) {
-            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) &&
-                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU)) ||
-               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU))) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU) &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_VHT_SU))) {
                 swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SU-BEAMFORMEE]");
             }
         }
         if(explicitBf) {
-            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
-                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU)) ||
-               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU))) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU) &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_SU))) {
                 swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SU-BEAMFORMER]");
             }
-            if(((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
-                 SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU)) ||
-                (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU))) && muMimo) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU) && muMimo &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU))) {
                 swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MU-BEAMFORMER]");
             }
         }
@@ -215,21 +215,21 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_centr_freq_seg0_idx", centerChan);
         }
         if(implicitBf) {
-            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) &&
-                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_HE_SU)) ||
-               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_HE_SU))) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_HE_SU) &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_HE_SU))) {
                 swl_mapCharFmt_addValInt32(radConfigMap, "he_su_beamformee", 1);
             }
         }
         if(explicitBf) {
-            if((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
-                SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_SU)) ||
-               (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_SU))) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_SU) &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_SU))) {
                 swl_mapCharFmt_addValInt32(radConfigMap, "he_su_beamformer", 1);
             }
-            if(((SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) &&
-                 SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU)) ||
-                (SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU))) && muMimo) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU) && muMimo &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU))) {
                 swl_mapCharFmt_addValInt32(radConfigMap, "he_mu_beamformer", 1);
             }
         }
@@ -687,7 +687,7 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
 
     char configMethodsStr[256] = {0};
-    swl_conv_maskToChar(configMethodsStr, sizeof(configMethodsStr), pAP->WPS_ConfigMethodsEnabled, s_hostapd_WPS_configMethods_str, SWL_ARRAY_SIZE(s_hostapd_WPS_configMethods_str));
+    swl_conv_maskToCharSep(configMethodsStr, sizeof(configMethodsStr), pAP->WPS_ConfigMethodsEnabled, s_hostapd_WPS_configMethods_str, SWL_ARRAY_SIZE(s_hostapd_WPS_configMethods_str), ' ');
     if(strlen(configMethodsStr) > 0) {
         swl_mapChar_add(vapConfigMap, "config_methods", configMethodsStr);
     }

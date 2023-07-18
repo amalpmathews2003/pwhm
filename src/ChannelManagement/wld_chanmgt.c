@@ -534,30 +534,17 @@ exit:
     return res;
 }
 
-amxd_status_t _wld_rad_setChannelChangeLogSize_pwf(amxd_object_t* object _UNUSED,
-                                                   amxd_param_t* parameter _UNUSED,
-                                                   amxd_action_t reason _UNUSED,
-                                                   const amxc_var_t* const args _UNUSED,
-                                                   amxc_var_t* const retval _UNUSED,
-                                                   void* priv _UNUSED) {
+static void s_setChannelChangeLogSize_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_object_t* radObject = amxd_object_get_parent(object);
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "ERR");
-    ASSERTI_FALSE(amxd_object_get_type(radObject) == amxd_object_instance, amxd_status_ok, ME, "Initial template run, skip");
-
-    T_Radio* pR = radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-    pR->channelChangeListSize = amxc_var_dyncast(uint32_t, args);
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    pR->channelChangeListSize = amxc_var_dyncast(uint32_t, newValue);
     s_onUpdateChannelChangeConfig(pR);
-    SAH_TRACEZ_ERROR(ME, "%s: Update channel changes list size to %d", pR->Name, pR->channelChangeListSize);
+    SAH_TRACEZ_WARNING(ME, "%s: Update channel changes list size to %d", pR->Name, pR->channelChangeListSize);
 
     SAH_TRACEZ_OUT(ME);
-
-    return amxd_status_ok;
 }
-
 
 /**
  * Ensure current channels is properly filled in with default.
@@ -627,4 +614,14 @@ void wld_chanmgt_cleanup(T_Radio* pRad) {
         free(change);
     }
 }
+
+SWLA_DM_HDLRS(sChanMgtDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("ChangeLogSize", s_setChannelChangeLogSize_pwf)));
+
+void _wld_chanmgt_setConf_ocf(const char* const sig_name,
+                              const amxc_var_t* const data,
+                              void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sChanMgtDmHdlrs, sig_name, data, priv);
+}
+
 

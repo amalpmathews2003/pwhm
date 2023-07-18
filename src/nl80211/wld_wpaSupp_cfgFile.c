@@ -99,7 +99,7 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
     swl_mapCharFmt_addValStr(global, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
     swl_mapChar_add(global, "device_type", "6-0050F204-1");
     char configMethodsStr[128] = {0};
-    swl_conv_maskToChar(configMethodsStr, sizeof(configMethodsStr), pEP->WPS_ConfigMethodsEnabled, wld_wpsConfigMethods, SWL_ARRAY_SIZE(wld_wpsConfigMethods));
+    swl_conv_maskToCharSep(configMethodsStr, sizeof(configMethodsStr), pEP->WPS_ConfigMethodsEnabled, wld_wpsConfigMethods, SWL_ARRAY_SIZE(wld_wpsConfigMethods), ' ');
     if(strlen(configMethodsStr) > 0) {
         swl_mapChar_add(global, "config_methods", configMethodsStr);
     }

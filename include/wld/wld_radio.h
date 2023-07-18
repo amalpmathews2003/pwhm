@@ -125,6 +125,7 @@ T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname);
 T_AccessPoint* wld_vap_from_name(const char* ifname);
 T_EndPoint* wld_vep_from_name(const char* ifname);
 T_Radio* wld_rad_from_name(const char* ifname);
+T_Radio* wld_rad_fromObj(amxd_object_t* radObj);
 
 T_AccessPoint* wld_rad_getVapByIndex(T_Radio* pRad, int index);
 T_EndPoint* wld_rad_getEpByIndex(T_Radio* pRad, int index);
@@ -139,6 +140,8 @@ bool wld_radio_scanresults_cleanup(T_ScanResults* results);
 void wld_notifyProbeRequest(T_Radio* pR, const unsigned char* macStr);
 void wld_notifyProbeRequest_rssi(T_Radio* pR, const unsigned char* macStr, int rssi);
 int wld_prbReq_getRssi(T_Radio* pR, const unsigned char* macStr);
+void wld_prbReq_setNotify_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
+void wld_prbReq_setNotifyAggregationTimer_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
 void wld_scan_done(T_Radio* pR, bool success);
 bool wld_scan_isRunning(T_Radio* pR);
 swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason);
@@ -174,6 +177,7 @@ bool wld_rad_hasEnabledVap(T_Radio* pRad);
 
 bool wld_rad_hasEnabledIface(T_Radio* pRad);
 bool wld_rad_hasActiveIface(T_Radio* pRad);
+uint32_t wld_rad_countIfaces(T_Radio* pRad);
 
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);

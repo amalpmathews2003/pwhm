@@ -14,21 +14,13 @@
                 parameter IntelligentAirtimeSchedulingEnable = 1;
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
-                parameter BeaconPeriod=100;
-                parameter DTIMPeriod=3;
                 parameter TargetWakeTimeEnable = 1;
-                parameter RxBeamformingCapsEnabled = "DEFAULT";
-                parameter TxBeamformingCapsEnabled = "DEFAULT";
                 parameter ObssCoexistenceEnable = 1;
                 parameter ProbeRequestNotify = "AlwaysRSSI";
-                parameter ProbeRequestAggregationTimer = 1000;
-                parameter OperatingStandards = "auto";
-                parameter OperatingChannelBandwidth = "20MHz";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
                     parameter BaseMacOffset = 1;
                     parameter UseLocalBitForGuest = true;
-                    parameter LocalGuestMacOffset = 65536;
                 }
             }
 {% elif (Radio.OperatingFrequency == "5GHz") : %}
@@ -46,25 +38,16 @@
                 parameter MultiUserMIMOEnabled = 1;
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
-                parameter BeaconPeriod=100;
-                parameter DTIMPeriod=3;
                 parameter TargetWakeTimeEnable = 1;
-                parameter RxBeamformingCapsEnabled = "DEFAULT";
-                parameter TxBeamformingCapsEnabled = "DEFAULT";
-                parameter MCS = -1;
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
                 parameter ProbeRequestNotify = "AlwaysRSSI";
-                parameter ProbeRequestAggregationTimer = 1000;
-                parameter OperatingStandards = "auto";
                 parameter AutoBandwidthSelectMode="MaxAvailable";
-                parameter OperatingChannelBandwidth="Auto";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
                     parameter BaseMacOffset = 2;
                     parameter UseLocalBitForGuest = true;
-                    parameter LocalGuestMacOffset = 65536;
                 }
             }
 {% elif (Radio.OperatingFrequency == "6GHz") : %}
@@ -82,24 +65,17 @@
                 parameter MultiUserMIMOEnabled = 1;
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
-                parameter BeaconPeriod = 100;
-                parameter DTIMPeriod = 3;
                 parameter HeCapsEnabled = "DL_OFDMA,UL_OFDMA,DL_MUMIMO";
                 parameter TargetWakeTimeEnable = 1;
-                parameter RxBeamformingCapsEnabled = "DEFAULT";
-                parameter TxBeamformingCapsEnabled = "DEFAULT";
-                parameter MCS = -1;
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
                 parameter ProbeRequestNotify = "AlwaysRSSI";
-                parameter ProbeRequestAggregationTimer = 1000;
-                parameter OperatingStandards = "auto";
                 parameter AutoBandwidthSelectMode="MaxAvailable";
-                parameter OperatingChannelBandwidth="Auto";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
                     parameter BaseMacOffset = 3;
+                    parameter UseLocalBitForGuest = true;
                 }
             }
 {% endif; endfor; %}

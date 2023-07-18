@@ -428,7 +428,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     pRad->autoChannelEnable = FALSE;
     pRad->autoChannelRefreshPeriod = FALSE;
     pRad->extensionChannel = REXT_AUTO;          /* Auto */
-    pRad->guardInterval = RGI_AUTO;              /* Auto == 400NSec*/
+    pRad->guardInterval = SWL_SGI_AUTO;          /* Auto == 400NSec*/
     pRad->MCS = 10;
     if(pOperBand->radStdsMask & M_SWL_RADSTD_AX) {
         pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_HE].mcsIndex;

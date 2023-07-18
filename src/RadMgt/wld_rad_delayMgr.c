@@ -123,32 +123,14 @@ amxd_status_t _Radio_apDelayUpDone(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_rad_delayMgr_setDelayApUpPeriod_pwf(amxd_object_t* object _UNUSED,
-                                                       amxd_param_t* parameter _UNUSED,
-                                                       amxd_action_t reason _UNUSED,
-                                                       const amxc_var_t* const args _UNUSED,
-                                                       amxc_var_t* const retval _UNUSED,
-                                                       void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = object;
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+void wld_rad_delayMgr_setDelayApUpPeriod_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "%p", parameter);
 
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NULL");
-
-    pR->delayMgr.delay = amxc_var_dyncast(uint32_t, args);
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    pR->delayMgr.delay = amxc_var_dyncast(uint32_t, newValue);
     SAH_TRACEZ_WARNING(ME, "%s: Update delay timer period to %d", pR->Name, pR->delayMgr.delay);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
+

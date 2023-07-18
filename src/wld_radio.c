@@ -192,23 +192,6 @@ const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
     "",
 };
 
-static void s_doSyncUpdate(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    amxd_object_t* pRadioObj = pRad->pBus;
-
-    wld_rad_init_counters(pRad, &pRad->genericCounters, radCounterDefaults);
-    wld_radStaMon_init(pRad);
-    syncData_VendorWPS2OBJ(NULL, pRad, GET);
-    pRad->pFA->mfn_sync_radio(pRadioObj, pRad, SET | NO_COMMIT);
-    amxd_object_t* dfsObj = amxd_object_get(pRadioObj, "DFS");
-    if(dfsObj == NULL) {
-        SAH_TRACEZ_ERROR(ME, "cannot found DFS object on %s", pRad->Name);
-    } else {
-        pRad->dfsEventLogLimit = amxd_object_get_uint8_t(dfsObj, "EventLogLimit", NULL);
-        pRad->dfsFileLogLimit = amxd_object_get_uint8_t(dfsObj, "FileLogLimit", NULL);
-    }
-}
-
 static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBandExt_e band) {
     ASSERT_NOT_NULL(pRadioObj, amxd_status_unknown_error, ME, "NULL");
     T_Radio* pRad = wld_getUinitRadioByBand(band);
@@ -226,55 +209,14 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
     return amxd_status_ok;
 }
 
-void _wld_radio_addInstance_ocf(const char* const sig_name _UNUSED,
-                                const amxc_var_t* const data,
-                                void* const priv _UNUSED) {
-    amxd_dm_t* dm = get_wld_plugin_dm();
-    amxd_object_t* templ_obj = amxd_dm_signal_get_object(dm, data);
-    ASSERT_NOT_NULL(templ_obj, , ME, "Could not get template object");
-    amxd_object_t* instance = amxd_object_get_instance(templ_obj, NULL, GET_UINT32(data, "index"));
-    ASSERT_NOT_NULL(instance, , ME, "Could not get the added instance");
-    const char* OFB = GETP_CHAR(data, "parameters.OperatingFrequencyBand");
-    /* Link radio/object */
-    T_Radio* pR = instance->priv;
-    if(pR == NULL) {
-        ASSERTW_STR(OFB, , ME, "Missing OperFreqBand");
-        swl_freqBandExt_e band = swl_conv_charToEnum(OFB, Rad_SupFreqBands, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_2_4GHZ);
-        _linkFirstUinitRadio(instance, band);
-        pR = instance->priv;
-        ASSERT_NOT_NULL(pR, , ME, "NULL");
-        pR->operatingFrequencyBand = band;
-    }
-    ASSERT_TRUE(debugIsRadPointer(pR), , ME, "NO radio Ctx");
-    s_doSyncUpdate(pR);
-    SAH_TRACEZ_INFO(ME, "%s: added instance object(%p:%s:%s)", pR->Name, instance, pR->instanceName, OFB);
-}
-
-/*
-    This function will update the read-only field based on the
-    driver info.
- */
-amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* wifiRad,
-                                     amxd_param_t* parameter _UNUSED,
-                                     amxd_action_t reason _UNUSED,
-                                     const amxc_var_t* const args _UNUSED,
-                                     amxc_var_t* const retval _UNUSED,
-                                     void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-
-    ASSERTS_EQUALS(amxd_object_get_type(wifiRad), amxd_object_instance, rv, ME, "TEMPLATE");
-
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    ASSERTS_EQUALS(rv, amxd_status_ok, rv, ME, "STATUS NOK");
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "INVALID");
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    bool flag = amxc_var_dyncast(bool, args);
 
-    SAH_TRACEZ_INFO(ME, "set Enable - %s: %d --> %d", pR->Name, pR->enable, flag);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool flag = amxc_var_dyncast(bool, newValue);
+    ASSERTI_NOT_EQUALS(pR->enable, flag, , ME, "%s: same enable %d", pR->Name, flag);
+    SAH_TRACEZ_INFO(ME, "%s: set Enable %d --> %d", pR->Name, pR->enable, flag);
     pR->pFA->mfn_wrad_enable(pR, flag, SET);
 
     wld_autoCommitMgr_notifyRadEdit(pR);
@@ -287,64 +229,37 @@ amxd_status_t _wld_rad_setEnable_pwf(amxd_object_t* wifiRad,
     }
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setKickRoamSta_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
+static void s_setKickRoamSta_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    bool flag = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "setKickRoamSta %p %p %d", pR, wifiRad, flag);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool flag = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setKickRoamSta %d", pR->Name, flag);
     pR->kickRoamStaEnabled = flag;
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _getSupportedFrequencyBands(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    amxd_object_t* wifiRad = NULL;
-    T_Radio* pR = NULL;
-    char TBuf[128];
-    char* pSFB;
+amxd_status_t _wld_rad_getSupportedFrequencyBands_prf(amxd_object_t* object,
+                                                      amxd_param_t* param,
+                                                      amxd_action_t reason,
+                                                      const amxc_var_t* const args _UNUSED,
+                                                      amxc_var_t* const retval,
+                                                      void* priv _UNUSED) {
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "no radio mapped");
 
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "getSupportedFrequencyBands %p", parameter);
-
-    wifiRad = amxd_param_get_owner(parameter);
-    pR = (T_Radio*) wifiRad->priv;
-    if(pR && debugIsRadPointer(pR)) {
-        wld_bitmaskToCSValues(TBuf, sizeof(TBuf), pR->supportedFrequencyBands, swl_freqBandExt_str);
-        pSFB = wld_getVendorParam(pR, "SupportedFrequencyBands", TBuf);
-        amxc_var_t value;
-        amxc_var_init(&value);
-        amxc_var_set_cstring_t(&value, pSFB);
-        amxd_param_set_value(parameter, &value);
-        amxc_var_clean(&value);
-        free(pSFB);
-    }
+    char TBuf[128] = {0};
+    swl_conv_maskToChar(TBuf, sizeof(TBuf), pR->supportedFrequencyBands, swl_freqBandExt_str, SWL_FREQ_BAND_MAX);
+    // Update with potential vendor info
+    char* pSFB = wld_getVendorParam(pR, "SupportedFrequencyBands", TBuf);
+    amxc_var_set(cstring_t, retval, pSFB);
+    free(pSFB);
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
@@ -366,37 +281,19 @@ amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
     return amxd_status_invalid_value;
 }
 
-amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-
+static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    int32_t channel = amxc_var_dyncast(int32_t, args);
 
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "NULL or not radio pointer");
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pR, , ME, "No radio mapped");
+    int32_t channel = amxc_var_dyncast(int32_t, newValue);
+    ASSERTI_NOT_EQUALS(channel, pR->channel, , ME, "%s: Same channel %d", pR->Name, channel);
 
     SAH_TRACEZ_INFO(ME, "%s: set RadioChannel %d", pR->Name, channel);
     SAH_TRACEZ_INFO(ME, "STATUS %d %d %d",
                     pR->channel,
                     pR->autoChannelEnable,
                     pR->autoChannelSetByUser);
-
-    ASSERTI_TRUE(channel != pR->channel, amxd_status_ok, ME, "Same channel, exit");
 
     if(channel) {
         /**
@@ -408,7 +305,7 @@ amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
         if(ep && (ep->connectionStatus == EPCS_CONNECTED)) {
             SAH_TRACEZ_INFO(ME, "%s: EP %s connected, not change channel", pR->Name, ep->Name);
             SAH_TRACEZ_OUT(ME);
-            return amxd_status_ok;
+            return;
         }
 
         /* Disable autochannel if valid channel and first commit has been done
@@ -428,219 +325,102 @@ amxd_status_t _wld_rad_setChannel_pwf(amxd_object_t* object _UNUSED,
 
         wld_autoCommitMgr_notifyRadEdit(pR);
     } else {
-        amxd_object_set_bool(pR->pBus, "AutoChannelEnable", 1);
+        swl_typeUInt8_commitObjectParam(pR->pBus, "AutoChannelEnable", 1);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setAPMode_pwf(amxd_object_t* object _UNUSED,
-                                     amxd_param_t* parameter _UNUSED,
-                                     amxd_action_t reason _UNUSED,
-                                     const amxc_var_t* const args _UNUSED,
-                                     amxc_var_t* const retval _UNUSED,
-                                     void* priv _UNUSED) {
+static void s_setAPMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool APMode = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set AP_Mode %d", pR->Name, APMode);
+    pR->isAP = APMode;
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    bool APMode = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set AP_Mode %d", APMode);
-    if(pR) {
-        pR->isAP = APMode;
-        pR->fsmRad.FSM_SyncAll = TRUE;
-    }
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setSTAMode_pwf(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter,
-                                      amxd_action_t reason,
-                                      const amxc_var_t* const args,
-                                      amxc_var_t* const retval,
-                                      void* priv) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setSTAMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool STAMode = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set STA_Mode %d", pR->Name, STAMode);
+    pR->isSTA = STAMode;
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    bool STAMode = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set STA_Mode %d", STAMode);
-    if(pR) {
-        pR->isSTA = STAMode;
-        pR->fsmRad.FSM_SyncAll = TRUE;
-    }
-
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setWDSMode_pwf(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setWDSMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool wdsMode = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set WDS_Mode %d", pR->Name, wdsMode);
+    pR->isWDS = wdsMode;
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    bool wdsMode = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set WDS_Mode %d", wdsMode);
-    if(pR) {
-        pR->isWDS = wdsMode;
-        pR->fsmRad.FSM_SyncAll = TRUE;
-    }
-
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setWETMode_pwf(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setWETMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool wetMode = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set WET_Mode %d", pR->Name, wetMode);
+    pR->isWET = wetMode;
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    bool wetMode = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set WET_Mode %d", wetMode);
-    if(pR) {
-        pR->isWET = wetMode;
-        pR->fsmRad.FSM_SyncAll = TRUE;
-    }
-
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setStaSupMode_pwf(amxd_object_t* object _UNUSED,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    bool StaSupMode = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set STASup_Mode %d", StaSupMode);
-    if(pR) {
-        pR->isSTASup = StaSupMode;
-        pR->fsmRad.FSM_SyncAll = TRUE;
-    }
-
-    return rv;
+static void s_setStaSupMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool StaSupMode = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set STASup_Mode %d", pR->Name, StaSupMode);
+    pR->isSTASup = StaSupMode;
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
+    SAH_TRACEZ_OUT(ME);
 }
 
 // Chicken Egg issue with WPS when both STA and AP have WPS set...
 // This radio setting will decide how we will manage this!
-amxd_status_t _wld_rad_setWPSEnrolMode_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setWPSEnrolMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool WPS_EnrolleeMode = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set WPSEnrol_Mode %d", pR->Name, WPS_EnrolleeMode);
+    pR->isWPSEnrol = WPS_EnrolleeMode;
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    bool WPS_EnrolleeMode = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set WPSEnrol_Mode %d", WPS_EnrolleeMode);
-    if(pR) {
-        pR->isWPSEnrol = WPS_EnrolleeMode;
-        pR->fsmRad.FSM_SyncAll = TRUE;
-    }
-
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setAutoChannelEnable_pwf(amxd_object_t* object _UNUSED,
-                                                amxd_param_t* parameter _UNUSED,
-                                                amxd_action_t reason _UNUSED,
-                                                const amxc_var_t* const args _UNUSED,
-                                                amxc_var_t* const retval _UNUSED,
-                                                void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setAutoChannelEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    ASSERTS_NOT_NULL(pRad, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "NULL");
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
 
-    bool newAutochan = amxc_var_dyncast(bool, args);
+    bool newAutochan = amxc_var_dyncast(bool, newValue);
 
     SAH_TRACEZ_INFO(ME, "%s: ACS STATUS PRE  %d %d %d => val %u",
                     pRad->Name,
@@ -659,7 +439,6 @@ amxd_status_t _wld_rad_setAutoChannelEnable_pwf(amxd_object_t* object _UNUSED,
                     ret);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* object,
@@ -687,27 +466,12 @@ amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* obje
     return status;
 }
 
-amxd_status_t _wld_rad_setOperatingChannelBandwidth_pwf(amxd_object_t* object _UNUSED,
-                                                        amxd_param_t* parameter _UNUSED,
-                                                        amxd_action_t reason _UNUSED,
-                                                        const amxc_var_t* const args _UNUSED,
-                                                        amxc_var_t* const retval _UNUSED,
-                                                        void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "NULL");
 
-    const char* OCBW = amxc_var_constcast(cstring_t, args);
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, , ME, "NULL");
+    const char* OCBW = amxc_var_constcast(cstring_t, newValue);
 
     swl_bandwidth_e radBw = swl_conv_charToEnum(OCBW, Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
     pRad->operatingChannelBandwidth = radBw;
@@ -716,7 +480,7 @@ amxd_status_t _wld_rad_setOperatingChannelBandwidth_pwf(amxd_object_t* object _U
 
     swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->channel, radBw, pRad->operatingFrequencyBand);
     wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
-    SAH_TRACEZ_INFO(ME, "%s set OCBW %u : %u", pRad->Name, radBw, autoBwChange);
+    SAH_TRACEZ_INFO(ME, "%s: set OCBW %u : %u", pRad->Name, radBw, autoBwChange);
 
     if(autoBwChange) {
         // if autobandwidth is enabled, and going from or to autobw, trigger autochannelEnable
@@ -725,82 +489,43 @@ amxd_status_t _wld_rad_setOperatingChannelBandwidth_pwf(amxd_object_t* object _U
     wld_autoCommitMgr_notifyRadEdit(pRad);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setAutoBandwidthSelectMode_pwf(amxd_object_t* object _UNUSED,
-                                                      amxd_param_t* parameter _UNUSED,
-                                                      amxd_action_t reason _UNUSED,
-                                                      const amxc_var_t* const args _UNUSED,
-                                                      amxc_var_t* const retval _UNUSED,
-                                                      void* priv _UNUSED) {
+static void s_setAutoBandwidthSelectMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERT_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "NULL");
-
-    const char* TCBW = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "set AutoBandwidthSelectMode %p", TCBW);
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    const char* TCBW = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set AutoBandwidthSelectMode %p", pRad->Name, TCBW);
     pRad->autoBwSelectMode = swl_conv_charToEnum(TCBW, wld_rad_autoBwSelectMode_str, BW_SELECT_MODE_MAX, BW_SELECT_MODE_DEFAULT);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setObssCoexistenceEnable_pwf(amxd_object_t* object _UNUSED,
-                                                    amxd_param_t* parameter _UNUSED,
-                                                    amxd_action_t reason _UNUSED,
-                                                    const amxc_var_t* const args _UNUSED,
-                                                    amxc_var_t* const retval _UNUSED,
-                                                    void* priv _UNUSED) {
+static void s_setObssCoexistenceEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "NULL");
-
-    bool flag = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set ObssCoexistenceEnable %d", flag);
-    if(pR->obssCoexistenceEnabled != flag) {
-        pR->obssCoexistenceEnabled = flag;
-        wld_rad_doSync(pR);
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    bool flag = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set ObssCoexistenceEnable %d", pR->Name, flag);
+    ASSERTS_NOT_EQUALS(pR->obssCoexistenceEnabled, flag, , ME, "same");
+    pR->obssCoexistenceEnabled = flag;
+    wld_rad_doSync(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setExtensionChannel_pwf(amxd_object_t* object _UNUSED,
-                                               amxd_param_t* parameter _UNUSED,
-                                               amxd_action_t reason _UNUSED,
-                                               const amxc_var_t* const args _UNUSED,
-                                               amxc_var_t* const retval _UNUSED,
-                                               void* priv _UNUSED) {
-    return amxd_status_ok;
+static void s_setExtensionChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    const char* valStr = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set ExtensionChannel %s", pR->Name, valStr);
 }
 
 static void checkRadioEventLogLimitReached (T_Radio* pR) {
-    ASSERT_NOT_NULL(pR, , ME, "NULL");
-
     SAH_TRACEZ_IN(ME);
+
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
     amxd_object_t* evt = amxd_object_get(pR->pBus, "DFS.Event");
     amxc_llist_it_t* it = amxd_object_first_instance(evt);
     amxd_object_t* chld = amxc_llist_it_get_data(it, amxd_object_t, it);
@@ -811,6 +536,7 @@ static void checkRadioEventLogLimitReached (T_Radio* pR) {
         chld = amxc_llist_it_get_data(it, amxd_object_t, it);
         pR->dfsEventNbr--;
     }
+
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -867,41 +593,19 @@ swl_rc_ne wld_rad_getCurrentNoise(T_Radio* pRad, int32_t* pNoise) {
     return SWL_RC_OK;
 }
 
-amxd_status_t _wld_rad_setGuardInterval_pwf(amxd_object_t* object _UNUSED,
-                                            amxd_param_t* parameter _UNUSED,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args _UNUSED,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
-    int i;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setGuardInterval_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-
-    const char* OCBW = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "set GuardInterval %s", OCBW);
-    if(pR && debugIsRadPointer(pR)) {
-        for(i = 0; i <= RGI_800NSEC; i++) {
-            if(!strcmp(Rad_SupGI[i], OCBW)) {
-                pR->guardInterval = i;
-                pR->pFA->mfn_wrad_guardintval(pR, NULL, pR->guardInterval, SET);
-                break;
-            }
-        }
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    char* giStr = amxc_var_dyncast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set GuardInterval %s", pR->Name, giStr);
+    swl_enum_e gi = swl_conv_charToEnum(giStr, Rad_SupGI, SWL_ARRAY_SIZE(Rad_SupGI), SWL_SGI_AUTO);
+    free(giStr);
+    ASSERTS_NOT_EQUALS(pR->guardInterval, gi, , ME, "EQUAL");
+    pR->guardInterval = gi;
+    pR->pFA->mfn_wrad_guardintval(pR, NULL, pR->guardInterval, SET);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 static void s_updateRadioStatsValues(T_Radio* pR, amxd_object_t* stats) {
@@ -969,8 +673,8 @@ amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,
     ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
     uint16_t channelLoad = 0;
     ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
-    T_Radio* pR = (T_Radio*) object->priv;
-    ASSERTS_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "no radio mapped");
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "no radio mapped");
     SAH_TRACEZ_IN(ME);
     T_Airstats airStats = {0};
     swl_rc_ne rc = pR->pFA->mfn_wrad_airstats(pR, &airStats);
@@ -981,26 +685,27 @@ amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-amxd_status_t _getRadioTxPower(amxd_object_t* object _UNUSED,
-                               amxd_param_t* parameter _UNUSED,
-                               amxd_action_t reason _UNUSED,
-                               const amxc_var_t* const args _UNUSED,
-                               amxc_var_t* const retval,
-                               void* priv _UNUSED) {
-    amxd_object_t* wifiRad = NULL;
-    T_Radio* pR = NULL;
-    int32_t power = 0;
+amxd_status_t _wld_rad_getTxPower_prf(amxd_object_t* object,
+                                      amxd_param_t* param,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args _UNUSED,
+                                      amxc_var_t* const retval,
+                                      void* priv _UNUSED) {
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
+    int32_t percentage = -1;
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
+    T_Radio* pR = wld_rad_fromObj(object);
 
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "GetRadioTxPower %p", parameter);
 
-    wifiRad = amxd_param_get_owner(parameter);
-    pR = wifiRad->priv;
-
-    if(pR && debugIsRadPointer(pR)) {
-        power = pR->pFA->mfn_wrad_txpow(pR, 0, GET);
-        amxc_var_add(int32_t, retval, power);
+    if(pR != NULL) {
+        percentage = pR->pFA->mfn_wrad_txpow(pR, 0, GET);
+        if((percentage < -1) || (percentage > 100)) {
+            SAH_TRACEZ_WARNING(ME, "%s: out of range txPwr prc %d, consider auto mode", pR->Name, percentage);
+            percentage = -1;
+        }
     }
+    amxc_var_set(int32_t, retval, percentage);
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
@@ -1012,8 +717,8 @@ amxd_status_t _wld_rad_validateTxPower_pvf(amxd_object_t* object,
                                            const amxc_var_t* const args,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
-    T_Radio* pRad = (T_Radio*) object->priv;
-    ASSERTW_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     int8_t currentValue = amxc_var_dyncast(int8_t, &param->value);
     int8_t newValue = amxc_var_dyncast(int8_t, args);
     ASSERTS_NOT_EQUALS(currentValue, newValue, amxd_status_ok, ME, "same value");
@@ -1026,98 +731,23 @@ amxd_status_t _wld_rad_validateTxPower_pvf(amxd_object_t* object,
     return amxd_status_invalid_value;
 }
 
-amxd_status_t _wld_rad_getTxPower_prf(amxd_object_t* object,
-                                      amxd_param_t* param,
-                                      amxd_action_t reason,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval,
-                                      void* priv _UNUSED) {
-    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
-    int32_t percentage = -1;
-    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
-    T_Radio* pR = (T_Radio*) object->priv;
+static void s_setTxPower_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    if(pR && debugIsRadPointer(pR)) {
-        percentage = pR->pFA->mfn_wrad_txpow(pR, 0, GET);
-        if((percentage < -1) || (percentage > 100)) {
-            SAH_TRACEZ_WARNING(ME, "%s: out of range txPwr prc %d, consider auto mode", pR->Name, percentage);
-            percentage = -1;
-        }
-    }
-    amxc_var_set(int32_t, retval, percentage);
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_rad_setTxPower_pwf(amxd_object_t* object,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(object) != amxd_object_instance) {
-        return rv;
-    }
-
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    T_Radio* pR = (T_Radio*) object->priv;
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-
-    SAH_TRACEZ_IN(ME);
-
-    int32_t power = amxc_var_dyncast(int32_t, args);
-    SAH_TRACEZ_INFO(ME, "set TxPower %d", power);
-    if(pR && debugIsRadPointer(pR)) {
-        pR->pFA->mfn_wrad_txpow(pR, power, SET);
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    int32_t power = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set TxPower %d", pR->Name, power);
+    pR->pFA->mfn_wrad_txpow(pR, power, SET);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setAntennaCtrl_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    int32_t antenna = amxc_var_dyncast(int32_t, args);
-
+static void s_setDriverConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "set AntennaCtrl %p %p %i", parameter, pR, antenna);
 
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-    pR->actAntennaCtrl = antenna;
-    pR->pFA->mfn_wrad_antennactrl(pR, antenna, SET);
-
-    SAH_TRACEZ_OUT(ME);
-    return rv;
-}
-
-amxd_status_t _wld_rad_setDriverConfig_owf(amxd_object_t* object) {
-    amxd_object_t* radObject = amxd_object_get_parent(object);
-    ASSERTI_FALSE(amxd_object_get_type(radObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
-
-    T_Radio* pRad = (T_Radio*) radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pRad), amxd_status_unknown_error, ME, "Radio Object is NULL");
-    SAH_TRACEZ_INFO(ME, "%s update driver config", pRad->Name);
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pRad, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: update driver config", pRad->Name);
 
     pRad->driverCfg.txBurst = amxd_object_get_int32_t(object, "TxBurst", NULL);
     pRad->driverCfg.ampdu = amxd_object_get_int32_t(object, "Ampdu", NULL);
@@ -1127,105 +757,92 @@ amxd_status_t _wld_rad_setDriverConfig_owf(amxd_object_t* object) {
     pRad->driverCfg.txBeamforming = amxd_object_get_int32_t(object, "TxBeamforming", NULL);
     pRad->driverCfg.vhtOmnEnabled = amxd_object_get_bool(object, "VhtOmnEnabled", NULL);
     pRad->driverCfg.broadcastMaxBwCapability = amxd_object_get_int32_t(object, "BroadcastMaxBwCapability", NULL);
-    pRad->driverCfg.tpcMode = swl_conv_charToEnum(amxd_object_get_cstring_t(object, "TPCMode", NULL), g_str_wld_tpcMode, TPCMODE_MAX, TPCMODE_OFF);
+    pRad->driverCfg.tpcMode = swl_conv_objectParamEnum(object, "TPCMode", g_str_wld_tpcMode, TPCMODE_MAX, TPCMODE_OFF);
+    wld_rad_doSync(pRad);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sDriverConfigDmHdlrs, ARR(), .objChangedCb = s_setDriverConfig_ocf);
+
+void _wld_rad_setDriverConfig_ocf(const char* const sig_name,
+                                  const amxc_var_t* const data,
+                                  void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sDriverConfigDmHdlrs, sig_name, data, priv);
+}
+
+static void s_setMACConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: update mac config", pRad->Name);
+
+    pRad->macCfg.useBaseMacOffset = amxd_object_get_bool(object, "UseBaseMacOffset", NULL);
+    pRad->macCfg.useLocalBitForGuest = amxd_object_get_bool(object, "UseLocalBitForGuest", NULL);
+    pRad->macCfg.baseMacOffset = amxd_object_get_int64_t(object, "BaseMacOffset", NULL);
+    pRad->macCfg.localGuestMacOffset = amxd_object_get_int64_t(object, "LocalGuestMacOffset", NULL);
+    pRad->macCfg.nrBssRequired = amxd_object_get_uint32_t(object, "NrBssRequired", NULL);
+
+    //Update base mac when adding first interface, as we have all needed macConfig details
+    if(!wld_rad_countIfaces(pRad)) {
+        char macStr[SWL_MAC_CHAR_LEN] = {0};
+        // Apply the MAC address on the radio, update if needed inside vendor
+        SWL_MAC_BIN_TO_CHAR(macStr, pRad->MACAddr);
+        pRad->pFA->mfn_wvap_bssid(pRad, NULL, (unsigned char*) macStr, SWL_MAC_CHAR_LEN, SET);
+        // update macStr as macBin may be shifted inside vendor
+        SWL_MAC_BIN_TO_CHAR(macStr, pRad->MACAddr);
+        SAH_TRACEZ_WARNING(ME, "%s: vendor %s updated baseMac %s", pRad->Name, pRad->vendor->name, macStr);
+    }
 
     wld_rad_doSync(pRad);
-    return amxd_status_ok;
-}
 
-amxd_status_t _wld_rad_setMACConfig_pwf(amxd_object_t* object,
-                                        amxd_param_t* param,
-                                        amxd_action_t reason,
-                                        const amxc_var_t* const args,
-                                        amxc_var_t* const retval,
-                                        void* priv) {
-    SAH_TRACEZ_IN(ME);
-    amxd_status_t status = amxd_action_param_write(object, param, reason, args, retval, priv);
-    ASSERT_EQUALS(status, amxd_status_ok, status, ME, "ERR");
-    amxd_object_t* radObject = amxd_object_get_parent(object);
-    ASSERTI_EQUALS(amxd_object_get_type(radObject), amxd_object_instance, amxd_status_ok, ME, "template");
-    T_Radio* pRad = (T_Radio*) radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pRad), amxd_status_unknown_error, ME, "Radio Object is NULL");
-    const char* pname = param->name;
-    if(swl_str_matches(pname, "UseBaseMacOffset")) {
-        pRad->macCfg.useBaseMacOffset = amxc_var_dyncast(bool, args);
-    } else if(swl_str_matches(pname, "UseLocalBitForGuest")) {
-        pRad->macCfg.useLocalBitForGuest = amxc_var_dyncast(bool, args);
-    } else if(swl_str_matches(pname, "BaseMacOffset")) {
-        pRad->macCfg.baseMacOffset = amxc_var_dyncast(int64_t, args);
-    } else if(swl_str_matches(pname, "LocalGuestMacOffset")) {
-        pRad->macCfg.localGuestMacOffset = amxc_var_dyncast(int64_t, args);
-    } else if(swl_str_matches(pname, "NrBssRequired")) {
-        pRad->macCfg.nrBssRequired = amxc_var_dyncast(int64_t, args);
-    }
     SAH_TRACEZ_OUT(ME);
-    return status;
 }
 
-amxd_status_t _wld_rad_setRxChainCtrl_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+SWLA_DM_HDLRS(sMACConfigDmHdlrs, ARR(), .objChangedCb = s_setMACConfig_ocf);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+void _wld_rad_setMACConfig_ocf(const char* const sig_name,
+                               const amxc_var_t* const data,
+                               void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sMACConfigDmHdlrs, sig_name, data, priv);
+}
 
-    int32_t antenna = amxc_var_dyncast(int32_t, args);
-
+static void s_setAntennaCtrl_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "set RxChainCtrl %p %p %i", parameter, pR, antenna);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    int32_t antenna = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set AntennaCtrl %i", pR->Name, antenna);
+    pR->actAntennaCtrl = antenna;
+    pR->pFA->mfn_wrad_antennactrl(pR, antenna, SET);
 
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
+    SAH_TRACEZ_OUT(ME);
+}
 
+static void s_setRxChainCtrl_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    int32_t antenna = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set RxChainCtrl %i", pR->Name, antenna);
     pR->rxChainCtrl = antenna;
     pR->pFA->mfn_wrad_antennactrl(pR, pR->actAntennaCtrl, SET);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setTxChainCtrl_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    int32_t antenna = amxc_var_dyncast(int32_t, args);
-
+static void s_setTxChainCtrl_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_INFO(ME, "set TxChainCtrl %p %p %i", parameter, pR, antenna);
 
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    int32_t antenna = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set TxChainCtrl %i", pR->Name, antenna);
     pR->txChainCtrl = antenna;
     pR->pFA->mfn_wrad_antennactrl(pR, pR->actAntennaCtrl, SET);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 /**
@@ -1233,348 +850,159 @@ amxd_status_t _wld_rad_setTxChainCtrl_pwf(amxd_object_t* object _UNUSED,
  * The goal of this is only for developpers!
  * We need a way to have/enable a better view how things are managed by some deamons.
  */
-amxd_status_t _wld_rad_setDbgEnable_pwf(amxd_object_t* object _UNUSED,
-                                        amxd_param_t* parameter _UNUSED,
-                                        amxd_action_t reason _UNUSED,
-                                        const amxc_var_t* const args _UNUSED,
-                                        amxc_var_t* const retval _UNUSED,
-                                        void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setDbgEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    int dbgRadEnable = amxc_var_dyncast(int32_t, args);
-    SAH_TRACEZ_INFO(ME, "set dbgEnable %d", dbgRadEnable);
-
-    if(pR && debugIsRadPointer(pR)) {
-        pR->dbgEnable = dbgRadEnable;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    int dbgRadEnable = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set dbgEnable %d", pR->Name, dbgRadEnable);
+    pR->dbgEnable = dbgRadEnable;
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setDbgFile_pwf(amxd_object_t* object _UNUSED,
-                                      amxd_param_t* parameter _UNUSED,
-                                      amxd_action_t reason _UNUSED,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval _UNUSED,
-                                      void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setDbgFile_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    const char* dbgFile = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "set DbgFile %s", dbgFile);
-    if(pR && debugIsRadPointer(pR) && dbgFile) {
-        if(pR->dbgOutput) {
-            free(pR->dbgOutput);
-        }
-        pR->dbgOutput = strdup(dbgFile);
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    const char* dbgFile = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(dbgFile, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: set DbgFile %s", pR->Name, dbgFile);
+    swl_str_copyMalloc(&pR->dbgOutput, dbgFile);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 /* Setting Retry Limit */
-amxd_status_t _wld_rad_setRetryLimit_pwf(amxd_object_t* object _UNUSED,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setRetryLimit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    uint8_t retryLimitValue = amxc_var_dyncast(uint8_t, args);
-    SAH_TRACEZ_INFO(ME, "set RetryLimit %d", retryLimitValue);
-
-    // Set Retry Limit and update Radio object param !
-    if(pR && debugIsRadPointer(pR)) {
-        pR->retryLimit = retryLimitValue;
-        wld_rad_doSync(pR);
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    uint8_t retryLimitValue = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set RetryLimit %d", pR->Name, retryLimitValue);
+    pR->retryLimit = retryLimitValue;
+    wld_rad_doSync(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
+
 /* Setting Long Retry Limit */
-amxd_status_t _wld_rad_setLongRetryLimit_pwf(amxd_object_t* object _UNUSED,
-                                             amxd_param_t* parameter _UNUSED,
-                                             amxd_action_t reason _UNUSED,
-                                             const amxc_var_t* const args _UNUSED,
-                                             amxc_var_t* const retval _UNUSED,
-                                             void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setLongRetryLimit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    uint8_t lRetryLimitValue = amxc_var_dyncast(uint8_t, args);
-    SAH_TRACEZ_INFO(ME, "set LongRetryLimit %d", lRetryLimitValue);
-
-    // Set Long Retry Limit and update Radio object param !
-    if(pR && debugIsRadPointer(pR)) {
-        pR->longRetryLimit = lRetryLimitValue;
-        wld_rad_doSync(pR);
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    uint8_t lRetryLimitValue = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set LongRetryLimit %d", pR->Name, lRetryLimitValue);
+    pR->longRetryLimit = lRetryLimitValue;
+    wld_rad_doSync(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-
-amxd_status_t _wld_rad_setBeaconPeriod_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setBeaconPeriod_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "NULL");
 
-    uint32_t newVal = amxc_var_dyncast(uint32_t, args);
-    SAH_TRACEZ_INFO(ME, "%p %u", parameter, newVal);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pR, , ME, "NULL");
+    uint32_t newVal = amxc_var_dyncast(uint32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set BeaconPeriod %u", pR->Name, newVal);
     pR->beaconPeriod = newVal;
     wld_rad_doSync(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setDtimPeriod_pwf(amxd_object_t* object _UNUSED,
-                                         amxd_param_t* parameter _UNUSED,
-                                         amxd_action_t reason _UNUSED,
-                                         const amxc_var_t* const args _UNUSED,
-                                         amxc_var_t* const retval _UNUSED,
-                                         void* priv _UNUSED) {
+static void s_setDtimPeriod_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERTI_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "NULL");
-
-    uint32_t newVal = amxc_var_dyncast(uint32_t, args);
-
-    SAH_TRACEZ_INFO(ME, "%p %u", parameter, newVal);
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pR, , ME, "NULL");
+    uint32_t newVal = amxc_var_dyncast(uint32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set DtimPeriod %u", pR->Name, newVal);
     pR->dtimPeriod = newVal;
     wld_rad_doSync(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 /* Setting Target Wake Time Enable */
-amxd_status_t _wld_rad_setTargetWakeTimeEnable_pwf(amxd_object_t* object _UNUSED,
-                                                   amxd_param_t* parameter _UNUSED,
-                                                   amxd_action_t reason _UNUSED,
-                                                   const amxc_var_t* const args _UNUSED,
-                                                   amxc_var_t* const retval _UNUSED,
-                                                   void* priv _UNUSED) {
+static void s_setTargetWakeTimeEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "NULL"); // silent fail if userdata not yet set
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-
-    pR->twtEnable = amxc_var_dyncast(bool, args);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    pR->twtEnable = amxc_var_dyncast(bool, newValue);
     wld_rad_doSync(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setOfdmaEnable_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
+static void s_setOfdmaEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
 
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERTS_NOT_NULL(pRad, amxd_status_ok, ME, "NULL"); // silent fail if userdata not yet set
-    ASSERT_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "INVALID");
-
-    pRad->ofdmaEnable = amxc_var_dyncast(bool, args);
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    pRad->ofdmaEnable = amxc_var_dyncast(bool, newValue);
     wld_rad_doSync(pRad);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setHeCaps_pwf(amxd_object_t* object _UNUSED,
-                                     amxd_param_t* parameter _UNUSED,
-                                     amxd_action_t reason _UNUSED,
-                                     const amxc_var_t* const args _UNUSED,
-                                     amxc_var_t* const retval _UNUSED,
-                                     void* priv _UNUSED) {
+static void s_setHeCaps_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
 
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERTS_NOT_NULL(pRad, amxd_status_ok, ME, "NULL"); // silent fail if userdata not yet set
-    ASSERT_TRUE(debugIsRadPointer(pRad), amxd_status_ok, ME, "INVALID");
-
-    const char* caps = amxc_var_constcast(cstring_t, args);
-
-    pRad->heCapsEnabled = swl_conv_charToMaskSep(caps, g_str_wld_he_cap, HE_CAP_MAX, ',', NULL);
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    const char* caps = amxc_var_constcast(cstring_t, newValue);
+    wld_he_cap_m newCapsEna = swl_conv_charToMask(caps, g_str_wld_he_cap, HE_CAP_MAX);
+    ASSERTS_NOT_EQUALS(newCapsEna, pRad->heCapsEnabled, , ME, "EQUAL");
+    pRad->heCapsEnabled = newCapsEna;
     wld_rad_doSync(pRad);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_set80211hEnable_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_set80211hEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool flag = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set 80211hEnable %d", pR->Name, flag);
+    bool enable = pR->IEEE80211hSupported && flag;
+    ASSERTS_NOT_EQUALS(enable, pR->setRadio80211hEnable, , ME, "EQUAL");
+    pR->setRadio80211hEnable = enable;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+amxd_status_t _wld_rad_validateIEEE80211hEnabled_pvf(amxd_object_t* object _UNUSED,
+                                                     amxd_param_t* param _UNUSED,
+                                                     amxd_action_t reason _UNUSED,
+                                                     const amxc_var_t* const args,
+                                                     amxc_var_t* const retval _UNUSED,
+                                                     void* priv _UNUSED) {
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     bool flag = amxc_var_dyncast(bool, args);
-    SAH_TRACEZ_INFO(ME, "set 80211hEnable %d", flag);
-    if(pR && debugIsRadPointer(pR)) {
-        bool newValue = pR->IEEE80211hSupported && flag;
-        if(newValue != pR->setRadio80211hEnable) {
-            wld_rad_doSync(pR); // Force a resync of the structure (FIX ME)
-        }
-    }
-
-    SAH_TRACEZ_OUT(ME);
-    return rv;
-}
-
-amxd_status_t _validateIEEE80211hEnabled(amxd_param_t* parameter, void* validationData) {
-    _UNUSED_(validationData);
-    T_Radio* pR;
-    bool flag;
-
-    amxc_var_t Nvalue;
-    amxc_var_init(&Nvalue);
-    amxd_param_get_value(parameter, &Nvalue);
-
-    flag = amxc_var_get_bool(&Nvalue);
-    amxc_var_clean(&Nvalue);
-    pR = amxd_param_get_owner(parameter)->priv;
-
-    if(!pR) {
+    if((pRad->IEEE80211hSupported && flag) == flag) {
         return amxd_status_ok;
     }
-
-    return ((pR->IEEE80211hSupported && flag) == flag);
+    SAH_TRACEZ_ERROR(ME, "%s: invalid IEEE80211hEnabled %d", pRad->Name, flag);
+    return amxd_status_invalid_value;
 }
 
-static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
-    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_FALSE(swl_str_isEmpty(countryCode), SWL_RC_INVALID_PARAM, ME, "%s: Empty country", pR->Name);
-    ASSERT_FALSE(swl_str_matches(countryCode, " "), SWL_RC_ERROR, ME, "%s: invalid country(%s)", pR->Name, countryCode);
+static swl_rc_ne s_checkCountryCode(const char* countryCode, int32_t* pIdx) {
+    if(pIdx != NULL) {
+        *pIdx = -1;
+    }
+    ASSERT_FALSE(swl_str_isEmpty(countryCode), SWL_RC_INVALID_PARAM, ME, "Empty country");
+    ASSERT_FALSE(swl_str_matches(countryCode, " "), SWL_RC_ERROR, ME, "invalid country(%s)", countryCode);
     int indexCountryCode = atoi(countryCode);
     int idx = 0;
     int rc = -1;
@@ -1585,174 +1013,111 @@ static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
     } else {
         rc = getCountryParam(NULL, indexCountryCode, &idx);
     }
-    ASSERT_FALSE(rc < 0, SWL_RC_ERROR, ME, "%s: invalid country (%s)", pR->Name, countryCode);
-    pR->regulatoryDomainIdx = idx;
-    pR->pFA->mfn_wrad_regdomain(pR, NULL, 0, SET);
+    if(pIdx != NULL) {
+        *pIdx = idx;
+    }
+    ASSERT_FALSE(rc < 0, SWL_RC_ERROR, ME, "invalid country (%s)", countryCode);
     return SWL_RC_OK;
 }
-amxd_status_t _wld_rad_setCountryCode_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    const char* CC = NULL;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERT_NOT_NULL(pR, rv, ME, "NULL");
+static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    int idx = 0;
+    swl_rc_ne rc = s_checkCountryCode(countryCode, &idx);
+    ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "%s: invalid country (%s)", pR->Name, countryCode);
+    pR->regulatoryDomainIdx = idx;
+    pR->pFA->mfn_wrad_regdomain(pR, NULL, 0, SET);
+    return rc;
+}
 
+static void s_setCountryCode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    CC = amxc_var_constcast(cstring_t, args);
-    SAH_TRACEZ_INFO(ME, "%s: set CountryCode (%s)", pR->Name, CC);
 
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    const char* CC = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set CountryCode (%s)", pR->Name, CC);
     if(s_setCountryCode(pR, CC) == SWL_RC_OK) {
         wld_autoCommitMgr_notifyRadEdit(pR);
     }
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _validateImplicitBeamForming(amxd_param_t* parameter, void* validationData) {
-    _UNUSED_(validationData);
-    amxd_object_t* wifiRad = NULL;
-    T_Radio* pR = NULL;
-    amxc_var_t Nvalue;
-    amxc_var_init(&Nvalue);
-    amxd_param_get_value(parameter, &Nvalue);
-
-    wifiRad = amxd_param_get_owner(parameter);
-    pR = wifiRad->priv;
-
-    if(!pR) {
-        return amxd_status_ok;
-    }
+amxd_status_t _wld_rad_validateImplicitBeamForming_pvf(amxd_object_t* object _UNUSED,
+                                                       amxd_param_t* param _UNUSED,
+                                                       amxd_action_t reason _UNUSED,
+                                                       const amxc_var_t* const args,
+                                                       amxc_var_t* const retval _UNUSED,
+                                                       void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    bool enable = amxc_var_dyncast(bool, args);
 
     /* Disabling is always allowed */
-    bool enable = amxc_var_get_bool(&Nvalue);
-    amxc_var_clean(&Nvalue);
-
-    if(!enable) {
+    if((!enable) || (pRad->implicitBeamFormingSupported)) {
         return amxd_status_ok;
     }
-
-    return pR->implicitBeamFormingSupported;
+    SAH_TRACEZ_ERROR(ME, "%s: unsupported feature", pRad->Name);
+    return status;
 }
 
-static amxd_status_t _setBeamForming(amxd_param_t* parameter, amxd_action_t reason,
-                                     const amxc_var_t* const args,
-                                     amxc_var_t* const retval,
-                                     void* priv, beamforming_type_t type) {
-    int ret;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setBeamForming(T_Radio* pR, const amxc_var_t* const newValue, beamforming_type_t type) {
+    SAH_TRACEZ_IN(ME);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    if(!pR) {
-        return rv;
-    }
-
-    bool enabled = amxc_var_dyncast(bool, args);
-
+    ASSERTI_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
     if(type == beamforming_implicit) {
         pR->implicitBeamFormingEnabled = enabled;
     } else {
         pR->explicitBeamFormingEnabled = enabled;
     }
-
-    ret = pR->pFA->mfn_wrad_beamforming(pR, type, enabled, SET);
+    int ret = pR->pFA->mfn_wrad_beamforming(pR, type, enabled, SET);
+    ASSERT_EQUALS(ret, 0, , ME, "Failed to set %s beam forming",
+                  type == beamforming_implicit ? "implicit" : "explicit");
     wld_autoCommitMgr_notifyRadEdit(pR);
-    if(ret != 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to set %s beam forming",
-                         type == beamforming_implicit ? "implicit" : "explicit");
-    }
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setImplicitBeamForming_pwf(amxd_object_t* object _UNUSED,
-                                                  amxd_param_t* parameter _UNUSED,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
-    return _setBeamForming(parameter, reason, args, retval, priv, beamforming_implicit);
+static void s_setImplicitBeamForming_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pR = wld_rad_fromObj(object);
+    s_setBeamForming(pR, newValue, beamforming_implicit);
 }
 
-amxd_status_t _validateExplicitBeamForming(amxd_param_t* parameter, void* validationData) {
-    _UNUSED_(validationData);
-    amxd_object_t* wifiRad = NULL;
-    T_Radio* pR = NULL;
-    amxc_var_t Nvalue;
-    amxc_var_init(&Nvalue);
-    amxd_param_get_value(parameter, &Nvalue);
+amxd_status_t _wld_rad_validateExplicitBeamForming_pvf(amxd_object_t* object _UNUSED,
+                                                       amxd_param_t* param _UNUSED,
+                                                       amxd_action_t reason _UNUSED,
+                                                       const amxc_var_t* const args,
+                                                       amxc_var_t* const retval _UNUSED,
+                                                       void* priv _UNUSED) {
+    amxd_status_t status = amxd_status_invalid_value;
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    bool enable = amxc_var_dyncast(bool, args);
 
-    wifiRad = amxd_param_get_owner(parameter);
-    pR = wifiRad->priv;
-
-    if(!pR) {
-        return amxd_status_ok;
-    }
-
-    bool enable = amxc_var_get_bool(&Nvalue);
-    amxc_var_clean(&Nvalue);
     /* Disabling is always allowed */
-    if(!enable) {
+    if((!enable) || (pRad->explicitBeamFormingSupported)) {
         return amxd_status_ok;
     }
-
-    return pR->explicitBeamFormingSupported;
+    SAH_TRACEZ_ERROR(ME, "%s: unsupported feature", pRad->Name);
+    return status;
 }
 
-amxd_status_t _wld_rad_setExplicitBeamForming_pwf(amxd_object_t* object _UNUSED,
-                                                  amxd_param_t* parameter _UNUSED,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
-    return _setBeamForming(parameter, reason, args, retval, priv, beamforming_explicit);
+static void s_setExplicitBeamForming_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pR = wld_rad_fromObj(object);
+    s_setBeamForming(pR, newValue, beamforming_explicit);
 }
 
-static amxd_status_t setBfCap(amxd_param_t* parameter _UNUSED,
-                              amxd_action_t reason _UNUSED,
-                              const amxc_var_t* const args _UNUSED,
-                              amxc_var_t* const retval _UNUSED,
-                              void* priv _UNUSED, com_dir_e comDir) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setBfCap(T_Radio* pR, const amxc_var_t* const newValue, com_dir_e comDir) {
+    SAH_TRACEZ_IN(ME);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    const char* bfStr = amxc_var_constcast(cstring_t, args);
-    ASSERTI_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
+    ASSERTI_NOT_NULL(pR, , ME, "NULL");
+    const char* bfStr = amxc_var_constcast(cstring_t, newValue);
     wld_rad_bf_cap_m capEnable = swl_conv_charToMask(bfStr, g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
 
-    ASSERTI_NOT_EQUALS(capEnable, pR->bfCapsEnabled[comDir], amxd_status_ok, ME, "%s bfCap no change %u %u",
+    ASSERTI_NOT_EQUALS(capEnable, pR->bfCapsEnabled[comDir], , ME, "%s bfCap no change %u %u",
                        pR->Name, comDir, capEnable);
 
     if((capEnable & !pR->bfCapsSupported[comDir]) && (capEnable != M_RAD_BF_CAP_DEFAULT)) {
@@ -1766,95 +1131,45 @@ static amxd_status_t setBfCap(amxd_param_t* parameter _UNUSED,
     pR->bfCapsEnabled[comDir] = capEnable;
     wld_rad_doSync(pR);
 
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setRxBfCapsEnabled_pwf(amxd_object_t* object _UNUSED,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args _UNUSED,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    return setBfCap(parameter, reason, args, retval, priv, COM_DIR_RECEIVE);
+static void s_setRxBfCapsEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pR = wld_rad_fromObj(object);
+    s_setBfCap(pR, newValue, COM_DIR_RECEIVE);
 }
 
-amxd_status_t _wld_rad_setTxBfCapsEnabled_pwf(amxd_object_t* object _UNUSED,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args _UNUSED,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    return setBfCap(parameter, reason, args, retval, priv, COM_DIR_TRANSMIT);
+static void s_setTxBfCapsEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pR = wld_rad_fromObj(object);
+    s_setBfCap(pR, newValue, COM_DIR_TRANSMIT);
 }
 
+static void s_setRIFS_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-amxd_status_t _wld_rad_setRIFS_pwf(amxd_object_t* object _UNUSED,
-                                   amxd_param_t* parameter _UNUSED,
-                                   amxd_action_t reason _UNUSED,
-                                   const amxc_var_t* const args _UNUSED,
-                                   amxc_var_t* const retval _UNUSED,
-                                   void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    if(!pR) {
-        return rv;
-    }
-
-    pR->RIFSEnabled = swl_conv_charToEnum(amxc_var_constcast(cstring_t, args), Rad_RIFS_MODE, RIFS_MODE_MAX, RIFS_MODE_DEFAULT);
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    const char* rifsStr = amxc_var_constcast(cstring_t, newValue);
+    pR->RIFSEnabled = swl_conv_charToEnum(rifsStr, Rad_RIFS_MODE, RIFS_MODE_MAX, RIFS_MODE_DEFAULT);
     int ret = pR->pFA->mfn_wrad_rifs(pR, pR->RIFSEnabled, SET);
+    ASSERTI_EQUALS(ret, 0, , ME, "%s :Failed to put RIFS to %s", pR->Name, Rad_RIFS_MODE[pR->RIFSEnabled]);
     wld_autoCommitMgr_notifyRadEdit(pR);
-    if(ret != 0) {
-        SAH_TRACEZ_ERROR(ME, "%s :Failed to put RIFS to %s", pR->Name, Rad_RIFS_MODE[pR->RIFSEnabled]);
-    }
 
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setAirTimeFairness_pwf(amxd_object_t* object _UNUSED,
-                                              amxd_param_t* parameter _UNUSED,
-                                              amxd_action_t reason _UNUSED,
-                                              const amxc_var_t* const args _UNUSED,
-                                              amxc_var_t* const retval _UNUSED,
-                                              void* priv _UNUSED) {
-    int ret;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setAirTimeFairness_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-    if(!pR) {
-        return rv;
-    }
-
-    bool enabled = amxc_var_dyncast(bool, args);
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
     pR->airtimeFairnessEnabled = enabled;
-
-    ret = pR->pFA->mfn_wrad_airtimefairness(pR, enabled, SET);
-    if(ret != 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to %s AirTimeFairness",
-                         enabled ? "enable" : "disable");
-    }
+    int ret = pR->pFA->mfn_wrad_airtimefairness(pR, enabled, SET);
+    ASSERTI_EQUALS(ret, 0, , ME, "%s: Failed to %s AirTimeFairness", pR->Name, enabled ? "enable" : "disable");
     wld_autoCommitMgr_notifyRadEdit(pR);
 
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
 /**
@@ -1864,178 +1179,81 @@ amxd_status_t _wld_rad_setAirTimeFairness_pwf(amxd_object_t* object _UNUSED,
  * state.
  * Note! It is up to the plugin to actually change the radio value, if valid.
  */
-amxd_status_t _wld_rad_setIntelligentAirtime_pwf(amxd_object_t* object _UNUSED,
-                                                 amxd_param_t* parameter _UNUSED,
-                                                 amxd_action_t reason _UNUSED,
-                                                 const amxc_var_t* const args _UNUSED,
-                                                 amxc_var_t* const retval _UNUSED,
-                                                 void* priv _UNUSED) {
-    int ret;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
+static void s_setIntelligentAirtime_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if((rv != amxd_status_ok) || !pR) {
-        return rv;
-    }
 
-    bool enabled = amxc_var_dyncast(bool, args);
-    if(enabled != pR->intAirtimeSchedEnabled) {
-        ret = pR->pFA->mfn_wrad_intelligentAirtime(pR, enabled, SET);
-        if(ret != 0) {
-            SAH_TRACEZ_ERROR(ME, "fail %u", enabled);
-        } else {
-            SAH_TRACEZ_INFO(ME, "set %u", enabled);
-            wld_autoCommitMgr_notifyRadEdit(pR);
-        }
-    } else {
-        SAH_TRACEZ_INFO(ME, "keep %u", enabled);
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
+    ASSERTI_NOT_EQUALS(enabled, pR->intAirtimeSchedEnabled, , ME, "%s: keep %u", pR->Name, enabled);
+    int ret = pR->pFA->mfn_wrad_intelligentAirtime(pR, enabled, SET);
+    ASSERTI_EQUALS(ret, 0, , ME, "%s: fail %u", pR->Name, enabled);
+    SAH_TRACEZ_INFO(ME, "%s: set %u", pR->Name, enabled);
+    wld_autoCommitMgr_notifyRadEdit(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
-amxd_status_t _wld_rad_setRxPowerSave_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
+static void s_setRxPowerSave_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if((rv != amxd_status_ok) || !pR) {
-        return rv;
-    }
-
-    bool enabled = amxc_var_dyncast(bool, args);
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
     pR->rxPowerSaveEnabled = enabled;
 
     int ret = pR->pFA->mfn_wrad_rx_powersave(pR, enabled, SET);
+    ASSERTI_EQUALS(ret, 0, , ME, "%s : Failed to %s power save", pR->Name, enabled ? "enable" : "disable");
     wld_autoCommitMgr_notifyRadEdit(pR);
-    if(ret != 0) {
-        SAH_TRACEZ_ERROR(ME, "%s : Failed to %s power save",
-                         pR->Name, enabled ? "enable" : "disable");
-    }
 
-    return rv;
+    SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setRxPowerSaveRepeater_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-amxd_status_t _wld_rad_setRxPowerSaveRepeater_pwf(amxd_object_t* object _UNUSED,
-                                                  amxd_param_t* parameter _UNUSED,
-                                                  amxd_action_t reason _UNUSED,
-                                                  const amxc_var_t* const args _UNUSED,
-                                                  amxc_var_t* const retval _UNUSED,
-                                                  void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if((rv != amxd_status_ok) || !pR) {
-        return rv;
-    }
-
-    bool enabled = amxc_var_dyncast(bool, args);
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_ok, ME, "INVALID");
-
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
     pR->rxPowerSaveEnabledWhenRepeater = enabled;
     if(!wld_rad_hasEnabledEp(pR)) {
         SAH_TRACEZ_INFO(ME, "%s: no active repeater, ignore set", pR->Name);
-        return amxd_status_ok;
+        return;
     }
 
     int ret = pR->pFA->mfn_wrad_rx_powersave(pR, enabled, SET);
+    ASSERTI_EQUALS(ret, 0, , ME, "%s : Failed to %s power save on repeater", pR->Name, enabled ? "enable" : "disable");
     wld_autoCommitMgr_notifyRadEdit(pR);
-    if(ret != 0) {
-        SAH_TRACEZ_ERROR(ME, "%s : Failed to %s power save on repeater",
-                         pR->Name, enabled ? "enable" : "disable");
-    }
-    return amxd_status_ok;
+
+    SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_rad_setMultiUserMIMO_pwf(amxd_object_t* object _UNUSED,
-                                            amxd_param_t* parameter _UNUSED,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args _UNUSED,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
-    int ret;
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return amxd_status_ok;
-    }
-
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    bool enabled = amxc_var_dyncast(bool, args);
-    if(!pR) {
-        return amxd_status_ok;
-    }
-
-    pR->multiUserMIMOEnabled = enabled;
-
-    ret = pR->pFA->mfn_wrad_multiusermimo(pR, enabled, SET);
-    wld_autoCommitMgr_notifyRadEdit(pR);
-    if(ret != 0) {
-        SAH_TRACEZ_INFO(ME, "Failed to %s Multi-User MIMO", enabled ? "enable" : "disable");
-    }
-    return amxd_status_ok;
-}
-
-amxd_status_t _wld_rad_setMaxStations_pwf(amxd_object_t* object _UNUSED,
-                                          amxd_param_t* parameter _UNUSED,
-                                          amxd_action_t reason _UNUSED,
-                                          const amxc_var_t* const args _UNUSED,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return amxd_status_ok;
-    }
-
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setMultiUserMIMO_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    int flag = amxc_var_dyncast(int32_t, args);
-    SAH_TRACEZ_INFO(ME, "set MaxStations %d", flag);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
+    pR->multiUserMIMOEnabled = enabled;
 
-    // Set MaxStations supported and update Radio object param !
-    if(pRad && debugIsRadPointer(pRad)) {
-        pRad->maxStations = flag;
-        wld_rad_doSync(pRad);
-    }
+    int ret = pR->pFA->mfn_wrad_multiusermimo(pR, enabled, SET);
+    ASSERTI_EQUALS(ret, 0, , ME, "%s : Failed to %s Multi-User MIMO", pR->Name, enabled ? "enable" : "disable");
+    wld_autoCommitMgr_notifyRadEdit(pR);
+
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+}
+
+static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    int nMaxSta = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set MaxStations %d", pR->Name, nMaxSta);
+    pR->maxStations = nMaxSta;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
 }
 
 // See this as
@@ -2125,98 +1343,73 @@ amxd_status_t _DFS_drvdbg(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_rad_setFileLogLimit_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter _UNUSED,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    ASSERT_NOT_NULL(wifiRad, amxd_status_unknown_error, ME, "NULL");
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return amxd_status_ok;
-    }
-
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setDfsFileLogLimit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
 
-    uint8_t newFileLogLimit = amxc_var_dyncast(uint8_t, args);
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    uint8_t newFileLogLimit = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setFileLogLimit oldValue:%d newValue:%d", pR->Name, pR->dfsFileLogLimit, newFileLogLimit);
+    pR->dfsFileLogLimit = newFileLogLimit;
 
-    SAH_TRACEZ_INFO(ME, "setFileLogLimit oldValue:%d newValue:%d", pRad->dfsFileLogLimit, newFileLogLimit);
-    pRad->dfsFileLogLimit = newFileLogLimit;
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_rad_setEventLogLimit_pwf(amxd_object_t* object _UNUSED,
-                                            amxd_param_t* parameter _UNUSED,
-                                            amxd_action_t reason _UNUSED,
-                                            const amxc_var_t* const args _UNUSED,
-                                            amxc_var_t* const retval _UNUSED,
-                                            void* priv _UNUSED) {
+static void s_setDfsEventLogLimit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
 
-    T_Radio* pRad = (T_Radio*) wifiRad->priv;
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    uint8_t newEventLogLimit = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: setEventLogLimit oldValue:%d newValue:%d", pR->Name, pR->dfsEventLogLimit, newEventLogLimit);
+    pR->dfsEventLogLimit = newEventLogLimit;
+    checkRadioEventLogLimitReached(pR);
 
-    uint8_t newEventLogLimit = amxc_var_dyncast(uint8_t, args);
-    SAH_TRACEZ_INFO(ME, "setEventLogLimit oldValue:%d newValue:%d", pRad->dfsEventLogLimit, newEventLogLimit);
-    pRad->dfsEventLogLimit = newEventLogLimit;
-    checkRadioEventLogLimitReached(pRad);
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
+SWLA_DM_HDLRS(sDfsDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("FileLogLimit", s_setDfsFileLogLimit_pwf),
+                  SWLA_DM_PARAM_HDLR("EventLogLimit", s_setDfsEventLogLimit_pwf)));
 
-amxd_status_t _validateRadioOperatingFrequencyBand(amxd_param_t* parameter, void* validationData _UNUSED) {
-    amxd_object_t* wifiRad = NULL;
-    T_Radio* pR = NULL;
-    amxc_var_t Nvalue;
-    amxc_var_init(&Nvalue);
-    amxd_param_get_value(parameter, &Nvalue);
-    const char* OFB = NULL;
-    swl_freqBand_e band;
+void _wld_rad_setDFSConfig_ocf(const char* const sig_name,
+                               const amxc_var_t* const data,
+                               void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sDfsDmHdlrs, sig_name, data, priv);
+}
 
+amxd_status_t _wld_rad_validateOperatingFrequencyBand_pvf(amxd_object_t* object _UNUSED,
+                                                          amxd_param_t* param,
+                                                          amxd_action_t reason _UNUSED,
+                                                          const amxc_var_t* const args,
+                                                          amxc_var_t* const retval _UNUSED,
+                                                          void* priv _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    OFB = amxc_var_get_cstring_t(&Nvalue);
-    wifiRad = amxd_param_get_owner(parameter);
-    pR = wifiRad->priv;
-    amxc_var_clean(&Nvalue);
 
-    if(!pR) {
-        return amxd_status_ok; // We're creating the object entry but have no valid Radio handler.
+    const char* oname = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    amxd_status_t status = amxd_status_invalid_value;
+    const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
+    ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
+    swl_freqBandExt_e bandExt = swl_conv_charToEnum(newValue, Rad_SupFreqBands, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_NONE);
+    swl_freqBand_e band = swl_chanspec_freqBandExtToFreqBand(bandExt, SWL_FREQ_BAND_MAX, NULL);
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    if(pRad == NULL) {
+        pRad = wld_getUinitRadioByBand(bandExt);
     }
 
-    band = swl_conv_charToEnum(OFB, Rad_SupFreqBands, SWL_FREQ_BAND_MAX, M_SWL_FREQ_BAND_EXT_AUTO);
-    if(band == M_SWL_FREQ_BAND_EXT_AUTO) {
-        SAH_TRACEZ_INFO(ME, "Invalid frequency band %s for %s",
-                        OFB, pR->Name);
-        return amxd_status_unknown_error;
+    if((swl_str_matches(currentValue, newValue)) ||
+       ((band != SWL_FREQ_BAND_MAX) && (pRad != NULL) && (SWL_BIT_SET(pRad->supportedFrequencyBands, bandExt)))) {
+        status = amxd_status_ok;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "%s: No available radio device supporting Frequency band %s", oname, newValue);
     }
+    free(newValue);
 
-    if(!(pR->supportedFrequencyBands & (1 << band))) {
-        SAH_TRACEZ_INFO(ME, "Frequency band %s not supported on %s",
-                        OFB, pR->Name);
-        return amxd_status_unknown_error;
-    }
-
-    return amxd_status_ok;
+    SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
@@ -2226,49 +1419,77 @@ amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
                                                      amxc_var_t* const retval,
                                                      void* priv) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    if(amxd_object_get_type(object) != amxd_object_instance) {
-        return rv;
-    }
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
+
+    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
+    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "fail to write param rv:%d", rv);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, rv, ME, "Not instance");
 
     const char* OFB = amxc_var_constcast(cstring_t, args);
-    ASSERTW_STR(OFB, amxd_status_unknown_error, ME, "Missing param");
+    ASSERTW_STR(OFB, amxd_status_invalid_value, ME, "Missing param");
 
     swl_freqBandExt_e band = swl_conv_charToEnum(OFB, Rad_SupFreqBands, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_2_4GHZ);
 
     /* Link radio/object */
+    bool newMap = false;
     if(object->priv == NULL) {
-        _linkFirstUinitRadio(object, band);
+        newMap = (_linkFirstUinitRadio(object, band) == amxd_status_ok);
     }
 
     T_Radio* pR = object->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
-
-    pR->operatingFrequencyBand = band;
-
-    SAH_TRACEZ_INFO(ME, "set OperatingFrequencyBand %p %s %d", parameter, OFB, band);
+    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "No mapped radio");
+    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "invalid radio Ctx");
+    if(newMap || (pR->operatingFrequencyBand != band)) {
+        pR->operatingFrequencyBand = band;
+        SAH_TRACEZ_INFO(ME, "%s: set OperatingFrequencyBand %s %d", pR->Name, OFB, band);
+        pR->fsmRad.FSM_SyncAll = TRUE;
+        wld_rad_doCommitIfUnblocked(pR);
+    }
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
 
+static void s_syncRadDm(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+
+    SAH_TRACEZ_IN(ME);
+
+    pRad->pFA->mfn_sync_radio(pRad->pBus, pRad, SET);
+    if(pRad == wld_firstRad()) {
+        syncData_VendorWPS2OBJ(amxd_object_get(get_wld_object(), "wps_DefParam"), pRad, SET);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_addInstance_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const intialParamValues) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NO radio Ctx");
+
+    const char* OFB = GET_CHAR(intialParamValues, "OperatingFrequencyBand");
+    SAH_TRACEZ_INFO(ME, "%s: added instance object(%p:%s:%s)", pR->Name, object, pR->instanceName, OFB);
+    wld_rad_init_counters(pR, &pR->genericCounters, radCounterDefaults);
+    wld_radStaMon_init(pR);
+    syncData_VendorWPS2OBJ(NULL, pR, GET);
+    //event instance-added received, radio object is writable (loading transaction is done)
+    pR->hasDmReady = true;
+
+    //delay sync Rad Dm after all conf has been loaded
+    swla_delayExec_add((swla_delayExecFun_cbf) s_syncRadDm, pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 /**************************************************************************************************/
 /**************************************************************************************************/
 T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn) {
-    amxd_object_t* radio;
-    amxd_object_t* inst;
-    if(pobj) {
-        radio = amxd_object_get_child(pobj, "Radio");
-        inst = amxd_object_get_instance(radio, rn, 0);
-        ASSERTI_NOT_NULL(inst, NULL, ME, "%s - %p\n", rn, inst);
-        return (T_Radio*) inst->priv;
-    }
-    return NULL;
+    ASSERTS_NOT_NULL(pobj, NULL, ME, "NULL");
+    amxd_object_t* radio = amxd_object_get_child(pobj, "Radio");
+    amxd_object_t* inst = amxd_object_get_instance(radio, rn, 0);
+    ASSERTI_NOT_NULL(inst, NULL, ME, "%s - %p\n", rn, inst);
+    return (T_Radio*) inst->priv;
 }
 
 /**
@@ -2336,9 +1557,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         /* 'SupportedFrequencyBands' Comma-separated list of string.
          *  List items indicate the frequency bands at which the radio
          *  can operate. */
-        char supportedFrequencyBandsStr[128] = {0};
-        swl_conv_maskToChar(supportedFrequencyBandsStr, sizeof(supportedFrequencyBandsStr), pR->supportedFrequencyBands, swl_freqBandExt_str, SWL_FREQ_BAND_MAX);
-        amxd_object_set_cstring_t(object, "SupportedFrequencyBands", supportedFrequencyBandsStr);
+        swl_conv_objectParamSetMask(object, "SupportedFrequencyBands", pR->supportedFrequencyBands, swl_freqBandExt_str, SWL_FREQ_BAND_MAX);
 
         /* 'OperatingFrequencyBand' The value MUST be a member of
          *  the list reported by the SupportedFrequencyBands
@@ -2354,14 +1573,11 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         swl_radStd_supportedStandardsToChar(TBuf, sizeof(TBuf), pR->supportedStandards, pR->operatingStandardsFormat);
         amxd_object_set_cstring_t(object, "SupportedStandards", TBuf);
 
-        conv_maskToStr(pR->heCapsSupported, g_str_wld_he_cap, HE_CAP_MAX, TBuf, sizeof(TBuf));
-        amxd_object_set_cstring_t(object, "HeCapsSupported", TBuf);
+        swl_conv_objectParamSetMask(object, "HeCapsSupported", pR->heCapsSupported, g_str_wld_he_cap, HE_CAP_MAX);
 
-        swl_conv_maskToChar(TBuf, sizeof(TBuf), pR->bfCapsSupported[COM_DIR_TRANSMIT], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
-        amxd_object_set_cstring_t(object, "TxBeamformingCapsAvailable", TBuf);
+        swl_conv_objectParamSetMask(object, "TxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_TRANSMIT], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
 
-        swl_conv_maskToChar(TBuf, sizeof(TBuf), pR->bfCapsSupported[COM_DIR_RECEIVE], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
-        amxd_object_set_cstring_t(object, "RxBeamformingCapsAvailable", TBuf);
+        swl_conv_objectParamSetMask(object, "RxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_RECEIVE], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
 
         ssize_t outputSize = 0;
         //HT capabilities
@@ -2476,10 +1692,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
          *  levels a percentage f full power. */
         TBuf[0] = '\0';
         for(idx = 0; !idx || pR->transmitPowerSupported[idx]; idx++) {
-            if(idx && TBuf[0]) {
-                swl_str_cat(TBuf, sizeof(TBuf), ",");
-            }
-            swl_str_cat(TBuf, sizeof(TBuf), itoa(pR->transmitPowerSupported[idx], ValBuf, 10));
+            swl_strlst_catFormat(TBuf, sizeof(TBuf), ",", "%d", pR->transmitPowerSupported[idx]);
         }
         amxd_object_set_cstring_t(object, "TransmitPowerSupported", TBuf);
         /* 'TransmitPower' Indicates the current transmit power
@@ -2516,9 +1729,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         amxd_object_set_bool(object, "IEEE80211rSupported", pR->IEEE80211rSupported);
 
-        char multiAPTypesSupportedStr[128] = {0};
-        swl_conv_maskToChar(multiAPTypesSupportedStr, sizeof(multiAPTypesSupportedStr), pR->m_multiAPTypesSupported, cstr_MultiAPType, MULTIAP_MAX);
-        amxd_object_set_cstring_t(object, "MultiAPTypesSupported", multiAPTypesSupportedStr);
+        swl_conv_objectParamSetMask(object, "MultiAPTypesSupported", pR->m_multiAPTypesSupported, cstr_MultiAPType, MULTIAP_MAX);
 
         /* 'RegulatoryDomain' The 802.11d Regulatory Domain. First
          *  two octects are two-character country code. The third
@@ -2624,8 +1835,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
 
         char* guardInt = amxd_object_get_cstring_t(object, "GuardInterval", NULL);
-        if(strncmp(Rad_SupGI[pR->guardInterval], guardInt, strlen(Rad_SupGI[pR->guardInterval]))) {
-            pR->guardInterval = conv_strToEnum(Rad_SupGI, guardInt, RGI_800NSEC, RGI_AUTO);
+        if(!swl_str_nmatches(Rad_SupGI[pR->guardInterval], guardInt, strlen(Rad_SupGI[pR->guardInterval]))) {
+            pR->guardInterval = swl_conv_charToEnum(guardInt, Rad_SupGI, SWL_ARRAY_SIZE(Rad_SupGI), SWL_SGI_AUTO);
             pR->pFA->mfn_wrad_guardintval(pR, NULL, pR->guardInterval, SET);
             commit = true;
         }
@@ -2810,47 +2021,40 @@ amxd_status_t _FSM_Start(amxd_object_t* wifi,
                          amxd_function_t* func _UNUSED,
                          amxc_var_t* args,
                          amxc_var_t* retval) {
-    amxd_object_t* objAP = NULL;
-    T_Radio* pR = NULL;
-    T_AccessPoint* pAP = NULL;
-
     int32_t ret = -1;
-    char objPath[64];
+
+    amxd_status_t status = amxd_status_unknown_error;
 
     const char* vapname = GET_CHAR(args, "vap");
-    SAH_TRACEZ_INFO(ME, "argument_getChar vap %s", vapname);
+    ASSERT_STR(vapname, status, ME, "Missing vap name");
+    amxc_var_t* var = GET_ARG(args, "bitnr");
+    ASSERT_NOT_NULL(var, status, ME, "Missing bitnr");
+    int32_t val_int32 = amxc_var_dyncast(int32_t, var);
+    SAH_TRACEZ_INFO(ME, "vap %s bitnr %d", vapname, val_int32);
 
-    int32_t val_int32 = GET_INT32(args, "bitnr");
-    SAH_TRACEZ_INFO(ME, "argument_getInt32 %d", val_int32);
+    amxd_object_t* objAP = amxd_object_findf(wifi, "AccessPoint.%s", vapname);
+    ASSERT_NOT_NULL(objAP, status, ME, "Not vap instance for vapname %s", vapname);
+    T_AccessPoint* pAP = (T_AccessPoint*) objAP->priv;
+    ASSERT_TRUE(debugIsVapPointer(pAP), status, ME, "Not internal ctx from vapname %s", vapname);
+    T_Radio* pR = pAP->pRadio;
+    ASSERT_NOT_NULL(pR, status, ME, "No radio mapped to vapname %s", vapname);
 
-    /* remove our object entry out of the SSID and ACCESSPOINT table */
-    sprintf(objPath, "%s.%s", "AccessPoint", vapname);
-    objAP = amxd_object_get(wifi, objPath);
+    /* Set a bit in our state machine bit-array */
+    clearAllBitsLongArray(pAP->fsm.FSM_CSC, FSM_BW);            /* Clear also current state */
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, (int) val_int32);
 
-    if(objAP) {
-        /* Get our Radio system handler */
-        pAP = (T_AccessPoint*) objAP->priv;
-        if(pAP) {
-            pR = (T_Radio*) pAP->pRadio;
+    SAH_TRACEZ_INFO(ME, "setBitLongArray");
 
-            /* Set a bit in our state machine bit-array */
-            clearAllBitsLongArray(pAP->fsm.FSM_CSC, FSM_BW);            /* Clear also current state */
-            setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, (int) val_int32);
-
-            SAH_TRACEZ_INFO(ME, "setBitLongArray");
-
-            /* Start our state machine */
-            if((ret = pR->pFA->mfn_wrad_fsm_state(pR)) == FSM_IDLE) {
-                ret = pR->pFA->mfn_wrad_fsm(pR);
-            }
-
-            SAH_TRACEZ_INFO(ME, "mfn_wvap_fsm");
-        }
+    /* Start our state machine */
+    if((ret = pR->pFA->mfn_wrad_fsm_state(pR)) == FSM_IDLE) {
+        ret = pR->pFA->mfn_wrad_fsm(pR);
     }
 
+    SAH_TRACEZ_INFO(ME, "mfn_wvap_fsm");
     if(ret == FSM_WAIT) {
+        amxd_function_defer(func, &pR->call_id, retval, NULL, pR);
         amxc_var_set(int32_t, retval, ret);
-        return amxd_status_deferred; // as there is no "executing" I set it to deffered to say that the function result is adjourned
+        return amxd_status_deferred;
     }
 
     amxc_var_set(int32_t, retval, ret);
@@ -3141,8 +2345,7 @@ int DebugObjStructPrint(void* pData) {
                      pR->blockCommit, pR->pFA->mfn_wrad_fsm_state(pR));
 
     /* Do this also for the VAP's */
-    for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pR->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
-        pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pR) {
         pHR = (char*) pAP;
         selObj = pAP->pBus;
 
@@ -3243,15 +2446,9 @@ int DebugObjStructPrint(void* pData) {
     return 0;
 }
 
-amxd_status_t _verify(amxd_object_t* object _UNUSED,
-                      amxd_function_t* func _UNUSED,
-                      amxc_var_t* args _UNUSED,
-                      amxc_var_t* ret _UNUSED) {
-    return amxd_status_ok;
-}
-
 void Radio_Commit_Abort(uint64_t call_id _UNUSED, void* userdata) {
     T_Radio* pR = (T_Radio*) userdata;
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
     pR->call_id = 0;
 }
 
@@ -3262,23 +2459,20 @@ static void doRadioReset(T_Radio* pRad) {
     SAH_TRACEZ_ERROR(ME, "BloCom %u State %u", pRad->blockCommit, fsmState);
     T_AccessPoint* pAP;
     /* collect all dependencies on all attached ep interfaces, mirror it on the RAD interface */
-    amxc_llist_for_each(it, &pRad->llEndPoints) {
-        T_EndPoint* pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
-        SAH_TRACEZ_ERROR(ME, "Reset ap %s: 0x%lx 0x%lx // 0x%lx 0x%lx ",
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        SAH_TRACEZ_ERROR(ME, "Reset ep %s: 0x%lx 0x%lx // 0x%lx 0x%lx ",
                          pEP->alias,
                          pEP->fsm.FSM_BitActionArray[0], pEP->fsm.FSM_BitActionArray[1],
                          pEP->fsm.FSM_AC_BitActionArray[0], pEP->fsm.FSM_AC_BitActionArray[1]);
     }
 
     /* collect all dependencies on all attached vap interfaces, mirror it on the RAD interface */
-    for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pRad->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
-        pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
-        if(pAP && debugIsVapPointer(pAP)) {
-            SAH_TRACEZ_ERROR(ME, "Reset ap %s: 0x%lx 0x%lx // 0x%lx 0x%lx",
-                             pAP->alias,
-                             pAP->fsm.FSM_BitActionArray[0], pAP->fsm.FSM_BitActionArray[1],
-                             pAP->fsm.FSM_AC_BitActionArray[0], pAP->fsm.FSM_AC_BitActionArray[1]);
-        }
+    wld_rad_forEachAp(pAP, pRad) {
+        SAH_TRACEZ_ERROR(ME, "Reset ap %s: 0x%lx 0x%lx // 0x%lx 0x%lx",
+                         pAP->alias,
+                         pAP->fsm.FSM_BitActionArray[0], pAP->fsm.FSM_BitActionArray[1],
+                         pAP->fsm.FSM_AC_BitActionArray[0], pAP->fsm.FSM_AC_BitActionArray[1]);
     }
 
     if(pRad->call_id != 0) {
@@ -3308,8 +2502,7 @@ static void doRadioReset(T_Radio* pRad) {
 
 static void doAllRadioReset() {
     T_Radio* pRad = NULL;
-    amxc_llist_for_each(it, &g_radios) {
-        pRad = amxc_llist_it_get_data(it, T_Radio, it);
+    wld_for_eachRad(pRad) {
         if(pRad->fsm_radio_st != FSM_IDLE) {
             doRadioReset(pRad);
         }
@@ -3427,19 +2620,18 @@ int wld_rad_doCommitIfUnblocked(T_Radio* pRad) {
     return ret;
 }
 
-amxd_status_t _commit(amxd_object_t* object,
-                      amxd_function_t* func _UNUSED,
-                      amxc_var_t* args _UNUSED,
-                      amxc_var_t* retval) {
+amxd_status_t _Radio_commit(amxd_object_t* object,
+                            amxd_function_t* func _UNUSED,
+                            amxc_var_t* args _UNUSED,
+                            amxc_var_t* retval) {
 
-    T_Radio* pR = NULL;
-    int ret = -1;
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    pR = object->priv;
-
-    ret = wld_rad_doRadioCommit(pR);
+    int ret = wld_rad_doRadioCommit(pR);
 
     if(ret == FSM_WAIT) {
+        amxd_function_defer(func, &pR->call_id, retval, Radio_Commit_Abort, pR);
         amxc_var_set(int32_t, retval, ret);
         return amxd_status_deferred;
     }
@@ -3539,8 +2731,7 @@ T_EndPoint* wld_rad_getFirstEp(T_Radio* pR) {
 T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname) {
     T_AccessPoint* pAP = NULL;
 
-    amxc_llist_for_each(it, &pR->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pR) {
         if(!strcmp((const char*) pAP->alias, ifname)) {
             return pAP;
         }
@@ -3552,8 +2743,7 @@ T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname) {
 T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
     T_EndPoint* pEP = NULL;
 
-    amxc_llist_for_each(it, &pR->llEndPoints) {
-        pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
+    wld_rad_forEachEp(pEP, pR) {
         if(!strcmp((const char*) pEP->Name, ifname)) {
             return pEP;
         }
@@ -3564,8 +2754,7 @@ T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
 T_Radio* wld_rad_from_name(const char* ifname) {
     T_Radio* pR;
 
-    amxc_llist_for_each(it, &g_radios) {
-        pR = amxc_llist_it_get_data(it, T_Radio, it);
+    wld_for_eachRad(pR) {
         if(!strcmp((const char*) pR->Name, ifname)) {
             return pR;
         }
@@ -3579,8 +2768,7 @@ T_AccessPoint* wld_vap_from_name(const char* ifname) {
     T_Radio* pR;
     T_AccessPoint* pAP = NULL;
 
-    amxc_llist_for_each(it, &g_radios) {
-        pR = amxc_llist_it_get_data(it, T_Radio, it);
+    wld_for_eachRad(pR) {
         if((pAP = wld_rad_vap_from_name(pR, ifname))) {
             break;
         }
@@ -3594,14 +2782,28 @@ T_EndPoint* wld_vep_from_name(const char* ifname) {
     T_Radio* pR;
     T_EndPoint* pEP = NULL;
 
-    amxc_llist_for_each(it, &g_radios) {
-        pR = amxc_llist_it_get_data(it, T_Radio, it);
+    wld_for_eachRad(pR) {
         if((pEP = wld_rad_ep_from_name(pR, ifname))) {
             break;
         }
     }
 
     return pEP;
+}
+
+/*
+ * @brief return radio ctx of radio object
+ */
+T_Radio* wld_rad_fromObj(amxd_object_t* radObj) {
+    ASSERTS_EQUALS(amxd_object_get_type(radObj), amxd_object_instance, NULL, ME, "Not instance");
+    amxd_object_t* parentObj = amxd_object_get_parent(radObj);
+    ASSERT_EQUALS(get_wld_object(), amxd_object_get_parent(parentObj), NULL, ME, "wrong location");
+    const char* parentName = amxd_object_get_name(parentObj, AMXD_OBJECT_NAMED);
+    ASSERT_TRUE(swl_str_matches(parentName, "Radio"), NULL, ME, "invalid parent obj(%s)", parentName);
+    T_Radio* pRad = (T_Radio*) radObj->priv;
+    ASSERTI_NOT_NULL(pRad, NULL, ME, "NULL");
+    ASSERT_TRUE(debugIsRadPointer(pRad), NULL, ME, "INVALID");
+    return pRad;
 }
 
 bool wld_radio_notify_scanresults(amxd_object_t* obj) {
@@ -3804,8 +3006,7 @@ bool wld_rad_hasEnabledEp(T_Radio* pRad) {
     T_EndPoint* pEP = NULL;
 
     /* Check if NO AP is active */
-    amxc_llist_for_each(it, &pRad->llEndPoints) {
-        pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
+    wld_rad_forEachEp(pEP, pRad) {
         if(pEP->enable) {
             return true;
         }
@@ -3818,8 +3019,7 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
     T_EndPoint* pEP = NULL;
 
     /* Check if NO AP is active */
-    amxc_llist_for_each(it, &pRad->llEndPoints) {
-        pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
+    wld_rad_forEachEp(pEP, pRad) {
         if(pEP->connectionStatus == EPCS_CONNECTED) {
             return true;
         }
@@ -3832,8 +3032,7 @@ bool wld_rad_hasEnabledVap(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
 
     /* Check if NO AP is active */
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         if(pAP->enable) {
             return true;
         }
@@ -3846,8 +3045,7 @@ bool wld_rad_hasActiveVap(T_Radio* pRad) {
     T_AccessPoint* pAP = NULL;
 
     /* Check if NO AP is active */
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         if(pAP->status == APSTI_ENABLED) {
             return true;
         }
@@ -3895,6 +3093,19 @@ uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad) {
 
 bool wld_rad_hasActiveIface(T_Radio* pRad) {
     return (wld_rad_getFirstActiveIfaceIndex(pRad) > 0);
+}
+
+uint32_t wld_rad_countIfaces(T_Radio* pRad) {
+    uint32_t count = 0;
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        count += (pAP->index > 0);
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        count += (pEP->index > 0);
+    }
+    return count;
 }
 
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size) {
@@ -4039,7 +3250,7 @@ char* getChannelsInUseStr(T_Radio* pRad) {
         int i = 0;
         pRad->channelsInUse[0] = 0;
         for(i = 0; i < val; i++) {
-            swl_str_catFormat(pRad->channelsInUse, sizeof(pRad->channelsInUse), "%d,", pRad->possibleChannels[chidx + i]);
+            swl_strlst_catFormat(pRad->channelsInUse, sizeof(pRad->channelsInUse), ",", "%d", pRad->possibleChannels[chidx + i]);
         }
     } else {
         // 2.4
@@ -4242,9 +3453,7 @@ bool wld_rad_has_endpoint_enabled(T_Radio* rad) {
 T_EndPoint* wld_rad_getEnabledEndpoint(T_Radio* rad) {
     ASSERT_NOT_NULL(rad, NULL, ME, "NULL");
     T_EndPoint* pEndpoint;
-    amxc_llist_for_each(it, &rad->llEndPoints) {
-        pEndpoint = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
-
+    wld_rad_forEachEp(pEndpoint, rad) {
         if(pEndpoint && pEndpoint->enable) {
             return pEndpoint;
         }
@@ -4259,9 +3468,7 @@ bool wld_rad_hasWpsActiveEndpoint(T_Radio* rad) {
 T_EndPoint* wld_rad_getWpsActiveEndpoint(T_Radio* rad) {
     ASSERT_NOT_NULL(rad, NULL, ME, "NULL");
     T_EndPoint* pEndpoint;
-    amxc_llist_for_each(it, &rad->llEndPoints) {
-        pEndpoint = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
-
+    wld_rad_forEachEp(pEndpoint, rad) {
         if(pEndpoint && (pEndpoint->connectionStatus == EPCS_WPS_PAIRING)) {
             return pEndpoint;
         }
@@ -4275,8 +3482,7 @@ void wld_rad_updateActiveDevices(T_Radio* pRad) {
 
     int nrActiveDevices = 0;
 
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         nrActiveDevices += pAP->ActiveAssociatedDeviceNumberOfEntries;
     }
     pRad->currentStations = nrActiveDevices;
@@ -4285,8 +3491,7 @@ void wld_rad_updateActiveDevices(T_Radio* pRad) {
 
 T_Radio* wld_rad_get_radio(const char* ifname) {
     T_Radio* pRad = NULL;
-    amxc_llist_for_each(llit, &g_radios) {
-        pRad = amxc_llist_it_get_data(llit, T_Radio, it);
+    wld_for_eachRad(pRad) {
         if(pRad && !strcmp(pRad->Name, ifname)) {
             return pRad;
         }
@@ -4300,9 +3505,9 @@ void wld_rad_chan_update_model(T_Radio* pRad) {
     amxd_object_set_uint32_t(pRad->pBus, "Channel", pRad->channel);
     amxd_object_set_cstring_t(pRad->pBus, "ChannelsInUse", (void*) getChannelsInUseStr(pRad));
 
-    amxc_string_t operatingStandardsText = swl_radStd_toStr(pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
-    amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", operatingStandardsText.buffer);
-    amxc_string_clean(&operatingStandardsText);
+    char operatingStandardsText[64] = {};
+    swl_radStd_toChar(operatingStandardsText, sizeof(operatingStandardsText), pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
+    amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", operatingStandardsText);
     amxd_object_set_cstring_t(pRad->pBus, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
 
     amxd_object_set_cstring_t(pRad->pBus, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
@@ -4624,8 +3829,7 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
 
     T_AccessPoint* pAP = NULL;
 
-    amxc_llist_for_each(it, &pRad->llAP) {
-        pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+    wld_rad_forEachAp(pAP, pRad) {
         wld_vap_updateState(pAP);
     }
 
@@ -4844,3 +4048,60 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
     }
     return amxd_status_ok;
 }
+
+SWLA_DM_HDLRS(sRadioDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Channel", s_setChannel_pwf),
+                  SWLA_DM_PARAM_HDLR("AP_Mode", s_setAPMode_pwf),
+                  SWLA_DM_PARAM_HDLR("STA_Mode", s_setSTAMode_pwf),
+                  SWLA_DM_PARAM_HDLR("WDS_Mode", s_setWDSMode_pwf),
+                  SWLA_DM_PARAM_HDLR("WET_Mode", s_setWETMode_pwf),
+                  SWLA_DM_PARAM_HDLR("STASupported_Mode", s_setStaSupMode_pwf),
+                  SWLA_DM_PARAM_HDLR("WPS_Enrollee_Mode", s_setWPSEnrolMode_pwf),
+                  SWLA_DM_PARAM_HDLR("KickRoamingStation", s_setKickRoamSta_pwf),
+                  SWLA_DM_PARAM_HDLR("AutoChannelEnable", s_setAutoChannelEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("OperatingChannelBandwidth", s_setOperatingChannelBandwidth_pwf),
+                  SWLA_DM_PARAM_HDLR("AutoBandwidthSelectMode", s_setAutoBandwidthSelectMode_pwf),
+                  SWLA_DM_PARAM_HDLR("ObssCoexistenceEnable", s_setObssCoexistenceEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("ExtensionChannel", s_setExtensionChannel_pwf),
+                  SWLA_DM_PARAM_HDLR("GuardInterval", s_setGuardInterval_pwf),
+                  SWLA_DM_PARAM_HDLR("TransmitPower", s_setTxPower_pwf),
+                  SWLA_DM_PARAM_HDLR("ActiveAntennaCtrl", s_setAntennaCtrl_pwf),
+                  SWLA_DM_PARAM_HDLR("RxChainCtrl", s_setRxChainCtrl_pwf),
+                  SWLA_DM_PARAM_HDLR("TxChainCtrl", s_setTxChainCtrl_pwf),
+                  SWLA_DM_PARAM_HDLR("RetryLimit", s_setRetryLimit_pwf),
+                  SWLA_DM_PARAM_HDLR("LongRetryLimit", s_setLongRetryLimit_pwf),
+                  SWLA_DM_PARAM_HDLR("BeaconPeriod", s_setBeaconPeriod_pwf),
+                  SWLA_DM_PARAM_HDLR("DTIMPeriod", s_setDtimPeriod_pwf),
+                  SWLA_DM_PARAM_HDLR("TargetWakeTimeEnable", s_setTargetWakeTimeEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("OfdmaEnable", s_setOfdmaEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("HeCapsEnabled", s_setHeCaps_pwf),
+                  SWLA_DM_PARAM_HDLR("IEEE80211hEnabled", s_set80211hEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("RegulatoryDomain", s_setCountryCode_pwf),
+                  SWLA_DM_PARAM_HDLR("ImplicitBeamFormingEnabled", s_setImplicitBeamForming_pwf),
+                  SWLA_DM_PARAM_HDLR("ExplicitBeamFormingEnabled", s_setExplicitBeamForming_pwf),
+                  SWLA_DM_PARAM_HDLR("RxBeamformingCapsEnabled", s_setRxBfCapsEnabled_pwf),
+                  SWLA_DM_PARAM_HDLR("TxBeamformingCapsEnabled", s_setTxBfCapsEnabled_pwf),
+                  SWLA_DM_PARAM_HDLR("RIFSEnabled", s_setRIFS_pwf),
+                  SWLA_DM_PARAM_HDLR("AirtimeFairnessEnabled", s_setAirTimeFairness_pwf),
+                  SWLA_DM_PARAM_HDLR("RxPowerSaveEnabled", s_setRxPowerSave_pwf),
+                  SWLA_DM_PARAM_HDLR("RxPowerSaveRepeaterEnable", s_setRxPowerSaveRepeater_pwf),
+                  SWLA_DM_PARAM_HDLR("MultiUserMIMOEnabled", s_setMultiUserMIMO_pwf),
+                  SWLA_DM_PARAM_HDLR("MaxAssociatedDevices", s_setMaxStations_pwf),
+                  SWLA_DM_PARAM_HDLR("IntelligentAirtimeSchedulingEnable", s_setIntelligentAirtime_pwf),
+                  SWLA_DM_PARAM_HDLR("dbgRADEnable", s_setDbgEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("dbgRADFile", s_setDbgFile_pwf),
+                  SWLA_DM_PARAM_HDLR("OperatingStandards", wld_rad_setOperatingStandards_pwf),
+                  SWLA_DM_PARAM_HDLR("OperatingStandardsFormat", wld_rad_setOperatingStandardsFormat_pwf),
+                  SWLA_DM_PARAM_HDLR("ProbeRequestNotify", wld_prbReq_setNotify_pwf),
+                  SWLA_DM_PARAM_HDLR("ProbeRequestAggregationTimer", wld_prbReq_setNotifyAggregationTimer_pwf),
+                  SWLA_DM_PARAM_HDLR("DelayApUpPeriod", wld_rad_delayMgr_setDelayApUpPeriod_pwf),
+                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
+                  ),
+              .instAddedCb = s_addInstance_oaf);
+
+void _wld_radio_setConf_ocf(const char* const sig_name,
+                            const amxc_var_t* const data,
+                            void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sRadioDmHdlrs, sig_name, data, priv);
+}
+

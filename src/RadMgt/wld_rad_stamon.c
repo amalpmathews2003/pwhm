@@ -355,40 +355,20 @@ amxd_status_t _clearNonAssociatedDevices(amxd_object_t* obj,
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_radStaMon_setEnable_pwf(amxd_object_t* object _UNUSED,
-                                           amxd_param_t* parameter,
-                                           amxd_action_t reason _UNUSED,
-                                           const amxc_var_t* const args _UNUSED,
-                                           amxc_var_t* const retval _UNUSED,
-                                           void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_object_get_parent(object);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return rv;
-    }
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
-    rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    bool enabled = amxc_var_dyncast(bool, args);
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    bool enabled = amxc_var_dyncast(bool, newValue);
 
     pR->stationMonitorEnabled = enabled;
 
     int ret = pR->pFA->mfn_wrad_setup_stamon(pR, enabled);
-    if(ret != 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to %s station monitor", enabled ? "enable" : "disable");
-        return amxd_status_unknown_error;
-    }
-
+    ASSERT_EQUALS(ret, 0, , ME, "Failed to %s station monitor", enabled ? "enable" : "disable");
     wld_radStaMon_updateActive(pR);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, amxc_llist_t* devList) {
@@ -500,19 +480,36 @@ void wld_radStaMon_destroy(T_Radio* pRad) {
     SAH_TRACEZ_OUT(ME);
 }
 
-amxd_status_t _wld_radStaMon_setRssiEventing_owf(amxd_object_t* object) {
-    amxd_object_t* radObject = amxd_object_get_parent(amxd_object_get_parent(object));
-    ASSERTI_FALSE(amxd_object_get_type(radObject) == amxd_object_template, amxd_status_unknown_error, ME, "Initial template run, skip");
+static void s_setRssiEventing_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
 
-    T_Radio* pRad = (T_Radio*) radObject->priv;
-    ASSERTI_TRUE(debugIsRadPointer(pRad), amxd_status_unknown_error, ME, "Radio object is NULL");
+    SAH_TRACEZ_INFO(ME, "%s: Update rssiMon", pRad->Name);
+
     T_RssiEventing* ev = &pRad->naStaRssiMonitor;
-
-    SAH_TRACEZ_INFO(ME, "Update rssiMon @ %s", pRad->Name);
+    ASSERT_NOT_NULL(ev, , ME, "NULL");
 
     ev->rssiInterval = amxd_object_get_uint32_t(object, "RssiInterval", NULL);
     ev->averagingFactor = amxd_object_get_uint32_t(object, "AveragingFactor", NULL);
-    return amxd_status_ok;
+    amxc_var_t* val = GET_ARG(newParamValues, "Interval");
+    if(val != NULL) {
+        wld_mon_setInterval_pwf(&ev->monitor, val);
+    }
+    val = GET_ARG(newParamValues, "Enable");
+    if(val != NULL) {
+        wld_mon_setEnable_pwf(&ev->monitor, val);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sRssiEventingConfigDmHdlrs, ARR(), .objChangedCb = s_setRssiEventing_ocf);
+
+void _wld_radStaMon_setRssiEventing_ocf(const char* const sig_name,
+                                        const amxc_var_t* const data,
+                                        void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sRssiEventingConfigDmHdlrs, sig_name, data, priv);
 }
 
 void wld_radStaMon_debug(T_Radio* pRad, amxc_var_t* retMap) {
@@ -617,3 +614,13 @@ amxd_status_t _clearMonitorDevices(amxd_object_t* obj,
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }
+
+SWLA_DM_HDLRS(sRadStaMonDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf)));
+
+void _wld_radStaMon_setConf_ocf(const char* const sig_name,
+                                const amxc_var_t* const data,
+                                void* const priv _UNUSED) {
+    swla_dm_procObjEvtOfLocalDm(&sRadStaMonDmHdlrs, sig_name, data, priv);
+}
+

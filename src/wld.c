@@ -181,11 +181,6 @@ void wld_plugin_syncDm() {
         T_AccessPoint* pAP;
         T_SSID* pSSID;
         /*
-         * Rad obj DM params was synced to internal when setting upperLayer SSID instances
-         * Now we push updated Rad params to DM
-         */
-        pRad->pFA->mfn_sync_radio(pRad->pBus, pRad, SET);
-        /*
          * SSID obj DM params was synced to internal when setting relative AP/EP instances
          * Now we push updated SSID params to DM
          */
@@ -203,7 +198,6 @@ void wld_plugin_syncDm() {
             pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
     }
-    syncData_VendorWPS2OBJ(amxd_object_get(get_wld_object(), "wps_DefParam"), wld_firstRad(), SET);
     SAH_TRACEZ_WARNING(ME, "Syncing Done");
 }
 
@@ -328,7 +322,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
         }
     }
 
-    char macStr[SWL_MAC_CHAR_LEN] = {0};
     SAH_TRACEZ_INFO(ME, "Create new radio %s %u", name, idx);
 
 
@@ -433,16 +426,10 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     amxc_llist_append(&g_radios, &pR->it);
 
-    // Apply the MAC address on the radio, update if needed inside vendor
-    SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
-    pR->pFA->mfn_wvap_bssid(pR, NULL, (unsigned char*) macStr, SWL_MAC_CHAR_LEN, SET);
-    // update macStr as macBin may be shifted inside vendor
-    SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
-
     wld_chanmgt_checkInitChannel(pR);
     pR->isReady = true;
 
-    SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u, baseMac %s", name, vendor->name, idx, macStr);
+    SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u", name, vendor->name, idx);
 
     return 0;
 }
@@ -554,7 +541,7 @@ T_Radio* wld_getRadioByName(const char* name) {
 T_Radio* wld_getUinitRadioByBand(swl_freqBandExt_e band) {
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
-        if((pRad->operatingFrequencyBand == band) && (pRad->pBus == NULL)) {
+        if((SWL_BIT_IS_SET(pRad->supportedFrequencyBands, band)) && (pRad->pBus == NULL)) {
             return pRad;
         }
     }

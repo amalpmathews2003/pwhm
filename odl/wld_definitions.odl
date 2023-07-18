@@ -149,105 +149,7 @@
 	 * <li>20 - Get the Channel</li>
 	 * <li>21 - Trigger WPS button</li>
 	 */
-	uint32 FSM_Start(%in string vap, %in uint32 bitnr);  /* use WIFI_FSM_Start (DEBUG) */
-
-	/**
-	 *  <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-	 *  Enable/Disable a VAP interface
-	 *  @param vap Name of the VAP interface that will updated. Required input field.
-	 *  @param state 1 or 0, active or disable state. Use -1 for getting the current state.
-	 *  The other states: Unknown, Dormant, NotPresent, LowerLayerDown or Error
-	 *  can't be set with this function.
-	 *  @return It will return the current state after the action.
-	 */
-//	bool activateVAPIntf(%in string vap, %in bool state);
-
-	/**
-	 *  <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-	 *  Enable/Disable a Radio interface, note this will disable also the upper VAPs
-	 *  @param radio Name of the Radio interface that will updated. Required input field.
-	 *  @param state 1 or 0, active or disable state. Use -1 for getting the current state.
-	 *  The other states: Unknown, Dormant, NotPresent, LowerLayerDown or Error
-	 *  can't be set with this function.
-	 *  @return It will return the current state after the action.
-	 */
-//	bool activateRADIOIntf(%in string radio, %in bool state);
-
-	/* For the WEB GUI ((Better NOT)) --> GUI guys must talk with (practical) DRIES or Theory (Wouter)!!! */
-	/*
-		NeMo will take care of the configuration, so it's NeMo that will save the config
-		Those functions can be used (debug). But in the future they will be obsolete.
-	*/
-	/**
-	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-	 * Gets data from a registered VAP interface and updates the
-	 * requested fields with AccessPoint and SSID object data.
-	 * @param vap - Name of the VAP interface that will be read.
-	 *  	  (wl0,wl1,...) Required input field.
-	 * @param enable after the call this will be updated with the current 'enable' state
-	 * of the vap.
-	 * @param ssid after the call this will be updated with the current 'SSID' name
-	 * of the VAP. (copied from SSID.&#123;vap&#125; object.
-	 * @param hideSSID after the call this will be updated with the current
-	 * 'SSIDAdvertisementEnabled' value.
-	 * @param secKey after the call this will be updated with the security key used.
-	 * Attention, when the secMode is WEP, it will contain the WEP key.
-	 * When it's WPA(2) it can be the passphrase or TKIP key.
-	 * It's an empty string when security is set on none.
-	 * @param secMode after the call this will be updated with the selected security mode.
-	 * (None, WEP-64, WEP-128, WPA-Personal, WPA2-Personal, WPA-WPA2-Personal, WPA-Enterprise,
-	 * WPA2-Enterprise or WPA-WPA2-Enterprise.
-	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-	 */
-//	bool getWebVAPData(string vap, bool enable, string ssid, bool hideSSID, string secKey, string secMode, string encrypMode);
-
-	/**
-	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-	 * Sets data on a registered VAP interface and updates the
-	 * requested fields in the object AccessPoint and SSID data.
-	 * @param vap - Name of the VAP interface that will be updated.
-	 *  	  (wl0,wl1,...) Required input field.
-	 * @param enable after the call the active vap will be updated with the requested 'enable' state.
-	 * @param ssid after the call, the vap SSID will be updated with the requested SSID.
-	 * @param hideSSID after the call the SSID will be actively broadcasted or not.
-	 * @param secKey after the call this will be updated with the security key used.
-	 * Attention, this is based on the given secMode value. When this is WEP,
-	 * it must contain a valid WEP key.  When it's WPA(2) it must contain a passphrase
-	 * or TKIP key. When 'none' the value isn't taken.
-	 * @param secMode after the call the security mode will be updated. Possible values:.
-	 * (None, WEP-64, WEP-128, WPA-Personal, WPA2-Personal, WPA-WPA2-Personal, WPA-Enterprise,
-	 * WPA2-Enterprise or WPA-WPA2-Enterprise).
-	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-	 */
-//	bool setWebVAPData(%in string vap, %in bool enable, %in string ssid, %in bool hideSSID, %in string secKey, %in string secMode, %in string encrypMode);
-
-	/**
-	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-	 * Gets main Radio data
-	 * @param radio Name of the Radio interface that will be read. Needed input field.
-	 * @param After the call this will contain Current 'Enable' state of
-	 * the selected Radio interface (Up/Down).
-	 * @param selectchannel After the call this will contain the cached channel.
-	 * In case this is 0 it means Auto Channel selection.
-	 * @param channel After the call this will contain the used channel by the Radio.
-	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-	*/
-//	bool getWebRadioData(%in string radio, %in string mode, %in uint16 selectchannel, %in uint16 channel);
-
-	/**
-	 * <p><b>OBSOLETE - Use the NeMo MIB interface to control this</b></p>
-	 * Sets main Radio data
-	 * @param radio Name of the Radio interface that will be read. Needed input field.
-	 * @param mode After the call this will set Current 'Enable' state of
-	 * the selected Radio interface (Up/Down).
-	 * @param selectchannel After the call this will set the current channel.
-	 * In case this is 0 it means Auto Channel selection.
-	 * @return Success if &gt;=0!. When &lt;0 it's representing a failure.
-	*/
-//	bool setWebRadioData(%in string radio, %in string mode, %in uint16 selectchannel);
-
-// bool getWebWPSData(%in string vap, %in bool enable, %in string wpsMode, %in string wpsClientPin, %in string wpsSelfPin);
-// bool setWebWPSData(%in string vap, %in bool enable, %in string wpsMode, %in string wpsClientPin);
+	uint32 FSM_Start(%in %mandatory string vap, %in %mandatory uint32 bitnr);  /* use WIFI_FSM_Start (DEBUG) */
 
 	/**
 	 * This command defines access to other WiFi SSIDs that this device is able to receive.
@@ -361,8 +263,6 @@ include "wld_endpoint.odl";
 
 %populate {
 	on event "app:start" call app_start;
-	on event "dm:instance-added" call wld_radio_addInstance_ocf
-		filter 'path == "WiFi.Radio."';
 	on event regexp("dm:object-(added|changed)") call wld_rad_setVendorData_ocf
 		filter 'path matches "WiFi\.Radio\.[0-9]+\.Vendor\.+"';
 	on event "dm:object-changed" call wld_rad_setOperatingClass

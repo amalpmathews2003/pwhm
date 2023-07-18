@@ -78,5 +78,6 @@ void wld_rad_delayMgr_destroy(T_Radio* pR);
 void wld_rad_delayMgr_startApDelayUp(T_Radio* pR);
 void wld_rad_delayMgr_apDelayUpDone(T_Radio* pR);
 amxd_status_t _Radio_apDelayDone(amxd_object_t* object, amxd_function_t* func _UNUSED, amxc_var_t* args _UNUSED, amxc_var_t* ret _UNUSED);
+void wld_rad_delayMgr_setDelayApUpPeriod_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
 
 #endif /* __WLD_DELAY_MGR_H__ */

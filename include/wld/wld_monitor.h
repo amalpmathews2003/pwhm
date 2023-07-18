@@ -71,5 +71,7 @@ void wld_mon_writeActive(T_Monitor* pMon, bool active);
 void wld_mon_sendUpdateNotification(amxd_object_t* eventObject, const char* name, amxc_var_t* variant);
 void wld_mon_debug(T_Monitor* pMon, amxc_var_t* retMap);
 void wld_mon_stop(T_Monitor* pMon);
+void wld_mon_setEnable_pwf(T_Monitor* pMon, const amxc_var_t* const newValue);
+void wld_mon_setInterval_pwf(T_Monitor* pMon, const amxc_var_t* const newValue);
 
 #endif /* SRC_UTILS_WLD_MONITOR_H_ */

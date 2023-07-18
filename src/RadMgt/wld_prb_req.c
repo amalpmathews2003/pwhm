@@ -328,72 +328,31 @@ void wld_notifyProbeRequest_rssi(T_Radio* pR, const unsigned char* macStr, int r
     }
 }
 
-amxd_status_t _wld_prbReq_setNotify_pwf(amxd_object_t* object _UNUSED,
-                                        amxd_param_t* parameter,
-                                        amxd_action_t reason,
-                                        const amxc_var_t* const args,
-                                        amxc_var_t* const retval,
-                                        void* priv) {
+void wld_prbReq_setNotify_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return amxd_status_ok;
-    }
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
-
-    int new_mode = 0;
-    const char* new_val = amxc_var_constcast(cstring_t, args);
-    if(!findStrInArray(new_val, cstr_wld_prb_req_mode, &new_mode)) {
-        SAH_TRACEZ_ERROR(ME, "Mode not found %s", new_val);
-        return amxd_status_unknown_error;
-    }
-
-    SAH_TRACEZ_INFO(ME, "Setting mode %s to %u", pR->Name, new_mode);
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    const char* new_val = amxc_var_constcast(cstring_t, newValue);
+    wld_prb_req_mode new_mode = swl_conv_charToEnum(new_val, cstr_wld_prb_req_mode, WLD_PRB_MAX, WLD_PRB_MAX);
+    ASSERT_NOT_EQUALS(new_mode, WLD_PRB_MAX, , ME, "%s: Mode not found %s", pR->Name, new_val);
+    ASSERTS_NOT_EQUALS(pR->probeRequestMode, new_mode, , ME, "EQUAL");
+    SAH_TRACEZ_INFO(ME, "%s: Setting mode to %u", pR->Name, new_mode);
     pR->probeRequestMode = new_mode;
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_prbReq_setNotifyAggregationTimer_pwf(amxd_object_t* object _UNUSED,
-                                                        amxd_param_t* parameter,
-                                                        amxd_action_t reason,
-                                                        const amxc_var_t* const args,
-                                                        amxc_var_t* const retval,
-                                                        void* priv) {
+void wld_prbReq_setNotifyAggregationTimer_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiRad = amxd_param_get_owner(parameter);
-    if(amxd_object_get_type(wifiRad) != amxd_object_instance) {
-        return amxd_status_ok;
-    }
 
-    T_Radio* pR = (T_Radio*) wifiRad->priv;
-    rv = amxd_action_param_write(wifiRad, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "NULL");
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NO radio Ctx");
-
-    uint32_t new_val = amxc_var_dyncast(uint32_t, args);
-    if(new_val != pR->probeRequestAggregationTime) {
-        SAH_TRACEZ_INFO(ME, "Setting aggreg %s to %u", pR->Name, new_val);
-        pR->probeRequestAggregationTime = new_val;
-    }
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    uint32_t new_val = amxc_var_dyncast(uint32_t, newValue);
+    ASSERTS_NOT_EQUALS(pR->probeRequestAggregationTime, new_val, , ME, "EQUAL");
+    pR->probeRequestAggregationTime = new_val;
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
 int wld_prbReq_getRssi(T_Radio* pR, const unsigned char* macStr) {
