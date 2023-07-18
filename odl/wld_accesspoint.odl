@@ -830,12 +830,13 @@ define rrm_t{
 		/** This object contains parameters related to Wi-Fi Protected
 		 *  Setup [WPSv1.0] for this access point.*/
 		%persistent object WPS{
+			on event "*" call wld_ap_setWpsConf_ocf;
+
 			/** Enables or disables WPS functionality for this access
 			 *  point. Note only one VAP/Radio can enable WPS. For this by
 			 *  design the default is disable. */
 			%persistent bool Enable{
 				default false;
-				on action write call wld_ap_setWPSEnable_pwf;
 				userflags %upc;
 			}
 			/** Keeps track of current (real) WPS activation status.
@@ -874,12 +875,10 @@ define rrm_t{
 			 *  ConfigMethodsSupported  parameter. Indicates WPS
 			 *  configuration methods enabled on the device.*/
 			%persistent string ConfigMethodsEnabled{
-				on action write call wld_ap_setWpsConfigMethodsEnabled_pwf;
 				userflags %upc;
 			}
 
 			bool CertModeEnable{
-				on action write call wld_ap_setWpsCertModeEnable_pwf;
 				default false;
 			}
 
@@ -899,9 +898,7 @@ define rrm_t{
 			 * whenever needed so it is not guaranteed to be constant between two consecutive
 			 * generateSelfPIN()-calls.
 			 */
-			string SelfPIN{
-			on action write call wld_ap_setWpsSelfPIN_pwf;
-			}
+			string SelfPIN;
 
 			/**
 			 * Initiates a Wi-Fi Protected Setup (WPS) Push Button Configuration (PBC)
@@ -949,7 +946,6 @@ define rrm_t{
 			 * We need something to toggle WPS in unconfigured mode.
 			 */
 			%persistent bool Configured{
-				on action write call wld_ap_setWpsConfigured_pwf;
 				default true;
 			}
 
@@ -969,8 +965,7 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			string UUID {
-				on action write call wld_wps_setUUID;
-				default "00000000-0000-0000-0000-000000000000";
+				on action validate call wld_wps_validateUUID_pvf;
 			}
 
 			/**
@@ -979,7 +974,6 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			%persistent bool RelayCredentialsEnable {
-				on action write call wld_ap_setWpsRelayCredentialsEnable_pwf;
 				default false;
 			}
 
@@ -990,7 +984,6 @@ define rrm_t{
 			 * @version 10.0
 			 */
 			 %persistent bool RestartOnRequest {
-				on action write call wld_ap_setWpsRestartOnRequest_pwf;
 				default false;
 			}
 		}

@@ -303,7 +303,7 @@ void s_syncWpsConstToObject() {
  *
  * This does not inform the driver.
  */
-static void updateSelfPIN(const char* selfPIN) {
+static void s_updateSelfPIN(const char* selfPIN) {
     ASSERT_NOT_NULL(selfPIN, , ME, "NULL");
     ASSERT_TRUE(strlen(selfPIN) < sizeof(g_wpsConst.DefaultPin), , ME, "PIN too long");
 
@@ -316,50 +316,30 @@ void genSelfPIN() {
     char defaultPin[WPS_PIN_LEN + 1] = "";
     /* Generate new PIN */
     wpsPinGen(defaultPin);
-    updateSelfPIN(defaultPin);
+    s_updateSelfPIN(defaultPin);
 }
 
 /**
  * Callback when the field `WPS.SelfPIN` is written to.
  */
-amxd_status_t _wld_ap_setWpsSelfPIN_pwf(amxd_object_t* object _UNUSED,
-                                        amxd_param_t* parameter _UNUSED,
-                                        amxd_action_t reason _UNUSED,
-                                        const amxc_var_t* const args _UNUSED,
-                                        amxc_var_t* const retval _UNUSED,
-                                        void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setWpsSelfPIN_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
-    ASSERTI_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "no AP");
-    ASSERTI_TRUE(debugIsSsidPointer(pAP->pSSID), amxd_status_ok, ME, "no SSID");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTS_NOT_NULL(pAP, , ME, "pAP NULL");
+    uint32_t SelfPIN = amxc_var_dyncast(uint32_t, newValue);
 
-    uint32_t SelfPIN = amxc_var_dyncast(uint32_t, args);
-
-    char defaultPIN[WPS_PIN_LEN + 1];
-    if(SelfPIN == 0) {
-        memset(defaultPIN, 0, sizeof(defaultPIN));
-    } else {
-        sprintf(defaultPIN, "%d", SelfPIN);
+    char defaultPIN[WPS_PIN_LEN + 1] = {0};
+    if(SelfPIN > 0) {
+        swl_str_catFormat(defaultPIN, sizeof(defaultPIN), "%d", SelfPIN);
     }
 
-    updateSelfPIN(defaultPIN);
+    s_updateSelfPIN(defaultPIN);
     pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
 
-    SAH_TRACEZ_INFO(ME, "set WPS SelfPIN %s %d - %d", pAP->alias, SelfPIN, rv);
+    SAH_TRACEZ_INFO(ME, "%s: set WPS SelfPIN %d", pAP->alias, SelfPIN);
 
     SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 amxd_status_t _generateSelfPIN(amxd_object_t* object,
@@ -383,137 +363,154 @@ amxd_status_t _generateSelfPIN(amxd_object_t* object,
 }
 
 /**
- * Updates the UUID to the given UUID.
- *
- * Normalizes the UUID to lowercase.
- *
- * This also informs the driver.
- *
- * @return true on success, fails on failure: given UUID is not a valid UUID (wrong format
- *   or NULL pointer). If UUID is already set (ignoring case), this is considered success.
- */
-static bool s_updateUUID(const char* srcUuid, T_AccessPoint* pAP) {
-    ASSERT_NOT_NULL(srcUuid, false, ME, "NULL");
-    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
-    ASSERT_TRUE(strlen(srcUuid) < sizeof(g_wpsConst.UUID), false, ME, "UUID too long");
-    ASSERT_TRUE(swl_uuid_isValidChar(srcUuid), false, ME, "Invalid UUID");
-
-    char srcUuidLowerCase[SWL_UUID_CHAR_SIZE] = "";
-    bool ok = swl_str_copy(srcUuidLowerCase, sizeof(srcUuidLowerCase), srcUuid);
-    ASSERT_TRUE(ok, false, ME, "Unexpected string copy failure");
-    swl_str_toLower(srcUuidLowerCase, sizeof(srcUuidLowerCase));
-
-    if(swl_str_matches(srcUuidLowerCase, g_wpsConst.UUID)) {
-        return true;
-    }
-
-    ok = swl_str_copy(g_wpsConst.UUID, sizeof(g_wpsConst.UUID), srcUuidLowerCase);
-    ASSERT_TRUE(ok, false, ME, "Unexpected string copy failure");
-
-    // Force a resync of the structure
-    wld_ap_doWpsSync(pAP);
-
-    SAH_TRACEZ_INFO(ME, "UUID updated to %s", g_wpsConst.UUID);
-    return true;
-}
-
-/**
  * Callback for custom constraint of field `WPS.UUID`
  */
-amxd_status_t _wld_wps_validateUUID(amxd_param_t* parameter, void* oldValue _UNUSED) {
-    amxc_var_t value;
-    amxc_var_init(&value);
-    amxd_param_get_value(parameter, &value);
-    const char* newValue = amxc_var_get_cstring_t(&value);
-    amxc_var_clean(&value);
-    return swl_uuid_isValidChar(newValue);
-}
-
-amxd_status_t _wld_ap_setWpsRelayCredentialsEnable_pwf(amxd_object_t* object _UNUSED,
-                                                       amxd_param_t* parameter _UNUSED,
-                                                       amxd_action_t reason _UNUSED,
-                                                       const amxc_var_t* const args _UNUSED,
-                                                       amxc_var_t* const retval _UNUSED,
-                                                       void* priv _UNUSED) {
-
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+amxd_status_t _wld_wps_validateUUID_pvf(amxd_object_t* object _UNUSED,
+                                        amxd_param_t* param,
+                                        amxd_action_t reason _UNUSED,
+                                        const amxc_var_t* const args,
+                                        amxc_var_t* const retval _UNUSED,
+                                        void* priv _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
-    bool new_addRelayApCredentials = amxc_var_dyncast(bool, args);
+    amxd_status_t status = amxd_status_invalid_value;
+    char* currentUuid = amxc_var_dyncast(cstring_t, &param->value);
+    char* uuid = amxc_var_dyncast(cstring_t, args);
+    if(swl_str_matches(currentUuid, uuid) || swl_uuid_isValidChar(uuid)) {
+        status = amxd_status_ok;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "invalid UUID (%s)", uuid);
+    }
+    free(currentUuid);
+    free(uuid);
 
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+static void s_setWpsRelayCredentialsEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    bool new_addRelayApCredentials = amxc_var_dyncast(bool, newValue);
     if(new_addRelayApCredentials != pAP->addRelayApCredentials) {
         pAP->addRelayApCredentials = new_addRelayApCredentials;
     }
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
 
-amxd_status_t _wld_ap_setWpsRestartOnRequest_pwf(amxd_object_t* object _UNUSED,
-                                                 amxd_param_t* parameter _UNUSED,
-                                                 amxd_action_t reason _UNUSED,
-                                                 const amxc_var_t* const args _UNUSED,
-                                                 amxc_var_t* const retval _UNUSED,
-                                                 void* priv _UNUSED) {
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
-    }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
+static void s_setWpsRestartOnRequest_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
-    ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "INVALID");
 
-    pAP->wpsRestartOnRequest = amxc_var_dyncast(bool, args);
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    pAP->wpsRestartOnRequest = amxc_var_dyncast(bool, newValue);
 
     SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
 }
+
 /**
  * Callback called when the field `WPS.UUID` is written to.
  */
-amxd_status_t _wld_wps_setUUID(amxd_object_t* object _UNUSED,
-                               amxd_param_t* parameter _UNUSED,
-                               amxd_action_t reason _UNUSED,
-                               const amxc_var_t* const args _UNUSED,
-                               amxc_var_t* const retval _UNUSED,
-                               void* priv _UNUSED) {
+static void s_setUUID_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
 
-    amxd_status_t rv = amxd_status_ok;
-    amxd_object_t* wifiVap = amxd_object_get_parent(amxd_param_get_owner(parameter));
-    if(amxd_object_get_type(wifiVap) != amxd_object_instance) {
-        return rv;
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTS_NOT_NULL(pAP, , ME, "pAP NULL");
+
+    char* uuid = amxc_var_dyncast(cstring_t, newValue);
+    //Normalizes the UUID to lowercase.
+    swl_str_toLower(uuid, swl_str_len(uuid));
+    if(!swl_str_matches(uuid, g_wpsConst.UUID)) {
+        swl_str_copy(g_wpsConst.UUID, sizeof(g_wpsConst.UUID), uuid);
+        // Force a resync of the structure
+        wld_ap_doWpsSync(pAP);
     }
-    T_AccessPoint* pAP = (T_AccessPoint*) wifiVap->priv;
-    rv = amxd_action_param_write(wifiVap, parameter, reason, args, retval, priv);
-    if(rv != amxd_status_ok) {
-        return rv;
-    }
-
-    ASSERTI_TRUE(debugIsVapPointer(pAP), amxd_status_ok, ME, "NULL");
-    ASSERTI_TRUE(debugIsSsidPointer(pAP->pSSID), amxd_status_ok, ME, "NULL");
-
-    char* uuid = amxc_var_dyncast(cstring_t, args);
-    bool ok = s_updateUUID(uuid, pAP);
     free(uuid);
 
-    return ok ? amxd_status_ok : amxd_status_unknown_error;
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setWPSEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pAP, , ME, "INVALID");
+    pAP->WPS_Enable = amxc_var_dyncast(bool, newValue);
+    wld_ap_doWpsSync(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setWpsConfigMethodsEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTS_NOT_NULL(pAP, , ME, "pAP NULL");
+
+    const char* StrParm = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "set WPS ConfigMethodsEnabled %s", StrParm);
+    /* convert it to our bit value... */
+    wld_wps_cfgMethod_m nv;
+    wld_wps_ConfigMethods_string_to_mask(&nv, StrParm, ',');
+    if(nv != pAP->WPS_ConfigMethodsEnabled) {
+        /* Ignore comparison with virtual bit settings of WPS 2.0 */
+        bool needSync = ((!nv) || ((nv & M_WPS_CFG_MTHD_WPS10_ALL) != (pAP->WPS_ConfigMethodsEnabled & M_WPS_CFG_MTHD_WPS10_ALL)));
+        pAP->WPS_ConfigMethodsEnabled = nv;
+        if(needSync) {
+            wld_ap_doWpsSync(pAP);
+        }
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setWpsCertModeEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pAP, , ME, "INVALID");
+    bool flag = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set WPS CertModeEnable %d", pAP->alias, flag);
+    pAP->WPS_CertMode = flag;
+    wld_ap_doWpsSync(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setWpsConfigured_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pAP, , ME, "INVALID");
+    bool flag = amxc_var_dyncast(bool, newValue);
+    ASSERTS_NOT_EQUALS(flag, pAP->WPS_Configured, , ME, "EQUALS");
+    SAH_TRACEZ_INFO(ME, "%s: set WPS Configured %d", pAP->alias, flag);
+    pAP->WPS_Configured = flag;
+    wld_ap_doWpsSync(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sApWpsDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("ConfigMethodsEnabled", s_setWpsConfigMethodsEnabled_pwf),
+                  SWLA_DM_PARAM_HDLR("CertModeEnable", s_setWpsCertModeEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("Configured", s_setWpsConfigured_pwf),
+                  SWLA_DM_PARAM_HDLR("SelfPIN", s_setWpsSelfPIN_pwf),
+                  SWLA_DM_PARAM_HDLR("UUID", s_setUUID_pwf),
+                  SWLA_DM_PARAM_HDLR("RelayCredentialsEnable", s_setWpsRelayCredentialsEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("RestartOnRequest", s_setWpsRestartOnRequest_pwf),
+                  SWLA_DM_PARAM_HDLR("Enable", s_setWPSEnable_pwf),
+                  ));
+
+void _wld_ap_setWpsConf_ocf(const char* const sig_name,
+                            const amxc_var_t* const data,
+                            void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApWpsDmHdlrs, sig_name, data, priv);
 }
 
 static void wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata) {
@@ -667,14 +664,18 @@ amxd_status_t _WPS_InitiateWPSPBC(amxd_object_t* object,
                                   amxc_var_t* args _UNUSED,
                                   amxc_var_t* retval) {
     amxd_object_t* pApObj = amxd_object_get_parent(object);
-    T_AccessPoint* pAP = NULL;
+    T_AccessPoint* pAP = wld_ap_fromObj(pApObj);
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     swl_rc_ne rc = SWL_RC_OK;
     amxd_status_t status = amxd_status_ok;
-    if((pApObj == NULL) || ((pAP = pApObj->priv) == NULL) || (!debugIsVapPointer(pAP)) || (pAP->pRadio == NULL)) {
+    if((pAP == NULL) || (pAP->pRadio == NULL)) {
         rc = SWL_RC_INVALID_PARAM;
         status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_invalid_value);
+        if(pAP == NULL) {
+            wld_wps_sendPairingNotification(pApObj, NOTIFY_PAIRING_ERROR, WPS_FAILURE_START_PBC, NULL, NULL);
+            return status;
+        }
     } else if(!(pAP->WPS_ConfigMethodsEnabled & M_WPS_CFG_MTHD_PBC_ALL)) {
         SAH_TRACEZ_ERROR(ME, "%s: wps PushButton not supported", pAP->alias);
         rc = SWL_RC_INVALID_STATE;
@@ -700,15 +701,19 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
                                   amxc_var_t* args,
                                   amxc_var_t* retval) {
     amxd_object_t* pApObj = amxd_object_get_parent(object);
-    T_AccessPoint* pAP = NULL;
+    T_AccessPoint* pAP = wld_ap_fromObj(pApObj);
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     const char* clientPIN = GET_CHAR(args, "clientPIN");
     swl_rc_ne rc = SWL_RC_OK;
     amxd_status_t status = amxd_status_ok;
-    if((pApObj == NULL) || ((pAP = pApObj->priv) == NULL) || (!debugIsVapPointer(pAP)) || (pAP->pRadio == NULL)) {
+    if((pAP == NULL) || (pAP->pRadio == NULL)) {
         rc = SWL_RC_INVALID_PARAM;
         status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_invalid_value);
+        if(pAP == NULL) {
+            wld_wps_sendPairingNotification(pApObj, NOTIFY_PAIRING_ERROR, WPS_FAILURE_START_PIN, NULL, NULL);
+            return status;
+        }
     } else if(clientPIN == NULL) {
         if((!(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL))) ||
            (swl_str_isEmpty(pAP->pRadio->wpsConst->DefaultPin))) {
