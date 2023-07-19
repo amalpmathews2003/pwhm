@@ -547,6 +547,7 @@ define rrm_t{
 			 * KeyPassPhrase should be between 8 and 63 ascii characters for normal keys,
 			 * or 256 bit secret, entered as a 64 characters hex key.*/
 			%persistent string KeyPassPhrase = "password" {
+				on action read call hide_value;
 				on action validate call wld_ap_validateKeyPassPhrase_pvf;
 				on action write call wld_ap_setKeyPassPhrase_pwf;
 				userflags %upc;
