@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.18.3 - 2023-07-20(08:53:37 +0000)
+
+### Other
+
+- use swla dm api to commit param with one transaction
+
 ## Release v3.18.2 - 2023-07-18(16:25:14 +0000)
 
 ### Other
