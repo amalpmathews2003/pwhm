@@ -358,6 +358,11 @@ static swl_rc_ne TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap, const swl_
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wvap_setEvtHandlers(T_AccessPoint* vap) {
+    SAH_TRACEZ_NOTICE(ME, "%p", vap);
+    return SWL_RC_OK;
+}
+
 static int TRAP_mfn_wvap_bssid(T_Radio* rad, T_AccessPoint* vap, unsigned char* buf, int bufsize, int set) {
     _UNUSED_(rad);
     _UNUSED_(vap);
@@ -550,6 +555,14 @@ static swl_rc_ne TRAP_mfn_wrad_stats(T_Radio* pRadio _UNUSED) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_updateConfigMap(T_Radio* pRad _UNUSED, swl_mapChar_t* configMap _UNUSED) {
+    return SWL_RC_OK;
+}
+
+static swl_rc_ne TRAP_mfn_wvap_updateConfigMap(T_AccessPoint* pAP _UNUSED, swl_mapChar_t* configMap _UNUSED) {
+    return SWL_RC_OK;
+}
+
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 
 #define FTA_ASSIGN(x) \
@@ -606,6 +619,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_del_stamon);
     FTA_ASSIGN(mfn_wrad_delayApUpDone);
     FTA_ASSIGN(mfn_wrad_stats);
+    FTA_ASSIGN(mfn_wrad_updateConfigMap);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);
@@ -651,6 +665,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_hspot_config);
     FTA_ASSIGN(mfn_on_bridge_state_change);
     FTA_ASSIGN(mfn_wvap_update_assoc_dev);
+    FTA_ASSIGN(mfn_wvap_updateConfigMap);
     FTA_ASSIGN(mfn_wrad_update_chaninfo);
     FTA_ASSIGN(mfn_wrad_update_prob_req);
     FTA_ASSIGN(mfn_wvap_updated_neighbour);
@@ -675,5 +690,6 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wendpoint_sendManagementFrame);
 
     FTA_ASSIGN(mfn_wvap_request_rrm_report);
+    FTA_ASSIGN(mfn_wvap_setEvtHandlers);
 }
 

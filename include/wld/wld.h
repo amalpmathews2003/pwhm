@@ -2152,27 +2152,29 @@ typedef struct S_CWLD_FUNC_TABLE {
      */
     swl_rc_ne (* mfn_wrad_setChanspec)(T_Radio* rad, bool direct);
 
-    PFN_WRAD_SUPPORTS mfn_wrad_supports;                     /**< Update all ReadOnly Radio states */
-    PFN_WRAD_AUTOCHANNELENABLE mfn_wrad_autochannelenable;   /**< Set/Get Auto Channel Enable */
-    PFN_WRAD_STARTACS mfn_wrad_startacs;                     /**< Trigger Autochannel scan to start! */
-    PFN_WRAD_BGDFS_ENABLE mfn_wrad_bgdfs_enable;             /**< Set background dfs feature */
-    PFN_WRAD_BGDFS_START mfn_wrad_bgdfs_start;               /**< Start bg dfs clear for a dedicated channel */
-    PFN_WRAD_BGDFS_START_EXT mfn_wrad_bgdfs_start_ext;       /**< Start bg dfs clear for a dedicated channel with extended options */
-    PFN_WRAD_BGDFS_STOP mfn_wrad_bgdfs_stop;                 /**< Stop bg dfs clear */
+    PFN_WRAD_SUPPORTS mfn_wrad_supports;                                             /**< Update all ReadOnly Radio states */
+    PFN_WRAD_AUTOCHANNELENABLE mfn_wrad_autochannelenable;                           /**< Set/Get Auto Channel Enable */
+    PFN_WRAD_STARTACS mfn_wrad_startacs;                                             /**< Trigger Autochannel scan to start! */
+    PFN_WRAD_BGDFS_ENABLE mfn_wrad_bgdfs_enable;                                     /**< Set background dfs feature */
+    PFN_WRAD_BGDFS_START mfn_wrad_bgdfs_start;                                       /**< Start bg dfs clear for a dedicated channel */
+    PFN_WRAD_BGDFS_START_EXT mfn_wrad_bgdfs_start_ext;                               /**< Start bg dfs clear for a dedicated channel with extended options */
+    PFN_WRAD_BGDFS_STOP mfn_wrad_bgdfs_stop;                                         /**< Stop bg dfs clear */
 
-    PFN_WRAD_ACHREFPERIOD mfn_wrad_achrefperiod;             /**< Set/Get Auto Channel Refresh Period */
-    PFN_WRAD_EXTCHAN mfn_wrad_extchan;                       /**< Set/Get secondary extension channel position (+1/Auto/-1) */
-    PFN_WRAD_GUARDINTVAL mfn_wrad_guardintval;               /**< Set/Get guard interval between OFDM symbols */
-    PFN_WRAD_MCS mfn_wrad_mcs;                               /**< Set/Get MCS */
-    PFN_WRAD_TXPOW mfn_wrad_txpow;                           /**< Set/Get TxPower */
-    PFN_WRAD_ANTENNACTRL mfn_wrad_antennactrl;               /**< Set/Get Antenna parameters */
-    PFN_WRAD_REGDOMAIN mfn_wrad_regdomain;                   /**< Set/Get Country code */
-    PFN_WRAD_BEAMFORMING mfn_wrad_beamforming;               /**< Set/Get beam forming settings */
-    PFN_WRAD_RIFS mfn_wrad_rifs;                             /**< Set/Get RIFS status */
-    PFN_WRAD_AIRTIMEFAIRNESS mfn_wrad_airtimefairness;       /**< Set/Get AirTimeFairness status */
-    PFN_WRAD_RXPOWERSAVE mfn_wrad_rx_powersave;              /**< Set/Get Power Save status */
-    PFN_WRAD_INTELLIGENTAIRTIME mfn_wrad_intelligentAirtime; /**< Set/Get Intelligent airtime scheduler status */
-    PFN_WRAD_MULTIUSERMIMO mfn_wrad_multiusermimo;           /**< Set/Get MultiUserMIMO status */
+    PFN_WRAD_ACHREFPERIOD mfn_wrad_achrefperiod;                                     /**< Set/Get Auto Channel Refresh Period */
+    PFN_WRAD_EXTCHAN mfn_wrad_extchan;                                               /**< Set/Get secondary extension channel position (+1/Auto/-1) */
+    PFN_WRAD_GUARDINTVAL mfn_wrad_guardintval;                                       /**< Set/Get guard interval between OFDM symbols */
+    PFN_WRAD_MCS mfn_wrad_mcs;                                                       /**< Set/Get MCS */
+    PFN_WRAD_TXPOW mfn_wrad_txpow;                                                   /**< Set/Get TxPower */
+    PFN_WRAD_ANTENNACTRL mfn_wrad_antennactrl;                                       /**< Set/Get Antenna parameters */
+    PFN_WRAD_REGDOMAIN mfn_wrad_regdomain;                                           /**< Set/Get Country code */
+    PFN_WRAD_BEAMFORMING mfn_wrad_beamforming;                                       /**< Set/Get beam forming settings */
+    PFN_WRAD_RIFS mfn_wrad_rifs;                                                     /**< Set/Get RIFS status */
+    PFN_WRAD_AIRTIMEFAIRNESS mfn_wrad_airtimefairness;                               /**< Set/Get AirTimeFairness status */
+    PFN_WRAD_RXPOWERSAVE mfn_wrad_rx_powersave;                                      /**< Set/Get Power Save status */
+    PFN_WRAD_INTELLIGENTAIRTIME mfn_wrad_intelligentAirtime;                         /**< Set/Get Intelligent airtime scheduler status */
+    PFN_WRAD_MULTIUSERMIMO mfn_wrad_multiusermimo;                                   /**< Set/Get MultiUserMIMO status */
+
+    swl_rc_ne (* mfn_wrad_updateConfigMap)(T_Radio* pRad, swl_mapChar_t* configMap); /**< Update the current hostapd radio parameters map, to add or delete parameters */
 
     /**< Get Air usage statistics */
     swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, T_Airstats* pStats);
@@ -2197,7 +2199,9 @@ typedef struct S_CWLD_FUNC_TABLE {
     swl_rc_ne (* mfn_wvap_get_station_stats)(T_AccessPoint* pAP);
     swl_rc_ne (* mfn_wvap_get_single_station_stats)(T_AssociatedDevice* pAD);
 
-    PFN_WVAP_VAP_UPDATE_ADL mfn_wvap_update_rssi_stats;          /**< Update rssi of associated devices */
+    swl_rc_ne (* mfn_wvap_updateConfigMap)(T_AccessPoint* pAP, swl_mapChar_t* configMap); /**< Update the current hostapd vap parameters map, to add or delete parameters */
+
+    PFN_WVAP_VAP_UPDATE_ADL mfn_wvap_update_rssi_stats;                                   /**< Update rssi of associated devices */
     /** Update the stats counters of requested accesspoint BSS */
     swl_rc_ne (* mfn_wvap_update_ap_stats)(T_AccessPoint* vap);
 
@@ -2226,35 +2230,36 @@ typedef struct S_CWLD_FUNC_TABLE {
      */
     swl_rc_ne (* mfn_wvap_transfer_sta)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
     swl_rc_ne (* mfn_wvap_sendManagementFrame)(T_AccessPoint* vap, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
+    swl_rc_ne (* mfn_wvap_setEvtHandlers)(T_AccessPoint* vap);   /**< Set the event handlers from the VAP */
 
-    PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;              /**< Send a 802.11k remote measurement request */
-    PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                         /**< Cleanup a non connected station from the VAP */
-    PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;     /**< Set MultiAP type */
-    PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                     /**< Set AccessPoint role */
-    PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;                 /**< Add vendor IE */
-    PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;                 /**< Del vendor IE */
-    PFN_WVAP_ENAB_VENDOR_IE mfn_wvap_enab_vendor_ie;               /**< Enable vendor IEs */
-    PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method;   /**< Set BSS discovery method */
-    PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;            /**< Set Config Driver */
+    PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
+    PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */
+    PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;   /**< Set MultiAP type */
+    PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                   /**< Set AccessPoint role */
+    PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;               /**< Add vendor IE */
+    PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;               /**< Del vendor IE */
+    PFN_WVAP_ENAB_VENDOR_IE mfn_wvap_enab_vendor_ie;             /**< Enable vendor IEs */
+    PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method; /**< Set BSS discovery method */
+    PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;          /**< Set Config Driver */
 
-    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                      /**< bool, for driver capabilities
-                                                                      "WEP","TKIP","AES","AES_CCM",
-                                                                      "CKIP","FF","TURBOP","NOTUSED"
-                                                                      "IBSS","PMGT","HOSTAP","AHDEMO",
-                                                                      "SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE",
-                                                                      "MONITOR","TKIPMIC","WPA1","WPA2",
-                                                                      "WPA","BURST","WME","WDS",
-                                                                      "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
-                                                                      "EXPL_BF", "IMPL_BF",
-                                                                      "DFS_OFFLOAD","CSA","SAE","SAE_PWE" */
+    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                    /**< bool, for driver capabilities
+                                                                    "WEP","TKIP","AES","AES_CCM",
+                                                                    "CKIP","FF","TURBOP","NOTUSED"
+                                                                    "IBSS","PMGT","HOSTAP","AHDEMO",
+                                                                    "SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE",
+                                                                    "MONITOR","TKIPMIC","WPA1","WPA2",
+                                                                    "WPA","BURST","WME","WDS",
+                                                                    "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
+                                                                    "EXPL_BF", "IMPL_BF",
+                                                                    "DFS_OFFLOAD","CSA","SAE","SAE_PWE" */
 
-    PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                         /**< Get the FSM state of the VAP */
-    PFN_WVAP_FSM mfn_wvap_fsm;                                     /**< Do the tasks in parts (use of callback timer) */
-    PFN_WVAP_FSM_NODELAY mfn_wvap_fsm_nodelay;                     /**< Do all at once... */
+    PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                       /**< Get the FSM state of the VAP */
+    PFN_WVAP_FSM mfn_wvap_fsm;                                   /**< Do the tasks in parts (use of callback timer) */
+    PFN_WVAP_FSM_NODELAY mfn_wvap_fsm_nodelay;                   /**< Do all at once... */
 
-    PFN_WRAD_FSM_STATE mfn_wrad_fsm_state;                         /**< Get the FSM state of the RADIO */
-    PFN_WRAD_FSM mfn_wrad_fsm;                                     /**< Do the tasks in parts (use of callback timer) */
-    PFN_WRAD_FSM_NODELAY mfn_wrad_fsm_nodelay;                     /**< Do all at once... */
+    PFN_WRAD_FSM_STATE mfn_wrad_fsm_state;                       /**< Get the FSM state of the RADIO */
+    PFN_WRAD_FSM mfn_wrad_fsm;                                   /**< Do the tasks in parts (use of callback timer) */
+    PFN_WRAD_FSM_NODELAY mfn_wrad_fsm_nodelay;                   /**< Do all at once... */
 
     /**
      * Request the driver to reset the current fsm commit of the given radio

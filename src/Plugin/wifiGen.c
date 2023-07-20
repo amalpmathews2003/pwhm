@@ -68,6 +68,7 @@
 #include "wifiGen_vap.h"
 #include "wifiGen_ep.h"
 #include "wifiGen_fsm.h"
+#include "wifiGen_events.h"
 
 #define ME "gen"
 
@@ -135,6 +136,7 @@ bool wifiGen_init() {
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;
     fta.mfn_wvap_update_ap_stats = wifiGen_vap_updateApStats;
     fta.mfn_wvap_request_rrm_report = wifiGen_vap_requestRrmReport;
+    fta.mfn_wvap_setEvtHandlers = wifiGen_setVapEvtHandlers;
 
     //endpoint functions
     fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;
@@ -155,6 +157,7 @@ bool wifiGen_init() {
 
 
     s_vendor = wld_nl80211_registerVendor(&fta);
+    ASSERT_NOT_NULL(s_vendor, false, ME, "NULL vendor");
     wld_nl80211_getSharedState();
     wifiGen_fsm_doInit(s_vendor);
 

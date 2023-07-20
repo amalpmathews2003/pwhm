@@ -464,11 +464,8 @@ static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macA
         ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
         SAH_TRACEZ_INFO(ME, "%s: created device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
     }
-    // initialize the associated device info at the connection time
-    wld_nl80211_stationInfo_t stationInfo;
-    if(wld_ap_nl80211_getStationInfo(pAP, (swl_macBin_t*) pAD->MACAddress, &stationInfo) >= SWL_RC_OK) {
-        wld_ap_nl80211_copyStationInfoToAssocDev(pAP, pAD, &stationInfo);
-    }
+
+    pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
 
     wld_ad_add_connection_success(pAP, pAD);
 }

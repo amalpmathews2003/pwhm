@@ -733,8 +733,9 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
     swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
     wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
 
-    swl_mapChar_t* multiAPConfig = NULL;
+    pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
 
+    swl_mapChar_t* multiAPConfig = NULL;
     amxc_llist_for_each(ap_it, &pRad->llAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
         if(SWL_BIT_IS_ONLY_SET(pAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
@@ -755,6 +756,13 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
             wld_hostapd_cfgFile_setVapConfig(pAp, vapConfigMap, multiAPConfig);
         }
     }
+
+    amxc_llist_for_each(ap_it, &pRad->llAP) {
+        T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
+        swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
+        pAp->pFA->mfn_wvap_updateConfigMap(pAp, vapConfigMap);
+    }
+
     wld_hostapd_writeConfig(config, cfgFileName);
     wld_hostapd_deleteConfig(config);
 }

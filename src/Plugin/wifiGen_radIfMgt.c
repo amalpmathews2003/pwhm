@@ -211,7 +211,7 @@ static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex) {
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to create ap(%s)id(%d) on rad(%s)", pAP->alias, apIndex, pRad->Name);
     rc = wifiGen_hapd_initVAP(pAP);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to init hapd interface", pAP->alias);
-    rc = wifiGen_setVapEvtHandlers(pAP);
+    rc = pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
     return rc;
 }
 
