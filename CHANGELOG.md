@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.19.0 - 2023-07-21(07:14:18 +0000)
+
+### Other
+
+- : Add new configMap FTA
+
 ## Release v3.18.3 - 2023-07-20(08:53:37 +0000)
 
 ### Other
