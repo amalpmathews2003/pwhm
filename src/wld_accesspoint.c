@@ -271,11 +271,11 @@ static void s_deinitAP(T_AccessPoint* pAP) {
  *
  * @param accesspoint context
  */
-static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName) {
+static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uint32_t idx) {
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     ASSERT_STR(vapName, false, ME, "No vap name");
-    s_setDefaults(pAP, pRad, vapName, amxc_llist_size(&pRad->llAP));
+    s_setDefaults(pAP, pRad, vapName, idx);
     /* Add pAP on linked list of pR */
     amxc_llist_append(&pRad->llAP, &pAP->it);
 
@@ -284,6 +284,28 @@ static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName) {
 
     swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
     return true;
+}
+
+T_AccessPoint* s_createAp(T_Radio* pRad, const char* vapName, uint32_t idx, amxd_object_t* vapObj) {
+    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
+    T_AccessPoint* pAP = calloc(1, sizeof(T_AccessPoint));
+    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+
+    pAP->pBus = vapObj;
+    if(!s_initAp(pAP, pRad, vapName, idx)) {
+        free(pAP);
+        return NULL;
+    }
+
+    ASSERTW_NOT_NULL(vapObj, pAP, ME, "%s: created local VAP(%s) context with no mapped dm object", pRad->Name, pAP->alias);
+    vapObj->priv = pAP;
+
+    pAP->wpsSessionInfo.intfObj = vapObj;
+    amxd_object_t* wpsinstance = amxd_object_get(vapObj, "WPS");
+    ASSERTW_NOT_NULL(wpsinstance, pAP, ME, "%s: WPS subObj is not available", pAP->name);
+    wpsinstance->priv = &pAP->wpsSessionInfo;
+
+    return pAP;
 }
 
 static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj) {
@@ -303,11 +325,12 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     T_Radio* pRad = pSSID->RADIO_PARENT;
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
     SAH_TRACEZ_INFO(ME, "pSSID(%p) pRad(%p)", pSSID, pRad);
+    uint32_t idx = amxc_llist_size(&pRad->llAP);
     if(pAP != NULL) {
-        bool ret = s_initAp(pAP, pRad, vapName);
+        bool ret = s_initAp(pAP, pRad, vapName, idx);
         ASSERT_EQUALS(ret, true, amxd_status_unknown_error, ME, "%s: fail to re-create accesspoint", vapName);
     } else {
-        pAP = wld_ap_create(pRad, vapName, object);
+        pAP = s_createAp(pRad, vapName, idx, object);
         ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "%s: fail to create accesspoint", vapName);
     }
 
@@ -1829,25 +1852,8 @@ static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_pa
     SAH_TRACEZ_OUT(ME);
 }
 
-T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, amxd_object_t* vapObj) {
-    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
-    T_AccessPoint* pAP = calloc(1, sizeof(T_AccessPoint));
-    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
-
-    pAP->pBus = vapObj;
-    if(!s_initAp(pAP, pRad, vapName)) {
-        free(pAP);
-        return NULL;
-    }
-
-    vapObj->priv = pAP;
-
-    pAP->wpsSessionInfo.intfObj = vapObj;
-    amxd_object_t* wpsinstance = amxd_object_get(vapObj, "WPS");
-    ASSERTW_NOT_NULL(wpsinstance, pAP, ME, "%s: WPS subObj is not available", pAP->name);
-    wpsinstance->priv = &pAP->wpsSessionInfo;
-
-    return pAP;
+T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
+    return s_createAp(pRad, vapName, idx, NULL);
 }
 
 /**

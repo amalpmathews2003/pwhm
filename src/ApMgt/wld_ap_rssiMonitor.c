@@ -197,7 +197,9 @@ void wld_apRssiMon_updateEnable(T_AccessPoint* pAP) {
 }
 
 void wld_ap_rssiMonInit(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
     amxd_object_t* rssiEventingObj = amxd_object_findf(pAP->pBus, "RssiEventing");
+    ASSERTS_NOT_NULL(rssiEventingObj, , ME, "NULL");
     T_RssiEventing* ev = &pAP->rssiEventing;
     char name[AP_NAME_SIZE + 16] = {0};
     snprintf(name, sizeof(name), "%s_ApRssiMon", pAP->alias);
