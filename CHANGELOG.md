@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v3.19.1 - 2023-07-21(07:46:59 +0000)
+
+### Other
+
+- restore old wld_ap_create proto still used in mod-whm
+
 ## Release v3.19.0 - 2023-07-21(07:14:18 +0000)
 
 ### Other
