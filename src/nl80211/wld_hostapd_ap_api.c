@@ -73,31 +73,6 @@
 
 #define WPS_START  "WPS_PBC"
 #define WPS_CANCEL "WPS_CANCEL"
-#define NR_SIZE  36
-typedef struct {
-    char neighReport[NR_SIZE];
-} wld_neighReport_t;
-static void s_generateNeighReportField(swl_macChar_t bssid, uint32_t BssidInfo, uint8_t operClass, uint8_t channel, uint8_t phyType, wld_neighReport_t* result) {
-    unsigned int MAC[8];
-    unsigned char CMAC[SWL_MAC_BIN_LEN];
-
-    memset(result->neighReport, 0, NR_SIZE);
-    if(sscanf(bssid.cMac, "%x:%x:%x:%x:%x:%x",
-              &MAC[0], &MAC[1], &MAC[2],
-              &MAC[3], &MAC[4], &MAC[5]) == 6) {
-        CMAC[0] = MAC[0];
-        CMAC[1] = MAC[1];
-        CMAC[2] = MAC[2];
-        CMAC[3] = MAC[3];
-        CMAC[4] = MAC[4];
-        CMAC[5] = MAC[5];
-        SAH_TRACEZ_INFO(ME, "%2.2x %2.2x %2.2x %2.2x %2.2x %2.2x \n",
-                        CMAC[0], CMAC[1], CMAC[2], CMAC[3], CMAC[4], CMAC[5]);
-        snprintf(result->neighReport, 30, "%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x%08x%02x%02x%02x", CMAC[0], CMAC[1], CMAC[2], CMAC[3], CMAC[4], CMAC[5], BssidInfo, operClass, channel, phyType);
-    }
-
-
-}
 
 bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
@@ -131,6 +106,39 @@ bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason) {
     return s_sendHostapdCommand(pAP, "RELOAD_WPA_PSK", reason);
 }
 
+swl_rc_ne wld_ap_hostapd_dumpNeighborList(T_AccessPoint* pAP, swl_macBin_t* list, uint32_t maxLen, uint32_t* pLen) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), SWL_RC_INVALID_STATE, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    ASSERT_NOT_NULL(pLen, SWL_RC_INVALID_PARAM, ME, "NULL");
+    *pLen = 0;
+    ASSERT_NOT_NULL(list, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_FALSE(maxLen == 0, SWL_RC_INVALID_PARAM, ME, "null len");
+    char buff[WLD_L_BUF] = {0};
+    swl_str_copy(buff, sizeof(buff), "SHOW_NEIGHBOR");
+    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, buff, ret);
+    char* str = buff;
+    char* line = NULL;
+    char* field = NULL;
+    while(str && (*pLen < maxLen)) {
+        //get lines
+        line = strsep(&str, "\n");
+        //skip potential empty lines
+        if(line[0] == 0) {
+            continue;
+        }
+        swl_str_removeWhitespaceEdges(line);
+        //Line format: <02:ba:7d:80:80:24 ssid=7072706c4f53 nr=02ba7d808024ef5900008024090603022a00>
+        //first field of each line is sta mac
+        field = strsep(&line, " ");
+        if((swl_str_len(field) == SWL_MAC_CHAR_LEN - 1) && (swl_mac_charIsValidStaMac((swl_macChar_t*) field))) {
+            swl_typeMacBin_fromChar(&list[*pLen], field);
+            *pLen += 1;
+        }
+    }
+    return SWL_RC_OK;
+}
+
 /**
  * @brief delete neighbor
  *
@@ -139,23 +147,29 @@ bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason) {
  * @return true when the remove_neighbor cmd is executed successfully. Otherwise false.
  */
 swl_rc_ne wld_ap_hostapd_removeNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
+    ASSERTS_NOT_NULL(pApNeighbor, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), SWL_RC_INVALID_STATE, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    ASSERTI_FALSE(swl_mac_binIsNull((swl_macBin_t*) pApNeighbor->bssid), SWL_RC_INVALID_STATE, ME, "%s: neighbor has null bssid", pAP->alias);
 
-    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
-    ASSERTS_NOT_NULL(pApNeighbor, false, ME, "NULL");
-    ASSERTS_STR(pApNeighbor->ssid, false, ME, "empty ssid");
-    char cmd[128];
-    swl_macChar_t macStr;
-    char hexSSSID[strlen(pApNeighbor->ssid) * 2 + 1 ];
-
-    wldu_convMac2Str((unsigned char*) pApNeighbor->bssid, ETHER_ADDR_LEN, macStr.cMac, ETHER_ADDR_STR_LEN);
-
-    swl_hex_fromBytes(hexSSSID, sizeof(hexSSSID), (uint8_t*) pApNeighbor->ssid, sizeof(pApNeighbor->ssid), 0);
-    hexSSSID[strlen(pApNeighbor->ssid) * 2] = '\0';
-
-    snprintf(cmd, sizeof(cmd), "REMOVE_NEIGHBOR %s ssid=%s", macStr.cMac, hexSSSID);
-    SAH_TRACEZ_INFO(ME, "sending cmd : %s", cmd);
-    bool ret = s_sendHostapdCommand(pAP, cmd, "remove_neighbor");
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: remove_neighbor failed", pAP->alias);
+    swl_macBin_t neighs[128];
+    uint32_t nNeighs = 0;
+    uint32_t nDel = 1;
+    //fetch all db entries matching bssid
+    if(wld_ap_hostapd_dumpNeighborList(pAP, neighs, SWL_ARRAY_SIZE(neighs), &nNeighs) == SWL_RC_OK) {
+        nDel = 0;
+        for(uint32_t i = 0; i < nNeighs; i++) {
+            nDel += (SWL_MAC_BIN_MATCHES(&neighs[i], pApNeighbor->bssid));
+        }
+    }
+    //re-iterate for all matching entries (or once if failed to dump db)
+    for(int32_t i = nDel; i > 0; i--) {
+        char cmd[256] = {0};
+        swl_str_catFormat(cmd, sizeof(cmd), "REMOVE_NEIGHBOR %s", swl_typeMacBin_toBuf32Ref((swl_macBin_t*) pApNeighbor->bssid).buf);
+        SAH_TRACEZ_INFO(ME, "sending cmd : %s", cmd);
+        nDel -= (s_sendHostapdCommand(pAP, cmd, "remove_neighbor") == true);
+    }
+    ASSERT_EQUALS(nDel, 0, SWL_RC_ERROR, ME, "%s: remove_neighbor failed", pAP->alias);
     return SWL_RC_OK;
 }
 
@@ -167,26 +181,67 @@ swl_rc_ne wld_ap_hostapd_removeNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNe
  * @return true when the set_neighbor cmd is executed successfully. Otherwise false.
  */
 swl_rc_ne wld_ap_hostapd_setNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
+    ASSERTS_NOT_NULL(pApNeighbor, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), SWL_RC_INVALID_STATE, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    ASSERTI_NOT_NULL(pAP->pRadio, SWL_RC_INVALID_STATE, ME, "%s: has no radio", pAP->alias);
+    ASSERTI_NOT_NULL(pAP->pSSID, SWL_RC_INVALID_STATE, ME, "%s: has no ssid", pAP->alias);
+    //mandatory args for hostapd SET_NEIGHBOR: bssid, ssid and nr bytes
+    ASSERTI_FALSE(swl_mac_binIsNull((swl_macBin_t*) pApNeighbor->bssid), SWL_RC_INVALID_STATE, ME, "%s: neighbor has null bssid", pAP->alias);
+    ASSERTI_STR(pApNeighbor->ssid, SWL_RC_INVALID_PARAM, ME, "%s: neighbor has empty ssid", pAP->alias);
 
-    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
-    ASSERTS_NOT_NULL(pApNeighbor, false, ME, "NULL");
-    ASSERTS_STR(pApNeighbor->ssid, false, ME, "empty ssid");
-    char cmd[128];
+    char cmd[256] = {0};
+    swl_str_catFormat(cmd, sizeof(cmd), "SET_NEIGHBOR %s", swl_typeMacBin_toBuf32Ref((swl_macBin_t*) pApNeighbor->bssid).buf);
+
+    swl_mask_m bssParamsMask = SWL_80211_BSS_PARAMS_TBSSID;
+    if(amxc_llist_size(&pAP->pRadio->llAP) > 1) {
+        bssParamsMask |= SWL_80211_BSS_PARAMS_MBSSID;
+    }
+
+    char neighSsid[SSID_NAME_LEN * 2] = {0};
+    swl_str_copy(neighSsid, sizeof(neighSsid), pApNeighbor->ssid);
+    swl_hex_fromBytesSep(neighSsid, sizeof(neighSsid), (swl_bit8_t*) pApNeighbor->ssid, swl_str_len(pApNeighbor->ssid), false, 0, NULL);
+    /*
+     * hostapd skips adding RNR neighbors having same ssid checksum (crc32) as local bss (sending rnr)
+     * see hostapd_eid_nr_db_len at https://w1.fi/cgit/hostap/tree/src/ap/ieee802_11.c#n7120
+     *
+     * tweak:
+     * when only handling neighbors for RNR (11k neighbor report enabled),
+     * and not impacting 11r,
+     * then workaround by adding a suffix to the reported neighbor ssid (%d%d radIdx vapIdx)
+     * in order to change crc32
+     *
+     * otherwise keep neigh ssid as is, and let hostapd manage
+     */
+    if(swl_str_matches(pAP->pSSID->SSID, pApNeighbor->ssid)) {
+        bssParamsMask |= SWL_80211_BSS_PARAMS_SAME_SSID;
+
+        if(pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR) &&
+           !(pAP->IEEE80211rEnable && pAP->IEEE80211rFTOverDSEnable)) {
+            swl_str_catFormat(neighSsid, sizeof(neighSsid), "%02x%02x", '0' + pAP->pRadio->ref_index, '0' + pAP->ref_index);
+        }
+    }
+    swl_str_catFormat(cmd, sizeof(cmd), " ssid=%s", neighSsid);
+
     swl_macChar_t macStr;
-    wld_neighReport_t nrResult;
-    char hexSSSID[strlen(pApNeighbor->ssid) * 2 + 1 ];
+    swl_hex_fromBytesSep(macStr.cMac, sizeof(macStr.cMac), (swl_bit8_t*) pApNeighbor->bssid, SWL_MAC_BIN_LEN, false, 0, NULL);
+    swl_str_catFormat(cmd, sizeof(cmd), " nr=%s%08x%02x%02x", macStr.cMac, 0, pApNeighbor->operatingClass, pApNeighbor->channel);
 
+    T_AccessPoint* pColocAP = wld_ap_getVapByBssid((swl_macBin_t*) pApNeighbor->bssid);
+    if((pColocAP != NULL) || (pApNeighbor->colocatedAp)) {
+        bssParamsMask |= SWL_80211_BSS_PARAMS_COLOC_AP;
+    }
+    if(pColocAP != NULL) {
+        swl_mask_m colocBands = SWL_BIT_SHIFT(pAP->pRadio->operatingFrequencyBand);
+        colocBands |= SWL_BIT_SHIFT(pColocAP->pRadio->operatingFrequencyBand);
+        if(SWL_BIT_IS_SET(colocBands, SWL_FREQ_BAND_EXT_6GHZ) ||
+           (colocBands == (M_SWL_FREQ_BAND_EXT_2_4GHZ | M_SWL_FREQ_BAND_EXT_5GHZ))) {
+            bssParamsMask |= SWL_80211_BSS_PARAMS_ESS_24_5_COLOC_AP;
+        }
+    }
+    swl_str_catFormat(cmd, sizeof(cmd), " bss_parameter=%d", (bssParamsMask & 0xff));
 
-    wldu_convMac2Str((unsigned char*) pApNeighbor->bssid, ETHER_ADDR_LEN, macStr.cMac, ETHER_ADDR_STR_LEN);
-
-    swl_hex_fromBytes(hexSSSID, sizeof(hexSSSID), (uint8_t*) pApNeighbor->ssid, sizeof(pApNeighbor->ssid), 0);
-    hexSSSID[strlen(pApNeighbor->ssid) * 2] = '\0';
-
-    s_generateNeighReportField(macStr, pApNeighbor->information, pApNeighbor->operatingClass, pApNeighbor->channel, pApNeighbor->phyType, &nrResult);
-
-    snprintf(cmd, sizeof(cmd), "SET_NEIGHBOR %s ssid=%s nr=%s %s %s %s", macStr.cMac, hexSSSID, nrResult.neighReport, "", "", "");
     SAH_TRACEZ_INFO(ME, "sending cmd : %s", cmd);
-
     bool ret = s_sendHostapdCommand(pAP, cmd, "set_neighbor");
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: set_neighbor failed", pAP->alias);
     return SWL_RC_OK;

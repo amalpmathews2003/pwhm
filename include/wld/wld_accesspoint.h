@@ -115,6 +115,7 @@ void wld_vap_updateState(T_AccessPoint* pAP);
 T_AccessPoint* wld_vap_get_vap(const char* ifname);
 T_AccessPoint* wld_ap_getVapByName(const char* name);
 T_AccessPoint* wld_ap_fromIt(amxc_llist_it_t* it);
+T_AccessPoint* wld_ap_getVapByBssid(swl_macBin_t* bssid);
 void wld_station_stats_done(T_AccessPoint* pAP, bool success);
 bool wld_ap_getDesiredState(T_AccessPoint* pAp);
 void wld_ap_updateDiscoveryMethod(T_AccessPoint* pAP);

@@ -654,7 +654,23 @@ wld_fsmMngr_t mngr = {
     .nrFsmBits = GEN_FSM_MAX,
 };
 
+static void s_vapStatusUpdateCb(wld_vap_status_change_event_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    T_AccessPoint* pAP = event->vap;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    if((pAP->status == APSTI_ENABLED) && (pSSID->status == RST_UP)) {
+        wifiGen_vap_postUpActions(pAP);
+    }
+}
+
+static wld_event_callback_t s_vapStatusCbContainer = {
+    .callback = (wld_event_callback_fun) s_vapStatusUpdateCb
+};
+
 void wifiGen_fsm_doInit(vendor_t* vendor) {
     ASSERT_NOT_NULL(vendor, , ME, "NULL");
     wld_fsm_init(vendor, &mngr);
+    wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
 }

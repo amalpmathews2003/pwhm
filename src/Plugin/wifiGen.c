@@ -137,6 +137,9 @@ bool wifiGen_init() {
     fta.mfn_wvap_update_ap_stats = wifiGen_vap_updateApStats;
     fta.mfn_wvap_request_rrm_report = wifiGen_vap_requestRrmReport;
     fta.mfn_wvap_setEvtHandlers = wifiGen_setVapEvtHandlers;
+    fta.mfn_wvap_updated_neighbour = wifiGen_vap_updated_neighbor;
+    fta.mfn_wvap_deleted_neighbour = wifiGen_vap_deleted_neighbor;
+    fta.mfn_wvap_set_discovery_method = wifiGen_vap_setDiscoveryMethod;
 
     //endpoint functions
     fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;
@@ -151,10 +154,6 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_wps_cancel = wifiGen_ep_wpsCancel;
     fta.mfn_wendpoint_multiap_enable = wifiGen_ep_multiApEnable;
     fta.mfn_wendpoint_sendManagementFrame = wifiGen_ep_sendManagementFrame;
-
-    fta.mfn_wvap_updated_neighbour = wifiGen_vap_updated_neighbor;
-    fta.mfn_wvap_deleted_neighbour = wifiGen_vap_deleted_neighbor;
-
 
     s_vendor = wld_nl80211_registerVendor(&fta);
     ASSERT_NOT_NULL(s_vendor, false, ME, "NULL vendor");

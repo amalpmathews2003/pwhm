@@ -2342,6 +2342,13 @@ T_AccessPoint* wld_ap_getVapByName(const char* name) {
     return NULL;
 }
 
+T_AccessPoint* wld_ap_getVapByBssid(swl_macBin_t* bssid) {
+    T_SSID* pSSID = wld_ssid_getSsidByMacAddress(bssid);
+    if((pSSID != NULL) && (pSSID->RADIO_PARENT != NULL) && (pSSID->AP_HOOK != NULL) && (pSSID->AP_HOOK->pRadio == pSSID->RADIO_PARENT)) {
+        return pSSID->AP_HOOK;
+    }
+    return NULL;
+}
 
 void wld_vap_updateState(T_AccessPoint* pAP) {
 

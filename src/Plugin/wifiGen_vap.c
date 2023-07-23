@@ -78,6 +78,7 @@
 #include "wifiGen_fsm.h"
 #include "wifiGen_rad.h"
 #include "wld/wld_statsmon.h"
+#include "wld/Utils/wld_autoCommitMgr.h"
 
 #define ME "genVap"
 
@@ -292,12 +293,48 @@ swl_rc_ne wifiGen_vap_sendManagementFrame(T_AccessPoint* pAP, swl_80211_mgmtFram
     return wld_ap_nl80211_sendManagementFrameCmd(pAP, fc, tgtMac, data, dataLen, chanspec, 0);
 }
 
+swl_rc_ne s_addDelNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor, bool add) {
+    ASSERTS_NOT_NULL(pApNeighbor, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    bool has11rFToDsEnabled = (pRad->IEEE80211rSupported && pAP->IEEE80211rEnable && pAP->IEEE80211rFTOverDSEnable);
+    bool has11kNeighReportEnabled = (pRad->IEEE80211kSupported && pAP->IEEE80211kEnable);
+    //dynamic setting of neighbors
+    //1) clean old entry from hostapd DB
+    wld_ap_hostapd_removeNeighbor(pAP, pApNeighbor);
+    if((add) && (has11rFToDsEnabled || has11kNeighReportEnabled)) {
+        //2) add new entry to hostapd DB
+        wld_ap_hostapd_setNeighbor(pAP, pApNeighbor);
+    }
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
+
+    if(has11rFToDsEnabled) {
+        //only 11r FT neighbors requires cold conf apply
+        setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
+    }
+
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wifiGen_vap_deleted_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
-    return wld_ap_hostapd_removeNeighbor(pAP, pApNeighbor);
+    return s_addDelNeighbor(pAP, pApNeighbor, false);
 }
 
 swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor) {
-    return wld_ap_hostapd_setNeighbor(pAP, pApNeighbor);
+    return s_addDelNeighbor(pAP, pApNeighbor, true);
+}
+
+swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    bool enaRnr = (pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR));
+    if(!wld_ap_hostapd_setParamValue(pAP, "rnr", (enaRnr ? "1" : "0"), "enaDisRnR")) {
+        SAH_TRACEZ_NOTICE(ME, "%s: can not apply rnr ena(%d) to hostapd: seems not supported", pAP->alias, enaRnr);
+    }
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
+    wld_autoCommitMgr_notifyVapEdit(pAP);
+    return SWL_RC_OK;
 }
 
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
@@ -419,4 +456,31 @@ swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* 
     SAH_TRACEZ_INFO(ME, "%s: send rrm to %s %u/%u %s %s", pAP->alias, sta->cMac, req->operClass, req->channel, req->bssid.cMac, req->ssid);
     return wld_ap_hostapd_requestRRMReport(pAP, sta, req->modeMask, req->operClass, req->channel, req->addNeighbor, req->interval,
                                            req->duration, req->mode, &req->bssid, req->ssid);
+}
+
+static swl_rc_ne s_reloadApNeighbors(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    /*
+     * Enable dynamically reduced neighbor reporting (RNR)
+     * to avoid saving in hostapd (older than 2.10) conf file an unsupported param
+     * that prevent proper startup
+     */
+    pAP->pFA->mfn_wvap_set_discovery_method(pAP);
+
+    //now add dynamically the saved ap neigbours to hostapd db
+    amxc_llist_for_each(it, &pAP->neighbours) {
+        T_ApNeighbour* pApNeighbor = amxc_container_of(it, T_ApNeighbour, it);
+        pAP->pFA->mfn_wvap_updated_neighbour(pAP, pApNeighbor);
+    }
+
+    //apply list to beacon is RNR is enabled
+    wld_ap_hostapd_updateBeacon(pAP, "reloadApNeigh");
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc;
+    rc = s_reloadApNeighbors(pAP);
+    return rc;
 }

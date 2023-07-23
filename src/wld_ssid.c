@@ -376,6 +376,26 @@ void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin) {
     memcpy(pSSID->MACAddress, macBin->bMac, sizeof(pSSID->MACAddress));
 }
 
+T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin) {
+    amxc_llist_for_each(it, &sSsidList) {
+        T_SSID* pSSID = amxc_container_of(it, T_SSID, it);
+        if(SWL_MAC_BIN_MATCHES(pSSID->BSSID, macBin)) {
+            return pSSID;
+        }
+    }
+    return NULL;
+}
+
+T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin) {
+    amxc_llist_for_each(it, &sSsidList) {
+        T_SSID* pSSID = amxc_container_of(it, T_SSID, it);
+        if(SWL_MAC_BIN_MATCHES(pSSID->MACAddress, macBin)) {
+            return pSSID;
+        }
+    }
+    return NULL;
+}
+
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);
