@@ -296,7 +296,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     if(pAP != NULL) {
         pAP->index = pIfaceInfo->ifIndex;
         pAP->wDevId = pIfaceInfo->wDevId;
-        wifiGen_setVapEvtHandlers(pAP);
+        pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
         wld_vap_updateState(pAP);
     }
 }
