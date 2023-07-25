@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.0.0 - 2023-07-25(07:03:32 +0000)
+
+### Other
+
+- fix RNR IE in beacon when having default Discovery method
+
 ## Release v3.19.1 - 2023-07-21(07:46:59 +0000)
 
 ### Other
