@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.0.1 - 2023-07-25(14:58:21 +0000)
+
+### Other
+
+- : Missing FTA setEvtHandlers call
+
 ## Release v4.0.0 - 2023-07-25(07:03:32 +0000)
 
 ### Other
