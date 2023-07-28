@@ -178,6 +178,19 @@ swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t*
 swl_rc_ne wld_rad_nl80211_getSurveyInfo(T_Radio* pRadio, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnrChanSurveyInfo);
 
 /*
+ * @brief convert channel survey info of the central channel being used into radio air statistics
+ *
+ * @param pRadio pointer to radio context
+ * @param pStats pointer to result
+ * @param pChanSurveyInfo  pointer to channel survey info to be processed
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_CONTINUE if survey info is not of the central channel being used
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats* pStats, wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo);
+
+/*
  * @brief get radio air statistics of the central channel being used
  * The channel load is defined as the percentage of time that the AP sensed the medium was busy.
  *
