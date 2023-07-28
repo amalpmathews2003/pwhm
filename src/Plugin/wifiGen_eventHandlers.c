@@ -298,6 +298,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         pAP->wDevId = pIfaceInfo->wDevId;
         pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
         wld_vap_updateState(pAP);
+        swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
     }
 }
 
@@ -312,6 +313,7 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         pAP->index = 0;
         pAP->wDevId = 0;
         wld_vap_updateState(pAP);
+        swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
     }
 }
 

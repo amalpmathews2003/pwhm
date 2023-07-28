@@ -268,12 +268,12 @@ bool wld_linuxIfStats_getInterfaceStats(const char* pIfaceName, T_Stats* pInterf
 
     if(bind(fd, (struct sockaddr*) &kernel, sizeof(kernel)) < 0) {
         SAH_TRACEZ_ERROR(ME, "Failed binding socket");
+        close(fd);
         return false;
     }
 
     if(sendmsg(fd, (struct msghdr*) (&rtnl_msg), 0) < 0) {
         SAH_TRACEZ_ERROR(ME, "Unable to send message through Netlink socket");
-
         close(fd);
         return false;
     }
@@ -298,30 +298,29 @@ bool wld_linuxIfStats_getInterfaceStats(const char* pIfaceName, T_Stats* pInterf
 
         // Read as much data as fits in the receive buffer
         length = recvmsg(fd, &rtnl_reply, 0);
-
-        if(length) {
-
-            for(pMsg = (struct nlmsghdr*) reply;
-                NLMSG_OK(pMsg, length);
-                pMsg = NLMSG_NEXT(pMsg, length)) {
-                switch(pMsg->nlmsg_type) {
-                case NLMSG_DONE:
-                    // This is the special meaning NLMSG_DONE message we asked for by using NLM_F_DUMP flag
-                    end = true;
-                    break;
-
-                case RTM_NEWLINK:
-                    // This is a RTM_NEWLINK message, which contains lots of information about a link
-                    if(s_getRtmNewLinkInterfaceStats(pMsg, pIfaceName, pInterfaceStats)) {
-                        end = true;
-                        result = true;
-                    }
-                    break;
-                }
+        if(length <= 0) {
+            //processing end;
+            break;
+        }
+        for(pMsg = (struct nlmsghdr*) reply;
+            NLMSG_OK(pMsg, length);
+            pMsg = NLMSG_NEXT(pMsg, length)) {
+            switch(pMsg->nlmsg_type) {
+            case NLMSG_DONE: {
+                // This is the special meaning NLMSG_DONE message we asked for by using NLM_F_DUMP flag
+                end = true;
+                break;
             }
-        } else {
-            close(fd);
-            return false;
+            case RTM_NEWLINK: {
+                // This is a RTM_NEWLINK message, which contains lots of information about a link
+                if(s_getRtmNewLinkInterfaceStats(pMsg, pIfaceName, pInterfaceStats)) {
+                    end = true;
+                    result = true;
+                }
+                break;
+            }
+            default: break;
+            }
         }
     }
 
