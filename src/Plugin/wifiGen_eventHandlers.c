@@ -113,26 +113,6 @@ static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t
     SAH_TRACEZ_INFO(ME, "%s: csa finished to new_chan=%d", pRad->Name, chanSpec->channel);
 }
 
-static void s_newInterfaceCb(void* pRef, void* pData, wld_nl80211_ifaceInfo_t* pIfaceInfo);
-static void s_delInterfaceCb(void* pRef, void* pData, wld_nl80211_ifaceInfo_t* pIfaceInfo);
-static void s_refreshVapsIfIdx(T_Radio* pRad) {
-    T_AccessPoint* pAP = NULL;
-    wld_rad_forEachAp(pAP, pRad) {
-        wld_nl80211_ifaceInfo_t ifaceInfo;
-        ifaceInfo.ifIndex = pAP->index;
-        swl_rc_ne rc = wld_ap_nl80211_getInterfaceInfo(pAP, &ifaceInfo);
-        if((pAP->index > 0) && ((rc < SWL_RC_OK) || (pAP->index != (int) ifaceInfo.ifIndex))) {
-            wld_nl80211_ifaceInfo_t oldIfaceInfo;
-            swl_str_copy(oldIfaceInfo.name, sizeof(oldIfaceInfo.name), pAP->alias);
-            oldIfaceInfo.ifIndex = pAP->index;
-            oldIfaceInfo.wDevId = pAP->wDevId;
-            s_delInterfaceCb(pRad, NULL, &oldIfaceInfo);
-        }
-        if((rc >= SWL_RC_OK) && (ifaceInfo.ifIndex > 0) && (pAP->index != (int) ifaceInfo.ifIndex)) {
-            s_newInterfaceCb(pRad, NULL, &ifaceInfo);
-        }
-    }
-}
 static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
     ASSERTS_TRUE(isReady, , ME, "Not ready");
@@ -156,9 +136,6 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-            //in case we missed BSS re-creation nl80211 event, refresh relative info
-            //as wpactrl mgr is ready and enabled
-            s_refreshVapsIfIdx(pRad);
             setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
             wld_rad_doCommitIfUnblocked(pRad);
             return;
@@ -175,9 +152,6 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     // when main iface setup is completed, current chanspec is the last applied target chanspec
     s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-    //in case we missed BSS re-creation nl80211 event, refresh relative info
-    //as wpactrl mgr is ready and enabled
-    s_refreshVapsIfIdx(pRad);
     setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
     wld_rad_doCommitIfUnblocked(pRad);
     wld_rad_updateState(pRad, true);
@@ -287,6 +261,14 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     return SWL_RC_OK;
 }
 
+void s_syncVapInfo(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    swl_typeUInt32_toObjectParam(pAP->pBus, "Index", pAP->index);
+    ASSERT_NOT_NULL(pAP->pSSID, , ME, "NULL");
+    swl_typeUInt32_toObjectParam(pAP->pSSID->pBus, "Index", pAP->index);
+    wld_vap_updateState(pAP);
+}
+
 static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
@@ -297,8 +279,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         pAP->index = pIfaceInfo->ifIndex;
         pAP->wDevId = pIfaceInfo->wDevId;
         pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
-        wld_vap_updateState(pAP);
-        swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
     }
 }
 
@@ -312,8 +293,29 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         wld_ap_nl80211_delEvtListener(pAP);
         pAP->index = 0;
         pAP->wDevId = 0;
-        wld_vap_updateState(pAP);
-        swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
+    }
+}
+
+/*
+ * @brief: force refreshing vaps ifindex as sometimes we miss the nl80211 iface added/removed events
+ */
+void wifiGen_refreshVapsIfIdx(T_Radio* pRad) {
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        wld_nl80211_ifaceInfo_t ifaceInfo;
+        swl_str_copy(ifaceInfo.name, sizeof(ifaceInfo.name), pAP->alias);
+        ifaceInfo.ifIndex = pAP->index;
+        ifaceInfo.wDevId = pAP->wDevId;
+        int32_t curIfIdx = 0;
+        if(((wld_linuxIfUtils_getIfIndex(wld_rad_getSocket(pRad), pAP->alias, &curIfIdx) < 0) ||
+            (curIfIdx <= 0) || (pAP->index != curIfIdx)) && (pAP->index > 0)) {
+            s_delInterfaceCb(pRad, NULL, &ifaceInfo);
+        }
+        if((curIfIdx > 0) && (pAP->index != curIfIdx) &&
+           (wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), curIfIdx, &ifaceInfo) >= SWL_RC_OK)) {
+            s_newInterfaceCb(pRad, NULL, &ifaceInfo);
+        }
     }
 }
 

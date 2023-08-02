@@ -68,6 +68,7 @@
 #include "wld/wld_wpaCtrl_events.h"
 #include "wld/wld_hostapd_ap_api.h"
 #include "wifiGen_hapd.h"
+#include "wifiGen_events.h"
 
 #define ME "genHapd"
 #define HOSTAPD_CONF_FILE_PATH_FORMAT "/tmp/%s_hapd.conf"
@@ -236,6 +237,15 @@ swl_rc_ne wifiGen_hapd_updateRadState(T_Radio* pRad) {
 
 swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
     swl_rc_ne ret = SWL_RC_OK;
+
+    /*
+     * in case we missed BSS re-creation nl80211 event, refresh relative info (ifIndex, wdevId)
+     */
+    wifiGen_refreshVapsIfIdx(pRad);
+
+    /*
+     * Now as ifIndex are up to date, we can sync the enabling status
+     */
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
         if(!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface) || (pAP->index <= 0)) {

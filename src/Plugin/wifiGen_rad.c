@@ -602,7 +602,7 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
 
         swl_rc_ne retVal = SWL_RC_OK;
 
-        SAH_TRACEZ_ERROR(ME, "%s: setPow %i / max %i diff %i => %i", pRad->Name, val, maxPow, *tgtVal, tgtPow);
+        SAH_TRACEZ_INFO(ME, "%s: setPow %i / max %i diff %i => %i", pRad->Name, val, maxPow, *tgtVal, tgtPow);
         // arg in mbm, so * 100
         retVal = wld_rad_nl80211_setTxPowerLimited(pRad, tgtPow * 100);
 
@@ -625,8 +625,6 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
         int8_t* tgtVal = (int8_t*) swl_table_getMatchingValue(&sPowerTable, 0, 1, &diff);
         ASSERTI_NOT_NULL(tgtVal, pRad->transmitPower, ME, "%s: no tgtVal %i (%i/%i)", pRad->Name, diff, curDbm, maxPow);
 
-
-        SAH_TRACEZ_INFO(ME, "%s: getPow %i max %i diff %i => %i", pRad->Name, curDbm, maxPow, diff, *tgtVal);
         return *tgtVal;
     }
 
@@ -735,7 +733,8 @@ int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad) {
         pRad->fsmRad.TODC = 10000;
         return 0;
     }
-    wld_rad_updateState(pRad, true);
+    wld_rad_updateState(pRad, false);
+    wifiGen_hapd_syncVapStates(pRad);
     pRad->fsmRad.TODC = 0;
     return 0;
 }

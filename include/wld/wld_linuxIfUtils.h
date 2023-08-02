@@ -194,4 +194,28 @@ int wld_linuxIfUtils_getLinkState(int sock, char* intfName);
  */
 int wld_linuxIfUtils_getLinkStateExt(char* intfName);
 
+/*
+ * @brief gets interface's netdev index
+ *
+ * @param sock socket to kernel
+ * @param intfName interface name
+ * @param (output) pointer netdev index
+ *
+ * @param 0 in case of success
+ *        <0 (errno) in case of error
+ */
+int wld_linuxIfUtils_getIfIndex(int sock, char* intfName, int* pIfIndex);
+
+/*
+ * @brief gets interface's netdev index
+ * (socket is created internally)
+ *
+ * @param intfName interface name
+ * @param (output) pointer netdev index
+ *
+ * @param 0 in case of success
+ *        <0 (errno) in case of error
+ */
+int wld_linuxIfUtils_getIfIndexExt(int sock, char* intfName, int* pIfIndex);
+
 #endif /* INCLUDE_WLD_WLD_LINUXIFUTILS_H_ */
