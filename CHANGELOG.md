@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.1.0 - 2023-08-02(16:16:55 +0000)
+
+### Other
+
+- - apply nl80211 scan passive and active dwell time
+
 ## Release v4.0.3 - 2023-08-02(15:52:15 +0000)
 
 ### Other
