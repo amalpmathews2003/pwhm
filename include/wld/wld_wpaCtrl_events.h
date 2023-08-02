@@ -112,6 +112,7 @@ typedef struct {
     wld_wpaCtrl_apStationConnectivityCb_f fApStationDisconnectedCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
+    wld_wpaCtrl_stationConnectivityCb_f fStationAssociatedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationConnectedCb;
     wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;

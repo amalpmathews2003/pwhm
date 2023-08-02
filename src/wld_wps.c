@@ -110,7 +110,12 @@ const int ci_AP_WPS_VERSUPPORTED[] = {
 };
 
 amxd_status_t doCancelPairing(amxd_object_t* object) {
-    T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(object)->priv;
+    ASSERTI_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
+    wld_wpsSessionInfo_t* pWpsSessionInfo = (wld_wpsSessionInfo_t*) object->priv;
+    ASSERTI_NOT_NULL(pWpsSessionInfo, amxd_status_unknown_error, ME, "NULL");
+    wld_wps_clearPairingTimer(pWpsSessionInfo);
+    T_AccessPoint* pAP = wld_ap_fromObj(pWpsSessionInfo->intfObj);
+    ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "Not ap wps");
     char strbuf[] = "STOP";
     // If a timer is running... stop and destroy it also.
     if(pAP->WPS_PBC_Delay.timer) {
@@ -118,7 +123,6 @@ amxd_status_t doCancelPairing(amxd_object_t* object) {
         pAP->WPS_PBC_Delay.timer = NULL;
         pAP->WPS_PBC_Delay.intf.vap = NULL;
     }
-    wld_wps_clearPairingTimer(&pAP->wpsSessionInfo);
     pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, SWL_ARRAY_SIZE(strbuf), SET);
 
     SAH_TRACEZ_ERROR(ME, "WPS cancel %s", pAP->alias);
@@ -177,9 +181,11 @@ void wld_wps_pushButton_reply(uint64_t call_id, swl_usp_cmdStatus_ne cmdStatus) 
 
 void wld_wps_clearPairingTimer(wld_wpsSessionInfo_t* pCtx) {
     ASSERTS_NOT_NULL(pCtx, , ME, "NULL");
-    ASSERTS_NOT_NULL(pCtx->sessionTimer, , ME, "NULL");
-    amxp_timer_delete(&pCtx->sessionTimer);
-    pCtx->sessionTimer = NULL;
+    memset(pCtx->peerMac.bMac, 0, SWL_MAC_BIN_LEN);
+    if(pCtx->sessionTimer != NULL) {
+        amxp_timer_delete(&pCtx->sessionTimer);
+        pCtx->sessionTimer = NULL;
+    }
 }
 
 static void s_pairingTimeoutHandler(amxp_timer_t* timer _UNUSED, void* userdata) {
@@ -199,15 +205,16 @@ void s_startPairingTimer(wld_wpsSessionInfo_t* pCtx) {
     }
     ASSERT_NOT_NULL(pCtx->sessionTimer, , ME, "NULL");
     amxp_timer_start(pCtx->sessionTimer, WPS_SESSION_TIMEOUT * 1000);
+    memset(pCtx->peerMac.bMac, 0, SWL_MAC_BIN_LEN);
 }
 
-void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason, const char* macAddress, T_WPSCredentials* credentials) {
+static void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason, const char* macAddress, T_WPSCredentials* credentials) {
     amxc_var_t notifMap;
     amxc_var_init(&notifMap);
     amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
 
     amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_REASON, reason);
-    if(macAddress) {
+    if(swl_mac_charIsValidStaMac((swl_macChar_t*) macAddress)) {
         amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_MACADDRESS, macAddress);
     }
     if(credentials) {
@@ -224,9 +231,11 @@ void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason, const
 void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const char* reason, const char* macAddress, T_WPSCredentials* credentials) {
     amxd_object_t* wps = amxd_object_get(object, "WPS");
     ASSERT_NOT_NULL(wps, , ME, "NULL");
+    wld_wpsSessionInfo_t* pCtx = wps->priv;
+    ASSERT_NOT_NULL(pCtx, , ME, "NULL");
     char* name = WPS_PAIRING_NO_MESSAGE;
     bool inProgress = false;
-    bool prevInProgress = amxd_object_get_bool(wps, "PairingInProgress", NULL);
+    bool prevInProgress = pCtx->WPS_PairingInProgress;
 
     switch(type) {
     case (NOTIFY_PAIRING_READY):
@@ -243,7 +252,6 @@ void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const
         break;
     }
 
-    wld_wpsSessionInfo_t* pCtx = wps->priv;
     const char* intfName = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
     if(!inProgress) {
         wld_wps_clearPairingTimer(pCtx);
@@ -255,7 +263,8 @@ void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const
     s_sendNotif(wps, name, reason, macAddress, credentials);
 
     if(prevInProgress != inProgress) {
-        amxd_object_set_bool(wps, "PairingInProgress", inProgress);
+        pCtx->WPS_PairingInProgress = inProgress;
+        swl_typeUInt8_commitObjectParam(wps, "PairingInProgress", inProgress);
     }
 }
 
@@ -639,7 +648,7 @@ static amxd_status_t s_initiateWPS(T_AccessPoint* pAP, amxc_var_t* retval, swl_r
     pAP->WPS_PBC_Delay.intf.vap = NULL;
 
     /* Cancel the ongoing wps session if RestartOnRequest is true */
-    if((pAP->wpsRestartOnRequest) && (pAP->WPS_PairingInProgress)) {
+    if((pAP->wpsRestartOnRequest) && (pAP->wpsSessionInfo.WPS_PairingInProgress)) {
         char strbuf[] = "STOP";
         pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, sizeof(strbuf), SET);
         SAH_TRACEZ_WARNING(ME, "%s: WPS cancel", pAP->alias);

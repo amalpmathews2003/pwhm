@@ -2280,8 +2280,6 @@ bool wld_vap_assoc_update_cuid(T_AccessPoint* pAP, swl_macBin_t* mac, char* cuid
 
 void wld_ap_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* reason, const char* macAddress) {
     wld_wps_sendPairingNotification(pAP->pBus, type, reason, macAddress, NULL);
-    amxd_object_t* wps = amxd_object_get(pAP->pBus, "WPS");
-    pAP->WPS_PairingInProgress = amxd_object_get_bool(wps, "PairingInProgress", NULL);
 }
 
 T_AccessPoint* wld_ap_fromIt(amxc_llist_it_t* it) {

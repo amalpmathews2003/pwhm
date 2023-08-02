@@ -660,6 +660,18 @@ static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBs
     }
 }
 
+static void s_stationAssociatedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED) {
+    T_EndPoint* pEP = (T_EndPoint*) pRef;
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: station associated to "MAC_PRINT_FMT, pEP->Name, MAC_PRINT_ARG(bBssidMac->bMac));
+    //save remote bssid to allow fully filling wps_done notif (with mac address)
+    if(pEP->wpsSessionInfo.WPS_PairingInProgress) {
+        memcpy(&pEP->wpsSessionInfo.peerMac, bBssidMac, sizeof(swl_macBin_t));
+    }
+}
+
 static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED) {
     T_EndPoint* pEP = (T_EndPoint*) pRef;
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
@@ -754,6 +766,7 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     wld_wpaCtrl_evtHandlers_cb wpaCtrlEpEvtHandlers;
     memset(&wpaCtrlEpEvtHandlers, 0, sizeof(wpaCtrlEpEvtHandlers));
     //Set here the wpa_ctrl EP event handlers
+    wpaCtrlEpEvtHandlers.fStationAssociatedCb = s_stationAssociatedEvt;
     wpaCtrlEpEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
     wpaCtrlEpEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
     wpaCtrlEpEvtHandlers.fStationScanFailedCb = s_stationScanFailedEvt;

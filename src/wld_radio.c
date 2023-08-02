@@ -2263,7 +2263,7 @@ T_DEBUG_OBJ_STR VerifyAccessPoint[] = {
     {TPH_BOOL, "WPS.Enable", TPH_INT32, offsetof(T_AccessPoint, WPS_Enable)},
     {TPH_STR, "WPS.ConfigMethodsEnabled", TPH_INT32, offsetof(T_AccessPoint, WPS_ConfigMethodsEnabled)},
     {TPH_BOOL, "WPS.Configured", TPH_INT32, offsetof(T_AccessPoint, WPS_Configured)},
-    {TPH_BOOL, "WPS.PairingInProgress", TPH_BOOL, offsetof(T_AccessPoint, WPS_PairingInProgress)},
+    {TPH_BOOL, "WPS.PairingInProgress", TPH_BOOL, offsetof(T_AccessPoint, wpsSessionInfo) + offsetof(wld_wpsSessionInfo_t, WPS_PairingInProgress)},
     {TPH_BOOL, "Enable", TPH_INT32, offsetof(T_AccessPoint, enable)},
     {TPH_BOOL, "Status", TPH_INT32, offsetof(T_AccessPoint, status)},
     {TPH_INT32, "dbgAPEnable", TPH_INT32, offsetof(T_AccessPoint, dbgEnable)},

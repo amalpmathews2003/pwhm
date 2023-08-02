@@ -476,6 +476,20 @@ static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fMgtFrameReceivedCb, mgmtFrame, binLen, data);
 }
 
+static void s_stationAssociated(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
+    //endpoint case: msg format: <3>Associated with 96:83:c4:14:95:11
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    swl_macBin_t bBssidMac = SWL_MAC_BIN_NEW();
+    const char* msgPfx = "with ";
+    if(swl_str_startsWith(params, msgPfx)) {
+        char bssid[SWL_MAC_CHAR_LEN] = {0};
+        swl_str_copy(bssid, SWL_MAC_CHAR_LEN, &params[strlen(msgPfx)]);
+        SWL_MAC_CHAR_TO_BIN(&bBssidMac, bssid);
+    }
+    ASSERT_FALSE(swl_mac_binIsNull(&bBssidMac), , ME, "%s: No remote bssid", pInterface->name)
+    CALL_INTF(pInterface, fStationAssociatedCb, &bBssidMac, 0);
+}
+
 static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: <3>CTRL-EVENT-DISCONNECTED bssid=xx:xx:xx:xx:xx:xx reason=3 locally_generated=1
     char bssid[SWL_MAC_CHAR_LEN] = {0};
@@ -563,6 +577,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"DFS-RADAR-DETECTED", &s_radDfsRadarDetectedEvt},
               {"DFS-NOP-FINISHED", &s_radDfsNopFinishedEvt},
               {"DFS-NEW-CHANNEL", &s_radDfsNewChannelEvt},
+              {"Associated", &s_stationAssociated},
               {"CTRL-EVENT-DISCONNECTED", &s_stationDisconnected},
               {"CTRL-EVENT-CONNECTED", &s_stationConnected},
               {"CTRL-EVENT-SCAN-FAILED", &s_stationScanFailed},

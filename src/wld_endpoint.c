@@ -1061,9 +1061,7 @@ void wld_endpoint_sync_connection(T_EndPoint* pEP, bool connected, wld_epError_e
 
 
 void wld_endpoint_sendPairingNotification(T_EndPoint* pEP, uint32_t type, const char* reason, T_WPSCredentials* credentials) {
-    wld_wps_sendPairingNotification(pEP->pBus, type, reason, NULL, credentials);
-    amxd_object_t* wps = amxd_object_get(pEP->pBus, "WPS");
-    pEP->WPS_PairingInProgress = amxd_object_get_bool(wps, "PairingInProgress", NULL);
+    wld_wps_sendPairingNotification(pEP->pBus, type, reason, swl_typeMacBin_toBuf32Ref(&pEP->wpsSessionInfo.peerMac).buf, credentials);
 }
 
 /**

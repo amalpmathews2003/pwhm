@@ -1097,6 +1097,8 @@ typedef struct S_WPS_pushButton_Delay {
 typedef struct {
     amxp_timer_t* sessionTimer; /* wps session timer       */
     amxd_object_t* intfObj;     /* VAP/EP obj */
+    bool WPS_PairingInProgress; /* bool representing whether pairing is in progress */
+    swl_macBin_t peerMac;       /* remote device MAC (Bssid for WPS enrollee (EP), Sta Mac for WPS registrar (AP)) */
 } wld_wpsSessionInfo_t;
 
 typedef enum {
@@ -1715,7 +1717,6 @@ struct S_ACCESSPOINT {
     wld_wps_cfgMethod_m WPS_ConfigMethodsSupported; /* bit mask of supported wps config methods */
     wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;   /* bit mask of enabled wps config methods */
     int WPS_Configured;                             /* Not in ODL but required */
-    bool WPS_PairingInProgress;                     /* bool representing whether pairing is in progress */
     char WPS_ClientPIN[16];                         /* Client PIN used for this VAP */
     struct S_WPS_pushButton_Delay WPS_PBC_Delay;    /* PushButton delay, commit running */
     wld_wpsSessionInfo_t wpsSessionInfo;            /* WPS session context (with safety timer, to close session beyond WPS walk time) */
@@ -1843,7 +1844,6 @@ struct S_EndPoint {
     int WPS_Configured;                             /* Not in ODL but required */
     wld_wps_cfgMethod_m WPS_ConfigMethodsSupported; /* bit mask of supported wps config methods */
     wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;   /* bit mask of enabled wps config methods */
-    bool WPS_PairingInProgress;                     /* bool representing whether pairing is in progress */
     char WPS_ClientPIN[16];                         /* Client PIN used for this VAP */
     T_WPS_pushButton_Delay WPS_PBC_Delay;           /* To delay the push button when state machine not idle */
     wld_wpsSessionInfo_t wpsSessionInfo;            /* WPS session context (with safety timer, to close session beyond WPS walk time) */
