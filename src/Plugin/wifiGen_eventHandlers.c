@@ -680,10 +680,7 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
     SAH_TRACEZ_INFO(ME, "%s: station connected to "MAC_PRINT_FMT, pEP->Name, MAC_PRINT_ARG(bBssidMac->bMac));
 
     T_Radio* pRad = pEP->pRadio;
-    // enable the hapd previously disabled
-    if(wifiGen_hapd_isRunning(pRad)) {
-        wld_rad_hostapd_enable(pRad);
-    }
+    ASSERT_NOT_NULL(pRad, , ME, "%s: no radio mapped", pEP->Name);
     wld_endpoint_sync_connection(pEP, true, 0);
 
     // update radio datamodel
@@ -696,6 +693,7 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
     // set hostapd channel
     if(wifiGen_hapd_isRunning(pRad)) {
         setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
+        setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
         wld_rad_doCommitIfUnblocked(pRad);
     }
 }

@@ -372,23 +372,24 @@ void wld_endpoint_setCurrentProfile(amxd_object_t* endpointObject, T_EndPointPro
     ASSERT_NOT_NULL(EndPoint, , ME, "NULL");
 
     char* profileRefStr = amxd_object_get_cstring_t(endpointObject, "ProfileReference", NULL);
-    if(profileRefStr == NULL) {
+    amxd_object_t* profileRefObj = swla_object_getReferenceObject(endpointObject, profileRefStr);
+    if(profileRefObj == NULL) {
         SAH_TRACEZ_INFO(ME, "Profile Reference is not yet set - not setting currentProfile");
+        free(profileRefStr);
         return;
     }
-    char* profileRef = amxd_object_get_path(Profile->pBus, AMXD_OBJECT_NAMED);
-    const char* profileName = amxd_object_get_name(Profile->pBus, 0);
+    const char* profileName = amxd_object_get_name(Profile->pBus, AMXD_OBJECT_NAMED);
+    const char* profileRefName = amxd_object_get_name(profileRefObj, AMXD_OBJECT_NAMED);
 
-    if(swl_str_matches(profileRefStr, profileRef) || swl_str_matches(profileRefStr, profileName)) {
-        SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] : setting as currentProfile",
-                          profileRef);
+    if(profileRefObj == Profile->pBus) {
+        SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] matched : setting as currentProfile",
+                          profileName);
         EndPoint->currentProfile = Profile;
     } else {
         SAH_TRACEZ_NOTICE(ME, "Profile Instance name [%s] does not match the profileRefStr [%s] - not setting currentProfile",
-                          profileRef, profileRefStr);
+                          profileName, profileRefName);
     }
 
-    free(profileRef);
     free(profileRefStr);
 }
 

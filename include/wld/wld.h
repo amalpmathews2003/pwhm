@@ -1869,6 +1869,7 @@ struct S_EndPoint {
     wld_nl80211_listener_t* nl80211Listener;  /* nl80211 events listener */
     wld_wpaCtrlInterface_t* wpaCtrlInterface; /* wpaCtrlInterface to wpa_supplicant interface */
     wld_secDmn_t* wpaSupp;                    /* wpa_supplicant daemon context. */
+    uint64_t wDevId;                          /* nl80211 wireless device id */
 };
 
 typedef struct {

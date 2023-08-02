@@ -152,6 +152,18 @@ swl_rc_ne wld_rad_nl80211_set4Mac(T_Radio* pRadio, bool use4Mac);
 swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP);
 
 /*
+ * @brief create/set EP interface on top of radio device
+ * EP.alias (expected net dev name) must be provided as input.
+ *
+ * @param pRadio pointer to radio context
+ * @param pEP pointer to endpoint context
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_addEpInterface(T_Radio* pRadio, T_EndPoint* pEP);
+
+/*
  * @brief get info of radio device
  * This includes:
  * - supported radio standards, freq Bands (+chanList), channel widths

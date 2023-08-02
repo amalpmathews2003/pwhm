@@ -510,7 +510,7 @@ static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
 
 static bool s_doConnectedEp(T_EndPoint* pEP, T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: connected endpoint", pEP->Name);
-    if(wifiGen_hapd_isRunning(pRad)) {
+    if((pEP->connectionStatus == EPCS_CONNECTED) && wifiGen_hapd_isRunning(pRad)) {
         // update hostapd channel
         wld_secDmn_action_rc_ne rc = wld_rad_hostapd_setChannel(pRad);
         s_schedNextAction(rc, NULL, pRad);

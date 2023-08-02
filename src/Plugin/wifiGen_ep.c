@@ -304,7 +304,7 @@ swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
     stats->assocCaps.linkBandwidth = swl_chanspec_intToBw(
         SWL_MAX(swl_chanspec_bwToInt(stationInfo.txRate.mcsInfo.bandwidth),
                 swl_chanspec_bwToInt(stationInfo.rxRate.mcsInfo.bandwidth)));
-    if(stationInfo.flags.authorized == SWL_TRL_TRUE) {
+    if(pEP->currentProfile && (stationInfo.flags.authorized == SWL_TRL_TRUE)) {
         stats->assocCaps.currentSecurity = pEP->currentProfile->secModeEnabled;
     }
 

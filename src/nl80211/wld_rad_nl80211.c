@@ -140,6 +140,34 @@ swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP) {
     return rc;
 }
 
+swl_rc_ne wld_rad_nl80211_addEpInterface(T_Radio* pRadio, T_EndPoint* pEP) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+    ASSERT_NOT_NULL(pEP, rc, ME, "NULL");
+    ASSERT_NOT_EQUALS(pEP->alias[0], 0, rc, ME, "Empty alias");
+
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    if(pEP->index > 0) {
+        rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pEP->index, &ifaceInfo);
+        if((rc < SWL_RC_OK) || (!swl_str_matches(pEP->alias, ifaceInfo.name))) {
+            SAH_TRACEZ_ERROR(ME, "unmatched ep(%s) ifIndex(%d)", pEP->alias, pEP->index);
+            return SWL_RC_ERROR;
+        }
+        return SWL_RC_OK;
+    }
+    rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRadio->index, &ifaceInfo);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get radio(%s) main iface info", pRadio->Name);
+    if(swl_str_matches(ifaceInfo.name, pEP->alias)) {
+        rc = wld_rad_nl80211_setSta(pRadio);
+    } else {
+        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pEP->Name, NULL, false, true, &ifaceInfo);
+    }
+    ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add EP(%s) on radio(%s)", pEP->alias, pRadio->Name);
+    pEP->index = ifaceInfo.ifIndex;
+    pEP->wDevId = ifaceInfo.wDevId;
+    return rc;
+}
+
 swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t* pWiphyInfo) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_nl80211_getWiphyInfo(wld_nl80211_getSharedState(), pRadio->index, pWiphyInfo);
