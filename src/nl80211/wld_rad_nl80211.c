@@ -310,6 +310,31 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
     return rc;
 }
 
+static void s_setScanDuration(T_Radio* pRadio, wld_nl80211_scanParams_t* params) {
+    ASSERTS_NOT_NULL(params, , ME, "NULL");
+    params->measDuration = 0;
+    params->measDurationMandatory = false;
+    ASSERTS_NOT_NULL(pRadio, , ME, "NULL");
+    wld_scan_config_t* pCfg = &pRadio->scanState.cfg;
+    bool suppScanDwell = pRadio->pFA->mfn_misc_has_support(pRadio, NULL, "SCAN_DWELL", 0);
+    ASSERTI_TRUE(suppScanDwell, , ME, "%s: nl80211 driver does not support setting scan dwell", pRadio->Name);
+
+    //consider passive scan for freqBand 6GHz
+    if((pRadio->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) && (swl_unLiList_size(&params->ssids) > 0)) {
+        if((pCfg->activeChannelTime >= SCAN_ACTIVE_DWELL_MIN) && (pCfg->activeChannelTime <= SCAN_ACTIVE_DWELL_MAX)) {
+            params->measDuration = pCfg->activeChannelTime;
+            params->measDurationMandatory = true;
+        } else if(pCfg->activeChannelTime == -1) {
+            params->measDuration = SCAN_ACTIVE_DWELL_DEFAULT;
+        }
+    } else if((pCfg->passiveChannelTime >= SCAN_PASSIVE_DWELL_MIN) && (pCfg->passiveChannelTime <= SCAN_PASSIVE_DWELL_MAX)) {
+        params->measDuration = pCfg->passiveChannelTime;
+        params->measDurationMandatory = true;
+    } else if(pCfg->passiveChannelTime == -1) {
+        params->measDuration = SCAN_PASSIVE_DWELL_DEFAULT;
+    }
+}
+
 swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags) {
     T_ScanArgs* args = &pRadio->scanState.cfg.scanArguments;
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
@@ -348,6 +373,8 @@ swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t*
     if(pFlags != NULL) {
         memcpy(&params.flags, pFlags, sizeof(wld_nl80211_scanFlags_t));
     }
+    s_setScanDuration(pRadio, &params);
+
     /*
      * start_scan command has to be sent to enabled interface (UP)
      * (even when secondary VAP, while primary is disabled)
@@ -404,8 +431,13 @@ static void s_updateNeighBssMeasNoise(T_Radio* pRadio, T_ScanResults* results) {
             }
             amxc_llist_for_each(it, &results->ssids) {
                 T_ScanResult_SSID* pNeighBss = amxc_container_of(it, T_ScanResult_SSID, it);
-                if(pNeighBss->channel == (int32_t) chanSpec.channel) {
-                    pNeighBss->noise = pChanSurveyInfoList[i].noiseDbm;
+                if(pNeighBss->channel != (int32_t) chanSpec.channel) {
+                    continue;
+                }
+                pNeighBss->noise = pChanSurveyInfoList[i].noiseDbm;
+                pNeighBss->snr = pNeighBss->rssi - pNeighBss->noise;
+                if(pNeighBss->snr < 0) {
+                    pNeighBss->snr = 0;
                 }
             }
         }

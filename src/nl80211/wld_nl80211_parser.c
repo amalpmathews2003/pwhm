@@ -641,6 +641,7 @@ static swl_rc_ne s_parseSuppFeatures(struct nlattr* tb[], wld_nl80211_wiphyInfo_
         if(SWL_BIT_IS_SET(pWiphy->freqBandsMask, SWL_FREQ_BAND_5GHZ)) {
             pWiphy->suppFeatures.dfsOffload = s_extFeatureIsSet(extFeat, extFeatLen, NL80211_EXT_FEATURE_DFS_OFFLOAD);
         }
+        pWiphy->suppFeatures.scanDwell = s_extFeatureIsSet(extFeat, extFeatLen, NL80211_EXT_FEATURE_SET_SCAN_DWELL);
     }
     return SWL_RC_OK;
 }

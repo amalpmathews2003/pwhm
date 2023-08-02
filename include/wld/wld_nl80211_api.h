@@ -96,6 +96,22 @@ const T_CWLD_FUNC_TABLE* wld_nl80211_getVendorTable();
     }
 
 /*
+ * @brief convert time unit into mseconds: 100 TU (102.4ms).
+ * Ref: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/nl80211.h#n648
+ */
+static inline uint64_t wld_nl80211_tu2ms(uint64_t tu) {
+    return ((tu * 1024) / 1000);
+}
+
+/*
+ * @brief convert time unit into mseconds: 100 TU (102.4ms).
+ * Ref: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/nl80211.h#n648
+ */
+static inline uint64_t wld_nl80211_ms2tu(uint64_t ms) {
+    return ((ms * 1000) / 1024);
+}
+
+/*
  * @brief return registered FSM manager, defining action sequences and state transitions
  * of wld implementation for nl80211.
  * The FSM manager defines the way the scheduled action bitmaps are applied,

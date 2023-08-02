@@ -596,6 +596,7 @@ static uint32_t s_getScanFlags(wld_nl80211_scanFlags_t* pFlags) {
     }
     return flags;
 }
+
 swl_rc_ne wld_nl80211_startScan(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_scanParams_t* params) {
     SAH_TRACEZ_IN(ME);
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
@@ -654,6 +655,15 @@ swl_rc_ne wld_nl80211_startScan(wld_nl80211_state_t* state, uint32_t ifIndex, wl
         if((params->iesLen > 0) && (params->ies != NULL)) {
             NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_IE, params->iesLen, params->ies));
             SAH_TRACEZ_INFO(ME, "Scan probe with extra IEs");
+        }
+
+        if(params->measDuration > 0) {
+            uint16_t scanDurationTu = wld_nl80211_ms2tu(params->measDuration);
+            NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_MEASUREMENT_DURATION, scanDurationTu));
+            // only mandatory when explicitly defined in user conf
+            if(params->measDurationMandatory) {
+                NL_ATTRS_ADD(&attribs, NL_ATTR(NL80211_ATTR_MEASUREMENT_DURATION_MANDATORY));
+            }
         }
     }
     rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_TRIGGER_SCAN, 0, ifIndex, &attribs);

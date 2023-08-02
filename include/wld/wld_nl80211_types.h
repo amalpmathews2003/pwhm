@@ -150,6 +150,7 @@ typedef struct {
     bool dfsOffload; // driver will do all DFS-related actions by itself.
     bool sae;        // driver supports Simultaneous Authentication of Equals (SAE) with user space SME
     bool sae_pwe;    // driver supports SAE PWE derivation in WPA3-Personal networks which are using SAE authentication.
+    bool scanDwell;  // driver supports setting scan dwell time
 } wld_nl80211_wiphySuppFeatures;
 
 #define WLD_NL80211_CIPHERS_MAX 14                  //(Cf: IEEE80211 Table 9-180—Cipher suite selectors: defined suite types 0..14)
@@ -219,6 +220,21 @@ typedef struct {
 
 } wld_nl80211_stationInfo_t;
 
+#define SCAN_PASSIVE_DWELL_MIN      20
+#define SCAN_PASSIVE_DWELL_MAX      1000
+/*
+ * Passive time should be about 100ms, to see all probe request in 1 beacon interval
+ * Less time risks not seeing all beacons.
+ */
+#define SCAN_PASSIVE_DWELL_DEFAULT  80
+
+#define SCAN_ACTIVE_DWELL_MIN       5
+#define SCAN_ACTIVE_DWELL_MAX       1000
+/**
+ * Time spent scanning on channels that are non-DFS or have DFS cleared.
+ */
+#define SCAN_ACTIVE_DWELL_DEFAULT   50
+
 /*
  * nl80211_scan_flags -  scan request control flags
  */
@@ -236,6 +252,8 @@ typedef struct {
     uint32_t iesLen;               //length of extra Information Elements to add in probeReq
     const uint8_t* ies;            //extra Information Elements to add in probeReq
     wld_nl80211_scanFlags_t flags; //nl80211 scan flags
+    uint16_t measDuration;         //duration(ms) spent on channel in scan mode
+    bool measDurationMandatory;    //flag to force considering the provided measurement duration for the scan
 } wld_nl80211_scanParams_t;
 
 struct wld_nl80211_channelSurveyInfo {

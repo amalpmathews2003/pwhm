@@ -222,6 +222,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             if(pWiphyInfo->suppCmds.WMMCapability) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "WME");
             }
+            if(pWiphyInfo->suppFeatures.scanDwell) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "SCAN_DWELL");
+            }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
         }
     }
