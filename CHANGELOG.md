@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.1.1 - 2023-08-02(17:55:52 +0000)
+
+### Other
+
+- - fill missing remote BSSID in Endpoint wps pairingDoneSuccess notif
+
 ## Release v4.1.0 - 2023-08-02(16:16:55 +0000)
 
 ### Other
