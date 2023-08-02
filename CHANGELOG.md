@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.0.3 - 2023-08-02(15:52:15 +0000)
+
+### Other
+
+- - recover updated netdev index of vaps when missing nl80211 events
+
 ## Release v4.0.2 - 2023-07-28(12:33:45 +0000)
 
 ### Other
