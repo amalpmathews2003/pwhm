@@ -61,10 +61,12 @@
 ****************************************************************************/
 /*
  * nl80211 compatibility header file
+ * It ensures building properly regardless the kernel version:
+ * Ref: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/nl80211.h
  */
 
-#ifndef INCLUDE_PRIV_NL80211_WLD_NL80211_COMPAT_H_
-#define INCLUDE_PRIV_NL80211_WLD_NL80211_COMPAT_H_
+#ifndef INCLUDE_WLD_WLD_NL80211_COMPAT_H_
+#define INCLUDE_WLD_WLD_NL80211_COMPAT_H_
 
 #include <linux/socket.h>
 #include <linux/netlink.h>
@@ -76,6 +78,10 @@
 #include <netlink/attr.h>
 
 /*
+ * This header file replaces with "define" all required nl80211 "enum", used in the code,
+ * that are potentially undefined in some old kernel version.
+ * Those already defined, are keeping same official values.
+ * In fact:
  * nl80211 cmd and attribute IDs are defined in enum , not macros
  * so DEFINE same enum values, if they are lower than enum MAX,
  * else consider them by default UNSPECIFIED
@@ -199,6 +205,7 @@
 #define NL80211_RATE_INFO_10_MHZ_WIDTH NL80211_RATE_ATTR(11)
 #define NL80211_RATE_INFO_5_MHZ_WIDTH NL80211_RATE_ATTR(12)
 #define NL80211_SURVEY_INFO_TIME_SCAN NL80211_SURVEY_INFO(9)
+#define NL80211_STA_INFO_RX_DROP_MISC NL80211_STA_INFO(28)
 
 
 //defined since kernel >= 4.3
@@ -252,4 +259,4 @@
 //defined since kernel >= 5.11
 #define NL80211_ATTR_SAE_PWE NL80211_ATTR(298)
 
-#endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_COMPAT_H_ */
+#endif /* INCLUDE_WLD_WLD_NL80211_COMPAT_H_ */

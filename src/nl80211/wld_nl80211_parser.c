@@ -64,21 +64,19 @@
  */
 
 #include "wld_nl80211_parser.h"
+#include "wld_nl80211_utils.h"
 #include "swl/swl_genericFrameParser.h"
 
 #define ME "nlParser"
 
-#define NLA_GET_VAL(target, api, param) \
-    if(param) { \
-        target = api(param); \
-    }
-
-#define NLA_GET_DATA(target, param, maxLen) \
-    if(param) { \
-        int len = SWL_MIN((int) (maxLen), nla_len(param)); \
-        memcpy(target, nla_data(param), len); \
-    }
-
+/*
+ * @brief fetch Wiphy ID from nl80211 attributes
+ *
+ * @param tb nl attributes array
+ *
+ * @return uint32 valid wiphy ID if found
+ *         WLD_NL80211_ID_UNDEF (-1) in case of error
+ */
 uint32_t wld_nl80211_getWiphy(struct nlattr* tb[]) {
     ASSERTS_NOT_NULL(tb, WLD_NL80211_ID_UNDEF, ME, "NULL");
     if(tb[NL80211_ATTR_WIPHY]) {
@@ -95,27 +93,20 @@ uint32_t wld_nl80211_getWiphy(struct nlattr* tb[]) {
     return WLD_NL80211_ID_UNDEF;
 }
 
+/*
+ * @brief fetch interface netdev index from nl80211 attributes
+ *
+ * @param tb nl attributes array
+ *
+ * @return uint32 valid netdev index if found
+ *         WLD_NL80211_ID_UNDEF (-1) in case of error
+ */
 uint32_t wld_nl80211_getIfIndex(struct nlattr* tb[]) {
     uint32_t ifIndex = WLD_NL80211_ID_UNDEF;
     ASSERTS_NOT_NULL(tb, ifIndex, ME, "NULL");
     NLA_GET_VAL(ifIndex, nla_get_u32, tb[NL80211_ATTR_IFINDEX]);
     return ifIndex;
 }
-
-SWL_TABLE(sChannelWidthMap,
-          ARR(uint32_t nl80211Bw; uint32_t bw; swl_bandwidth_e swlBw; ),
-          ARR(swl_type_uint32, swl_type_uint32, swl_type_uint32, ),
-          ARR({NL80211_CHAN_WIDTH_20, 20, SWL_BW_20MHZ},
-              {NL80211_CHAN_WIDTH_40, 40, SWL_BW_40MHZ},
-              {NL80211_CHAN_WIDTH_80, 80, SWL_BW_80MHZ},
-              {NL80211_CHAN_WIDTH_160, 160, SWL_BW_160MHZ},
-              {NL80211_CHAN_WIDTH_10, 10, SWL_BW_10MHZ},
-              {NL80211_CHAN_WIDTH_5, 5, SWL_BW_5MHZ},
-              {NL80211_CHAN_WIDTH_2, 2, SWL_BW_2MHZ},
-              //specific cases
-              {NL80211_CHAN_WIDTH_20_NOHT, 20, SWL_BW_20MHZ},
-              {NL80211_CHAN_WIDTH_80P80, 160, SWL_BW_AUTO},
-              ));
 
 swl_rc_ne wld_nl80211_parseChanSpec(struct nlattr* tb[], wld_nl80211_chanSpec_t* pChanSpec) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
@@ -125,13 +116,31 @@ swl_rc_ne wld_nl80211_parseChanSpec(struct nlattr* tb[], wld_nl80211_chanSpec_t*
     ASSERTS_NOT_NULL(tb[NL80211_ATTR_WIPHY_FREQ], rc, ME, "no freq");
     pChanSpec->ctrlFreq = nla_get_u32(tb[NL80211_ATTR_WIPHY_FREQ]);
     ASSERTS_NOT_NULL(tb[NL80211_ATTR_CHANNEL_WIDTH], rc, ME, "no chan width");
-    uint32_t bwId = nla_get_u32(tb[NL80211_ATTR_CHANNEL_WIDTH]);
-    uint32_t* pBwVal = (uint32_t*) swl_table_getMatchingValue(&sChannelWidthMap, 1, 0, &bwId);
-    if(pBwVal) {
-        pChanSpec->chanWidth = *pBwVal;
+    uint32_t bwVal = wld_nl80211_bwNlToVal(nla_get_u32(tb[NL80211_ATTR_CHANNEL_WIDTH]));
+    if(bwVal > 0) {
+        pChanSpec->chanWidth = bwVal;
     }
     NLA_GET_VAL(pChanSpec->centerFreq1, nla_get_u32, tb[NL80211_ATTR_CENTER_FREQ1]);
     NLA_GET_VAL(pChanSpec->centerFreq2, nla_get_u32, tb[NL80211_ATTR_CENTER_FREQ2]);
+    return SWL_RC_DONE;
+}
+
+swl_rc_ne wld_nl80211_formatChanSpec(wld_nl80211_chanSpec_t* pChanSpec, wld_nl80211_nlAttrList_t* pAttrList) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pAttrList, rc, ME, "NULL");
+    ASSERT_NOT_NULL(pChanSpec, rc, ME, "NULL");
+    ASSERT_TRUE(pChanSpec->ctrlFreq > 0, rc, ME, "invalid freq");
+    NL_ATTRS_ADD(pAttrList, NL_ATTR_VAL(NL80211_ATTR_WIPHY_FREQ, pChanSpec->ctrlFreq));
+    ASSERTI_TRUE(pChanSpec->chanWidth > 0, SWL_RC_OK, ME, "no chan width");
+    int32_t bwId = wld_nl80211_bwValToNl(pChanSpec->chanWidth);
+    ASSERT_NOT_EQUALS(bwId, -1, rc, ME, "unknown chan width (%d)", pChanSpec->chanWidth);
+    NL_ATTRS_ADD(pAttrList, NL_ATTR_DATA(NL80211_ATTR_CHANNEL_WIDTH, sizeof(bwId), &bwId));
+    if(pChanSpec->centerFreq1 > 0) {
+        NL_ATTRS_ADD(pAttrList, NL_ATTR_VAL(NL80211_ATTR_CENTER_FREQ1, pChanSpec->centerFreq1));
+    }
+    if(pChanSpec->centerFreq2 > 0) {
+        NL_ATTRS_ADD(pAttrList, NL_ATTR_VAL(NL80211_ATTR_CENTER_FREQ2, pChanSpec->centerFreq2));
+    }
     return SWL_RC_DONE;
 }
 
@@ -351,7 +360,7 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
      * tweak: only parse first Rx VHT-MCS Map
      * (same values are commonly applied for TX maps)
      */
-    uint16_t mcsMapRx;
+    uint16_t mcsMapRx = 0xffff;
     NLA_GET_DATA(&mcsMapRx, tbBand[NL80211_BAND_ATTR_VHT_MCS_SET], sizeof(mcsMapRx));
     pMcsStd->numberOfSpatialStream = 1;
     pMcsStd->mcsIndex = 0;
@@ -551,13 +560,7 @@ swl_rc_ne s_parseChans(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
     }
     return SWL_RC_OK;
 }
-SWL_TABLE(sBandsMap,
-          ARR(uint32_t nl80211Band; swl_freqBand_e swlBand; ),
-          ARR(swl_type_uint32, swl_type_uint32, ),
-          ARR({NL80211_BAND_2GHZ, SWL_FREQ_BAND_2_4GHZ},
-              {NL80211_BAND_5GHZ, SWL_FREQ_BAND_5GHZ},
-              {NL80211_BAND_6GHZ, SWL_FREQ_BAND_6GHZ},
-              ));
+
 swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
     ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -567,11 +570,10 @@ swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy
     struct nlattr* tbBand[NL80211_BAND_ATTR_MAX + 1];
     nla_for_each_nested(nlBand, tb[NL80211_ATTR_WIPHY_BANDS], remBand) {
         uint32_t nlFreqBand = nlBand->nla_type;
-        swl_freqBand_e* pSwlFreqBand = (swl_freqBand_e*) swl_table_getMatchingValue(&sBandsMap, 1, 0, &nlFreqBand);
-        if(!pSwlFreqBand) {
+        swl_freqBand_e freqBand = wld_nl80211_freqBandNlToSwl(nlFreqBand);
+        if(freqBand >= SWL_FREQ_BAND_MAX) {
             continue;
         }
-        swl_freqBand_e freqBand = *pSwlFreqBand;
         wld_nl80211_bandDef_t* pBand = &pWiphy->bands[freqBand];
         pBand->freqBand = freqBand;
         switch(freqBand) {

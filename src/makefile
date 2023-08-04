@@ -69,6 +69,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					nl80211/wld_nl80211_attr.o \
 					nl80211/wld_nl80211_api.o \
 					nl80211/wld_nl80211_events.o \
+					nl80211/wld_nl80211_utils.o \
 					nl80211/wld_nl80211_parser.o \
 					nl80211/wld_nl80211_debug.o \
 					nl80211/wld_rad_nl80211.o \

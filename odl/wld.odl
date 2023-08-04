@@ -134,6 +134,7 @@
                    "nlEvt" = 200,
                    "nlParser" = 200,
                    "nlRad" = 200,
+                   "nlUtils" = 200,
                    "rad" = 200,
                    "radCaps" = 200,
                    "radEvtH" = 200,

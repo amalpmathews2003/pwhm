@@ -78,6 +78,7 @@
 #include "wld_nl80211_core.h"
 #include "wld_nl80211_api.h"
 #include "wld_nl80211_events.h"
+#include "wld_nl80211_utils.h"
 #include "wld_radio.h"
 #include "swl/swl_common.h"
 #include "swl/swl_80211.h"
@@ -575,7 +576,6 @@ typedef struct {
 } cmdMockTestMultiElt_t;
 
 cmdMockTest_t mockGetIfaceInfo;
-extern swl_table_t sChannelWidthMap;
 static int s_nlSend_ifaceInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
     int fd = mockGetIfaceInfo.stateMock.pipeFds[1];
     wld_nl80211_ifaceInfo_t* pIfaceInfo = (wld_nl80211_ifaceInfo_t*) mockGetIfaceInfo.expectedData;
@@ -610,9 +610,9 @@ static int s_nlSend_ifaceInfo(struct nl_sock* sock _UNUSED, struct nl_msg* msg _
     }
     if(pIfaceInfo->chanSpec.ctrlFreq > 0) {
         NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY_FREQ, pIfaceInfo->chanSpec.ctrlFreq));
-        uint32_t* pBwVal = (uint32_t*) swl_table_getMatchingValue(&sChannelWidthMap, 0, 1, &pIfaceInfo->chanSpec.chanWidth);
-        if(pBwVal) {
-            NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_CHANNEL_WIDTH, sizeof(*pBwVal), pBwVal));
+        int32_t nlBw = wld_nl80211_bwValToNl(pIfaceInfo->chanSpec.chanWidth);
+        if(nlBw >= 0) {
+            NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_CHANNEL_WIDTH, nlBw));
         }
         if(pIfaceInfo->chanSpec.centerFreq1 > 0) {
             NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_CENTER_FREQ1, pIfaceInfo->chanSpec.centerFreq1));
