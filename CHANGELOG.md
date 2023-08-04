@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.3.1 - 2023-08-04(16:33:00 +0000)
+
+### Other
+
+- fix NaSta creation/deletion with dm rpcs
+
 ## Release v4.3.0 - 2023-08-04(15:42:26 +0000)
 
 ### Other
