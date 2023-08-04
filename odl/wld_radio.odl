@@ -2046,16 +2046,19 @@ define probelist_t{
 			/**
 			 * <b>createNonAssociatedDevice</b>
 			 * @param MAC (format xx:xx:xx:xx:xx:xx)
+			 * @param channel: optional channel on which seeking station (otherwise: current radio channel)
+			 * @param bandwidth: optional bandwidth in MHz used for the scan (otherwise: current radio channelWidth)
+			 * @param operatingClass: optional operating class used for the scan (otherwise: current radio operating class)
 			 * <p> Create a new entry in NonAssociatedDevice table </p>
 			*/
-			void createNonAssociatedDevice(%in string macaddress);
+			void createNonAssociatedDevice(%in %mandatory string macaddress, %in uint8 channel, %in uint8 bandwidth, %in uint8 operatingClass);
 
 			/**
 			 * <b>deleteNonAssociatedDevice</b>
 			 * @param MAC (format xx:xx:xx:xx:xx:xx)
 			 * <p> Delete an entry in NonAssociatedDevice table </p>
 			*/
-			void deleteNonAssociatedDevice(%in string macaddress);
+			void deleteNonAssociatedDevice(%in %mandatory string macaddress);
 
 			/**
 			 * <p> Clear all non associated devices</p>
@@ -2073,13 +2076,13 @@ define probelist_t{
 			 * Create a new entry in MonitorDevice table
 			 * @param MAC (format xx:xx:xx:xx:xx:xx)
 			*/
-			void createMonitorDevice(%in string macaddress);
+			void createMonitorDevice(%in %mandatory string macaddress);
 
 			/**
 			 * Delete an entry in MonitorDevice table
 			 * @param MAC (format xx:xx:xx:xx:xx:xx)
 			*/
-			void deleteMonitorDevice(%in string macaddress);
+			void deleteMonitorDevice(%in %mandatory string macaddress);
 
 			/**
 			 * Clear all non associated devices
@@ -2099,8 +2102,8 @@ define probelist_t{
 			*/
 			%read-only object NonAssociatedDevice[]{
 
-				on action del-inst call wld_rad_staMon_deleteNaSta_odf;
-				on action add-inst call wld_rad_staMon_addNaSta_ocf;
+				on action destroy call wld_rad_staMon_deleteNaSta_odf;
+				on action add-inst call wld_rad_staMon_addNaSta_oaf;
 
 				/** A non-volatile handle used to reference this instance. Alias
 				*  provides a mechanism for an ACS to label this instance for
@@ -2150,8 +2153,8 @@ define probelist_t{
 			 * @version 9.2
 			*/
 			%read-only object MonitorDevice[]{
-				on action del-inst call wld_rad_staMon_deleteNastaMonDev_odf;
-				on action add-inst call wld_rad_staMon_addNastaMonDev_ocf;
+				on action destroy call wld_rad_staMon_deleteNastaMonDev_odf;
+				on action add-inst call wld_rad_staMon_addNastaMonDev_oaf;
 
 				/** A non-volatile handle used to reference this instance. Alias
 				*  provides a mechanism for an ACS to label this instance for
