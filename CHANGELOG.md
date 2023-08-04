@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.3.0 - 2023-08-04(15:42:26 +0000)
+
+### Other
+
+- add nl80211 util apis and make nl compat public
+
 ## Release v4.2.0 - 2023-08-02(18:37:49 +0000)
 
 ### Other
