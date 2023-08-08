@@ -614,6 +614,22 @@ static void wld_rad_scan_SendDoneNotification(T_Radio* pR, bool success) {
     free(path);
 }
 
+static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERT_NOT_NULL(pOutVar, , ME, "NULL");
+
+    amxc_llist_t* results = &pR->scanState.spectrumResults;
+
+    amxc_var_set_type(pOutVar, AMXC_VAR_ID_LIST);
+    amxc_llist_for_each(it, results) {
+        amxc_var_t* varEntry = amxc_var_add(amxc_htable_t, pOutVar, NULL);
+        spectrumChannelInfoEntry_t* llEntry = amxc_llist_it_get_data(it, spectrumChannelInfoEntry_t, it);
+        amxc_var_add_key(uint32_t, varEntry, "channel", llEntry->channel);
+        amxc_var_add_key(uint32_t, varEntry, "availability", llEntry->availability);
+        amxc_var_add_key(uint32_t, varEntry, "ourUsage", llEntry->ourUsage);
+        amxc_var_add_key(int32_t, varEntry, "noiselevel", llEntry->noiselevel);
+    }
+}
 
 /**
  * Send scan results back to the caller and reset the scanState call_id.
@@ -626,11 +642,18 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
     amxc_var_t ret;
     amxc_var_init(&ret);
 
-    if(pR->scanState.scanType == SCAN_TYPE_SSID) {
+    switch(pR->scanState.scanType) {
+    case SCAN_TYPE_SSID:
         if(!wld_get_scan_results(pR, &ret, pR->scanState.min_rssi)) {
             *success = false;
         }
-    } else {
+        break;
+    case SCAN_TYPE_SPECTRUM:
+        if(*success) {
+            s_prepareSpectrumOutput(pR, &ret);
+        }
+        break;
+    default:
         SAH_TRACEZ_ERROR(ME, "%s scan type unknown %s", pR->Name, pR->scanState.scanReason);
         *success = false;
     }
@@ -690,6 +713,16 @@ swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad) {
     return retVal;
 }
 
+static void s_delSpectrumResultEntry(amxc_llist_it_t* it) {
+    spectrumChannelInfoEntry_t* llEntry = amxc_llist_it_get_data(it, spectrumChannelInfoEntry_t, it);
+    free(llEntry);
+}
+
+void wld_spectrum_cleanupResults(T_Radio* pR) {
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    amxc_llist_t* results = &pR->scanState.spectrumResults;
+    amxc_llist_clean(results, s_delSpectrumResultEntry);
+}
 
 amxd_status_t _getSpectrumInfo(amxd_object_t* object,
                                amxd_function_t* func _UNUSED,
@@ -697,21 +730,44 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
                                amxc_var_t* retval) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pR = object->priv;
-
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
     bool update = GET_BOOL(args, "update");
 
-    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
-    amxd_status_t retVal = pR->pFA->mfn_wrad_getspectruminfo(pR, update, call_id, retval);
-    if(retVal != amxd_status_deferred) {
-        s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum", SWL_RC_ERROR);
-        return retVal;
+    if(wld_scan_isRunning(pR)) {
+        SAH_TRACEZ_ERROR(ME, "%s: scan is already running", pR->Name);
+        return amxd_status_invalid_action;
     }
 
-    s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum", SWL_RC_OK);
+    /* clean last spectrum result before start new one */
+    wld_spectrum_cleanupResults(pR);
 
-    pR->scanState.call_id = call_id;
-    return amxd_status_deferred;
+    amxc_llist_t* results = &pR->scanState.spectrumResults;
+
+    swl_rc_ne retCode = pR->pFA->mfn_wrad_getspectruminfo(pR, update, results);
+    if(retCode == SWL_RC_NOT_IMPLEMENTED) {
+        SAH_TRACEZ_OUT(ME);
+        return amxd_status_function_not_implemented;
+    }
+
+    /* send notification about scan */
+    s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum", retCode);
+
+    /* asynchronous call */
+    if(retCode == SWL_RC_CONTINUE) {
+        amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
+        SAH_TRACEZ_OUT(ME);
+        return amxd_status_deferred;
+    }
+
+    /* convert the amxc_llist_t to variant list for RPC return value (if any) */
+    s_prepareSpectrumOutput(pR, retval);
+
+    /* Scan is done */
+    wld_scan_done(pR, !(retCode < SWL_RC_OK));
+
+    SAH_TRACEZ_OUT(ME);
+    return (retCode < SWL_RC_OK) ? amxd_status_unknown_error : amxd_status_ok;
 }
 
 /**

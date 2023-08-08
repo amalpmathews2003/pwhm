@@ -294,13 +294,12 @@ static int TRAP_mfn_wrad_beamforming(T_Radio* rad, beamforming_type_t type, int 
     return -1;
 }
 
-static amxd_status_t TRAP_mfn_wrad_getspectruminfo(T_Radio* rad, bool update, uint64_t call_id, amxc_var_t* retval) {
+static swl_rc_ne TRAP_mfn_wrad_getspectruminfo(T_Radio* rad, bool update, amxc_llist_t* llSpectrumChannelInfo) {
     _UNUSED_(update);
-    _UNUSED_(retval);
     _UNUSED_(rad);
-    _UNUSED_(call_id);
+    _UNUSED_(llSpectrumChannelInfo);
     SAH_TRACEZ_NOTICE(ME, "%p", rad);
-    return amxd_status_unknown_error;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static swl_rc_ne TRAP_mfn_wrad_airstats(T_Radio* rad, T_Airstats* stats) {

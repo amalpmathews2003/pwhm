@@ -150,6 +150,7 @@ swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason
 swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad);
 void wld_scan_cleanupScanResultSSID(T_ScanResult_SSID* ssid);
 void wld_scan_cleanupScanResults(T_ScanResults* res);
+void wld_spectrum_cleanupResults(T_Radio* pR);
 T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand);
 
 int wld_rad_init_cap(T_Radio* pR);

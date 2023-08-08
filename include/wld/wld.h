@@ -1197,6 +1197,7 @@ typedef struct {
     wld_scan_config_t cfg;
     swl_timeMono_t lastScanTime;
     T_ScanResults lastScanResults;
+    amxc_llist_t spectrumResults;   /*!< results of the getSpectrum */
 } T_ScanState;
 
 typedef struct {
@@ -1922,6 +1923,13 @@ typedef struct {
     uint16_t maxTxStream;
 } T_EndPointStats;
 
+typedef struct {
+    amxc_llist_it_t it;
+    uint8_t channel;
+    uint32_t availability;
+    uint32_t ourUsage;
+    int32_t noiselevel;
+} spectrumChannelInfoEntry_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -1940,7 +1948,7 @@ typedef int (APIENTRY* PFN_WRAD_DELVAPIF)(T_Radio* rad, char* vap);
 typedef int (APIENTRY* PFN_WRAD_ADDENDPOINTIF)(T_Radio* rad, char* endpoint, int bufsize);
 typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);
 
-typedef amxd_status_t (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, uint64_t call_id, amxc_var_t* retval);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, amxc_llist_t* llSpectrumChannelInfo);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, T_ScanResults* results);
 
 /* Our common function table that all VENDOR WIFI drivers must be able to handle... */

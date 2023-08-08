@@ -396,6 +396,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->macCfg.localGuestMacOffset = 256;
 
     amxc_llist_init(&pR->scanState.stats.extendedStat);
+    amxc_llist_init(&pR->scanState.spectrumResults);
 
     amxc_llist_append(&g_radios, &pR->it);
 
@@ -430,6 +431,7 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     free(pRad->scanState.cfg.fastScanReasons);
     pRad->scanState.cfg.fastScanReasons = NULL;
     wld_scan_cleanupScanResults(&pRad->scanState.lastScanResults);
+    wld_spectrum_cleanupResults(pRad);
 
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pRad->pFA, , ME, "NULL");
