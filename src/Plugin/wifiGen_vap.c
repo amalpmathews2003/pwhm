@@ -279,6 +279,23 @@ int wifiGen_vap_sec_sync(T_AccessPoint* pAP, int set) {
     return ret;
 }
 
+swl_rc_ne wifiGen_vap_setMboDisallowReason(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(pAP->mboEnable, SWL_RC_OK, ME, "%s: mbo disabled", pAP->alias);
+    char reasonIdStr[2] = {"0"};
+    if(pAP->mboEnable) {
+        reasonIdStr[0] = '0' + pAP->mboDenyReason;
+    }
+    if(!wld_ap_hostapd_setParamValue(pAP, "mbo_assoc_disallow", reasonIdStr, "mbo_assoc_disallow")) {
+        SAH_TRACEZ_NOTICE(ME, "%s: can not apply mbo_assoc_disallow (%s) to hostapd: seems not supported",
+                          pAP->alias, reasonIdStr);
+        return SWL_RC_ERROR;
+    }
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
+    wld_autoCommitMgr_notifyVapEdit(pAP);
+    return SWL_RC_OK;
+}
+
 int wifiGen_vap_multiap_update_type(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
@@ -480,7 +497,12 @@ static swl_rc_ne s_reloadApNeighbors(T_AccessPoint* pAP) {
 
 swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    swl_rc_ne rc;
-    rc = s_reloadApNeighbors(pAP);
-    return rc;
+
+    if(!s_reloadApNeighbors(pAP)) {
+        SAH_TRACEZ_NOTICE(ME, "failed reloading AP Neighbors");
+    }
+    if(!wifiGen_vap_setMboDisallowReason(pAP)) {
+        SAH_TRACEZ_NOTICE(ME, "failed setting mbo_assoc_disallow reason");
+    }
+    return SWL_RC_OK;
 }

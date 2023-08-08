@@ -1300,11 +1300,35 @@ static void s_setMBOEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_p
     bool newEnable = amxc_var_dyncast(bool, newValue);
     SAH_TRACEZ_INFO(ME, "%s: MBOEnable %d", pAP->alias, newEnable);
 
-    pAP->mboEnable = newEnable;
-    wld_ap_doSync(pAP);
+    if(newEnable != pAP->mboEnable) {
+        pAP->mboEnable = newEnable;
+        wld_ap_doSync(pAP);
+    }
 
     SAH_TRACEZ_OUT(ME);
 }
+
+static void s_setMBOAssocDisallowReason_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    const char* mboDenyReasonStr = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(mboDenyReasonStr, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: set MBO deny reason %s", pAP->alias, mboDenyReasonStr);
+    wld_mbo_denyReason_e mboDenyReason =
+        swl_conv_charToEnum(mboDenyReasonStr, swl_ieee802_mboAssocDisallowReason_str,
+                            SWL_IEEE802_MBO_ASSOC_DISALLOW_REASON_MAX,
+                            SWL_IEEE802_MBO_ASSOC_DISALLOW_REASON_OFF);
+
+    ASSERTI_NOT_EQUALS(pAP->mboDenyReason, mboDenyReason, , ME, "%s: same reason %s", pAP->alias, mboDenyReasonStr);
+    SAH_TRACEZ_INFO(ME, "%s: Updating mbo deny reason %u to %u", pAP->alias, pAP->mboDenyReason, mboDenyReason);
+    pAP->mboDenyReason = mboDenyReason;
+    pAP->pFA->mfn_wvap_setMboDenyReason(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 
 static void s_setMultiAPType_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -2650,6 +2674,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("IEEE80211kEnabled", s_set80211kEnabled_pwf),
                   SWLA_DM_PARAM_HDLR("WDSEnable", s_setWDSEnable_pwf),
                   SWLA_DM_PARAM_HDLR("MBOEnable", s_setMBOEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MBOAssocDisallowReason", s_setMBOAssocDisallowReason_pwf),
                   SWLA_DM_PARAM_HDLR("MultiAPType", s_setMultiAPType_pwf),
                   SWLA_DM_PARAM_HDLR("ApRole", s_setApRole_pwf),
                   SWLA_DM_PARAM_HDLR("MaxAssociatedDevices", s_setMaxStations_pwf),

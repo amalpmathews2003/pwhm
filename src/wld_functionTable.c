@@ -243,6 +243,7 @@ DEF_TRAP_int_int(T_AccessPoint, mfn_hspot_enable);
 DEF_TRAP_int(T_AccessPoint, mfn_hspot_config);
 DEF_TRAP_char_int(T_AccessPoint, mfn_wvap_clean_sta);
 DEF_TRAP(T_AccessPoint, mfn_wvap_multiap_update_type);
+DEF_TRAP(T_AccessPoint, mfn_wvap_setMboDenyReason);
 DEF_TRAP(T_AccessPoint, mfn_wvap_set_ap_role);
 DEF_TRAP_int(T_AccessPoint, mfn_wvap_enab_vendor_ie);
 DEF_TRAP(T_AccessPoint, mfn_wvap_set_discovery_method);
@@ -644,6 +645,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_kick_sta_reason);
     FTA_ASSIGN(mfn_wvap_clean_sta);
     FTA_ASSIGN(mfn_wvap_multiap_update_type);
+    FTA_ASSIGN(mfn_wvap_setMboDenyReason);
     FTA_ASSIGN(mfn_wvap_set_ap_role);
     FTA_ASSIGN(mfn_wvap_add_vendor_ie);
     FTA_ASSIGN(mfn_wvap_del_vendor_ie);

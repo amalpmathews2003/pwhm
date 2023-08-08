@@ -493,6 +493,8 @@ typedef enum {
     APEMI_MAX
 } wld_enc_modes_e;
 
+typedef swl_ieee802_mbo_assocDisallowReason_e wld_mbo_denyReason_e;
+
 extern const char* cstr_MultiAPType[];
 typedef enum {
     MULTIAP_FRONTHAUL_BSS,
@@ -1759,6 +1761,7 @@ struct S_ACCESSPOINT {
     wld_multiap_type_m multiAPType;      /* Bitmask of all MultiAP type applied to this accesspoint */
     wld_apRole_e apRole;                 /* Current AccessPoint role */
     bool mboEnable;                      /* Enable multi band operation*/
+    wld_mbo_denyReason_e mboDenyReason;  /* MBO Assoc Disallow Reason to add to the MBO IE*/
     bool enableVendorIEs;                /* Enable the broadcast of custom vendor IEs */
     amxc_llist_t vendorIEs;              /* List of vendor IE */
     wld_fcallState_t stationsStatsState; /* Station stats state */
@@ -2070,6 +2073,7 @@ typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, 
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef int (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);
+typedef int (APIENTRY* PNF_WVAP_SET_MBO_DENY_REASON)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_SET_AP_ROLE)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_ADD_VENDOR_IE)(T_AccessPoint* vap, wld_vendorIe_t* vendor_ie);
 typedef int (APIENTRY* PFN_WVAP_DEL_VENDOR_IE)(T_AccessPoint* vap, wld_vendorIe_t* vendor_ie);
@@ -2244,6 +2248,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
     PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */
     PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;   /**< Set MultiAP type */
+    PNF_WVAP_SET_MBO_DENY_REASON mfn_wvap_setMboDenyReason;      /**< Set MBO Assoc Disallow Reason*/
     PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                   /**< Set AccessPoint role */
     PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;               /**< Add vendor IE */
     PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;               /**< Del vendor IE */

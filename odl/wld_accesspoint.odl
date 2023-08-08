@@ -320,6 +320,18 @@ define rrm_t{
 		}
 
 		/**
+		 * Add MBO Assoc Disallow Reason in the MBO IE
+		 * Possible options are : "Off", "Unspecified", "MaxAssocSTA",
+		 * "AirInterfaceOverload", "AuthServOverload", "InsufficientRSSI"
+		 *
+		 */
+		string MBOAssocDisallowReason{
+			default "Off";
+			on action validate call check_enum ["Off", "Unspecified", "MaxAssocSTA",
+					"AirInterfaceOverload", "AuthServOverload", "InsufficientRSSI"];
+		}
+
+		/**
 		 * Comma-separated list of strings. List items indicate which IEEE 1905
 		 * Multi-AP type is used for this Access Point.
 		 * Supported options are : "Off", "FronthaulBSS", "BackhaulBSS".
@@ -675,7 +687,9 @@ define rrm_t{
 			 *     * Disabled
 			 *     * Optional
 			 *     * Required
+			 * MBO: PMF needs to be enabled whenever using WPA2 with MBO (set to Optional)
 			 */
+
 			string MFPConfig = "Disabled" {
 				on action validate call check_enum ["Disabled",
 						"Optional",

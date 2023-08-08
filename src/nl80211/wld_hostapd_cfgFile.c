@@ -511,7 +511,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         }
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
-        swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", pAP->mfpConfig);
+        swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", (pAP->mboEnable ? 1 : pAP->mfpConfig));
         break;
     case SWL_SECURITY_APMODE_WPA2_WPA3_P:
         swl_mapChar_add(vapConfigMap, "wpa", "2");
@@ -608,7 +608,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         if(pAP->radiusChargeableUserId) {
             swl_mapChar_add(vapConfigMap, "radius_request_cui", "1");
         }
-        swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", pAP->mfpConfig);
+        swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", (pAP->mboEnable ? 1 : pAP->mfpConfig));
         break;
     default:
         break;

@@ -134,6 +134,7 @@ bool wifiGen_init() {
     fta.mfn_wvap_kick_sta = wifiGen_vap_kick_sta;
     fta.mfn_wvap_kick_sta_reason = wifiGen_vap_kick_sta_reason;
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;
+    fta.mfn_wvap_setMboDenyReason = wifiGen_vap_setMboDisallowReason;
     fta.mfn_wvap_update_ap_stats = wifiGen_vap_updateApStats;
     fta.mfn_wvap_request_rrm_report = wifiGen_vap_requestRrmReport;
     fta.mfn_wvap_setEvtHandlers = wifiGen_setVapEvtHandlers;
