@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.4.0 - 2023-08-08(09:23:06 +0000)
+
+### Other
+
+- - Add getSpectrumInfo stats
+
 ## Release v4.3.1 - 2023-08-04(16:33:00 +0000)
 
 ### Other
