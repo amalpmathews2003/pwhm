@@ -1405,6 +1405,18 @@ typedef struct {
     char heSprSrgPartialBssid[HE_SPR_SRG_PARTIAL_BSSID_MAX_LEN];
 } wld_cfg11ax_t;
 
+typedef enum {
+    HE_SR_CONTROL_PSR_DISALLOWED,
+    HE_SR_CONTROL_NON_SRG_OBSS_PD_SR_DISALLOWED,
+    HE_SR_CONTROL_NON_SRG_OFFSET_PRESENT,
+    HE_SR_CONTROL_SRG_INFORMATION_PRESENT,
+    HE_SR_CONTROL_HESIGA_SPATIAL_REUSE_VALUE15_ALLOWED,
+    HE_SR_CONTROL_MAX
+
+} wld_he_sr_control_e;
+
+typedef uint32_t wld_he_sr_control_m;
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;

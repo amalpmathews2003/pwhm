@@ -100,6 +100,19 @@ static bool s_checkSGI(T_Radio* pRad, int guardInterval _UNUSED) {
     return ((pRad->guardInterval == SWL_SGI_AUTO) || (pRad->guardInterval == SWL_SGI_400));
 }
 
+/**
+ * @brief convert comma separated string to space separated
+ * convert "1,2,5,63" t0 "1 2 5 63"
+ * @param commaStr comma separated string
+ * @param spaceStr space separated string
+ * @param spaceStrLen length of the spaceStr
+ * @return void
+ */
+static void s_commaToSpaceSeparated(const char* commaStr, char* spaceStr, uint32_t spaceStrLen) {
+    swl_str_copy(spaceStr, spaceStrLen, NULL);
+    swl_str_replace(spaceStr, spaceStrLen, commaStr, ",", " ");
+}
+
 /*
  * Mapping of VHT Channel Width IDs from on hostapd.conf @ https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf
  * # 0 = 20 or 40 MHz operating Channel width
@@ -232,6 +245,52 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
                (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) ||
                 SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_HE_MU))) {
                 swl_mapCharFmt_addValInt32(radConfigMap, "he_mu_beamformer", 1);
+            }
+        }
+
+        /*
+         * Bss Color
+         * heBssColor=0 means hostapd is not configured and then it
+         * is up to the driver to select the correct color.
+         */
+        if(pRad->cfg11ax.heBssColor != 0) {
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_bss_color", pRad->cfg11ax.heBssColor);
+        }
+        swl_mapCharFmt_addValInt32(radConfigMap, "he_bss_color_partial", pRad->cfg11ax.heBssColorPartial);
+
+        /*
+         * Spatial Reuse Parameter Set
+         */
+        wld_he_sr_control_m heSprSrControl = (pRad->cfg11ax.hePSRDisallowed << HE_SR_CONTROL_PSR_DISALLOWED) | (0 << HE_SR_CONTROL_NON_SRG_OBSS_PD_SR_DISALLOWED) |
+        (pRad->cfg11ax.heNonSRGOffsetValid << HE_SR_CONTROL_NON_SRG_OFFSET_PRESENT) |
+        (pRad->cfg11ax.heSRGInformationValid << HE_SR_CONTROL_SRG_INFORMATION_PRESENT) |
+        (pRad->cfg11ax.heHESIGASpatialReuseValue15Allowed << HE_SR_CONTROL_HESIGA_SPATIAL_REUSE_VALUE15_ALLOWED);
+        swl_mapCharFmt_addValInt32(radConfigMap, "he_spr_sr_control", heSprSrControl);
+
+        if(pRad->cfg11ax.heNonSRGOffsetValid != 0) {
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_spr_non_srg_obss_pd_max_offset", pRad->cfg11ax.heSprNonSrgObssPdMaxOffset);
+        }
+
+        if(pRad->cfg11ax.heSRGInformationValid != 0) {
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_spr_srg_obss_pd_min_offset", pRad->cfg11ax.heSprSrgObssPdMinOffset);
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_spr_srg_obss_pd_max_offset", pRad->cfg11ax.heSprSrgObssPdMaxOffset);
+
+            /*
+             * SRGBSSColorBitmap and SRGPartialBSSIDBitmap have comma separated format in TR-181 data model.
+             * But these parameters are space separated in hostapd.conf:
+             * he_spr_srg_bss_colors=1 2 10 63
+             * he_spr_srg_partial_bssid=0 1 3 63
+             * So need to convert comma separated string to space separated.
+             */
+            if(pRad->cfg11ax.heSprSrgBssColors[0]) {
+                char srgBSSColorBitmap[swl_str_len(pRad->cfg11ax.heSprSrgBssColors) + 1];
+                s_commaToSpaceSeparated(pRad->cfg11ax.heSprSrgBssColors, srgBSSColorBitmap, sizeof(srgBSSColorBitmap));
+                swl_mapChar_add(radConfigMap, "he_spr_srg_bss_colors", srgBSSColorBitmap);
+            }
+            if(pRad->cfg11ax.heSprSrgPartialBssid[0]) {
+                char srgPartialBSSIDBitmap[swl_str_len(pRad->cfg11ax.heSprSrgPartialBssid) + 1];
+                s_commaToSpaceSeparated(pRad->cfg11ax.heSprSrgPartialBssid, srgPartialBSSIDBitmap, sizeof(srgPartialBSSIDBitmap));
+                swl_mapChar_add(radConfigMap, "he_spr_srg_partial_bssid", srgPartialBSSIDBitmap);
             }
         }
         /*
