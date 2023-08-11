@@ -4106,3 +4106,185 @@ void _wld_radio_setConf_ocf(const char* const sig_name,
     swla_dm_procObjEvtOfLocalDm(&sRadioDmHdlrs, sig_name, data, priv);
 }
 
+static void s_setBssColor_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+
+    uint8_t bssColor = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set Bss Color %d", pR->Name, bssColor);
+    pR->cfg11ax.heBssColor = bssColor;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setBssColorPartial_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t bssColorPartial = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set BSS color AID equation %d", pR->Name, bssColorPartial);
+    pR->cfg11ax.heBssColorPartial = bssColorPartial;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setHESIGASpatialReuseValue15Allowed_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t srValue15Allowed = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set HESIGA Spatial Reuse value 15 allowed %d", pR->Name, srValue15Allowed);
+    pR->cfg11ax.heHESIGASpatialReuseValue15Allowed = srValue15Allowed;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSRGInformationValid_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t srSRGInformationValid = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set SRG Information Valid value %d", pR->Name, srSRGInformationValid);
+    pR->cfg11ax.heSRGInformationValid = srSRGInformationValid;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setNonSRGOffsetValid_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t srNonSRGOffsetValid = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set Non SRG Offset Valid value %d", pR->Name, srNonSRGOffsetValid);
+    pR->cfg11ax.heNonSRGOffsetValid = srNonSRGOffsetValid;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setPSRDisallowed_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t srPSRDisallowed = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set PSR Disallowed value %d", pR->Name, srPSRDisallowed);
+    pR->cfg11ax.hePSRDisallowed = srPSRDisallowed;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setNonSRGOBSSPDMaxOffset_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t nonSrgObssPdMaxOffset = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set Non-SRG OBSS PD Max Offset value %d", pR->Name, nonSrgObssPdMaxOffset);
+    pR->cfg11ax.heSprNonSrgObssPdMaxOffset = nonSrgObssPdMaxOffset;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSRGOBSSPDMinOffset_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t srgObssPdMinOffset = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set SRG OBSS PD Min Offset value %d", pR->Name, srgObssPdMinOffset);
+    pR->cfg11ax.heSprSrgObssPdMinOffset = srgObssPdMinOffset;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSRGOBSSPDMaxOffset_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    uint8_t srgObssPdMaxOffset = amxc_var_dyncast(uint8_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set SRG OBSS PD Max Offset value %d", pR->Name, srgObssPdMaxOffset);
+    pR->cfg11ax.heSprSrgObssPdMaxOffset = srgObssPdMaxOffset;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSRGBSSColorBitmap_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    char* bssColorStr = amxc_var_dyncast(cstring_t, newValue);
+    ASSERT_NOT_NULL(bssColorStr, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: set BSS Colors Bitmap %s", pR->Name, bssColorStr);
+    if(!swl_str_matches(pR->cfg11ax.heSprSrgBssColors, bssColorStr)) {
+        swl_str_copy(pR->cfg11ax.heSprSrgBssColors, HE_SPR_SRG_BSS_COLORS_MAX_LEN, bssColorStr);
+        wld_rad_doSync(pR);
+    }
+    free(bssColorStr);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSRGPartialBSSIDBitmap_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "INVALID");
+
+    char* srgPartialBssid = amxc_var_dyncast(cstring_t, newValue);
+    ASSERT_NOT_NULL(srgPartialBssid, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: set SPR SRG Partial BSSID Bitmap %s", pR->Name, srgPartialBssid);
+    if(!swl_str_matches(pR->cfg11ax.heSprSrgPartialBssid, srgPartialBssid)) {
+        swl_str_copy(pR->cfg11ax.heSprSrgPartialBssid, HE_SPR_SRG_PARTIAL_BSSID_MAX_LEN, srgPartialBssid);
+        wld_rad_doSync(pR);
+    }
+    free(srgPartialBssid);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sRadio11axDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("BssColor", s_setBssColor_pwf),
+                  SWLA_DM_PARAM_HDLR("BssColorPartial", s_setBssColorPartial_pwf),
+                  SWLA_DM_PARAM_HDLR("HESIGASpatialReuseValue15Allowed", s_setHESIGASpatialReuseValue15Allowed_pwf),
+                  SWLA_DM_PARAM_HDLR("SRGInformationValid", s_setSRGInformationValid_pwf),
+                  SWLA_DM_PARAM_HDLR("NonSRGOffsetValid", s_setNonSRGOffsetValid_pwf),
+                  SWLA_DM_PARAM_HDLR("PSRDisallowed", s_setPSRDisallowed_pwf),
+                  SWLA_DM_PARAM_HDLR("NonSRGOBSSPDMaxOffset", s_setNonSRGOBSSPDMaxOffset_pwf),
+                  SWLA_DM_PARAM_HDLR("SRGOBSSPDMinOffset", s_setSRGOBSSPDMinOffset_pwf),
+                  SWLA_DM_PARAM_HDLR("SRGOBSSPDMaxOffset", s_setSRGOBSSPDMaxOffset_pwf),
+                  SWLA_DM_PARAM_HDLR("SRGBSSColorBitmap", s_setSRGBSSColorBitmap_pwf),
+                  SWLA_DM_PARAM_HDLR("SRGPartialBSSIDBitmap", s_setSRGPartialBSSIDBitmap_pwf),
+                  ));
+
+void _wld_rad_11ax_setConf_ocf(const char* const sig_name,
+                               const amxc_var_t* const data,
+                               void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sRadio11axDmHdlrs, sig_name, data, priv);
+}
+
