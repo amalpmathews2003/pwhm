@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.5.0 - 2023-08-11(12:33:17 +0000)
+
+### Other
+
+- : EasyMesh R2 4.2.1 - MBO Station Disallow support
+
 ## Release v4.4.0 - 2023-08-08(09:23:06 +0000)
 
 ### Other
