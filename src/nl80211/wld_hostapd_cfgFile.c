@@ -473,6 +473,10 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
 
     s_writeMfConfig(pAP, vapConfigMap);
 
+    if(pAP->cfg11u.qosMapSet[0]) {
+        swl_mapChar_add(vapConfigMap, "qos_map_set", pAP->cfg11u.qosMapSet);
+    }
+
     char* wpa_key_str = ((strlen(pAP->keyPassPhrase) + 1) == PSK_KEY_SIZE_LEN) ? "wpa_psk" : "wpa_passphrase";
     switch(pAP->secModeEnabled) {
     case SWL_SECURITY_APMODE_WEP64:
