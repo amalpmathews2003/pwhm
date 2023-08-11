@@ -1932,6 +1932,8 @@ typedef struct {
     uint32_t availability;
     uint32_t ourUsage;
     int32_t noiselevel;
+    uint32_t nrCoChannelAP;
+    swl_bandwidth_e bandwidth;
 } spectrumChannelInfoEntry_t;
 
 #ifdef __cplusplus

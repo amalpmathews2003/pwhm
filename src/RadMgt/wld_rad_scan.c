@@ -625,8 +625,8 @@ static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
         amxc_var_t* varEntry = amxc_var_add(amxc_htable_t, pOutVar, NULL);
         spectrumChannelInfoEntry_t* llEntry = amxc_llist_it_get_data(it, spectrumChannelInfoEntry_t, it);
         amxc_var_add_key(uint32_t, varEntry, "channel", llEntry->channel);
-        amxc_var_add_key(uint32_t, varEntry, "availability", llEntry->availability);
-        amxc_var_add_key(uint32_t, varEntry, "ourUsage", llEntry->ourUsage);
+        amxc_var_add_key(uint32_t, varEntry, "nrCoChannelAP", llEntry->nrCoChannelAP);
+        amxc_var_add_key(cstring_t, varEntry, "bandwidth", swl_bandwidth_str[llEntry->bandwidth]);
         amxc_var_add_key(int32_t, varEntry, "noiselevel", llEntry->noiselevel);
     }
 }
@@ -942,7 +942,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
     }
     s_updateScanStats(pR);
 
-    if(success && (pR->scanState.scanType == SCAN_TYPE_SSID)) {
+    if(success && ((pR->scanState.scanType == SCAN_TYPE_SSID) || (pR->scanState.scanType == SCAN_TYPE_SPECTRUM))) {
         wld_scan_update_obj_results(pR);
     }
 

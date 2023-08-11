@@ -766,3 +766,41 @@ swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, T_Airstats* pStats) {
     return wld_rad_nl80211_getAirstats(pRad, pStats);
 }
 
+
+swl_rc_ne wifiGen_rad_getSpectrumInfo(T_Radio* rad, bool update _UNUSED, amxc_llist_t* llSpectrumChannelInfo) {
+    ASSERT_NOT_NULL(rad, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    uint32_t nChanSurveyInfo = 0;
+    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList = NULL;
+    wld_rad_nl80211_getSurveyInfo(rad, &pChanSurveyInfoList, &nChanSurveyInfo);
+
+    amxd_object_t* obj_scan = amxd_object_get(rad->pBus, "ScanResults");
+    amxd_object_t* chanTemplate = amxd_object_get(obj_scan, "SurroundingChannels");
+    amxd_object_t* chanObj = NULL;
+    uint32_t nrCoChannel = 0;
+
+    for(uint32_t i = 0; i < nChanSurveyInfo; i++) {
+        swl_chanspec_t chanSpec;
+        swl_chanspec_channelFromMHz(&chanSpec, pChanSurveyInfoList[i].frequencyMHz);
+        spectrumChannelInfoEntry_t* pEntry = calloc(1, sizeof(spectrumChannelInfoEntry_t));
+        ASSERT_NOT_NULL(pEntry, false, ME, "NULL");
+
+        amxd_object_for_each(instance, it, chanTemplate) {
+            chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
+            if(amxd_object_get_uint16_t(chanObj, "Channel", NULL) == chanSpec.channel) {
+                amxd_object_t* apTemplate = amxd_object_get(chanObj, "Accesspoint");
+                nrCoChannel = amxd_object_get_instance_count(apTemplate);
+                break;
+            }
+        }
+
+        pEntry->channel = chanSpec.channel;
+        pEntry->nrCoChannelAP = nrCoChannel;
+        pEntry->bandwidth = rad->runningChannelBandwidth;
+        pEntry->noiselevel = pChanSurveyInfoList[i].noiseDbm;
+        amxc_llist_append(llSpectrumChannelInfo, &pEntry->it);
+
+    }
+
+    return SWL_RC_OK;
+}

@@ -113,6 +113,7 @@ bool wifiGen_init() {
     fta.mfn_wrad_stop_scan = wld_rad_nl80211_abortScan;
     fta.mfn_wrad_scan_results = wifiGen_rad_getScanResults;
     fta.mfn_wrad_airstats = wifiGen_rad_getAirStats;
+    fta.mfn_wrad_getspectruminfo = wifiGen_rad_getSpectrumInfo;
 
     //vap functions
     fta.mfn_wvap_create_hook = wifiGen_vap_createHook;
