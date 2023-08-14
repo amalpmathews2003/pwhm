@@ -783,10 +783,10 @@ swl_rc_ne wld_nl80211_getAllCounters(wld_nl80211_stateCounters_t* pCounters) {
  *
  * @return pointer to the built netlink message, null otherwise
  */
-static struct nl_msg* s_newMsg(uint32_t cmd, uint32_t flags) {
+static struct nl_msg* s_newMsg(uint32_t cmd, size_t msgSize, uint32_t flags) {
     ASSERT_TRUE((g_nl80211DriverIDs.family_id > 0), NULL, ME, "Invalid nl80211 familty id");
     SAH_TRACEZ_INFO(ME, "cmd = %d", cmd);
-    struct nl_msg* msg = nlmsg_alloc();
+    struct nl_msg* msg = (msgSize > 0) ? nlmsg_alloc_size(msgSize) : nlmsg_alloc();
     ASSERT_NOT_NULL(msg, NULL, ME, "NULL");
     genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, g_nl80211DriverIDs.family_id, 0, flags, cmd, 0);
     return msg;
@@ -925,21 +925,24 @@ swl_rc_ne wld_nl80211_addNlAttrs(struct nl_msg* msg, wld_nl80211_nlAttrList_t* c
         //add simple attributes (may have no data)
         uint32_t len = pAttr->data.raw.len;
         const void* data = pAttr->data.raw.ptr;
-        if(!len) {
+        if(len == 0) {
             data = NULL;
         } else if(data == NULL) {
             len = 0;
         }
         ASSERT_FALSE((nla_put(msg, pAttr->type, len, data) < 0),
-                     rc, ME, "Fail to add attrib(%d) (len:%d,data:%p)",
+                     SWL_RC_ERROR, ME, "Fail to add attrib(%d) (len:%d,data:%p)",
                      pAttr->type, len, data);
     }
     return SWL_RC_OK;
 }
 
-static struct nl_msg* s_createNlMsg(uint32_t cmd, uint32_t flags, uint32_t ifIndex) {
+static struct nl_msg* s_createNlMsg(uint32_t cmd, size_t attrSize, uint32_t flags, uint32_t ifIndex) {
     SAH_TRACEZ_INFO(ME, "create nlmsg cmd(%d)(%s) ifIndex(%d)", cmd, wld_nl80211_msgName(cmd), ifIndex);
-    struct nl_msg* msg = s_newMsg(cmd, flags);
+    /* Netlink Header + Generic Header + attrSize */
+    size_t msgSize = NLMSG_LENGTH(GENL_HDRLEN + NLMSG_ALIGN(attrSize));
+    msgSize += (ifIndex > 0) ? (NLA_HDRLEN + NLA_ALIGN(sizeof(uint32_t))) : 0;
+    struct nl_msg* msg = s_newMsg(cmd, msgSize, flags);
     ASSERT_NOT_NULL(msg, NULL, ME, "Fail to create nl msg");
     if(ifIndex > 0) {
         nla_put_u32(msg, NL80211_ATTR_IFINDEX, ifIndex);
@@ -947,12 +950,34 @@ static struct nl_msg* s_createNlMsg(uint32_t cmd, uint32_t flags, uint32_t ifInd
     return msg;
 }
 
+static size_t s_getNlMsgAttrSize(wld_nl80211_nlAttrList_t* const pAttrList) {
+    ASSERTS_NOT_NULL(pAttrList, 0, ME, "NULL");
+    size_t size = 0;
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, pAttrList) {
+        wld_nl80211_nlAttr_t* pAttr = swl_unLiList_data(&it, wld_nl80211_nlAttr_t*);
+        if(pAttr == NULL) {
+            continue;
+        }
+        size += NLA_HDRLEN;
+        size += pAttr->nested ? s_getNlMsgAttrSize(&pAttr->data.attribs) : NLA_ALIGN(pAttr->data.raw.len);
+    }
+    return NLA_ALIGN(size);
+}
+
 swl_rc_ne wld_nl80211_sendCmd(bool isSync, wld_nl80211_state_t* state, uint32_t cmd, uint32_t flags,
                               uint32_t ifIndex, wld_nl80211_nlAttrList_t* const pAttrList,
                               wld_nl80211_handler_f handler, void* priv, swl_rc_ne* pResult) {
-    swl_rc_ne rc;
-    struct nl_msg* msg = s_createNlMsg(cmd, flags, ifIndex);
-    wld_nl80211_addNlAttrs(msg, pAttrList);
+    swl_rc_ne rc = SWL_RC_ERROR;
+    size_t attrSize = s_getNlMsgAttrSize(pAttrList);
+    struct nl_msg* msg = s_createNlMsg(cmd, attrSize, flags, ifIndex);
+    ASSERT_NOT_NULL(msg, SWL_RC_ERROR, ME, "create nlmsg failed");
+    rc = wld_nl80211_addNlAttrs(msg, pAttrList);
+    if(rc < SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "error addind nlmsg attributes");
+        s_freeMsg(msg);
+        return rc;
+    }
     if(isSync) {
         rc = s_sendMsgSync(state, msg, handler, priv);
         if(pResult) {
