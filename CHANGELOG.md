@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.5.1 - 2023-08-21(13:53:41 +0000)
+
+### Other
+
+- - Predict netlink message before allocation.
+
 ## Release v4.5.0 - 2023-08-11(12:33:17 +0000)
 
 ### Other
