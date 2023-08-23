@@ -1410,35 +1410,72 @@ define rrm_t{
 			%volatile %read-only uint32 MUMimoTxPktsPercentage;
 
 			/**
-			 * list of HT modulation and coding scheme (MCS) supported by the associated device.
-			 * Format is comma separated list of integers.
-			 * @version 9.2
+			 * List of legacy modulation and coding scheme (MCS) indexes supported by the associated device.
+			 * Format is comma separated list of integers in the range of [1 2 6 9 12 18 24 36 48 54 ]
 			 */
 			%read-only string SupportedMCS;
 
 			/**
-			 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
-			 * supported by the associated device.
-			 * Format is comma separated list of integers.
-			 * @version 10.0
+			 * List of HT modulation and coding scheme (MCS) indexes supported by the associated device.
+			 * Format is comma separated list of integers in the range of [0-31]
 			 */
-			%read-only string SupportedVhtMCS;
+			%read-only string SupportedHtMCS;
 
 			/**
-			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * List of RX VHT modulation and coding scheme (MCS) per spatial stream
 			 * supported by the associated device.
 			 * Format is comma separated list of integers.
-			 * @version 10.0
 			 */
-			%read-only string SupportedHeMCS;
+			%read-only string RxSupportedVhtMCS;
 
 			/**
-			 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+			 * List of TX VHT modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 */
+			%read-only string TxSupportedVhtMCS;
+
+			/**
+			 * List of RX HE modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 */
+			%read-only string RxSupportedHeMCS;
+
+			/**
+			 *List of TX HE modulation and coding scheme (MCS) per spatial stream
+			 * supported by the associated device.
+			 * Format is comma separated list of integers.
+			 */
+			%read-only string TxSupportedHeMCS;
+
+			/**
+			 * List of RX He160 modulation and coding scheme (MCS) per spatial stream
 			 * for 160MHz bandwidth supported by the associated device.
 			 * Format is comma separated list of integers.
-			 * @version 10.0
 			 */
-			%read-only string SupportedHe160MCS;
+			%read-only string RxSupportedHe160MCS;
+
+			/**
+			 * List of TX He160 modulation and coding scheme (MCS) per spatial stream
+			 * for 160MHz bandwidth supported by the associated device.
+			 * Format is comma separated list of integers.
+			 */
+			%read-only string TxSupportedHe160MCS;
+
+			/**
+			 * List of RX He80x80 modulation and coding scheme (MCS) per spatial stream
+			 * for 80x80MHz bandwidth supported by the associated device.
+			 * Format is comma separated list of integers.
+			 */
+			%read-only string RxSupportedHe80x80MCS;
+
+			/**
+			 * List of TX He80x80 modulation and coding scheme (MCS) per spatial stream
+			 * for 80x80MHz bandwidth supported by the associated device.
+			 * Format is comma separated list of integers.
+			 */
+			%read-only string TxSupportedHe80x80MCS;
 
 			/**
 			 * Vendor OUI of the associated device.
@@ -1555,30 +1592,68 @@ define rrm_t{
 				 * @version 9.2
 				 */
 				%read-only string SupportedMCS;
-				
+
 				/**
-				 * list of maximum VHT modulation and coding scheme (MCS) per spatial stream
+				 * List of HT modulation and coding scheme (MCS) indexes supported by the associated device.
+				 * Format is comma separated list of integers in the range of [0-31]
+				 */
+				%read-only string SupportedHtMCS;
+
+				/**
+				 * List of RX VHT modulation and coding scheme (MCS) per spatial stream
 				 * supported by the associated device.
 				 * Format is comma separated list of integers.
-				 * @version 10.0
 				 */
-				%read-only string SupportedVhtMCS;
-	
+				%read-only string RxSupportedVhtMCS;
+
 				/**
-				 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+				 * List of TX VHT modulation and coding scheme (MCS) per spatial stream
 				 * supported by the associated device.
 				 * Format is comma separated list of integers.
-				 * @version 10.0
 				 */
-				%read-only string SupportedHeMCS;
-	
+				%read-only string TxSupportedVhtMCS;
+
 				/**
-				 * list of maximum HE modulation and coding scheme (MCS) per spatial stream
+				 * List of RX HE modulation and coding scheme (MCS) per spatial stream
+				 * supported by the associated device.
+				 * Format is comma separated list of integers.
+				 */
+				%read-only string RxSupportedHeMCS;
+
+				/**
+				 *List of TX HE modulation and coding scheme (MCS) per spatial stream
+				 * supported by the associated device.
+				 * Format is comma separated list of integers.
+				 */
+				%read-only string TxSupportedHeMCS;
+
+				/**
+				 * List of RX He160 modulation and coding scheme (MCS) per spatial stream
 				 * for 160MHz bandwidth supported by the associated device.
 				 * Format is comma separated list of integers.
-				 * @version 10.0
 				 */
-				%read-only string SupportedHe160MCS;
+				%read-only string RxSupportedHe160MCS;
+
+				/**
+				 * List of TX He160 modulation and coding scheme (MCS) per spatial stream
+				 * for 160MHz bandwidth supported by the associated device.
+				 * Format is comma separated list of integers.
+				 */
+				%read-only string TxSupportedHe160MCS;
+
+				/**
+				 * List of RX He80x80 modulation and coding scheme (MCS) per spatial stream
+				 * for 80x80MHz bandwidth supported by the associated device.
+				 * Format is comma separated list of integers.
+				 */
+				%read-only string RxSupportedHe80x80MCS;
+
+				/**
+				 * List of TX He80x80 modulation and coding scheme (MCS) per spatial stream
+				 * for 80x80MHz bandwidth supported by the associated device.
+				 * Format is comma separated list of integers.
+				 */
+				%read-only string TxSupportedHe80x80MCS;
 
 				/**
 				 * Vendor OUI of the associated device.

@@ -699,9 +699,6 @@ typedef struct {
     uint32_t txAsMuPktsPrc; /* current percentage of TX packets sent as MU. */
 } wld_sta_muMimoInfo_t;
 
-#define WLD_MAX_MCS 128
-#define WLD_MAX_NSS 8
-
 /* From IEEE 802.11 Draft P802.11ax D8.0 fig 9-589cn */
 #define D11_HE_MCS_0_7  0
 #define D11_HE_MCS_0_9  1
@@ -710,16 +707,6 @@ typedef struct {
 
 #define D11_HE_MCS_SUBFIELD_SIZE 2
 #define D11_HE_MCS_SUBFIELD_MASK 0x3
-
-typedef struct {
-    uint8_t mcsNbr;
-    uint8_t mcs[WLD_MAX_MCS];
-} wld_sta_supMCS_t;
-
-typedef struct {
-    uint8_t nssNbr;
-    uint8_t nssMcsNbr[WLD_MAX_NSS];
-} wld_sta_supMCS_adv_t;
 
 /*
  * @brief arguments for BSS Transfer request
@@ -738,10 +725,12 @@ typedef struct {
 
 typedef struct {
     swl_timeMono_t updateTime;
-    wld_sta_supMCS_t supportedMCS;
-    wld_sta_supMCS_adv_t supportedVhtMCS;
-    wld_sta_supMCS_adv_t supportedHeMCS;
-    wld_sta_supMCS_adv_t supportedHe160MCS;
+    swl_mcs_supMCS_t supportedMCS;
+    swl_mcs_supMCS_t supportedHtMCS;
+    swl_mcs_supMCS_adv_t supportedVhtMCS[SWL_COM_DIR_MAX];
+    swl_mcs_supMCS_adv_t supportedHeMCS[SWL_COM_DIR_MAX];
+    swl_mcs_supMCS_adv_t supportedHe160MCS[SWL_COM_DIR_MAX];
+    swl_mcs_supMCS_adv_t supportedHe80x80MCS[SWL_COM_DIR_MAX];
 
     swl_oui_list_t vendorOUI;
 

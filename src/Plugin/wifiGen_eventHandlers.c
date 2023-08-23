@@ -400,7 +400,7 @@ static void s_probeRequestReceived(void* userData, swl_80211_mgmtFrame_t* frame,
     ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&results, NULL, probeReqDataLen, (swl_bit8_t*) probeReq);
     ASSERTW_FALSE(parsedLen < (ssize_t) probeReqDataLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, probeReqDataLen);
 
-    wld_assocDev_copyAssocDevInfoFromIEs(pAD, &pAD->probeReqCaps, &results);
+    wld_assocDev_copyAssocDevInfoFromIEs(pRad, pAD, &pAD->probeReqCaps, &results);
     pAD->probeReqCaps.updateTime = swl_time_getMonoSec();
 }
 

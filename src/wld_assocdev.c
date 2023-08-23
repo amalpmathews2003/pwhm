@@ -1298,12 +1298,24 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     memset(mcsList, 0, sizeof(mcsList));
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedMCS.mcs, caps->supportedMCS.mcsNbr);
     amxd_trans_set_cstring_t(trans, "SupportedMCS", mcsList);
-    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedVhtMCS.nssMcsNbr, caps->supportedVhtMCS.nssNbr);
-    amxd_trans_set_cstring_t(trans, "SupportedVhtMCS", mcsList);
-    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHeMCS.nssMcsNbr, caps->supportedHeMCS.nssNbr);
-    amxd_trans_set_cstring_t(trans, "SupportedHeMCS", mcsList);
-    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe160MCS.nssMcsNbr, caps->supportedHe160MCS.nssNbr);
-    amxd_trans_set_cstring_t(trans, "SupportedHe160MCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHtMCS.mcs, caps->supportedHtMCS.mcsNbr);
+    amxd_trans_set_cstring_t(trans, "SupportedHtMCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedVhtMCS[COM_DIR_RECEIVE].nssMcsNbr, caps->supportedVhtMCS[COM_DIR_RECEIVE].nssNbr);
+    amxd_trans_set_cstring_t(trans, "RxSupportedVhtMCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedVhtMCS[COM_DIR_TRANSMIT].nssMcsNbr, caps->supportedVhtMCS[COM_DIR_TRANSMIT].nssNbr);
+    amxd_trans_set_cstring_t(trans, "TxSupportedVhtMCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHeMCS[COM_DIR_RECEIVE].nssMcsNbr, caps->supportedHeMCS[COM_DIR_RECEIVE].nssNbr);
+    amxd_trans_set_cstring_t(trans, "RxSupportedHeMCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHeMCS[COM_DIR_TRANSMIT].nssMcsNbr, caps->supportedHeMCS[COM_DIR_TRANSMIT].nssNbr);
+    amxd_trans_set_cstring_t(trans, "TxSupportedHeMCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe160MCS[COM_DIR_RECEIVE].nssMcsNbr, caps->supportedHe160MCS[COM_DIR_RECEIVE].nssNbr);
+    amxd_trans_set_cstring_t(trans, "RxSupportedHe160MCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe160MCS[COM_DIR_TRANSMIT].nssMcsNbr, caps->supportedHe160MCS[COM_DIR_TRANSMIT].nssNbr);
+    amxd_trans_set_cstring_t(trans, "TxSupportedHe160MCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe80x80MCS[COM_DIR_RECEIVE].nssMcsNbr, caps->supportedHe80x80MCS[COM_DIR_RECEIVE].nssNbr);
+    amxd_trans_set_cstring_t(trans, "RxSupportedHe80x80MCS", mcsList);
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe80x80MCS[COM_DIR_TRANSMIT].nssMcsNbr, caps->supportedHe80x80MCS[COM_DIR_TRANSMIT].nssNbr);
+    amxd_trans_set_cstring_t(trans, "TxSupportedHe80x80MCS", mcsList);
 
     amxc_string_t TBufStr;
     amxc_string_init(&TBufStr, 0);
@@ -1353,23 +1365,6 @@ int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD) {
     return (int32_t) avgRssiByChain;
 }
 
-void wld_ad_getHeMCS(uint16_t he_mcs, wld_sta_supMCS_adv_t* supportedHeMCS) {
-    int nss;
-    uint8_t mcsList[] = {7, 9, 11, 0};
-    for(nss = 0; nss < WLD_MAX_NSS; nss++) {
-        uint8_t maxHeMCS = he_mcs >> (nss * D11_HE_MCS_SUBFIELD_SIZE) & D11_HE_MCS_SUBFIELD_MASK;
-        if(maxHeMCS > 3) {
-            supportedHeMCS->nssMcsNbr[nss] = 0;
-        } else {
-            supportedHeMCS->nssMcsNbr[nss] = mcsList[maxHeMCS];
-        }
-        if(supportedHeMCS->nssMcsNbr[nss] == 0) {
-            supportedHeMCS->nssNbr = (uint8_t) nss;
-            break;
-        }
-    }
-}
-
 void wld_assocDev_initAp(T_AccessPoint* pAP) {
     swl_unLiTable_initExt(&pAP->staDcList, &tWld_ad_dcLog, 3);
     swl_unLiList_setKeepsLastBlock(&pAP->staDcList.list, true);
@@ -1391,7 +1386,7 @@ void wld_assocDev_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant)
     swl_unLiTable_toListOfMaps(&pAP->staDcList, variant, tupleNames);
 }
 
-void wld_assocDev_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
     pDev->capabilities |= pWirelessDevIE->capabilities;
     pDev->uniiBandsCapabilities |= pWirelessDevIE->uniiBandsCapabilities;
     cap->freqCapabilities = pWirelessDevIE->freqCapabilities;
@@ -1403,6 +1398,23 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_AssociatedDevice* pDev, wld_assocDev
     cap->rrmOnChannelMaxDuration = pWirelessDevIE->rrmOnChannelMaxDuration;
     cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;
     cap->currentSecurity = pWirelessDevIE->secModeEnabled;
+    pDev->MaxRxSpatialStreamsSupported = pWirelessDevIE->maxRxSpatialStreamsSupported;
+    pDev->MaxTxSpatialStreamsSupported = pWirelessDevIE->maxTxSpatialStreamsSupported;
+    pDev->MaxDownlinkRateSupported = pWirelessDevIE->maxDownlinkRateSupported;
+    pDev->MaxUplinkRateSupported = pWirelessDevIE->maxUplinkRateSupported;
+    memcpy(&cap->supportedMCS, &pWirelessDevIE->supportedMCS, sizeof(swl_mcs_supMCS_t));
+    memcpy(&cap->supportedHtMCS, &pWirelessDevIE->supportedHtMCS, sizeof(swl_mcs_supMCS_t));
+    memcpy(&cap->supportedVhtMCS, &pWirelessDevIE->supportedVhtMCS, sizeof(pWirelessDevIE->supportedVhtMCS));
+    memcpy(&cap->supportedHeMCS, &pWirelessDevIE->supportedHeMCS, sizeof(pWirelessDevIE->supportedHeMCS));
+    memcpy(&cap->supportedHe160MCS, &pWirelessDevIE->supportedHe160MCS, sizeof(pWirelessDevIE->supportedHe160MCS));
+    memcpy(&cap->supportedHe80x80MCS, &pWirelessDevIE->supportedHe80x80MCS, sizeof(pWirelessDevIE->supportedHe80x80MCS));
+
+    if(pDev->operatingStandard == SWL_RADSTD_AUTO) {
+        pDev->operatingStandard = SWL_MIN(swl_bit32_getHighest(pWirelessDevIE->operatingStandards), swl_bit32_getHighest(pRad->operatingStandards));
+    }
+    if(cap->linkBandwidth == SWL_BW_AUTO) {
+        cap->linkBandwidth = SWL_MIN(wld_util_getMaxBwCap(cap), pRad->runningChannelBandwidth);
+    }
 }
 
 void wld_assocDev_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen) {
@@ -1422,6 +1434,6 @@ void wld_assocDev_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, sw
     ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
     ASSERTW_FALSE(parsedLen < (ssize_t) iesLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, iesLen);
 
-    wld_assocDev_copyAssocDevInfoFromIEs(pAD, &pAD->assocCaps, &wirelessDevIE);
+    wld_assocDev_copyAssocDevInfoFromIEs(pAP->pRadio, pAD, &pAD->assocCaps, &wirelessDevIE);
 }
 

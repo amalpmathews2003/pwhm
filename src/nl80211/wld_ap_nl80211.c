@@ -146,9 +146,6 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     SAH_TRACEZ_INFO(ME, "%s: Downlink MCS %s", pAD->Name, swl_typeMcs_toBuf32(pStationInfo->txRate.mcsInfo).buf);
     SAH_TRACEZ_INFO(ME, "%s: Uplink MCS %s", pAD->Name, swl_typeMcs_toBuf32(pStationInfo->rxRate.mcsInfo).buf);
 
-    pAD->operatingStandard = SWL_MAX(
-        swl_mcs_radStdFromMcsStd(pStationInfo->txRate.mcsInfo.standard, pAP->pRadio->operatingFrequencyBand),
-        swl_mcs_radStdFromMcsStd(pStationInfo->rxRate.mcsInfo.standard, pAP->pRadio->operatingFrequencyBand));
     pAD->assocCaps.linkBandwidth = swl_chanspec_intToBw(
         SWL_MAX(swl_chanspec_bwToInt(pStationInfo->txRate.mcsInfo.bandwidth),
                 swl_chanspec_bwToInt(pStationInfo->rxRate.mcsInfo.bandwidth)));
