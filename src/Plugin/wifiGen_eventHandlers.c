@@ -156,6 +156,17 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     wld_rad_doCommitIfUnblocked(pRad);
     wld_rad_updateState(pRad, true);
     pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
+
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+
+    /**
+     * Main AP is ready, listening to mgmt frames is possible.
+     * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
+     */
+    if(wld_ap_nl80211_registerFrame(pAP, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
+        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pAP->alias);
+    }
 }
 
 static void s_mainApDisabledCb(void* userData, char* ifName) {

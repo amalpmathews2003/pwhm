@@ -204,3 +204,9 @@ swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mg
     return wld_nl80211_sendManagementFrameCmd(wld_nl80211_getSharedState(), fc, dataBytes, dataBytesLen, chanspec,
                                               (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &pSSID->BSSID, flags, pAP->index);
 }
+
+swl_rc_ne wld_ap_nl80211_registerFrame(T_AccessPoint* pAP, uint16_t type, const char* pattern, size_t patternLen) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pAP, rc, ME, "NULL");
+    return wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pAP->index, type, pattern, patternLen);
+}

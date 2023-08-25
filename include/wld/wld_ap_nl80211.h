@@ -217,4 +217,17 @@ swl_rc_ne wld_ap_nl80211_sendVendorSubCmdAttr(T_AccessPoint* pAP, uint32_t oui, 
 swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen,
                                                 swl_chanspec_t* chanspec, uint32_t flags);
 
+/*
+ * @brief common function to register to frame
+ *
+ * @param pAP pointer to accesspoint context
+ * @param type packet type to be received
+ * @param pattern first bytes of the packet (optional)
+ * @param patternLen pattern's length (optional)
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_nl80211_registerFrame(T_AccessPoint* pAP, uint16_t type, const char* pattern, size_t patternLen);
+
 #endif /* INCLUDE_WLD_WLD_AP_NL80211_H_ */
