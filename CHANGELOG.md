@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.5.2 - 2023-08-28(07:27:57 +0000)
+
+### Other
+
+- getSpectrumInfo() returns <NULL>
+- No Probe Request received
+
 ## Release v4.5.1 - 2023-08-21(13:53:41 +0000)
 
 ### Other
