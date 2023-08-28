@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.5.3 - 2023-08-28(12:10:18 +0000)
+
+### Other
+
+- : Add Ht/Vht/He capabilities from assoc request
+
 ## Release v4.5.2 - 2023-08-28(07:27:57 +0000)
 
 ### Other
