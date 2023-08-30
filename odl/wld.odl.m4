@@ -111,6 +111,7 @@
                    "chan" = 200,
                    "chanInf" = 200,
                    "chanMgt" = 200,
+                   "csi" = 200,
                    "dm_trans" = 200,
                    "ep" = 200,
                    "fileMgr" = 200,

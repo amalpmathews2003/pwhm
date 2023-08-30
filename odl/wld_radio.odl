@@ -2635,6 +2635,87 @@ define probelist_t{
 			}
 		}
 
+		/**
+		 * wifi sensing
+		 * Sensing is the use of PHY and MAC features of IEEE 802.11 stations to obtain measurements that may
+		 * be useful to estimate features such as range, velocity, and motion of objects in an area of interest.
+		 * Measurements obtained with WLAN sensing may be used to enable applications such as presence detection
+		 * and gesture classification.
+		 */
+		%persistent object Sensing {
+
+			/**
+			 * Enable / Disable Channel State Information (CSI) feature
+			 */
+			%persistent bool Enable{
+				default false;
+				on action write call wld_wifiSensing_enable_pwf;
+			}
+
+			/**
+			 * List of clients MAC addresses configured to capture CSI reports
+			 */
+			object CSIClient[]{
+
+				on action destroy call wld_wifiSensing_delete_client_odf;
+				on event "*" call wld_wifiSensing_setConf_ocf;
+
+				/**
+				 * A non-volatile handle used to reference this instance. Alias
+				 * provides a mechanism for an ACS to label this instance for
+				 * future reference. An initial unique value MUST be assigned
+				 * when the CPE creates an instance of this object.
+				 */
+				%unique %key string Alias;
+
+				/**
+				 * MACAddress : Device mac address (format xx:xx:xx:xx:xx:xx)
+				 */
+				string MACAddress;
+
+				/**
+				 * Monitor interval : Time (ms) interval between CSI captures
+				 */
+				uint32 MonitorInterval;
+			}
+
+			/**
+			 * Statistics counters of the overal CSIMON module
+			 * NullFrameCounter : Null frames sent
+			 * M2MTransmitCounter : Number of CSI records successfully transferred by M2M DMA
+			 * UserTransmitCounter : Number of CSI records successfully transferred to user over netlink socket
+			 * NullFrameAckFailCounter : Null frames not successfully acknowledged
+			 * ReceivedOverflowCounter : The application is not reading the records fast enough
+			 * TransmitFailCounter : SVMP to host memory xfer failures
+			 * UserTransmitFailCounter : CSIMON drops with nl send
+			 * VendorCounters : vendor specific counters
+			 */
+			void csiStats();
+
+			/**
+			 * Add one client with specified unicast MAC address to CSIMON client list with the monitor interval setting
+			 * MACAddress : Mac address of the device
+			 * MonitorInterval : Time (ms) interval between CSI captures
+			 */
+			void addClient(%in string MACAddress, %in uint32 MonitorInterval);
+
+			/**
+			 * Delete one client with specified unicast MAC address to CSIMON client list with the monitor interval setting
+			 * MACAddress : Mac address of the device
+			 */
+			void delClient(%in string MACAddress);
+
+			/**
+			 * Clear CSIMON counters
+			 */
+			void resetStats();
+
+			/**
+			 * Debug
+			 */
+			void debug();
+		} /* object Sensing */
+
 	} /* object Radio */
     }
 }

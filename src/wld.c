@@ -403,6 +403,9 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     amxc_llist_append(&g_radios, &pR->it);
 
     wld_chanmgt_checkInitChannel(pR);
+
+    wld_sensing_init(pR);
+
     pR->isReady = true;
 
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u", name, vendor->name, idx);
@@ -435,6 +438,7 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     pRad->scanState.cfg.fastScanReasons = NULL;
     wld_scan_cleanupScanResults(&pRad->scanState.lastScanResults);
     wld_spectrum_cleanupResults(pRad);
+    wld_sensing_cleanup(pRad);
 
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pRad->pFA, , ME, "NULL");

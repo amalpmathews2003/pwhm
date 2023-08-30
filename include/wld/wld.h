@@ -98,6 +98,7 @@
 #include "wld_bgdfs.h"
 #include "wld_rad_delayMgr.h"
 #include "wld_fsm.h"
+#include "wld_sensing.h"
 #include "Utils/wld_autoCommitRadData.h"
 #include "swla/swla_radioStandards.h"
 #include "swla/swla_chanspec.h"
@@ -1364,6 +1365,24 @@ typedef struct {
     swl_timeMono_t changeTime;
 } wld_rad_detailedChanState_t;
 
+typedef struct {
+    amxc_llist_it_t it;
+    swl_macChar_t macAddr;
+    uint32_t monitorInterval;
+    amxd_object_t* obj;
+} wld_csiClient_t;
+
+typedef struct {
+    uint32_t nullFrameCounter;          /* Null frames sent */
+    uint32_t m2mTransmitCounter;        /* Number of CSI records successfully xferred by M2M DMA */
+    uint32_t userTransmitCounter;       /* Number of CSI records successfully xferred by user over netlink socket */
+    uint32_t nullFrameAckFailCounter;   /* Null frames not successfully acknowledged */
+    uint32_t receivedOverflowCounter;   /* The application is not reading the records fast enough */
+    uint32_t transmitFailCounter;       /* SVMP to host memory xfer failures */
+    uint32_t userTransmitFailCounter;   /* CSIMON drops with nl send */
+    amxc_var_t* vendorCounters;         /* Vendor specific counters */
+} wld_csiState_t;
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;
@@ -1564,6 +1583,8 @@ struct WLD_RADIO {
     uint32_t wiphy;                               /* nl80211 wireless physical device id */
     wld_nl80211_channelSurveyInfo_t* pLastSurvey; /* last active chan survey result (cached) */
     wld_airStats_t* pLastAirStats;                /* last air stats calculated based on diff with active chan survey result (cached for nl80211) */
+    bool csiEnable;                               /* Enable CSI */
+    amxc_llist_t csiClientList;                   /* CSI client list */
 };
 
 typedef struct {
@@ -2047,6 +2068,12 @@ typedef int (APIENTRY* PFN_WRAD_CHECK_HEALTH)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_DELAY_AP_UP_DONE)(T_Radio* rad);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_RADIO_STATS)(T_Radio* rad);
 
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_CMD)(T_Radio* rad);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_CSI_STATS)(T_Radio* rad, wld_csiState_t* csimonState);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_ADD_CLIENT)(T_Radio* rad, wld_csiClient_t* client);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_DEL_CLIENT)(T_Radio* rad, swl_macChar_t macAddr);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_RESET_STATS)(T_Radio* rad);
+
 /*********** Vendor VAP driver settings *********************/
 typedef int (APIENTRY* PFN_WVAP_CREATE_HOOK)(T_AccessPoint* vap);
 typedef void (APIENTRY* PFN_WVAP_DESTROY_HOOK)(T_AccessPoint* vap);
@@ -2189,21 +2216,27 @@ typedef struct S_CWLD_FUNC_TABLE {
     /**< Get Air usage statistics */
     swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, wld_airStats_t* pStats);
 
-    PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;       /**< Update probe requests */
-    PFN_WRAD_SYNC mfn_wrad_sync;                             /**< Sync Enable/channel/band-mode/... */
-    PFN_WRAD_PER_ANTENNA_RSSI mfn_wrad_per_ant_rssi;         /**< Get the RSSI values of each antenna*/
-    PFN_WRAD_LATEST_POWER mfn_wrad_latest_power;             /**< Get the power values of each antenna*/
-    PFN_WRAD_UPDATE_CHANINFO mfn_wrad_update_chaninfo;       /**< Update the channel information and statistics*/
-    PFN_WRAD_UPDATE_MON_STATS mfn_wrad_update_mon_stats;     /**< Update the non associated station counters of SSID */
-    PFN_WRAD_SETUP_STAMON mfn_wrad_setup_stamon;             /**< Set the station monitor */
-    PFN_WRAD_ADD_STAMON mfn_wrad_add_stamon;                 /**< Add the non associated station */
-    PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                 /**< Del the non associated station */
-    PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;        /**< Warn driver delay AP up period is over*/
-    PFN_WRAD_RADIO_STATS mfn_wrad_stats;                     /**< get radio statistics */
+    PFN_WRAD_SENSING_CMD mfn_wrad_sensing_cmd;                /**< Start / Stop CSI monitoring */
+    PFN_WRAD_SENSING_CSI_STATS mfn_wrad_sensing_csiStats;     /**< Get CSI monitoring stats */
+    PFN_WRAD_SENSING_ADD_CLIENT mfn_wrad_sensing_addClient;   /**< Add a client into CSI monitoring */
+    PFN_WRAD_SENSING_DEL_CLIENT mfn_wrad_sensing_delClient;   /**< Remove a client into CSI monitoring */
+    PFN_WRAD_SENSING_RESET_STATS mfn_wrad_sensing_resetStats; /**< Reset CSI monitoring counters */
 
-    PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;               /**< VAP constructor hook */
-    PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;             /**< VAP destructor hook */
-    PFN_WVAP_VAP_STATUS mfn_wvap_status;                     /**< Get ReadOnly VAP states */
+    PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;        /**< Update probe requests */
+    PFN_WRAD_SYNC mfn_wrad_sync;                              /**< Sync Enable/channel/band-mode/... */
+    PFN_WRAD_PER_ANTENNA_RSSI mfn_wrad_per_ant_rssi;          /**< Get the RSSI values of each antenna*/
+    PFN_WRAD_LATEST_POWER mfn_wrad_latest_power;              /**< Get the power values of each antenna*/
+    PFN_WRAD_UPDATE_CHANINFO mfn_wrad_update_chaninfo;        /**< Update the channel information and statistics*/
+    PFN_WRAD_UPDATE_MON_STATS mfn_wrad_update_mon_stats;      /**< Update the non associated station counters of SSID */
+    PFN_WRAD_SETUP_STAMON mfn_wrad_setup_stamon;              /**< Set the station monitor */
+    PFN_WRAD_ADD_STAMON mfn_wrad_add_stamon;                  /**< Add the non associated station */
+    PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                  /**< Del the non associated station */
+    PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;         /**< Warn driver delay AP up period is over*/
+    PFN_WRAD_RADIO_STATS mfn_wrad_stats;                      /**< get radio statistics */
+
+    PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;                /**< VAP constructor hook */
+    PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;              /**< VAP destructor hook */
+    PFN_WVAP_VAP_STATUS mfn_wvap_status;                      /**< Get ReadOnly VAP states */
 
     /**< Update list of associated device statistics */
     swl_rc_ne (* mfn_wvap_get_station_stats)(T_AccessPoint* pAP);

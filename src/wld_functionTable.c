@@ -221,6 +221,29 @@ DEF_TRAP_int(T_Radio, mfn_wrad_bgdfs_enable);
 DEF_TRAP_int(T_Radio, mfn_wrad_bgdfs_start);
 DEF_TRAP(T_Radio, mfn_wrad_bgdfs_stop);
 DEF_TRAP(T_Radio, mfn_wrad_delayApUpDone);
+DEF_TRAP(T_Radio, mfn_wrad_sensing_cmd);
+DEF_TRAP(T_Radio, mfn_wrad_sensing_resetStats);
+
+static swl_rc_ne TRAP_mfn_wrad_sensing_csiStats(T_Radio* rad, wld_csiState_t* csimonState) {
+    _UNUSED_(rad);
+    _UNUSED_(csimonState);
+    SAH_TRACEZ_NOTICE(ME, "%p %p", rad, csimonState);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_sensing_addClient(T_Radio* rad, wld_csiClient_t* client) {
+    _UNUSED_(rad);
+    _UNUSED_(client);
+    SAH_TRACEZ_NOTICE(ME, "%p %s %d", rad, client->macAddr.cMac, client->monitorInterval);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_sensing_delClient(T_Radio* rad, swl_macChar_t macAddr) {
+    _UNUSED_(rad);
+    _UNUSED_(macAddr);
+    SAH_TRACEZ_NOTICE(ME, "%p %s", rad, macAddr.cMac);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
 
 DEF_TRAP(T_AccessPoint, mfn_wvap_status);
 DEF_TRAP(T_AccessPoint, mfn_wvap_fsm_state);
@@ -620,6 +643,11 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_delayApUpDone);
     FTA_ASSIGN(mfn_wrad_stats);
     FTA_ASSIGN(mfn_wrad_updateConfigMap);
+    FTA_ASSIGN(mfn_wrad_sensing_cmd);
+    FTA_ASSIGN(mfn_wrad_sensing_csiStats);
+    FTA_ASSIGN(mfn_wrad_sensing_addClient);
+    FTA_ASSIGN(mfn_wrad_sensing_delClient);
+    FTA_ASSIGN(mfn_wrad_sensing_resetStats);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);

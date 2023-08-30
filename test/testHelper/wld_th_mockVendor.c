@@ -67,7 +67,7 @@
 #include "swl/swl_common.h"
 #include "wld_eventing.h"
 #include "Plugin/wifiGen_vap.h"
-
+#include "wld_th_sensing.h"
 
 static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wrad_supports = wld_th_radio_vendorCb_supports,
@@ -82,6 +82,11 @@ static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wrad_intelligentAirtime = wld_th_mfn_wrad_intelligentAirtime,
     .mfn_wrad_supstd = wld_th_mfn_wrad_supstd,
     .mfn_wrad_setChanspec = wld_th_rad_setChanspec,
+    .mfn_wrad_sensing_cmd = wld_th_rad_sensing_cmd,
+    .mfn_wrad_sensing_addClient = wld_th_rad_sensing_addClient,
+    .mfn_wrad_sensing_delClient = wld_th_rad_sensing_delClient,
+    .mfn_wrad_sensing_csiStats = wld_th_rad_sensing_csiStats,
+    .mfn_wrad_sensing_resetStats = wld_th_rad_sensing_resetStats,
 
     .mfn_wvap_create_hook = wld_th_vap_createHook,
     .mfn_wvap_destroy_hook = wld_th_vap_destroyHook,

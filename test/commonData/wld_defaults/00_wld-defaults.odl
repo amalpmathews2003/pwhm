@@ -25,6 +25,9 @@
                     parameter UseBaseMacOffset = 1;
                     parameter BaseMacOffset = 1;
                 }
+                object Sensing {
+                    parameter Enable = 0;
+                }
             }
             instance add ("wifi1") {
                 parameter OperatingFrequencyBand = "5GHz";
@@ -45,6 +48,9 @@
                 }
                 parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "a,n,ac,ax";
+                object Sensing {
+                    parameter Enable = 0;
+                }
             }
             instance add ("wifi2") {
                 parameter OperatingFrequencyBand = "6GHz";
@@ -65,6 +71,9 @@
                 }
                 parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "ax";
+                object Sensing {
+                    parameter Enable = 0;
+                }
             }
         }
         object SSID {
