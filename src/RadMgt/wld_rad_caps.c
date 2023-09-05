@@ -137,8 +137,7 @@ static void wld_rad_parse_enable(T_Radio* pR, int includeIndex, int excludeIndex
     int size = 1 + ((MAX_CAP_SIZE + 1) * pR->nrCapabilities);
     char cap_string[size];
     cap_string[0] = 0;
-    int i = 0;
-    for(i = 0; i < pR->nrCapabilities; i++) {
+    for(int i = 0; i < pR->nrCapabilities; i++) {
         if((i == includeIndex) || (pR->cap_status[i].enable && (i != excludeIndex))) {
             swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
@@ -170,82 +169,6 @@ void wld_rad_parse_cap(T_Radio* pR) {
     wld_rad_parse_status(pR);
 }
 
-
-
-
-/**
- * Parse the capabilities string, and fill up the capabilities list.
- *
- * @param capabilities
- *  a string containing all the capabilities, separated either by comma or space, null terminated.
- *  This string will be written over, and the delimiters will be replaced by nulls !
- * @param capabilityList
- *  a list of strings. It will be overwritten, and in the end will contain pointers to the
- *  capabilities string, to where each word starts.
- * @param max_nr_caps
- *  the maximum amount of capabilities that the capabilityList contains.
- * @return
- *  the number of capabilities parsed.
- */
-static int wld_rad_parseList(char* capabilities, char** capabilityList, int max_nr_caps) {
-
-    int i = 0;
-    int len = strlen(capabilities);
-    int index = 0;
-
-    do {
-        //Go over delimiters. This will eventually end at null termination.
-        while((capabilities[index] == ' ' || capabilities[index] == ',') && index < len) {
-            index++;
-        }
-        if(capabilities[index] == 0) {
-            //We're at the end of the capabilities, return number of capabilities.
-            return i;
-        }
-        //Add capability
-        if(i < max_nr_caps) {
-            capabilityList[i] = &capabilities[index];
-            i++;
-        } else {
-            //If no more room in capabilities, but more capabilities in string.
-            SAH_TRACEZ_ERROR(ME, "more capabilities than fit in list");
-            return -1;
-        }
-
-        while(capabilities[index] != ' ' && capabilities[index] != 0 && capabilities[index] != ',') {
-            //Find end of capability word
-            index++;
-        }
-
-        //add null at end of string;
-        capabilities[index] = 0;
-        index++;
-
-    } while(true);
-    return -1;
-}
-
-/**
- * Check if the list of strings contains the given string.
- * @param val
- *  the string to check against
- * @param list
- *  the list of strings.
- * @param nrValues
- *  the number of values the list contains.
- * @return
- *  true if one of entries in list matches val, false otherwise
- */
-static bool wld_rad_list_contains(const char* val, char** list, int nrValues) {
-    int i = 0;
-    for(i = 0; i < nrValues; i++) {
-        if(strncmp(val, list[i], MAX_CAP_SIZE) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
 static void wld_rad_setCapabilityIndex(T_Radio* pR, int index, bool status) {
     ASSERTS_NOT_NULL(pR, , ME, "NULL");
     ASSERTS_NOT_NULL(pR->capabilities, , ME, "NULL");
@@ -274,36 +197,22 @@ static void wld_rad_setCapabilityIndex(T_Radio* pR, int index, bool status) {
  * Then it will go over all capabilities, and check whether or not it's in the requested capabilities list.
  */
 static void s_setEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
-    SAH_TRACEZ_IN(ME);
-
     T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
     ASSERT_NOT_NULL(pR, , ME, "NULL");
     ASSERTI_TRUE(pR->nrCapabilities > 0, , ME, "%s: No specific radio caps", pR->Name);
-    char* capabilities = amxc_var_dyncast(cstring_t, newValue);
-    ASSERT_NOT_NULL(capabilities, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: Setting capabilities [%s]", pR->Name, capabilities);
-    char* capabilityList[1 + pR->nrCapabilities];
-    int nrValues = wld_rad_parseList(capabilities, capabilityList, pR->nrCapabilities);
-    free(capabilities);
-    if(nrValues < 0) {
-        //can't parse all caps, still continuing
-        SAH_TRACEZ_WARNING(ME, "Failed to parse all caps");
-    }
 
-    int i = 0;
-    for(i = 0; i < pR->nrCapabilities; i++) {
-        bool status = false;
-        if(wld_rad_list_contains(pR->capabilities[i].Name, capabilityList, nrValues)) {
-            status = true;
-        }
+    const char* capabilities = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(capabilities, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: Setting capabilities [%s]", pR->Name, capabilities);
+
+    for(int i = 0; i < pR->nrCapabilities; i++) {
+        bool status = swl_strlst_contains(capabilities, " ", pR->capabilities[i].Name);
         if(pR->cap_status[i].enable != status) {
             wld_rad_setCapabilityIndex(pR, i, status);
         }
     }
-
     wld_rad_parse_status(pR);
-
-    SAH_TRACEZ_OUT(ME);
 }
 
 /**
@@ -342,30 +251,22 @@ amxd_status_t _RadCaps_Enable(amxd_object_t* wifi_cap,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args,
                               amxc_var_t* ret _UNUSED) {
-    SAH_TRACEZ_IN(ME);
-
     amxd_object_t* wifi_rad = amxd_object_get_parent(wifi_cap);
     T_Radio* pR = (T_Radio*) wifi_rad->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    amxd_status_t retVal = amxd_status_ok;
-
     const char* feature = GET_CHAR(args, "feature");
 
     int index = wld_rad_get_capability_index(pR, feature);
-    if(index == -1) {
-        SAH_TRACEZ_ERROR(ME, "Unknown feature %s", feature);
-        retVal = amxd_status_unknown_error;
-        goto end;
-    }
-    if(pR->cap_status[index].enable) {
-        goto end;
-    }
-    wld_rad_parse_enable(pR, index, -1);
+    ASSERT_FALSE(index == -1, amxd_status_unknown_error, ME, "Unknown feature %s", feature);
 
-end:
-    SAH_TRACEZ_OUT(ME);
-    return retVal;
+    ASSERTS_FALSE(pR->cap_status[index].enable, amxd_status_ok, ME, "already enabled");
+
+    wld_rad_setCapabilityIndex(pR, index, true);
+    wld_rad_parse_enable(pR, index, -1);
+    wld_rad_parse_status(pR);
+
+    return amxd_status_ok;
 }
 
 /**
@@ -378,30 +279,22 @@ amxd_status_t _RadCaps_Disable(amxd_object_t* wifi_cap,
                                amxd_function_t* func _UNUSED,
                                amxc_var_t* args,
                                amxc_var_t* ret _UNUSED) {
-    SAH_TRACEZ_IN(ME);
-
     amxd_object_t* wifi_rad = amxd_object_get_parent(wifi_cap);
     T_Radio* pR = (T_Radio*) wifi_rad->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    amxd_status_t retVal = amxd_status_ok;
-
     const char* feature = GET_CHAR(args, "feature");
 
     int index = wld_rad_get_capability_index(pR, feature);
-    if(index == -1) {
-        SAH_TRACEZ_ERROR(ME, "Unknown feature %s", feature);
-        retVal = amxd_status_unknown_error;
-        goto end;
-    }
-    if(!pR->cap_status[index].enable) {
-        goto end;
-    }
+    ASSERT_FALSE(index == -1, amxd_status_unknown_error, ME, "Unknown feature %s", feature);
 
+    ASSERTS_TRUE(pR->cap_status[index].enable, amxd_status_ok, ME, "already disabled");
+
+    wld_rad_setCapabilityIndex(pR, index, false);
     wld_rad_parse_enable(pR, -1, index);
-end:
-    SAH_TRACEZ_OUT(ME);
-    return retVal;
+    wld_rad_parse_status(pR);
+
+    return amxd_status_ok;
 }
 
 /**
