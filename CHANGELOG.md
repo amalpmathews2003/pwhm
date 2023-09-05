@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.8.0 - 2023-09-05(09:27:58 +0000)
+
+### Other
+
+- Update scan and channel switch APIs
+
 ## Release v4.7.0 - 2023-09-05(09:14:41 +0000)
 
 ## Release v4.6.1 - 2023-09-04(14:22:14 +0000)
