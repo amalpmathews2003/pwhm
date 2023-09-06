@@ -227,7 +227,8 @@
 
     //persistent storage
     pcm_svc_config = {
-        "Objects" = "WiFi"
+        "Objects" = "WiFi",
+        "BackupFiles" = "wld"
     };
 }
 
@@ -236,7 +237,6 @@ import "mod-netmodel.so" as "mnm";
 import "mod-dmext.so";
 
 #include "mod_sahtrace.odl";
-#include "mod_pcm_svc.odl";
 
 include "${definition_file}";
 
@@ -244,4 +244,4 @@ include "${definition_file}";
     entry-point mnm.mod_netmodel_main;
     entry-point wld.wld_main;
 }
-
+#include "mod_pcm_svc.odl";
