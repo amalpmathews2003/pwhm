@@ -200,7 +200,7 @@ define probelist_t{
 		 * @param channels: optional comma seperated list of channels.
 		 * @param scanReason: optional string indicates the scan reason.
 		 * Default scan reason is "Ssid".
-		 * @return a list of scanresult_t.
+		 * The results are in a list of scanresult_t.
 		 * @version 10.3
 		 * @error function_exec_error "Invalid Channels in the List" if list contains a channels otherthan PossibleChannels list.
 		 * @error function_exec_error "Unable to start scan" if the radio is unavailable.
@@ -261,10 +261,10 @@ define probelist_t{
 		 * Return a list scanresult_t describing the accesspoints discovered
 		 * during the previous scan
 		 * @version 7.0
-		 * @param min_rssi: minimal RSSI required to return scanned Access Points.
+		 * @param minRssi: minimal RSSI required to return scanned Access Points.
 		 * @version 10.0
 		 */
-		list getScanResults(%in int32 min_rssi, %in out variant results);
+		list getScanResults(%in int32 minRssi);
 
 		/* event ScanComplete is sent on the radio instance when scan results are received */
 		/* event NOTIFY_SCAN_DONE name = "ScanComplete"

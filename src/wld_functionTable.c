@@ -79,7 +79,7 @@ static void TRAP_mfn_wrad_destroy_hook(T_Radio* rad) {
     // Ignore silently. Destructor hooks are optional.
 }
 
-static swl_rc_ne TRAP_mfn_wrad_scan_results(T_Radio* rad, T_ScanResults* results) {
+static swl_rc_ne TRAP_mfn_wrad_scan_results(T_Radio* rad, wld_scanResults_t* results) {
     _UNUSED_(rad);
     _UNUSED_(results);
     SAH_TRACEZ_NOTICE(ME, "%p, %p", rad, results);
@@ -303,7 +303,7 @@ static swl_rc_ne TRAP_mfn_wrad_getspectruminfo(T_Radio* rad, bool update, amxc_l
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static swl_rc_ne TRAP_mfn_wrad_airstats(T_Radio* rad, T_Airstats* stats) {
+static swl_rc_ne TRAP_mfn_wrad_airstats(T_Radio* rad, wld_airStats_t* stats) {
     _UNUSED_(rad);
     _UNUSED_(stats);
     SAH_TRACEZ_NOTICE(ME, "%p %p", rad, stats);

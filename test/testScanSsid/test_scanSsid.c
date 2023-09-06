@@ -31,11 +31,11 @@ swl_channel_t scanResChannels[SWL_FREQ_BAND_MAX][NB_SURROUNDING_CHANNELS] = {{1,
 static int s_setupSuite(void** state _UNUSED) {
     assert_true(wld_th_dm_init(&dm));
     T_Radio* rad;
-    T_ScanResults* results;
+    wld_scanResults_t* results;
     wld_for_eachRad(rad) {
         results = &rad->scanState.lastScanResults;
         for(int i = 0; i < NB_SCAN_RESULTS; i++) {
-            T_ScanResult_SSID* item = calloc(1, sizeof(T_ScanResult_SSID));
+            wld_scanResultSSID_t* item = calloc(1, sizeof(wld_scanResultSSID_t));
             assert_non_null(item);
             item->ssidLen = snprintf((char*) item->ssid, sizeof(item->ssid), "ssid_%d", i);
             int devIdx = i % NB_NEIGH_DEVICES;
@@ -89,11 +89,11 @@ static void test_startAndGetScan(void** state _UNUSED) {
     ttb_mockTimer_goToFutureMs(1000);
     wld_scan_done(pRad, true);
     assert_false(wld_scan_isRunning(pRad));
-    T_ScanResults res;
+    wld_scanResults_t res;
     amxc_llist_init(&res.ssids);
     assert_true(pRad->pFA->mfn_wrad_scan_results(pRad, &res) != SWL_RC_NOT_IMPLEMENTED);
     amxc_llist_for_each(it, &res.ssids) {
-        T_ScanResult_SSID* pSSID = amxc_container_of(it, T_ScanResult_SSID, it);
+        wld_scanResultSSID_t* pSSID = amxc_container_of(it, wld_scanResultSSID_t, it);
         assert_non_null(pSSID);
         assert_string_not_equal(pSSID->ssid, "");
         assert_true(wld_rad_hasChannel(pRad, pSSID->channel));
@@ -117,7 +117,7 @@ static void test_startAndGetScan(void** state _UNUSED) {
                 swl_macBin_t bssidBin = SWL_MAC_BIN_NEW();
                 SWL_MAC_CHAR_TO_BIN(&bssidBin, bssid);
                 amxc_llist_for_each(itScanSSID, &res.ssids) {
-                    T_ScanResult_SSID* pSSID = amxc_container_of(itScanSSID, T_ScanResult_SSID, it);
+                    wld_scanResultSSID_t* pSSID = amxc_container_of(itScanSSID, wld_scanResultSSID_t, it);
                     if((swl_str_nmatches((char*) pSSID->ssid, ssid, pSSID->ssidLen)) &&
                        (pSSID->channel == channel) &&
                        (SWL_MAC_BIN_MATCHES(&pSSID->bssid, &bssidBin))) {

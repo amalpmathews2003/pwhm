@@ -136,8 +136,8 @@ amxd_object_t* ssid_create(amxd_object_t* pBus, T_Radio* pR, const char* name);
 bool radio_scanresults_to_variant(T_Radio* radio, amxc_var_t* variant_out);
 bool wld_radio_notify_scanresults(amxd_object_t* obj);
 bool wld_radio_stats_to_variant(T_Radio* a, T_Stats* stats, amxc_var_t* map);
-bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, T_ScanResult_SSID* output);
-bool wld_radio_scanresults_cleanup(T_ScanResults* results);
+bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, wld_scanResultSSID_t* output);
+bool wld_radio_scanresults_cleanup(wld_scanResults_t* results);
 
 void wld_notifyProbeRequest(T_Radio* pR, const unsigned char* macStr);
 void wld_notifyProbeRequest_rssi(T_Radio* pR, const unsigned char* macStr, int rssi);
@@ -150,8 +150,8 @@ void wld_scan_done(T_Radio* pR, bool success);
 bool wld_scan_isRunning(T_Radio* pR);
 swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason);
 swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad);
-void wld_scan_cleanupScanResultSSID(T_ScanResult_SSID* ssid);
-void wld_scan_cleanupScanResults(T_ScanResults* res);
+void wld_scan_cleanupScanResultSSID(wld_scanResultSSID_t* ssid);
+void wld_scan_cleanupScanResults(wld_scanResults_t* res);
 void wld_spectrum_cleanupResults(T_Radio* pR);
 T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand);
 
@@ -222,7 +222,7 @@ void wld_rad_init_counters(T_Radio* pRad, T_EventCounterList* counters, const ch
 void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint32_t counterIndex, const char* info);
 void wld_rad_incrementCounterStr(T_Radio* pRad, T_EventCounterList* counters, uint32_t index, const char* template, ...);
 
-void wld_radio_copySsidsToResult(T_ScanResults* results, amxc_llist_t* ssid_list);
+void wld_radio_copySsidsToResult(wld_scanResults_t* results, amxc_llist_t* ssid_list);
 
 T_AssociatedDevice* wld_rad_getAssociatedDevice(T_Radio* pRad, swl_macBin_t* macBin);
 bool wld_rad_isAvailable(T_Radio* pRad);

@@ -377,6 +377,33 @@ swl_rc_ne wld_util_getRealReferencePath(char* outRefPath, size_t outRefPathSize,
 
 swl_rc_ne wld_util_getManagementFrameParameters(T_Radio* pRad, wld_util_managementFrame_t* mgmtFrame, amxc_var_t* args);
 
+/**
+ * @brief count number of neighbor BSS scan entries detected on a provided primary channel
+ *
+ * @param results the scan results list
+ * @param channel the host channel
+ * @return uint32_t count of BSSs detected on the channel
+ */
+uint32_t wld_util_countScanResultEntriesPerChannel(wld_scanResults_t* results, swl_channel_t channel);
+
+/**
+ * @brief fetch, by channel, a spectrum result entry in provided list
+ *
+ * @param pSpectrumInfoList the spectrum info list
+ * @param channel the host channel
+ * @return wld_spectrumChannelInfoEntry_t* pointer to the entry node in the list, or NULL when not match
+ */
+wld_spectrumChannelInfoEntry_t* wld_util_getSpectrumEntryByChannel(amxc_llist_t* pSpectrumInfoList, swl_channel_t channel);
+
+/**
+ * @brief add or update a spectrum result entry in provided list, based on the channel of the provided data struct
+ *
+ * @param pSpectrumInfoList the spectrum info list
+ * @param channel the host channel
+ * @return wld_spectrumChannelInfoEntry_t* pointer to the entry node in the list, or NULL when not match
+ */
+wld_spectrumChannelInfoEntry_t* wld_util_addorUpdateSpectrumEntry(amxc_llist_t* llSpectrumChannelInfo, wld_spectrumChannelInfoEntry_t* pData);
+
 #ifdef __cplusplus
 }/* extern "C" */
 #endif

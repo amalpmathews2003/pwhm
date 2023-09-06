@@ -942,7 +942,7 @@ typedef struct wld_nasta {
     int32_t SignalStrength;
     int32_t monRssi;
     int32_t rssiAccumulator;
-    time_t TimeStamp;
+    swl_timeMono_t TimeStamp;
     amxd_object_t* obj;
     swl_channel_t channel;
     swl_operatingClass_t operatingClass;
@@ -1120,7 +1120,7 @@ typedef struct {
     amxd_object_t* object;
 } wld_scanReasonStats_t;
 
-typedef struct {
+typedef struct wld_scanResultSSID {
     uint8_t ssidLen;
     uint8_t ssid[SSID_NAME_LEN];
     swl_macBin_t bssid;
@@ -1142,13 +1142,13 @@ typedef struct {
     swl_security_encMode_e encryptionMode;
 
     amxc_llist_it_t it;
-} T_ScanResult_SSID;
+} wld_scanResultSSID_t;
 
-struct wld_scanResults {
+typedef struct wld_scanResults {
     amxc_llist_t ssids;
-};
+} wld_scanResults_t;
 
-struct wld_scanArgs {
+typedef struct wld_scanArgs {
     char ssid[SSID_NAME_LEN];
     swl_macBin_t bssid;               /*particular BSSID MAC address to scan*/
     int ssidLen;
@@ -1156,7 +1156,7 @@ struct wld_scanArgs {
     int chanCount;
     bool updateUsageStats;
     bool fastScan;
-};
+} wld_scanArgs_t;
 
 #define SCAN_REASON_MAX 5
 
@@ -1177,7 +1177,7 @@ typedef struct {
     int32_t maxChannelsPerScan;
     wld_blockScanMode_e blockScanMode;
     char* fastScanReasons;
-    T_ScanArgs scanArguments;
+    wld_scanArgs_t scanArguments;
 } wld_scan_config_t;
 
 typedef struct {
@@ -1188,9 +1188,24 @@ typedef struct {
     wld_scan_stats_t stats;
     wld_scan_config_t cfg;
     swl_timeMono_t lastScanTime;
-    T_ScanResults lastScanResults;
+    wld_scanResults_t lastScanResults;
     amxc_llist_t spectrumResults;   /*!< results of the getSpectrum */
 } T_ScanState;
+
+typedef struct wld_airStats {
+    uint16_t load;
+    int32_t noise;
+    uint16_t bss_transmit_time; // time spent sending signal
+    uint16_t bss_receive_time;  // time spent receiving signal from within bss
+    uint16_t other_bss_time;    // time receiving signal from other bss
+    uint16_t other_time;        // time spent handling "other than wifi" signals
+    uint16_t free_time;         // time spent not sending nor receiving anything
+    uint16_t total_time;        // total time should match tx + rx + other_bss + noise + free
+    uint32_t timestamp;
+    uint8_t short_preamble_error_percentage;
+    uint8_t long_preamble_error_percentage;
+    amxc_var_t* vendorStats;
+} wld_airStats_t;
 
 typedef struct {
     T_Radio* pRad;
@@ -1548,6 +1563,7 @@ struct WLD_RADIO {
     wld_secDmn_t* hostapd;                        /* hostapd daemon context. */
     uint32_t wiphy;                               /* nl80211 wireless physical device id */
     wld_nl80211_channelSurveyInfo_t* pLastSurvey; /* last active chan survey result (cached) */
+    wld_airStats_t* pLastAirStats;                /* last air stats calculated based on diff with active chan survey result (cached for nl80211) */
 };
 
 typedef struct {
@@ -1919,7 +1935,7 @@ typedef struct {
     uint16_t maxTxStream;
 } T_EndPointStats;
 
-typedef struct {
+typedef struct wld_spectrumChannelInfoEntry {
     amxc_llist_it_t it;
     uint8_t channel;
     uint32_t availability;
@@ -1927,7 +1943,7 @@ typedef struct {
     int32_t noiselevel;
     uint32_t nrCoChannelAP;
     swl_bandwidth_e bandwidth;
-} spectrumChannelInfoEntry_t;
+} wld_spectrumChannelInfoEntry_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -1947,7 +1963,7 @@ typedef int (APIENTRY* PFN_WRAD_ADDENDPOINTIF)(T_Radio* rad, char* endpoint, int
 typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);
 
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, amxc_llist_t* llSpectrumChannelInfo);
-typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, T_ScanResults* results);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, wld_scanResults_t* results);
 
 /* Our common function table that all VENDOR WIFI drivers must be able to handle... */
 
@@ -1995,20 +2011,6 @@ typedef int (APIENTRY* PFN_WRAD_AIRTIMEFAIRNESS)(T_Radio* rad, int val, int set)
 typedef int (APIENTRY* PFN_WRAD_RXPOWERSAVE)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_INTELLIGENTAIRTIME)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_MULTIUSERMIMO)(T_Radio* rad, int val, int set);
-typedef struct {
-    uint16_t load;
-    int32_t noise;
-    uint16_t bss_transmit_time; // time spent sending signal
-    uint16_t bss_receive_time;  // time spent receiving signal from within bss
-    uint16_t other_bss_time;    // time receiving signal from other bss
-    uint16_t other_time;        // time spent handling "other than wifi" signals
-    uint16_t free_time;         // time spent not sending nor receiving anything
-    uint16_t total_time;        // total time should match tx + rx + other_bss + noise + free
-    uint32_t timestamp;
-    uint8_t short_preamble_error_percentage;
-    uint8_t long_preamble_error_percentage;
-    amxc_var_t* vendorStats;
-} T_Airstats;
 typedef int (APIENTRY* PFN_WRAD_UPDATE_PROB_REQ)(T_Radio* rad);
 
 #define DEFAULT_BASE_RSSI -200.0
@@ -2185,7 +2187,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     swl_rc_ne (* mfn_wrad_updateConfigMap)(T_Radio* pRad, swl_mapChar_t* configMap); /**< Update the current hostapd radio parameters map, to add or delete parameters */
 
     /**< Get Air usage statistics */
-    swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, T_Airstats* pStats);
+    swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, wld_airStats_t* pStats);
 
     PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;       /**< Update probe requests */
     PFN_WRAD_SYNC mfn_wrad_sync;                             /**< Sync Enable/channel/band-mode/... */

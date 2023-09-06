@@ -929,16 +929,16 @@ typedef struct {
 
 cmdMockAsyncTest_t mockGetScanResults;
 
-static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
+static void s_scanResultsCb(void* priv, swl_rc_ne rc, wld_scanResults_t* results) {
     assert_false(rc < SWL_RC_OK);
     assert_non_null(results);
     cmdMockAsyncTest_t* mockCtx = (cmdMockAsyncTest_t*) priv;
     assert_non_null(mockCtx);
-    T_ScanResults* pCopy = mockCtx->resultingData;
+    wld_scanResults_t* pCopy = mockCtx->resultingData;
     wld_scan_cleanupScanResults(pCopy);
-    pCopy = (T_ScanResults*) calloc(1, sizeof(T_ScanResults));
+    pCopy = (wld_scanResults_t*) calloc(1, sizeof(wld_scanResults_t));
     amxc_llist_for_each(it, &results->ssids) {
-        T_ScanResult_SSID* pItem = amxc_container_of(it, T_ScanResult_SSID, it);
+        wld_scanResultSSID_t* pItem = amxc_container_of(it, wld_scanResultSSID_t, it);
         amxc_llist_it_take(&pItem->it);
         amxc_llist_append(&pCopy->ssids, &pItem->it);
     }
@@ -947,7 +947,7 @@ static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
 
 static int s_nlSend_getScanResults(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
     int fd = mockGetScanResults.stateMock.pipeFds[1];
-    T_ScanResults* pResults = (T_ScanResults*) mockGetScanResults.expectedData;
+    wld_scanResults_t* pResults = (wld_scanResults_t*) mockGetScanResults.expectedData;
     uint32_t genId = 2;
     uint32_t wiphy = 1;
     uint32_t ifIndex = 14;
@@ -955,7 +955,7 @@ static int s_nlSend_getScanResults(struct nl_sock* sock _UNUSED, struct nl_msg* 
     bool hasMulti = (amxc_llist_size(&pResults->ssids) > 1);
 
     amxc_llist_for_each(it, &pResults->ssids) {
-        T_ScanResult_SSID* bss = amxc_container_of(it, T_ScanResult_SSID, it);
+        wld_scanResultSSID_t* bss = amxc_container_of(it, wld_scanResultSSID_t, it);
         struct nl_msg* msgReply = s_mirrorNlMsg(msg, NL80211_CMD_NEW_SCAN_RESULTS, hasMulti ? NLM_F_MULTI : 0);
         NL_ATTRS(attribs,
                  ARR(NL_ATTR_VAL(NL80211_ATTR_GENERATION, genId),
@@ -1018,7 +1018,7 @@ static int s_test_getScanResults_setup(void** state) {
 static int s_test_getScanResults_teardown(void** state) {
     cmdMockAsyncTest_t* pMockGetScanResults = *state;
     s_stateMockDeInit(&pMockGetScanResults->stateMock);
-    T_ScanResults* results = (T_ScanResults*) pMockGetScanResults->resultingData;
+    wld_scanResults_t* results = (wld_scanResults_t*) pMockGetScanResults->resultingData;
     wld_scan_cleanupScanResults(results);
     free(results);
     return 0;
@@ -1029,9 +1029,9 @@ static void test_wld_nl80211_getScanResults(void** mockaState _UNUSED) {
     //tweak: override nl_send API to catch request and build reply locally
     mockGetScanResults.stateMock.state->fNlSendPriv = s_nlSend_getScanResults;
 
-    T_ScanResults expectedList;
+    wld_scanResults_t expectedList;
     amxc_llist_init(&expectedList.ssids);
-    T_ScanResult_SSID aItems[] = {
+    wld_scanResultSSID_t aItems[] = {
         {
             .ssid = "Neigh_1_2G_20M",
             .ssidLen = swl_str_len("Neigh_1_2G_20M"),
@@ -1050,7 +1050,7 @@ static void test_wld_nl80211_getScanResults(void** mockaState _UNUSED) {
         },
     };
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(aItems); i++) {
-        T_ScanResult_SSID* pResultItem = &aItems[i];
+        wld_scanResultSSID_t* pResultItem = &aItems[i];
         amxc_llist_it_init(&pResultItem->it);
         amxc_llist_append(&expectedList.ssids, &pResultItem->it);
     }
@@ -1066,15 +1066,15 @@ static void test_wld_nl80211_getScanResults(void** mockaState _UNUSED) {
         wld_nl80211_getAllCounters(&counters);
     } while(counters.reqPending > 0);
 
-    T_ScanResults* resultingList = (T_ScanResults*) mockGetScanResults.resultingData;
+    wld_scanResults_t* resultingList = (wld_scanResults_t*) mockGetScanResults.resultingData;
     assert_non_null(resultingList);
 
     assert_int_equal(amxc_llist_size(&expectedList.ssids), amxc_llist_size(&resultingList->ssids));
     amxc_llist_for_each(it, &expectedList.ssids) {
-        T_ScanResult_SSID* pExpectedItem = amxc_container_of(it, T_ScanResult_SSID, it);
+        wld_scanResultSSID_t* pExpectedItem = amxc_container_of(it, wld_scanResultSSID_t, it);
         bool found = false;
         amxc_llist_for_each(it2, &resultingList->ssids) {
-            T_ScanResult_SSID* pResultItem = amxc_container_of(it2, T_ScanResult_SSID, it);
+            wld_scanResultSSID_t* pResultItem = amxc_container_of(it2, wld_scanResultSSID_t, it);
             if(swl_mac_binMatches(&pResultItem->bssid, &pExpectedItem->bssid)) {
                 found = true;
                 assert_int_equal(pResultItem->channel, pExpectedItem->channel);

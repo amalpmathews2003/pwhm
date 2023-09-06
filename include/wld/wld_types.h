@@ -71,8 +71,15 @@ typedef struct S_SSID T_SSID;
 typedef struct S_EndPoint T_EndPoint;
 typedef struct vendor vendor_t;
 typedef struct wld_tinyRoam wld_tinyRoam_t;
-typedef struct wld_scanResults T_ScanResults;
+/*
+ * Deprecated types with old syntax T_xxx , only defined for backward compatibility with legacy code
+ * Please use wld_xxx_t types for new development.
+ */
+typedef struct wld_spectrumChannelInfoEntry spectrumChannelInfoEntry_t;
 typedef struct wld_scanArgs T_ScanArgs;
+typedef struct wld_scanResultSSID T_ScanResult_SSID;
+typedef struct wld_scanResults T_ScanResults;
+typedef struct wld_airStats T_Airstats;
 
 typedef enum {
     COM_DIR_TRANSMIT,

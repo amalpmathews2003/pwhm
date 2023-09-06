@@ -980,7 +980,7 @@ swl_rc_ne wld_nl80211_parseChanSurveyInfo(struct nlattr* tb[], wld_nl80211_chann
     return rc;
 }
 
-static void s_copyScanInfoFromIEs(T_ScanResult_SSID* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
     if(pWirelessDevIE->operChanInfo.channel > 0) {
         pResult->channel = pWirelessDevIE->operChanInfo.channel;
     }
@@ -994,7 +994,7 @@ static void s_copyScanInfoFromIEs(T_ScanResult_SSID* pResult, swl_wirelessDevice
     pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
 }
 
-swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], T_ScanResult_SSID* pResult) {
+swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t* pResult) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(tb, rc, ME, "NULL");
     ASSERT_NOT_NULL(pResult, rc, ME, "NULL");

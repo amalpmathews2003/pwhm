@@ -200,7 +200,22 @@ swl_rc_ne wld_rad_nl80211_getSurveyInfo(T_Radio* pRadio, wld_nl80211_channelSurv
  *         SWL_RC_CONTINUE if survey info is not of the central channel being used
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats* pStats, wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo);
+swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, wld_airStats_t* pStats, wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo);
+
+/*
+ * @brief update radio usage statistics (spectrum info list)
+ * based on retrieved channel survey results
+ *
+ * @param pRadio pointer to radio context
+ * @param pOutSpectrumResults spectrum results filled with process survey info
+ * @param pChanSurveyInfoList array of channel survey info
+ * @param nChanSurveyInfo count of channel survey array entries
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_updateUsageStatsFromSurveyInfo(T_Radio* pRadio, amxc_llist_t* pOutSpectrumResults,
+                                                         wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList, uint32_t nChanSurveyInfo);
 
 /*
  * @brief get radio air statistics of the central channel being used
@@ -212,7 +227,7 @@ swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats*
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRad, T_Airstats* stats);
+swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRad, wld_airStats_t* stats);
 
 /*
  * @brief configure radio's tx/rx antennas

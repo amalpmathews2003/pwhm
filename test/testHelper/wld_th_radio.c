@@ -70,8 +70,8 @@
 #include <stdarg.h>
 #include <cmocka.h>
 
-#include "wld_th_radio.h"
 #include "wld.h"
+#include "wld_th_radio.h"
 #include "wld_util.h"
 #include "wld_th_mockVendor.h"
 #include "test-toolbox/ttb.h"
@@ -245,12 +245,12 @@ int wld_th_rad_startScan(T_Radio* rad) {
     return SWL_RC_OK;
 }
 
-int wld_th_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {
+int wld_th_rad_getScanResults(T_Radio* pRad, wld_scanResults_t* results) {
     assert_non_null(pRad);
     assert_non_null(results);
     amxc_llist_for_each(it, &pRad->scanState.lastScanResults.ssids) {
-        T_ScanResult_SSID* pResult = amxc_container_of(it, T_ScanResult_SSID, it);
-        T_ScanResult_SSID* pCopy = calloc(1, sizeof(T_ScanResult_SSID));
+        wld_scanResultSSID_t* pResult = amxc_container_of(it, wld_scanResultSSID_t, it);
+        wld_scanResultSSID_t* pCopy = calloc(1, sizeof(wld_scanResultSSID_t));
         assert_non_null(pCopy);
         memcpy(pCopy, pResult, sizeof(*pCopy));
         amxc_llist_it_init(&pCopy->it);

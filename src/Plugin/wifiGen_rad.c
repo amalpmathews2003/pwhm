@@ -71,6 +71,7 @@
 #include "wld/wld_linuxIfStats.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
+#include "wld/wld_eventing.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_hapd.h"
 #include "wifiGen_events.h"
@@ -93,6 +94,11 @@ SWL_TABLE(sPowerTable,
               ));
 
 static const char* s_defaultRegDomain = "DE";
+
+static void s_radScanStatusUpdateCb(wld_scanEvent_t* event);
+static wld_event_callback_t s_radScanStatusCbContainer = {
+    .callback = (wld_event_callback_fun) s_radScanStatusUpdateCb
+};
 
 int wifiGen_rad_miscHasSupport(T_Radio* pRad, T_AccessPoint* pAp, char* buf, int bufsize) {
     ASSERTS_NOT_NULL(buf, 0, ME, "NULL");
@@ -117,13 +123,16 @@ int wifiGen_rad_createHook(T_Radio* pRad) {
     }
     wifiGen_hapd_init(pRad);
     wifiGen_setRadEvtHandlers(pRad);
+    wld_event_add_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
     return SWL_RC_OK;
 }
 
 void wifiGen_rad_destroyHook(T_Radio* pRad) {
+    wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
     wifiGen_hapd_cleanup(pRad);
     wld_rad_nl80211_delEvtListener(pRad);
     free(pRad->pLastSurvey);
+    free(pRad->pLastAirStats);
     if(pRad->wlRadio_SK > 0) {
         close(pRad->wlRadio_SK);
         pRad->wlRadio_SK = -1;
@@ -742,13 +751,53 @@ int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad) {
     return 0;
 }
 
-swl_rc_ne wifiGen_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {
+/*
+ * fill missing noise of detected neigh BSS with spectrum results
+ * already updated, after scan completed on all/selected channels
+ */
+static void s_updateScanResultsWithSpectrumInfo(wld_scanResults_t* pScanResults, wld_spectrumChannelInfoEntry_t* pSpectrumEntry) {
+    ASSERTS_NOT_NULL(pScanResults, , ME, "NULL");
+    ASSERTS_NOT_NULL(pSpectrumEntry, , ME, "NULL");
+    ASSERTS_NOT_EQUALS(pSpectrumEntry->noiselevel, 0, , ME, "noise is null");
+    amxc_llist_for_each(it, &pScanResults->ssids) {
+        wld_scanResultSSID_t* pNeighBss = amxc_container_of(it, wld_scanResultSSID_t, it);
+        if(pNeighBss->channel != pSpectrumEntry->channel) {
+            continue;
+        }
+        pNeighBss->noise = pSpectrumEntry->noiselevel;
+        pNeighBss->snr = pNeighBss->rssi - pNeighBss->noise;
+        if(pNeighBss->snr < 0) {
+            pNeighBss->snr = 0;
+        }
+    }
+}
+
+static void s_radScanStatusUpdateCb(wld_scanEvent_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    T_Radio* pRadio = event->pRad;
+    ASSERT_NOT_NULL(pRadio, , ME, "NULL");
+    if(event->start || !event->success) {
+        return;
+    }
+    //refresh spectrum info based on last scan
+    amxc_llist_t* pSpectrumResults = &pRadio->scanState.spectrumResults;
+    swl_rc_ne rc = pRadio->pFA->mfn_wrad_getspectruminfo(pRadio, false, pSpectrumResults);
+    ASSERT_FALSE(rc < SWL_RC_OK, , ME, "%s: fail to spectrum info", pRadio->Name);
+    //fill missing noise and SNR values in ssid scan result entries
+    wld_scanResults_t* pScanResults = &pRadio->scanState.lastScanResults;
+    amxc_llist_for_each(it, pSpectrumResults) {
+        wld_spectrumChannelInfoEntry_t* pSpectrumEntry = amxc_container_of(it, wld_spectrumChannelInfoEntry_t, it);
+        s_updateScanResultsWithSpectrumInfo(pScanResults, pSpectrumEntry);
+    }
+}
+
+swl_rc_ne wifiGen_rad_getScanResults(T_Radio* pRad, wld_scanResults_t* results) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(results, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_scan_cleanupScanResults(results);
     amxc_llist_for_each(it, &pRad->scanState.lastScanResults.ssids) {
-        T_ScanResult_SSID* pResult = amxc_container_of(it, T_ScanResult_SSID, it);
-        T_ScanResult_SSID* pCopy = calloc(1, sizeof(T_ScanResult_SSID));
+        wld_scanResultSSID_t* pResult = amxc_container_of(it, wld_scanResultSSID_t, it);
+        wld_scanResultSSID_t* pCopy = calloc(1, sizeof(wld_scanResultSSID_t));
         if(pCopy == NULL) {
             wld_scan_cleanupScanResults(results);
             return SWL_RC_ERROR;
@@ -760,47 +809,36 @@ swl_rc_ne wifiGen_rad_getScanResults(T_Radio* pRad, T_ScanResults* results) {
     return SWL_RC_OK;
 }
 
-swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, T_Airstats* pStats) {
+swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, wld_airStats_t* pStats) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pStats, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_rad_nl80211_getAirstats(pRad, pStats);
 }
 
 
-swl_rc_ne wifiGen_rad_getSpectrumInfo(T_Radio* rad, bool update _UNUSED, amxc_llist_t* llSpectrumChannelInfo) {
+swl_rc_ne wifiGen_rad_getSpectrumInfo(T_Radio* rad, bool update, amxc_llist_t* llSpectrumChannelInfo) {
+    swl_rc_ne rc;
     ASSERT_NOT_NULL(rad, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    uint32_t nChanSurveyInfo = 0;
-    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList = NULL;
-    wld_rad_nl80211_getSurveyInfo(rad, &pChanSurveyInfoList, &nChanSurveyInfo);
-
-    amxd_object_t* obj_scan = amxd_object_get(rad->pBus, "ScanResults");
-    amxd_object_t* chanTemplate = amxd_object_get(obj_scan, "SurroundingChannels");
-    amxd_object_t* chanObj = NULL;
-    uint32_t nrCoChannel = 0;
-
-    for(uint32_t i = 0; i < nChanSurveyInfo; i++) {
-        swl_chanspec_t chanSpec;
-        swl_chanspec_channelFromMHz(&chanSpec, pChanSurveyInfoList[i].frequencyMHz);
-        spectrumChannelInfoEntry_t* pEntry = calloc(1, sizeof(spectrumChannelInfoEntry_t));
-        ASSERT_NOT_NULL(pEntry, false, ME, "NULL");
-
-        amxd_object_for_each(instance, it, chanTemplate) {
-            chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
-            if(amxd_object_get_uint16_t(chanObj, "Channel", NULL) == chanSpec.channel) {
-                amxd_object_t* apTemplate = amxd_object_get(chanObj, "Accesspoint");
-                nrCoChannel = amxd_object_get_instance_count(apTemplate);
-                break;
-            }
-        }
-
-        pEntry->channel = chanSpec.channel;
-        pEntry->nrCoChannelAP = nrCoChannel;
-        pEntry->bandwidth = rad->runningChannelBandwidth;
-        pEntry->noiselevel = pChanSurveyInfoList[i].noiseDbm;
-        amxc_llist_append(llSpectrumChannelInfo, &pEntry->it);
-
+    if(update) {
+        //force scan to get updated whole spectrum info
+        rc = wld_scan_start(rad, SCAN_TYPE_SPECTRUM, "ForcedSpectrumRefresh");
+        ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to force spectrum scan", rad->Name);
+        return SWL_RC_CONTINUE;
     }
 
-    return SWL_RC_OK;
+    //just refresh current channel info
+    uint32_t nChanSurveyInfo = 0;
+    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList = NULL;
+    rc = wld_rad_nl80211_getSurveyInfo(rad, &pChanSurveyInfoList, &nChanSurveyInfo);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to get survey info", rad->Name);
+    rc = wld_rad_nl80211_updateUsageStatsFromSurveyInfo(rad, llSpectrumChannelInfo, pChanSurveyInfoList, nChanSurveyInfo);
+    free(pChanSurveyInfoList);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to update usage stats", rad->Name);
+    amxc_llist_for_each(it, llSpectrumChannelInfo) {
+        wld_spectrumChannelInfoEntry_t* pEntry = amxc_container_of(it, wld_spectrumChannelInfoEntry_t, it);
+        pEntry->nrCoChannelAP = wld_util_countScanResultEntriesPerChannel(&rad->scanState.lastScanResults, pEntry->channel);
+    }
+
+    return rc;
 }

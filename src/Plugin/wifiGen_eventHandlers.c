@@ -330,7 +330,7 @@ void wifiGen_refreshVapsIfIdx(T_Radio* pRad) {
     }
 }
 
-static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
+static void s_scanResultsCb(void* priv, swl_rc_ne rc, wld_scanResults_t* results) {
     T_Radio* pRad = (T_Radio*) priv;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(results, , ME, "NULL");
@@ -341,7 +341,7 @@ static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
     }
     wld_scan_cleanupScanResults(&pRad->scanState.lastScanResults);
     amxc_llist_for_each(it, &results->ssids) {
-        T_ScanResult_SSID* pResult = amxc_container_of(it, T_ScanResult_SSID, it);
+        wld_scanResultSSID_t* pResult = amxc_container_of(it, wld_scanResultSSID_t, it);
         SAH_TRACEZ_INFO(ME, "scan result entry: bssid("SWL_MAC_FMT ") ssid(%s) signal(%d dbm)",
                         SWL_MAC_ARG(pResult->bssid.bMac), pResult->ssid, pResult->rssi);
         amxc_llist_it_take(&pResult->it);

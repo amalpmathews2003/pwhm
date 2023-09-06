@@ -138,7 +138,7 @@ swl_rc_ne wld_nl80211_parseChanSurveyInfo(struct nlattr* tb[], wld_nl80211_chann
  * @return SWL_RC_OK parsing done successfully
  *         <= SWL_RC_ERROR parsing error
  */
-swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], T_ScanResult_SSID* pResult);
+swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t* pResult);
 
 /*
  * @brief parse nl msg attributes into mgmt frame struct

@@ -409,7 +409,7 @@ swl_rc_ne wld_nl80211_abortScan(wld_nl80211_state_t* state, uint32_t ifIndex);
  * @param priv Private user data
  * @param results pointer to scan results structure
  */
-typedef void (* scanResultsCb_f) (void* priv, swl_rc_ne rc, T_ScanResults* results);
+typedef void (* scanResultsCb_f) (void* priv, swl_rc_ne rc, wld_scanResults_t* results);
 
 /*
  * @brief subscribe to get asynchronous scan results

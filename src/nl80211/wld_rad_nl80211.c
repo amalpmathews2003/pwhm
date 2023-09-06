@@ -67,6 +67,7 @@
 #include "swl/swl_common.h"
 #include "swl/swl_common_time.h"
 #include "wld_radio.h"
+#include "wld_util.h"
 
 #define ME "nlRad"
 
@@ -179,7 +180,12 @@ swl_rc_ne wld_rad_nl80211_getSurveyInfo(T_Radio* pRadio, wld_nl80211_channelSurv
     return wld_nl80211_getSurveyInfo(wld_nl80211_getSharedState(), ifIndex, ppChanSurveyInfo, pnrChanSurveyInfo);
 }
 
-swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats* pStats, wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo) {
+/*
+ * lowest period since last air stats calculation in ms
+ * to avoid too small diff counters
+ */
+#define MIN_AIR_STATS_REFRESH_PERIOD_MS 100
+swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, wld_airStats_t* pStats, wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pStats, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pChanSurveyInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -192,6 +198,23 @@ swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats*
                          pRadio->Name, pChanSurveyInfo->frequencyMHz);
         return SWL_RC_ERROR;
     }
+
+    swl_timeSpecMono_t nowTs;
+    swl_timespec_getMono(&nowTs);
+    uint32_t nowTsMsU32 = swl_timespec_toMs(&nowTs);
+
+    if(pRadio->pLastAirStats == NULL) {
+        pRadio->pLastAirStats = calloc(1, sizeof(wld_airStats_t));
+        if(pRadio->pLastAirStats == NULL) {
+            SAH_TRACEZ_ERROR(ME, "%s: fail to alloc air stats cache", pRadio->Name);
+            return SWL_RC_ERROR;
+        }
+    } else if((nowTsMsU32 - pRadio->pLastAirStats->timestamp) <= MIN_AIR_STATS_REFRESH_PERIOD_MS) {
+        SAH_TRACEZ_INFO(ME, "%s: too frequent polling: return cached air stats", pRadio->Name);
+        memcpy(pStats, pRadio->pLastAirStats, sizeof(*pStats));
+        return SWL_RC_OK;
+    }
+
     /*
      * cache last active chan survey info, per radio
      * as nl80211 survey info include cumulative time values
@@ -222,7 +245,7 @@ swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats*
     memcpy(pLastActiveChanSurveyInfo, pChanSurveyInfo, sizeof(*pChanSurveyInfo));
 
     pChanSurveyInfo = &currChanSurveyInfo;
-    pStats->timestamp = swl_time_getMonoSec();
+    pStats->timestamp = nowTsMsU32;
     pStats->noise = pChanSurveyInfo->noiseDbm;
     //use ratio, when timeOn value is beyond total_time variable max type value
     uint64_t base = SWL_MIN(pChanSurveyInfo->timeOn, SWL_BIT_SHIFT(SWL_BIT_SIZE(pStats->total_time)) - 1);
@@ -238,11 +261,12 @@ swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, T_Airstats*
         pStats->other_time = ((pChanSurveyInfo->timeBusy - wifiTime) * base) / pChanSurveyInfo->timeOn;
     }
     pStats->free_time = ((pChanSurveyInfo->timeOn - pChanSurveyInfo->timeBusy) * base) / pChanSurveyInfo->timeOn;
-    pStats->load = (pChanSurveyInfo->timeBusy * 100) / pChanSurveyInfo->timeOn;
+    pStats->load = SWL_MAX((bool) (pChanSurveyInfo->timeBusy > 0), SWL_MIN((pChanSurveyInfo->timeBusy * 100) / pChanSurveyInfo->timeOn, 100U));
+    memcpy(pRadio->pLastAirStats, pStats, sizeof(*pStats));
     return SWL_RC_OK;
 }
 
-swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRadio, T_Airstats* pStats) {
+swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRadio, wld_airStats_t* pStats) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pStats, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -266,6 +290,44 @@ swl_rc_ne wld_rad_nl80211_getAirstats(T_Radio* pRadio, T_Airstats* pStats) {
     }
     free(pChanSurveyInfoList);
     return retVal;
+}
+
+swl_rc_ne wld_rad_nl80211_updateUsageStatsFromSurveyInfo(T_Radio* pRadio, amxc_llist_t* pOutSpectrumResults,
+                                                         wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList, uint32_t nChanSurveyInfo) {
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pOutSpectrumResults, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pChanSurveyInfoList, SWL_RC_OK, ME, "Empty");
+
+    for(uint32_t i = 0; i < nChanSurveyInfo; i++) {
+        wld_spectrumChannelInfoEntry_t chanInfo;
+        memset(&chanInfo, 0, sizeof(chanInfo));
+        swl_chanspec_t chanSpec;
+        wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo = &pChanSurveyInfoList[i];
+        if(swl_chanspec_channelFromMHz(&chanSpec, pChanSurveyInfo->frequencyMHz) < SWL_RC_OK) {
+            continue;
+        }
+
+        chanInfo.channel = chanSpec.channel;
+        chanInfo.bandwidth = SWL_BW_20MHZ;
+        chanInfo.noiselevel = pChanSurveyInfo->noiseDbm;
+        wld_airStats_t airStats;
+        memset(&airStats, 0, sizeof(airStats));
+        if(!pChanSurveyInfo->inUse) {
+            if((pChanSurveyInfo->timeOn > 0) && (pChanSurveyInfo->timeBusy <= pChanSurveyInfo->timeOn)) {
+                chanInfo.availability = SWL_MIN((((pChanSurveyInfo->timeOn - pChanSurveyInfo->timeBusy) * 100) / pChanSurveyInfo->timeOn), 100LLU);
+            }
+        } else if(wld_rad_nl80211_getAirStatsFromSurveyInfo(pRadio, &airStats, pChanSurveyInfo) == SWL_RC_OK) {
+            if(airStats.total_time > 0) {
+                uint64_t ourTime = airStats.bss_receive_time + airStats.bss_transmit_time + airStats.other_bss_time;
+                chanInfo.ourUsage = SWL_MAX((bool) (ourTime > 0), SWL_MIN(((ourTime * 100) / airStats.total_time), 100U));
+                chanInfo.availability = SWL_MIN(((airStats.free_time * 100) / airStats.total_time), 100);
+            }
+        }
+
+        wld_util_addorUpdateSpectrumEntry(pOutSpectrumResults, &chanInfo);
+    }
+
+    return SWL_RC_OK;
 }
 
 swl_rc_ne wld_rad_nl80211_setAntennas(T_Radio* pRadio, uint32_t txMapAnt, uint32_t rxMapAnt) {
@@ -364,7 +426,7 @@ static void s_setScanDuration(T_Radio* pRadio, wld_nl80211_scanParams_t* params)
 }
 
 swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags) {
-    T_ScanArgs* args = &pRadio->scanState.cfg.scanArguments;
+    wld_scanArgs_t* args = &pRadio->scanState.cfg.scanArguments;
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
@@ -436,47 +498,10 @@ struct getScanResultsData_s {
     scanResultsCb_f fScanResultsCb;
     void* priv;
 };
-/*
- * fill missing noise of detected neigh BSS with survey results
- * already updated, after scan completed on all/selected channels
- */
-static void s_updateNeighBssMeasNoise(T_Radio* pRadio, T_ScanResults* results) {
-    ASSERTS_NOT_NULL(pRadio, , ME, "NULL");
-    ASSERTS_NOT_NULL(results, , ME, "NULL");
-    ASSERTS_TRUE(amxc_llist_size(&results->ssids) > 0, , ME, "No neigh BSS");
-    uint32_t nChanSurveyInfo = 0;
-    wld_nl80211_channelSurveyInfo_t* pChanSurveyInfoList = NULL;
-    swl_rc_ne rc = wld_rad_nl80211_getSurveyInfo(pRadio, &pChanSurveyInfoList, &nChanSurveyInfo);
-    if((rc == SWL_RC_OK) && (pChanSurveyInfoList != NULL) && (nChanSurveyInfo > 0)) {
-        for(uint32_t i = 0; i < nChanSurveyInfo; i++) {
-            if(pChanSurveyInfoList[i].noiseDbm == 0) {
-                continue;
-            }
-            swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
-            if((swl_chanspec_channelFromMHz(&chanSpec, pChanSurveyInfoList[i].frequencyMHz) < SWL_RC_OK) ||
-               (chanSpec.band != pRadio->operatingFrequencyBand)) {
-                continue;
-            }
-            amxc_llist_for_each(it, &results->ssids) {
-                T_ScanResult_SSID* pNeighBss = amxc_container_of(it, T_ScanResult_SSID, it);
-                if(pNeighBss->channel != (int32_t) chanSpec.channel) {
-                    continue;
-                }
-                pNeighBss->noise = pChanSurveyInfoList[i].noiseDbm;
-                pNeighBss->snr = pNeighBss->rssi - pNeighBss->noise;
-                if(pNeighBss->snr < 0) {
-                    pNeighBss->snr = 0;
-                }
-            }
-        }
-    }
-    free(pChanSurveyInfoList);
-}
-static void s_scanResultsCb(void* priv, swl_rc_ne rc, T_ScanResults* results) {
+static void s_scanResultsCb(void* priv, swl_rc_ne rc, wld_scanResults_t* results) {
     struct getScanResultsData_s* pScanResultsData = (struct getScanResultsData_s*) priv;
     ASSERTS_NOT_NULL(pScanResultsData, , ME, "NULL");
     if(pScanResultsData->fScanResultsCb != NULL) {
-        s_updateNeighBssMeasNoise(pScanResultsData->pRadio, results);
         pScanResultsData->fScanResultsCb(pScanResultsData->priv, rc, results);
     }
     free(pScanResultsData);

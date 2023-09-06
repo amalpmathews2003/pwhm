@@ -677,11 +677,11 @@ swl_rc_ne wld_nl80211_abortScan(wld_nl80211_state_t* state, uint32_t ifIndex) {
 
 struct getScanResultsData_s {
     scanResultsCb_f fScanResultsCb;
-    T_ScanResults results;
+    wld_scanResults_t results;
     void* priv;
 };
 static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
-    T_ScanResult_SSID* pResult = NULL;
+    wld_scanResultSSID_t* pResult = NULL;
     struct getScanResultsData_s* requestData = (struct getScanResultsData_s*) priv;
     if(rc <= SWL_RC_ERROR) {
         goto scanFinish;
@@ -697,7 +697,7 @@ static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) 
     }
     struct genlmsghdr* gnlh = (struct genlmsghdr*) nlmsg_data(nlh);
     ASSERTI_EQUALS(gnlh->cmd, NL80211_CMD_NEW_SCAN_RESULTS, SWL_RC_OK, ME, "unexpected cmd %d", gnlh->cmd);
-    T_ScanResult_SSID result;
+    wld_scanResultSSID_t result;
     memset(&result, 0, sizeof(result));
     struct nlattr* tb[NL80211_ATTR_MAX + 1] = {};
     if((nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL) != 0) ||
@@ -708,12 +708,12 @@ static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) 
     if(rc == SWL_RC_CONTINUE) {
         SAH_TRACEZ_INFO(ME, "skip nl msg due to partial parsing");
     } else if(requestData) {
-        pResult = calloc(1, sizeof(T_ScanResult_SSID));
+        pResult = calloc(1, sizeof(wld_scanResultSSID_t));
         if(pResult == NULL) {
             SAH_TRACEZ_ERROR(ME, "fail to alloc scan result element");
             goto scanFinish;
         }
-        memcpy(pResult, &result, sizeof(T_ScanResult_SSID));
+        memcpy(pResult, &result, sizeof(wld_scanResultSSID_t));
         amxc_llist_it_init(&pResult->it);
         amxc_llist_append(&requestData->results.ssids, &pResult->it);
     }
@@ -722,7 +722,7 @@ scanFinish:
     ASSERTS_NOT_NULL(requestData, rc, ME, "no request data");
     SAH_TRACEZ_INFO(ME, "rc:%d nResults:%d", rc, (int) amxc_llist_size(&requestData->results.ssids));
     amxc_llist_for_each(it, &requestData->results.ssids) {
-        pResult = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
+        pResult = amxc_llist_it_get_data(it, wld_scanResultSSID_t, it);
         SAH_TRACEZ_INFO(ME, "scan result entry: bssid("SWL_MAC_FMT ") ssid(%s) signal(%d dbm)",
                         SWL_MAC_ARG(pResult->bssid.bMac), pResult->ssid, pResult->rssi);
     }
@@ -731,7 +731,7 @@ scanFinish:
     }
     SAH_TRACEZ_INFO(ME, "clean request data");
     amxc_llist_for_each(it, &requestData->results.ssids) {
-        pResult = amxc_llist_it_get_data(it, T_ScanResult_SSID, it);
+        pResult = amxc_llist_it_get_data(it, wld_scanResultSSID_t, it);
         amxc_llist_it_take(&pResult->it);
         free(pResult);
     }

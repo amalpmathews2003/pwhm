@@ -84,7 +84,7 @@ int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards);
 void wifiGen_rad_initBands(T_Radio* pRad);
 swl_rc_ne wifiGen_rad_stats(T_Radio* pRad);
 int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad);
-swl_rc_ne wifiGen_rad_getScanResults(T_Radio* rad, T_ScanResults* results);
-swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, T_Airstats* pStats);
+swl_rc_ne wifiGen_rad_getScanResults(T_Radio* rad, wld_scanResults_t* results);
+swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, wld_airStats_t* pStats);
 swl_rc_ne wifiGen_rad_getSpectrumInfo(T_Radio* rad, bool update _UNUSED, amxc_llist_t* llSpectrumChannelInfo);
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_RAD_H_ */

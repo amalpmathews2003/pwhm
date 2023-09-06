@@ -2391,3 +2391,49 @@ swl_rc_ne wld_util_getManagementFrameParameters(T_Radio* pRad, wld_util_manageme
 
     return SWL_RC_OK;
 }
+
+uint32_t wld_util_countScanResultEntriesPerChannel(wld_scanResults_t* results, swl_channel_t channel) {
+    ASSERTS_NOT_NULL(results, 0, ME, "NULL");
+    uint32_t count = 0;
+    amxc_llist_for_each(it, &results->ssids) {
+        wld_scanResultSSID_t* pNeighBss = amxc_container_of(it, wld_scanResultSSID_t, it);
+        if(pNeighBss->channel != (int32_t) channel) {
+            continue;
+        }
+        count++;
+    }
+    return count;
+}
+
+wld_spectrumChannelInfoEntry_t* wld_util_getSpectrumEntryByChannel(amxc_llist_t* pSpectrumInfoList, swl_channel_t channel) {
+    ASSERTS_NOT_NULL(pSpectrumInfoList, NULL, ME, "NULL");
+    amxc_llist_for_each(it, pSpectrumInfoList) {
+        wld_spectrumChannelInfoEntry_t* pEntry = amxc_container_of(it, wld_spectrumChannelInfoEntry_t, it);
+        if(pEntry->channel == channel) {
+            return pEntry;
+        }
+    }
+    return NULL;
+}
+
+wld_spectrumChannelInfoEntry_t* wld_util_addorUpdateSpectrumEntry(amxc_llist_t* llSpectrumChannelInfo, wld_spectrumChannelInfoEntry_t* pData) {
+    ASSERT_NOT_NULL(llSpectrumChannelInfo, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(pData, NULL, ME, "NULL");
+    ASSERTI_TRUE(pData->channel > 0, NULL, ME, "invalid channel");
+    bool isNew = false;
+    wld_spectrumChannelInfoEntry_t* pEntry = wld_util_getSpectrumEntryByChannel(llSpectrumChannelInfo, pData->channel);
+    if(pEntry == NULL) {
+        pEntry = calloc(1, sizeof(wld_spectrumChannelInfoEntry_t));
+        ASSERT_NOT_NULL(pEntry, NULL, ME, "Fail to allocate entry");
+        isNew = true;
+    }
+    amxc_llist_it_t it = pEntry->it;
+    memcpy(pEntry, pData, sizeof(wld_spectrumChannelInfoEntry_t));
+    if(isNew) {
+        amxc_llist_append(llSpectrumChannelInfo, &pEntry->it);
+    } else {
+        pEntry->it = it;
+    }
+    return pEntry;
+}
+
