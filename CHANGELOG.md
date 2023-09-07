@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.9.0 - 2023-09-07(15:29:20 +0000)
+
+### Other
+
+- [tr181-pcm] All the plugins that are register to PCM should set the pcm_svc_config
+
 ## Release v4.8.1 - 2023-09-07(07:48:11 +0000)
 
 ### Other
