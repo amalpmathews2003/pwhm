@@ -687,6 +687,13 @@ define probelist_t{
 		}
 
 		/**
+		 * <p>Max number of SSIDs supported by this radio. </p>
+		 */
+		%read-only uint32 MaxSupportedSSIDs {
+			default 1;
+		}
+
+		/**
 		 * <p>The desired channel bandwidth (applicable to 802.11n specifications
 		 * only). Enumeration of: </p>
 		 * <ul>

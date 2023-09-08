@@ -1709,6 +1709,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             wld_rad_updateOperatingClass(pR);
         }
 
+        amxd_object_set_uint32_t(object, "MaxSupportedSSIDs", pR->maxNrHwBss);
+
         /* 'AutoChannelSupported' Indicates whether automatic
          *  channel selection is supported by this  radio. IF false,
          *  then AutoChannelEnable MUST be FALSE! */
