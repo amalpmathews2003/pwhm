@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.10.0 - 2023-09-11(10:07:02 +0000)
+
+### Other
+
+- fill scanned neighBss noise and spectrum chan nbColocAp
+
 ## Release v4.9.0 - 2023-09-07(15:29:20 +0000)
 
 ### Other
