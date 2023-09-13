@@ -91,6 +91,10 @@
     //main files
     definition_file = "${name}_definitions.odl";
 
+    privileges = {
+        keep-all = true
+    };
+
     sahtrace = {
         type = "syslog",
         level = 500
