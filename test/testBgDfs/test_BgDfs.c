@@ -175,111 +175,60 @@ static void test_startClear(void** state _UNUSED) {
     clearStructs();
     swl_channel_t channel = 0;
     swl_bandwidth_e bandwidth = SWL_BW_20MHZ;
-    bool externalClear = false;
 
-    wld_bgdfs_notifyClearStarted(&pRad, channel, bandwidth, externalClear);
+    for(uint8_t type = BGDFS_TYPE_CLEAR; type < BGDFS_TYPE_MAX; type++) {
+        wld_bgdfs_notifyClearStarted(&pRad, channel, bandwidth, type);
 
-    assert_int_equal(pRad.bgdfs_config.channel, channel);
-    assert_int_equal(pRad.bgdfs_config.bandwidth, bandwidth);
-    assert_int_equal(pRad.bgdfs_config.status, BGDFS_STATUS_CLEAR);
+        assert_int_equal(pRad.bgdfs_config.channel, channel);
+        assert_int_equal(pRad.bgdfs_config.bandwidth, bandwidth);
+        assert_int_equal(pRad.bgdfs_config.type, type);
+        assert_int_equal(pRad.bgdfs_stats.nrClearStart[type], 1);
+    }
 }
 
-static void test_startClearExternal(void** state _UNUSED) {
-    clearStructs();
-    swl_channel_t channel = 0;
-    swl_bandwidth_e bandwidth = SWL_BW_20MHZ;
-    bool externalClear = true;
-
-    wld_bgdfs_notifyClearStarted(&pRad, channel, bandwidth, externalClear);
-
-    assert_int_equal(pRad.bgdfs_config.channel, channel);
-    assert_int_equal(pRad.bgdfs_config.bandwidth, bandwidth);
-    assert_int_equal(pRad.bgdfs_config.status, BGDFS_STATUS_CLEAR_EXT);
-}
-
-static void test_endClearResultOKClearExternal(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR_EXT;
-    pRad.bgdfs_config.enable = true;
-    pRad.bgdfs_config.available = true;
-
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OK);
-
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccessExt, 1);
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccess, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadarExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOtherExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOther, 0);
-
-    assert_int_equal(pRad.bgdfs_config.channel, 0);
-    assert_int_equal(pRad.bgdfs_config.bandwidth, SWL_BW_AUTO);
-    assert_int_equal(pRad.bgdfs_config.status, BGDFS_STATUS_IDLE);
-}
 static void test_endClearResultOKClear(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR;
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OK);
+    for(uint8_t type = BGDFS_TYPE_CLEAR; type < BGDFS_TYPE_MAX; type++) {
+        clearStructs();
+        pRad.bgdfs_config.type = type;
+        wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OK);
 
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccessExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccess, 1);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadarExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOtherExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOther, 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearSuccess[type], 1);
+        assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar[type], 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearFailOther[type], 0);
+        /* if not BGDFS_TYPE_CLEAR_CONTINUOUS, it will stop */
+        assert_int_equal(pRad.bgdfs_stats.nrClearStopQuit[type], !!(type != BGDFS_TYPE_CLEAR_CONTINUOUS));
+    }
 }
 
 static void test_endClearResultFailRadarClear(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR;
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_RADAR);
+    for(uint8_t type = BGDFS_TYPE_CLEAR; type < BGDFS_TYPE_MAX; type++) {
+        clearStructs();
+        pRad.bgdfs_config.type = type;
+        wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_RADAR);
 
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccessExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccess, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadarExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar, 1);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOtherExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOther, 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearSuccess[type], 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar[type], 1);
+        assert_int_equal(pRad.bgdfs_stats.nrClearFailOther[type], 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearStopQuit[type], 1);
+    }
 }
-static void test_endClearResultFailRadarClearExternal(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR_EXT;
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_RADAR);
 
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccessExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccess, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadarExt, 1);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOtherExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOther, 0);
-}
 static void test_endClearResultFailOtherClear(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR;
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OTHER);
+    for(uint8_t type = BGDFS_TYPE_CLEAR; type < BGDFS_TYPE_MAX; type++) {
+        clearStructs();
+        pRad.bgdfs_config.type = type;
+        wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OTHER);
 
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccessExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccess, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadarExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOtherExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOther, 1);
-}
-static void test_endClearResultFailOtherClearExternal(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR_EXT;
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OTHER);
-
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccessExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearSuccess, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadarExt, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar, 0);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOtherExt, 1);
-    assert_int_equal(pRad.bgdfs_stats.nrClearFailOther, 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearSuccess[type], 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearFailRadar[type], 0);
+        assert_int_equal(pRad.bgdfs_stats.nrClearFailOther[type], 1);
+        assert_int_equal(pRad.bgdfs_stats.nrClearStopQuit[type], 1);
+    }
 }
 
 static void test_endClearBgDfsIsOffIfEnableIsFalse(void** state _UNUSED) {
     clearStructs();
+    pRad.bgdfs_config.type = BGDFS_TYPE_CLEAR_EXT;
     pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR_EXT;
     pRad.bgdfs_config.enable = false;
     pRad.bgdfs_config.available = true;
@@ -289,16 +238,6 @@ static void test_endClearBgDfsIsOffIfEnableIsFalse(void** state _UNUSED) {
     assert_int_equal(pRad.bgdfs_config.status, BGDFS_STATUS_OFF);
 }
 
-static void test_endClearBgDfsIsOffIfAvailableIsFalse(void** state _UNUSED) {
-    clearStructs();
-    pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR_EXT;
-    pRad.bgdfs_config.enable = true;
-    pRad.bgdfs_config.available = false;
-
-    wld_bgdfs_notifyClearEnded(&pRad, DFS_RESULT_OK);
-
-    assert_int_equal(pRad.bgdfs_config.status, BGDFS_STATUS_OFF);
-}
 static void test_startClearFailsIfBgDfsDisabled(void** state _UNUSED) {
     clearStructs();
     pRad.bgdfs_config.enable = false;
@@ -451,6 +390,7 @@ static void test_StopClearFailsIfExtFnFails(void** state _UNUSED) {
 
 static void test_setAvailableFailsIfBgDfsIsRunningAndAvailableFalse(void** state _UNUSED) {
     clearStructs();
+    pRad.bgdfs_config.enable = true;
     pRad.bgdfs_config.status = BGDFS_STATUS_IDLE;
     //Initialized to true, should be updated to false by wld_bgdfs_setAvailable()
     pRad.bgdfs_config.available = true;
@@ -466,6 +406,7 @@ static void test_setAvailableFailsIfBgDfsIsRunningAndAvailableFalse(void** state
 }
 static void test_setAvailableSucceeds(void** state _UNUSED) {
     clearStructs();
+    pRad.bgdfs_config.enable = true;
     pRad.bgdfs_config.status = BGDFS_STATUS_CLEAR;
     //Initialized to false, should be updated to true by wld_bgdfs_setAvailable()
     pRad.bgdfs_config.available = false;
@@ -490,15 +431,10 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_startDfsExtImplementedSucceeds),
         cmocka_unit_test(test_startDfsExtIsImplementedButFails),
         cmocka_unit_test(test_startDfsExtNotImplemented),
-        cmocka_unit_test(test_endClearResultOKClearExternal),
         cmocka_unit_test(test_endClearResultOKClear),
         cmocka_unit_test(test_endClearResultFailRadarClear),
-        cmocka_unit_test(test_endClearResultFailRadarClearExternal),
         cmocka_unit_test(test_endClearResultFailOtherClear),
-        cmocka_unit_test(test_endClearResultFailOtherClearExternal),
         cmocka_unit_test(test_endClearBgDfsIsOffIfEnableIsFalse),
-        cmocka_unit_test(test_endClearBgDfsIsOffIfAvailableIsFalse),
-        cmocka_unit_test(test_startClearExternal),
         cmocka_unit_test(test_startClear),
         cmocka_unit_test(test_startClearFailsIfBgDfsDisabled),
         cmocka_unit_test(test_startClearFailsIfBgDfsNotAvailable),

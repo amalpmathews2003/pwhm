@@ -75,61 +75,105 @@
 
 #define ME "wld"
 
-const char* wld_bgdfsStatus_str[BGDFS_STATUS_MAX] = {
+static const char* wld_bgdfsStatus_str[BGDFS_STATUS_MAX] = {
     "Off",
     "Idle",
     "Clearing",
-    "ExtClearing"
+    "ExtClearing",
+    "ContinuousClearing",
 };
 
-const char* wld_dfsResult_str[DFS_RESULT_MAX] = {
+static const char* wld_dfsResult_str[DFS_RESULT_MAX] = {
     "Success",
     "Radar",
-    "Fail"
+    "Fail",
 };
 
-static void wld_bgdfs_writeChannel(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
+static const char* wld_dfsType_str[BGDFS_TYPE_MAX] = {
+    "Background",
+    "Provider",
+    "Continuous",
+};
 
-    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
-    amxd_object_t* bgDfsObject = amxd_object_findf(chanObject, "BgDfs");
-    amxd_object_set_int32_t(bgDfsObject, "Channel", pRad->bgdfs_config.channel);
-    amxd_object_set_cstring_t(bgDfsObject, "Bandwidth", Rad_SupBW[pRad->bgdfs_config.bandwidth]);
-    amxd_object_set_cstring_t(bgDfsObject, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
+static const wld_bgdfsStatus_e wld_dfsTypeToStatus[BGDFS_TYPE_MAX] = {
+    BGDFS_STATUS_CLEAR,
+    BGDFS_STATUS_CLEAR_EXT,
+    BGDFS_STATUS_CLEAR_CONTINUOUS
+};
+
+static void s_writeConfig(T_Radio* pRad, amxd_object_t* object) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(object, , ME, "NULL");
+
+    amxd_object_set_int32_t(object, "Channel", pRad->bgdfs_config.channel);
+    amxd_object_set_cstring_t(object, "Bandwidth", Rad_SupBW[pRad->bgdfs_config.bandwidth]);
 }
 
-static void wld_bgdfs_writeStatistics(T_Radio* pRad) {
+static void s_writeStatistics(T_Radio* pRad, amxd_object_t* object) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
+    ASSERT_TRUE(pRad->bgdfs_config.type < BGDFS_TYPE_MAX, , ME, "invalid");
+    ASSERT_NOT_NULL(object, , ME, "NULL");
 
-    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
-    amxd_object_t* bgDfsObject = amxd_object_findf(chanObject, "BgDfs");
-    amxd_object_set_int32_t(bgDfsObject, "NrClearSuccess", pRad->bgdfs_stats.nrClearSuccess);
-    amxd_object_set_int32_t(bgDfsObject, "NrClearFailRadar", pRad->bgdfs_stats.nrClearFailRadar);
-    amxd_object_set_int32_t(bgDfsObject, "NrClearFailOther", pRad->bgdfs_stats.nrClearFailOther);
-    amxd_object_set_int32_t(bgDfsObject, "NrClearSuccessExt", pRad->bgdfs_stats.nrClearSuccessExt);
-    amxd_object_set_int32_t(bgDfsObject, "NrClearFailRadarExt", pRad->bgdfs_stats.nrClearFailRadarExt);
-    amxd_object_set_int32_t(bgDfsObject, "NrClearFailOtherExt", pRad->bgdfs_stats.nrClearFailOtherExt);
+    wld_bgdfsType_e type = pRad->bgdfs_config.type;
+
+    amxc_var_t statsUpdate;
+    amxc_var_init(&statsUpdate);
+    amxc_var_set_type(&statsUpdate, AMXC_VAR_ID_HTABLE);
+
+    amxc_var_add_key(cstring_t, &statsUpdate, "Alias", wld_dfsType_str[type]);
+    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearStart", pRad->bgdfs_stats.nrClearStart[type]);
+    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearStopQuit", pRad->bgdfs_stats.nrClearStopQuit[type]);
+    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearStopChange", pRad->bgdfs_stats.nrClearStopChange[type]);
+    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearSuccess", pRad->bgdfs_stats.nrClearSuccess[type]);
+    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearFailRadar", pRad->bgdfs_stats.nrClearFailRadar[type]);
+    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearFailOther", pRad->bgdfs_stats.nrClearFailOther[type]);
+
+    amxd_object_t* statsTemplate = amxd_object_get(object, "Stats");
+    amxd_object_t* statsInstance = amxd_object_get_instance(statsTemplate, wld_dfsType_str[type], 0);
+    if(statsInstance == NULL) {
+        amxd_object_add_instance(NULL, statsTemplate, wld_dfsType_str[type], 0, &statsUpdate);
+    } else {
+        amxd_object_set_params(statsInstance, &statsUpdate);
+    }
+    amxc_var_clean(&statsUpdate);
 }
 
+static void s_writeStatus(T_Radio* pRad, amxd_object_t* object) {
+    ASSERTS_NOT_NULL(object, , ME, "no object given");
+    ASSERTS_TRUE(pRad->bgdfs_config.status < BGDFS_STATUS_MAX, , ME, "invalid");
+    amxd_object_set_cstring_t(object, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
+}
 
-void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_bandwidth_e bandwidth, bool externalClear) {
+static void s_resetStatus(T_Radio* pRad, amxd_object_t* object) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    bool isIdle = pRad->bgdfs_config.enable && pRad->bgdfs_config.available;
+    pRad->bgdfs_config.status = isIdle ? BGDFS_STATUS_IDLE : BGDFS_STATUS_OFF;
+    s_writeStatus(pRad, object);
+}
 
+/* Called when background DFS engine start to clear a given channel */
+void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_bandwidth_e bandwidth, wld_bgdfsType_e type) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
 
     swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, bandwidth, pRad->operatingFrequencyBand);
     pRad->bgdfs_config.channel = channel;
     pRad->bgdfs_config.bandwidth = bandwidth;
-    pRad->bgdfs_config.status = externalClear ? BGDFS_STATUS_CLEAR_EXT : BGDFS_STATUS_CLEAR;
+    pRad->bgdfs_config.type = type;
+    pRad->bgdfs_config.status = wld_dfsTypeToStatus[type];
     pRad->bgdfs_config.clearStartTime = swl_timespec_getMonoVal();
     pRad->bgdfs_config.estimatedClearTime = wld_channel_get_band_clear_time(chanspec);
 
-    SAH_TRACEZ_WARNING(ME, "%s : startClear %u/%u current %u/%u, dur %u, ext %u", pRad->Name,
+    SAH_TRACEZ_WARNING(ME, "%s : startClear %u/%u current %u/%u, dur %u, type %s", pRad->Name,
                        channel, swl_bandwidth_int[bandwidth],
                        pRad->channel, swl_bandwidth_int[pRad->runningChannelBandwidth],
-                       pRad->bgdfs_config.estimatedClearTime, externalClear);
-    wld_bgdfs_writeChannel(pRad);
+                       pRad->bgdfs_config.estimatedClearTime, wld_dfsType_str[type]);
+
+    pRad->bgdfs_stats.nrClearStart[type]++;
+
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
+    s_writeConfig(pRad, object);
+    s_writeStatistics(pRad, object);
+    s_writeStatus(pRad, object);
 }
 
 bool wld_bgdfs_isRunning(T_Radio* pRad) {
@@ -143,9 +187,7 @@ static void s_sendNotification(T_Radio* pRad) {
     amxc_var_t params;
     amxc_var_init(&params);
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
-
     amxc_var_t* my_map = amxc_var_add_key(amxc_htable_t, &params, "Updates", NULL);
-
     amxc_var_add_key(uint32_t, my_map, "StartChannel", pRad->channel);
     amxc_var_add_key(cstring_t, my_map, "StartBandwidth", swl_bandwidth_str[pRad->runningChannelBandwidth]);
     amxc_var_add_key(uint32_t, my_map, "ClearChannel", pRad->bgdfs_config.channel);
@@ -153,13 +195,9 @@ static void s_sendNotification(T_Radio* pRad) {
     amxc_var_add_key(cstring_t, my_map, "Result", wld_dfsResult_str[pRad->bgdfs_config.lastResult]);
     int64_t clearTime = swl_timespec_diffToMillisec(&pRad->bgdfs_config.clearStartTime, &pRad->bgdfs_config.clearEndTime);
     amxc_var_add_key(uint64_t, my_map, "RunTime", clearTime);
-
-    amxc_var_add_key(cstring_t, my_map, "Mode", pRad->bgdfs_config.status == BGDFS_STATUS_CLEAR_EXT ?
-                     "Provider" : "Background");
+    amxc_var_add_key(cstring_t, my_map, "Mode", wld_dfsType_str[pRad->bgdfs_config.type]);
     amxd_object_trigger_signal(pRad->pBus, "DFS Done", &params);
-
     SAH_TRACEZ_INFO(ME, "Send DFS done notification");
-
     amxc_var_clean(&params);
 }
 
@@ -169,9 +207,8 @@ uint32_t wld_bgdfs_clearTimeEllapsed(T_Radio* pRad) {
     return (uint32_t) swl_timespec_diffToSec(&pRad->bgdfs_config.clearStartTime, &now);
 }
 
-void wld_bgdfs_notifyClearEnded(T_Radio* pRad,
-                                wld_dfsResult_e result) {
-
+/* Called when background DFS engine clear the channel */
+void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
 
     pRad->bgdfs_config.clearEndTime = swl_timespec_getMonoVal();
@@ -181,66 +218,65 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad,
                        pRad->Name, pRad->bgdfs_config.channel, swl_bandwidth_int[pRad->bgdfs_config.bandwidth],
                        result,
                        swl_timespec_diffToMillisec(&pRad->bgdfs_config.clearStartTime, &pRad->bgdfs_config.clearEndTime));
-    bool isExternal = (pRad->bgdfs_config.status == BGDFS_STATUS_CLEAR_EXT);
-    if(result == DFS_RESULT_OK) {
-        if(isExternal) {
-            pRad->bgdfs_stats.nrClearSuccessExt++;
-        } else {
-            pRad->bgdfs_stats.nrClearSuccess++;
-        }
-    } else if(result == DFS_RESULT_RADAR) {
-        if(isExternal) {
-            pRad->bgdfs_stats.nrClearFailRadarExt++;
-        } else {
-            pRad->bgdfs_stats.nrClearFailRadar++;
-        }
-    } else {
-        if(isExternal) {
-            pRad->bgdfs_stats.nrClearFailOtherExt++;
-        } else {
-            pRad->bgdfs_stats.nrClearFailOther++;
-        }
+
+    wld_bgdfsType_e type = pRad->bgdfs_config.type;
+
+    switch(result) {
+    case DFS_RESULT_OK:
+        pRad->bgdfs_stats.nrClearSuccess[type]++;
+        break;
+    case DFS_RESULT_RADAR:
+        pRad->bgdfs_stats.nrClearFailRadar[type]++;
+        break;
+    default:
+        pRad->bgdfs_stats.nrClearFailOther[type]++;
+        break;
     }
-    wld_bgdfs_writeStatistics(pRad);
 
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
+    /* update status only if continuous clearing or radar */
+    if((type != BGDFS_TYPE_CLEAR_CONTINUOUS) ||
+       (result != DFS_RESULT_OK)) {
+        pRad->bgdfs_stats.nrClearStopQuit[type]++;
+        pRad->bgdfs_config.channel = 0;
+        pRad->bgdfs_config.bandwidth = SWL_BW_AUTO;
+        s_resetStatus(pRad, object);
+    }
+    s_writeConfig(pRad, object);
+    s_writeStatistics(pRad, object);
+    /* send notification on the bus */
     s_sendNotification(pRad);
+}
 
-    pRad->bgdfs_config.channel = 0;
-    pRad->bgdfs_config.bandwidth = SWL_BW_AUTO;
-    bool running = pRad->bgdfs_config.enable && pRad->bgdfs_config.available;
-    pRad->bgdfs_config.status = running ? BGDFS_STATUS_IDLE : BGDFS_STATUS_OFF;
-    wld_bgdfs_writeChannel(pRad);
+void s_checkEnableChange(T_Radio* pRad, bool enable) {
+    if(!enable && wld_bgdfs_isRunning(pRad)) {
+        SWL_CALL(pRad->pFA->mfn_wrad_bgdfs_stop, pRad);
+        SAH_TRACEZ_ERROR(ME, "%s : end bgdfs due to available end", pRad->Name);
+        pRad->bgdfs_stats.nrClearStopChange[pRad->bgdfs_config.type]++;
+    }
 }
 
 void wld_bgdfs_setAvailable(T_Radio* pRad, bool available) {
-    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
-    amxd_object_t* bgDfsObject = amxd_object_findf(chanObject, "BgDfs");
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
+    bool oldAvailable = pRad->bgdfs_config.available;
     pRad->bgdfs_config.available = available;
-    amxd_object_set_bool(bgDfsObject, "Available", available);
-    if(!pRad->bgdfs_config.available && wld_bgdfs_isRunning(pRad)) {
-        pRad->pFA->mfn_wrad_bgdfs_stop(pRad);
-        SAH_TRACEZ_ERROR(ME, "%s : end bgdfs due to available end", pRad->Name);
+    amxd_object_set_bool(object, "Available", available);
+    s_checkEnableChange(pRad, available);
+    s_writeStatistics(pRad, object);
+    if(oldAvailable != available) {
+        s_resetStatus(pRad, object);
     }
-
-    pRad->bgdfs_config.status = pRad->bgdfs_config.available ? BGDFS_STATUS_IDLE : BGDFS_STATUS_OFF;
-    amxd_object_set_cstring_t(bgDfsObject, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
 }
 
 void wld_bgdfs_update(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
-
-    amxd_object_t* chanObject = amxd_object_findf(pRad->pBus, "ChannelMgt");
-    ASSERT_NOT_NULL(chanObject, , ME, "NULL");
-
-    amxd_object_t* bgDfsObject = amxd_object_findf(chanObject, "BgDfs");
-    ASSERT_NOT_NULL(bgDfsObject, , ME, "NULL");
-
-    amxd_object_set_bool(bgDfsObject, "Available", pRad->bgdfs_config.available);
-    pRad->bgdfs_config.status = pRad->bgdfs_config.available ? BGDFS_STATUS_IDLE : BGDFS_STATUS_OFF;
-    amxd_object_set_cstring_t(bgDfsObject, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
-    wld_bgdfs_writeChannel(pRad);
-    wld_bgdfs_writeStatistics(pRad);
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
+    ASSERT_NOT_NULL(object, , ME, "NULL");
+    amxd_object_set_bool(object, "Available", pRad->bgdfs_config.available);
+    s_writeConfig(pRad, object);
+    s_writeStatistics(pRad, object);
+    s_writeStatus(pRad, object);
 }
 
 swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
@@ -267,11 +303,12 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     bool enabled = amxc_var_dyncast(bool, newValue);
     ASSERTI_NOT_EQUALS(pR->bgdfs_config.enable, enabled, , ME, "EQUALS");
 
-    if(wld_bgdfs_isRunning(pR)) {
-        wld_bgdfs_notifyClearEnded(pR, DFS_RESULT_OTHER);
-    }
-
     pR->bgdfs_config.enable = enabled;
+
+    s_checkEnableChange(pR, enabled);
+    s_writeStatistics(pR, object);
+    /* update status */
+    s_resetStatus(pR, object);
 
     SAH_TRACEZ_INFO(ME,
                     "%s: BgDfs preclear enable changed to %s",
@@ -327,12 +364,12 @@ amxd_status_t bgdfs_startClear(T_Radio* pR,
     if(bandwidth == 0) {
         dfsArgs->bandwidth = SWL_BW_AUTO;
     } else {
-        dfsArgs->bandwidth = wld_channel_getBandwidthEnumFromVal(bandwidth);
+        dfsArgs->bandwidth = swl_chanspec_intToBw(bandwidth);
     }
     SAH_TRACEZ_INFO(ME, "Dfs arguments: channel= %i, bandwidth= %i", channel, bandwidth);
 
-    ASSERT_CMD_SUCCESS(wld_bgdfs_startExt(pR, dfsArgs),
-                       amxd_status_unknown_error, ME, "%s start bgdfs error %i", pR->Name, _errNo);
+    ASSERT_CMD_SUCCESS(wld_bgdfs_startExt(pR, dfsArgs), amxd_status_unknown_error,
+                       ME, "%s start bgdfs error %i", pR->Name, _errNo);
     return amxd_status_ok;
 }
 
@@ -345,8 +382,11 @@ amxd_status_t bgdfs_stopClear(T_Radio* pRad) {
         return amxd_status_invalid_function_argument;
     }
 
-    ASSERT_CMD_SUCCESS(pRad->pFA->mfn_wrad_bgdfs_stop(pRad),
-                       amxd_status_unknown_error, ME, "%s stop bgdfs error %i", pRad->Name, _errNo);
+    pRad->bgdfs_stats.nrClearStopChange[pRad->bgdfs_config.type]++;
+    s_writeStatistics(pRad, amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs"));
+
+    ASSERT_CMD_SUCCESS(pRad->pFA->mfn_wrad_bgdfs_stop(pRad), amxd_status_unknown_error,
+                       ME, "%s stop bgdfs error %i", pRad->Name, _errNo);
 
     return amxd_status_ok;
 }

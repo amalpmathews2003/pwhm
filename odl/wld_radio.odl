@@ -2005,39 +2005,50 @@ define probelist_t{
 				 * Current status of bg dfs clearing
 				 */
 				%read-only string Status{
-					on action validate call check_enum ["Off","Idle","Clearing","ExtClearing"];
+					on action validate call check_enum ["Off","Idle","Clearing","ExtClearing","ContinuousClearing"];
 					default "Off";
 				}
 
 				/**
-				 * The number of successfull clears
+				 * Stats about background clearing
+				 * Instance for each clearing @Type.
 				 */
-				%read-only uint32 NrClearSuccess;
+				%read-only object Stats[] {
+					/**
+					 * Alias of the instance.
+					 */
+					%unique %key string Alias;
 
-				/**
-				 * The number of failed clears due to radar detected
-				 */
-				%read-only uint32 NrClearFailRadar;
+					/**
+					 * The number of time clear started.
+					 */
+					%read-only uint32 NrClearStart;
 
-				/**
-				 * The number of failed clears due to other reasons
-				 */
-				%read-only uint32 NrClearFailOther;
+					/**
+					 * The number of time clear stopped (internally).
+					 */
+					%read-only uint32 NrClearStopQuit;
 
-				/**
-				 * The number of successfull clears using external provider
-				 */
-				%read-only uint32 NrClearSuccessExt;
+					/**
+					 * The number of time clear stopped (external).
+					 */
+					%read-only uint32 NrClearStopChange;
 
-				/**
-				 * The number of failed clears due to radar detected using external provider
-				 */
-				%read-only uint32 NrClearFailRadarExt;
+					/**
+					 * The number of successfull clears
+					 */
+					%read-only uint32 NrClearSuccess;
 
-				/**
-				 * The number of failed clears due to other reasons using external provider
-				 */
-				%read-only uint32 NrClearFailOtherExt;
+					/**
+					 * The number of failed clears due to radar detected
+					 */
+					%read-only uint32 NrClearFailRadar;
+
+					/**
+					 * The number of failed clears due to other reasons
+					 */
+					%read-only uint32 NrClearFailOther;
+				}
 
 				/**
 				 * Start BgDfs

@@ -718,7 +718,7 @@ void wifiGen_rad_initBands(T_Radio* pRad) {
     for(i = 0; i < pRad->nrPossibleChannels; i++) {
         swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->possibleChannels[i], pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
         wld_channel_mark_available_channel(chanspec);
-        if(wld_channel_is_dfs(pRad->possibleChannels[i])) {
+        if(swl_channel_isDfs(pRad->possibleChannels[i])) {
             wld_channel_mark_radar_req_channel(chanspec);
             wld_channel_mark_passive_channel(chanspec);
         }

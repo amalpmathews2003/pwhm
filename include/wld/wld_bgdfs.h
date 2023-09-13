@@ -70,18 +70,24 @@ typedef struct {
     swl_bandwidth_e bandwidth;
 } wld_startBgdfsArgs_t;
 
-
 typedef enum {
-    BGDFS_STATUS_OFF,       // System is not working and turned off
-    BGDFS_STATUS_IDLE,      // System is turned on but not clearing
-    BGDFS_STATUS_CLEAR,     // System is clearing
-    BGDFS_STATUS_CLEAR_EXT, // System is clearing using external provider
+    BGDFS_STATUS_OFF,              // System is not working and turned off
+    BGDFS_STATUS_IDLE,             // System is turned on but not clearing
+    BGDFS_STATUS_CLEAR,            // System is clearing
+    BGDFS_STATUS_CLEAR_EXT,        // System is clearing using external provider
+    BGDFS_STATUS_CLEAR_CONTINUOUS, // System is clearing indefinitely
     BGDFS_STATUS_MAX
 } wld_bgdfsStatus_e;
 
+typedef enum {
+    BGDFS_TYPE_CLEAR,             // Finite CAC which ends at the end of time.
+    BGDFS_TYPE_CLEAR_EXT,         // same as @BGDFS_TYPE_CLEAR, except that it use an external provider.
+    BGDFS_TYPE_CLEAR_CONTINUOUS,  // Indefinitely CAC.
+    BGDFS_TYPE_MAX
+} wld_bgdfsType_e;
 
 typedef enum {
-    DFS_RESULT_OK,    // performed successfull dfs clear
+    DFS_RESULT_OK,    // performed successful dfs clear
     DFS_RESULT_RADAR, // dfs clear failed due to radar
     DFS_RESULT_OTHER, // dfs clear failed due to other reasons
     DFS_RESULT_MAX
@@ -99,38 +105,38 @@ typedef struct wld_rad_bgdfs_config {
      * Enable BgDfs feature
      */
     bool enable;
-
+    /**
+     * Status of the BgDFS (Idle or running)
+     */
     wld_bgdfsStatus_e status;
+    /**
+     * Type of the background DFS running (applicable if status != idle)
+     */
+    wld_bgdfsType_e type;
     /**
      * Whether to use external provider if available
      */
     bool useProvider;
-
     /**
      * Channel currently being cleared
      */
     swl_channel_t channel;
-
     /**
      * The bandwidth currently being cleared
      */
     swl_bandwidth_e bandwidth;
-
     /**
      * timestamp when clear started
      */
     swl_timeSpecMono_t clearStartTime;
-
     /**
      * timestamp when clear last finished
      */
     swl_timeSpecMono_t clearEndTime;
-
     /**
      * The last result
      */
     wld_dfsResult_e lastResult;
-
     /**
      * Estimated time clear would take
      */
@@ -138,12 +144,12 @@ typedef struct wld_rad_bgdfs_config {
 } wld_rad_bgdfs_config_t;
 
 typedef struct {
-    uint32_t nrClearSuccess;
-    uint32_t nrClearFailRadar;
-    uint32_t nrClearFailOther;
-    uint32_t nrClearSuccessExt;
-    uint32_t nrClearFailRadarExt;
-    uint32_t nrClearFailOtherExt;
+    uint32_t nrClearStart[BGDFS_TYPE_MAX];      // Counter for started CAC
+    uint32_t nrClearStopQuit[BGDFS_TYPE_MAX];   // Counter for stop CAC (Internal end or stop)
+    uint32_t nrClearStopChange[BGDFS_TYPE_MAX]; // Counter for stop CAC (made in purpose, change channel in instance)
+    uint32_t nrClearSuccess[BGDFS_TYPE_MAX];    // Counter for Success CAC (cleared channel)
+    uint32_t nrClearFailRadar[BGDFS_TYPE_MAX];  // Counter for RADAR detection
+    uint32_t nrClearFailOther[BGDFS_TYPE_MAX];  // Counter for other unknown CAC fails
 } wld_rad_bgdfs_stats_t;
 
 
@@ -155,7 +161,7 @@ void wld_bgdfs_setAvailable(T_Radio* pRad, bool available);
 /**
  * Start a bgdfs clear with given channel and bw, and whether it's external
  */
-void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_bandwidth_e bandwidth, bool externalClear);
+void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_bandwidth_e bandwidth, wld_bgdfsType_e type);
 
 /**
  * Stop a bgdfs clear
