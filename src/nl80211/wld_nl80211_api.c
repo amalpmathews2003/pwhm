@@ -862,3 +862,26 @@ swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_802
     NL_ATTRS_CLEAR(&attribs);
     return rc;
 }
+
+swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data) {
+    ASSERT_FALSE((rc <= SWL_RC_ERROR), rc, ME, "Request error");
+    ASSERT_NOT_NULL(nlh, SWL_RC_ERROR, ME, "NULL");
+
+    struct genlmsghdr* gnlh = (struct genlmsghdr*) nlmsg_data(nlh);
+    ASSERT_EQUALS(gnlh->cmd, NL80211_CMD_VENDOR, SWL_RC_OK, ME, "unexpected cmd %d", gnlh->cmd);
+
+    struct nlattr* tb[NL80211_ATTR_MAX + 1] = {};
+    if(nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL)) {
+        SAH_TRACEZ_ERROR(ME, "Failed to parse netlink message");
+        return SWL_RC_ERROR;
+    }
+
+    nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL);
+
+    // parse data table
+    ASSERT_NOT_NULL(tb[NL80211_ATTR_VENDOR_DATA], SWL_RC_ERROR, ME, "NULL");
+    *data = nla_data(tb[NL80211_ATTR_VENDOR_DATA]);
+    ASSERT_NOT_NULL(*data, SWL_RC_ERROR, ME, "NULL");
+
+    return rc;
+}

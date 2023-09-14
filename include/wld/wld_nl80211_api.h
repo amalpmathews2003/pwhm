@@ -501,4 +501,20 @@ swl_rc_ne wld_nl80211_sendVendorSubCmdAttr(wld_nl80211_state_t* state, uint32_t 
 swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_80211_mgmtFrameControl_t* fc, swl_bit8_t* data, size_t dataLen,
                                              swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags, uint32_t ifIndex);
 
+
+/*
+ * @brief common function to verify callback status and return data
+ *
+ * @param rc result of initial checks of the reply
+ * @param nlh netlink header of received msg, to be parsed
+ * @param data (output) parameter to forward provided data on request success
+ *
+ * @return SWL_RC_OK when message is valid, handled, but waiting for next parts
+ *         SWL_RC_CONTINUE when message is valid, but ignored
+ *         SWL_RC_DONE when message is processed and all reply parts are received:
+ *                     request is terminated and can be cleared
+ *         SWL_RC_ERROR in case of error: request will be cancelled
+ */
+swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data);
+
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */
