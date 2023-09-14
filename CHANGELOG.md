@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.12.0 - 2023-09-14(10:08:43 +0000)
+
+### Other
+
+- expose MaxSupportedSSIDs
+
 ## Release v4.11.0 - 2023-09-13(13:29:00 +0000)
 
 ### Other
