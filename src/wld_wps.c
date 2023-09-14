@@ -713,7 +713,11 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
     T_AccessPoint* pAP = wld_ap_fromObj(pApObj);
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
-    const char* clientPIN = GET_CHAR(args, "clientPIN");
+    char clientPIN[16] = {0};
+    amxc_var_t* clientPINVar = GET_ARG(args, "clientPIN");
+    char* clientPINStr = amxc_var_dyncast(cstring_t, clientPINVar);
+    swl_str_copy(clientPIN, sizeof(clientPIN), clientPINStr);
+    free(clientPINStr);
     swl_rc_ne rc = SWL_RC_OK;
     amxd_status_t status = amxd_status_ok;
     if((pAP == NULL) || (pAP->pRadio == NULL)) {
@@ -723,7 +727,7 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
             wld_wps_sendPairingNotification(pApObj, NOTIFY_PAIRING_ERROR, WPS_FAILURE_START_PIN, NULL, NULL);
             return status;
         }
-    } else if(clientPIN == NULL) {
+    } else if(clientPINVar == NULL) {
         if((!(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL))) ||
            (swl_str_isEmpty(pAP->pRadio->wpsConst->DefaultPin))) {
             SAH_TRACEZ_ERROR(ME, "%s: wps self PIN not enabled", pAP->alias);
@@ -742,6 +746,7 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
         status = s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
     } else {
         char clean_str[strlen(clientPIN) + 1];
+        memset(clean_str, 0, sizeof(clean_str));
         swl_str_copy(clean_str, sizeof(clean_str), clientPIN);
 
         stripOutToken(clean_str, "-");
