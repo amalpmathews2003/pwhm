@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.13.0 - 2023-09-15(12:05:22 +0000)
+
+### Other
+
+- - [Wifi sensing] implement control HL API
+- WPS Methods - Client PIN is not working on both
+
 ## Release v4.12.0 - 2023-09-14(10:08:43 +0000)
 
 ### Other
