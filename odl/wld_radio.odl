@@ -2644,13 +2644,12 @@ define probelist_t{
 		 */
 		%persistent object Sensing {
 
+			on event "*" call wld_wifiSensing_setConf_ocf;
+
 			/**
 			 * Enable / Disable Channel State Information (CSI) feature
 			 */
-			%persistent bool Enable{
-				default false;
-				on action write call wld_wifiSensing_enable_pwf;
-			}
+			%persistent bool Enable;
 
 			/**
 			 * List of clients MAC addresses configured to capture CSI reports
@@ -2658,7 +2657,7 @@ define probelist_t{
 			object CSIClient[]{
 
 				on action destroy call wld_wifiSensing_delete_client_odf;
-				on event "*" call wld_wifiSensing_setConf_ocf;
+				on event "*" call wld_wifiSensing_csiClientSetConf_ocf;
 
 				/**
 				 * A non-volatile handle used to reference this instance. Alias
@@ -2690,20 +2689,20 @@ define probelist_t{
 			 * UserTransmitFailCounter : CSIMON drops with nl send
 			 * VendorCounters : vendor specific counters
 			 */
-			void csiStats();
+			htable csiStats();
 
 			/**
 			 * Add one client with specified unicast MAC address to CSIMON client list with the monitor interval setting
 			 * MACAddress : Mac address of the device
 			 * MonitorInterval : Time (ms) interval between CSI captures
 			 */
-			void addClient(%in string MACAddress, %in uint32 MonitorInterval);
+			void addClient(%mandatory %in string MACAddress, %mandatory %in uint32 MonitorInterval);
 
 			/**
 			 * Delete one client with specified unicast MAC address to CSIMON client list with the monitor interval setting
 			 * MACAddress : Mac address of the device
 			 */
-			void delClient(%in string MACAddress);
+			void delClient(%mandatory %in string MACAddress);
 
 			/**
 			 * Clear CSIMON counters

@@ -321,33 +321,6 @@ amxd_status_t _Sensing_debug(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-
-/**
- * Enable CSI monitoring
- * @return
- *  - Success: amxd_status_ok
- *  - Failure: amxd_status_unknown_error
- */
-amxd_status_t _wld_wifiSensing_enable_pwf(amxd_object_t* object,
-                                          amxd_param_t* parameter,
-                                          amxd_action_t reason,
-                                          const amxc_var_t* const args,
-                                          amxc_var_t* const retval _UNUSED,
-                                          void* priv) {
-    amxd_status_t rv = amxd_action_param_write(object, parameter, reason, args, retval, priv);
-    ASSERT_EQUALS(rv, amxd_status_ok, rv, ME, "fail to set value rv:%d", rv);
-
-    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
-    pRad->csiEnable = amxc_var_dyncast(bool, args);
-
-    SAH_TRACEZ_INFO(ME, "%s: csiEnable %d", pRad->Name, pRad->csiEnable);
-    pRad->pFA->mfn_wrad_sensing_cmd(pRad);
-
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
-}
-
 /**
  * Called when a new client instance is added.
  */
@@ -402,11 +375,41 @@ static void s_setClientConf_ocf(void* priv _UNUSED, amxd_object_t* object, const
     SAH_TRACEZ_OUT(ME);
 }
 
-SWLA_DM_HDLRS(sSensingDmHdlrs,
+SWLA_DM_HDLRS(sSensingCsiClientDmHdlrs,
               ARR(),
               .instAddedCb = s_addClientInst_oaf,
               .objChangedCb = s_setClientConf_ocf,
               );
+
+void _wld_wifiSensing_csiClientSetConf_ocf(const char* const sig_name,
+                                           const amxc_var_t* const data,
+                                           void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sSensingCsiClientDmHdlrs, sig_name, data, priv);
+}
+
+/**
+ * Enable CSI monitoring
+ */
+static void s_setSensingEnable_pwf(void* priv _UNUSED,
+                                   amxd_object_t* object,
+                                   amxd_param_t* param _UNUSED,
+                                   const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+
+    bool newEnable = amxc_var_dyncast(bool, newValue);
+    ASSERTI_NOT_EQUALS(newEnable, pRad->csiEnable, , ME, "EQUAL");
+    SAH_TRACEZ_INFO(ME, "Update Sensing Enable %d to %d", pRad->csiEnable, newEnable);
+
+    pRad->csiEnable = newEnable;
+    pRad->pFA->mfn_wrad_sensing_cmd(pRad);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sSensingDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setSensingEnable_pwf)));
 
 void _wld_wifiSensing_setConf_ocf(const char* const sig_name,
                                   const amxc_var_t* const data,
