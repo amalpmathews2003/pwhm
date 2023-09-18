@@ -226,7 +226,7 @@
         "${prefix}${plugin-dir}/modules"
     ];
 
-    m4_ifelse(MOD_AMXB_USP_ENABLED,y,
+    m4_ifelse(ENABLE_USP_SERVER_SOCKET,y,
     listen = [ 'usp:/var/run/pwhm_usp.sock' ];
     )
 
