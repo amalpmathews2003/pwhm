@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.13.1 - 2023-09-18(13:01:24 +0000)
+
+### Other
+
+- - [Wifi sensing] use event handling to manage Radio.Sensing object
+
 ## Release v4.13.0 - 2023-09-15(12:05:22 +0000)
 
 ### Other
