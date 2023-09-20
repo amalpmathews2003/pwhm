@@ -324,6 +324,32 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"max_num_sta", SECDMN_ACTION_OK_DONE},
               ));
 
+/**
+ * @brief get the 'on change' action of a specific hostapd parameter
+ * @param pOutMappedAction a out mapped action pointer
+ * @param paramName the parameter name
+ * @return SWL_RC_OK if successful, error code otherwise
+ */
+swl_rc_ne wld_ap_hostapd_getParamAction(wld_secDmn_action_rc_ne* pOutMappedAction, const char* paramName) {
+    wld_secDmn_action_rc_ne* pMappedAction = (wld_secDmn_action_rc_ne*) swl_table_getMatchingValue(&sHapdCfgParamsActionMap, 1, 0, paramName);
+    ASSERTS_NOT_NULL(pMappedAction, SWL_RC_ERROR, ME, "NULL");
+    W_SWL_SETPTR(pOutMappedAction, *pMappedAction);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief set the 'on change' of a specific hostapd parameter
+ * @param paramName the parameter name
+ * @param inMappedAction the new mapped action
+ * @return SWL_RC_OK if successful, error code otherwise
+ */
+swl_rc_ne wld_ap_hostapd_setParamAction(const char* paramName, wld_secDmn_action_rc_ne inMappedAction) {
+    wld_secDmn_action_rc_ne* pMappedAction = (wld_secDmn_action_rc_ne*) swl_table_getMatchingValue(&sHapdCfgParamsActionMap, 1, 0, paramName);
+    ASSERTS_NOT_NULL(pMappedAction, SWL_RC_ERROR, ME, "NULL");
+    W_SWL_SETPTR(pMappedAction, inMappedAction);
+    return SWL_RC_OK;
+}
+
 static bool s_setParam(T_AccessPoint* pAP, const char* param, const char* value, wld_secDmn_action_rc_ne* pAction) {
     ASSERTS_NOT_NULL(param, false, ME, "NULL");
     bool ret = wld_ap_hostapd_setParamValue(pAP, param, value, param);

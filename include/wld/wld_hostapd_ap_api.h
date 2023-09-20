@@ -79,6 +79,8 @@ typedef enum {
 
 bool wld_ap_hostapd_setParamValue(T_AccessPoint* pAP, const char* field, const char* value, const char* reason);
 bool wld_ap_hostapd_sendCommand(T_AccessPoint* pAP, char* cmd, const char* reason);
+swl_rc_ne wld_ap_hostapd_getParamAction(wld_secDmn_action_rc_ne* pOutMappedAction, const char* paramName);
+swl_rc_ne wld_ap_hostapd_setParamAction(const char* paramName, wld_secDmn_action_rc_ne inMappedAction);
 bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason);
 bool wld_ap_hostapd_reloadSecKey(T_AccessPoint* pAP, const char* reason);
 swl_rc_ne wld_ap_hostapd_setNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor);
