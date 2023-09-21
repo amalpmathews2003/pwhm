@@ -3889,30 +3889,6 @@ static void s_setStats(amxc_var_t* pRetMap, T_Stats* pStats) {
     amxc_var_add_key(uint32_t, pRetMap, "MultipleRetryCount", pStats->MultipleRetryCount);
 }
 
-void wld_rad_notifyVendorSpecificAction(T_Radio* pRad, swl_macChar_t* receiverMAC, swl_macChar_t* sourceMAC, swl_oui_t* oui, char* dataHex) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-
-    amxc_var_t map;
-    amxc_var_init(&map);
-    amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
-
-    amxc_var_t notifMap;
-    amxc_var_init(&notifMap);
-    amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
-
-    amxc_var_add_key(cstring_t, &notifMap, "ReceiverMACAddress", receiverMAC->cMac);
-    amxc_var_add_key(cstring_t, &notifMap, "SourceMACAddress", sourceMAC->cMac);
-    char ouiStr[SWL_OUI_STR_LEN] = {0};
-    swl_hex_fromBytesSep(ouiStr, SWL_OUI_STR_LEN, oui->ouiBytes, SWL_OUI_BYTE_LEN, true, ':', NULL);
-    amxc_var_add_key(cstring_t, &notifMap, "OUI", ouiStr);
-    amxc_var_add_key(cstring_t, &notifMap, "Data", dataHex);
-    amxc_var_add_key(amxc_htable_t, &map, "Vendor", amxc_var_get_amxc_htable_t(&notifMap));
-    amxc_var_clean(&notifMap);
-
-    amxd_object_trigger_signal(pRad->pBus, "VendorSpecificAction", &map);
-    amxc_var_clean(&map);
-}
-
 amxd_object_t* wld_rad_getObject(T_Radio* pRad) {
     return pRad->pBus;
 }
