@@ -1,20 +1,3 @@
-/*
- * wld_th_dm.h
- *
- *  Created on: 28 Sept 2022
- *      Author: jefm
- */
-
-/*
- * Copyright (c) 2022 SoftAtHome
- *
- * The information and source code contained herein is the exclusive
- * property of SoftAtHome and may not be disclosed, examined, or
- * reproduced in whole or in part without explicit written authorization
- * of the copyright owner.
- *
- */
-
 /****************************************************************************
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -76,6 +59,7 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+
 #ifndef SRC_TEST_TESTHELPER_WLD_TH_DM_H_
 #define SRC_TEST_TESTHELPER_WLD_TH_DM_H_
 
