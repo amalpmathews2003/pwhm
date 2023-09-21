@@ -504,7 +504,7 @@ static void s_setChanspecTimeout(amxp_timer_t* timer, void* userdata) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
     ASSERT_EQUALS(pR->timerReqChanspec, timer, , ME, "INVALID");
     SAH_TRACEZ_WARNING(ME, "%s: chanspec timeout", pR->Name);
-    s_setChanspecDone(pR, amxd_status_timeout);
+    s_setChanspecDone(pR, amxd_status_unknown_error);
 }
 
 amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
