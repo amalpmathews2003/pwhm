@@ -2715,6 +2715,93 @@ define probelist_t{
 			void debug();
 		} /* object Sensing */
 
+		/**
+		 * Object encapsulating IEEE 802.11ax configuration parameters.
+		 * @version 10.0
+		 */
+		%persistent object IEEE80211ax {
+			on event "*" call wld_rad_11ax_setConf_ocf;
+			/**
+			 * BSS color range (1-63).
+			 * BssColor=0 means hostapd is not configured and then it
+			 * is up to the driver to select the correct color.
+			 */
+			uint32 BssColor = 0 {
+				on action validate call check_range {min = 0, max = 63};
+			}
+
+			/**
+			 * BSS color AID equation
+			 */
+			uint32 BssColorPartial;
+
+			/**
+			 * Indicates if the Agent is allowed to set HESIGA.SpatialReuse field to value 15
+			 * (PSR_AND_NON_SRG_OBSS_PD_PROHIBITED) in HE PPDU transmissions of this radio.
+			 *	true:  allowed;
+			 *	false: disallowed.
+			 */
+			bool HESIGASpatialReuseValue15Allowed;
+
+			/**
+			 * This field indicates whether the SRG Information fields (SRG OBSS PD Min Offset,
+			 * SRG OBSS PD Max Offset, SRG BSS Color Bitmap and SRG Partial BSSID Bitmap) in this
+			 * command are valid.
+			 *	true:  SRG Information fields valid;
+			 *	false: SRG Information fields not valid.
+			 */
+			bool SRGInformationValid;
+
+			/**
+			 * This field indicates whether the Non-SRG OBSSPD Max Offset field in this command is valid.
+			 *	true:  Non-SRG Max Offset field valid;
+			 *	false: Non-SRG Max Offset field not valid.
+			 */
+			bool NonSRGOffsetValid;
+
+			/**
+			 * Indicates if the Agent is disallowed to use Parameterized Spatial Reuse (PSR)-based
+			 * Spatial Reuse for transmissions by the specified radio. (EasyMesh TLV Field: PSR Disallowed)
+			 *	true:  PSR disallowed;
+			 *	false: PSR allowed.
+			 */
+			bool PSRDisallowed;
+
+			/**
+			 * Non-SRG OBSS PD Max Offset. This field is valid only if NonSRGOffsetValid is true.
+			 */
+			uint32 NonSRGOBSSPDMaxOffset;
+
+			/**
+			 * SRG OBSS PD Min Offset. This field is valid only if SRGInformationValid is true.
+			 */
+			uint32 SRGOBSSPDMinOffset;
+
+			/**
+			 * SRG OBSS PD Max Offset. This field is valid only if SRGInformationValid is true.
+			 */
+			uint32 SRGOBSSPDMaxOffset;
+
+			/**
+			 * SPR SRG BSS Color. This field is valid only if SRGInformationValid is true.
+			 * This config represents SRG BSS Color Bitmap field of Spatial Reuse Parameter
+			 * Set element that indicates the BSS color values used by members of the
+			 * SRG of which the transmitting STA is a member. 
+			 * Multiple comma-separated ranges:
+			 * SRGBSSColorBitmap = "1,3,5,63"
+			 */
+			%persistent string SRGBSSColorBitmap;
+
+			/**
+			 * SPR SRG Partial BSSID. This field is valid only if SRGInformationValid is true.
+			 * This config represents SRG Partial BSSID Bitmap field of Spatial Reuse
+			 * Parameter Set element that indicates the Partial BSSID values used by members
+			 * of the SRG of which the transmitting STA is a member.
+			 * Multiple comma-separated ranges:
+			 * SRGPartialBSSIDBitmap = "0,1,3,5,63"
+			 */
+			%persistent string SRGPartialBSSIDBitmap;
+		}
 	} /* object Radio */
     }
 }

@@ -172,6 +172,14 @@
 #define QOS_MAP_SET_MAX_LEN 128
 #endif
 
+#ifndef HE_SPR_SRG_BSS_COLORS_MAX_LEN
+#define HE_SPR_SRG_BSS_COLORS_MAX_LEN 128
+#endif
+
+#ifndef HE_SPR_SRG_PARTIAL_BSSID_MAX_LEN
+#define HE_SPR_SRG_PARTIAL_BSSID_MAX_LEN 128
+#endif
+
 #ifndef WLD_TMP_DEBUG_DIR
 #define WLD_TMP_DEBUG_DIR "/tmp/wifiDbg"
 #endif
@@ -1383,6 +1391,32 @@ typedef struct {
     amxc_var_t* vendorCounters;         /* Vendor specific counters */
 } wld_csiState_t;
 
+typedef struct {
+    uint8_t heBssColor;
+    uint8_t heBssColorPartial;
+    bool heHESIGASpatialReuseValue15Allowed;
+    bool heSRGInformationValid;
+    bool heNonSRGOffsetValid;
+    bool hePSRDisallowed;
+    uint8_t heSprNonSrgObssPdMaxOffset;
+    uint8_t heSprSrgObssPdMinOffset;
+    uint8_t heSprSrgObssPdMaxOffset;
+    char heSprSrgBssColors[HE_SPR_SRG_BSS_COLORS_MAX_LEN];
+    char heSprSrgPartialBssid[HE_SPR_SRG_PARTIAL_BSSID_MAX_LEN];
+} wld_cfg11ax_t;
+
+typedef enum {
+    HE_SR_CONTROL_PSR_DISALLOWED,
+    HE_SR_CONTROL_NON_SRG_OBSS_PD_SR_DISALLOWED,
+    HE_SR_CONTROL_NON_SRG_OFFSET_PRESENT,
+    HE_SR_CONTROL_SRG_INFORMATION_PRESENT,
+    HE_SR_CONTROL_HESIGA_SPATIAL_REUSE_VALUE15_ALLOWED,
+    HE_SR_CONTROL_MAX
+
+} wld_he_sr_control_e;
+
+typedef uint32_t wld_he_sr_control_m;
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;
@@ -1474,6 +1508,7 @@ struct WLD_RADIO {
     bool setRadio80211hEnable;                  /* Enable 802.11h */
     int regulatoryDomainIdx;                    /* Responding country code */
     char regulatoryDomain[8];                   /* Country code (BE, FR, EU, US,...)*/
+    wld_cfg11ax_t cfg11ax;
     bool implicitBeamFormingSupported;
     bool implicitBeamFormingEnabled;
     bool explicitBeamFormingSupported;
