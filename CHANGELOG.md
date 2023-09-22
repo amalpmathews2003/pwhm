@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.14.3 - 2023-09-22(07:00:49 +0000)
+
+### Other
+
+- SSID is not correctly applied
+
 ## Release v4.14.1 - 2023-09-21(14:12:58 +0000)
 
 ### Other
