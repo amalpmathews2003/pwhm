@@ -188,6 +188,25 @@ swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t IfIndex,
                                    wld_nl80211_ifaceInfo_t* pIfaceInfo);
 
 /*
+ * @brief create a new virtual interface on top of wiphy (radio)
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex physical interface net dev index (i.e wiphy / radio iface)
+ * @param ifName new virtual interface name
+ * @param pIfaceConf new virtual interface conf (type: (AP, EP or monitor), mac address)
+ * @param pIfaceInfo (output)(optional) resulting info of the newly created interface.
+ *        It will indicate the assigned ifIndex for the new interface, and the used mac address
+ *        (shall be the one provided as argument, if mac can be set on interface creation)
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex, const char* ifName,
+                                      wld_nl80211_newIfaceConf_t* pIfaceConf,
+                                      wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
  * @brief delete a virtual interface (AP or EP)
  * (Synchronous api)
  *

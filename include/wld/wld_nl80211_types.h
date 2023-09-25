@@ -107,6 +107,11 @@ typedef struct {
     char ssid[SSID_NAME_LEN];        //bss/ess ssid
 } wld_nl80211_ifaceInfo_t;
 
+typedef struct {
+    swl_macBin_t mac;                //interface mac address
+    uint32_t type;                   //nl80211 interface type: from enum nl80211_iftype"
+} wld_nl80211_newIfaceConf_t;
+
 typedef enum {
     WLD_NL80211_CHAN_STATUS_UNKNOWN, //unknown status
     WLD_NL80211_CHAN_DISABLED,       //channel disabled for this regulatory domain

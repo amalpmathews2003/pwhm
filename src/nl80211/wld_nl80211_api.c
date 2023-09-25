@@ -208,20 +208,39 @@ swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t ifIndex,
                                    const swl_macBin_t* pMac, bool isAp, bool isSta,
                                    wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_TRUE((isAp || isSta), rc, ME, "invalid type");
+
+    wld_nl80211_newIfaceConf_t ifaceConf;
+    memset(&ifaceConf, 0, sizeof(ifaceConf));
+
+    //no nl80211 interface type for mixed apsta mode
+    ifaceConf.type = (isAp ? NL80211_IFTYPE_AP : NL80211_IFTYPE_STATION);
+    if(pMac != NULL) {
+        memcpy(ifaceConf.mac.bMac, pMac->bMac, SWL_MAC_BIN_LEN);
+    }
+
+    return wld_nl80211_newInterfaceExt(state, ifIndex, ifName, &ifaceConf, pIfaceInfo);
+}
+
+swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex, const char* ifName,
+                                      wld_nl80211_newIfaceConf_t* pIfaceConf,
+                                      wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(ifName, rc, ME, "NULL");
     ASSERT_NOT_EQUALS(ifName[0], 0, rc, ME, "empty name");
-    ASSERT_TRUE((isAp || isSta), rc, ME, "invalid type");
-    //no nl80211 interface type for mixed apsta mode
-    uint32_t ifType = (isAp ? NL80211_IFTYPE_AP : NL80211_IFTYPE_STATION);
+    ASSERT_NOT_NULL(pIfaceConf, rc, ME, "NULL");
+    ASSERT_TRUE(IS_SPECIFIED(pIfaceConf->type, NL80211_IFTYPE_MAX, NL80211_IFTYPE_UNSPECIFIED),
+                rc, ME, "invalid iftype %d", pIfaceConf->type);
+
     NL_ATTRS(attribs,
              ARR(NL_ATTR_DATA(NL80211_ATTR_IFNAME, strlen(ifName) + 1, ifName),
-                 NL_ATTR_VAL(NL80211_ATTR_IFTYPE, ifType),
+                 NL_ATTR_VAL(NL80211_ATTR_IFTYPE, pIfaceConf->type),
                  //make the socket owning the interface
                  //to make the interface being destroyed when the socket is closed
                  NL_ATTR(NL80211_ATTR_SOCKET_OWNER)));
     //add mac if provided and valid; driver may support setting mac on interface creation
-    if(pMac && !swl_mac_binIsBroadcast(pMac) && !swl_mac_binIsNull(pMac)) {
-        NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pMac->bMac));
+    if(!swl_mac_binIsBroadcast(&pIfaceConf->mac) && !swl_mac_binIsNull(&pIfaceConf->mac)) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pIfaceConf->mac.bMac));
     }
     struct getWirelessIfacesData_s requestData = {
         .nrIfacesMax = 1,
