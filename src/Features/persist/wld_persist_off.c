@@ -59,43 +59,44 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#ifndef SRC_INCLUDE_WLD_WLD_FSM_H_
-#define SRC_INCLUDE_WLD_WLD_FSM_H_
 
-#define WLD_FSM_MAX_WAIT 20
-#define WLD_FSM_WAIT_TIME 1000
+#include <string.h>
+#include <stdlib.h>
+#include <debug/sahtrace.h>
+#include <errno.h>
 
-#include "wld_types.h"
+#include "wld/wld.h"
+#include "wld/wld_util.h"
+#include "wld/wld_vendorModule_mgr.h"
+#include "swl/swl_assert.h"
+#include "swl/swl_returnCode.h"
+#include "wld_dm_trans.h"
 
-#define STR_NAME(action) #action
-#define FSM_ACTION(action) .index = action, .name = STR_NAME(action)
+#define ME "wldPst"
 
-typedef struct {
-    uint32_t index;
-    char* name;
-    bool (* doRadFsmAction)(T_Radio* pRad);
-    bool (* doVapFsmAction)(T_AccessPoint* pAP, T_Radio* pRad);
-    bool (* doEpFsmAction)(T_EndPoint* pEP, T_Radio* pRad);
-} wld_fsmMngr_action_t;
+bool wld_persist_onStart() {
+    // persistance is off, nothing needs to be done on start specifically, but radio objects need
+    // to be created to allow external systems to add config and vaps.
+    return true;
+}
 
-typedef struct {
-    void (* doRestart)(T_Radio* pRad);
-    void (* doRadFsmRun)(T_Radio* pRad);
-    void (* doEpFsmRun)(T_EndPoint* pEP, T_Radio* pRad);
-    void (* doVapFsmRun)(T_AccessPoint* pAP, T_Radio* pRad);
-    void (* doCompendCheck)(T_Radio* pRad, bool last);
-    void (* doFinish)(T_Radio* pRad);
-    void (* checkPreDependency)(T_Radio* pRad); // Pre dependecy check for radio
-    void (* checkVapDependency)(T_AccessPoint* pAP, T_Radio* pRad);
-    void (* checkEpDependency)(T_EndPoint* pEP, T_Radio* pRad);
-    void (* checkRadDependency)(T_Radio* pRad); // Post dependency check for radio
-    wld_fsmMngr_action_t* actionList;           //list of actions
-    uint32_t nrFsmBits;
-} wld_fsmMngr_t;
 
-FSM_STATE wld_rad_fsm(T_Radio* rad);
-swl_rc_ne wld_rad_fsm_reset(T_Radio* rad);
+void wld_persist_onRadioCreation(T_Radio* pR) {
+    amxd_object_t* templateObject = amxd_object_get(get_wld_object(), "Radio");
 
-void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
+    if(!templateObject) {
+        SAH_TRACEZ_ERROR(ME, "%s: Could not get template: %p", pR->Name, templateObject);
+        return;
+    }
 
-#endif /* SRC_INCLUDE_WLD_WLD_FSM_H_ */
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(templateObject, &trans, , ME, "%s : trans init failure", pR->Name);
+
+    amxd_trans_add_inst(&trans, pR->index, pR->instanceName);
+    SAH_TRACEZ_INFO(ME, "Add radio %s", pR->instanceName);
+    amxd_trans_set_value(cstring_t, &trans, "OperatingFrequencyBand",
+                         Rad_SupFreqBands[pR->operatingFrequencyBand]);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+
+}

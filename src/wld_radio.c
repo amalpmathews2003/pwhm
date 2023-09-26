@@ -3104,6 +3104,19 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
     return false;
 }
 
+bool wld_rad_areAllVapsDone(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+
+    /* Check if NO AP is active */
+    wld_rad_forEachAp(pAP, pRad) {
+        if(!pAP->initDone) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool wld_rad_hasEnabledVap(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_AccessPoint* pAP = NULL;

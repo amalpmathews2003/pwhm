@@ -59,43 +59,13 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#ifndef SRC_INCLUDE_WLD_WLD_FSM_H_
-#define SRC_INCLUDE_WLD_WLD_FSM_H_
 
-#define WLD_FSM_MAX_WAIT 20
-#define WLD_FSM_WAIT_TIME 1000
+#ifndef SRC_INCLUDE_PRIV_FEATURES_WLD_PERSIST_H_
+#define SRC_INCLUDE_PRIV_FEATURES_WLD_PERSIST_H_
 
-#include "wld_types.h"
+#include "wld/wld.h"
 
-#define STR_NAME(action) #action
-#define FSM_ACTION(action) .index = action, .name = STR_NAME(action)
+bool wld_persist_onStart();
+void wld_persist_onRadioCreation(T_Radio* pRad);
 
-typedef struct {
-    uint32_t index;
-    char* name;
-    bool (* doRadFsmAction)(T_Radio* pRad);
-    bool (* doVapFsmAction)(T_AccessPoint* pAP, T_Radio* pRad);
-    bool (* doEpFsmAction)(T_EndPoint* pEP, T_Radio* pRad);
-} wld_fsmMngr_action_t;
-
-typedef struct {
-    void (* doRestart)(T_Radio* pRad);
-    void (* doRadFsmRun)(T_Radio* pRad);
-    void (* doEpFsmRun)(T_EndPoint* pEP, T_Radio* pRad);
-    void (* doVapFsmRun)(T_AccessPoint* pAP, T_Radio* pRad);
-    void (* doCompendCheck)(T_Radio* pRad, bool last);
-    void (* doFinish)(T_Radio* pRad);
-    void (* checkPreDependency)(T_Radio* pRad); // Pre dependecy check for radio
-    void (* checkVapDependency)(T_AccessPoint* pAP, T_Radio* pRad);
-    void (* checkEpDependency)(T_EndPoint* pEP, T_Radio* pRad);
-    void (* checkRadDependency)(T_Radio* pRad); // Post dependency check for radio
-    wld_fsmMngr_action_t* actionList;           //list of actions
-    uint32_t nrFsmBits;
-} wld_fsmMngr_t;
-
-FSM_STATE wld_rad_fsm(T_Radio* rad);
-swl_rc_ne wld_rad_fsm_reset(T_Radio* rad);
-
-void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
-
-#endif /* SRC_INCLUDE_WLD_WLD_FSM_H_ */
+#endif /* SRC_INCLUDE_PRIV_FEATURES_WLD_PERSIST_H_ */

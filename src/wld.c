@@ -82,6 +82,7 @@
 #include "wld_chanmgt.h"
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_nl80211_types.h"
+#include "Features/wld_persist.h"
 
 #define ME "wld"
 
@@ -184,6 +185,11 @@ vendor_t* wld_getVendorByName(const char* name) {
     }
     return NULL;
 }
+
+const char* wld_getRootObjName() {
+    return amxd_object_get_name(get_wld_object(), AMXD_OBJECT_NAMED);
+}
+
 
 void wld_cleanup() {
     SAH_TRACEZ_INFO(ME, "Cleaning up wld plugin");
@@ -305,6 +311,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     }
     pR->vendor = vendor;
     pR->wlRadio_SK = -1;
+    snprintf(pR->instanceName, IFNAMSIZ, "wifi%d", idx);
 
     memcpy(pR->MACAddr, &wld_getWanAddr()->bMac, SWL_MAC_BIN_LEN);
     swl_mac_binAddVal((swl_macBin_t*) pR->MACAddr, idx, -1);
@@ -408,6 +415,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     wld_chanmgt_checkInitChannel(pR);
 
     wld_sensing_init(pR);
+
+    wld_persist_onRadioCreation(pR);
 
     pR->isReady = true;
 

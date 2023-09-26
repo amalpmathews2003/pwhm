@@ -59,43 +59,65 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#ifndef SRC_INCLUDE_WLD_WLD_FSM_H_
-#define SRC_INCLUDE_WLD_WLD_FSM_H_
 
-#define WLD_FSM_MAX_WAIT 20
-#define WLD_FSM_WAIT_TIME 1000
+#include <string.h>
+#include <stdlib.h>
+#include <debug/sahtrace.h>
+#include <errno.h>
 
-#include "wld_types.h"
+#include "wld/wld.h"
+#include "wld/wld_util.h"
+#include "wld/wld_vendorModule_mgr.h"
+#include "swl/swl_assert.h"
+#include "swl/fileOps/swl_fileUtils.h"
 
-#define STR_NAME(action) #action
-#define FSM_ACTION(action) .index = action, .name = STR_NAME(action)
+#define ME "wldPst"
 
-typedef struct {
-    uint32_t index;
-    char* name;
-    bool (* doRadFsmAction)(T_Radio* pRad);
-    bool (* doVapFsmAction)(T_AccessPoint* pAP, T_Radio* pRad);
-    bool (* doEpFsmAction)(T_EndPoint* pEP, T_Radio* pRad);
-} wld_fsmMngr_action_t;
+static bool s_getSavedConfPath(amxc_string_t* path) {
+    ASSERT_NOT_NULL(path, false, ME, "NULL");
+    amxc_string_reset(path);
+    amxc_var_t* config = amxo_parser_get_config(get_wld_plugin_parser(), "odl.directory");
+    const char* saveDir = amxc_var_constcast(cstring_t, config);
+    ASSERTS_STR(saveDir, false, ME, "Empty");
+    config = amxo_parser_get_config(get_wld_plugin_parser(), "name");
+    const char* wldName = amxc_var_constcast(cstring_t, config);
+    ASSERTS_STR(wldName, false, ME, "Empty");
+    int ret = amxc_string_appendf(path, "%s/%s.odl", saveDir, wldName);
+    ASSERT_EQUALS(ret, 0, false, ME, "fail to format save path");
+    return true;
+}
 
-typedef struct {
-    void (* doRestart)(T_Radio* pRad);
-    void (* doRadFsmRun)(T_Radio* pRad);
-    void (* doEpFsmRun)(T_EndPoint* pEP, T_Radio* pRad);
-    void (* doVapFsmRun)(T_AccessPoint* pAP, T_Radio* pRad);
-    void (* doCompendCheck)(T_Radio* pRad, bool last);
-    void (* doFinish)(T_Radio* pRad);
-    void (* checkPreDependency)(T_Radio* pRad); // Pre dependecy check for radio
-    void (* checkVapDependency)(T_AccessPoint* pAP, T_Radio* pRad);
-    void (* checkEpDependency)(T_EndPoint* pEP, T_Radio* pRad);
-    void (* checkRadDependency)(T_Radio* pRad); // Post dependency check for radio
-    wld_fsmMngr_action_t* actionList;           //list of actions
-    uint32_t nrFsmBits;
-} wld_fsmMngr_t;
+bool wld_persist_onStart() {
+    SAH_TRACEZ_IN(ME);
+    // Defaults or saved odl will be loaded here:
+    // This makes sure that the events for the defaults are only called when the plugin is started
+    while(amxp_signal_read() == 0) {
+    }
+    int rv;
+    amxc_string_t confPath;
+    amxc_string_init(&confPath, 0);
+    amxd_object_t* rootObj = amxd_dm_get_root(get_wld_plugin_dm());
+    amxo_parser_t* parser = get_wld_plugin_parser();
+    if(s_getSavedConfPath(&confPath) && swl_fileUtils_existsFile(amxc_string_get(&confPath, 0))) {
+        rv = amxo_parser_parse_file(parser, amxc_string_get(&confPath, 0), rootObj);
+    } else {
+        rv = amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
+        wld_vendorModuleMgr_loadDefaultsAll();
+    }
+    amxc_string_clean(&confPath);
+    while(amxp_signal_read() == 0) {
+    }
+    if(rv != 0) {
+        SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
+                         amxo_parser_get_status(parser),
+                         amxo_parser_get_message(parser));
+        return false;
+    }
+    SAH_TRACEZ_OUT(ME);
+    return true;
+}
 
-FSM_STATE wld_rad_fsm(T_Radio* rad);
-swl_rc_ne wld_rad_fsm_reset(T_Radio* rad);
 
-void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
-
-#endif /* SRC_INCLUDE_WLD_WLD_FSM_H_ */
+void wld_persist_onRadioCreation(T_Radio* pRad _UNUSED) {
+    // when persistence is on, radios are loaded from the data model.
+}

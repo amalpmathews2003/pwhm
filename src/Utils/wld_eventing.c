@@ -79,21 +79,22 @@
  * The queue of callbacks after an rad gets changed
  */
 static wld_event_queue_t rqueue_rad_onStatus_change = {.name = "evRadStatus"};
-
 static wld_event_queue_t rqueue_ep_onStatus_change = {.name = "evEpStatus"};
-
 static wld_event_queue_t rqueue_vap_onStatus_change = {.name = "evVapStatus"};
-
 static wld_event_queue_t rqueue_rad_onScan_change = {.name = "evScan"};
-
-
 static wld_event_queue_t rqueue_rad_onChange = {.name = "evRadChange"};
+
+
+static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
 
 wld_event_queue_t* gWld_queue_rad_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_vap_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_rad_onScan_change = NULL;
 wld_event_queue_t* gWld_queue_rad_onChangeEvent = NULL;
+
+wld_event_queue_t* gWld_queue_lifecycleEvent = NULL;
+
 /**
  * Initialize the eventing module
  * Create all queues, and set the pointers correctly
@@ -114,6 +115,9 @@ void wld_event_init() {
 
     gWld_queue_rad_onChangeEvent = &rqueue_rad_onChange;
     amxc_llist_init(&gWld_queue_rad_onChangeEvent->subscribers);
+
+    gWld_queue_lifecycleEvent = &rqueue_lifecycleEvent;
+    amxc_llist_init(&gWld_queue_lifecycleEvent->subscribers);
 }
 
 /**
@@ -139,6 +143,7 @@ void wld_event_destroy() {
     wld_event_cleanup_queue(gWld_queue_ep_onStatusChange);
     wld_event_cleanup_queue(gWld_queue_vap_onStatusChange);
     wld_event_cleanup_queue(gWld_queue_rad_onScan_change);
+    wld_event_cleanup_queue(gWld_queue_lifecycleEvent);
 }
 
 /**

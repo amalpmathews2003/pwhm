@@ -1737,6 +1737,7 @@ struct S_ACCESSPOINT {
     T_Radio* pRadio;                 /* Contains a direct pointer to the parent of this VAP */
 
     bool SSIDAdvertisementEnabled;
+    bool initDone;                   /* Whether this AP is properly initialized, and ready for configuration */
     int retryLimit;
     bool WMMCapability;
     bool UAPSDCapability;
@@ -2428,6 +2429,7 @@ void wld_cleanup();
 
 vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta);
 vendor_t* wld_getVendorByName(const char* name);
+const char* wld_getRootObjName();
 bool wld_isVendorUsed(vendor_t* vendor);
 bool wld_unregisterVendor(vendor_t* vendor);
 bool wld_unregisterAllVendors();

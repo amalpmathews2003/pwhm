@@ -82,7 +82,10 @@
         dm-load = false,
         load-dm-events = true,
         dm-save = false,
-        dm-save-on-changed = true,
+m4_ifelse(DISABLE_PERSIST,y,``
+        dm-save-on-changed = false,'',``
+        dm-save-on-changed = true,''
+)
         dm-save-delay = 1000,
         dm-defaults = "${name}_defaults/",
         directory = "${storage-path}/odl"
@@ -206,6 +209,8 @@
                    "wps" = 200,
                    "wSupCfg" = 200
                    };
+                   
+m4_ifelse(DISABLE_NETMODEL,y,,``
     NetModel =  "nm_radio,nm_ssid";
     nm_ssid = {
         InstancePath = "WiFi.SSID.",
@@ -217,6 +222,7 @@
         Tags = "radio",
         Prefix = "radio-"
     };
+'')
 
     import-dirs = [
         ".",
@@ -238,7 +244,9 @@
 }
 
 import "${name}.so" as "${name}";
+m4_ifelse(DISABLE_NETMODEL,y,,
 import "mod-netmodel.so" as "mnm";
+)
 import "mod-dmext.so";
 
 #include "mod_sahtrace.odl";
@@ -246,7 +254,8 @@ import "mod-dmext.so";
 include "${definition_file}";
 
 %define {
-    entry-point mnm.mod_netmodel_main;
+m4_ifelse(DISABLE_NETMODEL,y,,
+``    entry-point mnm.mod_netmodel_main;'')
     entry-point wld.wld_main;
 }
 #include "mod_pcm_svc.odl";

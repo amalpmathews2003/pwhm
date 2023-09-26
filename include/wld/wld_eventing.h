@@ -74,6 +74,17 @@
 #include <amxd/amxd_object_event.h>
 #include <amxd/amxd_function.h>
 
+typedef enum {
+    WLD_LIFECYCLE_EVENT_INIT_DONE,
+    WLD_LIFECYCLE_EVENT_DATAMODEL_LOADED,
+    WLD_LIFECYCLE_EVENT_CLEANUP_START,
+} wld_lifecycleEvent_e;
+
+typedef struct {
+    wld_lifecycleEvent_e event;
+} wld_lifecycleEvent_t;
+
+
 typedef void (* wld_event_callback_fun)(const void* data);
 
 typedef struct {
@@ -93,6 +104,8 @@ extern wld_event_queue_t* gWld_queue_vap_onStatusChange;
 extern wld_event_queue_t* gWld_queue_rad_onScan_change;
 
 extern wld_event_queue_t* gWld_queue_rad_onChangeEvent;
+extern wld_event_queue_t* gWld_queue_lifecycleEvent;
+
 
 void wld_event_add_callback(wld_event_queue_t* queue, wld_event_callback_t* callback);
 void wld_event_remove_callback(wld_event_queue_t* queue, wld_event_callback_t* callback);

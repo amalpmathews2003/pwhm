@@ -70,58 +70,26 @@
 #include "swl/swl_assert.h"
 #include "wifiGen.h"
 #include "swl/fileOps/swl_fileUtils.h"
+#include "wld/Features/wld_persist.h"
+#include "wld/wld_eventing.h"
 
 #define ME "wld"
 
-static bool s_getSavedConfPath(amxc_string_t* path) {
-    ASSERT_NOT_NULL(path, false, ME, "NULL");
-    amxc_string_reset(path);
-    amxc_var_t* config = amxo_parser_get_config(get_wld_plugin_parser(), "odl.directory");
-    const char* saveDir = amxc_var_constcast(cstring_t, config);
-    ASSERTS_STR(saveDir, false, ME, "Empty");
-    config = amxo_parser_get_config(get_wld_plugin_parser(), "name");
-    const char* wldName = amxc_var_constcast(cstring_t, config);
-    ASSERTS_STR(wldName, false, ME, "Empty");
-    int ret = amxc_string_appendf(path, "%s/%s.odl", saveDir, wldName);
-    ASSERT_EQUALS(ret, 0, false, ME, "fail to format save path");
-    return true;
-}
 
-static bool s_loadDmConf() {
-    SAH_TRACEZ_IN(ME);
-    // Defaults or saved odl will be loaded here:
-    // This makes sure that the events for the defaults are only called when the plugin is started
-    while(amxp_signal_read() == 0) {
-    }
-    int rv;
-    amxc_string_t confPath;
-    amxc_string_init(&confPath, 0);
-    amxd_object_t* rootObj = amxd_dm_get_root(get_wld_plugin_dm());
-    amxo_parser_t* parser = get_wld_plugin_parser();
-    if(s_getSavedConfPath(&confPath) && swl_fileUtils_existsFile(amxc_string_get(&confPath, 0))) {
-        rv = amxo_parser_parse_file(parser, amxc_string_get(&confPath, 0), rootObj);
-    } else {
-        rv = amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
-        wld_vendorModuleMgr_loadDefaultsAll();
-    }
-    amxc_string_clean(&confPath);
-    while(amxp_signal_read() == 0) {
-    }
-    if(rv != 0) {
-        SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
-                         amxo_parser_get_status(parser),
-                         amxo_parser_get_message(parser));
-        return false;
-    }
-    SAH_TRACEZ_OUT(ME);
-    return true;
+static void s_sendLifecycleEvent(wld_lifecycleEvent_e change) {
+    wld_lifecycleEvent_t event = {
+        .event = change,
+    };
+    wld_event_trigger_callback(gWld_queue_lifecycleEvent, &event);
+
 }
 
 void _app_start(const char* const event_name _UNUSED,
                 const amxc_var_t* const event_data _UNUSED,
                 void* const priv _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "data model is loaded");
-    s_loadDmConf();
+    wld_persist_onStart();
+    s_sendLifecycleEvent(WLD_LIFECYCLE_EVENT_DATAMODEL_LOADED);
 }
 
 static bool s_initPluginConf() {
@@ -155,9 +123,13 @@ int _wld_main(int reason,
         wld_vendorModuleMgr_initAll(&initInfo);
         wifiGen_addRadios();
 
+        s_sendLifecycleEvent(WLD_LIFECYCLE_EVENT_INIT_DONE);
+
         break;
     case 1:     // STOP
         SAH_TRACEZ_WARNING(ME, "WLD plugin stopped");
+        s_sendLifecycleEvent(WLD_LIFECYCLE_EVENT_CLEANUP_START);
+
         wld_vendorModuleMgr_deinitAll();
         wld_cleanup();
         wld_vendorModuleMgr_unloadAll();

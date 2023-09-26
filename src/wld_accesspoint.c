@@ -352,6 +352,7 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
     pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
     pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
 
+    pAP->initDone = true;
     SAH_TRACEZ_OUT(ME);
 
 }

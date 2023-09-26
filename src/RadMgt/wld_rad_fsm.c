@@ -340,33 +340,39 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
                     SAH_TRACEZ_WARNING(ME, "Starting FSM commit %s", rad->Name);
                     rad->fsm_radio_st = FSM_RUN;              // Lock the RADIO for our FSM
                     rad->fsmRad.FSM_State = FSM_WAIT;
-                    rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT; // When failing, try 2 extra rounds ?
+                    rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT; // When failing, wait 20 seconds to allow init / WPS to finish ?
                     rad->fsmRad.FSM_Loop = 0;                 // Be sure this is resetted!
                 }
             }
         }
         break;
 
-    case FSM_WAIT:
-        if(wld_rad_hasWpsActiveEndpoint(rad)) {
+    case FSM_WAIT: {
+        bool waitForVaps = !wld_rad_areAllVapsDone(rad);
+        bool waitForWps = wld_rad_hasWpsActiveEndpoint(rad);
+        if(waitForVaps || waitForWps) {
             if(rad->fsmRad.FSM_Retry > 0) {
-                SAH_TRACEZ_WARNING(ME, "Delay commit %s %i / %i", rad->Name, rad->fsmRad.FSM_Retry, WLD_FSM_MAX_WAIT);
+                SAH_TRACEZ_WARNING(ME, "Delay commit %s %i / %i ( vap %u / WPS %u)", rad->Name, rad->fsmRad.FSM_Retry, WLD_FSM_MAX_WAIT,
+                                   waitForVaps, waitForWps);
                 rad->fsmRad.timeout_msec = WLD_FSM_WAIT_TIME;
                 rad->fsmRad.FSM_Retry--;
                 break;
             } else {
-                SAH_TRACEZ_ERROR(ME, "%s start while EP WPS active", rad->Name);
+                SAH_TRACEZ_ERROR(ME, "%s start while EP WPS active (vap %u / WPS %u)", rad->Name,
+                                 waitForVaps, waitForWps);
             }
         }
-        rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT;
+
         /* There's no wait cycle (Can't be used for TR69 & TR98), SPEEDUP */
         rad->fsmRad.timeout_msec = 100;
         bool has_lock = s_tryGetLock(rad);
         if(has_lock) {
             rad->fsmRad.FSM_State = FSM_DEPENDENCY;
+            rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT;
         }
         // else just stay and wait.
-        break;
+    }
+    break;
 
     case FSM_RESTART:
         // Restart radio after deep power down

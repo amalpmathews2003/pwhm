@@ -1,5 +1,6 @@
 include ../makefile.inc
 
+
 # build destination directories
 OBJDIR = ../output/$(MACHINE)
 
@@ -87,7 +88,15 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					nl80211/wld_wpaSupp_cfgFile.o \
 					nl80211/wld_wpaSupp_cfgManager.o \
 					nl80211/wld_wpaSupp_ep_api.o \
-					nl80211/wld_wpaSupp_parser.o		
+					nl80211/wld_wpaSupp_parser.o
+
+ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
+$(info Feature persist OFF)
+	OBJS-libwld.so += Features/persist/wld_persist_off.o
+else
+$(info Feature persist ON)
+	OBJS-libwld.so += Features/persist/wld_persist_on.o
+endif
 
 OBJS = $(OBJS-libwld.so)
 LIBS = libwld.so
