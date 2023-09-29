@@ -52,7 +52,7 @@ if (RadioIndex >= 0) : %}
 {% endif %}
                 }
                 object WPS {
-                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
+                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,Display,VirtualDisplay,PIN";
                     parameter Configured = 1;
 {% if (BDfn.isInterfaceLan(Itf.Name)) : %}
                     parameter Enable = 1;

@@ -307,6 +307,7 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"config_methods", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"qos_map_set", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"uuid", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"ap_pin", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"mbo", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap_backhaul_ssid", SECDMN_ACTION_OK_NEED_SIGHUP},
@@ -660,7 +661,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     const char* params[] = {
         "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",
         "ft_over_ds", "multi_ap", "qos_map_set",
-        "wps_state", "config_methods", "uuid",
+        "wps_state", "config_methods", "uuid", "ap_pin",
         "rrm_neighbor_report", "ieee80211w", "mbo",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,

@@ -132,6 +132,7 @@ bool wifiGen_init() {
     fta.mfn_wvap_pf_sync = wifiGen_vap_mf_sync;
     fta.mfn_wvap_wps_sync = wifiGen_vap_wps_sync;
     fta.mfn_wvap_wps_enable = wifiGen_vap_wps_enable;
+    fta.mfn_wvap_wps_label_pin = wifiGen_vap_wps_labelPin;
     fta.mfn_wvap_kick_sta = wifiGen_vap_kick_sta;
     fta.mfn_wvap_kick_sta_reason = wifiGen_vap_kick_sta_reason;
     fta.mfn_wvap_multiap_update_type = wifiGen_vap_multiap_update_type;

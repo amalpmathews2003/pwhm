@@ -277,35 +277,26 @@ void wld_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* 
  *
  * Updatable fields are currently: DefaultPIN, UUID
  */
-void s_syncWpsConstToObject() {
-    amxc_llist_it_t* itRad = NULL;
-    bool ret;
-
+static void s_syncWpsConstToObject() {
+    amxd_trans_t trans;
     /* Update wps_DefParam */
     amxd_object_t* pWPS_DefParam_obj = amxd_object_get(get_wld_object(), "wps_DefParam");
-    amxd_object_set_cstring_t(pWPS_DefParam_obj, "DefaultPin", g_wpsConst.DefaultPin);
-    amxd_object_set_cstring_t(pWPS_DefParam_obj, "UUID", g_wpsConst.UUID);
+    ASSERT_TRANSACTION_INIT(pWPS_DefParam_obj, &trans, , ME, "trans init failure");
+    amxd_trans_set_value(cstring_t, &trans, "DefaultPin", g_wpsConst.DefaultPin);
+    amxd_trans_set_value(cstring_t, &trans, "UUID", g_wpsConst.UUID);
 
     /* Update updatable AccessPoint.WPS.* fields */
-    for(itRad = amxc_llist_get_first(&g_radios); itRad; itRad = amxc_llist_it_get_next(itRad)) {
-        T_Radio* pRad = amxc_llist_it_get_data(itRad, T_Radio, it);
-        assert(pRad);
-        amxc_llist_it_t* it;
-        for(it = amxc_llist_get_first(&pRad->llAP); it; it = amxc_llist_it_get_next(it)) {
-            T_AccessPoint* pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
-            assert(pAP);
-
-            amxd_object_t* wpsObj = amxd_object_findf(pAP->pBus, "WPS");
-            ret = amxd_object_set_cstring_t(wpsObj, "SelfPIN", pRad->wpsConst->DefaultPin);
-            assert(ret);
-
-            ret = amxd_object_set_cstring_t(wpsObj, "UUID", pRad->wpsConst->UUID);
-            assert(ret);
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pAP = NULL;
+        wld_rad_forEachAp(pAP, pRad) {
+            amxd_object_t* wpsObj = amxd_object_get(pAP->pBus, "WPS");
+            amxd_trans_select_object(&trans, wpsObj);
+            amxd_trans_set_value(cstring_t, &trans, "SelfPIN", pRad->wpsConst->DefaultPin);
+            amxd_trans_set_value(cstring_t, &trans, "UUID", pRad->wpsConst->UUID);
         }
     }
-
-    ret = (get_wld_object());
-    assert(ret);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
 }
 
 /**
@@ -317,6 +308,7 @@ static void s_updateSelfPIN(const char* selfPIN) {
     ASSERT_TRUE(strlen(selfPIN) < sizeof(g_wpsConst.DefaultPin), , ME, "PIN too long");
 
     swl_str_copy(g_wpsConst.DefaultPin, sizeof(g_wpsConst.DefaultPin), selfPIN);
+    s_syncWpsConstToObject();
 
     SAH_TRACEZ_INFO(ME, "SelfPIN updated to %s", g_wpsConst.DefaultPin);
 }
@@ -344,9 +336,10 @@ static void s_setWpsSelfPIN_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     }
 
     s_updateSelfPIN(defaultPIN);
-    pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
-
-    SAH_TRACEZ_INFO(ME, "%s: set WPS SelfPIN %d", pAP->alias, SelfPIN);
+    if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
+        pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
+        SAH_TRACEZ_INFO(ME, "%s: set WPS SelfPIN %d", pAP->alias, SelfPIN);
+    }
 
     SAH_TRACEZ_OUT(ME);
 }

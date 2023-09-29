@@ -447,6 +447,21 @@ swl_rc_ne wifiGen_vap_wps_enable(T_AccessPoint* pAP, int enable, int set) {
     return SWL_RC_OK;
 }
 
+int wifiGen_vap_wps_labelPin(T_AccessPoint* pAP, int set) {
+    swl_rc_ne rc = SWL_RC_OK;
+
+    if(set & SET) {
+        T_Radio* pRad = pAP->pRadio;
+        ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+        if(set & DIRECT) {
+            rc = wld_ap_hostapd_setWpsApPin(pAP, pRad->wpsConst->DefaultPin, 0);
+        } else {
+            setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+        }
+    }
+    return rc;
+}
+
 int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize _UNUSED, int reason) {
     ASSERT_TRUE(buf && strlen(buf), SWL_RC_INVALID_PARAM, ME, "Invalid");
     swl_macBin_t bMac;
