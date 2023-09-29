@@ -355,3 +355,13 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
     return SWL_RC_OK;
 }
 
+bool wld_nl80211_getEvtListenerHandlers(wld_nl80211_listener_t* pListener, void** pData, wld_nl80211_evtHandlers_cb* pHandlers) {
+    ASSERT_NOT_NULL(pListener, false, ME, "NULL");
+    if(pData != NULL) {
+        *pData = pListener->pData;
+    }
+    if(pHandlers != NULL) {
+        *pHandlers = pListener->handlers;
+    }
+    return true;
+}

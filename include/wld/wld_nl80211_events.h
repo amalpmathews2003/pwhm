@@ -195,6 +195,18 @@ wld_nl80211_listener_t* wld_nl80211_addGlobalEvtListener(wld_nl80211_state_t* st
 swl_rc_ne wld_nl80211_delEvtListener(wld_nl80211_listener_t** ppListener);
 
 /*
+ * @brief get internal data from listener
+ *
+ * @param pListener current listener use to get internal data
+ * @param pData the user data saved inside pListener.
+ * @param pHandlers the evt handler saved inside pListener.
+
+ * @return true on success
+ *         false otherwise
+ */
+bool wld_nl80211_getEvtListenerHandlers(wld_nl80211_listener_t* pListener, void** pData, wld_nl80211_evtHandlers_cb* pHandlers);
+
+/*
  * @brief create a listener for vendor reported events, received from a selection of wiphy/iface.
  * Received events are notified to the listener when:
  * - listener has a dedicated valid handler function (i.e not null)
