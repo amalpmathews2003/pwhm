@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.15.1 - 2023-09-29(13:30:10 +0000)
+
+### Other
+
+- - prplmesh Mxl - Factorise duplicated code lines in sub cmd callback function
+
 ## Release v4.15.0 - 2023-09-25(07:49:19 +0000)
 
 ### Other
