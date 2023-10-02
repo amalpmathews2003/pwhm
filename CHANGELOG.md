@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.15.2 - 2023-10-02(11:35:24 +0000)
+
+### Other
+
+- : Add wld_nl80211_getEvtListenerHandlers for vendor module.
+
 ## Release v4.15.1 - 2023-09-29(13:30:10 +0000)
 
 ### Other
