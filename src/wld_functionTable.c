@@ -223,6 +223,7 @@ DEF_TRAP(T_Radio, mfn_wrad_bgdfs_stop);
 DEF_TRAP(T_Radio, mfn_wrad_delayApUpDone);
 DEF_TRAP(T_Radio, mfn_wrad_sensing_cmd);
 DEF_TRAP(T_Radio, mfn_wrad_sensing_resetStats);
+DEF_TRAP(T_Radio, mfn_wrad_firmwareVersion);
 
 static swl_rc_ne TRAP_mfn_wrad_sensing_csiStats(T_Radio* rad, wld_csiState_t* csimonState) {
     _UNUSED_(rad);
@@ -648,6 +649,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_sensing_addClient);
     FTA_ASSIGN(mfn_wrad_sensing_delClient);
     FTA_ASSIGN(mfn_wrad_sensing_resetStats);
+    FTA_ASSIGN(mfn_wrad_firmwareVersion);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);

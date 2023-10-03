@@ -694,6 +694,11 @@ define probelist_t{
 		}
 
 		/**
+		 * <p>This radio’s WiFi firmware version. </p>
+		 */
+		%read-only string FirmwareVersion;
+
+		/**
 		 * <p>The desired channel bandwidth (applicable to 802.11n specifications
 		 * only). Enumeration of: </p>
 		 * <ul>

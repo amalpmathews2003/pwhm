@@ -362,6 +362,9 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->pFA->mfn_wrad_supports(pR, NULL, 0);
     pR->maxBitRate = 0; // Mark this as AUTO!
 
+    /* Get Wifi firmware version */
+    pR->pFA->mfn_wrad_firmwareVersion(pR);
+
     pR->multiUserMIMOSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "MU_MIMO", 0) == SWL_TRL_TRUE);
     pR->implicitBeamFormingSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "IMPL_BF", 0) == SWL_TRL_TRUE);
     /* Enabled by default, but not if it's not supported of course. */

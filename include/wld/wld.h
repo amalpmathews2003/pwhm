@@ -1620,6 +1620,7 @@ struct WLD_RADIO {
     wld_airStats_t* pLastAirStats;                /* last air stats calculated based on diff with active chan survey result (cached for nl80211) */
     bool csiEnable;                               /* Enable CSI */
     amxc_llist_t csiClientList;                   /* CSI client list */
+    char firmwareVersion[64];                     /* Radio’s WiFi firmware version */
 };
 
 typedef struct {
@@ -2268,6 +2269,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                  /**< Del the non associated station */
     PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;         /**< Warn driver delay AP up period is over*/
     PFN_WRAD_RADIO_STATS mfn_wrad_stats;                      /**< get radio statistics */
+    swl_rc_ne (* mfn_wrad_firmwareVersion)(T_Radio* rad);     /**< get the radio's firmware version */
 
     PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;                /**< VAP constructor hook */
     PFN_WVAP_DESTROY_HOOK mfn_wvap_destroy_hook;              /**< VAP destructor hook */

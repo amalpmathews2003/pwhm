@@ -1817,6 +1817,9 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         pR->pFA->mfn_misc_has_support(pR, NULL, TBuf, sizeof(TBuf)); /* Get fake value we need a VAP */
         amxd_object_set_cstring_t(object, "IEEE80211_Caps", TBuf);
 
+        /* 'FirmwareVersion' The radio’s WiFi firmware version */
+        amxd_object_set_cstring_t(object, "FirmwareVersion", pR->firmwareVersion);
+
         wld_rad_parse_cap(pR);
         wld_rad_update_operating_standard(pR);
         wld_radio_updateAntenna(pR);
