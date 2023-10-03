@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.16.0 - 2023-10-03(08:04:12 +0000)
+
+### Other
+
+- - send notification for received mgmt action frames
+
 ## Release v4.15.2 - 2023-10-02(11:35:24 +0000)
 
 ### Other
