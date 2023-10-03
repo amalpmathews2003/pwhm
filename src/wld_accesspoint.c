@@ -1997,12 +1997,31 @@ swl_rc_ne wld_vap_saveAssocReq(T_AccessPoint* pAP, swl_bit8_t* frameBin, size_t 
     }
     char frameStr[(frameLen * 2) + 1];
     bool ret = swl_hex_fromBytesSep(frameStr, sizeof(frameStr), frameBin, frameLen, false, 0, NULL);
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: fail to hex dump frame type %d (len:%zu)", pAP->alias, frame->fc.subType, frameLen)
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: fail to hex dump frame type %d (len:%zu)", pAP->alias, frame->fc.subType, frameLen);
     swl_timeMono_t timestamp = swl_time_getMonoSec();
     wld_vap_assocTableStruct_t tuple = {frame->transmitter, frame->bssid, frameStr, timestamp, frame->fc.subType};
     swl_circTable_addValues(&(pAP->lastAssocReq), &tuple);
     SAH_TRACEZ_INFO(ME, "%s: add/update assocReq entry for station "SWL_MAC_FMT, pAP->alias,
                     SWL_MAC_ARG(frame->transmitter.bMac));
+    return SWL_RC_OK;
+}
+
+/**
+ * Called to notify the receive of 80211 action frame
+ */
+swl_rc_ne wld_vap_notifyActionFrame(T_AccessPoint* pAP, const char* frame) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pAP->pBus, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "notify action frame received, frame=%s", frame);
+
+    amxc_var_t notifMap;
+    amxc_var_init(&notifMap);
+    amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &notifMap, "frame", frame);
+    amxd_object_trigger_signal(pAP->pBus, "MgmtActionFrameReceived", &notifMap);
+    amxc_var_clean(&notifMap);
+
     return SWL_RC_OK;
 }
 

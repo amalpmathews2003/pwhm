@@ -82,6 +82,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set);
 void SetAPDefaults(T_AccessPoint* pAP, int idx);
 
 swl_rc_ne wld_vap_saveAssocReq(T_AccessPoint* pAP, swl_bit8_t* frame, size_t frameLen);
+swl_rc_ne wld_vap_notifyActionFrame(T_AccessPoint* pAP, const char* frame);
 swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_vap_syncNrDev(T_AccessPoint* pAP);
 bool wld_vap_sync_assoclist(T_AccessPoint* pAP);

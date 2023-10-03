@@ -586,7 +586,23 @@ static void s_actionVendorSpecificCb(void* userData, swl_80211_mgmtFrame_t* fram
     wld_rad_notifyVendorSpecificAction(pRad, &sourceMAC, &receiverMAC, (swl_oui_t*) &vendor->oui, dataHex);
 }
 
+static void s_actionFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen, swl_80211_actionFrame_t* actionFrame _UNUSED, size_t actionFrameDataLen _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s action frame received (len:%zu)", pAP->alias, frameLen);
+
+    char frameStr[(frameLen * 2) + 1];
+    bool ret = swl_hex_fromBytesSep(frameStr, sizeof(frameStr), (swl_bit8_t*) frame, frameLen, false, 0, NULL);
+    ASSERT_TRUE(ret, , ME, "%s: fail to hex dump action frame (len:%zu)", pAP->alias, frameLen);
+
+    // trigger AMX signal to notify the receive of the action frame
+    wld_vap_notifyActionFrame(pAP, frameStr);
+}
+
 static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameHandlers = {
+    .fProcActionFrame = s_actionFrameCb,
     .fProcAssocReq = s_assocReqCb,
     .fProcReAssocReq = s_reassocReqCb,
     .fProcBtmQuery = s_btmQueryCb,
