@@ -1326,6 +1326,11 @@ define probelist_t{
 		%read-only uint32 ActiveAssociatedDevices;
 
 		/**
+		 * The number of Video devices currently connected to this radio.
+		 */
+		%read-only uint32 ActiveVideoAssociatedDevices;
+
+		/**
 		 * <B>DEBUG</B>
 		 *  Enable extra debugging output by vendor deamon applications
 		 *  The content of this one is for developpers only and not meant to export for clients.

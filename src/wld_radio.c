@@ -2242,7 +2242,7 @@ T_DEBUG_OBJ_STR VerifyRadio[] = {
     {TPH_STR, "ChannelChangeReason", TPH_STR, offsetof(T_Radio, channelChangeReason)},
     {TPH_STR, "ChannelBandwidthChangeReason", TPH_STR, offsetof(T_Radio, channelBandwidthChangeReason)},
     {TPH_INT32, "ActiveAssociatedDevices", TPH_INT32, offsetof(T_Radio, currentStations)},
-    {TPH_INT32, "ActiveVideoAssociatedDevices", TPH_INT32, offsetof(T_Radio, currentStations)},
+    {TPH_INT32, "ActiveVideoAssociatedDevices", TPH_INT32, offsetof(T_Radio, currentVideoStations)},
     {TPH_INT32, "MaxAssociatedDevices", TPH_INT32, offsetof(T_Radio, maxStations)},
     {TPH_BOOL, "KickRoamingStation", TPH_BOOL, offsetof(T_Radio, kickRoamStaEnabled)},
     {TPH_INT32, "dbgRADEnable", TPH_INT32, offsetof(T_Radio, dbgEnable)},
