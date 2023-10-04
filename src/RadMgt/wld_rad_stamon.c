@@ -82,18 +82,22 @@
 /**
  * Retrieve a Device based on its string MACAddress in a given list.
  */
-wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devList) {
-    swl_macBin_t macAddr = SWL_MAC_BIN_NEW();
-    ASSERT_TRUE(swl_typeMacBin_fromChar(&macAddr, macAddrStr), NULL, ME, "Bad Format MacAddress (%s)", macAddrStr);
-
+wld_nasta_t* wld_rad_staMon_getDeviceExt(const swl_macBin_t* pMacBin, amxc_llist_t* devList) {
+    ASSERT_NOT_NULL(pMacBin, NULL, ME, "NULL");
     amxc_llist_for_each(it, devList) {
         wld_nasta_t* pMD = amxc_llist_it_get_data(it, wld_nasta_t, it);
-        if(memcmp(macAddr.bMac, pMD->MACAddress, ETHER_ADDR_LEN) == 0) {
+        if(memcmp(pMacBin->bMac, pMD->MACAddress, ETHER_ADDR_LEN) == 0) {
             return pMD;
         }
     }
 
     return NULL;
+}
+
+wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devList) {
+    swl_macBin_t macAddr = SWL_MAC_BIN_NEW();
+    ASSERT_TRUE(swl_typeMacBin_fromChar(&macAddr, macAddrStr), NULL, ME, "Bad Format MacAddress (%s)", macAddrStr);
+    return wld_rad_staMon_getDeviceExt(&macAddr, devList);
 }
 
 T_NonAssociatedDevice* wld_rad_staMon_getNonAssociatedDevice(T_Radio* pRad, const char* macAddrStr) {
@@ -189,7 +193,7 @@ static amxd_status_t s_stamon_createDevice(amxd_object_t* parent, const char* te
     ASSERT_NOT_NULL(template, amxd_status_unknown_error, ME, "NULL");
 
     const char* macAddr = GET_CHAR(args, "macaddress");
-    ASSERT_TRUE(swl_mac_charIsValidStaMac((swl_macChar_t*) macAddr), amxd_status_unknown_error, ME, "invalid MACAddress (%s)", macAddr);
+    ASSERT_TRUE(swl_mac_charIsValidStaMac((swl_macChar_t*) macAddr), amxd_status_invalid_value, ME, "invalid MACAddress (%s)", macAddr);
     SAH_TRACEZ_INFO(ME, "Creating Device instance with template %s and macAddr %s", template, macAddr);
 
     amxd_object_t* object;
@@ -273,13 +277,14 @@ amxd_status_t _createNonAssociatedDevice(amxd_object_t* obj,
     if(var == NULL) {
         amxc_var_add_new_key_uint8_t(args, "bandwidth", swl_chanspec_bwToInt(spec.bandwidth));
     } else {
-        swl_bandwidth_e reqBw = amxc_var_dyncast(uint8_t, var);
-        if((swl_chanspec_intToBw(reqBw) == SWL_BW_AUTO) ||
+        uint8_t reqBw = amxc_var_dyncast(uint8_t, var);
+        swl_bandwidth_e reqBwEnu = swl_chanspec_intToBw(reqBw);
+        if((reqBwEnu == SWL_BW_AUTO) ||
            (((int32_t) reqBw) > swl_chanspec_bwToInt(pRad->maxChannelBandwidth))) {
             SAH_TRACEZ_WARNING(ME, "%s: ignore invalid bandwidth %d", pRad->Name, reqBw);
             amxc_var_set_uint8_t(var, swl_chanspec_bwToInt(spec.bandwidth));
         } else {
-            spec.bandwidth = reqBw;
+            spec.bandwidth = reqBwEnu;
         }
     }
 
@@ -325,10 +330,9 @@ amxd_status_t _deleteNonAssociatedDevice(amxd_object_t* obj,
     return state;
 }
 
-amxd_status_t wld_rad_staMon_getDeviceStats(amxd_object_t* obj,
-                                            uint64_t call_id _UNUSED,
-                                            amxc_var_t* retval,
-                                            const char* path) {
+static amxd_status_t s_getDeviceStats(amxd_object_t* obj,
+                                      amxc_var_t* retval,
+                                      const char* path) {
     SAH_TRACEZ_IN(ME);
 
     amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
@@ -337,12 +341,11 @@ amxd_status_t wld_rad_staMon_getDeviceStats(amxd_object_t* obj,
     ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "Invalid Radio Pointer");
     ASSERTI_TRUE(pRad->stationMonitorEnabled, amxd_status_ok, ME, "%s stamon disabled", pRad->Name);
 
-    if(pRad->pFA->mfn_wrad_update_mon_stats(pRad) < 0) {
-        SAH_TRACEZ_ERROR(ME, "Update monitor stats failed");
-        return amxd_status_unknown_error;
-    }
+    swl_rc_ne rc = pRad->pFA->mfn_wrad_update_mon_stats(pRad);
+    ASSERTS_NOT_EQUALS(rc, SWL_RC_NOT_IMPLEMENTED, amxd_status_ok, ME, "%s: staMon not supported", pRad->Name);
+    ASSERT_FALSE(rc < SWL_RC_OK, amxd_status_unknown_error, ME, "%s: Update monitor stats failed", pRad->Name);
 
-    amxd_object_t* object = amxd_object_get(pRad->pBus, path);
+    amxd_object_t* object = amxd_object_get(obj, path);
     amxd_object_for_each(instance, it, object) {
         amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
         if(instance == NULL) {
@@ -375,8 +378,7 @@ amxd_status_t _getNaStationStats(amxd_object_t* obj,
                                  amxd_function_t* func _UNUSED,
                                  amxc_var_t* args _UNUSED,
                                  amxc_var_t* retval) {
-    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
-    return wld_rad_staMon_getDeviceStats(obj, call_id, retval, "NaStaMonitor.NonAssociatedDevice");
+    return s_getDeviceStats(obj, retval, "NonAssociatedDevice");
 }
 
 amxd_status_t _clearNonAssociatedDevices(amxd_object_t* obj,
@@ -411,8 +413,9 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
 
     pR->stationMonitorEnabled = enabled;
 
-    int ret = pR->pFA->mfn_wrad_setup_stamon(pR, enabled);
-    ASSERT_EQUALS(ret, 0, , ME, "Failed to %s station monitor", enabled ? "enable" : "disable");
+    swl_rc_ne ret = pR->pFA->mfn_wrad_setup_stamon(pR, enabled);
+    ASSERTI_NOT_EQUALS(ret, SWL_RC_NOT_IMPLEMENTED, , ME, "%s: station monitor not supported", pR->Name);
+    ASSERT_FALSE(ret < SWL_RC_OK, , ME, "%s: Failed to %s station monitor", pR->Name, enabled ? "enable" : "disable");
     wld_radStaMon_updateActive(pR);
 
     SAH_TRACEZ_OUT(ME);
@@ -436,25 +439,9 @@ static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, a
             amxc_var_t myMap;
             amxc_var_init(&myMap);
             amxc_var_add_key(int32_t, &myMap, "SignalStrength", pMD->monRssi);
-            char buffer[ETHER_ADDR_STR_LEN];
-            wldu_convMac2Str(pMD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
-            amxc_var_add_key(cstring_t, &myMap, "MACAddress", buffer);
+            swl_typeMacBin_addToMapRef(&myMap, "MACAddress", (swl_macBin_t*) pMD->MACAddress);
 
-            swl_macBin_t mac;
-            swl_macChar_t macAddr_char = {.cMac = {0}};
-            strncpy(macAddr_char.cMac, (const char*) pMD->MACAddress, sizeof(macAddr_char.cMac) - 1);
-            if(!swl_mac_charToBin(&mac, &macAddr_char)) {
-                SAH_TRACEZ_ERROR(ME, "Unable to parse %s", pMD->MACAddress);
-                return false;
-            }
-
-            swl_typeMacBin_addToMap(&myMap, "MACAddress", mac);
-
-            struct tm now_tm;
-            time_t now = time(NULL);
-            gmtime_r(&now, &now_tm);
-            amxc_ts_t ts;
-            amxc_var_add_key(amxc_ts_t, &myMap, "TimeStamp", &ts);
+            swl_typeTimeSpecReal_addToMap(&myMap, "TimeStamp", swl_timespec_getRealVal());
 
             amxc_var_move(myList, &myMap);
             nrUpdates++;
@@ -470,8 +457,8 @@ static void timeHandler(void* userdata) {
 
     SAH_TRACEZ_INFO(ME, "Time rssiMon %s", pRad->Name);
 
-    int result = pRad->pFA->mfn_wrad_update_mon_stats(pRad);
-    if(result != WLD_OK) {
+    swl_rc_ne result = pRad->pFA->mfn_wrad_update_mon_stats(pRad);
+    if(result != SWL_RC_OK) {
         wld_mon_stop(&ev->monitor);
     }
 
@@ -602,8 +589,7 @@ amxd_status_t _getMonitorDeviceStats(amxd_object_t* obj,
                                      amxd_function_t* func _UNUSED,
                                      amxc_var_t* args _UNUSED,
                                      amxc_var_t* retval) {
-    uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
-    return wld_rad_staMon_getDeviceStats(obj, call_id, retval, "NaStaMonitor.MonitorDevice");
+    return s_getDeviceStats(obj, retval, "MonitorDevice");
 }
 
 /**

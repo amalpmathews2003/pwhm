@@ -958,9 +958,6 @@ typedef struct wld_nasta {
     void* vendorData;
 } wld_nasta_t;
 
-typedef struct wld_nasta T_NonAssociatedDevice;
-typedef struct wld_nasta T_MonitorDevice;
-
 typedef enum {
     HE_CAP_DL_OFDMA,
     HE_CAP_UL_OFDMA,
@@ -2096,10 +2093,10 @@ typedef struct {
 typedef int (APIENTRY* PFN_WRAD_PER_ANTENNA_RSSI)(T_Radio* rad, T_ANTENNA_RSSI*);
 typedef int (APIENTRY* PFN_WRAD_LATEST_POWER)(T_Radio* rad, T_ANTENNA_POWER*);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_UPDATE_CHANINFO)(T_Radio* rad);
-typedef int (APIENTRY* PFN_WRAD_UPDATE_MON_STATS)(T_Radio* rad);
-typedef int (APIENTRY* PFN_WRAD_SETUP_STAMON)(T_Radio* rad, bool enable);
-typedef int (APIENTRY* PFN_WRAD_ADD_STAMON)(T_Radio* rad, T_NonAssociatedDevice* pMD);
-typedef int (APIENTRY* PFN_WRAD_DEL_STAMON)(T_Radio* rad, T_NonAssociatedDevice* pMD);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_UPDATE_MON_STATS)(T_Radio* rad);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SETUP_STAMON)(T_Radio* rad, bool enable);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_ADD_STAMON)(T_Radio* rad, T_NonAssociatedDevice* pMD);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_DEL_STAMON)(T_Radio* rad, T_NonAssociatedDevice* pMD);
 typedef int (APIENTRY* PFN_WRAD_SETUP_INTFRMON)(T_Radio* rad, bool enable);
 typedef int (APIENTRY* PFN_WRAD_CHECK_HEALTH)(T_Radio* rad);
 typedef int (APIENTRY* PFN_WRAD_DELAY_AP_UP_DONE)(T_Radio* rad);

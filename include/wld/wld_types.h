@@ -80,6 +80,8 @@ typedef struct wld_scanArgs T_ScanArgs;
 typedef struct wld_scanResultSSID T_ScanResult_SSID;
 typedef struct wld_scanResults T_ScanResults;
 typedef struct wld_airStats T_Airstats;
+typedef struct wld_nasta T_NonAssociatedDevice;
+typedef struct wld_nasta T_MonitorDevice;
 
 typedef enum {
     COM_DIR_TRANSMIT,

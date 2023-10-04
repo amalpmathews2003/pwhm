@@ -2090,7 +2090,7 @@ define probelist_t{
 			 * @return list of variant maps with the NonAssociatedDevice values
 			 * @version 9.0
 			*/
-			void getNaStationStats();
+			list getNaStationStats();
 
 			/**
 			 * <b>createNonAssociatedDevice</b>
@@ -2119,7 +2119,7 @@ define probelist_t{
 			 * @return list of variant maps with latest MonitorDevice values
 			 * @version 9.2
 			*/
-			void getMonitorDeviceStats();
+			list getMonitorDeviceStats();
 
 			/**
 			 * Create a new entry in MonitorDevice table
@@ -2169,11 +2169,11 @@ define probelist_t{
 				/**
 				 * An indicator of radio signal strength of the uplink from the
 				 * monitored device to the access point, measured in dBm.
-				 * device.
+				 * (measured RSSI of the device).
 				 * @version 9.0
 				 */
-				%read-only uint8 SignalStrength{
-					on action validate call check_range { min = 0, max = 220 };
+				%read-only int32 SignalStrength{
+					on action validate call check_range { min = -200, max = 0 };
 				}
 
 				/**

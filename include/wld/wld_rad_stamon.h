@@ -72,5 +72,6 @@ T_NonAssociatedDevice* wld_rad_staMon_getNonAssociatedDevice(T_Radio* pRad, cons
 T_MonitorDevice* wld_rad_staMon_getMonitorDevice(T_Radio* pRad, const char* macAddrStr);
 
 wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devList);
+wld_nasta_t* wld_rad_staMon_getDeviceExt(const swl_macBin_t* pMacBin, amxc_llist_t* devList);
 
 #endif /* SRC_INCLUDE_WLD_WLD_RAD_STAMON_H_ */

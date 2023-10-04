@@ -538,31 +538,31 @@ static int TRAP_mfn_wendpoint_update_vendor_roaming(T_EndPoint* pEP _UNUSED) {
     return -1;
 }
 
-static int TRAP_mfn_wrad_update_mon_stats(T_Radio* rad _UNUSED) {
+static swl_rc_ne TRAP_mfn_wrad_update_mon_stats(T_Radio* rad _UNUSED) {
     _UNUSED_(rad);
     SAH_TRACEZ_NOTICE(ME, "%p", rad);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wrad_setup_stamon(T_Radio* rad _UNUSED, bool enable _UNUSED) {
+static swl_rc_ne TRAP_mfn_wrad_setup_stamon(T_Radio* rad _UNUSED, bool enable _UNUSED) {
     _UNUSED_(rad);
     _UNUSED_(enable);
     SAH_TRACEZ_NOTICE(ME, "%p %d", rad, enable);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wrad_add_stamon(T_Radio* rad _UNUSED, T_NonAssociatedDevice* pMD _UNUSED) {
+static swl_rc_ne TRAP_mfn_wrad_add_stamon(T_Radio* rad _UNUSED, T_NonAssociatedDevice* pMD _UNUSED) {
     _UNUSED_(rad);
     _UNUSED_(pMD);
     SAH_TRACEZ_NOTICE(ME, "%p %p", rad, pMD);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
-static int TRAP_mfn_wrad_del_stamon(T_Radio* rad _UNUSED, T_NonAssociatedDevice* pMD _UNUSED) {
+static swl_rc_ne TRAP_mfn_wrad_del_stamon(T_Radio* rad _UNUSED, T_NonAssociatedDevice* pMD _UNUSED) {
     _UNUSED_(rad);
     _UNUSED_(pMD);
     SAH_TRACEZ_NOTICE(ME, "%p %p", rad, pMD);
-    return -1;
+    return SWL_RC_NOT_IMPLEMENTED;
 }
 
 static swl_rc_ne TRAP_mfn_wvap_wps_sync(T_AccessPoint* pAP _UNUSED, char* val _UNUSED, int bufsize _UNUSED, int set _UNUSED) {
