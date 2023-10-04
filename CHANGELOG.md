@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.17.0 - 2023-10-04(09:21:52 +0000)
+
+### Other
+
+- - Add Radio firmware Version
+
 ## Release v4.16.0 - 2023-10-03(08:04:12 +0000)
 
 ### Other
