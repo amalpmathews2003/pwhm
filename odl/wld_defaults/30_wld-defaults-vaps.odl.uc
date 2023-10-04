@@ -2,110 +2,64 @@
     object WiFi {
         object SSID {
 {% for ( let Itf in BD.Interfaces ) : if ( Itf.Type == "wireless" ) : %}
+{% if ((Itf.OperatingFrequency == "2.4GHz") || (Itf.OperatingFrequency == "5GHz") || (Itf.OperatingFrequency == "6GHz")) : %}
             instance add ("{{Itf.Alias}}") {
+{% if ( Itf.SSID != "" ) : %}
                 parameter SSID = "{{Itf.SSID}}";
+{% endif %}
                 parameter Enable = 0;
 {% RadioIndex = BDfn.getRadioIndex(Itf.OperatingFrequency);
 if (RadioIndex >= 0) : %}
                 parameter LowerLayers = "Device.WiFi.Radio.{{RadioIndex + 1}}.";
 {% endif %}
             }
+{% endif %}
 {% endif; endfor; %}
         }
         object AccessPoint {
 {% let i = 0 %}
 {% for ( let Itf in BD.Interfaces ) : if ( Itf.Type == "wireless" ) : %}
+{% if ((Itf.OperatingFrequency == "2.4GHz") || (Itf.OperatingFrequency == "5GHz") || (Itf.OperatingFrequency == "6GHz")) : %}
 {% i++ %}
-{% if ((BDfn.isInterfaceGuest(Itf.Name)) && (Itf.OperatingFrequency == "2.4GHz")) : %}
+{% if ( Itf.SSID != "" ) : %}
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
                 parameter Enable = 0;
+{% if (BDfn.isInterfaceGuest(Itf.Name)) : %}
                 parameter DefaultDeviceType = "Guest";
-                object Security {
-                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
-                    parameter ModeEnabled = "WPA2-Personal";
-                    parameter KeyPassPhrase = "passwordGuest";
-                    parameter RekeyingInterval = 0;
-                }
-                object WPS {
-                    parameter Enable = 0;
-                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
-                    parameter Configured = 1;
-                }
-            }
-{% elif ((BDfn.isInterfaceGuest(Itf.Name)) && (Itf.OperatingFrequency == "5GHz")) : %}
-            instance add ("{{Itf.Alias}}") {
-                parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
-                parameter Enable = 0;
-                parameter DefaultDeviceType = "Guest";
-                object Security {
-                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
-                    parameter ModeEnabled = "WPA2-Personal";
-                    parameter KeyPassPhrase = "passwordGuest";
-                    parameter RekeyingInterval = 0;
-                }
-                object WPS {
-                    parameter Enable = 0;
-                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
-                    parameter Configured = 1;
-                }
-            }
-{% elif ((BDfn.isInterfaceGuest(Itf.Name)) && (Itf.OperatingFrequency == "6GHz")) : %}
-
-{% elif (Itf.OperatingFrequency == "2.4GHz") : %}
-            instance add ("{{Itf.Alias}}") {
-                parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
-                parameter Enable = 0;
-                parameter DefaultDeviceType = "Data";
+{% elif (BDfn.isInterfaceLan(Itf.Name)) : %}
                 parameter IEEE80211kEnabled = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                object Security {
-                    parameter ModeEnabled = "WPA2-Personal";
-                    parameter KeyPassPhrase = "password";
-                    parameter RekeyingInterval = 0;
-                }
-                object WPS {
-                    parameter Enable = 1;
-                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
-                    parameter Configured = 1;
-                }
-            }
-{% elif (Itf.OperatingFrequency == "5GHz") : %}
-            instance add ("{{Itf.Alias}}") {
-                parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
-                parameter Enable = 0;
-                parameter DefaultDeviceType = "Data";
-                parameter IEEE80211kEnabled = 1;
+{% if ((Itf.OperatingFrequency == "5GHz") || (Itf.OperatingFrequency == "6GHz")) : %}
                 parameter WDSEnable = 1;
-                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+{% endif %}
+{% endif %}
                 object Security {
-                    parameter ModeEnabled = "WPA2-Personal";
-                    parameter KeyPassPhrase = "password";
                     parameter RekeyingInterval = 0;
-                }
-                object WPS {
-                    parameter Enable = 1;
-                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
-                    parameter Configured = 1;
-                }
-            }
-{% elif (Itf.OperatingFrequency == "6GHz") : %}
-            instance add ("{{Itf.Alias}}") {
-                parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
-                parameter Enable = 1;
-                parameter DefaultDeviceType = "Data";
-                parameter IEEE80211kEnabled = 1;
-                parameter WDSEnable = 1;
-                parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
-                object Security {
+{% if (Itf.OperatingFrequency == "6GHz") : %}
                     parameter ModesAvailable = "WPA3-Personal";
                     parameter ModeEnabled = "WPA3-Personal";
-                    parameter KeyPassPhrase = "password";
-                    parameter RekeyingInterval = 0;
                     parameter SAEPassphrase = "";
                     parameter SPPAmsdu = 0;
+{% else %}
+                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
+                    parameter ModeEnabled = "WPA2-Personal";
+{% endif %}
+{% if (BDfn.isInterfaceGuest(Itf.Name)) : %}
+                    parameter KeyPassPhrase = "passwordGuest";
+{% else %}
+                    parameter KeyPassPhrase = "password";
+{% endif %}
+                }
+                object WPS {
+                    parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
+                    parameter Configured = 1;
+{% if (BDfn.isInterfaceLan(Itf.Name)) : %}
+                    parameter Enable = 1;
+{% endif %}
                 }
             }
+{% endif %}
 {% endif %}
 {% endif; endfor; %}
         }
