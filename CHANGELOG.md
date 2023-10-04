@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.17.1 - 2023-10-04(15:28:47 +0000)
+
+### Other
+
+- enable odl and doc check
+- add support for guest vap on all radio in odl defaults
+
 ## Release v4.17.0 - 2023-10-04(09:21:52 +0000)
 
 ### Other
