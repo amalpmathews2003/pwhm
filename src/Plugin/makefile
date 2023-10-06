@@ -1,14 +1,11 @@
 include ../../makefile.inc
 
-CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra -Wno-unused-but-set-variable \
-			-I../../include/ \
-			-I$(STAGINGDIR)/include/ \
-			-I$(STAGINGDIR)/usr/include/ \
-			-I../../include_priv/Plugin
-CFLAGS += -Wimplicit-function-declaration -Wl,--no-undefined
+
+CFLAGS := -I../../include/ -I../../include_priv/Plugin -I$(STAGINGDIR)/include -I$(STAGINGDIR)/usr/include $(CFLAGS)
+CFLAGS += -std=gnu99 -fPIC -Wall -Werror -Wextra -g
 CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 
-LDFLAGS += -L.. -L$(STAGINGDIR)/lib -L$(STAGINGDIR)/usr/lib
+LDFLAGS := -L.. -L$(STAGINGDIR)/lib -L$(STAGINGDIR)/usr/lib $(LDFLAGS)
 LDFLAGS += -Wl,-rpath,/lib -Wl,-rpath,/usr/lib
 LDFLAGS += -lsahtrace -lswlc -lswla -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
 
