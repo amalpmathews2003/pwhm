@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.18.0 - 2023-10-06(15:19:20 +0000)
+
+### Other
+
+- - Integrate pWHM on SOP
+
 ## Release v4.17.2 - 2023-10-06(08:27:30 +0000)
 
 ### Other
