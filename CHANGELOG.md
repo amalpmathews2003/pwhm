@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.17.2 - 2023-10-06(08:27:30 +0000)
+
+### Other
+
+- - channel switch while SwitchDelayVideo is not over
+
 ## Release v4.17.1 - 2023-10-04(15:28:47 +0000)
 
 ### Other
