@@ -125,7 +125,6 @@
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Guest";
                 object Security {
-                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "passwordGuest";
                     parameter RekeyingInterval = 0;
@@ -141,7 +140,6 @@
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Guest";
                 object Security {
-                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "passwordGuest";
                     parameter RekeyingInterval = 0;

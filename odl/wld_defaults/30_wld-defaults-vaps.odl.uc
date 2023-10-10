@@ -42,7 +42,6 @@ if (RadioIndex >= 0) : %}
                     parameter SAEPassphrase = "";
                     parameter SPPAmsdu = 0;
 {% else %}
-                    parameter ModesAvailable = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA3-Personal,WPA2-WPA3-Personal";
                     parameter ModeEnabled = "WPA2-Personal";
 {% endif %}
 {% if (BDfn.isInterfaceGuest(Itf.Name)) : %}
