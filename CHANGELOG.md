@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.18.4 - 2023-10-10(15:03:06 +0000)
+
+### Other
+
+- fix getting NaSta stats
+
 ## Release v4.18.3 - 2023-10-10(08:20:59 +0000)
 
 ### Other
