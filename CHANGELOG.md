@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.18.3 - 2023-10-10(08:20:59 +0000)
+
+### Other
+
+- : Remove VendorSpecific action frame notifications
+
 ## Release v4.18.2 - 2023-10-09(15:10:21 +0000)
 
 ### Other
