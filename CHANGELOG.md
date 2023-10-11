@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.18.5 - 2023-10-11(07:24:39 +0000)
+
+### Other
+
+- : Missing security mode "OWE" for Wifi guest
+
 ## Release v4.18.4 - 2023-10-10(15:03:06 +0000)
 
 ### Other
