@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.18.6 - 2023-10-12(16:56:47 +0000)
+
+### Other
+
+- WiFi Reset Support on Router and Extender
+
 ## Release v4.18.5 - 2023-10-11(07:24:39 +0000)
 
 ### Other
