@@ -72,6 +72,9 @@
 */
 %define {
 %persistent object WiFi {
+	/* Function used to reset all parameters to default values */
+	void Reset();
+
 	/* Functions - used in NeMo for creating and deleting VAP interfaces (USE WITH CARE) */
 
 	/**

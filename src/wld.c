@@ -83,6 +83,7 @@
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_nl80211_types.h"
 #include "Features/wld_persist.h"
+#include "wld/wld_vendorModule_mgr.h"
 
 #define ME "wld"
 
@@ -712,4 +713,24 @@ swl_freqBandExt_m wld_getAvailableFreqBands(T_Radio* ignoreRad) {
 
 swl_timeSpecMono_t* wld_getInitTime() {
     return &initTime;
+}
+
+amxd_status_t _Reset(amxd_object_t* obj _UNUSED,
+                     amxd_function_t* func _UNUSED,
+                     amxc_var_t* args _UNUSED,
+                     amxc_var_t* retval _UNUSED) {
+
+    amxd_object_t* rootObj = amxd_dm_get_root(get_wld_plugin_dm());
+    amxo_parser_t* parser = get_wld_plugin_parser();
+    amxo_parser_parse_string(parser, "include '${definition_file}';", rootObj);
+    amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
+    wld_vendorModuleMgr_loadDefaultsAll();
+
+    T_Radio* tmpRad = NULL;
+    wld_for_eachRad(tmpRad) {
+        tmpRad->fsmRad.FSM_SyncAll = TRUE;
+        wld_autoCommitMgr_notifyRadEdit(tmpRad);
+    }
+
+    return amxd_status_ok;
 }
