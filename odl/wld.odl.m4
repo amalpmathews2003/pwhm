@@ -253,10 +253,11 @@ import "mod-dmext.so";
 
 include "${definition_file}";
 
-%define {
-m4_ifelse(DISABLE_NETMODEL,y,,
-    entry-point wld.wld_main;``    
-    entry-point mnm.mod_netmodel_main;'')
 
+%define {
+    entry-point wld.wld_main;
+m4_ifelse(DISABLE_NETMODEL,y,,``
+    entry-point mnm.mod_netmodel_main;'')
 }
+
 #include "mod_pcm_svc.odl";
