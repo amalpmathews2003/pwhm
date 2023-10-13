@@ -255,7 +255,8 @@ include "${definition_file}";
 
 %define {
 m4_ifelse(DISABLE_NETMODEL,y,,
-``    entry-point mnm.mod_netmodel_main;'')
-    entry-point wld.wld_main;
+    entry-point wld.wld_main;``    
+    entry-point mnm.mod_netmodel_main;'')
+
 }
 #include "mod_pcm_svc.odl";
