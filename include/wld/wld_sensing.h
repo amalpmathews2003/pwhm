@@ -66,5 +66,6 @@
 
 void wld_sensing_init(T_Radio* pRad);
 void wld_sensing_cleanup(T_Radio* pRad);
+swl_rc_ne wld_sensing_delCsiClientEntry(T_Radio* pRad, swl_macBin_t* macAddr);
 
 #endif /* __WLD_SENSING_H__ */

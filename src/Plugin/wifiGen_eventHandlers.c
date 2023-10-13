@@ -76,6 +76,7 @@
 #include "wld/wld_radio.h"
 #include "wld/wld_endpoint.h"
 #include "wld/wld_chanmgt.h"
+#include "wld/wld_sensing.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_genericFrameParser.h"
@@ -497,6 +498,7 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
 
     wld_ad_add_disconnection(pAP, pAD);
+    wld_sensing_delCsiClientEntry(pAP->pRadio, macAddress);
 }
 
 static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode, swl_macChar_t* targetBssid) {

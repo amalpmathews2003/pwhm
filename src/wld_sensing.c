@@ -66,18 +66,14 @@
 #include <debug/sahtrace.h>
 #include "swl/swl_assert.h"
 #include "wld.h"
-#include "wld_endpoint.h"
 #include "wld_radio.h"
-#include "wld_util.h"
 
 #define ME "csi"
 
-static wld_csiClient_t* s_findClient(amxd_object_t* templateObj, const char* macAddr, amxd_object_t* optExclObj) {
+static wld_csiClient_t* s_findClient(amxd_object_t* templateObj, const char* macAddr) {
     amxd_object_for_each(instance, it, templateObj) {
         amxd_object_t* clientObj = amxc_container_of(it, amxd_object_t, it);
-        if(optExclObj == clientObj) {
-            continue;
-        }
+        ASSERT_NOT_NULL(clientObj, NULL, ME, "NULL");
         char* entryMacAddr = amxd_object_get_cstring_t(clientObj, "MACAddress", NULL);
         bool match = (!swl_str_isEmpty(entryMacAddr) && SWL_MAC_CHAR_MATCHES(entryMacAddr, macAddr));
         free(entryMacAddr);
@@ -106,6 +102,10 @@ static swl_rc_ne s_removeClient(T_Radio* pRad, wld_csiClient_t* client) {
     return rc;
 }
 
+static bool s_clientMACAddressIsValid(const char* macAddr, swl_macChar_t* macChar) {
+    return swl_mac_charToStandard(macChar, macAddr) && swl_mac_charIsValidStaMac(macChar);
+}
+
 /**
  * Add one client with specified MAC address
  * @return
@@ -117,53 +117,41 @@ amxd_status_t _Sensing_addClient(amxd_object_t* object,
                                  amxc_var_t* args,
                                  amxc_var_t* retval _UNUSED) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t status = amxd_status_unknown_error;
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, status, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "No radio ctx");
 
-    /* Get mac address input data */
-    const char* macAddrStr = GET_CHAR(args, "MACAddress");
-    swl_macChar_t macAddr;
-    ASSERT_TRUE(swl_mac_charToStandard(&macAddr, macAddrStr),
-                status, ME, "Invalid client MAC (%s)", macAddrStr);
+    // Get MAC address and monitoring interval input data
+    const char* macAddr = GET_CHAR(args, "MACAddress");
+    swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
+    ASSERT_TRUE(s_clientMACAddressIsValid(macAddr, &macChar),
+                amxd_status_invalid_value, ME, "%s: Invalid client MACAddress [%s]", pRad->Name, macAddr);
+
+    uint32_t interval = GET_UINT32(args, "MonitorInterval");
 
     amxd_trans_t trans;
     amxd_object_t* clientTemplate = amxd_object_findf(object, "CSIClient");
-    ASSERT_NOT_NULL(clientTemplate, amxd_status_unknown_error, ME, "NULL");
-    wld_csiClient_t* client = s_findClient(clientTemplate, macAddr.cMac, NULL);
-
+    ASSERT_NOT_NULL(clientTemplate, amxd_status_unknown_error, ME, "%s: CSIClient object not found", pRad->Name);
+    wld_csiClient_t* client = s_findClient(clientTemplate, macAddr);
     if(client != NULL) {
-        SAH_TRACEZ_INFO(ME, "client with macAddr [%s] found in client list", macAddrStr);
+        SAH_TRACEZ_INFO(ME, "%s: Client with MACAddress [%s] found in client list", pRad->Name, macAddr);
         ASSERT_TRANSACTION_INIT(client->obj, &trans, amxd_status_unknown_error, ME,
-                                "%s : trans init failure", pRad->Name);
+                                "%s: trans init failure", pRad->Name);
     } else {
-        SAH_TRACEZ_INFO(ME, "Create new client with macAddr [%s]", macAddrStr);
+        SAH_TRACEZ_INFO(ME, "%s: Create new client with MACAddress [%s] MonitorInterval %u",
+                        pRad->Name, macAddr, interval);
         ASSERT_TRANSACTION_INIT(clientTemplate, &trans, amxd_status_unknown_error, ME,
-                                "%s : trans init failure", pRad->Name);
-        amxd_trans_add_inst(&trans, 0, NULL);
+                                "%s: trans init failure", pRad->Name);
+        uint32_t index = swla_object_getFirstAvailableIndex(clientTemplate);
+        char alias[SWL_MAC_CHAR_LEN + 1];
+        snprintf(alias, sizeof(alias), "_%s", macChar.cMac);
+        amxd_trans_add_inst(&trans, index, alias);
     }
 
-    SAH_TRACEZ_INFO(ME, "Updating client object with provided arguments");
-    amxc_var_for_each(newValue, args) {
-        const char* pname = amxc_var_key(newValue);
-        if(swl_str_matches(pname, "MACAddress")) {
-            char* macArg = amxc_var_dyncast(cstring_t, newValue);
-            amxd_trans_set_cstring_t(&trans, "MACAddress", macArg);
-            SAH_TRACEZ_INFO(ME, "MACAddress = %s", macArg);
-            free(macArg);
-        } else if(swl_str_matches(pname, "MonitorInterval")) {
-            uint32_t intervalArg = amxc_var_dyncast(uint32_t, newValue);
-            amxd_trans_set_uint32_t(&trans, "MonitorInterval", intervalArg);
-            SAH_TRACEZ_INFO(ME, "MonitorInterval = %u", intervalArg);
-        } else {
-            continue;
-        }
-    }
-
-    status = swl_object_finalizeTransactionOnLocalDm(&trans);
+    amxd_trans_set_cstring_t(&trans, "MACAddress", macChar.cMac);
+    amxd_trans_set_uint32_t(&trans, "MonitorInterval", interval);
 
     SAH_TRACEZ_OUT(ME);
-    return status;
+    return swl_object_finalizeTransactionOnLocalDm(&trans);
 }
 
 /**
@@ -179,25 +167,44 @@ amxd_status_t _Sensing_delClient(amxd_object_t* object,
     SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_status_unknown_error;
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, status, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, status, ME, "No radio ctx");
 
-    // Get mac address input data
-    const char* macAddrStr = GET_CHAR(args, "MACAddress");
-    swl_macChar_t macAddr;
-    ASSERT_TRUE(swl_mac_charToStandard(&macAddr, macAddrStr),
-                status, ME, "Invalid client MAC (%s)", macAddrStr);
+    // Get MAC address input data
+    const char* macAddr = GET_CHAR(args, "MACAddress");
 
-    amxd_object_t* clientTemplate = amxd_object_findf(object, "CSIClient");
-    ASSERT_NOT_NULL(clientTemplate, amxd_status_unknown_error, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: Delete client with MACAddress [%s]", pRad->Name, macAddr);
 
+    swl_macBin_t macBin = SWL_MAC_BIN_NEW();
+    ASSERT_TRUE(swl_typeMacBin_fromChar(&macBin, macAddr),
+                status, ME, "%s: Invalid client MACAddress [%s]", pRad->Name, macAddr);
 
-    wld_csiClient_t* client = s_findClient(clientTemplate, macAddr.cMac, NULL);
-    ASSERT_NOT_NULL(client, status, ME, "NULL");
-
-    status = swl_object_delInstWithTransOnLocalDm(client->obj);
+    if(wld_sensing_delCsiClientEntry(pRad, &macBin) != SWL_RC_OK) {
+        return status;
+    }
 
     SAH_TRACEZ_OUT(ME);
-    return status;
+    return amxd_status_ok;
+}
+
+/**
+ * Called to delete CSI client datamodel entry
+ */
+swl_rc_ne wld_sensing_delCsiClientEntry(T_Radio* pRad, swl_macBin_t* macAddr) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "No radio ctx");
+    ASSERT_NOT_NULL(pRad->pBus, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
+    SWL_MAC_BIN_TO_CHAR(&macChar, macAddr);
+
+    amxd_object_t* sensingTemplate = amxd_object_findf(pRad->pBus, "Sensing");
+    ASSERT_NOT_NULL(sensingTemplate, SWL_RC_ERROR, ME, "%s: Sensing object not found", pRad->Name);
+    amxd_object_t* clientTemplate = amxd_object_findf(sensingTemplate, "CSIClient");
+    ASSERT_NOT_NULL(clientTemplate, SWL_RC_ERROR, ME, "%s: CSIClient object not found", pRad->Name);
+    wld_csiClient_t* client = s_findClient(clientTemplate, macChar.cMac);
+    ASSERTI_NOT_NULL(client, SWL_RC_OK, ME, "%s: Client with MACAddress [%s] not found",
+                     pRad->Name, macChar.cMac);
+    amxd_status_t status = swl_object_delInstWithTransOnLocalDm(client->obj);
+    return ((status == amxd_status_ok) ? SWL_RC_OK : SWL_RC_ERROR);
 }
 
 /**
@@ -210,15 +217,14 @@ amxd_status_t _wld_wifiSensing_delete_client_odf(amxd_object_t* object,
                                                  amxc_var_t* const retval,
                                                  void* priv) {
     SAH_TRACEZ_IN(ME);
-
     amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy client entry st:%d", status);
-    wld_csiClient_t* client = (wld_csiClient_t*) object->priv;
-    object->priv = NULL;
-    ASSERTS_NOT_NULL(client, amxd_status_ok, ME, "No internal ctx");
 
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-    ASSERT_NOT_NULL(pRad, amxd_status_ok, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, amxd_status_ok, ME, "No radio ctx");
+    wld_csiClient_t* client = (wld_csiClient_t*) object->priv;
+    object->priv = NULL;
+    ASSERT_NOT_NULL(client, amxd_status_ok, ME, "NULL");
 
     s_removeClient(pRad, client);
 
@@ -241,7 +247,7 @@ amxd_status_t _Sensing_csiStats(amxd_object_t* object,
                                 amxc_var_t* retval) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "No radio ctx");
 
     wld_csiState_t csimonState;
     memset(&csimonState, 0, sizeof(wld_csiState_t));
@@ -285,7 +291,7 @@ amxd_status_t _Sensing_resetStats(amxd_object_t* object,
                                   amxc_var_t* retval _UNUSED) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "No radio ctx");
 
     pRad->pFA->mfn_wrad_sensing_resetStats(pRad);
 
@@ -302,12 +308,13 @@ amxd_status_t _Sensing_debug(amxd_object_t* object,
                              amxc_var_t* retval) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "NULL");
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "No radio ctx");
 
     amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
     amxc_llist_for_each(it, &pRad->csiClientList) {
         wld_csiClient_t* client = amxc_llist_it_get_data(it, wld_csiClient_t, it);
-        SAH_TRACEZ_INFO(ME, "%s: CSIMON client %s, interval %d", pRad->Name, client->macAddr.cMac, client->monitorInterval);
+        SAH_TRACEZ_INFO(ME, "%s: Client MACAddress [%s], MonitorInterval %u",
+                        pRad->Name, client->macAddr.cMac, client->monitorInterval);
 
         amxc_var_t* clientEntry = amxc_var_add(amxc_htable_t, retval, NULL);
         if(clientEntry == NULL) {
@@ -328,13 +335,13 @@ static void s_addClientInst_oaf(void* priv _UNUSED, amxd_object_t* object, const
     SAH_TRACEZ_IN(ME);
 
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "No radio ctx");
 
     wld_csiClient_t* client = calloc(1, sizeof(wld_csiClient_t));
     ASSERT_NOT_NULL(client, , ME, "NULL");
     memset(client, 0, sizeof(wld_csiClient_t));
 
-    SAH_TRACEZ_INFO(ME, "%s: Adding new CSI client", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: Adding new CSI client instance", pRad->Name);
     amxc_llist_it_init(&client->it);
     amxc_llist_append(&pRad->csiClientList, &client->it);
     object->priv = client;
@@ -347,7 +354,7 @@ static void s_setClientConf_ocf(void* priv _UNUSED, amxd_object_t* object, const
     SAH_TRACEZ_IN(ME);
 
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "No radio ctx");
 
     wld_csiClient_t* client = object->priv;
     ASSERT_NOT_NULL(client, , ME, "NULL");
@@ -360,7 +367,7 @@ static void s_setClientConf_ocf(void* priv _UNUSED, amxd_object_t* object, const
         if(swl_str_matches(pname, "MACAddress")) {
             valStr = amxc_var_dyncast(cstring_t, newValue);
             SAH_TRACEZ_INFO(ME, "set Client MACAddress = %s", valStr);
-            ASSERT_TRUE(swl_mac_charToStandard(&client->macAddr, valStr), , ME, "Invalid client MAC (%s)", valStr);
+            ASSERT_TRUE(swl_mac_charToStandard(&client->macAddr, valStr), , ME, "Invalid client MACAddress [%s]", valStr);
         } else if(swl_str_matches(pname, "MonitorInterval")) {
             client->monitorInterval = amxc_var_dyncast(uint32_t, newValue);
             SAH_TRACEZ_INFO(ME, "set client MonitorInterval = %d", client->monitorInterval);
@@ -396,7 +403,7 @@ static void s_setSensingEnable_pwf(void* priv _UNUSED,
                                    const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "No radio ctx");
 
     bool newEnable = amxc_var_dyncast(bool, newValue);
     ASSERTI_NOT_EQUALS(newEnable, pRad->csiEnable, , ME, "EQUAL");
@@ -419,7 +426,7 @@ void _wld_wifiSensing_setConf_ocf(const char* const sig_name,
 
 
 void wld_sensing_init(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "No radio ctx");
 
     SAH_TRACEZ_INFO(ME, "Initialize CSI client list");
     if(amxc_llist_init(&pRad->csiClientList) != 0) {
@@ -428,7 +435,7 @@ void wld_sensing_init(T_Radio* pRad) {
 }
 
 void wld_sensing_cleanup(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "No radio ctx");
 
     SAH_TRACEZ_INFO(ME, "Cleanup CSI client list");
     amxc_llist_for_each(it, &pRad->csiClientList) {
@@ -437,3 +444,6 @@ void wld_sensing_cleanup(T_Radio* pRad) {
         free(client);
     }
 }
+
+
+

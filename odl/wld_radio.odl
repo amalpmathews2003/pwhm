@@ -2691,7 +2691,9 @@ define probelist_t{
 				/**
 				 * MACAddress : Device mac address (format xx:xx:xx:xx:xx:xx)
 				 */
-				string MACAddress;
+				string MACAddress{
+					on action validate call is_valid_macaddr;
+				}
 
 				/**
 				 * Monitor interval : Time (ms) interval between CSI captures
@@ -2700,7 +2702,8 @@ define probelist_t{
 			}
 
 			/**
-			 * Statistics counters of the overal CSIMON module
+			 * Returns a map containing the statistics counters of the overal CSIMON module.
+			 * The map contains:
 			 * NullFrameCounter : Null frames sent
 			 * M2MTransmitCounter : Number of CSI records successfully transferred by M2M DMA
 			 * UserTransmitCounter : Number of CSI records successfully transferred to user over netlink socket
