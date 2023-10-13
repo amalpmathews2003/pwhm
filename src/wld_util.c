@@ -2371,10 +2371,10 @@ swl_rc_ne wld_util_getManagementFrameParameters(T_Radio* pRad, wld_util_manageme
     bool success = swl_hex_toBytes((swl_bit8_t*) &mgmtFrame->fc, (sizeof(swl_80211_mgmtFrameControl_t) + 1), frameControlStr, frameControlStrLen);
     ASSERTS_TRUE(success, SWL_RC_INVALID_PARAM, ME, "hex to bytes error");
 
-    uint8_t channel = 0;
-    amxc_var_t* typeVar = amxc_var_get_key(args, "channel", AMXC_VAR_FLAG_DEFAULT);
-    channel = (typeVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, typeVar);
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, SWL_BW_20MHZ, pRad->operatingFrequencyBand);
+    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(GET_UINT32(args, "channel"), SWL_BW_20MHZ, pRad->operatingFrequencyBand);
+    if(chanspec.channel == 0) {
+        chanspec.channel = pRad->currentChanspec.chanspec.channel;
+    }
     memcpy(&mgmtFrame->chanspec, &chanspec, sizeof(swl_chanspec_t));
 
     const char* data = GET_CHAR(args, "data");
