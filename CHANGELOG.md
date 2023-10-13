@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.19.0 - 2023-10-13(07:34:44 +0000)
+
+### Other
+
+- :WDS module for pwhm
+
 ## Release v4.18.6 - 2023-10-12(16:56:47 +0000)
 
 ### Other
