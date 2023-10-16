@@ -93,8 +93,7 @@ typedef struct {
 
 T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn);
 
-int radio_libsync_status_cb(T_Radio* rad);
-void wld_radio_updateAntenna(T_Radio* pRad);
+void wld_radio_updateAntenna(T_Radio* pRad, amxd_trans_t* trans);
 wld_ap_dm_m wld_rad_getDiscoveryMethod(T_Radio* pR);
 void wld_rad_updateDiscoveryMethod6GHz();
 
@@ -160,8 +159,8 @@ void wld_spectrum_cleanupResults(T_Radio* pR);
 T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand);
 
 int wld_rad_init_cap(T_Radio* pR);
-void wld_rad_parse_cap(T_Radio* pR);
-void wld_rad_parse_status(T_Radio* pR);
+void wld_rad_updateCapabilities(T_Radio* pR, amxd_trans_t* trans);
+void wld_rad_writeCapStatus(T_Radio* pR, amxd_trans_t* trans);
 bool wld_rad_is_cap_enabled(T_Radio* pR, int capability);
 bool wld_rad_is_cap_active(T_Radio* pR, int capability);
 
@@ -217,10 +216,10 @@ bool wld_rad_has_endpoint_enabled(T_Radio* rad);
 T_EndPoint* wld_rad_getEnabledEndpoint(T_Radio* rad);
 bool wld_rad_hasWpsActiveEndpoint(T_Radio* rad);
 T_EndPoint* wld_rad_getWpsActiveEndpoint(T_Radio* rad);
-void wld_rad_updateActiveDevices(T_Radio* pRad);
+void wld_rad_updateActiveDevices(T_Radio* pRad, amxd_trans_t* trans);
 
 T_Radio* wld_rad_get_radio(const char* ifname);
-void wld_rad_chan_update_model(T_Radio* pRad);
+void wld_rad_chan_update_model(T_Radio* pRad, amxd_trans_t* trans);
 void wld_rad_updateOperatingClass(T_Radio* pRad);
 
 void wld_rad_init_counters(T_Radio* pRad, T_EventCounterList* counters, const char** defaults);

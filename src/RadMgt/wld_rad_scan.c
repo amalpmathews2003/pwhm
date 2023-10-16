@@ -134,18 +134,26 @@ void _wld_rad_setScanConfig_ocf(const char* const sig_name,
 static void s_updateScanStats(T_Radio* pRad) {
     amxd_object_t* objScanStats = amxd_object_findf(pRad->pBus, "ScanStats");
     ASSERTS_NOT_NULL(objScanStats, , ME, "ScanStats Obj NULL");
-    amxd_object_set_uint32_t(objScanStats, "NrScanRequested", pRad->scanState.stats.nrScanRequested);
-    amxd_object_set_uint32_t(objScanStats, "NrScanDone", pRad->scanState.stats.nrScanDone);
-    amxd_object_set_uint32_t(objScanStats, "NrScanError", pRad->scanState.stats.nrScanError);
-    amxd_object_set_uint32_t(objScanStats, "NrScanBlocked", pRad->scanState.stats.nrScanBlocked);
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(objScanStats, &trans, , ME, "%s : trans init failure", pRad->Name);
+
+    amxd_trans_set_uint32_t(&trans, "NrScanRequested", pRad->scanState.stats.nrScanRequested);
+    amxd_trans_set_uint32_t(&trans, "NrScanDone", pRad->scanState.stats.nrScanDone);
+    amxd_trans_set_uint32_t(&trans, "NrScanError", pRad->scanState.stats.nrScanError);
+    amxd_trans_set_uint32_t(&trans, "NrScanBlocked", pRad->scanState.stats.nrScanBlocked);
 
     amxc_llist_for_each(it, &(pRad->scanState.stats.extendedStat)) {
         wld_scanReasonStats_t* stats = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);
-        amxd_object_set_cstring_t(stats->object, "Name", stats->scanReason);
-        amxd_object_set_uint32_t(stats->object, "NrScanRequested", stats->totalCount);
-        amxd_object_set_uint32_t(stats->object, "NrScanDone", stats->successCount);
-        amxd_object_set_uint32_t(stats->object, "NrScanError", stats->errorCount);
+        amxd_trans_select_object(&trans, stats->object);
+        amxd_trans_set_cstring_t(&trans, "Name", stats->scanReason);
+        amxd_trans_set_uint32_t(&trans, "NrScanRequested", stats->totalCount);
+        amxd_trans_set_uint32_t(&trans, "NrScanDone", stats->successCount);
+        amxd_trans_set_uint32_t(&trans, "NrScanError", stats->errorCount);
     }
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
+
 }
 
 void wld_radio_copySsidsToResult(wld_scanResults_t* results, amxc_llist_t* ssid_list) {
@@ -692,7 +700,7 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
 }
 
 /**
- * Look for a channel object withing the ScanResults object.
+ * Look for a channel object within the ScanResults object.
  * If the requested channel object does not exist, a new channel object is created.
  * Returns null if the channel is 0.
  *

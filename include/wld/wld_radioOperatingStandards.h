@@ -68,7 +68,7 @@
 #include "swla/swla_radioStandards.h"
 #include "wld.h"
 
-void wld_rad_update_operating_standard(T_Radio* pRad);
+void wld_rad_update_operating_standard(T_Radio* pRad, amxd_trans_t* trans);
 
 /*
  * @brief: checks wither a specific radio standard is enabled

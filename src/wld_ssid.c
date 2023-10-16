@@ -74,6 +74,8 @@
 #include "wld_radio.h"
 #include "wld_dm_trans.h"
 #include "swl/swl_string.h"
+#include "swl/swl_common.h"
+#include "swl/swl_assert.h"
 #include "Utils/wld_autoCommitMgr.h"
 
 #define ME "ssid"

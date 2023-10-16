@@ -483,6 +483,7 @@ typedef enum {
 
 typedef swl_mask_m wld_wps_cfgMethod_m;
 
+extern const char* cstr_WPS_CM_Supported[];
 extern const char* cstr_AP_WPS_VERSUPPORTED[];
 enum {
     APWPSVERSI_AUTO,
@@ -603,7 +604,7 @@ typedef struct {
     /* Isolate ongoing Active Commit (AC) actions from inbetween config/commits */
     unsigned long FSM_AC_BitActionArray[FSM_BW];
     unsigned long FSM_AC_CSC[FSM_BW];
-    time_t FSM_ComPend_Start;                 //time when commit pend started
+    swl_timeMono_t FSM_ComPend_Start;         //time when commit pend started
     uint32_t retryCount;                      //how many times fase has been retried.
 } T_FSM;
 
@@ -1219,7 +1220,7 @@ typedef struct {
 typedef struct {
     uint32_t counter;
     amxd_object_t* object;
-    time_t lastEventTime;
+    swl_timeMono_t lastEventTime;
 } T_EventCounter;
 
 typedef struct {
@@ -1567,7 +1568,7 @@ struct WLD_RADIO {
     struct S_CWLD_FUNC_TABLE* pFA;      /* Function Array */
     uint64_t call_id;                   /* Used for delayed function return state */
     int blockCommit;                    /* Blocks TR98-commit way, edit(), ..XXX.. , commit()! */
-    time_t blockStart;                  /* Set when block was started */
+    swl_timeMono_t blockStart;          /* Set when block was started */
     int ignoreWPSEvents;                /* Ignore commands received from wpa_talk when this is set */
     amxc_llist_it_t it;
     amxd_object_t* pBus;                /* Keep a copy of the amxd_object_t */
@@ -2174,8 +2175,6 @@ typedef void (APIENTRY* PFN_SYNC_EP)(T_EndPoint* pEP);
 typedef swl_rc_ne (APIENTRY* PFN_WIFI_SUPVEND_MODES)(T_Radio* pRad, T_AccessPoint* pAP, amxd_object_t* object, amxc_var_t* params);
 
 /* Functions that are called from vendor plugin in wld lib! */
-typedef int (APIENTRY* PFN_WRAD_RADIO_LIBSYNC_STATUS)(T_Radio* rad);
-typedef int (APIENTRY* PFN_WVAP_VAP_LIBSYNC_STATUS)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_HSPOT_ENABLE)(T_AccessPoint* vap, int enable, int set);
 typedef int (APIENTRY* PFN_HSPOT_CONFIG)(T_AccessPoint* vap, int set);
 
@@ -2354,8 +2353,6 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_SCAN_RESULTS mfn_wrad_scan_results;
 
     /* <<ADD Functions that do combined task or no HW related >> */
-    PFN_WRAD_RADIO_LIBSYNC_STATUS mfn_wrad_libsync_status;
-    PFN_WVAP_VAP_LIBSYNC_STATUS mfn_wvap_libsync_status;
     PFN_HSPOT_ENABLE mfn_hspot_enable;
     PFN_HSPOT_CONFIG mfn_hspot_config;
 

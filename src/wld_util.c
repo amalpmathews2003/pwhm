@@ -74,6 +74,7 @@
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_common_chanspec.h"
+#include "amxd/amxd_transaction.h"
 
 #include "wld_linuxIfUtils.h"
 
@@ -1876,59 +1877,6 @@ int get_pattern_string(const char* arg, uint8_t* pattern) {
     return num;
 }
 
-
-/**
- * get the monotonic elapsed time.
- */
-time_t wld_util_time_monotonic_sec() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return ts.tv_sec;
-}
-
-/**
- * Convert a monotonic time in seconds to a struct tm timeval.
- * Note that if the time is zero, zero time is returned.
- */
-void wld_util_time_monotonic_to_tm(const time_t seconds, struct tm* tm_val) {
-    if(seconds == 0) {
-        memset(tm_val, 0, sizeof(struct tm));
-        return;
-    }
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-
-    time_t curMonotonic = wld_util_time_monotonic_sec();
-    time_t diff = curMonotonic - seconds;
-    ts.tv_sec -= diff;
-
-    gmtime_r(&(ts.tv_sec), tm_val);
-}
-
-/**
- * Get the current time as a struct tm timeval
- */
-void wld_util_time_curr_tm(struct tm* tm_val) {
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    gmtime_r(&(ts.tv_sec), tm_val);
-}
-
-void wld_util_time_addMonotonicTimeToMap(amxc_var_t* map, const char* name, time_t time) {
-    struct tm timeval;
-    wld_util_time_monotonic_to_tm(time, &timeval);
-    amxc_ts_t tsp;
-    amxc_ts_to_tm_local(&tsp, &timeval);
-    amxc_var_add_key(amxc_ts_t, map, name, &tsp);
-}
-
-void wld_util_time_objectSetMonotonicTime(amxd_object_t* object _UNUSED, const char* name, time_t time) {
-    amxc_ts_t ts;
-    struct tm timeval;
-    wld_util_time_monotonic_to_tm(time, &timeval);
-    amxd_object_set_value(amxc_ts_t, object, name, &ts);
-}
-
 int32_t wld_util_performFactorStep(int32_t accum, int32_t newVal, int32_t factor) {
     if(accum == 0) {
         //if currently accumulator is empty, just initialize with newVal
@@ -2256,49 +2204,56 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
     return true;
 }
 
-static void s_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
+static void s_writeWmmStats(amxd_trans_t* trans, amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
     amxd_object_t* object = amxd_object_get(parentObj, objectName);
     ASSERT_NOT_NULL(object, , ME, "No object named <%s>", objectName);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_BE", stats[WLD_AC_BE]);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_BK", stats[WLD_AC_BK]);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_VO", stats[WLD_AC_VO]);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_VI", stats[WLD_AC_VI]);
+    amxd_trans_select_object(trans, object);
+    amxd_trans_set_uint64_t(trans, "AC_BE", stats[WLD_AC_BE]);
+    amxd_trans_set_uint64_t(trans, "AC_BK", stats[WLD_AC_BK]);
+    amxd_trans_set_uint64_t(trans, "AC_VO", stats[WLD_AC_VO]);
+    amxd_trans_set_uint64_t(trans, "AC_VI", stats[WLD_AC_VI]);
 }
 
 amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats) {
     ASSERT_NOT_NULL(obj, amxd_status_unknown_error, ME, "NULL");
     ASSERT_NOT_NULL(stats, amxd_status_unknown_error, ME, "NULL");
 
-    SWLA_OBJECT_SET_PARAM_UINT64(obj, "BytesSent", stats->BytesSent);
-    SWLA_OBJECT_SET_PARAM_UINT64(obj, "BytesReceived", stats->BytesReceived);
-    SWLA_OBJECT_SET_PARAM_UINT64(obj, "PacketsSent", stats->PacketsSent);
-    SWLA_OBJECT_SET_PARAM_UINT64(obj, "PacketsReceived", stats->PacketsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsSent", stats->ErrorsSent);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "RetransCount", stats->RetransCount);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsReceived", stats->ErrorsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "DiscardPacketsSent", stats->DiscardPacketsSent);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastPacketsSent", stats->UnicastPacketsSent);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastPacketsSent", stats->MulticastPacketsSent);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "FailedRetransCount", stats->FailedRetransCount);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "RetryCount", stats->RetryCount);
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MultipleRetryCount", stats->MultipleRetryCount);
-    SWLA_OBJECT_SET_PARAM_INT32(obj, "Temperature", stats->TemperatureDegreesCelsius);
-    SWLA_OBJECT_SET_PARAM_INT32(obj, "Noise", stats->noise);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(obj, &trans, amxd_status_unknown_error, ME, "trans init failure");
 
-    s_writeWmmStats(obj, "WmmPacketsSent", stats->WmmPacketsSent);
-    s_writeWmmStats(obj, "WmmPacketsReceived", stats->WmmPacketsReceived);
-    s_writeWmmStats(obj, "WmmFailedSent", stats->WmmFailedSent);
-    s_writeWmmStats(obj, "WmmFailedReceived", stats->WmmFailedReceived);
-    s_writeWmmStats(obj, "WmmBytesSent", stats->WmmBytesSent);
-    s_writeWmmStats(obj, "WmmFailedbytesSent", stats->WmmFailedBytesSent);
-    s_writeWmmStats(obj, "WmmBytesReceived", stats->WmmBytesReceived);
-    s_writeWmmStats(obj, "WmmFailedBytesReceived", stats->WmmFailedBytesReceived);
+
+    amxd_trans_set_uint64_t(&trans, "BytesSent", stats->BytesSent);
+    amxd_trans_set_uint64_t(&trans, "BytesReceived", stats->BytesReceived);
+    amxd_trans_set_uint64_t(&trans, "PacketsSent", stats->PacketsSent);
+    amxd_trans_set_uint64_t(&trans, "PacketsReceived", stats->PacketsReceived);
+    amxd_trans_set_uint32_t(&trans, "ErrorsSent", stats->ErrorsSent);
+    amxd_trans_set_uint32_t(&trans, "RetransCount", stats->RetransCount);
+    amxd_trans_set_uint32_t(&trans, "ErrorsReceived", stats->ErrorsReceived);
+    amxd_trans_set_uint32_t(&trans, "DiscardPacketsSent", stats->DiscardPacketsSent);
+    amxd_trans_set_uint32_t(&trans, "DiscardPacketsReceived", stats->DiscardPacketsReceived);
+    amxd_trans_set_uint32_t(&trans, "UnicastPacketsSent", stats->UnicastPacketsSent);
+    amxd_trans_set_uint32_t(&trans, "UnicastPacketsReceived", stats->UnicastPacketsReceived);
+    amxd_trans_set_uint32_t(&trans, "MulticastPacketsSent", stats->MulticastPacketsSent);
+    amxd_trans_set_uint32_t(&trans, "MulticastPacketsReceived", stats->MulticastPacketsReceived);
+    amxd_trans_set_uint32_t(&trans, "BroadcastPacketsSent", stats->BroadcastPacketsSent);
+    amxd_trans_set_uint32_t(&trans, "BroadcastPacketsReceived", stats->BroadcastPacketsReceived);
+    amxd_trans_set_uint32_t(&trans, "UnknownProtoPacketsReceived", stats->UnknownProtoPacketsReceived);
+    amxd_trans_set_uint32_t(&trans, "FailedRetransCount", stats->FailedRetransCount);
+    amxd_trans_set_uint32_t(&trans, "RetryCount", stats->RetryCount);
+    amxd_trans_set_uint32_t(&trans, "MultipleRetryCount", stats->MultipleRetryCount);
+    amxd_trans_set_int32_t(&trans, "Temperature", stats->TemperatureDegreesCelsius);
+    amxd_trans_set_int32_t(&trans, "Noise", stats->noise);
+
+    s_writeWmmStats(&trans, obj, "WmmPacketsSent", stats->WmmPacketsSent);
+    s_writeWmmStats(&trans, obj, "WmmPacketsReceived", stats->WmmPacketsReceived);
+    s_writeWmmStats(&trans, obj, "WmmFailedSent", stats->WmmFailedSent);
+    s_writeWmmStats(&trans, obj, "WmmFailedReceived", stats->WmmFailedReceived);
+    s_writeWmmStats(&trans, obj, "WmmBytesSent", stats->WmmBytesSent);
+    s_writeWmmStats(&trans, obj, "WmmFailedbytesSent", stats->WmmFailedBytesSent);
+    s_writeWmmStats(&trans, obj, "WmmBytesReceived", stats->WmmBytesReceived);
+    s_writeWmmStats(&trans, obj, "WmmFailedBytesReceived", stats->WmmFailedBytesReceived);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_unknown_error, ME, "trans apply failure");
 
     return amxd_status_ok;
 }

@@ -246,6 +246,7 @@ static void s_performSync(T_Radio* rad) {
             markAllBitsLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
             pAP->fsm.FSM_SyncAll = FALSE;
         }
+        pAP->initDone = true;
     }
 
     wld_rad_forEachEp(pEP, rad) {
@@ -340,7 +341,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
                     SAH_TRACEZ_WARNING(ME, "Starting FSM commit %s", rad->Name);
                     rad->fsm_radio_st = FSM_RUN;              // Lock the RADIO for our FSM
                     rad->fsmRad.FSM_State = FSM_WAIT;
-                    rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT; // When failing, wait 20 seconds to allow init / WPS to finish ?
+                    rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT; // When failing, wait 10 seconds to allow init / WPS to finish ?
                     rad->fsmRad.FSM_Loop = 0;                 // Be sure this is resetted!
                 }
             }

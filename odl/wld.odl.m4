@@ -235,12 +235,12 @@ m4_ifelse(DISABLE_NETMODEL,y,,``
     m4_ifelse(ENABLE_USP_SERVER_SOCKET,y,
     listen = [ 'usp:/var/run/pwhm_usp.sock' ];
     )
-
+m4_ifelse(DISABLE_PERSIST,y,,``
     //persistent storage
     pcm_svc_config = {
         "Objects" = "WiFi",
         "BackupFiles" = "wld"
-    };
+    };'')
 }
 
 import "${name}.so" as "${name}";
@@ -255,9 +255,12 @@ include "${definition_file}";
 
 
 %define {
-    entry-point wld.wld_main;
-m4_ifelse(DISABLE_NETMODEL,y,,``
+    entry-point wld.wld_main;   
+m4_ifelse(DISABLE_NETMODEL,y,,`` 
     entry-point mnm.mod_netmodel_main;'')
 }
 
-#include "mod_pcm_svc.odl";
+
+m4_ifelse(DISABLE_PERSIST,y,,`` 
+#include "mod_pcm_svc.odl";'')
+

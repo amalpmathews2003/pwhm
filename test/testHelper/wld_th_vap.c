@@ -89,12 +89,14 @@ int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bu
 
 swl_rc_ne wld_th_vap_createHook(T_AccessPoint* pAP) {
     assert_non_null(pAP);
+    printf("CREATE CREATE %s\n\n", pAP->name);
     pAP->vendorData = calloc(1, sizeof(wld_th_vap_vendorData_t));
     return SWL_RC_OK;
 }
 
 void wld_th_vap_destroyHook(T_AccessPoint* pAP) {
     assert_non_null(pAP);
+    printf("DESTROY DESTROY %s\n\n", pAP->name);
     free(pAP->vendorData);
     pAP->vendorData = NULL;
 }

@@ -67,6 +67,7 @@
 #include "wld.h"
 #include "wld_util.h"
 #include "swl/swl_assert.h"
+#include "swla/swla_trans.h"
 #include "wld_radio.h"
 #include "wld_channel_types.h"
 #include "wld_chanmgt.h"
@@ -101,54 +102,54 @@ static const wld_bgdfsStatus_e wld_dfsTypeToStatus[BGDFS_TYPE_MAX] = {
     BGDFS_STATUS_CLEAR_CONTINUOUS
 };
 
-static void s_writeConfig(T_Radio* pRad, amxd_object_t* object) {
+static void s_writeConfig(T_Radio* pRad, amxd_trans_t* trans) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERT_NOT_NULL(object, , ME, "NULL");
+    ASSERT_NOT_NULL(trans, , ME, "NULL");
 
-    amxd_object_set_int32_t(object, "Channel", pRad->bgdfs_config.channel);
-    amxd_object_set_cstring_t(object, "Bandwidth", Rad_SupBW[pRad->bgdfs_config.bandwidth]);
+    amxd_trans_set_int32_t(trans, "Channel", pRad->bgdfs_config.channel);
+    amxd_trans_set_cstring_t(trans, "Bandwidth", Rad_SupBW[pRad->bgdfs_config.bandwidth]);
 }
 
-static void s_writeStatistics(T_Radio* pRad, amxd_object_t* object) {
+/**
+ * Write statistics in transaction.
+ * Assumes transaction is pointing to bgDfs
+ */
+static void s_writeStatistics(T_Radio* pRad, amxd_trans_t* trans) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_TRUE(pRad->bgdfs_config.type < BGDFS_TYPE_MAX, , ME, "invalid");
-    ASSERT_NOT_NULL(object, , ME, "NULL");
+    ASSERT_NOT_NULL(trans, , ME, "NULL");
 
     wld_bgdfsType_e type = pRad->bgdfs_config.type;
 
-    amxc_var_t statsUpdate;
-    amxc_var_init(&statsUpdate);
-    amxc_var_set_type(&statsUpdate, AMXC_VAR_ID_HTABLE);
-
-    amxc_var_add_key(cstring_t, &statsUpdate, "Alias", wld_dfsType_str[type]);
-    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearStart", pRad->bgdfs_stats.nrClearStart[type]);
-    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearStopQuit", pRad->bgdfs_stats.nrClearStopQuit[type]);
-    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearStopChange", pRad->bgdfs_stats.nrClearStopChange[type]);
-    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearSuccess", pRad->bgdfs_stats.nrClearSuccess[type]);
-    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearFailRadar", pRad->bgdfs_stats.nrClearFailRadar[type]);
-    amxc_var_add_key(uint32_t, &statsUpdate, "NrClearFailOther", pRad->bgdfs_stats.nrClearFailOther[type]);
-
-    amxd_object_t* statsTemplate = amxd_object_get(object, "Stats");
+    amxd_object_t* statsTemplate = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs.Stats");
     amxd_object_t* statsInstance = amxd_object_get_instance(statsTemplate, wld_dfsType_str[type], 0);
     if(statsInstance == NULL) {
-        amxd_object_add_instance(NULL, statsTemplate, wld_dfsType_str[type], 0, &statsUpdate);
+        amxd_trans_select_object(trans, statsTemplate);
+        amxd_trans_add_inst(trans, 0, wld_dfsType_str[type]);
     } else {
-        amxd_object_set_params(statsInstance, &statsUpdate);
+        amxd_trans_select_object(trans, statsInstance);
     }
-    amxc_var_clean(&statsUpdate);
+    amxd_trans_set_value(cstring_t, trans, "Alias", wld_dfsType_str[type]);
+    amxd_trans_set_value(uint32_t, trans, "NrClearStart", pRad->bgdfs_stats.nrClearStart[type]);
+    amxd_trans_set_value(uint32_t, trans, "NrClearStopQuit", pRad->bgdfs_stats.nrClearStopQuit[type]);
+    amxd_trans_set_value(uint32_t, trans, "NrClearStopChange", pRad->bgdfs_stats.nrClearStopChange[type]);
+    amxd_trans_set_value(uint32_t, trans, "NrClearSuccess", pRad->bgdfs_stats.nrClearSuccess[type]);
+    amxd_trans_set_value(uint32_t, trans, "NrClearFailRadar", pRad->bgdfs_stats.nrClearFailRadar[type]);
+    amxd_trans_set_value(uint32_t, trans, "NrClearFailOther", pRad->bgdfs_stats.nrClearFailOther[type]);
+
 }
 
-static void s_writeStatus(T_Radio* pRad, amxd_object_t* object) {
-    ASSERTS_NOT_NULL(object, , ME, "no object given");
+static void s_writeStatus(T_Radio* pRad, amxd_trans_t* trans) {
+    ASSERTS_NOT_NULL(trans, , ME, "no object given");
     ASSERTS_TRUE(pRad->bgdfs_config.status < BGDFS_STATUS_MAX, , ME, "invalid");
-    amxd_object_set_cstring_t(object, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
+    amxd_trans_set_cstring_t(trans, "Status", wld_bgdfsStatus_str[pRad->bgdfs_config.status]);
 }
 
-static void s_resetStatus(T_Radio* pRad, amxd_object_t* object) {
+static void s_resetStatus(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     bool isIdle = pRad->bgdfs_config.enable && pRad->bgdfs_config.available;
     pRad->bgdfs_config.status = isIdle ? BGDFS_STATUS_IDLE : BGDFS_STATUS_OFF;
-    s_writeStatus(pRad, object);
+
 }
 
 /* Called when background DFS engine start to clear a given channel */
@@ -171,9 +172,15 @@ void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_band
     pRad->bgdfs_stats.nrClearStart[type]++;
 
     amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
-    s_writeConfig(pRad, object);
-    s_writeStatistics(pRad, object);
-    s_writeStatus(pRad, object);
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pRad->Name);
+
+    s_writeConfig(pRad, &trans);
+    s_writeStatus(pRad, &trans);
+    s_writeStatistics(pRad, &trans);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
+
 }
 
 bool wld_bgdfs_isRunning(T_Radio* pRad) {
@@ -233,17 +240,30 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
         break;
     }
 
-    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
-    /* update status only if continuous clearing or radar */
+    bool statusUpdate = false;
+
     if((type != BGDFS_TYPE_CLEAR_CONTINUOUS) ||
        (result != DFS_RESULT_OK)) {
         pRad->bgdfs_stats.nrClearStopQuit[type]++;
         pRad->bgdfs_config.channel = 0;
         pRad->bgdfs_config.bandwidth = SWL_BW_AUTO;
-        s_resetStatus(pRad, object);
+        s_resetStatus(pRad);
+        statusUpdate = true;
     }
-    s_writeConfig(pRad, object);
-    s_writeStatistics(pRad, object);
+
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pRad->Name);
+
+    /* update status only if continuous clearing or radar */
+    if(statusUpdate) {
+        s_writeStatus(pRad, &trans);
+    }
+    s_writeConfig(pRad, &trans);
+    s_writeStatistics(pRad, &trans);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
+
     /* send notification on the bus */
     s_sendNotification(pRad);
 }
@@ -260,23 +280,41 @@ void wld_bgdfs_setAvailable(T_Radio* pRad, bool available) {
     amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
     bool oldAvailable = pRad->bgdfs_config.available;
     pRad->bgdfs_config.available = available;
-    amxd_object_set_bool(object, "Available", available);
     s_checkEnableChange(pRad, available);
-    s_writeStatistics(pRad, object);
+
     if(oldAvailable != available) {
-        s_resetStatus(pRad, object);
+        s_resetStatus(pRad);
     }
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pRad->Name);
+
+
+    amxd_trans_set_bool(&trans, "Available", available);
+    s_writeStatus(pRad, &trans);
+
+    s_writeStatistics(pRad, &trans);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
+
 }
 
-void wld_bgdfs_update(T_Radio* pRad) {
+void wld_bgdfs_update(T_Radio* pRad, amxd_trans_t* trans) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
     amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
     ASSERT_NOT_NULL(object, , ME, "NULL");
-    amxd_object_set_bool(object, "Available", pRad->bgdfs_config.available);
-    s_writeConfig(pRad, object);
-    s_writeStatistics(pRad, object);
-    s_writeStatus(pRad, object);
+
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, object);
+    ASSERT_NOT_NULL(targetTrans, , ME, "NULL");
+
+
+    amxd_trans_set_bool(targetTrans, "Available", pRad->bgdfs_config.available);
+    s_writeConfig(pRad, targetTrans);
+    s_writeStatus(pRad, targetTrans);
+    s_writeStatistics(pRad, targetTrans);
+
+    swla_trans_finalize(&tmpTrans, NULL);
 }
 
 swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
@@ -289,6 +327,7 @@ swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
             legacy = true;
         }
     }
+
     SAH_TRACEZ_INFO(ME, "%s : Starting BG_DFS %u/%s legacy %u",
                     pRad->Name, args->channel, swl_bandwidth_str[args->bandwidth], legacy);
     return ret;
@@ -306,9 +345,19 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     pR->bgdfs_config.enable = enabled;
 
     s_checkEnableChange(pR, enabled);
-    s_writeStatistics(pR, object);
+
     /* update status */
-    s_resetStatus(pR, object);
+    s_resetStatus(pR);
+
+    amxd_object_t* enableObj = amxd_object_findf(pR->pBus, "ChannelMgt.BgDfs");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(enableObj, &trans, , ME, "%s : trans init failure", pR->Name);
+
+    s_writeStatus(pR, &trans);
+    s_writeStatistics(pR, &trans);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+
 
     SAH_TRACEZ_INFO(ME,
                     "%s: BgDfs preclear enable changed to %s",
@@ -383,10 +432,17 @@ amxd_status_t bgdfs_stopClear(T_Radio* pRad) {
     }
 
     pRad->bgdfs_stats.nrClearStopChange[pRad->bgdfs_config.type]++;
-    s_writeStatistics(pRad, amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs"));
 
     ASSERT_CMD_SUCCESS(pRad->pFA->mfn_wrad_bgdfs_stop(pRad), amxd_status_unknown_error,
                        ME, "%s stop bgdfs error %i", pRad->Name, _errNo);
+
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, amxd_status_ok, ME, "%s : trans init failure", pRad->Name);
+    s_writeStatistics(pRad, &trans);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_ok, ME, "%s : trans apply failure", pRad->Name);
+
+
 
     return amxd_status_ok;
 }

@@ -103,7 +103,6 @@ typedef struct {
 
 const char* wld_wps_ConfigMethod_to_string(wld_wps_cfgMethod_e value);
 bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const wld_wps_cfgMethod_m configMethods);
-bool wld_wps_ConfigMethods_mask_to_charBuf(char* string, size_t stringsize, const wld_wps_cfgMethod_m configMethods);
 bool wld_wps_ConfigMethods_string_to_mask(wld_wps_cfgMethod_m* output, const char* input, const char separator);
 void wld_wps_pushButton_reply(uint64_t call_id, swl_usp_cmdStatus_ne cmdStatus);
 

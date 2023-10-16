@@ -212,13 +212,18 @@ swl_rc_ne wld_vendorModule_parseOdl(const char* path) {
     const char* dirPath = dirname(fullPath);
     if((swl_str_len(dirPath) == 0) || (dirPath[0] != '/')) {
         fullPath[0] = 0;
-        const char* cfgDir = amxc_var_constcast(cstring_t, amxo_parser_get_config(parser, "cfg-dir"));
-        if(swl_str_len(cfgDir) > 0) {
-            swl_str_catFormat(fullPath, sizeof(fullPath), "%s/", cfgDir);
-        }
-        const char* plgName = amxc_var_constcast(cstring_t, amxo_parser_get_config(parser, "name"));
-        if(swl_str_len(cfgDir) > 0) {
-            swl_str_catFormat(fullPath, sizeof(fullPath), "%s/", plgName);
+        const char* dbgDir = amxc_var_constcast(cstring_t, amxo_parser_get_config(parser, "dbg-dir"));
+        if(swl_str_len(dbgDir) > 0) {
+            swl_str_catFormat(fullPath, sizeof(fullPath), "%s/", dbgDir);
+        } else {
+            const char* cfgDir = amxc_var_constcast(cstring_t, amxo_parser_get_config(parser, "cfg-dir"));
+            if(swl_str_len(cfgDir) > 0) {
+                swl_str_catFormat(fullPath, sizeof(fullPath), "%s/", cfgDir);
+            }
+            const char* plgName = amxc_var_constcast(cstring_t, amxo_parser_get_config(parser, "name"));
+            if(swl_str_len(cfgDir) > 0) {
+                swl_str_catFormat(fullPath, sizeof(fullPath), "%s/", plgName);
+            }
         }
         swl_str_catFormat(fullPath, sizeof(fullPath), "%s", path);
         path = fullPath;

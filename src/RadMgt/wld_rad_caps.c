@@ -69,7 +69,7 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-
+#include "swla/swla_trans.h"
 #include "wld.h"
 #include "wld_util.h"
 #include "wld_radio.h"
@@ -114,7 +114,12 @@ bool wld_rad_is_cap_active(T_Radio* pR, int capability) {
  * @param pR
  *  The radio to update.
  */
-void wld_rad_parse_status(T_Radio* pR) {
+void wld_rad_writeCapStatus(T_Radio* pR, amxd_trans_t* trans) {
+
+    amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, featureObject);
+
     int size = 1 + ((MAX_CAP_SIZE + 1) * pR->nrCapabilities);
     char cap_string[size];
     cap_string[0] = 0;
@@ -124,8 +129,9 @@ void wld_rad_parse_status(T_Radio* pR) {
             swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
     }
-    amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
-    amxd_object_set_cstring_t(featureObject, "Status", cap_string);
+    amxd_trans_set_cstring_t(targetTrans, "Status", cap_string);
+
+    swla_trans_finalize(&tmpTrans, NULL);
 }
 
 /**
@@ -133,7 +139,12 @@ void wld_rad_parse_status(T_Radio* pR) {
  * @param pR
  *  The radio to update.
  */
-static void wld_rad_parse_enable(T_Radio* pR, int includeIndex, int excludeIndex) {
+static void s_writeCapEnable(T_Radio* pR, int includeIndex, int excludeIndex, amxd_trans_t* trans) {
+    amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, featureObject);
+
+
     int size = 1 + ((MAX_CAP_SIZE + 1) * pR->nrCapabilities);
     char cap_string[size];
     cap_string[0] = 0;
@@ -142,8 +153,10 @@ static void wld_rad_parse_enable(T_Radio* pR, int includeIndex, int excludeIndex
             swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
     }
-    amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
-    amxd_object_set_cstring_t(featureObject, "Enabled", cap_string);
+    amxd_trans_set_cstring_t(targetTrans, "Enabled", cap_string);
+
+    swla_trans_finalize(&tmpTrans, NULL);
+
 }
 
 /**
@@ -152,8 +165,11 @@ static void wld_rad_parse_enable(T_Radio* pR, int includeIndex, int excludeIndex
  *
  * @param pR
  *  The radio of which to update the capabilities.
+ * @param trans
+ *  The transaction with which to update the capabilities, must not be NULL
  */
-void wld_rad_parse_cap(T_Radio* pR) {
+void wld_rad_updateCapabilities(T_Radio* pR, amxd_trans_t* trans) {
+    ASSERT_NOT_NULL(trans, , ME, "NULL");
     int size = 1 + ((MAX_CAP_SIZE + 1) * pR->nrCapabilities);
     char cap_string[size];
     cap_string[0] = 0;
@@ -163,10 +179,14 @@ void wld_rad_parse_cap(T_Radio* pR) {
             swl_strlst_cat(cap_string, sizeof(cap_string), " ", pR->capabilities[i].Name);
         }
     }
+
+
     amxd_object_t* featureObject = amxd_object_findf(pR->pBus, "RadCaps");
-    amxd_object_set_cstring_t(featureObject, "Available", cap_string);
-    wld_rad_parse_enable(pR, -1, -1);
-    wld_rad_parse_status(pR);
+
+    amxd_trans_select_object(trans, featureObject);
+    amxd_trans_set_cstring_t(trans, "Available", cap_string);
+    s_writeCapEnable(pR, -1, -1, trans);
+    wld_rad_writeCapStatus(pR, trans);
 }
 
 static void wld_rad_setCapabilityIndex(T_Radio* pR, int index, bool status) {
@@ -212,7 +232,7 @@ static void s_setEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
             wld_rad_setCapabilityIndex(pR, i, status);
         }
     }
-    wld_rad_parse_status(pR);
+    wld_rad_writeCapStatus(pR, NULL);
 }
 
 /**
@@ -263,8 +283,8 @@ amxd_status_t _RadCaps_Enable(amxd_object_t* wifi_cap,
     ASSERTS_FALSE(pR->cap_status[index].enable, amxd_status_ok, ME, "already enabled");
 
     wld_rad_setCapabilityIndex(pR, index, true);
-    wld_rad_parse_enable(pR, index, -1);
-    wld_rad_parse_status(pR);
+    s_writeCapEnable(pR, index, -1, NULL);
+    wld_rad_writeCapStatus(pR, NULL);
 
     return amxd_status_ok;
 }
@@ -291,8 +311,8 @@ amxd_status_t _RadCaps_Disable(amxd_object_t* wifi_cap,
     ASSERTS_TRUE(pR->cap_status[index].enable, amxd_status_ok, ME, "already disabled");
 
     wld_rad_setCapabilityIndex(pR, index, false);
-    wld_rad_parse_enable(pR, -1, index);
-    wld_rad_parse_status(pR);
+    s_writeCapEnable(pR, -1, index, NULL);
+    wld_rad_writeCapStatus(pR, NULL);
 
     return amxd_status_ok;
 }

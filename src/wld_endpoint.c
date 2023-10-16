@@ -288,11 +288,14 @@ static void s_writeStats(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_var_t* 
 
 static void s_writeAssocStats(T_EndPoint* pEP) {
     amxd_object_t* object = amxd_object_get(pEP->pBus, "AssocStats");
-    amxd_object_set_uint32_t(object, "NrAssocAttempts", pEP->assocStats.nrAssocAttempts);
-    amxd_object_set_uint32_t(object, "NrAssocAttempsSinceDc", pEP->assocStats.nrAssocAttemptsSinceDc);
-    amxd_object_set_uint32_t(object, "NrAssociations", pEP->assocStats.nrAssociations);
-    amxd_object_set_uint32_t(object, "AssocTime", pEP->assocStats.lastAssocTime);
-    amxd_object_set_uint32_t(object, "DisassocTime", pEP->assocStats.lastDisassocTime);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pEP->Name);
+    amxd_trans_set_uint32_t(&trans, "NrAssocAttempts", pEP->assocStats.nrAssocAttempts);
+    amxd_trans_set_uint32_t(&trans, "NrAssocAttempsSinceDc", pEP->assocStats.nrAssocAttemptsSinceDc);
+    amxd_trans_set_uint32_t(&trans, "NrAssociations", pEP->assocStats.nrAssociations);
+    amxd_trans_set_uint32_t(&trans, "AssocTime", pEP->assocStats.lastAssocTime);
+    amxd_trans_set_uint32_t(&trans, "DisassocTime", pEP->assocStats.lastDisassocTime);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pEP->Name);
 }
 
 void wld_endpoint_writeStats(T_EndPoint* pEP, T_EndPointStats* stats, bool success) {
@@ -938,53 +941,65 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
 
     SAH_TRACEZ_INFO(ME, "Syncing Endpoint to Datamodel");
 
-    amxd_object_set_cstring_t(object, "Status", cstr_EndPoint_status[pEP->status]);
-    amxd_object_set_cstring_t(object, "ConnectionStatus",
-                              cstr_EndPoint_connectionStatus[pEP->connectionStatus]);
-    amxd_object_set_cstring_t(object, "LastError", cstr_EndPoint_lastError[pEP->error]);
-    amxd_object_set_cstring_t(object, "Alias", pEP->alias);
-    amxd_object_set_int32_t(object, "Index", pEP->index);
-    amxd_object_set_cstring_t(object, "IntfName", pEP->Name);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pEP->Name);
+
+    amxd_trans_set_cstring_t(&trans, "Status", cstr_EndPoint_status[pEP->status]);
+    amxd_trans_set_cstring_t(&trans, "ConnectionStatus",
+                             cstr_EndPoint_connectionStatus[pEP->connectionStatus]);
+    amxd_trans_set_cstring_t(&trans, "LastError", cstr_EndPoint_lastError[pEP->error]);
+    amxd_trans_set_cstring_t(&trans, "Alias", pEP->alias);
+    amxd_trans_set_int32_t(&trans, "Index", pEP->index);
+    amxd_trans_set_cstring_t(&trans, "IntfName", pEP->Name);
 
     if(pEP->currentProfile) {
         char* profileRef = amxd_object_get_path(pEP->currentProfile->pBus, AMXD_OBJECT_INDEXED);
-        amxd_object_set_cstring_t(object, "ProfileReference", profileRef);
+        amxd_trans_set_cstring_t(&trans, "ProfileReference", profileRef);
         free(profileRef);
     } else {
-        amxd_object_set_cstring_t(object, "ProfileReference", "");
+        amxd_trans_set_cstring_t(&trans, "ProfileReference", "");
     }
 
     TBuf[0] = 0;
     if(pEP->pSSID != NULL) {
         T_Radio* pRad = pEP->pSSID->RADIO_PARENT;
         if((pRad != NULL) && (pRad->pBus != NULL)) {
+            amxd_trans_select_object(&trans, pEP->pSSID->pBus);
             char* currRadRef = amxd_object_get_cstring_t(pEP->pSSID->pBus, "LowerLayers", NULL);
             wld_util_getRealReferencePath(TBuf, sizeof(TBuf), currRadRef, pRad->pBus);
-            amxd_object_set_cstring_t(pEP->pSSID->pBus, "LowerLayers", TBuf);
+            amxd_trans_set_cstring_t(&trans, "LowerLayers", TBuf);
             free(currRadRef);
             char* radObjPath = amxd_object_get_path(pRad->pBus, AMXD_OBJECT_NAMED);
-            amxd_object_set_cstring_t(pEP->pBus, "RadioReference", radObjPath);
+
+            amxd_trans_select_object(&trans, pEP->pBus);
+            amxd_trans_set_cstring_t(&trans, "RadioReference", radObjPath);
             free(radObjPath);
         }
+
+
         TBuf[0] = 0;
         char* currSsidRef = amxd_object_get_cstring_t(pEP->pBus, "SSIDReference", NULL);
         wld_util_getRealReferencePath(TBuf, sizeof(TBuf), currSsidRef, pEP->pSSID->pBus);
         free(currSsidRef);
     }
-    amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
+    amxd_trans_set_cstring_t(&trans, "SSIDReference", TBuf);
 
+
+
+    amxd_object_t* secObj = amxd_object_findf(object, "Security");
+    amxd_trans_select_object(&trans, secObj);
     swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pEP->secModesSupported);
     SAH_TRACEZ_INFO(ME, "Security.ModesSupported=%s", TBuf);
-    amxd_object_set_cstring_t(amxd_object_findf(object, "Security"), "ModesSupported", TBuf);
+    amxd_trans_set_cstring_t(&trans, "ModesSupported", TBuf);
 
     amxd_object_t* wpsObj = amxd_object_findf(object, "WPS");
-    amxd_object_set_int32_t(wpsObj, "Enable", pEP->WPS_Enable);
+    amxd_trans_select_object(&trans, wpsObj);
+    amxd_trans_set_int32_t(&trans, "Enable", pEP->WPS_Enable);
+    swl_conv_transParamSetMask(&trans, "ConfigMethodsSupported", pEP->WPS_ConfigMethodsSupported, cstr_WPS_CM_Supported, WPS_CFG_MTHD_MAX);
+    swl_conv_transParamSetMask(&trans, "ConfigMethodsEnabled", pEP->WPS_ConfigMethodsEnabled, cstr_WPS_CM_Supported, WPS_CFG_MTHD_MAX);
 
-    wld_wps_ConfigMethods_mask_to_charBuf(TBuf, sizeof(TBuf), pEP->WPS_ConfigMethodsSupported);
-    amxd_object_set_cstring_t(wpsObj, "ConfigMethodsSupported", TBuf);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pEP->Name);
 
-    wld_wps_ConfigMethods_mask_to_charBuf(TBuf, sizeof(TBuf), pEP->WPS_ConfigMethodsEnabled);
-    amxd_object_set_cstring_t(wpsObj, "ConfigMethodsEnabled", TBuf);
 }
 
 void wld_endpoint_setConnectionStatus(T_EndPoint* pEP, wld_epConnectionStatus_e connectionStatus, wld_epError_e error) {
@@ -1449,11 +1464,18 @@ static void s_setProfileStatus(T_EndPointProfile* profile, bool connected) {
 
     if(status != profile->status) {
         profile->status = status;
-        amxd_object_set_cstring_t(object, "Status",
-                                  cstr_EndPointProfile_status[profile->status]);
+
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", profile->alias);
+
+        amxd_trans_set_cstring_t(&trans, "Status",
+                                 cstr_EndPointProfile_status[profile->status]);
         bool prevValue = profile->endpoint->internalChange;
         profile->endpoint->internalChange = true;
         profile->endpoint->internalChange = prevValue;
+
+
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", profile->alias);
     }
 }
 
@@ -1647,7 +1669,7 @@ static void endpoint_reconnect_handler(amxp_timer_t* timer _UNUSED, void* userda
     }
 
     chanspec = wld_rad_getSwlChanspec(pRad);
-    uint32_t curStateTime = (uint32_t) (wld_util_time_monotonic_sec() - pRad->changeInfo.lastStatusChange);
+    uint32_t curStateTime = (uint32_t) (swl_time_getMonoSec() - pRad->changeInfo.lastStatusChange);
     uint32_t clearTimeSec = wld_channel_get_band_clear_time(chanspec) / 1000;
 
     SAH_TRACEZ_INFO(ME, "%s: status %u timeInfo %u/%u chanInfo %u/%u", pRad->Name, pRad->status,

@@ -184,6 +184,6 @@ uint32_t wld_bgdfs_clearTimeEllapsed(T_Radio* pRad);
 bool wld_bgdfs_isRunning(T_Radio* pRad);
 
 /* Sync datamodel object with local values */
-void wld_bgdfs_update(T_Radio* pRad);
+void wld_bgdfs_update(T_Radio* pRad, amxd_trans_t* trans);
 
 #endif /* _WLD_BGDFS_H_ */

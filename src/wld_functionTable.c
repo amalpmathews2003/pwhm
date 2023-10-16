@@ -136,12 +136,12 @@ static void TRAP_mfn_wvap_set_config_driver(T_AccessPoint* ap, wld_vap_driverCfg
     }
 
 #define DEF_TRAP_int_int(type, func) \
-    static int TRAP_ ## func(type * obj, int a, int b) { \
+    static swl_rc_ne TRAP_ ## func(type * obj, int a, int b) { \
         _UNUSED_(obj); \
         _UNUSED_(a); \
         _UNUSED_(b); \
         SAH_TRACEZ_NOTICE(ME, "%p %d %d", obj, a, b); \
-        return -1; \
+        return SWL_RC_NOT_IMPLEMENTED; \
     }
 
 #define DEF_TRAP_bool(type, func) \

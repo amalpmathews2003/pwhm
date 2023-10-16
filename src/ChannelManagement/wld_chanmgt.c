@@ -172,12 +172,20 @@ static void s_updateChannelShowing(T_Radio* pR) {
 }
 
 static void s_updateChanDetailed(wld_rad_detailedChanState_t chanDet, amxd_object_t* object) {
-    amxd_object_set_uint16_t(object, "Channel", chanDet.chanspec.channel);
-    amxd_object_set_cstring_t(object, "Bandwidth", swl_bandwidth_str[chanDet.chanspec.bandwidth]);
-    amxd_object_set_cstring_t(object, "Frequency", swl_freqBandExt_str[chanDet.chanspec.band]);
-    amxd_object_set_cstring_t(object, "Reason", g_wld_channelChangeReason_str[chanDet.reason]);
-    amxd_object_set_cstring_t(object, "ReasonExt", chanDet.reasonExt);
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "trans init failure");
+
+    amxd_trans_set_uint16_t(&trans, "Channel", chanDet.chanspec.channel);
+    amxd_trans_set_cstring_t(&trans, "Bandwidth", swl_bandwidth_str[chanDet.chanspec.bandwidth]);
+    amxd_trans_set_cstring_t(&trans, "Frequency", swl_freqBandExt_str[chanDet.chanspec.band]);
+    amxd_trans_set_cstring_t(&trans, "Reason", g_wld_channelChangeReason_str[chanDet.reason]);
+    amxd_trans_set_cstring_t(&trans, "ReasonExt", chanDet.reasonExt);
     swl_type_toObjectParam(&gtSwl_type_timeMono, object, "LastChangeTime", &chanDet.changeTime);
+
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
+
 }
 
 static void s_updateTargetChanspec(T_Radio* pR) {
@@ -209,30 +217,30 @@ static swl_rc_ne s_writeChangeToOdl(wld_rad_chanChange_t* change) {
     ASSERTS_NOT_NULL(pRad->pBus, SWL_RC_ERROR, ME, "NULL");
     amxd_object_t* template = amxd_object_findf(pRad->pBus, "ChannelMgt.ChannelChanges");
 
-    amxd_object_t* dmObj = NULL;
-    amxd_object_new_instance(&dmObj, template, NULL, 0, NULL);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(template, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pRad->Name);
 
-    if(dmObj == NULL) {
-        SAH_TRACEZ_ERROR(ME, "%s: failed to create new change pcb object", pRad->Name);
-        return SWL_RC_ERROR;
-    }
+    amxd_trans_add_inst(&trans, pRad->totalNrCurrentChanspecChanges, NULL);
 
-    swl_typeTimeMono_toObjectParam(dmObj, "TimeStamp", change->changeTime);
+    swl_typeTimeMono_toTransParam(&trans, "TimeStamp", change->changeTime);
 
-    amxd_object_set_uint8_t(dmObj, "OldChannel", change->old.channel);
-    amxd_object_set_cstring_t(dmObj, "OldBandwidth", Rad_SupBW[change->old.bandwidth]);
-    amxd_object_set_uint32_t(dmObj, "NewChannel", change->new.channel);
-    amxd_object_set_cstring_t(dmObj, "NewBandwidth", Rad_SupBW[change->new.bandwidth]);
-    amxd_object_set_cstring_t(dmObj, "ChannelChangeReason", g_wld_channelChangeReason_str[change->reason]);
-    amxd_object_set_cstring_t(dmObj, "ChannelChangeReasonExt", change->reasonExt);
-    amxd_object_set_uint16_t(dmObj, "NrSta", change->nrSta);
-    amxd_object_set_uint16_t(dmObj, "NrVideoSta", change->nrVid);
+    amxd_trans_set_uint8_t(&trans, "OldChannel", change->old.channel);
+    amxd_trans_set_cstring_t(&trans, "OldBandwidth", Rad_SupBW[change->old.bandwidth]);
+    amxd_trans_set_uint32_t(&trans, "NewChannel", change->new.channel);
+    amxd_trans_set_cstring_t(&trans, "NewBandwidth", Rad_SupBW[change->new.bandwidth]);
+    amxd_trans_set_cstring_t(&trans, "ChannelChangeReason", g_wld_channelChangeReason_str[change->reason]);
+    amxd_trans_set_cstring_t(&trans, "ChannelChangeReasonExt", change->reasonExt);
+    amxd_trans_set_uint16_t(&trans, "NrSta", change->nrSta);
+    amxd_trans_set_uint16_t(&trans, "NrVideoSta", change->nrVid);
 
-    amxd_object_set_uint32_t(dmObj, "TargetChannel", change->target.channel);
-    amxd_object_set_cstring_t(dmObj, "TargetBandwidth", Rad_SupBW[change->target.bandwidth]);
-    swl_typeTimeMono_toObjectParam(dmObj, "TargetChangeTime", change->targetChangeTime);
+    amxd_trans_set_uint32_t(&trans, "TargetChannel", change->target.channel);
+    amxd_trans_set_cstring_t(&trans, "TargetBandwidth", Rad_SupBW[change->target.bandwidth]);
+    swl_typeTimeMono_toTransParam(&trans, "TargetChangeTime", change->targetChangeTime);
 
-    change->object = dmObj;
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "%s : trans apply failure", pRad->Name);
+
+
+    change->object = amxd_object_get_instance(template, NULL, pRad->totalNrCurrentChanspecChanges);
     return SWL_RC_OK;
 }
 
@@ -246,7 +254,7 @@ static void s_saveCurrentChanspec(T_Radio* pRad) {
     s_updateCurrentChanspec(pRad);
     s_updateChannelShowing(pRad);
     wld_rad_updateChannelsInUse(pRad);
-    wld_rad_chan_update_model(pRad);
+    wld_rad_chan_update_model(pRad, NULL);
 }
 
 static wld_rad_chanChange_t* s_logChannelChange(T_Radio* pRad, swl_chanspec_t oldSpec) {
@@ -613,7 +621,7 @@ void wld_chanmgt_saveChanges(T_Radio* pRad) {
     ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: radio dm obj not ready for updates", pRad->Name);
     s_updateCurrentChanspec(pRad);
     s_updateTargetDm(pRad);
-    wld_rad_chan_update_model(pRad);
+    wld_rad_chan_update_model(pRad, NULL);
 
     amxc_llist_for_each(it, &pRad->channelChangeList) {
         wld_rad_chanChange_t* change = amxc_llist_it_get_data(it, wld_rad_chanChange_t, it);

@@ -1124,7 +1124,7 @@ define rrm_t{
 			 *  device.
 			 * @version 6.0
 			 */
-			%read-only uint32 LastDataDownlinkRate;
+			 %read-only uint32 LastDataDownlinkRate;
 
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the associated device to the access
@@ -1348,7 +1348,7 @@ define rrm_t{
 			}
 
 			/** Station is in power save mode */
-			%read-only bool PowerSave;
+			%volatile %read-only bool PowerSave;
 
 			/**
 			 * Station Capabilities

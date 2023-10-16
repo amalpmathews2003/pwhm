@@ -67,5 +67,6 @@
 
 bool wld_persist_onStart();
 void wld_persist_onRadioCreation(T_Radio* pRad);
+bool wld_persist_writeApAtCreation();
 
 #endif /* SRC_INCLUDE_PRIV_FEATURES_WLD_PERSIST_H_ */

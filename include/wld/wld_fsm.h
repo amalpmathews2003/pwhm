@@ -62,7 +62,7 @@
 #ifndef SRC_INCLUDE_WLD_WLD_FSM_H_
 #define SRC_INCLUDE_WLD_WLD_FSM_H_
 
-#define WLD_FSM_MAX_WAIT 20
+#define WLD_FSM_MAX_WAIT 10
 #define WLD_FSM_WAIT_TIME 1000
 
 #include "wld_types.h"

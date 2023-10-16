@@ -121,3 +121,8 @@ bool wld_persist_onStart() {
 void wld_persist_onRadioCreation(T_Radio* pRad _UNUSED) {
     // when persistence is on, radios are loaded from the data model.
 }
+
+
+bool wld_persist_writeApAtCreation() {
+    return true;
+}

@@ -422,7 +422,13 @@ static void test_setAvailableSucceeds(void** state _UNUSED) {
 
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
+    sahTraceOpen(__FILE__, TRACE_TYPE_STDERR);
+    if(!sahTraceIsOpen()) {
+        fprintf(stderr, "FAILED to open SAH TRACE\n");
+    }
     sahTraceSetLevel(TRACE_LEVEL_INFO);
+    sahTraceSetTimeFormat(TRACE_TIME_APP_SECONDS);
+
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_isRunningReturnsFalseWhenIdle),
         cmocka_unit_test(test_isRunningReturnsFalseWhenOff),

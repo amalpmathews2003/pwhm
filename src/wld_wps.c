@@ -81,7 +81,7 @@
  * @brief names of all WPS configuration methods as per tr-181-2-15-1-usp
  * Device.WiFi.AccessPoint.{i}.WPS.ConfigMethodsSupported
  * */
-static const char* cstr_WPS_CM_Supported[] = {
+const char* cstr_WPS_CM_Supported[] = {
     "USBFlashDrive",
     "Ethernet",
     "Label",
@@ -145,10 +145,6 @@ bool wld_wps_ConfigMethods_mask_to_string(amxc_string_t* output, const wld_wps_c
     bool ret = swl_conv_maskToChar(buffer, sizeof(buffer), configMethods, cstr_WPS_CM_Supported, SWL_ARRAY_SIZE(cstr_WPS_CM_Supported));
     amxc_string_set(output, buffer);
     return ret;
-}
-
-bool wld_wps_ConfigMethods_mask_to_charBuf(char* string, size_t stringsize, const wld_wps_cfgMethod_m configMethods) {
-    return swl_conv_maskToChar(string, stringsize, configMethods, cstr_WPS_CM_Supported, WPS_CFG_MTHD_MAX);
 }
 
 bool wld_wps_ConfigMethods_string_to_mask(wld_wps_cfgMethod_m* output, const char* input, const char separator) {

@@ -230,9 +230,6 @@ vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta) {
     fta->mfn_sync_ssid = vendor->fta.mfn_sync_ssid = syncData_SSID2OBJ;
     fta->mfn_sync_ep = vendor->fta.mfn_sync_ep = syncData_EndPoint2OBJ;
 
-    fta->mfn_wrad_libsync_status = vendor->fta.mfn_wrad_libsync_status = radio_libsync_status_cb;
-    fta->mfn_wvap_libsync_status = vendor->fta.mfn_wvap_libsync_status = vap_libsync_status_cb;
-
     return vendor;
 }
 

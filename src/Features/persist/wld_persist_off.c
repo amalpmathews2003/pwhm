@@ -98,5 +98,8 @@ void wld_persist_onRadioCreation(T_Radio* pR) {
                          Rad_SupFreqBands[pR->operatingFrequencyBand]);
 
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+}
 
+bool wld_persist_writeApAtCreation() {
+    return false;
 }

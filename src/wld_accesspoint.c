@@ -76,6 +76,7 @@
 #include "wld_radio.h"
 #include "wld_wps.h"
 #include "wld_assocdev.h"
+#include "swl/swl_common.h"
 #include "swl/swl_assert.h"
 #include "swl/swl_string.h"
 #include "swl/swl_ieee802_1x_defs.h"
@@ -88,6 +89,7 @@
 #include "wld_ap_nl80211.h"
 #include "wld_hostapd_ap_api.h"
 #include "wld_dm_trans.h"
+#include "Features/wld_persist.h"
 
 #define ME "ap"
 
@@ -113,6 +115,8 @@ const char* g_str_wld_ap_dm[] = {"Default", "Disabled", "RNR", "UPR", "FILSDisco
 SWL_TUPLE_TYPE_NEW(assocTable, ARR(swl_type_macBin, swl_type_macBin, swl_type_charPtr, swl_type_timeReal, swl_type_uint16))
 static const char* s_assocTableNames[] = {"mac", "bssid", "frame", "timestamp", "request_type"};
 SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_assocTableNames) == SWL_ARRAY_SIZE(assocTableTypes), "s_assocTableNames not correctly defined");
+
+static bool s_finalizeApCreation(T_AccessPoint* pAP);
 
 T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj) {
     ASSERTS_EQUALS(amxd_object_get_type(apObj), amxd_object_instance, NULL, ME, "Not instance");
@@ -222,6 +226,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
     pAP->enable = false;
     T_Radio* pR = pAP->pRadio;
     T_SSID* pSSID = pAP->pSSID;
+    SAH_TRACEZ_ERROR(ME, "DELETE %s %p", pAP->name, pR);
     if(pR) {
         if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
             if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
@@ -229,6 +234,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
                 SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
                 pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
             }
+            SAH_TRACEZ_ERROR(ME, "DELETE HOOK %s", pAP->name);
             /* Destroy vap*/
             pR->pFA->mfn_wvap_destroy_hook(pAP);
             /* Try to delete the requested interface by calling the HW function */
@@ -280,7 +286,6 @@ static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uin
     amxc_llist_append(&pRad->llAP, &pAP->it);
 
     wld_ap_rssiMonInit(pAP);
-    wld_assocDev_initAp(pAP);
 
     swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
     return true;
@@ -338,6 +343,8 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     pSSID->AP_HOOK = pAP;
     pAP->pSSID = pSSID;
 
+    s_finalizeApCreation(object->priv);
+
     return amxd_status_ok;
 }
 
@@ -347,12 +354,17 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
 
     SAH_TRACEZ_IN(ME);
 
-    T_SSID* pSSID = pAP->pSSID;
-    ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
-    pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
-    pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
 
-    pAP->initDone = true;
+    if(wld_persist_writeApAtCreation()) {
+        T_SSID* pSSID = pAP->pSSID;
+        ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
+        pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
+        pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+
+        pAP->initDone = true;
+    }
+    wld_assocDev_initAp(pAP);
+
     SAH_TRACEZ_OUT(ME);
 
 }
@@ -362,6 +374,7 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
  */
 static bool s_finalizeApCreation(T_AccessPoint* pAP) {
     SAH_TRACEZ_IN(ME);
+    SAH_TRACEZ_ERROR(ME, "Finalize %s %p", pAP->name, pAP);
 
     ASSERTS_NOT_NULL(pAP, false, ME, "No mapped AP Ctx");
     T_SSID* pSSID = pAP->pSSID;
@@ -380,6 +393,7 @@ static bool s_finalizeApCreation(T_AccessPoint* pAP) {
 
     //delay sync AP and SSID Dm after all conf has been loaded
     swla_delayExec_add((swla_delayExecFun_cbf) s_syncApSSIDDm, pAP);
+
 
     SAH_TRACEZ_OUT(ME);
     return true;
@@ -428,24 +442,6 @@ amxd_status_t _wld_ap_addInstance_oaf(amxd_object_t* object,
     return status;
 }
 
-/*
- * AP instance addition event handler
- * late handling only to finalize AP interface creation (using twin ssid instance)
- * when SSIDReference is not explicitely provided by user conf
- */
-static void s_addApInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const initialParamValues _UNUSED) {
-    SAH_TRACEZ_IN(ME);
-
-    if(GET_ARG(initialParamValues, "SSIDReference") == NULL) {
-        /*
-         * As user conf does not include specific SSIDReference
-         * then use the default twin ssid mapping already initiated in the early action handler
-         */
-        s_finalizeApCreation(object->priv);
-    }
-
-    SAH_TRACEZ_OUT(ME);
-}
 
 static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -457,8 +453,6 @@ static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
 
     amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
     ASSERT_EQUALS(_linkApSsid(object, pSsidObj), amxd_status_ok, , ME, "%s: fail to link Ap to SSID (%s)", oname, ssidRef);
-
-    s_finalizeApCreation(object->priv);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -749,28 +743,6 @@ static void s_setApCommonParam_pwf(void* priv _UNUSED, amxd_object_t* object, am
     SAH_TRACEZ_OUT(ME);
 }
 
-/**
- * All VAP (AccessPoint & SSID) parameters that must be
- * updated after a commit are handled in this function.
- */
-int vap_libsync_status_cb(T_AccessPoint* pAP) {
-    T_SSID* pSSID = pAP->pSSID;
-
-    /* Keep WPS status sync when SSIDAdvertisement is enabled! Otherwise NeMo must handle it!  */
-    if(pAP->SSIDAdvertisementEnabled) {
-        pAP->WPS_Status = ((pAP->WPS_Enable) &&
-                           (swl_security_isApModeValid(pAP->secModeEnabled)) &&
-                           (pAP->secModeEnabled == SWL_SECURITY_APMODE_NONE || (!swl_security_isApModeWEP(pAP->secModeEnabled))) &&
-                           (pAP->MF_Mode != APMFM_WHITELIST || pAP->WPS_CertMode));
-    }
-
-    /* Update NEMO for this... */
-    amxd_object_set_cstring_t(pAP->pBus, "Status", cstr_AP_status[pAP->status]);
-    amxd_object_set_cstring_t(amxd_object_findf(pAP->pBus, "WPS"),
-                              "Status", cstr_AP_status[pAP->WPS_Status]);
-    amxd_object_set_cstring_t(pSSID->pBus, "Status", Rad_SupStatus[pSSID->status]);
-    return 0;
-}
 
 void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
     char TBuf[256];
@@ -786,222 +758,129 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
     amxd_object_t* secObj = amxd_object_findf(object, "Security");
     amxd_object_t* wpsObj = amxd_object_findf(object, "WPS");
     if(set & SET) {
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pAP->name);
+
         amxc_string_t TBufStr;
         amxc_string_init(&TBufStr, 0);
 
         /* Set AP data in mapped OBJ structure */
         /* object, must be the one mapping on the pAP structure (/WIFI/AccessPoint/xxx */
 
-        /** 'Status' Indicates the status of this access point.
-         */
-        amxd_object_set_cstring_t(object, "Status", cstr_AP_status[pAP->status]);
-        /** 'Index' NeMo helper value, this will contain the key or
-         *  name index value. We keep this also in the AP structure. */
-        amxd_object_set_int32_t(object, "Index", pAP->index);
-        /** 'Alias' A non-volatile handle used to reference this
-         *  instance. Alias provides a mechanism for an ACS to label
-         *  this instance for future reference. An initial unique value
-         *  MUST be assigned when the CPE creates an instance of this
-         *  object. (Currently it's the VAP name wl0,wl1,...)   */
-        amxd_object_set_cstring_t(object, "Alias", pAP->alias);
-        /** 'SSIDReference' The value MUST be the path name of a row in
-         *  the SSID table. If the referenced object is deleted, the
-         *  parameter value MUST be set to an empty string. */
+        amxd_trans_set_cstring_t(&trans, "Status", cstr_AP_status[pAP->status]);
+        amxd_trans_set_int32_t(&trans, "Index", pAP->index);
+
+        amxd_trans_set_cstring_t(&trans, "Alias", pAP->alias);
+
         TBuf[0] = 0;
         if(pAP->pSSID != NULL) {
             char* currSsidRef = amxd_object_get_cstring_t(pAP->pBus, "SSIDReference", NULL);
             wld_util_getRealReferencePath(TBuf, sizeof(TBuf), currSsidRef, pAP->pSSID->pBus);
             free(currSsidRef);
         }
-        amxd_object_set_cstring_t(object, "SSIDReference", TBuf);
+        amxd_trans_set_cstring_t(&trans, "SSIDReference", TBuf);
         TBuf[0] = 0;
         if(pAP->pRadio) {
             char* path = amxd_object_get_path(pAP->pRadio->pBus, AMXD_OBJECT_NAMED);
             swl_str_copy(TBuf, sizeof(TBuf), path);
             free(path);
         }
-        amxd_object_set_cstring_t(object, "RadioReference", TBuf);
-        /** 'RetryLimit' The maximum number of retransmission for a
-         *  packet. This corresponds to IEEE 802.11 parameter
-         *  do11ShortRetryLimit [0..127] */
-        amxd_object_set_int32_t(object, "RetryLimit", pAP->retryLimit);
-        /** 'WMMCapability' Indicates whether this access point supports
-         *  WiFi Multimedia(WMM) Access Cagegories (AC). */
-        amxd_object_set_bool(object, "WMMCapability", pAP->WMMCapability);
-        /** 'UAPSDCapability' Indicates whether this access point
-         *  supports WMM Unscheduled Automatic Power Save Delivery
-         *  (U-APSD). */
-        //set_OBJ_ParameterHelper(TPH_INT32 , object, "UAPSDCapability", &pAP->UAPSDCapability);
-        amxc_var_set_bool(&variant, ((pAP->WMMCapability) ? pAP->UAPSDCapability : 0));
-        amxd_param_set_value(amxd_object_get_param_def(object, "UAPSDCapability"), &variant);
-        /** 'WMMEnable' Whether WMM support is currently enabled.
-         *  When enabled, this is indicated in beacon frames */
-        amxc_var_set_bool(&variant, ((pAP->WMMCapability) ? pAP->WMMEnable : 0));
-        amxd_param_set_value(amxd_object_get_param_def(object, "WMMEnable"), &variant);
-        /** 'UAPSDEnable' Whether U-APSD support is currently
-         *  enabled. When enabled, this is indicated in beacon frames */
-        amxc_var_set_bool(&variant, ((pAP->UAPSDCapability) ? pAP->UAPSDEnable : 0));
-        amxd_param_set_value(amxd_object_get_param_def(object, "UAPSDEnable"), &variant);
+        amxd_trans_set_cstring_t(&trans, "RadioReference", TBuf);
 
-        amxc_var_set_bool(&variant, pAP->MCEnable);
-        amxd_param_set_value(amxd_object_get_param_def(object, "MCEnable"), &variant);
+        amxd_trans_set_int32_t(&trans, "RetryLimit", pAP->retryLimit);
+        amxd_trans_set_bool(&trans, "WMMCapability", pAP->WMMCapability);
+        amxd_trans_set_bool(&trans, "UAPSDCapability", ((pAP->WMMCapability) ? pAP->UAPSDCapability : false));
+        amxd_trans_set_bool(&trans, "WMMEnable", ((pAP->WMMCapability) ? pAP->WMMEnable : false));
+        amxd_trans_set_bool(&trans, "UAPSDEnable", ((pAP->UAPSDCapability && pAP->WMMCapability) ? pAP->UAPSDEnable : false));
+        amxd_trans_set_bool(&trans, "MCEnable", pAP->MCEnable);
+        amxd_trans_set_bool(&trans, "APBridgeDisable", pAP->APBridgeDisable);
 
-        amxc_var_set_bool(&variant, pAP->APBridgeDisable);
-        amxd_param_set_value(amxd_object_get_param_def(object, "APBridgeDisable"), &variant);
+        amxd_trans_set_bool(&trans, "IsolationEnable", pAP->clientIsolationEnable);
 
-        amxd_object_set_bool(object, "IsolationEnable", pAP->clientIsolationEnable);
+        amxd_trans_set_bool(&trans, "IEEE80211kEnabled", pAP->IEEE80211kEnable);
 
-        amxd_object_set_bool(object, "IEEE80211kEnabled", pAP->IEEE80211kEnable);
+        amxd_trans_set_bool(&trans, "WDSEnable", pAP->wdsEnable);
 
-        amxd_object_set_bool(object, "WDSEnable", pAP->wdsEnable);
+        swl_conv_transParamSetMask(&trans, "MultiAPType", pAP->multiAPType, cstr_MultiAPType, MULTIAP_MAX);
 
-        swl_conv_objectParamSetMask(object, "MultiAPType", pAP->multiAPType, cstr_MultiAPType, MULTIAP_MAX);
+        amxd_trans_set_int32_t(&trans, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
+        amxd_trans_set_int32_t(&trans, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
 
-        amxd_object_set_cstring_t(amxd_object_findf(object, "IEEE80211r"),
-                                  "NASIdentifier", pAP->NASIdentifier);
 
-        amxd_object_set_cstring_t(amxd_object_findf(object, "IEEE80211r"),
-                                  "R0KHKey", pAP->R0KHKey);
 
-        /** 'AssociatedDeviceNumberOfEntries' The number of entries
-         *  in the AssociatedDevice table. */
-        amxd_object_set_int32_t(object, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
+        /** IEEE80211r part */
 
-        /** 'ActiveAssociatedDeviceNumberOfEntries' The number of entries
-         *  in the AssociatedDevice table. */
-        amxd_object_set_int32_t(object, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
+        amxd_object_t* obj11r = amxd_object_findf(object, "IEEE80211r");
+        amxd_trans_select_object(&trans, obj11r);
+        amxd_trans_set_cstring_t(&trans, "NASIdentifier", pAP->NASIdentifier);
+        amxd_trans_set_cstring_t(&trans, "R0KHKey", pAP->R0KHKey);
 
         /** Security part */
-        /** 'ModesSupported' Comma separated list of strings. Inicates
-         *  which security modes this AccessPoint instance is capable
-         *  of supporting. */
-        swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pAP->secModesSupported);
 
-        amxd_object_set_cstring_t(secObj, "ModesSupported", TBuf);
+        amxd_trans_select_object(&trans, secObj);
+
+        swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pAP->secModesSupported);
+        amxd_trans_set_cstring_t(&trans, "ModesSupported", TBuf);
 
         swl_security_apModeMaskToString(TBuf, sizeof(TBuf), SWL_SECURITY_APMODEFMT_LEGACY, pAP->secModesAvailable);
+        amxd_trans_set_cstring_t(&trans, "ModesAvailable", TBuf);
+        amxd_trans_set_cstring_t(&trans, "ModeEnabled", swl_security_apModeToString(pAP->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
+        amxd_trans_set_cstring_t(&trans, "MFPConfig", swl_security_mfpModeToString(pAP->mfpConfig));
+        amxd_trans_set_int32_t(&trans, "SPPAmsdu", pAP->sppAmsdu);
 
-        amxd_object_set_cstring_t(secObj, "ModesAvailable", TBuf);
 
-        /** 'ModeEnabled' The value MUST be a member of the list
-         *  reported by the ModesSupported parameter. Indicates which
-         *  security mode is enabled. */
-        amxd_object_set_cstring_t(secObj, "ModeEnabled", swl_security_apModeToString(pAP->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
-        amxd_object_set_cstring_t(secObj, "MFPConfig", swl_security_mfpModeToString(pAP->mfpConfig));
-        amxd_object_set_int32_t(secObj, "SPPAmsdu", pAP->sppAmsdu);
-
-        /** 'WEPKey' A WEP key expressed as a hexadecimal string.
-         *  WEPKey is used only if ModeEnabled is set to WEP-64,
-         *  WEP-128 or WEP-128iv. A 5 byte WEPKey corresponds to
-         *  security mode WEP-64 and a 13 byte WEPKey cooresponds to
-         *  security mode WEP-128. */
-        if(isValidWEPKey(pAP->WEPKey)) {    // Don't change if key isn't valid!
-            amxd_object_set_cstring_t(secObj, "WEPKey", pAP->WEPKey);
+        if(isValidWEPKey(pAP->WEPKey)) {
+            amxd_trans_set_cstring_t(&trans, "WEPKey", pAP->WEPKey);
         }
 
-        /** 'PreSharedKey' A literal PreSharedKey (PSK) expressed as
-         *  a hexadecimal string. PresharedKey is only used if
-         *  ModeEnalbed is set to WPA/WPA2/WPA-WPA2-personal. If
-         *  KeyPassphrase is written, then PreSharedKey is immediatley
-         *  generated. The ACS SHOULD NOT set both the KeyPassphrase and
-         *  the PreSharedKey directly (the result of doing this is
-         *  undefined). When read this parameter returns an empty
-         *  string, regardless of the actual value. */
-        if(isValidPSKKey(pAP->preSharedKey)) {  // Don't change if key isn't valid!
-            amxd_object_set_cstring_t(secObj, "PreSharedKey", pAP->preSharedKey);
+        if(isValidPSKKey(pAP->preSharedKey)) {
+            amxd_trans_set_cstring_t(&trans, "PreSharedKey", pAP->preSharedKey);
         }
 
-        /** 'KeyPassphrase' A passhprase from which the PreSharedKey
-         *  is to be generated, for WPA/WPA2 or WPA-WPA2-Personal
-         *  security modes. If KeyPassphrase is written, then
-         *  PreSharedkey is immediatly generated. The ACS SHOULD NOT
-         *  set both the KeyPassphrase and the PreSharedKey directly
-         *  (The result of doing this is undefined). The key is
-         *  generated as specified by WPA. which use PBKDF2 from PKCS
-         *  #5: password-based Cryptography7 Specifiction Version
-         *  2.0. When read, this paramter returns an empty string,
-         *  regardless of the actual value. */
-        if(isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {     // Don't change if key isn't valid!
-            amxd_object_set_cstring_t(secObj, "KeyPassPhrase", pAP->keyPassPhrase);
+        if(isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
+            amxd_trans_set_cstring_t(&trans, "KeyPassPhrase", pAP->keyPassPhrase);
+            SAH_TRACEZ_ERROR(ME, "%s - SET %s", pAP->name, pAP->keyPassPhrase);
         }
 
-        if(isValidAESKey(pAP->saePassphrase, SAE_KEY_SIZE_LEN)) {     // Don't change if key isn't valid!
-            amxd_object_set_cstring_t(secObj, "SAEPassphrase", pAP->saePassphrase);
+        if(isValidAESKey(pAP->saePassphrase, SAE_KEY_SIZE_LEN)) {
+            amxd_trans_set_cstring_t(&trans, "SAEPassphrase", pAP->saePassphrase);
         }
 
-        /** 'EncryptionMode'  */
-        amxd_object_set_cstring_t(secObj, "EncryptionMode", cstr_AP_EncryptionMode[pAP->encryptionModeEnabled]);
-
-        /** 'RekeyingInterval' The interval (expressed in seconds) in
-         *  which the keys are re-generated. This is applicable to
-         *  WPA/WPA2 and Mixed modes in personal or Enterprise mode
-         *  (i.e. when ModeEnabled is set to a value other than Non
-         *  or WEP-64/128/128iv) */
-        amxd_object_set_uint32_t(secObj, "RekeyingInterval", pAP->rekeyingInterval);
-
-        amxd_object_set_cstring_t(secObj, "OWETransitionInterface", pAP->oweTransModeIntf);
-
-        amxd_object_set_uint32_t(secObj, "TransitionDisable", pAP->transitionDisable);
-        /** 'RadiusServerIPAddr' [IPAddress] The IP address of the
-         *  RADIUS server used for WLAN security. RadiusServerIPAddr
-         *  is only applicable when ModeEnabled is an Enterprise type
-         *  (WPA/WPA2/WPA-WPA2-Enterprise) */
-        amxd_object_set_cstring_t(secObj, "RadiusServerIPAddr", pAP->radiusServerIPAddr);
-
-        /** 'RadiusServerPort' The port number of the RADIUS server
-         *  used for WLAN security. RadiusServerPort is only
-         *  applicable when ModeEnabled is an Enterprise type
-         *  (WPA/WPA2/WPA-WPA2-Enterprise) */
-        amxd_object_set_uint32_t(secObj, "RadiusServerPort", pAP->radiusServerPort);
-
-        /** 'RadiusSecret' The secret used for handshaking with the
-         *  RADIUS server [RFC2865]. When read, this parameter
-         *  returns an empty string, regardless of the actual value. */
-        amxd_object_set_cstring_t(secObj, "RadiusSecret", pAP->radiusSecret);
-
-        amxd_object_set_int32_t(secObj, "RadiusDefaultSessionTimeout", pAP->radiusDefaultSessionTimeout);
-        amxd_object_set_cstring_t(secObj, "RadiusOwnIPAddress", pAP->radiusOwnIPAddress);
-        amxd_object_set_cstring_t(secObj, "RadiusNASIdentifier", pAP->radiusNASIdentifier);
-        amxd_object_set_cstring_t(secObj, "RadiusCalledStationId", pAP->radiusCalledStationId);
-        amxd_object_set_int32_t(secObj, "RadiusChargeableUserId", pAP->radiusChargeableUserId);
+        amxd_trans_set_cstring_t(&trans, "EncryptionMode", cstr_AP_EncryptionMode[pAP->encryptionModeEnabled]);
+        amxd_trans_set_uint32_t(&trans, "RekeyingInterval", pAP->rekeyingInterval);
+        amxd_trans_set_cstring_t(&trans, "OWETransitionInterface", pAP->oweTransModeIntf);
+        amxd_trans_set_uint32_t(&trans, "TransitionDisable", pAP->transitionDisable);
+        amxd_trans_set_cstring_t(&trans, "RadiusServerIPAddr", pAP->radiusServerIPAddr);
+        amxd_trans_set_uint32_t(&trans, "RadiusServerPort", pAP->radiusServerPort);
+        amxd_trans_set_cstring_t(&trans, "RadiusSecret", pAP->radiusSecret);
+        amxd_trans_set_int32_t(&trans, "RadiusDefaultSessionTimeout", pAP->radiusDefaultSessionTimeout);
+        amxd_trans_set_cstring_t(&trans, "RadiusOwnIPAddress", pAP->radiusOwnIPAddress);
+        amxd_trans_set_cstring_t(&trans, "RadiusNASIdentifier", pAP->radiusNASIdentifier);
+        amxd_trans_set_cstring_t(&trans, "RadiusCalledStationId", pAP->radiusCalledStationId);
+        amxd_trans_set_int32_t(&trans, "RadiusChargeableUserId", pAP->radiusChargeableUserId);
 
         /** WPS Part */
 
-        /** 'Enable' Enables or disables WPS functionality for this
-         *  accesspoint. */
-        if(wpsObj) {
+        if(wpsObj != NULL) {
             wpsObj->priv = &pAP->wpsSessionInfo;
         }
-        amxd_object_set_int32_t(wpsObj, "Enable", pAP->WPS_Enable);
-        amxd_object_set_cstring_t(wpsObj, "Status", cstr_AP_status[pAP->WPS_Status]);
-        amxd_object_set_cstring_t(wpsObj, "SelfPIN", g_wpsConst.DefaultPin);
 
-        /** 'ConfigMethodsSupported' Comma-separated list of strings.
-         *  Indicates WPS configuration methods supported by the
-         *  device. This parameter corresponds directly to the "Config
-         *  Methods" attribute of the WPS specification [WPSv1.0]. The
-         *  PushButton and PIN methods MUST be supported!!!
-         */
+        amxd_trans_select_object(&trans, wpsObj);
+
+        amxd_trans_set_int32_t(&trans, "Enable", pAP->WPS_Enable);
+        amxd_trans_set_cstring_t(&trans, "Status", cstr_AP_status[pAP->WPS_Status]);
+        amxd_trans_set_cstring_t(&trans, "SelfPIN", g_wpsConst.DefaultPin);
 
         wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsSupported);
 
-        amxd_object_set_cstring_t(wpsObj, "ConfigMethodsSupported", TBufStr.buffer);
-
-        /** 'ConfigMethodsEnabled' Comma-separated list of strings.
-         *  Each list item MUST be a member of the list reported by
-         *  the ConfigMethodsSupported parameter. Indicates WPS
-         *  configuration methods enabled on the device */
+        amxd_trans_set_cstring_t(&trans, "ConfigMethodsSupported", TBufStr.buffer);
         wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsEnabled);
 
-        amxd_object_set_cstring_t(wpsObj, "ConfigMethodsEnabled", TBufStr.buffer);
+        amxd_trans_set_cstring_t(&trans, "ConfigMethodsEnabled", TBufStr.buffer);
+        amxd_trans_set_int32_t(&trans, "Configured", pAP->WPS_Configured);
+        amxd_trans_set_cstring_t(&trans, "UUID", g_wpsConst.UUID);
 
-        /** 'Configured'
-         *  Indicates WPS that AP is in configured or unconfigured state
-         *  (Out Of the Box OOB mode)
-         */
-        amxd_object_set_int32_t(wpsObj, "Configured", pAP->WPS_Configured);
-
-        amxd_object_set_cstring_t(wpsObj, "UUID", g_wpsConst.UUID);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->name);
 
         amxc_string_clean(&TBufStr);
     } else {
@@ -2044,9 +1923,9 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
     ASSERT_NOT_NULL(pAD, SWL_RC_ERROR, ME, "%s: AssociatedDevice==null", pAP->alias);
 
-    uint32_t nextDevIndex = pAP->lastDevIndex + 1;
 
     if(pAD->object == NULL) {
+        uint32_t nextDevIndex = pAP->lastDevIndex + 1;
         SAH_TRACEZ_INFO(ME, "%s: Creating template object for mac %s (id %u)", pAP->name, pAD->Name, nextDevIndex);
         amxd_object_t* templateObject = amxd_object_get(pAP->pBus, "AssociatedDevice");
 
@@ -2095,24 +1974,10 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         amxd_trans_set_value(int32_t, &trans, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
         amxd_trans_set_value(cstring_t, &trans, "SignalStrengthByChain", TBuf);
         amxd_trans_set_value(int32_t, &trans, "SignalNoiseRatio", pAD->SignalNoiseRatio);
-        amxd_trans_set_value(uint32_t, &trans, "Retransmissions", pAD->Retransmissions);
-        amxd_trans_set_value(uint32_t, &trans, "Rx_Retransmissions", pAD->Rx_Retransmissions);
-        amxd_trans_set_value(uint32_t, &trans, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
-        amxd_trans_set_value(uint32_t, &trans, "Tx_Retransmissions", pAD->Tx_Retransmissions);
-        amxd_trans_set_value(uint32_t, &trans, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
         amxd_trans_set_value(bool, &trans, "Active", pAD->Active);
         amxd_trans_set_value(int32_t, &trans, "Noise", pAD->noise);
-        amxd_trans_set_value(uint32_t, &trans, "Inactive", pAD->Inactive);
-        amxd_trans_set_value(uint32_t, &trans, "RxPacketCount", pAD->RxPacketCount);
-        amxd_trans_set_value(uint32_t, &trans, "TxPacketCount", pAD->TxPacketCount);
-        amxd_trans_set_value(uint32_t, &trans, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
-        amxd_trans_set_value(uint32_t, &trans, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
-        amxd_trans_set_value(uint32_t, &trans, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
-        amxd_trans_set_value(uint32_t, &trans, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
 
-        amxd_trans_set_value(uint64_t, &trans, "RxBytes", pAD->RxBytes);
-        amxd_trans_set_value(uint64_t, &trans, "TxBytes", pAD->TxBytes);
-        amxd_trans_set_value(uint32_t, &trans, "TxErrors", pAD->TxFailures);
+
         amxd_trans_set_value(uint32_t, &trans, "UplinkMCS", pAD->UplinkMCS);
         amxd_trans_set_value(uint32_t, &trans, "UplinkBandwidth", pAD->UplinkBandwidth);
         amxd_trans_set_value(uint32_t, &trans, "UplinkShortGuard", pAD->UplinkShortGuard);
@@ -2141,16 +2006,12 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         char buffer[128] = {0};
         wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
         amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
-        amxd_trans_set_value(uint32_t, &trans, "ConnectionDuration", pAD->connectionDuration);
         swl_typeTimeMono_toTransParam(&trans, "LastStateChange", pAD->latestStateChangeTime);
         swl_typeTimeMono_toTransParam(&trans, "AssociationTime", pAD->associationTime);
         swl_typeTimeMono_toTransParam(&trans, "DisassociationTime", pAD->disassociationTime);
-        amxd_trans_set_value(bool, &trans, "PowerSave", pAD->powerSave);
         amxd_trans_set_value(cstring_t, &trans, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
         amxd_trans_set_value(uint32_t, &trans, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
         amxd_trans_set_value(uint32_t, &trans, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);
-        amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
-        amxd_trans_set_value(uint32_t, &trans, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 
         wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
         wld_ad_syncRrmCapabilities(&trans, &pAD->assocCaps);
@@ -2175,6 +2036,29 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         pAD->lastProbeCapUpdateTime = pAD->probeReqCaps.updateTime;
     }
 
+    // Update volatile parameters
+    amxd_object_set_value(uint64_t, object, "RxBytes", pAD->RxBytes);
+    amxd_object_set_value(uint64_t, object, "TxBytes", pAD->TxBytes);
+    amxd_object_set_value(uint32_t, object, "TxErrors", pAD->TxFailures);
+
+    amxd_object_set_value(uint32_t, object, "Retransmissions", pAD->Retransmissions);
+    amxd_object_set_value(uint32_t, object, "Rx_Retransmissions", pAD->Rx_Retransmissions);
+    amxd_object_set_value(uint32_t, object, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
+    amxd_object_set_value(uint32_t, object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
+    amxd_object_set_value(uint32_t, object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+    amxd_object_set_value(uint32_t, object, "Inactive", pAD->Inactive);
+    amxd_object_set_value(uint32_t, object, "RxPacketCount", pAD->RxPacketCount);
+    amxd_object_set_value(uint32_t, object, "TxPacketCount", pAD->TxPacketCount);
+    amxd_object_set_value(uint32_t, object, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
+    amxd_object_set_value(uint32_t, object, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
+    amxd_object_set_value(uint32_t, object, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
+    amxd_object_set_value(uint32_t, object, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
+
+    amxd_object_set_value(uint32_t, object, "ConnectionDuration", pAD->connectionDuration);
+    amxd_object_set_value(bool, object, "PowerSave", pAD->powerSave);
+
+    amxd_object_set_value(uint32_t, object, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
+    amxd_object_set_value(uint32_t, object, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 
     return SWL_RC_CONTINUE;
 }
@@ -2196,9 +2080,10 @@ void wld_vap_syncNrDev(T_AccessPoint* pAP) {
     amxd_trans_set_value(int32_t, &trans, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
     pAP->ActiveAssociatedDeviceNumberOfEntries = active;
     amxd_trans_set_value(int32_t, &trans, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
+
+    wld_rad_updateActiveDevices((T_Radio*) pAP->pRadio, &trans);
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->alias);
 
-    wld_rad_updateActiveDevices((T_Radio*) pAP->pRadio);
 }
 
 /* update the datamodel with the T_AccessPoint.AssociatedDevice[] */
@@ -2718,8 +2603,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("dbgAPFile", s_setDbgFile_pwf),
                   SWLA_DM_PARAM_HDLR("MACFilterAddressList", wld_apMacFilter_setAddressList_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setApEnable_pwf),
-                  ),
-              .instAddedCb = s_addApInst_oaf, );
+                  ), );
 
 void _wld_ap_setConf_ocf(const char* const sig_name,
                          const amxc_var_t* const data,

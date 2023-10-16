@@ -345,6 +345,9 @@ static amxd_status_t s_getDeviceStats(amxd_object_t* obj,
     ASSERTS_NOT_EQUALS(rc, SWL_RC_NOT_IMPLEMENTED, amxd_status_ok, ME, "%s: staMon not supported", pRad->Name);
     ASSERT_FALSE(rc < SWL_RC_OK, amxd_status_unknown_error, ME, "%s: Update monitor stats failed", pRad->Name);
 
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(pRad->pBus, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pRad->Name);
+
     amxd_object_t* object = amxd_object_get(obj, path);
     amxd_object_for_each(instance, it, object) {
         amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
@@ -355,17 +358,32 @@ static amxd_status_t s_getDeviceStats(amxd_object_t* obj,
         if(!pMD) {
             continue;
         }
-        amxd_object_set_int32_t(instance, "SignalStrength", pMD->SignalStrength);
-        amxd_object_set_uint8_t(instance, "Channel", pMD->channel);
-        amxd_object_set_uint8_t(instance, "OperatingClass", pMD->operatingClass);
-        swl_typeTimeMono_toObjectParam(instance, "TimeStamp", pMD->TimeStamp);
+        amxd_trans_select_object(&trans, instance);
 
+        amxd_trans_set_int32_t(&trans, "SignalStrength", pMD->SignalStrength);
+        amxd_trans_set_uint8_t(&trans, "Channel", pMD->channel);
+        amxd_trans_set_uint8_t(&trans, "OperatingClass", pMD->operatingClass);
+        swl_typeTimeMono_toTransParam(&trans, "TimeStamp", pMD->TimeStamp);
+    }
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_unknown_error, ME, "%s : trans apply failure", pRad->Name);
+
+    amxd_object_for_each(instance, it, object) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        if(instance == NULL) {
+            continue;
+        }
+        wld_nasta_t* pMD = (wld_nasta_t*) instance->priv;
+        if(!pMD) {
+            continue;
+        }
         amxc_var_t tmpVar;
         amxc_var_init(&tmpVar);
         amxd_object_get_params(instance, &tmpVar, amxd_dm_access_private);
         amxc_var_add_new_amxc_htable_t(retval, &tmpVar.data.vm);
         amxc_var_clean(&tmpVar);
     }
+
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;

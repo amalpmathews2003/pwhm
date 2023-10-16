@@ -76,7 +76,6 @@ T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj);
 int wld_ap_initializeVendor(T_Radio* pR, T_AccessPoint* pAP, T_SSID* pSSID);
 int wld_ap_init(T_AccessPoint* pAP);
 void wld_ap_destroy(T_AccessPoint* pAP);
-int vap_libsync_status_cb(T_AccessPoint* pAP);
 
 void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set);
 void SetAPDefaults(T_AccessPoint* pAP, int idx);

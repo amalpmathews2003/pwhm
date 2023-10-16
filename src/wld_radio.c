@@ -101,6 +101,7 @@
 #include "wld_linuxIfUtils.h"
 #include "wld_dm_trans.h"
 #include <swl/swl_base64.h>
+#include "swla/swla_trans.h"
 
 #define GETENV(x, var) \
     { \
@@ -294,8 +295,9 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
 
     T_Radio* pR = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pR, , ME, "No radio mapped");
-    int32_t channel = amxc_var_dyncast(int32_t, newValue);
+    swl_channel_t channel = amxc_var_dyncast(int32_t, newValue);
     ASSERTI_NOT_EQUALS(channel, pR->channel, , ME, "%s: Same channel %d", pR->Name, channel);
+
 
     SAH_TRACEZ_INFO(ME, "%s: set RadioChannel %d", pR->Name, channel);
     SAH_TRACEZ_INFO(ME, "STATUS %d %d %d",
@@ -319,8 +321,9 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
         /* Disable autochannel if valid channel and first commit has been done
          * I.e. use case where user writes channel manually.
          */
-        if(!pR->autoChannelEnable && wld_rad_firstCommitFinished(pR)) {
-            amxd_object_set_bool(pR->pBus, "AutoChannelEnable", 0);
+        if(pR->autoChannelEnable && wld_rad_firstCommitFinished(pR)) {
+            SAH_TRACEZ_WARNING(ME, "%s: disable autochan from chan config", pR->Name);
+            swl_typeUInt8_commitObjectParam(pR->pBus, "AutoChannelEnable", 0);
         }
 
         pR->channelChangeReason = CHAN_REASON_MANUAL;
@@ -328,11 +331,12 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
         swl_rc_ne retcode = wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
         if(retcode < SWL_RC_OK) {
             /* If target channel is not valid, reset channel entry */
-            wld_rad_chan_update_model(pR);
+            wld_rad_chan_update_model(pR, NULL);
         }
 
         wld_autoCommitMgr_notifyRadEdit(pR);
     } else {
+        SAH_TRACEZ_WARNING(ME, "%s: enable autochan from chan config", pR->Name);
         swl_typeUInt8_commitObjectParam(pR->pBus, "AutoChannelEnable", 1);
     }
 
@@ -437,8 +441,14 @@ static void s_setAutoChannelEnable_pwf(void* priv _UNUSED, amxd_object_t* object
                     pRad->autoChannelSetByUser,
                     newAutochan);
 
-    int ret = pRad->pFA->mfn_wrad_autochannelenable(pRad, newAutochan, SET);
+    swl_rc_ne ret = pRad->pFA->mfn_wrad_autochannelenable(pRad, newAutochan, SET);
     wld_autoCommitMgr_notifyRadEdit(pRad);
+
+    if(ret == SWL_RC_NOT_IMPLEMENTED) {
+        pRad->autoChannelEnable = newAutochan;
+    }
+
+
     SAH_TRACEZ_INFO(ME, "%s: ACS STATUS POST %d %d %d : ret %d",
                     pRad->Name,
                     pRad->channel,
@@ -539,7 +549,7 @@ static void checkRadioEventLogLimitReached (T_Radio* pR) {
     amxd_object_t* chld = amxc_llist_it_get_data(it, amxd_object_t, it);
     while(pR->dfsEventNbr > pR->dfsEventLogLimit) {
         ASSERT_NOT_NULL(chld, , ME, "NULL");
-        amxd_object_delete(&chld);
+        swl_object_delInstWithTransOnLocalDm(chld);
         amxc_llist_it_t* it = amxd_object_first_instance(chld);
         chld = amxc_llist_it_get_data(it, amxd_object_t, it);
         pR->dfsEventNbr--;
@@ -553,21 +563,28 @@ bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt) {
 
     amxd_object_t* event = amxd_object_findf(pR->pBus, "DFS.Event");
     ASSERT_NOT_NULL(event, false, ME, "NULL");
-    amxd_object_t* evtInstance;
-    amxd_object_new_instance(&evtInstance, event, NULL, 0, NULL);
 
-    swl_time_objectParamSetReal(evtInstance, "TimeStamp", evt->timestamp);
 
-    amxd_object_set_uint32_t(evtInstance, "Channel", evt->channel);
-    amxd_object_set_cstring_t(evtInstance, "Bandwidth", Rad_SupBW[evt->bandwidth]);
-    amxd_object_set_cstring_t(evtInstance, "RadarZone", Rad_RadarZones[evt->radarZone]);
-    amxd_object_set_uint8_t(evtInstance, "RadarIndex", evt->radarIndex);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(event, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pR->Name);
 
-    amxd_object_set_uint32_t(evtInstance, "NewChannel", pR->channel);
-    amxd_object_set_cstring_t(evtInstance, "NewBandwidth", swl_bandwidth_str[pR->runningChannelBandwidth]);
+    amxd_trans_add_inst(&trans, 0, NULL);
 
-    swl_typeUInt8_arrayObjectParamSetChar(evtInstance, "DFSRadarDetectionList",
-                                          pR->lastRadarChannelsAdded, pR->nrLastRadarChannelsAdded);
+    swl_typeTimeReal_toTransParam(&trans, "TimeStamp", evt->timestamp);
+
+    amxd_trans_set_uint32_t(&trans, "Channel", evt->channel);
+    amxd_trans_set_cstring_t(&trans, "Bandwidth", Rad_SupBW[evt->bandwidth]);
+    amxd_trans_set_cstring_t(&trans, "RadarZone", Rad_RadarZones[evt->radarZone]);
+    amxd_trans_set_uint8_t(&trans, "RadarIndex", evt->radarIndex);
+
+    amxd_trans_set_uint32_t(&trans, "NewChannel", pR->channel);
+    amxd_trans_set_cstring_t(&trans, "NewBandwidth", swl_bandwidth_str[pR->runningChannelBandwidth]);
+
+    swl_typeUInt8_arrayTransParamSetChar(&trans, "DFSRadarDetectionList",
+                                         pR->lastRadarChannelsAdded, pR->nrLastRadarChannelsAdded);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "%s : trans apply failure", pR->Name);
+
 
     pR->dfsEventNbr++;
     checkRadioEventLogLimitReached(pR);
@@ -1501,30 +1518,19 @@ T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn) {
     return (T_Radio*) inst->priv;
 }
 
-/**
- * All Radio parameters that must be updated after a commit are
- * handled in this function.
- */
-int radio_libsync_status_cb(T_Radio* rad) {
+void wld_radio_updateAntenna(T_Radio* pRad, amxd_trans_t* trans) {
+    amxd_object_t* hwObject = amxd_object_findf(pRad->pBus, "DriverStatus");
 
-    /* Update NEMO for this... */
-    amxd_object_set_cstring_t(rad->pBus, "Status", Rad_SupStatus[rad->status]);
-    /* Update also the Channel & AutoChannel value */
-    if(rad->channel) {  // Don't set if channel is 0 (== autochannel)
-        amxd_object_set_int32_t(rad->pBus, "Channel", rad->channel);
-    }
-    amxd_object_set_int32_t(rad->pBus, "AutoChannelEnable", rad->autoChannelSetByUser);
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, hwObject);
+    ASSERT_NOT_NULL(targetTrans, , ME, "NULL");
 
-    return 0;
-}
+    amxd_trans_set_int32_t(targetTrans, "NrTxAntenna", pRad->nrAntenna[COM_DIR_TRANSMIT]);
+    amxd_trans_set_int32_t(targetTrans, "NrRxAntenna", pRad->nrAntenna[COM_DIR_RECEIVE]);
+    amxd_trans_set_int32_t(targetTrans, "NrActiveTxAntenna", pRad->nrActiveAntenna[COM_DIR_TRANSMIT]);
+    amxd_trans_set_int32_t(targetTrans, "NrActiveRxAntenna", pRad->nrActiveAntenna[COM_DIR_RECEIVE]);
 
-void wld_radio_updateAntenna(T_Radio* pRad) {
-    amxd_object_t* object = pRad->pBus;
-    amxd_object_t* hwObject = amxd_object_findf(object, "DriverStatus");
-    amxd_object_set_int32_t(hwObject, "NrTxAntenna", pRad->nrAntenna[COM_DIR_TRANSMIT]);
-    amxd_object_set_int32_t(hwObject, "NrRxAntenna", pRad->nrAntenna[COM_DIR_RECEIVE]);
-    amxd_object_set_int32_t(hwObject, "NrActiveTxAntenna", pRad->nrActiveAntenna[COM_DIR_TRANSMIT]);
-    amxd_object_set_int32_t(hwObject, "NrActiveRxAntenna", pRad->nrActiveAntenna[COM_DIR_RECEIVE]);
+    swla_trans_finalize(&tmpTrans, NULL);
 }
 
 /**
@@ -1583,7 +1589,7 @@ static void s_listRadioFeatures(T_Radio* pRad, amxc_var_t* map) {
 }
 
 void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
-    int idx;
+    //int idx;
     char ValBuf[32];
     char TBuf[320];
     char objPath[128];
@@ -1604,44 +1610,31 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         char macStr[SWL_MAC_CHAR_LEN] = {0};
         SWL_MAC_BIN_TO_CHAR(macStr, pR->MACAddr);
 
-        amxd_object_set_cstring_t(object, "VendorPCISig", pR->vendor->name);
-        //datamodel is ready for internal updates, when it is writable (i.e no ongoing transactions)
-        pR->hasDmReady = (amxd_object_set_cstring_t(object, "Name", pR->Name) == amxd_status_ok);
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pR->Name);
 
-        amxd_object_set_cstring_t(object, "BaseMACAddress", macStr);
-        /* 'Status' The current operational state of the radio */
-        amxd_object_set_cstring_t(object, "Status", Rad_SupStatus[pR->status]);
-        /* 'Index' contains the system interface index for this
-         *  device (ip l) */
-        amxd_object_set_int32_t(object, "Index", pR->index);
-        /* 'MaxBitRate' The maximum PH bit rate supported by this
-         *  interface (expressed in Mbps). */
 
-        amxd_object_set_int32_t(object, "MaxBitRate", pR->maxBitRate);
-        /* 'SupportedFrequencyBands' Comma-separated list of string.
-         *  List items indicate the frequency bands at which the radio
-         *  can operate. */
-        swl_conv_objectParamSetMask(object, "SupportedFrequencyBands", pR->supportedFrequencyBands, swl_freqBandExt_str, SWL_FREQ_BAND_MAX);
+        amxd_trans_set_cstring_t(&trans, "VendorPCISig", pR->vendor->name);
+        amxd_trans_set_cstring_t(&trans, "Name", pR->Name);
 
-        /* 'OperatingFrequencyBand' The value MUST be a member of
-         *  the list reported by the SupportedFrequencyBands
-         *  parameter. Indicates the frequency band at which the
-         *  radio is operating. */
-        amxd_object_set_cstring_t(object, "OperatingFrequencyBand", Rad_SupFreqBands[pR->operatingFrequencyBand]);
+        amxd_trans_set_cstring_t(&trans, "BaseMACAddress", macStr);
+        amxd_trans_set_cstring_t(&trans, "Status", Rad_SupStatus[pR->status]);
+        amxd_trans_set_int32_t(&trans, "Index", pR->index);
 
-        /* 'SupportedStandards' Comma separated list of strings.
-         *  List items indicate which IEEE802.11 standards this Radio
-         *  instance can support simultaneously, in the frequency
-         *  band specified by OpertatingFrequencyBand. (CHECK THIS -
-         *  FIX ME) */
+        amxd_trans_set_int32_t(&trans, "MaxBitRate", pR->maxBitRate);
+
+        swl_conv_transParamSetMask(&trans, "SupportedFrequencyBands", pR->supportedFrequencyBands, swl_freqBandExt_str, SWL_FREQ_BAND_MAX);
+
+        amxd_trans_set_cstring_t(&trans, "OperatingFrequencyBand", Rad_SupFreqBands[pR->operatingFrequencyBand]);
+
         swl_radStd_supportedStandardsToChar(TBuf, sizeof(TBuf), pR->supportedStandards, pR->operatingStandardsFormat);
-        amxd_object_set_cstring_t(object, "SupportedStandards", TBuf);
+        amxd_trans_set_cstring_t(&trans, "SupportedStandards", TBuf);
 
-        swl_conv_objectParamSetMask(object, "HeCapsSupported", pR->heCapsSupported, g_str_wld_he_cap, HE_CAP_MAX);
+        swl_conv_transParamSetMask(&trans, "HeCapsSupported", pR->heCapsSupported, g_str_wld_he_cap, HE_CAP_MAX);
 
-        swl_conv_objectParamSetMask(object, "TxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_TRANSMIT], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
+        swl_conv_transParamSetMask(&trans, "TxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_TRANSMIT], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
 
-        swl_conv_objectParamSetMask(object, "RxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_RECEIVE], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
+        swl_conv_transParamSetMask(&trans, "RxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_RECEIVE], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
 
         ssize_t outputSize = 0;
         //HT capabilities
@@ -1650,33 +1643,33 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         } else {
-            amxd_object_set_cstring_t(object, "HTCapabilities", capBuffer);
+            amxd_trans_set_cstring_t(&trans, "HTCapabilities", capBuffer);
         }
         outputSize = swl_80211_htCapMaskToChar(capBuffer, sizeof(capBuffer), pR->htCapabilities);
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         }
-        amxd_object_set_cstring_t(object, "RadCapabilitiesHTStr", capBuffer);
+        amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHTStr", capBuffer);
 
         //VHT capabilities
         outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->vhtCapabilities, sizeof(pR->vhtCapabilities));
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         } else {
-            amxd_object_set_cstring_t(object, "VHTCapabilities", capBuffer);
+            amxd_trans_set_cstring_t(&trans, "VHTCapabilities", capBuffer);
         }
         outputSize = swl_80211_vhtCapMaskToChar(capBuffer, sizeof(capBuffer), pR->vhtCapabilities);
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         }
-        amxd_object_set_cstring_t(object, "RadCapabilitiesVHTStr", capBuffer);
+        amxd_trans_set_cstring_t(&trans, "RadCapabilitiesVHTStr", capBuffer);
 
         //HE Physical Capabilities
         outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->hePhyCapabilities, sizeof(pR->hePhyCapabilities));
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         } else {
-            amxd_object_set_cstring_t(object, "HECapabilities", capBuffer);
+            amxd_trans_set_cstring_t(&trans, "HECapabilities", capBuffer);
         }
         // pR->hePhyCapabilities.cap is 10 bytes, the last 2 bytes are empty, thus we can just read the first 8 bytes
         swl_80211_hePhyCapInfo_m heCap = 0;
@@ -1685,151 +1678,83 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         }
-        amxd_object_set_cstring_t(object, "RadCapabilitiesHePhysStr", capBuffer);
+        amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHePhysStr", capBuffer);
 
 
-        amxd_object_set_cstring_t(object, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));
+        amxd_trans_set_cstring_t(&trans, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));
 
-
-        /* 'OperatingStandards' Comma-separated list of strings.
-         *  Each list item MUST be a member of the list reported by
-         *  the SupportedStandards parameter. List items inidcate
-         *  which IEEE 802.11 standard this radio instance is
-         *  configured for. */
         swl_radStd_toChar(TBuf, sizeof(TBuf), pR->operatingStandards, pR->operatingStandardsFormat, pR->supportedStandards);
-        amxd_object_set_cstring_t(object, "OperatingStandards", TBuf);
-        /* 'PossibleChannels' Comma-separated list (maximum length
-         *  1024) of strings. List items represent possible radio
-         *  channels for the wireless standard (a,b,g,n) and the
-         *  regulatory domain. */
-        wld_rad_write_possible_channels(pR);
-        /* 'Channel' The current radio channel used by the
-         *  connection. To request automatic channel selection, set
-         *  AutoChannelEnable to TRUE. Whenever AutoChannelEnale is
-         *  true, the value of the channel parameter MUST be the
-         *  channel selected by the automatic channel selection
-         *  procedure. The channel is valid when not 0. (0==auto channel) */
+        amxd_trans_set_cstring_t(&trans, "OperatingStandards", TBuf);
+
+        swl_conv_uint8ArrayToChar(TBuf, sizeof(TBuf), pR->possibleChannels, pR->nrPossibleChannels);
+        amxd_trans_set_value(cstring_t, &trans, "PossibleChannels", TBuf);
+        amxd_trans_set_value(cstring_t, &trans, "MaxChannelBandwidth", Rad_SupBW[pR->maxChannelBandwidth]);
+
         if(pR->channel) {
-            amxd_object_set_int32_t(object, "Channel", pR->channel);
-            wld_rad_chan_update_model(pR);
+            amxd_trans_set_int32_t(&trans, "Channel", pR->channel);
+            wld_rad_chan_update_model(pR, &trans);
             wld_rad_updateOperatingClass(pR);
         }
 
-        amxd_object_set_uint32_t(object, "MaxSupportedSSIDs", pR->maxNrHwBss);
-
-        /* 'AutoChannelSupported' Indicates whether automatic
-         *  channel selection is supported by this  radio. IF false,
-         *  then AutoChannelEnable MUST be FALSE! */
-        amxd_object_set_int32_t(object, "AutoChannelSupported", pR->autoChannelSupported);
-        /* 'AutoChannelEnable' Enable or disable automatic channel
-         *  selection. */
-        // Functions that have a "write-with" in the odl file don't need this!
-        // set_OBJ_ParameterHelper(TPH_INT32 , object, "AutoChannelEnable", &pR->autoChannelSetByUser);
-        /* 'AutoChannelRefreshPeriod' The time period in seconds
-        *  between two consecutive automatic channel selections. A
-        *  value of 0 means that the automatic channel selection is
-        *  done alnly at boot time. (config of the interface) */
-        amxd_object_set_int32_t(object, "AutoChannelRefreshPeriod", pR->autoChannelRefreshPeriod);
-        /* 'OperatingChannelBandwidth' The channel bandwidth
-         *  applicable to 802.11n specifications only. */
-        amxd_object_set_cstring_t(object, "OperatingChannelBandwidth", Rad_SupBW[pR->operatingChannelBandwidth]);
-        amxd_object_set_cstring_t(object, "MaxChannelBandwidth", Rad_SupBW[pR->maxChannelBandwidth]);
-        amxd_object_set_cstring_t(object, "AutoBandwidthSelectMode", wld_rad_autoBwSelectMode_str[pR->autoBwSelectMode]);
-        /* 'Obss Coexistence'. Indicates whether obss coexistence is currently enabled. When enabled,
-         *  this is allows the change of bandwidth from 40 to 20Mhz in case of obss interference.
-         *  Only applicable on 2.4GHz when configured on 40MHz bandwidth. */
-        amxd_object_set_bool(object, "ObssCoexistenceEnable", pR->obssCoexistenceEnabled);
-        /* 'ExtensionChannel' The secondary extension channel
-         *  position, applicable when operating in wide channel mode
-         *  (i.e. when OperatingChannelBandwidth is set to 40MHz or
-         *  Auto). */
-        amxd_object_set_cstring_t(object, "ExtensionChannel", Rad_SupCExt[pR->extensionChannel]);
-        /* 'GuardInterval' The guard interval value between OFDM
-         *  symbols. */
-        amxd_object_set_cstring_t(object, "GuardInterval", Rad_SupGI[pR->guardInterval]);
-        //amxd_object_set_int32_t(object,"MCS", pR->MCS);
-        /* 'MCS' The Modulation Coding Scheme index. Values from 0
-         *  to 15 MUST be supported. A value 0f -1 indicates
-         *  automatic selection of the MCS index. (This is CHINEES
-         *  FOR ME! CHECK!!!!) */
-        amxd_object_set_int32_t(object, "MCS", pR->MCS);
-        /* 'TransmitPowerSupported' Comma-separated list of
-         *  integers. List items represent supported transmit power
-         *  levels a percentage f full power. */
+        amxd_trans_set_uint32_t(&trans, "MaxSupportedSSIDs", pR->maxNrHwBss);
+        amxd_trans_set_int32_t(&trans, "AutoChannelSupported", pR->autoChannelSupported);
+        amxd_trans_set_int32_t(&trans, "AutoChannelRefreshPeriod", pR->autoChannelRefreshPeriod);
+        amxd_trans_set_cstring_t(&trans, "OperatingChannelBandwidth", Rad_SupBW[pR->operatingChannelBandwidth]);
+        amxd_trans_set_cstring_t(&trans, "MaxChannelBandwidth", Rad_SupBW[pR->maxChannelBandwidth]);
+        amxd_trans_set_cstring_t(&trans, "AutoBandwidthSelectMode", wld_rad_autoBwSelectMode_str[pR->autoBwSelectMode]);
+        amxd_trans_set_bool(&trans, "ObssCoexistenceEnable", pR->obssCoexistenceEnabled);
+        amxd_trans_set_cstring_t(&trans, "ExtensionChannel", Rad_SupCExt[pR->extensionChannel]);
+        amxd_trans_set_cstring_t(&trans, "GuardInterval", Rad_SupGI[pR->guardInterval]);
+        amxd_trans_set_int32_t(&trans, "MCS", pR->MCS);
         TBuf[0] = '\0';
-        for(idx = 0; !idx || pR->transmitPowerSupported[idx]; idx++) {
+        for(uint32_t idx = 0; !idx || pR->transmitPowerSupported[idx]; idx++) {
             swl_strlst_catFormat(TBuf, sizeof(TBuf), ",", "%d", pR->transmitPowerSupported[idx]);
         }
-        amxd_object_set_cstring_t(object, "TransmitPowerSupported", TBuf);
-        /* 'TransmitPower' Indicates the current transmit power
-         *  level as a percentage of full power. The value MUST be
-         *  one of the values reporte by the TransmitPowerSupported
-         *  parameter. A value of -1 indicates auto mode (automatic
-         *  decision by CPE). */
-        //bitchk = pR->pFA->mfn_wrad_txpow(pR,pR->transmitPower,GET);
-        //set_OBJ_ParameterHelper(TPH_INT32, object, "TransmitPower", &bitchk);
+        amxd_trans_set_cstring_t(&trans, "TransmitPowerSupported", TBuf);
+        amxd_trans_set_uint8_t(&trans, "RetryLimit", pR->retryLimit);
+        amxd_trans_set_uint8_t(&trans, "LongRetryLimit", pR->longRetryLimit);
+        amxd_trans_set_bool(&trans, "IEEE80211hSupported", pR->IEEE80211hSupported);
+        amxd_trans_set_bool(&trans, "IEEE80211hEnabled", pR->setRadio80211hEnable);
+        amxd_trans_set_bool(&trans, "IEEE80211kSupported", pR->IEEE80211kSupported);
+        amxd_trans_set_bool(&trans, "IEEE80211rSupported", pR->IEEE80211rSupported);
+        swl_conv_transParamSetMask(&trans, "MultiAPTypesSupported", pR->m_multiAPTypesSupported, cstr_MultiAPType, MULTIAP_MAX);
 
-        /** 'Retry Limit'
-         * The maximum number of retransmissions of a short packet
-         * i.e. a packet that is no longer than the RTSThreshold.
-         * This corresponds to IEEE 802.11 parameter dot11ShortRetryLimit [802.11-2012]. */
-        amxd_object_set_uint8_t(object, "RetryLimit", pR->retryLimit);
-        /**
-         * Long Retry Limit
-         * This indicates the maximum number of transmission attempts of a frame,
-         * the length of which is greater than RTSThreshold,
-         * that will be made before a failure condition is indicated.
-         * This parameter is based on dot11LongRetryLimit from [802.11-2012]. */
-        amxd_object_set_uint8_t(object, "LongRetryLimit", pR->longRetryLimit);
-        /* 'IEEE80211hSupported' Indicates whether IEEE 802.11h
-         *  functionality is supported by this radio. The value can
-         *  be true obnly if the 802.11a or 802.11n @5GHz standard is
-         *  supported. (i.e. SupportedFrequencyBands includes 5GHz
-         *  and SupportedStandards include a or n. */
-        amxd_object_set_bool(object, "IEEE80211hSupported", pR->IEEE80211hSupported);
-        /* 'IEEE80211hEnabled' Indicates whether IEEE 802.11h
-         *  functionlaity is enabled on this radio. */
-        amxd_object_set_bool(object, "IEEE80211hEnabled", pR->setRadio80211hEnable);
 
-        amxd_object_set_bool(object, "IEEE80211kSupported", pR->IEEE80211kSupported);
 
-        amxd_object_set_bool(object, "IEEE80211rSupported", pR->IEEE80211rSupported);
 
-        swl_conv_objectParamSetMask(object, "MultiAPTypesSupported", pR->m_multiAPTypesSupported, cstr_MultiAPType, MULTIAP_MAX);
-
-        /* 'RegulatoryDomain' The 802.11d Regulatory Domain. First
-         *  two octects are two-character country code. The third
-         *  octet is either ' ' (all environments, 'O' outside or 'I'
-         *  Inside possible parameters [A..Z][A..Z][ OI] */
         TBuf[0] = '\0';
         pR->pFA->mfn_wrad_regdomain(pR, TBuf, sizeof(TBuf), GET);
-        amxd_object_set_cstring_t(object, "RegulatoryDomain", TBuf);
+        amxd_trans_set_cstring_t(&trans, "RegulatoryDomain", TBuf);
 
-        amxd_object_set_bool(object, "MultiUserMIMOSupported", pR->multiUserMIMOSupported);
-        amxd_object_set_bool(object, "ImplicitBeamFormingSupported", pR->implicitBeamFormingSupported);
-        amxd_object_set_bool(object, "ImplicitBeamFormingEnabled", pR->implicitBeamFormingEnabled);
-        amxd_object_set_bool(object, "ExplicitBeamFormingSupported", pR->explicitBeamFormingSupported);
-        amxd_object_set_bool(object, "ExplicitBeamFormingEnabled", pR->explicitBeamFormingEnabled);
-        amxd_object_set_cstring_t(object, "RIFSEnabled", Rad_RIFS_MODE[pR->RIFSEnabled]);
-        amxd_object_set_bool(object, "AirtimeFairnessEnabled", pR->airtimeFairnessEnabled);
-        amxd_object_set_uint32_t(object, "DFSChannelChangeEventCounter", pR->DFSChannelChangeEventCounter);
-        swl_time_objectParamSetReal(object, "DFSChannelChangeEventTimestamp", pR->DFSChannelChangeEventTimestamp);
+        amxd_trans_set_bool(&trans, "MultiUserMIMOSupported", pR->multiUserMIMOSupported);
+        amxd_trans_set_bool(&trans, "ImplicitBeamFormingSupported", pR->implicitBeamFormingSupported);
+        amxd_trans_set_bool(&trans, "ImplicitBeamFormingEnabled", pR->implicitBeamFormingEnabled);
+        amxd_trans_set_bool(&trans, "ExplicitBeamFormingSupported", pR->explicitBeamFormingSupported);
+        amxd_trans_set_bool(&trans, "ExplicitBeamFormingEnabled", pR->explicitBeamFormingEnabled);
+        amxd_trans_set_cstring_t(&trans, "RIFSEnabled", Rad_RIFS_MODE[pR->RIFSEnabled]);
+        amxd_trans_set_bool(&trans, "AirtimeFairnessEnabled", pR->airtimeFairnessEnabled);
+        amxd_trans_set_uint32_t(&trans, "DFSChannelChangeEventCounter", pR->DFSChannelChangeEventCounter);
+        swl_type_toTransParam(&gtSwl_type_timeReal, &trans, "DFSChannelChangeEventTimestamp", &pR->DFSChannelChangeEventTimestamp);
         wld_chanmgt_saveChanges(pR);
+
 
         /* 'IEEE80211_Caps' S@H, shows the supported driver capabilities.
            When a VAP is attached, this field is update so don't fake it!
          */
         TBuf[0] = '\0';
         pR->pFA->mfn_misc_has_support(pR, NULL, TBuf, sizeof(TBuf)); /* Get fake value we need a VAP */
-        amxd_object_set_cstring_t(object, "IEEE80211_Caps", TBuf);
+        amxd_trans_set_cstring_t(&trans, "IEEE80211_Caps", TBuf);
 
-        /* 'FirmwareVersion' The radio’s WiFi firmware version */
-        amxd_object_set_cstring_t(object, "FirmwareVersion", pR->firmwareVersion);
+        amxd_trans_set_cstring_t(&trans, "FirmwareVersion", pR->firmwareVersion);
+        wld_rad_update_operating_standard(pR, &trans);
 
-        wld_rad_parse_cap(pR);
-        wld_rad_update_operating_standard(pR);
-        wld_radio_updateAntenna(pR);
-        wld_bgdfs_update(pR);
+        wld_rad_updateCapabilities(pR, &trans);
+        wld_radio_updateAntenna(pR, &trans);
+        wld_bgdfs_update(pR, &trans);
+
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+        // When transaction successfully ends, it means DM is ready.
+        pR->hasDmReady = true;
     } else {
         int32_t tmp_int32 = 0;
         bool tmp_bool = false;
@@ -1986,21 +1911,29 @@ void syncData_VendorWPS2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
     /* WPS stuff */
     if((set & SET)) {
         ASSERT_NOT_NULL(object, , ME, "NULL");
-        amxd_object_set_cstring_t(object, "DefaultPin", pCWPS->DefaultPin);
-        amxd_object_set_cstring_t(object, "DevName", pCWPS->DevName);
-        amxd_object_set_cstring_t(object, "OUI", pCWPS->OUI);
-        amxd_object_set_cstring_t(object, "FriendlyName", pCWPS->FriendlyName);
-        amxd_object_set_cstring_t(object, "Manufacturer", pCWPS->Manufacturer);
-        amxd_object_set_cstring_t(object, "ManufacturerUrl", pCWPS->ManufacturerUrl);
-        amxd_object_set_cstring_t(object, "ModelDescription", pCWPS->ModelDescription);
-        amxd_object_set_cstring_t(object, "ModelName", pCWPS->ModelName);
-        amxd_object_set_cstring_t(object, "ModelNumber", pCWPS->ModelNumber);
-        amxd_object_set_cstring_t(object, "ModelUrl", pCWPS->ModelUrl);
-        amxd_object_set_cstring_t(object, "OsVersion", pCWPS->OsVersion);
-        amxd_object_set_cstring_t(object, "SerialNumber", pCWPS->SerialNumber);
-        amxd_object_set_cstring_t(object, "UUID", pCWPS->UUID);
-        amxd_object_set_int32_t(object, "wpsSupVer", pCWPS->wpsSupVer);
-        amxd_object_set_int32_t(object, "wpsUUIDShared", pCWPS->wpsUUIDShared);
+
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pR->Name);
+
+        amxd_trans_set_cstring_t(&trans, "DefaultPin", pCWPS->DefaultPin);
+        amxd_trans_set_cstring_t(&trans, "DevName", pCWPS->DevName);
+        amxd_trans_set_cstring_t(&trans, "OUI", pCWPS->OUI);
+        amxd_trans_set_cstring_t(&trans, "FriendlyName", pCWPS->FriendlyName);
+        amxd_trans_set_cstring_t(&trans, "Manufacturer", pCWPS->Manufacturer);
+        amxd_trans_set_cstring_t(&trans, "ManufacturerUrl", pCWPS->ManufacturerUrl);
+        amxd_trans_set_cstring_t(&trans, "ModelDescription", pCWPS->ModelDescription);
+        amxd_trans_set_cstring_t(&trans, "ModelName", pCWPS->ModelName);
+        amxd_trans_set_cstring_t(&trans, "ModelNumber", pCWPS->ModelNumber);
+        amxd_trans_set_cstring_t(&trans, "ModelUrl", pCWPS->ModelUrl);
+        amxd_trans_set_cstring_t(&trans, "OsVersion", pCWPS->OsVersion);
+        amxd_trans_set_cstring_t(&trans, "SerialNumber", pCWPS->SerialNumber);
+        amxd_trans_set_cstring_t(&trans, "UUID", pCWPS->UUID);
+        amxd_trans_set_int32_t(&trans, "wpsSupVer", pCWPS->wpsSupVer);
+        amxd_trans_set_int32_t(&trans, "wpsUUIDShared", pCWPS->wpsUUIDShared);
+
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+
+
     } else { /* Get! */
         amxc_var_t getVar;
         amxc_var_init(&getVar);
@@ -2177,7 +2110,7 @@ amxd_status_t _edit(amxd_object_t* object,
     /* Check our input data */
     if(pR && debugIsRadPointer(pR)) {
         pR->blockCommit = 1;
-        pR->blockStart = wld_util_time_monotonic_sec();
+        pR->blockStart = swl_time_getMonoSec();
         success = true;
     }
 
@@ -2654,7 +2587,7 @@ int wld_rad_doRadioCommit(T_Radio* pRad) {
         ret = pRad->pFA->mfn_wrad_fsm(pRad);
     } else {
         /* Mark as Commit Pending */
-        time_t now = wld_util_time_monotonic_sec();
+        swl_timeMono_t now = swl_time_getMonoSec();
 
         if(pRad->fsmRad.FSM_ComPend == 0) {
             pRad->fsmRad.FSM_ComPend_Start = now;
@@ -2688,7 +2621,7 @@ int wld_rad_doCommitIfUnblocked(T_Radio* pRad) {
     if(!pRad->blockCommit) {
         ret = wld_rad_doRadioCommit(pRad);
     } else {
-        time_t now = wld_util_time_monotonic_sec();
+        swl_timeMono_t now = swl_time_getMonoSec();
         uint32_t diff = (now - pRad->blockStart);
         if(diff > BLOCK_COMMIT_TIMEOUT) {
             SAH_TRACEZ_ERROR(ME, "Ignore commit block @ %s because time expired %u", pRad->Name, diff);
@@ -2939,13 +2872,19 @@ amxd_status_t _getRadioAirStats(amxd_object_t* object,
 
     //Update parameters in data model
     amxd_object_t* radio = (amxd_object_t*) pR->pBus;
-    amxd_object_set_uint16_t(radio, "ChannelLoad", stats.load);
-    amxd_object_set_int32_t(radio, "Noise", stats.noise);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(radio, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pR->Name);
+
+    amxd_trans_set_uint16_t(&trans, "ChannelLoad", stats.load);
+    amxd_trans_set_int32_t(&trans, "Noise", stats.noise);
     if(stats.total_time != 0) {
-        amxd_object_set_uint16_t(radio, "Interference", (stats.other_bss_time * 100) / stats.total_time);
+        amxd_trans_set_uint16_t(&trans, "Interference", (stats.other_bss_time * 100) / stats.total_time);
     } else {
-        amxd_object_set_uint16_t(radio, "Interference", 0);
+        amxd_trans_set_uint16_t(&trans, "Interference", 0);
     }
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_unknown_error, ME, "%s : trans apply failure", pR->Name);
+
+
     amxc_var_add_key(amxc_htable_t, retval_map, "VendorStats", amxc_var_get_const_amxc_htable_t(stats.vendorStats));
 
     amxc_var_clean(&vendorStats);
@@ -3495,7 +3434,7 @@ T_EndPoint* wld_rad_getWpsActiveEndpoint(T_Radio* rad) {
     return NULL;
 }
 
-void wld_rad_updateActiveDevices(T_Radio* pRad) {
+void wld_rad_updateActiveDevices(T_Radio* pRad, amxd_trans_t* trans) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     T_AccessPoint* pAP;
 
@@ -3508,8 +3447,11 @@ void wld_rad_updateActiveDevices(T_Radio* pRad) {
     }
     pRad->currentStations = nrActiveDevices;
     pRad->currentVideoStations = nrActiveVideoDevices;
-    amxd_object_set_int32_t(pRad->pBus, "ActiveAssociatedDevices", pRad->currentStations);
-    amxd_object_set_uint32_t(pRad->pBus, "ActiveVideoAssociatedDevices", pRad->currentVideoStations);
+
+    amxd_trans_select_object(trans, pRad->pBus);
+
+    amxd_trans_set_int32_t(trans, "ActiveAssociatedDevices", pRad->currentStations);
+    amxd_trans_set_uint32_t(trans, "ActiveVideoAssociatedDevices", pRad->currentVideoStations);
 }
 
 T_Radio* wld_rad_get_radio(const char* ifname) {
@@ -3523,24 +3465,26 @@ T_Radio* wld_rad_get_radio(const char* ifname) {
     return NULL;
 }
 
-void wld_rad_chan_update_model(T_Radio* pRad) {
+void wld_rad_chan_update_model(T_Radio* pRad, amxd_trans_t* trans) {
+
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, pRad->pBus);
+    ASSERT_NOT_NULL(targetTrans, , ME, "NULL");
+
     /* Update object fields directly if changed */
-    amxd_object_set_uint32_t(pRad->pBus, "Channel", pRad->channel);
-    amxd_object_set_cstring_t(pRad->pBus, "ChannelsInUse", pRad->channelsInUse);
+    amxd_trans_set_uint32_t(targetTrans, "Channel", pRad->channel);
+    amxd_trans_set_cstring_t(targetTrans, "ChannelsInUse", pRad->channelsInUse);
 
     char operatingStandardsText[64] = {};
     swl_radStd_toChar(operatingStandardsText, sizeof(operatingStandardsText), pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
-    amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", operatingStandardsText);
-    amxd_object_set_cstring_t(pRad->pBus, "OperatingChannelBandwidth", Rad_SupBW[pRad->operatingChannelBandwidth]);
-    amxd_object_set_cstring_t(pRad->pBus, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
+    amxd_trans_set_cstring_t(targetTrans, "OperatingStandards", operatingStandardsText);
+    amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", Rad_SupBW[pRad->operatingChannelBandwidth]);
+    amxd_trans_set_cstring_t(targetTrans, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
 
-    amxd_object_set_cstring_t(pRad->pBus, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
-    amxd_object_set_cstring_t(pRad->pBus, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);
-    amxd_object_t* statsObj = amxd_object_get_child(pRad->pBus, "Stats");
-    amxd_object_set_uint32_t(statsObj, "TotalTargetChannelChangeCount", pRad->totalNrCurrentChanspecChanges);
-    amxd_object_set_uint32_t(statsObj, "TotalChannelChangeCount", pRad->totalNrCurrentChanspecChanges);
-    swl_type_arrayObjectParamSetChar(statsObj, "DetailedChannelChangeCountList", swl_type_uint16, pRad->channelChangeCounters, CHAN_REASON_MAX);
+    amxd_trans_set_cstring_t(targetTrans, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
+    amxd_trans_set_cstring_t(targetTrans, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);
 
+    swla_trans_finalize(&tmpTrans, NULL);
 }
 
 void wld_rad_updateOperatingClass(T_Radio* pRad) {
@@ -3599,18 +3543,26 @@ void _wld_rad_setVendorData_ocf(const char* const sig_name _UNUSED,
 
 void wld_rad_init_counters(T_Radio* pRad, T_EventCounterList* counters, const char** defaults) {
     amxd_object_t* counters_template = amxd_object_findf(pRad->pBus, "EventCounter");
-    uint32_t i = 0;
-    for(i = 0; i < counters->nrCounters; i++) {
-        amxd_object_t* object = NULL;
-        amxd_object_new_instance(&object, counters_template, counters->names[i], 0, NULL);
-        ASSERT_NOT_NULL(object, , ME, "%s object create error", pRad->Name);
 
-        counters->values[i].object = object;
-        amxd_object_set_cstring_t(object, "Key", counters->names[i]);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(counters_template, &trans, , ME, "%s : trans init failure", pRad->Name);
+
+    for(uint32_t i = 0; i < counters->nrCounters; i++) {
+        amxd_trans_select_object(&trans, counters_template);
+        amxd_trans_add_inst(&trans, 0, counters->names[i]);
+
+        amxd_trans_set_cstring_t(&trans, "Key", counters->names[i]);
         if((defaults != NULL) && (defaults[i] != NULL)) {
-            amxd_object_set_cstring_t(object, "Info", defaults[i]);
+            amxd_trans_set_cstring_t(&trans, "Info", defaults[i]);
         }
     }
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
+
+    for(uint32_t i = 0; i < counters->nrCounters; i++) {
+        counters->values[i].object = amxd_object_get_instance(counters_template, counters->names[i], 0);
+    }
+
 }
 
 void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint32_t index, const char* info) {
@@ -3621,16 +3573,16 @@ void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint
     const char* oldInfo = amxd_object_get_cstring_t(value->object, "Info", NULL);
     SAH_TRACEZ_WARNING(ME, "EVENT %s: %s : %u : %s (was %s)", pRad->Name, counters->names[index], value->counter, info, oldInfo);
 
-    value->lastEventTime = wld_util_time_monotonic_sec();
-    amxd_object_set_uint32_t(value->object, "Value", value->counter);
-    struct tm lastTime;
-    memset(&lastTime, 0, sizeof(struct tm));
-    wld_util_time_monotonic_to_tm(value->lastEventTime, &lastTime);
-    amxc_ts_t ts;
-    memset(&ts, 0, sizeof(amxc_ts_t));
-    amxc_ts_from_tm(&ts, &lastTime);
-    amxd_object_set_value(amxc_ts_t, value->object, "LastOccurrence", &ts);
-    amxd_object_set_cstring_t(value->object, "Info", info);
+    value->lastEventTime = swl_time_getMonoSec();
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(value->object, &trans, , ME, "%s : trans init failure", pRad->Name);
+
+    amxd_trans_set_uint32_t(&trans, "Value", value->counter);
+    swl_typeTimeMono_toTransParam(&trans, "LastOccurrence", value->lastEventTime);
+    amxd_trans_set_cstring_t(&trans, "Info", info);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
 }
 
 void wld_rad_incrementCounterStr(T_Radio* pRad, T_EventCounterList* counters, uint32_t index, const char* template, ...) {

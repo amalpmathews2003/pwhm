@@ -117,7 +117,14 @@ const char* fastReconnectTypes[WLD_FAST_RECONNECT_MAX] = {"Default", "OnStateCha
 static void s_incrementObjCounter(amxd_object_t* obj, char* counterName) {
     uint32_t val = amxd_object_get_uint32_t(obj, counterName, NULL);
     val++;
-    amxd_object_set_uint32_t(obj, counterName, val);
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(obj, &trans, , ME, "%s : trans init failure", counterName);
+
+    amxd_trans_set_uint32_t(&trans, counterName, val);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", counterName);
+
 }
 
 static void s_incrementAssocCounter(T_AccessPoint* pAP, char* counterName) {
@@ -781,49 +788,7 @@ amxd_status_t _getSingleStationStats(amxd_object_t* const object,
 
     if(ret >= SWL_RC_OK) {
         s_updateStationStatsHistory(pAD);
-        SWLA_OBJECT_SET_PARAM_CSTRING(object, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "ConnectionDuration", pAD->connectionDuration);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "Inactive", pAD->Inactive);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "MaxUplinkRateReached", pAD->MaxUplinkRateReached);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkMCS", pAD->UplinkMCS);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkBandwidth", pAD->UplinkBandwidth);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkShortGuard", pAD->UplinkShortGuard);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkMCS", pAD->DownlinkMCS);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkBandwidth", pAD->DownlinkBandwidth);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkShortGuard", pAD->DownlinkShortGuard);
-
-        SWLA_OBJECT_SET_PARAM_INT32(object, "SignalStrength", pAD->SignalStrength);
-        SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
-        SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
-        char TBuf[64] = {'\0'};
-        wld_ad_printSignalStrengthByChain(pAD, TBuf, sizeof(TBuf));
-        SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthByChain", TBuf);
-        char rssiHistory[64] = {'\0'};
-        wld_ad_printSignalStrengthHistory(pAD, rssiHistory, sizeof(rssiHistory));
-        SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthHistory", rssiHistory);
-        SWLA_OBJECT_SET_PARAM_INT32(object, "Noise", pAD->noise);
-        SWLA_OBJECT_SET_PARAM_INT32(object, "SignalNoiseRatio", pAD->SignalNoiseRatio);
-
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "Retransmissions", pAD->Retransmissions);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "Rx_Retransmissions", pAD->Rx_Retransmissions);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "RxPacketCount", pAD->RxPacketCount);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
-        SWLA_OBJECT_SET_PARAM_UINT64(object, "TxBytes", pAD->TxBytes);
-        SWLA_OBJECT_SET_PARAM_UINT64(object, "RxBytes", pAD->RxBytes);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "TxErrors", pAD->TxFailures);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
-        SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
+        wld_vap_sync_device(pAP, pAD);
     }
 
     status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
@@ -1229,13 +1194,18 @@ static void s_setResetCounters_pwf(void* priv _UNUSED, amxd_object_t* object, am
 
     bool flag = amxc_var_dyncast(bool, newValue);
     if(flag) {
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "trans init failure");
         // Reset On Write
-        amxd_object_set_bool(object, "ResetCounters", 0);
+        amxd_trans_set_bool(&trans, "ResetCounters", 0);
         // Reset Association Counters on 0!
-        amxd_object_set_uint32_t(object, "Success", 0);
-        amxd_object_set_uint32_t(object, "Fail", 0);
-        amxd_object_set_uint32_t(object, "FailSecurity", 0);
-        amxd_object_set_uint32_t(object, "Disconnect", 0);
+        amxd_trans_set_uint32_t(&trans, "Success", 0);
+        amxd_trans_set_uint32_t(&trans, "Fail", 0);
+        amxd_trans_set_uint32_t(&trans, "FailSecurity", 0);
+        amxd_trans_set_uint32_t(&trans, "Disconnect", 0);
+
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
+
     }
 
     SAH_TRACEZ_OUT(ME);
@@ -1383,11 +1353,17 @@ void wld_assocDev_initAp(T_AccessPoint* pAP) {
     swl_unLiList_setKeepsLastBlock(&pAP->staDcList.list, true);
     amxd_object_t* templateObj = amxd_object_findf(pAP->pBus, "AssociationCount.FastReconnectTypes");
     ASSERT_NOT_NULL(templateObj, , ME, "NULL");
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(templateObj, &trans, , ME, "%s : trans init failure", pAP->name);
+
     for(uint32_t i = 0; i < WLD_FAST_RECONNECT_MAX; i++) {
-        amxd_object_t* instObj = NULL;
-        amxd_object_new_instance(&instObj, templateObj, fastReconnectTypes[i], 0, NULL);
-        amxd_object_set_cstring_t(instObj, "Type", fastReconnectTypes[i]);
+        amxd_trans_select_object(&trans, templateObj);
+        amxd_trans_add_inst(&trans, 0, fastReconnectTypes[i]);
+        amxd_trans_set_cstring_t(&trans, "Type", fastReconnectTypes[i]);
     }
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->name);
+
 }
 
 

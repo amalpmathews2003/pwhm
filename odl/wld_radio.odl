@@ -292,7 +292,7 @@ define probelist_t{
 		 * Get the latest TX Power value for each antenna of the radio.
 		 */
 		htable getLatestPower();
-		
+
 		/**
 		 * Returns a map containing this SSID's status histogram information.
 		 * The map contains:
@@ -305,8 +305,8 @@ define probelist_t{
 		 * NrEnables: The number of times Enable has been set to true (so only false to true is counted)
 		 */
 		htable getStatusHistogram();
-		
-		
+
+
 		/**
 		 * Request to change the chanspec
 		 * @param channel: target channel.
@@ -319,7 +319,7 @@ define probelist_t{
 		 * @error function_exec_error "Unable to change channel" if the radio is unavailable.
 		 */
 		void setChanspec(%mandatory uint16 channel, string bandwidth, string reason, bool direct, string reasonExt);
-		
+
 
 		/**
 		* The current operational state of the radio (see [Section 4.2.2/TR-181i2]).
@@ -356,13 +356,13 @@ define probelist_t{
 			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
 			default "Down";
 		}
-		
-				
+
+
 		/**
 		 * Timestamp of the last time status changed.
 		 */
 		%read-only datetime LastStatusChangeTimeStamp;
-		
+
 		/** <p>SoftAtHome parameter. This is used for configuring a
 		 *  MAC address on thr RADIO interface. It's important to know
 		 *  that it can only be used before the VAP's are created! </p>*/
@@ -393,9 +393,9 @@ define probelist_t{
 		/*uint32 LastChange;*/
 
 		/**
-		 * <p>List of Path Names of an interface objects that are stacked 
+		 * <p>List of Path Names of an interface objects that are stacked
 		 * immediately below this interface object.
-		 * Note: Since Radio is a layer 1 interface, it is expected that 
+		 * Note: Since Radio is a layer 1 interface, it is expected that
 		 * LowerLayers will not be used.</p>
 		 */
 		string LowerLayers;
@@ -526,7 +526,7 @@ define probelist_t{
 		 * then list items can also be: "bg", "gn", "bgn", "an", and "abgn".</p>
  		 */
 		%read-only string SupportedStandards;
-		
+
 		/**
 		   <p>Comma-separated list of strings. Each list item MUST be a
 		   member of the list reported by the SupportedStandards
@@ -560,22 +560,22 @@ define probelist_t{
 			on action validate call wld_rad_validateOperatingStandards_pvf;
 			userflags %upc;
 		}
-		
+
 		/**
 		 * Format used to interpret the OperatingStandards string.
 		 *
-		 * If "Legacy", then for OperatingStandards 
+		 * If "Legacy", then for OperatingStandards
 		 * "ac" will be interpreted as 802.11ac plus 802.11a if supported plus 802.11n if supported
 		 * (according to the SupportedStandards string);
 		 * and "ax" as 802.11ax plus all lower supported standards (802.11a,b,g,n,ac).
 		 * For the following combinations, no commas are written between radio standards:
 		 * "bg", "gn", "bgn", "an", and "abgn" (no other order, so no "gb").
-		 * 
+		 *
 		 * If "Standard", the value of OperatingStandards will be interpreted according to
 		 * the TR-181 standard, i.e. enable the standards mentioned in the value and disable
 		 * all other radio standards, and use commas between radio standards without
 		 * particular ordering (e.g. "b,g,n" or "g,b,n").
- 		 * 
+ 		 *
  		 * Independently of the value of OperatingStandardsFormat, one can write to
  		 * OperatingStandars in either Legacy or Standard Format. Only the value "ax" and
  		 * "ac" will be interpreted differently depending on OperatingStandardsFormat.
@@ -591,7 +591,7 @@ define probelist_t{
 		%persistent string OperatingStandardsFormat = "Legacy" {
 			on action validate call check_enum ["Legacy", "Standard"];
 		}
-		
+
 		/**
 		 * <p>Comma-separated list (maximum length 1024) of strings. List
 		 * items represent possible radio channels for the wireless
@@ -640,7 +640,7 @@ define probelist_t{
 			default true;
 			userflags %upc;
 		}
-		
+
 		/**
 		 * <p>The time period in seconds between two consecutive
 		 * automatic channel selections. A value of 0 means that the
@@ -846,7 +846,7 @@ define probelist_t{
 			on action validate call check_range { min = -1, max = 255 };
 			default -1;
 		}
-		
+
 		/**
 		 * Bit pattern of the current of active transmit antennas.
 		 * The value MUST be in range of supported driver. Based on 2th wave
@@ -858,7 +858,7 @@ define probelist_t{
 			on action validate call check_range { min = -1, max = 255 };
 			default -1;
 		}
-		
+
 		/**
 		* Retry Limit
 		* The maximum number of retransmissions of a short packet
@@ -1013,10 +1013,10 @@ define probelist_t{
 			on action validate call wld_rad_validateExplicitBeamForming_pvf;
 			default false;
 		}
-		
+
 		/**
 		 * Receive beamforming capabilities available. List of
-		 * Possible values are: 
+		 * Possible values are:
 		 * * VHT_SU_BF : single user beamforming for VTH
 		 * * VHT_MU_BF : multi user beamforming for VTH
 		 * * HE_SU_BF : single user beamforming for HE
@@ -1025,7 +1025,7 @@ define probelist_t{
 		 * @version 10.0
 		 */
 		%read-only string RxBeamformingCapsAvailable;
-		
+
 		/**
 		 * Receive beamforming capabilities enabled. List of comma separated strings
 		 * as defined in RxBeamformingCapsAvailable above.
@@ -1038,10 +1038,10 @@ define probelist_t{
 		string RxBeamformingCapsEnabled{
 			default "DEFAULT";
 		}
-		
+
 		/**
 		 * Transmit beamforming capabilities available. List of
-		 * Possible values are: 
+		 * Possible values are:
 		 * * VHT_SU_BF : single user beamforming for VTH
 		 * * VHT_MU_BF : multi user beamforming for VTH
 		 * * HE_SU_BF : single user beamforming for HE
@@ -1050,10 +1050,10 @@ define probelist_t{
 		 * @version 10.0
 		 */
 		%read-only string TxBeamformingCapsAvailable;
-		
+
 		/**
 		 * Transmit beamforming capabilities enabled. List of comma separated strings
-		 * as defined in RxBeamformingCapsAvailable above. 
+		 * as defined in RxBeamformingCapsAvailable above.
 		 * An additional special value to these is "DEFAULT" which will just use
 		 * whatever the driver has enabled by default.
 		 * Note that for MU features, MultiUserMIMOEnabled must be true,
@@ -1064,15 +1064,15 @@ define probelist_t{
 			default "DEFAULT";
 		}
 
-		/** 
+		/**
 		 *	Radio 802.11n HT(High Throughput) capabilities, raw values,in base64 as per the Tr181 Spec.
 		 *   See standard section "9.4.2.55.2 HT Capability Information field" for bits details.
 		*/
 		%read-only string HTCapabilities;
 
-		/** 
+		/**
 		 * Radio 802.11n HT(High Throughput) capabilities. List of strings  with these
-		 * possible values: 
+		 * possible values:
 		 * * LPDC
 		 * * CAP_40
 		 * * POWER_SAVE
@@ -1089,13 +1089,13 @@ define probelist_t{
 		%read-only string RadCapabilitiesHTStr;
 
 		/** Radio 802.11n VHT(Very High Throughput) capabilities, raw values,in base64 as per the Tr181 Spec.
-		*   See standard section "9.4.2.157.2 VHT Capabilities Information field" for bits details. 
+		*   See standard section "9.4.2.157.2 VHT Capabilities Information field" for bits details.
 		*/
 		%read-only string VHTCapabilities;
 
-		/** 
+		/**
 		 * Radio 802.11n VHT(Very High Throughput) capabilities. List of strings  with these
-		 * possible values: 
+		 * possible values:
 		 * * MAX_MPDU
          * * SUP_WIDTH
 		 * * RX_LDPC
@@ -1118,15 +1118,15 @@ define probelist_t{
 		*/
 		%read-only string RadCapabilitiesVHTStr;
 
-		/** 
+		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities, raw values, in base64 as per the Tr181 Spec.
 	     * See standard section "9.4.2.248.3 HE PHY Capabilities Information field" for bits details.
 		*/
 		%read-only string HECapabilities;
 
-		/** 
+		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities. List of strings  with these
-		 * possible values: 
+		 * possible values:
 		 * * PHY_B0
          * * 40MHZ_2_4GHZ
          * * 40_80MHZ_5GHZ
@@ -1227,13 +1227,13 @@ define probelist_t{
 				}
 				/* Channel to which the radio went after DFS detection */
 				%read-only uint32 NewChannel;
-				
+
 				/* Bandwidth to which the radio went after DFS detection */
 				%read-only string NewBandwidth{
 					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
 					default "Auto";
 				}
-				
+
 				/* List of channels on which radar was actually detected */
 				%read-only string DFSRadarDetectionList;
 				/* Detected radar's zone */
@@ -1319,7 +1319,7 @@ define probelist_t{
 		 */
 		%read-only object Stats{
 			on action read call wld_radio_getStats_orf;
-													   
+
 			/** The total number of bytes transmitted out of the
 			 *  interface, including framing characters. */
 			%volatile %read-only uint64 BytesSent;
@@ -1339,7 +1339,7 @@ define probelist_t{
 			 *  be transmitted because of errors. */
 			%volatile %read-only uint32 ErrorsSent;
 
-			/** The total number of transmitted packets which were retransmissions. 
+			/** The total number of transmitted packets which were retransmissions.
 			 *  Two retransmissions of the same packet results in this counter incrementing by two. */
 			%volatile %read-only uint32 RetransCount;
 
@@ -1392,12 +1392,12 @@ define probelist_t{
 			 *  layer to a higher layer, which were addressed to a
 			 *  broadcast address at this layer. */
 			%volatile %read-only uint32 BroadcastPacketsReceived;
-			
+
 			/** The total number of packets received via the interface which
 			 *  were discarded because of an unknown or unsupported
 			 *  protocol.*/
 			%volatile %read-only uint32 UnknownProtoPacketsReceived;
-			
+
 			/** The number of packets that were not transmitted successfully
 			 *  due to the number of retransmission attempts
 			 *  exceeding an 802.11 retry limit.*/
@@ -1408,7 +1408,7 @@ define probelist_t{
 
 			/** The number of packets that were successfully transmitted after more than one retransmission*/
 			%volatile %read-only uint32 MultipleRetryCount;
-			
+
 			/** The total number of packets that higher-level protocols
 			 *  requested for transmission ordered by wmm category*/
 			%read-only object WmmPacketsSent {
@@ -1469,7 +1469,7 @@ define probelist_t{
 				%volatile %read-only uint32 AC_VO;
 				%volatile %read-only uint32 AC_VI;
 			}
-			
+
 			/** The total number of bytes received on this interface, but failed to be sent to the
 					higher layers, ordered by wmm category*/
 			%read-only object WmmFailedBytesReceived {
@@ -1479,16 +1479,16 @@ define probelist_t{
 				%volatile %read-only uint32 AC_VI;
 			}
 
-			/** 
+			/**
 			 * The chip's temperature(degrees Celsius).
-			 * As per TR-181, value should not be less than -274. 
+			 * As per TR-181, value should not be less than -274.
 			 * Default value is -274 which is INVALID value.
 			 */
 			%read-only int32 Temperature{
 				default -274;
 				on action validate call check_minimum -274;
 			}
-			
+
 			/**
 			 * An indicator of average noise strength received at this radio, measured in dBm.
 			 * This measurement of non-IEEE 802.11 noise power is made by sampling the channel
@@ -1637,7 +1637,7 @@ define probelist_t{
 		%persistent object RadCaps{
 
 			on event "*" call wld_radCaps_setConf_ocf;
-			
+
 			/**
 			 * A list of strings, which encode which capabilities are currently being offered by this radio.
 			 * This list may differ from radio to radio. Vendor feature names may differ from vendor to vendor
@@ -1697,7 +1697,7 @@ define probelist_t{
 				on action validate call check_enum ["Current", "Target", "Sync"];
 				default "Current";
 			}
-		
+
 			/**
 			 * Object describing the currenlty desired channel, as received by the middleware
 			 */
@@ -1748,7 +1748,7 @@ define probelist_t{
 				%read-only string ReasonExt{
 					default "";
 				}
-				
+
 				/**
 				 * The last time the target chanspec changed, so either Channel or Bandwidth.
 				 */
@@ -1802,13 +1802,13 @@ define probelist_t{
 				%read-only string ReasonExt{
 					default "";
 				}
-				
+
 				/**
 				 * The last time the current chanspec changed, so either Channel or Bandwidth.
 				 */
 				%read-only datetime LastChangeTime;
 			}
-		
+
 
 			/**
 			 * Log of recent channel changes.
@@ -1819,22 +1819,22 @@ define probelist_t{
 				 * Timestamp of when the channel change took place.
 				 */
 				%read-only datetime TimeStamp;
-				
+
 				/**
 				 * The previous or old channel, the channel which was moved away from.
 				 */
 				%read-only uint32 OldChannel;
-				
+
 				/**
 				 * The bandwidth of the old channel, in MHz notation, e.g. "20MHz".
 				 */
 				%read-only string OldBandwidth;
-				
+
 				/**
 				 * The new channel, the channel to which the radio moved.
 				 */
 				%read-only uint32 NewChannel;
-				
+
 				/**
 				 * The bandwidth of the new channel, in MHz notation, e.g. "20MHz".
 				 */
@@ -1860,30 +1860,40 @@ define probelist_t{
 				 * Extended info for channel change reason. No specific format.
 				 */
 				%read-only string ChannelChangeReasonExt;
-				
+
 				/**
 				 * The target channel, as last configured.
 				 */
 				%read-only uint32 TargetChannel;
-				
+
+				/**
+				 * The number of stations associated at the time of change
+				 */
+				%read-only uint32 NrSta;
+
+				/**
+				 * The number of stations of type Video associated at the time of change
+				 */
+				%read-only uint32 NrVideoSta;
+
 				/**
 				 * The bandwidth of the target chanspec, in MHz notation, e.g. "20MHz".
 				 */
 				%read-only string TargetBandwidth;
-				
+
 				/**
 				 * The timestamp when the target chanspec was last set.
 				 */
 				%read-only datetime TargetChangeTime;
 			}
-			
+
 			/**
 			 * The size of the channel changes log.
 			 */
 			%persistent uint32 ChangeLogSize{
 				default 10;
 			}
-		
+
 			/**
 			 * List of currently cleared channels.
 			 * Note that this will only contain channel that require radar. Non radar sensitive channels
@@ -2048,7 +2058,7 @@ define probelist_t{
 		%persistent object NaStaMonitor {
 
 			on event "*" call wld_radStaMon_setConf_ocf;
-			
+
 			/** Update the statistics in of the NonAssociatedDevice[] objects in the datamodel,
 			 * @return list of variant maps with the NonAssociatedDevice values
 			 * @version 9.0
@@ -2282,7 +2292,7 @@ define probelist_t{
 		}
 
 		void debug();
-		
+
 		/**
 		 * List of fields for advanced driver config. Ensure that
 		 * for all these fields "No change from default" is the default.
@@ -2290,7 +2300,7 @@ define probelist_t{
 		 */
 		%persistent object DriverConfig{
 			on event "*" call wld_rad_setDriverConfig_ocf;
-			
+
 			/**
 			 * Enable / disable tx bursting. Set to -1 to allow default.
 			 * @version 9.2
@@ -2298,8 +2308,8 @@ define probelist_t{
 			%persistent int32 TxBurst{
 				default -1;
 			}
-			
-			
+
+
 			/**
 			 * Enable / disable amsdu. Set to -1 to allow default.
 			 * @version 9.2
@@ -2307,7 +2317,7 @@ define probelist_t{
 			%persistent int32 Amsdu{
 				default -1;
 			}
-			
+
 			/**
 			 * Enable / disable ampdu. Set to -1 to allow default.
 			 * @version 9.2
@@ -2315,7 +2325,7 @@ define probelist_t{
 			%persistent int32 Ampdu{
 				default -1;
 			}
-			
+
 			/**
 			 * Configure fragmentation threshold. Set to -1 to allow default.
 			 * @version 9.2
@@ -2323,7 +2333,7 @@ define probelist_t{
 			%persistent int32 FragmentationThreshold{
 				default -1;
 			}
-			
+
 			/**
 			 * Configure request to send threshold. Set to -1 to allow default.
 			 * @version 9.2
@@ -2343,17 +2353,17 @@ define probelist_t{
 			%persistent int32 TxBeamforming{
 				default -1;
 			}
-			
+
 			/**
 			 * Enable or disable the Operating Mode Notification frames
 			 * in the driver. These frames are used to notify stations that
-			 * the HGW is temporarily running with reduced tx and rx chains 
+			 * the HGW is temporarily running with reduced tx and rx chains
 			 * potentially due to background DFS clearing.
 			 */
 			%persistent int32 VhtOmnEnabled{
 				default 1;
 			}
-			
+
 			/**
 			 * Configure the driver to broadcast the maximum bandwidth capability
 			 * in beacons. e.g. if driver is 160MHz capable, radio should broadcast
@@ -2380,7 +2390,7 @@ define probelist_t{
 				default "Auto";
 			}
 		}
-		
+
 		/**
 		 * Configuration regarding how MAC Addresses should be generated for this radio.
 		 * Note that this shall only be updated if currently no APs were created on this
@@ -2399,7 +2409,7 @@ define probelist_t{
 			%persistent uint32 NrBssRequired{
 				default 0;
 			}
-	
+
 			/**
 			 * Whether to use a simple base mac offset to set the MAC of this radio.
 			 * If enabled, the base mac shall just be determined based on the base offset.
@@ -2410,7 +2420,7 @@ define probelist_t{
 			%persistent bool UseBaseMacOffset{
 				default false;
 			}
-			
+
 			/**
 			 * Offset that the radio base mac addr should have from the WAN Address.
 			 * Enable UseBaseMacOffset to have this enacted in compatible drivers.
@@ -2418,15 +2428,15 @@ define probelist_t{
 			%persistent int64 BaseMacOffset{
 				default 0;
 			}
-			
+
 			/**
 			 * Whether to generate guest BSSIDs with the local bit set.
-			 * When set, these BSSIDs may overlap, so it is 
+			 * When set, these BSSIDs may overlap, so it is
 			 */
 			%persistent bool UseLocalBitForGuest{
 				default false;
 			}
-			
+
 			/**
 			 * Additional offset for the guest mac, per radio index + 1.
 			 * So the guest MACS will go on RadioBaseMac + LogalGuestMacOffset for the first radio.
@@ -2438,7 +2448,7 @@ define probelist_t{
 				default 256;
 			}
 		}
-		
+
 		/**
 		 * Information with regards to radio driver capabilities and status.
 		 * @version 10.0
@@ -2546,12 +2556,12 @@ define probelist_t{
 				on action validate call check_enum ["Disable","Prio","All"];
 				default "Disable";
 			}
-			
+
 			/**
-			 * When scans started for these reasons, the scan will be 
+			 * When scans started for these reasons, the scan will be
 			 * forced as fast, so any "slow scan" interruption mitigation will be disabled.
 			 *
-			 * Entered as a list of scan reason strings. Default a standard scan requested through the bus will be 
+			 * Entered as a list of scan reason strings. Default a standard scan requested through the bus will be
 			 * run as fast.
 			 *
 			 * @version 10.0
@@ -2772,7 +2782,7 @@ define probelist_t{
 			 * SPR SRG BSS Color. This field is valid only if SRGInformationValid is true.
 			 * This config represents SRG BSS Color Bitmap field of Spatial Reuse Parameter
 			 * Set element that indicates the BSS color values used by members of the
-			 * SRG of which the transmitting STA is a member. 
+			 * SRG of which the transmitting STA is a member.
 			 * Multiple comma-separated ranges:
 			 * SRGBSSColorBitmap = "1,3,5,63"
 			 */

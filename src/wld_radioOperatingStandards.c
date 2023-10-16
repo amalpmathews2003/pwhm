@@ -160,7 +160,7 @@ void wld_rad_setOperatingStandards_pwf(void* priv _UNUSED, amxd_object_t* object
 
 // In case `operatingStandards` is "auto", set it to the default (which is the `supportedStandards`).
 // This also updates the value in the datamodel, if change needed.
-void wld_rad_update_operating_standard(T_Radio* pRad) {
+void wld_rad_update_operating_standard(T_Radio* pRad, amxd_trans_t* trans) {
     SAH_TRACEZ_IN(ME);
     ASSERT_NOT_NULL(pRad, , ME, "Radio NULL");
     ASSERT_FALSE(pRad->operatingStandards != M_SWL_RADSTD_AUTO && (pRad->operatingStandards & (~pRad->supportedStandards)), , ME,
@@ -187,7 +187,12 @@ void wld_rad_update_operating_standard(T_Radio* pRad) {
                     pRad->Name,
                     oldStandards,
                     pRad->operatingStandards, amxc_string_get(&operatingStandardsText, 0));
-    amxd_object_set_cstring_t(pRad->pBus, "OperatingStandards", amxc_string_get(&operatingStandardsText, 0));
+    if(trans != NULL) {
+        amxd_trans_set_cstring_t(trans, "OperatingStandards", (char*) amxc_string_get(&operatingStandardsText, 0));
+    } else {
+        swl_typeCharPtr_commitObjectParam(pRad->pBus, "OperatingStandards", (char*) amxc_string_get(&operatingStandardsText, 0));
+    }
+
     amxc_string_clean(&operatingStandardsText);
 
     SAH_TRACEZ_OUT(ME);

@@ -265,14 +265,6 @@ int get_pattern_string(const char* arg, uint8_t* pattern);
 char* if_indextoname(unsigned int __ifindex, char* __ifname);
 unsigned int if_nametoindex(const char* __ifname);
 
-/**
- * get the monotonic elapsed time.
- */
-time_t wld_util_time_monotonic_sec();
-void wld_util_time_curr_tm(struct tm* tm_val);
-void wld_util_time_monotonic_to_tm(const time_t seconds, struct tm* tm_val);
-void wld_util_time_addMonotonicTimeToMap(amxc_var_t* map, const char* name, time_t time);
-void wld_util_time_objectSetMonotonicTime(amxd_object_t* object, const char* name, time_t time);
 
 //how to go from accumulator to actual value. add + or - 499 to ensure proper rounding
 #define WLD_ACC_TO_VAL(val) (val >= 0 ? ((val + 500) / 1000) : ((val - 500) / 1000))

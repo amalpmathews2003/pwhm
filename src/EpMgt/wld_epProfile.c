@@ -183,7 +183,7 @@ swl_rc_ne wld_epProfile_delete(T_EndPoint* pEP, T_EndPointProfile* pProfile) {
         pEP->currentProfile = NULL;
         SAH_TRACEZ_WARNING(ME, "Current Active EndpointProfile gets deleted !!!");
         pEP->internalChange = true;
-        amxd_object_set_cstring_t(pEP->pBus, "ProfileReference", "");
+        swl_typeCharPtr_commitObjectParam(pEP->pBus, "ProfileReference", "");
         pEP->internalChange = false;
         wld_endpoint_reconfigure(pEP);
     }
