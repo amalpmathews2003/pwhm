@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.19.3 - 2023-10-16(13:47:21 +0000)
+
+### Other
+
+- : No management frame sent when channel equals 0
+- [prpl][osp] fix 20s delay when applying any conf through FSM
+
 ## Release v4.19.2 - 2023-10-13(12:08:50 +0000)
 
 ### Other
