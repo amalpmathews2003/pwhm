@@ -7,7 +7,6 @@
                 parameter OperatingFrequencyBand = "2.4GHz";
                 parameter Enable = 1;
                 parameter AutoChannelEnable = 0;
-                parameter Channel = 1;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;
                 parameter AirtimeFairnessEnabled = 1;
@@ -28,7 +27,6 @@
                 parameter OperatingFrequencyBand = "5GHz";
                 parameter Enable = 1;
                 parameter AutoChannelEnable = 0;
-                parameter Channel = 36;
                 parameter IEEE80211hEnabled = true;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;
@@ -55,7 +53,6 @@
                 parameter OperatingFrequencyBand = "6GHz";
                 parameter Enable = 1;
                 parameter AutoChannelEnable = 0;
-                parameter Channel = 5;
                 parameter IEEE80211hEnabled = true;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;

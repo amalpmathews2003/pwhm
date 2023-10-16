@@ -274,6 +274,12 @@ amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
                                            void* priv _UNUSED) {
     T_Radio* pRad = (T_Radio*) object->priv;
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    /*
+     * wait for all rad conf be loaded, and especially OperFreq and RegDomain
+     * to have the right list of possible channels
+     * against which the new channel is checked
+     */
+    ASSERTI_TRUE(pRad->hasDmReady, amxd_status_ok, ME, "%s: radio config not yet fully loaded", pRad->Name);
     uint32_t currentValue = amxc_var_dyncast(uint32_t, &param->value);
     uint32_t newValue = amxc_var_dyncast(uint32_t, args);
     if((currentValue == newValue) || (wld_rad_hasChannel(pRad, newValue))) {

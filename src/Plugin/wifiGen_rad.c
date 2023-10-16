@@ -235,6 +235,13 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "SCAN_DWELL");
             }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
+            if((pRad->channel == 0) && (wld_rad_getFreqBand(pRad) == pBand->freqBand)) {
+                swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+                if(swl_chanspec_channelFromMHz(&chanSpec, pBand->chans[0].ctrlFreq) == SWL_RC_OK) {
+                    pRad->channel = chanSpec.channel;
+                    SAH_TRACEZ_INFO(ME, "%s: get first supported channel %u", pRad->Name, pRad->channel);
+                }
+            }
         }
     }
     SAH_TRACEZ_OUT(ME);

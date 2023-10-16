@@ -680,8 +680,8 @@ define probelist_t{
 			 specified.</p>
 			 # For Atomic write... set channel after autochannel!
 		*/
-		%persistent uint32 Channel = 6 {
-			on action validate call check_range { min = 1, max = 255 };
+		%persistent uint32 Channel {
+			on action validate call check_maximum 255;
 			on action validate call wld_rad_validateChannel_pvf;
 			userflags %upc;
 		}
