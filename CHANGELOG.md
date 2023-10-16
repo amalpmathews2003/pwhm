@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.19.4 - 2023-10-16(15:26:10 +0000)
+
+### Other
+
+- remove assumption of default rad channel
+
 ## Release v4.19.3 - 2023-10-16(13:47:21 +0000)
 
 ### Other
