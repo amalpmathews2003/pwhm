@@ -3082,7 +3082,7 @@ bool wld_rad_hasEnabledEp(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_EndPoint* pEP = NULL;
 
-    /* Check if NO AP is active */
+    /* Check if NO EP is enabled */
     wld_rad_forEachEp(pEP, pRad) {
         if(pEP->enable) {
             return true;
@@ -3095,7 +3095,7 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_EndPoint* pEP = NULL;
 
-    /* Check if NO AP is active */
+    /* Check if NO EP is connected */
     wld_rad_forEachEp(pEP, pRad) {
         if(pEP->connectionStatus == EPCS_CONNECTED) {
             return true;
@@ -3108,9 +3108,12 @@ bool wld_rad_areAllVapsDone(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_AccessPoint* pAP = NULL;
 
-    /* Check if NO AP is active */
+    /*
+     * Check whether all configurable APs are initialized
+     * (i.e conf loaded from saved/defaults , internal ctx synced with datamodel)
+     */
     wld_rad_forEachAp(pAP, pRad) {
-        if(!pAP->initDone) {
+        if((pAP->pBus != NULL) && (!pAP->initDone)) {
             return false;
         }
     }
@@ -3121,7 +3124,7 @@ bool wld_rad_hasEnabledVap(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_AccessPoint* pAP = NULL;
 
-    /* Check if NO AP is active */
+    /* Check if NO AP is enabled */
     wld_rad_forEachAp(pAP, pRad) {
         if(pAP->enable) {
             return true;
