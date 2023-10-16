@@ -78,7 +78,6 @@
 #include "wld_wps.h"
 #include "wld_rad_stamon.h"
 #include "wld_eventing.h"
-#include "wld_prbReq.h"
 #include "wld_chanmgt.h"
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_nl80211_types.h"
@@ -331,9 +330,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     swl_timeMono_t now = swl_time_getMonoSec();
     pR->changeInfo.lastStatusChange = now;
     pR->changeInfo.lastStatusHistogramUpdate = now;
-    pR->probeRequestMode = WLD_PRB_FIRST_RSSI;
-    pR->probeRequestAggregationTime = 1000;
-    pR->aggregationTimer = NULL;
     pR->genericCounters.nrCounters = WLD_RAD_EV_MAX;
     pR->genericCounters.values = pR->counterList;
     pR->genericCounters.names = radCounterNames;
@@ -345,7 +341,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     SAH_TRACEZ_WARNING(ME, "Creating new Radio context [%s]", pR->Name);
 
-    wld_prbReq_init(pR);
     wld_scan_init(pR);
     wld_chanmgt_init(pR);
     wld_autoCommitMgr_init(pR);
@@ -419,6 +414,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     wld_persist_onRadioCreation(pR);
 
+    wld_rad_triggerChangeEvent(pR, WLD_RAD_CHANGE_INIT, NULL);
+
     pR->isReady = true;
 
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u", name, vendor->name, idx);
@@ -432,10 +429,11 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     memcpy(name, pRad->Name, sizeof(name));
     SAH_TRACEZ_INFO(ME, "start delete radio %s", name);
 
+    wld_rad_triggerChangeEvent(pRad, WLD_RAD_CHANGE_DESTROY, NULL);
+
     wld_radStaMon_destroy(pRad);
     wld_autoCommitMgr_destroy(pRad);
     wld_rad_clearSuppDrvCaps(pRad);
-    wld_prbReq_destroy(pRad);
     wld_scan_destroy(pRad);
 
     amxc_llist_for_each(it, &pRad->scanState.stats.extendedStat) {
@@ -456,8 +454,6 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pRad->pFA, , ME, "NULL");
     pRad->pFA->mfn_wrad_destroy_hook(pRad);
-    amxp_timer_delete(&pRad->aggregationTimer);
-    pRad->aggregationTimer = NULL;
 
     if(pRad->pBus != NULL) {
         pRad->pBus->priv = NULL;

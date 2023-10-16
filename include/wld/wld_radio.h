@@ -72,6 +72,8 @@
 #include "wld_radioOperatingStandards.h"
 
 typedef enum {
+    WLD_RAD_CHANGE_INIT,
+    WLD_RAD_CHANGE_DESTROY,
     WLD_RAD_CHANGE_POSCHAN,
     WLD_RAD_CHANGE_MAX
 } wld_rad_changeEvent_e;
@@ -81,6 +83,13 @@ typedef struct {
     T_Radio* pRad;
     void* changeData;
 } wld_rad_changeEvent_t;
+
+typedef struct {
+    T_Radio* pRad;
+    swl_bit8_t* frameData;
+    size_t frameLen;
+    int32_t frameRssi;
+} wld_rad_frameEvent_t;
 
 T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn);
 
@@ -139,11 +148,6 @@ bool wld_radio_stats_to_variant(T_Radio* a, T_Stats* stats, amxc_var_t* map);
 bool wld_radio_scanresults_find(T_Radio* pR, const char* ssid, wld_scanResultSSID_t* output);
 bool wld_radio_scanresults_cleanup(wld_scanResults_t* results);
 
-void wld_notifyProbeRequest(T_Radio* pR, const unsigned char* macStr);
-void wld_notifyProbeRequest_rssi(T_Radio* pR, const unsigned char* macStr, int rssi);
-int wld_prbReq_getRssi(T_Radio* pR, const unsigned char* macStr);
-void wld_prbReq_setNotify_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
-void wld_prbReq_setNotifyAggregationTimer_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
 void wld_scan_init(T_Radio* pR);
 void wld_scan_destroy(T_Radio* pR);
 void wld_scan_done(T_Radio* pR, bool success);
@@ -242,6 +246,7 @@ T_EndPoint* wld_rad_firstEp(T_Radio* pRad);
 T_EndPoint* wld_rad_nextEp(T_Radio* pRad, T_EndPoint* pEP);
 T_Radio* wld_rad_fromIt(amxc_llist_it_t* it);
 void wld_rad_triggerChangeEvent(T_Radio* pRad, wld_rad_changeEvent_e event, void* data);
+void wld_rad_triggerFrameEvent(T_Radio* pRad, swl_bit8_t* frame, size_t frameLen, int32_t rssi);
 
 #define wld_rad_forEachAp(apPtr, radPtr) \
     for(apPtr = wld_rad_firstAp(radPtr); apPtr; apPtr = wld_rad_nextAp(radPtr, apPtr))

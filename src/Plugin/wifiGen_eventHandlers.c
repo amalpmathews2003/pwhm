@@ -375,52 +375,11 @@ static void s_scanStartedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNU
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
 }
 
-typedef struct {
-    T_Radio* pRad;
-    int32_t rssi;
-} wld_mgmtFrameExtra_t;
-
-static void s_probeRequestReceived(void* userData, swl_80211_mgmtFrame_t* frame, size_t frameLen _UNUSED, swl_80211_probeReqFrameBody_t* probeReq, size_t probeReqDataLen) {
-    wld_mgmtFrameExtra_t* extra = (wld_mgmtFrameExtra_t*) userData;
-    ASSERT_NOT_NULL(extra, , ME, "NULL");
-    ASSERTS_NOT_NULL(extra->pRad, , ME, "NULL");
-    ASSERT_NOT_NULL(frame, , ME, "NULL");
-    ASSERT_NOT_NULL(probeReq, , ME, "NULL");
-    T_Radio* pRad = extra->pRad;
-
-    swl_macChar_t macStr = SWL_MAC_CHAR_NEW();
-    swl_mac_binToChar(&macStr, &frame->transmitter);
-
-    wld_notifyProbeRequest_rssi(pRad, (const unsigned char*) macStr.cMac, extra->rssi);
-
-    //Update ProbeReq capabilities for the associatedDevice if known
-    T_AssociatedDevice* pAD = wld_rad_getAssociatedDevice(pRad, &frame->transmitter);
-    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
-
-    swl_wirelessDevice_infoElements_t results;
-    memset(&results, 0, sizeof(swl_wirelessDevice_infoElements_t));
-    ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&results, NULL, probeReqDataLen, (swl_bit8_t*) probeReq);
-    ASSERTW_FALSE(parsedLen < (ssize_t) probeReqDataLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, probeReqDataLen);
-
-    wld_assocDev_copyAssocDevInfoFromIEs(pRad, pAD, &pAD->probeReqCaps, &results);
-    pAD->probeReqCaps.updateTime = swl_time_getMonoSec();
-}
-
-static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameNl80211Handlers = {
-    .fProcProbeReq = s_probeRequestReceived,
-};
-
 static void s_frameReceivedCb(void* pRef, void* pData _UNUSED, size_t frameLen, swl_80211_mgmtFrame_t* frame, int32_t rssi) {
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(frame, , ME, "NULL");
-
-    wld_mgmtFrameExtra_t extra;
-    memset(&extra, 0, sizeof(wld_mgmtFrameExtra_t));
-    extra.pRad = pRad;
-    extra.rssi = rssi;
-
-    swl_80211_handleMgmtFrame(&extra, (swl_bit8_t*) frame, frameLen, &s_mgmtFrameNl80211Handlers);
+    wld_rad_triggerFrameEvent(pRad, (swl_bit8_t*) frame, frameLen, rssi);
 }
 
 swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {

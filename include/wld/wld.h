@@ -1553,8 +1553,6 @@ struct WLD_RADIO {
     T_FSM fsmRad;                                   /* Global Radio FSM state */
     int fsmTO;
 
-    amxc_llist_t llProbeRequests;            /* Probe Request cache */
-
     bool stationMonitorEnabled;
 
     /**
@@ -1595,10 +1593,6 @@ struct WLD_RADIO {
     chanmgt_rad_state detailedStatePrev;
     int nrCapabilities;
     wld_feature_status features[WLD_FEATURE_MAX];
-    wld_prb_req_mode probeRequestMode;
-    uint32_t probeRequestAggregationTime;
-    time_t probeReferenceTimestamp;
-    amxp_timer_t* aggregationTimer;
     T_EventCounterList vendorCounters;
     T_EventCounter counterList[WLD_RAD_EV_MAX];
     T_EventCounterList genericCounters;
@@ -1618,6 +1612,7 @@ struct WLD_RADIO {
     bool csiEnable;                               /* Enable CSI */
     amxc_llist_t csiClientList;                   /* CSI client list */
     char firmwareVersion[64];                     /* Radio’s WiFi firmware version */
+    wld_radExt_t* radExt;                         /* Radio external data */
 };
 
 typedef struct {

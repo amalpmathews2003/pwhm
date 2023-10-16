@@ -274,22 +274,6 @@ define probelist_t{
 		*/
 
 		/**
-		 * Request a re-send of all previous ProbeRequest notifications.
-		 * This is useful for a newly (re)started or re-configured BandSteering
-		 * daemon.
-		 * @version 7.0
-		 */
-		void refreshProbeRequests();
-
-		/**
-		 * Retrieve the probe requests since a given timestamp.
-		 * If no timestamp is given, all probe requests are returned.
-		 * Returns an object of the probelist_t type.
-		 * All timestamps will be in UTC time.
-		 */
-		 void getProbeRequests(%in datetime fromTime);
-
-		/**
 		 * Air quality statistics for this interface.
 		 */
 		htable getRadioAirStats();
@@ -1287,27 +1271,6 @@ define probelist_t{
 		 * </ul>
 		 */
 		%read-only string IEEE80211_Caps;     /* Supported vendor caps */
-
-		/**
-		 * Define how a probe request is sent through notifications.
-		 * NoUpdate : probe request notifications are not sent.
-		 * First : a probe request is sent only if RSSI equals 0 and if probe request transmitter MACAddress is seen for the first time.
-		 * FirstRSSI : a probe request is sent only if RSSI is valid and if probe request transmitter MACAddress is seen for the first time.
-		 * Always : a probe request is sent only if RSSI equals 0.
-		 * AlwaysRSSI : a probe request is sent only if RSSI is valid.
-		 */
-		%persistent string ProbeRequestNotify = "FirstRSSI" {
-			on action validate call check_enum ["NoUpdate","First","FirstRSSI","Always","AlwaysRSSI"];
-		}
-
-		/**
-		 * After receiving a Probe Request in AlwaysRSSI mode,
-		 * define the number of milliseconds before send out all recently received Probe Requests.
-		 * @version 9.1
-		 */
-		%persistent uint32 ProbeRequestAggregationTimer{
-			default 1000;
-		}
 
 		/**
 		 * The maximum number of devices that can simultaneously be connected to the radio.

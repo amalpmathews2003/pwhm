@@ -3869,6 +3869,16 @@ void wld_rad_triggerChangeEvent(T_Radio* pRad, wld_rad_changeEvent_e event, void
     wld_event_trigger_callback(gWld_queue_rad_onChangeEvent, &changeEv);
 }
 
+void wld_rad_triggerFrameEvent(T_Radio* pRad, swl_bit8_t* frame, size_t frameLen, int32_t rssi) {
+    wld_rad_frameEvent_t frameEv;
+    frameEv.pRad = pRad;
+    frameEv.frameData = frame;
+    frameEv.frameLen = frameLen;
+    frameEv.frameRssi = rssi;
+
+    wld_event_trigger_callback(gWld_queue_rad_onFrameEvent, &frameEv);
+}
+
 uint32_t wld_rad_getCurrentFreq(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, 0, ME, "NULL");
     swl_chanspec_t spec = wld_rad_getSwlChanspec(pRad);
@@ -4094,8 +4104,6 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("dbgRADFile", s_setDbgFile_pwf),
                   SWLA_DM_PARAM_HDLR("OperatingStandards", wld_rad_setOperatingStandards_pwf),
                   SWLA_DM_PARAM_HDLR("OperatingStandardsFormat", wld_rad_setOperatingStandardsFormat_pwf),
-                  SWLA_DM_PARAM_HDLR("ProbeRequestNotify", wld_prbReq_setNotify_pwf),
-                  SWLA_DM_PARAM_HDLR("ProbeRequestAggregationTimer", wld_prbReq_setNotifyAggregationTimer_pwf),
                   SWLA_DM_PARAM_HDLR("DelayApUpPeriod", wld_rad_delayMgr_setDelayApUpPeriod_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
                   ),

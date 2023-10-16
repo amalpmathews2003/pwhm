@@ -83,6 +83,7 @@ static wld_event_queue_t rqueue_ep_onStatus_change = {.name = "evEpStatus"};
 static wld_event_queue_t rqueue_vap_onStatus_change = {.name = "evVapStatus"};
 static wld_event_queue_t rqueue_rad_onScan_change = {.name = "evScan"};
 static wld_event_queue_t rqueue_rad_onChange = {.name = "evRadChange"};
+static wld_event_queue_t rqueue_rad_onFrame = {.name = "evRadFrame"};
 
 
 static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
@@ -92,6 +93,7 @@ wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_vap_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_rad_onScan_change = NULL;
 wld_event_queue_t* gWld_queue_rad_onChangeEvent = NULL;
+wld_event_queue_t* gWld_queue_rad_onFrameEvent = NULL;
 
 wld_event_queue_t* gWld_queue_lifecycleEvent = NULL;
 
@@ -115,6 +117,9 @@ void wld_event_init() {
 
     gWld_queue_rad_onChangeEvent = &rqueue_rad_onChange;
     amxc_llist_init(&gWld_queue_rad_onChangeEvent->subscribers);
+
+    gWld_queue_rad_onFrameEvent = &rqueue_rad_onFrame;
+    amxc_llist_init(&gWld_queue_rad_onFrameEvent->subscribers);
 
     gWld_queue_lifecycleEvent = &rqueue_lifecycleEvent;
     amxc_llist_init(&gWld_queue_lifecycleEvent->subscribers);

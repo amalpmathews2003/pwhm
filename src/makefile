@@ -39,7 +39,6 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					ChannelManagement/wld_chanmgt.o \
 					ChannelManagement/wld_bgdfs.o \
 					ChannelManagement/wld_channel_info.o \
-					RadMgt/wld_prb_req.o\
 					RadMgt/wld_rad_stamon.o\
 					RadMgt/wld_rad_caps.o\
 					RadMgt/wld_rad_ifMgt.o\

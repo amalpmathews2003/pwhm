@@ -15,7 +15,6 @@
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
                 parameter ObssCoexistenceEnable = 1;
-                parameter ProbeRequestNotify = "AlwaysRSSI";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
                     parameter BaseMacOffset = 1;
@@ -40,7 +39,6 @@
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
-                parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter AutoBandwidthSelectMode="MaxAvailable";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
@@ -67,7 +65,6 @@
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
-                parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter AutoBandwidthSelectMode="MaxAvailable";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;

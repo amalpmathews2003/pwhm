@@ -80,7 +80,6 @@
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
                 parameter ObssCoexistenceEnable = 1;
-                parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "b,g,n,ax";
                 parameter OperatingChannelBandwidth = "20MHz";
                 object MACConfig {
@@ -108,7 +107,6 @@
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
-                parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "a,n,ac,ax";
                 object Sensing {
                     parameter Enable = 0;
@@ -131,7 +129,6 @@
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
-                parameter ProbeRequestNotify = "AlwaysRSSI";
                 parameter OperatingStandards = "ax";
                 object Sensing {
                     parameter Enable = 0;
