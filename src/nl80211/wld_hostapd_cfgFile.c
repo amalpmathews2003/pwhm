@@ -66,6 +66,7 @@
 #include "wld_util.h"
 #include "swl/swl_hex.h"
 #include "swl/map/swl_mapCharFmt.h"
+#include "wld_wpaSupp_parser.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgFile.h"
 #include "wld_chanmgt.h"

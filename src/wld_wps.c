@@ -661,6 +661,10 @@ static amxd_status_t s_initiateWPS(T_AccessPoint* pAP, amxc_var_t* retval, swl_r
     return s_setCommandReply(retval, SWL_USP_CMD_STATUS_SUCCESS, amxd_status_ok);
 }
 
+static void s_updateRelayApCredentials(T_AccessPoint* pAP, amxc_var_t* relayVar) {
+    pAP->addRelayApCredentials = amxc_var_dyncast(bool, relayVar) || amxd_object_get_bool(amxd_object_get(pAP->pBus, "WPS"), "RelayCredentialsEnable", NULL);
+}
+
 amxd_status_t _WPS_InitiateWPSPBC(amxd_object_t* object,
                                   amxd_function_t* func _UNUSED,
                                   amxc_var_t* args _UNUSED,
@@ -669,6 +673,7 @@ amxd_status_t _WPS_InitiateWPSPBC(amxd_object_t* object,
     T_AccessPoint* pAP = wld_ap_fromObj(pApObj);
     amxc_var_init(retval);
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    s_updateRelayApCredentials(pAP, GET_ARG(args, "isRelay"));
     swl_rc_ne rc = SWL_RC_OK;
     amxd_status_t status = amxd_status_ok;
     if((pAP == NULL) || (pAP->pRadio == NULL)) {
@@ -711,6 +716,7 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
     char* clientPINStr = amxc_var_dyncast(cstring_t, clientPINVar);
     swl_str_copy(clientPIN, sizeof(clientPIN), clientPINStr);
     free(clientPINStr);
+    s_updateRelayApCredentials(pAP, GET_ARG(args, "isRelay"));
     swl_rc_ne rc = SWL_RC_OK;
     amxd_status_t status = amxd_status_ok;
     if((pAP == NULL) || (pAP->pRadio == NULL)) {

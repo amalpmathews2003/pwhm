@@ -1808,6 +1808,7 @@ struct S_ACCESSPOINT {
     bool wdsEnable;                      /* Enable 4 mac address */
     wld_multiap_type_m multiAPType;      /* Bitmask of all MultiAP type applied to this accesspoint */
     wld_apRole_e apRole;                 /* Current AccessPoint role */
+    T_AccessPoint* pReferenceApRelay;    /* Use the credentials of this AP inside WPS M8 */
     bool mboEnable;                      /* Enable multi band operation*/
     wld_mbo_denyReason_e mboDenyReason;  /* MBO Assoc Disallow Reason to add to the MBO IE*/
     bool enableVendorIEs;                /* Enable the broadcast of custom vendor IEs */

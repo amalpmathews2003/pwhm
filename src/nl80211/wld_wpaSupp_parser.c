@@ -59,6 +59,8 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include <arpa/inet.h>
+
 #include "wld.h"
 #include "wld_util.h"
 #include "wld_wps.h"
@@ -161,8 +163,120 @@ enum wps_wpasupplicant_attr {
 #define WPS_SUPPLICANT_AUTH_WPAPSK        0x02
 #define WPS_SUPPLICANT_AUTH_WPA2PSK       0x20
 
+#define WPS_SUPPLICANT_ENCR_NONE          0x01
+#define WPS_SUPPLICANT_ENCR_TKIP          0x04
+#define WPS_SUPPLICANT_ENCR_AES           0x08
+
+SWL_TABLE(sAuthMap,
+          ARR(uint16_t auth; uint16_t secMode; ),
+          ARR(swl_type_uint16, swl_type_uint16, ),
+          ARR({SWL_SECURITY_APMODE_NONE, WPS_SUPPLICANT_AUTH_OPEN},
+              {SWL_SECURITY_APMODE_WPA_P, WPS_SUPPLICANT_AUTH_WPAPSK},
+              {SWL_SECURITY_APMODE_WPA2_P, WPS_SUPPLICANT_AUTH_WPA2PSK},
+              ));
+
+SWL_TABLE(sEncrMap,
+          ARR(uint16_t encr; uint16_t secMode; ),
+          ARR(swl_type_uint16, swl_type_uint16, ),
+          ARR({SWL_SECURITY_APMODE_NONE, WPS_SUPPLICANT_ENCR_NONE},
+              {SWL_SECURITY_APMODE_WPA_P, WPS_SUPPLICANT_ENCR_TKIP},
+              {SWL_SECURITY_APMODE_WPA2_P, WPS_SUPPLICANT_ENCR_AES},
+              ));
+
 static inline uint16_t WPS_SUPPLICANT_GET_BE16(const uint8_t* a) {
     return (a[0] << 8) | a[1];
+}
+
+static inline void WPS_SUPPLICANT_SET_BE16(char* a, const uint16_t val) {
+    a[0] = val >> 8;
+    a[1] = val & 0xff;
+}
+
+#define X_WPS_CRED(X, Y) \
+    X(Y, gtSwl_type_uint16, credAttr) \
+    X(Y, gtSwl_type_uint16, credLen) \
+    X(Y, gtSwl_type_uint16, networkAttr) \
+    X(Y, gtSwl_type_uint16, networkLen) \
+    X(Y, gtSwl_type_uint8, networkValue) \
+    X(Y, gtSwl_type_uint16, ssidAttr) \
+    X(Y, gtSwl_type_uint16, ssidLen) \
+    X(Y, gtSwl_type_charPtr, ssidValue) \
+    X(Y, gtSwl_type_uint16, authAttr) \
+    X(Y, gtSwl_type_uint16, authLen) \
+    X(Y, gtSwl_type_uint16, authValue) \
+    X(Y, gtSwl_type_uint16, encrAttr) \
+    X(Y, gtSwl_type_uint16, encrLen) \
+    X(Y, gtSwl_type_uint16, encrValue) \
+    X(Y, gtSwl_type_uint16, keyAttr) \
+    X(Y, gtSwl_type_uint16, keyLen) \
+    X(Y, gtSwl_type_charPtr, keyValue) \
+    X(Y, gtSwl_type_uint16, macAttr) \
+    X(Y, gtSwl_type_uint16, macLen) \
+    X(Y, gtSwl_type_macBin, macValue)
+
+SWL_TT_H(gWpsCred, wld_wpsCred_t, X_WPS_CRED, )
+SWL_TT_C(gWpsCred, wld_wpsCred_t, X_WPS_CRED)
+
+bool wpaSupp_buildWpsCredentials(T_AccessPoint* pAP, char* buf, size_t* bufLen) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(buf, false, ME, "NULL");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+
+    wld_wpsCred_t cred = {
+        .credAttr = htons(WPS_ATTR_CRED),
+
+        .networkAttr = htons(WPS_ATTR_NETWORK_INDEX),
+        .networkLen = htons(1),
+        .networkValue = 0,
+
+        .ssidAttr = htons(WPS_ATTR_SSID),
+        .ssidLen = htons(strlen(pSSID->SSID)),
+        .ssidValue = pSSID->SSID,
+
+        .authAttr = htons(WPS_ATTR_AUTH_TYPE),
+        .authLen = htons(2),
+        .authValue = htons(*((uint16_t*) swl_table_getMatchingValue(&sAuthMap, 1, 0, &pAP->secModeEnabled))),
+
+        .encrAttr = htons(WPS_ATTR_ENCR_TYPE),
+        .encrLen = htons(2),
+        .encrValue = htons(*((uint16_t*) swl_table_getMatchingValue(&sEncrMap, 1, 0, &pAP->secModeEnabled))),
+
+        .keyAttr = htons(WPS_ATTR_NETWORK_KEY),
+        .keyLen = htons(strlen(pAP->keyPassPhrase)),
+        .keyValue = pAP->keyPassPhrase,
+
+        .macAttr = htons(WPS_ATTR_MAC_ADDR),
+        .macLen = htons(SWL_MAC_BIN_LEN),
+        .macValue.bMac = ARR(SWL_MAC_ARG(pSSID->BSSID)),
+    };
+
+    //Get credentials size
+    size_t attrCredlenSize = 0;
+    for(size_t i = 0; i < gWpsCred.nrTypes; i++) {
+        swl_type_t* type = gWpsCred.types[i];
+        swl_typeData_t* tmpValue = swl_tupleType_getValue(&gWpsCred, &cred, i);
+        attrCredlenSize += (type == &gtSwl_type_charPtr) ? strlen((char*) tmpValue) : type->size;
+    }
+
+    //Remove ATTR_CRED size
+    attrCredlenSize -= 2 * sizeof(uint16_t);
+    cred.credLen = htons(attrCredlenSize);
+
+    //Serialize wps credentials
+    size_t offset = 0;
+    for(size_t i = 0; i < gWpsCred.nrTypes; i++) {
+        swl_type_t* type = gWpsCred.types[i];
+        swl_typeData_t* tmpValue = swl_tupleType_getValue(&gWpsCred, &cred, i);
+        size_t elementLen = (type == &gtSwl_type_charPtr) ? strlen((char*) tmpValue) : type->size;
+        ASSERT_TRUE(((offset + elementLen) <= *bufLen), false, ME, "Buffer too small %d/%d", (int) (offset + elementLen), (int) *bufLen);
+        memcpy(buf + offset, tmpValue, elementLen);
+        offset += elementLen;
+    }
+
+    *bufLen = offset;
+
+    return true;
 }
 
 static swl_rc_ne s_parseSsid(T_WPSCredentials* creds, uint16_t attr _UNUSED, uint16_t len, uint8_t* data) {

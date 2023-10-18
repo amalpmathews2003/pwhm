@@ -1364,6 +1364,20 @@ static void s_setApRole_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setReferenceApRelay_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    const char* referenceApRelay = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(referenceApRelay, , ME, "NULL");
+    T_AccessPoint* relayAP = wld_ap_fromObj(amxd_object_findf(amxd_dm_get_root(get_wld_plugin_dm()), "%s", referenceApRelay));
+    pAP->pReferenceApRelay = relayAP;
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 static void s_enableVendorIEs_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
@@ -2697,6 +2711,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("MBOAssocDisallowReason", s_setMBOAssocDisallowReason_pwf),
                   SWLA_DM_PARAM_HDLR("MultiAPType", s_setMultiAPType_pwf),
                   SWLA_DM_PARAM_HDLR("ApRole", s_setApRole_pwf),
+                  SWLA_DM_PARAM_HDLR("ReferenceApRelay", s_setReferenceApRelay_pwf),
                   SWLA_DM_PARAM_HDLR("MaxAssociatedDevices", s_setMaxStations_pwf),
                   SWLA_DM_PARAM_HDLR("DiscoveryMethodEnabled", s_setDiscoveryMethod_pwf),
                   SWLA_DM_PARAM_HDLR("dbgAPEnable", s_setDbgEnable_pwf),

@@ -60,6 +60,7 @@
 **
 ****************************************************************************/
 #include <swl/swl_common.h>
+#include <swl/fileOps/swl_fileUtils.h>
 #include <swla/swla_mac.h>
 
 #include "wld/wld.h"
@@ -79,6 +80,8 @@
 #include "wifiGen_rad.h"
 #include "wld/wld_statsmon.h"
 #include "wld/Utils/wld_autoCommitMgr.h"
+#include "wld/wld_wpaSupp_parser.h"
+#include "wifiGen_hapd.h"
 
 #define ME "genVap"
 
@@ -366,6 +369,28 @@ int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
     return rc;
 }
 
+static void s_syncRelayCredentials(T_AccessPoint* pAP) {
+    wld_ap_hostapd_setParamValue(pAP, "skip_cred_build", "0", "WPS");
+
+    T_AccessPoint* relayAP = pAP->pReferenceApRelay;
+    ASSERTI_NOT_NULL(relayAP, , ME, "NULL");
+    ASSERTI_TRUE((relayAP != pAP) && pAP->addRelayApCredentials, , ME, "No relay enabled");
+
+    char wpsRelaySettings[256] = {'\0'};
+    size_t wpsRelaySettingsLen = sizeof(wpsRelaySettings);
+    bool ret = wpaSupp_buildWpsCredentials(relayAP, wpsRelaySettings, &wpsRelaySettingsLen);
+    ASSERTI_TRUE(ret, , ME, "Error in wpaSupp_buildWpsCredentials");
+
+    FILE* fptr = fopen("/tmp/wpsRelay.settings", "w");
+    ASSERT_NOT_NULL(fptr, , ME, "NULL");
+
+    fwrite(wpsRelaySettings, wpsRelaySettingsLen, 1, fptr);
+    fclose(fptr);
+
+    wld_ap_hostapd_setParamValue(pAP, "extra_cred", "/tmp/wpsRelay.settings", "WPS");
+    wld_ap_hostapd_setParamValue(pAP, "skip_cred_build", "1", "WPS");
+}
+
 swl_rc_ne wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set) {
     swl_rc_ne rc;
     if(!(set & SET)) {
@@ -385,6 +410,8 @@ swl_rc_ne wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int s
         wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_CANCELLED, NULL);
         return SWL_RC_OK;
     }
+
+    s_syncRelayCredentials(pAP);
 
     /*
      * Empty val or asking for supported one of PushButton methods: start PBC

@@ -355,6 +355,13 @@ define rrm_t{
 		}
 
 		/**
+		 * Use the credentials of this AP inside WPS M8.
+		 * Path to the relevant accesspoint example "WiFi.AccessPoint.vap5g0priv".
+		 * Will only be used if "isRelay" parameter is set to true in WPS functions.
+		 */
+		%persistent string ReferenceApRelay;
+
+		/**
 		 * List of MAC Addresses allowed or blocked on the current AP depending of the mode.
 		 * @version 9.3
 		 */
@@ -925,8 +932,9 @@ define rrm_t{
 			 * @return htable including "Status" of the the request to start PBC 
 			 * registrar session, which is one of the following strings:
 			 * Success, Error_Not_Ready, Error_Timeout, Error_Other
+			 * isRelay: set to true if this WPS session will be used as a relay to provide another AP credentials.
 			 */
-			htable InitiateWPSPBC();
+			htable InitiateWPSPBC(%in bool isRelay);
 			
 			/**
 			 * Initiates a Wi-Fi Protected Setup (WPS) AP/Client PIN:
@@ -936,11 +944,12 @@ define rrm_t{
 			 * with self PIN, for 2 mn.
 			 * Notice that the corresponding config methods need to be enabled by ConfigMethodsEnabled.
 			 * clientPIN: 4-digit or 8-digit WPS PIN code in case of ClientPIN.
+			 * isRelay: set to true if this WPS session will be used as a relay to provide another AP credentials.
 			 * @return htable including Status of the the request to start WPS AP/Client PIN session,
 			 * which is one of the following strings:
 			 * Success, Error_Not_Ready, Error_Timeout, Error_Other
 			 */
-			htable InitiateWPSPIN(%in string clientPIN);
+			htable InitiateWPSPIN(%in string clientPIN, %in bool isRelay);
 
 			/**
 			 * Cancel WPS registrar if it was runnning.
