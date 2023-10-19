@@ -117,6 +117,7 @@
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
 #include "wld_hostapd_cfgManager.h"
+#include "wld_wpaSupp_cfgManager.h"
 #include "swl/swl_80211.h"
 #include "swl/swl_ieee802.h"
 
@@ -2377,7 +2378,9 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     swl_rc_ne (* mfn_wendpoint_sendManagementFrame)(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
 
-    PFN_WVAP_UPDATE_STA_INFO mfn_wvap_update_assoc_dev;      /** Update settable changed to associated devices */
+    swl_rc_ne (* mfn_wendpoint_updateConfigMaps)(T_EndPoint* pEP, wld_wpaSupp_config_t* configMap); /**< Update the current wpa_supplicant global/network parameters map, to add or delete parameters */
+
+    PFN_WVAP_UPDATE_STA_INFO mfn_wvap_update_assoc_dev;                                             /** Update settable changed to associated devices */
 
     /**
      * A neighbour has been added or updated on the AP. The system should add the new neighbour

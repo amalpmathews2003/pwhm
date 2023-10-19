@@ -587,6 +587,10 @@ static swl_rc_ne TRAP_mfn_wvap_updateConfigMap(T_AccessPoint* pAP _UNUSED, swl_m
     return SWL_RC_OK;
 }
 
+static swl_rc_ne TRAP_mfn_wendpoint_updateConfigMaps(T_EndPoint* pEP _UNUSED, wld_wpaSupp_config_t* configMap _UNUSED) {
+    return SWL_RC_OK;
+}
+
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 
 #define FTA_ASSIGN(x) \
@@ -719,6 +723,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wendpoint_multiap_enable);
     FTA_ASSIGN(mfn_wendpoint_set_mac_address);
     FTA_ASSIGN(mfn_wendpoint_sendManagementFrame);
+    FTA_ASSIGN(mfn_wendpoint_updateConfigMaps);
 
     FTA_ASSIGN(mfn_wvap_request_rrm_report);
     FTA_ASSIGN(mfn_wvap_setEvtHandlers);
