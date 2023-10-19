@@ -290,6 +290,8 @@ swl_rc_ne wld_wpaSupp_cfgFile_create(T_EndPoint* pEP, char* cfgFileName) {
 
     s_setWpaSuppNetworkConfig(pEP, config);
 
+    pEP->pFA->mfn_wendpoint_updateConfigMaps(pEP, config);
+
     ret = wld_wpaSupp_writeConfig(config, cfgFileName);
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Write config error");
 
