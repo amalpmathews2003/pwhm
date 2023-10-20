@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.20.0 - 2023-10-20(08:46:50 +0000)
+
+### Other
+
+- Add support for adding a monitor interface to a radio
+
 ## Release v4.19.4 - 2023-10-16(15:26:10 +0000)
 
 ### Other
