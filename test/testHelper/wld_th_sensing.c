@@ -69,8 +69,7 @@
 #include "wld_th_sensing.h"
 #include "test-toolbox/ttb_assert.h"
 
-
-wld_th_rad_sensing_vendorData_t* s_getSensingVendorData(T_Radio* pRad) {
+wld_th_rad_sensing_vendorData_t* sensingGetVendorData(T_Radio* pRad) {
     ttb_assert_non_null(pRad);
     if(!pRad->vendorData) {
         wld_th_rad_sensing_vendorData_t* vendorData = calloc(1, sizeof(wld_th_rad_sensing_vendorData_t));
@@ -80,7 +79,7 @@ wld_th_rad_sensing_vendorData_t* s_getSensingVendorData(T_Radio* pRad) {
     return pRad->vendorData;
 }
 
-void freeSensingVendorData(T_Radio* pRad) {
+void sensingFreeVendorData(T_Radio* pRad) {
     ttb_assert_non_null(pRad);
     if(pRad->vendorData) {
         free(pRad->vendorData);
@@ -91,7 +90,7 @@ void freeSensingVendorData(T_Radio* pRad) {
 swl_rc_ne wld_th_rad_sensing_cmd(T_Radio* pRad) {
     ttb_assert_non_null(pRad);
     if(pRad->vendorData) {
-        wld_th_rad_sensing_vendorData_t* sensingVendorData = s_getSensingVendorData(pRad);
+        wld_th_rad_sensing_vendorData_t* sensingVendorData = sensingGetVendorData(pRad);
         ttb_assert_non_null(sensingVendorData);
         sensingVendorData->csiEnable = pRad->csiEnable;
     }
@@ -100,17 +99,28 @@ swl_rc_ne wld_th_rad_sensing_cmd(T_Radio* pRad) {
 
 swl_rc_ne wld_th_rad_sensing_addClient(T_Radio* pRad, wld_csiClient_t* client) {
     ttb_assert_non_null(pRad);
-    wld_th_rad_sensing_vendorData_t* sensingVendorData = s_getSensingVendorData(pRad);
+    wld_th_rad_sensing_vendorData_t* sensingVendorData = sensingGetVendorData(pRad);
     ttb_assert_non_null(sensingVendorData);
 
-    strcpy(sensingVendorData->macAddr.cMac, client->macAddr.cMac);
-    sensingVendorData->monitor_interval = client->monitorInterval;
+    if(client->monitorInterval > sensingVendorData->maxMonitorInterval) {
+        return SWL_RC_ERROR;
+    }
+
+    if(!swl_str_matches(client->macAddr.cMac, sensingVendorData->macAddr.cMac)) {
+        if(sensingVendorData->maxClientsNbrs == 0) {
+            return SWL_RC_ERROR;
+        }
+        sensingVendorData->maxClientsNbrs--;
+        strcpy(sensingVendorData->macAddr.cMac, client->macAddr.cMac);
+    }
+
+    sensingVendorData->monitorInterval = client->monitorInterval;
     return SWL_RC_OK;
 }
 
 swl_rc_ne wld_th_rad_sensing_delClient(T_Radio* pRad, swl_macChar_t macAddr) {
     ttb_assert_non_null(pRad);
-    wld_th_rad_sensing_vendorData_t* sensingVendorData = s_getSensingVendorData(pRad);
+    wld_th_rad_sensing_vendorData_t* sensingVendorData = sensingGetVendorData(pRad);
     ttb_assert_non_null(sensingVendorData);
 
     strcpy(sensingVendorData->macAddr.cMac, macAddr.cMac);
@@ -132,7 +142,7 @@ swl_rc_ne wld_th_rad_sensing_csiStats(T_Radio* pRad _UNUSED, wld_csiState_t* csi
 
 swl_rc_ne wld_th_rad_sensing_resetStats(T_Radio* pRad) {
     ttb_assert_non_null(pRad);
-    wld_th_rad_sensing_vendorData_t* sensingVendorData = s_getSensingVendorData(pRad);
+    wld_th_rad_sensing_vendorData_t* sensingVendorData = sensingGetVendorData(pRad);
     ttb_assert_non_null(sensingVendorData);
 
     sensingVendorData->csimonState.nullFrameCounter = 1;

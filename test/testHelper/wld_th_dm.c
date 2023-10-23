@@ -186,8 +186,6 @@ void wld_th_dm_destroy(wld_th_dm_t* dm) {
     swl_lib_cleanup();
 
     ttb_amx_cleanup(dm->ttbBus);
-
-
 }
 
 void wld_th_dm_handleEvents(wld_th_dm_t* dm _UNUSED) {

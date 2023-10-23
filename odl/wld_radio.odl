@@ -2675,10 +2675,9 @@ define probelist_t{
 			/**
 			 * List of clients MAC addresses configured to capture CSI reports
 			 */
-			object CSIClient[]{
-
-				on action destroy call wld_wifiSensing_delete_client_odf;
-				on event "*" call wld_wifiSensing_csiClientSetConf_ocf;
+			%read-only object CSIClient[]{
+				on action add-inst call wld_wifiSensing_addClientInst_oaf;
+				on action destroy call wld_wifiSensing_delClient_odf;
 
 				/**
 				 * A non-volatile handle used to reference this instance. Alias
@@ -2691,14 +2690,14 @@ define probelist_t{
 				/**
 				 * MACAddress : Device mac address (format xx:xx:xx:xx:xx:xx)
 				 */
-				string MACAddress{
-					on action validate call is_valid_macaddr;
-				}
+				%read-only string MACAddress;
 
 				/**
 				 * Monitor interval : Time (ms) interval between CSI captures
 				 */
-				uint32 MonitorInterval;
+				uint32 MonitorInterval{
+					on action write call wld_wifiSensing_setMonitorInterval_pwf;
+				}
 			}
 
 			/**

@@ -125,7 +125,7 @@ static void sensing_enable(T_Radio* pRad, ttb_object_t* radObj, wld_th_rad_sensi
     assert_int_equal(1, sensingVendorData->csiEnable);
 }
 
-static void sensingCommand(ttb_object_t* radObj, char* cmd, char* macAddr, uint8_t interval) {
+static bool sensingCommand(ttb_object_t* radObj, char* cmd, char* macAddr, uint32_t interval) {
     ttb_var_t* replyVar = NULL;
     ttb_reply_t* reply = NULL;
 
@@ -136,7 +136,7 @@ static void sensingCommand(ttb_object_t* radObj, char* cmd, char* macAddr, uint8
         amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
         amxc_var_add_key(cstring_t, args, "MACAddress", macAddr);
         if(interval != 0) {
-            amxc_var_add_key(uint8_t, args, "MonitorInterval", interval);
+            amxc_var_add_key(uint32_t, args, "MonitorInterval", interval);
         }
         reply = ttb_object_callFun(dm.ttbBus, radObj, cmd,
                                    &args, &replyVar);
@@ -144,10 +144,10 @@ static void sensingCommand(ttb_object_t* radObj, char* cmd, char* macAddr, uint8
         reply = ttb_object_callFun(dm.ttbBus, radObj, cmd,
                                    NULL, &replyVar);
     }
-
-    assert_true(ttb_object_replySuccess(reply));
+    bool ret = ttb_object_replySuccess(reply);
     ttb_object_cleanReply(&reply, &replyVar);
     ttb_mockTimer_goToFutureMs(1);
+    return ret;
 }
 
 static void checkCSICounters(ttb_object_t* radObj) {
@@ -230,7 +230,7 @@ static void test_sensing_enable(void** state _UNUSED) {
     for(tabIndex = 0; tabIndex < SWL_FREQ_BAND_MAX; tabIndex++) {
         T_Radio* pRad = getRadioBand(bandTab[tabIndex]);
         assert_non_null(pRad);
-        wld_th_rad_sensing_vendorData_t* sensingVendorData = s_getSensingVendorData(pRad);
+        wld_th_rad_sensing_vendorData_t* sensingVendorData = sensingGetVendorData(pRad);
         assert_non_null(sensingVendorData);
         ttb_object_t* radObj = getSensingChildObject(bandTab[tabIndex]);
         assert_non_null(radObj);
@@ -238,7 +238,7 @@ static void test_sensing_enable(void** state _UNUSED) {
         sensing_enable(pRad, radObj, sensingVendorData);
 
         // Free memory
-        freeSensingVendorData(pRad);
+        sensingFreeVendorData(pRad);
     }
 
 }
@@ -251,12 +251,14 @@ static void test_sensing_start_stop(void** state _UNUSED) {
     T_Radio* pRad = NULL;
     wld_th_rad_sensing_vendorData_t* sensingVendorData = NULL;
 
-
     for(tabIndex = 0; tabIndex < SWL_FREQ_BAND_MAX; tabIndex++) {
         pRad = getRadioBand(bandTab[tabIndex]);
         assert_non_null(pRad);
-        sensingVendorData = s_getSensingVendorData(pRad);
+        sensingVendorData = sensingGetVendorData(pRad);
         assert_non_null(sensingVendorData);
+
+        sensingVendorData->maxClientsNbrs = 3;
+        sensingVendorData->maxMonitorInterval = 500;
 
         // Add some client devices
         radObj = getSensingChildObject(bandTab[tabIndex]);
@@ -264,7 +266,8 @@ static void test_sensing_start_stop(void** state _UNUSED) {
 
         for(csiClientListIndex = 0; csiClientListIndex < NB_CLIENT_DEVICE; csiClientListIndex++) {
             // ADD csi client test ---------------------------------------------------------------------//
-            sensingCommand(radObj, "addClient", csiDeviceMacAddrList[csiClientListIndex], csiClientListIndex * 100 + 10);
+            assert_true(sensingCommand(radObj, "addClient",
+                                       csiDeviceMacAddrList[csiClientListIndex], csiClientListIndex * 100 + 10));
 
             csiClientObj = getCsiClientChildObject(bandTab[tabIndex], csiClientListIndex + 1);
             assert_non_null(csiClientObj);
@@ -281,8 +284,41 @@ static void test_sensing_start_stop(void** state _UNUSED) {
             swl_macChar_t swlMacAddr;
             strcpy(swlMacAddr.cMac, csiDeviceMacAddrList[csiClientListIndex]);
             swl_mac_charMatches(&(sensingVendorData->macAddr), &swlMacAddr);
-            assert_int_equal(sensingVendorData->monitor_interval, interval);
+            assert_int_equal(sensingVendorData->monitorInterval, interval);
+
+            // Update client monitoring interval
+            swl_typeUInt32_commitObjectParam(csiClientObj, "MonitorInterval", csiClientListIndex * 100 + 20);
+            ttb_mockTimer_goToFutureMs(1);
+            interval = swl_typeUInt32_fromObjectParamDef(csiClientObj, "MonitorInterval", 0);
+            assert_int_equal(interval, csiClientListIndex * 100 + 20);
+            assert_int_equal(sensingVendorData->monitorInterval, interval);
+
+            // Set client monitoring interval up to max supported interval
+            swl_typeUInt32_commitObjectParam(csiClientObj, "MonitorInterval", sensingVendorData->maxMonitorInterval + 100);
+            ttb_mockTimer_goToFutureMs(1);
+            interval = swl_typeUInt32_fromObjectParamDef(csiClientObj, "MonitorInterval", 0);
+            assert_int_equal(interval, csiClientListIndex * 100 + 20);
+            assert_int_equal(sensingVendorData->monitorInterval, interval);
+
+            // Set client monitoring interval up to max supported interval, using addClient() API
+            assert_false(sensingCommand(radObj, "addClient",
+                                        csiDeviceMacAddrList[csiClientListIndex], sensingVendorData->maxMonitorInterval + 100));
+            interval = swl_typeUInt32_fromObjectParamDef(csiClientObj, "MonitorInterval", 0);
+            assert_int_equal(interval, csiClientListIndex * 100 + 20);
+            assert_int_equal(sensingVendorData->monitorInterval, interval);
         }
+
+        // Add new client with invalid MAC address
+        assert_false(sensingCommand(radObj, "addClient",
+                                    "40:07:4D:54:3F", sensingVendorData->maxMonitorInterval));
+
+        // Add new client with valid MAC address and monitoring interval up to max supported interval
+        assert_false(sensingCommand(radObj, "addClient",
+                                    "40:07:4D:54:3F:9E", sensingVendorData->maxMonitorInterval + 100));
+
+        // Add the 4th client with valid MAC address and valid monitoring interval, when the max supported clients is 3
+        assert_false(sensingCommand(radObj, "addClient",
+                                    "40:07:4D:54:3F:9E", sensingVendorData->maxMonitorInterval));
 
         // Show stats test -------------------------------------------------------------------------//
         checkCSICounters(radObj);
@@ -299,7 +335,7 @@ static void test_sensing_start_stop(void** state _UNUSED) {
         }
 
         // Free memory
-        freeSensingVendorData(pRad);
+        sensingFreeVendorData(pRad);
     }
 }
 

@@ -68,14 +68,18 @@
 typedef struct {
     bool csiEnable;
     swl_macChar_t macAddr;
-    uint32_t monitor_interval;
+    uint32_t monitorInterval;
+    uint32_t maxClientsNbrs;
+    uint32_t maxMonitorInterval;
     wld_csiState_t csimonState;
 } wld_th_rad_sensing_vendorData_t;
 
-wld_th_rad_sensing_vendorData_t* s_getSensingVendorData(T_Radio* pRad);
-void freeSensingVendorData(T_Radio* pRad);
+wld_th_rad_sensing_vendorData_t* sensingGetVendorData(T_Radio* pRad);
+void sensingFreeVendorData(T_Radio* pRad);
+
 int wld_th_rad_sensing_create_hook(T_Radio* pRad);
 void wld_th_rad_sensing_destroy_hook(T_Radio* pRad);
+
 swl_rc_ne wld_th_rad_sensing_cmd(T_Radio* pRad);
 swl_rc_ne wld_th_rad_sensing_addClient(T_Radio* pRad, wld_csiClient_t* client);
 swl_rc_ne wld_th_rad_sensing_delClient(T_Radio* pRad, swl_macChar_t macAddr);
