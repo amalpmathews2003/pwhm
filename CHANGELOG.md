@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v4.20.1 - 2023-10-23(15:21:18 +0000)
+
+### Other
+
+- [WiFi Sensing] handle API errors while adding new CSI client instance
+
 ## Release v4.20.0 - 2023-10-20(08:46:50 +0000)
 
 ### Other
