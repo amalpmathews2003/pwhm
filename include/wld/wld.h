@@ -571,17 +571,6 @@ typedef enum {
     CM_RAD_MAX
 } chanmgt_rad_state;
 
-extern const char* cstr_wld_prb_req_mode[];
-
-typedef enum {
-    WLD_PRB_NO_UPDATE,
-    WLD_PRB_FIRST,
-    WLD_PRB_FIRST_RSSI,
-    WLD_PRB_ALWAYS,
-    WLD_PRB_ALWAYS_RSSI,
-    WLD_PRB_MAX
-} wld_prb_req_mode;
-
 /* PFN_WRAD_DFSRADARTRIGGER - "One-shot"-Radar simulation with optional sub-band modes */
 typedef enum {
     DFST_RP_NONE,       /* Do nothing (default) */
