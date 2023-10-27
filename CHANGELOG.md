@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.0.1 - 2023-10-27(10:10:32 +0000)
+
+### Other
+
+- - Radio alias invalid
+
 ## Release v5.0.0 - 2023-10-26(07:24:31 +0000)
 
 ### Other
