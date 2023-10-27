@@ -96,6 +96,7 @@ void wld_persist_onRadioCreation(T_Radio* pR) {
     SAH_TRACEZ_INFO(ME, "Add radio %s", pR->instanceName);
     amxd_trans_set_value(cstring_t, &trans, "OperatingFrequencyBand",
                          Rad_SupFreqBands[pR->operatingFrequencyBand]);
+    amxd_trans_set_value(cstring_t, &trans, "Alias", pR->instanceName);
 
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
 }
