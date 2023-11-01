@@ -64,6 +64,6 @@
 #define __WLD_WPA_SUPPLICANT_PARSER_H__
 
 swl_rc_ne wpaSup_parseWpsReceiveCredentialsEvt(T_WPSCredentials* creds, char* data, size_t dataLen);
-bool wpaSupp_buildWpsCredentials(T_AccessPoint* pAP, char* data, size_t* dataLen);
+swl_rc_ne wpaSupp_buildWpsCredentials(T_AccessPoint* pAP, char* data, size_t* dataLen);
 
 #endif /* __WLD_WPA_SUPPLICANT_PARSER_H__ */

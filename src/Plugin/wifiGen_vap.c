@@ -379,8 +379,8 @@ static void s_syncRelayCredentials(T_AccessPoint* pAP) {
 
     char wpsRelaySettings[256] = {'\0'};
     size_t wpsRelaySettingsLen = sizeof(wpsRelaySettings);
-    bool ret = wpaSupp_buildWpsCredentials(relayAP, wpsRelaySettings, &wpsRelaySettingsLen);
-    ASSERTI_TRUE(ret, , ME, "Error in wpaSupp_buildWpsCredentials");
+    swl_rc_ne ret = wpaSupp_buildWpsCredentials(relayAP, wpsRelaySettings, &wpsRelaySettingsLen);
+    ASSERTI_EQUALS(ret, SWL_RC_OK, , ME, "Error in wpaSupp_buildWpsCredentials");
 
     FILE* fptr = fopen("/tmp/wpsRelay.settings", "w");
     ASSERT_NOT_NULL(fptr, , ME, "NULL");
