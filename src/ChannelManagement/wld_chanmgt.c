@@ -547,6 +547,8 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
         return amxd_status_invalid_arg;
     }
 
+    ASSERT_EQUALS(pR->callIdReqChanspec, 0, amxd_status_invalid_action, ME, "%s call_id already set", pR->Name);
+
     swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, bandwidth, freqBand);
     wld_channelChangeReason_e reason = swl_conv_charToEnum(reason_str, g_wld_channelChangeReason_str, CHAN_REASON_MAX, CHAN_REASON_MANUAL);
 
