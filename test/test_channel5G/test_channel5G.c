@@ -133,7 +133,7 @@ static void test_startstop(void** state _UNUSED) {
 
 
     T_DFSEvent evt;
-    evt.bandwidth = rad->operatingChannelBandwidth;
+    evt.bandwidth = swl_radBw_toBw[rad->operatingChannelBandwidth];
     evt.channel = 100;
     evt.radarZone = RADARZONE_ETSI;
     evt.radarIndex = 1;

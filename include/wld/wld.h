@@ -335,17 +335,6 @@ extern amxd_object_t* wifi;
 
 /* Must be used in driver modules but they are mapping on this strings.*/
 extern const char* Rad_SupStatus[];
-extern const char* wld_status_str[];
-typedef enum {
-    RST_ERROR,
-    RST_LLDOWN,
-    RST_NOTPRESENT,
-    RST_DORMANT,
-    RST_UNKNOWN,
-    RST_DOWN,
-    RST_UP,
-    RST_MAX
-} wld_status_e;
 
 extern const char** Rad_SupFreqBands;
 
@@ -652,37 +641,6 @@ extern const char* g_str_wld_ap_dm[];
 /* These base structures are based on the TR181 docs */
 #define WLD_TEMP_INVALID_CELSIUS -274    // Temperature of The chipset, this is the default value which is INVALID.
 
-typedef struct {
-    unsigned long long BytesSent;
-    unsigned long long BytesReceived;
-    unsigned long long PacketsSent;
-    unsigned long long PacketsReceived;
-    unsigned long ErrorsSent;
-    unsigned long RetransCount;
-    unsigned long ErrorsReceived;
-    unsigned long DiscardPacketsSent;
-    unsigned long DiscardPacketsReceived;
-    unsigned long UnicastPacketsSent;
-    unsigned long UnicastPacketsReceived;
-    unsigned long MulticastPacketsSent;
-    unsigned long MulticastPacketsReceived;
-    unsigned long BroadcastPacketsSent;
-    unsigned long BroadcastPacketsReceived;
-    unsigned long UnknownProtoPacketsReceived;
-    unsigned long FailedRetransCount;
-    unsigned long RetryCount;
-    unsigned long MultipleRetryCount;
-    unsigned long WmmPacketsSent[WLD_AC_MAX];
-    unsigned long WmmPacketsReceived[WLD_AC_MAX];
-    unsigned long WmmFailedSent[WLD_AC_MAX];
-    unsigned long WmmFailedReceived[WLD_AC_MAX];
-    unsigned long WmmBytesSent[WLD_AC_MAX];
-    unsigned long WmmBytesReceived[WLD_AC_MAX];
-    unsigned long WmmFailedBytesSent[WLD_AC_MAX];
-    unsigned long WmmFailedBytesReceived[WLD_AC_MAX];
-    int32_t TemperatureDegreesCelsius; //Chipset Temperature in degrees Celsius
-    int32_t noise;
-} T_Stats;
 
 typedef struct {
     uint32_t maxMuClients;      /* Maximum MU clients. */
@@ -1334,18 +1292,7 @@ typedef enum {
     RIFS_MODE_MAX
 } wld_rifs_mode_e;
 
-SWL_ARRAY_TYPE_H(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX);
 
-#define X_WLD_STATUS_CHANGE_INFO(X, Y) \
-    X(Y, gtSwl_type_timeMono, lastStatusChange, "LastStatusChange") \
-    X(Y, gtSwl_type_uint32, nrStatusChanges, "NrStatusChanges") \
-    X(Y, gtWld_type_statusArray, statusHistogram, "StatusHistogram") \
-    X(Y, gtSwl_type_timeMono, lastStatusHistogramUpdate, "LastStatusHistogramUpdate") \
-    X(Y, gtSwl_type_timeMono, lastEnableTime, "LastEnableTime") \
-    X(Y, gtSwl_type_timeMono, lastDisableTime, "LastDisableTime") \
-    X(Y, gtSwl_type_uint32, nrEnables, "NrEnables")
-
-SWL_NTT_H(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO, );
 
 typedef enum {
     CHANNEL_INTERNAL_STATUS_CURRENT,
@@ -1459,8 +1406,9 @@ struct WLD_RADIO {
     bool autoChannelEnable;
     int autoChannelSetByUser;                               /* Keep track of UI interaction on the autoChannelEnable */
     int autoChannelRefreshPeriod;
-    swl_bandwidth_e operatingChannelBandwidth;              /* bandwidth as requested by user */
-    swl_bandwidth_e runningChannelBandwidth;                /* bandwidth currently configured */
+    swl_radBw_e operatingChannelBandwidth;                  /* bandwidth as requested by user */
+    swl_radBw_e runningChannelBandwidth;                    /* bandwidth currently configured */
+    swl_radBw_m supportedChannelBandwidth;                  /* SupportedBandwidths */
     wld_channelChangeReason_e channelBandwidthChangeReason; /* The cause of the last channel's Bandwidth change */
     swl_bandwidth_e maxChannelBandwidth;                    /* max available bandwidth */
     wld_rad_channelInternalStatus_e channelShowing;

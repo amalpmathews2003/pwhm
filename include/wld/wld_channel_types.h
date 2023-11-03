@@ -83,16 +83,6 @@ typedef enum {
 #define REXT_ABOVE_CC WLD_CHANNEL_EXTENTION_POS_ABOVE
 #define REXT_BELOW_CC WLD_CHANNEL_EXTENTION_POS_BELOW
 
-/**
- * Obsolete radio bandwidth definitions, please use SWL notation
- */
-#define RBW_AUTO SWL_BW_AUTO
-#define RBW_20MHZ SWL_BW_20MHZ
-#define RBW_40MHZ SWL_BW_40MHZ
-#define RBW_80MHZ SWL_BW_80MHZ
-#define RBW_160MHZ SWL_BW_160MHZ
-#define RBW_MAX SWL_BW_MAX
-typedef swl_bandwidth_e wld_radiobw_e;
 
 /**
  * Obsolete frequency band definitions, please use SWL notation

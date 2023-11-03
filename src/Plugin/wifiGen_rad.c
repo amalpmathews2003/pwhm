@@ -187,6 +187,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
         wld_nl80211_bandDef_t* pBand = &pWiphyInfo->bands[i];
         if(pBand->nChans > 0) {
             SAH_TRACEZ_INFO(ME, "process band(%d) nchan(%d)", pBand->freqBand, pBand->nChans);
+            if(SWL_BIT_IS_SET(pBand->chanWidthMask, SWL_BW_320MHZ)) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "320MHz");
+            }
             if(SWL_BIT_IS_SET(pBand->chanWidthMask, SWL_BW_160MHZ)) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "160MHz");
             }
@@ -252,7 +255,7 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     pRad->supportedFrequencyBands = M_SWL_FREQ_BAND_EXT_NONE;
     pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_NONE;
     pRad->supportedStandards = 0;
-    pRad->runningChannelBandwidth = SWL_BW_AUTO;
+    pRad->runningChannelBandwidth = SWL_RAD_BW_AUTO;
     pRad->maxChannelBandwidth = SWL_BW_AUTO;
     ASSERT_NOT_NULL(bands, , ME, "NULL");
     for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
@@ -272,9 +275,18 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
             pRad->operatingFrequencyBand = chanSpec.band;
             W_SWL_BIT_CLEAR(pRad->supportedFrequencyBands, SWL_FREQ_BAND_EXT_NONE);
             W_SWL_BIT_SET(pRad->supportedFrequencyBands, pRad->operatingFrequencyBand);
-        }
-        if(pIfaceInfo->chanSpec.chanWidth > 0) {
-            pRad->runningChannelBandwidth = swl_chanspec_intToBw(pIfaceInfo->chanSpec.chanWidth);
+
+            if(pIfaceInfo->chanSpec.chanWidth == 20) {
+                // 20MHz needs to be handled separately as in this case centerFreq may not be set, which causes an error in swl_chanspec_fromFreqCtrlCentre
+                pRad->runningChannelBandwidth = SWL_RAD_BW_20MHZ;
+            } else {
+                swl_chanspec_fromFreqCtrlCentre(&chanSpec, chanSpec.band, pIfaceInfo->chanSpec.ctrlFreq, pIfaceInfo->chanSpec.centerFreq1);
+                pRad->runningChannelBandwidth = swl_chanspec_toRadBw(&chanSpec);
+            }
+
+        } else if((pIfaceInfo->chanSpec.chanWidth > 0) && (pIfaceInfo->chanSpec.chanWidth < 320)) {
+            // At 320MHz, there are multiple possible runningChannelBw, so we need to be able to parse centre channel
+            pRad->runningChannelBandwidth = (swl_radBw_e) swl_chanspec_intToBw(pIfaceInfo->chanSpec.chanWidth);
         }
     }
     if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_NONE) {
@@ -297,22 +309,26 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     wld_nl80211_bandDef_t* pOperBand = &bands[pRad->operatingFrequencyBand];
     if(pOperBand->chanWidthMask > 0) {
         pRad->maxChannelBandwidth = swl_bit32_getHighest(pOperBand->chanWidthMask);
-        if(pRad->runningChannelBandwidth == SWL_BW_AUTO) {
-            pRad->runningChannelBandwidth = pRad->maxChannelBandwidth;
+        if(pRad->runningChannelBandwidth == SWL_RAD_BW_AUTO) {
+            if(pRad->maxChannelBandwidth < SWL_BW_320MHZ) {
+                pRad->runningChannelBandwidth = (swl_radBw_e) pRad->maxChannelBandwidth;
+            } else {
+                pRad->runningChannelBandwidth = SWL_RAD_BW_320MHZ1;
+            }
         }
-    } else if(pRad->runningChannelBandwidth == SWL_BW_AUTO) {
+    } else if(pRad->runningChannelBandwidth == SWL_RAD_BW_AUTO) {
         switch(pRad->operatingFrequencyBand) {
         case SWL_FREQ_BAND_EXT_5GHZ:
-            pRad->runningChannelBandwidth = SWL_BW_80MHZ;
+            pRad->runningChannelBandwidth = SWL_RAD_BW_80MHZ;
             break;
         case SWL_FREQ_BAND_EXT_6GHZ:
-            pRad->runningChannelBandwidth = SWL_BW_160MHZ;
+            pRad->runningChannelBandwidth = SWL_RAD_BW_160MHZ;
             break;
         default:
-            pRad->runningChannelBandwidth = SWL_BW_20MHZ;
+            pRad->runningChannelBandwidth = SWL_RAD_BW_20MHZ;
             break;
         }
-        pRad->maxChannelBandwidth = pRad->runningChannelBandwidth;
+        pRad->maxChannelBandwidth = swl_radBw_toBw[pRad->runningChannelBandwidth];
     }
     pRad->IEEE80211hSupported = (pRad->supportedFrequencyBands & (M_SWL_FREQ_BAND_5GHZ | M_SWL_FREQ_BAND_6GHZ)) ? 1 : 0;
     pRad->IEEE80211kSupported = true;
@@ -392,7 +408,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     SAH_TRACEZ_IN(ME);
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     pRad->index = if_nametoindex(pRad->Name);
-    pRad->runningChannelBandwidth = SWL_BW_AUTO;
+    pRad->runningChannelBandwidth = SWL_RAD_BW_AUTO;
     pRad->operatingStandards = M_SWL_RADSTD_AUTO;
     /* Fill in all our RO fields... */
     pRad->autoChannelSupported = 1;
@@ -724,7 +740,7 @@ int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards) {
 void wifiGen_rad_initBands(T_Radio* pRad) {
     int i = 0;
     for(i = 0; i < pRad->nrPossibleChannels; i++) {
-        swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->possibleChannels[i], pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
+        swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->possibleChannels[i], pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
         wld_channel_mark_available_channel(chanspec);
         if(swl_channel_isDfs(pRad->possibleChannels[i])) {
             wld_channel_mark_radar_req_channel(chanspec);

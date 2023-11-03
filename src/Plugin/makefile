@@ -3,6 +3,7 @@ include ../../makefile.inc
 
 CFLAGS := -I../../include/ -I../../include_priv/Plugin -I$(STAGINGDIR)/include -I$(STAGINGDIR)/usr/include $(CFLAGS)
 CFLAGS += -std=gnu99 -fPIC -Wall -Werror -Wextra -g
+CFLAGS += -Wformat -Wformat-security -Wimplicit-function-declaration -Wl,--no-undefined -Wno-unused-variable
 CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 
 LDFLAGS := -L.. -L$(STAGINGDIR)/lib -L$(STAGINGDIR)/usr/lib $(LDFLAGS)

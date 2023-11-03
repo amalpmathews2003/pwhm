@@ -292,7 +292,7 @@
 			 * @version 10.0
 			 */
 			%read-only string LinkBandwidth{
-				on action validate call check_enum ["Unknown","20MHz","40MHz","80MHz","160MHz"];
+				on action validate call check_enum ["Unknown","20MHz","40MHz","80MHz","160MHz","320MHz"];
 				default "Unknown";
 			}
 			
@@ -304,10 +304,11 @@
 			 * * n ([802.11n-2009])
 			 * * ac ([802.11ac-2013])
 			 * * ax ([802.11ax]) 
+			 * * be ([802.11be]) 
 			 * @version 10.0
 			 */
 			%read-only string OperatingStandard{
-				on action validate call check_enum ["Unknown","a","b","g","n","ac","ax"];
+				on action validate call check_enum ["Unknown","a","b","g","n","ac","be"];
 				default "Unknown";
 			}
 			

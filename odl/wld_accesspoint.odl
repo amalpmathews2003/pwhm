@@ -1333,7 +1333,7 @@ define rrm_t{
 
 			/* Maximum bandwidth supported */
 			%read-only string MaxBandwidthSupported {
-				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz","Unknown"];
 				default "Unknown";
 			}
 			
@@ -1345,10 +1345,10 @@ define rrm_t{
 			 * * n ([802.11n-2009])
 			 * * ac ([802.11ac-2013])
 			 * * ax ([802.11ax]) 
-			 * @version 10.0
+			 * * be ([802.11be])
 			 */
 			%read-only string OperatingStandard{
-				on action validate call check_enum ["a","b","g","n","ac","ax","Unknown"];
+				on action validate call check_enum ["a","b","g","n","ac","ax","be","Unknown"];
 				default "Unknown";
 			}
 
@@ -1528,7 +1528,7 @@ define rrm_t{
 			 * @version 9.2
 			 */
 			%read-only string LinkBandwidth{
-				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+				on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz","Unknown"];
 				default "Unknown";
 			}
 
@@ -1706,7 +1706,7 @@ define rrm_t{
 				 * @version 9.2
 				 */
 				%read-only string LinkBandwidth{
-					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Unknown"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz","Unknown"];
 					default "Unknown";
 				}
 

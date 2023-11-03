@@ -128,7 +128,7 @@ define probelist_t{
 */
 
 %define {
-    select WiFi {
+	select WiFi {
 	/**
 	   This object models an 802.11 wireless radio on a device (a
 	   stackable interface object as described in [section
@@ -145,7 +145,7 @@ define probelist_t{
 	   every physical wireless card. Note it's only the WLD
 	   plugin that will create the RADIO interface when started and
 	   destroy it when the plugin stops.
-	    */
+	*/
 	%persistent object Radio[] {
 		on event "*" call wld_radio_setConf_ocf;
 		/**
@@ -517,6 +517,7 @@ define probelist_t{
 		 *  <li>n ([802.11n-2009])</li>
 		 *  <li>ac ([802.11ac-2013])</li>
 		 *  <li>ax ([802.11ax])</li>
+		 *  <li>be ([802.11be])</li>
 		 * </ul>
 		 * <p>Each value indicates support for the indicated standard.
 		 * If OperatingFrequencyBand is set to 2.4GHz, only values b, g,
@@ -552,8 +553,8 @@ define probelist_t{
 		   <p>Diverging from the TR-181 standard described above, we currently only support
 		   the following combinations (were "ax" means "ax"-only and "ac" "ac-only"):
 		   "a", "b", "g", "n", "b,g", "g,n", "b,g,n", "a,n", "a,b,g,n", "a,n,ac",
-		   "a,b,g,n,ac,ax", "n,ac", "ac", "ax", "a,n,ac,ax",
-		   "b,g,n,ax".
+		   "a,b,g,n,ac,ax", "n,ac", "ac", "ax", "be", "a,n,ac,ax",
+		   "b,g,n,ax","a,n,ac,ax,be", "b,g,n,ax,be".
 		   </p>
 		 */
 		%persistent string OperatingStandards = "auto" {
@@ -681,36 +682,41 @@ define probelist_t{
 		 * <p>This radio’s WiFi firmware version. </p>
 		 */
 		%read-only string FirmwareVersion;
-
-		/**
-		 * <p>The desired channel bandwidth (applicable to 802.11n specifications
-		 * only). Enumeration of: </p>
+		
+		 /**
+		 * Comma-separated list of strings. These are the valid writable values for OperatingChannelBandwidth.
+		 * Each list item is an enumeration of: Each list item is an enumeration of:
 		 * <ul>
 		 * <li>20MHz</li>
 		 * <li>40MHz (wide mode)</li>
-		 * <li>80MHz (802.11ac only) </li>
-		 * <li>160MHz (802.11ac only) </li>
-		 * <li>Auto</li>
+		 * <li>80MHz</li>
+		 * <li>80+80MHz</li>
+		 * <li>160MHz</li>
+		 * <li>320MHz-1</li>
+		 * <li>320MHz-2</li>
 		 * </ul>
 		 */
+		%read-only string SupportedOperatingChannelBandwidth{
+			default "";
+		}
+
+		/**
+		 * The desired channel bandwidth (applicable to 802.11n specifications
+		 * only). 
+		 * The value MUST be a member of the list reported by the SupportedOperatingChannelBandwidths parameter.
+		 */
 		%persistent string OperatingChannelBandwidth{   /* Selected by channel */
-			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","80+80MHz","320MHz-1","320MHz-2","Auto"];
 			on action validate call wld_rad_validateOperatingChannelBandwidth_pvf;
 			default "Auto";
 		}
 
 		/**
 		 * The channel bandwidth currently in use. Enumeration of:
-		 * <ul>
-		 * <li>20MHz</li>
-		 * <li>40MHz (wide mode)</li>
-		 * <li>80MHz</li>
-		 * <li>160MHz</li>
-		 * </ul>
-		 * @version 9.1
+		 * The value MUST be a member of the list reported by the SupportedOperatingChannelBandwidths parameter.
 		 */
 		%read-only string CurrentOperatingChannelBandwidth{
-			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","80+80MHz","320MHz-1","320MHz-2","Auto"];
 			default "20MHz";
 		}
 
@@ -726,11 +732,11 @@ define probelist_t{
 		 * <li>40MHz (wide mode)</li>
 		 * <li>80MHz</li>
 		 * <li>160MHz</li>
+		 * <li>320MHz</li>
 		 * </ul>
-		 * @version 9.1
 		 */
 		%read-only string MaxChannelBandwidth{
-			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz"];
 			default "20MHz";
 		}
 
@@ -831,7 +837,7 @@ define probelist_t{
 		 * the value set here will be overwritten by the specific controls</p>
 		 */
 		%persistent int32 ActiveAntennaCtrl{
-			on action validate call check_range { min = -1, max = 255 };       /* Max support for 8 antennas (2th wave of 11AC) */
+			on action validate call check_range { min = -1, max = 255 }; /* Max support for 8 antennas (2th wave of 11AC) */
 			default -1;
 		}
 
@@ -1097,7 +1103,7 @@ define probelist_t{
 		 * Radio 802.11n VHT(Very High Throughput) capabilities. List of strings  with these
 		 * possible values:
 		 * * MAX_MPDU
-         * * SUP_WIDTH
+		 * * SUP_WIDTH
 		 * * RX_LDPC
 		 * * SGI_80
 		 * * SGI_160
@@ -1120,7 +1126,7 @@ define probelist_t{
 
 		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities, raw values, in base64 as per the Tr181 Spec.
-	     * See standard section "9.4.2.248.3 HE PHY Capabilities Information field" for bits details.
+		 * See standard section "9.4.2.248.3 HE PHY Capabilities Information field" for bits details.
 		*/
 		%read-only string HECapabilities;
 
@@ -1128,8 +1134,8 @@ define probelist_t{
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities. List of strings  with these
 		 * possible values:
 		 * * PHY_B0
-         * * 40MHZ_2_4GHZ
-         * * 40_80MHZ_5GHZ
+		 * * 40MHZ_2_4GHZ
+		 * * 40_80MHZ_5GHZ
 		 * * 160MHZ_5GHZ
 		 * * 160_80_80_MHZ_5GHZ
 		 * * SU_BEAMFORMER
@@ -1216,31 +1222,37 @@ define probelist_t{
 
 			/* Event instance created when radar detected */
 			object Event[] {
+			
 				/* Timestamp of detected radar */
 				%read-only datetime TimeStamp;
-				/* Channel of detected radar */
+				
+				/* Channel of detected radar. This may not match the primary channel of the radio */
 				%read-only uint32 Channel;
-				/* Bandwidth of detected radar */
+				
+				/* Bandwidth of detected radar. This is a plain bandwidth, and not an OperatingChannelBandwidth */
 				%read-only string Bandwidth{
-					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz","Auto"];
 					default "Auto";
 				}
+				
 				/* Channel to which the radio went after DFS detection */
 				%read-only uint32 NewChannel;
 
-				/* Bandwidth to which the radio went after DFS detection */
+				/* CurrentOperatingChannelBandwidth to which the radio went after DFS detection. */
 				%read-only string NewBandwidth{
-					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","80+80MHz","320MHz-1","320MHz-2","Auto"];
 					default "Auto";
 				}
 
 				/* List of channels on which radar was actually detected */
 				%read-only string DFSRadarDetectionList;
+				
 				/* Detected radar's zone */
 				%read-only string RadarZone{
 					on action validate call check_enum ["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
 					default "NONE";
 				}
+				
 				/* Detected radar's index */
 				%read-only uint8 RadarIndex;
 			}
@@ -1270,7 +1282,7 @@ define probelist_t{
 		 * "WPA1","WPA2","BURST","WME","WDS","WME_TKIPMIC","BGSCAN","UAPSD","FASTCC"
 		 * </ul>
 		 */
-		%read-only string IEEE80211_Caps;     /* Supported vendor caps */
+		%read-only string IEEE80211_Caps; /* Supported vendor caps */
 
 		/**
 		 * The maximum number of devices that can simultaneously be connected to the radio.
@@ -1707,17 +1719,12 @@ define probelist_t{
 				%read-only uint16 Channel;
 
 				/**
-				 * Target channel bandwidth by the radio in order to switch on it. Enumeration of:
-				 * <ul>
-				 * <li>Auto</li>
-				 * <li>20MHz</li>
-				 * <li>40MHz (wide mode)</li>
-				 * <li>80MHz</li>
-				 * <li>160MHz</li>
+				 * Target channel bandwidth by the radio in order to switch on it. 
+				 * Values shall match the possible values in SupportedOperatingChannelBandwidth.
 				 * </ul>
 				 */
 				%read-only string Bandwidth {
-					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz", "Auto"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","80+80MHz","320MHz-1","320MHz-2","Auto"];
 					default "Auto";
 				}
 
@@ -1764,16 +1771,12 @@ define probelist_t{
 				%read-only uint16 Channel;
 
 				/**
-				 * Current channel bandwidth by the radio in order to switch on it. Enumeration of:
-				 * <ul>
-				 * <li>20MHz</li>
-				 * <li>40MHz (wide mode)</li>
-				 * <li>80MHz</li>
-				 * <li>160MHz</li>
+				 * Current channel bandwidth by the radio in order to switch on it. 
+                 * Values shall match the possible values in SupportedOperatingChannelBandwidth.
 				 * </ul>
 				 */
 				%read-only string Bandwidth {
-					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","80+80MHz","320MHz-1","320MHz-2","Auto"];
 					default "20MHz";
 				}
 
@@ -1979,7 +1982,7 @@ define probelist_t{
 				 * Auto means no BgDfs running
 				 */
 				%read-only string Bandwidth{
-					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","Auto"];
+					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz","Auto"];
 					default "Auto";
 				}
 
@@ -2801,5 +2804,5 @@ define probelist_t{
 			%persistent string SRGPartialBSSIDBitmap;
 		}
 	} /* object Radio */
-    }
+	}
 }

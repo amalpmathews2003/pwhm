@@ -80,6 +80,7 @@
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_genericFrameParser.h"
+#include "swla/swla_chanspec.h"
 #include <amxc/amxc.h>
 #include <errno.h>
 #define ME "genEvt"
@@ -205,7 +206,7 @@ static void s_dfsCacDoneCb(void* userData, char* ifName, swl_chanspec_t* chanSpe
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     swl_chanspec_t currChanSpec = *chanSpec;
-    currChanSpec.bandwidth = pRad->runningChannelBandwidth;
+    currChanSpec.bandwidth = swl_radBw_toBw[pRad->runningChannelBandwidth];
     if(success) {
         wld_channel_clear_passive_band(currChanSpec);
         wld_chanmgt_writeDfsChannels(pRad);
@@ -249,7 +250,7 @@ static void s_dfsNewChannelCb(void* userData, char* ifName, swl_chanspec_t* chan
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     swl_chanspec_t currChanSpec = *chanSpec;
-    currChanSpec.bandwidth = pRad->runningChannelBandwidth;
+    currChanSpec.bandwidth = swl_radBw_toBw[pRad->runningChannelBandwidth];
     s_saveChanChanged(pRad, &currChanSpec, CHAN_REASON_DFS);
 }
 

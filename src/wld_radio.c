@@ -327,7 +327,7 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
         }
 
         pR->channelChangeReason = CHAN_REASON_MANUAL;
-        swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
+        swl_chanspec_t chanspec = swl_chanspec_fromDm(channel, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
         swl_rc_ne retcode = wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
         if(retcode < SWL_RC_OK) {
             /* If target channel is not valid, reset channel entry */
@@ -474,7 +474,7 @@ amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* obje
     ASSERT_NOT_NULL(newValue, status, ME, "NULL");
     swl_bandwidth_e radBw;
     if((swl_str_matches(currentValue, newValue)) ||
-       ((radBw = swl_conv_charToEnum(newValue, Rad_SupBW, SWL_BW_MAX, SWL_BW_MAX) < SWL_BW_MAX) &&
+       ((radBw = swl_conv_charToEnum(newValue, Rad_SupBW, SWL_BW_RAD_MAX, SWL_BW_RAD_MAX) < SWL_BW_RAD_MAX) &&
         ((radBw == SWL_BW_AUTO) || (swl_chanspec_bwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
         status = amxd_status_ok;
     } else {
@@ -491,14 +491,15 @@ static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t
     ASSERTI_NOT_NULL(pRad, , ME, "NULL");
     const char* OCBW = amxc_var_constcast(cstring_t, newValue);
 
-    swl_bandwidth_e radBw = swl_conv_charToEnum(OCBW, Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
+    swl_radBw_e radBw = swl_conv_charToEnum(OCBW, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
+    bool autoBwChange = (pRad->operatingChannelBandwidth == SWL_RAD_BW_AUTO || radBw == SWL_RAD_BW_AUTO);
+
     pRad->operatingChannelBandwidth = radBw;
-    bool autoBwChange = (pRad->operatingChannelBandwidth == SWL_BW_AUTO || radBw == SWL_BW_AUTO);
     pRad->channelBandwidthChangeReason = CHAN_REASON_MANUAL;
 
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->channel, radBw, pRad->operatingFrequencyBand);
+    swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->channel, radBw, pRad->operatingFrequencyBand);
     wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
-    SAH_TRACEZ_INFO(ME, "%s: set OCBW %u : %u", pRad->Name, radBw, autoBwChange);
+    SAH_TRACEZ_INFO(ME, "%s: set OCBW %s", pRad->Name, swl_radBw_str[radBw]);
 
     if(autoBwChange) {
         // if autobandwidth is enabled, and going from or to autobw, trigger autochannelEnable
@@ -578,7 +579,7 @@ bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt) {
     amxd_trans_set_uint8_t(&trans, "RadarIndex", evt->radarIndex);
 
     amxd_trans_set_uint32_t(&trans, "NewChannel", pR->channel);
-    amxd_trans_set_cstring_t(&trans, "NewBandwidth", swl_bandwidth_str[pR->runningChannelBandwidth]);
+    amxd_trans_set_cstring_t(&trans, "NewBandwidth", swl_radBw_str[pR->runningChannelBandwidth]);
 
     swl_typeUInt8_arrayTransParamSetChar(&trans, "DFSRadarDetectionList",
                                          pR->lastRadarChannelsAdded, pR->nrLastRadarChannelsAdded);
@@ -593,7 +594,7 @@ bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt) {
 }
 
 swl_chanspec_t wld_rad_getSwlChanspec(T_Radio* pRad) {
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->channel, pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
+    swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->channel, pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
     return chanspec;
 }
 
@@ -1819,13 +1820,13 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             commit = true;
         }
 
-        swl_bandwidth_e radBw = swl_conv_objectParamEnum(object, "OperatingChannelBandwidth", Rad_SupBW, SWL_BW_MAX, SWL_BW_AUTO);
+        swl_radBw_e radBw = swl_conv_objectParamEnum(object, "OperatingChannelBandwidth", swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
         tmp_int32 = amxd_object_get_int32_t(object, "Channel", NULL);
         if(((pR->channel != tmp_int32) || (pR->operatingChannelBandwidth != radBw)) &&
            ((pR->channelShowing == CHANNEL_INTERNAL_STATUS_SYNC) || (pR->channelShowing == CHANNEL_INTERNAL_STATUS_TARGET))) {
             pR->operatingChannelBandwidth = radBw;
             if(!pR->autoChannelEnable) {
-                swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(tmp_int32, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
+                swl_chanspec_t chanspec = swl_chanspec_fromDm(tmp_int32, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
                 wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
                 wld_autoCommitMgr_notifyRadEdit(pR);
             } else {
@@ -3013,7 +3014,7 @@ bool wld_rad_hasChannel(T_Radio* pRad, int chan) {
 
 bool wld_rad_hasChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
-    return (swl_chanspec_bwToInt(pRad->runningChannelBandwidth) >= swl_chanspec_bwToInt(chW));
+    return (swl_chanspec_radBwToInt(pRad->runningChannelBandwidth) >= swl_chanspec_bwToInt(chW));
 }
 
 wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad) {
@@ -3199,49 +3200,6 @@ bool wld_rad_hasOnlyActiveEP(T_Radio* pRad) {
     return !wld_rad_hasActiveVap(pRad);
 }
 
-/*
-   Some channels are not 11AC channels!
-   To handle the trouble channels we must check what we have and if we can support them.
-   When the Weather channels are included, we've an extra 11AC group. (116,120,124 and 128).
-   When channel 144 is freeed (already in US), this also enables one (132,136,140 and 144)!
-
-   !!! IMPORTANT !!!
-   Following channel rule is implemented: The user can ALWAYS select the CHANNEL! If selected
-   channel can't be set due current "USER BANDWIDTH" mode, we set the next highest possible
-   BANDWIDTH that allows us to SET the requested channel!
-   It's up to the caller to keep track of the USER BANDWIDTH and restore it back! This is
-   needed to switch back to initial user bandwidth when old (or new) possible channel is
-   set/restored.
- */
-
-void do_updateOperatingChannelBandwidth5GHz(T_Radio* pRad) {
-    switch(pRad->channel) {
-    case 116:
-        if(!wld_rad_hasWeatherChannels(pRad)) {
-            // We've only Channel 116!
-            pRad->runningChannelBandwidth = SWL_BW_20MHZ;
-        }
-        break;
-    case 132:
-    case 136:
-    case 140:
-    case 144: // Future, is already freed in US!
-        if(!wld_rad_hasChannel(pRad, 144)) {
-            if((pRad->channel == 140) || (pRad->operatingChannelBandwidth == SWL_BW_20MHZ)) {
-                pRad->runningChannelBandwidth = SWL_BW_20MHZ;
-            } else {
-                pRad->runningChannelBandwidth = SWL_BW_40MHZ;
-            }
-        }
-        break;
-    case 165:
-        pRad->runningChannelBandwidth = SWL_BW_20MHZ;
-        break;
-    default:
-        /* No need to overrule user ChannelBandwidth setting ALL combinations are allowed! */
-        break;
-    }
-}
 
 void wld_rad_updateChannelsInUse(T_Radio* pRad) {
     swl_channel_t chanInUse[SWL_BW_CHANNELS_MAX] = {0};
@@ -3285,7 +3243,7 @@ bool wld_rad_is_on_dfs(T_Radio* pRad) {
         SAH_TRACEZ_ERROR(ME, "req dfs of null rad");
         return false;
     }
-    return wld_channel_is_dfs_band(pRad->channel, pRad->runningChannelBandwidth);
+    return wld_channel_is_dfs_band(pRad->channel, swl_radBw_toBw[pRad->runningChannelBandwidth]);
 }
 
 bool wld_rad_isDoingDfsScan(T_Radio* pRad) {
@@ -3324,80 +3282,6 @@ bool wld_rad_isUpExt(T_Radio* pRad) {
             || (pRad->detailedState == CM_RAD_BG_CAC_EXT)
             || (pRad->detailedState == CM_RAD_BG_CAC_EXT_NS)
             || (pRad->detailedState == CM_RAD_DELAY_AP_UP));
-}
-
-swl_bandwidth_e wld_rad_verify_bandwidth(T_Radio* pRad, swl_bandwidth_e targetbandwidth) {
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->channel, targetbandwidth, pRad->operatingFrequencyBand);
-    while(!wld_channel_is_band_available(chanspec) && targetbandwidth > SWL_BW_20MHZ) {
-        SAH_TRACEZ_INFO(ME, "band not avail %u %u %s", pRad->channel, targetbandwidth, pRad->Name);
-        targetbandwidth--;
-        chanspec.bandwidth = targetbandwidth;
-    }
-    if(pRad->obssCoexistenceEnabled && pRad->obssCoexistenceActive && (targetbandwidth == SWL_BW_40MHZ)) {
-        targetbandwidth = SWL_BW_20MHZ;
-    }
-
-    if(!wld_channel_is_band_available(chanspec)) {
-        SAH_TRACEZ_ERROR(ME, "No band available on channel!! %u %u %u",
-                         pRad->channel,
-                         pRad->runningChannelBandwidth,
-                         pRad->operatingChannelBandwidth);
-        return SWL_BW_AUTO;
-    }
-    return targetbandwidth;
-}
-
-swl_bandwidth_e wld_rad_getBaseConfigBw(T_Radio* pRad) {
-    if(pRad->operatingChannelBandwidth != SWL_BW_AUTO) {
-        return pRad->operatingChannelBandwidth;
-    }
-    if(wld_rad_is_5ghz(pRad)) {
-        return SWL_BW_80MHZ;
-    } else if(wld_rad_is_6ghz(pRad)) {
-        return SWL_BW_160MHZ;
-    } else {
-        return SWL_BW_20MHZ;
-    }
-}
-
-swl_bandwidth_e wld_rad_get_target_bandwidth(T_Radio* pRad) {
-    int targetBandwidth;
-    if(pRad->operatingChannelBandwidth != SWL_BW_AUTO) {
-        if(pRad->obssCoexistenceActive) {
-            if(pRad->operatingChannelBandwidth != SWL_BW_20MHZ) {
-                SAH_TRACEZ_INFO(ME, "%s : coexistence activated--> forcing targetBandwidth to 20MHz", pRad->Name);
-                pRad->channelBandwidthChangeReason = CHAN_REASON_OBSS_COEX; // forcing 20MHz--> even if the reason is manual in origin-->becomes CHAN_REASON_OBSS_COEX
-            }
-            targetBandwidth = SWL_BW_20MHZ;
-        } else {
-            targetBandwidth = pRad->operatingChannelBandwidth;
-            if(!pRad->autoChannelEnable) {
-                pRad->channelBandwidthChangeReason = CHAN_REASON_MANUAL;
-            }
-        }
-    } else {
-        if(!pRad->autoChannelEnable) {
-            if(!wld_rad_is_24ghz(pRad)) {
-                swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->channel, pRad->maxChannelBandwidth, pRad->operatingFrequencyBand);
-                if((pRad->autoBwSelectMode == BW_SELECT_MODE_MAXAVAILABLE)
-                   || ((pRad->autoBwSelectMode == BW_SELECT_MODE_MAXCLEARED)
-                       && (wld_channel_is_band_usable(chanspec)))) {
-                    targetBandwidth = pRad->maxChannelBandwidth;
-                } else if(wld_rad_is_6ghz(pRad)) {
-                    targetBandwidth = SWL_BW_160MHZ;
-                } else {
-                    targetBandwidth = SWL_BW_80MHZ;
-                }
-            } else {
-                targetBandwidth = SWL_BW_20MHZ;
-            }
-        } else {
-            targetBandwidth = pRad->runningChannelBandwidth;
-        }
-        pRad->channelBandwidthChangeReason = CHAN_REASON_AUTO;
-    }
-    targetBandwidth = wld_rad_verify_bandwidth(pRad, targetBandwidth);
-    return targetBandwidth;
 }
 
 void wld_rad_write_possible_channels(T_Radio* pRad) {
@@ -3488,8 +3372,10 @@ void wld_rad_chan_update_model(T_Radio* pRad, amxd_trans_t* trans) {
     char operatingStandardsText[64] = {};
     swl_radStd_toChar(operatingStandardsText, sizeof(operatingStandardsText), pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
     amxd_trans_set_cstring_t(targetTrans, "OperatingStandards", operatingStandardsText);
-    amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", Rad_SupBW[pRad->operatingChannelBandwidth]);
-    amxd_trans_set_cstring_t(targetTrans, "CurrentOperatingChannelBandwidth", Rad_SupBW[pRad->runningChannelBandwidth]);
+    amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", swl_radBw_str[pRad->operatingChannelBandwidth]);
+    amxd_trans_set_cstring_t(targetTrans, "CurrentOperatingChannelBandwidth", swl_radBw_str[pRad->runningChannelBandwidth]);
+    swl_conv_transParamSetMask(targetTrans, "SupportedOperatingChannelBandwidth", pRad->supportedChannelBandwidth,
+                               swl_radBw_str, SWL_RAD_BW_MAX);
 
     amxd_trans_set_cstring_t(targetTrans, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
     amxd_trans_set_cstring_t(targetTrans, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);

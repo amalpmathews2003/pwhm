@@ -377,8 +377,13 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     if(pR->maxChannelBandwidth == SWL_BW_AUTO) {
         if((pR->supportedFrequencyBands & RFB_5_GHZ) || (pR->supportedFrequencyBands & RFB_6_GHZ)) {
-            bool supports160 = pR->pFA->mfn_misc_has_support(pR, NULL, "160MHz", 0);
-            pR->maxChannelBandwidth = (supports160 ? SWL_BW_160MHZ : SWL_BW_80MHZ);
+            if(pR->pFA->mfn_misc_has_support(pR, NULL, "320MHz", 0)) {
+                pR->maxChannelBandwidth = SWL_BW_320MHZ;
+            } else if(pR->pFA->mfn_misc_has_support(pR, NULL, "160MHz", 0)) {
+                pR->maxChannelBandwidth = SWL_BW_160MHZ;
+            } else {
+                pR->maxChannelBandwidth = SWL_BW_80MHZ;
+            }
         } else {
             pR->maxChannelBandwidth = (pR->supportedStandards & M_SWL_RADSTD_N) ? SWL_BW_40MHZ : SWL_BW_20MHZ;
         }

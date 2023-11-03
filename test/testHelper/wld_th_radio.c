@@ -138,7 +138,7 @@ swl_channel_t possibleChannels6[] = {1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45
 void s_readChanInfo(T_Radio* pRad) {
 
     for(int i = 0; i < pRad->nrPossibleChannels; i++) {
-        swl_chanspec_t cs = SWL_CHANSPEC_NEW(pRad->possibleChannels[i], pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
+        swl_chanspec_t cs = swl_chanspec_fromDm(pRad->possibleChannels[i], pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
         wld_channel_mark_available_channel(cs);
         if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) && wld_channel_is_dfs(possibleChannels5[i])) {
             wld_channel_mark_radar_req_channel(cs);
@@ -162,7 +162,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         memcpy(rad->possibleChannels, possibleChannels6, SWL_ARRAY_SIZE(possibleChannels6));
         rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels6);
         rad->maxChannelBandwidth = SWL_BW_160MHZ;
-        rad->operatingChannelBandwidth = SWL_BW_80MHZ;
+        rad->operatingChannelBandwidth = SWL_RAD_BW_80MHZ;
         rad->channel = 1;
         rad->supportedStandards = M_SWL_RADSTD_AX;
     } else if(swl_str_matches(rad->Name, "wifi1")) {
@@ -171,7 +171,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         memcpy(rad->possibleChannels, possibleChannels5, SWL_ARRAY_SIZE(possibleChannels5));
         rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels5);
         rad->maxChannelBandwidth = SWL_BW_160MHZ;
-        rad->operatingChannelBandwidth = SWL_BW_80MHZ;
+        rad->operatingChannelBandwidth = SWL_RAD_BW_80MHZ;
         rad->channel = 36;
         rad->supportedStandards = M_SWL_RADSTD_A | M_SWL_RADSTD_N | M_SWL_RADSTD_AC | M_SWL_RADSTD_AX;
     } else {
@@ -180,7 +180,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         memcpy(rad->possibleChannels, possibleChannels2, SWL_ARRAY_SIZE(possibleChannels2));
         rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels2);
         rad->maxChannelBandwidth = SWL_BW_40MHZ;
-        rad->operatingChannelBandwidth = SWL_BW_20MHZ;
+        rad->operatingChannelBandwidth = SWL_RAD_BW_20MHZ;
         rad->channel = 1;
         rad->supportedStandards = M_SWL_RADSTD_B | M_SWL_RADSTD_G | M_SWL_RADSTD_N | M_SWL_RADSTD_AX;
     }

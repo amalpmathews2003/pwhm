@@ -197,7 +197,7 @@ static void s_sendNotification(T_Radio* pRad) {
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_t* my_map = amxc_var_add_key(amxc_htable_t, &params, "Updates", NULL);
     amxc_var_add_key(uint32_t, my_map, "StartChannel", pRad->channel);
-    amxc_var_add_key(cstring_t, my_map, "StartBandwidth", swl_bandwidth_str[pRad->runningChannelBandwidth]);
+    amxc_var_add_key(cstring_t, my_map, "StartBandwidth", swl_radBw_str[pRad->runningChannelBandwidth]);
     amxc_var_add_key(uint32_t, my_map, "ClearChannel", pRad->bgdfs_config.channel);
     amxc_var_add_key(cstring_t, my_map, "ClearBandwidth", swl_bandwidth_str[pRad->bgdfs_config.bandwidth]);
     amxc_var_add_key(cstring_t, my_map, "Result", wld_dfsResult_str[pRad->bgdfs_config.lastResult]);

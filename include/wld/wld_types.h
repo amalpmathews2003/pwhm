@@ -63,6 +63,11 @@
 #ifndef SRC_INCLUDE_WLD_WLD_TYPES_H_
 #define SRC_INCLUDE_WLD_WLD_TYPES_H_
 
+#include <stdint.h>
+#include "swl/types/swl_arrayType.h"
+#include "swla/swla_namedTupleType.h"
+#include "swla/swla_time.h"
+
 #define WLD_MAX_POSSIBLE_CHANNELS 64
 
 typedef struct WLD_RADIO T_Radio;
@@ -99,6 +104,18 @@ typedef enum {
     WLD_AC_MAX
 } wld_ac_e;
 
+extern const char* wld_status_str[];
+typedef enum {
+    RST_ERROR,
+    RST_LLDOWN,
+    RST_NOTPRESENT,
+    RST_DORMANT,
+    RST_UNKNOWN,
+    RST_DOWN,
+    RST_UP,
+    RST_MAX
+} wld_status_e;
+
 
 typedef enum {
     FSM_IDLE,       /* Task not yet created */
@@ -115,5 +132,89 @@ typedef enum {
     FSM_UNKNOWN,    /* ? A state we don't like and don't know how to get rid of it.*/
     FSM_FATAL       /* Really hard issue... we can only fix this by restarting the system or driver */
 } FSM_STATE;
+
+typedef struct wld_stats T_Stats;
+typedef struct wld_stats {
+    unsigned long long BytesSent;
+    unsigned long long BytesReceived;
+    unsigned long long PacketsSent;
+    unsigned long long PacketsReceived;
+    unsigned long ErrorsSent;
+    unsigned long RetransCount;
+    unsigned long ErrorsReceived;
+    unsigned long DiscardPacketsSent;
+    unsigned long DiscardPacketsReceived;
+    unsigned long UnicastPacketsSent;
+    unsigned long UnicastPacketsReceived;
+    unsigned long MulticastPacketsSent;
+    unsigned long MulticastPacketsReceived;
+    unsigned long BroadcastPacketsSent;
+    unsigned long BroadcastPacketsReceived;
+    unsigned long UnknownProtoPacketsReceived;
+    unsigned long FailedRetransCount;
+    unsigned long RetryCount;
+    unsigned long MultipleRetryCount;
+    unsigned long WmmPacketsSent[WLD_AC_MAX];
+    unsigned long WmmPacketsReceived[WLD_AC_MAX];
+    unsigned long WmmFailedSent[WLD_AC_MAX];
+    unsigned long WmmFailedReceived[WLD_AC_MAX];
+    unsigned long WmmBytesSent[WLD_AC_MAX];
+    unsigned long WmmBytesReceived[WLD_AC_MAX];
+    unsigned long WmmFailedBytesSent[WLD_AC_MAX];
+    unsigned long WmmFailedBytesReceived[WLD_AC_MAX];
+    int32_t TemperatureDegreesCelsius; //Chipset Temperature in degrees Celsius
+    int32_t noise;
+} wld_stats_t;
+
+#define X_WLD_STATS(X, Y) \
+    X(Y, gtSwl_type_uint64, BytesSent, "BytesSent") \
+    X(Y, gtSwl_type_uint64, BytesReceived, "BytesReceived") \
+    X(Y, gtSwl_type_uint64, PacketsSent, "PacketsSent") \
+    X(Y, gtSwl_type_uint64, PacketsReceived, "PacketsReceived") \
+    X(Y, gtSwl_type_uint64, FramesSent, "FramesSent") \
+    X(Y, gtSwl_type_uint64, FramesReceived, "FramesReceived") \
+    X(Y, gtSwl_type_uint32, ErrorsSent, "ErrorsSent") \
+    X(Y, gtSwl_type_uint32, ErrorsReceived, "ErrorsReceived") \
+    X(Y, gtSwl_type_uint32, RetransCount, "RetransCount") \
+    X(Y, gtSwl_type_uint32, ReceiveRetransCount, "ReceiveRetransCount") \
+    X(Y, gtSwl_type_uint32, DiscardPacketsSent, "DiscardPacketsSent") \
+    X(Y, gtSwl_type_uint32, DiscardPacketsReceived, "DiscardPacketsReceived") \
+    X(Y, gtSwl_type_uint32, UnicastPacketsSent, "UnicastPacketsSent") \
+    X(Y, gtSwl_type_uint32, UnicastPacketsReceived, "UnicastPacketsReceived") \
+    X(Y, gtSwl_type_uint32, MulticastPacketsSent, "MulticastPacketsSent") \
+    X(Y, gtSwl_type_uint32, MulticastPacketsReceived, "MulticastPacketsReceived") \
+    X(Y, gtSwl_type_uint32, BroadcastPacketsSent, "BroadcastPacketsSent") \
+    X(Y, gtSwl_type_uint32, BroadcastPacketsReceived, "BroadcastPacketsReceived") \
+    X(Y, gtSwl_type_uint32, UnknownProtoPacketsReceived, "UnknownProtoPacketsReceived") \
+    X(Y, gtSwl_type_uint32, FailedRetransCount, "FailedRetransCount") \
+    X(Y, gtSwl_type_uint32, RxHole, "RxHole") \
+    X(Y, gtSwl_type_uint32, RetryCount, "RetryCount") \
+    X(Y, gtWld_acTrafficArray, WmmPacketsSent, "WmmPacketsSent") \
+    X(Y, gtWld_acTrafficArray, WmmPacketsReceived, "WmmPacketsReceived") \
+    X(Y, gtWld_acTrafficArray, WmmFailedSent, "WmmFailedSent") \
+    X(Y, gtWld_acTrafficArray, WmmFailedReceived, "WmmFailedReceived") \
+    X(Y, gtWld_acTrafficArray, WmmBytesSent, "WmmBytesSent") \
+    X(Y, gtWld_acTrafficArray, WmmBytesReceived, "WmmBytesReceived") \
+    X(Y, gtWld_acTrafficArray, WmmFailedBytesSent, "WmmFailedBytesSent") \
+    X(Y, gtWld_acTrafficArray, WmmFailedBytesReceived, "WmmFailedBytesReceived") \
+    X(Y, gtSwl_type_int32, TemperatureDegreesCelsius, "TemperatureDegreesCelsius") \
+    X(Y, gtSwl_type_timeMono, latestStatsUpdateTime, "LatestStatsUpdateTime")
+
+SWL_NTT_H_ANNOTATE(gtWld_stats, wld_stats_t, X_WLD_STATS);
+
+
+
+SWL_ARRAY_TYPE_H(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX);
+
+#define X_WLD_STATUS_CHANGE_INFO(X, Y) \
+    X(Y, gtSwl_type_timeMono, lastStatusChange, "LastStatusChange") \
+    X(Y, gtSwl_type_uint32, nrStatusChanges, "NrStatusChanges") \
+    X(Y, gtWld_type_statusArray, statusHistogram, "StatusHistogram") \
+    X(Y, gtSwl_type_timeMono, lastStatusHistogramUpdate, "LastStatusHistogramUpdate") \
+    X(Y, gtSwl_type_timeMono, lastEnableTime, "LastEnableTime") \
+    X(Y, gtSwl_type_timeMono, lastDisableTime, "LastDisableTime") \
+    X(Y, gtSwl_type_uint32, nrEnables, "NrEnables")
+
+SWL_NTT_H(gtWld_status_changeInfo, wld_status_changeInfo_t, X_WLD_STATUS_CHANGE_INFO, );
 
 #endif /* SRC_INCLUDE_WLD_WLD_TYPES_H_ */

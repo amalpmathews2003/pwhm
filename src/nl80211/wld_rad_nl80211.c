@@ -442,13 +442,9 @@ swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t*
                                  pRadio->Name, args->chanlist[i]);
                 goto scan_error;
             }
-            swl_chanspec_t chanspec = {
-                .band = pRadio->operatingFrequencyBand,
-                .bandwidth = pRadio->operatingChannelBandwidth,
-                .channel = args->chanlist[i],
-            };
-            chanspec.band = pRadio->operatingFrequencyBand;
-            chanspec.bandwidth = pRadio->operatingChannelBandwidth;
+            swl_chanspec_t chanspec = swl_chanspec_fromDm(args->chanlist[i],
+                                                          pRadio->operatingChannelBandwidth,
+                                                          pRadio->operatingFrequencyBand);
             uint32_t freq = wld_channel_getFrequencyOfChannel(chanspec);
             swl_unLiList_add(&params.freqs, &freq);
         }

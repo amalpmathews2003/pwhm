@@ -1616,7 +1616,7 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
         pDev->operatingStandard = SWL_MIN(swl_bit32_getHighest(pWirelessDevIE->operatingStandards), swl_bit32_getHighest(pRad->operatingStandards));
     }
     if(cap->linkBandwidth == SWL_BW_AUTO) {
-        cap->linkBandwidth = SWL_MIN(wld_util_getMaxBwCap(cap), pRad->runningChannelBandwidth);
+        cap->linkBandwidth = SWL_MIN(wld_util_getMaxBwCap(cap), swl_radBw_toBw[pRad->runningChannelBandwidth]);
     }
 }
 
@@ -1632,7 +1632,7 @@ void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8
 
     swl_wirelessDevice_infoElements_t wirelessDevIE;
     swl_parsingArgs_t parsingArgs = {
-        .seenOnChanspec = SWL_CHANSPEC_NEW(pAP->pRadio->channel, pAP->pRadio->runningChannelBandwidth, pAP->pRadio->operatingFrequencyBand),
+        .seenOnChanspec = swl_chanspec_fromDm(pAP->pRadio->channel, pAP->pRadio->runningChannelBandwidth, pAP->pRadio->operatingFrequencyBand),
     };
     ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
     ASSERTW_FALSE(parsedLen < (ssize_t) iesLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, iesLen);

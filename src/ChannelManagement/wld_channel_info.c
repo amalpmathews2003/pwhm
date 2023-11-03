@@ -77,26 +77,17 @@ typedef struct {
     int chanWidth;
 } chanwidthData_t;
 
-const chanwidthData_t nr_channels_ahead[NR_BANDS_TYPES] = {
+const chanwidthData_t nr_channels_ahead[] = {
     {SWL_BW_AUTO, 1},
     {SWL_BW_20MHZ, 1},
     {SWL_BW_40MHZ, 2},
     {SWL_BW_80MHZ, 4},
     {SWL_BW_160MHZ, 8},
+    {SWL_BW_320MHZ, 16}
 };
 
-typedef struct {
-    swl_bandwidth_e wldBw;
-    uint32_t chanMhz;
-} chanMhzData_t;
+SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(nr_channels_ahead) == SWL_BW_RAD_MAX, "nr_channels_ahead not correctly defined");
 
-const chanMhzData_t chanMhzData[NR_BANDS_TYPES] = {
-    {SWL_BW_AUTO, 0},
-    {SWL_BW_20MHZ, 20},
-    {SWL_BW_40MHZ, 40},
-    {SWL_BW_80MHZ, 80},
-    {SWL_BW_160MHZ, 160},
-};
 
 /**
  * Interference matrix for a 20Mhz channel, starting at the channel number
@@ -348,7 +339,7 @@ bool wld_channel_is_5ghz(int channel) {
 int wld_get_nr_channels_in_band(swl_chanspec_t chanspec) {
     if(chanspec.band != SWL_FREQ_BAND_EXT_2_4GHZ) {
         int i = 0;
-        for(i = 0; i < NR_BANDS_TYPES; i++) {
+        for(i = 0; i < SWL_BW_RAD_MAX; i++) {
             if(chanspec.bandwidth == nr_channels_ahead[i].wldBw) {
                 return nr_channels_ahead[i].chanWidth;
             }
@@ -379,24 +370,6 @@ uint32_t wld_channel_getFrequencyOfChannel(swl_chanspec_t chanspec) {
             return 2407 + 5 * chanspec.channel;
         }
     }
-}
-
-uint32_t wld_channel_getBandwidthValFromEnum(swl_bandwidth_e radioBw) {
-    for(int i = 0; i < SWL_BW_MAX; i++) {
-        if(chanMhzData[i].wldBw == radioBw) {
-            return chanMhzData[i].chanMhz;
-        }
-    }
-    return SWL_BW_AUTO;
-}
-
-swl_bandwidth_e wld_channel_getBandwidthEnumFromVal(uint32_t val) {
-    for(int i = 0; i < SWL_BW_MAX; i++) {
-        if(chanMhzData[i].chanMhz == val) {
-            return chanMhzData[i].wldBw;
-        }
-    }
-    return SWL_BW_AUTO;
 }
 
 /**
@@ -590,8 +563,8 @@ bool wld_channel_areBandsOverlapping(swl_chanspec_t band1, swl_chanspec_t band2)
     int maxChanBand2 = listBand2[nrChanBand2 - 1].channel;
     if(!((maxChanBand1 < minChanBand2) || (minChanBand1 > maxChanBand2))) {
         SAH_TRACEZ_INFO(ME, "%d/%d and %d/%d overlaps ",
-                        band1.channel, wld_channel_getBandwidthValFromEnum(band1.bandwidth),
-                        band2.channel, wld_channel_getBandwidthValFromEnum(band2.bandwidth));
+                        band1.channel, swl_bandwidth_int[band1.bandwidth],
+                        band2.channel, swl_bandwidth_int[band2.bandwidth]);
         return true;
     }
     return false;
@@ -616,8 +589,8 @@ bool wld_channel_isBandAdjacentTo(swl_chanspec_t band1, swl_chanspec_t band2) {
     int maxChanBand2 = listBand2[nrChanBand2 - 1].channel;
     if((band1.channel >= minChanBand2) && (band1.channel <= maxChanBand2)) {
         SAH_TRACEZ_INFO(ME, "%d/%d is adjacent of %d/%d",
-                        band1.channel, wld_channel_getBandwidthValFromEnum(band1.bandwidth),
-                        band2.channel, wld_channel_getBandwidthValFromEnum(band2.bandwidth));
+                        band1.channel, swl_bandwidth_int[band1.bandwidth],
+                        band2.channel, swl_bandwidth_int[band2.bandwidth]);
         return true;
     }
     return false;

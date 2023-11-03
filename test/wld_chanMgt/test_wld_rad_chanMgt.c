@@ -136,7 +136,7 @@ static void test_wld_setTargetChanspec(void** state _UNUSED) {
 
     /* Same channel */
     rad->channel = 6;
-    rad->runningChannelBandwidth = SWL_BW_20MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_20MHZ;
     assert_int_equal(SWL_RC_ERROR, s_setTargetAndWait(rad, chanspec2, true, CHAN_REASON_MANUAL, NULL));
 
     /********************
@@ -228,7 +228,7 @@ static void test_wld_reportCurrentChanspec(void** state _UNUSED) {
     rad = dm.bandList[SWL_FREQ_BAND_EXT_2_4GHZ].rad;
     rad->channel = 1;
     rad->currentChanspec.chanspec.channel = 1;
-    rad->runningChannelBandwidth = SWL_BW_20MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_20MHZ;
     rad->currentChanspec.chanspec.bandwidth = SWL_BW_20MHZ;
     rad->channelChangeReason = CHAN_REASON_INITIAL;
     rad->channelBandwidthChangeReason = CHAN_REASON_INITIAL;
@@ -261,7 +261,7 @@ static void test_wld_reportCurrentChanspec(void** state _UNUSED) {
     memset(&rad->targetChanspec.chanspec, 0, sizeof(swl_chanspec_t));
     rad->currentChanspec.chanspec.channel = 36;
     rad->targetChanspec.chanspec.channel = 36;
-    rad->runningChannelBandwidth = SWL_BW_80MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_80MHZ;
     rad->currentChanspec.chanspec.bandwidth = SWL_BW_80MHZ;
     rad->targetChanspec.chanspec.bandwidth = SWL_BW_80MHZ;
     rad->currentChanspec.chanspec.band = SWL_FREQ_BAND_EXT_5GHZ;
@@ -299,7 +299,7 @@ static void test_wld_reportCurrentChanspec(void** state _UNUSED) {
     rad = dm.bandList[SWL_FREQ_BAND_EXT_6GHZ].rad;
     rad->channel = 5;
     rad->currentChanspec.chanspec.channel = 5;
-    rad->runningChannelBandwidth = SWL_BW_80MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_80MHZ;
     rad->currentChanspec.chanspec.bandwidth = SWL_BW_80MHZ;
     rad->channelChangeReason = CHAN_REASON_INITIAL;
     rad->channelBandwidthChangeReason = CHAN_REASON_INITIAL;
@@ -331,7 +331,7 @@ static void test_wld_setChannel(void** state _UNUSED) {
     T_Radio* rad = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].rad;
     rad->channel = 36;
     rad->targetChanspec.chanspec.channel = 36;
-    rad->runningChannelBandwidth = SWL_BW_80MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_80MHZ;
     rad->targetChanspec.chanspec.bandwidth = SWL_BW_80MHZ;
     ttb_object_t* radObj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].radObj;
     ttb_object_t* targetObj = ttb_object_getChildObject(radObj, "ChannelMgt.TargetChanspec");
@@ -365,7 +365,7 @@ static void test_wld_checkSync(void** state _UNUSED) {
     rad->channel = 36;
     rad->currentChanspec.chanspec.channel = 36;
     rad->targetChanspec.chanspec.channel = 36;
-    rad->runningChannelBandwidth = SWL_BW_80MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_80MHZ;
     rad->currentChanspec.chanspec.bandwidth = SWL_BW_80MHZ;
     rad->targetChanspec.chanspec.bandwidth = SWL_BW_80MHZ;
     ttb_object_t* radObj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].radObj;
@@ -411,7 +411,7 @@ static void test_wld_setChanspec(void** state _UNUSED) {
     rad->channel = 1;
     rad->targetChanspec.chanspec.channel = 1;
     rad->currentChanspec.chanspec.channel = 1;
-    rad->runningChannelBandwidth = SWL_BW_20MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_20MHZ;
     rad->currentChanspec.chanspec.bandwidth = SWL_BW_20MHZ;
     ttb_object_t* radObj = dm.bandList[SWL_FREQ_BAND_EXT_2_4GHZ].radObj;
 
@@ -476,7 +476,7 @@ static void test_wld_checkChannelChange(void** state _UNUSED) {
     rad->targetChanspec.chanspec.channel = 1;
     rad->targetChanspec.chanspec.bandwidth = SWL_BW_20MHZ;
     rad->currentChanspec.chanspec.channel = 1;
-    rad->runningChannelBandwidth = SWL_BW_20MHZ;
+    rad->runningChannelBandwidth = SWL_RAD_BW_20MHZ;
     rad->currentChanspec.chanspec.bandwidth = SWL_BW_20MHZ;
 
     ttb_var_t* arg = ttb_object_createArgs();

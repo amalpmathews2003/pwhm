@@ -201,9 +201,7 @@ bool wld_rad_is_on_dfs(T_Radio* pR);
 bool wld_rad_isDoingDfsScan(T_Radio* pRad);
 bool wld_rad_isUpAndReady(T_Radio* pRad);
 bool wld_rad_isUpExt(T_Radio* pRad);
-swl_bandwidth_e wld_rad_verify_bandwidth(T_Radio* pRad, swl_bandwidth_e targetbandwidth);
-swl_bandwidth_e wld_rad_getBaseConfigBw(T_Radio* pRad);
-swl_bandwidth_e wld_rad_get_target_bandwidth(T_Radio* pRad);
+
 void wld_rad_write_possible_channels(T_Radio* pRad);
 bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt);
 swl_chanspec_t wld_rad_getSwlChanspec(T_Radio* pRad);
