@@ -20,13 +20,13 @@
                 "from": false,
                 "to": true
             },
-            "DownlinkRateSpec": {
-                "from": "",
-                "to": "unk_0_0_0_0"
-            },
             "LastStateChange": {
                 "from": "0001-01-01T00:00:00Z",
                 "to": "2022-01-01T00:00:12Z"
+            },
+            "DownlinkRateSpec": {
+                "from": "",
+                "to": "unk_0_0_0_0"
             },
             "MACAddress": {
                 "from": "",

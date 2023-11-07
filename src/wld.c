@@ -125,7 +125,7 @@ T_Radio* wld_nextRad(T_Radio* pRad) {
 }
 
 static void wld_plugin_set_busctx(amxo_parser_t* parser) {
-    amxc_llist_for_each(it, parser->connections) {
+    amxc_llist_for_each(it, amxo_parser_get_connections(parser)) {
         amxo_connection_t* con = amxc_container_of(it, amxo_connection_t, it);
         if(con->type == AMXO_BUS) {
             wld_plugin_amx = (amxb_bus_ctx_t*) con->priv;
