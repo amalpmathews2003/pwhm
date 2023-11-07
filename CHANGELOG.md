@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.1.1 - 2023-11-07(14:00:48 +0000)
+
+### Other
+
+- : WiFi not showing when channel and bandwidth changes multiple times
+
 ## Release v5.1.0 - 2023-11-07(11:58:02 +0000)
 
 ### Other
