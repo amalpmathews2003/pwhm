@@ -1683,8 +1683,7 @@ define probelist_t{
 			void Disable(%in string Capability);
 		} /* object RadCaps */
 
-		object ChannelMgt{
-
+		%persistent object ChannelMgt{
 			on event "*" call wld_chanmgt_setConf_ocf;
 
 			/**
