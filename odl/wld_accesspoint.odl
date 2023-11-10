@@ -447,7 +447,7 @@ define rrm_t{
 		 * value of 0 means that there is no specific limit.
 		 * @version 9.1
 		 */
-		uint32 MaxAssociatedDevices{
+		%persistent uint32 MaxAssociatedDevices{
 			default 32;
 		}
 
