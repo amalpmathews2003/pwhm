@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.0 - 2023-11-13(12:15:07 +0000)
+
+### Other
+
+- - add ScanReason to ScanChange notif.
+
 ## Release v5.2.1 - 2023-11-09(12:02:23 +0000)
 
 ### Other
