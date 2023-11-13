@@ -1348,9 +1348,13 @@ int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD) {
     return (int32_t) avgRssiByChain;
 }
 
-void wld_assocDev_initAp(T_AccessPoint* pAP) {
+void wld_ad_initAp(T_AccessPoint* pAP) {
     swl_unLiTable_initExt(&pAP->staDcList, &tWld_ad_dcLog, 3);
     swl_unLiList_setKeepsLastBlock(&pAP->staDcList.list, true);
+}
+
+void wld_ad_initFastReconnectCounters(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
     amxd_object_t* templateObj = amxd_object_findf(pAP->pBus, "AssociationCount.FastReconnectTypes");
     ASSERT_NOT_NULL(templateObj, , ME, "NULL");
 
@@ -1363,15 +1367,14 @@ void wld_assocDev_initAp(T_AccessPoint* pAP) {
         amxd_trans_set_cstring_t(&trans, "Type", fastReconnectTypes[i]);
     }
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->name);
-
 }
 
 
-void wld_assocDev_cleanAp(T_AccessPoint* pAP) {
+void wld_ad_cleanAp(T_AccessPoint* pAP) {
     swl_unLiTable_destroy(&pAP->staDcList);
 }
 
-void wld_assocDev_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant) {
+void wld_ad_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant) {
     swl_unLiTable_toListOfMaps(&pAP->staDcList, variant, tupleNames);
 }
 
@@ -1406,7 +1409,7 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
     }
 }
 
-void wld_assocDev_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen) {
+void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "PKT sta:"SWL_MAC_FMT " iesLen:%zu", SWL_MAC_ARG(pAD->MACAddress), iesLen);

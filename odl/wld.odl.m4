@@ -255,8 +255,8 @@ include "${definition_file}";
 
 
 %define {
-    entry-point wld.wld_main;   
-m4_ifelse(DISABLE_NETMODEL,y,,`` 
+    entry-point wld.wld_main;
+m4_ifelse(DISABLE_NETMODEL,y,,``
     entry-point mnm.mod_netmodel_main;'')
 }
 

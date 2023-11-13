@@ -226,7 +226,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
     pAP->enable = false;
     T_Radio* pR = pAP->pRadio;
     T_SSID* pSSID = pAP->pSSID;
-    SAH_TRACEZ_ERROR(ME, "DELETE %s %p", pAP->name, pR);
+    SAH_TRACEZ_WARNING(ME, "DELETE %s %p", pAP->name, pR);
     if(pR) {
         if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
             if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
@@ -234,7 +234,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
                 SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
                 pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
             }
-            SAH_TRACEZ_ERROR(ME, "DELETE HOOK %s", pAP->name);
+            SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
             /* Destroy vap*/
             pR->pFA->mfn_wvap_destroy_hook(pAP);
             /* Try to delete the requested interface by calling the HW function */
@@ -251,7 +251,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
         wld_ad_destroy_associatedDevice(pAP, i);
     }
     pAP->ActiveAssociatedDeviceNumberOfEntries = 0;
-    wld_assocDev_cleanAp(pAP);
+    wld_ad_cleanAp(pAP);
     wld_ap_rssiMonDestroy(pAP);
 
     swl_circTable_destroy(&(pAP->lastAssocReq));
@@ -286,6 +286,7 @@ static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uin
     amxc_llist_append(&pRad->llAP, &pAP->it);
 
     wld_ap_rssiMonInit(pAP);
+    wld_ad_initAp(pAP);
 
     swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
     return true;
@@ -343,7 +344,8 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     pSSID->AP_HOOK = pAP;
     pAP->pSSID = pSSID;
 
-    s_finalizeApCreation(object->priv);
+    SAH_TRACEZ_WARNING(ME, "CREATE HOOK %s", pAP->name);
+    pAP->pRadio->pFA->mfn_wvap_create_hook(pAP);
 
     return amxd_status_ok;
 }
@@ -354,7 +356,6 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
 
     SAH_TRACEZ_IN(ME);
 
-
     if(wld_persist_writeApAtCreation()) {
         T_SSID* pSSID = pAP->pSSID;
         ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
@@ -363,7 +364,6 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
 
         pAP->initDone = true;
     }
-    wld_assocDev_initAp(pAP);
 
     SAH_TRACEZ_OUT(ME);
 
@@ -374,15 +374,12 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
  */
 static bool s_finalizeApCreation(T_AccessPoint* pAP) {
     SAH_TRACEZ_IN(ME);
-    SAH_TRACEZ_ERROR(ME, "Finalize %s %p", pAP->name, pAP);
+    SAH_TRACEZ_INFO(ME, "Finalize %s %p", pAP->name, pAP);
 
     ASSERTS_NOT_NULL(pAP, false, ME, "No mapped AP Ctx");
     T_SSID* pSSID = pAP->pSSID;
     ASSERT_NOT_NULL(pSSID, false, ME, "%s: No mapped SSID Ctx", pAP->alias);
     ASSERT_NOT_NULL(pAP->pRadio, false, ME, "No lower radio");
-
-    swl_rc_ne rc = pAP->pRadio->pFA->mfn_wvap_create_hook(pAP);
-    ASSERT_FALSE(rc < SWL_RC_OK, false, ME, "%s: VAP create hook failed (rc:%d)", pAP->alias, rc);
 
     if(!pAP->index) {
         SAH_TRACEZ_INFO(ME, "%s: initialize ap interface", pAP->alias);
@@ -442,6 +439,25 @@ amxd_status_t _wld_ap_addInstance_oaf(amxd_object_t* object,
     return status;
 }
 
+/*
+ * AP instance addition event handler
+ * late handling only to finalize AP interface creation (using twin ssid instance)
+ * when SSIDReference is not explicitely provided by user conf
+ */
+static void s_addApInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const initialParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    if(swl_str_isEmpty(GET_CHAR(initialParamValues, "SSIDReference"))) {
+        /*
+         * As user conf does not include specific SSIDReference
+         * then use the default twin ssid mapping already initiated in the early action handler
+         */
+        s_finalizeApCreation(object->priv);
+    }
+    swla_delayExec_add((swla_delayExecFun_cbf) wld_ad_initFastReconnectCounters, object->priv);
+
+    SAH_TRACEZ_OUT(ME);
+}
 
 static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -453,6 +469,8 @@ static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
 
     amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
     ASSERT_EQUALS(_linkApSsid(object, pSsidObj), amxd_status_ok, , ME, "%s: fail to link Ap to SSID (%s)", oname, ssidRef);
+
+    s_finalizeApCreation(object->priv);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -839,7 +857,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         if(isValidAESKey(pAP->keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
             amxd_trans_set_cstring_t(&trans, "KeyPassPhrase", pAP->keyPassPhrase);
-            SAH_TRACEZ_ERROR(ME, "%s - SET %s", pAP->name, pAP->keyPassPhrase);
+            SAH_TRACEZ_INFO(ME, "%s - SET %s", pAP->name, pAP->keyPassPhrase);
         }
 
         if(isValidAESKey(pAP->saePassphrase, SAE_KEY_SIZE_LEN)) {
@@ -880,9 +898,10 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_trans_set_int32_t(&trans, "Configured", pAP->WPS_Configured);
         amxd_trans_set_cstring_t(&trans, "UUID", g_wpsConst.UUID);
 
+        amxc_string_clean(&TBufStr);
+
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->name);
 
-        amxc_string_clean(&TBufStr);
     } else {
         /* Get AP data from OBJ to AP */
         int32_t tmp_int32 = 0;
@@ -2480,7 +2499,7 @@ amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
         wld_ap_rssiEv_debug(pAP, retMap);
     } else if(!strcasecmp(feature, "recentDcs")) {
         amxc_var_set_type(retMap, AMXC_VAR_ID_LIST);
-        wld_assocDev_listRecentDisconnects(pAP, retMap);
+        wld_ad_listRecentDisconnects(pAP, retMap);
     } else if(!strcasecmp(feature, "SSIDAdvertisementEnabled")) {
         bool enable = GET_BOOL(args, "enable");
         wld_ap_hostapd_setSSIDAdvertisement(pAP, enable);
@@ -2603,7 +2622,8 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("dbgAPFile", s_setDbgFile_pwf),
                   SWLA_DM_PARAM_HDLR("MACFilterAddressList", wld_apMacFilter_setAddressList_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setApEnable_pwf),
-                  ), );
+                  ),
+              .instAddedCb = s_addApInst_oaf, );
 
 void _wld_ap_setConf_ocf(const char* const sig_name,
                          const amxc_var_t* const data,

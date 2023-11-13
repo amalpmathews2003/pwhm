@@ -477,7 +477,7 @@ static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame,
     ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac));
     wld_vap_saveAssocReq(pAP, (swl_bit8_t*) frame, frameLen);
 
-    wld_assocDev_handleAssocMsg(pAP, pAD, iesData, iesLen);
+    wld_ad_handleAssocMsg(pAP, pAD, iesData, iesLen);
     W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
 
     wld_ad_add_connection_try(pAP, pAD);

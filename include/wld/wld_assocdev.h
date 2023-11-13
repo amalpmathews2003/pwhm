@@ -125,10 +125,11 @@ void wld_vap_mark_all_stations_unseen(T_AccessPoint* pAP);
 void wld_vap_update_seen(T_AccessPoint* pAP);
 void wld_vap_remove_all(T_AccessPoint* pAP);
 
-void wld_assocDev_initAp(T_AccessPoint* pAP);
-void wld_assocDev_cleanAp(T_AccessPoint* pAP);
-void wld_assocDev_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant);
-void wld_assocDev_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen);
+void wld_ad_initAp(T_AccessPoint* pAP);
+void wld_ad_initFastReconnectCounters(T_AccessPoint* pAP);
+void wld_ad_cleanAp(T_AccessPoint* pAP);
+void wld_ad_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant);
+void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen);
 void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
 
 #endif /* SRC_INCLUDE_WLD_WLD_ASSOCDEV_H_ */
