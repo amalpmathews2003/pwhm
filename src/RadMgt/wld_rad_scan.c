@@ -1020,6 +1020,7 @@ static void s_scanStatus_cbf(const wld_scanEvent_t* scanEvent) {
     amxc_var_add_key(bool, tmpMap, "IsRunning", scanEvent->start);
     amxc_var_add_key(bool, tmpMap, "Success", scanEvent->success);
     amxc_var_add_key(int32_t, tmpMap, "ScanType", scanEvent->scanType);
+    amxc_var_add_key(cstring_t, tmpMap, "ScanReason", scanEvent->scanReason);
     SAH_TRACEZ_INFO(ME, "%s: notif scan status change @ path=%s %s}", pRad->Name, path, "ScanChange");
     amxd_object_trigger_signal(pRad->pBus, "ScanChange", &map);
     amxc_var_clean(&map);
