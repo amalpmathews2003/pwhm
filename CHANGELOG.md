@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.1 - 2023-11-13(17:28:56 +0000)
+
+### Other
+
+- finalize VAP iface creation after referencing SSID and Radio
+
 ## Release v5.3.0 - 2023-11-13(12:15:07 +0000)
 
 ### Other
