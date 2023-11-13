@@ -788,11 +788,6 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
         return amxd_status_function_not_implemented;
     }
 
-    /* send notification about scan, if not yet sent by the plugin/vendor_module */
-    if(!wld_scan_isRunning(pR)) {
-        s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "Spectrum", retCode);
-    }
-
     /* asynchronous call */
     if(retCode == SWL_RC_CONTINUE) {
         amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
@@ -802,9 +797,6 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
 
     /* convert the amxc_llist_t to variant list for RPC return value (if any) */
     s_prepareSpectrumOutput(pR, retval);
-
-    /* Scan is done */
-    wld_scan_done(pR, !(retCode < SWL_RC_OK));
 
     SAH_TRACEZ_OUT(ME);
     return (retCode < SWL_RC_OK) ? amxd_status_unknown_error : amxd_status_ok;
