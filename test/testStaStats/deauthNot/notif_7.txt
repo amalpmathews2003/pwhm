@@ -1,8 +1,14 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.ProbeReqCaps.",
-        "notification": "dm:object-removed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].ProbeReqCaps.",
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.2.ProbeReqCaps."
+        "object": "WiFi.AccessPoint.wlan1.AssociationCount.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociationCount.",
+        "parameters": {
+            "Disconnect": {
+                "from": 1,
+                "to": 2
+            }
+        },
+        "path": "WiFi.AccessPoint.2.AssociationCount."
     }
 }

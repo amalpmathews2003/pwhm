@@ -1,26 +1,14 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
+        "object": "WiFi.AccessPoint.wlan1.AssociationCount.",
         "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociationCount.",
         "parameters": {
-            "AuthenticationState": {
-                "from": true,
-                "to": false
-            },
-            "Active": {
-                "from": true,
-                "to": false
-            },
-            "DisassociationTime": {
-                "from": "0001-01-01T00:00:00Z",
-                "to": "2022-01-01T00:00:17Z"
-            },
-            "LastStateChange": {
-                "from": "2022-01-01T00:00:12Z",
-                "to": "2022-01-01T00:00:17Z"
+            "Disconnect": {
+                "from": 0,
+                "to": 1
             }
         },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
+        "path": "WiFi.AccessPoint.2.AssociationCount."
     }
 }

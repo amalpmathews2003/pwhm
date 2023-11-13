@@ -160,6 +160,7 @@ amxd_status_t _wld_endpoint_deleteProfileInstance_odf(amxd_object_t* object,
 
     amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy ep profile st:%d", status);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, status, ME, "obj is not instance");
 
     T_EndPointProfile* pProf = (T_EndPointProfile*) object->priv;
     object->priv = NULL;

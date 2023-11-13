@@ -244,7 +244,7 @@ static void test_getStats(void** state _UNUSED) {
     ttb_notifWatch_printList(req);
 
 
-    size_t nrNotif = 10;
+    size_t nrNotif = 12;
     assert_int_equal(nrNotif, ttb_notifWatch_nbNotifsSeen(req));
 
     for(size_t i = 0; i < nrNotif; i++) {

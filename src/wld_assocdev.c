@@ -115,16 +115,11 @@ char* tupleNames[] = {"macAddress", "dcTime"};
 const char* fastReconnectTypes[WLD_FAST_RECONNECT_MAX] = {"Default", "OnStateChange", "OnScan", "User"};
 
 static void s_incrementObjCounter(amxd_object_t* obj, char* counterName) {
-    uint32_t val = amxd_object_get_uint32_t(obj, counterName, NULL);
+    const amxc_var_t* valVar = amxd_object_get_param_value(obj, counterName);
+    ASSERT_NOT_NULL(valVar, , ME, "unknown counter %s", counterName);
+    uint32_t val = amxc_var_get_uint32_t(valVar);
     val++;
-
-    amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(obj, &trans, , ME, "%s : trans init failure", counterName);
-
-    amxd_trans_set_uint32_t(&trans, counterName, val);
-
-    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", counterName);
-
+    swl_typeUInt32_commitObjectParam(obj, counterName, val);
 }
 
 static void s_incrementAssocCounter(T_AccessPoint* pAP, char* counterName) {
@@ -779,16 +774,16 @@ amxd_status_t _getSingleStationStats(amxd_object_t* const object,
     T_AssociatedDevice* pAD = object->priv;
     if(pAD == NULL) {
         SAH_TRACEZ_INFO(ME, "pAD is NULL, no device present");
-        status = amxd_status_unknown_error;
+        status = amxd_status_ok;
         goto exit;
     }
 
-    T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(amxd_object_get_parent(pAD->object))->priv;
-    swl_rc_ne ret = pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
-
-    if(ret >= SWL_RC_OK) {
+    T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
+    if((pAP != NULL) && (pAP->pFA->mfn_wvap_get_single_station_stats(pAD) >= SWL_RC_OK)) {
+        // Update here stats parameters
+        // and let status parameters been updated via transaction when needed
         s_updateStationStatsHistory(pAD);
-        wld_vap_sync_device(pAP, pAD);
+        wld_ad_syncStats(pAD);
     }
 
     status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
@@ -950,6 +945,65 @@ T_AccessPoint* wld_rad_get_associated_ap(T_Radio* pRad, const unsigned char macA
 
     }
     return NULL;
+}
+
+T_AccessPoint* wld_ad_getAssociatedApByMac(swl_macBin_t* macAddress) {
+    T_AccessPoint* pAP = NULL;
+    T_AssociatedDevice* pAD = NULL;
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pTmpAP = NULL;
+        wld_rad_forEachAp(pTmpAP, pRad) {
+            T_AssociatedDevice* pTmpAD = wld_vap_get_existing_station(pTmpAP, macAddress);
+            if((pTmpAD != NULL) && ((pAD == NULL) || (pTmpAD->Active > pAD->Active))) {
+                pAD = pTmpAD;
+                pAP = pTmpAP;
+            }
+        }
+    }
+    return pAP;
+}
+
+T_AccessPoint* wld_ad_getAssociatedAp(T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAD, NULL, ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(pAD->object)));
+    if(pAP == NULL) {
+        pAP = wld_ad_getAssociatedApByMac((swl_macBin_t*) pAD->MACAddress);
+    }
+    return pAP;
+}
+
+T_AssociatedDevice* wld_ad_fromMac(swl_macBin_t* macAddress) {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pTmpAP = NULL;
+        wld_rad_forEachAp(pTmpAP, pRad) {
+            T_AssociatedDevice* pTmpAD = wld_vap_get_existing_station(pTmpAP, macAddress);
+            if(pTmpAD != NULL) {
+                return pTmpAD;
+            }
+        }
+    }
+    return NULL;
+}
+
+T_AssociatedDevice* wld_ad_fromObj(amxd_object_t* object) {
+    ASSERTS_NOT_NULL(object, NULL, ME, "NULL");
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERTS_NOT_NULL(pAP, NULL, ME, "NULL");
+    T_AssociatedDevice* pAD = object->priv;
+    if(pAD == NULL) {
+        char* macAddrStr = amxd_object_get_cstring_t(object, "MACAddress", NULL);
+        swl_macBin_t macAddr = SWL_MAC_BIN_NEW();
+        if(swl_typeMacBin_fromChar(&macAddr, macAddrStr)) {
+            pAD = wld_vap_get_existing_station(pAP, &macAddr);
+        }
+        free(macAddrStr);
+    } else {
+        ASSERT_EQUALS(pAD->object, object, NULL, ME, "INVALID");
+        ASSERT_FALSE(wld_ad_getIndex(pAP, pAD) < 0, NULL, ME, "INVALID");
+    }
+    return pAD;
 }
 
 wld_assocDevInfo_t wld_rad_get_associatedDeviceInfo(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]) {
@@ -1273,14 +1327,12 @@ static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
     amxc_string_set(output, buffer);
 }
 
-void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
+void wld_ad_syncdetailedMcsCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
     ASSERT_NOT_NULL(trans, , ME, "NULL");
     ASSERT_NOT_NULL(caps, , ME, "NULL");
 
     char mcsList[100];
     memset(mcsList, 0, sizeof(mcsList));
-    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedMCS.mcs, caps->supportedMCS.mcsNbr);
-    amxd_trans_set_cstring_t(trans, "SupportedMCS", mcsList);
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHtMCS.mcs, caps->supportedHtMCS.mcsNbr);
     amxd_trans_set_cstring_t(trans, "SupportedHtMCS", mcsList);
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedVhtMCS[COM_DIR_RECEIVE].nssMcsNbr, caps->supportedVhtMCS[COM_DIR_RECEIVE].nssNbr);
@@ -1299,6 +1351,16 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     amxd_trans_set_cstring_t(trans, "RxSupportedHe80x80MCS", mcsList);
     swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedHe80x80MCS[COM_DIR_TRANSMIT].nssMcsNbr, caps->supportedHe80x80MCS[COM_DIR_TRANSMIT].nssNbr);
     amxd_trans_set_cstring_t(trans, "TxSupportedHe80x80MCS", mcsList);
+}
+
+void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
+    ASSERT_NOT_NULL(trans, , ME, "NULL");
+    ASSERT_NOT_NULL(caps, , ME, "NULL");
+
+    char mcsList[100];
+    memset(mcsList, 0, sizeof(mcsList));
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedMCS.mcs, caps->supportedMCS.mcsNbr);
+    amxd_trans_set_cstring_t(trans, "SupportedMCS", mcsList);
 
     amxc_string_t TBufStr;
     amxc_string_init(&TBufStr, 0);
@@ -1330,6 +1392,155 @@ void wld_ad_syncRrmCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t
     amxd_trans_set_cstring_t(trans, "RrmCapabilities", buffer);
     amxd_trans_set_uint32_t(trans, "RrmOnChannelMaxDuration", caps->rrmOnChannelMaxDuration);
     amxd_trans_set_uint32_t(trans, "RrmOffChannelMaxDuration", caps->rrmOffChannelMaxDuration);
+}
+
+amxd_object_t* wld_ad_getOrCreateObject(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
+    ASSERTS_NULL(pAD->object, pAD->object, ME, "NULL");
+    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+    amxd_object_t* templateObject = amxd_object_get(pAP->pBus, "AssociatedDevice");
+    ASSERT_NOT_NULL(templateObject, NULL, ME, "%s: Could not get template", pAP->alias);
+    uint32_t nextDevIndex = pAP->lastDevIndex + 1;
+    SAH_TRACEZ_INFO(ME, "%s: Creating template object for mac %s (id %u)", pAP->name, pAD->Name, nextDevIndex);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(templateObject, &trans, NULL, ME, "%s : trans init failure", pAD->Name);
+
+    amxd_trans_add_inst(&trans, nextDevIndex, NULL);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, NULL, ME, "%s : trans apply failure", pAD->Name);
+
+    pAD->object = amxd_object_get_instance(templateObject, NULL, nextDevIndex);
+    ASSERT_NOT_NULL(pAD->object, NULL, ME, "%s: failure to create object", pAD->Name);
+    pAD->object->priv = pAD;
+    pAP->lastDevIndex = nextDevIndex;
+    return pAD->object;
+}
+
+swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
+    amxd_object_t* object = pAD->object;
+    ASSERT_NOT_NULL(object, SWL_RC_INVALID_PARAM, ME, "NULL");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
+    bool hasData = false;
+
+    if(swl_timespec_isZero(&pAD->lastSampleTime) || (swl_timespec_diff(NULL, &pAD->lastSampleSyncTime, &pAD->lastSampleTime) != 0)
+       || (pAD->latestStateChangeTime >= pAD->lastSampleSyncTime.tv_sec)) {
+        hasData = true;
+        SAH_TRACEZ_INFO(ME, "setting info of sta mac %s", pAD->Name);
+        swl_typeMacBin_toTransParamStringRef(&trans, "MACAddress", (swl_macBin_t*) pAD->MACAddress);
+
+        amxd_trans_set_value(cstring_t, &trans, "ChargeableUserId", pAD->Radius_CUID);
+        amxd_trans_set_value(bool, &trans, "AuthenticationState", pAD->AuthenticationState);
+        amxd_trans_set_value(int32_t, &trans, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
+
+        amxd_trans_set_value(bool, &trans, "Active", pAD->Active);
+
+        amxd_trans_set_value(uint16_t, &trans, "MaxRxSpatialStreamsSupported", pAD->MaxRxSpatialStreamsSupported);
+        amxd_trans_set_value(uint16_t, &trans, "MaxTxSpatialStreamsSupported", pAD->MaxTxSpatialStreamsSupported);
+        amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateSupported", pAD->MaxDownlinkRateSupported);
+        amxd_trans_set_value(uint32_t, &trans, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
+        amxd_trans_set_value(uint32_t, &trans, "MaxUplinkRateSupported", pAD->MaxUplinkRateSupported);
+
+        swl_bandwidth_e maxBw = pAD->MaxBandwidthSupported;
+        if(maxBw == SWL_BW_AUTO) {
+            maxBw = wld_util_getMaxBwCap(&pAD->assocCaps);
+        }
+        amxd_trans_set_value(cstring_t, &trans, "MaxBandwidthSupported", swl_bandwidth_unknown_str[maxBw]);
+
+        swl_typeMcs_toTransParam(&trans, "UplinkRateSpec", pAD->upLinkRateSpec);
+        swl_typeMcs_toTransParam(&trans, "DownlinkRateSpec", pAD->downLinkRateSpec);
+
+        amxd_trans_set_value(cstring_t, &trans, "DeviceType", cstr_DEVICE_TYPES[pAD->deviceType]);
+        amxd_trans_set_value(int32_t, &trans, "DevicePriority", pAD->devicePriority);
+        char buffer[128] = {0};
+        wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
+        amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
+        swl_typeTimeMono_toTransParam(&trans, "LastStateChange", pAD->latestStateChangeTime);
+        swl_typeTimeMono_toTransParam(&trans, "AssociationTime", pAD->associationTime);
+        swl_typeTimeMono_toTransParam(&trans, "DisassociationTime", pAD->disassociationTime);
+        amxd_trans_set_value(cstring_t, &trans, "OperatingStandard", swl_radStd_unknown_str[pAD->operatingStandard]);
+        amxd_trans_set_value(uint32_t, &trans, "MUGroupId", pAD->staMuMimoInfo.muGroupId);
+        amxd_trans_set_value(uint32_t, &trans, "MUUserPositionId", pAD->staMuMimoInfo.muUserPosId);
+
+        wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
+        wld_ad_syncdetailedMcsCapabilities(&trans, &pAD->assocCaps);
+        wld_ad_syncRrmCapabilities(&trans, &pAD->assocCaps);
+
+        swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX),
+        amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
+    }
+
+    if(pAD->probeReqCaps.updateTime != pAD->lastProbeCapUpdateTime) {
+        hasData = true;
+        SAH_TRACEZ_INFO(ME, "setting probe caps of sta mac %s", pAD->Name);
+        amxd_trans_select_pathf(&trans, ".ProbeReqCaps");
+        wld_ad_syncCapabilities(&trans, &pAD->probeReqCaps);
+        wld_ad_syncdetailedMcsCapabilities(&trans, &pAD->probeReqCaps);
+        wld_ad_syncRrmCapabilities(&trans, &pAD->probeReqCaps);
+    }
+
+    if(!hasData) {
+        amxd_trans_clean(&trans);
+        return SWL_RC_CONTINUE;
+    }
+    if(swl_object_finalizeTransactionOnLocalDm(&trans) != amxd_status_ok) {
+        SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pAD->Name);
+        return SWL_RC_ERROR;
+    }
+    pAD->lastSampleSyncTime = pAD->lastSampleTime;
+    pAD->lastProbeCapUpdateTime = pAD->probeReqCaps.updateTime;
+
+    return SWL_RC_OK;
+}
+
+void wld_ad_syncStats(T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    amxd_object_t* object = pAD->object;
+    ASSERT_NOT_NULL(object, , ME, "NULL");
+    // Update here volatile parameters
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "ConnectionDuration", pAD->connectionDuration);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "Inactive", pAD->Inactive);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "LastDataDownlinkRate", pAD->LastDataDownlinkRate);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "LastDataUplinkRate", pAD->LastDataUplinkRate);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "MaxDownlinkRateReached", pAD->MaxDownlinkRateReached);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "MaxUplinkRateReached", pAD->MaxUplinkRateReached);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkMCS", pAD->UplinkMCS);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "UplinkBandwidth", pAD->UplinkBandwidth);
+    SWLA_OBJECT_SET_PARAM_BOOL(object, "UplinkShortGuard", pAD->UplinkShortGuard);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkMCS", pAD->DownlinkMCS);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "DownlinkBandwidth", pAD->DownlinkBandwidth);
+    SWLA_OBJECT_SET_PARAM_BOOL(object, "DownlinkShortGuard", pAD->DownlinkShortGuard);
+
+    SWLA_OBJECT_SET_PARAM_INT32(object, "SignalStrength", pAD->SignalStrength);
+    SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
+    SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
+    char TBuf[64] = {'\0'};
+    wld_ad_printSignalStrengthByChain(pAD, TBuf, sizeof(TBuf));
+    SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthByChain", TBuf);
+    char rssiHistory[64] = {'\0'};
+    wld_ad_printSignalStrengthHistory(pAD, rssiHistory, sizeof(rssiHistory));
+    SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthHistory", rssiHistory);
+    SWLA_OBJECT_SET_PARAM_INT32(object, "Noise", pAD->noise);
+    SWLA_OBJECT_SET_PARAM_INT32(object, "SignalNoiseRatio", pAD->SignalNoiseRatio);
+    SWLA_OBJECT_SET_PARAM_BOOL(object, "PowerSave", pAD->powerSave);
+
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "Retransmissions", pAD->Retransmissions);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "Rx_Retransmissions", pAD->Rx_Retransmissions);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "RxPacketCount", pAD->RxPacketCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "TxUnicastPacketCount", pAD->TxUnicastPacketCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "RxMulticastPacketCount", pAD->RxMulticastPacketCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "TxMulticastPacketCount", pAD->TxMulticastPacketCount);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "TxBytes", pAD->TxBytes);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "RxBytes", pAD->RxBytes);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "TxErrors", pAD->TxFailures);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 }
 
 int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD) {

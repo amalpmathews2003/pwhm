@@ -133,6 +133,7 @@ amxd_status_t _wld_ap_delete_neigh_odf(amxd_object_t* object,
 
     amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy neigh entry st:%d", status);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, status, ME, "obj is not instance");
 
     T_ApNeighbour* neigh = (T_ApNeighbour*) object->priv;
     object->priv = NULL;

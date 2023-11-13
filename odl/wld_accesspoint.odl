@@ -1041,6 +1041,11 @@ define rrm_t{
 			%read-only uint32 FailSecurity;
 
 			/**
+			 * The amount of successfully associated stations that have disconnected since last reset.
+			 */
+			%read-only uint32 Disconnect;
+
+			/**
 			 * The number of fast reconnects observed. A fast reconnect is if a station
 			 * disconnects and then reconnects within a configured time frame.
 			 * @version 10.0
@@ -1124,14 +1129,14 @@ define rrm_t{
 			 *  device.
 			 * @version 6.0
 			 */
-			 %read-only uint32 LastDataDownlinkRate;
+			%volatile %read-only uint32 LastDataDownlinkRate;
 
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the associated device to the access
 			 *  point.
 			 * @version 6.0
 			 */
-			%read-only uint32 LastDataUplinkRate;
+			%volatile %read-only uint32 LastDataUplinkRate;
 
 			/** An indicator of radio signal strength of the uplink from the
 			 *  associated device to the access point, measured in dBm, as
@@ -1140,7 +1145,7 @@ define rrm_t{
 			 *  The value is the highest value accross all SignalStrengthByChain values. If not available, the value is the one reported by the driver.
 			 * @version 6.0
 			 */
-			%read-only int32 SignalStrength{
+			%volatile %read-only int32 SignalStrength{
 				on action validate call check_range { min = -200, max = 0 };
 			}
 
@@ -1149,7 +1154,7 @@ define rrm_t{
 			 *  format is comma separated string of integers, example : -11,-33
 			 * @version 10.0
 			 */
-			%read-only string SignalStrengthHistory;
+			%volatile %read-only string SignalStrengthHistory;
 
 			/**
 			* List of radio signal strength per antennas of the uplink from the
@@ -1158,14 +1163,14 @@ define rrm_t{
 			* Example : -58.5,-58.2,-57.4,-58.1
 			 * @version 9.1
 			*/
-			%read-only string SignalStrengthByChain;
+			%volatile %read-only string SignalStrengthByChain;
 			/**
 			 * An indicator of radio signal strength of the uplink from the
 			 * associated device to the access point, measured in dBm, as
 			 * an average over all antennas.
 			 * @version 9.2
 			 */
-			%read-only int32 AvgSignalStrengthByChain{
+			%volatile %read-only int32 AvgSignalStrengthByChain{
 				on action validate call check_range { min = -200, max = 0 };
 			}
 			/**
@@ -1202,11 +1207,11 @@ define rrm_t{
 			/** Signal to noise ratio in dB
 			 * @version 6.0
 			 */
-			%read-only int32 SignalNoiseRatio;
+			%volatile %read-only int32 SignalNoiseRatio;
 			/** Radio noise level in dB
 			 * @version 6.0
 			*/
-			%read-only int32 Noise;
+			%volatile %read-only int32 Noise;
 			/** The time elapsed since the station was last active, in seconds
 			 * @version 6.0
 			*/
@@ -1285,28 +1290,28 @@ define rrm_t{
 			%volatile %read-only uint32 Tx_RetransmissionsFailed;
 
 			/** MCS Id of the station's uplink */
-			%read-only uint32 UplinkMCS;
+			%volatile %read-only uint32 UplinkMCS;
 
 			/** Indicates channel bandwidth is used as uplink */
-			%read-only uint32 UplinkBandwidth;
+			%volatile %read-only uint32 UplinkBandwidth;
 
 			/** Short guarding interval is applied for uplink */
-			%read-only bool UplinkShortGuard;
+			%volatile %read-only bool UplinkShortGuard;
 			
 			/** String representation of full receive rateSpec */
-			%read-only string UplinkRateSpec;
+			%volatile %read-only string UplinkRateSpec;
 
 			/** MCS Id of the station's downlink */
-			%read-only uint32 DownlinkMCS;
+			%volatile %read-only uint32 DownlinkMCS;
 
 			/** Indicates channel bandwidth is used as downlink */
-			%read-only uint32 DownlinkBandwidth;
+			%volatile %read-only uint32 DownlinkBandwidth;
 
 			/** Short guarding interval is applied for downlink */
-			%read-only bool DownlinkShortGuard;
+			%volatile %read-only bool DownlinkShortGuard;
 			
 			/** String representation of full transmit rateSpec */
-			%read-only string DownlinkRateSpec;
+			%volatile %read-only string DownlinkRateSpec;
 
 			/* Maximum number of Rx spatial streams supported */
 			%read-only uint16 MaxRxSpatialStreamsSupported;
@@ -1318,13 +1323,13 @@ define rrm_t{
 			%read-only uint32 MaxDownlinkRateSupported;
 
 			/* Maximum Downlink physical rate reached in Kbps */
-			%read-only uint32 MaxDownlinkRateReached;
+			%volatile %read-only uint32 MaxDownlinkRateReached;
 
 			/* Maximum UplinkRate supported in Kbps */
 			%read-only uint32 MaxUplinkRateSupported;
 
 			/* Maximum Uplink physical rate reached in Kbps */
-			%read-only uint32 MaxUplinkRateReached;
+			%volatile %read-only uint32 MaxUplinkRateReached;
 
 			/* Maximum bandwidth supported */
 			%read-only string MaxBandwidthSupported {

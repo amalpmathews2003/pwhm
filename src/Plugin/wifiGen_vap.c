@@ -252,7 +252,8 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
 }
 
 swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
-    T_AccessPoint* pAP = (T_AccessPoint*) amxd_object_get_parent(amxd_object_get_parent(pAD->object))->priv;
+    T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_STATE, ME, "NULL");
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
     ASSERTI_TRUE(pAD->Active, SWL_RC_OK, ME, "assocdev no more active");

@@ -109,6 +109,10 @@ bool wld_ad_has_active_stations(T_AccessPoint* pAP);
 bool wld_ad_hasAuthenticatedStations(T_AccessPoint* pAP);
 void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps);
 void wld_ad_syncRrmCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps);
+void wld_ad_syncdetailedMcsCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps);
+amxd_object_t* wld_ad_getOrCreateObject(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
+swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD);
+void wld_ad_syncStats(T_AssociatedDevice* pAD);
 bool wld_ad_has_active_video_stations(T_AccessPoint* pAP);
 bool wld_rad_has_active_stations(T_Radio* pRad);
 bool wld_rad_has_active_video_stations(T_Radio* pRad);
@@ -120,6 +124,10 @@ bool wld_ad_has_assocdev(T_AccessPoint* pAP, const unsigned char macAddress[ETHE
 T_AccessPoint* wld_rad_get_associated_ap(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]);
 bool wld_rad_has_assocdev(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]);
 wld_assocDevInfo_t wld_rad_get_associatedDeviceInfo(T_Radio* pRad, const unsigned char macAddress[ETHER_ADDR_LEN]);
+T_AccessPoint* wld_ad_getAssociatedApByMac(swl_macBin_t* macAddress);
+T_AccessPoint* wld_ad_getAssociatedAp(T_AssociatedDevice* pAD);
+T_AssociatedDevice* wld_ad_fromMac(swl_macBin_t* macAddress);
+T_AssociatedDevice* wld_ad_fromObj(amxd_object_t* object);
 
 void wld_vap_mark_all_stations_unseen(T_AccessPoint* pAP);
 void wld_vap_update_seen(T_AccessPoint* pAP);
