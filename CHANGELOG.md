@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.2 - 2023-11-13(18:01:46 +0000)
+
+### Other
+
+- set SSID/Radio stats params without transaction
+
 ## Release v5.3.1 - 2023-11-13(17:28:56 +0000)
 
 ### Other
