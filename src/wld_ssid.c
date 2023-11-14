@@ -746,6 +746,7 @@ void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit) {
     pSSID->status = status;
 
     if(commit) {
+        ASSERTI_NOT_NULL(pSSID->pBus, , ME, "%s: not dm configurable", pSSID->Name);
         amxd_trans_t trans;
         ASSERT_TRANSACTION_INIT(pSSID->pBus, &trans, , ME, "%s : trans init failure", pSSID->Name);
         amxd_trans_set_value(cstring_t, &trans, "Status", Rad_SupStatus[pSSID->status]);

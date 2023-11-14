@@ -2214,7 +2214,8 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
     pAP->lastStatusChange = swl_time_getMonoSec();
     wld_ssid_setStatus(pSSID, newSsidStatus, true);
 
-    ASSERT_TRUE(swl_typeCharPtr_commitObjectParam(pAP->pBus, "Status", (char*) cstr_AP_status[pAP->status]), ,
+    //update DM Status of DM configurable VAPs
+    ASSERT_TRUE((pAP->pBus == NULL) || swl_typeCharPtr_commitObjectParam(pAP->pBus, "Status", (char*) cstr_AP_status[pAP->status]), ,
                 ME, "%s: fail to commit status (%s)", pAP->alias, cstr_AP_status[pAP->status]);
 
     wld_vap_status_change_event_t vapUpdate;

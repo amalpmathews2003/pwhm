@@ -287,6 +287,10 @@ static void s_syncWpsConstToObject() {
         T_AccessPoint* pAP = NULL;
         wld_rad_forEachAp(pAP, pRad) {
             amxd_object_t* wpsObj = amxd_object_get(pAP->pBus, "WPS");
+            //skip AP ctx not configurable through dm
+            if(wpsObj == NULL) {
+                continue;
+            }
             amxd_trans_select_object(&trans, wpsObj);
             amxd_trans_set_value(cstring_t, &trans, "SelfPIN", pRad->wpsConst->DefaultPin);
             amxd_trans_set_value(cstring_t, &trans, "UUID", pRad->wpsConst->UUID);
