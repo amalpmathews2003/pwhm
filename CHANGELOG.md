@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.11 - 2023-11-14(16:29:31 +0000)
+
+### Other
+
+- - do not send scan notification in async mode.
+
 ## Release v5.3.10 - 2023-11-14(16:03:53 +0000)
 
 ### Other
