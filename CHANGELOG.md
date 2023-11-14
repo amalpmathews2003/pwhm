@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.10 - 2023-11-14(16:03:53 +0000)
+
+### Other
+
+- restore legacy wld_radio_updateAntenna
+
 ## Release v5.3.9 - 2023-11-14(14:56:55 +0000)
 
 ### Other
