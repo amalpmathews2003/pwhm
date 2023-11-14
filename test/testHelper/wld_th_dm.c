@@ -108,10 +108,12 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 
 
     ttb_amx_loadDm(dm->ttbBus, "../../test/commonData/wld.odl", "WiFi");
+    //init swla dm bus ctx, first time, before wld_main, for any early dm action
+    swl_lib_initialize(dm->ttbBus->bus_ctx);
 
     assert_int_equal(_wld_main(AMXO_START, &dm->ttbBus->dm, &dm->ttbBus->parser), 0);
 
-
+    //re-init swla dm bus ctx, second time, after wld_main, to restore ttbBus emulated connection
     swl_lib_initialize(dm->ttbBus->bus_ctx);
 
     dm->mockVendor = wld_th_mockVendor_create("MockVendor");

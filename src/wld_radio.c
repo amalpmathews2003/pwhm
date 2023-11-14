@@ -544,7 +544,7 @@ static void checkRadioEventLogLimitReached (T_Radio* pR) {
     SAH_TRACEZ_IN(ME);
 
     ASSERT_NOT_NULL(pR, , ME, "NULL");
-    amxd_object_t* evt = amxd_object_get(pR->pBus, "DFS.Event");
+    amxd_object_t* evt = amxd_object_findf(pR->pBus, "DFS.Event");
     amxc_llist_it_t* it = amxd_object_first_instance(evt);
     amxd_object_t* chld = amxc_llist_it_get_data(it, amxd_object_t, it);
     while(pR->dfsEventNbr > pR->dfsEventLogLimit) {

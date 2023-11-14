@@ -171,6 +171,7 @@ void wld_bgdfs_notifyClearStarted(T_Radio* pRad, swl_channel_t channel, swl_band
 
     pRad->bgdfs_stats.nrClearStart[type]++;
 
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: dm not ready", pRad->Name);
     amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
 
     amxd_trans_t trans;
@@ -251,6 +252,7 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
         statusUpdate = true;
     }
 
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: dm not ready", pRad->Name);
     amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pRad->Name);
@@ -277,7 +279,6 @@ void s_checkEnableChange(T_Radio* pRad, bool enable) {
 }
 
 void wld_bgdfs_setAvailable(T_Radio* pRad, bool available) {
-    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
     bool oldAvailable = pRad->bgdfs_config.available;
     pRad->bgdfs_config.available = available;
     s_checkEnableChange(pRad, available);
@@ -286,6 +287,8 @@ void wld_bgdfs_setAvailable(T_Radio* pRad, bool available) {
         s_resetStatus(pRad);
     }
 
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: dm not ready", pRad->Name);
+    amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pRad->Name);
 
@@ -349,6 +352,12 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     /* update status */
     s_resetStatus(pR);
 
+    SAH_TRACEZ_INFO(ME,
+                    "%s: BgDfs preclear enable changed to %s",
+                    pR->Name,
+                    pR->bgdfs_config.enable ? "true" : "false");
+
+    ASSERTI_TRUE(pR->hasDmReady, , ME, "%s: dm not ready", pR->Name);
     amxd_object_t* enableObj = amxd_object_findf(pR->pBus, "ChannelMgt.BgDfs");
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(enableObj, &trans, , ME, "%s : trans init failure", pR->Name);
@@ -357,12 +366,6 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     s_writeStatistics(pR, &trans);
 
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
-
-
-    SAH_TRACEZ_INFO(ME,
-                    "%s: BgDfs preclear enable changed to %s",
-                    pR->Name,
-                    pR->bgdfs_config.enable ? "true" : "false");
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -436,13 +439,12 @@ amxd_status_t bgdfs_stopClear(T_Radio* pRad) {
     ASSERT_CMD_SUCCESS(pRad->pFA->mfn_wrad_bgdfs_stop(pRad), amxd_status_unknown_error,
                        ME, "%s stop bgdfs error %i", pRad->Name, _errNo);
 
+    ASSERTI_TRUE(pRad->hasDmReady, amxd_status_ok, ME, "%s: dm not ready", pRad->Name);
     amxd_object_t* object = amxd_object_findf(pRad->pBus, "ChannelMgt.BgDfs");
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(object, &trans, amxd_status_ok, ME, "%s : trans init failure", pRad->Name);
     s_writeStatistics(pRad, &trans);
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, amxd_status_ok, ME, "%s : trans apply failure", pRad->Name);
-
-
 
     return amxd_status_ok;
 }

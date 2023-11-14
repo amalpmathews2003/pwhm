@@ -305,6 +305,7 @@ amxd_status_t _wld_wifiSensing_delClient_odf(amxd_object_t* object,
     SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_action_object_destroy(object, param, reason, args, retval, priv);
     ASSERT_EQUALS(status, amxd_status_ok, status, ME, "Fail to destroy client entry st:%d", status);
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, status, ME, "obj is not instance");
 
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(amxd_object_get_parent(object))));
     ASSERT_NOT_NULL(pRad, amxd_status_ok, ME, "No radio ctx");

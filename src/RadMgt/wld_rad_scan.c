@@ -87,12 +87,17 @@ const char* g_str_wld_blockScanMode[BLOCKSCANMODE_MAX] = {
 };
 
 static amxd_object_t* s_scanStatsInitialize(T_Radio* pRad, const char* scanReason) {
-    amxd_object_t* scanStatsTemp = amxd_object_get(pRad->pBus, "ScanStats.ScanReason");
+    amxd_object_t* scanStatsTemp = amxd_object_findf(pRad->pBus, "ScanStats.ScanReason");
     ASSERTS_NOT_NULL(scanStatsTemp, NULL, ME, "ScanReason Obj NULL");
     amxd_object_t* obj = amxd_object_get(scanStatsTemp, scanReason);
     if(obj == NULL) {
-        amxd_object_new_instance(&obj, scanStatsTemp, scanReason, 0, NULL);
-        ASSERTS_NOT_NULL(obj, NULL, ME, "Failed to create object: %s", scanReason);
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(scanStatsTemp, &trans, NULL, ME, "%s : trans init failure", pRad->Name);
+        amxd_trans_add_inst(&trans, 0, scanReason);
+        amxd_trans_set_value(cstring_t, &trans, "Name", scanReason);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, NULL, ME, "%s : trans apply failure", pRad->Name);
+        obj = amxd_object_get(scanStatsTemp, scanReason);
+        ASSERT_NOT_NULL(obj, NULL, ME, "Failed to create object: %s", scanReason);
     }
     return obj;
 }
@@ -146,7 +151,6 @@ static void s_updateScanStats(T_Radio* pRad) {
     amxc_llist_for_each(it, &(pRad->scanState.stats.extendedStat)) {
         wld_scanReasonStats_t* stats = amxc_llist_it_get_data(it, wld_scanReasonStats_t, it);
         amxd_trans_select_object(&trans, stats->object);
-        amxd_trans_set_cstring_t(&trans, "Name", stats->scanReason);
         amxd_trans_set_uint32_t(&trans, "NrScanRequested", stats->totalCount);
         amxd_trans_set_uint32_t(&trans, "NrScanDone", stats->successCount);
         amxd_trans_set_uint32_t(&trans, "NrScanError", stats->errorCount);

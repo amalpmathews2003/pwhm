@@ -2608,9 +2608,7 @@ define probelist_t{
 				/* Name of the ScanReason, This be a string for which reason scan is triggered.
 				 * @version 10.3
 				 */
-				%read-only string Name{
-					default "";
-				}
+				%read-only string Name;
 				/**
 				 * Number of scans triggered for the scan Reason.
 				 * @version 10.3
@@ -2625,6 +2623,11 @@ define probelist_t{
 				%read-only uint32 NrScanDone{
 					default 0;
 				}
+				/**
+				 * Number of scans failed for given reason
+				 * @version 10.3
+				 */
+				%read-only uint32 NrScanError;
 			}
 		}
 
