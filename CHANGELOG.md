@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.3 - 2023-11-14(07:37:51 +0000)
+
+### Other
+
+- : Incorrect value for "WiFi.AccessPoint.[].MaxAssociatedDevices" after reboot
+
 ## Release v5.3.2 - 2023-11-13(18:01:46 +0000)
 
 ### Other
