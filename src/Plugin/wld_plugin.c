@@ -101,6 +101,29 @@ static bool s_initPluginConf() {
     return swl_fileUtils_writeFile("", confFile);
 }
 
+static char* s_getModDir(amxo_parser_t* parser) {
+    //1) get conf: pwhm vendor modules path
+    amxc_var_t* cfgVar = amxo_parser_get_config(parser, "wld.mod-dir");
+    char* modDir = amxc_var_get_cstring_t(cfgVar);
+    amxc_var_delete(&cfgVar);
+    if(!swl_str_isEmpty(modDir)) {
+        return modDir;
+    }
+    //2) if not available, build alternative vdr module path from the plugin path
+    W_SWL_FREE(modDir);
+    cfgVar = amxo_parser_get_config(parser, "plugin-dir");
+    const char* pluginDir = amxc_var_get_const_cstring_t(cfgVar);
+    if(!swl_str_isEmpty(pluginDir)) {
+        amxc_string_t modDirStr;
+        amxc_string_init(&modDirStr, swl_str_len(pluginDir));
+        amxc_string_setf(&modDirStr, "%s/%s", pluginDir, "/wld/modules");
+        modDir = amxc_string_take_buffer(&modDirStr);
+        amxc_string_clean(&modDirStr);
+    }
+    amxc_var_delete(&cfgVar);
+    return modDir;
+}
+
 int _wld_main(int reason,
               amxd_dm_t* dm,
               amxo_parser_t* parser) {
@@ -109,12 +132,11 @@ int _wld_main(int reason,
         SAH_TRACEZ_WARNING(ME, "WLD plugin started");
         wld_plugin_init(dm, parser);
         wld_plugin_start();
-        amxc_var_t* modDirVar = amxo_parser_get_config(parser, "wld.mod-dir");
-        const char* mod_dir = amxc_var_get_const_cstring_t(modDirVar);
-        if(swl_str_isEmpty(mod_dir) || (wld_vendorModuleMgr_loadExternalDir(mod_dir) < 0)) {
+        char* modDir = s_getModDir(parser);
+        if(swl_str_isEmpty(modDir) || (wld_vendorModuleMgr_loadExternalDir(modDir) < 0)) {
             wld_vendorModuleMgr_loadInternal();
         }
-        amxc_var_delete(&modDirVar);
+        free(modDir);
 
         //Init info struct to be filled with need info
         wld_vendorModule_initInfo_t initInfo;
