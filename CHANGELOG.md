@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.4 - 2023-11-14(10:44:10 +0000)
+
+### Other
+
+- set AssociatedDevice stats params without transaction
+
 ## Release v5.3.3 - 2023-11-14(07:37:51 +0000)
 
 ### Other
