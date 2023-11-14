@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.7 - 2023-11-14(12:35:57 +0000)
+
+### Other
+
+- direct set regdomain at boot to early update possible channels
+
 ## Release v5.3.6 - 2023-11-14(11:28:56 +0000)
 
 ### Other
