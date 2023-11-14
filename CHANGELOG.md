@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.5 - 2023-11-14(11:15:06 +0000)
+
+### Other
+
+- apply transaction only on DM configurable VAPs
+
 ## Release v5.3.4 - 2023-11-14(10:44:10 +0000)
 
 ### Other
