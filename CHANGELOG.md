@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.4.0 - 2023-11-14(18:26:36 +0000)
+
+### Other
+
+- : Add TLVs support
+
 ## Release v5.3.11 - 2023-11-14(16:29:31 +0000)
 
 ### Other
