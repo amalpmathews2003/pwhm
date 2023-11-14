@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.9 - 2023-11-14(14:56:55 +0000)
+
+### Other
+
+- load vendor modules from alternative default path
+
 ## Release v5.3.8 - 2023-11-14(14:06:39 +0000)
 
 ### Other
