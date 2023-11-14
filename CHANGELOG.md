@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.6 - 2023-11-14(11:28:56 +0000)
+
+### Other
+
+- set direct label pin when hostapd connection is ready
+
 ## Release v5.3.5 - 2023-11-14(11:15:06 +0000)
 
 ### Other
