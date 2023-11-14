@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.3.8 - 2023-11-14(14:06:39 +0000)
+
+### Other
+
+- fix scanStats dm notif
+
 ## Release v5.3.7 - 2023-11-14(12:35:57 +0000)
 
 ### Other
