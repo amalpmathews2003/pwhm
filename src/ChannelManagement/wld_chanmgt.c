@@ -612,6 +612,12 @@ void wld_chanmgt_checkInitChannel(T_Radio* pRad) {
     swl_freqBand_e freqB = wld_rad_getFreqBand(pRad);
     swl_chanspec_t defaultChanspec = SWL_CHANSPEC_NEW(swl_channel_defaults[freqB],
                                                       swl_bandwidth_defaults[freqB], pRad->operatingFrequencyBand);
+    //consider the default chanspec from the driver
+    //otherwise fall back to implicit default chanspec per freqBand
+    swl_chanspec_t radChanspec = wld_rad_getSwlChanspec(pRad);
+    if(swl_chanspec_channelToMHzDef(&radChanspec, 0) == 0) {
+        defaultChanspec = radChanspec;
+    }
     wld_chanmgt_reportCurrentChanspec(pRad, defaultChanspec, CHAN_REASON_INITIAL);
 }
 

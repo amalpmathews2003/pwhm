@@ -76,7 +76,7 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize);
 int wifiGen_rad_status(T_Radio* pRad);
 int wifiGen_rad_enable(T_Radio* rad, int val, int set);
 int wifiGen_rad_sync(T_Radio* pRad, int set);
-int wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set);
+swl_rc_ne wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set);
 int wifiGen_rad_txpow(T_Radio* pRad, int val, int set);
 swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct);
 int wifiGen_rad_antennactrl(T_Radio* pRad, int val, int set);

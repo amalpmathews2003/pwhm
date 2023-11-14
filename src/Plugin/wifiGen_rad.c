@@ -404,9 +404,15 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     //toggle to force loading nl80211 wiphy caps
     int radState = wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pRad->Name);
     if(radState == 0) {
-        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 1);
-        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 0);
+        pRad->pFA->mfn_wrad_enable(pRad, 1, SET | DIRECT);
+        pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
     }
+
+    //set default regdomain to let driver update wiphy band channels
+    //before getting wiphy info
+    swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), s_defaultRegDomain);
+    getCountryParam(pRad->regulatoryDomain, 0, &pRad->regulatoryDomainIdx);
+    pRad->pFA->mfn_wrad_regdomain(pRad, NULL, 0, SET | DIRECT);
 
     wld_nl80211_wiphyInfo_t wiphyInfo;
     swl_rc_ne rc = wld_rad_nl80211_getWiphyInfo(pRad, &wiphyInfo);
@@ -461,8 +467,6 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     pRad->transmitPower = 100;
     pRad->setRadio80211hEnable = (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ || pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) ? TRUE : FALSE;
-    swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), s_defaultRegDomain);
-    getCountryParam(pRad->regulatoryDomain, 0, &pRad->regulatoryDomainIdx);
     pRad->m_multiAPTypesSupported = M_MULTIAP_ALL;
 
     /* First time force full config */
@@ -557,23 +561,20 @@ int wifiGen_rad_sync(T_Radio* pRad, int set) {
     return SWL_RC_OK;
 }
 
-int wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
+swl_rc_ne wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
     if(set & SET) {
         const char* countryName = getShortCountryName(pRad->regulatoryDomainIdx);
-        if(!swl_str_isEmpty(countryName)) {
-            swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), countryName);
-            if(set & DIRECT) {
-                wld_rad_nl80211_setRegDomain(pRad, countryName);
-            } else {
-                setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE);
-            }
-        } else {
-            SAH_TRACEZ_ERROR(ME, "regulatoryDomainIdx %d not valid!", pRad->regulatoryDomainIdx);
+        ASSERT_FALSE(swl_str_isEmpty(countryName), SWL_RC_INVALID_PARAM,
+                     ME, "regulatoryDomainIdx %d not valid!", pRad->regulatoryDomainIdx);
+        swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), countryName);
+        if(set & DIRECT) {
+            return wld_rad_nl80211_setRegDomain(pRad, countryName);
         }
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE);
     } else {
         swl_str_copy(val, bufsize, pRad->regulatoryDomain);
     }
-    return true;
+    return SWL_RC_OK;
 }
 
 int32_t s_getMaxPow(T_Radio* pRad) {

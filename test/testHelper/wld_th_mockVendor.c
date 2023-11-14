@@ -81,6 +81,7 @@ static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wrad_airtimefairness = wld_th_mfn_wrad_airtimefairness,
     .mfn_wrad_intelligentAirtime = wld_th_mfn_wrad_intelligentAirtime,
     .mfn_wrad_supstd = wld_th_mfn_wrad_supstd,
+    .mfn_wrad_regdomain = wld_th_mfn_wrad_regdomain,
     .mfn_wrad_setChanspec = wld_th_rad_setChanspec,
     .mfn_wrad_sensing_cmd = wld_th_rad_sensing_cmd,
     .mfn_wrad_sensing_addClient = wld_th_rad_sensing_addClient,

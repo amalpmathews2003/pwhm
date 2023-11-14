@@ -1046,12 +1046,16 @@ static swl_rc_ne s_checkCountryCode(const char* countryCode, int32_t* pIdx) {
     return SWL_RC_OK;
 }
 
-static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode) {
+static swl_rc_ne s_setCountryCode(T_Radio* pR, const char* countryCode, bool direct) {
     ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
     int idx = 0;
     swl_rc_ne rc = s_checkCountryCode(countryCode, &idx);
     ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "%s: invalid country (%s)", pR->Name, countryCode);
     pR->regulatoryDomainIdx = idx;
+    if(direct && (pR->pFA->mfn_wrad_regdomain(pR, NULL, 0, SET | DIRECT) == SWL_RC_OK)) {
+        pR->pFA->mfn_wrad_poschans(pR, NULL, 0);
+        return SWL_RC_OK;
+    }
     pR->pFA->mfn_wrad_regdomain(pR, NULL, 0, SET);
     return rc;
 }
@@ -1063,7 +1067,10 @@ static void s_setCountryCode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
     ASSERT_NOT_NULL(pR, , ME, "NULL");
     const char* CC = amxc_var_constcast(cstring_t, newValue);
     SAH_TRACEZ_INFO(ME, "%s: set CountryCode (%s)", pR->Name, CC);
-    if(s_setCountryCode(pR, CC) == SWL_RC_OK) {
+    //apply immediately the country code if possible (boot case)
+    //to have up to date possible channels asap
+    bool initOngoing = (!wld_rad_areAllVapsDone(pR));
+    if(s_setCountryCode(pR, CC, initOngoing) == SWL_RC_OK) {
         wld_autoCommitMgr_notifyRadEdit(pR);
     }
 
@@ -1589,7 +1596,6 @@ static void s_listRadioFeatures(T_Radio* pRad, amxc_var_t* map) {
 }
 
 void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
-    //int idx;
     char ValBuf[32];
     char TBuf[320];
     char objPath[128];
@@ -1871,7 +1877,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         char* regulatoryDomain = amxd_object_get_cstring_t(object, "RegulatoryDomain", NULL);
         if(!swl_str_matches(regulatoryDomain, pR->regulatoryDomain)) {
-            if(s_setCountryCode(pR, regulatoryDomain) == SWL_RC_OK) {
+            if(s_setCountryCode(pR, regulatoryDomain, false) == SWL_RC_OK) {
                 commit = true;
             }
         }
@@ -4014,7 +4020,9 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
 }
 
 SWLA_DM_HDLRS(sRadioDmHdlrs,
-              ARR(SWLA_DM_PARAM_HDLR("Channel", s_setChannel_pwf),
+              ARR(SWLA_DM_PARAM_HDLR("RegulatoryDomain", s_setCountryCode_pwf),
+                  SWLA_DM_PARAM_HDLR("IEEE80211hEnabled", s_set80211hEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("Channel", s_setChannel_pwf),
                   SWLA_DM_PARAM_HDLR("AP_Mode", s_setAPMode_pwf),
                   SWLA_DM_PARAM_HDLR("STA_Mode", s_setSTAMode_pwf),
                   SWLA_DM_PARAM_HDLR("WDS_Mode", s_setWDSMode_pwf),
@@ -4023,8 +4031,8 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("WPS_Enrollee_Mode", s_setWPSEnrolMode_pwf),
                   SWLA_DM_PARAM_HDLR("KickRoamingStation", s_setKickRoamSta_pwf),
                   SWLA_DM_PARAM_HDLR("AutoChannelEnable", s_setAutoChannelEnable_pwf),
-                  SWLA_DM_PARAM_HDLR("OperatingChannelBandwidth", s_setOperatingChannelBandwidth_pwf),
                   SWLA_DM_PARAM_HDLR("AutoBandwidthSelectMode", s_setAutoBandwidthSelectMode_pwf),
+                  SWLA_DM_PARAM_HDLR("OperatingChannelBandwidth", s_setOperatingChannelBandwidth_pwf),
                   SWLA_DM_PARAM_HDLR("ObssCoexistenceEnable", s_setObssCoexistenceEnable_pwf),
                   SWLA_DM_PARAM_HDLR("ExtensionChannel", s_setExtensionChannel_pwf),
                   SWLA_DM_PARAM_HDLR("GuardInterval", s_setGuardInterval_pwf),
@@ -4039,8 +4047,6 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("TargetWakeTimeEnable", s_setTargetWakeTimeEnable_pwf),
                   SWLA_DM_PARAM_HDLR("OfdmaEnable", s_setOfdmaEnable_pwf),
                   SWLA_DM_PARAM_HDLR("HeCapsEnabled", s_setHeCaps_pwf),
-                  SWLA_DM_PARAM_HDLR("IEEE80211hEnabled", s_set80211hEnable_pwf),
-                  SWLA_DM_PARAM_HDLR("RegulatoryDomain", s_setCountryCode_pwf),
                   SWLA_DM_PARAM_HDLR("ImplicitBeamFormingEnabled", s_setImplicitBeamForming_pwf),
                   SWLA_DM_PARAM_HDLR("ExplicitBeamFormingEnabled", s_setExplicitBeamForming_pwf),
                   SWLA_DM_PARAM_HDLR("RxBeamformingCapsEnabled", s_setRxBfCapsEnabled_pwf),
