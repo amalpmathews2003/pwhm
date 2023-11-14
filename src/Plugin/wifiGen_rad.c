@@ -701,7 +701,7 @@ int wifiGen_rad_antennactrl(T_Radio* pRad, int val _UNUSED, int set) {
 
     pRad->nrActiveAntenna[COM_DIR_TRANSMIT] = swl_bit32_getNrSet(txMapAnt);
     pRad->nrActiveAntenna[COM_DIR_RECEIVE] = swl_bit32_getNrSet(rxMapAnt);
-    wld_radio_updateAntenna(pRad, NULL);
+    wld_radio_updateAntenna(pRad);
     SAH_TRACEZ_INFO(ME, "%s: enable %u, ctrl %i %i-%i ; ant %i/%i -%i/%i",
                     pRad->Name, pRad->enable, pRad->actAntennaCtrl, pRad->txChainCtrl, pRad->rxChainCtrl,
                     pRad->nrActiveAntenna[COM_DIR_TRANSMIT], pRad->nrAntenna[COM_DIR_TRANSMIT],

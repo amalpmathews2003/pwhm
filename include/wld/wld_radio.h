@@ -93,7 +93,8 @@ typedef struct {
 
 T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn);
 
-void wld_radio_updateAntenna(T_Radio* pRad, amxd_trans_t* trans);
+void wld_radio_updateAntenna(T_Radio* pRad);
+void wld_radio_updateAntennaExt(T_Radio* pRad, amxd_trans_t* trans);
 wld_ap_dm_m wld_rad_getDiscoveryMethod(T_Radio* pR);
 void wld_rad_updateDiscoveryMethod6GHz();
 

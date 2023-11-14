@@ -1525,7 +1525,7 @@ T_Radio* wld_getRadioDataHandler(amxd_object_t* pobj, const char* rn) {
     return (T_Radio*) inst->priv;
 }
 
-void wld_radio_updateAntenna(T_Radio* pRad, amxd_trans_t* trans) {
+void wld_radio_updateAntennaExt(T_Radio* pRad, amxd_trans_t* trans) {
     amxd_object_t* hwObject = amxd_object_findf(pRad->pBus, "DriverStatus");
 
     swla_trans_t tmpTrans;
@@ -1538,6 +1538,10 @@ void wld_radio_updateAntenna(T_Radio* pRad, amxd_trans_t* trans) {
     amxd_trans_set_int32_t(targetTrans, "NrActiveRxAntenna", pRad->nrActiveAntenna[COM_DIR_RECEIVE]);
 
     swla_trans_finalize(&tmpTrans, NULL);
+}
+
+void wld_radio_updateAntenna(T_Radio* pRad) {
+    wld_radio_updateAntennaExt(pRad, NULL);
 }
 
 /**
@@ -1755,7 +1759,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         wld_rad_update_operating_standard(pR, &trans);
 
         wld_rad_updateCapabilities(pR, &trans);
-        wld_radio_updateAntenna(pR, &trans);
+        wld_radio_updateAntennaExt(pR, &trans);
         wld_bgdfs_update(pR, &trans);
 
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
