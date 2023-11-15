@@ -81,6 +81,12 @@
 #include "wld_chanmgt.h"
 #include "swl/swl_common_chanspec.h"
 
+
+
+
+static swl_llist_t s_capList = {NULL, NULL};
+
+
 static int s_getNextIndex() {
     // this is basically a hidden global, so not very pretty, but ok...
     static int nextIndex = 0;
@@ -147,10 +153,43 @@ void s_readChanInfo(T_Radio* pRad) {
     }
 }
 
+
+void wld_th_radio_addCustomCap(wld_th_radCap_t* cap) {
+    swl_llist_append(&s_capList, &cap->it);
+}
+
+wld_th_radCap_t* s_findCap(const char* radName) {
+    swl_llist_iterator_t* it;
+    swl_llist_for_each(it, &s_capList) {
+        wld_th_radCap_t* cap = swl_llist_item_data(it, wld_th_radCap_t, it);
+        if(swl_str_matches(cap->name, radName)) {
+            return cap;
+        }
+    }
+    return NULL;
+}
+
 /** Implements #PFN_WRAD_SUPPORTS */
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize _UNUSED) {
     assert_non_null(rad);
     rad->driverCfg.skipSocketIO = true;
+
+    wld_th_radCap_t* cap = s_findCap(rad->Name);
+    if(cap != NULL) {
+        printf("%s: loading custom cap\n", rad->Name);
+        rad->operatingFrequencyBand = cap->operatingFrequencyBand;
+        rad->supportedFrequencyBands = cap->supportedFrequencyBands;
+        memcpy(rad->possibleChannels, cap->possibleChannels, cap->nrPossibleChannels);
+        rad->nrPossibleChannels = cap->nrPossibleChannels;
+        rad->maxChannelBandwidth = cap->maxChannelBandwidth;
+        rad->operatingChannelBandwidth = cap->operatingChannelBandwidth;
+        rad->channel = cap->channel;
+        rad->supportedStandards = cap->supportedStandards;
+        memcpy(&rad->cap, &cap->cap, sizeof(wld_radioCap_t));
+        return 0;
+    }
+
+
 
     // In wld's radio cration, this callback is called, after which it syncs to PCB,
     // after which it commits the PCB object, which fails if the band is invalid.

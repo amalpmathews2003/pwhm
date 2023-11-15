@@ -101,9 +101,6 @@ static wld_th_dm_t dm;
 
 static int test_setup(void** state _UNUSED) {
     assert_true(wld_th_dm_init(&dm));
-
-
-
     return 0;
 }
 

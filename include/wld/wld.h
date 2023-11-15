@@ -1162,6 +1162,18 @@ typedef struct wld_airStats {
     amxc_var_t* vendorStats;
 } wld_airStats_t;
 
+typedef struct wld_radioWiFi7Cap {
+    bool emlmrSupported;
+    bool emlsrSupported;
+    bool strSupported;
+    bool nstrSupported;
+} wld_radioWiFi7Cap_t;
+
+typedef struct wld_radioCap {
+    wld_radioWiFi7Cap_t apCap7;
+    wld_radioWiFi7Cap_t staCap7;
+} wld_radioCap_t;
+
 typedef struct {
     T_Radio* pRad;
     bool start;   //set to true if start, false if stop
@@ -1552,6 +1564,7 @@ struct WLD_RADIO {
     amxc_llist_t csiClientList;                   /* CSI client list */
     char firmwareVersion[64];                     /* Radio’s WiFi firmware version */
     wld_radExt_t* radExt;                         /* Radio external data */
+    wld_radioCap_t cap;                           /* Datamodel capabilities; */
 };
 
 typedef struct {

@@ -76,11 +76,27 @@
 #include <amxo/amxo_save.h>
 #include <amxb/amxb.h>
 
+typedef struct {
+    swl_llist_iterator_t it;
+    char name[32];
+    swl_channel_t possibleChannels[WLD_MAX_POSSIBLE_CHANNELS];
+    uint32_t nrPossibleChannels;
+    swl_freqBandExt_m supportedFrequencyBands;
+    swl_freqBandExt_e operatingFrequencyBand;
+    swl_channel_t startChannel;
+    swl_bandwidth_e maxChannelBandwidth;
+    swl_radBw_e operatingChannelBandwidth;
+    swl_channel_t channel;
+    swl_radioStandard_m supportedStandards;
+    wld_radioCap_t cap;
+} wld_th_radCap_t;
+
 T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name);
 
 int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad, char* endpoint, int bufsize);
 int wld_th_radio_vendorCb_delEndpointIf(T_Radio* radio, char* endpoint);
 int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+void wld_th_radio_addCustomCap(wld_th_radCap_t* cap);
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
 int wld_th_mfn_wrad_airtimefairness(T_Radio* rad, int val, int set);
 int wld_th_mfn_wrad_intelligentAirtime(T_Radio* rad, int val, int set);

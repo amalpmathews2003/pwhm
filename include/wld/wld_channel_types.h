@@ -106,11 +106,6 @@ typedef swl_freqBandExt_e wld_radiofb_e;
 #define RFB_MAX M_SWL_FREQ_BAND_EXT_MAX
 typedef swl_freqBandExt_m wld_radiofb_m;
 
-typedef struct {
-    swl_channel_t channel;
-    swl_bandwidth_e bandwidth;
-} wld_chanspec_t;
-
 /**
  * An element of an interference list, to be requested for a specific channel
  */

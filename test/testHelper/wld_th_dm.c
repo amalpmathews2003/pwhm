@@ -90,7 +90,10 @@ bool wld_th_dm_initFreq(wld_th_dm_t* dm, swl_freqBand_m initMask _UNUSED) {
     return wld_th_dm_init(dm);
 }
 
-bool wld_th_dm_init(wld_th_dm_t* dm) {
+/**
+ * Only initialize environment, don't init radio's & vaps
+ */
+bool wld_th_dmEnv_init(wld_th_dm_t* dm) {
     assert_non_null(dm);
     ttb_mockClock_initDefault();
     dm->ttbBus = ttb_amx_init();
@@ -105,7 +108,6 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
     amxc_var_dump(&dm->ttbBus->parser.config, STDOUT_FILENO);
 
     setenv("WAN_ADDR", "AA:BB:CC:DD:EE:FF", 0);
-
 
     ttb_amx_loadDm(dm->ttbBus, "../../test/commonData/wld.odl", "WiFi");
     //init swla dm bus ctx, first time, before wld_main, for any early dm action
@@ -124,6 +126,11 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
 
     assert_int_equal(amxb_get(dm->ttbBus->bus_ctx, "WiFi.", INT32_MAX, &ret, 5), AMXB_STATUS_OK);
     amxc_var_clean(&ret);
+    return true;
+}
+
+bool wld_th_dm_init(wld_th_dm_t* dm) {
+    wld_th_dmEnv_init(dm);
 
     char* radNames[3] = {"wifi0", "wifi1", "wifi2"};
     char* vapNames[3] = {"wlan0", "wlan1", "wlan2"};
@@ -174,7 +181,6 @@ bool wld_th_dm_init(wld_th_dm_t* dm) {
         assert_int_equal(amxc_llist_size(&band->ep->llProfiles), 2);
 
         assert_non_null(band->ep->currentProfile);
-
     }
 
     return true;

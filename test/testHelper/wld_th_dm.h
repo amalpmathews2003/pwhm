@@ -97,6 +97,7 @@ typedef struct {
     wld_th_mockVendor_t* mockVendor;
 } wld_th_dm_t;
 
+bool wld_th_dmEnv_init(wld_th_dm_t* dm);
 bool wld_th_dm_init(wld_th_dm_t* dm);
 bool wld_th_dm_initFreq(wld_th_dm_t* dm, swl_freqBand_m initMask);
 void wld_th_dm_destroy(wld_th_dm_t* dm);

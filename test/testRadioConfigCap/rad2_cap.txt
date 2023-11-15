@@ -1,0 +1,14 @@
+{
+    "WiFi7APRole": {
+        "EMLMRSupport": true,
+        "STRSupport": true,
+        "NSTRSupport": true,
+        "EMLSRSupport": true
+    },
+    "WiFi7STARole": {
+        "EMLMRSupport": true,
+        "STRSupport": true,
+        "NSTRSupport": false,
+        "EMLSRSupport": false
+    }
+}

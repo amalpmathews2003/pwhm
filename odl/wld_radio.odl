@@ -1772,7 +1772,7 @@ define probelist_t{
 
 				/**
 				 * Current channel bandwidth by the radio in order to switch on it. 
-                 * Values shall match the possible values in SupportedOperatingChannelBandwidth.
+				 * Values shall match the possible values in SupportedOperatingChannelBandwidth.
 				 * </ul>
 				 */
 				%read-only string Bandwidth {
@@ -2802,6 +2802,65 @@ define probelist_t{
 			 * SRGPartialBSSIDBitmap = "0,1,3,5,63"
 			 */
 			%persistent string SRGPartialBSSIDBitmap;
+		}
+		
+		
+		/**
+		 * This object represents the capabilities of the radio.
+		 */
+		%read-only object Capabilities{
+		
+			/**
+			 *This object describes the Wi-Fi 7 capabilities for the AP role.
+			 */
+			%read-only object WiFi7APRole{
+				/**
+				 * Indicates if the Enhanced Multi-Link Multi-Radio (EMLMR) operation is supported.
+				 */
+				%read-only bool EMLMRSupport;
+				
+				/**
+				 * Indicates if Enhanced Multi-Link Single-Radio (EMLSR) operation is supported.
+				 */
+				%read-only bool EMLSRSupport;
+				
+				/**
+				 * Indicates if Simultaneous Transmit and Receive (STR) operation is supported.
+				 */
+				%read-only bool STRSupport;
+				
+				/**
+				 * Indicates if Non-Simultaneous Transmit and Receive (NSTR) operation is supported.
+				 */ 
+				%read-only bool NSTRSupport;
+			
+			}
+		
+			/**
+			 *This object describes the Wi-Fi 7 capabilities for the Sta role.
+			 */
+			%read-only object WiFi7STARole{
+				/**
+				 * Indicates if the Enhanced Multi-Link Multi-Radio (EMLMR) operation is supported.
+				 */
+				%read-only bool EMLMRSupport;
+				
+				/**
+				 * Indicates if Enhanced Multi-Link Single-Radio (EMLSR) operation is supported.
+				 */
+				%read-only bool EMLSRSupport;
+				
+				/**
+				 * Indicates if Simultaneous Transmit and Receive (STR) operation is supported.
+				 */
+				%read-only bool STRSupport;
+				
+				/**
+				 * Indicates if Non-Simultaneous Transmit and Receive (NSTR) operation is supported.
+				 */ 
+				%read-only bool NSTRSupport;
+			
+			}
 		}
 	} /* object Radio */
 	}

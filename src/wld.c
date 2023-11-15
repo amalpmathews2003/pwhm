@@ -313,7 +313,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     memcpy(pR->MACAddr, &wld_getWanAddr()->bMac, SWL_MAC_BIN_LEN);
     swl_mac_binAddVal((swl_macBin_t*) pR->MACAddr, idx, -1);
 
-    /* Attach T_Radio to object*/
     pR->debug = RAD_POINTER;
     pR->pFA = &vendor->fta;                         // Attach our vendor function table on it!
     swl_str_copy(pR->Name, sizeof(pR->Name), name); // Name of the RADIO!

@@ -1496,6 +1496,28 @@ static void s_syncRadDm(T_Radio* pRad) {
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_writeWiFi7Cap(amxd_trans_t* trans, amxd_object_t* obj, wld_radioWiFi7Cap_t* cap) {
+    ASSERT_NOT_NULL(obj, , ME, "NULL");
+    amxd_trans_select_object(trans, obj);
+    amxd_trans_set_bool(trans, "EMLMRSupport", cap->emlmrSupported);
+    amxd_trans_set_bool(trans, "EMLSRSupport", cap->emlsrSupported);
+    amxd_trans_set_bool(trans, "STRSupport", cap->strSupported);
+    amxd_trans_set_bool(trans, "NSTRSupport", cap->nstrSupported);
+}
+
+static void s_writeCapabilities(T_Radio* pR) {
+
+    amxd_object_t* capObj = amxd_object_findf(pR->pBus, "Capabilities");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(capObj, &trans, , ME, "%s : trans init failure", pR->Name);
+
+
+    s_writeWiFi7Cap(&trans, amxd_object_findf(capObj, "WiFi7APRole"), &pR->cap.apCap7);
+    s_writeWiFi7Cap(&trans, amxd_object_findf(capObj, "WiFi7STARole"), &pR->cap.staCap7);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+}
+
 static void s_addInstance_oaf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const intialParamValues) {
     SAH_TRACEZ_IN(ME);
 
@@ -1506,6 +1528,7 @@ static void s_addInstance_oaf(void* priv _UNUSED, amxd_object_t* object, const a
     SAH_TRACEZ_INFO(ME, "%s: added instance object(%p:%s:%s)", pR->Name, object, pR->instanceName, OFB);
     wld_rad_init_counters(pR, &pR->genericCounters, radCounterDefaults);
     wld_radStaMon_init(pR);
+    s_writeCapabilities(pR);
     syncData_VendorWPS2OBJ(NULL, pR, GET);
     //event instance-added received, radio object is writable (loading transaction is done)
     pR->hasDmReady = true;
