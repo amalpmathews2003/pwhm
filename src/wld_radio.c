@@ -610,6 +610,8 @@ swl_chanspec_t wld_rad_getSwlChanspec(T_Radio* pRad) {
 swl_rc_ne wld_rad_getCurrentNoise(T_Radio* pRad, int32_t* pNoise) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pNoise, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_rad_isActive(pRad), SWL_RC_INVALID_STATE, ME, "%s : not ready", pRad->Name);
+
     *pNoise = 0;
     wld_airStats_t airStats;
     memset(&airStats, 0, sizeof(airStats));
@@ -701,6 +703,8 @@ amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,
     ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
     T_Radio* pR = wld_rad_fromObj(object);
     ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "no radio mapped");
+    ASSERTI_TRUE(wld_rad_isActive(pR), amxd_status_ok, ME, "%s : not ready", pR->Name);
+
     SAH_TRACEZ_IN(ME);
     wld_airStats_t airStats = {0};
     swl_rc_ne rc = pR->pFA->mfn_wrad_airstats(pR, &airStats);
@@ -1438,7 +1442,7 @@ amxd_status_t _wld_rad_validateOperatingFrequencyBand_pvf(amxd_object_t* object 
        ((band != SWL_FREQ_BAND_MAX) && (pRad != NULL) && (SWL_BIT_SET(pRad->supportedFrequencyBands, bandExt)))) {
         status = amxd_status_ok;
     } else {
-        SAH_TRACEZ_ERROR(ME, "%s: No available radio device supporting Frequency band %s", oname, newValue);
+        SAH_TRACEZ_ERROR(ME, "%s: No available radio device supporting Frequency band -%s- -%s- %p", oname, currentValue, newValue, pRad);
     }
     free(newValue);
 

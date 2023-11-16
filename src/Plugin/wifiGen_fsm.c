@@ -554,8 +554,8 @@ static void s_checkPreRadDependency(T_Radio* pRad _UNUSED) {
 
     bool targetEnable = (pRad->enable && (wld_rad_hasEnabledVap(pRad) || wld_rad_hasEnabledEp(pRad)));
     bool currentEnable = wld_rad_isUpExt(pRad);
-    SAH_TRACEZ_ERROR(ME, "%s : curr %u tgt %u status %u enable %u", pRad->Name,
-                     currentEnable, targetEnable, pRad->status, pRad->enable);
+    SAH_TRACEZ_WARNING(ME, "%s: setEnable curr %u, tgt %u, dm %u, status %s", pRad->Name,
+                       currentEnable, targetEnable, pRad->enable, wld_status_str[pRad->status]);
 
     if(targetEnable != currentEnable) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);

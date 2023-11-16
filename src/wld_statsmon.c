@@ -111,6 +111,8 @@ static T_Stats* moveTxRxStats2Stats(T_Stats* pDst, const T_intf_txrxstats* pSrc)
         pDst->BroadcastPacketsSent = pSrc->txFifo;
         pDst->BroadcastPacketsReceived = pSrc->rxFrame;
         pDst->UnknownProtoPacketsReceived = 0;
+
+        pDst->latestStatsUpdateTime = swl_time_getMonoSec();
         return pDst;
     }
     return NULL;
@@ -194,6 +196,10 @@ static int wld_statsmon_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
     }
     fclose(hf);
     latestStateChangeTime = time(NULL);
+
+    if(pR) {
+        pR->stats.latestStatsUpdateTime = swl_time_getMonoSec();
+    }
     return 0;
 }
 

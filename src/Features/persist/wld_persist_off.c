@@ -97,8 +97,10 @@ void wld_persist_onRadioCreation(T_Radio* pR) {
     amxd_trans_set_value(cstring_t, &trans, "OperatingFrequencyBand",
                          Rad_SupFreqBands[pR->operatingFrequencyBand]);
     amxd_trans_set_value(cstring_t, &trans, "Alias", pR->instanceName);
-
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
+
+    pR->pBus = amxd_object_get_instance(templateObject, NULL, pR->index);
+    pR->pBus->priv = pR;
 }
 
 bool wld_persist_writeApAtCreation() {

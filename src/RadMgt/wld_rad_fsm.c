@@ -359,8 +359,12 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
                 rad->fsmRad.FSM_Retry--;
                 break;
             } else {
-                SAH_TRACEZ_ERROR(ME, "%s start while EP WPS active (vap %u / WPS %u)", rad->Name,
-                                 waitForVaps, waitForWps);
+                if(waitForWps) {
+                    SAH_TRACEZ_ERROR(ME, "%s start while EP WPS active (vap %u / WPS %u)", rad->Name,
+                                     waitForVaps, waitForWps);
+                } else {
+                    SAH_TRACEZ_WARNING(ME, "%s start after wait VAP config", rad->Name);
+                }
             }
         }
 

@@ -164,19 +164,20 @@ typedef struct wld_stats {
     unsigned long WmmFailedBytesReceived[WLD_AC_MAX];
     int32_t TemperatureDegreesCelsius; //Chipset Temperature in degrees Celsius
     int32_t noise;
+    swl_timeMono_t latestStatsUpdateTime;
 } wld_stats_t;
+
+
+SWL_ARRAY_TYPE_H(gtWld_acTrafficArray, gtSwl_type_uint32, WLD_AC_MAX);
 
 #define X_WLD_STATS(X, Y) \
     X(Y, gtSwl_type_uint64, BytesSent, "BytesSent") \
     X(Y, gtSwl_type_uint64, BytesReceived, "BytesReceived") \
     X(Y, gtSwl_type_uint64, PacketsSent, "PacketsSent") \
     X(Y, gtSwl_type_uint64, PacketsReceived, "PacketsReceived") \
-    X(Y, gtSwl_type_uint64, FramesSent, "FramesSent") \
-    X(Y, gtSwl_type_uint64, FramesReceived, "FramesReceived") \
     X(Y, gtSwl_type_uint32, ErrorsSent, "ErrorsSent") \
     X(Y, gtSwl_type_uint32, ErrorsReceived, "ErrorsReceived") \
     X(Y, gtSwl_type_uint32, RetransCount, "RetransCount") \
-    X(Y, gtSwl_type_uint32, ReceiveRetransCount, "ReceiveRetransCount") \
     X(Y, gtSwl_type_uint32, DiscardPacketsSent, "DiscardPacketsSent") \
     X(Y, gtSwl_type_uint32, DiscardPacketsReceived, "DiscardPacketsReceived") \
     X(Y, gtSwl_type_uint32, UnicastPacketsSent, "UnicastPacketsSent") \
@@ -187,7 +188,6 @@ typedef struct wld_stats {
     X(Y, gtSwl_type_uint32, BroadcastPacketsReceived, "BroadcastPacketsReceived") \
     X(Y, gtSwl_type_uint32, UnknownProtoPacketsReceived, "UnknownProtoPacketsReceived") \
     X(Y, gtSwl_type_uint32, FailedRetransCount, "FailedRetransCount") \
-    X(Y, gtSwl_type_uint32, RxHole, "RxHole") \
     X(Y, gtSwl_type_uint32, RetryCount, "RetryCount") \
     X(Y, gtWld_acTrafficArray, WmmPacketsSent, "WmmPacketsSent") \
     X(Y, gtWld_acTrafficArray, WmmPacketsReceived, "WmmPacketsReceived") \
