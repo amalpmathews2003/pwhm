@@ -106,16 +106,12 @@ bool wld_channel_is_long_wait_band(swl_chanspec_t chanspec);
 bool wld_channel_is_long_wait_channel(swl_chanspec_t chanspec);
 
 int wld_channel_get_channels_in_band(swl_chanspec_t chanspec, int* list, int size);
-int wld_channel_get_interference_list(swl_chanspec_t chanspec,
-                                      wld_chan_interference_t* list,
-                                      int list_size);
+
 
 int wld_get_nr_channels_in_band(swl_chanspec_t chanspec);
 
 int wld_channel_getComplementaryBaseChannel(swl_chanspec_t chanspec);
 bool wld_channel_areAdjacent(swl_chanspec_t chanspec1, swl_chanspec_t chanspec2);
-bool wld_channel_areBandsOverlapping(swl_chanspec_t band1, swl_chanspec_t band2);
-bool wld_channel_isBandAdjacentTo(swl_chanspec_t band1, swl_chanspec_t band2);
 
 //Setters
 
