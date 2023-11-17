@@ -1456,6 +1456,10 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
         char buffer[128] = {0};
         wld_writeCapsToString(buffer, sizeof(buffer), swl_staCap_str, pAD->capabilities, SWL_STACAP_MAX);
         amxd_trans_set_value(cstring_t, &trans, "Capabilities", buffer);
+
+        swl_conv_maskToChar(buffer, sizeof(buffer), pAD->vendorCapabilities, swl_staCapVendor_str, SWL_STACAP_VENDOR_MAX);
+        amxd_trans_set_value(cstring_t, &trans, "VendorCapabilities", buffer);
+
         swl_typeTimeMono_toTransParam(&trans, "LastStateChange", pAD->latestStateChangeTime);
         swl_typeTimeMono_toTransParam(&trans, "AssociationTime", pAD->associationTime);
         swl_typeTimeMono_toTransParam(&trans, "DisassociationTime", pAD->disassociationTime);
@@ -1467,7 +1471,7 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
         wld_ad_syncdetailedMcsCapabilities(&trans, &pAD->assocCaps);
         wld_ad_syncRrmCapabilities(&trans, &pAD->assocCaps);
 
-        swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX),
+        swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX);
         amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
     }
 
@@ -1591,6 +1595,7 @@ void wld_ad_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant) {
 
 void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
     pDev->capabilities |= pWirelessDevIE->capabilities;
+    pDev->vendorCapabilities |= pWirelessDevIE->vendorCapabilities;
     pDev->uniiBandsCapabilities |= pWirelessDevIE->uniiBandsCapabilities;
     cap->freqCapabilities = pWirelessDevIE->freqCapabilities;
     memcpy(&cap->vendorOUI, &pWirelessDevIE->vendorOUI, sizeof(swl_oui_list_t));
@@ -1627,6 +1632,7 @@ void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8
     ASSERT_TRUE((iesData != NULL) && (iesLen > 0), , ME, "missing IEs in mgmt Frame");
 
     pAD->capabilities = 0;
+    pAD->vendorCapabilities = 0;
     pAD->assocCaps.updateTime = swl_time_getMonoSec();
     pAD->lastSampleTime = swl_timespec_getMonoVal();
 

@@ -1368,6 +1368,15 @@ define rrm_t{
 			}
 
 			/**
+			 * Station Vendor capabilities
+			 * Comma-separated list of strings. Indicates the vendor capabilities supported by the station
+			 * List item: "MS-WPS", "WFA-MBO"
+			*/
+			%read-only string VendorCapabilities{
+				default "";
+			}
+
+			/**
 			 * Connection Duration in seconds
 			 * @version 9.0
 			*/

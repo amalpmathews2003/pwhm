@@ -64,6 +64,7 @@
         "RxSupportedHe160MCS": "",
         "MaxBandwidthSupported": "20MHz",
         "DownlinkMCS": 10,
+        "VendorCapabilities": "",
         "DownlinkShortGuard": false,
         "TxSupportedVhtMCS": "",
         "ConnectionDuration": 6,

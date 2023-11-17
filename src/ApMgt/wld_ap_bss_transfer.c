@@ -206,8 +206,16 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     amxc_var_t* bssidInfo = amxc_var_get_key(args, "bssidInfo", AMXC_VAR_FLAG_DEFAULT);
     params.bssidInfo = (bssidInfo == NULL) ? 0 : amxc_var_dyncast(uint32_t, bssidInfo);
 
-    amxc_var_t* transitionReason = amxc_var_get_key(args, "transitionReason", AMXC_VAR_FLAG_DEFAULT);
-    params.transitionReason = (transitionReason == NULL) ? 0 : amxc_var_dyncast(int32_t, transitionReason);
+    params.transitionReason = -1;
+    if(pAP->mboEnable) {
+        swl_macBin_t macStaBin;
+        swl_mac_charToBin(&macStaBin, &params.sta);
+        T_AssociatedDevice* pAD = wld_vap_get_existing_station(pAP, &macStaBin);
+        if((pAD != NULL) && SWL_BIT_IS_SET(pAD->vendorCapabilities, SWL_STACAP_VENDOR_WFA_MBO)) {
+            amxc_var_t* transitionReason = amxc_var_get_key(args, "transitionReason", AMXC_VAR_FLAG_DEFAULT);
+            params.transitionReason = (transitionReason == NULL) ? 0 : amxc_var_dyncast(int32_t, transitionReason);
+        }
+    }
 
     amxc_var_t* mode = amxc_var_get_key(args, "mode", AMXC_VAR_FLAG_DEFAULT);
     params.reqModeMask = (mode == NULL) ? M_SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL |

@@ -776,7 +776,8 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
                       , params->sta.cMac,
                       SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL),
                       SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_ABRIDGED));
-    if(params->transitionReason >= 0) {
+    if((params->transitionReason >= SWL_80211_WFA_MBO_TRANSITION_REASON_UNSPECIFIED) &&
+       (params->transitionReason < SWL_80211_WFA_MBO_TRANSITION_REASON_MAX)) {
         swl_str_catFormat(cmd, sizeof(cmd),
                           " mbo=%d:%d:%d"  //mbo=<reason>:<reassoc_delay>:<cell_pref>
                           , params->transitionReason, (params->disassoc > 0) ? 100 : 0, 0);
