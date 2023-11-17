@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.6.1 - 2023-11-17(12:00:44 +0000)
+
+### Other
+
+- - Several band steering failures
+
 ## Release v5.6.0 - 2023-11-17(10:44:42 +0000)
 
 ### Other
