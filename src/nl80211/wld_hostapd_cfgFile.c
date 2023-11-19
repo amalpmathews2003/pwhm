@@ -684,12 +684,8 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "hs20_deauth_req_timeout", 0);
         swl_mapCharFmt_addValInt32(vapConfigMap, "osen", false);
     }
-    if(pAP->WMMCapability && pAP->WMMEnable) {
-        swl_mapCharFmt_addValInt32(vapConfigMap, "wmm_enabled", true);
-    }
-    if(pAP->UAPSDCapability && pAP->UAPSDEnable) {
-        swl_mapCharFmt_addValInt32(vapConfigMap, "uapsd_advertisement_enabled", true);
-    }
+    swl_mapCharFmt_addValInt32(vapConfigMap, "wmm_enabled", pAP->WMMCapability && pAP->WMMEnable);
+    swl_mapCharFmt_addValInt32(vapConfigMap, "uapsd_advertisement_enabled", pAP->UAPSDCapability && pAP->UAPSDEnable);
     //Temporarily disabled : triggering station disconnection
     swl_mapChar_add(vapConfigMap, "#bss_transition", "1");
     swl_mapChar_add(vapConfigMap, "notify_mgmt_frames", "1");

@@ -321,6 +321,8 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               //params set and applied with update_beacon
               {"ignore_broadcast_ssid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               {"ap_isolate", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
+              {"wmm_enabled", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
+              {"uapsd_advertisement_enabled", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               //params set and applied without any action
               {"max_num_sta", SECDMN_ACTION_OK_DONE},
               ));
@@ -663,6 +665,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "ft_over_ds", "multi_ap", "qos_map_set",
         "wps_state", "config_methods", "uuid", "ap_pin",
         "rrm_neighbor_report", "ieee80211w", "mbo",
+        "wmm_enabled", "uapsd_advertisement_enabled",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
