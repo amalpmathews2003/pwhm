@@ -3044,8 +3044,13 @@ bool wld_rad_hasChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW) {
     return (swl_chanspec_radBwToInt(pRad->runningChannelBandwidth) >= swl_chanspec_bwToInt(chW));
 }
 
+bool wld_rad_hasTgtChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    return (swl_chanspec_radBwToInt(pRad->targetChanspec.chanspec.bandwidth) >= swl_chanspec_bwToInt(chW));
+}
+
 wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad) {
-    ASSERTI_TRUE(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_40MHZ), WLD_CHANNEL_EXTENTION_POS_NONE, ME, "not supported");
+    ASSERTI_TRUE(wld_rad_hasTgtChannelWidthCovered(pRad, SWL_BW_40MHZ), WLD_CHANNEL_EXTENTION_POS_NONE, ME, "not supported");
     if(pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_2_4GHZ) {
         if((pRad->channel / 4) % 2) {
             return WLD_CHANNEL_EXTENTION_POS_ABOVE;

@@ -157,7 +157,7 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
         swl_mapChar_add(radConfigMap, "ieee80211n", "1");
         char htCaps[256] = {0};
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_40MHZ)) {
+        if(wld_rad_hasTgtChannelWidthCovered(pRad, SWL_BW_40MHZ)) {
             wld_channel_extensionPos_e extChanPos = wld_rad_getExtensionChannel(pRad);
             if(extChanPos == WLD_CHANNEL_EXTENTION_POS_ABOVE) {
                 swl_str_cat(htCaps, sizeof(htCaps), "[HT40+]");
@@ -191,10 +191,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapCharFmt_addValInt32(radConfigMap, "vht_oper_centr_freq_seg0_idx", centerChan);
         }
         char vhtCaps[256] = {0};
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_160MHZ)) {
+        if(wld_rad_hasTgtChannelWidthCovered(pRad, SWL_BW_160MHZ)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[VHT160]");
         }
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_80MHZ) && s_checkSGI(pRad, SWL_SGI_400)) {
+        if(wld_rad_hasTgtChannelWidthCovered(pRad, SWL_BW_80MHZ) && s_checkSGI(pRad, SWL_SGI_400)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SHORT-GI-80]");
         }
         if(implicitBf) {
