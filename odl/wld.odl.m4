@@ -234,7 +234,10 @@ m4_ifelse(DISABLE_NETMODEL,y,,``
 
     m4_ifelse(ENABLE_USP_SERVER_SOCKET,y,
     listen = [ 'usp:/var/run/pwhm_usp.sock' ];
-    )
+    backend-dir = [
+        "/usr/bin/mods/amxb/"`,'
+        "/usr/bin/mods/usp/"
+    ];)
 m4_ifelse(DISABLE_PERSIST,y,,``
     //persistent storage
     pcm_svc_config = {
