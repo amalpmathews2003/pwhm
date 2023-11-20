@@ -226,6 +226,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
     swl_mapChar_t radParams;
     swl_mapChar_init(&radParams);
     wld_hostapd_cfgFile_setRadioConfig(pR, &radParams);
+    pR->pFA->mfn_wrad_updateConfigMap(pR, &radParams);
     const char* chanParams[] = {
         "channel", "ht_capab",
         "vht_capab", "vht_oper_centr_freq_seg0_idx", "vht_oper_chwidth",
