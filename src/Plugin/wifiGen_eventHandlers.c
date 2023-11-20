@@ -83,6 +83,7 @@
 #include "swla/swla_chanspec.h"
 #include <amxc/amxc.h>
 #include <errno.h>
+
 #define ME "genEvt"
 
 static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_channelChangeReason_e reason) {
@@ -461,6 +462,16 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     wld_sensing_delCsiClientEntry(pAP->pRadio, macAddress);
 }
 
+static void s_apStationAssocFailureEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
+    T_AccessPoint* pAP = (T_AccessPoint*) pRef;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    wld_ad_add_sec_failNoDc(pAP, pAD);
+}
+
 static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* mac, uint8_t replyCode, swl_macChar_t* targetBssid) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     wld_ap_bss_done(pAP, mac, (int) replyCode, targetBssid);
@@ -586,6 +597,54 @@ static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin
     amxc_var_clean(&retval);
 }
 
+static void s_notifyWpaCtrlEvent(amxd_object_t* object, char* ifName, char* msgData) {
+    amxc_var_t eventData;
+    amxc_var_init(&eventData);
+    amxc_var_set_type(&eventData, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &eventData, "ifName", ifName);
+    amxc_var_add_key(cstring_t, &eventData, "eventData", msgData);
+
+    SAH_TRACEZ_INFO(ME, "%s: notify wpaCtrlEvents eventData=%s", ifName, msgData);
+
+    amxd_object_trigger_signal(object, "wpaCtrlEvents", &eventData);
+    amxc_var_clean(&eventData);
+}
+
+/* Table of standard wpactrl iface events to be forwarded to other applications */
+static const char* s_fwdIfaceStdWpaCtrlEventsList[] = {
+    "AP-STA-POSSIBLE-PSK-MISMATCH",
+    "CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER",
+    "CTRL-EVENT-EAP-FAILURE",
+    "CTRL-EVENT-EAP-TIMEOUT-FAILURE",
+    // WPA EAP failure2/timeout2 events while using an external RADIUS server
+    "CTRL-EVENT-EAP-FAILURE2",
+    "CTRL-EVENT-EAP-TIMEOUT-FAILURE2"
+};
+
+static void s_wpaCtrlStdEvt(void* userData, char* ifName, char* eventName, char* msgData) {
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+    ASSERT_NOT_NULL(eventName, , ME, "NULL");
+    ASSERT_NOT_NULL(msgData, , ME, "NULL");
+
+    amxd_object_t* object = NULL;
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    if(debugIsVapPointer(pAP)) {
+        object = pAP->pBus;
+    } else if(debugIsEpPointer(pEP)) {
+        object = pEP->pBus;
+    }
+    ASSERT_NOT_NULL(object, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "received wpaCtrl standard event %s", eventName);
+    for(size_t i = 0; i < SWL_ARRAY_SIZE(s_fwdIfaceStdWpaCtrlEventsList); i++) {
+        if(swl_str_matches(eventName, s_fwdIfaceStdWpaCtrlEventsList[i])) {
+            s_notifyWpaCtrlEvent(object, ifName, msgData);
+            break;
+        }
+    }
+}
+
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -593,6 +652,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     memset(&wpaCtrlVapEvtHandlers, 0, sizeof(wpaCtrlVapEvtHandlers));
 
     //Set here the wpa_ctrl VAP event handlers
+    wpaCtrlVapEvtHandlers.fProcStdEvtMsg = s_wpaCtrlStdEvt;
     wpaCtrlVapEvtHandlers.fWpsCancelMsg = s_wpsCancel;
     wpaCtrlVapEvtHandlers.fWpsTimeoutMsg = s_wpsTimeout;
     wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_wpsSuccess;
@@ -600,6 +660,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fWpsFailMsg = s_wpsFail;
     wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
     wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
+    wpaCtrlVapEvtHandlers.fApStationAssocFailureCb = s_apStationAssocFailureEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
     wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;

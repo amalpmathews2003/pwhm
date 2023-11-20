@@ -278,6 +278,18 @@ static void s_apStationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* ev
     CALL_INTF(pInterface, fApStationDisconnectedCb, &bStationMac);
 }
 
+static void s_apStationAssocFailure(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    //Example: AP-STA-POSSIBLE-PSK-MISMATCH xx:xx:xx:xx:xx:xx
+    //Example: CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER xx:xx:xx:xx:xx:xx
+    char buf[SWL_MAC_CHAR_LEN] = {0};
+    swl_macBin_t bStationMac;
+
+    memcpy(buf, params, SWL_MAC_CHAR_LEN - 1);
+    bool ret = swl_mac_charToBin(&bStationMac, (swl_macChar_t*) buf);
+    ASSERT_TRUE(ret, , ME, "fail to convert mac address to binary");
+    CALL_INTF(pInterface, fApStationAssocFailureCb, &bStationMac);
+}
+
 static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: BSS-TM-RESP <sta_mac_adr> dialog_token=x status_code=x bss_termination_delay=x target_bssid=<bsssid_mac_adr>
     char buf[SWL_MAC_CHAR_LEN] = {0};
@@ -563,6 +575,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-SUCCESS", &s_wpsStationSuccessEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
+              {"AP-STA-POSSIBLE-PSK-MISMATCH", &s_apStationAssocFailure},
+              {"CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER", &s_apStationAssocFailure},
               {"BSS-TM-RESP", &s_btmResponse},
               {"CTRL-EVENT-STARTED-CHANNEL-SWITCH", &s_chanSwitchStartedEvtCb},
               {"CTRL-EVENT-CHANNEL-SWITCH", &s_chanSwitchEvtCb},
@@ -606,8 +620,12 @@ void s_processEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
     char eventName[eventNameLen + 1];
     swl_str_copy(eventName, sizeof(eventName), pEvent);
     evtParser_f fEvtParser = s_getEventParser(eventName);
-    ASSERTS_NOT_NULL(fEvtParser, , ME, "No parser for evt(%s)", eventName);
-    fEvtParser(pInterface, eventName, pParams);
+    if(fEvtParser) {
+        fEvtParser(pInterface, eventName, pParams);
+    } else {
+        SAH_TRACEZ_NOTICE(ME, "No parser for evt(%s)", eventName);
+    }
+    NOTIFY(pInterface, fProcStdEvtMsg, eventName, msgData);
 }
 
 /**

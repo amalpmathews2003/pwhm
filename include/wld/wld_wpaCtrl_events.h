@@ -83,6 +83,7 @@ typedef struct {
 } __attribute__((packed)) wld_wpaCtrl_rrmBeaconRsp_t;
 
 typedef void (* wld_wpaCtrl_processMsgCb_f)(void* userData, char* ifName, char* msgData);
+typedef void (* wld_wpaCtrl_processStdMsgCb_f)(void* userData, char* ifName, char* eventName, char* msgData);
 
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
 typedef void (* wld_wpaCtrl_wpsTimeoutMsg_f)(void* userData, char* ifName);
@@ -91,6 +92,7 @@ typedef void (* wld_wpaCtrl_wpsOverlapMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsFailMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCredReceivedMsg_f)(void* userData, char* ifName, void* creds, swl_rc_ne status);
 typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
+typedef void (* wld_wpaCtrl_apStationAssocFailureCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status, swl_macChar_t* targetBssid);
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, swl_80211_mgmtFrame_t* frame, size_t frameLen, char* frameStr);
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
@@ -101,7 +103,8 @@ typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, sw
  * @brief structure of AP/EP event handlers
  */
 typedef struct {
-    wld_wpaCtrl_processMsgCb_f fProcEvtMsg; // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_processStdMsgCb_f fProcStdEvtMsg; // Basic handler of standard received wpa ctrl event
     wld_wpaCtrl_wpsSuccessMsg_f fWpsSuccessMsg;
     wld_wpaCtrl_wpsTimeoutMsg_f fWpsTimeoutMsg;
     wld_wpaCtrl_wpsCancelMsg_f fWpsCancelMsg;
@@ -110,6 +113,7 @@ typedef struct {
     wld_wpaCtrl_wpsCredReceivedMsg_f fWpsCredReceivedCb; /** WPS credentials received */
     wld_wpaCtrl_apStationConnectivityCb_f fApStationConnectedCb;
     wld_wpaCtrl_apStationConnectivityCb_f fApStationDisconnectedCb;
+    wld_wpaCtrl_apStationAssocFailureCb_f fApStationAssocFailureCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationAssociatedCb;
@@ -136,7 +140,8 @@ typedef void (* wld_wpaCtrl_mainApDisabledCb_f)(void* userData, char* ifName);
  * @brief structure of Radio event handlers
  */
 typedef struct {
-    wld_wpaCtrl_processMsgCb_f fProcEvtMsg; // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_processStdMsgCb_f fProcStdEvtMsg; // Basic handler of standard received wpa ctrl event
     wld_wpaCtrl_chanSwitchStartedCb_f fChanSwitchStartedCb;
     wld_wpaCtrl_chanSwitchCb_f fChanSwitchCb;
     wld_wpaCtrl_apCsaFinishedCb_f fApCsaFinishedCb;

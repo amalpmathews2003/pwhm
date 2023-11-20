@@ -1927,7 +1927,7 @@ swl_rc_ne wld_vap_notifyActionFrame(T_AccessPoint* pAP, const char* frame) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pAP->pBus, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "notify action frame received, frame=%s", frame);
+    SAH_TRACEZ_INFO(ME, "%s: notify action frame received, frame=%s", pAP->alias, frame);
 
     amxc_var_t notifMap;
     amxc_var_init(&notifMap);
