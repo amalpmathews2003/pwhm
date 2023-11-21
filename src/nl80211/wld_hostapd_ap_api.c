@@ -258,7 +258,7 @@ bool wld_ap_hostapd_setParamValue(T_AccessPoint* pAP, const char* field, const c
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
     ASSERTS_STR(field, false, ME, "empty key");
     ASSERTS_STR(value, false, ME, "empty value");
-    char cmd[128];
+    char cmd[512];
     snprintf(cmd, sizeof(cmd), "SET %s %s", field, value);
     return s_sendHostapdCommand(pAP, cmd, reason);
 }
