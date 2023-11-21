@@ -290,6 +290,17 @@ static void s_apStationAssocFailure(wld_wpaCtrlInterface_t* pInterface, char* ev
     CALL_INTF(pInterface, fApStationAssocFailureCb, &bStationMac);
 }
 
+static void s_wdsStationInterfaceRemoved(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    //Example: WDS-STA-INTERFACE-REMOVED ifname=wlan0.sta1 sta_addr=d6:ee:57:0d:f2:aa
+    char sta_addr[SWL_MAC_CHAR_LEN] = {0};
+    swl_macBin_t bStationMac;
+
+    wld_wpaCtrl_getValueStr(params, "sta_addr", sta_addr, sizeof(sta_addr));
+    swl_mac_charToBin(&bStationMac, (swl_macChar_t*) sta_addr);
+    SAH_TRACEZ_INFO(ME, "%s WDS-STA-INTERFACE-REMOVED sta_addr =%s", pInterface->name, sta_addr);
+    CALL_INTF(pInterface, fApStationDisconnectedCb, &bStationMac);
+}
+
 static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: BSS-TM-RESP <sta_mac_adr> dialog_token=x status_code=x bss_termination_delay=x target_bssid=<bsssid_mac_adr>
     char buf[SWL_MAC_CHAR_LEN] = {0};
@@ -575,6 +586,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-SUCCESS", &s_wpsStationSuccessEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
+	      {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},
               {"AP-STA-POSSIBLE-PSK-MISMATCH", &s_apStationAssocFailure},
               {"CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER", &s_apStationAssocFailure},
               {"BSS-TM-RESP", &s_btmResponse},
