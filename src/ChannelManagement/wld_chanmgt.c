@@ -334,6 +334,17 @@ static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
 swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
     ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
 
+    if(reason == CHAN_REASON_INITIAL) {
+        // For init, set reg domain before updating channel spec
+        swl_exec_result_t result;
+        memset(&result, 0, sizeof(swl_exec_result_t));
+        SAH_TRACEZ_WARNING(ME, "iw reg set %s", pR->regulatoryDomain);
+        swl_rc_ne rc = SWL_EXEC_BUF_EXT(&result, "iw", "reg set %s", pR->regulatoryDomain);
+        if((result.exitInfo.isSignaled) || (result.exitInfo.exitStatus != 0)) {
+            rc = SWL_RC_ERROR;
+            return rc;
+        }
+    }
     if(swl_typeChanspec_equals(chanspec, pR->currentChanspec.chanspec)) {
         SAH_TRACEZ_INFO(ME, "%s: report same chanspec, %s (reason %s)", pR->Name,
                         swl_typeChanspecExt_toBuf32(chanspec).buf,
