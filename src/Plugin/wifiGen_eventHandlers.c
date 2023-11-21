@@ -738,6 +738,7 @@ static void s_stationScanFailedEvt(void* pRef, char* ifName, int error) {
 
     SAH_TRACEZ_INFO(ME, "%s: scan Failed with error(%d)", pEP->Name, error);
     if((error == -EBUSY) && wifiGen_hapd_isAlive(pRad)) {
+        ASSERT_TRUE(pEP->toggleBssOnReconnect, , ME, "%s: do not disable hostapd", pEP->Name);
         // disable hostapd to allow wpa_supplicant to do scan
         wld_rad_hostapd_disable(pRad);
     }

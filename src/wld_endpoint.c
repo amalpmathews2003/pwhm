@@ -423,6 +423,8 @@ static void s_setDefaults(T_EndPoint* pEP, const char* endpointname) {
 
     pEP->WPS_Enable = true;
 
+    pEP->toggleBssOnReconnect = true;
+
     pEP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
     pEP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_DISPLAY);
     pEP->secModesSupported = 0;

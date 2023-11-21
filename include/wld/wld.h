@@ -1915,6 +1915,7 @@ struct S_EndPoint {
     uint32_t reconnectDelay;         /* Minimum time before try to reconnect */
     uint32_t reconnectInterval;      /* Minimum time between two reconnections attempt */
     bool multiAPEnable;              /* Set MultiAP BackhaulSTA on this EndPoint */
+    bool toggleBssOnReconnect;       /* Disable hostapd on EP reconnection */
 
     wld_tinyRoam_t* tinyRoam;
     wld_fcallState_t statsCall;
@@ -2039,6 +2040,7 @@ typedef int (APIENTRY* PFN_WRAD_GUARDINTVAL)(T_Radio* rad, char* buf, int bufsiz
 typedef int (APIENTRY* PFN_WRAD_MCS)(T_Radio* rad, char* val, int bufsize, int set);
 typedef int (APIENTRY* PFN_WRAD_TXPOW)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_ANTENNACTRL)(T_Radio* rad, int val, int set);
+typedef int (APIENTRY* PFN_WRAD_STAMODE)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_REGDOMAIN)(T_Radio* rad, char* val, int bufsize, int set);
 typedef int (APIENTRY* PFN_WRAD_SYNC)(T_Radio* rad, int set);
 typedef enum {
@@ -2220,6 +2222,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_MCS mfn_wrad_mcs;                                                       /**< Set/Get MCS */
     PFN_WRAD_TXPOW mfn_wrad_txpow;                                                   /**< Set/Get TxPower */
     PFN_WRAD_ANTENNACTRL mfn_wrad_antennactrl;                                       /**< Set/Get Antenna parameters */
+    PFN_WRAD_STAMODE mfn_wrad_stamode;                                               /**< Set/Get STA_Mode */
     PFN_WRAD_REGDOMAIN mfn_wrad_regdomain;                                           /**< Set/Get Country code */
     PFN_WRAD_BEAMFORMING mfn_wrad_beamforming;                                       /**< Set/Get beam forming settings */
     PFN_WRAD_RIFS mfn_wrad_rifs;                                                     /**< Set/Get RIFS status */

@@ -107,7 +107,7 @@ swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
 
     SAH_TRACEZ_INFO(ME, "%s : Endpoint enable changed : [%d] --> [%d]", pEP->Name, pEP->enable, enable);
     pEP->enable = enable;
-    pRad->isSTA = pRad->isSTASup && pEP->enable;
+    pRad->isSTA = (amxd_object_get_bool(pRad->pBus, "STA_Mode", NULL) || (pRad->isSTASup && pEP->enable));
     if(pRad->isSTA) {
         setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
     } else {

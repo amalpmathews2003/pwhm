@@ -106,6 +106,7 @@ bool wifiGen_init() {
     fta.mfn_wrad_txpow = wifiGen_rad_txpow;
     fta.mfn_wrad_setChanspec = wifiGen_rad_setChanspec;
     fta.mfn_wrad_antennactrl = wifiGen_rad_antennactrl;
+    fta.mfn_wrad_stamode = wifiGen_rad_staMode;
     fta.mfn_wrad_supstd = wifiGen_rad_supstd;
     fta.mfn_wrad_stats = wifiGen_rad_stats;
     fta.mfn_wrad_fsm_delay_commit = wifiGen_rad_delayedCommitUpdate;

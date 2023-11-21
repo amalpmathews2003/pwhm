@@ -194,6 +194,7 @@ DEF_TRAP_int_int(T_Radio, mfn_wrad_autochannelenable);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_achrefperiod);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_txpow);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_antennactrl);
+DEF_TRAP_int_int(T_Radio, mfn_wrad_stamode);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_rifs);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_airtimefairness);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_intelligentAirtime);
@@ -626,6 +627,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_mcs);
     FTA_ASSIGN(mfn_wrad_txpow);
     FTA_ASSIGN(mfn_wrad_antennactrl);
+    FTA_ASSIGN(mfn_wrad_stamode);
     FTA_ASSIGN(mfn_wrad_regdomain);
     FTA_ASSIGN(mfn_wrad_beamforming);
     FTA_ASSIGN(mfn_wrad_rifs);

@@ -478,6 +478,8 @@ static void s_startWpaSuppTimer(amxp_timer_t* timer, void* userdata) {
     ASSERTS_NOT_NULL(timer, , ME, "NULL");
     ASSERTS_NOT_NULL(userdata, , ME, "NULL");
     T_EndPoint* pEP = (T_EndPoint*) userdata;
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+
     T_Radio* pRad = pEP->pRadio;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     bool ret = wifiGen_hapd_isAlive(pRad);
@@ -497,6 +499,8 @@ static void s_startWpaSuppTimer(amxp_timer_t* timer, void* userdata) {
 }
 static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: enable endpoint", pEP->Name);
+    ASSERT_NOT_NULL(pEP, true, ME, "NULL");
+    ASSERT_TRUE(pEP->toggleBssOnReconnect, true, ME, "%s: do not disable hostapd", pEP->Name);
     // check if there is a running hostapd in order to disable it in order allow to wpa_supplicant to connect.
     // Otherwise, wpa_supplicant will fail to connect
     if(wifiGen_hapd_isRunning(pRad)) {
@@ -513,6 +517,9 @@ static bool s_doConnectedEp(T_EndPoint* pEP, T_Radio* pRad) {
     if((pEP->connectionStatus == EPCS_CONNECTED) && wifiGen_hapd_isRunning(pRad)) {
         // update hostapd channel
         wld_secDmn_action_rc_ne rc = wld_rad_hostapd_setChannel(pRad);
+        if(!pEP->toggleBssOnReconnect) {
+            rc = SECDMN_ACTION_OK_DONE;
+        }
         s_schedNextAction(rc, NULL, pRad);
     }
     return true;

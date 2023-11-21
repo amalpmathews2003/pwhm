@@ -725,6 +725,15 @@ int wifiGen_rad_antennactrl(T_Radio* pRad, int val _UNUSED, int set) {
     return WLD_OK;
 }
 
+int wifiGen_rad_staMode(T_Radio* pRad, int val, int set) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    if(set & SET) {
+        pRad->isSTA = val;
+        pRad->fsmRad.FSM_SyncAll = TRUE;
+    }
+    return pRad->isSTA;
+}
+
 int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards) {
     ASSERTS_NOT_NULL(pRad, -1, ME, "rad is NULL");
     ASSERT_TRUE(swl_radStd_isValid(radioStandards, "rad_supstd"), -1, ME,

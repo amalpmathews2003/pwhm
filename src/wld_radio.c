@@ -365,8 +365,7 @@ static void s_setSTAMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     ASSERTS_NOT_NULL(pR, , ME, "NULL");
     bool STAMode = amxc_var_dyncast(bool, newValue);
     SAH_TRACEZ_INFO(ME, "%s: set STA_Mode %d", pR->Name, STAMode);
-    pR->isSTA = STAMode;
-    pR->fsmRad.FSM_SyncAll = TRUE;
+    pR->pFA->mfn_wrad_stamode(pR, STAMode, SET);
     wld_autoCommitMgr_notifyRadEdit(pR);
 
     SAH_TRACEZ_OUT(ME);
@@ -1919,8 +1918,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         tmp_bool = amxd_object_get_bool(object, "STA_Mode", NULL);
         if(pR->isSTA != tmp_bool) {
-            pR->isSTA = tmp_bool;
-            pR->fsmRad.FSM_SyncAll = TRUE;
+            pR->pFA->mfn_wrad_stamode(pR, tmp_bool, SET);
             commit = true;
         }
 

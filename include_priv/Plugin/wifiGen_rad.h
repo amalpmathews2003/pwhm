@@ -80,6 +80,7 @@ swl_rc_ne wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set);
 int wifiGen_rad_txpow(T_Radio* pRad, int val, int set);
 swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct);
 int wifiGen_rad_antennactrl(T_Radio* pRad, int val, int set);
+int wifiGen_rad_staMode(T_Radio* pRad, int val, int set);
 int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards);
 void wifiGen_rad_initBands(T_Radio* pRad);
 swl_rc_ne wifiGen_rad_stats(T_Radio* pRad);
