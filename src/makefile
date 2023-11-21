@@ -65,6 +65,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					Utils/wld_linuxIfUtils.o \
 					Utils/wld_linuxWExtUtils.o \
 					Utils/wld_linuxIfStats.o \
+					Utils/wld_extMod.o \
 					VendorModule/wld_vendorModule_mgr.o \
 					VendorModule/wld_vendorModule.o \
 					nl80211/wld_nl80211_core.o \

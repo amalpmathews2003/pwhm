@@ -120,6 +120,7 @@
 #include "wld_wpaSupp_cfgManager.h"
 #include "swl/swl_80211.h"
 #include "swl/swl_ieee802.h"
+#include "wld_extMod.h"
 
 #ifndef IFNAMSIZ
 #define IFNAMSIZ 16
@@ -845,7 +846,9 @@ typedef struct {
     bool hadSecFailure;                    /* Number of security failures of this station */
     wld_sta_muMimoInfo_t staMuMimoInfo;
     wld_assocDev_history_t* staHistory;
-    swl_IEEE80211deauthReason_ne lastDeauthReason;       /* last deauth reason for this sta */
+    swl_IEEE80211deauthReason_ne lastDeauthReason; /* last deauth reason for this sta */
+    void* vendor;                                  /* Pointer for wifi chipset vendor data */
+    wld_extMod_dataList_t extDataList;             /* list of extention data for non-chipset vendor modules */
 } T_AssociatedDevice;
 
 #define X_T_ASSOCIATED_DEVICE_ANNOT(X, Y) \
@@ -1564,7 +1567,9 @@ struct WLD_RADIO {
     bool csiEnable;                               /* Enable CSI */
     amxc_llist_t csiClientList;                   /* CSI client list */
     char firmwareVersion[64];                     /* Radio’s WiFi firmware version */
-    wld_radExt_t* radExt;                         /* Radio external data */
+
+    wld_extMod_dataList_t extDataList;            /* Non chipset vendor module data list. @type wld_extMod_registration_t */
+
     wld_radioCap_t cap;                           /* Datamodel capabilities; */
 };
 
@@ -1763,7 +1768,7 @@ struct S_ACCESSPOINT {
     struct S_CWLD_FUNC_TABLE* pFA;       /* Function Array */
     amxc_llist_it_t it;
     amxd_object_t* pBus;                 /* Keep a copy of the amxd_object_t */
-    void* vendorData;                    /* Additional vendor specific data */
+    void* vendorData;                    /* Additional vendor specific data for chipset vendor only*/
 
     int dbgEnable;                       /* Enable Deamon debugging */
     char* dbgOutput;                     /* Filename to store data  */
@@ -1791,6 +1796,7 @@ struct S_ACCESSPOINT {
     bool clientIsolationEnable;
     swl_circTable_t lastAssocReq;             /* (mac, bssid, assoc/reassoc frame, timestamp,assocType) where station mac format: xx:xx:xx:xx:xx:xx */
     uint32_t lastDevIndex;
+    wld_extMod_dataList_t extDataList;        /* list of extention data for non-chipset vendor modules */
 };
 
 typedef struct SWL_PACKED {
@@ -1807,6 +1813,36 @@ typedef struct {
     int oldVapStatus;
     int oldSsidStatus;
 } wld_vap_status_change_event_t;
+
+typedef enum {
+    WLD_VAP_CHANGE_EVENT_CREATE,       // Initial creation of object, no transaction possible
+    WLD_VAP_CHANGE_EVENT_CREATE_FINAL, // Evented add handler, transaction possible
+    WLD_VAP_CHANGE_EVENT_DESTROY,
+    WLD_VAP_CHANGE_EVENT_MAX
+} wld_vap_changeEvent_e;
+
+typedef struct {
+    wld_vap_changeEvent_e changeType;
+    T_AccessPoint* vap;
+    void* data;
+} wld_vap_changeEvent_t;
+
+
+typedef enum {
+    WLD_AD_CHANGE_EVENT_CREATE,
+    WLD_AD_CHANGE_EVENT_ASSOC,
+    WLD_AD_CHANGE_EVENT_AUTH,
+    WLD_AD_CHANGE_EVENT_DISASSOC,
+    WLD_AD_CHANGE_EVENT_DESTROY,
+    WLD_AD_CHANGE_EVENT_MAX
+} wld_ad_changeEvent_e;
+
+typedef struct {
+    wld_ad_changeEvent_e changeType;
+    T_AccessPoint* vap;
+    T_AssociatedDevice* ad;
+    void* data;
+} wld_ad_changeEvent_t;
 
 
 typedef enum bs_uplink_type {

@@ -102,6 +102,7 @@
 #include "wld_dm_trans.h"
 #include <swl/swl_base64.h>
 #include "swla/swla_trans.h"
+#include "wld_extMod.h"
 
 #define GETENV(x, var) \
     { \
@@ -3795,6 +3796,21 @@ bool wld_rad_firstCommitFinished(T_Radio* pRad) {
         return true;
     }
     return pRad->fsmRad.FSM_State == FSM_IDLE;
+}
+
+swl_rc_ne wld_rad_registerExtModData(T_Radio* pRad, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_extMod_registerData(&pRad->extDataList, extModId, extModData, deleteHandler);
+}
+
+void* wld_rad_getExtModData(T_Radio* pRad, uint32_t extModId) {
+    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
+    return wld_extMod_getData(&pRad->extDataList, extModId);
+}
+
+swl_rc_ne wld_rad_unregisterExtModData(T_Radio* pRad, uint32_t extModId) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_extMod_unregisterData(&pRad->extDataList, extModId);
 }
 
 

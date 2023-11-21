@@ -64,12 +64,11 @@
 #define __WLD_RADIO_H__
 
 
-
-
 #include "swla/swla_trilean.h"
 #include "wld.h"
 #include "wld_channel.h"
 #include "wld_radioOperatingStandards.h"
+#include "wld_extMod.h"
 
 typedef enum {
     WLD_RAD_CHANGE_INIT,
@@ -245,6 +244,22 @@ T_EndPoint* wld_rad_nextEp(T_Radio* pRad, T_EndPoint* pEP);
 T_Radio* wld_rad_fromIt(amxc_llist_it_t* it);
 void wld_rad_triggerChangeEvent(T_Radio* pRad, wld_rad_changeEvent_e event, void* data);
 void wld_rad_triggerFrameEvent(T_Radio* pRad, swl_bit8_t* frame, size_t frameLen, int32_t rssi);
+
+/**
+ * Add ext module data registration for this radio.
+ */
+swl_rc_ne wld_rad_registerExtModData(T_Radio* pRad, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler);
+
+/**
+ * Retrieve ext module data from radio
+ */
+void* wld_rad_getExtModData(T_Radio* pRad, uint32_t extModId);
+
+/**
+ * remove a registration. Note this will NOT free the registration object, just remove its link with the radio.
+ * The external module must still free the structure.
+ */
+swl_rc_ne wld_rad_unregisterExtModData(T_Radio* pRad, uint32_t extModId);
 
 #define wld_rad_forEachAp(apPtr, radPtr) \
     for(apPtr = wld_rad_firstAp(radPtr); apPtr; apPtr = wld_rad_nextAp(radPtr, apPtr))

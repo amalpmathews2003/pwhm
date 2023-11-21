@@ -90,6 +90,7 @@
 #include "wld_hostapd_ap_api.h"
 #include "wld_dm_trans.h"
 #include "Features/wld_persist.h"
+#include "wld_extMod.h"
 
 #define ME "ap"
 
@@ -117,6 +118,17 @@ static const char* s_assocTableNames[] = {"mac", "bssid", "frame", "timestamp", 
 SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_assocTableNames) == SWL_ARRAY_SIZE(assocTableTypes), "s_assocTableNames not correctly defined");
 
 static bool s_finalizeApCreation(T_AccessPoint* pAP);
+
+static void s_sendChangeEvent(T_AccessPoint* pAP, wld_vap_changeEvent_e changeType, void* data) {
+    wld_vap_changeEvent_t change = {
+        .vap = pAP,
+        .changeType = changeType,
+        .data = data
+    };
+
+    wld_event_trigger_callback(gWld_queue_vap_onChangeEvent, &change);
+
+}
 
 T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj) {
     ASSERTS_EQUALS(amxd_object_get_type(apObj), amxd_object_instance, NULL, ME, "Not instance");
@@ -289,6 +301,7 @@ static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uin
     wld_ad_initAp(pAP);
 
     swl_circTable_init(&(pAP->lastAssocReq), &assocTable, 20);
+
     return true;
 }
 
@@ -296,6 +309,8 @@ static T_AccessPoint* s_createAp(T_Radio* pRad, const char* vapName, uint32_t id
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     T_AccessPoint* pAP = calloc(1, sizeof(T_AccessPoint));
     ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+
+    wld_extMod_initDataList(&pAP->extDataList);
 
     pAP->pBus = vapObj;
     if(!s_initAp(pAP, pRad, vapName, idx)) {
@@ -310,6 +325,8 @@ static T_AccessPoint* s_createAp(T_Radio* pRad, const char* vapName, uint32_t id
     amxd_object_t* wpsinstance = amxd_object_get(vapObj, "WPS");
     ASSERTW_NOT_NULL(wpsinstance, pAP, ME, "%s: WPS subObj is not available", pAP->name);
     wpsinstance->priv = &pAP->wpsSessionInfo;
+
+    s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_CREATE, NULL);
 
     return pAP;
 }
@@ -439,6 +456,15 @@ amxd_status_t _wld_ap_addInstance_oaf(amxd_object_t* object,
     return status;
 }
 
+/**
+ * Handler to add objects post creation in transacted manner.
+ * Shall be called soon after AP creation, at time when transactions are possible
+ */
+static void s_handlePostApCreation(T_AccessPoint* pAP) {
+    wld_ad_initFastReconnectCounters(pAP);
+    s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_CREATE_FINAL, NULL);
+}
+
 /*
  * AP instance addition event handler
  * late handling only to finalize AP interface creation (using twin ssid instance)
@@ -454,7 +480,8 @@ static void s_addApInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amx
          */
         s_finalizeApCreation(object->priv);
     }
-    swla_delayExec_add((swla_delayExecFun_cbf) wld_ad_initFastReconnectCounters, object->priv);
+    swla_delayExec_add((swla_delayExecFun_cbf) s_handlePostApCreation, object->priv);
+
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -1800,6 +1827,10 @@ T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
  */
 void wld_ap_destroy(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+
+    s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_DESTROY, NULL);
+    wld_extMod_cleanupDataList(&pAP->extDataList, pAP);
+
     s_deinitAP(pAP);
 
     if(pAP->pBus != NULL) {
@@ -2301,6 +2332,24 @@ swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld
     ASSERT_NOT_NULL(*data, SWL_RC_ERROR, ME, "NULL");
     return SWL_RC_OK;
 }
+
+
+
+swl_rc_ne wld_vap_registerExtModData(T_AccessPoint* pAP, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_extMod_registerData(&pAP->extDataList, extModId, extModData, deleteHandler);
+}
+
+void* wld_vap_getExtModData(T_AccessPoint* pAP, uint32_t extModId) {
+    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+    return wld_extMod_getData(&pAP->extDataList, extModId);
+}
+
+swl_rc_ne wld_vap_unregisterExtModData(T_AccessPoint* pAP, uint32_t extModId) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_extMod_unregisterData(&pAP->extDataList, extModId);
+}
+
 
 static amxd_status_t s_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, amxc_var_t* retval) {
     wld_vap_assocTableStruct_t* tuple = NULL;

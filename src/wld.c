@@ -91,6 +91,7 @@ amxd_dm_t* wld_plugin_dm = NULL;
 amxo_parser_t* wld_plugin_parser = NULL;
 amxd_object_t* wifi = NULL;
 
+// List of chipset vendor modules
 static amxc_llist_t vendors = {NULL, NULL};
 
 static swl_macBin_t sWanAddr = {{0}};
@@ -408,6 +409,8 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     amxc_llist_init(&pR->scanState.stats.extendedStat);
     amxc_llist_init(&pR->scanState.spectrumResults);
 
+    wld_extMod_initDataList(&pR->extDataList);
+
     amxc_llist_append(&g_radios, &pR->it);
 
     wld_chanmgt_checkInitChannel(pR);
@@ -432,6 +435,8 @@ void wld_deleteRadioObj(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "start delete radio %s", name);
 
     wld_rad_triggerChangeEvent(pRad, WLD_RAD_CHANGE_DESTROY, NULL);
+
+    wld_extMod_cleanupDataList(&pRad->extDataList, pRad);
 
     wld_radStaMon_destroy(pRad);
     wld_autoCommitMgr_destroy(pRad);

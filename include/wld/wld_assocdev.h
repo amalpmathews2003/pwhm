@@ -64,6 +64,7 @@
 #define SRC_INCLUDE_WLD_WLD_ASSOCDEV_H_
 
 #include "wld.h"
+#include "wld_extMod.h"
 
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
@@ -139,5 +140,9 @@ void wld_ad_cleanAp(T_AccessPoint* pAP);
 void wld_ad_listRecentDisconnects(T_AccessPoint* pAP, amxc_var_t* variant);
 void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen);
 void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDev, wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
+
+swl_rc_ne wld_ad_registerExtModData(T_AssociatedDevice* pAD, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler);
+void* wld_ad_getExtModData(T_AssociatedDevice* pAD, uint32_t extModId);
+swl_rc_ne wld_ad_unregisterExtModData(T_AssociatedDevice* pAD, uint32_t extModId);
 
 #endif /* SRC_INCLUDE_WLD_WLD_ASSOCDEV_H_ */

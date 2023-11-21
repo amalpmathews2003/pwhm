@@ -85,15 +85,26 @@ static wld_event_queue_t rqueue_rad_onScan_change = {.name = "evScan"};
 static wld_event_queue_t rqueue_rad_onChange = {.name = "evRadChange"};
 static wld_event_queue_t rqueue_rad_onFrame = {.name = "evRadFrame"};
 
+/**
+ * General lifecycle changes of AP. Does not include status changes => rqueue_vap_onStatus_change
+ */
+static wld_event_queue_t rqueue_vap_onChange = {.name = "evApChange"};
+
+static wld_event_queue_t rqueue_sta_onChange = {.name = "evStaChange"};
+
 
 static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
 
 wld_event_queue_t* gWld_queue_rad_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
-wld_event_queue_t* gWld_queue_vap_onStatusChange = NULL;
+wld_event_queue_t* gWld_queue_vap_onStatusChange = NULL;  // Called when the status of the vap changes. @type wld_vap_status_change_event_t
+wld_event_queue_t* gWld_queue_vap_onChangeEvent = NULL;   // Called when vap structural changes, i.e. create / destroy. @type wld_vap_changeEvent_t
 wld_event_queue_t* gWld_queue_rad_onScan_change = NULL;
 wld_event_queue_t* gWld_queue_rad_onChangeEvent = NULL;
 wld_event_queue_t* gWld_queue_rad_onFrameEvent = NULL;
+
+wld_event_queue_t* gWld_queue_sta_onChangeEvent = NULL;
+
 
 wld_event_queue_t* gWld_queue_lifecycleEvent = NULL;
 
@@ -123,6 +134,12 @@ void wld_event_init() {
 
     gWld_queue_lifecycleEvent = &rqueue_lifecycleEvent;
     amxc_llist_init(&gWld_queue_lifecycleEvent->subscribers);
+
+    gWld_queue_vap_onChangeEvent = &rqueue_vap_onChange;
+    amxc_llist_init(&gWld_queue_vap_onChangeEvent->subscribers);
+
+    gWld_queue_sta_onChangeEvent = &rqueue_sta_onChange;
+    amxc_llist_init(&gWld_queue_sta_onChangeEvent->subscribers);
 }
 
 /**
@@ -147,8 +164,11 @@ void wld_event_destroy() {
     wld_event_cleanup_queue(gWld_queue_rad_onStatusChange);
     wld_event_cleanup_queue(gWld_queue_ep_onStatusChange);
     wld_event_cleanup_queue(gWld_queue_vap_onStatusChange);
+    wld_event_cleanup_queue(gWld_queue_vap_onChangeEvent);
     wld_event_cleanup_queue(gWld_queue_rad_onScan_change);
     wld_event_cleanup_queue(gWld_queue_lifecycleEvent);
+
+    wld_event_cleanup_queue(gWld_queue_sta_onChangeEvent);
 }
 
 /**

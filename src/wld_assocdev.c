@@ -85,6 +85,8 @@
 #include "wld_ap_rssiMonitor.h"
 #include "wld_rad_nl80211.h"
 #include "wld_dm_trans.h"
+#include "wld_eventing.h"
+#include "wld_extMod.h"
 
 #define BRCTL_DEL_FDB_ENTRIES 27
 #define STATIONS_STATS_TIMEOUT 5000
@@ -244,6 +246,15 @@ static void s_dcEntryConnected(T_AccessPoint* pAP, wld_ad_dcLog_t* entry) {
     X(Y, gtSwl_type_uint32, recentRxRetransmissionsFailed, "RecentRxRetransmissionsFailed") \
 
 SWL_NTT(gtWld_ad_disassocEvent, wld_ad_disassocEvent_t, X_WLD_AD_DISASSOC_EVENT, )
+
+static void s_sendChangeEvent(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_ad_changeEvent_e event, void* data) {
+    wld_ad_changeEvent_t change;
+    change.vap = pAP;
+    change.ad = pAD;
+    change.changeType = event;
+    change.data = data;
+    wld_event_trigger_callback(gWld_queue_sta_onChangeEvent, &change);
+}
 
 static void s_sendDisassocNotification(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
@@ -428,6 +439,18 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
         return;
     }
 
+    T_AssociatedDevice* pAD = pAP->AssociatedDevice[index];
+    SAH_TRACEZ_INFO(ME, "%s: delete %s", pAP->alias, pAD->Name);
+
+    if(pAD->Active) {
+        pAD->Active = false;
+        pAD->AuthenticationState = false;
+        pAP->ActiveAssociatedDeviceNumberOfEntries--;
+        s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_DISASSOC, NULL);
+    }
+    s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_DESTROY, NULL);
+    wld_extMod_cleanupDataList(&pAD->extDataList, pAD);
+
     wld_apRssiMon_destroyStaHistory(pAP->AssociatedDevice[index]);
     free(pAP->AssociatedDevice[index]);
 
@@ -466,6 +489,7 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
         SAH_TRACEZ_OUT(ME);
         return NULL;
     }
+    wld_extMod_initDataList(&pAD->extDataList);
 
     swl_timeMono_t timeNow = swl_time_getMonoSec();
 
@@ -503,6 +527,8 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
     pAD->AvgSignalStrengthByChain = 0;
 
     wld_apRssiMon_createStaHistory(pAD, pAP->rssiEventing.historyLen);
+
+    s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_CREATE, NULL);
 
     return pAD;
 }
@@ -1105,6 +1131,8 @@ static void s_activate(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
     //kick from all other AP's
     wld_ad_checkRoamSta(pAP, pAD);
+
+    s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_ASSOC, NULL);
 }
 
 /**
@@ -1154,25 +1182,28 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         s_incrementAssocCounter(pAP, "Disconnect");
         s_addDcEntry(pAP, pAD, deauthReason);
     }
-    if(pAD->Active) {
-        uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
-        SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i - reason %u",
-                           pAP->alias, pAD->Name, pAD->AuthenticationState, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
-                           timeOnline, pAD->SignalNoiseRatio, deauthReason);
-        pAD->latestStateChangeTime = swl_time_getMonoSec();
-        pAD->disassociationTime = swl_time_getMonoSec();
-        pAD->connectionDuration = timeOnline;
 
-        wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
-        if(log == NULL) {
-            log = swl_unLiList_allocElement(&pAP->staDcList.list);
-        }
-        log->dcTime = swl_timespec_getMonoVal();
-        memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
+    uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
+    SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i - reason %u",
+                       pAP->alias, pAD->Name, pAD->AuthenticationState, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
+                       timeOnline, pAD->SignalNoiseRatio, deauthReason);
+    pAD->latestStateChangeTime = swl_time_getMonoSec();
+    pAD->disassociationTime = swl_time_getMonoSec();
+    pAD->connectionDuration = timeOnline;
+
+    wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
+    if(log == NULL) {
+        log = swl_unLiList_allocElement(&pAP->staDcList.list);
     }
+    log->dcTime = swl_timespec_getMonoVal();
+    memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
+
+    s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_DISASSOC, log);
+
     pAD->AuthenticationState = 0;
     pAD->Active = 0;
     pAD->Inactive = 0;
+
     wld_ad_remove_assocdev_from_bridge(pAP, pAD);
 
     wld_vap_sync_device(pAP, pAD);
@@ -1208,6 +1239,9 @@ void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) 
     if(entry != NULL) {
         s_dcEntryConnected(pAP, entry);
     }
+
+    s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_AUTH, NULL);
+
     wld_vap_sync_device(pAP, pAD);
 }
 
@@ -1645,4 +1679,20 @@ void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8
 
     wld_assocDev_copyAssocDevInfoFromIEs(pAP->pRadio, pAD, &pAD->assocCaps, &wirelessDevIE);
 }
+
+
+swl_rc_ne wld_ad_registerExtModData(T_AssociatedDevice* pAD, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler) {
+    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_extMod_registerData(&pAD->extDataList, extModId, extModData, deleteHandler);
+}
+
+void* wld_ad_getExtModData(T_AssociatedDevice* pAD, uint32_t extModId) {
+    ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
+    return wld_extMod_getData(&pAD->extDataList, extModId);
+}
+
+swl_rc_ne wld_ad_unregisterExtModData(T_AssociatedDevice* pAD, uint32_t extModId) {
+    return wld_extMod_unregisterData(&pAD->extDataList, extModId);
+}
+
 

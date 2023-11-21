@@ -98,14 +98,20 @@ typedef struct {
     char* name;
 } wld_event_queue_t;
 
-extern wld_event_queue_t* gWld_queue_rad_onStatusChange;
 extern wld_event_queue_t* gWld_queue_ep_onStatusChange;
-extern wld_event_queue_t* gWld_queue_vap_onStatusChange;
-extern wld_event_queue_t* gWld_queue_rad_onScan_change;
 
+extern wld_event_queue_t* gWld_queue_vap_onStatusChange;
+extern wld_event_queue_t* gWld_queue_vap_onChangeEvent;
+
+extern wld_event_queue_t* gWld_queue_rad_onStatusChange;
+extern wld_event_queue_t* gWld_queue_rad_onScan_change;
 extern wld_event_queue_t* gWld_queue_rad_onChangeEvent;
 extern wld_event_queue_t* gWld_queue_rad_onFrameEvent;
+
+extern wld_event_queue_t* gWld_queue_sta_onChangeEvent;
+
 extern wld_event_queue_t* gWld_queue_lifecycleEvent;
+
 
 
 void wld_event_add_callback(wld_event_queue_t* queue, wld_event_callback_t* callback);
