@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.9.0 - 2023-11-22(15:37:20 +0000)
+
+### Other
+
+- - Add eventing for ap and sta, and vendor data lists
+
 ## Release v5.8.0 - 2023-11-20(10:13:50 +0000)
 
 ### Other
