@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.9.1 - 2023-11-23(16:18:59 +0000)
+
+### Other
+
+- VAPs are down after endpoint activation and reconnection
+
 ## Release v5.9.0 - 2023-11-22(15:37:20 +0000)
 
 ### Other
