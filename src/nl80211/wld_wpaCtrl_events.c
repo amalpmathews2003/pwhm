@@ -290,14 +290,14 @@ static void s_apStationAssocFailure(wld_wpaCtrlInterface_t* pInterface, char* ev
     CALL_INTF(pInterface, fApStationAssocFailureCb, &bStationMac);
 }
 
-static void s_wdsStationInterfaceRemoved(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+static void s_wdsStationInterfaceRemoved(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
     //Example: WDS-STA-INTERFACE-REMOVED ifname=wlan0.sta1 sta_addr=d6:ee:57:0d:f2:aa
-    char sta_addr[SWL_MAC_CHAR_LEN] = {0};
+    char staAddr[SWL_MAC_CHAR_LEN] = {0};
     swl_macBin_t bStationMac;
 
-    wld_wpaCtrl_getValueStr(params, "sta_addr", sta_addr, sizeof(sta_addr));
-    swl_mac_charToBin(&bStationMac, (swl_macChar_t*) sta_addr);
-    SAH_TRACEZ_INFO(ME, "%s WDS-STA-INTERFACE-REMOVED sta_addr =%s", pInterface->name, sta_addr);
+    ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "sta_addr", staAddr, sizeof(staAddr)) > 0, ,ME, "STA addr not found");
+    ASSERTI_TRUE(swl_mac_charToBin(&bStationMac, (swl_macChar_t*) staAddr), ,ME, "fail to convert mac address to binary");
+    SAH_TRACEZ_INFO(ME, "%s %s sta_addr =%s", pInterface->name, event, staAddr);
     CALL_INTF(pInterface, fApStationDisconnectedCb, &bStationMac);
 }
 
