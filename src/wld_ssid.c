@@ -676,30 +676,33 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
          *  connection. The SSID is an identifier that is attached to
          *  packets sent over the wireless LAN that functions as an
          *  ID for joining a particular radio network (BSS). */
-        amxd_trans_set_cstring_t(&trans, "SSID", pS->SSID);
+        if(pEP != NULL) {
+            // Only need to set SSID if Endpoint. In case of accespoint, this is incoming config.
+            amxd_trans_set_cstring_t(&trans, "SSID", pS->SSID);
+        }
+
+
         /** 'MACAddress' The MAC address of this interface.  */
         sprintf(TBuf, "%.2X:%.2X:%.2X:%.2X:%.2X:%.2X",
                 pS->MACAddress[0], pS->MACAddress[1], pS->MACAddress[2],
                 pS->MACAddress[3], pS->MACAddress[4], pS->MACAddress[5]);
         amxd_trans_set_cstring_t(&trans, "MACAddress", TBuf);
+
+
         /** 'BSSID' The Basic Service Set ID. This is the MAC address
          *  of the access point, which can either be local (when this
          *  instance models an access point SSID) or remote (when
          *  this instance models an end point SSID).
          *  In multiple VAP setup it differs */
-
         int err = 0;
         if(pAP) {
             err = pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) TBuf, sizeof(TBuf), GET);
-            wld_autoCommitMgr_notifyVapEdit(pAP);
         } else if(pEP) {
-            swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
-            err = pEP->pFA->mfn_wendpoint_bssid(pEP, &macChar);
-            swl_str_copy(TBuf, sizeof(TBuf), macChar.cMac);
-            wld_autoCommitMgr_notifyEpEdit(pEP);
+            err = pEP->pFA->mfn_wendpoint_bssid(pEP, (swl_macChar_t*) TBuf);
         } else {
             err = WLD_ERROR_NOT_IMPLEMENTED;
         }
+
         if(err < 0) {
             snprintf(TBuf, sizeof(TBuf), WLD_EMPTY_MAC_ADDRESS);
             memset(pS->BSSID, 0, ETHER_ADDR_LEN);
@@ -707,6 +710,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             wldu_convStr2Mac(pS->BSSID, ETHER_ADDR_LEN, (char*) TBuf, ETHER_ADDR_STR_LEN);
         }
         amxd_trans_set_cstring_t(&trans, "BSSID", TBuf);
+
         TBuf[0] = 0;
         int32_t ifIndex = 0;
         if(pAP != NULL) {

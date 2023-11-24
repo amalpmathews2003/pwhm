@@ -246,7 +246,6 @@ static void s_performSync(T_Radio* rad) {
             markAllBitsLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
             pAP->fsm.FSM_SyncAll = FALSE;
         }
-        pAP->initDone = true;
     }
 
     wld_rad_forEachEp(pEP, rad) {
@@ -264,6 +263,13 @@ static void s_performSync(T_Radio* rad) {
         pSSID = (T_SSID*) pAP->pSSID;
         rad->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
         rad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
+
+        // The first time we pass here when init is not done, we need to write back the AP and SSID
+        if(!pAP->initDone) {
+            pAP->initDone = true;
+            rad->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
+            rad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
+        }
     }
 
     wld_rad_forEachEp(pEP, rad) {

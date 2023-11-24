@@ -378,7 +378,6 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
         ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
         pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
         pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
-
         pAP->initDone = true;
     }
 
@@ -405,9 +404,11 @@ static bool s_finalizeApCreation(T_AccessPoint* pAP) {
     //Finalize SSID mapping
     pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
 
+    wld_ad_initFastReconnectCounters(pAP);
+    s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_CREATE_FINAL, NULL);
+
     //delay sync AP and SSID Dm after all conf has been loaded
     swla_delayExec_add((swla_delayExecFun_cbf) s_syncApSSIDDm, pAP);
-
 
     SAH_TRACEZ_OUT(ME);
     return true;
@@ -456,15 +457,6 @@ amxd_status_t _wld_ap_addInstance_oaf(amxd_object_t* object,
     return status;
 }
 
-/**
- * Handler to add objects post creation in transacted manner.
- * Shall be called soon after AP creation, at time when transactions are possible
- */
-static void s_handlePostApCreation(T_AccessPoint* pAP) {
-    wld_ad_initFastReconnectCounters(pAP);
-    s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_CREATE_FINAL, NULL);
-}
-
 /*
  * AP instance addition event handler
  * late handling only to finalize AP interface creation (using twin ssid instance)
@@ -480,8 +472,6 @@ static void s_addApInst_oaf(void* priv _UNUSED, amxd_object_t* object, const amx
          */
         s_finalizeApCreation(object->priv);
     }
-    swla_delayExec_add((swla_delayExecFun_cbf) s_handlePostApCreation, object->priv);
-
 
     SAH_TRACEZ_OUT(ME);
 }
