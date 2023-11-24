@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.9.4 - 2023-11-24(12:11:05 +0000)
+
+### Other
+
+- - BSSID not properly set when external config source
+
 ## Release v5.9.3 - 2023-11-24(11:58:37 +0000)
 
 ### Other
