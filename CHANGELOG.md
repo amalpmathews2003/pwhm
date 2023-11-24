@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.9.3 - 2023-11-24(11:58:37 +0000)
+
+### Other
+
+- correct wrong linux utils function declaration
+
 ## Release v5.9.2 - 2023-11-24(07:26:07 +0000)
 
 ## Release v5.9.1 - 2023-11-23(16:18:59 +0000)
