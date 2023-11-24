@@ -295,8 +295,8 @@ static void s_wdsStationInterfaceRemoved(wld_wpaCtrlInterface_t* pInterface, cha
     char staAddr[SWL_MAC_CHAR_LEN] = {0};
     swl_macBin_t bStationMac;
 
-    ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "sta_addr", staAddr, sizeof(staAddr)) > 0, ,ME, "STA addr not found");
-    ASSERTI_TRUE(swl_mac_charToBin(&bStationMac, (swl_macChar_t*) staAddr), ,ME, "fail to convert mac address to binary");
+    ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "sta_addr", staAddr, sizeof(staAddr)) > 0, , ME, "STA addr not found");
+    ASSERTI_TRUE(swl_mac_charToBin(&bStationMac, (swl_macChar_t*) staAddr), , ME, "fail to convert mac address to binary");
     SAH_TRACEZ_INFO(ME, "%s %s sta_addr =%s", pInterface->name, event, staAddr);
     CALL_INTF(pInterface, fApStationDisconnectedCb, &bStationMac);
 }
@@ -586,7 +586,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-SUCCESS", &s_wpsStationSuccessEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
-	      {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},
+              {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},
               {"AP-STA-POSSIBLE-PSK-MISMATCH", &s_apStationAssocFailure},
               {"CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER", &s_apStationAssocFailure},
               {"BSS-TM-RESP", &s_btmResponse},
