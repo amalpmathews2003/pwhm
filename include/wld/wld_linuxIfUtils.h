@@ -216,6 +216,6 @@ int wld_linuxIfUtils_getIfIndex(int sock, char* intfName, int* pIfIndex);
  * @param 0 in case of success
  *        <0 (errno) in case of error
  */
-int wld_linuxIfUtils_getIfIndexExt(int sock, char* intfName, int* pIfIndex);
+int wld_linuxIfUtils_getIfIndexExt(char* intfName, int* pIfIndex);
 
 #endif /* INCLUDE_WLD_WLD_LINUXIFUTILS_H_ */
