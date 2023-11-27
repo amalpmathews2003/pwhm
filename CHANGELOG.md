@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.9.5 - 2023-11-27(09:56:07 +0000)
+
+### Other
+
+- [PPM-2628][osp] update ht/vht caps in hostapd conf with new target operChBw
+
 ## Release v5.9.4 - 2023-11-24(12:11:05 +0000)
 
 ### Other
