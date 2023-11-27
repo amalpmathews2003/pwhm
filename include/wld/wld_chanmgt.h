@@ -99,5 +99,7 @@ swl_channel_t wld_chanmgt_getCurChannel(T_Radio* pRad);
 swl_bandwidth_e wld_chanmgt_getCurBw(T_Radio* pRad);
 swl_channel_t wld_chanmgt_getTgtChannel(T_Radio* pRad);
 swl_bandwidth_e wld_chanmgt_getTgtBw(T_Radio* pRad);
+swl_chanspec_t wld_chanmgt_getCurChspec(T_Radio* pRad);
+swl_chanspec_t wld_chanmgt_getTgtChspec(T_Radio* pRad);
 
 #endif /* _WLD_CHANMGT_PCB_H_ */

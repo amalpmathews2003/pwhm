@@ -142,14 +142,15 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     ASSERTS_NOT_NULL(radConfigMap, , ME, "NULL");
     swl_mapChar_add(radConfigMap, "driver", "nl80211");
     swl_mapChar_add(radConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
-    swl_channel_t tgtChan = wld_chanmgt_getTgtChannel(pRad);
+    swl_chanspec_t tgtChspec = wld_chanmgt_getTgtChspec(pRad);
+    swl_channel_t tgtChan = tgtChspec.channel;
     swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);
     swl_mapCharFmt_addValInt32(radConfigMap, "op_class", swl_chanspec_getOperClass(&pRad->targetChanspec.chanspec));
     swl_mapChar_add(radConfigMap, "country_code", pRad->regulatoryDomain);
     swl_mapChar_add(radConfigMap, "ieee80211d", "1");
     swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211h", pRad->IEEE80211hSupported && pRad->setRadio80211hEnable);
 
-    swl_bandwidth_e tgtChW = wld_chanmgt_getTgtBw(pRad);
+    swl_bandwidth_e tgtChW = tgtChspec.bandwidth;
     SAH_TRACEZ_INFO(ME, "%s: operStd:0x%x suppStd:0x%x operChw:%d maxChW:%d tgtChW:%d chan:%d",
                     pRad->Name, pRad->operatingStandards, pRad->supportedStandards,
                     pRad->operatingChannelBandwidth, pRad->maxChannelBandwidth, tgtChW, tgtChan);
@@ -157,8 +158,8 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
         swl_mapChar_add(radConfigMap, "ieee80211n", "1");
         char htCaps[256] = {0};
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_40MHZ)) {
-            wld_channel_extensionPos_e extChanPos = wld_rad_getExtensionChannel(pRad);
+        if(wld_channel_hasChannelWidthCovered(tgtChspec, SWL_BW_40MHZ)) {
+            wld_channel_extensionPos_e extChanPos = wld_channel_getExtensionChannel(tgtChspec, pRad->extensionChannel);
             if(extChanPos == WLD_CHANNEL_EXTENTION_POS_ABOVE) {
                 swl_str_cat(htCaps, sizeof(htCaps), "[HT40+]");
             } else if(extChanPos == WLD_CHANNEL_EXTENTION_POS_BELOW) {
@@ -180,7 +181,7 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     }
     uint32_t* pChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 0, 1, &tgtChW);
 
-    swl_channel_t centerChan = swl_chanspec_getCentreChannel(&pRad->targetChanspec.chanspec);
+    swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
     bool implicitBf = (pRad->implicitBeamFormingSupported && pRad->implicitBeamFormingEnabled);
     bool explicitBf = (pRad->explicitBeamFormingSupported && pRad->explicitBeamFormingEnabled);
     bool muMimo = (pRad->multiUserMIMOSupported && pRad->multiUserMIMOEnabled);
@@ -191,10 +192,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapCharFmt_addValInt32(radConfigMap, "vht_oper_centr_freq_seg0_idx", centerChan);
         }
         char vhtCaps[256] = {0};
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_160MHZ)) {
+        if(wld_channel_hasChannelWidthCovered(tgtChspec, SWL_BW_160MHZ)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[VHT160]");
         }
-        if(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_80MHZ) && s_checkSGI(pRad, SWL_SGI_400)) {
+        if(wld_channel_hasChannelWidthCovered(tgtChspec, SWL_BW_80MHZ) && s_checkSGI(pRad, SWL_SGI_400)) {
             swl_str_cat(vhtCaps, sizeof(vhtCaps), "[SHORT-GI-80]");
         }
         if(implicitBf) {

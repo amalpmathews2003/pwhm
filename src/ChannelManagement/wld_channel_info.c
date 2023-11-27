@@ -404,3 +404,24 @@ int wld_channel_getComplementaryBaseChannel(swl_chanspec_t chanspec) {
         return baseChanspec.channel;
     }
 }
+
+bool wld_channel_hasChannelWidthCovered(swl_chanspec_t chspec, swl_bandwidth_e chW) {
+    return (swl_chanspec_bwToInt(chspec.bandwidth) >= swl_chanspec_bwToInt(chW));
+}
+
+wld_channel_extensionPos_e wld_channel_getExtensionChannel(swl_chanspec_t chspec, wld_channel_extensionPos_e currExtChanPos) {
+    ASSERTI_TRUE(wld_channel_hasChannelWidthCovered(chspec, SWL_BW_40MHZ), WLD_CHANNEL_EXTENTION_POS_NONE, ME, "not supported");
+    if(chspec.band != SWL_FREQ_BAND_EXT_2_4GHZ) {
+        if((chspec.channel / 4) % 2) {
+            return WLD_CHANNEL_EXTENTION_POS_ABOVE;
+        }
+        return WLD_CHANNEL_EXTENTION_POS_BELOW;
+    }
+    if(currExtChanPos == WLD_CHANNEL_EXTENTION_POS_AUTO) {
+        if(chspec.channel < 7) {
+            return WLD_CHANNEL_EXTENTION_POS_ABOVE;
+        }
+        return WLD_CHANNEL_EXTENTION_POS_BELOW;
+    }
+    return currExtChanPos;
+}

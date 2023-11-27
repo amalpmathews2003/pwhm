@@ -472,10 +472,10 @@ amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* obje
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
     ASSERT_NOT_NULL(newValue, status, ME, "NULL");
-    swl_bandwidth_e radBw;
+    swl_radBw_e radBw;
     if((swl_str_matches(currentValue, newValue)) ||
-       ((radBw = swl_conv_charToEnum(newValue, Rad_SupBW, SWL_BW_RAD_MAX, SWL_BW_RAD_MAX) < SWL_BW_RAD_MAX) &&
-        ((radBw == SWL_BW_AUTO) || (swl_chanspec_bwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
+       ((radBw = swl_conv_charToEnum(newValue, swl_radBw_str, SWL_BW_RAD_MAX, SWL_BW_RAD_MAX) < SWL_BW_RAD_MAX) &&
+        ((radBw == SWL_RAD_BW_AUTO) || (swl_chanspec_radBwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "%s: unsupported operating channel bandwidth(%s)", pRad->Name, newValue);
@@ -499,7 +499,7 @@ static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t
 
     swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->channel, radBw, pRad->operatingFrequencyBand);
     wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
-    SAH_TRACEZ_INFO(ME, "%s: set OCBW %s", pRad->Name, swl_radBw_str[radBw]);
+    SAH_TRACEZ_INFO(ME, "%s: set OCBW %s : %u", pRad->Name, swl_radBw_str[radBw], autoBwChange);
 
     if(autoBwChange) {
         // if autobandwidth is enabled, and going from or to autobw, trigger autochannelEnable
@@ -594,7 +594,9 @@ bool wld_rad_addDFSEvent(T_Radio* pR, T_DFSEvent* evt) {
 }
 
 swl_chanspec_t wld_rad_getSwlChanspec(T_Radio* pRad) {
-    swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->channel, pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
+    swl_chanspec_t chanspec = SWL_CHANSPEC_EMPTY;
+    ASSERTS_NOT_NULL(pRad, chanspec, ME, "NULL");
+    chanspec = swl_chanspec_fromDm(pRad->channel, pRad->runningChannelBandwidth, pRad->operatingFrequencyBand);
     return chanspec;
 }
 
@@ -3039,25 +3041,12 @@ bool wld_rad_hasChannel(T_Radio* pRad, int chan) {
 }
 
 bool wld_rad_hasChannelWidthCovered(T_Radio* pRad, swl_bandwidth_e chW) {
-    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
-    return (swl_chanspec_radBwToInt(pRad->runningChannelBandwidth) >= swl_chanspec_bwToInt(chW));
+    return wld_channel_hasChannelWidthCovered(wld_rad_getSwlChanspec(pRad), chW);
 }
 
 wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad) {
-    ASSERTI_TRUE(wld_rad_hasChannelWidthCovered(pRad, SWL_BW_40MHZ), WLD_CHANNEL_EXTENTION_POS_NONE, ME, "not supported");
-    if(pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_2_4GHZ) {
-        if((pRad->channel / 4) % 2) {
-            return WLD_CHANNEL_EXTENTION_POS_ABOVE;
-        }
-        return WLD_CHANNEL_EXTENTION_POS_BELOW;
-    }
-    if(pRad->extensionChannel == WLD_CHANNEL_EXTENTION_POS_AUTO) {
-        if(pRad->channel < 7) {
-            return WLD_CHANNEL_EXTENTION_POS_ABOVE;
-        }
-        return WLD_CHANNEL_EXTENTION_POS_BELOW;
-    }
-    return pRad->extensionChannel;
+    ASSERT_NOT_NULL(pRad, WLD_CHANNEL_EXTENTION_POS_NONE, ME, "NULL");
+    return wld_channel_getExtensionChannel(wld_rad_getSwlChanspec(pRad), pRad->extensionChannel);
 }
 
 bool wld_rad_hasEnabledEp(T_Radio* pRad) {

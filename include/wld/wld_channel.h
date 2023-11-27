@@ -112,6 +112,8 @@ int wld_get_nr_channels_in_band(swl_chanspec_t chanspec);
 
 int wld_channel_getComplementaryBaseChannel(swl_chanspec_t chanspec);
 bool wld_channel_areAdjacent(swl_chanspec_t chanspec1, swl_chanspec_t chanspec2);
+bool wld_channel_hasChannelWidthCovered(swl_chanspec_t chspec, swl_bandwidth_e chW);
+wld_channel_extensionPos_e wld_channel_getExtensionChannel(swl_chanspec_t chspec, wld_channel_extensionPos_e currExtChanPos);
 
 //Setters
 

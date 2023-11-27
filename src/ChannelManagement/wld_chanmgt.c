@@ -640,31 +640,49 @@ void wld_chanmgt_saveChanges(T_Radio* pRad) {
 }
 
 /**
+ * Return the current chanspec
+ */
+swl_chanspec_t wld_chanmgt_getCurChspec(T_Radio* pRad) {
+    swl_chanspec_t chspec = SWL_CHANSPEC_EMPTY;
+    ASSERTS_NOT_NULL(pRad, chspec, ME, "NULL");
+    return pRad->currentChanspec.chanspec;
+}
+
+/**
+ * Return the target chanspec
+ */
+swl_chanspec_t wld_chanmgt_getTgtChspec(T_Radio* pRad) {
+    swl_chanspec_t chspec = SWL_CHANSPEC_EMPTY;
+    ASSERTS_NOT_NULL(pRad, chspec, ME, "NULL");
+    return pRad->targetChanspec.chanspec;
+}
+
+/**
  * Return the current channel
  */
 swl_channel_t wld_chanmgt_getCurChannel(T_Radio* pRad) {
-    return pRad->currentChanspec.chanspec.channel;
+    return wld_chanmgt_getCurChspec(pRad).channel;
 }
 
 /**
  * Return the current bandwidth
  */
 swl_bandwidth_e wld_chanmgt_getCurBw(T_Radio* pRad) {
-    return pRad->currentChanspec.chanspec.bandwidth;
+    return wld_chanmgt_getCurChspec(pRad).bandwidth;
 }
 
 /**
  * Return the target channel
  */
 swl_channel_t wld_chanmgt_getTgtChannel(T_Radio* pRad) {
-    return pRad->targetChanspec.chanspec.channel;
+    return wld_chanmgt_getTgtChspec(pRad).channel;
 }
 
 /**
  * Return the target bandwidth
  */
 swl_bandwidth_e wld_chanmgt_getTgtBw(T_Radio* pRad) {
-    return pRad->targetChanspec.chanspec.bandwidth;
+    return wld_chanmgt_getTgtChspec(pRad).bandwidth;
 }
 
 void wld_chanmgt_cleanup(T_Radio* pRad) {
