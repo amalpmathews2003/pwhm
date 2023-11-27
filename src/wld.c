@@ -419,8 +419,6 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     wld_persist_onRadioCreation(pR);
 
-    wld_rad_triggerChangeEvent(pR, WLD_RAD_CHANGE_INIT, NULL);
-
     pR->isReady = true;
 
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u", name, vendor->name, idx);

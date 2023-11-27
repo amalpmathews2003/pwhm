@@ -1538,6 +1538,7 @@ static void s_addInstance_oaf(void* priv _UNUSED, amxd_object_t* object, const a
     syncData_VendorWPS2OBJ(NULL, pR, GET);
     //event instance-added received, radio object is writable (loading transaction is done)
     pR->hasDmReady = true;
+    wld_rad_triggerChangeEvent(pR, WLD_RAD_CHANGE_INIT, NULL);
 
     //delay sync Rad Dm after all conf has been loaded
     swla_delayExec_add((swla_delayExecFun_cbf) s_syncRadDm, pR);
