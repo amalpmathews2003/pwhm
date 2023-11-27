@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.9.6 - 2023-11-27(11:17:24 +0000)
+
+### Other
+
+- trigger RAD_CHANGE_INIT event after Rad DM be loaded
+
 ## Release v5.9.5 - 2023-11-27(09:56:07 +0000)
 
 ### Other
