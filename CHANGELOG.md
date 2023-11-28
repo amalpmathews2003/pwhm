@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.10.0 - 2023-11-28(14:09:27 +0000)
+
+### Other
+
+- - handle and notify channel switch and CSA finished events
+
 ## Release v5.9.6 - 2023-11-27(11:17:24 +0000)
 
 ### Other
