@@ -86,6 +86,81 @@
 
 #define ME "genEvt"
 
+/* Table of standard wpactrl iface events to be forwarded to other applications */
+static const char* s_fwdIfaceStdWpaCtrlEventsList[] = {
+    "AP-STA-POSSIBLE-PSK-MISMATCH",
+    "CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER",
+    "CTRL-EVENT-EAP-FAILURE",
+    "CTRL-EVENT-EAP-TIMEOUT-FAILURE",
+    // WPA EAP failure2/timeout2 events while using an external RADIUS server
+    "CTRL-EVENT-EAP-FAILURE2",
+    "CTRL-EVENT-EAP-TIMEOUT-FAILURE2"
+};
+
+/* Table of standard wpactrl radio events to be forwarded to other applications */
+static const char* s_fwdRadioStdWpaCtrlEventsList[] = {
+    "CTRL-EVENT-CHANNEL-SWITCH",
+    "AP-CSA-FINISHED"
+};
+
+static void s_notifyWpaCtrlEvent(amxd_object_t* object, char* ifName, char* eventName,
+                                 const char** eventList, size_t eventListSize, char* msgData) {
+    ASSERTS_NOT_NULL(object, , ME, "NULL");
+    for(size_t i = 0; i < eventListSize; i++) {
+        if(!swl_str_matches(eventName, eventList[i])) {
+            continue;
+        }
+        amxc_var_t eventData;
+        amxc_var_init(&eventData);
+        amxc_var_set_type(&eventData, AMXC_VAR_ID_HTABLE);
+        amxc_var_add_key(cstring_t, &eventData, "ifName", ifName);
+        amxc_var_add_key(cstring_t, &eventData, "eventData", msgData);
+
+        SAH_TRACEZ_INFO(ME, "%s: notify wpaCtrlEvents eventData=%s", ifName, msgData);
+
+        amxd_object_trigger_signal(object, "wpaCtrlEvents", &eventData);
+        amxc_var_clean(&eventData);
+    }
+}
+
+static void s_wpaCtrlIfaceStdEvt(void* userData, char* ifName, char* eventName, char* msgData) {
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+    ASSERT_NOT_NULL(eventName, , ME, "NULL");
+    ASSERT_NOT_NULL(msgData, , ME, "NULL");
+
+    amxd_object_t* object = NULL;
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    if(debugIsVapPointer(pAP)) {
+        object = pAP->pBus;
+    } else if(debugIsEpPointer(pEP)) {
+        object = pEP->pBus;
+    }
+
+    ASSERT_NOT_NULL(object, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: received wpaCtrl iface standard event %s", ifName, eventName);
+
+    s_notifyWpaCtrlEvent(object, ifName, eventName, s_fwdIfaceStdWpaCtrlEventsList,
+                         SWL_ARRAY_SIZE(s_fwdRadioStdWpaCtrlEventsList), msgData);
+}
+
+static void s_wpaCtrlRadioStdEvt(void* userData, char* ifName, char* eventName, char* msgData) {
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+    ASSERT_NOT_NULL(eventName, , ME, "NULL");
+    ASSERT_NOT_NULL(msgData, , ME, "NULL");
+
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
+
+    ASSERTS_TRUE(swl_str_matches(pRad->Name, ifName), , ME, "invalid ifName %s", ifName);
+
+    SAH_TRACEZ_INFO(ME, "%s: received wpaCtrl radio standard event %s", ifName, eventName);
+
+    s_notifyWpaCtrlEvent(pRad->pBus, ifName, eventName, s_fwdRadioStdWpaCtrlEventsList,
+                         SWL_ARRAY_SIZE(s_fwdRadioStdWpaCtrlEventsList), msgData);
+}
+
 static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_channelChangeReason_e reason) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pChanSpec, , ME, "NULL");
@@ -260,6 +335,7 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     wld_wpaCtrl_radioEvtHandlers_cb wpaCtrlRadEvthandlers;
     memset(&wpaCtrlRadEvthandlers, 0, sizeof(wpaCtrlRadEvthandlers));
     //Set here the wpa_ctrl RAD event handlers
+    wpaCtrlRadEvthandlers.fProcStdEvtMsg = s_wpaCtrlRadioStdEvt;
     wpaCtrlRadEvthandlers.fChanSwitchStartedCb = s_chanSwitchCb;
     wpaCtrlRadEvthandlers.fChanSwitchCb = s_chanSwitchCb;
     wpaCtrlRadEvthandlers.fApCsaFinishedCb = s_csaFinishedCb;
@@ -597,54 +673,6 @@ static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin
     amxc_var_clean(&retval);
 }
 
-static void s_notifyWpaCtrlEvent(amxd_object_t* object, char* ifName, char* msgData) {
-    amxc_var_t eventData;
-    amxc_var_init(&eventData);
-    amxc_var_set_type(&eventData, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &eventData, "ifName", ifName);
-    amxc_var_add_key(cstring_t, &eventData, "eventData", msgData);
-
-    SAH_TRACEZ_INFO(ME, "%s: notify wpaCtrlEvents eventData=%s", ifName, msgData);
-
-    amxd_object_trigger_signal(object, "wpaCtrlEvents", &eventData);
-    amxc_var_clean(&eventData);
-}
-
-/* Table of standard wpactrl iface events to be forwarded to other applications */
-static const char* s_fwdIfaceStdWpaCtrlEventsList[] = {
-    "AP-STA-POSSIBLE-PSK-MISMATCH",
-    "CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER",
-    "CTRL-EVENT-EAP-FAILURE",
-    "CTRL-EVENT-EAP-TIMEOUT-FAILURE",
-    // WPA EAP failure2/timeout2 events while using an external RADIUS server
-    "CTRL-EVENT-EAP-FAILURE2",
-    "CTRL-EVENT-EAP-TIMEOUT-FAILURE2"
-};
-
-static void s_wpaCtrlStdEvt(void* userData, char* ifName, char* eventName, char* msgData) {
-    ASSERT_NOT_NULL(ifName, , ME, "NULL");
-    ASSERT_NOT_NULL(eventName, , ME, "NULL");
-    ASSERT_NOT_NULL(msgData, , ME, "NULL");
-
-    amxd_object_t* object = NULL;
-    T_AccessPoint* pAP = (T_AccessPoint*) userData;
-    T_EndPoint* pEP = (T_EndPoint*) userData;
-    if(debugIsVapPointer(pAP)) {
-        object = pAP->pBus;
-    } else if(debugIsEpPointer(pEP)) {
-        object = pEP->pBus;
-    }
-    ASSERT_NOT_NULL(object, , ME, "NULL");
-
-    SAH_TRACEZ_INFO(ME, "received wpaCtrl standard event %s", eventName);
-    for(size_t i = 0; i < SWL_ARRAY_SIZE(s_fwdIfaceStdWpaCtrlEventsList); i++) {
-        if(swl_str_matches(eventName, s_fwdIfaceStdWpaCtrlEventsList[i])) {
-            s_notifyWpaCtrlEvent(object, ifName, msgData);
-            break;
-        }
-    }
-}
-
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -652,7 +680,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     memset(&wpaCtrlVapEvtHandlers, 0, sizeof(wpaCtrlVapEvtHandlers));
 
     //Set here the wpa_ctrl VAP event handlers
-    wpaCtrlVapEvtHandlers.fProcStdEvtMsg = s_wpaCtrlStdEvt;
+    wpaCtrlVapEvtHandlers.fProcStdEvtMsg = s_wpaCtrlIfaceStdEvt;
     wpaCtrlVapEvtHandlers.fWpsCancelMsg = s_wpsCancel;
     wpaCtrlVapEvtHandlers.fWpsTimeoutMsg = s_wpsTimeout;
     wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_wpsSuccess;
@@ -796,6 +824,7 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     wld_wpaCtrl_evtHandlers_cb wpaCtrlEpEvtHandlers;
     memset(&wpaCtrlEpEvtHandlers, 0, sizeof(wpaCtrlEpEvtHandlers));
     //Set here the wpa_ctrl EP event handlers
+    wpaCtrlEpEvtHandlers.fProcStdEvtMsg = s_wpaCtrlIfaceStdEvt;
     wpaCtrlEpEvtHandlers.fStationAssociatedCb = s_stationAssociatedEvt;
     wpaCtrlEpEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
     wpaCtrlEpEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
