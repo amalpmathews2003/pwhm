@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.11.0 - 2023-11-30(09:28:44 +0000)
+
+### Other
+
+- add wpactrl eventHandlers to intercept redirect and modify msg
+
 ## Release v5.10.0 - 2023-11-28(14:09:27 +0000)
 
 ### Other
