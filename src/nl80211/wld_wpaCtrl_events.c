@@ -145,29 +145,47 @@ int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey) {
     return val;
 }
 
-#define NOTIFY(PIFACE, FNAME, ...) \
+#define CALL_IFACE(PIFACE, FNAME, ...) \
     if((PIFACE != NULL)) { \
-        /* for VAP/EP events */ \
-        if(PIFACE->handlers.FNAME != NULL) { \
-            PIFACE->handlers.FNAME(PIFACE->userData, PIFACE->name, __VA_ARGS__); \
-        } \
-        /* for RAD/Glob events */ \
-        if((PIFACE->pMgr != NULL) && (PIFACE->pMgr->handlers.FNAME != NULL)) { \
-            PIFACE->pMgr->handlers.FNAME(PIFACE->pMgr->userData, PIFACE->name, __VA_ARGS__); \
+        SWL_CALL(PIFACE->handlers.FNAME, PIFACE->userData, PIFACE->name, __VA_ARGS__); \
+    }
+#define CALL_IFACE_RET(PIFACE, ret, FNAME, ...) \
+    { \
+        ret = SWL_RC_INVALID_PARAM; \
+        if(PIFACE != NULL) { \
+            ret = SWL_RC_NOT_IMPLEMENTED; \
+            if(PIFACE->handlers.FNAME != NULL) { \
+                ret = PIFACE->handlers.FNAME(PIFACE->userData, PIFACE->name, __VA_ARGS__); \
+            } \
         } \
     }
-
-typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, char* params);
 
 #define CALL_MGR_I(pIntf, fName, ...) \
     if(pIntf != NULL) { \
         CALL_MGR(pIntf->pMgr, pIntf->name, fName, __VA_ARGS__); \
+    }
+#define CALL_MGR_I_RET(pIntf, ret, fName, ...) \
+    { \
+        ret = SWL_RC_INVALID_PARAM; \
+        if(pIntf != NULL) { \
+            CALL_MGR_RET(pIntf->pMgr, pIntf->name, ret, fName, __VA_ARGS__); \
+        } \
     }
 
 #define CALL_MGR_I_NA(pIntf, fName) \
     if(pIntf != NULL) { \
         CALL_MGR_NA(pIntf->pMgr, pIntf->name, fName); \
     }
+
+#define NOTIFY(PIFACE, FNAME, ...) \
+    if((PIFACE != NULL)) { \
+        /* for VAP/EP events */ \
+        CALL_IFACE(PIFACE, FNAME, __VA_ARGS__); \
+        /* for RAD/Glob events */ \
+        CALL_MGR_I(PIFACE, FNAME, __VA_ARGS__); \
+    }
+
+typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, char* params);
 
 static void s_wpsCancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s WPS CANCEL", pInterface->name);
@@ -616,21 +634,76 @@ static evtParser_f s_getEventParser(char* eventName) {
     return *pfEvtHdlr;
 }
 
-#define WPA_MSG_LEVEL_INFO "<3>"
-void s_processEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
-    // All wpa msgs including events are sent with level MSG_INFO (3)
-    char* pEvent = strstr(msgData, WPA_MSG_LEVEL_INFO);
-    ASSERTS_NOT_NULL(pEvent, , ME, "%s: this is not a wpa_ctrl event %s", wld_wpaCtrlInterface_getName(pInterface), msgData);
-    pEvent += strlen(WPA_MSG_LEVEL_INFO);
-    // Look for the event
-    uint32_t eventNameLen = strlen(pEvent);
-    char* pParams = strchr(pEvent, ' ');
-    if(pParams) {
-        eventNameLen = pParams - pEvent;
-        pParams++;
+/*
+ * @brief parse a wpactrl msg and copy the event name, and the argument list
+ * The event name is potentially prefixed.
+ * The expected message format is "[PREFIX]<EVENT_NAME><space_char><EVENT_ARGS...>"
+ *
+ * @param pData wp ctrl message
+ * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)
+ * @param separator optional string (or char) separating event name and next event arguments
+ * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)
+ * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)
+ *
+ * @return true when event name is found, false otherwise
+ */
+bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep, char** pEvtName, char** pEvtArgs) {
+    ASSERTS_STR(pData, false, ME, "Empty");
+    const char* start = (char*) pData;
+    ssize_t pos = 0;
+    if(!swl_str_isEmpty(prefix)) {
+        pos = swl_str_find(start, prefix);
+        if(pos < 0) {
+            SAH_TRACEZ_ERROR(ME, "prefix (%s) not found in (%s)", prefix, pData);
+            start = NULL;
+        } else {
+            start = &start[pos + swl_str_len(prefix)];
+        }
     }
-    char eventName[eventNameLen + 1];
-    swl_str_copy(eventName, sizeof(eventName), pEvent);
+    const char* startArgs = NULL;
+    size_t evtNameLen = swl_str_len(start);
+    if(!swl_str_isEmpty(sep)) {
+        pos = swl_str_find(start, sep);
+        if(pos > 0) {
+            evtNameLen = pos;
+            startArgs = &start[pos + swl_str_len(sep)];
+        }
+    }
+    if(pEvtArgs != NULL) {
+        swl_str_copyMalloc(pEvtArgs, startArgs);
+    }
+    if(pEvtName != NULL) {
+        const char* resEvtName = NULL;
+        char eventName[evtNameLen + 1];
+        if(evtNameLen > 0) {
+            swl_str_ncopy(eventName, sizeof(eventName), start, evtNameLen);
+            resEvtName = eventName;
+        }
+        swl_str_copyMalloc(pEvtName, resEvtName);
+    }
+    ASSERTI_TRUE(evtNameLen > 0, false, ME, "no event name in (%s)", pData);
+    return true;
+}
+
+static bool s_processCustomEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
+    //if custom event handler was registered, then call it
+    bool custProc = false;
+    /* for VAP/EP events */
+    swl_rc_ne rc;
+    CALL_IFACE_RET(pInterface, rc, fCustProcEvtMsg, msgData);
+    custProc |= (rc == SWL_RC_DONE);
+    /* for RAD/Glob events */
+    CALL_MGR_I_RET(pInterface, rc, fCustProcEvtMsg, msgData);
+    custProc |= (rc == SWL_RC_DONE);
+    return custProc;
+}
+
+static void s_processStdEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
+    char* eventName = NULL;
+    char* pParams = NULL;
+    // All wpa msgs including events are sent with level MSG_INFO (3)
+    ASSERTS_TRUE(wld_wpaCtrl_parseMsg(msgData, WPA_MSG_LEVEL_INFO, " ", &eventName, &pParams), ,
+                 ME, "%s: this is not standard wpa_ctrl event %s", wld_wpaCtrlInterface_getName(pInterface), msgData);
     evtParser_f fEvtParser = s_getEventParser(eventName);
     if(fEvtParser) {
         fEvtParser(pInterface, eventName, pParams);
@@ -638,6 +711,8 @@ void s_processEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
         SAH_TRACEZ_NOTICE(ME, "No parser for evt(%s)", eventName);
     }
     NOTIFY(pInterface, fProcStdEvtMsg, eventName, msgData);
+    W_SWL_FREE(eventName);
+    W_SWL_FREE(pParams);
 }
 
 /**
@@ -650,9 +725,39 @@ void s_processEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
  */
 void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len) {
     ASSERTS_NOT_NULL(pInterface, , ME, "NULL");
-    ASSERTS_NOT_NULL(msgData, , ME, "NULL");
+    ASSERTS_STR(msgData, , ME, "empty");
+    ASSERTS_TRUE(len > 0, , ME, "null length");
     SAH_TRACEZ_NOTICE(ME, "%s: receive event len: %zu (%s)", wld_wpaCtrlInterface_getName(pInterface), len, msgData);
-    s_processEvent(pInterface, msgData);
-    //if custom event handler was registered, then call it
+
+    // 1) prepare custom msg for processing: target interface, msg content
+    char* newIfName = NULL;
+    char* newMsgData = NULL;
+    size_t newLen = 0;
+    swl_rc_ne rc;
+    CALL_IFACE_RET(pInterface, rc, fPreProcEvtMsg, msgData, len, &newIfName, &newMsgData, &newLen);
+    if(rc == SWL_RC_DONE) {
+        if(newIfName != NULL) {
+            wld_wpaCtrlInterface_t* pNewInterface = wld_wpaCtrlMngr_getInterfaceByName(pInterface->pMgr, newIfName);
+            if(pNewInterface != NULL) {
+                SAH_TRACEZ_NOTICE(ME, "%s: redirected event to iface %s", pInterface->name, pNewInterface->name);
+                pInterface = pNewInterface;
+            }
+        }
+        if((newMsgData != NULL) && (newLen > 0)) {
+            msgData = newMsgData;
+            len = newLen;
+            SAH_TRACEZ_NOTICE(ME, "%s: modified event len: %zu (%s)", pInterface->name, len, msgData);
+        }
+    }
+    W_SWL_FREE(newIfName);
+
+    // 2) try to process msg as custom, then as standard
+    if(!s_processCustomEvent(pInterface, msgData)) {
+        s_processStdEvent(pInterface, msgData);
+    }
+
+    // 3) if post-proc event handler was registered, then call it
     NOTIFY(pInterface, fProcEvtMsg, msgData);
+
+    W_SWL_FREE(newMsgData);
 }

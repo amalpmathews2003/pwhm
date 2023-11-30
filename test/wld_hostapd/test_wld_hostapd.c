@@ -75,6 +75,7 @@
 
 #include "wld.h"
 #include "wld_hostapd_ap_api.h"
+#include "wld_wpaCtrl_events.h"
 
 static void test_wld_ap_hostapd_getParamAction(void** state) {
     (void) state;
@@ -109,6 +110,76 @@ static void test_wld_ap_hostapd_setParamAction(void** state) {
     assert_int_equal(pMappedAction, SECDMN_ACTION_OK_NEED_SIGHUP);
 }
 
+static void test_wld_parse_wpactrl_evnt(void** state) {
+    (void) state;
+    struct testInfo {
+        const char* msgData;
+        const char* msgEvtNamePfx;
+        const char* msgEvtArgsSep;
+        bool expecRes;
+        const char* expecEvtName;
+        const char* expecEvtArgs;
+    } tests[] = {
+        {
+            "<3>CTRL-EVENT-CONNECTED - Connection to 98:42:65:2d:27:b0 completed [id=0 id_str=]",
+            "<3>", " ",
+            true, "CTRL-EVENT-CONNECTED", "- Connection to 98:42:65:2d:27:b0 completed [id=0 id_str=]"
+        },
+        {
+            "<3>WDS-STA-INTERFACE-REMOVED ifname=wlan0.sta1 sta_addr=d6:ee:57:0d:f2:aa",
+            "<3>", " ",
+            true, "WDS-STA-INTERFACE-REMOVED", "ifname=wlan0.sta1 sta_addr=d6:ee:57:0d:f2:aa"
+        },
+        {
+            "<3>AP-ENABLED",
+            "<3>", " ",
+            true, "AP-ENABLED", NULL
+        },
+        {
+            "zzzzzzzz<3>AP-ENABLED",
+            "<3>", NULL,
+            true, "AP-ENABLED", NULL
+        },
+        {
+            "<3>AP-MGMT-FRAME-RECEIVED buf=b0003c0000000000001012d4159a59e7000000000010a082000001000000",
+            "<3>", NULL,
+            true, "AP-MGMT-FRAME-RECEIVED buf=b0003c0000000000001012d4159a59e7000000000010a082000001000000", NULL
+        },
+        {
+            "CTRL-EVENT-STARTED-CHANNEL-SWITCH freq=5260 ht_enabled=1 ch_offset=1 ch_width=80 MHz cf1=5290 cf2=0 dfs=1",
+            NULL, " ",
+            true, "CTRL-EVENT-STARTED-CHANNEL-SWITCH", "freq=5260 ht_enabled=1 ch_offset=1 ch_width=80 MHz cf1=5290 cf2=0 dfs=1"
+        },
+        {
+            "CTRL-EVENT-STARTED-CHANNEL-SWITCH freq=5260 ht_enabled=1 ch_offset=1 ch_width=80 MHz cf1=5290 cf2=0 dfs=1",
+            "<3>", " ",
+            false, NULL, NULL
+        },
+        {
+            "<3>",
+            "<3>", " ",
+            false, NULL, NULL
+        },
+        {
+            NULL,
+            "<3>", " ",
+            false, NULL, NULL
+        },
+    };
+
+    char* eventName = NULL;
+    char* pParams = NULL;
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(tests); i++) {
+        bool ret = wld_wpaCtrl_parseMsg(tests[i].msgData, tests[i].msgEvtNamePfx, tests[i].msgEvtArgsSep, &eventName, &pParams);
+        assert_int_equal(ret, tests[i].expecRes);
+        assert_true(swl_str_matches(eventName, tests[i].expecEvtName));
+        assert_true(swl_str_matches(pParams, tests[i].expecEvtArgs));
+    }
+
+    W_SWL_FREE(eventName);
+    W_SWL_FREE(pParams);
+}
+
 static int s_setupSuite(void** state) {
     (void) state;
     return 0;
@@ -130,6 +201,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_wld_ap_hostapd_getParamAction),
         cmocka_unit_test(test_wld_ap_hostapd_setParamAction),
+        cmocka_unit_test(test_wld_parse_wpactrl_evnt),
     };
     int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();

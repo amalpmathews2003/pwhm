@@ -63,9 +63,9 @@
 #ifndef __WLD_WPA_CTRL_MNGR_H__
 #define __WLD_WPA_CTRL_MNGR_H__
 
+#include "wld_wpaCtrl_types.h"
 #include "wld_wpaCtrlInterface.h"
 struct wld_secDmn;
-typedef struct wld_wpaCtrlMngr wld_wpaCtrlMngr_t;
 
 bool wld_wpaCtrlMngr_init(wld_wpaCtrlMngr_t** ppMgr, struct wld_secDmn* pSecDmn);
 bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers);
@@ -79,6 +79,7 @@ void wld_wpaCtrlMngr_cleanup(wld_wpaCtrlMngr_t** ppMgr);
 bool wld_wpaCtrlMngr_registerInterface(wld_wpaCtrlMngr_t* pMgr, wld_wpaCtrlInterface_t* pIface);
 bool wld_wpaCtrlMngr_unregisterInterface(wld_wpaCtrlMngr_t* pMgr, wld_wpaCtrlInterface_t* pIface);
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterface(wld_wpaCtrlMngr_t* pMgr, int32_t pos);
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(wld_wpaCtrlMngr_t* pMgr, const char* name);
 bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr);
 
 #define CALL_MGR_EXT(pMgr, fName, ifName, ...) \
@@ -88,6 +89,11 @@ bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr);
         if(wld_wpaCtrlMngr_getEvtHandlers(pMgr, &userdata, &handlers)) { \
             SWL_CALL(handlers.fName, userdata, ifName, __VA_ARGS__); \
         } \
+    }
+
+#define CALL_MGR_I_EXT(pIntf, fName, ...) \
+    if(pIntf != NULL) { \
+        CALL_MGR_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, wld_wpaCtrlInterface_getName(pIface), __VA_ARGS__); \
     }
 
 #endif /* __WLD_WPA_CTRL_MNGR_H__ */

@@ -61,6 +61,7 @@
 ****************************************************************************/
 #include <stdlib.h>
 #include "swl/swl_common.h"
+#include "swl/swl_string.h"
 #include "wld_wpaCtrlMngr_priv.h"
 #include "wld_wpaCtrlInterface_priv.h"
 
@@ -216,6 +217,19 @@ wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterface(wld_wpaCtrlMngr_t* pMgr, in
     wld_wpaCtrlInterface_t** ppIface = (wld_wpaCtrlInterface_t**) swl_unLiList_get(&pMgr->ifaces, pos);
     ASSERT_NOT_NULL(ppIface, NULL, ME, "Not found");
     return *ppIface;
+}
+
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(wld_wpaCtrlMngr_t* pMgr, const char* name) {
+    ASSERTS_STR(name, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &pMgr->ifaces) {
+        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(swl_str_matches(wld_wpaCtrlInterface_getName(pIface), name)) {
+            return pIface;
+        }
+    }
+    return NULL;
 }
 
 bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr) {

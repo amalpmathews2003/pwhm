@@ -60,56 +60,10 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_WPA_CTRL_MNGR_PRIV_H__
-#define __WLD_WPA_CTRL_MNGR_PRIV_H__
+#ifndef __WLD_WPA_CTRL_TYPES_H__
+#define __WLD_WPA_CTRL_TYPES_H__
 
-#define MAX_CONNECTION_ATTEMPTS 15
-#define FIRST_DELAY_MS 1500
-#define RETRY_DELAY_MS 500
+typedef struct wld_wpaCtrlInterface wld_wpaCtrlInterface_t;
+typedef struct wld_wpaCtrlMngr wld_wpaCtrlMngr_t;
 
-#include "swl/swl_unLiList.h"
-#include "wld_wpaCtrl_events.h"
-#include "wld_secDmn.h"
-
-struct wld_wpaCtrlMngr {
-    amxp_timer_t* connectTimer;
-    uint8_t wpaCtrlConnectAttempts;
-    wld_secDmn_t* pSecDmn;
-    void* userData;
-    swl_unLiList_t ifaces; //list of wpa_ctrl interfaces, handled by the manager
-    wld_wpaCtrl_radioEvtHandlers_cb handlers;
-};
-
-#define CALL_MGR(pMgr, ifName, fName, ...) \
-    if(pMgr != NULL) { \
-        SWL_CALL(pMgr->handlers.fName, pMgr->userData, ifName, __VA_ARGS__); \
-    }
-
-#define CALL_MGR_NA(pMgr, ifName, fName) \
-    if(pMgr != NULL) { \
-        SWL_CALL(pMgr->handlers.fName, pMgr->userData, ifName); \
-    }
-
-#define CALL_MGR_RET(pMgr, ifName, ret, fName, ...) \
-    { \
-        ret = SWL_RC_INVALID_PARAM; \
-        if(pMgr != NULL) { \
-            ret = SWL_RC_NOT_IMPLEMENTED; \
-            if(pMgr->handlers.fName != NULL) { \
-                ret = pMgr->handlers.fName(pMgr->userData, ifName, __VA_ARGS__); \
-            } \
-        } \
-    }
-
-#define CALL_MGR_RET_NA(pMgr, ifName, ret, fName, ...) \
-    { \
-        ret = SWL_RC_INVALID_PARAM; \
-        if(pMgr != NULL) { \
-            ret = SWL_RC_NOT_IMPLEMENTED; \
-            if(pMgr->handlers.fName != NULL) { \
-                ret = pMgr->handlers.fName(pMgr->userData, ifName); \
-            } \
-        } \
-    }
-
-#endif /* __WLD_WPA_CTRL_MNGR_PRIV_H__ */
+#endif /* __WLD_WPA_CTRL_TYPES_H__ */

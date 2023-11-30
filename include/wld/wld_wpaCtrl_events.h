@@ -69,6 +69,8 @@
 #include "swl/swl_80211.h"
 #include "swl/swl_returnCode.h"
 
+#define WPA_MSG_LEVEL_INFO "<3>"
+
 typedef struct {
     uint8_t opclass;
     uint8_t channel;
@@ -82,9 +84,59 @@ typedef struct {
     uint32_t parentTsf;
 } __attribute__((packed)) wld_wpaCtrl_rrmBeaconRsp_t;
 
+/*
+ * @brief Handler to prepare custom evt msg processing:
+ * by fetching the real source interface and/or modify the received msg data to allow a generic processing.
+ * When needed, newInterfaceName and newMsgData are allocated and filled
+ * inside the handler, and they are freed on pwhm side
+ * This handler allows to redirect custom wpactrl messages received on a global wpaCtrl socket
+ * but targeted to a different interface
+ *
+ * @param userData private user data context registered with the wpactrl iface socket
+ * @param ifName name of wpactrl iface receiving the event
+ * @param msgData original text of the received msg
+ * @param len original length of received msg
+ * @param newIfName pointer to string allocated and filled with the interface name fetched in the msg
+ * @param newMsgData pointer to string allocated and filled with the prepared msg for processing
+ * @param newLen pointer to length variable set with the length of the prepared msg
+ *
+ * @return SWL_RC_DONE if the msg or the interface has been modified
+ *         SWL_RC_OK if no custom changes has been done on target interface or received msg
+ *         error code otherwise
+ * @return void
+ */
+typedef swl_rc_ne (* wld_wpaCtrl_preProcMsgCb_f)(void* userData, char* ifName, char* msgData, size_t len, char** newIfName, char** newMsgData, size_t* newLen);
+
+/*
+ * @brief handler for custom processing of received wpa ctrl event
+ *
+ * @param userData private user data context registered with the wpactrl iface socket
+ * @param ifName name of wpactrl iface receiving the event
+ * @param msgData text of the received event
+ *
+ * @return SWL_RC_DONE if the msg has been completely processed as custom event (eg: vendor specific format)
+ *                     and no more need to handle it as generic
+ *         SWL_RC_OK or SWL_RC_CONTINUE if the msg has been partially handled
+ *                     but can still be more processed
+ *         error code otherwise
+ */
+typedef swl_rc_ne (* wld_wpaCtrl_custProcMsgCb_f)(void* userData, char* ifName, char* msgData);
+
+/*
+ * @brief Handler for post msg processing
+ * It is called after a custom or generic msg parsing and handling has been tried
+ */
 typedef void (* wld_wpaCtrl_processMsgCb_f)(void* userData, char* ifName, char* msgData);
+
+/*
+ * @brief Handler for post standard event processing
+ * It is called after a generic msg parsing and handling has been tried
+ */
 typedef void (* wld_wpaCtrl_processStdMsgCb_f)(void* userData, char* ifName, char* eventName, char* msgData);
 
+/*
+ * wpactrl event handlers called by a generic wpactrl msg parsing
+ */
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
 typedef void (* wld_wpaCtrl_wpsTimeoutMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCancelMsg_f)(void* userData, char* ifName);
@@ -103,7 +155,9 @@ typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, sw
  * @brief structure of AP/EP event handlers
  */
 typedef struct {
-    wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_preProcMsgCb_f fPreProcEvtMsg;    // Handler to prepare custom msg processing (redirect, alter)
+    wld_wpaCtrl_custProcMsgCb_f fCustProcEvtMsg;  // Handler for custom msg processing (filter)
+    wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Handler to post-process evt msg
     wld_wpaCtrl_processStdMsgCb_f fProcStdEvtMsg; // Basic handler of standard received wpa ctrl event
     wld_wpaCtrl_wpsSuccessMsg_f fWpsSuccessMsg;
     wld_wpaCtrl_wpsTimeoutMsg_f fWpsTimeoutMsg;
@@ -140,7 +194,8 @@ typedef void (* wld_wpaCtrl_mainApDisabledCb_f)(void* userData, char* ifName);
  * @brief structure of Radio event handlers
  */
 typedef struct {
-    wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Basic handler of received wpa ctrl event
+    wld_wpaCtrl_custProcMsgCb_f fCustProcEvtMsg;  // Handler for custom msg processing (filter)
+    wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Handler to post process evt msg
     wld_wpaCtrl_processStdMsgCb_f fProcStdEvtMsg; // Basic handler of standard received wpa ctrl event
     wld_wpaCtrl_chanSwitchStartedCb_f fChanSwitchStartedCb;
     wld_wpaCtrl_chanSwitchCb_f fChanSwitchCb;
@@ -159,5 +214,20 @@ typedef struct {
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);
 int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey);
 bool wld_wpaCtrl_getValueIntExt(const char* pData, const char* pKey, int32_t* pVal);
+
+/*
+ * @brief parse a wpactrl msg and copy the event name, and the argument list
+ * The event name is potentially prefixed.
+ * The expected message format is "[PREFIX]<EVENT_NAME><space_char><EVENT_ARGS...>"
+ *
+ * @param pData wp ctrl message
+ * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)
+ * @param separator optional string (or char) separating event name and next event arguments
+ * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)
+ * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)
+ *
+ * @return true when event name is found, false otherwise
+ */
+bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep, char** pEvtName, char** pEvtArgs);
 
 #endif /* __WLD_WPA_CTRL_EVENTS_H__ */

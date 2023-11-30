@@ -63,12 +63,12 @@
 #ifndef INCLUDE_WLD_WLD_WPACTRLINTERFACE_H_
 #define INCLUDE_WLD_WLD_WPACTRLINTERFACE_H_
 
+#include "wld_wpaCtrl_types.h"
 #include "wld_wpaCtrl_events.h"
-
-typedef struct wld_wpaCtrlInterface wld_wpaCtrlInterface_t;
 
 bool wld_wpaCtrlInterface_init(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, char* serverPath);
 bool wld_wpaCtrlInterface_setEvtHandlers(wld_wpaCtrlInterface_t* pIface, void* userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers);
+bool wld_wpaCtrlInterface_getEvtHandlers(wld_wpaCtrlInterface_t* pIface, void** userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers);
 bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface);
 void wld_wpaCtrlInterface_close(wld_wpaCtrlInterface_t* pIface);
 void wld_wpaCtrlInterface_cleanup(wld_wpaCtrlInterface_t** ppIface);
@@ -76,5 +76,6 @@ bool wld_wpaCtrlInterface_ping(wld_wpaCtrlInterface_t* pIface);
 bool wld_wpaCtrlInterface_isReady(wld_wpaCtrlInterface_t* pIface);
 const char* wld_wpaCtrlInterface_getPath(wld_wpaCtrlInterface_t* pIface);
 const char* wld_wpaCtrlInterface_getName(wld_wpaCtrlInterface_t* pIface);
+const wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(wld_wpaCtrlInterface_t* pIface);
 
 #endif /* INCLUDE_WLD_WLD_WPACTRLINTERFACE_H_ */

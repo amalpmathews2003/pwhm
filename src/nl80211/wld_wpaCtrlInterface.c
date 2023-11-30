@@ -410,6 +410,17 @@ bool wld_wpaCtrlInterface_setEvtHandlers(wld_wpaCtrlInterface_t* pIface, void* u
     return true;
 }
 
+bool wld_wpaCtrlInterface_getEvtHandlers(wld_wpaCtrlInterface_t* pIface, void** userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers) {
+    ASSERT_NOT_NULL(pIface, false, ME, "NULL");
+    if(userdata != NULL) {
+        *userdata = pIface->userData;
+    }
+    if(pHandlers != NULL) {
+        *pHandlers = pIface->handlers;
+    }
+    return true;
+}
+
 bool wld_wpaCtrlInterface_ping(wld_wpaCtrlInterface_t* pIface) {
     return ((pIface != NULL) &&
             (s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG")));
@@ -428,6 +439,11 @@ const char* wld_wpaCtrlInterface_getPath(wld_wpaCtrlInterface_t* pIface) {
 const char* wld_wpaCtrlInterface_getName(wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, "", ME, "NULL");
     return pIface->name;
+}
+
+const wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(wld_wpaCtrlInterface_t* pIface) {
+    ASSERT_NOT_NULL(pIface, NULL, ME, "NULL");
+    return pIface->pMgr;
 }
 
 /**
