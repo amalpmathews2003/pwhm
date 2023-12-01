@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.12.0 - 2023-12-01(08:50:27 +0000)
+
+### Other
+
+- move fsm state sched out of wpactrl gen event handling
+
 ## Release v5.11.0 - 2023-11-30(09:28:44 +0000)
 
 ### Other
