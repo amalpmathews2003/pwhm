@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.12.1 - 2023-12-01(09:29:17 +0000)
+
+### Other
+
+- fix warnings in dm param validator on template object
+
 ## Release v5.12.0 - 2023-12-01(08:50:27 +0000)
 
 ### Other
