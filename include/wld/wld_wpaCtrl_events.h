@@ -189,6 +189,7 @@ typedef void (* wld_wpaCtrl_dfsNopFinishedCb_f)(void* userData, char* ifName, sw
 typedef void (* wld_wpaCtrl_dfsNewChannelCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
 typedef void (* wld_wpaCtrl_mainApSetupCompletedCb_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_mainApDisabledCb_f)(void* userData, char* ifName);
+typedef void (* wld_wpaCtrl_syncOnReadyCb_f)(void* userData, char* ifName, bool state);
 
 /*
  * @brief structure of Radio event handlers
@@ -209,6 +210,8 @@ typedef struct {
     wld_wpaCtrl_dfsNewChannelCb_f fDfsNewChannelCb; //fallback after dfs radar detection
     wld_wpaCtrl_mainApSetupCompletedCb_f fMainApSetupCompletedCb;
     wld_wpaCtrl_mainApDisabledCb_f fMainApDisabledCb;
+    wld_wpaCtrl_syncOnReadyCb_f fSyncOnRadioUp;     // Handler to sync ifaces when radio is up (ie mgr ready and APMain enabled)
+    wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpConnected; // Handler to sync radio conf when endpoint is connected
 } wld_wpaCtrl_radioEvtHandlers_cb;
 
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);

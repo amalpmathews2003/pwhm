@@ -67,6 +67,7 @@
 #include "wld/wld_hostapd_ap_api.h"
 #include "wld/wld_hostapd_cfgFile.h"
 #include "wld/wld_rad_nl80211.h"
+#include "wld/wld_ap_nl80211.h"
 
 #include "wifiGen_fsm.h"
 
@@ -455,7 +456,7 @@ static bool s_doSyncState(T_Radio* pRad) {
         swl_chanspec_t chanSpec;
         _UNUSED_(chanSpec);
         if((!wld_channel_is_band_usable(wld_rad_getSwlChanspec(pRad)) ||
-            (wld_rad_nl80211_getChannel(pRad, &chanSpec) < SWL_RC_OK))) {
+            (pRad->pFA->mfn_wrad_getChanspec(pRad, &chanSpec) < SWL_RC_OK))) {
             SAH_TRACEZ_WARNING(ME, "%s: curr band [%s] is unusable", pRad->Name, pRad->channelsInUse);
             if(!pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0)) {
                 SAH_TRACEZ_WARNING(ME, "%s: no dfs_offload => need to toggle hostapd recover radio", pRad->Name);
@@ -672,12 +673,68 @@ static void s_vapStatusUpdateCb(wld_vap_status_change_event_t* event) {
     }
 }
 
+static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
+    ASSERTS_TRUE(state, , ME, "not up");
+    T_Radio* pRad = (T_Radio*) userData;
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+    wld_rad_doCommitIfUnblocked(pRad);
+    /**
+     * Radio is ready, and Main AP is ready: listening to mgmt frames is possible.
+     * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
+     */
+    if(wld_ap_nl80211_registerFrame(pAP, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
+        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pAP->alias);
+    }
+}
+
+static void s_syncOnEpConnected(void* userData, char* ifName, bool state) {
+    ASSERTS_TRUE(state, , ME, "not connected");
+    T_Radio* pRad = (T_Radio*) userData;
+    T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hapd not running", pRad->Name);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+    wld_rad_doCommitIfUnblocked(pRad);
+}
+
+static void s_registerSyncEvtHandlers(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad->hostapd, , ME, "%s: no hostapd ctx", pRad->Name);
+    void* userdata = NULL;
+    wld_wpaCtrl_radioEvtHandlers_cb handlers = {0};
+    if(wld_wpaCtrlMngr_getEvtHandlers(pRad->hostapd->wpaCtrlMngr, &userdata, &handlers)) {
+        handlers.fSyncOnRadioUp = s_syncOnRadUp;
+        handlers.fSyncOnEpConnected = s_syncOnEpConnected;
+        wld_wpaCtrlMngr_setEvtHandlers(pRad->hostapd->wpaCtrlMngr, userdata, &handlers);
+    }
+}
+
 static wld_event_callback_t s_vapStatusCbContainer = {
     .callback = (wld_event_callback_fun) s_vapStatusUpdateCb
+};
+
+static void s_radioChange(wld_rad_changeEvent_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    T_Radio* pRad = event->pRad;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
+    if(event->changeType == WLD_RAD_CHANGE_INIT) {
+        s_registerSyncEvtHandlers(pRad);
+        wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
+    } else if(event->changeType == WLD_RAD_CHANGE_DESTROY) {
+        wld_event_remove_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
+    }
+}
+
+static wld_event_callback_t s_onRadioChange = {
+    .callback = (wld_event_callback_fun) s_radioChange,
 };
 
 void wifiGen_fsm_doInit(vendor_t* vendor) {
     ASSERT_NOT_NULL(vendor, , ME, "NULL");
     wld_fsm_init(vendor, &mngr);
-    wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
+    wld_event_add_callback(gWld_queue_rad_onChangeEvent, &s_onRadioChange);
 }

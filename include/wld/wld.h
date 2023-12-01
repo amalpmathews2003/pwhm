@@ -2208,6 +2208,11 @@ typedef struct S_CWLD_FUNC_TABLE {
      */
     swl_rc_ne (* mfn_wrad_setChanspec)(T_Radio* rad, bool direct);
 
+    /*
+     * Get current chanspec from driver
+     */
+    swl_rc_ne (* mfn_wrad_getChanspec)(T_Radio* rad, swl_chanspec_t* pChSpec);
+
     PFN_WRAD_SUPPORTS mfn_wrad_supports;                                             /**< Update all ReadOnly Radio states */
     PFN_WRAD_AUTOCHANNELENABLE mfn_wrad_autochannelenable;                           /**< Set/Get Auto Channel Enable */
     PFN_WRAD_STARTACS mfn_wrad_startacs;                                             /**< Trigger Autochannel scan to start! */

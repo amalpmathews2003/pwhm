@@ -68,6 +68,7 @@
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
+#include "wld/wld_secDmn.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_accesspoint.h"
 #include "wld/wld_wps.h"
@@ -172,7 +173,7 @@ static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_chan
 
 static void s_syncCurrentChannel(T_Radio* pRad, wld_channelChangeReason_e reason) {
     swl_chanspec_t chanSpec;
-    ASSERTS_FALSE(wld_rad_nl80211_getChannel(pRad, &chanSpec) < SWL_RC_OK, ,
+    ASSERTS_FALSE(pRad->pFA->mfn_wrad_getChanspec(pRad, &chanSpec) < SWL_RC_OK, ,
                   ME, "%s: fail to get channel", pRad->Name);
     s_saveChanChanged(pRad, &chanSpec, reason);
 }
@@ -197,13 +198,6 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     if(wld_rad_vap_from_name(pRad, ifName) != NULL) {
-        /**
-         * Radio is ready, listening to mgmt frames is possible.
-         * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
-         */
-        if(wld_rad_nl80211_registerFrame(pRad, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
-            SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pRad->Name);
-        }
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
         //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
@@ -214,8 +208,7 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
-            wld_rad_doCommitIfUnblocked(pRad);
+            CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, true);
             return;
         }
     }
@@ -230,21 +223,9 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     // when main iface setup is completed, current chanspec is the last applied target chanspec
     s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
-    wld_rad_doCommitIfUnblocked(pRad);
+    CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, true);
     wld_rad_updateState(pRad, true);
     pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
-
-    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
-
-    /**
-     * Main AP is ready, listening to mgmt frames is possible.
-     * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
-     */
-    if(wld_ap_nl80211_registerFrame(pAP, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
-        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pAP->alias);
-    }
 }
 
 static void s_mainApDisabledCb(void* userData, char* ifName) {
@@ -743,18 +724,14 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
     wld_endpoint_sync_connection(pEP, true, 0);
 
     // update radio datamodel
-    swl_chanspec_t chanSpec;
-    wld_rad_nl80211_getChannel(pRad, &chanSpec);
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    pRad->pFA->mfn_wrad_getChanspec(pRad, &chanSpec);
     s_saveChanChanged(pRad, &chanSpec, CHAN_REASON_EP_MOVE);
     wld_channel_clear_passive_band(chanSpec);
     wld_rad_updateState(pRad, true);
 
     // set hostapd channel
-    if(wifiGen_hapd_isRunning(pRad)) {
-        setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
-        setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
-        wld_rad_doCommitIfUnblocked(pRad);
-    }
+    CALL_SECDMN_MGR_EXT(pEP->wpaSupp, fSyncOnEpConnected, pEP->Name, true);
 }
 
 static void s_stationScanFailedEvt(void* pRef, char* ifName, int error) {

@@ -247,6 +247,13 @@ static swl_rc_ne TRAP_mfn_wrad_sensing_delClient(T_Radio* rad, swl_macChar_t mac
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpec) {
+    _UNUSED_(pRad);
+    _UNUSED_(pChSpec);
+    SAH_TRACEZ_NOTICE(ME, "%p %p", pRad, pChSpec);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 DEF_TRAP(T_AccessPoint, mfn_wvap_status);
 DEF_TRAP(T_AccessPoint, mfn_wvap_fsm_state);
 DEF_TRAP(T_AccessPoint, mfn_wvap_fsm);
@@ -614,6 +621,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_supstd);
     FTA_ASSIGN(mfn_wrad_poschans);
     FTA_ASSIGN(mfn_wrad_setChanspec);
+    FTA_ASSIGN(mfn_wrad_getChanspec);
     FTA_ASSIGN(mfn_wrad_supports);
     FTA_ASSIGN(mfn_wrad_autochannelenable);
     FTA_ASSIGN(mfn_wrad_startacs);

@@ -500,7 +500,7 @@ int wifiGen_rad_status(T_Radio* pRad) {
     if(!wld_rad_hasEnabledIface(pRad)) {
         SAH_TRACEZ_INFO(ME, "%s: has no enabled interface", pRad->Name);
         pRad->detailedState = CM_RAD_DOWN;
-    } else if(wld_rad_nl80211_getChannel(pRad, &currChanSpec) < SWL_RC_OK) {
+    } else if(pRad->pFA->mfn_wrad_getChanspec(pRad, &currChanSpec) < SWL_RC_OK) {
         SAH_TRACEZ_INFO(ME, "%s: has no available channel", pRad->Name);
         pRad->detailedState = CM_RAD_DOWN;
     } else if(!wld_channel_is_band_usable(currChanSpec)) {
@@ -696,6 +696,10 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
         wld_rad_doCommitIfUnblocked(pRad);
     }
     return SWL_RC_OK;
+}
+
+swl_rc_ne wifiGen_rad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpec) {
+    return wld_rad_nl80211_getChannel(pRad, pChSpec);
 }
 
 uint32_t s_writeAntennaCtrl(T_Radio* pRad, com_dir_e comdir) {
