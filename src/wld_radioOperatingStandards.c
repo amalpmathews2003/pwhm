@@ -85,6 +85,8 @@ amxd_status_t _wld_rad_validateOperatingStandards_pvf(amxd_object_t* object _UNU
                                                       const amxc_var_t* const args,
                                                       amxc_var_t* const retval _UNUSED,
                                                       void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     amxd_status_t status = amxd_status_invalid_value;
     T_Radio* pRadio = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pRadio, amxd_status_ok, ME, "No radio mapped");

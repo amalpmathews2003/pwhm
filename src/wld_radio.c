@@ -274,6 +274,8 @@ amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
                                            const amxc_var_t* const args,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     T_Radio* pRad = (T_Radio*) object->priv;
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     /*
@@ -465,6 +467,8 @@ amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* obje
                                                              const amxc_var_t* const args,
                                                              amxc_var_t* const retval _UNUSED,
                                                              void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     amxd_status_t status = amxd_status_invalid_value;
     T_Radio* pRad = (T_Radio*) object->priv;
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
@@ -750,6 +754,8 @@ amxd_status_t _wld_rad_validateTxPower_pvf(amxd_object_t* object,
                                            const amxc_var_t* const args,
                                            amxc_var_t* const retval _UNUSED,
                                            void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     T_Radio* pRad = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     int8_t currentValue = amxc_var_dyncast(int8_t, &param->value);
@@ -1020,6 +1026,8 @@ amxd_status_t _wld_rad_validateIEEE80211hEnabled_pvf(amxd_object_t* object _UNUS
                                                      const amxc_var_t* const args,
                                                      amxc_var_t* const retval _UNUSED,
                                                      void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     T_Radio* pRad = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     bool flag = amxc_var_dyncast(bool, args);
@@ -1090,6 +1098,8 @@ amxd_status_t _wld_rad_validateImplicitBeamForming_pvf(amxd_object_t* object _UN
                                                        const amxc_var_t* const args,
                                                        amxc_var_t* const retval _UNUSED,
                                                        void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     amxd_status_t status = amxd_status_invalid_value;
     T_Radio* pRad = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
@@ -1132,6 +1142,8 @@ amxd_status_t _wld_rad_validateExplicitBeamForming_pvf(amxd_object_t* object _UN
                                                        const amxc_var_t* const args,
                                                        amxc_var_t* const retval _UNUSED,
                                                        void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     amxd_status_t status = amxd_status_invalid_value;
     T_Radio* pRad = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
@@ -1424,6 +1436,8 @@ amxd_status_t _wld_rad_validateOperatingFrequencyBand_pvf(amxd_object_t* object 
                                                           const amxc_var_t* const args,
                                                           amxc_var_t* const retval _UNUSED,
                                                           void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     SAH_TRACEZ_IN(ME);
 
     const char* oname = amxd_object_get_name(object, AMXD_OBJECT_NAMED);

@@ -426,6 +426,7 @@ static bool s_doReloadApSecKey(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
     wld_ap_hostapd_reloadSecKey(pAP, "reloadSecKey");
+    ASSERTI_TRUE(pAP->enable && pRad->enable, true, ME, "%s: missing enable conds apE:%d radE:%d", pAP->alias, pAP->enable, pRad->enable);
     wld_ap_hostapd_updateBeacon(pAP, "updateBeacon");
     return true;
 }
@@ -433,6 +434,8 @@ static bool s_doReloadApSecKey(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
 static bool s_doUpdateBeacon(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    ASSERTI_TRUE(pAP->enable && pRad->enable, true, ME, "%s: missing enable conds apE:%d radE:%d", pAP->alias, pAP->enable, pRad->enable);
+    SAH_TRACEZ_INFO(ME, "%s: start/update beaconing", pAP->alias);
     wld_ap_hostapd_updateBeacon(pAP, "updateBeacon");
     return true;
 }

@@ -84,7 +84,8 @@ int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bu
     assert_non_null(rad);
     assert_non_null(vap);
     assert_true(bufsize > 0);
-    return 0;
+    int vapIdx = ((1 + amxc_llist_it_index_of(&rad->it)) * 10) + wld_rad_countIfaces(rad);
+    return vapIdx;
 }
 
 swl_rc_ne wld_th_vap_createHook(T_AccessPoint* pAP) {

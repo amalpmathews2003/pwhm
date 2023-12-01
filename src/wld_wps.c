@@ -373,6 +373,7 @@ amxd_status_t _wld_wps_validateUUID_pvf(amxd_object_t* object _UNUSED,
                                         const amxc_var_t* const args,
                                         amxc_var_t* const retval _UNUSED,
                                         void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
     SAH_TRACEZ_IN(ME);
 
     amxd_status_t status = amxd_status_invalid_value;

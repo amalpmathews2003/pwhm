@@ -240,6 +240,7 @@ amxd_status_t _wld_ap_validateWEPKey_pvf(amxd_object_t* object _UNUSED,
                                          const amxc_var_t* const args,
                                          amxc_var_t* const retval _UNUSED,
                                          void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
     SAH_TRACEZ_IN(ME);
 
     T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
@@ -340,6 +341,7 @@ amxd_status_t _wld_ap_validatePreSharedKey_pvf(amxd_object_t* object _UNUSED,
                                                const amxc_var_t* const args,
                                                amxc_var_t* const retval _UNUSED,
                                                void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
     SAH_TRACEZ_IN(ME);
 
     amxd_status_t status = amxd_status_invalid_value;
@@ -363,6 +365,7 @@ amxd_status_t _wld_ap_validateKeyPassPhrase_pvf(amxd_object_t* object _UNUSED,
                                                 const amxc_var_t* const args,
                                                 amxc_var_t* const retval _UNUSED,
                                                 void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
     amxd_status_t status = amxd_status_invalid_value;
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
@@ -404,6 +407,7 @@ amxd_status_t _wld_ap_validateSaePassphrase_pvf(amxd_object_t* object _UNUSED,
                                                 const amxc_var_t* const args,
                                                 amxc_var_t* const retval _UNUSED,
                                                 void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
     amxd_status_t status = amxd_status_invalid_value;
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");

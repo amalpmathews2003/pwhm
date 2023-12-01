@@ -1606,6 +1606,7 @@ void wld_ad_initFastReconnectCounters(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     amxd_object_t* templateObj = amxd_object_findf(pAP->pBus, "AssociationCount.FastReconnectTypes");
     ASSERT_NOT_NULL(templateObj, , ME, "NULL");
+    ASSERTS_EQUALS(amxd_object_get_instance_count(templateObj), 0, , ME, "already initialized");
 
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(templateObj, &trans, , ME, "%s : trans init failure", pAP->name);

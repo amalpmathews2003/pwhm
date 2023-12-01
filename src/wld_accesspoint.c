@@ -390,6 +390,7 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
  */
 static bool s_finalizeApCreation(T_AccessPoint* pAP) {
     SAH_TRACEZ_IN(ME);
+    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "Finalize %s %p", pAP->name, pAP);
 
     ASSERTS_NOT_NULL(pAP, false, ME, "No mapped AP Ctx");
@@ -485,6 +486,11 @@ static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     SAH_TRACEZ_INFO(ME, "%s: ssidRef(%s)", oname, ssidRef);
 
     amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
+    T_AccessPoint* pAP = object->priv;
+    if((pAP != NULL) && (pAP->pSSID != NULL) && (pAP->pSSID->pBus == pSsidObj) && (pAP->index > 0)) {
+        SAH_TRACEZ_NOTICE(ME, "%s: same reference ssid: no need for new finalization", oname);
+        return;
+    }
     ASSERT_EQUALS(_linkApSsid(object, pSsidObj), amxd_status_ok, , ME, "%s: fail to link Ap to SSID (%s)", oname, ssidRef);
 
     s_finalizeApCreation(object->priv);
@@ -640,6 +646,7 @@ amxd_status_t _wld_ap_validateIEEE80211rEnabled_pvf(amxd_object_t* object _UNUSE
                                                     const amxc_var_t* const args,
                                                     amxc_var_t* const retval _UNUSED,
                                                     void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
     T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
     ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "No AP mapped");
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
@@ -1695,6 +1702,8 @@ amxd_status_t _wld_ap_validateDiscoveryMethod_pvf(amxd_object_t* object,
                                                   const amxc_var_t* const args,
                                                   amxc_var_t* const retval _UNUSED,
                                                   void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     SAH_TRACEZ_IN(ME);
 
     amxd_status_t status = amxd_status_invalid_value;

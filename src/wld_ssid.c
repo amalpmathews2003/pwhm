@@ -560,6 +560,8 @@ amxd_status_t _wld_ssid_validateSSID_pvf(amxd_object_t* object _UNUSED,
                                          const amxc_var_t* const args,
                                          amxc_var_t* const retval _UNUSED,
                                          void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
     SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_status_invalid_value;
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
