@@ -95,6 +95,8 @@ typedef struct {
 
 FSM_STATE wld_rad_fsm(T_Radio* rad);
 swl_rc_ne wld_rad_fsm_reset(T_Radio* rad);
+void wld_rad_fsm_cleanFsmBits(T_Radio* rad);
+int wld_rad_fsm_clearFsmBitForAll(T_Radio* rad, int bitNr);
 
 void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
 

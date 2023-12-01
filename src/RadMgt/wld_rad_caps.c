@@ -102,10 +102,14 @@ int wld_rad_init_cap(T_Radio* pR) {
 }
 
 bool wld_rad_is_cap_enabled(T_Radio* pR, int capability) {
+    ASSERTS_NOT_NULL(pR, false, ME, "NULL");
+    ASSERTS_TRUE((capability >= 0) && (capability < pR->nrCapabilities), false, ME, "out of range");
     return pR->cap_status[capability].enable;
 }
 
 bool wld_rad_is_cap_active(T_Radio* pR, int capability) {
+    ASSERTS_NOT_NULL(pR, false, ME, "NULL");
+    ASSERTS_TRUE((capability >= 0) && (capability < pR->nrCapabilities), false, ME, "out of range");
     return pR->cap_status[capability].status;
 }
 

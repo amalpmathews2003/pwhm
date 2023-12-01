@@ -88,6 +88,7 @@ typedef struct wld_airStats T_Airstats;
 typedef struct wld_nasta T_NonAssociatedDevice;
 typedef struct wld_nasta T_MonitorDevice;
 typedef struct wld_radExt wld_radExt_t;
+typedef struct wld_apNeighbour T_ApNeighbour;
 
 typedef enum {
     COM_DIR_TRANSMIT,

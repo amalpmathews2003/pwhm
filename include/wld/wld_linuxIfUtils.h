@@ -218,4 +218,30 @@ int wld_linuxIfUtils_getIfIndex(int sock, char* intfName, int* pIfIndex);
  */
 int wld_linuxIfUtils_getIfIndexExt(char* intfName, int* pIfIndex);
 
+/*
+ * @brief update interface's hw mac address
+ * and toggle the interface if needed
+ *
+ * @param sock socket to kernel
+ * @param intfName interface name
+ * @param macAddress mac address in binary format
+ *
+ * @param 0 in case of success
+ *        <0 (errno) in case of error
+ */
+int wld_linuxIfUtils_updateMac(int sock, char* intfName, swl_macBin_t* macAddress);
+
+/*
+ * @brief update interface's hw mac address
+ * and toggle the interface if needed
+ * (socket is created internally)
+ *
+ * @param intfName interface name
+ * @param macAddress mac address in binary format
+ *
+ * @param 0 in case of success
+ *        <0 (errno) in case of error
+ */
+int wld_linuxIfUtils_updateMacExt(char* intfName, swl_macBin_t* macAddress);
+
 #endif /* INCLUDE_WLD_WLD_LINUXIFUTILS_H_ */

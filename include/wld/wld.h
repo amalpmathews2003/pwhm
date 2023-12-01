@@ -600,7 +600,7 @@ typedef struct {
 } T_FSM;
 
 
-typedef struct {
+typedef struct wld_apNeighbour {
     amxc_llist_it_t it;
     char bssid[ETHER_ADDR_LEN];
     char ssid[SSID_NAME_LEN];
@@ -613,7 +613,7 @@ typedef struct {
     char r1khkey[KHKEY_MAX_LEN];
     bool colocatedAp;
     amxd_object_t* obj;
-} T_ApNeighbour;
+} wld_apNeighbour_t;
 
 /* Discovery methods to announce an AP
  *   - AP_DM_DISABLED: Disabled

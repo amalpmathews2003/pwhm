@@ -228,3 +228,45 @@ int wld_linuxIfUtils_getIfIndexExt(char* intfName, int* pIfIndex) {
     return ret;
 }
 
+int wld_linuxIfUtils_updateMac(int sock, char* intfName, swl_macBin_t* macAddress) {
+    ASSERT_FALSE(sock < 0, SWL_RC_INVALID_PARAM, ME, "invalid socket");
+    ASSERTS_STR(intfName, SWL_RC_INVALID_PARAM, ME, "Empty ifname");
+    ASSERTS_NOT_NULL(macAddress, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_macBin_t curMac;
+    int ret = wld_linuxIfUtils_getMac(sock, intfName, &curMac);
+    ASSERT_FALSE(ret < SWL_RC_OK, ret, ME, "%s: fail to get current mac", intfName);
+    if(memcmp(&curMac, macAddress, sizeof(curMac)) == 0) {
+        return SWL_RC_OK;
+    }
+    bool restoreUp = false;
+    ret = wld_linuxIfUtils_setMac(sock, intfName, macAddress);
+    if(ret < 0) {
+        ASSERT_EQUALS(ret, -EIO, SWL_RC_ERROR, ME, "%s:fail to set intf mac ["SWL_MAC_FMT "] (ret:%d)",
+                      intfName, SWL_MAC_ARG(macAddress->bMac), ret);
+        int state = wld_linuxIfUtils_getState(sock, intfName);
+        ASSERT_TRUE(state >= 0, SWL_RC_ERROR, ME, "%s: can not get interface state (ret:%d)", intfName, state);
+        ASSERTI_NOT_EQUALS(state, 0, SWL_RC_ERROR, ME, "%s: already down", intfName);
+        SAH_TRACEZ_WARNING(ME, "%s: not down: toggle to apply mac", intfName);
+        restoreUp = true;
+        wld_linuxIfUtils_setState(sock, intfName, 0);
+        ret = wld_linuxIfUtils_setMac(sock, intfName, macAddress);
+        if(ret < 0) {
+            SAH_TRACEZ_ERROR(ME, "%s:still fail to set intf mac ["SWL_MAC_FMT "] after switching off (%s) (ret:%d)",
+                             intfName, SWL_MAC_ARG(macAddress->bMac), intfName, ret);
+            wld_linuxIfUtils_setState(sock, intfName, 1);
+        }
+    }
+    if(restoreUp) {
+        wld_linuxIfUtils_setState(sock, intfName, 1);
+    }
+    return ret;
+}
+
+int wld_linuxIfUtils_updateMacExt(char* intfName, swl_macBin_t* macAddress) {
+    int sock = wld_linuxIfUtils_getNetSock();
+    ASSERT_FALSE(sock < 0, SWL_RC_ERROR, ME, "invalid socket");
+    int ret = wld_linuxIfUtils_updateMac(sock, intfName, macAddress);
+    close(sock);
+    return ret;
+}

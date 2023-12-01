@@ -123,6 +123,25 @@ static void s_cleanFsmBits(T_Radio* rad) {
     }
 }
 
+void wld_rad_fsm_cleanFsmBits(T_Radio* rad) {
+    s_cleanFsmBits(rad);
+}
+
+int wld_rad_fsm_clearFsmBitForAll(T_Radio* pR, int bitNr) {
+    T_AccessPoint* pAP;
+    T_EndPoint* pEP;
+
+    wld_rad_forEachAp(pAP, pR) {
+        clearBitLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, bitNr);
+    }
+
+    wld_rad_forEachEp(pEP, pR) {
+        clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, bitNr);
+    }
+
+    return clearBitLongArray(pR->fsmRad.FSM_AC_BitActionArray, FSM_BW, bitNr);
+}
+
 /**
  * This function shall update the radio FSM_CSC bit array. It shall set it
  * to the OR of the Radio FSM_BA, VAP FSM_BA and Endpoint FSM_BA. If there are then
