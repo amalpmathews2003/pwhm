@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.13.0 - 2023-12-01(10:28:43 +0000)
+
+### Other
+
+- add new public util APIs for vendor modules
+
 ## Release v5.12.1 - 2023-12-01(09:29:17 +0000)
 
 ### Other
