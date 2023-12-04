@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.14.1 - 2023-12-04(13:06:35 +0000)
+
+### Other
+
+- auto calc rad baseMacAddress from env vars
+
 ## Release v5.14.0 - 2023-12-04(09:47:55 +0000)
 
 ### Other
