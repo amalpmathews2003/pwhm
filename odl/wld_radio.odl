@@ -366,9 +366,8 @@ define probelist_t{
 		/** <p>SoftAtHome parameter. This is used for configuring a
 		 *  MAC address on thr RADIO interface. It's important to know
 		 *  that it can only be used before the VAP's are created! </p>*/
-		string BaseMACAddress {
-			default "$(WAN_ADDR)";
-		}
+		string BaseMACAddress;
+
 		/** <p>A non-volatile handle used to reference this instance.
 		 *  Alias provides a mechanism for an ACS to label this
 		 *  instance for future reference. An initial unique value

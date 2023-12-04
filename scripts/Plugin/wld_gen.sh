@@ -6,14 +6,12 @@ MAX_SIGTERM_RETRIES=3
 
 prevent_netifd_to_configure_wireless()
 {
-    if [ -e "/etc/config/wireless" ]; then
-        for i in $(uci -q show wireless | grep wifi-device | cut -d '=' -f1 | cut -d '.' -f2); do
-            uci -q del wireless.$i
-        done
-        echo "# Wireless is managed by prplMesh Wireless Hardware Manager" >> /etc/config/wireless
-        echo "# this is Backup of previous configuration that was available at /etc/config/wireless" >> /etc/config/wireless
-        mv /etc/config/wireless /etc/config/netifd.wireless.backup
-    fi
+    entries=$(uci -q show wireless 2> /dev/null | grep -e "wifi-iface" -e "wifi-device" | cut -d '=' -f1 | cut -d '.' -f2) && [ -n "$entries" ] || return
+    for i in $entries; do
+        uci -q del wireless.$i
+    done
+    uci -q commit wireless
+    logger -t $name -p daemon.warn "Wireless is managed by prplMesh Wireless Hardware Manager"
 }
 
 get_base_wan_address()
@@ -23,6 +21,10 @@ get_base_wan_address()
         set -a
         . /etc/environment 2> /dev/null
         if [ -n "$WAN_ADDR" ]; then
+            return
+        fi
+        if [ -n "$BASEMACADDRESS" ]; then
+            export WAN_ADDR="$BASEMACADDRESS"
             return
         fi
     fi
