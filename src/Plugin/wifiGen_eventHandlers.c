@@ -95,7 +95,9 @@ static const char* s_fwdIfaceStdWpaCtrlEventsList[] = {
     "CTRL-EVENT-EAP-TIMEOUT-FAILURE",
     // WPA EAP failure2/timeout2 events while using an external RADIUS server
     "CTRL-EVENT-EAP-FAILURE2",
-    "CTRL-EVENT-EAP-TIMEOUT-FAILURE2"
+    "CTRL-EVENT-EAP-TIMEOUT-FAILURE2",
+    "BEACON-REQ-TX-STATUS",
+    "BEACON-RESP-RX"
 };
 
 /* Table of standard wpactrl radio events to be forwarded to other applications */
@@ -138,11 +140,11 @@ static void s_wpaCtrlIfaceStdEvt(void* userData, char* ifName, char* eventName, 
         object = pEP->pBus;
     }
 
-    ASSERT_NOT_NULL(object, , ME, "NULL");
+    ASSERTS_NOT_NULL(object, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: received wpaCtrl iface standard event %s", ifName, eventName);
 
     s_notifyWpaCtrlEvent(object, ifName, eventName, s_fwdIfaceStdWpaCtrlEventsList,
-                         SWL_ARRAY_SIZE(s_fwdRadioStdWpaCtrlEventsList), msgData);
+                         SWL_ARRAY_SIZE(s_fwdIfaceStdWpaCtrlEventsList), msgData);
 }
 
 static void s_wpaCtrlRadioStdEvt(void* userData, char* ifName, char* eventName, char* msgData) {
@@ -152,7 +154,7 @@ static void s_wpaCtrlRadioStdEvt(void* userData, char* ifName, char* eventName, 
 
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
 
     ASSERTS_TRUE(swl_str_matches(pRad->Name, ifName), , ME, "invalid ifName %s", ifName);
 
