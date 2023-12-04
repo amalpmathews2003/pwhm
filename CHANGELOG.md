@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.14.0 - 2023-12-04(09:47:55 +0000)
+
+### Other
+
+- - handle and notify RRM beacon response and request status events
+
 ## Release v5.13.0 - 2023-12-01(10:28:43 +0000)
 
 ### Other
