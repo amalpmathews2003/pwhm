@@ -20,15 +20,15 @@ get_base_wan_address()
     if [ -e "/etc/environment" ]; then
         set -a
         . /etc/environment 2> /dev/null
-        if [ -n "$WAN_ADDR" ]; then
-            return
-        fi
-        if [ -n "$BASEMACADDRESS" ]; then
+        if [ -z "$WAN_ADDR" -a -n "$BASEMACADDRESS" ]; then
             export WAN_ADDR="$BASEMACADDRESS"
-            return
         fi
+        if [ -z "$WLAN_ADDR" -a -n "$BASEMACADDRESS_PLUS_1" ]; then
+            export WLAN_ADDR="$BASEMACADDRESS_PLUS_1"
+        fi
+        [ -z "$WLAN_ADDR" ] || return
     fi
-    export WAN_ADDR=$(cat /sys/class/net/br-lan/address 2> /dev/null)
+    export WLAN_ADDR=$(cat /sys/class/net/br-lan/address 2> /dev/null)
 }
 
 kill_process()

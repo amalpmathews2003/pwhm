@@ -165,10 +165,10 @@ bool wld_plugin_start() {
 
     // Set BaseMACAddress
     const char* MACStr = getenv("WLAN_ADDR"); /*backw compatible: */
-    if(!MACStr || (MACStr[0] == '\0')) {
+    if(!swl_mac_charIsValidStaMac((swl_macChar_t*) MACStr)) {
         MACStr = getenv("WAN_ADDR");
     }
-    if(MACStr) {
+    if(swl_mac_charIsValidStaMac((swl_macChar_t*) MACStr)) {
         SWL_MAC_CHAR_TO_BIN(&sWanAddr, MACStr);
     } else {
         SAH_TRACEZ_ERROR(ME, "getenv(\"WLAN_ADDR\");failed and getenv(\"WAN_ADDR\");failed ");
