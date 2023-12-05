@@ -1937,6 +1937,19 @@ define probelist_t{
 			}
 
 			/**
+			 * IEEE Channel number to be used at boot.
+			 * Only applied when AutoChannelEnable is active.
+			 * Possible value :
+			 *    -1: deactivated, not considered at boot
+			 *     0: use default internal channel
+			 * <NUM>: Valid 20MHz channel number used at boot.
+			 */
+			%persistent int32 AcsBootChannel {
+				on action validate call wld_chanmgt_validateAcsBootChannel_pvf;
+				default -1;
+			}
+
+			/**
 			 * Background DFS clearing feature
 			 * Based on chipset vendor capabilities, BgDfs will try to clear all DFS channels
 			 * and flag them as available for CSM.

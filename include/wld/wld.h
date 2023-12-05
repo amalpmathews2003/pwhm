@@ -1436,6 +1436,7 @@ struct WLD_RADIO {
     uint16_t totalNrCurrentChanspecChanges;                 /* Total number of current chanspec changes */
     uint16_t channelChangeCounters[CHAN_REASON_MAX];        /* Counter for channel changes */
     uint32_t channelChangeListSize;                         /* Maximum number of channel changes entries */
+    int32_t acsBootChannel;                                 /* IEEE Channel number to be used at boot, for the first channel set */
     amxc_llist_t channelChangeList;                         /* List of channel changes */
     wld_rad_bwSelectMode_e autoBwSelectMode;                /* channel bandwidth pushed for a fixed channel */
     bool obssCoexistenceEnabled;                            /* Enable the coexistence Bandwidth */

@@ -143,6 +143,14 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     swl_mapChar_add(radConfigMap, "driver", "nl80211");
     swl_mapChar_add(radConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
     swl_chanspec_t tgtChspec = wld_chanmgt_getTgtChspec(pRad);
+
+    /* force AcsBootChannel when Radio is down to the next up */
+    if(!wld_rad_isUpExt(pRad) && pRad->autoChannelEnable && (pRad->acsBootChannel != -1)) {
+        swl_freqBand_e f = wld_rad_getFreqBand(pRad);
+        tgtChspec.channel = pRad->acsBootChannel ? : swl_channel_defaults[f];
+        tgtChspec.bandwidth = swl_bandwidth_defaults[f];
+    }
+
     swl_channel_t tgtChan = tgtChspec.channel;
     swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);
     swl_mapCharFmt_addValInt32(radConfigMap, "op_class", swl_chanspec_getOperClass(&pRad->targetChanspec.chanspec));

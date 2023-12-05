@@ -600,6 +600,15 @@ static void s_setChannelChangeLogSize_pwf(void* priv _UNUSED, amxd_object_t* obj
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setAcsBootChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    pR->acsBootChannel = amxc_var_dyncast(int32_t, newValue);
+    SAH_TRACEZ_WARNING(ME, "%s: Update ACS Boot channel to %d", pR->Name, pR->acsBootChannel);
+    SAH_TRACEZ_OUT(ME);
+}
+
 /**
  * Ensure current channels is properly filled in with default.
  */
@@ -694,13 +703,33 @@ void wld_chanmgt_cleanup(T_Radio* pRad) {
 }
 
 SWLA_DM_HDLRS(sChanMgtDmHdlrs,
-              ARR(SWLA_DM_PARAM_HDLR("ChangeLogSize", s_setChannelChangeLogSize_pwf)));
+              ARR(SWLA_DM_PARAM_HDLR("ChangeLogSize", s_setChannelChangeLogSize_pwf),
+                  SWLA_DM_PARAM_HDLR("AcsBootChannel", s_setAcsBootChannel_pwf)));
 
 void _wld_chanmgt_setConf_ocf(const char* const sig_name,
                               const amxc_var_t* const data,
                               void* const priv) {
     swla_dm_procObjEvtOfLocalDm(&sChanMgtDmHdlrs, sig_name, data, priv);
 }
+
+amxd_status_t _wld_chanmgt_validateAcsBootChannel_pvf(amxd_object_t* object,
+                                                      amxd_param_t* param _UNUSED,
+                                                      amxd_action_t reason _UNUSED,
+                                                      const amxc_var_t* const args,
+                                                      amxc_var_t* const retval _UNUSED,
+                                                      void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_singleton, amxd_status_ok, ME, "obj is not singleton");
+    int bootChannel = amxc_var_dyncast(int32_t, args);
+    ASSERTI_FALSE((bootChannel < -1) || (bootChannel > 255), amxd_status_invalid_value, ME, "invalid bootChannel %d", bootChannel);
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    ASSERTI_TRUE(pRad->hasDmReady, amxd_status_ok, ME, "%s: radio config not yet fully loaded", pRad->Name);
+    ASSERTI_TRUE(wld_rad_hasChannel(pRad, bootChannel), amxd_status_invalid_value, ME, "%s: not supported bootChannel %d", pRad->Name, bootChannel);
+    return amxd_status_ok;
+}
+
+
 
 void wld_chanmgt_init(T_Radio* pR) {
     pR->callIdReqChanspec = 0;
