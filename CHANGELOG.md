@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.15.0 - 2023-12-05(09:43:17 +0000)
+
+### Other
+
+- load var env for WLAN_ADDR
+
 ## Release v5.14.1 - 2023-12-04(13:06:35 +0000)
 
 ### Other
