@@ -259,8 +259,6 @@ static void s_wpsFailEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char
     CALL_INTF_NA(pInterface, fWpsFailMsg);
 }
 
-
-
 static void s_wpsCredReceivedEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
     T_WPSCredentials creds;
     memset(&creds, 0, sizeof(creds));
@@ -360,6 +358,11 @@ static swl_rc_ne s_freqParamToChanSpec(char* params, const char* key, swl_chansp
     pChanSpec->band = chanSpec.band;
     return SWL_RC_OK;
 }
+
+swl_rc_ne wld_wpaCtrl_freqParamToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
+    return s_freqParamToChanSpec(params, key, pChanSpec);
+}
+
 static swl_rc_ne s_chWidthDescToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
     ASSERTS_STR(params, SWL_RC_INVALID_PARAM, ME, "Empty");
     ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -371,6 +374,11 @@ static swl_rc_ne s_chWidthDescToChanSpec(char* params, const char* key, swl_chan
     pChanSpec->bandwidth = *pBwEnu;
     return SWL_RC_OK;
 }
+
+swl_rc_ne wld_wpaCtrl_chWidthDescToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
+    return s_chWidthDescToChanSpec(params, key, pChanSpec);
+}
+
 static swl_rc_ne s_chWidthIdToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
     ASSERTS_STR(params, SWL_RC_INVALID_PARAM, ME, "Empty");
     ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -381,6 +389,10 @@ static swl_rc_ne s_chWidthIdToChanSpec(char* params, const char* key, swl_chansp
     ASSERTS_NOT_NULL(pBwEnu, SWL_RC_ERROR, ME, "unknown channel width id (%d)", chWId);
     pChanSpec->bandwidth = *pBwEnu;
     return SWL_RC_OK;
+}
+
+swl_rc_ne wld_wpaCtrl_chWidthIdToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
+    return s_chWidthIdToChanSpec(params, key, pChanSpec);
 }
 
 static void s_chanSwitchStartedEvtCb(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {

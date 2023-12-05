@@ -233,4 +233,22 @@ bool wld_wpaCtrl_getValueIntExt(const char* pData, const char* pKey, int32_t* pV
  */
 bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep, char** pEvtName, char** pEvtArgs);
 
+/*
+ * @brief public api to convert channel frequency from wpactrl msg (from hostapd/wpasupp) into swl chanspec struct
+ * param key string may vary with events
+ */
+swl_rc_ne wld_wpaCtrl_freqParamToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec);
+
+/*
+ * @brief public api to convert channel width description from wpactrl msg (from hostapd/wpasupp) into swl chanspec struct
+ * param key string may vary with events
+ */
+swl_rc_ne wld_wpaCtrl_chWidthDescToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec);
+
+/*
+ * @brief public api to convert channel width ID from wpactrl msg (from hostapd/wpasupp) into swl chanspec struct
+ * param key string may vary with events
+ */
+swl_rc_ne wld_wpaCtrl_chWidthIdToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec);
+
 #endif /* __WLD_WPA_CTRL_EVENTS_H__ */
