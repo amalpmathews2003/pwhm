@@ -516,6 +516,21 @@ static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
     return true;
 }
 
+static bool s_doSetEpMAC(T_EndPoint* pEP, T_Radio* pRadio) {
+    ASSERT_NOT_NULL(pEP, true, ME, "NULL");
+    T_SSID* pSSID = pEP->pSSID;
+    ASSERT_NOT_NULL(pSSID, true, ME, "NULL");
+    ASSERT_NOT_NULL(pRadio, true, ME, "NULL");
+    swl_macBin_t* mac = (swl_macBin_t*) pSSID->MACAddress;
+    ASSERT_FALSE(swl_mac_binIsNull(mac), true, ME, "%s: null mac", pEP->Name);
+    SAH_TRACEZ_WARNING(ME, "%s: set endpoint mac "SWL_MAC_FMT, pEP->Name, SWL_MAC_ARG(pSSID->MACAddress));
+    if(wld_linuxIfUtils_updateMac(wld_rad_getSocket(pRadio), pEP->Name, mac) < 0) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to set ep intf mac ["SWL_MAC_FMT "]",
+                         pEP->Name, SWL_MAC_ARG(pSSID->MACAddress));
+    }
+    return true;
+}
+
 static bool s_doConnectedEp(T_EndPoint* pEP, T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: connected endpoint", pEP->Name);
     if((pEP->connectionStatus == EPCS_CONNECTED) && wifiGen_hapd_isRunning(pRad)) {
@@ -643,6 +658,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_MOD_HOSTAPD), .doRadFsmAction = s_doConfHostapd},
     {FSM_ACTION(GEN_FSM_MOD_WPASUPP), .doEpFsmAction = s_doConfWpaSupp},
     {FSM_ACTION(GEN_FSM_RELOAD_AP_SECKEY), .doVapFsmAction = s_doReloadApSecKey},
+    {FSM_ACTION(GEN_FSM_MOD_EP_MACADDR), .doEpFsmAction = s_doSetEpMAC},
     {FSM_ACTION(GEN_FSM_UPDATE_BEACON), .doVapFsmAction = s_doUpdateBeacon},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_UPDATE_WPASUPP), .doEpFsmAction = s_doReloadWpaSupp},

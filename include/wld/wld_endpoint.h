@@ -101,4 +101,9 @@ T_EndPoint* wld_endpoint_fromIt(amxc_llist_it_t* it);
 
 T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, amxd_object_t* object);
 void wld_endpoint_destroy(T_EndPoint* pEP);
+/*
+ * @brief finalize endpoint creation, by creation its interface
+ * If already set, then interface will be re-created
+ */
+swl_rc_ne wld_endpoint_finalizeCreation(T_EndPoint* pEP);
 #endif /* __WLD_ENDPOINT_H__ */

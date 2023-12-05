@@ -623,9 +623,11 @@ static void s_setMacAddress_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
             SAH_TRACEZ_INFO(ME, "[%s] Accesspoint Mac Address : %s", pAP->alias, pMacStr);
             memcpy(pSSID->BSSID, mac.bMac, ETHER_ADDR_LEN);
             pAP->pFA->mfn_wvap_bssid(NULL, pAP, (unsigned char*) pMacStr, ETHER_ADDR_STR_LEN, SET);
+            wld_autoCommitMgr_notifyVapEdit(pAP);
         } else if((pEP != NULL) && debugIsEpPointer(pEP) && (pEP->pSSID == pSSID)) {
             SAH_TRACEZ_INFO(ME, "[%s] Endpoint Mac Address : %s", pEP->Name, pMacStr);
             pEP->pFA->mfn_wendpoint_set_mac_address(pEP);
+            wld_autoCommitMgr_notifyEpEdit(pEP);
         }
     }
 

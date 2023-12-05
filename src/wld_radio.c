@@ -360,15 +360,29 @@ static void s_setAPMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_finalizeEPs(T_Radio* pR) {
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pR) {
+        if(pEP->index == 0) {
+            wld_endpoint_finalizeCreation(pEP);
+        }
+    }
+}
+
 static void s_setSTAMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
     T_Radio* pR = wld_rad_fromObj(object);
     ASSERTS_NOT_NULL(pR, , ME, "NULL");
     bool STAMode = amxc_var_dyncast(bool, newValue);
+    ASSERT_NOT_EQUALS(pR->isSTA, STAMode, , ME, "same value");
     SAH_TRACEZ_INFO(ME, "%s: set STA_Mode %d", pR->Name, STAMode);
     pR->pFA->mfn_wrad_stamode(pR, STAMode, SET);
     wld_autoCommitMgr_notifyRadEdit(pR);
+    //just need to check the complementary condition for EP interface finalization
+    if(pR->isSTASup) {
+        swla_delayExec_add((swla_delayExecFun_cbf) s_finalizeEPs, pR);
+    }
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -406,10 +420,13 @@ static void s_setStaSupMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     T_Radio* pR = wld_rad_fromObj(object);
     ASSERTS_NOT_NULL(pR, , ME, "NULL");
     bool StaSupMode = amxc_var_dyncast(bool, newValue);
+    ASSERT_NOT_EQUALS(pR->isSTASup, StaSupMode, , ME, "same value");
     SAH_TRACEZ_INFO(ME, "%s: set STASup_Mode %d", pR->Name, StaSupMode);
     pR->isSTASup = StaSupMode;
     pR->fsmRad.FSM_SyncAll = TRUE;
     wld_autoCommitMgr_notifyRadEdit(pR);
+    //just need to check the complementary condition for EP interface finalization
+    swla_delayExec_add((swla_delayExecFun_cbf) s_finalizeEPs, pR);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -3230,6 +3247,19 @@ bool wld_rad_hasOnlyActiveEP(T_Radio* pRad) {
     return !wld_rad_hasActiveVap(pRad);
 }
 
+/*
+ * @brief func checks if radio has endpoint as main interface
+ */
+bool wld_rad_hasMainEP(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        if((pEP->index >= 0) && (pEP->index == pRad->index)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void wld_rad_updateChannelsInUse(T_Radio* pRad) {
     swl_channel_t chanInUse[SWL_BW_CHANNELS_MAX] = {0};

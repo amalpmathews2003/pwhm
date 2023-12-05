@@ -1927,7 +1927,7 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
     char epIfName[IFNAMSIZ] = {0};
     int epIfIndex = -1;
     int ret = -1;
-    if(pRad->isSTASup && pRad->isSTA) {
+    if(pRad->isSTASup) {
         swl_str_copy(epIfName, sizeof(epIfName), pRad->Name);
         epIfIndex = pRad->index;
         int ret = pRad->pFA->mfn_wrad_addendpointif(pRad, epIfName, sizeof(epIfName));
@@ -1938,6 +1938,7 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
         SAH_TRACEZ_WARNING(ME, "set ep iface(%s) (ifIndex:%d) on radio(%s)", epIfName, epIfIndex, pRad->Name);
         swl_str_copy(pEP->Name, sizeof(pEP->Name), epIfName);
         pEP->index = epIfIndex;
+        pEP->toggleBssOnReconnect = (pEP->index == pRad->index);
     }
 
     ret = pRad->pFA->mfn_wendpoint_create_hook(pEP);
@@ -1949,7 +1950,11 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
     }
 
     /* Get defined paramater values from the default instance */
-    pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
+    char* epMac = amxd_object_get_cstring_t(pSSID->pBus, "MACAddress", NULL);
+    if(swl_mac_charIsValidStaMac((swl_macChar_t*) epMac)) {
+        pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
+    }
+    free(epMac);
 
     //delay sync AP and SSID Dm after all conf has been loaded
     swla_delayExec_add((swla_delayExecFun_cbf) s_syncEpSSIDDm, pEP);
@@ -1986,11 +1991,34 @@ static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     SAH_TRACEZ_INFO(ME, "%s: ssidRef(%s)", oname, ssidRef);
 
     amxd_object_t* pSsidObj = swla_object_getReferenceObject(object, ssidRef);
+    T_EndPoint* pEP = object->priv;
+    if((pEP != NULL) && (pEP->pSSID != NULL) && (pEP->pSSID->pBus == pSsidObj) && (pEP->index > 0)) {
+        SAH_TRACEZ_NOTICE(ME, "%s: same reference ssid: no need for new finalization", oname);
+        return;
+    }
+
     ASSERT_EQUALS(_linkEpSsid(object, pSsidObj), amxd_status_ok, , ME, "%s: fail to link Ep to SSID (%s)", oname, ssidRef);
 
     s_finalizeEpCreation(object->priv);
 
     SAH_TRACEZ_OUT(ME);
+}
+
+/*
+ * @brief finalize endpoint creation, by creation its interface
+ * If already set, then interface will be re-created
+ */
+swl_rc_ne wld_endpoint_finalizeCreation(T_EndPoint* pEP) {
+    SAH_TRACEZ_IN(ME);
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pEP->pSSID, SWL_RC_INVALID_STATE, ME, "NULL");
+    amxd_object_t* pSsidObj = pEP->pSSID->pBus;
+    const char* ssidRefName = amxd_object_get_name(pSsidObj, AMXD_OBJECT_NAMED);
+    s_deinitEP(pEP);
+    ASSERT_EQUALS(_linkEpSsid(pEP->pBus, pSsidObj), amxd_status_ok, SWL_RC_ERROR, ME, "%s: fail to link Ep to SSID (%s)", pEP->alias, ssidRefName);
+    ASSERT_TRUE(s_finalizeEpCreation(pEP), SWL_RC_ERROR, ME, "%s: fail to finalize ep creation", pEP->alias);
+    SAH_TRACEZ_OUT(ME);
+    return SWL_RC_OK;
 }
 
 amxd_status_t _EndPoint_debug(amxd_object_t* object,

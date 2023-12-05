@@ -107,8 +107,12 @@ swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
 
     SAH_TRACEZ_INFO(ME, "%s : Endpoint enable changed : [%d] --> [%d]", pEP->Name, pEP->enable, enable);
     pEP->enable = enable;
-    pRad->isSTA = (amxd_object_get_bool(pRad->pBus, "STA_Mode", NULL) || (pRad->isSTASup && pEP->enable));
-    if(pRad->isSTA) {
+    bool isMainIface = ((pEP->index >= 0) && (pEP->index == pRad->index));
+    pRad->isSTA = (amxd_object_get_bool(pRad->pBus, "STA_Mode", NULL) || (isMainIface && pRad->isSTASup && enable));
+    SAH_TRACEZ_INFO(ME, "ep %s/%d isMain(%d), rad %s/%d isSta(%d) isStaSupp(%d)",
+                    pEP->Name, pEP->index, isMainIface,
+                    pRad->Name, pRad->index, pRad->isSTA, pRad->isSTASup);
+    if(pRad->isSTASup && enable) {
         setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
     } else {
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
@@ -150,6 +154,13 @@ swl_rc_ne wifiGen_ep_bssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
         return SWL_RC_INVALID_STATE;
     }
     return wld_wpaSupp_ep_getBssid(pEP, bssid);
+}
+
+swl_rc_ne wifiGen_ep_setMacAddress(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_EP_MACADDR);
+    return SWL_RC_OK;
 }
 
 /**

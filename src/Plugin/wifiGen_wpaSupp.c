@@ -115,6 +115,7 @@ void wifiGen_wpaSupp_cleanup(T_EndPoint* pEP) {
 
 swl_rc_ne wifiGen_wpaSupp_startDaemon(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pEP->wpaSupp, SWL_RC_INVALID_STATE, ME, "%s: wpaSupp not initialized", pEP->Name);
     SAH_TRACEZ_WARNING(ME, "%s: Start wpa_supplicant", pEP->Name);
     char startArgs[128] = {0};
     swl_rc_ne rc = s_writeWpaSupArgsToBuf(startArgs, sizeof(startArgs), NULL, 0, pEP);

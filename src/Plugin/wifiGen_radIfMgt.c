@@ -269,12 +269,24 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     T_EndPoint* pEpExist = wld_rad_ep_from_name(pRad, epIfname);
     ASSERT_NULL(pEpExist, SWL_RC_ERROR, ME, "%s: already created EP[%s] with ifname(%s)", pRad->Name, pEpExist->alias, pEpExist->Name);
     swl_str_copy(buf, bufsize, epIfname);
-    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), (char*) epIfname, false);
-    wld_rad_nl80211_setSta(pRad);
-    wld_rad_nl80211_set4Mac(pRad, true);
+    if(pRad->isSTA) {
+        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), (char*) epIfname, false);
+        wld_rad_nl80211_setSta(pRad);
+        wld_rad_nl80211_set4Mac(pRad, true);
+    }
 
     /* Return the radio index number */
     return pRad->index;
+}
+
+swl_rc_ne wifiGen_rad_delendpointif(T_Radio* pRad _UNUSED, char* endpoint) {
+    ASSERT_STR(endpoint, SWL_RC_INVALID_PARAM, ME, "NULL");
+    int ifIndex = -1;
+    swl_rc_ne rc = wld_linuxIfUtils_getIfIndexExt(endpoint, &ifIndex);
+    ASSERTS_FALSE((rc < SWL_RC_OK) || (ifIndex <= 0), rc, ME, "no ifIndex for endpoint %s", endpoint);
+    ASSERT_NOT_EQUALS(pRad->index, ifIndex, SWL_RC_ERROR, ME, "%s: can not delete main rad iface", endpoint);
+    rc = wld_nl80211_delInterface(wld_nl80211_getSharedState(), ifIndex);
+    return rc;
 }
 
 int wifiGen_vap_bssid(T_Radio* pRad, T_AccessPoint* pAP, unsigned char* buf, int bufsize, int set) {

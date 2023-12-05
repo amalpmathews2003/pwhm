@@ -79,6 +79,7 @@ typedef enum {
     GEN_FSM_MOD_HOSTAPD,          /* Write config of hostapd */
     GEN_FSM_MOD_WPASUPP,          /* Write config of wpa_supplicant */
     GEN_FSM_RELOAD_AP_SECKEY,     /* reload AP security secret key */
+    GEN_FSM_MOD_EP_MACADDR,       /* apply ep mac address */
     GEN_FSM_UPDATE_BEACON,        /* Start/Refresh AP Beacon */
     GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
     GEN_FSM_UPDATE_WPASUPP,       /* Update wpa_supplicant */

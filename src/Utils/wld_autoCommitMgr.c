@@ -103,7 +103,8 @@ void s_startRadioAutoCommit(T_Radio* pRad) {
  */
 void wld_autoCommitMgr_notifyRadEdit(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERTI_TRUE(areBitsSetLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW), , ME, "%s: not pending", pRad->Name);
+    bool anyChange = pRad->fsmRad.FSM_SyncAll || areBitsSetLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW);
+    ASSERTI_TRUE(anyChange, , ME, "%s: not pending", pRad->Name);
     s_startRadioAutoCommit(pRad);
 }
 
@@ -132,7 +133,8 @@ static void s_radDestroy(T_Radio* pRad) {
  */
 void wld_autoCommitMgr_notifyVapEdit(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    ASSERTI_TRUE(areBitsSetLongArray(pAP->fsm.FSM_BitActionArray, 2), , ME, "%s: not pending", pAP->alias);
+    bool anyChange = pAP->fsm.FSM_SyncAll || areBitsSetLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW);
+    ASSERTI_TRUE(anyChange, , ME, "%s: not pending", pAP->alias);
     s_startRadioAutoCommit(pAP->pRadio);
 }
 
@@ -141,7 +143,8 @@ void wld_autoCommitMgr_notifyVapEdit(T_AccessPoint* pAP) {
  */
 void wld_autoCommitMgr_notifyEpEdit(T_EndPoint* pEp) {
     ASSERT_NOT_NULL(pEp, , ME, "NULL");
-    ASSERTI_TRUE(areBitsSetLongArray(pEp->fsm.FSM_BitActionArray, 2), , ME, "%s: not pending", pEp->alias);
+    bool anyChange = pEp->fsm.FSM_SyncAll || areBitsSetLongArray(pEp->fsm.FSM_BitActionArray, FSM_BW);
+    ASSERTI_TRUE(anyChange, , ME, "%s: not pending", pEp->alias);
     s_startRadioAutoCommit(pEp->pRadio);
 }
 
