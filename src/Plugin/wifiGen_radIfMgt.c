@@ -198,7 +198,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     ASSERT_FALSE(apIndex >= maxNrAp, WLD_ERROR_INVALID_STATE, ME, "%s: Max Number of BSS reached : %d", pRad->Name, maxNrAp);
     ASSERT_FALSE(wld_rad_getSocket(pRad) < 0, WLD_ERROR_INVALID_STATE, ME, "%s: Unable to create socket", pRad->Name);
 
-    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 0);
+    pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
 
     //check need for updating base mac when adding next interface
     if(apIndex > 0) {
@@ -222,8 +222,9 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
                 wld_ssid_setBssid(tmpAp->pSSID, &macBin);
                 tmpAp->pFA->mfn_sync_ssid(tmpAp->pSSID->pBus, tmpAp->pSSID, SET);
                 wifiGen_vap_setBssid(tmpAp);
+                //sched to reapply via fsm
+                tmpAp->pFA->mfn_wvap_bssid(pRad, tmpAp, (uint8_t*) swl_typeMacBin_toBuf32Ref(&macBin).buf, SWL_MAC_CHAR_LEN, SET);
             }
-            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_BSSID);
         }
     }
 
@@ -239,7 +240,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     /* Set network address! */
     wifiGen_vap_setBssid(pAP);
 
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
+    pRad->pFA->mfn_wrad_enable(pRad, pRad->enable, SET);
 
     SAH_TRACEZ_INFO(ME, "%s: created interface %s (%s) index %d - %u",
                     pRad->Name, pAP->name, pAP->alias, pAP->index, apIndex);
