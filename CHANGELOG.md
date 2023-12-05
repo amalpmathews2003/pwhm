@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.15.1 - 2023-12-05(13:37:45 +0000)
+
+### Other
+
+- use fta call isof direct fsm sched when adding vap iface
+- chanmgt init with available chanspec from driver
+
 ## Release v5.15.0 - 2023-12-05(09:43:17 +0000)
 
 ### Other
