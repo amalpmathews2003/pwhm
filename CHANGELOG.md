@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.15.2 - 2023-12-05(15:38:09 +0000)
+
+### Other
+
+- fill endpoint iface name/mac of radio with enabled STASupported_Mode
+
 ## Release v5.15.1 - 2023-12-05(13:37:45 +0000)
 
 ### Other
