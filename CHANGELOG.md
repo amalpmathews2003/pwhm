@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.16.0 - 2023-12-06(15:08:35 +0000)
+
+### Other
+
+- - add AcsBootChannel parameter to Radio.
+
 ## Release v5.15.3 - 2023-12-06(08:06:55 +0000)
 
 ## Release v5.15.2 - 2023-12-05(15:38:09 +0000)
