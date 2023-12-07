@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.16.1 - 2023-12-07(13:23:13 +0000)
+
+### Other
+
+- install ep config
+
 ## Release v5.16.0 - 2023-12-06(15:08:35 +0000)
 
 ### Other
