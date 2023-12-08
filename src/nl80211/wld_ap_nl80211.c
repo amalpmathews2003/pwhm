@@ -120,6 +120,15 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     ASSERT_NOT_NULL(pStationInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
     pAD->RxBytes = pStationInfo->rxBytes;
     pAD->TxBytes = pStationInfo->txBytes;
+
+    int recent_packets_sent = (pStationInfo->txPackets - pAD->TxPacketCount);
+    int recent_packets_retries = (pStationInfo->txRetries - pAD->Tx_Retransmissions);
+    if(recent_packets_sent > 0) {
+        pAD->Retransmissions = SWL_MIN((recent_packets_retries * 100) / recent_packets_sent, 100);
+    } else {
+        pAD->Retransmissions = 0;
+    }
+
     pAD->RxPacketCount = pStationInfo->rxPackets;
     pAD->TxPacketCount = pStationInfo->txPackets;
     pAD->TxFailures = pStationInfo->txFailed;
