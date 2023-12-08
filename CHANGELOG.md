@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.16.3 - 2023-12-08(12:44:08 +0000)
+
+### Other
+
+- WiFi.AccessPoint.{x}.AssociatedDevice.{x}.Retransmission not updated
+
 ## Release v5.16.2 - 2023-12-08(11:37:25 +0000)
 
 ### Other
