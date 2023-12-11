@@ -1599,6 +1599,7 @@ struct S_SSID {
     void* vendorData;                         /* Additional vendor specific data */
     amxp_timer_t* enableSyncTimer;            /* Timer to keep the SSID and Intf enable synced */
     bool syncEnableToIntf;                    /* Whether the sync should be SSID to intf (true) or other way (false)*/
+    uint32_t bssIndex;                        /* interface creation order among all radio's interfaces */
 };
 
 typedef struct {

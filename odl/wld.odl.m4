@@ -147,6 +147,7 @@ m4_ifelse(DISABLE_PERSIST,y,``
                    "radCaps" = 200,
                    "radEvtH" = 200,
                    "radIfM" = 200,
+                   "radMacC" = 200,
                    "radOStd" = 200,
                    "radPrb" = 200,
                    "radStm" = 200,

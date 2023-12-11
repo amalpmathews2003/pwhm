@@ -69,6 +69,7 @@
 #include "wld_channel.h"
 #include "wld_radioOperatingStandards.h"
 #include "wld_extMod.h"
+#include "wld_rad_macCfg.h"
 
 typedef enum {
     WLD_RAD_CHANGE_INIT,

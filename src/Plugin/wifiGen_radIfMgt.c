@@ -76,71 +76,6 @@
 
 #define ME "genRadI"
 
-static int32_t s_getMacOffset(T_Radio* pRad, T_Radio* prevRad) {
-    uint32_t prevRadMaxBssConfig = prevRad->maxNrHwBss;
-    uint32_t prevRadNrBssReq = prevRad->macCfg.nrBssRequired;
-
-    if(prevRad->macCfg.useLocalBitForGuest) {
-        SAH_TRACEZ_INFO(ME, "%s: guest, use 1 offset for base", pRad->Name);
-        return 1;
-    }
-    if(prevRadNrBssReq == 0) {
-        SAH_TRACEZ_INFO(ME, "%s: prev no bss req known, assume max", pRad->Name);
-        return prevRadMaxBssConfig;
-    }
-    return SWL_MIN(prevRadMaxBssConfig, prevRadNrBssReq);
-}
-
-/*
- * shift Mbss base mac, if there is not enough available macs (starting from radio base mac) for secondary bss
- */
-static bool s_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss) {
-    uint8_t maxHwBss = pRad->maxNrHwBss;
-
-    if((reqBss == 0) || pRad->macCfg.useLocalBitForGuest) {
-        // No requirement or using guest, all is fine.
-        return false;
-    }
-
-    // calculate nr bss available, by checking last bit mask
-    uint8_t* mbssBaseMACAddr = pRad->mbssBaseMACAddr.bMac;
-    uint8_t bitMask = mbssBaseMACAddr[5] % maxHwBss;
-
-    uint32_t nrAvailable = maxHwBss - bitMask;
-    bool nextToCycle = (bitMask == maxHwBss - 1);
-    if((nrAvailable >= reqBss) || nextToCycle) {
-        return false;
-    }
-    uint8_t orBitMask = maxHwBss - 1; // MaxHwBss is always multiple of 2
-    mbssBaseMACAddr[5] |= orBitMask;
-    SAH_TRACEZ_WARNING(ME, "%s : shifting MBSS BASE MAC so max nr of BSS available, maxBss %u mask 0x%.2x " MAC_PRINT_FMT, pRad->Name, maxHwBss, orBitMask,
-                       MAC_PRINT_ARG(mbssBaseMACAddr));
-    return true;
-}
-
-static void s_updateRadBaseMac(T_Radio* pRad) {
-    amxc_llist_it_t* prevListIt = pRad->it.prev;
-    swl_macBin_t prevMacAddr;
-    memcpy(prevMacAddr.bMac, pRad->MACAddr, SWL_MAC_BIN_LEN);
-
-    if(pRad->macCfg.useBaseMacOffset) {
-        memcpy(pRad->MACAddr, wld_getWanAddr()->bMac, ETHER_ADDR_LEN);
-        swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, pRad->macCfg.baseMacOffset, -1);
-    } else if(prevListIt != NULL) {
-        T_Radio* prevRad = amxc_llist_it_get_data(prevListIt, T_Radio, it);
-        memcpy(pRad->MACAddr, prevRad->mbssBaseMACAddr.bMac, SWL_MAC_BIN_LEN);
-        swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, s_getMacOffset(pRad, prevRad), -1);
-    }
-    memcpy(pRad->mbssBaseMACAddr.bMac, pRad->MACAddr, SWL_MAC_BIN_LEN);
-
-    s_shiftMbssIfNotEnoughVaps(pRad, pRad->macCfg.nrBssRequired);
-    if(memcmp(pRad->MACAddr, prevMacAddr.bMac, SWL_MAC_BIN_LEN)) {
-        pRad->pFA->mfn_sync_radio(pRad->pBus, pRad, SET);
-    }
-
-    SAH_TRACEZ_INFO(ME, "%s: set MAC "SWL_MAC_FMT " %u %p", pRad->Name, SWL_MAC_ARG(pRad->MACAddr), pRad->macCfg.useBaseMacOffset, prevListIt);
-}
-
 int wifiGen_vap_setBssid(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_SSID* pSSID = pAP->pSSID;
@@ -195,14 +130,14 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     SAH_TRACEZ_INFO(ME, "%s: add vap - [%s] %u", pRad->Name, pAP->name, apIndex);
 
     int maxNrAp = pRad->maxNrHwBss;
-    ASSERT_FALSE(apIndex >= maxNrAp, WLD_ERROR_INVALID_STATE, ME, "%s: Max Number of BSS reached : %d", pRad->Name, maxNrAp);
-    ASSERT_FALSE(wld_rad_getSocket(pRad) < 0, WLD_ERROR_INVALID_STATE, ME, "%s: Unable to create socket", pRad->Name);
+    ASSERT_FALSE(apIndex >= maxNrAp, SWL_RC_INVALID_STATE, ME, "%s: Max Number of BSS reached : %d", pRad->Name, maxNrAp);
+    ASSERT_FALSE(wld_rad_getSocket(pRad) < 0, SWL_RC_INVALID_STATE, ME, "%s: Unable to create socket", pRad->Name);
 
     pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
 
     //check need for updating base mac when adding next interface
     if(apIndex > 0) {
-        bool changed = s_shiftMbssIfNotEnoughVaps(pRad, apIndex + 1);
+        bool changed = wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, apIndex + 1);
         if(changed) {
             SAH_TRACEZ_WARNING(ME, "%s: Shifting previous %u vap interfaces after mbss mac shift ", pRad->Name, (apIndex - pRad->isSTASup));
             //Brcm requires to re-apply the primary config's cur_etheraddr,
@@ -301,13 +236,13 @@ int wifiGen_vap_bssid(T_Radio* pRad, T_AccessPoint* pAP, unsigned char* buf, int
             ASSERT_TRUE(SWL_MAC_CHAR_TO_BIN(pSSID->BSSID, buf),
                         SWL_RC_ERROR, ME, "fail to convert mac(%s) len(%d)", buf, bufsize);
             setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_BSSID);
-            if(s_bssIndex(pAP) == 0) {
+            if(pSSID->bssIndex == 0) {
                 // if changing first VAP, all secondary vaps also must have their BSSID set.
                 setBitLongArray(pAP->pRadio->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_BSSID);
                 return SWL_RC_OK;
             }
         } else {
-            s_updateRadBaseMac(pRad);
+            wld_rad_macCfg_updateRadBaseMac(pRad);
             wld_linuxIfUtils_updateMac(wld_rad_getSocket(pRad), pRad->Name, (swl_macBin_t*) pRad->MACAddr);
         }
     } else {

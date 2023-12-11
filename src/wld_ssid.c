@@ -327,11 +327,7 @@ amxd_status_t _wld_ssid_setLowerLayers_pwf(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-/**
- * BSSID/MAC of pAP/pEP will be generated from interface Index (i.e rank) and from the number of MACAddresses
- * being available per configuration.
- */
-static void s_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin) {
+void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     ASSERT_NOT_NULL(pRad, , ME, "%s: No mapped radio", pSSID->Name);
     T_AccessPoint* pAP = pSSID->AP_HOOK;
@@ -339,53 +335,16 @@ static void s_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macB
     ASSERT_TRUE((pAP != NULL) || (pEP != NULL), , ME, "%s: No mapped AP/EP", pSSID->Name);
     const char* ifName = ((pAP != NULL) ? pAP->alias : pEP->Name);
     const char* addrType = ((pAP != NULL) ? "AP BSSID" : "EP MAC");
-
-    // Sync with the MAC created by BSSID!
-    // Create our Virtual MAC
-    uint32_t nrMaskBit = swl_bit32_getHighest(pRad->maxNrHwBss);
-
-    unsigned char* baseMacAddr = pRad->MACAddr;
-    if(index > 0) {
-        baseMacAddr = pRad->mbssBaseMACAddr.bMac;
-    }
-    memcpy(macBin->bMac, baseMacAddr, ETHER_ADDR_LEN);
-
-    uint8_t bitMask = baseMacAddr[5] % pRad->maxNrHwBss;
-
-    if((baseMacAddr[5] % pRad->maxNrHwBss) == pRad->maxNrHwBss - 1) {
-        nrMaskBit = -1;
-    } else if(bitMask + index >= pRad->maxNrHwBss) {
-        SAH_TRACEZ_ERROR(ME, "%s error has not enough iface MACs %u + %u >= %u. Cycling BSS",
-                         pRad->Name, index, bitMask, pRad->maxNrHwBss);
-    }
-
-    swl_mac_binAddVal(macBin, index, nrMaskBit);
-    //if mac shift occured, then skip generated mac matching the mbss base mac bitmask
-    //as bcrm drv verifies that there isn't a collision with any other bss configs (including primary bss).
-    if(memcmp(baseMacAddr, pRad->MACAddr, ETHER_ADDR_LEN) &&
-       ((macBin->bMac[5] % pRad->maxNrHwBss) >= (pRad->MACAddr[5] % pRad->maxNrHwBss))) {
-        swl_mac_binAddVal(macBin, 1, nrMaskBit);
-    }
-
-    /* IEEE standardized MAC address assignation on 6GHz and 5 1/2 bytes must be the same */
-    if(index && pRad->macCfg.useLocalBitForGuest && (pRad->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ)) {
-        macBin->bMac[0] |= 0x02;    // Set on guest interfaces the locally administered bit.
-        // Only allow offset when using local mac
-        swl_mac_binAddVal(macBin, pRad->macCfg.localGuestMacOffset * (1 + pRad->ref_index), -1);
-    }
-
-    SAH_TRACEZ_INFO(ME, "%s: gen %s "SWL_MAC_FMT " Base "SWL_MAC_FMT " maskBit %u, supBss %u",
-                    ifName, addrType,
-                    SWL_MAC_ARG(macBin->bMac), SWL_MAC_ARG(baseMacAddr), nrMaskBit, pRad->maxNrHwBss);
+    swl_rc_ne rc = wld_rad_macCfg_generateMac(pRad, index, macBin);
+    ASSERT_FALSE(rc < SWL_RC_OK, , ME, "%s: fail to generate %s", ifName, addrType);
+    SAH_TRACEZ_INFO(ME, "%s: gen %s "SWL_MAC_FMT "rank(%d)",
+                    ifName, addrType, SWL_MAC_ARG(macBin->bMac), index);
+    pSSID->bssIndex = index;
 }
 
 void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex, swl_macBin_t* macBin) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    s_generateMac(pRad, pAP->pSSID, apIndex, macBin);
-}
-
-void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin) {
-    s_generateMac(pRad, pSSID, index, macBin);
+    wld_ssid_generateMac(pRad, pAP->pSSID, apIndex, macBin);
 }
 
 void wld_ssid_setMac(T_SSID* pSSID, swl_macBin_t* macBin) {

@@ -47,6 +47,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					RadMgt/wld_rad_evtHandler.o\
 					RadMgt/wld_rad_scan.o\
 					RadMgt/wld_rad_delayMgr.o\
+					RadMgt/wld_rad_macCfg.o\
 					ApMgt/wld_ap_neighbours.o\
 					ApMgt/wld_ap_macfilter.o\
 					ApMgt/wld_ap_bss_transfer.o\

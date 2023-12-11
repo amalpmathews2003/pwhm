@@ -827,42 +827,6 @@ void _wld_rad_setDriverConfig_ocf(const char* const sig_name,
     swla_dm_procObjEvtOfLocalDm(&sDriverConfigDmHdlrs, sig_name, data, priv);
 }
 
-static void s_setMACConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
-    SAH_TRACEZ_IN(ME);
-    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: update mac config", pRad->Name);
-
-    pRad->macCfg.useBaseMacOffset = amxd_object_get_bool(object, "UseBaseMacOffset", NULL);
-    pRad->macCfg.useLocalBitForGuest = amxd_object_get_bool(object, "UseLocalBitForGuest", NULL);
-    pRad->macCfg.baseMacOffset = amxd_object_get_int64_t(object, "BaseMacOffset", NULL);
-    pRad->macCfg.localGuestMacOffset = amxd_object_get_int64_t(object, "LocalGuestMacOffset", NULL);
-    pRad->macCfg.nrBssRequired = amxd_object_get_uint32_t(object, "NrBssRequired", NULL);
-
-    //Update base mac when adding first interface, as we have all needed macConfig details
-    if(!wld_rad_countIfaces(pRad)) {
-        char macStr[SWL_MAC_CHAR_LEN] = {0};
-        // Apply the MAC address on the radio, update if needed inside vendor
-        SWL_MAC_BIN_TO_CHAR(macStr, pRad->MACAddr);
-        pRad->pFA->mfn_wvap_bssid(pRad, NULL, (unsigned char*) macStr, SWL_MAC_CHAR_LEN, SET);
-        // update macStr as macBin may be shifted inside vendor
-        SWL_MAC_BIN_TO_CHAR(macStr, pRad->MACAddr);
-        SAH_TRACEZ_WARNING(ME, "%s: vendor %s updated baseMac %s", pRad->Name, pRad->vendor->name, macStr);
-    }
-
-    wld_rad_doSync(pRad);
-
-    SAH_TRACEZ_OUT(ME);
-}
-
-SWLA_DM_HDLRS(sMACConfigDmHdlrs, ARR(), .objChangedCb = s_setMACConfig_ocf);
-
-void _wld_rad_setMACConfig_ocf(const char* const sig_name,
-                               const amxc_var_t* const data,
-                               void* const priv) {
-    swla_dm_procObjEvtOfLocalDm(&sMACConfigDmHdlrs, sig_name, data, priv);
-}
-
 static void s_setAntennaCtrl_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pR = wld_rad_fromObj(object);
