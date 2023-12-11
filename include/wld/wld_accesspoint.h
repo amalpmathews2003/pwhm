@@ -78,6 +78,25 @@ int wld_ap_initializeVendor(T_Radio* pR, T_AccessPoint* pAP, T_SSID* pSSID);
 int wld_ap_init(T_AccessPoint* pAP);
 void wld_ap_destroy(T_AccessPoint* pAP);
 
+typedef struct {
+    const char* mac;
+    int32_t reason;
+    int32_t result;
+} wld_ap_kickAction_t;
+
+typedef struct {
+    const char* mac;
+    const char* bssid;
+    wld_transferStaArgs_t* args;
+    swl_rc_ne result;
+} wld_ap_steerAction_t;
+
+typedef struct {
+    amxc_var_t* updates;
+    uint32_t nrUpdates;
+} wld_ap_rssiSampleAction_t;
+
+void wld_vap_sendActionEvent(T_AccessPoint* pAP, wld_vap_actionEvent_e actionEvent, void* data);
 void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set);
 void SetAPDefaults(T_AccessPoint* pAP, int idx);
 

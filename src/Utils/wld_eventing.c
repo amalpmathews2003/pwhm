@@ -89,16 +89,15 @@ static wld_event_queue_t rqueue_rad_onFrame = {.name = "evRadFrame"};
  * General lifecycle changes of AP. Does not include status changes => rqueue_vap_onStatus_change
  */
 static wld_event_queue_t rqueue_vap_onChange = {.name = "evApChange"};
-
+static wld_event_queue_t rqueue_vap_onAction = {.name = "evApAction"};
 static wld_event_queue_t rqueue_sta_onChange = {.name = "evStaChange"};
-
-
 static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
 
 wld_event_queue_t* gWld_queue_rad_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
-wld_event_queue_t* gWld_queue_vap_onStatusChange = NULL;  // Called when the status of the vap changes. @type wld_vap_status_change_event_t
-wld_event_queue_t* gWld_queue_vap_onChangeEvent = NULL;   // Called when vap structural changes, i.e. create / destroy. @type wld_vap_changeEvent_t
+wld_event_queue_t* gWld_queue_vap_onStatusChange = NULL; // Called when the status of the vap changes. @type wld_vap_status_change_event_t
+wld_event_queue_t* gWld_queue_vap_onChangeEvent = NULL;  // Called when vap structural or config changes, i.e. create / destroy. @type wld_vap_changeEvent_t
+wld_event_queue_t* gWld_queue_vap_onAction = NULL;       // General event queue, for vap actions, e.g. rssi eventing sample cation, sta kick, sta steer
 wld_event_queue_t* gWld_queue_rad_onScan_change = NULL;
 wld_event_queue_t* gWld_queue_rad_onChangeEvent = NULL;
 wld_event_queue_t* gWld_queue_rad_onFrameEvent = NULL;
@@ -122,6 +121,9 @@ void wld_event_init() {
 
     gWld_queue_vap_onStatusChange = &rqueue_vap_onStatus_change;
     amxc_llist_init(&gWld_queue_vap_onStatusChange->subscribers);
+
+    gWld_queue_vap_onAction = &rqueue_vap_onAction;
+    amxc_llist_init(&gWld_queue_vap_onAction->subscribers);
 
     gWld_queue_rad_onScan_change = &rqueue_rad_onScan_change;
     amxc_llist_init(&gWld_queue_rad_onScan_change->subscribers);

@@ -236,6 +236,15 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
                       params.operClass, params.channel, retries, ms_wait_time);
 
     swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_transfer_sta(pAP, &params);
+
+    wld_ap_steerAction_t action = {
+        .bssid = bssid,
+        .mac = mac,
+        .args = &params,
+        .result = cmdRetval
+    };
+    wld_vap_sendActionEvent(pAP, WLD_VAP_ACTION_STEER, &action);
+
     ASSERT_NOT_EQUALS(cmdRetval, SWL_RC_NOT_IMPLEMENTED, amxd_status_function_not_implemented, ME, "Function not supported");
     ASSERT_FALSE(cmdRetval < SWL_RC_OK, amxd_status_unknown_error, ME, "Error during execution");
     if(ms_wait_time > 0) {

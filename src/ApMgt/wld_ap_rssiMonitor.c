@@ -186,6 +186,13 @@ static void timeHandler(void* userdata) {
         wld_apRssiMon_sendStaHistoryAll(pAP);
     }
 
+    wld_ap_rssiSampleAction_t action = {
+        .nrUpdates = nrUpdates,
+        .updates = &myList
+    };
+
+    wld_vap_sendActionEvent(pAP, WLD_VAP_ACTION_RSSI_SAMPLE, &action);
+
     amxc_var_clean(&myList);
 }
 
@@ -623,6 +630,45 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
             amxc_var_clean(&myMap);
         }
     }
+}
+
+
+/**
+ * Return the sta sample that is the "x oldest sample". So giving 0 will provide the oldest sample, providing -1 will
+ * give the newest sample. Allowed range is -nr_valid_samples, nr_valid_samples -1. If not valid, NULL will be returned.
+ */
+wld_staHistory_t* wld_apRssiMon_getStaSampleIndexed(T_AccessPoint* pAP, T_AssociatedDevice* pAD, int32_t index) {
+    ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
+    ASSERTS_TRUE(pAP->rssiEventing.historyEnable, NULL, ME, "DISABLED");
+    ASSERTS_TRUE(pAD->AuthenticationState, NULL, ME, "No auth");
+    ASSERT_NOT_NULL(pAD->staHistory, NULL, ME, "NULL");
+
+
+    uint32_t historyLen = pAP->rssiEventing.historyLen;
+    uint8_t nbValidSample = pAD->staHistory->nr_valid_samples;
+    uint8_t targetIndex = 0;
+
+    if(index < 0) {
+        if(index < -1 * nbValidSample) {
+            return NULL;
+        }
+        if(nbValidSample == historyLen) {
+            targetIndex = (pAD->staHistory->index_last_sample + 1 + historyLen + index) % historyLen;
+        } else {
+            targetIndex = nbValidSample + index;
+        }
+    } else {
+        if(index >= nbValidSample) {
+            return NULL;
+        }
+        if(nbValidSample == historyLen) {
+            targetIndex = (pAD->staHistory->index_last_sample + 1 + historyLen + index) % historyLen;
+        } else {
+            targetIndex = index;
+        }
+    }
+
+    return &pAD->staHistory->samples[targetIndex];
 }
 
 void wld_apRssiMon_getStaHistory(T_AccessPoint* pAP, const unsigned char macAddress[ETHER_ADDR_LEN], amxc_var_t* myMap) {

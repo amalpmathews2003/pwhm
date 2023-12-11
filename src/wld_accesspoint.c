@@ -125,9 +125,17 @@ static void s_sendChangeEvent(T_AccessPoint* pAP, wld_vap_changeEvent_e changeTy
         .changeType = changeType,
         .data = data
     };
-
     wld_event_trigger_callback(gWld_queue_vap_onChangeEvent, &change);
 
+}
+
+void wld_vap_sendActionEvent(T_AccessPoint* pAP, wld_vap_actionEvent_e actionEvent, void* data) {
+    wld_vap_actionEvent_t change = {
+        .vap = pAP,
+        .changeType = actionEvent,
+        .data = data
+    };
+    wld_event_trigger_callback(gWld_queue_vap_onAction, &change);
 }
 
 T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj) {
@@ -1864,6 +1872,24 @@ void wld_ap_destroy(T_AccessPoint* pAP) {
 }
 
 
+static void s_kickSta(T_AccessPoint* pAP, const char* mac, int32_t reason) {
+    int result = -1;
+
+    if(reason < 0) {
+        result = pAP->pFA->mfn_wvap_kick_sta(pAP, (char*) mac, strlen(mac), SET);
+    } else {
+        result = pAP->pFA->mfn_wvap_kick_sta_reason(pAP, (char*) mac, strlen(mac), reason);
+    }
+
+    wld_ap_kickAction_t action = {
+        .mac = mac,
+        .reason = reason,
+        .result = result
+    };
+    wld_vap_sendActionEvent(pAP, WLD_VAP_ACTION_KICK, &action);
+
+}
+
 // This function will kick a STA with given MAC from the VAP interface.
 amxd_status_t _kickStation(amxd_object_t* obj_AP,
                            amxd_function_t* func _UNUSED,
@@ -1879,9 +1905,9 @@ amxd_status_t _kickStation(amxd_object_t* obj_AP,
 
     if(pAP && debugIsVapPointer(pAP)) {
         if(macStr) {
-            pAP->pFA->mfn_wvap_kick_sta(pAP, (char*) macStr, strlen(macStr), SET);
+            s_kickSta(pAP, (char*) macStr, -1);
         } else { /* Kick all */
-            pAP->pFA->mfn_wvap_kick_sta(pAP, "ff:ff:ff:ff:ff:ff", 17, SET);
+            s_kickSta(pAP, "ff:ff:ff:ff:ff:ff", -1);
         }
 
         SAH_TRACEZ_OUT(ME);
@@ -1910,7 +1936,7 @@ amxd_status_t _kickStationReason(amxd_object_t* obj_AP,
 
     if(pAP && debugIsVapPointer(pAP)) {
         if(macStr != NULL) {
-            pAP->pFA->mfn_wvap_kick_sta_reason(pAP, (char*) macStr, strlen(macStr), reason);
+            s_kickSta(pAP, macStr, reason);
         }
         SAH_TRACEZ_OUT(ME);
         return amxd_status_ok;

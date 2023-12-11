@@ -1812,8 +1812,8 @@ typedef struct SWL_PACKED {
 
 typedef struct {
     T_AccessPoint* vap;
-    int oldVapStatus;
-    int oldSsidStatus;
+    wld_intfStatus_e oldVapStatus;
+    wld_status_e oldSsidStatus;
 } wld_vap_status_change_event_t;
 
 typedef enum {
@@ -1828,6 +1828,20 @@ typedef struct {
     T_AccessPoint* vap;
     void* data;
 } wld_vap_changeEvent_t;
+
+typedef enum {
+    WLD_VAP_ACTION_RSSI_SAMPLE,
+    WLD_VAP_ACTION_STEER,
+    WLD_VAP_ACTION_KICK,
+    WLD_VAP_ACTION_MAX,
+} wld_vap_actionEvent_e;
+
+typedef struct {
+    wld_vap_actionEvent_e changeType;
+    T_AccessPoint* vap;
+    void* data;
+} wld_vap_actionEvent_t;
+
 
 
 typedef enum {

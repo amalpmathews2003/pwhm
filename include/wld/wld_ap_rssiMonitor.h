@@ -84,6 +84,7 @@ void wld_apRssiMon_updateHistoryLen(T_AccessPoint* pAP);
 void wld_apRssiMon_cleanStaHistory(wld_assocDev_history_t* staHistory, uint32_t historyLen);
 void wld_apRssiMon_cleanStaHistoryAll(T_AccessPoint* pAP);
 wld_staHistory_t* wld_apRssiMon_getOldestStaSample(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
+wld_staHistory_t* wld_apRssiMon_getStaSampleIndexed(T_AccessPoint* pAP, T_AssociatedDevice* pAD, int32_t index);
 void wld_apRssiMon_getStaHistory(T_AccessPoint* pAP, const unsigned char macAddress[ETHER_ADDR_LEN], amxc_var_t* myMap);
 void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_apRssiMon_sendHistoryOnAssocEvent(T_AccessPoint* pAP, T_AssociatedDevice* pAD, amxc_var_t* myVar);

@@ -337,7 +337,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     pR->nrActiveAntenna[COM_DIR_RECEIVE] = -1;
     pR->changeInfo.lastDisableTime = swl_time_getMonoSec();
 
-    SAH_TRACEZ_WARNING(ME, "Creating new Radio context [%s]", pR->Name);
+    SAH_TRACEZ_WARNING(ME, "Creating new Radio context [%s, %s]", pR->Name, pR->instanceName);
 
     wld_scan_init(pR);
     wld_chanmgt_init(pR);
