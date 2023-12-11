@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.16.4 - 2023-12-11(14:08:57 +0000)
+
+### Other
+
+- - fix using wrong amx variant set value
+
 ## Release v5.16.3 - 2023-12-08(12:44:08 +0000)
 
 ### Other
