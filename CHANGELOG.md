@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.18.0 - 2023-12-12(15:27:04 +0000)
+
+### Other
+
+- propagate wpactrl dfs/csa/cac events
+
 ## Release v5.17.1 - 2023-12-12(14:50:57 +0000)
 
 ### Other
