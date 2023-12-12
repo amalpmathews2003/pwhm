@@ -434,12 +434,6 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     ASSERT_TRUE(pR->isReady || reason == CHAN_REASON_INITIAL, SWL_RC_ERROR, ME, "%s: radio is not configured yet", pR->Name)
 
     swl_rc_ne rc = SWL_RC_OK;
-    const char* checkReason = s_isTargetChanspecValid(pR, chanspec);
-    ASSERT_NULL(checkReason, SWL_RC_ERROR, ME, "%s: %s <%s>", pR->Name, checkReason, swl_type_toBuf32(&gtSwl_type_chanspecExt, &chanspec).buf);
-
-    if(!wld_rad_firstCommitFinished(pR) && (reason == CHAN_REASON_MANUAL) && (pR->totalNrTargetChanspecChanges < 2)) {
-        reason = CHAN_REASON_PERSISTANCE;
-    }
 
     swl_chanspec_t tgtChanspec = chanspec;
 
@@ -452,6 +446,12 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     ASSERT_TRUE(tgtChanspec.bandwidth > 0, SWL_RC_ERROR, ME, "%s: channel / bw not available %s",
                 pR->Name, swl_type_toBuf32(&gtSwl_type_chanspecExt, &chanspec).buf);
 
+    const char* checkReason = s_isTargetChanspecValid(pR, tgtChanspec);
+    ASSERT_NULL(checkReason, SWL_RC_ERROR, ME, "%s: %s <%s>", pR->Name, checkReason, swl_type_toBuf32(&gtSwl_type_chanspecExt, &chanspec).buf);
+
+    if(!wld_rad_firstCommitFinished(pR) && (reason == CHAN_REASON_MANUAL) && (pR->totalNrTargetChanspecChanges < 2)) {
+        reason = CHAN_REASON_PERSISTANCE;
+    }
 
     SAH_TRACEZ_WARNING(ME, "%s: set tgt chanspec %s -> %s (reason <%s>, direct <%d>, current %s, in %s)",
                        pR->Name,
@@ -477,7 +477,7 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
         memset(pR->targetChanspec.reasonExt, 0, sizeof(pR->targetChanspec.reasonExt));
     }
 
-    if(chanspec.channel == amxd_object_get_uint8_t(pR->pBus, "Channel", NULL)) {
+    if(tgtChanspec.channel == amxd_object_get_uint8_t(pR->pBus, "Channel", NULL)) {
         /* operating channel did not change yet, exposed channel in DM is the target */
         pR->channelShowing = CHANNEL_INTERNAL_STATUS_TARGET;
     } else {
@@ -489,7 +489,6 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     if(reason != CHAN_REASON_INITIAL) {
         rc = pR->pFA->mfn_wrad_setChanspec(pR, direct);
     }
-
 
     if(s_isChanspecSync(pR)) {
         pR->channelShowing = CHANNEL_INTERNAL_STATUS_SYNC;
@@ -558,6 +557,7 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
     swl_rc_ne rc = wld_chanmgt_setTargetChanspec(pR, chanspec, direct, reason, reasonExt);
     ASSERT_FALSE(rc < SWL_RC_OK, amxd_status_unknown_error,
                  ME, "%s: fail to set channel %d", pR->Name, channel);
+    chanspec = pR->targetChanspec.chanspec;
 
     /* release/notify old call, if any.*/
     amxd_function_deferred_remove(pR->callIdReqChanspec);
