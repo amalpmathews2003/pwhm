@@ -354,7 +354,7 @@ define probelist_t{
 		*/
 		%read-only string Status{
 			on action validate call check_enum ["Up","Down","Unknown","Dormant","NotPresent","LowerLayerDown","Error"];
-			default "Down";
+			default "NotPresent";
 		}
 
 
