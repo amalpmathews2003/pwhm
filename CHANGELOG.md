@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.18.2 - 2023-12-12(18:05:47 +0000)
+
+### Other
+
+- fix chan_in_bands when bw auto
+
 ## Release v5.18.1 - 2023-12-12(15:50:05 +0000)
 
 ### Other
