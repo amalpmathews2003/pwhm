@@ -814,6 +814,8 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_trans_set_cstring_t(&trans, "Alias", pAP->alias);
 
+        amxd_trans_set_cstring_t(&trans, "InstanceName", amxd_object_get_name(object, AMXD_OBJECT_NAMED));
+
         TBuf[0] = 0;
         if(pAP->pSSID != NULL) {
             char* currSsidRef = amxd_object_get_cstring_t(pAP->pBus, "SSIDReference", NULL);

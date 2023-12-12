@@ -223,6 +223,9 @@ define rrm_t{
 		 *  future reference. An initial unique value MUST be assigned
 		 *  when the CPE creates an instance of this object.*/
 		string Alias;
+
+		%protected %read-only string InstanceName;
+
 		/** Index in the AccessPoint tree (also for the SSID tree,
 		 *  both are inline) */
 		%read-only uint32 Index;
