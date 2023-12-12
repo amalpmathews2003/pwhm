@@ -3303,6 +3303,7 @@ bool wld_rad_isUpExt(T_Radio* pRad) {
     return ((pRad->detailedState == CM_RAD_UP)
             || (pRad->detailedState == CM_RAD_FG_CAC)
             || (pRad->detailedState == CM_RAD_BG_CAC)
+            || (pRad->detailedState == CM_RAD_BG_CAC_NS)
             || (pRad->detailedState == CM_RAD_BG_CAC_EXT)
             || (pRad->detailedState == CM_RAD_BG_CAC_EXT_NS)
             || (pRad->detailedState == CM_RAD_DELAY_AP_UP));

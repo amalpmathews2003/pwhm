@@ -152,10 +152,11 @@ typedef struct {
 } wld_nl80211_wiphySuppCmds;
 
 typedef struct {
-    bool dfsOffload; // driver will do all DFS-related actions by itself.
-    bool sae;        // driver supports Simultaneous Authentication of Equals (SAE) with user space SME
-    bool sae_pwe;    // driver supports SAE PWE derivation in WPA3-Personal networks which are using SAE authentication.
-    bool scanDwell;  // driver supports setting scan dwell time
+    bool dfsOffload;      // driver will do all DFS-related actions by itself.
+    bool sae;             // driver supports Simultaneous Authentication of Equals (SAE) with user space SME
+    bool sae_pwe;         // driver supports SAE PWE derivation in WPA3-Personal networks which are using SAE authentication.
+    bool scanDwell;       // driver supports setting scan dwell time
+    bool backgroundRadar; // driver supports background CAC/Radar
 } wld_nl80211_wiphySuppFeatures;
 
 #define WLD_NL80211_CIPHERS_MAX 14                  //(Cf: IEEE80211 Table 9-180—Cipher suite selectors: defined suite types 0..14)

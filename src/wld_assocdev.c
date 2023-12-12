@@ -1085,8 +1085,8 @@ amxd_status_t _getFarAssociatedDevicesCount(amxd_object_t* object,
     T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
 
     int32_t threshold = INT32_MIN;
-    threshold = GET_UINT32(args, "threshold");
-    amxc_var_set_type(retval, AMXC_VAR_ID_INT32);
+    threshold = GET_INT32(args, "threshold");
+    amxc_var_set_type(retval, AMXC_VAR_ID_UINT32);
     amxc_var_set_uint32_t(retval, wld_ad_getFarStaCount(pAP, threshold));
 
     return amxd_status_ok;

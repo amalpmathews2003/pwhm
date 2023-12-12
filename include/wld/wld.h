@@ -2210,6 +2210,16 @@ typedef struct S_CWLD_FUNC_TABLE {
      */
     swl_rc_ne (* mfn_wrad_setChanspec)(T_Radio* rad, bool direct);
 
+    /**
+     * Start a ZeroWait DFS switching (called by @mfn_wrad_setChanspec)
+     */
+    swl_rc_ne (* mfn_wrad_zwdfs_start)(T_Radio* rad, bool direct);
+
+    /**
+     * Stop a ZeroWait DFS already started switching.
+     */
+    swl_rc_ne (* mfn_wrad_zwdfs_stop)(T_Radio* rad);
+
     /*
      * Get current chanspec from driver
      */

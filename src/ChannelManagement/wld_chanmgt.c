@@ -399,6 +399,9 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
         s_saveCurrentChanspec(pR);
     }
 
+    /* notify about channel change status */
+    wld_rad_triggerChangeEvent(pR, WLD_RAD_CHANGE_CHANSPEC, NULL);
+
     /* Reset to default channel if an invalid channel switch occurred */
     if(reason == CHAN_REASON_INVALID) {
         swl_chanspec_t resetChanspec = SWL_CHANSPEC_NEW(swl_channel_defaults[pR->operatingFrequencyBand],

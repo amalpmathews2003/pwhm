@@ -237,6 +237,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             if(pWiphyInfo->suppFeatures.scanDwell) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "SCAN_DWELL");
             }
+            if(pWiphyInfo->suppFeatures.backgroundRadar) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "RADAR_BACKGROUND");
+            }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
             if((pRad->channel == 0) && (wld_rad_getFreqBand(pRad) == pBand->freqBand)) {
                 swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;

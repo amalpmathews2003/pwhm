@@ -75,6 +75,7 @@ typedef enum {
     WLD_RAD_CHANGE_INIT,
     WLD_RAD_CHANGE_DESTROY,
     WLD_RAD_CHANGE_POSCHAN,
+    WLD_RAD_CHANGE_CHANSPEC,
     WLD_RAD_CHANGE_MAX
 } wld_rad_changeEvent_e;
 

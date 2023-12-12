@@ -644,6 +644,8 @@ static swl_rc_ne s_parseSuppFeatures(struct nlattr* tb[], wld_nl80211_wiphyInfo_
             pWiphy->suppFeatures.dfsOffload = s_extFeatureIsSet(extFeat, extFeatLen, NL80211_EXT_FEATURE_DFS_OFFLOAD);
         }
         pWiphy->suppFeatures.scanDwell = s_extFeatureIsSet(extFeat, extFeatLen, NL80211_EXT_FEATURE_SET_SCAN_DWELL);
+        pWiphy->suppFeatures.backgroundRadar = s_extFeatureIsSet(extFeat, extFeatLen, NL80211_EXT_FEATURE_RADAR_BACKGROUND);
+
     }
     return SWL_RC_OK;
 }
