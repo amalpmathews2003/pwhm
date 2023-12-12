@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.17.0 - 2023-12-12(14:23:07 +0000)
+
+### Other
+
+- add public apis to manage rad macConfig
+
 ## Release v5.16.4 - 2023-12-11(14:08:57 +0000)
 
 ### Other
