@@ -1601,10 +1601,14 @@ amxd_status_t _wld_ap_validateHotSpot2Requirements(amxd_object_t* object,
                                                    const amxc_var_t* const args,
                                                    amxc_var_t* const retval _UNUSED,
                                                    void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    amxd_object_t* pAPObj = amxd_object_get_parent(object);
+    ASSERTS_EQUALS(amxd_object_get_type(pAPObj), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
+
     SAH_TRACEZ_IN(ME);
 
     amxd_status_t status = amxd_status_invalid_value;
-    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    T_AccessPoint* pAP = wld_ap_fromObj(pAPObj);
     ASSERTI_NOT_NULL(pAP, amxd_status_ok, ME, "VAP Object is NULL");
 
     bool flag = amxc_var_dyncast(bool, args);
