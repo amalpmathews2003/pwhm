@@ -103,7 +103,11 @@ static const char* s_fwdIfaceStdWpaCtrlEventsList[] = {
 /* Table of standard wpactrl radio events to be forwarded to other applications */
 static const char* s_fwdRadioStdWpaCtrlEventsList[] = {
     "CTRL-EVENT-CHANNEL-SWITCH",
-    "AP-CSA-FINISHED"
+    "AP-CSA-FINISHED",
+    "DFS-RADAR-DETECTED",
+    "DFS-CAC-START",
+    "DFS-CAC-COMPLETED",
+    "DFS-NOP-FINISHED"
 };
 
 static void s_notifyWpaCtrlEvent(amxd_object_t* object, char* ifName, char* eventName,
