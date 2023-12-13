@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.18.5 - 2023-12-13(15:39:36 +0000)
+
+### Other
+
+- only keep vdr mod specific wpactrl rad evt hdlrs on reload
+
 ## Release v5.18.4 - 2023-12-13(07:58:15 +0000)
 
 ### Other
