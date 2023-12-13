@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.18.3 - 2023-12-13(07:35:15 +0000)
+
+### Other
+
+- fix hotspot2 obj validation
+
 ## Release v5.18.2 - 2023-12-12(18:05:47 +0000)
 
 ### Other
