@@ -375,6 +375,7 @@ static bool s_setParam(T_AccessPoint* pAP, const char* param, const char* value,
 static bool s_setChangedParam(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams,
                               const char* param, const char* newValue, wld_secDmn_action_rc_ne* pAction) {
     ASSERTS_NOT_NULL(param, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pCurrVapParams, false, ME, "NULL");
     const char* oldValue = swl_mapChar_get(pCurrVapParams, (char*) param);
     ASSERTS_FALSE(swl_str_matches(oldValue, newValue), false, ME, "same value");
     return s_setParam(pAP, param, newValue, pAction);
@@ -392,6 +393,7 @@ static bool s_setChangedMultiParams(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapP
 static bool s_setExistingParam(T_AccessPoint* pAP, swl_mapChar_t* pCurrVapParams,
                                const char* param, const char* newValue, wld_secDmn_action_rc_ne* pAction) {
     ASSERTS_NOT_NULL(param, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pCurrVapParams, false, ME, "NULL");
     const char* oldValue = swl_mapChar_get(pCurrVapParams, (char*) param);
     ASSERTS_FALSE(swl_str_isEmpty(oldValue), false, ME, "not existing");
     return s_setParam(pAP, param, newValue, pAction);
@@ -416,14 +418,19 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* s
     bool ret = s_setParam(pAP, "ssid", ssid, &action);
     ASSERT_TRUE(ret, SECDMN_ACTION_ERROR, ME, "%s: failed for setting SSID", pAP->alias);
     wld_hostapd_config_t* config = NULL;
-    wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
     swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
-    //hostapd requires backhaul_ssid included in double quotes
-    char bhSsid[strlen(ssid) + 3];
-    snprintf(bhSsid, sizeof(bhSsid), "\"%s\"", ssid);
-    s_setExistingParam(pAP, pCurrVapParams, "multi_ap_backhaul_ssid", bhSsid, &action);
-    if(!swl_str_matches(swl_mapChar_get(pCurrVapParams, "wps_state"), "0")) {
-        action = SWL_MAX(action, SECDMN_ACTION_OK_NEED_SIGHUP);
+    if(pCurrVapParams != NULL) {
+        //hostapd requires backhaul_ssid included in double quotes
+        char bhSsid[strlen(ssid) + 3];
+        snprintf(bhSsid, sizeof(bhSsid), "\"%s\"", ssid);
+        s_setExistingParam(pAP, pCurrVapParams, "multi_ap_backhaul_ssid", bhSsid, &action);
+        if(!swl_str_matches(swl_mapChar_get(pCurrVapParams, "wps_state"), "0")) {
+            action = SWL_MAX(action, SECDMN_ACTION_OK_NEED_SIGHUP);
+        }
+    } else {
+        action = SECDMN_ACTION_ERROR;
     }
     wld_hostapd_deleteConfig(config);
     return action;
