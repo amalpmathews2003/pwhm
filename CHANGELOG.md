@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.18.6 - 2023-12-13(16:55:26 +0000)
+
+### Other
+
+- - Check loaded hostapd conf not being empty
+
 ## Release v5.18.5 - 2023-12-13(15:39:36 +0000)
 
 ### Other
