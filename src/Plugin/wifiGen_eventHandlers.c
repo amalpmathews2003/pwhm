@@ -323,8 +323,7 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     ASSERT_NOT_NULL(wpaCtrlMngr, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_wpaCtrl_radioEvtHandlers_cb wpaCtrlRadEvthandlers;
     memset(&wpaCtrlRadEvthandlers, 0, sizeof(wpaCtrlRadEvthandlers));
-    void* userData = pRad;
-    wld_wpaCtrlMngr_getEvtHandlers(wpaCtrlMngr, &userData, &wpaCtrlRadEvthandlers);
+    wld_wpaCtrlMngr_getEvtHandlers(wpaCtrlMngr, NULL, &wpaCtrlRadEvthandlers);
     //Set here the wpa_ctrl RAD event handlers
     SET_HDLR(wpaCtrlRadEvthandlers.fProcStdEvtMsg, s_wpaCtrlRadioStdEvt);
     SET_HDLR(wpaCtrlRadEvthandlers.fChanSwitchStartedCb, s_chanSwitchCb);
@@ -339,7 +338,7 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsRadarDetectedCb, s_dfsRadarDetectedCb);
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsNopFinishedCb, s_dfsNopFinishedCb);
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsNewChannelCb, s_dfsNewChannelCb);
-    wld_wpaCtrlMngr_setEvtHandlers(wpaCtrlMngr, userData, &wpaCtrlRadEvthandlers);
+    wld_wpaCtrlMngr_setEvtHandlers(wpaCtrlMngr, pRad, &wpaCtrlRadEvthandlers);
     return SWL_RC_OK;
 }
 
@@ -459,16 +458,14 @@ swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
 
     wld_nl80211_evtHandlers_cb nl80211RadEvtHandlers;
     memset(&nl80211RadEvtHandlers, 0, sizeof(nl80211RadEvtHandlers));
-    void* userdata = NULL;
-    wld_nl80211_getEvtListenerHandlers(pRad->nl80211Listener, &userdata, &nl80211RadEvtHandlers);
     //Set here the nl80211 RAD event handlers
-    SET_HDLR(nl80211RadEvtHandlers.fNewInterfaceCb, s_newInterfaceCb);
-    SET_HDLR(nl80211RadEvtHandlers.fDelInterfaceCb, s_delInterfaceCb);
-    SET_HDLR(nl80211RadEvtHandlers.fScanStartedCb, s_scanStartedCb);
-    SET_HDLR(nl80211RadEvtHandlers.fScanAbortedCb, s_scanAbortedCb);
-    SET_HDLR(nl80211RadEvtHandlers.fScanDoneCb, s_scanDoneCb);
-    SET_HDLR(nl80211RadEvtHandlers.fMgtFrameEvtCb, s_frameReceivedCb);
-    wld_rad_nl80211_setEvtListener(pRad, userdata, &nl80211RadEvtHandlers);
+    nl80211RadEvtHandlers.fNewInterfaceCb = s_newInterfaceCb;
+    nl80211RadEvtHandlers.fDelInterfaceCb = s_delInterfaceCb;
+    nl80211RadEvtHandlers.fScanStartedCb = s_scanStartedCb;
+    nl80211RadEvtHandlers.fScanAbortedCb = s_scanAbortedCb;
+    nl80211RadEvtHandlers.fScanDoneCb = s_scanDoneCb;
+    nl80211RadEvtHandlers.fMgtFrameEvtCb = s_frameReceivedCb;
+    wld_rad_nl80211_setEvtListener(pRad, NULL, &nl80211RadEvtHandlers);
 
     return SWL_RC_OK;
 }
@@ -669,35 +666,33 @@ static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
+    wld_wpaCtrl_evtHandlers_cb wpaCtrlVapEvtHandlers;
+    memset(&wpaCtrlVapEvtHandlers, 0, sizeof(wpaCtrlVapEvtHandlers));
+
+    //Set here the wpa_ctrl VAP event handlers
+    wpaCtrlVapEvtHandlers.fProcStdEvtMsg = s_wpaCtrlIfaceStdEvt;
+    wpaCtrlVapEvtHandlers.fWpsCancelMsg = s_wpsCancel;
+    wpaCtrlVapEvtHandlers.fWpsTimeoutMsg = s_wpsTimeout;
+    wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_wpsSuccess;
+    wpaCtrlVapEvtHandlers.fWpsOverlapMsg = s_wpsOverlap;
+    wpaCtrlVapEvtHandlers.fWpsFailMsg = s_wpsFail;
+    wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
+    wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
+    wpaCtrlVapEvtHandlers.fApStationAssocFailureCb = s_apStationAssocFailureEvt;
+    wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
+    wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
+    wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
+
     if(pAP->wpaCtrlInterface != NULL) {
-        wld_wpaCtrl_evtHandlers_cb wpaCtrlVapEvtHandlers;
-        memset(&wpaCtrlVapEvtHandlers, 0, sizeof(wpaCtrlVapEvtHandlers));
-        void* userData = pAP;
-        wld_wpaCtrlInterface_getEvtHandlers(pAP->wpaCtrlInterface, &userData, &wpaCtrlVapEvtHandlers);
-        //Set here the wpa_ctrl VAP event handlers
-        SET_HDLR(wpaCtrlVapEvtHandlers.fProcStdEvtMsg, s_wpaCtrlIfaceStdEvt);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fWpsCancelMsg, s_wpsCancel);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fWpsTimeoutMsg, s_wpsTimeout);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fWpsSuccessMsg, s_wpsSuccess);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fWpsOverlapMsg, s_wpsOverlap);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fWpsFailMsg, s_wpsFail);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fApStationConnectedCb, s_apStationConnectedEvt);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fApStationDisconnectedCb, s_apStationDisconnectedEvt);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fApStationAssocFailureCb, s_apStationAssocFailureEvt);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fBtmReplyCb, s_btmReplyEvt);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb, s_mgtFrameReceivedEvt);
-        SET_HDLR(wpaCtrlVapEvtHandlers.fBeaconResponseCb, s_beaconResponseEvt);
-        ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, userData, &wpaCtrlVapEvtHandlers),
+        ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),
                     SWL_RC_ERROR, ME, "%s: fail to set interface wpa evt handlers", pAP->alias);
     }
 
     wld_nl80211_evtHandlers_cb nl80211VapEvtHandlers;
     memset(&nl80211VapEvtHandlers, 0, sizeof(nl80211VapEvtHandlers));
-    void* userdata = NULL;
-    wld_nl80211_getEvtListenerHandlers(pAP->nl80211Listener, &userdata, &nl80211VapEvtHandlers);
 
     //Set here the nl80211 VAP event handlers
-    wld_ap_nl80211_setEvtListener(pAP, userdata, &nl80211VapEvtHandlers);
+    wld_ap_nl80211_setEvtListener(pAP, NULL, &nl80211VapEvtHandlers);
 
     return SWL_RC_OK;
 }
@@ -814,22 +809,20 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
 
     wld_wpaCtrl_evtHandlers_cb wpaCtrlEpEvtHandlers;
     memset(&wpaCtrlEpEvtHandlers, 0, sizeof(wpaCtrlEpEvtHandlers));
-    void* userData = pEP;
-    wld_wpaCtrlInterface_getEvtHandlers(pEP->wpaCtrlInterface, &userData, &wpaCtrlEpEvtHandlers);
     //Set here the wpa_ctrl EP event handlers
-    SET_HDLR(wpaCtrlEpEvtHandlers.fProcStdEvtMsg, s_wpaCtrlIfaceStdEvt);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fStationAssociatedCb, s_stationAssociatedEvt);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fStationDisconnectedCb, s_stationDisconnectedEvt);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fStationConnectedCb, s_stationConnectedEvt);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fStationScanFailedCb, s_stationScanFailedEvt);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fWpsCredReceivedCb, s_stationWpsCredReceivedEvt);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fWpsCancelMsg, s_stationWpsCancel);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fWpsTimeoutMsg, s_stationWpsTimeout);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fWpsSuccessMsg, s_stationWpsSuccess);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fWpsOverlapMsg, s_stationWpsOverlap);
-    SET_HDLR(wpaCtrlEpEvtHandlers.fWpsFailMsg, s_stationWpsFail);
+    wpaCtrlEpEvtHandlers.fProcStdEvtMsg = s_wpaCtrlIfaceStdEvt;
+    wpaCtrlEpEvtHandlers.fStationAssociatedCb = s_stationAssociatedEvt;
+    wpaCtrlEpEvtHandlers.fStationDisconnectedCb = s_stationDisconnectedEvt;
+    wpaCtrlEpEvtHandlers.fStationConnectedCb = s_stationConnectedEvt;
+    wpaCtrlEpEvtHandlers.fStationScanFailedCb = s_stationScanFailedEvt;
+    wpaCtrlEpEvtHandlers.fWpsCredReceivedCb = s_stationWpsCredReceivedEvt;
+    wpaCtrlEpEvtHandlers.fWpsCancelMsg = s_stationWpsCancel;
+    wpaCtrlEpEvtHandlers.fWpsTimeoutMsg = s_stationWpsTimeout;
+    wpaCtrlEpEvtHandlers.fWpsSuccessMsg = s_stationWpsSuccess;
+    wpaCtrlEpEvtHandlers.fWpsOverlapMsg = s_stationWpsOverlap;
+    wpaCtrlEpEvtHandlers.fWpsFailMsg = s_stationWpsFail;
 
-    wld_wpaCtrlInterface_setEvtHandlers(pEP->wpaCtrlInterface, userData, &wpaCtrlEpEvtHandlers);
+    wld_wpaCtrlInterface_setEvtHandlers(pEP->wpaCtrlInterface, pEP, &wpaCtrlEpEvtHandlers);
 
     return SWL_RC_OK;
 }
