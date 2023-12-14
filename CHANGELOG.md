@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.19.1 - 2023-12-14(14:48:48 +0000)
+
+### Other
+
+- -  defining missing TRAP impl
+
 ## Release v5.19.0 - 2023-12-14(13:07:59 +0000)
 
 ### Other
