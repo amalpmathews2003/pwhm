@@ -226,6 +226,16 @@ DEF_TRAP(T_Radio, mfn_wrad_sensing_cmd);
 DEF_TRAP(T_Radio, mfn_wrad_sensing_resetStats);
 DEF_TRAP(T_Radio, mfn_wrad_firmwareVersion);
 
+swl_rc_ne TRAP_mfn_wrad_zwdfs_start(T_Radio* rad _UNUSED, bool direct _UNUSED) {
+    SAH_TRACEZ_NOTICE(ME, "%p %d", rad, direct);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+swl_rc_ne TRAP_mfn_wrad_zwdfs_stop(T_Radio* rad _UNUSED) {
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static swl_rc_ne TRAP_mfn_wrad_sensing_csiStats(T_Radio* rad, wld_csiState_t* csimonState) {
     _UNUSED_(rad);
     _UNUSED_(csimonState);
@@ -622,6 +632,8 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_poschans);
     FTA_ASSIGN(mfn_wrad_setChanspec);
     FTA_ASSIGN(mfn_wrad_getChanspec);
+    FTA_ASSIGN(mfn_wrad_zwdfs_start);
+    FTA_ASSIGN(mfn_wrad_zwdfs_stop);
     FTA_ASSIGN(mfn_wrad_supports);
     FTA_ASSIGN(mfn_wrad_autochannelenable);
     FTA_ASSIGN(mfn_wrad_startacs);
