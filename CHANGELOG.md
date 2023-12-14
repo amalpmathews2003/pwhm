@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.19.0 - 2023-12-14(13:07:59 +0000)
+
+### Other
+
+- - add start ZeroWait DFS call to FTA.
+
 ## Release v5.18.6 - 2023-12-13(16:55:26 +0000)
 
 ### Other
