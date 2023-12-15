@@ -167,11 +167,13 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         swl_mapChar_add(radConfigMap, "ieee80211n", "1");
         char htCaps[256] = {0};
         if(wld_channel_hasChannelWidthCovered(tgtChspec, SWL_BW_40MHZ)) {
-            wld_channel_extensionPos_e extChanPos = wld_channel_getExtensionChannel(tgtChspec, pRad->extensionChannel);
-            if(extChanPos == WLD_CHANNEL_EXTENTION_POS_ABOVE) {
-                swl_str_cat(htCaps, sizeof(htCaps), "[HT40+]");
-            } else if(extChanPos == WLD_CHANNEL_EXTENTION_POS_BELOW) {
-                swl_str_cat(htCaps, sizeof(htCaps), "[HT40-]");
+            if(pRad->operatingChannelBandwidth != SWL_BW_20MHZ) {
+                wld_channel_extensionPos_e extChanPos = wld_channel_getExtensionChannel(tgtChspec, pRad->extensionChannel);
+                if(extChanPos == WLD_CHANNEL_EXTENTION_POS_ABOVE) {
+                    swl_str_cat(htCaps, sizeof(htCaps), "[HT40+]");
+                } else if(extChanPos == WLD_CHANNEL_EXTENTION_POS_BELOW) {
+                    swl_str_cat(htCaps, sizeof(htCaps), "[HT40-]");
+                }
             }
             if(s_checkSGI(pRad, SWL_SGI_400)) {
                 swl_str_cat(htCaps, sizeof(htCaps), "[SHORT-GI-40]");
