@@ -131,7 +131,8 @@ typedef enum {
     FSM_FINISH,     /* To-do list is empty, all went fine */
     FSM_ERROR,      /* We've failed to execute the to-do list */
     FSM_UNKNOWN,    /* ? A state we don't like and don't know how to get rid of it.*/
-    FSM_FATAL       /* Really hard issue... we can only fix this by restarting the system or driver */
+    FSM_FATAL,      /* Really hard issue... we can only fix this by restarting the system or driver */
+    FSM_MAX         /* Max value, not actually handled in FSM */
 } FSM_STATE;
 
 typedef struct wld_stats T_Stats;

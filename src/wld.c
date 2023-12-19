@@ -609,6 +609,28 @@ T_Radio* wld_getRadioByFrequency(swl_freqBand_e freqBand) {
     return NULL;
 }
 
+/**
+ * Returns the number of Accesspoint, that have a positive id equal to
+ * to id.
+ * So negative (default non MLD) id will always return 0.
+ */
+uint32_t wld_getNrApMldLinksById(int32_t id) {
+    if(id < 0) {
+        return 0;
+    }
+    uint32_t nrAp = 0;
+    T_Radio* pRad = NULL;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* pAP = NULL;
+        wld_rad_forEachAp(pAP, pRad) {
+            if((pAP->pSSID != NULL) && (pAP->pSSID->mldUnit == id)) {
+                nrAp++;
+            }
+        }
+    }
+    return nrAp;
+}
+
 amxd_object_t* get_wld_object() {
     return wifi;
 }

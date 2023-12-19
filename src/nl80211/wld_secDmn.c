@@ -180,6 +180,15 @@ swl_rc_ne wld_secDmn_reload(wld_secDmn_t* pSecDmn) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_secDmn_setArgs(wld_secDmn_t* pSecDmn, char* startArgs) {
+    ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
+
+    wld_dmn_setArgList(pSecDmn->dmnProcess, startArgs);
+
+    return SWL_RC_OK;
+}
+
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
     return wld_dmn_isRunning(pSecDmn->dmnProcess);

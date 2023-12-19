@@ -1683,7 +1683,7 @@ define probelist_t{
 			 * The enable string will be rewritten to only contain those capabilities which are enabled and
 			 * available.
 			 */
-			void Enable(%in string Capability);
+			void Enable(%in string capability);
 
 			/**
 			 * Disable a capability. This will remove all occurences of the given capability string
@@ -1691,7 +1691,7 @@ define probelist_t{
 			 * The enable string will be rewritten to only contain those capabilities which are enabled and
 			 * available.
 			 */
-			void Disable(%in string Capability);
+			void Disable(%in string capability);
 		} /* object RadCaps */
 
 		%persistent object ChannelMgt{

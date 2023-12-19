@@ -189,7 +189,6 @@ void wld_rad_updateCapabilities(T_Radio* pR, amxd_trans_t* trans) {
 
     amxd_trans_select_object(trans, featureObject);
     amxd_trans_set_cstring_t(trans, "Available", cap_string);
-    s_writeCapEnable(pR, -1, -1, trans);
     wld_rad_writeCapStatus(pR, trans);
 }
 
@@ -279,7 +278,7 @@ amxd_status_t _RadCaps_Enable(amxd_object_t* wifi_cap,
     T_Radio* pR = (T_Radio*) wifi_rad->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    const char* feature = GET_CHAR(args, "feature");
+    const char* feature = GET_CHAR(args, "capability");
 
     int index = wld_rad_get_capability_index(pR, feature);
     ASSERT_FALSE(index == -1, amxd_status_unknown_error, ME, "Unknown feature %s", feature);
@@ -307,7 +306,7 @@ amxd_status_t _RadCaps_Disable(amxd_object_t* wifi_cap,
     T_Radio* pR = (T_Radio*) wifi_rad->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    const char* feature = GET_CHAR(args, "feature");
+    const char* feature = GET_CHAR(args, "capability");
 
     int index = wld_rad_get_capability_index(pR, feature);
     ASSERT_FALSE(index == -1, amxd_status_unknown_error, ME, "Unknown feature %s", feature);

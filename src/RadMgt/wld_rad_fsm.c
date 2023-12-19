@@ -383,13 +383,6 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
                 rad->fsmRad.timeout_msec = WLD_FSM_WAIT_TIME;
                 rad->fsmRad.FSM_Retry--;
                 break;
-            } else {
-                if(waitForWps) {
-                    SAH_TRACEZ_ERROR(ME, "%s start while EP WPS active (vap %u / WPS %u)", rad->Name,
-                                     waitForVaps, waitForWps);
-                } else {
-                    SAH_TRACEZ_WARNING(ME, "%s start after wait VAP config", rad->Name);
-                }
             }
         }
 
@@ -397,6 +390,15 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         rad->fsmRad.timeout_msec = 100;
         bool has_lock = s_tryGetLock(rad);
         if(has_lock) {
+
+            if(waitForWps) {
+                SAH_TRACEZ_ERROR(ME, "%s start while EP WPS active (vap %u / WPS %u)", rad->Name,
+                                 waitForVaps, waitForWps);
+            } else if(waitForVaps) {
+                SAH_TRACEZ_WARNING(ME, "%s start after wait VAP config", rad->Name);
+            }
+
+
             rad->fsmRad.FSM_State = FSM_DEPENDENCY;
             rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT;
         }
@@ -408,9 +410,13 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         // Restart radio after deep power down
         SAH_TRACEZ_INFO(ME, "%s refresh", rad->Name);
 
+        rad->fsmRad.FSM_ReqState = FSM_MAX;
         SWL_CALL(s_getMngr(rad)->doRestart, rad);
-
-        rad->fsmRad.FSM_State = FSM_DEPENDENCY;
+        if(rad->fsmRad.FSM_ReqState != FSM_MAX) {
+            rad->fsmRad.FSM_State = rad->fsmRad.FSM_ReqState;
+        } else {
+            rad->fsmRad.FSM_State = FSM_DEPENDENCY;
+        }
         break;
     case FSM_SYNC_RAD:
     case FSM_SYNC_VAP:
@@ -567,11 +573,22 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_ERROR:
     case FSM_UNKNOWN:
         SAH_TRACEZ_WARNING(ME, "%s: do finish FSM %p", rad->Name, s_getMngr(rad)->doFinish);
+        rad->fsmRad.timeout_msec = 0;
+
+        rad->fsmRad.FSM_ReqState = FSM_MAX;
         SWL_CALL(s_getMngr(rad)->doFinish, rad);
+        if(rad->fsmRad.FSM_ReqState != FSM_MAX) {
+            rad->fsmRad.FSM_State = rad->fsmRad.FSM_ReqState;
+            break;
+        }
+
+        // If again commit pending, move to wait to retake lock.
+        if(s_checkCommitPending(rad, FSM_WAIT)) {
+            break;
+        }
 
         /* Update here our wireless STATUS field to the datamodel */
         wld_rad_updateState(rad, false);
-
 
         rad->fsmRad.FSM_State = FSM_IDLE;
         rad->fsm_radio_st = FSM_IDLE;    // UnLock the RADIO
@@ -618,4 +635,15 @@ void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr) {
     vendor->fsmMngr = fsmMngr;
     vendor->fta.mfn_wrad_fsm = wld_rad_fsm;          //ERROR_TRAP_pA;
     vendor->fta.mfn_wrad_fsm_state = s_fsmState;     //ERROR_TRAP_pA;
+}
+
+uint32_t wld_fsm_getNrNotIdle() {
+    T_Radio* pRad = NULL;
+    uint32_t count = 0;
+    wld_for_eachRad(pRad) {
+        if(pRad->fsm_radio_st != FSM_IDLE) {
+            count++;
+        }
+    }
+    return count;
 }

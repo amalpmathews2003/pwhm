@@ -112,6 +112,14 @@ static void TRAP_mfn_wvap_set_config_driver(T_AccessPoint* ap, wld_vap_driverCfg
     // Ignore silently.
 }
 
+static swl_rc_ne TRAP_mfn_wvap_setMldUnit(T_AccessPoint* ap) {
+    _UNUSED_(ap);
+    SAH_TRACEZ_NOTICE(ME, "%p", ap);
+    // Ignore silently.
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+
 #define DEF_TRAP(type, func) \
     static int TRAP_ ## func(type * obj) { \
         _UNUSED_(obj); \
@@ -713,6 +721,9 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_fsm_state);
     FTA_ASSIGN(mfn_wvap_fsm);
     FTA_ASSIGN(mfn_wvap_fsm_nodelay);
+    FTA_ASSIGN(mfn_wvap_setMldUnit);
+
+
     FTA_ASSIGN(mfn_wrad_fsm_state);
     FTA_ASSIGN(mfn_wrad_fsm);
     FTA_ASSIGN(mfn_wrad_fsm_nodelay);

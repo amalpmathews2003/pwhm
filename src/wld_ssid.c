@@ -133,6 +133,7 @@ T_SSID* s_createSsid(const char* name, uint32_t id) {
     amxp_timer_new(&pSSID->enableSyncTimer, s_syncEnable, pSSID);
     pSSID->enable = 0;
     pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
+    pSSID->mldUnit = -1;
     SAH_TRACEZ_INFO(ME, "created ssid(%s) ctx(%p) id(%d)", name, pSSID, id);
     SAH_TRACEZ_OUT(ME);
     return pSSID;
@@ -415,6 +416,27 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     SAH_TRACEZ_OUT(ME);
 }
 
+
+static void s_setMLDUnit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    T_SSID* pSSID = wld_ssid_fromObj(object);
+    ASSERT_NOT_NULL(pSSID, , ME, "INVALID");
+    int32_t newMldUnit = amxc_var_get_int32_t(newValue);
+    if(pSSID->mldUnit == newMldUnit) {
+        return;
+    }
+    SAH_TRACEZ_INFO(ME, "%s: SET MLD_UNIT %u %u", pSSID->Name, pSSID->mldUnit, newMldUnit);
+
+    pSSID->mldUnit = newMldUnit;
+    if(pSSID->AP_HOOK != NULL) {
+        T_AccessPoint* pAP = pSSID->AP_HOOK;
+        pAP->pFA->mfn_wvap_setMldUnit(pAP);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+
 static void s_copyEpStats(T_Stats* pStats, T_EndPointStats* pEpStats) {
     ASSERTS_NOT_NULL(pStats, , ME, "NULL");
     ASSERTS_NOT_NULL(pEpStats, , ME, "NULL");
@@ -598,7 +620,9 @@ static void s_setMacAddress_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
 SWLA_DM_HDLRS(sSsidDmHdlrs,
               ARR(SWLA_DM_PARAM_HDLR("SSID", s_setSSID_pwf),
                   SWLA_DM_PARAM_HDLR("MACAddress", s_setMacAddress_pwf),
-                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf)));
+                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MLDUnit", s_setMLDUnit_pwf)
+                  ));
 
 void _wld_ssid_setConf_ocf(const char* const sig_name,
                            const amxc_var_t* const data,

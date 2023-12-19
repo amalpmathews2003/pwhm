@@ -79,12 +79,12 @@ typedef struct {
 } wld_fsmMngr_action_t;
 
 typedef struct {
-    void (* doRestart)(T_Radio* pRad);
+    void (* doRestart)(T_Radio* pRad); // Called on lock, allows update of FSM_ReqState
     void (* doRadFsmRun)(T_Radio* pRad);
     void (* doEpFsmRun)(T_EndPoint* pEP, T_Radio* pRad);
     void (* doVapFsmRun)(T_AccessPoint* pAP, T_Radio* pRad);
     void (* doCompendCheck)(T_Radio* pRad, bool last);
-    void (* doFinish)(T_Radio* pRad);
+    void (* doFinish)(T_Radio* pRad);           // Called on lock, allows update of FSM_ReqState
     void (* checkPreDependency)(T_Radio* pRad); // Pre dependecy check for radio
     void (* checkVapDependency)(T_AccessPoint* pAP, T_Radio* pRad);
     void (* checkEpDependency)(T_EndPoint* pEP, T_Radio* pRad);
@@ -99,5 +99,6 @@ void wld_rad_fsm_cleanFsmBits(T_Radio* rad);
 int wld_rad_fsm_clearFsmBitForAll(T_Radio* rad, int bitNr);
 
 void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
+uint32_t wld_fsm_getNrNotIdle();
 
 #endif /* SRC_INCLUDE_WLD_WLD_FSM_H_ */

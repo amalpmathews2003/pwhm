@@ -198,6 +198,16 @@
 			default "SSID_NOT_SET";
 			userflags %usersetting;
 		}
+		
+		/**
+		 * MLD-BSS unit number specifying BSS across multiple radios that 
+		 * form a single Multi Link Device. Assigning the same MLD unit groups
+		 * Basic Service Sets (BSS) across radios. A (default) value of -1 indicates 
+		 * that the interface is not part of any MLD.
+		 */
+		%persistent int32 MLDUnit{
+		    default -1;
+		}
 
 		%read-only object Stats{
 			on action read call wld_ssid_getStats_orf;

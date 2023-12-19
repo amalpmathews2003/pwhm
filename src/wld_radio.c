@@ -3075,13 +3075,16 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
 bool wld_rad_areAllVapsDone(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_AccessPoint* pAP = NULL;
+    if(amxc_llist_size(&pRad->llAP) == 0) {
+        return false;
+    }
 
     /*
      * Check whether all configurable APs are initialized
      * (i.e conf loaded from saved/defaults , internal ctx synced with datamodel)
      */
     wld_rad_forEachAp(pAP, pRad) {
-        if((pAP->pBus != NULL) && (!pAP->initDone)) {
+        if(!pAP->initDone) {
             return false;
         }
     }

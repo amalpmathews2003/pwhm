@@ -280,7 +280,11 @@
 			default "6GHz";
 		}
 	}
-    }
+	
+	%persistent object Vendor {
+	
+	}
+}
 }
 
 include "wld_radio.odl";

@@ -102,7 +102,7 @@ wld_event_queue_t* gWld_queue_rad_onScan_change = NULL;
 wld_event_queue_t* gWld_queue_rad_onChangeEvent = NULL;
 wld_event_queue_t* gWld_queue_rad_onFrameEvent = NULL;
 
-wld_event_queue_t* gWld_queue_sta_onChangeEvent = NULL;
+wld_event_queue_t* gWld_queue_sta_onChangeEvent = NULL; // Called on station lifecycle changes. @type wld_ad_changeEvent_t.
 
 
 wld_event_queue_t* gWld_queue_lifecycleEvent = NULL;

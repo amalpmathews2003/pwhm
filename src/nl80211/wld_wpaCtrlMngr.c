@@ -187,6 +187,8 @@ bool wld_wpaCtrlMngr_getEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void** userdata, wl
  */
 bool wld_wpaCtrlMngr_registerInterface(wld_wpaCtrlMngr_t* pMgr, wld_wpaCtrlInterface_t* pIface) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
+    ASSERT_NOT_NULL(pIface, false, ME, "NULL");
+
     if(!swl_unLiList_contains(&pMgr->ifaces, &pIface)) {
         swl_unLiList_add(&pMgr->ifaces, &pIface);
         pIface->pMgr = pMgr;

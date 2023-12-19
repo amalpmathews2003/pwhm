@@ -577,6 +577,7 @@ typedef enum {
 /* This structure will be attached on the OBJECT void pointer of the datamodel */
 typedef struct {
     FSM_STATE FSM_State;                      // Our main state
+    FSM_STATE FSM_ReqState;                   // State to which vendor wants FSM to move, in certain places
     int FSM_Delay;                            // Delay the FSM with some cycles
     int FSM_ComPend;                          // Commit Pending?
     int FSM_Error;                            // Error Message
@@ -1600,6 +1601,7 @@ struct S_SSID {
     amxp_timer_t* enableSyncTimer;            /* Timer to keep the SSID and Intf enable synced */
     bool syncEnableToIntf;                    /* Whether the sync should be SSID to intf (true) or other way (false)*/
     uint32_t bssIndex;                        /* interface creation order among all radio's interfaces */
+    int32_t mldUnit;                          /* the index in which "mld unit" this SSID is located */
 };
 
 typedef struct {
@@ -2424,6 +2426,11 @@ typedef struct S_CWLD_FUNC_TABLE {
      * should remove the AP from its list.
      */
     swl_rc_ne (* mfn_wvap_deleted_neighbour)(T_AccessPoint* pAP, T_ApNeighbour* newNeighbour);
+
+    /**
+     * Notify set of mldUnit
+     */
+    swl_rc_ne (* mfn_wvap_setMldUnit)(T_AccessPoint* pAP);
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {
