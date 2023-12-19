@@ -376,6 +376,7 @@ static void s_syncApSSIDDm(T_AccessPoint* pAP) {
     if(wld_persist_writeApAtCreation()) {
         T_SSID* pSSID = pAP->pSSID;
         ASSERTS_NOT_NULL(pSSID, , ME, "No mapped SSID Ctx");
+        pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, GET);
         pAP->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
         pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         pAP->initDone = true;
