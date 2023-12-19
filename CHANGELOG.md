@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.19.2 - 2023-12-19(17:34:35 +0000)
+
+### Other
+
+- : KeyPassPhrase is lost after upgrade
+
 ## Release v5.19.1 - 2023-12-14(14:48:48 +0000)
 
 ### Other
