@@ -684,7 +684,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             ifIndex = pEP->index;
         }
         amxd_trans_set_cstring_t(&trans, "Name", TBuf);
-        amxd_trans_set_int32_t(&trans, "Index", ifIndex);
+        amxd_trans_set_uint32_t(&trans, "Index", ifIndex);
 
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pS->Name);
     } else {

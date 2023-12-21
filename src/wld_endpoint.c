@@ -951,7 +951,7 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
                              cstr_EndPoint_connectionStatus[pEP->connectionStatus]);
     amxd_trans_set_cstring_t(&trans, "LastError", cstr_EndPoint_lastError[pEP->error]);
     amxd_trans_set_cstring_t(&trans, "Alias", pEP->alias);
-    amxd_trans_set_int32_t(&trans, "Index", pEP->index);
+    amxd_trans_set_uint32_t(&trans, "Index", pEP->index);
     amxd_trans_set_cstring_t(&trans, "IntfName", pEP->Name);
 
     if(pEP->currentProfile) {

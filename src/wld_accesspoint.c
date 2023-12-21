@@ -811,7 +811,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         /* object, must be the one mapping on the pAP structure (/WIFI/AccessPoint/xxx */
 
         amxd_trans_set_cstring_t(&trans, "Status", cstr_AP_status[pAP->status]);
-        amxd_trans_set_int32_t(&trans, "Index", pAP->index);
+        amxd_trans_set_uint32_t(&trans, "Index", pAP->index);
 
         amxd_trans_set_cstring_t(&trans, "Alias", pAP->alias);
 

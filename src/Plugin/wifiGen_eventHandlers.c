@@ -344,9 +344,9 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
 
 void s_syncVapInfo(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    swl_typeUInt32_toObjectParam(pAP->pBus, "Index", pAP->index);
+    swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
     ASSERT_NOT_NULL(pAP->pSSID, , ME, "NULL");
-    swl_typeUInt32_toObjectParam(pAP->pSSID->pBus, "Index", pAP->index);
+    swl_typeUInt32_commitObjectParam(pAP->pSSID->pBus, "Index", pAP->index);
     wld_vap_updateState(pAP);
 }
 
