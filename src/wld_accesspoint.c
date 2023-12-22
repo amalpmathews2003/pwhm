@@ -1823,6 +1823,23 @@ static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_pa
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setMACAddressControlEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    bool newMACAddressControlEnabled = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set MACAddressControlEnabled %d", pAP->alias, newMACAddressControlEnabled);
+
+    amxd_object_t* mfObject = amxd_object_get(pAP->pBus, "MACFiltering");
+    if((pAP->MF_Mode == APMFM_WHITELIST) || (pAP->MF_Mode == APMFM_OFF)) {
+        swl_typeCharPtr_commitObjectParam(mfObject, "Mode", newMACAddressControlEnabled ? (char*) cstr_AP_MFMode[APMFM_WHITELIST] : (char*) cstr_AP_MFMode[APMFM_OFF]);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
     return s_createAp(pRad, vapName, idx, NULL);
 }
@@ -2546,6 +2563,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("dbgAPFile", s_setDbgFile_pwf),
                   SWLA_DM_PARAM_HDLR("MACFilterAddressList", wld_apMacFilter_setAddressList_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setApEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MACAddressControlEnabled", s_setMACAddressControlEnabled_pwf),
                   ),
               .instAddedCb = s_addApInst_oaf, );
 

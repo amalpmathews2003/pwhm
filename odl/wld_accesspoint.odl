@@ -368,8 +368,19 @@ define rrm_t{
 		 * List of MAC Addresses allowed or blocked on the current AP depending of the mode.
 		 * @version 9.3
 		 */
-		string MACFilterAddressList{
+		%persistent string MACFilterAddressList {
 			on action validate call wld_ap_validateAddressList_pvf;
+			default "";
+			userflags %upc;
+		}
+
+		/**
+		 * Indicates whether or not MAC Address Control is enabled on this.
+		 * MAC Address Control limits client devices to those whose hardware addresses match the MACFilterAddressList list.
+		 */
+		%persistent bool MACAddressControlEnabled {
+			default false;
+			userflags %upc;
 		}
 
 		/**

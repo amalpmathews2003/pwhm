@@ -168,6 +168,7 @@ static void s_syncMACFiltering(amxd_object_t* object) {
     if(mfMode != pAP->MF_Mode) {
         SAH_TRACEZ_INFO(ME, "%s: Update Mac Filtering Mode from %u to %u", pAP->alias, pAP->MF_Mode, mfMode);
         pAP->MF_Mode = mfMode;
+        swl_typeBool_commitObjectParam(pAP->pBus, "MACAddressControlEnabled", (pAP->MF_Mode == APMFM_WHITELIST));
         needSyncToHw = true;
     }
 
