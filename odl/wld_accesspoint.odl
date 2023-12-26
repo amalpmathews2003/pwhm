@@ -1122,7 +1122,7 @@ define rrm_t{
 		    @version 6.0
 		  */
 		%read-only object AssociatedDevice[]{
-			on action read call getSingleStationStats;
+			on action read call wld_assocDev_getStats_orf;
 			on event "*" call wld_ap_setAssocDevConf_ocf;
 
 			/** CUI based on Chargeable-User-Identity attribute in Access-Accept

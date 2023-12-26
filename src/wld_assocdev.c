@@ -684,7 +684,7 @@ static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* r
 
         amxc_var_t tmpVar;
         amxc_var_init(&tmpVar);
-        amxd_object_get_params(pAD->object, &tmpVar, amxd_dm_access_private);
+        swla_dm_getObjectParams(pAD->object, &tmpVar, &pAD->onActionReadCtx);
 
         amxc_var_add_new_amxc_htable_t(retval, &tmpVar.data.vm);
 
@@ -783,42 +783,35 @@ amxd_status_t _getStationStats(amxd_object_t* obj_AP,
     return amxd_status_ok;
 }
 
-amxd_status_t _getSingleStationStats(amxd_object_t* const object,
-                                     amxd_param_t* const param,
-                                     amxd_action_t reason,
-                                     const amxc_var_t* const args,
-                                     amxc_var_t* const action_retval,
-                                     void* priv) {
-    SAH_TRACEZ_IN(ME);
-
-    amxd_status_t status = amxd_status_ok;
-    if(reason != action_object_read) {
-        status = amxd_status_function_not_implemented;
-        goto exit;
-    }
-
+static swl_rc_ne s_getSingleStationStats(amxd_object_t* const object) {
+    ASSERT_NOT_NULL(object, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_AssociatedDevice* pAD = object->priv;
-    if(pAD == NULL) {
-        SAH_TRACEZ_INFO(ME, "pAD is NULL, no device present");
-        status = amxd_status_ok;
-        goto exit;
-    }
-
+    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "pAD is NULL, no device present");
     T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
-    if((pAP != NULL) && (pAP->pFA->mfn_wvap_get_single_station_stats(pAD) >= SWL_RC_OK)) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_rc_ne status = pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
+    if(status >= SWL_RC_OK) {
         // Update here stats parameters
         // and let status parameters been updated via transaction when needed
         s_updateStationStatsHistory(pAD);
         wld_ad_syncStats(pAD);
     }
 
-    status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
-
-exit:
-    SAH_TRACEZ_OUT(ME);
     return status;
 }
 
+amxd_status_t _wld_assocDev_getStats_orf(amxd_object_t* const object,
+                                         amxd_param_t* const param,
+                                         amxd_action_t reason,
+                                         const amxc_var_t* const args,
+                                         amxc_var_t* const action_retval,
+                                         void* priv) {
+    ASSERT_NOT_NULL(object, amxd_status_ok, ME, "obj is NULL");
+    T_AssociatedDevice* pAD = object->priv;
+    ASSERT_NOT_NULL(pAD, amxd_status_ok, ME, "pAD is NULL, no device present");
+    return swla_dm_procObjActionRead(object, param, reason, args, action_retval, priv, &pAD->onActionReadCtx, s_getSingleStationStats);
+}
 
 /**
  * Return whether or not the given accesspoint has a far station.
@@ -1522,7 +1515,13 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
         amxd_trans_clean(&trans);
         return SWL_RC_CONTINUE;
     }
-    if(swl_object_finalizeTransactionOnLocalDm(&trans) != amxd_status_ok) {
+
+    swla_dm_objActionReadCtx_t* onActionReadCtx = &pAD->onActionReadCtx;
+    SWLA_DM_OBJ_BLOCK_READ_HDLR_CALL(onActionReadCtx);
+    amxd_status_t status = swl_object_finalizeTransactionOnLocalDm(&trans);
+    SWLA_DM_OBJ_ALLOW_READ_HDLR_CALL(onActionReadCtx);
+
+    if(status != amxd_status_ok) {
         SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pAD->Name);
         return SWL_RC_ERROR;
     }

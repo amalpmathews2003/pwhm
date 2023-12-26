@@ -850,6 +850,7 @@ typedef struct {
     swl_IEEE80211deauthReason_ne lastDeauthReason; /* last deauth reason for this sta */
     void* vendor;                                  /* Pointer for wifi chipset vendor data */
     wld_extMod_dataList_t extDataList;             /* list of extention data for non-chipset vendor modules */
+    swla_dm_objActionReadCtx_t onActionReadCtx;
 } T_AssociatedDevice;
 
 #define X_T_ASSOCIATED_DEVICE_ANNOT(X, Y) \
