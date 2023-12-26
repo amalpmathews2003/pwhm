@@ -441,7 +441,7 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     swl_chanspec_t tgtChanspec = chanspec;
 
     if(tgtChanspec.bandwidth == SWL_BW_AUTO) {
-        tgtChanspec.bandwidth = swl_bandwidth_defaults[pR->operatingFrequencyBand];
+        tgtChanspec.bandwidth = swl_bandwidth_defaults[wld_rad_getFreqBand(pR)];
     }
     while(!wld_channel_is_band_available(tgtChanspec) && tgtChanspec.bandwidth > 0) {
         tgtChanspec.bandwidth--;
