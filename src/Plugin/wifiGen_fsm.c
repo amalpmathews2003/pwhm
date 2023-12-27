@@ -308,6 +308,9 @@ static bool s_doRadEnable(T_Radio* pRad) {
 static bool s_doRadSync(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: sync rad conf", pRad->Name);
     pRad->pFA->mfn_wrad_sync(pRad, SET | DIRECT);
+    if(wifiGen_hapd_isRunning(pRad)) {
+        wld_rad_hostapd_setMiscParams(pRad);
+    }
     return true;
 }
 

@@ -73,6 +73,8 @@
 
 #define ME "hapdCfg"
 
+#define IEEE80211_MAX_RTS_THRESHOLD 2347 //MAX RTS Threshold, to make RTS/CTS handshake off
+
 /*
  * @brief names of all WPS configuration methods supported by hostapd
  * matching WPS v2.0 Config Methods
@@ -321,6 +323,14 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_tx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_TX_ANTPAT_CONS
         }
     }
+
+    int32_t rtsThreshold = -1;
+    if(pRad->rtsThreshold < IEEE80211_MAX_RTS_THRESHOLD) {
+        rtsThreshold = pRad->rtsThreshold;
+    }
+    swl_mapCharFmt_addValInt32(radConfigMap, "rts_threshold", rtsThreshold);
+
+    pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
 }
 
 /**
@@ -782,6 +792,8 @@ void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConf
     s_setVapCommonConfig(pAP, vapConfigMap);
     s_setVapWpsConfig(pAP, vapConfigMap);
     s_setVapMultiApConf(pAP, vapConfigMap, multiAPConfig);
+
+    pAP->pFA->mfn_wvap_updateConfigMap(pAP, vapConfigMap);
 }
 
 /**
@@ -801,8 +813,6 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
     ASSERT_TRUE(ret, , ME, "Bad config");
     swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
     wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
-
-    pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
 
     swl_mapChar_t* multiAPConfig = NULL;
     amxc_llist_for_each(ap_it, &pRad->llAP) {
@@ -824,12 +834,6 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
             swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
             wld_hostapd_cfgFile_setVapConfig(pAp, vapConfigMap, multiAPConfig);
         }
-    }
-
-    amxc_llist_for_each(ap_it, &pRad->llAP) {
-        T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
-        swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
-        pAp->pFA->mfn_wvap_updateConfigMap(pAp, vapConfigMap);
     }
 
     wld_hostapd_writeConfig(config, cfgFileName);

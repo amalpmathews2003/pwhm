@@ -64,6 +64,7 @@
 #include "wld_rad_hostapd_api.h"
 #include "wld_hostapd_ap_api.h"
 #include "wld_hostapd_cfgFile.h"
+#include "swl/map/swl_mapCharFmt.h"
 
 #define ME "hapdRad"
 
@@ -226,7 +227,6 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
     swl_mapChar_t radParams;
     swl_mapChar_init(&radParams);
     wld_hostapd_cfgFile_setRadioConfig(pR, &radParams);
-    pR->pFA->mfn_wrad_updateConfigMap(pR, &radParams);
     const char* chanParams[] = {
         "channel", "op_class", "ht_capab",
         "vht_capab", "vht_oper_centr_freq_seg0_idx", "vht_oper_chwidth",
@@ -236,6 +236,37 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
         wld_ap_hostapd_setParamValue(primaryVap, chanParams[i], swl_mapChar_get(&radParams, (char*) chanParams[i]), "");
     }
     swl_mapChar_cleanup(&radParams);
+    return SECDMN_ACTION_OK_NEED_TOGGLE;
+}
+
+wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
+    T_AccessPoint* primaryVap = wld_rad_firstAp(pRad);
+    ASSERT_NOT_NULL(primaryVap, SECDMN_ACTION_ERROR, ME, "NULL");
+
+    swl_mapChar_t radParams;
+    swl_mapChar_init(&radParams);
+    wld_hostapd_cfgFile_setRadioConfig(pRad, &radParams);
+    const char* miscRadParams[] = {
+        "rts_threshold",
+    };
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(miscRadParams); i++) {
+        wld_ap_hostapd_setParamValue(primaryVap, miscRadParams[i], swl_mapChar_get(&radParams, (char*) miscRadParams[i]), "");
+    }
+    swl_mapChar_cleanup(&radParams);
+
+    swl_mapChar_t vapParams;
+    swl_mapChar_init(&vapParams);
+    wld_hostapd_cfgFile_setVapConfig(primaryVap, &vapParams, (swl_mapChar_t*) NULL);
+    const char* miscVapParams[] = {
+        "beacon_int", "dtim_period",
+    };
+    amxc_llist_for_each(it, &pRad->llAP) {
+        T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+        for(uint32_t i = 0; i < SWL_ARRAY_SIZE(miscVapParams); i++) {
+            wld_ap_hostapd_setParamValue(pAP, miscVapParams[i], swl_mapChar_get(&vapParams, (char*) miscVapParams[i]), "");
+        }
+    }
+    swl_mapChar_cleanup(&vapParams);
     return SECDMN_ACTION_OK_NEED_TOGGLE;
 }
 

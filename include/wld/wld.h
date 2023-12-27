@@ -1486,6 +1486,7 @@ struct WLD_RADIO {
     wld_rad_bf_cap_m bfCapsEnabled[COM_DIR_MAX];    /* Which beamforming capabilities are enabled */
     int32_t nrAntenna[COM_DIR_MAX];                 /* Number of antennas available. -1 means undefined */
     int32_t nrActiveAntenna[COM_DIR_MAX];           /* Number of antennas active. -1 means undefined */
+    uint16_t rtsThreshold;                          /* Number of octets in an MPDU below which an RTS/CTS handshake is not performed */
     uint32_t beaconPeriod;                          /* Beaconing period in ms */
     uint32_t dtimPeriod;                            /* Delivery Traffic Information Map period, in nrBeacons*/
     unsigned int DFSChannelChangeEventCounter;      /* Number of DFS channel change events */

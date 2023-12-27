@@ -910,6 +910,19 @@ static void s_setRetryLimit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setRtsThreshold_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    uint16_t rtsThreshold = amxc_var_dyncast(uint16_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set RTS threshold %u", pRad->Name, rtsThreshold);
+    pRad->rtsThreshold = rtsThreshold;
+    wld_rad_doSync(pRad);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 /* Setting Long Retry Limit */
 static void s_setLongRetryLimit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -2193,6 +2206,7 @@ T_DEBUG_OBJ_STR VerifyRadio[] = {
     {TPH_INT32, "TransmitPower", TPH_INT32, offsetof(T_Radio, transmitPower)},
     {TPH_INT32, "ActiveAntennaCtrl", TPH_INT32, offsetof(T_Radio, actAntennaCtrl)},
     {TPH_UINT32, "RetryLimit", TPH_UINT8, offsetof(T_Radio, retryLimit)},
+    {TPH_UINT16, "RTSThreshold", TPH_UINT32, offsetof(T_Radio, rtsThreshold)},
     {TPH_UINT32, "LongRetryLimit", TPH_UINT8, offsetof(T_Radio, longRetryLimit)},
     {TPH_UINT32, "BeaconPeriod", TPH_UINT32, offsetof(T_Radio, beaconPeriod)},
     {TPH_UINT32, "DTIMPeriod", TPH_UINT32, offsetof(T_Radio, dtimPeriod)},
@@ -3992,6 +4006,7 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("RxChainCtrl", s_setRxChainCtrl_pwf),
                   SWLA_DM_PARAM_HDLR("TxChainCtrl", s_setTxChainCtrl_pwf),
                   SWLA_DM_PARAM_HDLR("RetryLimit", s_setRetryLimit_pwf),
+                  SWLA_DM_PARAM_HDLR("RTSThreshold", s_setRtsThreshold_pwf),
                   SWLA_DM_PARAM_HDLR("LongRetryLimit", s_setLongRetryLimit_pwf),
                   SWLA_DM_PARAM_HDLR("BeaconPeriod", s_setBeaconPeriod_pwf),
                   SWLA_DM_PARAM_HDLR("DTIMPeriod", s_setDtimPeriod_pwf),

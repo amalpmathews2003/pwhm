@@ -68,6 +68,7 @@
 
 wld_secDmn_action_rc_ne wld_rad_hostapd_setOperatingStandard(T_Radio* pRadio);
 wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR);
+wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pR);
 swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR);
 swl_rc_ne wld_rad_hostapd_reload(T_Radio* pR);
 swl_rc_ne wld_rad_hostapd_enable(T_Radio* pR);
