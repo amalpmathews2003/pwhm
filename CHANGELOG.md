@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.19.3 - 2023-12-27(16:22:55 +0000)
+
+### Other
+
+- - fix klocwork issue
+
 ## Release v5.19.2 - 2023-12-19(17:34:35 +0000)
 
 ### Other
