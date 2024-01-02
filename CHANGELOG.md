@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.19.4 - 2024-01-02(10:06:27 +0000)
+
+### Other
+
+- : No notification when Index changes
+
 ## Release v5.19.3 - 2023-12-27(16:22:55 +0000)
 
 ### Other
