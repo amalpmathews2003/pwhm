@@ -171,6 +171,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     swl_macBin_t macBin = SWL_MAC_BIN_NEW();
     wld_ssid_generateBssid(pRad, pAP, apIndex, &macBin);
     wld_ssid_setBssid(pAP->pSSID, &macBin);
+    pAP->pFA->mfn_sync_ssid(pAP->pSSID->pBus, pAP->pSSID, SET);
 
     /* Set network address! */
     wifiGen_vap_setBssid(pAP);
