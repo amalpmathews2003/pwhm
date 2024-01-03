@@ -195,8 +195,8 @@ static bool is_flag_set_on_channel(int channel, swl_freqBandExt_e freqBand, uint
 }
 
 static bool is_flag_set_in_band_always(swl_chanspec_t chanspec, uint32_t flag) {
-    int chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
-    int nr_channels = wld_channel_get_channels_in_band(chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
+    swl_channel_t chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
+    int nr_channels = swl_chanspec_getChannelsInChanspec(&chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
     int i = 0;
     for(i = 0; i < nr_channels; i++) {
         if(!is_flag_set_on_channel(chan_list[i], chanspec.band, flag)) {
@@ -207,8 +207,8 @@ static bool is_flag_set_in_band_always(swl_chanspec_t chanspec, uint32_t flag) {
 }
 
 static bool is_flag_set_in_band_anywhere(swl_chanspec_t chanspec, uint32_t flag) {
-    int chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
-    int nr_channels = wld_channel_get_channels_in_band(chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
+    swl_channel_t chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
+    int nr_channels = swl_chanspec_getChannelsInChanspec(&chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
     int i = 0;
     for(i = 0; i < nr_channels; i++) {
         if(is_flag_set_on_channel(chan_list[i], chanspec.band, flag)) {
@@ -233,8 +233,8 @@ static inline bool chandata_has_flag(wld_channel_data* data, uint32_t flag) {
 }
 
 static void band_remove_flag(swl_chanspec_t chanspec, uint32_t flag) {
-    int chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
-    int nr_channels = wld_channel_get_channels_in_band(chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
+    swl_channel_t chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
+    int nr_channels = swl_chanspec_getChannelsInChanspec(&chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
     int i;
     for(i = 0; i < nr_channels; i++) {
         wld_channel_data* channel = get_channel_data(chan_list[i], chanspec.band);
@@ -245,8 +245,8 @@ static void band_remove_flag(swl_chanspec_t chanspec, uint32_t flag) {
 }
 
 static void band_add_flag(swl_chanspec_t chanspec, uint32_t flag) {
-    int chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
-    int nr_channels = wld_channel_get_channels_in_band(chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
+    swl_channel_t chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
+    int nr_channels = swl_chanspec_getChannelsInChanspec(&chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
     int i;
     for(i = 0; i < nr_channels; i++) {
         wld_channel_data* channel = get_channel_data(chan_list[i], chanspec.band);
@@ -539,7 +539,7 @@ int wld_channel_isValidClearChannel(T_Radio* pRad, int channel, swl_bandwidth_e 
 int wld_channel_get_channel_to_clear(T_Radio* pRad, swl_bandwidth_e operatingChannelBandwidth) {
     swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(WLD_CHAN_START_DFS, operatingChannelBandwidth, pRad->operatingFrequencyBand);
 
-    int nr_channels = wld_get_nr_channels_in_band(chanspec);
+    int nr_channels = swl_chanspec_getNrChannelsInBand(&chanspec);
     if(pRad->nrPossibleChannels == 0) {
         return 0;
     }
@@ -582,9 +582,9 @@ bool wld_channel_areAdjacent(swl_chanspec_t chanspec1, swl_chanspec_t chanspec2)
         chanspec_high.bandwidth = chanspec1.bandwidth;
     }
 
-    int baseLow = wld_channel_get_base_channel(chanspec_low);
-    int baseHigh = wld_channel_get_base_channel(chanspec_high);
-    int nr_channels = wld_get_nr_channels_in_band(chanspec_low);
+    int baseLow = swl_chanspec_getBaseChannel(&chanspec_low);
+    int baseHigh = swl_chanspec_getBaseChannel(&chanspec_high);
+    int nr_channels = swl_chanspec_getNrChannelsInBand(&chanspec_low);
 
     return baseHigh <= baseLow + nr_channels * CHANNEL_INCREMENT;
 }

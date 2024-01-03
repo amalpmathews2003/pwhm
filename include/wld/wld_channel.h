@@ -76,11 +76,8 @@ extern const wld_chan_interference_t interferenceMatrix_24_20Mhz[NR_INTERFERENCE
 extern const wld_chan_interference_t interferenceMatrix_24_40Mhz[NR_INTERFERENCE_ELEMENT_24_40];
 
 //Getters
-bool wld_channel_is_dfs(int channel);
 bool wld_channel_is_dfs_band(int channel, swl_bandwidth_e bandwidth);
 uint32_t wld_channel_getDfsPercentage(int channel, swl_bandwidth_e bandwidth);
-bool wld_channel_is_hp_dfs(int channel);
-bool wld_channel_is_5ghz(int channel);
 bool wld_channel_is_usable(swl_chanspec_t chanspec);
 bool wld_channel_is_band_usable(swl_chanspec_t chanspec);
 bool wld_channel_is_band_passive(swl_chanspec_t chanspec);
@@ -92,7 +89,6 @@ bool wld_channel_is_radar_detected(swl_chanspec_t chanspec);
 bool wld_channel_is_band_radar_detected(swl_chanspec_t chanspec);
 int wld_channel_isValidClearChannel(T_Radio* pRad, int channel, swl_bandwidth_e operatingChannelBandwidth);
 
-int wld_channel_get_base_channel(swl_chanspec_t chanspec);
 uint32_t wld_channel_getFrequencyOfChannel(swl_chanspec_t chanspec);
 uint32_t wld_channel_getBandwidthValFromEnum(swl_bandwidth_e radioBw);
 swl_bandwidth_e wld_channel_getBandwidthEnumFromVal(uint32_t val);
@@ -105,12 +101,6 @@ bool wld_channel_is_long_wait(swl_chanspec_t chanspec); //Deprecated
 bool wld_channel_is_long_wait_band(swl_chanspec_t chanspec);
 bool wld_channel_is_long_wait_channel(swl_chanspec_t chanspec);
 
-int wld_channel_get_channels_in_band(swl_chanspec_t chanspec, int* list, int size);
-
-
-int wld_get_nr_channels_in_band(swl_chanspec_t chanspec);
-
-int wld_channel_getComplementaryBaseChannel(swl_chanspec_t chanspec);
 bool wld_channel_areAdjacent(swl_chanspec_t chanspec1, swl_chanspec_t chanspec2);
 bool wld_channel_hasChannelWidthCovered(swl_chanspec_t chspec, swl_bandwidth_e chW);
 wld_channel_extensionPos_e wld_channel_getExtensionChannel(swl_chanspec_t chspec, wld_channel_extensionPos_e currExtChanPos);

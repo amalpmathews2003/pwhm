@@ -389,6 +389,24 @@ swl_rc_ne s_updateChannels(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
         pRad->possibleChannels[pRad->nrPossibleChannels] = chanSpec.channel;
         pRad->nrPossibleChannels++;
     }
+
+    uint32_t maxBwInt = 0;
+    swl_bandwidth_e maxBw = SWL_BW_AUTO;
+    swl_radBw_m suppChW = M_SWL_RAD_BW_AUTO;
+    for(uint32_t radBw = SWL_RAD_BW_AUTO; radBw < SWL_RAD_BW_MAX; radBw++) {
+        uint32_t radBwInt = swl_chanspec_radBwToInt(radBw);
+        if(SWL_BIT_IS_SET(pOperBand->chanWidthMask, swl_chanspec_intToBw(radBwInt))) {
+            if(radBwInt <= maxBwInt) {
+                continue;
+            }
+            maxBwInt = radBwInt;
+            maxBw = swl_chanspec_intToBw(maxBwInt);
+            W_SWL_BIT_SET(suppChW, radBw);
+        }
+    }
+    pRad->maxChannelBandwidth = maxBw;
+    pRad->supportedChannelBandwidth = suppChW;
+
     wld_channel_init_channels(pRad);
     s_readChanInfo(pRad, pOperBand);
     return SWL_RC_OK;

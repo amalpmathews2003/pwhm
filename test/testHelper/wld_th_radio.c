@@ -146,7 +146,7 @@ void s_readChanInfo(T_Radio* pRad) {
     for(int i = 0; i < pRad->nrPossibleChannels; i++) {
         swl_chanspec_t cs = swl_chanspec_fromDm(pRad->possibleChannels[i], pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
         wld_channel_mark_available_channel(cs);
-        if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) && wld_channel_is_dfs(possibleChannels5[i])) {
+        if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) && swl_channel_isDfs(possibleChannels5[i])) {
             wld_channel_mark_radar_req_channel(cs);
             wld_channel_mark_passive_channel(cs);
         }

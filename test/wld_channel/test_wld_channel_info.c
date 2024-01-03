@@ -75,19 +75,6 @@
 
 #include "wld_channel.h"
 
-
-static void test_wld_channel_is_dfs(void** state) {
-    (void) state;
-    assert_false(wld_channel_is_dfs(36));
-    assert_true(wld_channel_is_dfs(52));
-    assert_true(wld_channel_is_dfs(100));
-    assert_false(wld_channel_is_dfs(149));
-
-    assert_false(wld_channel_is_dfs(1));
-    assert_false(wld_channel_is_dfs(6));
-    assert_false(wld_channel_is_dfs(11));
-}
-
 static void test_wld_channel_is_dfs_band(void** state) {
     (void) state;
     assert_false(wld_channel_is_dfs_band(36, SWL_BW_80MHZ));
@@ -116,90 +103,6 @@ static void test_wld_channel_getDfsPercentage(void** state) {
     assert_int_equal(wld_channel_is_dfs_band(1, SWL_BW_20MHZ), 0);
     assert_int_equal(wld_channel_is_dfs_band(6, SWL_BW_20MHZ), 0);
     assert_int_equal(wld_channel_is_dfs_band(11, SWL_BW_20MHZ), 0);
-}
-
-static void test_wld_channel_is_hp_dfs(void** state) {
-    (void) state;
-    assert_false(wld_channel_is_hp_dfs(1));
-    assert_false(wld_channel_is_hp_dfs(6));
-    assert_false(wld_channel_is_hp_dfs(11));
-
-    assert_false(wld_channel_is_hp_dfs(36));
-    assert_false(wld_channel_is_hp_dfs(52));
-    assert_true(wld_channel_is_hp_dfs(100));
-    assert_false(wld_channel_is_hp_dfs(149));
-}
-
-static void test_wld_channel_is_5ghz(void** state) {
-    (void) state;
-
-    assert_false(wld_channel_is_5ghz(1));
-    assert_false(wld_channel_is_5ghz(6));
-    assert_false(wld_channel_is_5ghz(11));
-
-    assert_true(wld_channel_is_5ghz(36));
-    assert_true(wld_channel_is_5ghz(52));
-    assert_true(wld_channel_is_5ghz(100));
-    assert_true(wld_channel_is_5ghz(149));
-}
-
-static void test_wld_get_nr_channels_in_band(void** state) {
-    (void) state;
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(1, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_2_4GHZ);
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.channel = 11;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.channel = 1;
-    chanspec.bandwidth = SWL_BW_20MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.channel = 11;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.channel = 1;
-    chanspec.bandwidth = SWL_BW_40MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 5);
-    chanspec.channel = 11;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 5);
-
-    chanspec.channel = 36;
-    chanspec.band = SWL_FREQ_BAND_EXT_5GHZ;
-    chanspec.bandwidth = SWL_BW_AUTO;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.bandwidth = SWL_BW_20MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.bandwidth = SWL_BW_40MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 2);
-    chanspec.bandwidth = SWL_BW_80MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 4);
-    chanspec.bandwidth = SWL_BW_160MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 8);
-
-    chanspec.channel = 100;
-    chanspec.band = SWL_FREQ_BAND_EXT_5GHZ;
-    chanspec.bandwidth = SWL_BW_AUTO;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.bandwidth = SWL_BW_20MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 1);
-    chanspec.bandwidth = SWL_BW_40MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 2);
-    chanspec.bandwidth = SWL_BW_80MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 4);
-    chanspec.bandwidth = SWL_BW_160MHZ;
-    assert_int_equal(wld_get_nr_channels_in_band(chanspec), 8);
-}
-
-static void test_wld_channel_get_base_channel(void** state) {
-    (void) state;
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(64, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ);
-    assert_int_equal(wld_channel_get_base_channel(chanspec), 64);
-    chanspec.bandwidth = SWL_BW_20MHZ;
-    assert_int_equal(wld_channel_get_base_channel(chanspec), 64);
-    chanspec.bandwidth = SWL_BW_40MHZ;
-    assert_int_equal(wld_channel_get_base_channel(chanspec), 60);
-    chanspec.bandwidth = SWL_BW_80MHZ;
-    assert_int_equal(wld_channel_get_base_channel(chanspec), 52);
-    chanspec.bandwidth = SWL_BW_160MHZ;
-    assert_int_equal(wld_channel_get_base_channel(chanspec), 36);
 }
 
 static void test_wld_channel_get_center_channel(void** state) {
@@ -305,29 +208,6 @@ static void test_wld_channel_is_chan_in_band(void** state) {
     assert_false(wld_channel_is_chan_in_band(chanspec, 100));
 }
 
-static void test_wld_channel_getComplementaryBaseChannel(void** state) {
-    (void) state;
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(36, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ);
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), -1);
-    chanspec.bandwidth = SWL_BW_40MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), 40);
-    chanspec.bandwidth = SWL_BW_80MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), 44);
-    chanspec.bandwidth = SWL_BW_160MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), 52);
-
-    chanspec.channel = 100;
-    chanspec.bandwidth = SWL_BW_20MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), -1);
-    chanspec.bandwidth = SWL_BW_40MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), 104);
-    chanspec.bandwidth = SWL_BW_80MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), 108);
-    chanspec.bandwidth = SWL_BW_160MHZ;
-    assert_int_equal(wld_channel_getComplementaryBaseChannel(chanspec), 116);
-}
-
-
 static int s_setupSuite(void** state) {
     (void) state;
     return 0;
@@ -347,17 +227,11 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetTimeFormat(TRACE_TIME_APP_SECONDS);
     sahTraceAddZone(sahTraceLevel(), "pcb");
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_wld_channel_is_dfs),
         cmocka_unit_test(test_wld_channel_is_dfs_band),
         cmocka_unit_test(test_wld_channel_getDfsPercentage),
-        cmocka_unit_test(test_wld_channel_is_hp_dfs),
-        cmocka_unit_test(test_wld_channel_is_5ghz),
-        cmocka_unit_test(test_wld_get_nr_channels_in_band),
-        cmocka_unit_test(test_wld_channel_get_base_channel),
         cmocka_unit_test(test_wld_channel_get_center_channel),
         cmocka_unit_test(test_wld_channel_is_long_wait_band),
         cmocka_unit_test(test_wld_channel_is_chan_in_band),
-        cmocka_unit_test(test_wld_channel_getComplementaryBaseChannel),
     };
     int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();

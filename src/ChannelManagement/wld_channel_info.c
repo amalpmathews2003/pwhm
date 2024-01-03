@@ -100,67 +100,10 @@ struct operating_class_table {
 };
 
 /**
- * Fill in the list with the amount of channels in the band
- */
-int wld_channel_get_channels_in_band(swl_chanspec_t chanspec, int* list, int list_size) {
-    swl_chanspec_t baseChanspec;
-    memcpy(&baseChanspec, &chanspec, sizeof(swl_chanspec_t));
-    if(chanspec.band != SWL_FREQ_BAND_EXT_2_4GHZ) {
-        baseChanspec.channel = wld_channel_get_base_channel(chanspec);
-        int nr_channels = wld_get_nr_channels_in_band(baseChanspec);
-        int i;
-        for(i = 0; i < nr_channels && i < list_size; i++) {
-            list[i] = baseChanspec.channel + i * CHANNEL_INCREMENT;
-        }
-        if((i == list_size) && (i < nr_channels)) {
-            SAH_TRACEZ_ERROR(ME, "Could not put all channels of %u/%u in list of size %u",
-                             chanspec.channel,
-                             chanspec.bandwidth,
-                             list_size);
-        }
-        return i;
-    } else {
-        if((chanspec.bandwidth == SWL_BW_20MHZ) && (list_size >= 1)) {
-            list[0] = chanspec.channel;
-            return 1;
-        } else if((chanspec.bandwidth == SWL_BW_40MHZ) && (list_size >= 5)) {
-            int start_channel = chanspec.channel;
-            //when the operating channel is greater than 6, we use it as top channel, otherwise bottem channel
-            if(start_channel > 6) {
-                start_channel -= 4;
-            }
-            for(int i = 0; i < 5; i++) {
-                list[i] = start_channel + i;
-            }
-            return 5;
-        } else {
-            SAH_TRACEZ_ERROR(ME, "Could not put all channels of %u/%u @ %u in list of size %u",
-                             chanspec.channel,
-                             chanspec.bandwidth,
-                             chanspec.band,
-                             list_size);
-            return 0;
-        }
-    }
-
-}
-
-/**
- * Returns whether or not the given channel is a dfs channel
- */
-bool wld_channel_is_dfs(int channel) {
-    // non-DFS chans in ETSI: 36..48
-    // DFS chans in ETSI: 52..64 , 100..140
-    // non-DFS chans in FCC: 36..48 , 149..165
-    // DFS chans in FCC:  52..64 , 100..144
-    return ((channel >= WLD_CHAN_START_DFS) && (channel <= WLD_CHAN_END_DFS));
-}
-
-/**
  * Returns whether a given band contains DFS channels.
  */
 bool wld_channel_is_dfs_band(int channel, swl_bandwidth_e bandwidth) {
-    if(wld_channel_is_dfs(channel)) {
+    if(swl_channel_isDfs(channel)) {
         return true;
     }
     if(bandwidth == SWL_BW_160MHZ) {
@@ -175,49 +118,11 @@ bool wld_channel_is_dfs_band(int channel, swl_bandwidth_e bandwidth) {
  */
 uint32_t wld_channel_getDfsPercentage(int channel, swl_bandwidth_e bandwidth) {
     if(bandwidth <= SWL_BW_80MHZ) {
-        return wld_channel_is_dfs(channel) ? 100 : 0;
+        return swl_channel_isDfs(channel) ? 100 : 0;
     }
     if(bandwidth == SWL_BW_160MHZ) {
-        return wld_channel_is_hp_dfs(channel) ? 100 : 50;
+        return swl_channel_isHighPower(channel) ? 100 : 50;
     }
-    return 0;
-}
-
-bool wld_channel_is_hp_dfs(int channel) {
-    // hp DFS chans in ETSI: 100..140
-    // hp DFS chans in FCC: 100..144
-    // hp non-DFS chans in FCC: 149..165
-    return ((channel >= WLD_CHAN_START_HP_DFS) && (channel <= WLD_CHAN_END_DFS));
-}
-
-/**
- * Returns whether or not the given channel is a channel on 5GHz
- */
-bool wld_channel_is_5ghz(int channel) {
-    return channel >= WLD_CHAN_START_5GHZ;
-}
-
-
-
-/**
- * Return the amount of 20Mhz channels in a given band.
- */
-int wld_get_nr_channels_in_band(swl_chanspec_t chanspec) {
-    if(chanspec.band != SWL_FREQ_BAND_EXT_2_4GHZ) {
-        int i = 0;
-        for(i = 0; i < SWL_BW_RAD_MAX; i++) {
-            if(chanspec.bandwidth == nr_channels_ahead[i].wldBw) {
-                return nr_channels_ahead[i].chanWidth;
-            }
-        }
-    } else {
-        if((chanspec.bandwidth == SWL_BW_20MHZ) || (chanspec.bandwidth == SWL_BW_AUTO)) {
-            return 1;
-        } else if(chanspec.bandwidth == SWL_BW_40MHZ) {
-            return 5;
-        }
-    }
-    SAH_TRACEZ_ERROR(ME, "requested unknown band %d for chan %d", chanspec.bandwidth, chanspec.channel);
     return 0;
 }
 
@@ -225,84 +130,24 @@ int wld_get_nr_channels_in_band(swl_chanspec_t chanspec) {
  * Get the frequency from a channel (in Hertz).
  */
 uint32_t wld_channel_getFrequencyOfChannel(swl_chanspec_t chanspec) {
-    if(chanspec.band == SWL_FREQ_BAND_EXT_6GHZ) {
-        return 5950 + 5 * chanspec.channel;
-    } else if(chanspec.band == SWL_FREQ_BAND_EXT_5GHZ) {
-        return 5000 + 5 * chanspec.channel;
-    } else {
-        if(chanspec.channel == 14) {
-            return 2484;
-        } else {
-            return 2407 + 5 * chanspec.channel;
-        }
-    }
-}
-
-/**
- * Get the base channel of a band. This is the first main channel in the band.
- */
-int wld_channel_get_base_channel(swl_chanspec_t chanspec) {
-    int channel = chanspec.channel;
-    if(chanspec.band == SWL_FREQ_BAND_EXT_6GHZ) {
-        int nr_chans = wld_get_nr_channels_in_band(chanspec);
-        if(nr_chans == 0) {
-            SAH_TRACEZ_ERROR(ME, "can't get base %u %u", channel, chanspec.bandwidth);
-            return channel;
-        }
-        if(channel >= 81) {
-            return channel - ((channel - 81) % (nr_chans * CHANNEL_INCREMENT));
-        } else {
-            return channel - ((channel - 1) % (nr_chans * CHANNEL_INCREMENT));
-        }
-    } else if(chanspec.band == SWL_FREQ_BAND_EXT_5GHZ) {
-        int nr_chans = wld_get_nr_channels_in_band(chanspec);
-        if(nr_chans == 0) {
-            SAH_TRACEZ_ERROR(ME, "can't get base %u %u", chanspec.channel, chanspec.bandwidth);
-            return channel;
-        }
-        if(channel >= 149) {
-            return channel - ((channel - 149) % (nr_chans * CHANNEL_INCREMENT));
-        } else {
-            return channel - ((channel - 36) % (nr_chans * CHANNEL_INCREMENT));
-        }
-    } else {
-        //2.4GHz
-        if((chanspec.bandwidth == SWL_BW_40MHZ) && (chanspec.channel > 6)) {
-            return channel - 4;
-        } else {
-            return channel;
-        }
-    }
+    uint32_t freqMHz = 0;
+    swl_chanspec_channelToMHz(&chanspec, &freqMHz);
+    return freqMHz;
 }
 
 /**
  * Get the center channel of a band
+ * OBSOLETE: please use swl_chanspec_getCentreChannel
  */
 int wld_channel_get_center_channel(swl_chanspec_t chanspec) {
-    int centerChannel;
-    int baseChannel = wld_channel_get_base_channel(chanspec);
-    int nrChannelsInBand = wld_get_nr_channels_in_band(chanspec);
-    if(chanspec.band != SWL_FREQ_BAND_EXT_2_4GHZ) {
-        if(nrChannelsInBand > 1) {
-            centerChannel = baseChannel + (nrChannelsInBand / 2 * 4) - 2;
-        } else {
-            centerChannel = baseChannel;
-        }
-    } else {
-        if(chanspec.bandwidth == SWL_BW_40MHZ) {
-            centerChannel = baseChannel + 2;
-        } else {
-            centerChannel = baseChannel;
-        }
-    }
-    return centerChannel;
+    return swl_chanspec_getCentreChannel(&chanspec);
 }
 
 /**
  * Returns the time in milliseconds that a channel should be cleared.
  */
 int wld_channel_get_channel_clear_time(int channel) {
-    if(!wld_channel_is_dfs(channel)) {
+    if(!swl_channel_isDfs(channel)) {
         return 0;
     }
     if((channel >= WLD_CHAN_START_EXTENDED_CLEARTIME)
@@ -320,11 +165,11 @@ int wld_channel_get_band_clear_time(swl_chanspec_t chanspec) {
     if(chanspec.band != SWL_FREQ_BAND_EXT_5GHZ) {
         return 0;
     }
-    int nrChannels = wld_get_nr_channels_in_band(chanspec);
+    int nrChannels = swl_chanspec_getNrChannelsInBand(&chanspec);
     int time = 0;
     int temp_time = 0;
     int i = 0;
-    int temp_channel = wld_channel_get_base_channel(chanspec);
+    int temp_channel = swl_chanspec_getBaseChannel(&chanspec);
     for(i = 0; i < nrChannels; i++) {
         temp_time = wld_channel_get_channel_clear_time(temp_channel);
         if(temp_time > time) {
@@ -349,10 +194,10 @@ bool wld_channel_is_long_wait_band(swl_chanspec_t chanspec) {
         return false;
     }
 
-    int nrChannels = wld_get_nr_channels_in_band(chanspec);
+    int nrChannels = swl_chanspec_getNrChannelsInBand(&chanspec);
     swl_chanspec_t tmpChanspec;
     memcpy(&tmpChanspec, &chanspec, sizeof(swl_chanspec_t));
-    tmpChanspec.channel = wld_channel_get_base_channel(chanspec);
+    tmpChanspec.channel = swl_chanspec_getBaseChannel(&chanspec);
 
     int i = 0;
     for(i = 0; i < nrChannels; i++) {
@@ -379,30 +224,10 @@ bool wld_channel_is_long_wait_channel(swl_chanspec_t chanspec) {
 /**
  * Returns true if the testChannel is in the band determing by the input channel and bandwidth.
  * Returns false otherwise.
+ * OBSOLETE: please use swl_channel_isInChanspec
  */
 bool wld_channel_is_chan_in_band(swl_chanspec_t chanspec, int testChannel) {
-    int chan_list[WLD_CHAN_MAX_NR_CHANS_IN_USE];
-    int nr_channels = wld_channel_get_channels_in_band(chanspec, chan_list, SWL_ARRAY_SIZE(chan_list));
-    int i = 0;
-    for(i = 0; i < nr_channels; i++) {
-        if(testChannel == chan_list[i]) {
-            return true;
-        }
-    }
-    return false;
-}
-
-int wld_channel_getComplementaryBaseChannel(swl_chanspec_t chanspec) {
-    if((chanspec.band == SWL_FREQ_BAND_EXT_2_4GHZ) || (chanspec.bandwidth <= SWL_BW_20MHZ)) {
-        return -1;
-    }
-    swl_chanspec_t baseChanspec = SWL_CHANSPEC_NEW(wld_channel_get_base_channel(chanspec), chanspec.bandwidth - 1, chanspec.band);
-    if(wld_channel_is_chan_in_band(baseChanspec, chanspec.channel)) {
-        int nr_channels = wld_get_nr_channels_in_band(baseChanspec);
-        return baseChanspec.channel + nr_channels * CHANNEL_INCREMENT;
-    } else {
-        return baseChanspec.channel;
-    }
+    return swl_channel_isInChanspec(&chanspec, testChannel);
 }
 
 bool wld_channel_hasChannelWidthCovered(swl_chanspec_t chspec, swl_bandwidth_e chW) {
