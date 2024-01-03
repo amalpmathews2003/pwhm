@@ -198,6 +198,7 @@ m4_ifelse(DISABLE_PERSIST,y,``
                    "utilMon" = 200,
                    "wld" = 200,
                    "wld_acm" = 200,
+                   "wld_autoNeigh" = 200,
                    "wldChan" = 200,
                    "wldDly" = 200,
                    "wldDmn" = 200,

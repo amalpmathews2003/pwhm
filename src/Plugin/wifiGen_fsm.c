@@ -689,6 +689,8 @@ static void s_vapStatusUpdateCb(wld_vap_status_change_event_t* event) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     if((pAP->status == APSTI_ENABLED) && (pSSID->status == RST_UP)) {
         wifiGen_vap_postUpActions(pAP);
+    } else if(pSSID->status == RST_DOWN) {
+        wifiGen_vap_postDownActions(pAP);
     }
 }
 

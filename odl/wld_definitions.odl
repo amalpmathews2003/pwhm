@@ -256,6 +256,30 @@
 		
 		htable debug(%in string op);
 	}
+
+	/**
+	 * Auto Neighbour Addition.
+	 * This component will manage the auto neighbour addition feature.
+	 * This feature is needed on solutions without smart WiFi logic, to automatically add/delete each accesspoint
+	 * with a radio operatingFrequencyBand in NeighbourBands to the neighbour list of other accesspoints.
+	 *
+	 * @version 10.2
+	 */
+	%protected %persistent object AutoNeighbourAddition{
+		on event "*" call wld_autoNeighAddition_setConf_ocf;
+
+		/**
+		 * Whether auto neighbour addition should be enabled
+		 */
+		%persistent bool Enable;
+
+		/**
+		 * A comma-separated string of radio operatingFrequencyBand to add their APs as neighbours for other APs
+		 */
+		%persistent string NeighbourBands{
+			default "6GHz";
+		}
+	}
     }
 }
 

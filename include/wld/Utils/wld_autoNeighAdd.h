@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,37 +60,40 @@
 **
 ****************************************************************************/
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_VAP_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_VAP_H_
+#ifndef SRC_INCLUDE_WLD_UTILS_WLD_AUTONEIGHADD_H_
+#define SRC_INCLUDE_WLD_UTILS_WLD_AUTONEIGHADD_H_
 
 #include "wld/wld.h"
 
-int wifiGen_vap_createHook(T_AccessPoint* pAP);
-void wifiGen_vap_destroyHook(T_AccessPoint* pAP);
-int wifiGen_vap_ssid(T_AccessPoint* pAP, char* buf, int bufsize, int set);
-int wifiGen_vap_status(T_AccessPoint* pAP);
-int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set);
-int wifiGen_vap_sync(T_AccessPoint* pAP, int set);
-swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP);
-swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD);
-int wifiGen_vap_bssid(T_Radio* pRad, T_AccessPoint* pAP, unsigned char* buf, int bufsize, int set);
-int wifiGen_vap_setBssid(T_AccessPoint* pAP);
-int wifiGen_vap_sec_sync(T_AccessPoint* pAP, int set);
-int wifiGen_vap_multiap_update_type(T_AccessPoint* pAP);
-swl_rc_ne wifiGen_vap_setMboDisallowReason(T_AccessPoint* pAP);
-swl_rc_ne wifiGen_vap_sta_transfer(T_AccessPoint* vap, wld_transferStaArgs_t* params);
-int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set);
-int wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int set);
-int wifiGen_vap_wps_enable(T_AccessPoint* pAP, int enable, int set);
-int wifiGen_vap_wps_labelPin(T_AccessPoint* pAP, int set);
-int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set);
-int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize, int reason);
-int wifiGen_vap_updateApStats(T_AccessPoint* vap);
-swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, wld_rrmReq_t* req);
-swl_rc_ne wifiGen_vap_deleted_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor);
-swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor);
-swl_rc_ne wifiGen_vap_sendManagementFrame(T_AccessPoint* pAP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
-swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP);
-swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP);
-swl_rc_ne wifiGen_vap_postDownActions(T_AccessPoint* pAP);
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_VAP_H_ */
+typedef struct {
+    bool enable;
+    swl_freqBandExt_m neighBands;
+} wld_autoNeighAddConfig_t;
+
+/**
+ * Set/delete a specific accesspoint to the neighbour list of other accesspoints
+ *
+ * @param pAP pointer to accesspoint context
+ * @param set true to add AP to other accesspoints, false to delete it
+ *
+ * @return
+ *  - Success: SWL_RC_OK
+ *  - Failure: SWL_RC_ERROR if auto neighbour addition feature disabled
+ *             or the AP radio's operatingFrequencyBand not in NeighbourBands
+ */
+swl_rc_ne wld_autoNeighAdd_vapSetDelNeighbourAP(T_AccessPoint* pAP, bool set);
+
+/**
+ * Set/delete accesspoints of specific radio to the neighbour list of other accesspoints in other radios
+ *
+ * @param pRad pointer to radio context
+ * @param set true to add AP to other accesspoints, false to delete it
+ *
+ * @return
+ *  - Success: SWL_RC_OK
+ *  - Failure: SWL_RC_ERROR if auto neighbour addition feature disabled
+ *             or the radio operatingFrequencyBand not in NeighbourBands
+ */
+swl_rc_ne wld_autoNeighAdd_radioSetDelNeighbourAP(T_Radio* pRad, bool set);
+
+#endif /* SRC_INCLUDE_WLD_UTILS_WLD_AUTONEIGHADD_H_ */

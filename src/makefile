@@ -62,6 +62,7 @@ OBJS-libwld.so += 	ChannelManagement/wld_channel.o \
 					Utils/wld_eventing.o \
 					Utils/wld_monitor.o \
 					Utils/wld_autoCommitMgr.o \
+					Utils/wld_autoNeighAdd.o \
 					Utils/wld_daemon.o \
 					Utils/wld_linuxIfUtils.o \
 					Utils/wld_linuxWExtUtils.o \

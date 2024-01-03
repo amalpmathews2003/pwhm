@@ -77,6 +77,7 @@
 #include "swl/swl_common.h"
 #include "swl/swl_assert.h"
 #include "Utils/wld_autoCommitMgr.h"
+#include "wld/Utils/wld_autoNeighAdd.h"
 
 #define ME "ssid"
 
@@ -556,6 +557,7 @@ static void s_setSSID_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_
         SAH_TRACEZ_INFO(ME, "%s: apply to AP %p", pSSID->Name, pAP);
         pAP->pFA->mfn_wvap_ssid(pAP, (char*) SSID, strlen(SSID), SET);
         wld_autoCommitMgr_notifyVapEdit(pAP);
+        wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, true);
     }
     free(SSID);
     //Setting endpoint ssid should only be done internally => no change necessary here.

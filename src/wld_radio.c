@@ -94,6 +94,7 @@
 #include "wld_assocdev.h"
 #include "wld_eventing.h"
 #include "Utils/wld_autoCommitMgr.h"
+#include "wld/Utils/wld_autoNeighAdd.h"
 
 #include "wld_hostapd_cfgFile.h"
 #include "wld_rad_nl80211.h"
@@ -3428,6 +3429,7 @@ void _wld_rad_setOperatingClass(const char* const sig_name _UNUSED,
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
     wld_rad_updateOperatingClass(pRad);
+    wld_autoNeighAdd_radioSetDelNeighbourAP(pRad, true);
 }
 
 void _wld_rad_updatePossibleChannels_ocf(const char* const sig_name _UNUSED,
