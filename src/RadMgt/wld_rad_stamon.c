@@ -454,16 +454,10 @@ static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, a
                         MAC_PRINT_ARG(pMD->MACAddress), pMD->SignalStrength, rssi_val, pMD->monRssi, ev->rssiInterval);
         if(diff >= ev->rssiInterval) {
             pMD->monRssi = rssi_val;
-            amxc_var_t myMap;
-            amxc_var_init(&myMap);
-            amxc_var_set_type(&myMap, AMXC_VAR_ID_HTABLE);
-            amxc_var_add_key(int32_t, &myMap, "SignalStrength", pMD->monRssi);
-            swl_typeMacBin_addToMapRef(&myMap, "MACAddress", (swl_macBin_t*) pMD->MACAddress);
-
-            swl_typeTimeSpecReal_addToMap(&myMap, "TimeStamp", swl_timespec_getRealVal());
-
-            amxc_var_move(myList, &myMap);
-            amxc_var_clean(&myMap);
+            amxc_var_t* pMyMap = amxc_var_add(amxc_htable_t, myList, NULL);
+            amxc_var_add_key(int32_t, pMyMap, "SignalStrength", pMD->monRssi);
+            swl_typeMacBin_addToMapRef(pMyMap, "MACAddress", (swl_macBin_t*) pMD->MACAddress);
+            swl_typeTimeSpecReal_addToMap(pMyMap, "TimeStamp", swl_timespec_getRealVal());
             nrUpdates++;
         }
     }
