@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.23.0 - 2024-01-04(08:53:17 +0000)
+
+### Other
+
+- - Add MLO capability
+
 ## Release v5.22.0 - 2024-01-04(08:01:56 +0000)
 
 ### Other
