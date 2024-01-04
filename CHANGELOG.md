@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.22.0 - 2024-01-04(08:01:56 +0000)
+
+### Other
+
+- - add vap action eventing
+
 ## Release v5.21.0 - 2024-01-03(16:19:44 +0000)
 
 ### Other
