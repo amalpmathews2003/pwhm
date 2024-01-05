@@ -431,6 +431,7 @@ swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t*
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
     wld_nl80211_scanParams_t params;
+    memset(&params, 0, sizeof(wld_nl80211_scanParams_t));
     swl_unLiList_init(&params.ssids, sizeof(char*));
     swl_unLiList_init(&params.freqs, sizeof(uint32_t));
     params.iesLen = 0;
@@ -453,7 +454,7 @@ swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t*
             swl_unLiList_add(&params.ssids, &ssid);
         }
         if(swl_mac_binIsNull(&args->bssid) == false) {
-            params.bssid = args->bssid;
+            memcpy(&params.bssid, &args->bssid, SWL_MAC_BIN_LEN);
         }
     }
     if(pFlags != NULL) {
