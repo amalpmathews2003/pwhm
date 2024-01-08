@@ -79,6 +79,18 @@ static wld_fsmMngr_t* s_getMngr(T_Radio* rad) {
     return rad->vendor->fsmMngr;
 }
 
+static bool s_doExternalLocking(wld_fsmMngr_t* mngr) {
+    return mngr->doLock != NULL && mngr->doUnlock != NULL && mngr->ensureLock != NULL;
+}
+
+bool wld_rad_fsm_doesExternalLocking(T_Radio* pRad) {
+    wld_fsmMngr_t* mngr = s_getMngr(pRad);
+    if(mngr == NULL) {
+        return false;
+    }
+    return s_doExternalLocking(mngr);
+}
+
 static void s_printFsmBits(T_Radio* rad) {
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, rad) {
@@ -109,6 +121,54 @@ static void s_printFsmBits(T_Radio* rad) {
                        rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1],
                        rad->fsmRad.FSM_CSC[0], rad->fsmRad.FSM_CSC[1]);
 
+}
+
+
+
+
+static void s_copyPredepenencyBits(T_Radio* rad) {
+    longArrayCopy(rad->fsmRad.FSM_AC_CSC, rad->fsmRad.FSM_BitActionArray, FSM_BW);
+    amxc_llist_for_each(it, &rad->llAP) {
+        T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+        longArrayCopy(pAP->fsm.FSM_AC_CSC, pAP->fsm.FSM_BitActionArray, FSM_BW);
+    }
+    amxc_llist_for_each(it, &rad->llEndPoints) {
+        T_EndPoint* pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
+        longArrayCopy(pEP->fsm.FSM_AC_CSC, pEP->fsm.FSM_BitActionArray, FSM_BW);
+    }
+}
+
+/**
+ * Redo dependency. Shall only be allowed if radio is in GLOBAL_SYNC stage
+ */
+void wld_rad_fsm_redoDependency(T_Radio* rad) {
+    if(rad->fsmRad.FSM_State != FSM_SYNC_GLOBAL) {
+        SAH_TRACEZ_ERROR(ME, "%s: trying to redy dependency during %u", rad->Name, rad->fsmRad.FSM_State);
+        return;
+    }
+    // move bits back to what they were pre dependency
+
+    longArrayCopy(rad->fsmRad.FSM_BitActionArray, rad->fsmRad.FSM_AC_CSC, FSM_BW);
+    amxc_llist_for_each(it, &rad->llAP) {
+        T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+        longArrayCopy(pAP->fsm.FSM_BitActionArray, pAP->fsm.FSM_AC_CSC, FSM_BW);
+    }
+    amxc_llist_for_each(it, &rad->llEndPoints) {
+        T_EndPoint* pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
+        longArrayCopy(pEP->fsm.FSM_BitActionArray, pEP->fsm.FSM_AC_CSC, FSM_BW);
+    }
+
+    longArrayClean(rad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    amxc_llist_for_each(it, &rad->llAP) {
+        T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
+        longArrayClean(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
+    }
+    amxc_llist_for_each(it, &rad->llEndPoints) {
+        T_EndPoint* pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
+        longArrayClean(pEP->fsm.FSM_AC_BitActionArray, FSM_BW);
+    }
+
+    rad->fsmRad.FSM_State = FSM_DEPENDENCY;
 }
 
 static void s_cleanFsmBits(T_Radio* rad) {
@@ -151,7 +211,6 @@ int wld_rad_fsm_clearFsmBitForAll(T_Radio* pR, int bitNr) {
 static void s_collectDependencies(T_Radio* rad) {
     T_AccessPoint* pAP;
     T_EndPoint* pEP;
-
     //Initialize CSC cache to radio bits
     longArrayCopy(rad->fsmRad.FSM_CSC, rad->fsmRad.FSM_BitActionArray, FSM_BW);
 
@@ -201,12 +260,8 @@ static bool s_checkCommitPending(T_Radio* rad, FSM_STATE targetState) {
     return false;
 }
 
-/**
- * Let fsm try to get the lock
- * Return true if has lock
- * Return false if doesn't have lock. Will put radio in waiting list.
- */
-bool s_tryGetLock(T_Radio* rad) {
+bool wld_rad_fsm_tryGetLock(T_Radio* rad) {
+
     int bitmask = (1 << rad->ref_index);
     if((s_radioFSMLock & RADIO_INDEX_MASK) == bitmask) {
         SAH_TRACEZ_ERROR(ME, "%s: requesting lock while has lock 0x%x", rad->Name, s_radioFSMLock);
@@ -224,11 +279,34 @@ bool s_tryGetLock(T_Radio* rad) {
 }
 
 /**
+ * Let fsm try to get the lock
+ * Return true if has lock
+ * Return false if doesn't have lock. Will put radio in waiting list.
+ */
+static bool s_tryGetLock(T_Radio* rad) {
+    wld_fsmMngr_t* mngr = s_getMngr(rad);
+    if(s_doExternalLocking(mngr)) {
+        return mngr->doLock(rad);
+    } else {
+        return wld_rad_fsm_tryGetLock(rad);
+    }
+}
+
+/**
  * Free the fsm lock.
  * Return true if you're the last one, i.e. no others are waiting.
  * Return false if others are waiting.
  */
-void s_freeLock(T_Radio* rad) {
+static void s_freeLock(T_Radio* rad) {
+    wld_fsmMngr_t* mngr = s_getMngr(rad);
+    if(s_doExternalLocking(mngr)) {
+        mngr->doUnlock(rad);
+    } else {
+        wld_rad_fsm_freeLock(rad);
+    }
+}
+
+void wld_rad_fsm_freeLock(T_Radio* rad) {
     int bitmask = (1 << rad->ref_index);
     if((s_radioFSMLock & RADIO_INDEX_MASK) != bitmask) {
         SAH_TRACEZ_ERROR(ME, "%s: freeing lock while not has lock %u", rad->Name, s_radioFSMLock);
@@ -238,14 +316,24 @@ void s_freeLock(T_Radio* rad) {
     s_radioFSMLock = 0;
 }
 
-bool s_areAnyWaiting() {
-    return s_radioFSMWaiting == 0;
-}
-
-void s_ensureHasLock(T_Radio* rad) {
+void wld_rad_fsm_ensureLock(T_Radio* rad) {
     int bitmask = (1 << rad->ref_index);
     if((s_radioFSMLock & RADIO_INDEX_MASK) != bitmask) {
         SAH_TRACEZ_ERROR(ME, "%s: Checking lock while not has lock %u", rad->Name, s_radioFSMLock);
+    }
+}
+
+static bool s_areAnyWaiting() {
+    return s_radioFSMWaiting == 0;
+}
+
+static void s_ensureHasLock(T_Radio* rad) {
+    wld_fsmMngr_t* mngr = s_getMngr(rad);
+
+    if(s_doExternalLocking(mngr)) {
+        mngr->ensureLock(rad);
+    } else {
+        wld_rad_fsm_ensureLock(rad);
     }
 }
 
@@ -422,6 +510,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_SYNC_VAP:
     case FSM_DEPENDENCY: {
 
+        s_copyPredepenencyBits(rad);
         s_performSync(rad);
 
         SWL_CALL(s_getMngr(rad)->checkPreDependency, rad);
@@ -434,11 +523,22 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         s_printFsmBits(rad);
         s_cleanFsmBits(rad);
 
-        rad->fsmRad.FSM_State = FSM_RUN;
         wld_rad_incrementCounterStr(rad, &rad->genericCounters, WLD_RAD_EV_FSM_COMMIT,
                                     "0x%08lx 0x%08lx / 0x%08lx 0x%08lx", rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1],
                                     rad->fsmRad.FSM_BitActionArray[0], rad->fsmRad.FSM_BitActionArray[1]);
         rad->fsmRad.retryCount = 0;
+        if(s_getMngr(rad)->waitGlobalSync == NULL) {
+            rad->fsmRad.FSM_State = FSM_RUN;
+        } else {
+            rad->fsmRad.FSM_State = FSM_SYNC_GLOBAL;
+        }
+        break;
+    }
+    case FSM_SYNC_GLOBAL: {
+        bool wait = s_getMngr(rad)->waitGlobalSync(rad);
+        if(!wait) {
+            rad->fsmRad.FSM_State = FSM_RUN;
+        }
         break;
     }
     case FSM_RUN:
@@ -573,7 +673,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_ERROR:
     case FSM_UNKNOWN:
         SAH_TRACEZ_WARNING(ME, "%s: do finish FSM %p", rad->Name, s_getMngr(rad)->doFinish);
-        rad->fsmRad.timeout_msec = 0;
+        rad->fsmRad.timeout_msec = 10;
 
         rad->fsmRad.FSM_ReqState = FSM_MAX;
         SWL_CALL(s_getMngr(rad)->doFinish, rad);
@@ -593,6 +693,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         rad->fsmRad.FSM_State = FSM_IDLE;
         rad->fsm_radio_st = FSM_IDLE;    // UnLock the RADIO
         rad->blockCommit = 0;            // Accept again commits by toggle Enable TRUE
+        rad->fsmRad.timeout_msec = 0;
 
         if(rad->fsmRad.timer) {
             amxp_timer_delete(&rad->fsmRad.timer);

@@ -3948,6 +3948,22 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         amxc_var_add_key(cstring_t, retval, "Result", swl_rc_toString(ret));
     } else if(swl_str_matchesIgnoreCase(feature, "getFreq")) {
         amxc_var_add_key(uint32_t, retval, "freq", wld_rad_getCurrentFreq(pR));
+    } else if(swl_str_matchesIgnoreCase(feature, "FSM")) {
+        amxc_var_add_key(uint32_t, retval, "fsmState", pR->fsmRad.FSM_State);
+        amxc_var_add_key(uint32_t, retval, "fsmReqState", pR->fsmRad.FSM_ReqState);
+        amxc_var_add_key(int32_t, retval, "fsmRetry", pR->fsmRad.FSM_Retry);
+        amxc_var_add_key(uint32_t, retval, "timeout", pR->fsmRad.timeout_msec);
+        amxc_var_add_key(bool, retval, "timerPresent", pR->fsmRad.timer != NULL);
+        amxc_var_add_key(uint32_t, retval, "timeRemaining", amxp_timer_remaining_time(pR->fsmRad.timer));
+        amxc_var_add_key(uint32_t, retval, "retryCount", pR->fsmRad.retryCount);
+        amxc_var_add_key(bool, retval, "externalLock", wld_rad_fsm_doesExternalLocking(pR));
+        char buffer[128] = {0};
+        snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_BitActionArray[0], pR->fsmRad.FSM_BitActionArray[1]);
+        amxc_var_add_key(cstring_t, retval, "FSM_BitArray", buffer);
+        snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_AC_BitActionArray[0], pR->fsmRad.FSM_AC_BitActionArray[1]);
+        amxc_var_add_key(cstring_t, retval, "FSM_AC_BitArray", buffer);
+        snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_CSC[0], pR->fsmRad.FSM_CSC[1]);
+        amxc_var_add_key(cstring_t, retval, "FSM_CSC", buffer);
     } else {
         amxc_var_add_key(cstring_t, retval, "Error", "Unknown command");
     }

@@ -79,7 +79,10 @@ typedef struct {
 } wld_fsmMngr_action_t;
 
 typedef struct {
-    void (* doRestart)(T_Radio* pRad); // Called on lock, allows update of FSM_ReqState
+    bool (* doLock)(T_Radio* pRad);     // call when trying to get lock. Shall only work if doUnlock is also not NULL
+    void (* doUnlock)(T_Radio* pRad);   // call when freeing lock. Shall only work if doUnlock is also not NULL
+    void (* ensureLock)(T_Radio* pRad); // check if current radio has lock.
+    void (* doRestart)(T_Radio* pRad);  // Called on lock, allows update of FSM_ReqState
     void (* doRadFsmRun)(T_Radio* pRad);
     void (* doEpFsmRun)(T_EndPoint* pEP, T_Radio* pRad);
     void (* doVapFsmRun)(T_AccessPoint* pAP, T_Radio* pRad);
@@ -89,6 +92,7 @@ typedef struct {
     void (* checkVapDependency)(T_AccessPoint* pAP, T_Radio* pRad);
     void (* checkEpDependency)(T_EndPoint* pEP, T_Radio* pRad);
     void (* checkRadDependency)(T_Radio* pRad); // Post dependency check for radio
+    bool (* waitGlobalSync)(T_Radio* pRad);     // Perform a global sync step across all radios
     wld_fsmMngr_action_t* actionList;           //list of actions
     uint32_t nrFsmBits;
 } wld_fsmMngr_t;
@@ -97,6 +101,12 @@ FSM_STATE wld_rad_fsm(T_Radio* rad);
 swl_rc_ne wld_rad_fsm_reset(T_Radio* rad);
 void wld_rad_fsm_cleanFsmBits(T_Radio* rad);
 int wld_rad_fsm_clearFsmBitForAll(T_Radio* rad, int bitNr);
+bool wld_rad_fsm_doesExternalLocking(T_Radio* pRad);
+
+void wld_rad_fsm_redoDependency(T_Radio* rad);
+bool wld_rad_fsm_tryGetLock(T_Radio* rad);
+void wld_rad_fsm_freeLock(T_Radio* rad);
+void wld_rad_fsm_ensureLock(T_Radio* rad);
 
 void wld_fsm_init(vendor_t* vendor, wld_fsmMngr_t* fsmMngr);
 uint32_t wld_fsm_getNrNotIdle();
