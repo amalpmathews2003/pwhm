@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.23.2 - 2024-01-08(07:55:00 +0000)
+
+### Other
+
+- - Fix Multiple get stats call for each station
+
 ## Release v5.23.1 - 2024-01-08(07:42:47 +0000)
 
 ### Other
