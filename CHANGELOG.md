@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.24.0 - 2024-01-09(12:32:16 +0000)
+
+### Other
+
+- - add global sync
+
 ## Release v5.23.2 - 2024-01-08(07:55:00 +0000)
 
 ### Other
