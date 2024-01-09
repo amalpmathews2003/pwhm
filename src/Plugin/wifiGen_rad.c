@@ -700,7 +700,11 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
             if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
                (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
                 swl_rc_ne rc = wld_rad_hostapd_switchChannel(pRad);
-                return (rc < SWL_RC_OK) ? SWL_RC_ERROR : SWL_RC_DONE;
+                if(rc >= SWL_RC_OK) {
+                    return SWL_RC_DONE;
+                }
+
+                SAH_TRACEZ_WARNING(ME, "%s: CSA failed, cold applying new channel", pRad->Name);
             }
         }
         /*
