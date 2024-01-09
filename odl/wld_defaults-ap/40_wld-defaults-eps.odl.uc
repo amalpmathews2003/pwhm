@@ -1,19 +1,22 @@
 %populate {
     object WiFi {
 {% let BssId = 0 %}
-{% for ( let Itf in BD.Interfaces ) : if ( Itf.Type == "wireless" ) : %}
-{% BssId++ %}
-{% endif; endfor; %}
-{% RadioIndex = BDfn.getRadioIndex("5GHz"); if (RadioIndex >= 0) : %}
-{% BssId++ %}
         object SSID {
-            instance add ({{BssId}}, "ep5g0") {
+{% for ( let Itf in BD.Interfaces ) : if ( BDfn.isInterfaceWirelessEp(Itf.Name) ) : %}
+{% RadioIndex = BDfn.getRadioIndex(Itf.OperatingFrequency); if (RadioIndex >= 0) : %}
+{% BssId = BDfn.getInterfaceIndex(Itf.Name, "wireless") %}
+            instance add ({{BssId + 1}}, "{{Itf.Alias}}") {
                 parameter LowerLayers = "Device.WiFi.Radio.{{RadioIndex + 1}}.";
             }
+{% endif %}
+{% endif; endfor; %}
         }
         object EndPoint {
-            instance add ("ep5g0") {
-                parameter SSIDReference = "Device.WiFi.SSID.{{BssId}}.";
+{% for ( let Itf in BD.Interfaces ) : if ( BDfn.isInterfaceWirelessEp(Itf.Name) ) : %}
+{% RadioIndex = BDfn.getRadioIndex(Itf.OperatingFrequency); if (RadioIndex >= 0) : %}
+{% BssId = BDfn.getInterfaceIndex(Itf.Name, "wireless") %}
+            instance add ("{{Itf.Alias}}") {
+                parameter SSIDReference = "Device.WiFi.SSID.{{BssId + 1}}.";
                 parameter Enable = 0;
                 parameter BridgeInterface = "{{BD.Bridges.Lan.Name}}";
                 parameter MultiAPEnable = 1;
@@ -22,7 +25,8 @@
                     parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,VirtualDisplay,PIN";
                 }
             }
-        }
 {% endif %}
+{% endif; endfor; %}
+        }
     }
 }

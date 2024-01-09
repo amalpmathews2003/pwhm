@@ -1,9 +1,11 @@
 %populate {
     object WiFi {
         object SSID {
-{% for ( let Itf in BD.Interfaces ) : if ( Itf.Type == "wireless" ) : %}
-{% if ((Itf.OperatingFrequency == "2.4GHz") || (Itf.OperatingFrequency == "5GHz") || (Itf.OperatingFrequency == "6GHz")) : %}
-            instance add ("{{Itf.Alias}}") {
+{% let apindex = 0 %}
+{% for ( let Itf in BD.Interfaces ) : if ( BDfn.isInterfaceWirelessAp(Itf.Name) ) : %}
+{% if (Itf.OperatingFrequency != "") : %}
+{% apindex = BDfn.getInterfaceIndex(Itf.Name, "wireless") %}
+            instance add ({{apindex + 1}}, "{{Itf.Alias}}") {
 {% if ( Itf.SSID != "" ) : %}
                 parameter SSID = "{{Itf.SSID}}";
 {% endif %}
@@ -13,17 +15,16 @@ if (RadioIndex >= 0) : %}
                 parameter LowerLayers = "Device.WiFi.Radio.{{RadioIndex + 1}}.";
 {% endif %}
             }
-{% endif %}
 {% endif; endfor; %}
         }
         object AccessPoint {
-{% let i = 0 %}
-{% for ( let Itf in BD.Interfaces ) : if ( Itf.Type == "wireless" ) : %}
-{% if ((Itf.OperatingFrequency == "2.4GHz") || (Itf.OperatingFrequency == "5GHz") || (Itf.OperatingFrequency == "6GHz")) : %}
-{% i++ %}
+{% let apindex = 0 %}
+{% for ( let Itf in BD.Interfaces ) : if ( BDfn.isInterfaceWirelessAp(Itf.Name) ) : %}
+{% if (Itf.OperatingFrequency != "") : %}
+{% apindex = BDfn.getInterfaceIndex(Itf.Name, "wireless")  %}
 {% if ( Itf.SSID != "" ) : %}
             instance add ("{{Itf.Alias}}") {
-                parameter SSIDReference = "Device.WiFi.SSID.{{i}}.";
+                parameter SSIDReference = "Device.WiFi.SSID.{{apindex + 1}}.";
                 parameter Enable = 0;
 {% if (BDfn.isInterfaceGuest(Itf.Name)) : %}
                 parameter DefaultDeviceType = "Guest";
