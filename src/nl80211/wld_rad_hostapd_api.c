@@ -247,7 +247,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
     swl_mapChar_init(&radParams);
     wld_hostapd_cfgFile_setRadioConfig(pRad, &radParams);
     const char* miscRadParams[] = {
-        "rts_threshold",
+        "rts_threshold", "preamble",
     };
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(miscRadParams); i++) {
         wld_ap_hostapd_setParamValue(primaryVap, miscRadParams[i], swl_mapChar_get(&radParams, (char*) miscRadParams[i]), "");

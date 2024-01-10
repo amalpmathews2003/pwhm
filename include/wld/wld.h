@@ -1393,6 +1393,13 @@ typedef enum {
 
 typedef uint32_t wld_he_sr_control_m;
 
+typedef enum {
+    PREAMBLE_TYPE_SHORT,
+    PREAMBLE_TYPE_LONG,
+    PREAMBLE_TYPE_AUTO,
+    PREAMBLE_TYPE_MAX
+} wld_preamble_type_e;
+
 struct WLD_RADIO {
     int debug;   /* FIX ME */
     vendor_t* vendor;
@@ -1512,6 +1519,7 @@ struct WLD_RADIO {
     uint16_t rtsThreshold;                          /* Number of octets in an MPDU below which an RTS/CTS handshake is not performed */
     uint32_t beaconPeriod;                          /* Beaconing period in ms */
     uint32_t dtimPeriod;                            /* Delivery Traffic Information Map period, in nrBeacons*/
+    wld_preamble_type_e preambleType;               /* Longer preamble are needed by 802.11g to coexist with legacy systems 802.11 and 802.11b */
     unsigned int DFSChannelChangeEventCounter;      /* Number of DFS channel change events */
     swl_timeReal_t DFSChannelChangeEventTimestamp;  /* Last DFS channel change event realTime value */
     uint8_t dfsFileLogLimit;                        /* MAX number of DFS events to be saved into dfsEvent log file */

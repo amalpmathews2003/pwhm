@@ -186,6 +186,8 @@ static const char* Rad_RIFS_MODE[RIFS_MODE_MAX] = {"Default", "Auto", "Off", "On
 
 static const char* g_wld_radFeatures_str[WLD_FEATURE_MAX] = {"Seamless DFS", "Background DFS"};
 
+static const char* g_wld_preambleType[PREAMBLE_TYPE_MAX] = {"short", "long", "auto"};
+
 amxc_llist_t g_radios = { NULL, NULL };
 
 SWL_ARRAY_TYPE_C(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX, true, true);
@@ -961,6 +963,44 @@ static void s_setDtimPeriod_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     SAH_TRACEZ_INFO(ME, "%s: set DtimPeriod %u", pR->Name, newVal);
     pR->dtimPeriod = newVal;
     wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+amxd_status_t _wld_rad_validatePreambleType_pvf(amxd_object_t* object,
+                                                amxd_param_t* param _UNUSED,
+                                                amxd_action_t reason _UNUSED,
+                                                const amxc_var_t* const args,
+                                                amxc_var_t* const retval _UNUSED,
+                                                void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    ASSERTI_FALSE(wld_rad_is_24ghz(pRad), amxd_status_ok, ME, "2.4GHz radio");
+    amxd_status_t status = amxd_status_invalid_value;
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
+    if(!swl_str_matches(newValue, "short")) {
+        status = amxd_status_ok;
+    }
+    free(newValue);
+
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+static void s_setPreambleType_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, , ME, "NULL");
+    const char* preambleType = amxc_var_constcast(cstring_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set Preamble Type %s", pRad->Name, preambleType);
+    pRad->preambleType = swl_conv_charToEnum(preambleType, g_wld_preambleType, PREAMBLE_TYPE_MAX, PREAMBLE_TYPE_AUTO);
+    wld_rad_doSync(pRad);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -4053,6 +4093,7 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("LongRetryLimit", s_setLongRetryLimit_pwf),
                   SWLA_DM_PARAM_HDLR("BeaconPeriod", s_setBeaconPeriod_pwf),
                   SWLA_DM_PARAM_HDLR("DTIMPeriod", s_setDtimPeriod_pwf),
+                  SWLA_DM_PARAM_HDLR("PreambleType", s_setPreambleType_pwf),
                   SWLA_DM_PARAM_HDLR("TargetWakeTimeEnable", s_setTargetWakeTimeEnable_pwf),
                   SWLA_DM_PARAM_HDLR("OfdmaEnable", s_setOfdmaEnable_pwf),
                   SWLA_DM_PARAM_HDLR("HeCapsEnabled", s_setHeCaps_pwf),

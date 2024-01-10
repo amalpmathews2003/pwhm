@@ -920,6 +920,20 @@ define probelist_t{
 		}
 
 		/**
+		* The type of preamble.
+		* Longer preambles (more overhead) are needed by 802.11g to coexist with legacy systems 802.11 and 802.11b.
+		* Enumeration of:
+		* * short
+		* * long
+		* * auto
+		*/
+		%persistent string PreambleType{
+			on action validate call check_enum ["short", "long", "auto"];
+			on action validate call wld_rad_validatePreambleType_pvf;
+			default "auto";
+		}
+
+		/**
 		 * Target Wake Time is an 11ax feature that allows the AP to
 		 * communicate with stations when and how often they will need
 		 * to send and receive data to increase battery life.
