@@ -2204,13 +2204,13 @@ bool wldu_key_matches(const char* ssid, const char* oldKeyPassPhrase, const char
     return true;
 }
 
-static void s_writeWmmStats(amxd_object_t* parentObj, const char* objectName, unsigned long* stats) {
+static void s_writeWmmStats(amxd_object_t* parentObj, const char* objectName, uint32_t* stats) {
     amxd_object_t* object = amxd_object_get(parentObj, objectName);
     ASSERT_NOT_NULL(object, , ME, "No object named <%s>", objectName);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_BE", stats[WLD_AC_BE]);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_BK", stats[WLD_AC_BK]);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_VO", stats[WLD_AC_VO]);
-    SWLA_OBJECT_SET_PARAM_UINT64(object, "AC_VI", stats[WLD_AC_VI]);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "AC_BE", stats[WLD_AC_BE]);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "AC_BK", stats[WLD_AC_BK]);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "AC_VO", stats[WLD_AC_VO]);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "AC_VI", stats[WLD_AC_VI]);
 }
 
 amxd_status_t wld_util_stats2Obj(amxd_object_t* obj, T_Stats* stats) {
