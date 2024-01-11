@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.25.0 - 2024-01-11(13:17:16 +0000)
+
+### Other
+
+- - Add RTSThreshold parameter
+
 ## Release v5.24.0 - 2024-01-09(12:32:16 +0000)
 
 ### Other
