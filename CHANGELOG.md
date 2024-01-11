@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.25.2 - 2024-01-11(19:16:08 +0000)
+
+### Other
+
+- fix rad obj mapping to device supporting multi-band
+
 ## Release v5.25.1 - 2024-01-11(18:24:23 +0000)
 
 ### Other
