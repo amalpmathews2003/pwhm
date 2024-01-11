@@ -69,6 +69,7 @@
 #include "wld_accesspoint.h"
 #include "wld_assocdev.h"
 #include "wld_util.h"
+#include "swl/swl_intf.h"
 #include "test-toolbox/ttb_mockClock.h"
 #include "test-toolbox/ttb_object.h"
 #include "../testHelper/wld_th_mockVendor.h"
@@ -159,7 +160,12 @@ static void test_radioStatus(void** state _UNUSED) {
     ttb_object_assertPrintEqFile(capObj2, 0, "rad2_cap.txt");
     ttb_object_assertPrintEqFile(capObj5, 0, "rad5_cap.txt");
 
-
+    amxd_object_t* unavRad6Obj = amxd_object_findf(get_wld_object(), "Radio.wifi2.");
+    char* statusStr = amxd_object_get_cstring_t(unavRad6Obj, "Status", NULL);
+    char statusArr[swl_str_len(statusStr) + 1];
+    swl_str_copy(statusArr, sizeof(statusArr), statusStr);
+    free(statusStr);
+    assert_string_equal(statusArr, swl_intf_status_str[SWL_INTF_STATUS_NOT_PRESENT]);
 }
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {

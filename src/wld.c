@@ -535,13 +535,19 @@ T_Radio* wld_getRadioByName(const char* name) {
 }
 
 T_Radio* wld_getUinitRadioByBand(swl_freqBandExt_e band) {
+    T_Radio* pRadCand = NULL;
     T_Radio* pRad;
     wld_for_eachRad(pRad) {
         if((SWL_BIT_IS_SET(pRad->supportedFrequencyBands, band)) && (pRad->pBus == NULL)) {
-            return pRad;
+            //prio to rad device initially set by driver in the required freqBand
+            if(pRad->operatingFrequencyBand == band) {
+                return pRad;
+            } else if(pRadCand == NULL) {
+                pRadCand = pRad;
+            }
         }
     }
-    return NULL;
+    return pRadCand;
 }
 
 T_EndPoint* wld_getEndpointByAlias(const char* name) {

@@ -1454,6 +1454,10 @@ amxd_status_t _wld_rad_validateOperatingFrequencyBand_pvf(amxd_object_t* object 
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "%s: No available radio device supporting Frequency band -%s- -%s- %p", oname, currentValue, newValue, pRad);
+        // allow unsupported freqBand on initial load, keeping radio at status "Not present"
+        if(swl_str_isEmpty(currentValue)) {
+            status = amxd_status_ok;
+        }
     }
     free(newValue);
 

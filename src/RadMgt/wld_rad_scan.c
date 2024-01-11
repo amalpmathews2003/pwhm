@@ -341,7 +341,7 @@ static amxd_status_t s_startScan(amxd_object_t* object,
         // otherwise there will be elements that are not part of possible channels.
         len = swl_type_arrayFromChar(swl_type_uint8, scanArgs->chanlist, WLD_MAX_POSSIBLE_CHANNELS, channels);
         if(!wld_rad_isChannelSubset(pR, scanArgs->chanlist, len) || (len == 0)) {
-            SAH_TRACEZ_ERROR(ME, "%s: Invalid Channel list", pR->Name);
+            SAH_TRACEZ_ERROR(ME, "%s: Invalid Channel list (%s)", pR->Name, channels);
             errorCode = amxd_status_invalid_function_argument;
             goto error;
         }
@@ -351,7 +351,7 @@ static amxd_status_t s_startScan(amxd_object_t* object,
     if(ssid != NULL) {
         len = strlen(ssid);
         if(len >= SSID_NAME_LEN) {
-            SAH_TRACEZ_ERROR(ME, "SSID too large");
+            SAH_TRACEZ_ERROR(ME, "SSID (%s) too large", ssid);
             errorCode = amxd_status_invalid_function_argument;
             goto error;
         }
@@ -363,7 +363,7 @@ static amxd_status_t s_startScan(amxd_object_t* object,
         swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
         memcpy(macChar.cMac, bssid, sizeof(swl_macChar_t));
         if(!swl_mac_charToBin(&scanArgs->bssid, &macChar) || (!swl_mac_charIsValidStaMac(&macChar))) {
-            SAH_TRACEZ_ERROR(ME, "Invalid bssid %s", bssid);
+            SAH_TRACEZ_ERROR(ME, "Invalid bssid (%s)", bssid);
             errorCode = amxd_status_invalid_function_argument;
             goto error;
 

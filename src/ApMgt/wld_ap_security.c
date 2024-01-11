@@ -153,7 +153,12 @@ amxd_status_t _wld_ap_validateSecurity_ovf(amxd_object_t* object,
     if(modesAvailableMask == 0) {
         SAH_TRACEZ_ERROR(ME, "%s: ModesAvailable (%s) not supported", oname, modesAvailableStr);
         amxc_var_clean(&params);
-        return amxd_status_invalid_value;
+        if((pAP == NULL) || (pAP->pRadio == NULL)) {
+            SAH_TRACEZ_WARNING(ME, "%s: ModesAvailable (%s) conf can not be processed as AP is not mapped to any Radio", oname, modesAvailableStr);
+            return amxd_status_ok;
+        } else {
+            return amxd_status_invalid_value;
+        }
     }
 
     modeEnabledId = s_getFinalModeEnabled(modesAvailableMask, modeEnabledId);

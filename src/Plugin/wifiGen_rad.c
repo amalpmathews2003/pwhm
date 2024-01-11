@@ -181,6 +181,7 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
     SAH_TRACEZ_IN(ME);
     SAH_TRACEZ_INFO(ME, "init cap %s", pRad->Name);
     wld_rad_init_cap(pRad);
+    wld_rad_clearSuppDrvCaps(pRad);
 
     ASSERT_NOT_NULL(pWiphyInfo, , ME, "NULL");
     for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
@@ -293,12 +294,28 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
         }
     }
     if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_NONE) {
-        if(pRad->supportedFrequencyBands < M_SWL_FREQ_BAND_EXT_NONE) {
-            pRad->operatingFrequencyBand = swl_bit32_getHighest(pRad->supportedFrequencyBands);
+        swl_freqBandExt_m otherRadsFB = M_SWL_FREQ_BAND_EXT_NONE | M_SWL_FREQ_BAND_EXT_AUTO | wld_getAvailableFreqBands(pRad);
+        swl_freqBandExt_m ownRadFB = pRad->supportedFrequencyBands & (~otherRadsFB);
+        /*
+         * If only one band supported take it.
+         * If multiple bands are supported OR we don't know, fine tune selection based on available antennas
+         * ans considering already registered radios (exclusive freq bands, except for 5ghz where multiple device can be detected
+         */
+        if(swl_bit32_getNrSet(ownRadFB) == 1) {
+            pRad->operatingFrequencyBand = swl_bit32_getHighest(ownRadFB);
+        } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] <= 2) && (SWL_BIT_IS_SET(ownRadFB, SWL_FREQ_BAND_EXT_2_4GHZ))) {
+            pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_2_4GHZ;
+        } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] > 2) && (SWL_BIT_IS_SET(ownRadFB, SWL_FREQ_BAND_EXT_6GHZ))) {
+            pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_6GHZ;
+        } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] >= 2) && (SWL_BIT_IS_SET(pRad->supportedFrequencyBands, SWL_FREQ_BAND_EXT_5GHZ))) {
+            //allow multiple 5ghz radio device guessing
+            pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_5GHZ;
         } else {
-            pRad->operatingFrequencyBand = (pRad->nrAntenna[COM_DIR_TRANSMIT] > 2) ? SWL_FREQ_BAND_EXT_5GHZ : SWL_FREQ_BAND_EXT_2_4GHZ;
-            pRad->supportedFrequencyBands = SWL_BIT_SHIFT(pRad->operatingFrequencyBand);
+            pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_AUTO;
         }
+        SAH_TRACEZ_INFO(ME, "%s: deduce freqBand %s",
+                        pRad->Name,
+                        swl_freqBandExt_unknown_str[pRad->operatingFrequencyBand]);
     }
     if(pRad->supportedStandards == 0) {
         if(SWL_BIT_IS_SET(pRad->supportedFrequencyBands, SWL_FREQ_BAND_EXT_2_4GHZ)) {
