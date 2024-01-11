@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.25.1 - 2024-01-11(18:24:23 +0000)
+
+### Other
+
+- restore fix removed wrongly by SSW-7598
+
 ## Release v5.25.0 - 2024-01-11(13:17:16 +0000)
 
 ### Other
