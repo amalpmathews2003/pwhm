@@ -3098,7 +3098,7 @@ bool wld_rad_areAllVapsDone(T_Radio* pRad) {
      * (i.e conf loaded from saved/defaults , internal ctx synced with datamodel)
      */
     wld_rad_forEachAp(pAP, pRad) {
-        if(!pAP->initDone) {
+        if((pAP->pBus != NULL) && (!pAP->initDone)) {
             return false;
         }
     }
