@@ -90,6 +90,7 @@ endif
 ifeq ($(CONFIG_ACCESSPOINT),y)
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
 	$(INSTALL) -d -m 0755 $(PKGDIR)/etc/amx/wld/wld_defaults
+	rm -f $(PKGDIR)/etc/amx/wld/wld_defaults/
 	ln -sfr $(PKGDIR)/etc/amx/wld/wld_defaults-ap/* $(PKGDIR)/etc/amx/wld/wld_defaults/
 endif
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
@@ -101,6 +102,7 @@ ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 scripts/Plugin/wld_gen.sh $(PKGDIR)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
 endif
 	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
+	rm -f $(PKGDIR)$(BINDIR)/wld
 	ln -sfr $(PKGDIR)/usr/bin/amxrt $(PKGDIR)$(BINDIR)/wld
 	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(PKGDIR)/usr/lib/debuginfo/debug_wifi.sh
 	cd $(PKGDIR) && $(TAR) -czvf ../$(COMPONENT)-$(VERSION).tar.gz .
