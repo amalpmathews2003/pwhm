@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.25.3 - 2024-01-12(13:43:01 +0000)
+
+### Other
+
+- - TrafficMonitor - Fix Prio traffic busy level
+
 ## Release v5.25.2 - 2024-01-11(19:16:08 +0000)
 
 ### Other
