@@ -15,6 +15,7 @@ if (RadioIndex >= 0) : %}
                 parameter LowerLayers = "Device.WiFi.Radio.{{RadioIndex + 1}}.";
 {% endif %}
             }
+{% endif %}
 {% endif; endfor; %}
         }
         object AccessPoint {
