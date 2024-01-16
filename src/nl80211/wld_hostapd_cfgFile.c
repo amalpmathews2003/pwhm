@@ -713,10 +713,12 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     }
 
     bool isIEEE80211k = pAP->IEEE80211kEnable && pRad->IEEE80211kSupported;
+    bool isRnrEnabled = pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR);
     // Enable neighbor report via radio measurements
     swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_neighbor_report", isIEEE80211k);
     // Enable beacon report via radio measurements
     swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_beacon_report", isIEEE80211k);
+    swl_mapCharFmt_addValInt32(vapConfigMap, "rnr", isRnrEnabled);
     // Multiband Operation (MBO)
     if(pAP->mboEnable) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "mbo", pAP->mboEnable);
