@@ -1178,6 +1178,15 @@ define rrm_t{
 			 * @version 9.1
 			*/
 			%volatile %read-only string SignalStrengthByChain;
+			
+			/**
+			 * List of radio noise level per antennas of the uplink from the
+			 * associated device to the access point, float values with one decimal
+			 * measured in dBm, separated by a comma.
+			 * Example : -90.1,-90.2,-90.3,-89.1
+			*/
+			%volatile %read-only string NoiseByChain;
+			
 			/**
 			 * An indicator of radio signal strength of the uplink from the
 			 * associated device to the access point, measured in dBm, as

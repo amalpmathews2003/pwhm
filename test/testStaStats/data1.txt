@@ -7,6 +7,16 @@
         "SignalStrength" : -21,
         "Noise" : -91,
         "SignalNoiseRatio" : 70,
+        "SignalStrengthByChain" : [
+            -20,
+            -21,
+            -22
+        ],
+        "NoiseByChain" : [
+            -92,
+            -91,
+            -90
+        ],
         "Retransmissions" : 1,
         "Rx_Retransmissions" : 11,
         "Rx_RetransmissionsFailed" : 1,
@@ -52,6 +62,16 @@
         "SignalStrength" : -22,
         "Noise" : -91,
         "SignalNoiseRatio" : 69,
+        "SignalStrengthByChain" : [
+            -20,
+            -22,
+            -24
+        ],
+        "NoiseByChain" : [
+            -92,
+            -91,
+            -90
+        ],
         "Retransmissions" : 5,
         "Rx_Retransmissions" : 15,
         "Rx_RetransmissionsFailed" : 5,

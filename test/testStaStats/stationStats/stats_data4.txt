@@ -22,6 +22,7 @@
         "TxUnicastPacketCount": 3853,
         "SignalNoiseRatio": 73,
         "MaxDownlinkRateReached": 2161760,
+        "NoiseByChain": "-91.0,-92.0,-93.0",
         "MACAddress": "18:58:80:C2:FC:A0",
         "Noise": -91,
         "AvgSignalStrengthByChain": 0,
@@ -77,7 +78,7 @@
         "SignalStrength": -18,
         "Active": false,
         "HtCapabilities": "",
-        "SignalStrengthByChain": "",
+        "SignalStrengthByChain": "-18.0,-18.0,-18.0",
         "MUGroupId": 0
     }
 ]

@@ -1,0 +1,14 @@
+{
+    "data": {
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.1.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
+        "parameters": {
+            "AuthenticationState": {
+                "from": true,
+                "to": false
+            }
+        },
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.1."
+    }
+}

@@ -5,6 +5,16 @@
         "LastDataDownlinkRate" : 2161760,
         "LastDataUplinkRate" : 2401910,
         "SignalStrength" : -20,
+        "SignalStrengthByChain" : [
+            -20,
+            -18,
+            -22
+        ],
+        "NoiseByChain" : [
+            -92,
+            -91,
+            -90
+        ],
         "Noise" : -91,
         "SignalNoiseRatio" : 71,
         "Retransmissions" : 0,
@@ -52,6 +62,16 @@
         "SignalStrength" : -20,
         "Noise" : -91,
         "SignalNoiseRatio" : 71,
+        "SignalStrengthByChain" : [
+            -20,
+            -18,
+            -22
+        ],
+        "NoiseByChain" : [
+            -92,
+            -91,
+            -90
+        ],
         "Retransmissions" : 0,
         "Rx_Retransmissions" : 13,
         "Rx_RetransmissionsFailed" : 0,

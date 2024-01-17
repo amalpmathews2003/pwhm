@@ -518,7 +518,8 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
 
     size_t i = 0;
     for(i = 0; i < MAX_NR_ANTENNA; i++) {
-        pAD->SignalStrengthByChain[i] = DEFAULT_BASE_RSSI;
+        pAD->SignalStrengthByChain[i] = 0;
+        pAD->noiseByChain[i] = 0;
     }
     memset(&pAD->assocCaps, 0, sizeof(wld_assocDev_capabilities_t));
     wld_ad_init_oui(&pAD->assocCaps);
@@ -642,11 +643,11 @@ void wld_ad_printSignalStrengthHistory(T_AssociatedDevice* pAD, char* buf, uint3
              pAD->meanSignalStrength, WLD_ACC_TO_VAL(pAD->meanSignalStrengthExpAccumulator));
 }
 
-void wld_ad_printSignalStrengthByChain(T_AssociatedDevice* pAD, char* buf, uint32_t bufSize) {
+void wld_ad_printDbmDoubleArray(char* buf, uint32_t bufSize, double* array, uint32_t arraySize) {
     ASSERTS_TRUE((buf != NULL) && (bufSize > 0), , ME, "empty");
-    for(uint32_t idx = 0; idx < MAX_NR_ANTENNA && pAD->SignalStrengthByChain[idx] != DEFAULT_BASE_RSSI; idx++) {
-        //Example : -100.0
-        swl_strlst_catFormat(buf, bufSize, ",", "%.1f", pAD->SignalStrengthByChain[idx]);
+    buf[0] = 0;
+    for(uint32_t idx = 0; idx < arraySize && array[idx] != DEFAULT_BASE_RSSI && array[idx] != 0; idx++) {
+        swl_strlst_catFormat(buf, bufSize, ",", "%.1f", array[idx]);
     }
 }
 
@@ -1535,6 +1536,7 @@ void wld_ad_syncStats(T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
     amxd_object_t* object = pAD->object;
     ASSERT_NOT_NULL(object, , ME, "NULL");
+
     // Update here volatile parameters
     SWLA_OBJECT_SET_PARAM_UINT32(object, "ConnectionDuration", pAD->connectionDuration);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "Inactive", pAD->Inactive);
@@ -1553,8 +1555,10 @@ void wld_ad_syncStats(T_AssociatedDevice* pAD) {
     SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrength", WLD_ACC_TO_VAL(pAD->rssiAccumulator));
     SWLA_OBJECT_SET_PARAM_INT32(object, "AvgSignalStrengthByChain", pAD->AvgSignalStrengthByChain);
     char TBuf[64] = {'\0'};
-    wld_ad_printSignalStrengthByChain(pAD, TBuf, sizeof(TBuf));
+    wld_ad_printDbmDoubleArray(TBuf, sizeof(TBuf), pAD->SignalStrengthByChain, MAX_NR_ANTENNA);
     SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthByChain", TBuf);
+    wld_ad_printDbmDoubleArray(TBuf, sizeof(TBuf), pAD->noiseByChain, MAX_NR_ANTENNA);
+    SWLA_OBJECT_SET_PARAM_CSTRING(object, "NoiseByChain", TBuf);
     char rssiHistory[64] = {'\0'};
     wld_ad_printSignalStrengthHistory(pAD, rssiHistory, sizeof(rssiHistory));
     SWLA_OBJECT_SET_PARAM_CSTRING(object, "SignalStrengthHistory", rssiHistory);

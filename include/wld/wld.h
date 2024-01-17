@@ -755,6 +755,7 @@ typedef struct {
     swl_timeSpecReal_t measurementTimestampAssoc; /* timestamp of first rssi monitor update since Wi-Fi assoc event */
 } wld_assocDev_history_t;
 
+
 typedef struct {
     char Name[32];                            /* Name tag.*/
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* MAC address of station */
@@ -773,6 +774,7 @@ typedef struct {
     int32_t meanSignalStrengthLinearAccumulator;
     uint32_t nrMeanSignalStrength;
     double SignalStrengthByChain[MAX_NR_ANTENNA]; /* dBm */
+    double noiseByChain[MAX_NR_ANTENNA];          /* dBm */
     int32_t AvgSignalStrengthByChain;             /* dBm */
     int32_t noise;                                /* dBm */
     int32_t SignalNoiseRatio;                     /* dB */
@@ -853,12 +855,18 @@ typedef struct {
     swla_dm_objActionReadCtx_t onActionReadCtx;
 } T_AssociatedDevice;
 
+
+SWL_ARRAY_TYPE_H(gtWld_signalStatArray, gtSwl_type_double, MAX_NR_ANTENNA);
+
+
 #define X_T_ASSOCIATED_DEVICE_ANNOT(X, Y) \
     X(Y, gtSwl_type_macBin, MACAddress, "MACAddress") \
     X(Y, gtSwl_type_bool, AuthenticationState, "AuthenticationState") \
     X(Y, gtSwl_type_uint32, LastDataDownlinkRate, "LastDataDownlinkRate") \
     X(Y, gtSwl_type_uint32, LastDataUplinkRate, "LastDataUplinkRate") \
     X(Y, gtSwl_type_int32, SignalStrength, "SignalStrength") \
+    X(Y, gtWld_signalStatArray, SignalStrengthByChain, "SignalStrengthByChain") \
+    X(Y, gtWld_signalStatArray, noiseByChain, "NoiseByChain") \
     X(Y, gtSwl_type_int32, noise, "Noise") \
     X(Y, gtSwl_type_int32, SignalNoiseRatio, "SignalNoiseRatio") \
     X(Y, gtSwl_type_uint32, Retransmissions, "Retransmissions") \
