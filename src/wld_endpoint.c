@@ -1939,10 +1939,10 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
         swl_str_copy(pEP->Name, sizeof(pEP->Name), epIfName);
         pEP->index = epIfIndex;
         pEP->toggleBssOnReconnect = (pEP->index == pRad->index);
-    }
 
-    ret = pRad->pFA->mfn_wendpoint_create_hook(pEP);
-    ASSERT_FALSE(ret < 0, false, ME, "%s: ep create hook failed %d", pEP->alias, ret);
+        ret = pRad->pFA->mfn_wendpoint_create_hook(pEP);
+        ASSERT_FALSE(ret < 0, false, ME, "%s: ep create hook failed %d", pEP->alias, ret);
+    }
 
     //default EP iface mac when not defined by the implementation, is base rad mac
     if((epIfIndex != -1) && (swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
