@@ -257,6 +257,8 @@ static void s_deinitAP(T_AccessPoint* pAP) {
             SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
             /* Destroy vap*/
             pR->pFA->mfn_wvap_destroy_hook(pAP);
+            /* Sync Rad */
+            wld_rad_doSync(pR);
             /* Try to delete the requested interface by calling the HW function */
             pR->pFA->mfn_wrad_delvapif(pR, pAP->alias);
         }
