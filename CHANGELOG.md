@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.26.2 - 2024-01-17(11:22:17 +0000)
+
+### Other
+
+- - Delete VAP doesn't remove the VAP from hostapd config file
+
 ## Release v5.26.1 - 2024-01-16(11:29:33 +0000)
 
 ### Other
