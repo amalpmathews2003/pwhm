@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.27.0 - 2024-01-17(16:26:48 +0000)
+
+### Other
+
+- - add noise by chain
+
 ## Release v5.26.3 - 2024-01-17(13:29:48 +0000)
 
 ## Release v5.26.2 - 2024-01-17(11:22:17 +0000)
