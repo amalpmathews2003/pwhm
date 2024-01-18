@@ -59,7 +59,7 @@ case $1 in
         prevent_netifd_to_configure_wireless
         mkdir -p /var/lib/${name}
         touch /var/lib/${name}/${name}_config.odl
-        amxrt /etc/amx/${name}/${name}.odl &
+        ${name} -D
         ;;
     stop|shutdown)
         if [ -f /var/run/${name}.pid ]; then
