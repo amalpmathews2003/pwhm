@@ -456,12 +456,14 @@ static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, a
             pMD->monRssi = rssi_val;
             amxc_var_t myMap;
             amxc_var_init(&myMap);
+            amxc_var_set_type(&myMap, AMXC_VAR_ID_HTABLE);
             amxc_var_add_key(int32_t, &myMap, "SignalStrength", pMD->monRssi);
             swl_typeMacBin_addToMapRef(&myMap, "MACAddress", (swl_macBin_t*) pMD->MACAddress);
 
             swl_typeTimeSpecReal_addToMap(&myMap, "TimeStamp", swl_timespec_getRealVal());
 
             amxc_var_move(myList, &myMap);
+            amxc_var_clean(&myMap);
             nrUpdates++;
         }
     }

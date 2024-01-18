@@ -164,6 +164,7 @@ static void timeHandler(void* userdata) {
             pAD->rssiLevel = rssi_val;
             amxc_var_t myMap;
             amxc_var_init(&myMap);
+            amxc_var_set_type(&myMap, AMXC_VAR_ID_HTABLE);
             amxc_var_add_key(int32_t, &myMap, "SignalStrength", rssi_val);
             amxc_var_add_key(int32_t, &myMap, "Noise", pAD->noise);
             char buffer[ETHER_ADDR_STR_LEN];

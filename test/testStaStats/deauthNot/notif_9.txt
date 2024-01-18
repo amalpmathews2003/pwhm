@@ -3,6 +3,29 @@
         "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.ProbeReqCaps.",
         "notification": "dm:object-removed",
         "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].ProbeReqCaps.",
+        "parameters": {
+            "TxSupportedHe80x80MCS": "",
+            "VendorOUI": "",
+            "RxSupportedHe160MCS": "",
+            "EncryptionMode": "Default",
+            "VhtCapabilities": "",
+            "RxSupportedHeMCS": "",
+            "TxSupportedVhtMCS": "",
+            "TxSupportedHe160MCS": "",
+            "SecurityModeEnabled": "WPA2-Personal",
+            "RrmOnChannelMaxDuration": 0,
+            "RxSupportedHe80x80MCS": "",
+            "RxSupportedVhtMCS": "",
+            "RrmOffChannelMaxDuration": 0,
+            "RrmCapabilities": "",
+            "HeCapabilities": "",
+            "SupportedMCS": "",
+            "FrequencyCapabilities": "2.4GHz,5GHz",
+            "HtCapabilities": "40MHz,SGI20",
+            "TxSupportedHeMCS": "",
+            "SupportedHtMCS": "",
+            "LinkBandwidth": "Unknown"
+        },
         "path": "WiFi.AccessPoint.2.AssociatedDevice.2.ProbeReqCaps."
     }
 }
