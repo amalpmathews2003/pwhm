@@ -93,6 +93,7 @@ swl_rc_ne wld_secDmn_reload(wld_secDmn_t* pSecDmn);
 swl_rc_ne wld_secDmn_setArgs(wld_secDmn_t* pSecDmn, char* startArgs);
 void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn);
 
 #define CALL_SECDMN_MGR_EXT(pSecDmn, fName, ifName, ...) \

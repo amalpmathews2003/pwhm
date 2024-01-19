@@ -194,6 +194,11 @@ bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn) {
     return wld_dmn_isRunning(pSecDmn->dmnProcess);
 }
 
+bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
+    return wld_dmn_isEnabled(pSecDmn->dmnProcess);
+}
+
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
     return (wld_secDmn_isRunning(pSecDmn) && wld_wpaCtrlMngr_isConnected(pSecDmn->wpaCtrlMngr));

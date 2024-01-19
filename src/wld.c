@@ -662,6 +662,10 @@ uint32_t wld_getNrApMldLinksById(int32_t id) {
     T_Radio* pRad = NULL;
     wld_for_eachRad(pRad) {
         T_AccessPoint* pAP = NULL;
+        if(!SWL_BIT_IS_SET(pRad->operatingStandards, SWL_RADSTD_BE)) {
+            continue;
+        }
+
         wld_rad_forEachAp(pAP, pRad) {
             if((pAP->pSSID != NULL) && (pAP->pSSID->mldUnit == id)) {
                 nrAp++;

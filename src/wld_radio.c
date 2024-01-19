@@ -3873,6 +3873,20 @@ amxd_status_t _Radio_getStatusHistogram(amxd_object_t* object,
     return amxd_status_ok;
 }
 
+static void s_dumpRadioDebug(T_Radio* pR, amxc_var_t* retval) {
+    amxc_var_add_key(bool, retval, "Enable", pR->enable);
+    amxc_var_add_key(cstring_t, retval, "Status", wld_status_str[pR->status]);
+    swl_type_addToMap(&gtWld_status_changeInfo.type.type, retval, "changeInfo", &pR->changeInfo);
+    amxc_var_add_key(int32_t, retval, "Index", pR->index);
+    amxc_var_add_key(uint64_t, retval, "WDevId", pR->wDevId);
+    amxc_var_add_key(int32_t, retval, "RefIndex", pR->ref_index);
+    amxc_var_add_key(bool, retval, "IsReady", pR->isReady);
+    swl_conv_addMaskToMap(retval, "SupportedFrequencyBands", pR->supportedFrequencyBands, swl_freqBandExt_str, SWL_FREQ_BAND_EXT_MAX);
+    amxc_var_add_key(cstring_t, retval, "OperatingFrequencyBand", swl_freqBandExt_str[pR->operatingFrequencyBand]);
+    swl_conv_addMaskToMap(retval, "SupportedStandards", pR->supportedStandards, swl_radStd_str, SWL_RADSTD_MAX);
+    swl_conv_addMaskToMap(retval, "OperatingStandards", pR->operatingStandards, swl_radStd_str, SWL_RADSTD_MAX);
+}
+
 amxd_status_t _Radio_debug(amxd_object_t* object,
                            amxd_function_t* func _UNUSED,
                            amxc_var_t* args,
@@ -4004,6 +4018,8 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         amxc_var_add_key(cstring_t, retval, "FSM_AC_BitArray", buffer);
         snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_CSC[0], pR->fsmRad.FSM_CSC[1]);
         amxc_var_add_key(cstring_t, retval, "FSM_CSC", buffer);
+    } else if(swl_str_matchesIgnoreCase(feature, "dump")) {
+        s_dumpRadioDebug(pR, retval);
     } else {
         amxc_var_add_key(cstring_t, retval, "Error", "Unknown command");
     }
