@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.27.2 - 2024-01-19(12:30:05 +0000)
+
+### Other
+
+- : Change pwhm default process name in prplOS
+
 ## Release v5.27.1 - 2024-01-19(12:17:44 +0000)
 
 ### Other
