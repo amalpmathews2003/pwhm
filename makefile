@@ -67,6 +67,7 @@ endif
 	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
 	ln -sfr $(DEST)/usr/bin/amxrt $(DEST)$(BINDIR)/wld
 	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(DEST)/usr/lib/debuginfo/debug_wifi.sh
+	$(INSTALL) -D -p -m 0755 scripts/debugInfo.sh $(DEST)$(LIBDIR)/amx/wld/debugInfo.sh
 
 package: all
 	$(INSTALL) -d -m 0755 $(PKGDIR)/$(INCLUDEDIR)/wld
@@ -105,6 +106,7 @@ endif
 	rm -f $(PKGDIR)$(BINDIR)/wld
 	ln -sfr $(PKGDIR)/usr/bin/amxrt $(PKGDIR)$(BINDIR)/wld
 	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(PKGDIR)/usr/lib/debuginfo/debug_wifi.sh
+	$(INSTALL) -D -p -m 0755 scripts/debugInfo.sh $(PKGDIR)$(LIBDIR)/amx/wld/debugInfo.sh
 	cd $(PKGDIR) && $(TAR) -czvf ../$(COMPONENT)-$(VERSION).tar.gz .
 	cp $(PKGDIR)../$(COMPONENT)-$(VERSION).tar.gz .
 	make -C packages

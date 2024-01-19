@@ -73,6 +73,7 @@ case $1 in
         ;;
     debuginfo)
         ubus-cli "WiFi.?"
+        /usr/lib/debuginfo/debug_wifi.sh
         ;;
     log)
         echo "log ${name}"

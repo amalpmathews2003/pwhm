@@ -1,10 +1,5 @@
 #!/bin/sh
-
-LIBDEBUG=/usr/lib/debuginfo/debug_functions.sh
-
-if [ ! -f "$LIBDEBUG" ]; then
-    echo "No debug library found : $LIBDEBUG"
-    exit 1
-fi
-
-. $LIBDEBUG
+/usr/lib/amx/wld/debugInfo.sh
+for FILE in $(ls -1 /usr/lib/amx/wld/modules/*/debugInfo.sh 2> /dev/null); do
+   $FILE
+done
