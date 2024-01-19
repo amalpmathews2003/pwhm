@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.27.1 - 2024-01-19(12:17:44 +0000)
+
+### Other
+
+- : RssiEventing is sending empty map
+
 ## Release v5.27.0 - 2024-01-17(16:26:48 +0000)
 
 ### Other
