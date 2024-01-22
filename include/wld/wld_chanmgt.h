@@ -93,7 +93,7 @@ void wld_chanmgt_writeDfsChannels(T_Radio* pRad);
 swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason);
 swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bool direct, wld_channelChangeReason_e reason, const char* reasonExt);
 
-void wld_chanmgt_saveChanges(T_Radio* pRad);
+void wld_chanmgt_saveChanges(T_Radio* pRad, amxd_trans_t* trans);
 void wld_chanmgt_checkInitChannel(T_Radio* pRad);
 swl_channel_t wld_chanmgt_getCurChannel(T_Radio* pRad);
 swl_bandwidth_e wld_chanmgt_getCurBw(T_Radio* pRad);

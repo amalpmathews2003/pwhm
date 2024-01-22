@@ -75,6 +75,7 @@
 #include "wld_accesspoint.h"
 #include "wld_assocdev.h"
 #include "swla/swla_delayExec.h"
+#include "swla/swla_trans.h"
 #include "wld_dm_trans.h"
 #include "Utils/wld_autoCommitMgr.h"
 
@@ -636,12 +637,12 @@ void wld_chanmgt_checkInitChannel(T_Radio* pRad) {
 /**
  * update of the radio data model after create
  */
-void wld_chanmgt_saveChanges(T_Radio* pRad) {
+void wld_chanmgt_saveChanges(T_Radio* pRad, amxd_trans_t* trans) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
     ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: radio dm obj not ready for updates", pRad->Name);
     s_updateCurrentChanspec(pRad);
     s_updateTargetDm(pRad);
-    wld_rad_chan_update_model(pRad, NULL);
 
     amxc_llist_for_each(it, &pRad->channelChangeList) {
         wld_rad_chanChange_t* change = amxc_llist_it_get_data(it, wld_rad_chanChange_t, it);
@@ -649,6 +650,26 @@ void wld_chanmgt_saveChanges(T_Radio* pRad) {
             s_writeChangeToOdl(change);
         }
     }
+
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, pRad->pBus);
+    ASSERT_NOT_NULL(targetTrans, , ME, "NULL");
+
+    uint32_t channel = amxd_object_get_uint32_t(pRad->pBus, "Channel", NULL);
+    if(channel == 0) {
+        amxd_trans_set_uint32_t(targetTrans, "Channel", pRad->channel);
+        amxd_trans_set_cstring_t(targetTrans, "ChannelsInUse", pRad->channelsInUse);
+        amxd_trans_set_cstring_t(targetTrans, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
+    }
+
+    swl_radBw_e radBw = swl_conv_objectParamEnum(pRad->pBus, "OperatingChannelBandwidth", swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
+    if(radBw == SWL_RAD_BW_AUTO) {
+        amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", swl_radBw_str[pRad->operatingChannelBandwidth]);
+        amxd_trans_set_cstring_t(targetTrans, "CurrentOperatingChannelBandwidth", swl_radBw_str[pRad->runningChannelBandwidth]);
+        amxd_trans_set_cstring_t(targetTrans, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);
+    }
+
+    swla_trans_finalize(&tmpTrans, NULL);
 }
 
 /**

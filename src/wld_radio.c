@@ -1741,19 +1741,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_trans_set_cstring_t(&trans, "OperatingStandards", TBuf);
 
         swl_conv_uint8ArrayToChar(TBuf, sizeof(TBuf), pR->possibleChannels, pR->nrPossibleChannels);
-        amxd_trans_set_value(cstring_t, &trans, "PossibleChannels", TBuf);
-        amxd_trans_set_value(cstring_t, &trans, "MaxChannelBandwidth", Rad_SupBW[pR->maxChannelBandwidth]);
-
-        if(pR->channel) {
-            amxd_trans_set_int32_t(&trans, "Channel", pR->channel);
-            wld_rad_chan_update_model(pR, &trans);
-            wld_rad_updateOperatingClass(pR);
-        }
-
-        if(amxd_object_get_uint32_t(object, "MaxAssociatedDevices", NULL) == 0) {
-            amxd_trans_set_uint32_t(&trans, "MaxAssociatedDevices", pR->maxStations);
-        }
-        amxd_trans_set_uint32_t(&trans, "MaxSupportedSSIDs", pR->maxNrHwBss);
+        amxd_trans_set_cstring_t(&trans, "PossibleChannels", TBuf);
+        swl_conv_transParamSetMask(&trans, "SupportedOperatingChannelBandwidth", pR->supportedChannelBandwidth, swl_radBw_str, SWL_RAD_BW_MAX);
         amxd_trans_set_int32_t(&trans, "AutoChannelSupported", pR->autoChannelSupported);
         amxd_trans_set_int32_t(&trans, "AutoChannelRefreshPeriod", pR->autoChannelRefreshPeriod);
         amxd_trans_set_cstring_t(&trans, "OperatingChannelBandwidth", Rad_SupBW[pR->operatingChannelBandwidth]);
@@ -1761,6 +1750,15 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_trans_set_cstring_t(&trans, "AutoBandwidthSelectMode", wld_rad_autoBwSelectMode_str[pR->autoBwSelectMode]);
         amxd_trans_set_bool(&trans, "ObssCoexistenceEnable", pR->obssCoexistenceEnabled);
         amxd_trans_set_cstring_t(&trans, "ExtensionChannel", Rad_SupCExt[pR->extensionChannel]);
+        if(pR->channel) {
+            wld_chanmgt_saveChanges(pR, &trans);
+            wld_rad_updateOperatingClass(pR);
+        }
+
+        if(amxd_object_get_uint32_t(object, "MaxAssociatedDevices", NULL) == 0) {
+            amxd_trans_set_uint32_t(&trans, "MaxAssociatedDevices", pR->maxStations);
+        }
+        amxd_trans_set_uint32_t(&trans, "MaxSupportedSSIDs", pR->maxNrHwBss);
         amxd_trans_set_cstring_t(&trans, "GuardInterval", Rad_SupGI[pR->guardInterval]);
         amxd_trans_set_int32_t(&trans, "MCS", pR->MCS);
         TBuf[0] = '\0';
@@ -1792,7 +1790,6 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_trans_set_bool(&trans, "AirtimeFairnessEnabled", pR->airtimeFairnessEnabled);
         amxd_trans_set_uint32_t(&trans, "DFSChannelChangeEventCounter", pR->DFSChannelChangeEventCounter);
         swl_type_toTransParam(&gtSwl_type_timeReal, &trans, "DFSChannelChangeEventTimestamp", &pR->DFSChannelChangeEventTimestamp);
-        wld_chanmgt_saveChanges(pR);
 
 
         /* 'IEEE80211_Caps' S@H, shows the supported driver capabilities.
