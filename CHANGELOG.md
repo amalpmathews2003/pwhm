@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.27.3 - 2024-01-22(09:50:21 +0000)
+
+### Other
+
+- RSSI events are missing elements.
+
 ## Release v5.27.2 - 2024-01-19(12:30:05 +0000)
 
 ### Other
