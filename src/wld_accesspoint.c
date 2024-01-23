@@ -1836,8 +1836,8 @@ static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_pa
     bool newEnable = amxc_var_dyncast(bool, newValue);
     SAH_TRACEZ_INFO(ME, "%s: setAccessPointEnable %d", pAP->alias, newEnable);
 
-    pAP->enable = newEnable;
     pAP->pFA->mfn_wvap_enable(pAP, newEnable, SET);
+    pAP->enable = newEnable;
     wld_autoCommitMgr_notifyVapEdit(pAP);
     wld_ssid_syncEnable(pAP->pSSID, false);
 
@@ -2301,16 +2301,20 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
 
     SAH_TRACEZ_INFO(ME, "%s: ap %u -> %u / ssid %u -> %u", pAP->alias, oldVapStatus, pAP->status, oldSsidStatus, newSsidStatus);
 
-    if((oldVapStatus == pAP->status) && (oldSsidStatus == newSsidStatus)) {
-        return;
-    }
-    pAP->lastStatusChange = swl_time_getMonoSec();
-    wld_ssid_setStatus(pSSID, newSsidStatus, true);
-
     //update DM Status of DM configurable VAPs
-    ASSERT_TRUE((pAP->pBus == NULL) || swl_typeCharPtr_commitObjectParam(pAP->pBus, "Status", (char*) cstr_AP_status[pAP->status]), ,
+    ASSERT_TRUE((pAP->pBus == NULL) ||
+                swl_typeCharPtr_commitObjectParam(pAP->pBus, "Status", (char*) cstr_AP_status[pAP->status]), ,
                 ME, "%s: fail to commit status (%s)", pAP->alias, cstr_AP_status[pAP->status]);
 
+    ASSERT_TRUE((pSSID->pBus == NULL) ||
+                swl_typeCharPtr_commitObjectParam(pSSID->pBus, "Status", (char*) Rad_SupStatus[newSsidStatus]), ,
+                ME, "%s: fail to commit status (%s)", pSSID->Name, Rad_SupStatus[newSsidStatus]);
+
+    ASSERTI_FALSE((oldVapStatus == pAP->status) && (oldSsidStatus == newSsidStatus), ,
+                  ME, "%s: status not changed", pAP->alias);
+
+    pAP->lastStatusChange = swl_time_getMonoSec();
+    wld_ssid_setStatus(pSSID, newSsidStatus, true);
     wld_vap_status_change_event_t vapUpdate;
     vapUpdate.vap = pAP;
     vapUpdate.oldSsidStatus = oldSsidStatus;
