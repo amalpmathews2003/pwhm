@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.27.4 - 2024-01-23(10:15:33 +0000)
+
+### Other
+
+- handle as much association as supported stations
+
 ## Release v5.27.3 - 2024-01-22(09:50:21 +0000)
 
 ### Other
