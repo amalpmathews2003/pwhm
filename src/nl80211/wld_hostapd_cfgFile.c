@@ -544,10 +544,12 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(!pAP->enable) {
         swl_mapChar_add(vapConfigMap, "start_disabled", "1");
     }
-    if(pAP->MaxStations > 0) {
+    /*
+     * set BSS max_sta when having explicit value in AP conf,
+     * and different than global radio max_sta (learned by hostapd from driver side)
+     */
+    if((pAP->MaxStations > 0) && (pAP->MaxStations != pRad->maxStations)) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", pAP->MaxStations);
-    } else if(pRad->maxStations > 0) {
-        swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", pRad->maxStations);
     }
 
     s_setVapIeee80211rConfig(pAP, vapConfigMap);
