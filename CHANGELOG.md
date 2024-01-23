@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.28.1 - 2024-01-23(14:22:17 +0000)
+
+### Other
+
+- set BSS max_num_sta in hapd conf when explicit
+
 ## Release v5.28.0 - 2024-01-23(12:01:51 +0000)
 
 ### Other
