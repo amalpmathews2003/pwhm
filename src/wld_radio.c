@@ -1750,6 +1750,9 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             wld_rad_updateOperatingClass(pR);
         }
 
+        if(amxd_object_get_uint32_t(object, "MaxAssociatedDevices", NULL) == 0) {
+            amxd_trans_set_uint32_t(&trans, "MaxAssociatedDevices", pR->maxStations);
+        }
         amxd_trans_set_uint32_t(&trans, "MaxSupportedSSIDs", pR->maxNrHwBss);
         amxd_trans_set_int32_t(&trans, "AutoChannelSupported", pR->autoChannelSupported);
         amxd_trans_set_int32_t(&trans, "AutoChannelRefreshPeriod", pR->autoChannelRefreshPeriod);
@@ -1903,7 +1906,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         //	pR->pFA->mfn_wrad_txpow(pR,pR->transmitPower,SET);
 
         tmp_int32 = amxd_object_get_int32_t(object, "MaxAssociatedDevices", NULL);
-        if(pR->maxStations != tmp_int32) {
+        if((tmp_int32 > 0) && (pR->maxStations != tmp_int32)) {
             pR->maxStations = tmp_int32;
             pR->pFA->mfn_wrad_sync(pR, SET);
             commit = true;

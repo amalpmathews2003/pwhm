@@ -273,6 +273,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
         wld_ad_destroy_associatedDevice(pAP, i);
     }
     pAP->ActiveAssociatedDeviceNumberOfEntries = 0;
+    W_SWL_FREE(pAP->AssociatedDevice);
     wld_ad_cleanAp(pAP);
     wld_ap_rssiMonDestroy(pAP);
 
@@ -303,6 +304,10 @@ static bool s_initAp(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName, uin
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     ASSERT_STR(vapName, false, ME, "No vap name");
+    if(pAP->AssociatedDevice == NULL) {
+        pAP->AssociatedDevice = calloc(MAXNROF_STAENTRY, sizeof(pAP->AssociatedDevice[0]));
+        ASSERT_NOT_NULL(pAP->AssociatedDevice, false, ME, "%s: fail to alloc assocDev array", vapName);
+    }
     s_setDefaults(pAP, pRad, vapName, idx);
     /* Add pAP on linked list of pR */
     amxc_llist_append(&pRad->llAP, &pAP->it);
@@ -556,7 +561,12 @@ static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
     int flag = amxc_var_dyncast(int32_t, newValue);
     SAH_TRACEZ_INFO(ME, "%s: set MaxStations %d", pAP->alias, flag);
     ASSERTS_NOT_EQUALS(pAP->MaxStations, flag, , ME, "same value");
-    pAP->MaxStations = (flag > MAXNROF_STAENTRY || flag < 0) ? MAXNROF_STAENTRY : flag;
+    T_Radio* pRad = pAP->pRadio;
+    int maxNrSta = wld_getMaxNrSta();
+    if(pRad != NULL) {
+        maxNrSta = SWL_MAX(pRad->maxStations, maxNrSta);
+    }
+    pAP->MaxStations = (flag > maxNrSta || flag <= 0) ? maxNrSta : flag;
     wld_ap_doSync(pAP);
     if(pAP->MaxStations != flag) {
         swla_delayExec_add((swla_delayExecFun_cbf) s_saveMaxStations, pAP);
@@ -860,8 +870,9 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_trans_set_int32_t(&trans, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
         amxd_trans_set_int32_t(&trans, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
-
-
+        if(amxd_object_get_int32_t(object, "MaxAssociatedDevices", NULL) <= 0) {
+            amxd_trans_set_uint32_t(&trans, "MaxAssociatedDevices", pAP->MaxStations);
+        }
 
         /** IEEE80211r part */
 
@@ -997,7 +1008,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
 
         tmp_int32 = amxd_object_get_int32_t(object, "MaxAssociatedDevices", NULL);
-        if(pAP->MaxStations != tmp_int32) {
+        if((tmp_int32 > 0) && (pAP->MaxStations != tmp_int32)) {
             pAP->MaxStations = tmp_int32;
             commit = true;
         }

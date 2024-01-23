@@ -218,13 +218,28 @@ enum {
  * updating the driver state.
  */
 
-#define MAXNROF_SSID          (16)
+/*
+ * Statically defined limit number of APs, EPs, SSIDs
+ * Only to be used for initial hw devs/ifaces detection
+ */
 #define MAXNROF_RADIO          (3)
 #define MAXNROF_ACCESSPOINT   (16)
 #define MAXNROF_ENDPOINT      (32)
-#define MAXNROF_STAENTRY      (128)
+#define MAXNROF_SSID  (MAXNROF_ACCESSPOINT + MAXNROF_ENDPOINT)
+
 #define MAXNROF_MFENTRY       (32)
 #define MAXNROF_PFENTRY       (32)
+#define NR_OF_STICKY_UNAUTHORIZED_STATIONS 1
+#define MAXNROF_STAENTRY (wld_getMaxNrSta() + NR_OF_STICKY_UNAUTHORIZED_STATIONS)
+
+/*
+ * APIs to get learned global limit number of: stations, accessPoints, endpoints, SSIDs
+ */
+int32_t wld_getMaxNrSta();
+uint32_t wld_getMaxNrAPs();
+uint32_t wld_getMaxNrEPs();
+uint32_t wld_getMaxNrSSIDs();
+
 #define MAX_FSM_STACK_STATE   (16)
 #define FSM_BW                 (2)
 
@@ -1759,7 +1774,7 @@ struct S_ACCESSPOINT {
 
     T_HotSpot2 HotSpot2;
     int CurrentAssociatedDevice;
-    T_AssociatedDevice* AssociatedDevice[MAXNROF_STAENTRY];
+    T_AssociatedDevice** AssociatedDevice;
     wld_mfMode_e MF_Mode;
     int MF_EntryCount;
     char* MF_AddressList;

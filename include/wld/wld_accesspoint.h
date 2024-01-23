@@ -69,8 +69,6 @@
 #include "wld_wps.h"
 #include "wld_extMod.h"
 
-#define NR_OF_STICKY_UNAUTHORIZED_STATIONS 1
-
 void t_destroy_handler_AP (amxd_object_t* object);
 T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx);
 T_AccessPoint* wld_ap_fromObj(amxd_object_t* apObj);

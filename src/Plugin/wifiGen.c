@@ -173,7 +173,8 @@ bool wifiGen_init() {
 int wifiGen_addRadios() {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(s_vendor, SWL_RC_INVALID_PARAM, ME, "NULL");
-    wld_nl80211_ifaceInfo_t wlIfacesInfo[MAXNROF_RADIO][MAXNROF_ACCESSPOINT] = {};
+    wld_nl80211_ifaceInfo_t wlIfacesInfo[MAXNROF_RADIO][MAXNROF_ACCESSPOINT];
+    memset(wlIfacesInfo, 0, sizeof(wlIfacesInfo));
     rc = wld_nl80211_getInterfaces(MAXNROF_RADIO, MAXNROF_ACCESSPOINT, wlIfacesInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get nl80211 interfaces");
     uint8_t index = 0;

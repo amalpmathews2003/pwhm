@@ -104,6 +104,10 @@ static swl_timeSpecMono_t initTime;
 T_CONST_WPS g_wpsConst;
 static bool init = false;
 
+static int32_t g_MaxNrSta = 32;             //default min 32 stations per radio
+static uint32_t g_MaxNrAPs = 2;             //default min 2 BSSs per Radio when MBSS is supported
+static uint32_t g_MaxNrEPs = MAXNROF_RADIO; //default 1 EP per Radio
+
 SWL_TT_C(gtWld_staHistory, wld_staHistory_t, X_WLD_STA_HISTORY);
 SWL_NTT_C(gtWld_associatedDevice, T_AssociatedDevice, X_T_ASSOCIATED_DEVICE_ANNOT)
 SWL_ARRAY_TYPE_C(gtWld_acTrafficArray, gtSwl_type_uint32, WLD_AC_MAX, true, false);
@@ -285,6 +289,22 @@ const char* radCounterNames[WLD_RAD_EV_MAX] = {
     "EpAssocFail",
 };
 
+int32_t wld_getMaxNrSta() {
+    return g_MaxNrSta;
+}
+
+uint32_t wld_getMaxNrAPs() {
+    return g_MaxNrAPs;
+}
+
+uint32_t wld_getMaxNrEPs() {
+    return g_MaxNrEPs;
+}
+
+uint32_t wld_getMaxNrSSIDs() {
+    return (g_MaxNrAPs + g_MaxNrEPs);
+}
+
 int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     ASSERT_NOT_NULL(name, -1, ME, "NULL");
     ASSERT_NOT_NULL(vendor, -1, ME, "NULL");
@@ -406,6 +426,19 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     pR->macCfg.useLocalBitForGuest = 0;
     pR->macCfg.localGuestMacOffset = 256;
+
+    if(pR->isAP) {
+        if(pR->maxNrHwBss == 0) {
+            pR->maxNrHwBss = g_MaxNrAPs;
+        } else if(pR->maxNrHwBss > g_MaxNrAPs) {
+            g_MaxNrAPs = pR->maxNrHwBss;
+        }
+        if(pR->maxStations == 0) {
+            pR->maxStations = g_MaxNrSta;
+        } else if(pR->maxStations > (int) g_MaxNrSta) {
+            g_MaxNrSta = pR->maxStations;
+        }
+    }
 
     amxc_llist_init(&pR->scanState.stats.extendedStat);
     amxc_llist_init(&pR->scanState.spectrumResults);

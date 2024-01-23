@@ -1300,9 +1300,7 @@ define probelist_t{
 		 * value of 0 means that there is no specific limit.
 		 * @version 9.1
 		 */
-		%persistent uint32 MaxAssociatedDevices{
-			default 64;
-		}
+		%persistent uint32 MaxAssociatedDevices;
 
 		/**
 		 * The number of devices currently connected to this radio.

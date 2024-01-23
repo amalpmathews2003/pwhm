@@ -480,9 +480,8 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     pRad->isAP = wiphyInfo.suppAp;
     if(pRad->isAP) {
-        if((pRad->maxNrHwBss = wiphyInfo.nApMax) == 0) {
-            pRad->maxNrHwBss = MAXNROF_ACCESSPOINT;
-        }
+        pRad->maxNrHwBss = wiphyInfo.nApMax;
+        pRad->maxStations = wiphyInfo.nStaMax;
     }
     //memcpy(pRad->MACAddr, ifaceInfo.mac.bMac, ETHER_ADDR_LEN);
 
