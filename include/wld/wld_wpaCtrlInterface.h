@@ -78,4 +78,13 @@ const char* wld_wpaCtrlInterface_getPath(wld_wpaCtrlInterface_t* pIface);
 const char* wld_wpaCtrlInterface_getName(wld_wpaCtrlInterface_t* pIface);
 const wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(wld_wpaCtrlInterface_t* pIface);
 
+#define CALL_INTF_EXT(pIntf, fName, ...) \
+    { \
+        void* userdata = NULL; \
+        wld_wpaCtrl_evtHandlers_cb handlers = {0}; \
+        if(wld_wpaCtrlInterface_getEvtHandlers(pIntf, &userdata, &handlers)) { \
+            SWL_CALL(handlers.fName, userdata, ifName, __VA_ARGS__); \
+        } \
+    }
+
 #endif /* INCLUDE_WLD_WLD_WPACTRLINTERFACE_H_ */

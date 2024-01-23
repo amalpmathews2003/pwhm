@@ -110,7 +110,7 @@ static void test_wld_ap_hostapd_setParamAction(void** state) {
     assert_int_equal(pMappedAction, SECDMN_ACTION_OK_NEED_SIGHUP);
 }
 
-static void test_wld_parse_wpactrl_evnt(void** state) {
+static void test_wld_parse_wpactrl_event(void** state) {
     (void) state;
     struct testInfo {
         const char* msgData;
@@ -180,6 +180,81 @@ static void test_wld_parse_wpactrl_evnt(void** state) {
     W_SWL_FREE(pParams);
 }
 
+static void test_wld_fetch_wpactrl_event(void** state) {
+    (void) state;
+    char* evtList[] = {
+        "SME: Trying to authenticate",
+        "Trying to associate",
+        "Associated"
+    };
+    struct testInfo {
+        const char* msgData;
+        const char* msgEvtNamePfx;
+        const char* msgEvtArgsSep;
+        int32_t expectPos;
+        const char* expecEvtName;
+        const char* expecEvtArgs;
+    } tests[] = {
+        {
+            "<3>SME: Trying to authenticate with 98:42:65:2d:23:43 (SSID='ssid' freq=5500 MHz)",
+            "<3>", " ",
+            0, "SME: Trying to authenticate", "with 98:42:65:2d:23:43 (SSID='ssid' freq=5500 MHz)"
+        },
+        {
+            "<3>Trying to associate with SSID 'ssid'",
+            "<3>", " ",
+            1, "Trying to associate", "with SSID 'ssid'"
+        },
+        {
+            "<3>Trying to associate with 98:42:65:2d:23:43 (SSID='ssid' freq=5500 MHz)",
+            "<3>", " ",
+            1, "Trying to associate", "with 98:42:65:2d:23:43 (SSID='ssid' freq=5500 MHz)"
+        },
+        {
+            "<3>Trying to connect to 98:42:65:2d:23:43",
+            "<3>", NULL,
+            -1, "Trying to connect to 98:42:65:2d:23:43", NULL
+        },
+        {
+            "SME: Trying to connect",
+            NULL, " ",
+            -1, "SME:", "Trying to connect"
+        },
+        {
+            "Associated to 98:42:65:2d:23:43",
+            NULL, " ",
+            2, "Associated", "to 98:42:65:2d:23:43"
+        },
+        {
+            "SME:",
+            "<3>", " ",
+            -1, NULL, NULL
+        },
+        {
+            "<3>",
+            "<3>", " ",
+            -1, NULL, NULL
+        },
+        {
+            NULL,
+            "<3>", " ",
+            -1, NULL, NULL
+        },
+    };
+
+    char* eventName = NULL;
+    char* pParams = NULL;
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(tests); i++) {
+        int ret = wld_wpaCtrl_fetchEvent(tests[i].msgData, tests[i].msgEvtNamePfx, tests[i].msgEvtArgsSep, evtList, SWL_ARRAY_SIZE(evtList), &eventName, &pParams);
+        assert_int_equal(ret, tests[i].expectPos);
+        assert_true(swl_str_matches(eventName, tests[i].expecEvtName));
+        assert_true(swl_str_matches(pParams, tests[i].expecEvtArgs));
+    }
+
+    W_SWL_FREE(eventName);
+    W_SWL_FREE(pParams);
+}
+
 static int s_setupSuite(void** state) {
     (void) state;
     return 0;
@@ -201,7 +276,8 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_wld_ap_hostapd_getParamAction),
         cmocka_unit_test(test_wld_ap_hostapd_setParamAction),
-        cmocka_unit_test(test_wld_parse_wpactrl_evnt),
+        cmocka_unit_test(test_wld_parse_wpactrl_event),
+        cmocka_unit_test(test_wld_fetch_wpactrl_event),
     };
     int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();

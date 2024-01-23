@@ -137,6 +137,7 @@ typedef void (* wld_wpaCtrl_processStdMsgCb_f)(void* userData, char* ifName, cha
 /*
  * wpactrl event handlers called by a generic wpactrl msg parsing
  */
+typedef void (* wld_wpaCtrl_wpsInProgressMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsSuccessMsg_f)(void* userData, char* ifName, swl_macChar_t* mac);
 typedef void (* wld_wpaCtrl_wpsTimeoutMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCancelMsg_f)(void* userData, char* ifName);
@@ -150,6 +151,8 @@ typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, 
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
 typedef void (* wld_wpaCtrl_stationScanFailedCb_f)(void* userData, char* ifName, int error);
 typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse);
+typedef void (* wld_wpaCtrl_stationStartConnCb_f)(void* userData, char* ifName, const char* ssid, swl_macBin_t* bBssidMac, swl_chanspec_t* pChansSpec);
+typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* ifName, int error);
 
 /*
  * @brief structure of AP/EP event handlers
@@ -159,6 +162,7 @@ typedef struct {
     wld_wpaCtrl_custProcMsgCb_f fCustProcEvtMsg;  // Handler for custom msg processing (filter)
     wld_wpaCtrl_processMsgCb_f fProcEvtMsg;       // Handler to post-process evt msg
     wld_wpaCtrl_processStdMsgCb_f fProcStdEvtMsg; // Basic handler of standard received wpa ctrl event
+    wld_wpaCtrl_wpsInProgressMsg_f fWpsInProgressMsg;
     wld_wpaCtrl_wpsSuccessMsg_f fWpsSuccessMsg;
     wld_wpaCtrl_wpsTimeoutMsg_f fWpsTimeoutMsg;
     wld_wpaCtrl_wpsCancelMsg_f fWpsCancelMsg;
@@ -174,6 +178,8 @@ typedef struct {
     wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationConnectedCb;
     wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;
+    wld_wpaCtrl_stationStartConnCb_f fStationStartConnCb;             // Endpoint starting connection
+    wld_wpaCtrl_stationStartConnFailedCb_f fStationStartConnFailedCb; // Endpoint connection init failure
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
@@ -210,18 +216,48 @@ typedef struct {
     wld_wpaCtrl_dfsNewChannelCb_f fDfsNewChannelCb; //fallback after dfs radar detection
     wld_wpaCtrl_mainApSetupCompletedCb_f fMainApSetupCompletedCb;
     wld_wpaCtrl_mainApDisabledCb_f fMainApDisabledCb;
-    wld_wpaCtrl_syncOnReadyCb_f fSyncOnRadioUp;     // Handler to sync ifaces when radio is up (ie mgr ready and APMain enabled)
-    wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpConnected; // Handler to sync radio conf when endpoint is connected
+
+    /*
+     * radio sync handlers:
+     * may be used to schedule fsm actions, post events
+     * (from hostapd/wpa_supplicant)
+     */
+    wld_wpaCtrl_syncOnReadyCb_f fSyncOnRadioUp;                       // Handler to sync ifaces when radio is up (ie mgr ready and APMain enabled)
+    wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpConnected;                   // Handler to sync radio conf when endpoint is connected
+    wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpDisconnected;                // Handler to sync radio conf when endpoint is disconnected
+    wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;           // EndPoint failing to scan BSS
+    wld_wpaCtrl_stationStartConnCb_f fStationStartConnCb;             // Endpoint starting connection
+    wld_wpaCtrl_stationStartConnFailedCb_f fStationStartConnFailedCb; // Endpoint connection init failure
 } wld_wpaCtrl_radioEvtHandlers_cb;
 
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);
 int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey);
 bool wld_wpaCtrl_getValueIntExt(const char* pData, const char* pKey, int32_t* pVal);
 
+
+/*
+ * @brief parse a wpactrl msg and fetch the event name from a provided list
+ * then copy the event name (delimited with separator), and the argument list (starting with separator)
+ * The event name is potentially prefixed.
+ * The expected message format is "[PREFIX]<EVENT_NAME><separator><EVENT_ARGS...>"
+ *
+ * @param pData wp ctrl message
+ * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)
+ * @param separator optional string (or char) separating event name and next event arguments
+ * @param evtList optional array of event name strings to fetch in priority, before splitting msg with separator
+ * @param evtListLen length of optional array of known event name strings
+ * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)
+ * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)
+ *
+ * @return -1,  when event name is unknown or not found
+ *         index < evtListLen, when event name is found in the provided list
+ */
+int32_t wld_wpaCtrl_fetchEvent(const char* pData, const char* prefix, const char* sep, char* evtList[], size_t evtListLen, char** pEvtName, char** pEvtArgs);
+
 /*
  * @brief parse a wpactrl msg and copy the event name, and the argument list
  * The event name is potentially prefixed.
- * The expected message format is "[PREFIX]<EVENT_NAME><space_char><EVENT_ARGS...>"
+ * The expected message format is "[PREFIX]<EVENT_NAME><separator><EVENT_ARGS...>"
  *
  * @param pData wp ctrl message
  * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)

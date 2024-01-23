@@ -187,6 +187,11 @@ int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey) {
 
 typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, char* params);
 
+static void s_wpsInProgress(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s WPS PBC In progress", pInterface->name);
+    CALL_INTF_NA(pInterface, fWpsInProgressMsg);
+}
+
 static void s_wpsCancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s WPS CANCEL", pInterface->name);
     CALL_INTF_NA(pInterface, fWpsCancelMsg);
@@ -529,18 +534,37 @@ static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fMgtFrameReceivedCb, mgmtFrame, binLen, data);
 }
 
-static void s_stationAssociated(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
-    //endpoint case: msg format: <3>Associated with 96:83:c4:14:95:11
-    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
-    swl_macBin_t bBssidMac = SWL_MAC_BIN_NEW();
-    const char* msgPfx = "with ";
-    if(swl_str_startsWith(params, msgPfx)) {
-        char bssid[SWL_MAC_CHAR_LEN] = {0};
-        swl_str_copy(bssid, SWL_MAC_CHAR_LEN, &params[strlen(msgPfx)]);
-        SWL_MAC_CHAR_TO_BIN(&bBssidMac, bssid);
+static bool s_skipPfx(const char* pfx, char** msg) {
+    if(swl_str_startsWith(*msg, pfx)) {
+        *msg += swl_str_len(pfx);
+        return true;
     }
-    ASSERT_FALSE(swl_mac_binIsNull(&bBssidMac), , ME, "%s: No remote bssid", pInterface->name)
-    CALL_INTF(pInterface, fStationAssociatedCb, &bBssidMac, 0);
+    return false;
+}
+
+static int32_t s_skipPfxList(const char* pfxList[], size_t pfxListLen, char** msg) {
+    for(uint32_t i = 0; i < pfxListLen; i++) {
+        if(s_skipPfx(pfxList[i], msg)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static void s_stationAssociated(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
+    //endpoint case: msg format: <3>Associated with 96:83:c4:14:95:11
+    //endpoint case: msg format: <3>Associated to a new BSS: BSSID=96:83:c4:14:95:11
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    swl_macBin_t bssidBin = SWL_MAC_BIN_NEW();
+    swl_macChar_t bssidStr = {{0}};
+    const char* msgPfx[] = {"with ", "to a new BSS: BSSID=", };
+    s_skipPfxList(msgPfx, SWL_ARRAY_SIZE(msgPfx), &params);
+    strncpy(bssidStr.cMac, params, SWL_MAC_CHAR_LEN - 1);
+    swl_mac_charToBin(&bssidBin, &bssidStr);
+    SAH_TRACEZ_INFO(ME, "%s: Associated with BSSID(%s)",
+                    pInterface->name, swl_typeMacBin_toBuf32Ref(&bssidBin).buf);
+
+    CALL_INTF(pInterface, fStationAssociatedCb, &bssidBin, 0);
 }
 
 static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -568,9 +592,68 @@ static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _
 static void s_stationScanFailed(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example:<3>CTRL-EVENT-SCAN-FAILED ret=-16 retry=1
     int error = wld_wpaCtrl_getValueInt(params, "ret");
-    CALL_INTF(pInterface, fStationScanFailedCb, error);
+    NOTIFY(pInterface, fStationScanFailedCb, error);
 }
 
+static void s_stationAuthenticating(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    //endpoint case: msg format: <3>SME: Trying to authenticate with 98:42:65:2d:23:43 (SSID='ssid' freq=5500 MHz)
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    swl_macBin_t bssidBin = SWL_MAC_BIN_NEW();
+    char ssid[SWL_80211_SSID_STR_LEN * 2] = {0};
+    s_skipPfx("with ", &params);
+    swl_macChar_t bssidStr = {{0}};
+    strncpy(bssidStr.cMac, params, SWL_MAC_CHAR_LEN - 1);
+    swl_mac_charToBin(&bssidBin, &bssidStr);
+    if(wld_wpaCtrl_getValueStr(params, "SSID", ssid, sizeof(ssid)) > 0) {
+        swl_str_stripChar(ssid, '\'');
+    }
+    char freqStr[64] = {0};
+    if(wld_wpaCtrl_getValueStr(params, "freq", freqStr, sizeof(freqStr)) > 0) {
+        uint32_t freq = 0;
+        if(swl_typeUInt32_fromChar(&freq, strtok(freqStr, " "))) {
+            swl_chanspec_channelFromMHz(&chanSpec, freq);
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "%s: Authenticating with BSSID(%s) SSID(%s) chspec(%s)",
+                    pInterface->name, swl_typeMacBin_toBuf32Ref(&bssidBin).buf, ssid, swl_typeChanspecExt_toBuf32Ref(&chanSpec).buf);
+    NOTIFY(pInterface, fStationStartConnCb, ssid, &bssidBin, &chanSpec);
+}
+
+static void s_stationAuthenticationFailure(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    //endpoint case: msg format: <3>SME: Authentication request to the driver failed
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    int error = -EBUSY;
+    NOTIFY(pInterface, fStationStartConnFailedCb, error);
+}
+
+static void s_stationAssociating(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
+    //endpoint case: msg format: <3>Trying to associate with 98:42:65:2d:23:43 (SSID='ssid' freq=5500 MHz)
+    //endpoint case: msg format: <3>Trying to associate with SSID '%s'
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+    swl_macBin_t bssidBin = SWL_MAC_BIN_NEW();
+    char ssid[SWL_80211_SSID_STR_LEN * 2] = {0};
+    if(s_skipPfx("with SSID ", &params)) {
+        swl_str_copy(ssid, sizeof(ssid), params);
+        swl_str_stripChar(ssid, '\'');
+    } else if(s_skipPfx("with ", &params)) {
+        swl_macChar_t bssidStr = {{0}};
+        strncpy(bssidStr.cMac, params, SWL_MAC_CHAR_LEN - 1);
+        swl_mac_charToBin(&bssidBin, &bssidStr);
+        if(wld_wpaCtrl_getValueStr(params, "SSID", ssid, sizeof(ssid)) > 0) {
+            swl_str_stripChar(ssid, '\'');
+        }
+        char freqStr[64] = {0};
+        if(wld_wpaCtrl_getValueStr(params, "freq", freqStr, sizeof(freqStr)) > 0) {
+            uint32_t freq = 0;
+            if(swl_typeUInt32_fromChar(&freq, strtok(freqStr, " "))) {
+                swl_chanspec_channelFromMHz(&chanSpec, freq);
+            }
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "%s: Associating with BSSID(%s) SSID(%s) chspec(%s) ",
+                    pInterface->name, swl_typeMacBin_toBuf32Ref(&bssidBin).buf, ssid, swl_typeChanspec_toBuf32Ref(&chanSpec).buf);
+}
 
 static void s_beaconResponseEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: BEACON-RESP-RX be:e9:46:09:57:8a 1 00 00010000000000000000640002bb00d47bb0bf73f00048dc020001b28741084de2000000640011150017536f66744174486f6d652d314332392d4d53637265656e010882848b962430486c0301010504000300000706455520010d1420010023020f002a010432040c12186030140100000fac040100000fac040100000fac020c000b0501008d0000460532000000002d1aad0117ffffff00000000000000000000000000000000000000003d16010804000000000000000000000000000000000000007f080400000000000040
@@ -614,6 +697,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-FAIL", &s_wpsFailEvent},
               {"WPS-CRED-RECEIVED", &s_wpsCredReceivedEvent},
               {"WPS-SUCCESS", &s_wpsStationSuccessEvent},
+              {"WPS-PBC-ACTIVE", &s_wpsInProgress},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
               {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},
@@ -633,6 +717,9 @@ SWL_TABLE(sWpaCtrlEvents,
               {"DFS-RADAR-DETECTED", &s_radDfsRadarDetectedEvt},
               {"DFS-NOP-FINISHED", &s_radDfsNopFinishedEvt},
               {"DFS-NEW-CHANNEL", &s_radDfsNewChannelEvt},
+              {"SME: Trying to authenticate", &s_stationAuthenticating},
+              {"SME: Authentication request to the driver failed", &s_stationAuthenticationFailure},
+              {"Trying to associate", &s_stationAssociating},
               {"Associated", &s_stationAssociated},
               {"CTRL-EVENT-DISCONNECTED", &s_stationDisconnected},
               {"CTRL-EVENT-CONNECTED", &s_stationConnected},
@@ -647,20 +734,31 @@ static evtParser_f s_getEventParser(char* eventName) {
 }
 
 /*
- * @brief parse a wpactrl msg and copy the event name, and the argument list
+ * @brief parse a wpactrl msg and fetch the event name from a provided list
+ * then copy the event name (delimited with separator), and the argument list (starting with separator)
  * The event name is potentially prefixed.
- * The expected message format is "[PREFIX]<EVENT_NAME><space_char><EVENT_ARGS...>"
+ * The expected message format is "[PREFIX]<EVENT_NAME><separator><EVENT_ARGS...>"
  *
  * @param pData wp ctrl message
  * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)
  * @param separator optional string (or char) separating event name and next event arguments
+ * @param evtList optional array of event name strings to fetch in priority, before splitting msg with separator
+ * @param evtListLen length of optional array of known event name strings
  * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)
  * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)
  *
- * @return true when event name is found, false otherwise
+ * @return -1,  when event name is unknown or not found
+ *         index < evtListLen, when event name is found in the provided list
  */
-bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep, char** pEvtName, char** pEvtArgs) {
-    ASSERTS_STR(pData, false, ME, "Empty");
+int32_t wld_wpaCtrl_fetchEvent(const char* pData, const char* prefix, const char* sep, char* evtList[], size_t evtListLen, char** pEvtName, char** pEvtArgs) {
+    int evtPos = -1;
+    if(pEvtName != NULL) {
+        W_SWL_FREE(*pEvtName);
+    }
+    if(pEvtArgs != NULL) {
+        W_SWL_FREE(*pEvtArgs);
+    }
+    ASSERTS_STR(pData, evtPos, ME, "Empty");
     const char* start = (char*) pData;
     ssize_t pos = 0;
     if(!swl_str_isEmpty(prefix)) {
@@ -674,11 +772,18 @@ bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep
     }
     const char* startArgs = NULL;
     size_t evtNameLen = swl_str_len(start);
+    for(uint32_t i = 0; i < evtListLen; i++) {
+        if(swl_str_startsWith(start, evtList[i])) {
+            evtPos = i;
+            break;
+        }
+    }
     if(!swl_str_isEmpty(sep)) {
-        pos = swl_str_find(start, sep);
-        if(pos > 0) {
-            evtNameLen = pos;
-            startArgs = &start[pos + swl_str_len(sep)];
+        uint32_t begin = (evtPos >= 0) ? swl_str_len(evtList[evtPos]) : 0;
+        pos = swl_str_find(&start[begin], sep);
+        if((pos >= 0) && ((begin + pos) > 0)) {
+            evtNameLen = begin + pos;
+            startArgs = &start[evtNameLen + swl_str_len(sep)];
         }
     }
     if(pEvtArgs != NULL) {
@@ -693,8 +798,32 @@ bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep
         }
         swl_str_copyMalloc(pEvtName, resEvtName);
     }
-    ASSERTI_TRUE(evtNameLen > 0, false, ME, "no event name in (%s)", pData);
-    return true;
+    ASSERTI_TRUE(evtNameLen > 0, evtPos, ME, "no event name in (%s)", pData);
+    return evtPos;
+}
+
+/*
+ * @brief parse a wpactrl msg and copy the event name, and the argument list
+ * The event name is potentially prefixed.
+ * The expected message format is "[PREFIX]<EVENT_NAME><separator><EVENT_ARGS...>"
+ *
+ * @param pData wp ctrl message
+ * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)
+ * @param separator optional string (or char) separating event name and next event arguments
+ * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)
+ * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)
+ *
+ * @return true when event name is found, false otherwise
+ */
+bool wld_wpaCtrl_parseMsg(const char* pData, const char* prefix, const char* sep, char** pEvtName, char** pEvtArgs) {
+    char* evtName = NULL;
+    wld_wpaCtrl_fetchEvent(pData, prefix, sep, NULL, 0, &evtName, pEvtArgs);
+    bool ret = (evtName != NULL);
+    if(pEvtName != NULL) {
+        swl_str_copyMalloc(pEvtName, evtName);
+    }
+    W_SWL_FREE(evtName);
+    return ret;
 }
 
 static bool s_processCustomEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
@@ -713,8 +842,11 @@ static bool s_processCustomEvent(wld_wpaCtrlInterface_t* pInterface, char* msgDa
 static void s_processStdEvent(wld_wpaCtrlInterface_t* pInterface, char* msgData) {
     char* eventName = NULL;
     char* pParams = NULL;
+    size_t nStdEvts = swl_table_getSize(&sWpaCtrlEvents);
+    char* evtList[nStdEvts];
+    swl_table_columnToArray(evtList, nStdEvts, &sWpaCtrlEvents, 0);
     // All wpa msgs including events are sent with level MSG_INFO (3)
-    ASSERTS_TRUE(wld_wpaCtrl_parseMsg(msgData, WPA_MSG_LEVEL_INFO, " ", &eventName, &pParams), ,
+    ASSERTS_TRUE(wld_wpaCtrl_fetchEvent(msgData, WPA_MSG_LEVEL_INFO, " ", evtList, nStdEvts, &eventName, &pParams), ,
                  ME, "%s: this is not standard wpa_ctrl event %s", wld_wpaCtrlInterface_getName(pInterface), msgData);
     evtParser_f fEvtParser = s_getEventParser(eventName);
     if(fEvtParser) {

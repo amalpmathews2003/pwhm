@@ -93,7 +93,7 @@ bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr);
 
 #define CALL_MGR_I_EXT(pIntf, fName, ...) \
     if(pIntf != NULL) { \
-        CALL_MGR_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, wld_wpaCtrlInterface_getName(pIface), __VA_ARGS__); \
+        CALL_MGR_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, wld_wpaCtrlInterface_getName(pIntf), __VA_ARGS__); \
     }
 
 #endif /* __WLD_WPA_CTRL_MNGR_H__ */
