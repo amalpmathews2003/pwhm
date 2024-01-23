@@ -941,7 +941,7 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
         return;
     }
 
-    SAH_TRACEZ_INFO(ME, "Syncing Endpoint to Datamodel");
+    SAH_TRACEZ_INFO(ME, "%s: Syncing Endpoint to Datamodel", pEP->Name);
 
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", pEP->Name);
@@ -1536,6 +1536,7 @@ void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
 void wld_endpoint_reconfigure(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, , ME, "null Endpoint");
     ASSERTI_NOT_NULL(pEP->pRadio, , ME, "null radio");
+    ASSERTI_FALSE(pEP->index <= 0, , ME, "%s: endpoint has no iface", pEP->alias);
 
     T_Radio* pR = pEP->pRadio;
 
@@ -1927,7 +1928,7 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
     char epIfName[IFNAMSIZ] = {0};
     int epIfIndex = -1;
     int ret = -1;
-    if(pRad->isSTASup) {
+    if(pRad->isSTASup && pRad->isSTA) {
         swl_str_copy(epIfName, sizeof(epIfName), pRad->Name);
         epIfIndex = pRad->index;
         int ret = pRad->pFA->mfn_wrad_addendpointif(pRad, epIfName, sizeof(epIfName));

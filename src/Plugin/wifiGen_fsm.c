@@ -346,12 +346,39 @@ static bool s_doUpdateHostapd(T_Radio* pRad) {
     return true;
 }
 
+static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
+    ASSERTS_TRUE(state, , ME, "not up");
+    T_Radio* pRad = (T_Radio*) userData;
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+    wld_rad_doCommitIfUnblocked(pRad);
+    /**
+     * Radio is ready, and Main AP is ready: listening to mgmt frames is possible.
+     * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
+     */
+    if(wld_ap_nl80211_registerFrame(pAP, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
+        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pAP->alias);
+    }
+}
+
+static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {
+    ASSERT_NOT_NULL(hostapd, , ME, "no hostapd ctx");
+    void* userdata = NULL;
+    wld_wpaCtrl_radioEvtHandlers_cb handlers = {0};
+    if(wld_wpaCtrlMngr_getEvtHandlers(hostapd->wpaCtrlMngr, &userdata, &handlers)) {
+        handlers.fSyncOnRadioUp = s_syncOnRadUp;
+        wld_wpaCtrlMngr_setEvtHandlers(hostapd->wpaCtrlMngr, userdata, &handlers);
+    }
+}
+
 static bool s_doStartHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wld_rad_hasEnabledVap(pRad), true, ME, "%s: radio has no enabled vap", pRad->Name);
     ASSERTS_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
     ASSERTS_FALSE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd running", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: start hostapd", pRad->Name);
     wifiGen_hapd_startDaemon(pRad);
+    s_registerHadpRadEvtHandlers(pRad->hostapd);
     return true;
 }
 
@@ -505,8 +532,10 @@ static void s_startWpaSuppTimer(amxp_timer_t* timer, void* userdata) {
     }
 }
 static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
+    bool enaConds = (pRad->enable && pEP->enable && (pEP->index > 0));
+    wld_endpoint_setConnectionStatus(pEP, enaConds ? EPCS_IDLE : EPCS_DISABLED, EPE_NONE);
+    ASSERTS_TRUE(enaConds, true, ME, "%d: ep not ready", pEP->Name);
     SAH_TRACEZ_INFO(ME, "%s: enable endpoint", pEP->Name);
-    ASSERT_NOT_NULL(pEP, true, ME, "NULL");
     ASSERT_TRUE(pEP->toggleBssOnReconnect, true, ME, "%s: do not disable hostapd", pEP->Name);
     // check if there is a running hostapd in order to disable it in order allow to wpa_supplicant to connect.
     // Otherwise, wpa_supplicant will fail to connect
@@ -553,10 +582,33 @@ static bool s_doStopWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
     return true;
 }
 
+static void s_syncOnEpConnected(void* userData, char* ifName, bool state) {
+    ASSERTS_TRUE(state, , ME, "not connected");
+    T_Radio* pRad = (T_Radio*) userData;
+    T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hapd not running", pRad->Name);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+    wld_rad_doCommitIfUnblocked(pRad);
+}
+
+static void s_registerWpaSuppRadEvtHandlers(wld_secDmn_t* wpaSupp) {
+    ASSERT_NOT_NULL(wpaSupp, , ME, "no wpaSupp ctx");
+    void* userdata = NULL;
+    wld_wpaCtrl_radioEvtHandlers_cb handlers = {0};
+    if(wld_wpaCtrlMngr_getEvtHandlers(wpaSupp->wpaCtrlMngr, &userdata, &handlers)) {
+        handlers.fSyncOnEpConnected = s_syncOnEpConnected;
+        wld_wpaCtrlMngr_setEvtHandlers(wpaSupp->wpaCtrlMngr, userdata, &handlers);
+    }
+}
+
 static bool s_doStartWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
-    ASSERTS_TRUE(pEP->enable, true, ME, "%s: endpoint disabled", pEP->Name);
+    bool enaConds = (pRad->enable && pEP->enable && (pEP->index > 0));
+    ASSERTS_TRUE(enaConds, true, ME, "%d: ep not ready", pEP->Name);
     SAH_TRACEZ_INFO(ME, "%s: start wpa_supplicant", pEP->Name);
     wifiGen_wpaSupp_startDaemon(pEP);
+    s_registerWpaSuppRadEvtHandlers(pEP->wpaSupp);
     return true;
 }
 
@@ -635,6 +687,9 @@ static void s_checkRadDependency(T_Radio* pRad) {
 }
 
 void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
+    }
     if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP)) {
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
     }
@@ -697,45 +752,6 @@ static void s_vapStatusUpdateCb(wld_vap_status_change_event_t* event) {
     }
 }
 
-static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
-    ASSERTS_TRUE(state, , ME, "not up");
-    T_Radio* pRad = (T_Radio*) userData;
-    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
-    wld_rad_doCommitIfUnblocked(pRad);
-    /**
-     * Radio is ready, and Main AP is ready: listening to mgmt frames is possible.
-     * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
-     */
-    if(wld_ap_nl80211_registerFrame(pAP, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
-        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pAP->alias);
-    }
-}
-
-static void s_syncOnEpConnected(void* userData, char* ifName, bool state) {
-    ASSERTS_TRUE(state, , ME, "not connected");
-    T_Radio* pRad = (T_Radio*) userData;
-    T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
-    ASSERT_NOT_NULL(pEP, , ME, "NULL");
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hapd not running", pRad->Name);
-    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
-    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
-    wld_rad_doCommitIfUnblocked(pRad);
-}
-
-static void s_registerSyncEvtHandlers(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    ASSERT_NOT_NULL(pRad->hostapd, , ME, "%s: no hostapd ctx", pRad->Name);
-    void* userdata = NULL;
-    wld_wpaCtrl_radioEvtHandlers_cb handlers = {0};
-    if(wld_wpaCtrlMngr_getEvtHandlers(pRad->hostapd->wpaCtrlMngr, &userdata, &handlers)) {
-        handlers.fSyncOnRadioUp = s_syncOnRadUp;
-        handlers.fSyncOnEpConnected = s_syncOnEpConnected;
-        wld_wpaCtrlMngr_setEvtHandlers(pRad->hostapd->wpaCtrlMngr, userdata, &handlers);
-    }
-}
-
 static wld_event_callback_t s_vapStatusCbContainer = {
     .callback = (wld_event_callback_fun) s_vapStatusUpdateCb
 };
@@ -746,7 +762,6 @@ static void s_radioChange(wld_rad_changeEvent_t* event) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
     if(event->changeType == WLD_RAD_CHANGE_INIT) {
-        s_registerSyncEvtHandlers(pRad);
         wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
     } else if(event->changeType == WLD_RAD_CHANGE_DESTROY) {
         wld_event_remove_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);

@@ -107,16 +107,12 @@ swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
 
     SAH_TRACEZ_INFO(ME, "%s : Endpoint enable changed : [%d] --> [%d]", pEP->Name, pEP->enable, enable);
     pEP->enable = enable;
-    bool isMainIface = ((pEP->index >= 0) && (pEP->index == pRad->index));
-    pRad->isSTA = (amxd_object_get_bool(pRad->pBus, "STA_Mode", NULL) || (isMainIface && pRad->isSTASup && enable));
-    SAH_TRACEZ_INFO(ME, "ep %s/%d isMain(%d), rad %s/%d isSta(%d) isStaSupp(%d)",
-                    pEP->Name, pEP->index, isMainIface,
-                    pRad->Name, pRad->index, pRad->isSTA, pRad->isSTASup);
-    if(pRad->isSTASup && enable) {
-        setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
-    } else {
-        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
-    }
+    bool isRadSTA = (pRad->isSTASup && enable);
+    swl_typeBool_commitObjectParam(pRad->pBus, "STA_Mode", isRadSTA);
+    SAH_TRACEZ_INFO(ME, "ep %s/%d rad %s/%d isSta(%d/%d) isStaSupp(%d)",
+                    pEP->Name, pEP->index,
+                    pRad->Name, pRad->index, pRad->isSTA, isRadSTA, pRad->isSTASup);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
     return SWL_RC_OK;
 }
 
