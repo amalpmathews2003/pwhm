@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.28.0 - 2024-01-23(12:01:51 +0000)
+
+### Other
+
+- fetch multi-field wpactrl event names
+
 ## Release v5.27.5 - 2024-01-23(11:08:00 +0000)
 
 ## Release v5.27.4 - 2024-01-23(10:15:33 +0000)
