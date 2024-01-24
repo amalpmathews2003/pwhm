@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.29.1 - 2024-01-24(13:02:08 +0000)
+
+### Other
+
+- - Wi-Fi is off after modifying default IPAddress
+
 ## Release v5.29.0 - 2024-01-24(09:49:27 +0000)
 
 ### Other
