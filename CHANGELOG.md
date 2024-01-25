@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.29.2 - 2024-01-25(09:13:17 +0000)
+
+### Other
+
+- restore ep iface creation conditioned with rad StaMode
+
 ## Release v5.29.1 - 2024-01-24(13:02:08 +0000)
 
 ### Other
