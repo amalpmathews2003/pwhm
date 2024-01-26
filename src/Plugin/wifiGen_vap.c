@@ -140,7 +140,7 @@ int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set) {
              * (although not broadcasting)
              */
             if((enable) ||
-               (pAP->ref_index > 0) ||
+               (pAP->index != pAP->pRadio->index) ||
                (pAP->pRadio->isSTA && pAP->pRadio->isSTASup) ||
                (!pAP->pRadio->enable)) {
                 wld_linuxIfUtils_setState(wld_rad_getSocket(pAP->pRadio), pAP->alias, enable);
