@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.29.3 - 2024-01-26(09:39:58 +0000)
+
+### Other
+
+- fix hostapd running after disabling last vap
+
 ## Release v5.29.2 - 2024-01-25(09:13:17 +0000)
 
 ### Other
