@@ -633,13 +633,23 @@ static void s_checkPreRadDependency(T_Radio* pRad _UNUSED) {
         return;
     }
 
-    bool targetEnable = (pRad->enable && (wld_rad_hasEnabledVap(pRad) || wld_rad_hasEnabledEp(pRad)));
-    bool currentEnable = wld_rad_isUpExt(pRad);
-    SAH_TRACEZ_WARNING(ME, "%s: setEnable curr %u, tgt %u, dm %u, status %s", pRad->Name,
-                       currentEnable, targetEnable, pRad->enable, wld_status_str[pRad->status]);
+    bool targetFthEnable = (pRad->enable && wld_rad_hasEnabledVap(pRad));
+    bool targetBkhEnable = (pRad->enable && wld_rad_hasEnabledEp(pRad));
+    bool targetEnable = (targetFthEnable || targetBkhEnable);
+    bool currentEnable = wld_rad_isUpExt(pRad) || (wld_rad_hasActiveEp(pRad) && (!wld_rad_hasActiveVap(pRad)));
+    SAH_TRACEZ_WARNING(ME, "%s: setEnable curr %u , tgt %u (fth %u / bkh %u) , dm %u, status %s", pRad->Name,
+                       currentEnable, targetEnable,
+                       targetFthEnable, targetBkhEnable,
+                       pRad->enable, wld_status_str[pRad->status]);
 
     if(targetEnable != currentEnable) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
+    }
+    if(wifiGen_hapd_isRunning(pRad) != targetFthEnable) {
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+    }
+    if(wifiGen_wpaSupp_isRunning(wld_rad_getFirstEp(pRad)) != targetBkhEnable) {
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
     }
 }
 

@@ -187,6 +187,7 @@ bool wld_rad_hasMainEP(T_Radio* pRad);
 bool wld_rad_areAllVapsDone(T_Radio* pRad);
 bool wld_rad_hasActiveVap(T_Radio* pRad);
 bool wld_rad_hasEnabledVap(T_Radio* pRad);
+bool wld_rad_hasActiveEp(T_Radio* pRad);
 
 bool wld_rad_hasEnabledIface(T_Radio* pRad);
 bool wld_rad_hasActiveIface(T_Radio* pRad);

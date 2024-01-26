@@ -3115,7 +3115,7 @@ bool wld_rad_hasEnabledVap(T_Radio* pRad) {
 
     /* Check if NO AP is enabled */
     wld_rad_forEachAp(pAP, pRad) {
-        if(pAP->enable) {
+        if((pAP->pBus != NULL) && (pAP->enable)) {
             return true;
         }
     }
@@ -3129,6 +3129,19 @@ bool wld_rad_hasActiveVap(T_Radio* pRad) {
     /* Check if NO AP is active */
     wld_rad_forEachAp(pAP, pRad) {
         if(pAP->status == APSTI_ENABLED) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool wld_rad_hasActiveEp(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    T_EndPoint* pEP = NULL;
+
+    /* Check if NO AP is active */
+    wld_rad_forEachEp(pEP, pRad) {
+        if(pEP->status == APSTI_ENABLED) {
             return true;
         }
     }
