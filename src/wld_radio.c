@@ -3190,17 +3190,26 @@ bool wld_rad_hasActiveIface(T_Radio* pRad) {
     return (wld_rad_getFirstActiveIfaceIndex(pRad) > 0);
 }
 
-uint32_t wld_rad_countIfaces(T_Radio* pRad) {
+uint32_t wld_rad_countVapIfaces(T_Radio* pRad) {
     uint32_t count = 0;
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
         count += (pAP->index > 0);
     }
+    return count;
+}
+
+uint32_t wld_rad_countEpIfaces(T_Radio* pRad) {
+    uint32_t count = 0;
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
         count += (pEP->index > 0);
     }
     return count;
+}
+
+uint32_t wld_rad_countIfaces(T_Radio* pRad) {
+    return (wld_rad_countVapIfaces(pRad) + wld_rad_countEpIfaces(pRad));
 }
 
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size) {

@@ -214,14 +214,14 @@ bool wld_wpaCtrlMngr_unregisterInterface(wld_wpaCtrlMngr_t* pMgr, wld_wpaCtrlInt
     return false;
 }
 
-wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterface(wld_wpaCtrlMngr_t* pMgr, int32_t pos) {
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterface(const wld_wpaCtrlMngr_t* pMgr, int32_t pos) {
     ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
     wld_wpaCtrlInterface_t** ppIface = (wld_wpaCtrlInterface_t**) swl_unLiList_get(&pMgr->ifaces, pos);
     ASSERT_NOT_NULL(ppIface, NULL, ME, "Not found");
     return *ppIface;
 }
 
-wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(wld_wpaCtrlMngr_t* pMgr, const char* name) {
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(const wld_wpaCtrlMngr_t* pMgr, const char* name) {
     ASSERTS_STR(name, NULL, ME, "NULL");
     ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
     swl_unLiListIt_t it;
@@ -234,8 +234,34 @@ wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(wld_wpaCtrlMngr_t* pM
     return NULL;
 }
 
-bool wld_wpaCtrlMngr_ping(wld_wpaCtrlMngr_t* pMgr) {
-    return wld_wpaCtrlInterface_ping(wld_wpaCtrlMngr_getInterface(pMgr, 0));
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstReadyInterface(const wld_wpaCtrlMngr_t* pMgr) {
+    ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &pMgr->ifaces) {
+        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(wld_wpaCtrlInterface_isReady(pIface)) {
+            return pIface;
+        }
+    }
+    return NULL;
+}
+
+uint32_t wld_wpaCtrlMngr_countInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
+    ASSERTS_NOT_NULL(pMgr, 0, ME, "NULL");
+    return swl_unLiList_size(&pMgr->ifaces);
+}
+
+wld_secDmn_t* wld_wpaCtrlMngr_getSecDmn(const wld_wpaCtrlMngr_t* pMgr) {
+    ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
+    return pMgr->pSecDmn;
+}
+
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstInterface(const wld_wpaCtrlMngr_t* pMgr) {
+    return wld_wpaCtrlMngr_getInterface(pMgr, 0);
+}
+
+bool wld_wpaCtrlMngr_ping(const wld_wpaCtrlMngr_t* pMgr) {
+    return wld_wpaCtrlInterface_ping(wld_wpaCtrlMngr_getFirstReadyInterface(pMgr));
 }
 
 /**

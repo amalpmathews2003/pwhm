@@ -198,6 +198,21 @@ static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t
     SAH_TRACEZ_INFO(ME, "%s: csa finished to new_chan=%d", pRad->Name, chanSpec->channel);
 }
 
+/*
+ * update rad detailed state from hapd, when not yet set with endpoint (wpa_supp)
+ * or with bg_dfs
+ */
+static bool s_saveHapdRadDetState(T_Radio* pRad, chanmgt_rad_state radDetState) {
+    ASSERTS_NOT_EQUALS(radDetState, CM_RAD_UNKNOWN, false, ME, "unknown");
+    ASSERTS_NOT_EQUALS(radDetState, pRad->detailedState, false, ME, "same");
+    if((!wld_rad_isUpExt(pRad)) &&
+       ((radDetState == CM_RAD_UP) ||
+        (!wld_rad_isDoingDfsScan(pRad)) ||
+        (pRad->detailedState == CM_RAD_FG_CAC))) {
+        pRad->detailedState = radDetState;
+    }
+    return (pRad->detailedState == radDetState);
+}
 static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
     ASSERTS_TRUE(isReady, , ME, "Not ready");
@@ -206,11 +221,15 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     if(wld_rad_vap_from_name(pRad, ifName) != NULL) {
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
+        pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
         //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
         s_syncCurrentChannel(pRad, CHAN_REASON_PERSISTANCE);
         //update rad status from hapd main iface state
-        if((wifiGen_hapd_updateRadState(pRad) >= SWL_RC_OK) &&
-           (pRad->detailedState == CM_RAD_UP)) {
+        //when radio is not yet UP via EP connection, then update detailed state from hapd
+        chanmgt_rad_state hapdRadDetState = CM_RAD_UNKNOWN;
+        wifiGen_hapd_getRadState(pRad, &hapdRadDetState);
+        s_saveHapdRadDetState(pRad, hapdRadDetState);
+        if(hapdRadDetState == CM_RAD_UP) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
@@ -225,13 +244,13 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     SAH_TRACEZ_WARNING(ME, "%s: main AP has setup completed", ifName);
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    pRad->detailedState = CM_RAD_UP;
+    s_saveHapdRadDetState(pRad, CM_RAD_UP);
     // when main iface setup is completed, current chanspec is the last applied target chanspec
+    pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
     s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
     CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, true);
     wld_rad_updateState(pRad, true);
-    pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
 }
 
 static void s_mainApDisabledCb(void* userData, char* ifName) {
@@ -361,6 +380,22 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         pAP->wDevId = pIfaceInfo->wDevId;
         pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
+        wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
+        if(pMgr != NULL) {
+            if((wifiGen_hapd_isRunning(pRad)) &&
+               (!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface))) {
+                wld_wpaCtrlInterface_open(pAP->wpaCtrlInterface);
+            }
+            if(wld_rad_countVapIfaces(pRad) == wld_wpaCtrlMngr_countInterfaces(pMgr)) {
+                chanmgt_rad_state radDetState = CM_RAD_UNKNOWN;
+                wifiGen_hapd_getRadState(pRad, &radDetState);
+                s_saveHapdRadDetState(pRad, radDetState);
+                if(radDetState == CM_RAD_UP) {
+                    const char* ifName = wld_wpaCtrlInterface_getName(pAP->wpaCtrlInterface);
+                    CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, (char*) ifName, true);
+                }
+            }
+        }
     }
 }
 
@@ -393,9 +428,15 @@ void wifiGen_refreshVapsIfIdx(T_Radio* pRad) {
             (curIfIdx <= 0) || (pAP->index != curIfIdx)) && (pAP->index > 0)) {
             s_delInterfaceCb(pRad, NULL, &ifaceInfo);
         }
-        if((curIfIdx > 0) && (pAP->index != curIfIdx) &&
-           (wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), curIfIdx, &ifaceInfo) >= SWL_RC_OK)) {
-            s_newInterfaceCb(pRad, NULL, &ifaceInfo);
+        if(curIfIdx > 0) {
+            if((pAP->index != curIfIdx) &&
+               (wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), curIfIdx, &ifaceInfo) >= SWL_RC_OK)) {
+                s_newInterfaceCb(pRad, NULL, &ifaceInfo);
+            }
+            if((wifiGen_hapd_isRunning(pRad)) &&
+               (!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface))) {
+                wld_wpaCtrlInterface_open(pAP->wpaCtrlInterface);
+            }
         }
     }
 }
@@ -739,7 +780,6 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
     wld_channel_clear_passive_band(chanSpec);
     wld_rad_updateState(pRad, true);
 
-    // set hostapd channel
     CALL_SECDMN_MGR_EXT(pEP->wpaSupp, fSyncOnEpConnected, pEP->Name, true);
 }
 

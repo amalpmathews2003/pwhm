@@ -189,10 +189,10 @@ void wifiGen_hapd_writeConfig(T_Radio* pRad) {
     wld_hostapd_cfgFile_createExt(pRad);
 }
 
-wld_wpaCtrlInterface_t* s_mainInterface(T_Radio* pRad) {
+static wld_wpaCtrlInterface_t* s_mainInterface(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
     ASSERTS_NOT_NULL(pRad->hostapd, NULL, ME, "NULL");
-    return wld_wpaCtrlMngr_getInterface(pRad->hostapd->wpaCtrlMngr, 0);
+    return wld_wpaCtrlMngr_getFirstReadyInterface(pRad->hostapd->wpaCtrlMngr);
 }
 
 bool wifiGen_hapd_isRunning(T_Radio* pRad) {
@@ -215,7 +215,7 @@ SWL_TABLE(sHapdStateDescMaps,
               {"DISABLED", CM_RAD_DOWN},
               {"ENABLED", CM_RAD_UP},
               ));
-swl_rc_ne wifiGen_hapd_updateRadState(T_Radio* pRad) {
+swl_rc_ne wifiGen_hapd_getRadState(T_Radio* pRad, chanmgt_rad_state* pDetailedState) {
     ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_wpaCtrlInterface_t* mainIface = s_mainInterface(pRad);
     ASSERTS_NOT_NULL(mainIface, SWL_RC_ERROR, ME, "%s: No main hapd wpactrl iface", pRad->Name);
@@ -230,8 +230,8 @@ swl_rc_ne wifiGen_hapd_updateRadState(T_Radio* pRad) {
     }
     chanmgt_rad_state* pRadDetState = (chanmgt_rad_state*) swl_table_getMatchingValue(&sHapdStateDescMaps, 1, 0, state);
     ASSERTI_NOT_NULL(pRadDetState, SWL_RC_ERROR, ME, "%s: unknown hapd state(%s)", pRad->Name, state);
-    pRad->detailedState = *pRadDetState;
-    SAH_TRACEZ_INFO(ME, "%s: hapd state(%s) -> radDetState(%d)", pRad->Name, state, pRad->detailedState);
+    W_SWL_SETPTR(pDetailedState, *pRadDetState);
+    SAH_TRACEZ_INFO(ME, "%s: hapd state(%s) -> radDetState(%d)", pRad->Name, state, *pRadDetState);
     return SWL_RC_OK;
 }
 
@@ -243,12 +243,15 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
      */
     wifiGen_refreshVapsIfIdx(pRad);
 
+    chanmgt_rad_state detRadState = CM_RAD_UNKNOWN;
+    wifiGen_hapd_getRadState(pRad, &detRadState);
+
     /*
      * Now as ifIndex are up to date, we can sync the enabling status
      */
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
-        if(!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface) || (pAP->index <= 0)) {
+        if(!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface) || (pAP->index <= 0) || (pAP->pBus == NULL)) {
             continue;
         }
         if((!pAP->enable) &&
@@ -257,7 +260,7 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
                 SAH_TRACEZ_INFO(ME, "%s: sync disable vap", pAP->alias);
             }
         } else if((pAP->enable) &&
-                  (pAP->pFA->mfn_wvap_status(pAP) == 0) && (wld_rad_isUpAndReady(pRad))) {
+                  (pAP->pFA->mfn_wvap_status(pAP) == 0) && (detRadState == CM_RAD_UP)) {
             //need to restart broadcasting the enabled bss,
             //that were potentially stopped by hapd when disabling one AP
             SAH_TRACEZ_INFO(ME, "%s: sync enable vap", pAP->alias);
