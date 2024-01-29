@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.29.5 - 2024-01-29(08:41:09 +0000)
+
+### Other
+
+- fix wrong rad status when doing bgdfs or ep connected
+
 ## Release v5.29.4 - 2024-01-26(11:29:53 +0000)
 
 ### Other
