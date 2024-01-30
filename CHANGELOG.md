@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.30.0 - 2024-01-30(10:39:58 +0000)
+
+### Other
+
+- - add set/get radio DFS channel clear time based on wiphy info
+
 ## Release v5.29.5 - 2024-01-29(08:41:09 +0000)
 
 ### Other
