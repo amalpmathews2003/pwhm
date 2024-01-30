@@ -94,6 +94,7 @@ uint32_t wld_channel_getBandwidthValFromEnum(swl_bandwidth_e radioBw);
 swl_bandwidth_e wld_channel_getBandwidthEnumFromVal(uint32_t val);
 int wld_channel_get_center_channel(swl_chanspec_t chanspec);
 int wld_channel_get_channel_to_clear(T_Radio* pRad, swl_bandwidth_e operatingChannelBandwidth);
+void wld_channel_set_channel_clear_time(int channel, uint32_t time);
 int wld_channel_get_channel_clear_time(int channel);
 int wld_channel_get_band_clear_time(swl_chanspec_t chanspec);
 

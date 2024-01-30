@@ -120,6 +120,7 @@
 typedef struct {
     int channel;
     uint32_t flags;
+    uint32_t clearTime; // DFS clear time in milliseconds
 } wld_channel_data;
 
 typedef struct {
@@ -256,7 +257,6 @@ static void band_add_flag(swl_chanspec_t chanspec, uint32_t flag) {
     }
 }
 
-
 /**
  * mark a given channel with the given flag if possible
  */
@@ -277,7 +277,23 @@ static void chan_remove_flag(int channel, swl_freqBandExt_e freqBand, uint32_t f
     }
 }
 
+/**
+ * set clear time for given channel if possible
+ */
+static void s_chanSetClearTime(int channel, swl_freqBandExt_e freqBand, uint32_t time) {
+    wld_channel_data* channel_info = get_channel_data(channel, freqBand);
+    ASSERTS_NOT_NULL(channel_info, , ME, "NULL");
+    channel_info->clearTime = time;
+}
 
+/**
+ * get clear time for given channel if possible
+ */
+static int s_chanGetClearTime(int channel, swl_freqBandExt_e freqBand) {
+    wld_channel_data* channel_info = get_channel_data(channel, freqBand);
+    ASSERTS_NOT_NULL(channel_info, 0, ME, "NULL");
+    return channel_info->clearTime;
+}
 
 //////////////////////////////////////////////////
 // External methods
@@ -304,6 +320,7 @@ void wld_channel_init_channels(T_Radio* rad) {
     for(i = 0; i < band->nr_channels; i++) {
         band->channels[i].channel = rad->possibleChannels[i];
         band->channels[i].flags = WLD_CHAN_INIT;
+        band->channels[i].clearTime = 0;
     }
 }
 
@@ -560,6 +577,35 @@ int wld_channel_get_channel_to_clear(T_Radio* pRad, swl_bandwidth_e operatingCha
     }
 
     return 0;
+}
+
+/**
+ * Set the time in milliseconds that a channel should be cleared.
+ */
+void wld_channel_set_channel_clear_time(int channel, uint32_t time) {
+    ASSERTS_TRUE(swl_channel_isDfs(channel), , ME, "%d not a DFS channel", channel);
+    s_chanSetClearTime(channel, SWL_FREQ_BAND_EXT_5GHZ, time);
+}
+
+/**
+ * Returns the time in milliseconds that a channel should be cleared.
+ */
+int wld_channel_get_channel_clear_time(int channel) {
+    ASSERTS_TRUE(swl_channel_isDfs(channel), 0, ME, "%d not a DFS channel", channel);
+    /**
+     * Return the clear time provided previously by the WiFi driver, if exists.
+     * Return the default values otherwise.
+     */
+    uint32_t clearTime = s_chanGetClearTime(channel, SWL_FREQ_BAND_EXT_5GHZ);
+    if(clearTime > 0) {
+        return clearTime;
+    }
+    if((channel >= WLD_CHAN_START_EXTENDED_CLEARTIME)
+       && (channel <= WLD_CHAN_END_EXTENDED_CLEARTIME)) {
+        return WLD_CHAN_DFS_EXTENDED_CLEAR_TIME_MS;
+    } else {
+        return WLD_CHAN_DFS_CLEAR_TIME_MS;
+    }
 }
 
 bool wld_channel_areAdjacent(swl_chanspec_t chanspec1, swl_chanspec_t chanspec2) {

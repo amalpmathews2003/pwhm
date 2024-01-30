@@ -375,7 +375,9 @@ void s_readChanInfo(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
         }
         wld_channel_mark_available_channel(chanSpec);
         if(pChan->isDfs) {
+            SAH_TRACEZ_INFO(ME, "%s: mark radar req, channel [%d] clear_time [%d]", pRad->Name, chanSpec.channel, pChan->dfsCacTime);
             wld_channel_mark_radar_req_channel(chanSpec);
+            wld_channel_set_channel_clear_time(chanSpec.channel, pChan->dfsCacTime);
         }
         switch(pChan->status) {
         case WLD_NL80211_CHAN_AVAILABLE: wld_channel_clear_passive_channel(chanSpec); break;

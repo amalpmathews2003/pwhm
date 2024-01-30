@@ -144,21 +144,6 @@ int wld_channel_get_center_channel(swl_chanspec_t chanspec) {
 }
 
 /**
- * Returns the time in milliseconds that a channel should be cleared.
- */
-int wld_channel_get_channel_clear_time(int channel) {
-    if(!swl_channel_isDfs(channel)) {
-        return 0;
-    }
-    if((channel >= WLD_CHAN_START_EXTENDED_CLEARTIME)
-       && (channel <= WLD_CHAN_END_EXTENDED_CLEARTIME)) {
-        return WLD_CHAN_DFS_EXTENDED_CLEAR_TIME_MS;
-    } else {
-        return WLD_CHAN_DFS_CLEAR_TIME_MS;
-    }
-}
-
-/**
  * Returns the time in milliseconds that it takes to clear this band.
  */
 int wld_channel_get_band_clear_time(swl_chanspec_t chanspec) {
