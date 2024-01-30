@@ -66,7 +66,7 @@
 
 #define DIAG_SCAN_REASON "NeighboringDiag"
 typedef struct {
-    uint64_t call_id;
+    swl_function_deferredInfo_t callInfo;
     amxc_llist_t runningRads;   /* list of radios running diag scan. */
     amxc_llist_t completedRads; /* list of radios reporting scan results. */
     amxc_llist_t canceledRads;  /* list of radios having cancelled scan. */
@@ -76,9 +76,7 @@ typedef struct {
 /**
  * global neighboringWiFiDiagnostic context.
  */
-neighboringWiFiDiagnosticInfo_t g_neighWiFiDiag = {
-    .call_id = 0,
-};
+neighboringWiFiDiagnosticInfo_t g_neighWiFiDiag;
 
 const char* g_str_wld_blockScanMode[BLOCKSCANMODE_MAX] = {
     "Disable",
@@ -379,6 +377,8 @@ static amxd_status_t s_startScan(amxd_object_t* object,
         scanArgs->fastScan = (swl_str_find(pR->scanState.cfg.fastScanReasons, reason) > 0);
     }
 
+    snprintf(scanArgs->reason, sizeof(scanArgs->reason), "%s", reason);
+
     if((pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_ALL)
        || ( pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_PRIO)) {
         SAH_TRACEZ_ERROR(ME, "Scan blocked");
@@ -393,6 +393,8 @@ static amxd_status_t s_startScan(amxd_object_t* object,
         errorCode = amxd_status_unknown_error;
         goto error;
     }
+
+    SAH_TRACEZ_INFO(ME, "%s: starting scan %u: %s", pR->Name, scanType, reason);
 
     /* Ok */
     return amxd_status_deferred;
@@ -455,8 +457,16 @@ static amxd_status_t s_scanRequest(T_Radio* pR,
     if(minRssiVar != NULL) {
         pR->scanState.minRssi = amxc_var_dyncast(int32_t, minRssiVar);
     }
-    amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
-    return amxd_status_deferred;
+
+    if(func != NULL) {
+        amxd_status_t success = swl_function_defer(&pR->scanState.scanFunInfo, func, retval);
+        if(success != amxd_status_deferred) {
+            SAH_TRACEZ_ERROR(ME, "%s: failure to defer scan %u", pR->Name, success);
+        }
+        return success;
+    } else {
+        return amxd_status_deferred;
+    }
 }
 
 amxd_status_t _scan(amxd_object_t* object,
@@ -671,7 +681,7 @@ static void wld_rad_scan_SendDoneNotification(T_Radio* pR, bool success) {
  **/
 static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
-    ASSERT_NOT_EQUALS(pR->scanState.call_id, 0, , ME, "%s no call_id", pR->Name);
+    ASSERT_TRUE(swl_function_deferIsActive(&pR->scanState.scanFunInfo), , ME, "%s no call_id", pR->Name);
     ASSERT_TRUE(wld_scan_isRunning(pR), , ME, "%s no scan", pR->Name);
 
     amxc_var_t ret;
@@ -696,10 +706,9 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
         *success = false;
     }
 
-    amxd_function_deferred_done(pR->scanState.call_id, success ? amxd_status_ok : amxd_status_unknown_error, NULL, &ret);
+    swl_function_deferDone(&pR->scanState.scanFunInfo, success ? amxd_status_ok : amxd_status_unknown_error, NULL, &ret);
 
     amxc_var_clean(&ret);
-    pR->scanState.call_id = 0;
     pR->scanState.minRssi = INT32_MIN;
 }
 
@@ -790,7 +799,7 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
 
     /* asynchronous call */
     if(retCode == SWL_RC_CONTINUE) {
-        amxd_function_defer(func, &pR->scanState.call_id, retval, NULL, NULL);
+        swl_function_defer(&pR->scanState.scanFunInfo, func, retval);
         SAH_TRACEZ_OUT(ME);
         return amxd_status_deferred;
     }
@@ -951,8 +960,9 @@ static void wld_scan_update_obj_results(T_Radio* pR) {
 void wld_scan_done(T_Radio* pR, bool success) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "%s : scan done %u Reason %s => run %u, call_id %" PRIu64,
-                    pR->Name, success, pR->scanState.scanReason, wld_scan_isRunning(pR), pR->scanState.call_id);
+    SAH_TRACEZ_INFO(ME, "%s : scan done %u Reason %s => run %u, deferred %u",
+                    pR->Name, success, pR->scanState.scanReason, wld_scan_isRunning(pR),
+                    swl_function_deferIsActive(&pR->scanState.scanFunInfo));
 
     if(!wld_scan_isRunning(pR)) {
         return;
@@ -987,9 +997,8 @@ void wld_scan_done(T_Radio* pR, bool success) {
         wld_scan_update_obj_results(pR);
     }
 
-    if(pR->scanState.call_id == 0) {
-        wld_rad_scan_SendDoneNotification(pR, success);
-    } else {
+    wld_rad_scan_SendDoneNotification(pR, success);
+    if(swl_function_deferIsActive(&pR->scanState.scanFunInfo)) {
         wld_rad_scan_FinishScanCall(pR, &success);
     }
 
@@ -1167,10 +1176,9 @@ static void s_sendNeighboringWifiDiagnosticResult() {
         wld_scan_cleanupScanResults(&scanRes);
     }
 
-    amxd_function_deferred_done(g_neighWiFiDiag.call_id, amxd_status_ok, NULL, &retMap);
+    swl_function_deferDone(&g_neighWiFiDiag.callInfo, amxd_status_ok, NULL, &retMap);
     amxc_var_clean(&retMap);
 
-    g_neighWiFiDiag.call_id = 0;
     wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
     amxc_llist_clean(&g_neighWiFiDiag.completedRads, amxc_string_list_it_free);
     amxc_llist_clean(&g_neighWiFiDiag.canceledRads, amxc_string_list_it_free);
@@ -1186,7 +1194,7 @@ amxd_status_t _NeighboringWiFiDiagnostic(amxd_object_t* pWifiObj,
 
     SAH_TRACEZ_IN(ME);
 
-    if(g_neighWiFiDiag.call_id != 0) {
+    if(swl_function_deferIsActive(&g_neighWiFiDiag.callInfo)) {
         SAH_TRACEZ_ERROR(ME, "WiFiDiagnostic is already running");
         goto error;
     }
@@ -1217,9 +1225,7 @@ amxd_status_t _NeighboringWiFiDiagnostic(amxd_object_t* pWifiObj,
     }
     amxc_var_clean(&localArgs);
     if(!amxc_llist_is_empty(&g_neighWiFiDiag.runningRads)) {
-        amxd_function_defer(func, &g_neighWiFiDiag.call_id, retval, NULL, NULL);
-        SAH_TRACEZ_OUT(ME);
-        return amxd_status_deferred;
+        return swl_function_defer(&g_neighWiFiDiag.callInfo, func, retval);
     }
     wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
 error:
@@ -1234,7 +1240,7 @@ swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason
     ASSERT_TRUE(type < SCAN_TYPE_MAX, SWL_RC_INVALID_PARAM, ME, "invalid scan type");
 
     swl_rc_ne error = pRad->pFA->mfn_wrad_start_scan(pRad);
-    ASSERT_TRUE(error == SWL_RC_OK, error, ME, "scan start failed");
+    ASSERT_TRUE(swl_rc_isOk(error), error, ME, "%s: scan start failed %i", pRad->Name, error);
 
     s_notifyStartScan(pRad, type, reason, error);
     return error;

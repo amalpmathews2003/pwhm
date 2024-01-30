@@ -72,6 +72,7 @@
 #include <swla/swla_time_spec.h>
 #include <swla/swla_oui.h>
 #include "swla/swla_delayExec.h"
+#include <swla/swla_function.h>
 #include <swl/swl_usp_cmdStatus.h>
 #include <swl/swl_wps.h>
 #include <swl/swl_security.h>
@@ -1119,13 +1120,19 @@ typedef struct wld_scanResultSSID {
     swl_radioStandard_m operatingStandards;
 
     swl_security_apMode_e secModeEnabled;
+    swl_security_mfpMode_e mfpMode;
     swl_wps_cfgMethod_m WPS_ConfigMethodsEnabled;
     bool hasActiveWpsRegistrar;
     bool adhoc;
     int32_t linkrate;
     swl_security_encMode_e encryptionMode;
 
+    amxc_llist_t vendorIEs;
     amxc_llist_it_t it;
+
+    swl_80211_htCapInfo_m htCaps;
+    swl_80211_vhtCapInfo_m vhtCaps;
+    swl_80211_heCapInfo_m heCaps;
 } wld_scanResultSSID_t;
 
 typedef struct wld_scanResults {
@@ -1140,6 +1147,7 @@ typedef struct wld_scanArgs {
     int chanCount;
     bool updateUsageStats;
     bool fastScan;
+    char reason[64];
 } wld_scanArgs_t;
 
 #define SCAN_REASON_MAX 5
@@ -1165,7 +1173,7 @@ typedef struct {
 } wld_scan_config_t;
 
 typedef struct {
-    uint64_t call_id;
+    swl_function_deferredInfo_t scanFunInfo;
     int32_t minRssi;
     char scanReason[16];
     wld_scan_type_e scanType;
