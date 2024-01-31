@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.30.2 - 2024-01-31(11:09:39 +0000)
+
+### Other
+
+- Endpoint interface to bridge
+
 ## Release v5.30.1 - 2024-01-30(10:56:29 +0000)
 
 ### Other
