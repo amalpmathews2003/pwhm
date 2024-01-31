@@ -89,6 +89,7 @@ typedef struct {
     swl_channel_t channel;
     swl_radioStandard_m supportedStandards;
     wld_radioCap_t cap;
+    swl_radBw_m supportedChannelBandwidth;
 } wld_th_radCap_t;
 
 T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name);

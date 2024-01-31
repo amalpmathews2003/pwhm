@@ -185,6 +185,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->operatingChannelBandwidth = cap->operatingChannelBandwidth;
         rad->channel = cap->channel;
         rad->supportedStandards = cap->supportedStandards;
+        rad->supportedChannelBandwidth = cap->supportedChannelBandwidth;
         memcpy(&rad->cap, &cap->cap, sizeof(wld_radioCap_t));
         return 0;
     }
@@ -202,6 +203,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels6);
         rad->maxChannelBandwidth = SWL_BW_160MHZ;
         rad->operatingChannelBandwidth = SWL_RAD_BW_80MHZ;
+        rad->supportedChannelBandwidth = ( 1 << (SWL_BW_160MHZ + 1)) - 1;
         rad->channel = 1;
         rad->supportedStandards = M_SWL_RADSTD_AX;
     } else if(swl_str_matches(rad->Name, "wifi1")) {
@@ -211,6 +213,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels5);
         rad->maxChannelBandwidth = SWL_BW_160MHZ;
         rad->operatingChannelBandwidth = SWL_RAD_BW_80MHZ;
+        rad->supportedChannelBandwidth = ( 1 << (SWL_BW_160MHZ + 1)) - 1;
         rad->channel = 36;
         rad->supportedStandards = M_SWL_RADSTD_A | M_SWL_RADSTD_N | M_SWL_RADSTD_AC | M_SWL_RADSTD_AX;
     } else {
@@ -220,6 +223,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->nrPossibleChannels = SWL_ARRAY_SIZE(possibleChannels2);
         rad->maxChannelBandwidth = SWL_BW_40MHZ;
         rad->operatingChannelBandwidth = SWL_RAD_BW_20MHZ;
+        rad->supportedChannelBandwidth = ( 1 << (SWL_BW_40MHZ + 1)) - 1;
         rad->channel = 1;
         rad->supportedStandards = M_SWL_RADSTD_B | M_SWL_RADSTD_G | M_SWL_RADSTD_N | M_SWL_RADSTD_AX;
     }

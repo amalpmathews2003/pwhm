@@ -1436,7 +1436,7 @@ struct WLD_RADIO {
     bool isSTASup;                                 /* Is STA supported? Has impact the way we manage the Radio! */
     bool isWPSEnrol;                               /* Set WPS Enrollee mode when STA is active! */
 
-    char channelsInUse[32];                        /* String presentation of used channels */
+    char channelsInUse[64];                        /* String presentation of used channels */
     swl_channel_t channel;                         /* When set we set autoChannelEnable FALSE */
     wld_channelChangeReason_e channelChangeReason; /* The cause of the last channel change */
     int autoChannelSupported;

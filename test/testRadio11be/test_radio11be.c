@@ -69,6 +69,7 @@
 #include "wld_accesspoint.h"
 #include "wld_assocdev.h"
 #include "wld_util.h"
+#include "wld_chanmgt.h"
 #include "swl/swl_intf.h"
 #include "test-toolbox/ttb_mockClock.h"
 #include "test-toolbox/ttb_object.h"
@@ -102,6 +103,7 @@ wld_th_radCap_t testCap2 = {
     .operatingChannelBandwidth = SWL_RAD_BW_20MHZ,
     .channel = 1,
     .supportedStandards = M_SWL_RADSTD_B | M_SWL_RADSTD_G | M_SWL_RADSTD_N | M_SWL_RADSTD_AX | M_SWL_RADSTD_BE,
+    .supportedChannelBandwidth = ( 1 << (SWL_BW_40MHZ + 1)) - 1,
     .cap = {
         .apCap7 = {
             .emlmrSupported = true,
@@ -129,6 +131,36 @@ wld_th_radCap_t testCap5 = {
     .operatingChannelBandwidth = SWL_RAD_BW_160MHZ,
     .channel = 36,
     .supportedStandards = M_SWL_RADSTD_A | M_SWL_RADSTD_N | M_SWL_RADSTD_AC | M_SWL_RADSTD_AX | M_SWL_RADSTD_BE,
+    .supportedChannelBandwidth = ( 1 << (SWL_BW_160MHZ + 1)) - 1,
+    .cap = {
+        .apCap7 = {
+            .emlmrSupported = false,
+            .emlsrSupported = true,
+            .strSupported = true,
+            .nstrSupported = false
+        },
+        .staCap7 = {
+            .emlmrSupported = false,
+            .emlsrSupported = true,
+            .strSupported = false,
+            .nstrSupported = true
+        }
+    }
+};
+
+
+wld_th_radCap_t testCap6 = {
+    .name = "wifi2",
+    .operatingFrequencyBand = SWL_FREQ_BAND_EXT_6GHZ,
+    .supportedFrequencyBands = M_SWL_FREQ_BAND_6GHZ,
+    .possibleChannels = {1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85,
+        89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205, 209, 213, 217, 221, 225, 229, 233},
+    .nrPossibleChannels = 59,
+    .maxChannelBandwidth = SWL_BW_320MHZ,
+    .operatingChannelBandwidth = SWL_RAD_BW_320MHZ1,
+    .supportedChannelBandwidth = M_SWL_RAD_BW_ALL,
+    .channel = 61,
+    .supportedStandards = M_SWL_RADSTD_AX | M_SWL_RADSTD_BE,
     .cap = {
         .apCap7 = {
             .emlmrSupported = false,
@@ -148,24 +180,36 @@ wld_th_radCap_t testCap5 = {
 static void test_radioStatus(void** state _UNUSED) {
     wld_th_radio_addCustomCap(&testCap2);
     wld_th_radio_addCustomCap(&testCap5);
+    wld_th_radio_addCustomCap(&testCap6);
     T_Radio* pRad2 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi0");
     T_Radio* pRad5 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi1");
+    T_Radio* pRad6 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi2");
 
     amxp_sigmngr_trigger_signal(&dm.ttbBus->dm.sigmngr, "app:start", NULL);
     ttb_mockTimer_goToFutureMs(10000);
 
     amxd_object_t* capObj2 = amxd_object_findf(pRad2->pBus, "Capabilities");
     amxd_object_t* capObj5 = amxd_object_findf(pRad5->pBus, "Capabilities");
+    amxd_object_t* capObj6 = amxd_object_findf(pRad6->pBus, "Capabilities");
 
     ttb_object_assertPrintEqFile(capObj2, 0, "rad2_cap.txt");
     ttb_object_assertPrintEqFile(capObj5, 0, "rad5_cap.txt");
+    ttb_object_assertPrintEqFile(capObj6, 0, "rad6_cap.txt");
 
-    amxd_object_t* unavRad6Obj = amxd_object_findf(get_wld_object(), "Radio.wifi2.");
-    char* statusStr = amxd_object_get_cstring_t(unavRad6Obj, "Status", NULL);
-    char statusArr[swl_str_len(statusStr) + 1];
-    swl_str_copy(statusArr, sizeof(statusArr), statusStr);
-    free(statusStr);
-    assert_string_equal(statusArr, swl_intf_status_str[SWL_INTF_STATUS_NOT_PRESENT]);
+    swl_chanspec_t cs2 = swl_chanspec_fromDm(1, SWL_RAD_BW_20MHZ, SWL_FREQ_BAND_EXT_2_4GHZ);
+    wld_chanmgt_reportCurrentChanspec(pRad2, cs2, CHAN_REASON_INITIAL);
+
+    swl_chanspec_t cs5 = swl_chanspec_fromDm(36, SWL_RAD_BW_80MHZ, SWL_FREQ_BAND_EXT_5GHZ);
+    wld_chanmgt_reportCurrentChanspec(pRad5, cs5, CHAN_REASON_INITIAL);
+
+    swl_chanspec_t cs6 = swl_chanspec_fromDm(1, SWL_RAD_BW_320MHZ1, SWL_FREQ_BAND_EXT_6GHZ);
+    wld_chanmgt_reportCurrentChanspec(pRad6, cs6, CHAN_REASON_INITIAL);
+
+    ttb_mockTimer_goToFutureMs(1000);
+
+    ttb_object_assertPrintEqFile(pRad2->pBus, 2, "rad2_base.txt");
+    ttb_object_assertPrintEqFile(pRad5->pBus, 2, "rad5_base.txt");
+    ttb_object_assertPrintEqFile(pRad6->pBus, 2, "rad6_base.txt");
 }
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {

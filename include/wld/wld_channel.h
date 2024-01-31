@@ -66,7 +66,7 @@
 #include "wld.h"
 #include "wld_channel_types.h"
 
-#define WLD_CHAN_MAX_NR_CHANS_IN_USE 8
+#define WLD_CHAN_MAX_NR_CHANS_IN_USE 16
 #define WLD_CHAN_MAX_NR_INTERF_CHAN 11
 
 #define NR_INTERFERENCE_ELEMENT_24_20 7

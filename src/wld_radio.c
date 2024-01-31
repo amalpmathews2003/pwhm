@@ -494,13 +494,15 @@ amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* obje
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
     ASSERT_NOT_NULL(newValue, status, ME, "NULL");
-    swl_radBw_e radBw;
+    swl_radBw_e radBw = swl_conv_charToEnum(newValue, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_MAX);
+
     if((swl_str_matches(currentValue, newValue)) ||
-       ((radBw = swl_conv_charToEnum(newValue, swl_radBw_str, SWL_BW_RAD_MAX, SWL_BW_RAD_MAX) < SWL_BW_RAD_MAX) &&
+       ((radBw < SWL_RAD_BW_MAX) &&
         ((radBw == SWL_RAD_BW_AUTO) || (swl_chanspec_radBwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
         status = amxd_status_ok;
     } else {
-        SAH_TRACEZ_ERROR(ME, "%s: unsupported operating channel bandwidth(%s)", pRad->Name, newValue);
+        SAH_TRACEZ_ERROR(ME, "%s: unsupported operating channel bandwidth(%s / %u / %u)", pRad->Name, newValue,
+                         swl_chanspec_radBwToInt(radBw), swl_chanspec_bwToInt(pRad->maxChannelBandwidth));
     }
     free(newValue);
     return status;

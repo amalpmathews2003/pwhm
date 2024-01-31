@@ -538,11 +538,12 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
 
     swl_freqBandExt_e freqBand = pR->operatingFrequencyBand;
 
-    swl_bandwidth_e bandwidth = swl_conv_charToEnum(bandwidth_str, swl_bandwidth_str, SWL_BW_RAD_MAX, SWL_BW_AUTO);
-    if(bandwidth > SWL_BW_RAD_LAST) {
-        SAH_TRACEZ_ERROR(ME, "%s: Invalid bandwidth %d (max: %d)", pR->Name, bandwidth, SWL_BW_RAD_LAST);
+    swl_radBw_e radBw = swl_conv_charToEnum(bandwidth_str, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
+    if(radBw > SWL_RAD_BW_MAX) {
+        SAH_TRACEZ_ERROR(ME, "%s: Invalid bandwidth %s - %d (max: %d)", pR->Name, bandwidth_str, radBw, SWL_RAD_BW_MAX);
         return amxd_status_invalid_arg;
     }
+    swl_bandwidth_e bandwidth = swl_radBw_toBw[radBw];
 
     if(swl_chanspec_bwToInt(bandwidth) > swl_chanspec_bwToInt(pR->maxChannelBandwidth)) {
         SAH_TRACEZ_ERROR(ME, "%s: Invalid bandwidth %s (max: %s)", pR->Name,
@@ -552,7 +553,7 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
 
     ASSERT_EQUALS(pR->callIdReqChanspec, 0, amxd_status_invalid_action, ME, "%s call_id already set", pR->Name);
 
-    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, bandwidth, freqBand);
+    swl_chanspec_t chanspec = swl_chanspec_fromDm(channel, radBw, freqBand);
     wld_channelChangeReason_e reason = swl_conv_charToEnum(reason_str, g_wld_channelChangeReason_str, CHAN_REASON_MAX, CHAN_REASON_MANUAL);
 
     SAH_TRACEZ_INFO(ME, "%s: request chanspec <%s> reason <%s> direct <%d>",
