@@ -239,6 +239,9 @@ swl_rc_ne wld_ap_hostapd_setNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeigh
             bssParamsMask |= SWL_80211_BSS_PARAMS_ESS_24_5_COLOC_AP;
         }
     }
+    if(wld_ap_getDiscoveryMethod(pColocAP) == M_AP_DM_UPR) {
+        bssParamsMask |= SWL_80211_BSS_PARAMS_UPR_ACTIVE;
+    }
     swl_str_catFormat(cmd, sizeof(cmd), " bss_parameter=%d", (bssParamsMask & 0xff));
 
     SAH_TRACEZ_INFO(ME, "sending cmd : %s", cmd);
