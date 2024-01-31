@@ -1,7 +1,8 @@
 {
     "data": {
         "object": "WiFi.AccessPoint.wlan1.RssiEventing.",
-        "Updates": {
+        "notification": "RssiUpdateShortHistoryDisassoc",
+        "Update": {
             "BytesSentHistory": "802703,802703,802703",
             "MultipleRetryCountHistory": "0,0,0",
             "TxFrameCountHistory": "393,393,393",
@@ -38,7 +39,6 @@
             "TxLinkBandwidthHistory": "80MHz,80MHz,80MHz",
             "RxFailedRetransCountHistory": "0,0,0"
         },
-        "notification": "RssiUpdateShortHistoryDisassoc",
         "eobject": "WiFi.AccessPoint.[wlan1].RssiEventing.",
         "path": "WiFi.AccessPoint.2.RssiEventing."
     }

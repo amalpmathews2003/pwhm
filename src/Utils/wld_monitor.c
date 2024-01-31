@@ -86,7 +86,7 @@ void wld_mon_sendUpdateNotification(amxd_object_t* eventObject, const char* name
     amxc_var_init(&map);
     amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
 
-    amxc_var_t* content = amxc_var_add_new_key(&map, "Updates");
+    amxc_var_t* content = amxc_var_add_new_key(&map, "Update");
     if((content == NULL) || (amxc_var_copy(content, variant) != 0)) {
         SAH_TRACEZ_ERROR(ME, "Error when adding Updates");
         W_SWL_FREE(content);

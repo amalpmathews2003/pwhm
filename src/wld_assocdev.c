@@ -810,7 +810,7 @@ amxd_status_t _wld_assocDev_getStats_orf(amxd_object_t* const object,
                                          void* priv) {
     ASSERT_NOT_NULL(object, amxd_status_ok, ME, "obj is NULL");
     T_AssociatedDevice* pAD = object->priv;
-    ASSERT_NOT_NULL(pAD, amxd_status_ok, ME, "pAD is NULL, no device present");
+    ASSERTI_NOT_NULL(pAD, amxd_status_ok, ME, "pAD is NULL, no device present");
     return swla_dm_procObjActionRead(object, param, reason, args, action_retval, priv, &pAD->onActionReadCtx, s_getSingleStationStats);
 }
 

@@ -171,7 +171,7 @@ static void timeHandler(void* userdata) {
             wldu_convMac2Str(pAD->MACAddress, ETHER_ADDR_LEN, buffer, ETHER_ADDR_STR_LEN);
 
             amxc_var_add_key(cstring_t, &myMap, "MACAddress", buffer);
-            amxc_var_move(&myList, &myMap);
+            amxc_var_add(amxc_htable_t, &myList, amxc_var_get_const_amxc_htable_t(&myMap));
             amxc_var_clean(&myMap);
             nrUpdates++;
         }
@@ -782,7 +782,7 @@ void wld_apRssiMon_sendStaHistoryAll(T_AccessPoint* pAP) {
             amxc_var_set_type(&varmap, AMXC_VAR_ID_HTABLE);
             if(pAD->staHistory->nr_valid_samples >= pAP->rssiEventing.historyLen) {
                 wld_apRssiMon_getStaHistory(pAP, pAP->AssociatedDevice[i]->MACAddress, &varmap);
-                amxc_var_move(&myList, &varmap);
+                amxc_var_add(amxc_htable_t, &myList, amxc_var_get_const_amxc_htable_t(&varmap));
             }
             amxc_var_clean(&varmap);
         }
