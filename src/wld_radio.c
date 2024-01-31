@@ -3472,7 +3472,6 @@ void _wld_rad_setOperatingClass(const char* const sig_name _UNUSED,
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
     wld_rad_updateOperatingClass(pRad);
-    wld_autoNeighAdd_radioSetDelNeighbourAP(pRad, true);
 }
 
 void _wld_rad_updatePossibleChannels_ocf(const char* const sig_name _UNUSED,

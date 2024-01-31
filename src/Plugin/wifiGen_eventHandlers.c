@@ -78,6 +78,7 @@
 #include "wld/wld_endpoint.h"
 #include "wld/wld_chanmgt.h"
 #include "wld/wld_sensing.h"
+#include "wld/Utils/wld_autoNeighAdd.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_genericFrameParser.h"
@@ -196,6 +197,7 @@ static void s_csaFinishedCb(void* userData, char* ifName _UNUSED, swl_chanspec_t
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: csa finished to new_chan=%d", pRad->Name, chanSpec->channel);
+    wld_autoNeighAdd_radioSetDelNeighbourAP(pRad, true);
 }
 
 /*
