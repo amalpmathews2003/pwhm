@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.30.6 - 2024-02-01(11:30:07 +0000)
+
+### Other
+
+- - fix 320Mhz channel configuration issues
+
 ## Release v5.30.5 - 2024-02-01(08:39:44 +0000)
 
 ### Other
