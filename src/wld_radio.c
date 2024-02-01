@@ -1345,6 +1345,21 @@ static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
     SAH_TRACEZ_OUT(ME);
 }
 
+amxd_status_t _wld_rad_getLastChange_prf(amxd_object_t* object,
+                                         amxd_param_t* param,
+                                         amxd_action_t reason,
+                                         const amxc_var_t* const args _UNUSED,
+                                         amxc_var_t* const retval,
+                                         void* priv _UNUSED) {
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, amxd_status_ok, ME, "no radio mapped");
+    uint32_t lastChange = swl_time_getMonoSec() - pRad->changeInfo.lastStatusChange;
+    amxc_var_set(uint32_t, retval, lastChange);
+    return amxd_status_ok;
+}
+
 // See this as
 const char* DFST_RP_Help[] = {
     "DFS_drvdbg (dbg_action:string) the DFS Radar pulse command",

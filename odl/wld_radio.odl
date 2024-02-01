@@ -389,7 +389,9 @@ define probelist_t{
 		 * <p>The accumulated time in seconds since the radio entered
 		 * its current operational state.</p>
 		 */
-		/*uint32 LastChange;*/
+		%read-only uint32 LastChange {
+			on action read call wld_rad_getLastChange_prf;
+		}
 
 		/**
 		 * <p>List of Path Names of an interface objects that are stacked
