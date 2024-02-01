@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.30.5 - 2024-02-01(08:39:44 +0000)
+
+### Other
+
+- : RssiEventing report only one station per event
+
 ## Release v5.30.4 - 2024-02-01(08:28:19 +0000)
 
 ## Release v5.30.3 - 2024-01-31(11:31:51 +0000)
