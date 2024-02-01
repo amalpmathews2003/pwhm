@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.31.0 - 2024-02-01(17:36:17 +0000)
+
+### Other
+
+- - Add Preamble Type configuration
+
 ## Release v5.30.6 - 2024-02-01(11:30:07 +0000)
 
 ### Other
