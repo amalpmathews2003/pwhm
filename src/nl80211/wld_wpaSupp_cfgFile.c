@@ -136,6 +136,7 @@ static swl_rc_ne s_setSaePassword(swl_mapChar_t* network, T_EndPointProfile* epP
     ASSERTS_FALSE(swl_str_isEmpty(epProfile->saePassphrase), SWL_RC_ERROR, ME, "saePassphrase is empty");
 
     char saePassphrase[SAE_KEY_SIZE_LEN + 2];
+    memset(saePassphrase, 0, sizeof(saePassphrase));
     swl_str_catFormat(saePassphrase, sizeof(saePassphrase), "\"%s\"", epProfile->saePassphrase);
     swl_mapChar_add(network, "sae_password", saePassphrase);
 
