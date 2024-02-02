@@ -757,6 +757,8 @@ define rrm_t{
 				on action destroy call wld_ap_deleteMACFilteringEntry_odf;
 				on event "*" call wld_apMacFilterEntry_setConf_ocf;
 
+				%persistent %unique %key string Alias;
+
 				/** The MAC-address of this table entry. */
 				%persistent string MACAddress {
 					on action validate call is_valid_macaddr;
