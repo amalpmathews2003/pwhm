@@ -109,6 +109,13 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
      * to process received credentials internally and pass them over ctrl_iface
      * to external program */
     swl_mapChar_add(global, "wps_cred_processing", "2");
+
+    T_EndPointProfile* epProfile = pEP->currentProfile;
+    if((epProfile != NULL) &&
+       ((epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA2_WPA3_P) ||
+        (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P))) {
+        swl_mapChar_add(global, "sae_pwe", "2");
+    }
     return SWL_RC_OK;
 }
 
