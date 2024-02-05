@@ -744,30 +744,21 @@ amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-amxd_status_t _wld_rad_getTxPower_prf(amxd_object_t* object,
-                                      amxd_param_t* param,
-                                      amxd_action_t reason,
-                                      const amxc_var_t* const args _UNUSED,
-                                      amxc_var_t* const retval,
-                                      void* priv _UNUSED) {
-    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
-    int32_t percentage = -1;
-    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
-    T_Radio* pR = wld_rad_fromObj(object);
+static swl_rc_ne s_getTxPowerPct(T_Radio* pR, int32_t* txPwrPct) {
+    ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(txPwrPct, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    SAH_TRACEZ_IN(ME);
-
-    if(pR != NULL) {
-        percentage = pR->pFA->mfn_wrad_txpow(pR, 0, GET);
-        if((percentage < -1) || (percentage > 100)) {
-            SAH_TRACEZ_WARNING(ME, "%s: out of range txPwr prc %d, consider auto mode", pR->Name, percentage);
-            percentage = -1;
-        }
+    swl_rc_ne rc = SWL_RC_OK;
+    int32_t percentage = pR->pFA->mfn_wrad_txpow(pR, 0, GET);
+    if((percentage < -1) || (percentage > 100)) {
+        SAH_TRACEZ_WARNING(ME, "%s: out of range txPwr prc %d, consider auto mode", pR->Name, percentage);
+        percentage = -1;
+        rc = SWL_RC_ERROR;
     }
-    amxc_var_set(int32_t, retval, percentage);
 
-    SAH_TRACEZ_OUT(ME);
-    return amxd_status_ok;
+    *txPwrPct = percentage;
+
+    return rc;
 }
 
 amxd_status_t _wld_rad_validateTxPower_pvf(amxd_object_t* object,
@@ -4074,6 +4065,11 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         amxc_var_add_key(cstring_t, retval, "FSM_AC_BitArray", buffer);
         snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_CSC[0], pR->fsmRad.FSM_CSC[1]);
         amxc_var_add_key(cstring_t, retval, "FSM_CSC", buffer);
+    } else if(swl_str_matchesIgnoreCase(feature, "getTxPwrPct")) {
+        int32_t txPwrPct = -1;
+        swl_rc_ne ret = s_getTxPowerPct(pR, &txPwrPct);
+        amxc_var_add_key(int32_t, retval, "txPwrPct", txPwrPct);
+        amxc_var_add_key(cstring_t, retval, "Result", swl_rc_toString(ret));
     } else if(swl_str_matchesIgnoreCase(feature, "dump")) {
         s_dumpRadioDebug(pR, retval);
     } else {
