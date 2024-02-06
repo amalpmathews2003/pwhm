@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.31.4 - 2024-02-06(13:37:03 +0000)
+
+### Other
+
+- - Add sae_pwe parameter to wpa_supplicant.
+
 ## Release v5.31.3 - 2024-02-04(11:20:07 +0000)
 
 ### Other
