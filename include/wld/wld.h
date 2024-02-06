@@ -1211,6 +1211,12 @@ typedef struct wld_radioCap {
     wld_radioWiFi7Cap_t staCap7;
 } wld_radioCap_t;
 
+typedef struct wld_cfg11be {
+    swl_trl_e emlmrEnable;
+    swl_trl_e emlsrEnable;
+} wld_cfg11be_t;
+
+
 typedef struct {
     T_Radio* pRad;
     bool start;   //set to true if start, false if stop
@@ -1614,6 +1620,7 @@ struct WLD_RADIO {
     wld_extMod_dataList_t extDataList;            /* Non chipset vendor module data list. @type wld_extMod_registration_t */
 
     wld_radioCap_t cap;                           /* Datamodel capabilities; */
+    wld_cfg11be_t cfg11be;                        /* Data model configuration for 802.11be */
 };
 
 typedef struct {
@@ -2320,6 +2327,9 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     /**< Get Air usage statistics */
     swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, wld_airStats_t* pStats);
+
+    /** Notify that pRad->cfg.wifi7Cfg has been updated */
+    swl_rc_ne (* mfn_wrad_notifyWifi7CfgUpdate)(T_Radio* pRad);
 
     PFN_WRAD_SENSING_CMD mfn_wrad_sensing_cmd;                /**< Start / Stop CSI monitoring */
     PFN_WRAD_SENSING_CSI_STATS mfn_wrad_sensing_csiStats;     /**< Get CSI monitoring stats */

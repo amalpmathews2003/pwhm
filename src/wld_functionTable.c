@@ -119,7 +119,6 @@ static swl_rc_ne TRAP_mfn_wvap_setMldUnit(T_AccessPoint* ap) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
-
 #define DEF_TRAP(type, func) \
     static int TRAP_ ## func(type * obj) { \
         _UNUSED_(obj); \
@@ -270,6 +269,12 @@ static swl_rc_ne TRAP_mfn_wrad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpe
     _UNUSED_(pChSpec);
     SAH_TRACEZ_NOTICE(ME, "%p %p", pRad, pChSpec);
     return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_notifyWifi7CfgUpdate(T_Radio* rad) {
+    _UNUSED_(rad);
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
+    return SWL_RC_ERROR;
 }
 
 DEF_TRAP(T_AccessPoint, mfn_wvap_status);
@@ -684,6 +689,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_sensing_delClient);
     FTA_ASSIGN(mfn_wrad_sensing_resetStats);
     FTA_ASSIGN(mfn_wrad_firmwareVersion);
+    FTA_ASSIGN(mfn_wrad_notifyWifi7CfgUpdate);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);
