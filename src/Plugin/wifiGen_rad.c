@@ -714,7 +714,10 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
     bool needCommit = (pRad->fsmRad.FSM_State != FSM_RUN);
     unsigned long* actionArray = (needCommit ? pRad->fsmRad.FSM_BitActionArray : pRad->fsmRad.FSM_AC_BitActionArray);
     if(wifiGen_hapd_isRunning(pRad)) {
-        if(pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) {
+        chanmgt_rad_state detState = pRad->detailedState;
+        wifiGen_hapd_getRadState(pRad, &detState);
+        if((pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) &&
+           ((detState == CM_RAD_UP) || (detState == CM_RAD_FG_CAC))) {
             if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
                (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
                 swl_rc_ne rc = wld_rad_hostapd_switchChannel(pRad);
@@ -726,7 +729,9 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
          * then hostapd must be toggled for cold applying (with DFS clearing if needed)
          */
         wld_rad_hostapd_setChannel(pRad);
-        setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        if(detState != CM_RAD_DOWN) {
+            setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        }
         setBitLongArray(actionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
     }
     /* update conf file */
