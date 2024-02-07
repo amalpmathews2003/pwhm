@@ -55,7 +55,7 @@ if (RadioIndex >= 0) : %}
                 object WPS {
                     parameter ConfigMethodsEnabled = "PhysicalPushButton,VirtualPushButton,Display,VirtualDisplay,PIN";
                     parameter Configured = 1;
-{% if (BDfn.isInterfaceLan(Itf.Name)) : %}
+{% if (BDfn.isInterfaceLan(Itf.Name) && (Itf.OperatingFrequency != "6GHz")) : %}
                     parameter Enable = 1;
 {% endif %}
                 }
