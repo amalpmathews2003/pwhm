@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.31.5 - 2024-02-07(13:19:20 +0000)
+
+### Other
+
+- : Vap6g0priv is down when Security.ModeEnabled is set to "OWE" or "None"
+
 ## Release v5.31.4 - 2024-02-06(13:37:03 +0000)
 
 ### Other
