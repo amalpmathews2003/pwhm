@@ -532,7 +532,8 @@ swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {
 swl_rc_ne wld_rad_nl80211_registerFrame(T_Radio* pRadio, uint16_t type, const char* pattern, size_t patternLen) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
-    return wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pRadio->index, type, pattern, patternLen);
+    uint32_t ifIndex = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    return wld_nl80211_registerFrame(wld_nl80211_getSharedState(), ifIndex, type, pattern, patternLen);
 }
 
 swl_rc_ne wld_rad_nl80211_sendVendorSubCmd(T_Radio* pRadio, uint32_t oui, int subcmd, void* data, int dataLen,

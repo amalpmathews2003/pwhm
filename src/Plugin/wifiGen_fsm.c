@@ -357,8 +357,8 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
      * Radio is ready, and Main AP is ready: listening to mgmt frames is possible.
      * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
      */
-    if(wld_ap_nl80211_registerFrame(pAP, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
-        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pAP->alias);
+    if(wld_rad_nl80211_registerFrame(pRad, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
+        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pRad->Name);
     }
 }
 
