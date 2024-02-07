@@ -327,8 +327,8 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     int32_t rtsThreshold = -1;
     if(pRad->rtsThreshold < IEEE80211_MAX_RTS_THRESHOLD) {
         rtsThreshold = pRad->rtsThreshold;
+        swl_mapCharFmt_addValInt32(radConfigMap, "rts_threshold", rtsThreshold);
     }
-    swl_mapCharFmt_addValInt32(radConfigMap, "rts_threshold", rtsThreshold);
 
     if(wld_rad_is_24ghz(pRad)) {
         bool enableShPreamble = (pRad->preambleType == PREAMBLE_TYPE_LONG) ? 0 : 1;
