@@ -561,7 +561,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
 
     s_writeMfConfig(pAP, vapConfigMap);
 
-    if(pAP->cfg11u.qosMapSet[0]) {
+    if(pAP->cfg11u.qosMapSet[0] && pAP->WMMCapability) {
         swl_mapChar_add(vapConfigMap, "qos_map_set", pAP->cfg11u.qosMapSet);
     }
 
@@ -712,7 +712,9 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "hs20_deauth_req_timeout", 0);
         swl_mapCharFmt_addValInt32(vapConfigMap, "osen", false);
     }
-    swl_mapCharFmt_addValInt32(vapConfigMap, "wmm_enabled", pAP->WMMCapability && pAP->WMMEnable);
+    if(pAP->WMMCapability) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wmm_enabled", pAP->WMMEnable);
+    }
     swl_mapCharFmt_addValInt32(vapConfigMap, "uapsd_advertisement_enabled", pAP->UAPSDCapability && pAP->UAPSDEnable);
     //Temporarily disabled : triggering station disconnection
     swl_mapChar_add(vapConfigMap, "#bss_transition", "1");
