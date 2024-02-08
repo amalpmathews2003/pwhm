@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.31.6 - 2024-02-08(08:46:05 +0000)
+
+### Other
+
+- set RTS_threshold to hostapd config only when it's intented
+
 ## Release v5.31.5 - 2024-02-07(13:19:20 +0000)
 
 ### Other
