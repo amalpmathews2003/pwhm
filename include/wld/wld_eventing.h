@@ -104,6 +104,8 @@ extern wld_event_queue_t* gWld_queue_vap_onStatusChange;
 extern wld_event_queue_t* gWld_queue_vap_onChangeEvent;
 extern wld_event_queue_t* gWld_queue_vap_onAction;
 
+extern wld_event_queue_t* gWld_queue_ep_onChangeEvent;
+
 extern wld_event_queue_t* gWld_queue_rad_onStatusChange;
 extern wld_event_queue_t* gWld_queue_rad_onScan_change;
 extern wld_event_queue_t* gWld_queue_rad_onChangeEvent;

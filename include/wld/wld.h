@@ -1885,7 +1885,18 @@ typedef struct {
     void* data;
 } wld_vap_actionEvent_t;
 
+typedef enum {
+    WLD_EP_CHANGE_EVENT_CREATE,       // Initial creation of object, no transaction possible
+    WLD_EP_CHANGE_EVENT_CREATE_FINAL, // Evented add handler, transaction possible
+    WLD_EP_CHANGE_EVENT_DESTROY,
+    WLD_EP_CHANGE_EVENT_MAX
+} wld_ep_changeEvent_e;
 
+typedef struct {
+    wld_ep_changeEvent_e changeType;
+    T_EndPoint* ep;
+    void* data;
+} wld_ep_changeEvent_t;
 
 typedef enum {
     WLD_AD_CHANGE_EVENT_CREATE,

@@ -436,6 +436,15 @@ static void s_setDefaults(T_EndPoint* pEP, const char* endpointname) {
         (M_SWL_SECURITY_APMODE_WPA3_P | M_SWL_SECURITY_APMODE_WPA2_WPA3_P) : 0;
 }
 
+static void s_sendChangeEvent(T_EndPoint* pEP, wld_ep_changeEvent_e changeType, void* data) {
+    wld_ep_changeEvent_t change = {
+        .ep = pEP,
+        .changeType = changeType,
+        .data = data
+    };
+    wld_event_trigger_callback(gWld_queue_ep_onChangeEvent, &change);
+}
+
 /**
  * @brief s_deinitEP
  *
@@ -459,6 +468,7 @@ static void s_deinitEP(T_EndPoint* pEP) {
             pR->pFA->mfn_wendpoint_destroy_hook(pEP);
             /* Try to delete the requested interface by calling the HW function */
             pR->pFA->mfn_wrad_delendpointif(pR, pEP->Name);
+            s_sendChangeEvent(pEP, WLD_EP_CHANGE_EVENT_DESTROY, NULL);
         }
         pEP->Name[0] = 0;
         pEP->index = 0;
@@ -501,6 +511,8 @@ static bool s_initEp(T_EndPoint* pEP, T_Radio* pRad, const char* epName) {
     amxc_llist_append(&pRad->llEndPoints, &pEP->it);
     wld_endpoint_create_reconnect_timer(pEP);
     wld_tinyRoam_init(pEP);
+
+    s_sendChangeEvent(pEP, WLD_EP_CHANGE_EVENT_CREATE, NULL);
 
     SAH_TRACEZ_OUT(ME);
     return true;
@@ -1956,6 +1968,8 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
         pRad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
     }
     free(epMac);
+
+    s_sendChangeEvent(pEP, WLD_EP_CHANGE_EVENT_CREATE_FINAL, NULL);
 
     //delay sync AP and SSID Dm after all conf has been loaded
     swla_delayExec_add((swla_delayExecFun_cbf) s_syncEpSSIDDm, pEP);
