@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.32.0 - 2024-02-09(16:11:33 +0000)
+
+### Other
+
+- : Add EndPoint event for config changes
+
 ## Release v5.31.9 - 2024-02-09(15:16:10 +0000)
 
 ### Other
