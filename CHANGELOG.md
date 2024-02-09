@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.31.8 - 2024-02-09(10:07:06 +0000)
+
+### Other
+
+- - Radio TransmitPower is not reboot persistent
+
 ## Release v5.31.7 - 2024-02-08(16:06:28 +0000)
 
 ### Other
