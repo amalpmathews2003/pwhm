@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.31.9 - 2024-02-09(15:16:10 +0000)
+
+### Other
+
+- [Wi-Fi] Observations are not reported by getStationInfo()
+
 ## Release v5.31.8 - 2024-02-09(10:07:06 +0000)
 
 ### Other
