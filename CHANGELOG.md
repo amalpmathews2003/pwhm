@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.0 - 2024-02-12(17:05:12 +0000)
+
+### Other
+
+- - [ZW-DFS] add new APIs to allow the management of ZW DFS feature on pWHM vendor modules side
+
 ## Release v5.32.2 - 2024-02-12(16:13:31 +0000)
 
 ### Other
