@@ -3220,18 +3220,38 @@ bool wld_rad_hasEnabledIface(T_Radio* pRad) {
     return (wld_rad_getFirstEnabledIfaceIndex(pRad) > 0);
 }
 
-uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad) {
+T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
         if((pAP->index > 0) && (pRad->pFA->mfn_wvap_status(pAP) > 0)) {
-            return pAP->index;
+            return pAP;
         }
     }
+    return NULL;
+}
+
+T_EndPoint* wld_rad_getFirstActiveEp(T_Radio* pRad) {
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
         if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) >= SWL_RC_OK)) {
-            return pEP->index;
+            return pEP;
         }
+    }
+    return NULL;
+}
+
+uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, 0, ME, "NULL");
+    T_AccessPoint* pAP = wld_rad_getFirstActiveAp(pRad);
+    if(pAP != NULL) {
+        return pAP->index;
+    }
+    T_EndPoint* pEP = wld_rad_getFirstActiveEp(pRad);
+    if(pEP != NULL) {
+        return pEP->index;
+    }
+    if((pRad->index > 0) && (wld_rad_isUpExt(pRad))) {
+        return pRad->index;
     }
     return 0;
 }

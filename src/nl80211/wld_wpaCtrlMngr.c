@@ -107,6 +107,7 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
     uint32_t nExpecIfaces = swl_unLiList_size(&pMgr->ifaces);
     if((nIfacesReady > 0) && (nIfacesReady == nExpecIfaces)) {
         pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+        ASSERTS_NOT_NULL(pIface, , ME, "NULL");
         SAH_TRACEZ_INFO(ME, "%s: wpa_ctrl server is ready (%d/%d connected)", srvName, nIfacesReady, nExpecIfaces);
         pMgr->wpaCtrlConnectAttempts = 0;
         amxp_timer_stop(pMgr->connectTimer);
