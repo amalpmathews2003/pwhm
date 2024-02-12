@@ -305,9 +305,9 @@ uint32_t wld_getMaxNrSSIDs() {
     return (g_MaxNrAPs + g_MaxNrEPs);
 }
 
-int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
-    ASSERT_NOT_NULL(name, -1, ME, "NULL");
-    ASSERT_NOT_NULL(vendor, -1, ME, "NULL");
+T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
+    ASSERT_NOT_NULL(name, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(vendor, NULL, ME, "NULL");
 
     T_Radio* pTmpR;
     if(idx < 0) {
@@ -317,7 +317,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
         }
     } else {
         wld_for_eachRad(pTmpR) {
-            ASSERT_NOT_EQUALS(idx, pTmpR->ref_index, -1, ME, "%s: refIfx(%d) already used by radio(%s)", name, idx, pTmpR->Name);
+            ASSERT_NOT_EQUALS(idx, pTmpR->ref_index, NULL, ME, "%s: refIfx(%d) already used by radio(%s)", name, idx, pTmpR->Name);
         }
     }
 
@@ -327,7 +327,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     T_Radio* pR = calloc(1, sizeof(T_Radio));
     if(!pR) {
         SAH_TRACEZ_ERROR(ME, "calloc failed");
-        return -1;
+        return NULL;
     }
     pR->vendor = vendor;
     pR->wlRadio_SK = -1;
@@ -367,7 +367,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     if(pR->pFA->mfn_wrad_create_hook(pR)) {
         SAH_TRACEZ_ERROR(ME, "Radio create hook failed");
         free(pR);
-        return -1;
+        return NULL;
     }
 
     /* Get our default WPS data */
@@ -445,19 +445,26 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     wld_extMod_initDataList(&pR->extDataList);
 
-    amxc_llist_append(&g_radios, &pR->it);
-
     wld_chanmgt_checkInitChannel(pR);
 
-    wld_sensing_init(pR);
+    return pR;
+}
 
-    wld_persist_onRadioCreation(pR);
+int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
+    T_Radio* pRad = wld_createRadio(name, vendor, idx);
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
 
-    pR->isReady = true;
+    amxc_llist_append(&g_radios, &pRad->it);
+
+    wld_sensing_init(pRad);
+
+    wld_persist_onRadioCreation(pRad);
+
+    pRad->isReady = true;
 
     SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u", name, vendor->name, idx);
 
-    return 0;
+    return SWL_RC_OK;
 }
 
 void wld_deleteRadioObj(T_Radio* pRad) {

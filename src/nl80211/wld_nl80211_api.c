@@ -357,7 +357,8 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
     return rc;
 }
 
-swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t nrWiphyMax, wld_nl80211_wiphyInfo_t pWiphyIfs[nrWiphyMax], uint32_t* pNrWiphy) {
+swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t nrWiphyMax, wld_nl80211_wiphyInfo_t pWiphyIfs[nrWiphyMax],
+                                      uint32_t* pNrWiphy) {
     memset(pWiphyIfs, 0, nrWiphyMax * sizeof(wld_nl80211_wiphyInfo_t));
     NL_ATTRS(attribs,
              ARR(NL_ATTR(NL80211_ATTR_SPLIT_WIPHY_DUMP)));
@@ -383,6 +384,15 @@ swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t
         }
     }
     free(requestData.pWiphys);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_getVendorWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_handler_f vendorHandler, void* vendorData) {
+    NL_ATTRS(attribs,
+             ARR(NL_ATTR(NL80211_ATTR_SPLIT_WIPHY_DUMP)));
+    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_WIPHY, NLM_F_DUMP,
+                                           ifIndex, &attribs, vendorHandler, vendorData);
+    NL_ATTRS_CLEAR(&attribs);
     return rc;
 }
 
@@ -882,7 +892,7 @@ swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_802
     return rc;
 }
 
-swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data) {
+swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data, size_t* dataLen) {
     ASSERT_FALSE((rc <= SWL_RC_ERROR), rc, ME, "Request error");
     ASSERT_NOT_NULL(nlh, SWL_RC_ERROR, ME, "NULL");
 
@@ -899,8 +909,8 @@ swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* 
 
     // parse data table
     ASSERT_NOT_NULL(tb[NL80211_ATTR_VENDOR_DATA], SWL_RC_ERROR, ME, "NULL");
-    *data = nla_data(tb[NL80211_ATTR_VENDOR_DATA]);
-    ASSERT_NOT_NULL(*data, SWL_RC_ERROR, ME, "NULL");
+    W_SWL_SETPTR(data, nla_data(tb[NL80211_ATTR_VENDOR_DATA]));
+    W_SWL_SETPTR(dataLen, nla_len(tb[NL80211_ATTR_VENDOR_DATA]));
 
     return rc;
 }

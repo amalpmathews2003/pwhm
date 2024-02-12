@@ -286,6 +286,20 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
 swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t nrWiphyMax, wld_nl80211_wiphyInfo_t pWiphyIfs[nrWiphyMax], uint32_t* pNrWiphy);
 
 /*
+ * @brief get vendor wiphy (radio) info: radio caps, supported bands/chans, dfs status, operStds, ...)
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param vendorHandler callback invoked when a reply is available
+ * @param vendorData private data to pass in to the handler
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getVendorWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_handler_f vendorHandler, void* vendorData);
+
+/*
  * @brief get station info: rx/tx bytes, rx/tx packets, rssi, ...
  * (Synchronous api)
  *
@@ -527,6 +541,7 @@ swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_802
  * @param rc result of initial checks of the reply
  * @param nlh netlink header of received msg, to be parsed
  * @param data (output) parameter to forward provided data on request success
+ * @param dataLen (output) parameter to forward provided data length on request success
  *
  * @return SWL_RC_OK when message is valid, handled, but waiting for next parts
  *         SWL_RC_CONTINUE when message is valid, but ignored
@@ -534,6 +549,6 @@ swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_802
  *                     request is terminated and can be cleared
  *         SWL_RC_ERROR in case of error: request will be cancelled
  */
-swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data);
+swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data, size_t* dataLen);
 
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

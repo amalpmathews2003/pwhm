@@ -352,6 +352,8 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     /* update status */
     s_resetStatus(pR);
 
+    pR->pFA->mfn_wrad_bgdfs_enable(pR, enabled);
+
     SAH_TRACEZ_INFO(ME,
                     "%s: BgDfs preclear enable changed to %s",
                     pR->Name,
