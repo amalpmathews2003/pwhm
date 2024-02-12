@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.1 - 2024-02-12(17:27:22 +0000)
+
+### Other
+
+- [Wi-Fi] Probe Request received by pwhm only the first time - after reset
+
 ## Release v5.33.0 - 2024-02-12(17:05:12 +0000)
 
 ### Other
