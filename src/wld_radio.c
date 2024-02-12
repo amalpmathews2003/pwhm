@@ -2938,7 +2938,8 @@ amxd_status_t _getRadioAirStats(amxd_object_t* object,
                                 amxc_var_t* retval_map) {
     SAH_TRACEZ_IN(ME);
 
-    T_Radio* pR = object->priv;
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "Not mapped to radio ctx");
 
     ASSERTI_TRUE(wld_rad_isActive(pR), amxd_status_ok, ME, "%s : not ready", pR->Name);
 
@@ -3006,7 +3007,8 @@ amxd_status_t _getPerAntennaRssi(amxd_object_t* object,
     SAH_TRACEZ_IN(ME);
 
     amxd_status_t status = amxd_status_ok;
-    T_Radio* pR = object->priv;
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "Not mapped to radio ctx");
 
     if(pR->enable == 0) {
         SAH_TRACEZ_INFO(ME, "No air statistics when disabled");
