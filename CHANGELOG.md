@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.32.1 - 2024-02-12(08:02:47 +0000)
+
+### Other
+
+- - fix station disabling HT/VHT/HE/BE if no WMM/QoS
+
 ## Release v5.32.0 - 2024-02-09(16:11:33 +0000)
 
 ### Other
