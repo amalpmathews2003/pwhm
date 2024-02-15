@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.2 - 2024-02-15(12:03:47 +0000)
+
+### Other
+
+- fix dfsDone notif and setChanspec rpc callInfo
+
 ## Release v5.33.1 - 2024-02-12(17:27:22 +0000)
 
 ### Other
