@@ -170,6 +170,9 @@ swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nrWiphyMax, const uint32_t nr
                 curWiphyPos++;
                 curIfacePos = 0;
             }
+            if(curWiphyPos >= nrWiphyMax) {
+                break;
+            }
             lastWiphy = requestData.pIfaces[i].wiphy;
         }
         pWlIface = &wlIfaces[curWiphyPos][curIfacePos];

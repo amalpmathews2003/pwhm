@@ -4006,6 +4006,22 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         } else {
             wld_nl80211_dumpIfaceInfo(&ifaceInfo, retval);
         }
+    } else if(!strcasecmp(feature, "nl80211IfacesInfo")) {
+        uint32_t nrWiphyMax = GET_UINT32(args, "wiphyMax");
+        nrWiphyMax = (nrWiphyMax > 0) ? nrWiphyMax : MAXNROF_RADIO;
+        wld_nl80211_ifaceInfo_t wlIfacesInfo[nrWiphyMax][MAXNROF_ACCESSPOINT];
+        memset(wlIfacesInfo, 0, sizeof(wlIfacesInfo));
+        if(wld_nl80211_getInterfaces(nrWiphyMax, MAXNROF_ACCESSPOINT, wlIfacesInfo) < SWL_RC_OK) {
+            amxc_var_add_key(cstring_t, retval, "Error", "Fail to get nl80211 ifaces info");
+        } else {
+            for(uint32_t i = 0; i < nrWiphyMax; i++) {
+                wld_nl80211_ifaceInfo_t* pMainIface = &wlIfacesInfo[i][0];
+                if(pMainIface->ifIndex <= 0) {
+                    continue;
+                }
+                wld_nl80211_dumpIfaceInfo(pMainIface, amxc_var_add_key(amxc_htable_t, retval, pMainIface->name, NULL));
+            }
+        }
     } else if(!strcasecmp(feature, "nl80211WiphyInfo")) {
         wld_nl80211_wiphyInfo_t wiphyInfo;
         if(wld_rad_nl80211_getWiphyInfo(pR, &wiphyInfo) < SWL_RC_OK) {
