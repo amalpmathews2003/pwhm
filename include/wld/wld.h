@@ -1469,7 +1469,7 @@ struct WLD_RADIO {
     swl_bandwidth_e maxChannelBandwidth;                    /* max available bandwidth */
     wld_rad_channelInternalStatus_e channelShowing;
     wld_rad_detailedChanState_t targetChanspec;
-    uint64_t callIdReqChanspec;
+    swl_function_deferredInfo_t callIdReqChanspec;
     amxp_timer_t* timerReqChanspec;
     wld_rad_detailedChanState_t currentChanspec;
     uint16_t totalNrTargetChanspecChanges;                  /* Total number of target chanspec changes */

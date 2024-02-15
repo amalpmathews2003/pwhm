@@ -312,7 +312,10 @@ static const char* s_isTargetChanspecValid(T_Radio* pR, swl_chanspec_t chanspec)
 
 static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
-    ASSERTS_NOT_EQUALS(pR->callIdReqChanspec, 0, , ME, "%s no call_id", pR->Name);
+    if((pR->callIdReqChanspec.status != SWL_FUNCTION_DEFERRED_STATUS_STARTED) &&
+       (pR->callIdReqChanspec.status != SWL_FUNCTION_DEFERRED_STATUS_CANCELLED)) {
+        return;
+    }
 
     amxc_var_t ret;
     amxc_var_init(&ret);
@@ -320,7 +323,7 @@ static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
     amxc_var_add_key(bool, &ret, "Result", (status == amxd_status_ok));
 
     SAH_TRACEZ_INFO(ME, "%s: setChanspec() call end: %u", pR->Name, status);
-    amxd_function_deferred_done(pR->callIdReqChanspec, status, NULL, &ret);
+    swl_function_deferDone(&pR->callIdReqChanspec, status, NULL, &ret);
 
     SAH_TRACEZ_INFO(ME, "%s: notify channel switch done, Result=%u",
                     pR->Name, (status == amxd_status_ok));
@@ -329,7 +332,6 @@ static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
     amxc_var_clean(&ret);
     amxp_timer_delete(&pR->timerReqChanspec);
     pR->timerReqChanspec = NULL;
-    pR->callIdReqChanspec = 0;
 }
 
 swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
@@ -363,7 +365,7 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
     pR->totalNrCurrentChanspecChanges++;
     pR->channelChangeCounters[reason]++;
 
-    if(pR->callIdReqChanspec != 0) {
+    if(swl_function_deferIsActive(&pR->callIdReqChanspec)) {
         bool success = swl_type_equals(swl_type_chanspec, &pR->targetChanspec.chanspec, &chanspec);
         success &= (pR->targetChanspec.reason == reason);
         amxd_status_t status = success ? amxd_status_ok : amxd_status_unknown_error;
@@ -503,10 +505,10 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     return rc;
 }
 
-static void s_setChanspecCanceled(uint64_t callId, void* const priv) {
+static void s_setChanspecCanceled(swl_function_deferredInfo_t* info, void* const priv) {
     T_Radio* pR = (T_Radio*) priv;
     ASSERT_NOT_NULL(pR, , ME, "NULL");
-    ASSERT_EQUALS(pR->callIdReqChanspec, callId, , ME, "not matching callId");
+    ASSERT_EQUALS(&pR->callIdReqChanspec, info, , ME, "not matching callInfo");
     s_setChanspecDone(pR, amxd_status_unknown_error);
 }
 
@@ -551,8 +553,6 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
         return amxd_status_invalid_arg;
     }
 
-    ASSERT_EQUALS(pR->callIdReqChanspec, 0, amxd_status_invalid_action, ME, "%s call_id already set", pR->Name);
-
     swl_chanspec_t chanspec = swl_chanspec_fromDm(channel, radBw, freqBand);
     wld_channelChangeReason_e reason = swl_conv_charToEnum(reason_str, g_wld_channelChangeReason_str, CHAN_REASON_MAX, CHAN_REASON_MANUAL);
 
@@ -565,11 +565,12 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
     chanspec = pR->targetChanspec.chanspec;
 
     /* release/notify old call, if any.*/
-    amxd_function_deferred_remove(pR->callIdReqChanspec);
+    if(swl_function_deferIsActive(&pR->callIdReqChanspec)) {
+        amxd_function_deferred_remove(pR->callIdReqChanspec.callId);
+    }
 
     /* register callId & cancel callback */
-    amxd_function_defer(func, &pR->callIdReqChanspec, ret,
-                        s_setChanspecCanceled, pR);
+    swl_function_deferCb(&pR->callIdReqChanspec, func, ret, s_setChanspecCanceled, pR);
 
     /* set timeout for the call
      * if the band is cleared use default timeout
@@ -757,5 +758,5 @@ amxd_status_t _wld_chanmgt_validateAcsBootChannel_pvf(amxd_object_t* object,
 
 
 void wld_chanmgt_init(T_Radio* pR) {
-    pR->callIdReqChanspec = 0;
+    swl_function_deferInit(&pR->callIdReqChanspec);
 }

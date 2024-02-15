@@ -190,14 +190,15 @@ bool wld_bgdfs_isRunning(T_Radio* pRad) {
 
 static void s_sendNotification(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTI_TRUE(pRad->hasDmReady, , ME, "%s: dm not ready", pRad->Name);
     ASSERT_NOT_NULL(pRad->pBus, , ME, "NULL");
 
     amxc_var_t params;
     amxc_var_init(&params);
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_t* my_map = amxc_var_add_key(amxc_htable_t, &params, "Updates", NULL);
-    amxc_var_add_key(uint32_t, my_map, "StartChannel", pRad->channel);
-    amxc_var_add_key(cstring_t, my_map, "StartBandwidth", swl_radBw_str[pRad->runningChannelBandwidth]);
+    amxc_var_add_key(uint32_t, my_map, "StartChannel", pRad->currentChanspec.chanspec.channel);
+    amxc_var_add_key(cstring_t, my_map, "StartBandwidth", swl_bandwidth_str[pRad->currentChanspec.chanspec.bandwidth]);
     amxc_var_add_key(uint32_t, my_map, "ClearChannel", pRad->bgdfs_config.channel);
     amxc_var_add_key(cstring_t, my_map, "ClearBandwidth", swl_bandwidth_str[pRad->bgdfs_config.bandwidth]);
     amxc_var_add_key(cstring_t, my_map, "Result", wld_dfsResult_str[pRad->bgdfs_config.lastResult]);
@@ -241,6 +242,9 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
         break;
     }
 
+    /* send notification on the bus */
+    s_sendNotification(pRad);
+
     bool statusUpdate = false;
 
     if((type != BGDFS_TYPE_CLEAR_CONTINUOUS) ||
@@ -265,9 +269,6 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
     s_writeStatistics(pRad, &trans);
 
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
-
-    /* send notification on the bus */
-    s_sendNotification(pRad);
 }
 
 void s_checkEnableChange(T_Radio* pRad, bool enable) {
