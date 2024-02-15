@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.5 - 2024-02-15(16:41:36 +0000)
+
+### Other
+
+- increase default value of min BSS per radio when MBSS is supported
+
 ## Release v5.33.4 - 2024-02-15(16:20:51 +0000)
 
 ### Other
