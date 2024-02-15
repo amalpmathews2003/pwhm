@@ -370,11 +370,12 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
         success &= (pR->targetChanspec.reason == reason);
         amxd_status_t status = success ? amxd_status_ok : amxd_status_unknown_error;
         s_setChanspecDone(pR, status);
-        //update operating channel bandwidth when set via rpc setChanspec
-        if(pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) {
-            pR->operatingChannelBandwidth = swl_chanspec_toRadBw(&chanspec);
-        }
     }
+
+    if(pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) {
+        pR->operatingChannelBandwidth = swl_chanspec_toRadBw(&chanspec);
+    }
+
     pR->currentChanspec.chanspec = chanspec;
     pR->currentChanspec.reason = reason;
     pR->currentChanspec.changeTime = swl_time_getMonoSec();

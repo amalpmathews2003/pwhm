@@ -225,12 +225,17 @@ static inline void chandata_remove_flag(wld_channel_data* data, uint32_t flag) {
     data->flags = data->flags & (~flag);
 }
 
-static inline void chandata_add_flag(wld_channel_data* data, uint32_t flag) {
-    data->flags = data->flags | flag;
-}
-
 static inline bool chandata_has_flag(wld_channel_data* data, uint32_t flag) {
     return (data->flags & flag) > 0;
+}
+
+static inline void chandata_add_flag(wld_channel_data* data, uint32_t flag) {
+    /* Do not mark CAC needed or RADAR detected flags on non-DFS channels */
+    if((!chandata_has_flag(data, WLD_CHAN_RADAR_REQUIRED)) &&
+       ((flag == WLD_CHAN_PASSIVE) || (flag == WLD_CHAN_RADAR_DETECTED))) {
+        return;
+    }
+    data->flags = data->flags | flag;
 }
 
 static void band_remove_flag(swl_chanspec_t chanspec, uint32_t flag) {

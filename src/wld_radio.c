@@ -518,6 +518,7 @@ static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t
     const char* OCBW = amxc_var_constcast(cstring_t, newValue);
 
     swl_radBw_e radBw = swl_conv_charToEnum(OCBW, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
+    ASSERTI_NOT_EQUALS(radBw, pRad->operatingChannelBandwidth, , ME, "%s: Same bandwidth %s", pRad->Name, swl_radBw_str[radBw]);
     bool autoBwChange = (pRad->operatingChannelBandwidth == SWL_RAD_BW_AUTO || radBw == SWL_RAD_BW_AUTO);
 
     pRad->operatingChannelBandwidth = radBw;
