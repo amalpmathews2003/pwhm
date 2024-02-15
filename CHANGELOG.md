@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.3 - 2024-02-15(13:19:22 +0000)
+
+### Other
+
+- - add new debug API to display all wiphy interfaces
+
 ## Release v5.33.2 - 2024-02-15(12:03:47 +0000)
 
 ### Other
