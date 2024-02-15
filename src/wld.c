@@ -105,7 +105,7 @@ T_CONST_WPS g_wpsConst;
 static bool init = false;
 
 static int32_t g_MaxNrSta = 32;             //default min 32 stations per radio
-static uint32_t g_MaxNrAPs = 2;             //default min 2 BSSs per Radio when MBSS is supported
+static uint32_t g_MaxNrAPs = 4;             //default min 4 BSSs per Radio when MBSS is supported
 static uint32_t g_MaxNrEPs = MAXNROF_RADIO; //default 1 EP per Radio
 
 SWL_TT_C(gtWld_staHistory, wld_staHistory_t, X_WLD_STA_HISTORY);
