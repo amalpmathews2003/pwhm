@@ -28,7 +28,7 @@ CC_PARTS = $(subst -, ,$(CC))
 CC_NAME = $(word $(words $(CC_PARTS)),$(CC_PARTS))
 
 # Target
-COMPONENT = pwhm
+COMPONENT = libwld
 ifeq ($(CONFIG_GATEWAY)$(CONFIG_ACCESSPOINT),)
 CONFIG_GATEWAY=y
 endif

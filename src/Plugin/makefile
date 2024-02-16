@@ -1,43 +1,48 @@
 include ../../makefile.inc
+# build destination directories
+OBJDIR = ../../output/$(MACHINE)
 
+# TARGETS
+TARGET_SO = $(OBJDIR)/Plugin/wld.so
 
-CFLAGS := -I../../include/ -I../../include_priv/Plugin -I$(STAGINGDIR)/include -I$(STAGINGDIR)/usr/include $(CFLAGS)
-CFLAGS += -std=gnu99 -fPIC -Wall -Werror -Wextra -g
+# directories
+# source directories
+SRCDIR = .
+INCDIR = ../../include
+INCDIR_PRIV = ../../include_priv
+INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include/libnl3)
+STAGING_LIBDIR = $(if $(STAGINGDIR), -L$(STAGINGDIR)/lib) $(if $(STAGINGDIR), -L$(STAGINGDIR)/usr/lib)
+
+# files
+#HEADERS = $(wildcard $(INCDIR_PUB)/$(TARGET_NAME)/*.h)
+SOURCES = $(wildcard *.c */*.c */*/*.c)
+OBJECTS = $(addprefix $(OBJDIR)/Plugin/,$(SOURCES:.c=.o))
+SUBDIRS_BASE = $(shell find $(SRCDIR) -type d)
+SUBDIRS = $(addprefix $(OBJDIR)/Plugin,$(patsubst $(SRCDIR)%,%/,$(SUBDIRS_BASE)))
+
+CFLAGS := -std=gnu99 -fPIC -g -Wall -Werror -Wextra  \
+		$(addprefix -I ,$(INCDIRS)) \
+		-I$(INCDIR_PRIV)/Plugin/ \
+		-I$(INCDIR)/ \
+		-DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 CFLAGS += -Wformat -Wformat-security -Wimplicit-function-declaration -Wl,--no-undefined -Wno-unused-variable
-CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
+LDFLAGS := -L$(OBJDIR) $(STAGING_LIBDIR) -Wl,-rpath,/lib -Wl,-rpath,/usr/lib -shared  -lsahtrace -lswlc -lswla -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
 
-LDFLAGS := -L.. -L$(STAGINGDIR)/lib -L$(STAGINGDIR)/usr/lib $(LDFLAGS)
-LDFLAGS += -Wl,-rpath,/lib -Wl,-rpath,/usr/lib
-LDFLAGS += -lsahtrace -lswlc -lswla -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
+all: $(TARGET_SO)
 
-OBJS-wld.so = wld_plugin.o \
-		  wifiGen.o \
-		  wifiGen_rad.o \
-		  wifiGen_radIfMgt.o \
-		  wifiGen_vap.o \
-		  wifiGen_hapd.o \
-		  wifiGen_wpaSupp.o \
-		  wifiGen_eventHandlers.o \
-		  wifiGen_fsm.o \
-		  wifiGen_ep.o \
+$(TARGET_SO): $(OBJECTS)
+	$(CC) -Wl,-soname,wld.so -o $(@) $(OBJECTS) $(LDFLAGS)
 
+-include $(OBJECTS:.o=.d)
 
-OBJS = $(OBJS-wld.so)
-LIBS = wld.so
+$(OBJDIR)/Plugin/%.o: $(SRCDIR)/%.c | $(OBJDIR)/Plugin/ $(SUBDIRS)
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
-all: $(LIBS)
-
-$(OBJS): %.o: %.c
-	$(CC) $(CFLAGS) -MMD -MP -MF $(@:.o=.d) -o $@ -c $<
-
--include $(OBJS:.o=.d)
-
-$(LIBS):
-	$(CC) $(CFLAGS) -Wl,-soname,$@ -shared -o $@ $(OBJS-$@) $(LDFLAGS) $(LDFLAGS-$@)
-
-wld.so: $(OBJS-wld.so)
+%/:
+	$(MKDIR) -p $@
 
 clean:
-	rm -f $(LIBS) $(OBJS) $(OBJS:.o=.d)
+	rm -f $(OBJDIR)/Plugin
 
 .PHONY: clean all
