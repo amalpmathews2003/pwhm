@@ -536,9 +536,21 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
 int wifiGen_rad_status(T_Radio* pRad) {
     swl_chanspec_t currChanSpec;
+    T_EndPoint* pActiveEp;
     if(!wld_rad_hasEnabledIface(pRad)) {
         SAH_TRACEZ_INFO(ME, "%s: has no enabled interface", pRad->Name);
         pRad->detailedState = CM_RAD_DOWN;
+    } else if(((pActiveEp = wld_rad_getFirstActiveEp(pRad)) != NULL) &&
+              ((wld_linuxIfUtils_getLinkStateExt(pActiveEp->Name) > 0) || (!wld_rad_hasEnabledVap(pRad)))) {
+        /*
+         * if radio has active backhaul:
+         *  - endpoint connected (iface LINK_UP)
+         *  - or just activated EndPoint (iface UP), with no VAPs (inactive fronthaul)
+         * then
+         *  radio status may be considered UP even if passive
+         */
+        SAH_TRACEZ_INFO(ME, "%s: radio is up, used by enabled endpoint %s", pRad->Name, pActiveEp->Name);
+        pRad->detailedState = CM_RAD_UP;
     } else if(pRad->pFA->mfn_wrad_getChanspec(pRad, &currChanSpec) < SWL_RC_OK) {
         SAH_TRACEZ_INFO(ME, "%s: has no available channel", pRad->Name);
         pRad->detailedState = CM_RAD_DOWN;
