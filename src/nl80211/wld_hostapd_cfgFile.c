@@ -182,6 +182,25 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         if(s_checkSGI(pRad, SWL_SGI_400)) {
             swl_str_cat(htCaps, sizeof(htCaps), "[SHORT-GI-20]");
         }
+        if(pRad->htCapabilities & M_SWL_80211_HTCAPINFO_LDPC) {
+            swl_str_cat(htCaps, sizeof(htCaps), "[LDPC]");
+        }
+        if(pRad->htCapabilities & M_SWL_80211_HTCAPINFO_TX_STBC) {
+            swl_str_cat(htCaps, sizeof(htCaps), "[TX-STBC]");
+        }
+        uint32_t n = (pRad->htCapabilities & M_SWL_80211_HTCAPINFO_RX_STBC);
+        n >>= swl_bit32_getLowest(M_SWL_80211_HTCAPINFO_RX_STBC);
+        if(n > 0) {
+            swl_str_cat(htCaps, sizeof(htCaps), "[RX-STBC");
+            for(uint32_t i = 1; (i <= n) && (i < 4); i++) {
+                /* max supported by hostapd [RX-STBC123] */
+                swl_str_catFormat(htCaps, sizeof(htCaps), "%d", i);
+            }
+            swl_str_cat(htCaps, sizeof(htCaps), "]");
+        }
+        if(pRad->htCapabilities & M_SWL_80211_HTCAPINFO_MAX_AMSDU) {
+            swl_str_cat(htCaps, sizeof(htCaps), "[MAX-AMSDU-7935]");
+        }
         /*
          * only add ht_caps tags when they are really supported by the driver (nl80211 phy caps).
          */
@@ -226,6 +245,45 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
                 SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_VHT_MU))) {
                 swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MU-BEAMFORMER]");
             }
+        }
+        uint32_t n = (pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_MAX_MPDU);
+        if(n == 2) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MAX-MPDU-11454]");
+        } else if(n == 1) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[MAX-MPDU-7991]");
+        }
+        if(pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_RX_LDPC) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[RXLDPC]");
+        }
+        if(pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_TX_STBC) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[TX-STBC-2BY1]");
+        }
+        n = (pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_RX_STBC);
+        n >>= swl_bit32_getLowest(M_SWL_80211_VHTCAPINFO_RX_STBC);
+        if(n > 0) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[RX-STBC-");
+            for(uint32_t i = 1; (i <= n) && (i < 5); i++) {
+                /* max supported by hostapd [RX-STBC-1234] */
+                swl_str_catFormat(vhtCaps, sizeof(vhtCaps), "%d", i);
+            }
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "]");
+        }
+        if(pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_TXOP_PS) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[VHT-TXOP-PS]");
+        }
+        if(pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_HTC_CAP) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[HTC-VHT]");
+        }
+        n = (pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_MAX_AMPDU_EXP);
+        n >>= swl_bit32_getLowest(M_SWL_80211_VHTCAPINFO_MAX_AMPDU_EXP);
+        if(n < 8) {
+            swl_str_catFormat(vhtCaps, sizeof(vhtCaps), "[MAX-A-MPDU-LEN-EXP%d]", n);
+        }
+        if(pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_RX_ANT_PAT_CONS) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[RX-ANTENNA-PATTERN]");
+        }
+        if(pRad->vhtCapabilities & M_SWL_80211_VHTCAPINFO_TX_ANT_PAT_CONS) {
+            swl_str_cat(vhtCaps, sizeof(vhtCaps), "[TX-ANTENNA-PATTERN]");
         }
         /*
          * only add vht_caps tags when they are really supported by the driver (nl80211 phy caps).
