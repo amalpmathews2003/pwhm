@@ -3,7 +3,7 @@ include makefile.inc
 NOW = $(shell date +"%Y-%m-%d(%H:%M:%S %z)")
 
 # Extra destination directories
-PKGDIR = ./output/$(MACHINE)/pkg/
+PKGDIR = ./output/$(MACHINE)/pkg
 
 define create_changelog
 	@$(ECHO) "Update changelog"
@@ -33,92 +33,92 @@ clean:
 	$(MAKE) -C src/Plugin clean
 
 install: all
+	$(INSTALL) -d -m 0755 $(DEST)/$(BINDIR)
 	$(INSTALL) -d -m 0755 $(DEST)/$(INCLUDEDIR)/wld
-	$(INSTALL) -D -p -m 0644 include/wld/*.h $(DEST)$(INCLUDEDIR)/wld/
 	$(INSTALL) -d -m 0755 $(DEST)/$(INCLUDEDIR)/wld/Utils
+	$(INSTALL) -d -m 0755 $(DEST)/$(LIBDIR)/amx
+	$(INSTALL) -d -m 0755 $(DEST)/$(LIBDIR)/amx/wld
+	$(INSTALL) -d -m 0755 $(DEST)/etc/amx/wld/wld_defaults
+
+	$(INSTALL) -D -p -m 0644 include/wld/*.h $(DEST)$(INCLUDEDIR)/wld/
 	$(INSTALL) -D -p -m 0644 include/wld/Utils/*.h $(DEST)$(INCLUDEDIR)/wld/Utils/
-	$(INSTALL) -D -p -m 0755 src/libwld.so $(DEST)$(LIBDIR)/libwld.so
-	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(DEST)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(DEST)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(DEST)/etc/amx/wld/wld_definitions.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_radio.odl $(DEST)/etc/amx/wld/wld_radio.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_ssid.odl $(DEST)/etc/amx/wld/wld_ssid.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_accesspoint.odl $(DEST)/etc/amx/wld/wld_accesspoint.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(DEST)/etc/amx/wld/wld_endpoint.odl
-ifneq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
-	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/* $(DEST)/etc/amx/wld/wld_defaults/
-endif
-ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
-	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
-	$(INSTALL) -D -p -m 0644 odl/wld_defaults_empty/* $(DEST)/etc/amx/wld/wld_defaults/
-endif
+	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(DEST)$(LIBDIR)/amx/wld/wld.sh
+	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(DEST)$(LIBDIR)/debuginfo/debug_wifi.sh
+	$(INSTALL) -D -p -m 0755 scripts/debugInfo.sh $(DEST)$(LIBDIR)/amx/wld/debugInfo.sh
+	$(INSTALL) -D -p -m 0660 acl/admin/pwhm.json $(DEST)$(ACLDIR)/admin/pwhm.json
+	
 ifeq ($(CONFIG_ACCESSPOINT),y)
-	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults-ap
+	$(INSTALL) -d -m 0755 $(DEST)/etc/amx/wld/wld_defaults-ap
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults-ap/* $(DEST)/etc/amx/wld/wld_defaults-ap/
 endif
+
 ifeq ($(CONFIG_ACCESSPOINT),y)
-	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
 	$(INSTALL) -d -m 0755 $(DEST)/etc/amx/wld/wld_defaults
 	ln -sfr $(DEST)/etc/amx/wld/wld_defaults-ap/* $(DEST)/etc/amx/wld/wld_defaults/
 endif
-	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(DEST)$(ACLDIR)/admin/$(COMPONENT).json
-	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
+
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
-	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(DEST)$(LIBDIR)/amx/wld/wld.so
-endif
-ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
+	$(INSTALL) -D -p -m 0644 output/$(MACHINE)/Plugin/wld.so $(DEST)$(LIBDIR)/amx/wld/wld.so.$(VERSION)
+	ln -sfr $(DEST)$(LIBDIR)/amx/wld/wld.so.$(VERSION) $(DEST)$(LIBDIR)/amx/wld/wld.so.$(VMAJOR)
+	ln -sfr $(DEST)$(LIBDIR)/amx/wld/wld.so.$(VERSION) $(DEST)$(LIBDIR)/amx/wld/wld.so
 	$(INSTALL) -D -p -m 0755 scripts/Plugin/wld_gen.sh $(DEST)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
 endif
-	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
+
+	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(DEST)$(LIBDIR)/$(COMPONENT).so.$(VERSION)
+	ln -sfr $(DEST)$(LIBDIR)/$(COMPONENT).so.$(VERSION) $(DEST)$(LIBDIR)/$(COMPONENT).so.$(VMAJOR)
+	ln -sfr $(DEST)$(LIBDIR)/$(COMPONENT).so.$(VERSION) $(DEST)$(LIBDIR)/$(COMPONENT).so
 	ln -sfr $(DEST)/usr/bin/amxrt $(DEST)$(BINDIR)/wld
-	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(DEST)/usr/lib/debuginfo/debug_wifi.sh
-	$(INSTALL) -D -p -m 0755 scripts/debugInfo.sh $(DEST)$(LIBDIR)/amx/wld/debugInfo.sh
+	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
 
 package: all
+	$(INSTALL) -d -m 0755 $(PKGDIR)/$(BINDIR)
 	$(INSTALL) -d -m 0755 $(PKGDIR)/$(INCLUDEDIR)/wld
-	$(INSTALL) -D -p -m 0644 include/wld/*.h $(PKGDIR)$(INCLUDEDIR)/wld/
 	$(INSTALL) -d -m 0755 $(PKGDIR)/$(INCLUDEDIR)/wld/Utils
+	$(INSTALL) -d -m 0755 $(PKGDIR)/$(LIBDIR)/amx
+	$(INSTALL) -d -m 0755 $(PKGDIR)/$(LIBDIR)/amx/wld
+	$(INSTALL) -d -m 0755 $(PKGDIR)/etc/amx/wld/wld_defaults
+
+	$(INSTALL) -D -p -m 0644 include/wld/*.h $(PKGDIR)$(INCLUDEDIR)/wld/
 	$(INSTALL) -D -p -m 0644 include/wld/Utils/*.h $(PKGDIR)$(INCLUDEDIR)/wld/Utils/
-	$(INSTALL) -D -p -m 0755 src/libwld.so $(PKGDIR)$(LIBDIR)/libwld.so
-	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(PKGDIR)$(LIBDIR)/wld/wld.sh
 	$(INSTALL) -D -p -m 0644 odl/wld.odl $(PKGDIR)/etc/amx/wld/wld.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_definitions.odl $(PKGDIR)/etc/amx/wld/wld_definitions.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_radio.odl $(PKGDIR)/etc/amx/wld/wld_radio.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_ssid.odl $(PKGDIR)/etc/amx/wld/wld_ssid.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_accesspoint.odl $(PKGDIR)/etc/amx/wld/wld_accesspoint.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(PKGDIR)/etc/amx/wld/wld_endpoint.odl
-ifneq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
-	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/* $(PKGDIR)/etc/amx/wld/wld_defaults/
-endif
-ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
-	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
-	$(INSTALL) -D -p -m 0644 odl/wld_defaults_empty/* $(PKGDIR)/etc/amx/wld/wld_defaults/
-endif
+	$(INSTALL) -D -p -m 0755 scripts/wld.sh $(PKGDIR)$(LIBDIR)/amx/wld/wld.sh
+	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(PKGDIR)$(LIBDIR)/debuginfo/debug_wifi.sh
+	$(INSTALL) -D -p -m 0755 scripts/debugInfo.sh $(PKGDIR)$(LIBDIR)/amx/wld/debugInfo.sh
+	$(INSTALL) -D -p -m 0660 acl/admin/pwhm.json $(PKGDIR)$(ACLDIR)/admin/pwhm.json
+
 ifeq ($(CONFIG_ACCESSPOINT),y)
-	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults-ap
-	$(INSTALL) -D -p -m 0644 odl/wld_defaults-ap/* $(PKGDIR)/etc/amx/wld/wld_defaults-ap/
-endif
-ifeq ($(CONFIG_ACCESSPOINT),y)
-	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
+	$(INSTALL) -d -m 0755 $(PKGDIR)/etc/amx/wld/wld_defaults-ap
 	$(INSTALL) -d -m 0755 $(PKGDIR)/etc/amx/wld/wld_defaults
-	rm -f $(PKGDIR)/etc/amx/wld/wld_defaults/
+	$(INSTALL) -D -p -m 0644 odl/wld_defaults-ap/* $(PKGDIR)/etc/amx/wld/wld_defaults-ap/
 	ln -sfr $(PKGDIR)/etc/amx/wld/wld_defaults-ap/* $(PKGDIR)/etc/amx/wld/wld_defaults/
 endif
-	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
-	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKGDIR)$(PKG_CONFIG_LIBDIR)/wld.pc
+
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
-	$(INSTALL) -D -p -m 0755 src/Plugin/wld.so $(PKGDIR)$(LIBDIR)/amx/wld/wld.so
-endif
-ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
+	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/Plugin/wld.so $(PKGDIR)$(LIBDIR)/amx/wld/wld.so.$(VERSION)
+	ln -sfr $(PKGDIR)$(LIBDIR)/amx/wld/wld.so.$(VERSION) $(PKGDIR)$(LIBDIR)/amx/wld/wld.so.$(VMAJOR)
+	ln -sfr $(PKGDIR)$(LIBDIR)/amx/wld/wld.so.$(VERSION) $(PKGDIR)$(LIBDIR)/amx/wld/wld.so
 	$(INSTALL) -D -p -m 0755 scripts/Plugin/wld_gen.sh $(PKGDIR)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
 endif
-	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
-	rm -f $(PKGDIR)$(BINDIR)/wld
+
+	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(PKGDIR)$(LIBDIR)/$(COMPONENT).so.$(VERSION)
+	ln -sfr $(PKGDIR)$(LIBDIR)/$(COMPONENT).so.$(VERSION) $(PKGDIR)$(LIBDIR)/$(COMPONENT).so.$(VMAJOR)
+	ln -sfr $(PKGDIR)$(LIBDIR)/$(COMPONENT).so.$(VERSION) $(PKGDIR)$(LIBDIR)/$(COMPONENT).so
 	ln -sfr $(PKGDIR)/usr/bin/amxrt $(PKGDIR)$(BINDIR)/wld
-	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(PKGDIR)/usr/lib/debuginfo/debug_wifi.sh
-	$(INSTALL) -D -p -m 0755 scripts/debugInfo.sh $(PKGDIR)$(LIBDIR)/amx/wld/debugInfo.sh
+	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
+
 	cd $(PKGDIR) && $(TAR) -czvf ../$(COMPONENT)-$(VERSION).tar.gz .
 	cp $(PKGDIR)../$(COMPONENT)-$(VERSION).tar.gz .
 	make -C packages
