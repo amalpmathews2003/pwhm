@@ -565,6 +565,8 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "qos_map_set", pAP->cfg11u.qosMapSet);
     }
 
+    bool isH2E = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "SAE_PWE", 0);
+    bool is6g = (pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ);
     char* wpa_key_str = ((strlen(pAP->keyPassPhrase) + 1) == PSK_KEY_SIZE_LEN) ? "wpa_psk" : "wpa_passphrase";
     switch(pAP->secModeEnabled) {
     case SWL_SECURITY_APMODE_WEP64:
@@ -623,6 +625,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_sync", "5");
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "1");
+        swl_mapCharFmt_addValInt32(vapConfigMap, "sae_pwe", isH2E ? 2 : 0);
         break;
     case SWL_SECURITY_APMODE_WPA3_P:
         swl_mapChar_add(vapConfigMap, "wpa", "2");
@@ -641,13 +644,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_sync", "5");
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "2");
-        if(pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "SAE_PWE", 0)) {
-            if(pAP->pRadio->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
-                swl_mapChar_add(vapConfigMap, "sae_pwe", "1");
-            } else {
-                swl_mapChar_add(vapConfigMap, "sae_pwe", "2");
-            }
-        }
+        swl_mapCharFmt_addValInt32(vapConfigMap, "sae_pwe", isH2E ? is6g ? 1 : 2 : 0);
         break;
     case SWL_SECURITY_APMODE_OWE:
     {
