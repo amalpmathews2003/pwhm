@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.6 - 2024-02-16(14:53:58 +0000)
+
+### Other
+
+- - force to set SAE H2E/HnP support with WPA3
+
 ## Release v5.33.5 - 2024-02-15(16:41:36 +0000)
 
 ### Other
