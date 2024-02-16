@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.33.7 - 2024-02-16(15:17:27 +0000)
+
+### Other
+
+- set radio status with backhaul when fronthaul is inactive
+
 ## Release v5.33.6 - 2024-02-16(14:53:58 +0000)
 
 ### Other
