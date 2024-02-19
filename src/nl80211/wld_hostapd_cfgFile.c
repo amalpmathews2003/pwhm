@@ -155,7 +155,7 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
 
     swl_channel_t tgtChan = tgtChspec.channel;
     swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);
-    swl_mapCharFmt_addValInt32(radConfigMap, "op_class", swl_chanspec_getOperClass(&pRad->targetChanspec.chanspec));
+    swl_mapCharFmt_addValInt32(radConfigMap, "op_class", swl_chanspec_getOperClass(&tgtChspec));
     swl_mapChar_add(radConfigMap, "country_code", pRad->regulatoryDomain);
     swl_mapChar_add(radConfigMap, "ieee80211d", "1");
     swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211h", pRad->IEEE80211hSupported && pRad->setRadio80211hEnable);
