@@ -692,7 +692,6 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
 
         rad->fsmRad.FSM_State = FSM_IDLE;
         rad->fsm_radio_st = FSM_IDLE;    // UnLock the RADIO
-        rad->blockCommit = 0;            // Accept again commits by toggle Enable TRUE
         rad->fsmRad.timeout_msec = 0;
 
         if(rad->fsmRad.timer) {

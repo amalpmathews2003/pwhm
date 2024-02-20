@@ -75,8 +75,28 @@
 #define ME "wldPst"
 
 bool wld_persist_onStart() {
-    // persistance is off, nothing needs to be done on start specifically, but radio objects need
-    // to be created to allow external systems to add config and vaps.
+    SAH_TRACEZ_IN(ME);
+    // Defaults or saved odl will be loaded here:
+    // This makes sure that the events for the defaults are only called when the plugin is started
+    while(amxp_signal_read() == 0) {
+    }
+    int rv;
+
+    amxd_object_t* rootObj = amxd_dm_get_root(get_wld_plugin_dm());
+    amxo_parser_t* parser = get_wld_plugin_parser();
+
+    rv = amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
+    wld_vendorModuleMgr_loadDefaultsAll();
+
+    while(amxp_signal_read() == 0) {
+    }
+    if(rv != 0) {
+        SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
+                         amxo_parser_get_status(parser),
+                         amxo_parser_get_message(parser));
+        return false;
+    }
+    SAH_TRACEZ_OUT(ME);
     return true;
 }
 

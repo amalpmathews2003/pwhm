@@ -2747,6 +2747,7 @@ amxd_status_t _Radio_commit(amxd_object_t* object,
     T_Radio* pR = wld_rad_fromObj(object);
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
+    pR->blockCommit = false;
     int ret = wld_rad_doRadioCommit(pR);
 
     if(ret == FSM_WAIT) {
