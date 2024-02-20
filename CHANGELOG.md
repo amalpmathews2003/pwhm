@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.34.1 - 2024-02-20(09:31:23 +0000)
+
+### Other
+
+- : Cannot bring-up 5GHz after reset_hard
+
 ## Release v5.34.0 - 2024-02-16(18:08:08 +0000)
 
 ### Other
