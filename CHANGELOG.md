@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.34.2 - 2024-02-21(09:22:56 +0000)
+
+### Other
+
+- - add the ability to enable the dummy vap for specific radio...
+
 ## Release v5.34.1 - 2024-02-20(09:31:23 +0000)
 
 ### Other
