@@ -3166,7 +3166,7 @@ bool wld_rad_hasEnabledVap(T_Radio* pRad) {
 
     /* Check if NO AP is enabled */
     wld_rad_forEachAp(pAP, pRad) {
-        if((pAP->pBus != NULL) && (pAP->enable)) {
+        if(pAP->enable) {
             return true;
         }
     }
