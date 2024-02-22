@@ -798,6 +798,12 @@ amxd_status_t _Reset(amxd_object_t* obj _UNUSED,
     amxo_parser_t* parser = get_wld_plugin_parser();
     amxo_parser_parse_string(parser, "include '${definition_file}';", rootObj);
     amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
+    /**
+     * Wait for all the definition and default parameters to be processed
+     * before continuing with internal syncing.
+     */
+    while(amxp_signal_read() == 0) {
+    }
     wld_vendorModuleMgr_loadDefaultsAll();
 
     T_Radio* tmpRad = NULL;
