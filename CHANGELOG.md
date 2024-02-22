@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.34.4 - 2024-02-22(15:24:30 +0000)
+
+### Other
+
+- add empty defaults when not doing persist
+
 ## Release v5.34.3 - 2024-02-22(08:50:27 +0000)
 
 ### Other
