@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,70 +59,3 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-
-#include <string.h>
-#include <stdlib.h>
-#include <debug/sahtrace.h>
-#include <errno.h>
-
-#include "wld/wld.h"
-#include "wld/wld_util.h"
-#include "wld/wld_vendorModule_mgr.h"
-#include "swl/swl_assert.h"
-#include "swl/swl_returnCode.h"
-#include "wld_dm_trans.h"
-
-#define ME "wldPst"
-
-bool wld_persist_onStart() {
-    SAH_TRACEZ_IN(ME);
-    // Defaults odl will be loaded here:
-    // This makes sure that the events for the defaults are only called when the plugin is started
-    while(amxp_signal_read() == 0) {
-    }
-    int rv;
-
-    amxd_object_t* rootObj = amxd_dm_get_root(get_wld_plugin_dm());
-    amxo_parser_t* parser = get_wld_plugin_parser();
-
-    rv = amxo_parser_parse_string(parser, "include '${odl.dm-defaults}';", rootObj);
-    wld_vendorModuleMgr_loadDefaultsAll();
-
-    while(amxp_signal_read() == 0) {
-    }
-    if(rv != 0) {
-        SAH_TRACEZ_ERROR(ME, "Fail to load conf: (status:%d) (msg:%s)",
-                         amxo_parser_get_status(parser),
-                         amxo_parser_get_message(parser));
-        return false;
-    }
-    SAH_TRACEZ_OUT(ME);
-    return true;
-}
-
-
-void wld_persist_onRadioCreation(T_Radio* pR) {
-    amxd_object_t* templateObject = amxd_object_get(get_wld_object(), "Radio");
-
-    if(!templateObject) {
-        SAH_TRACEZ_ERROR(ME, "%s: Could not get template: %p", pR->Name, templateObject);
-        return;
-    }
-
-    amxd_trans_t trans;
-    ASSERT_TRANSACTION_INIT(templateObject, &trans, , ME, "%s : trans init failure", pR->Name);
-
-    amxd_trans_add_inst(&trans, pR->index, pR->instanceName);
-    SAH_TRACEZ_INFO(ME, "Add radio %s", pR->instanceName);
-    amxd_trans_set_value(cstring_t, &trans, "OperatingFrequencyBand",
-                         Rad_SupFreqBands[pR->operatingFrequencyBand]);
-    amxd_trans_set_value(cstring_t, &trans, "Alias", pR->instanceName);
-    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);
-
-    pR->pBus = amxd_object_get_instance(templateObject, NULL, pR->index);
-    pR->pBus->priv = pR;
-}
-
-bool wld_persist_writeApAtCreation() {
-    return false;
-}

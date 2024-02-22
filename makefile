@@ -45,8 +45,14 @@ install: all
 	$(INSTALL) -D -p -m 0644 odl/wld_ssid.odl $(DEST)/etc/amx/wld/wld_ssid.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_accesspoint.odl $(DEST)/etc/amx/wld/wld_accesspoint.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(DEST)/etc/amx/wld/wld_endpoint.odl
+ifneq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/* $(DEST)/etc/amx/wld/wld_defaults/
+endif
+ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
+	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
+	$(INSTALL) -D -p -m 0644 odl/wld_defaults_empty/* $(DEST)/etc/amx/wld/wld_defaults/
+endif
 ifeq ($(CONFIG_ACCESSPOINT),y)
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults-ap
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults-ap/* $(DEST)/etc/amx/wld/wld_defaults-ap/
@@ -82,8 +88,14 @@ package: all
 	$(INSTALL) -D -p -m 0644 odl/wld_ssid.odl $(PKGDIR)/etc/amx/wld/wld_ssid.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_accesspoint.odl $(PKGDIR)/etc/amx/wld/wld_accesspoint.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(PKGDIR)/etc/amx/wld/wld_endpoint.odl
+ifneq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/* $(PKGDIR)/etc/amx/wld/wld_defaults/
+endif
+ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
+	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
+	$(INSTALL) -D -p -m 0644 odl/wld_defaults_empty/* $(PKGDIR)/etc/amx/wld/wld_defaults/
+endif
 ifeq ($(CONFIG_ACCESSPOINT),y)
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults-ap
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults-ap/* $(PKGDIR)/etc/amx/wld/wld_defaults-ap/
