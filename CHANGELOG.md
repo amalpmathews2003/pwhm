@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.34.3 - 2024-02-22(08:50:27 +0000)
+
+### Other
+
+- - enable auto commit manager when not doing persistance
+
 ## Release v5.34.2 - 2024-02-21(09:22:56 +0000)
 
 ### Other
