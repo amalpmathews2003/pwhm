@@ -2353,6 +2353,16 @@ uint32_t wld_util_countScanResultEntriesPerChannel(wld_scanResults_t* results, s
     return count;
 }
 
+void wld_util_initCustomAlias(amxd_trans_t* trans, amxd_object_t* object) {
+    ASSERTS_NOT_NULL(trans, , ME, "NULL");
+    ASSERTS_NOT_NULL(object, , ME, "NULL");
+    char* customAlias = amxd_object_get_cstring_t(object, "CustomAlias", NULL);
+    if((customAlias != NULL) && swl_str_isEmpty(customAlias)) {
+        amxd_trans_set_cstring_t(trans, "CustomAlias", amxd_object_get_name(object, AMXD_OBJECT_NAMED));
+    }
+    free(customAlias);
+}
+
 wld_spectrumChannelInfoEntry_t* wld_util_getSpectrumEntryByChannel(amxc_llist_t* pSpectrumInfoList, swl_channel_t channel) {
     ASSERTS_NOT_NULL(pSpectrumInfoList, NULL, ME, "NULL");
     amxc_llist_for_each(it, pSpectrumInfoList) {

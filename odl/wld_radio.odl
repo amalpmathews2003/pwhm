@@ -374,6 +374,12 @@ define probelist_t{
 		 *  MUST be assigned when the CPE creates an instance of this
 		 *  object.</p> */
 		%persistent %unique %key string Alias;
+
+		/**
+		 * Configurable instance alias to be used for higher layers.
+		 */
+		%persistent %protected string CustomAlias;
+
 		/**
 		 *  <p>The textual name of the radio as assigned by
 		 *  the CPE.</p> Internal vendor string (<B>DEBUG</B>)   */

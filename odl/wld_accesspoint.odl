@@ -224,7 +224,10 @@ define rrm_t{
 		 *  when the CPE creates an instance of this object.*/
 		string Alias;
 
-		%protected %read-only string InstanceName;
+		/**
+		 * Configurable instance alias to be used for higher layers.
+		 */
+		%persistent %protected string CustomAlias;
 
 		/** Index in the AccessPoint tree (also for the SSID tree,
 		 *  both are inline) */

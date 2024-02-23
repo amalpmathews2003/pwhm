@@ -155,6 +155,12 @@
 		 *  future reference. An initial unique value MUST be assigned
 		 *  when the CPE creates an instance of this object. */
 		%persistent %unique %key string Alias;
+
+		/**
+		 * Configurable instance alias to be used for higher layers.
+		 */
+		%persistent %protected string CustomAlias;
+
 		/** Index in the EndPoint object tree */
 		%read-only uint32 Index;
 		/** The value MUST be the path name of a row in the Profile

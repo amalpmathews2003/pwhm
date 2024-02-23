@@ -1720,6 +1720,8 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_trans_set_cstring_t(&trans, "VendorPCISig", pR->vendor->name);
         amxd_trans_set_cstring_t(&trans, "Name", pR->Name);
 
+        wld_util_initCustomAlias(&trans, object);
+
         amxd_trans_set_cstring_t(&trans, "BaseMACAddress", macStr);
         amxd_trans_set_cstring_t(&trans, "Status", Rad_SupStatus[pR->status]);
         amxd_trans_set_int32_t(&trans, "Index", pR->index);

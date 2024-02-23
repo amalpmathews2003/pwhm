@@ -835,7 +835,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_trans_set_cstring_t(&trans, "Alias", pAP->alias);
 
-        amxd_trans_set_cstring_t(&trans, "InstanceName", amxd_object_get_name(object, AMXD_OBJECT_NAMED));
+        wld_util_initCustomAlias(&trans, object);
 
         TBuf[0] = 0;
         if(pAP->pSSID != NULL) {

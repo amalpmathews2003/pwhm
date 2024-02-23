@@ -147,6 +147,11 @@
 		%persistent %unique %key string Alias;
 		
 		/**
+		 * Configurable instance alias to be used for higher layers.
+		 */
+		%persistent %protected string CustomAlias;
+
+		/**
 		 * <p> The textual name of the SSID entry as assigned by the
 		 * CPE.</p> */
 		%read-only string Name;

@@ -966,6 +966,8 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
     amxd_trans_set_uint32_t(&trans, "Index", pEP->index);
     amxd_trans_set_cstring_t(&trans, "IntfName", pEP->Name);
 
+    wld_util_initCustomAlias(&trans, object);
+
     if(pEP->currentProfile) {
         char* profileRef = amxd_object_get_path(pEP->currentProfile->pBus, AMXD_OBJECT_INDEXED);
         amxd_trans_set_cstring_t(&trans, "ProfileReference", profileRef);
