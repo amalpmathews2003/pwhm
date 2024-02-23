@@ -1796,7 +1796,6 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         swl_conv_transParamSetMask(&trans, "SupportedOperatingChannelBandwidth", pR->supportedChannelBandwidth, swl_radBw_str, SWL_RAD_BW_MAX);
         amxd_trans_set_int32_t(&trans, "AutoChannelSupported", pR->autoChannelSupported);
         amxd_trans_set_int32_t(&trans, "AutoChannelRefreshPeriod", pR->autoChannelRefreshPeriod);
-        amxd_trans_set_cstring_t(&trans, "OperatingChannelBandwidth", Rad_SupBW[pR->operatingChannelBandwidth]);
         amxd_trans_set_cstring_t(&trans, "MaxChannelBandwidth", Rad_SupBW[pR->maxChannelBandwidth]);
         amxd_trans_set_cstring_t(&trans, "AutoBandwidthSelectMode", wld_rad_autoBwSelectMode_str[pR->autoBwSelectMode]);
         amxd_trans_set_bool(&trans, "ObssCoexistenceEnable", pR->obssCoexistenceEnabled);

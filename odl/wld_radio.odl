@@ -716,6 +716,7 @@ define probelist_t{
 			on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","80+80MHz","320MHz-1","320MHz-2","Auto"];
 			on action validate call wld_rad_validateOperatingChannelBandwidth_pvf;
 			default "Auto";
+			userflags %upc;
 		}
 
 		/**

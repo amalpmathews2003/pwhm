@@ -658,16 +658,20 @@ void wld_chanmgt_saveChanges(T_Radio* pRad, amxd_trans_t* trans) {
     amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, pRad->pBus);
     ASSERT_NOT_NULL(targetTrans, , ME, "NULL");
 
-    uint32_t channel = amxd_object_get_uint32_t(pRad->pBus, "Channel", NULL);
-    if(channel == 0) {
-        amxd_trans_set_uint32_t(targetTrans, "Channel", pRad->channel);
+    swl_channel_t channel = amxd_object_get_uint32_t(pRad->pBus, "Channel", NULL);
+    if((channel == 0) || (channel == pRad->channel)) {
+        if(channel == 0) {
+            amxd_trans_set_uint32_t(targetTrans, "Channel", pRad->channel);
+        }
         amxd_trans_set_cstring_t(targetTrans, "ChannelsInUse", pRad->channelsInUse);
         amxd_trans_set_cstring_t(targetTrans, "ChannelChangeReason", g_wld_channelChangeReason_str[pRad->channelChangeReason]);
     }
 
     swl_radBw_e radBw = swl_conv_objectParamEnum(pRad->pBus, "OperatingChannelBandwidth", swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
-    if(radBw == SWL_RAD_BW_AUTO) {
-        amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", swl_radBw_str[pRad->operatingChannelBandwidth]);
+    if((radBw == SWL_RAD_BW_AUTO) || (radBw == pRad->operatingChannelBandwidth)) {
+        if(radBw == SWL_RAD_BW_AUTO) {
+            amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", swl_radBw_str[pRad->operatingChannelBandwidth]);
+        }
         amxd_trans_set_cstring_t(targetTrans, "CurrentOperatingChannelBandwidth", swl_radBw_str[pRad->runningChannelBandwidth]);
         amxd_trans_set_cstring_t(targetTrans, "ChannelBandwidthChangeReason", g_wld_channelChangeReason_str[pRad->channelBandwidthChangeReason]);
     }
