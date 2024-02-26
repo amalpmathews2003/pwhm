@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.35.1 - 2024-02-26(16:27:48 +0000)
+
+### Other
+
+- - OperatingChannelBandwidth is not upgrade persistent
+
 ## Release v5.35.0 - 2024-02-26(15:28:56 +0000)
 
 ### Other
