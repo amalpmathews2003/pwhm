@@ -254,7 +254,6 @@ static void s_saveCurrentChanspec(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     s_updateCurrentChanspec(pRad);
     s_updateChannelShowing(pRad);
-    wld_rad_updateChannelsInUse(pRad);
     wld_rad_chan_update_model(pRad, NULL);
 }
 
@@ -397,6 +396,8 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
     } else {
         pR->channelShowing = CHANNEL_INTERNAL_STATUS_CURRENT;
     }
+
+    wld_rad_updateChannelsInUse(pR);
 
     if(pR->hasDmReady) {
         s_saveChannelChange(change);
