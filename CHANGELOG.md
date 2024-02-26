@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.35.0 - 2024-02-26(15:28:56 +0000)
+
+### Other
+
+- : WiFi Radio and AccessPoint aliases are different than expected
+
 ## Release v5.34.4 - 2024-02-22(15:24:30 +0000)
 
 ### Other
