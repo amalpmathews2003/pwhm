@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.38.0 - 2024-02-27(18:24:06 +0000)
+
+### Other
+
+- add dynamically rnr hostapd config param
+
 ## Release v5.37.0 - 2024-02-27(17:59:58 +0000)
 
 ### Other
