@@ -351,9 +351,8 @@ swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNei
 swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     bool enaRnr = (pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR));
-    if(!wld_ap_hostapd_setParamValue(pAP, "rnr", (enaRnr ? "1" : "0"), "enaDisRnR")) {
-        SAH_TRACEZ_NOTICE(ME, "%s: can not apply rnr ena(%d) to hostapd: seems not supported", pAP->alias, enaRnr);
-    }
+    swl_rc_ne rc = wld_hostapd_ap_sendCfgParam(pAP, "rnr", (enaRnr ? "1" : "0"));
+    ASSERTI_TRUE(swl_rc_isOk(rc), rc, ME, "%s: can not apply rnr ena(%d) to hostapd: seems not supported", pAP->alias, enaRnr);
     setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
     wld_autoCommitMgr_notifyVapEdit(pAP);
     return SWL_RC_OK;
@@ -536,7 +535,8 @@ static swl_rc_ne s_reloadApNeighbors(T_AccessPoint* pAP) {
     }
 
     //apply list to beacon is RNR is enabled
-    wld_ap_hostapd_updateBeacon(pAP, "reloadApNeigh");
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
+    wld_rad_doCommitIfUnblocked(pAP->pRadio);
     return SWL_RC_OK;
 }
 

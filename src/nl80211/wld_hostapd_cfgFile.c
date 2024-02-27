@@ -136,7 +136,7 @@ SWL_TABLE(sChWidthIDsMaps,
               {2, SWL_BW_160MHZ},
               ));
 
-swl_rc_ne s_checkAndSetParamValueStr(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, const char* param, const char* valStr) {
+static swl_rc_ne s_checkAndSetParamValueStr(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, const char* param, const char* valStr) {
     wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(wld_wpaCtrlInterface_getMgr(pIface));
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_STATE, ME, "no secDmn");
     ASSERT_STR(param, SWL_RC_INVALID_PARAM, ME, "empty param");
@@ -163,7 +163,7 @@ swl_rc_ne s_checkAndSetParamValueStr(wld_wpaCtrlInterface_t* pIface, swl_mapChar
     return rc;
 }
 
-swl_rc_ne s_checkAndSetParamValueFmt(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, const char* valFormat, ...) {
+static swl_rc_ne s_checkAndSetParamValueFmt(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, const char* valFormat, ...) {
     wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(wld_wpaCtrlInterface_getMgr(pIface));
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_STATE, ME, "no secDmn");
     swl_trl_e trl = wld_secDmn_getCfgParamSupp(pSecDmn, param);
@@ -177,7 +177,7 @@ swl_rc_ne s_checkAndSetParamValueFmt(wld_wpaCtrlInterface_t* pIface, swl_mapChar
     return s_checkAndSetParamValueStr(pIface, mapChar, param, valStr);
 }
 
-swl_rc_ne s_checkAndSetParamValueInt32(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, int32_t value) {
+static swl_rc_ne s_checkAndSetParamValueInt32(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, int32_t value) {
     return s_checkAndSetParamValueFmt(pIface, mapChar, param, "%d", value);
 }
 
@@ -832,6 +832,9 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_neighbor_report", isIEEE80211k);
     // Enable beacon report via radio measurements
     swl_mapCharFmt_addValInt32(vapConfigMap, "rrm_beacon_report", isIEEE80211k);
+    // set rnr is supported by hostapd
+    bool isRnrEnabled = isIEEE80211k && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR);
+    s_checkAndSetParamValueInt32(pAP->wpaCtrlInterface, vapConfigMap, "rnr", isRnrEnabled);
     // Multiband Operation (MBO)
     if(pAP->mboEnable) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "mbo", pAP->mboEnable);

@@ -235,6 +235,8 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
         }
         if(s_setApplyAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_AP_SECKEY)) {
             setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_RELOAD_AP_SECKEY);
+            setBitLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_BEACON);
         }
         break;
     case SECDMN_ACTION_OK_NEED_UPDATE_BEACON:
@@ -465,15 +467,17 @@ static bool s_doReloadApSecKey(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
     wld_ap_hostapd_reloadSecKey(pAP, "reloadSecKey");
-    ASSERTI_TRUE(pAP->enable && pRad->enable, true, ME, "%s: missing enable conds apE:%d radE:%d", pAP->alias, pAP->enable, pRad->enable);
-    wld_ap_hostapd_updateBeacon(pAP, "updateBeacon");
     return true;
 }
 
 static bool s_doUpdateBeacon(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
-    ASSERTI_TRUE(pAP->enable && pRad->enable, true, ME, "%s: missing enable conds apE:%d radE:%d", pAP->alias, pAP->enable, pRad->enable);
+    chanmgt_rad_state detRadState = CM_RAD_UNKNOWN;
+    if((!pAP->enable) || (wifiGen_hapd_getRadState(pRad, &detRadState) < SWL_RC_OK) || (detRadState != CM_RAD_UP)) {
+        SAH_TRACEZ_INFO(ME, "%s: missing enable conds apE:%d radDetS:%d", pAP->alias, pAP->enable, detRadState);
+        return true;
+    }
     SAH_TRACEZ_INFO(ME, "%s: start/update beaconing", pAP->alias);
     wld_ap_hostapd_updateBeacon(pAP, "updateBeacon");
     return true;

@@ -133,6 +133,7 @@ static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
      * here declare hostapd cfg params to check (or to define) as supported or not
      * wld_secDmn_setCfgParamSupp(pRad->hostapd, "custom_param", SWL_TRL_UNKNOWN);
      */
+    wld_secDmn_setCfgParamSupp(pRad->hostapd, "rnr", SWL_TRL_UNKNOWN);
 }
 
 swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
