@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.37.0 - 2024-02-27(17:59:58 +0000)
+
+### Other
+
+- - add EMLMR and EMLSR support
+
 ## Release v5.36.0 - 2024-02-27(17:32:46 +0000)
 
 ### Other
