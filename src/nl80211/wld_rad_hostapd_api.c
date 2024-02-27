@@ -300,3 +300,8 @@ swl_rc_ne wld_rad_hostapd_disable(T_Radio* pR) {
     return SWL_RC_OK;
 }
 
+swl_trl_e wld_rad_hostapd_getCfgParamSupp(T_Radio* pRad, const char* param) {
+    ASSERT_NOT_NULL(pRad, SWL_TRL_UNKNOWN, ME, "NULL");
+    return wld_secDmn_getCfgParamSupp(pRad->hostapd, param);
+}
+

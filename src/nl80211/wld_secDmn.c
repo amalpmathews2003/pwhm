@@ -123,6 +123,7 @@ swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, c
     wld_dmn_setArgList(pSecDmn->dmnProcess, startArgs);
     swl_str_copyMalloc(&pSecDmn->cfgFile, cfgFile);
     swl_str_copyMalloc(&pSecDmn->ctrlIfaceDir, ctrlIfaceDir);
+    swl_mapCharInt32_init(&pSecDmn->cfgParamSup);
     return SWL_RC_OK;
 }
 
@@ -143,6 +144,7 @@ swl_rc_ne wld_secDmn_cleanup(wld_secDmn_t** ppSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_OK, ME, "cleaned up");
     wld_wpaCtrlMngr_cleanup(&pSecDmn->wpaCtrlMngr);
     wld_dmn_cleanupDaemon(pSecDmn->dmnProcess);
+    swl_mapCharInt32_cleanup(&pSecDmn->cfgParamSup);
     free(pSecDmn->dmnProcess);
     pSecDmn->dmnProcess = NULL;
     free(pSecDmn->cfgFile);
@@ -202,5 +204,58 @@ bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn) {
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
     return (wld_secDmn_isRunning(pSecDmn) && wld_wpaCtrlMngr_isConnected(pSecDmn->wpaCtrlMngr));
+}
+
+bool wld_secDmn_setCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param, swl_trl_e supp) {
+    ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
+    return swl_mapCharInt32_addOrSet(&pSecDmn->cfgParamSup, (char*) param, supp);
+}
+
+/*
+ * @brief checks wether a config param is supported or not (with dynamic detection)
+ *
+ * @param pSecDmn pointer to security daemon context
+ * @param param parameter name
+ *
+ * @return SWL_TRL_TRUE when the param is supported
+ *         SWL_TRL_FALSE when the param is not supported
+ *         SWL_TRL_UNKNOWN when the param support is not yet learned
+ */
+swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param) {
+    ASSERTS_NOT_NULL(pSecDmn, SWL_TRL_UNKNOWN, ME, "NULL");
+    int32_t* pVal = swl_map_get(&pSecDmn->cfgParamSup, (char*) param);
+    ASSERTS_NOT_NULL(pVal, SWL_TRL_UNKNOWN, ME, "not found");
+    return *pVal;
+}
+
+uint32_t swl_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, 0, ME, "NULL");
+    return swl_map_size(&pSecDmn->cfgParamSup);
+}
+
+uint32_t swl_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn) {
+    uint32_t count = 0;
+    ASSERTS_NOT_NULL(pSecDmn, count, ME, "NULL");
+    swl_mapIt_t mapIt;
+    swl_map_for_each(mapIt, &pSecDmn->cfgParamSup) {
+        int32_t* pSupp = (int32_t*) swl_map_itValue(&mapIt);
+        if((pSupp != NULL) && (*pSupp != SWL_TRL_UNKNOWN)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+uint32_t swl_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp) {
+    uint32_t count = 0;
+    ASSERTS_NOT_NULL(pSecDmn, count, ME, "NULL");
+    swl_mapIt_t mapIt;
+    swl_map_for_each(mapIt, &pSecDmn->cfgParamSup) {
+        int32_t* pSupp = (int32_t*) swl_map_itValue(&mapIt);
+        if((pSupp != NULL) && (*pSupp == (int32_t) supp)) {
+            count++;
+        }
+    }
+    return count;
 }
 

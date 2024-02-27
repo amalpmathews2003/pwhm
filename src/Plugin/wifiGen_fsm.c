@@ -351,6 +351,15 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
     T_Radio* pRad = (T_Radio*) userData;
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    // check and apply dyn detected cfg params
+    if((swl_secDmn_countCfgParamSuppAll(pRad->hostapd) > 0) &&
+       (swl_secDmn_countCfgParamSuppChecked(pRad->hostapd) == 0)) {
+        SAH_TRACEZ_INFO(ME, "%s: try to detect and apply dyn cfg params", pRad->Name);
+        wifiGen_hapd_writeConfig(pRad);
+        if(swl_secDmn_countCfgParamSuppByVal(pRad->hostapd, SWL_TRL_TRUE) > 0) {
+            wld_ap_hostapd_sendCommand(pAP, "RELOAD", "refreshConfig");
+        }
+    }
     setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
     wld_rad_doCommitIfUnblocked(pRad);
     /**

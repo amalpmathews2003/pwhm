@@ -1194,3 +1194,46 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
     ASSERT_TRUE(ok && (token >= 0), SWL_RC_ERROR, ME, "%s: Bad response %s : token %u reply(%s)", pAP->alias, cmd, token, reply);
     return SWL_RC_OK;
 }
+
+swl_trl_e wld_hostapd_ap_getCfgParamSupp(T_AccessPoint* pAP, const char* param) {
+    ASSERT_NOT_NULL(pAP, SWL_TRL_UNKNOWN, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
+    wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(pMgr);
+    swl_trl_e trl = wld_secDmn_getCfgParamSupp(pSecDmn, param);
+    if(trl != SWL_TRL_UNKNOWN) {
+        return trl;
+    }
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, trl, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, trl, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, trl, ME, "no saved config");
+    swl_mapChar_t* configMap = wld_hostapd_getConfigMap(config, pAP->alias);
+    if((configMap != NULL) && (swl_mapChar_has(configMap, (char*) param))) {
+        trl = SWL_TRL_TRUE;
+    }
+    wld_hostapd_deleteConfig(config);
+    return trl;
+}
+
+swl_rc_ne wld_hostapd_ap_sendCfgParam(T_AccessPoint* pAP, const char* param, const char* value) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
+    wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(pMgr);
+    ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_STATE, ME, "NULL");
+    swl_trl_e trl = wld_hostapd_ap_getCfgParamSupp(pAP, param);
+    if(trl == SWL_TRL_FALSE) {
+        return SWL_RC_ERROR;
+    }
+    swl_rc_ne rc = wld_wpaCtrl_sendCmdFmtCheckResponse(pAP->wpaCtrlInterface, "OK", "SET %s %s", (char*) param, (char*) value);
+    if(trl == SWL_TRL_UNKNOWN) {
+        if(rc == SWL_RC_OK) {
+            wld_secDmn_setCfgParamSupp(pSecDmn, param, SWL_TRL_TRUE);
+        } else if(rc == SWL_RC_ERROR) {
+            wld_secDmn_setCfgParamSupp(pSecDmn, param, SWL_TRL_FALSE);
+        }
+    }
+    return rc;
+}
+

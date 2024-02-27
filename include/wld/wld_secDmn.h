@@ -65,6 +65,8 @@
 
 #include "wld_wpaCtrlMngr.h"
 #include "wld_daemon.h"
+#include "swl/swl_common_trilean.h"
+#include "swl/swl_maps.h"
 
 typedef struct wld_secDmn wld_secDmn_t;
 typedef void (* wld_secDmn_restartHandler)(wld_secDmn_t* pSecDmn, void* userdata);
@@ -82,6 +84,7 @@ struct wld_secDmn {
     char* ctrlIfaceDir;             /* ctrl_interface directory: /var/run/xxx/*/
     wld_secDmnEvtHandlers handlers; /* optional handlers of secDmn events*/
     void* userData;                 /* optional user data available in restart handler. */
+    swl_mapCharInt32_t cfgParamSup; /* list of dynamically checked config parameters support */
 };
 
 swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir);
@@ -95,6 +98,11 @@ void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_setCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param, swl_trl_e supp);
+swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param);
+uint32_t swl_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn);
+uint32_t swl_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn);
+uint32_t swl_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp);
 
 #define CALL_SECDMN_MGR_EXT(pSecDmn, fName, ifName, ...) \
     if(pSecDmn != NULL) { \

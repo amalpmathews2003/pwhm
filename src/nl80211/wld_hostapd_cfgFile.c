@@ -70,6 +70,10 @@
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgFile.h"
 #include "wld_chanmgt.h"
+#include "wld_wpaCtrlMngr.h"
+#include "wld_wpaCtrlInterface.h"
+#include "wld_wpaCtrl_api.h"
+#include "wld_secDmn.h"
 
 #define ME "hapdCfg"
 
@@ -131,6 +135,51 @@ SWL_TABLE(sChWidthIDsMaps,
               {1, SWL_BW_80MHZ},
               {2, SWL_BW_160MHZ},
               ));
+
+swl_rc_ne s_checkAndSetParamValueStr(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, const char* param, const char* valStr) {
+    wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(wld_wpaCtrlInterface_getMgr(pIface));
+    ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_STATE, ME, "no secDmn");
+    ASSERT_STR(param, SWL_RC_INVALID_PARAM, ME, "empty param");
+    ASSERT_STR(valStr, SWL_RC_INVALID_PARAM, ME, "empty value");
+    swl_trl_e trl = wld_secDmn_getCfgParamSupp(pSecDmn, param);
+    ASSERTS_NOT_EQUALS(trl, SWL_TRL_FALSE, SWL_RC_INVALID_PARAM, ME, "param %s not supported", param);
+    int32_t ret = 0;
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    if(trl == SWL_TRL_UNKNOWN) {
+        rc = wld_wpaCtrl_sendCmdFmtCheckResponse(pIface, "OK", "SET %s %s", param, valStr);
+        if(rc == SWL_RC_OK) {
+            trl = SWL_TRL_TRUE;
+        } else if(rc == SWL_RC_ERROR) {
+            trl = SWL_TRL_FALSE;
+        }
+        if(trl != SWL_TRL_UNKNOWN) {
+            wld_secDmn_setCfgParamSupp(pSecDmn, param, trl);
+        }
+    }
+    if(trl == SWL_TRL_TRUE) {
+        ret = swl_mapChar_addOrSet(mapChar, (char*) param, (char*) valStr);
+        rc = (ret ? SWL_RC_OK : SWL_RC_ERROR);
+    }
+    return rc;
+}
+
+swl_rc_ne s_checkAndSetParamValueFmt(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, const char* valFormat, ...) {
+    wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(wld_wpaCtrlInterface_getMgr(pIface));
+    ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_STATE, ME, "no secDmn");
+    swl_trl_e trl = wld_secDmn_getCfgParamSupp(pSecDmn, param);
+    ASSERTS_NOT_EQUALS(trl, SWL_TRL_FALSE, SWL_RC_INVALID_PARAM, ME, "param %s not supported", param);
+    char valStr[512] = {0};
+    va_list args;
+    va_start(args, valFormat);
+    int32_t ret = vsnprintf(valStr, sizeof(valStr), valFormat, args);
+    va_end(args);
+    ASSERT_FALSE(ret < 0, SWL_RC_ERROR, ME, "Fail to format value string");
+    return s_checkAndSetParamValueStr(pIface, mapChar, param, valStr);
+}
+
+swl_rc_ne s_checkAndSetParamValueInt32(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, int32_t value) {
+    return s_checkAndSetParamValueFmt(pIface, mapChar, param, "%d", value);
+}
 
 /**
  * @brief set the radio parameters

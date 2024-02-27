@@ -212,6 +212,32 @@ bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd,
 }
 
 /**
+ * @brief send formatted command to wpa_ctrl server and check the received reply
+ *
+ * @param pIface :the wpa_ctrl interface to which the command is sent
+ * @param expectedResponse : string expected reply
+ * @param cmdFormat : string command format to be sent
+ *
+ * @return SWL_RC_OK when the command is answered as expected
+ *         SWL_RC_ERROR when the command is rejected
+ *         SWL_RC_INVALID_STATE when the wpactrl iface link is not ready
+ *         SWL_RC_INVALID_PARAM when the command format is not applicable
+ */
+swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...) {
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pIface), SWL_RC_INVALID_STATE, ME, "%s: wpactrl link not ready", wld_wpaCtrlInterface_getName(pIface));
+    ASSERTS_STR(cmdFormat, SWL_RC_INVALID_PARAM, ME, "empty cmd");
+    char cmdStr[512] = {0};
+    int32_t ret = 0;
+    va_list args;
+    va_start(args, cmdFormat);
+    ret = vsnprintf(cmdStr, sizeof(cmdStr), cmdFormat, args);
+    va_end(args);
+    ASSERT_FALSE(ret < 0, SWL_RC_INVALID_PARAM, ME, "Fail to format cmd string");
+    ret = s_sendCmdCheckResponse(pIface->cmdConn, cmdStr, expectedResponse);
+    return (ret ? SWL_RC_OK : SWL_RC_ERROR);
+}
+
+/**
  * @brief callback for received data from wpa_ctrl server
  *
  * @param peer : pointer to source context

@@ -126,6 +126,15 @@ static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
     wifiGen_hapd_stopDaemon(pRad);
 }
 
+static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->hostapd, , ME, "NULL");
+    /*
+     * here declare hostapd cfg params to check (or to define) as supported or not
+     * wld_secDmn_setCfgParamSupp(pRad->hostapd, "custom_param", SWL_TRL_UNKNOWN);
+     */
+}
+
 swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     char confFilePath[128] = {0};
@@ -134,6 +143,7 @@ swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     swl_str_catFormat(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT, confFilePath);
     swl_rc_ne rc = wld_secDmn_init(&pRad->hostapd, HOSTAPD_CMD, startArgs, confFilePath, HOSTAPD_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init hostapd", pRad->Name);
+    s_initHapdDynCfgParamSupp(pRad);
     wld_secDmnEvtHandlers handlers;
     memset(&handlers, 0, sizeof(handlers));
     handlers.restartCb = s_restartHapdCb;
