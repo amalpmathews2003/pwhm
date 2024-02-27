@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.36.0 - 2024-02-27(17:32:46 +0000)
+
+### Other
+
+- auto detect hostapd config params before writing them
+
 ## Release v5.35.2 - 2024-02-27(11:57:36 +0000)
 
 ### Other
