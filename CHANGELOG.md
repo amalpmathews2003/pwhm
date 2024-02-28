@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.38.2 - 2024-02-28(15:02:15 +0000)
+
+### Other
+
+- Automatic MAC offset based on radio index
+
 ## Release v5.38.1 - 2024-02-28(09:02:24 +0000)
 
 ### Other
