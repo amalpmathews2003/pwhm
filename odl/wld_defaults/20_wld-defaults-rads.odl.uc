@@ -1,7 +1,9 @@
 %populate {
     object WiFi {
         object Radio {
+{% let RadioId = 0 %}
 {% for ( let Radio in BD.Radios ) : %}
+{% RadioId++ %}
 {% if (Radio.OperatingFrequency == "2.4GHz") : %}
             instance add ("{{Radio.Alias}}") {
                 parameter OperatingFrequencyBand = "2.4GHz";
@@ -17,7 +19,7 @@
                 parameter ObssCoexistenceEnable = 1;
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
-                    parameter BaseMacOffset = 1;
+                    parameter BaseMacOffset = {{RadioId}};
                     parameter UseLocalBitForGuest = true;
                 }
             }
@@ -42,7 +44,7 @@
                 parameter AutoBandwidthSelectMode="MaxAvailable";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
-                    parameter BaseMacOffset = 2;
+                    parameter BaseMacOffset = {{RadioId}};
                     parameter UseLocalBitForGuest = true;
                 }
             }
@@ -68,7 +70,7 @@
                 parameter AutoBandwidthSelectMode="MaxAvailable";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
-                    parameter BaseMacOffset = 3;
+                    parameter BaseMacOffset = {{RadioId}};
                     parameter UseLocalBitForGuest = true;
                 }
             }
