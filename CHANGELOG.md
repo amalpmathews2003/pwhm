@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.39.0 - 2024-02-29(16:23:56 +0000)
+
+### Other
+
+- support dyn config_id hostapd cfg param
+
 ## Release v5.38.3 - 2024-02-29(07:56:26 +0000)
 
 ### Other
