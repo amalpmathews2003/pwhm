@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.38.3 - 2024-02-29(07:56:26 +0000)
+
+### Other
+
+- - add eth_link flag.
+
 ## Release v5.38.2 - 2024-02-28(15:02:15 +0000)
 
 ### Other
