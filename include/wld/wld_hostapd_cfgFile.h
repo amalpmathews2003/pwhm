@@ -70,5 +70,6 @@ void wld_hostapd_cfgFile_createExt(T_Radio* pRad);
 bool wld_hostapd_cfgFile_update(char* configPath, const char* interface, const char* key, const char* value);
 void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigMap);
 void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap, swl_mapChar_t* multiAPConfig);
+swl_rc_ne wld_hostapd_cfgFile_genConfigHash(char** pHashStr, swl_mapChar_t* configMap);
 
 #endif /* __WLD_HOSTAPD_CFG_FILE_H__ */

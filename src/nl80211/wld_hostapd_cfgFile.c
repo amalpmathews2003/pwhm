@@ -66,6 +66,9 @@
 #include "wld_util.h"
 #include "swl/swl_hex.h"
 #include "swl/map/swl_mapCharFmt.h"
+#include "swl/swl_common.h"
+#include "swl/swl_hash.h"
+#include "swl/fileOps/swl_mapWriterKVP.h"
 #include "wld_wpaSupp_parser.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgFile.h"
@@ -895,6 +898,48 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
 }
 
 /**
+ * @brief generate md5 hash for a config map
+ *
+ * @param pHashStr Pointer output string (to be freed by caller)
+ * @param configMap map char of config param/values
+ *
+ * @return SWL_RC_OK on success, error code otherwise
+ */
+swl_rc_ne wld_hostapd_cfgFile_genConfigHash(char** pHashStr, swl_mapChar_t* configMap) {
+    ASSERTS_NOT_NULL(configMap, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    // Generate the BSS config text
+    char bssCfgStr[4096] = {0};
+    bool success = swl_mapWriterKVP_writeToStr(configMap, bssCfgStr, SWL_ARRAY_SIZE(bssCfgStr));
+
+    ASSERT_TRUE(success, SWL_RC_ERROR, ME, "fail to generate the config text");
+
+    // Encode an MD5 hash from the BSS config
+    swl_bit8_t bssCfgHash[MD5_DIGEST_LENGTH] = {'\0'};
+    swl_rc_ne ret = swl_hash_rawToMD5(bssCfgHash, sizeof(bssCfgHash), (swl_bit8_t*) bssCfgStr, strlen((char*) bssCfgStr));
+
+    ASSERT_FALSE(ret < SWL_RC_ERROR, ret, ME, "fail to encode an MD5 hash from config");
+
+    char vapCfgId[MD5_DIGEST_LENGTH * 2 + 1] = {'\0'};
+    swl_hex_fromBytes(vapCfgId, sizeof(vapCfgId), bssCfgHash, MD5_DIGEST_LENGTH, 0);
+    ASSERT_TRUE(swl_str_copyMalloc(pHashStr, vapCfgId), SWL_RC_ERROR, ME, "Fail to copy Hash");
+
+    return SWL_RC_OK;
+}
+
+static void s_saveVapConfigId(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    if(swl_mapChar_has(vapConfigMap, "config_id")) {
+        swl_mapChar_delete(vapConfigMap, "config_id");
+    }
+    char* newValue = NULL;
+    if(wld_hostapd_cfgFile_genConfigHash(&newValue, vapConfigMap) == SWL_RC_OK) {
+        s_checkAndSetParamValueStr(pAP->wpaCtrlInterface, vapConfigMap, "config_id", newValue);
+    }
+    free(newValue);
+}
+
+/**
  * @brief set a vap parameters. A vap configuration could be either an interface or a bss
  *
  * @param pAP a vap
@@ -912,6 +957,8 @@ void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConf
     s_setVapMultiApConf(pAP, vapConfigMap, multiAPConfig);
 
     pAP->pFA->mfn_wvap_updateConfigMap(pAP, vapConfigMap);
+
+    s_saveVapConfigId(pAP, vapConfigMap);
 }
 
 /**
