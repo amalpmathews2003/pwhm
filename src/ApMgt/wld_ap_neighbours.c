@@ -116,6 +116,7 @@ static void s_removeNeighbor (T_AccessPoint* pAP, T_ApNeighbour* neigh) {
 
     ASSERTI_FALSE(swl_mac_binIsNull((swl_macBin_t*) neigh->bssid), , ME, "empty bssid");
     pAP->pFA->mfn_wvap_deleted_neighbour(pAP, neigh);
+    wld_autoCommitMgr_notifyVapEdit(pAP);
     SAH_TRACEZ_INFO(ME, "%s: Deleted neigh", pAP->alias);
     debugPrintNeighbour(neigh);
 }
