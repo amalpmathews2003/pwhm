@@ -69,7 +69,7 @@
 
 #define ME "nlCore"
 
-#define NL_ALLOC_SIZE 8192
+#define NL_ALLOC_SIZE 32768 //default nl sock rcv buf size: 32k
 
 wld_nl80211_driverIds_t g_nl80211DriverIDs = {
     .family_id = -1,
@@ -534,6 +534,17 @@ static ssize_t s_recv(const wld_nl80211_state_t* state, int socket, void* buffer
     return recv(socket, buffer, length, flags);
 }
 
+static size_t s_getSockRcvBufSize(int fd) {
+    int rcvBufSize = NL_ALLOC_SIZE;
+    socklen_t sockOptSize = sizeof(rcvBufSize);
+    // get nl sock recv buf dynamic size: it has been auto sized by nl_connect
+    if(getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &rcvBufSize, &sockOptSize) < 0) {
+        return NL_ALLOC_SIZE;
+    }
+    //consider max size between driver value and the default one
+    return SWL_MAX(rcvBufSize, NL_ALLOC_SIZE);
+}
+
 /*
  * @brief main netlink message read handler
  * It calls appropriate request or event handler
@@ -547,7 +558,8 @@ static void s_readHandler(int fd, void* priv _UNUSED) {
     wld_nl80211_state_t* state = (wld_nl80211_state_t*) con->priv;
     ASSERT_TRUE(s_isValidState(state), , ME, "Invalid state");
 
-    char buf[NL_ALLOC_SIZE] = {};
+    char buf[s_getSockRcvBufSize(fd)];
+    memset(buf, 0, sizeof(buf));
 
     int len = s_recv(state, fd, buf, sizeof(buf), 0);
     struct nlmsghdr* nlh = NULL;
@@ -722,8 +734,6 @@ wld_nl80211_state_t* wld_nl80211_newState() {
     opt = TRUE;
     setsockopt(fd, SOL_NETLINK,
                NETLINK_CAP_ACK, &opt, sizeof(opt));
-
-    nl_socket_set_buffer_size(state->nl_sock, NL_ALLOC_SIZE, NL_ALLOC_SIZE);
 
     int ret = amxo_connection_add(get_wld_plugin_parser(), fd, s_readHandler, "readHandler", AMXO_CUSTOM, state);
     if(ret != 0) {
