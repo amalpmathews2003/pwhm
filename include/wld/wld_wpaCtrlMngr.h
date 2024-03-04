@@ -102,4 +102,35 @@ uint32_t wld_wpaCtrlMngr_countReadyInterfaces(const wld_wpaCtrlMngr_t* pMgr);
         CALL_MGR_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, wld_wpaCtrlInterface_getName(pIntf), __VA_ARGS__); \
     }
 
+#define CALL_MGR_NA_EXT(pMgr, fName, ifName) \
+    { \
+        void* userdata = NULL; \
+        wld_wpaCtrl_radioEvtHandlers_cb handlers = {0}; \
+        if(wld_wpaCtrlMngr_getEvtHandlers(pMgr, &userdata, &handlers)) { \
+            SWL_CALL(handlers.fName, userdata, ifName); \
+        } \
+    }
+
+#define CALL_MGR_I_NA_EXT(pIntf, fName) \
+    if(pIntf != NULL) { \
+        char* ifName = (char*) wld_wpaCtrlInterface_getName(pIntf); \
+        CALL_MGR_NA_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, ifName); \
+    }
+
+#define NOTIFY_EXT(PIFACE, FNAME, ...) \
+    if((PIFACE != NULL)) { \
+        /* for VAP/EP events */ \
+        CALL_INTF_EXT(PIFACE, FNAME, __VA_ARGS__); \
+        /* for RAD/Glob events */ \
+        CALL_MGR_I_EXT(PIFACE, FNAME, __VA_ARGS__); \
+    }
+
+#define NOTIFY_NA_EXT(PIFACE, FNAME, ...) \
+    if((PIFACE != NULL)) { \
+        /* for VAP/EP events */ \
+        CALL_INTF_NA_EXT(PIFACE, FNAME); \
+        /* for RAD/Glob events */ \
+        CALL_MGR_I_NA_EXT(PIFACE, FNAME); \
+    }
+
 #endif /* __WLD_WPA_CTRL_MNGR_H__ */

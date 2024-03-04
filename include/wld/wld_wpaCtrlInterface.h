@@ -90,4 +90,14 @@ bool wld_wpaCtrlInterface_isEnabled(const wld_wpaCtrlInterface_t* pIface);
         } \
     }
 
+#define CALL_INTF_NA_EXT(pIntf, fName) \
+    { \
+        void* userdata = NULL; \
+        wld_wpaCtrl_evtHandlers_cb handlers = {0}; \
+        if(wld_wpaCtrlInterface_getEvtHandlers(pIntf, &userdata, &handlers)) { \
+            char* ifName = (char*) wld_wpaCtrlInterface_getName(pIntf); \
+            SWL_CALL(handlers.fName, userdata, ifName); \
+        } \
+    }
+
 #endif /* INCLUDE_WLD_WLD_WPACTRLINTERFACE_H_ */

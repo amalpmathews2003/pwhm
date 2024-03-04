@@ -190,6 +190,14 @@ int wld_wpaCtrl_getValueInt(const char* pData, const char* pKey) {
         CALL_MGR_I(PIFACE, FNAME, __VA_ARGS__); \
     }
 
+#define NOTIFY_NA(PIFACE, FNAME, ...) \
+    if((PIFACE != NULL)) { \
+        /* for VAP/EP events */ \
+        CALL_INTF_NA(PIFACE, FNAME); \
+        /* for RAD/Glob events */ \
+        CALL_MGR_I_NA(PIFACE, FNAME); \
+    }
+
 typedef void (* evtParser_f)(wld_wpaCtrlInterface_t* pInterface, char* event, char* params);
 
 static void s_wpsInProgress(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
