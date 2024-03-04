@@ -53,19 +53,38 @@ kill_process()
     # && command linking executes the next if previous command returns true
 }
 
+start()
+{
+    get_base_wan_address
+    prevent_netifd_to_configure_wireless
+    mkdir -p /var/lib/${name}
+    touch /var/lib/${name}/${name}_config.odl
+
+    if [ -f "/usr/lib/amx/${name}/preInit.sh" ]; then
+        /usr/lib/amx/${name}/preInit.sh
+    fi
+
+    for FILE in $(ls -1 /usr/lib/amx/${name}/modules/*/modPreInit.sh 2> /dev/null); do
+       $FILE
+    done
+
+    ${name} -D
+}
+
+stop()
+{
+    if [ -f /var/run/${name}.pid ]; then
+        echo "stopping ${name}"
+        kill_process `cat /var/run/${name}.pid`
+    fi
+}
+
 case $1 in
     start|boot)
-        get_base_wan_address
-        prevent_netifd_to_configure_wireless
-        mkdir -p /var/lib/${name}
-        touch /var/lib/${name}/${name}_config.odl
-        ${name} -D
+        start
         ;;
     stop|shutdown)
-        if [ -f /var/run/${name}.pid ]; then
-            echo "stopping ${name}"
-            kill_process `cat /var/run/${name}.pid`
-        fi
+        stop
         ;;
     restart)
         $0 stop
