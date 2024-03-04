@@ -237,6 +237,9 @@ typedef struct {
     wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;           // EndPoint failing to scan BSS
     wld_wpaCtrl_stationStartConnCb_f fStationStartConnCb;             // Endpoint starting connection
     wld_wpaCtrl_stationStartConnFailedCb_f fStationStartConnFailedCb; // Endpoint connection init failure
+    wld_wpaCtrl_wpsTimeoutMsg_f fWpsTimeoutMsg;                       // WPS Timeouting
+    wld_wpaCtrl_wpsCancelMsg_f fWpsCancelMsg;                         // WPS Canceled
+    wld_wpaCtrl_wpsOverlapMsg_f fWpsOverlapMsg;                       // WPS Overlap
 } wld_wpaCtrl_radioEvtHandlers_cb;
 
 int wld_wpaCtrl_getValueStr(const char* pData, const char* pKey, char* pValue, int length);

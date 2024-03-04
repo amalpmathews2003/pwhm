@@ -207,12 +207,12 @@ static void s_wpsInProgress(wld_wpaCtrlInterface_t* pInterface, char* event _UNU
 
 static void s_wpsCancelEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s WPS CANCEL", pInterface->name);
-    CALL_INTF_NA(pInterface, fWpsCancelMsg);
+    NOTIFY_NA(pInterface, fWpsCancelMsg);
 }
 
 static void s_wpsTimeoutEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s WPS TIMEOUT", pInterface->name);
-    CALL_INTF_NA(pInterface, fWpsTimeoutMsg);
+    NOTIFY_NA(pInterface, fWpsTimeoutMsg);
 }
 
 static void s_wpsSuccess(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -228,7 +228,7 @@ static void s_wpsSuccess(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED
 
 static void s_wpsOverlapEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
     SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
-    CALL_INTF_NA(pInterface, fWpsOverlapMsg);
+    NOTIFY_NA(pInterface, fWpsOverlapMsg);
 }
 
 static void s_wpsFailEvent(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {

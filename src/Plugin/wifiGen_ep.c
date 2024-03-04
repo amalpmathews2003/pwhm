@@ -298,7 +298,7 @@ swl_rc_ne wifiGen_ep_wpsCancel(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     swl_rc_ne ret = wld_wpaSupp_ep_cancelWps(pEP);
     ASSERT_TRUE(swl_rc_isOk(ret), ret, ME, "error %d", ret);
-    wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_CANCELLED, NULL);
+    NOTIFY_NA_EXT(pEP->wpaCtrlInterface, fWpsCancelMsg);
     return SWL_RC_OK;
 }
 
