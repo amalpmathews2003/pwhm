@@ -2388,6 +2388,7 @@ wld_spectrumChannelInfoEntry_t* wld_util_addorUpdateSpectrumEntry(amxc_llist_t* 
     amxc_llist_it_t it = pEntry->it;
     memcpy(pEntry, pData, sizeof(wld_spectrumChannelInfoEntry_t));
     if(isNew) {
+        amxc_llist_it_init(&pEntry->it);
         amxc_llist_append(llSpectrumChannelInfo, &pEntry->it);
     } else {
         pEntry->it = it;
