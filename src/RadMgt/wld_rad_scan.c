@@ -914,7 +914,17 @@ static void wld_scan_count_cochannel(T_Radio* pR, amxd_object_t* objScan) {
 }
 
 void wld_scan_cleanupScanResultSSID(wld_scanResultSSID_t* ssid) {
+    ASSERTS_NOT_NULL(ssid, , ME, "NULL");
     amxc_llist_it_take(&ssid->it);
+    amxc_llist_for_each(it, &ssid->vendorIEs) {
+        wld_vendorIe_t* vendorIE = amxc_container_of(it, wld_vendorIe_t, it);
+        amxc_llist_it_take(&vendorIE->it);
+        if(vendorIE->object != NULL) {
+            vendorIE->object->priv = NULL;
+            vendorIE->object = NULL;
+        }
+        free(vendorIE);
+    }
     free(ssid);
 }
 
