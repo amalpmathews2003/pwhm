@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.40.2 - 2024-03-05(15:28:45 +0000)
+
+### Other
+
+- - certification: 4.6.2_ETH_FH5GL: getLastAssocReq returns not-the-last-assoc-req
+
 ## Release v5.40.1 - 2024-03-05(09:51:10 +0000)
 
 ### Other
