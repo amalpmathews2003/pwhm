@@ -1,12 +1,12 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.",
-        "keys": null,
-        "name": "2",
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.",
-        "index": 2,
-        "notification": "dm:instance-removed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.",
-        "parameters": null
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.AffiliatedSta.",
+        "notification": "dm:object-removed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].AffiliatedSta.",
+        "parameters": {
+            "Active": false,
+            "BSSID": ""
+        },
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2.AffiliatedSta."
     }
 }

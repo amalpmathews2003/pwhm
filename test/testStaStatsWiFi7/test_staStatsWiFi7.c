@@ -97,33 +97,15 @@ static int teardown_suite(void** state _UNUSED) {
 
 void s_checkDevEntries(T_AccessPoint* pAP, uint32_t nrAssoc, uint32_t nrActive) {
     uint32_t dmNrAssoc = swl_typeUInt32_fromObjectParamDef(pAP->pBus, "AssociatedDeviceNumberOfEntries", 0);
-    assert_int_equal(dmNrAssoc, nrAssoc);
-    assert_int_equal(pAP->AssociatedDeviceNumberOfEntries, nrAssoc);
+    ttb_assert_int_eq(dmNrAssoc, nrAssoc);
+    ttb_assert_int_eq(pAP->AssociatedDeviceNumberOfEntries, nrAssoc);
 
     uint32_t dmNrActive = swl_typeUInt32_fromObjectParamDef(pAP->pBus, "ActiveAssociatedDeviceNumberOfEntries", 0);
-    assert_int_equal(dmNrActive, nrActive);
-    assert_int_equal(pAP->ActiveAssociatedDeviceNumberOfEntries, nrActive);
+    ttb_assert_int_eq(dmNrActive, nrActive);
+    ttb_assert_int_eq(pAP->ActiveAssociatedDeviceNumberOfEntries, nrActive);
 }
 
-
-#define NR_TEST_DEV 2
-
-static void s_checkHistory(T_AccessPoint* vap, ttb_object_t* evObj, const char* fileName) {
-    printf("%s: check rssi history\n", vap->name);
-    ttb_var_t* replyVar = NULL;
-
-    ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, evObj, "getShortHistoryStats",
-                                            NULL, &replyVar);
-    assert_true(ttb_object_replySuccess(reply));
-    assert_non_null(replyVar);
-    printf("VAR Type %s\n", amxc_var_get_type(replyVar->type_id)->name);
-
-    swl_ttbVariant_assertToFileMatchesFile(replyVar, fileName);
-    ttb_object_cleanReply(&reply, &replyVar);
-
-}
-
-static void s_checkStaStats(T_AccessPoint* vap, ttb_object_t* vapObj) {
+static void s_checkStaStats(T_AccessPoint* vap, ttb_object_t* vapObj, const char* fileName) {
     printf("%s: check stats\n", vap->name);
 
     ttb_var_t* replyVar = NULL;
@@ -131,135 +113,166 @@ static void s_checkStaStats(T_AccessPoint* vap, ttb_object_t* vapObj) {
                                             NULL, &replyVar);
     assert_true(ttb_object_replySuccess(reply));
 
-    wld_th_vap_vendorData_t* vendorD = wld_th_vap_getVendorData(vap);
     char fileBuf[64] = {0};
-    snprintf(fileBuf, sizeof(fileBuf), "stationStats/stats_%s", vendorD->staStatsFileName);
+    snprintf(fileBuf, sizeof(fileBuf), "stationStats/stats_%s", fileName);
     swl_ttbVariant_assertToFileMatchesFile(replyVar, fileBuf);
     ttb_object_cleanReply(&reply, &replyVar);
 }
 
+static void s_fillAfSta(wld_affiliatedSta_t* afSta, uint32_t baseVal, int32_t sigStrength) {
+
+    afSta->packetsSent = 2 * baseVal;
+    afSta->packetsReceived = baseVal;
+    afSta->bytesSent = 20 * baseVal;
+    afSta->bytesReceived = 10 * baseVal;
+    afSta->lastDataDownlinkRate = 2000 * baseVal;
+    afSta->lastDataUplinkRate = 1000 * baseVal;
+
+    afSta->signalStrength = sigStrength;
+
+}
 
 static void test_getStats(void** state _UNUSED) {
-    T_AccessPoint* vap = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].vapPriv;
-    ttb_object_t* vapObj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].vapPrivObj;
-    wld_th_vap_getVendorData(vap)->nrStaInFile = NR_TEST_DEV;
-    wld_th_vap_getVendorData(vap)->staStatsFileName = "data0.txt";
+    T_AccessPoint* vap2 = dm.bandList[SWL_FREQ_BAND_EXT_2_4GHZ].vapPriv;
+    assert_non_null(vap2);
+    T_AccessPoint* vap5 = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].vapPriv;
+    assert_non_null(vap5);
+    T_AccessPoint* vap6 = dm.bandList[SWL_FREQ_BAND_EXT_6GHZ].vapPriv;
+    assert_non_null(vap6);
 
 
     ttb_mockTimer_goToFutureSec(1);
-    printf("\n Start Rssi Ev \n");
 
+    ttb_object_t* vap5Obj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].vapPrivObj;
+    assert_non_null(vap5Obj);
 
-    ttb_object_t* evObj = ttb_object_getChildObject(vapObj, "RssiEventing");
-    assert_non_null(evObj);
+    s_checkDevEntries(vap2, 0, 0);
+    s_checkDevEntries(vap5, 0, 0);
+    s_checkDevEntries(vap6, 0, 0);
 
-    s_checkHistory(vap, evObj, "historyEmpty.txt");
+    s_checkStaStats(vap5, vap5Obj, "test1.txt");
 
-    assert_true(swl_typeUInt32_commitObjectParam(evObj, "HistoryLen", 3));
-    assert_true(swl_typeUInt32_commitObjectParam(evObj, "Enable", 1));
+    swl_macBin_t myBin = {.bMac = {0xaa, 0xbb, 0xaa, 0xbb, 0xaa, 0x01}};
 
-    amxd_object_t* templateObject = amxd_object_get(vapObj, "AssociatedDevice");
+    T_AssociatedDevice* pAD = wld_ad_create_associatedDevice(vap5, &myBin);
+    wld_ad_add_connection_try(vap5, pAD);
+    wld_ad_add_connection_success(vap5, pAD);
 
-    ttb_notifWatch_t* notWatchVap = ttb_notifWatch_createOnObject(dm.ttbBus, templateObject);
-
-    ttb_mockTimer_goToFutureSec(1);
-    s_checkHistory(vap, evObj, "history0.txt");
-
-    size_t nrNot = ttb_notifWatch_nbNotifsSeen(notWatchVap);
-    for(size_t i = 0; i < nrNot; i++) {
-        char buffer[64] = {0};
-        snprintf(buffer, sizeof(buffer), "assocNot/not_%zu.txt", i);
-        ttb_notification_t* not = ttb_notifWatch_notif(notWatchVap, i);
-        swl_ttbVariant_assertToFileMatchesFile(&not->variant, buffer);
-    }
-
-    ttb_notifWatch_printList(notWatchVap);
-    ttb_notifWatch_destroy(notWatchVap);
-
-
-    wld_th_vap_getVendorData(vap)->staStatsFileName = "data1.txt";
-    ttb_mockTimer_goToFutureSec(1);
-    s_checkHistory(vap, evObj, "history1.txt");
-
-    wld_th_vap_getVendorData(vap)->staStatsFileName = "data2.txt";
-    ttb_mockTimer_goToFutureSec(1);
-    s_checkHistory(vap, evObj, "history2.txt");
-
-    wld_th_vap_getVendorData(vap)->staStatsFileName = "data3.txt";
-    ttb_mockTimer_goToFutureSec(1);
-    s_checkHistory(vap, evObj, "history3.txt");
-
-    s_checkStaStats(vap, vapObj);
-    ttb_mockTimer_goToFutureSec(1);
-
-    swl_macBin_t macBin;
-    memset(&macBin, 0, sizeof(swl_macBin_t));
-    char testBuff[24] = "18:58:80:C2:FC:A1";
-    swl_mac_charToBin(&macBin, (swl_macChar_t*) &testBuff[0]);
-    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(vap, &macBin);
-    // Check probe update
-    pAD->probeReqCaps.currentSecurity = SWL_SECURITY_APMODE_WPA2_P;
-    pAD->probeReqCaps.freqCapabilities = M_SWL_FREQ_BAND_EXT_2_4GHZ | M_SWL_FREQ_BAND_EXT_5GHZ;
-    pAD->probeReqCaps.htCapabilities = M_SWL_STACAP_HT_SGI20 | M_SWL_STACAP_HT_40MHZ;
-    pAD->probeReqCaps.updateTime = swl_time_getMonoSec();
-    ttb_amx_handleEvents();
-
-    ttb_notifWatch_t* notWatch = ttb_notifWatch_createOnObject(dm.ttbBus, pAD->object);
-
-    ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, vapObj, "getStationStats",
-                                            NULL, NULL);
-    ttb_object_cleanReply(&reply, NULL);
-    ttb_amx_handleEvents();
-
-    ttb_notifWatch_printList(notWatch);
-
-    ttb_assert_int_eq(2, ttb_notifWatch_nbNotifsSeen(notWatch));
-
-    ttb_notification_t* not0 = ttb_notifWatch_notif(notWatch, 0);
-    swl_ttbVariant_assertToFileMatchesFile(&not0->variant, "staUpdate.txt");
-
-    ttb_notification_t* not1 = ttb_notifWatch_notif(notWatch, 1);
-    swl_ttbVariant_assertToFileMatchesFile(&not1->variant, "probeUpdate.txt");
-
-    ttb_notifWatch_destroy(notWatch);
+    wld_affiliatedSta_t* afSta2 = wld_ad_getOrAddAffiliatedSta(pAD, vap2);
+    wld_ad_activateAfSta(pAD, afSta2);
+    assert_non_null(afSta2);
+    wld_affiliatedSta_t* afSta5 = wld_ad_getOrAddAffiliatedSta(pAD, vap5);
+    wld_ad_activateAfSta(pAD, afSta5);
+    assert_non_null(afSta5);
+    wld_affiliatedSta_t* afSta6 = wld_ad_getOrAddAffiliatedSta(pAD, vap6);
+    wld_ad_activateAfSta(pAD, afSta6);
+    assert_non_null(afSta6);
 
     ttb_mockTimer_goToFutureSec(1);
 
-    ttb_notifWatch_t* req = ttb_notifWatch_createOnObject(dm.ttbBus, vap->pBus);
-
-    //Disassoc one manually.
-
-    assert_non_null(pAD);
-    wld_ad_deauthWithReason(vap, pAD, SWL_IEEE80211_DEAUTH_REASON_BTM);
-    ttb_amx_handleEvents();
+    s_checkDevEntries(vap2, 0, 0);
+    s_checkDevEntries(vap5, 1, 1);
+    s_checkDevEntries(vap6, 0, 0);
 
 
-    // Disassoc one by having 0 updates.
-    wld_th_vap_getVendorData(vap)->staStatsFileName = "data4.txt";
-    wld_th_vap_getVendorData(vap)->nrStaInFile = 0;
+    s_checkStaStats(vap5, vap5Obj, "test2.txt");
+
+    s_fillAfSta(afSta2, 1, -80);
+    s_fillAfSta(afSta5, 3, -81);
+    s_fillAfSta(afSta6, 5, -82);
     ttb_mockTimer_goToFutureSec(1);
-    s_checkHistory(vap, evObj, "history4.txt");
-    ttb_amx_handleEvents();
-
-    ttb_notifWatch_printList(req);
-
-    size_t nrNotif = 13;
-    assert_int_equal(nrNotif, ttb_notifWatch_nbNotifsSeen(req));
-
-    for(size_t i = 0; i < nrNotif; i++) {
-        char fileBuf[64] = {0};
-        snprintf(fileBuf, sizeof(fileBuf), "deauthNot/notif_%zi.txt", i);
-        ttb_notification_t* notif = ttb_notifWatch_notif(req, i);
-        if(amxc_var_is_null(&notif->variant)) {
-            printf("NULL %zu\n", i);
-        } else {
-            swl_ttbVariant_assertToFileMatchesFile(&notif->variant, fileBuf);
-        }
-    }
+    s_checkStaStats(vap5, vap5Obj, "test3.txt");
 
 
-    s_checkStaStats(vap, vapObj);
-    ttb_notifWatch_destroy(req);
+
+    s_fillAfSta(afSta2, 2, -82);
+    s_fillAfSta(afSta5, 6, -84);
+    s_fillAfSta(afSta6, 10, -86);
+    ttb_mockTimer_goToFutureSec(1);
+    s_checkStaStats(vap5, vap5Obj, "test4.txt");
+
+
+    wld_ad_add_disconnection(vap5, pAD);
+    ttb_mockTimer_goToFutureSec(1);
+    s_checkStaStats(vap5, vap5Obj, "test5.txt");
+
+    wld_ad_destroy(vap5, pAD);
+    pAD = NULL;
+    ttb_mockTimer_goToFutureSec(1);
+    s_checkStaStats(vap5, vap5Obj, "test6.txt");
+}
+
+static void test_deactivate(void** state _UNUSED) {
+    T_AccessPoint* vap2 = dm.bandList[SWL_FREQ_BAND_EXT_2_4GHZ].vapPriv;
+    assert_non_null(vap2);
+    T_AccessPoint* vap5 = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].vapPriv;
+    assert_non_null(vap5);
+    T_AccessPoint* vap6 = dm.bandList[SWL_FREQ_BAND_EXT_6GHZ].vapPriv;
+    assert_non_null(vap6);
+
+    ttb_mockTimer_goToFutureSec(1);
+
+    ttb_object_t* vap5Obj = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].vapPrivObj;
+    assert_non_null(vap5Obj);
+
+    ttb_assert_int_eq(wld_ad_get_nb_active_stations(vap5), 0);
+
+
+    swl_macBin_t myBin = {.bMac = {0xaa, 0xbb, 0xaa, 0xbb, 0xaa, 0x01}};
+
+    T_AssociatedDevice* pAD = wld_ad_create_associatedDevice(vap5, &myBin);
+    pAD->operatingStandard = SWL_RADSTD_BE;
+
+    ttb_assert_int_eq(wld_ad_get_nb_active_stations(vap5), 0);
+
+    wld_ad_add_connection_try(vap5, pAD);
+    wld_ad_add_connection_success(vap5, pAD);
+
+
+    ttb_assert_int_eq(wld_ad_get_nb_active_stations(vap5), 1);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 0);
+
+    wld_affiliatedSta_t* afSta2 = wld_ad_getOrAddAffiliatedSta(pAD, vap2);
+    wld_ad_activateAfSta(pAD, afSta2);
+    assert_non_null(afSta2);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 1);
+
+    wld_affiliatedSta_t* afSta5 = wld_ad_getOrAddAffiliatedSta(pAD, vap5);
+    wld_ad_activateAfSta(pAD, afSta5);
+    assert_non_null(afSta5);
+
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 2);
+
+    wld_affiliatedSta_t* afSta6 = wld_ad_getOrAddAffiliatedSta(pAD, vap6);
+    wld_ad_activateAfSta(pAD, afSta6);
+    assert_non_null(afSta6);
+
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 3);
+
+    wld_ad_deactivateAfSta(pAD, afSta2);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 2);
+
+
+    wld_ad_deactivateAfSta(pAD, afSta5);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 1);
+
+
+    wld_ad_deactivateAfSta(pAD, afSta6);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 0);
+
+    ttb_assert_int_eq(wld_ad_get_nb_active_stations(vap5), 1);
+
+    // Test reactivate & disconnect sta
+    wld_ad_activateAfSta(pAD, afSta2);
+    wld_ad_activateAfSta(pAD, afSta5);
+    wld_ad_activateAfSta(pAD, afSta6);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 3);
+
+    wld_ad_add_disconnection(vap5, pAD);
+    ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 0);
+    ttb_assert_int_eq(wld_ad_get_nb_active_stations(vap5), 0);
+
+    wld_ad_destroy(vap5, pAD);
 }
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
@@ -270,6 +283,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
 
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_getStats),
+        cmocka_unit_test(test_deactivate),
     };
     return cmocka_run_group_tests(tests, setup_suite, teardown_suite);
 }

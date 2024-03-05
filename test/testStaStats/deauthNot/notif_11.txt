@@ -1,18 +1,12 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.",
-        "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].",
-        "parameters": {
-            "AssociatedDeviceNumberOfEntries": {
-                "from": 2,
-                "to": 1
-            },
-            "ActiveAssociatedDeviceNumberOfEntries": {
-                "from": 1,
-                "to": 0
-            }
-        },
-        "path": "WiFi.AccessPoint.2."
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.",
+        "keys": null,
+        "name": "2",
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.",
+        "index": 2,
+        "notification": "dm:instance-removed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.",
+        "parameters": null
     }
 }

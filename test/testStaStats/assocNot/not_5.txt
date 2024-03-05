@@ -1,31 +1,12 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.ProbeReqCaps.",
-        "notification": "dm:object-added",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].ProbeReqCaps.",
-        "parameters": {
-            "TxSupportedHe80x80MCS": "",
-            "VendorOUI": "",
-            "RxSupportedHe160MCS": "",
-            "EncryptionMode": "Default",
-            "VhtCapabilities": "",
-            "RxSupportedHeMCS": "",
-            "TxSupportedVhtMCS": "",
-            "TxSupportedHe160MCS": "",
-            "SecurityModeEnabled": "Unknown",
-            "RrmOnChannelMaxDuration": 0,
-            "RxSupportedHe80x80MCS": "",
-            "RxSupportedVhtMCS": "",
-            "RrmOffChannelMaxDuration": 0,
-            "RrmCapabilities": "",
-            "HeCapabilities": "",
-            "SupportedMCS": "",
-            "FrequencyCapabilities": "",
-            "HtCapabilities": "",
-            "TxSupportedHeMCS": "",
-            "SupportedHtMCS": "",
-            "LinkBandwidth": "Unknown"
-        },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.2.ProbeReqCaps."
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.",
+        "keys": null,
+        "name": "2",
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.",
+        "index": 2,
+        "notification": "dm:instance-added",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.",
+        "parameters": null
     }
 }

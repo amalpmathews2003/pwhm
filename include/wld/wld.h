@@ -771,6 +771,22 @@ typedef struct {
     swl_timeSpecReal_t measurementTimestampAssoc; /* timestamp of first rssi monitor update since Wi-Fi assoc event */
 } wld_assocDev_history_t;
 
+typedef struct {
+    amxd_object_t* object;
+    amxc_llist_it_t it;
+
+    T_AccessPoint* pAP;
+    uint32_t index;
+    bool active;
+    uint64_t bytesSent;
+    uint64_t bytesReceived;
+    uint32_t packetsSent;
+    uint32_t packetsReceived;
+    uint32_t errorsSent;
+    int32_t signalStrength;
+    uint32_t lastDataDownlinkRate;
+    uint32_t lastDataUplinkRate;
+} wld_affiliatedSta_t;
 
 typedef struct {
     char Name[32];                            /* Name tag.*/
@@ -869,6 +885,8 @@ typedef struct {
     void* vendor;                                  /* Pointer for wifi chipset vendor data */
     wld_extMod_dataList_t extDataList;             /* list of extention data for non-chipset vendor modules */
     swla_dm_objActionReadCtx_t onActionReadCtx;
+    uint32_t nrCreatedAffiliatedStaLinks;
+    amxc_llist_t affiliatedStaList;         /* list of wld_affiliatedSta_t objects */
 } T_AssociatedDevice;
 
 

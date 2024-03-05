@@ -442,6 +442,13 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
     T_AssociatedDevice* pAD = pAP->AssociatedDevice[index];
     SAH_TRACEZ_INFO(ME, "%s: delete %s", pAP->alias, pAD->Name);
 
+
+    amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+        wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+        amxc_llist_it_take(&afSta->it);
+        free(afSta);
+    }
+
     if(pAD->Active) {
         pAD->Active = false;
         pAD->AuthenticationState = false;
@@ -458,6 +465,7 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
         pAP->AssociatedDevice[i] = pAP->AssociatedDevice[i + 1];
     }
     pAP->AssociatedDevice[pAP->AssociatedDeviceNumberOfEntries - 1] = NULL;
+
 
     pAP->AssociatedDeviceNumberOfEntries--;
     SAH_TRACEZ_OUT(ME);
@@ -687,6 +695,31 @@ static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* r
         amxc_var_init(&tmpVar);
         swla_dm_getObjectParams(pAD->object, &tmpVar, &pAD->onActionReadCtx);
 
+        amxc_var_t affiliatedStaList;
+        amxc_var_init(&affiliatedStaList);
+        amxc_var_set_type(&affiliatedStaList, AMXC_VAR_ID_LIST);
+
+        amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+            wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+            if(afSta->object == NULL) {
+                SAH_TRACEZ_ERROR(ME, "%s: no object for AfSta %s", pAD->Name, afSta->pAP->name);
+                continue;
+            }
+
+            amxc_var_t tmpAfStaVar;
+            amxc_var_init(&tmpAfStaVar);
+            swla_dm_getObjectParams(afSta->object, &tmpAfStaVar, &pAD->onActionReadCtx);
+
+            amxc_var_t* test = amxc_var_add_new_amxc_htable_t(&affiliatedStaList, &tmpAfStaVar.data.vm);
+            if(test == NULL) {
+                SAH_TRACEZ_ERROR(ME, "Fail to add");
+            }
+            amxc_var_clean(&tmpAfStaVar);
+        }
+
+        amxc_var_add_new_key_amxc_llist_t(&tmpVar, "AffiliatedSta", &affiliatedStaList.data.vl);
+        amxc_var_clean(&affiliatedStaList);
+
         amxc_var_add_new_amxc_htable_t(retval, &tmpVar.data.vm);
 
         amxc_var_clean(&tmpVar);
@@ -908,7 +941,20 @@ bool wld_rad_has_active_video_stations(T_Radio* pRad) {
  *  the RSSI threshold in dbm below which a station is considered far
  */
 int wld_ad_get_nb_active_stations(T_AccessPoint* pAP) {
-    return pAP->ActiveAssociatedDeviceNumberOfEntries;
+    int nr_sta = 0;
+
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+        T_AssociatedDevice* pAD = pAP->AssociatedDevice[i];
+        if(pAD == NULL) {
+            continue;
+            SAH_TRACEZ_ERROR(ME, "Null assoc dev on ap %s", pAP->alias);
+        }
+        if(!pAD->Active) {
+            continue;
+        }
+        nr_sta++;
+    }
+    return nr_sta;
 }
 
 int wld_ad_get_nb_active_video_stations(T_AccessPoint* pAP) {
@@ -1198,6 +1244,11 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
     pAD->Active = 0;
     pAD->Inactive = 0;
 
+    amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+        wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+        wld_ad_deactivateAfSta(pAD, afSta);
+    }
+
     wld_ad_remove_assocdev_from_bridge(pAP, pAD);
 
     wld_vap_sync_device(pAP, pAD);
@@ -1269,6 +1320,76 @@ void wld_ad_add_sec_failNoDc(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
         s_incrementAssocCounter(pAP, "FailSecurity");
         pAD->hadSecFailure = true;
     }
+}
+
+wld_affiliatedSta_t* wld_ad_getAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp) {
+    ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(affiliatedAp, NULL, ME, "NULL");
+
+    amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+        wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+        if(afSta->pAP == affiliatedAp) {
+            return afSta;
+        }
+    }
+
+    return NULL;
+}
+
+/**
+ * get or create a new affiliated station.
+ */
+wld_affiliatedSta_t* wld_ad_getOrAddAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp) {
+    ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(affiliatedAp, NULL, ME, "NULL");
+
+    wld_affiliatedSta_t* afSta = wld_ad_getAffiliatedSta(pAD, affiliatedAp);
+    if(afSta != NULL) {
+        return afSta;
+    }
+
+    if(pAD->operatingStandard < SWL_RADSTD_BE) {
+        SAH_TRACEZ_WARNING(ME, "%s@%s Adding AfSta to non-11be sta", pAD->Name, affiliatedAp->name);
+    }
+
+    afSta = calloc(1, sizeof(wld_affiliatedSta_t));
+    ASSERT_NOT_NULL(afSta, NULL, ME, "NO MEM");
+
+    afSta->pAP = affiliatedAp;
+
+    amxc_llist_append(&pAD->affiliatedStaList, &afSta->it);
+
+    return afSta;
+}
+
+void wld_ad_activateAfSta(T_AssociatedDevice* pAD _UNUSED, wld_affiliatedSta_t* afSta) {
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_NOT_NULL(afSta, , ME, "NULL");
+
+    afSta->active = true;
+}
+
+void wld_ad_deactivateAfSta(T_AssociatedDevice* pAD _UNUSED, wld_affiliatedSta_t* afSta) {
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_NOT_NULL(afSta, , ME, "NULL");
+
+    afSta->active = false;
+}
+
+uint32_t wld_ad_getNrActiveAffiliatedSta(T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, 0, ME, "NULL");
+    if(!pAD->Active) {
+        return 0;
+    }
+    uint32_t count = 0;
+    amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+        wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+        if(afSta->active) {
+            count++;
+        }
+    }
+
+    return count;
 }
 
 static void s_setResetCounters_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
@@ -1451,6 +1572,10 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(object, &trans, SWL_RC_ERROR, ME, "%s : trans init failure", pAD->Name);
     bool hasData = false;
+    bool syncAfSta = false;
+
+
+    amxd_object_t* afStaTemplateObject = amxd_object_get(object, "AffiliatedSta");
 
     if(swl_timespec_isZero(&pAD->lastSampleTime) || (swl_timespec_diff(NULL, &pAD->lastSampleSyncTime, &pAD->lastSampleTime) != 0)
        || (pAD->latestStateChangeTime >= pAD->lastSampleSyncTime.tv_sec)) {
@@ -1501,6 +1626,34 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
 
         swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX);
         amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
+
+        amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+            wld_affiliatedSta_t* affiliatedSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+
+            if(affiliatedSta->object == NULL) {
+                if(affiliatedSta->index != 0) {
+                    affiliatedSta->object = amxd_object_get_instance(afStaTemplateObject, NULL, affiliatedSta->index);
+                } else {
+                    pAD->nrCreatedAffiliatedStaLinks++;
+                    affiliatedSta->index = pAD->nrCreatedAffiliatedStaLinks;
+                }
+            }
+            if(affiliatedSta->object == NULL) {
+                amxd_trans_select_object(&trans, afStaTemplateObject);
+                amxd_trans_add_inst(&trans, affiliatedSta->index, NULL);
+                syncAfSta = true;
+            } else {
+                amxd_trans_select_object(&trans, affiliatedSta->object);
+            }
+            if((affiliatedSta->pAP != NULL) && (affiliatedSta->pAP->pSSID != NULL)) {
+                swl_macChar_t bssid;
+                swl_mac_binToChar(&bssid, (swl_macBin_t*) affiliatedSta->pAP->pSSID->MACAddress);
+                amxd_trans_set_cstring_t(&trans, "BSSID", bssid.cMac);
+            }
+            amxd_trans_set_bool(&trans, "Active", affiliatedSta->active);
+
+            amxd_trans_select_object(&trans, object);
+        }
     }
 
     if(pAD->probeReqCaps.updateTime != pAD->lastProbeCapUpdateTime) {
@@ -1528,6 +1681,18 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
     }
     pAD->lastSampleSyncTime = pAD->lastSampleTime;
     pAD->lastProbeCapUpdateTime = pAD->probeReqCaps.updateTime;
+
+    if(syncAfSta) {
+        amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+            wld_affiliatedSta_t* affiliatedSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+            if(affiliatedSta->object == NULL) {
+                affiliatedSta->object = amxd_object_get_instance(afStaTemplateObject, NULL, affiliatedSta->index);
+                if(affiliatedSta->object == NULL) {
+                    SAH_TRACEZ_ERROR(ME, "%s: failed to create afSta for ap %s", pAD->Name, affiliatedSta->pAP->name);
+                }
+            }
+        }
+    }
 
     return SWL_RC_OK;
 }
@@ -1582,6 +1747,24 @@ void wld_ad_syncStats(T_AssociatedDevice* pAD) {
     SWLA_OBJECT_SET_PARAM_UINT32(object, "TxErrors", pAD->TxFailures);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
+
+    amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+        wld_affiliatedSta_t* affiliatedSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+        if(affiliatedSta->object == NULL) {
+            continue;
+        }
+        SWLA_OBJECT_SET_PARAM_UINT64(affiliatedSta->object, "BytesSent", affiliatedSta->bytesSent);
+        SWLA_OBJECT_SET_PARAM_UINT64(affiliatedSta->object, "BytesReceived", affiliatedSta->bytesReceived);
+        SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "PacketsSent", affiliatedSta->packetsSent);
+        SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "PacketsReceived", affiliatedSta->packetsReceived);
+        SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "ErrorsSent", affiliatedSta->packetsReceived);
+        SWLA_OBJECT_SET_PARAM_INT32(affiliatedSta->object, "SignalStrength", affiliatedSta->signalStrength);
+        SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "LastDataDownlinkRate", affiliatedSta->lastDataDownlinkRate);
+        SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "LastDataUplinkRate", affiliatedSta->lastDataUplinkRate);
+
+
+    }
+
 }
 
 int32_t wld_ad_getAvgSignalStrengthByChain(T_AssociatedDevice* pAD) {

@@ -99,6 +99,13 @@ uint16_t wld_ad_getFarStaCount(T_AccessPoint* pAP, int threshold);
 void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_disconnection(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
+
+wld_affiliatedSta_t* wld_ad_getAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp);
+wld_affiliatedSta_t* wld_ad_getOrAddAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp);
+void wld_ad_activateAfSta(T_AssociatedDevice* pAD, wld_affiliatedSta_t* afSta);
+void wld_ad_deactivateAfSta(T_AssociatedDevice* pAD, wld_affiliatedSta_t* afSta);
+uint32_t wld_ad_getNrActiveAffiliatedSta(T_AssociatedDevice* pAD);
+
 void wld_ad_deauthWithReason(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_IEEE80211deauthReason_ne deauthReason);
 void wld_ad_add_sec_failure(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_sec_failNoDc(T_AccessPoint* pAP, T_AssociatedDevice* pAD);

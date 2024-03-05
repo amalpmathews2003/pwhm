@@ -24,6 +24,9 @@
         "MaxDownlinkRateReached": 2161760,
         "NoiseByChain": "-91.0,-92.0,-93.0",
         "MACAddress": "18:58:80:C2:FC:A0",
+        "AffiliatedSta": [
+
+        ],
         "Noise": -91,
         "AvgSignalStrengthByChain": 0,
         "TxMulticastPacketCount": 243,

@@ -1,12 +1,18 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.",
-        "keys": null,
-        "name": "2",
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.",
-        "index": 2,
-        "notification": "dm:instance-added",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.",
-        "parameters": null
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.1.",
+        "notification": "dm:object-changed",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
+        "parameters": {
+            "AuthenticationState": {
+                "from": false,
+                "to": true
+            },
+            "SecurityModeEnabled": {
+                "from": "Unknown",
+                "to": "WPA2-Personal"
+            }
+        },
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.1."
     }
 }

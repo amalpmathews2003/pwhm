@@ -1,18 +1,12 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
-        "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.AffiliatedSta.",
+        "notification": "dm:object-added",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].AffiliatedSta.",
         "parameters": {
-            "AuthenticationState": {
-                "from": false,
-                "to": true
-            },
-            "SecurityModeEnabled": {
-                "from": "Unknown",
-                "to": "WPA2-Personal"
-            }
+            "Active": false,
+            "BSSID": ""
         },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2.AffiliatedSta."
     }
 }

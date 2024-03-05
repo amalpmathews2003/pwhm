@@ -86,7 +86,7 @@
 #include "wld_ap_rssiMonitor.h"
 #include "wld_eventing.h"
 #include "Utils/wld_autoCommitMgr.h"
-#include "wld/Utils/wld_autoNeighAdd.h"
+#include "Utils/wld_autoNeighAdd.h"
 #include "wld_ap_nl80211.h"
 #include "wld_hostapd_ap_api.h"
 #include "wld_dm_trans.h"

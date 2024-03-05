@@ -1818,6 +1818,65 @@ define rrm_t{
 			 * @version 11.1
 			 */
 			htable getLastAssocReq();
+
+			/**
+			 * An affiliated station represents a single physical link between a station interface and an accesspoint interface.
+			 */
+			%read-only object AffiliatedSta[] {
+
+				/**
+				 * The BSSID of the Accesspoint interface, of which this object represents the link between the MLD station and 
+				 * the MLD accesspoint
+				 */
+				%read-only string BSSID;
+				
+				/**
+				 * Whether this affiliated Sta link is currently active.
+				 * If inactive, the stats shall show the state on disconnection. 
+				 * An AffiliatedSta object shall only be created when it's actually seen.
+				 */
+				%read-only bool Active;
+
+				/**
+				 * The total number of bytes sent by the accesspoint towards the station on this physical link.
+				 */
+				%read-only %volatile uint64 BytesSent;
+
+				/**
+				 * The total number of bytes received by the accesspoint from the station on this physical link.
+				 */
+				%read-only %volatile uint64 BytesReceived;
+
+				/**
+				 * The total number of of packets received from the affiliated STA.
+				 */
+				%read-only %volatile uint32 PacketsSent;
+
+				/**
+				 * The total number of packets sent to the affiliated STA.
+				 */
+				%read-only %volatile uint32 PacketsReceived;
+
+				/*
+				 * The number of packets which could not be transmitted to the affiliated STA due to errors.
+				 */
+				%read-only %volatile uint32 ErrorsSent;
+
+				/**
+				 * An indicator of radio signal strength of the uplink from the affiliated STA to the access point - measured in dBm.
+				 */
+				%read-only %volatile int32 SignalStrength;
+
+				/*
+				 * The data transmit rate in kbps that was most recently used for transmission of data from the access point to the affiliated STA.
+				 */
+				%read-only %volatile uint32 LastDataDownlinkRate;
+
+				/*
+				 * The data transmit rate in kbps that was most recently used for transmission of data from the affiliated STA to the access point.
+				 */
+				%read-only %volatile uint32 LastDataUplinkRate;
+			}
 		}
 
 		/**

@@ -1,26 +1,12 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.1.",
-        "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.1.AffiliatedSta.",
+        "notification": "dm:object-added",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].AffiliatedSta.",
         "parameters": {
-            "Active": {
-                "from": false,
-                "to": true
-            },
-            "AssociationTime": {
-                "from": "0001-01-01T00:00:00Z",
-                "to": "2022-01-01T00:00:12Z"
-            },
-            "LastStateChange": {
-                "from": "0001-01-01T00:00:00Z",
-                "to": "2022-01-01T00:00:12Z"
-            },
-            "MACAddress": {
-                "from": "",
-                "to": "18:58:80:C2:FC:A0"
-            }
+            "Active": false,
+            "BSSID": ""
         },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.1."
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.1.AffiliatedSta."
     }
 }

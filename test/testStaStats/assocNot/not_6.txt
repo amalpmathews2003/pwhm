@@ -1,26 +1,31 @@
 {
     "data": {
-        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.",
-        "notification": "dm:object-changed",
-        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].",
+        "object": "WiFi.AccessPoint.wlan1.AssociatedDevice.2.ProbeReqCaps.",
+        "notification": "dm:object-added",
+        "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].ProbeReqCaps.",
         "parameters": {
-            "Active": {
-                "from": false,
-                "to": true
-            },
-            "AssociationTime": {
-                "from": "0001-01-01T00:00:00Z",
-                "to": "2022-01-01T00:00:12Z"
-            },
-            "LastStateChange": {
-                "from": "0001-01-01T00:00:00Z",
-                "to": "2022-01-01T00:00:12Z"
-            },
-            "MACAddress": {
-                "from": "",
-                "to": "18:58:80:C2:FC:A1"
-            }
+            "TxSupportedHe80x80MCS": "",
+            "VendorOUI": "",
+            "RxSupportedHe160MCS": "",
+            "EncryptionMode": "Default",
+            "VhtCapabilities": "",
+            "RxSupportedHeMCS": "",
+            "TxSupportedVhtMCS": "",
+            "TxSupportedHe160MCS": "",
+            "SecurityModeEnabled": "Unknown",
+            "RrmOnChannelMaxDuration": 0,
+            "RxSupportedHe80x80MCS": "",
+            "RxSupportedVhtMCS": "",
+            "RrmOffChannelMaxDuration": 0,
+            "RrmCapabilities": "",
+            "HeCapabilities": "",
+            "SupportedMCS": "",
+            "FrequencyCapabilities": "",
+            "HtCapabilities": "",
+            "TxSupportedHeMCS": "",
+            "SupportedHtMCS": "",
+            "LinkBandwidth": "Unknown"
         },
-        "path": "WiFi.AccessPoint.2.AssociatedDevice.2."
+        "path": "WiFi.AccessPoint.2.AssociatedDevice.2.ProbeReqCaps."
     }
 }
