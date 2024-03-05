@@ -385,11 +385,23 @@ static void s_setAPMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
 }
 
 static void s_finalizeEPs(T_Radio* pR) {
+    bool needRadRestart = false;
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pR) {
-        if(pEP->index == 0) {
-            wld_endpoint_finalizeCreation(pEP);
+        int prevNDevIdx = pEP->index;
+        if(wld_endpoint_needCreateIface(pEP) || wld_endpoint_needDestroyIface(pEP)) {
+            wld_endpoint_finalize(pEP);
         }
+        if(prevNDevIdx != pEP->index) {
+            SAH_TRACEZ_INFO(ME, "%s: radIdx(%d) prevEpIdx(%d) currEpIdx(%d) => needRadRestart(%d)",
+                            pEP->alias, pR->index, prevNDevIdx, pEP->index, needRadRestart);
+            // restart the whole radio fsm if the added/removed endpoint matches the radio netdevIdx
+            needRadRestart |= ((prevNDevIdx == pR->index) || (pEP->index == pR->index));
+        }
+    }
+    if(needRadRestart) {
+        pR->fsmRad.FSM_SyncAll = TRUE;
+        wld_autoCommitMgr_notifyRadEdit(pR);
     }
 }
 
@@ -401,8 +413,7 @@ static void s_setSTAMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     bool STAMode = amxc_var_dyncast(bool, newValue);
     ASSERT_NOT_EQUALS(pR->isSTA, STAMode, , ME, "same value");
     SAH_TRACEZ_INFO(ME, "%s: set STA_Mode %d", pR->Name, STAMode);
-    pR->pFA->mfn_wrad_stamode(pR, STAMode, SET);
-    wld_autoCommitMgr_notifyRadEdit(pR);
+    pR->isSTA = STAMode;
     //just need to check the complementary condition for EP interface finalization
     if(pR->isSTASup) {
         swla_delayExec_add((swla_delayExecFun_cbf) s_finalizeEPs, pR);
@@ -447,10 +458,9 @@ static void s_setStaSupMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     ASSERT_NOT_EQUALS(pR->isSTASup, StaSupMode, , ME, "same value");
     SAH_TRACEZ_INFO(ME, "%s: set STASup_Mode %d", pR->Name, StaSupMode);
     pR->isSTASup = StaSupMode;
-    pR->fsmRad.FSM_SyncAll = TRUE;
-    wld_autoCommitMgr_notifyRadEdit(pR);
-    //just need to check the complementary condition for EP interface finalization
-    swla_delayExec_add((swla_delayExecFun_cbf) s_finalizeEPs, pR);
+    if(pR->isSTA) {
+        swla_delayExec_add((swla_delayExecFun_cbf) s_finalizeEPs, pR);
+    }
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -2134,19 +2144,6 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
         free(regulatoryDomain);
         regulatoryDomain = NULL;
-
-        tmp_bool = amxd_object_get_bool(object, "STA_Mode", NULL);
-        if(pR->isSTA != tmp_bool) {
-            pR->pFA->mfn_wrad_stamode(pR, tmp_bool, SET);
-            commit = true;
-        }
-
-        tmp_bool = amxd_object_get_bool(object, "STASupported_Mode", NULL);
-        if(pR->isSTASup != tmp_bool) {
-            pR->isSTASup = tmp_bool;
-            pR->fsmRad.FSM_SyncAll = TRUE;
-            commit = true;
-        }
 
         if(commit) {
             wld_autoCommitMgr_notifyRadEdit(pR);

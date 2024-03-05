@@ -108,9 +108,23 @@ T_EndPoint* wld_endpoint_fromIt(amxc_llist_it_t* it);
 
 T_EndPoint* wld_endpoint_create(T_Radio* pRad, const char* epName, amxd_object_t* object);
 void wld_endpoint_destroy(T_EndPoint* pEP);
+
 /*
- * @brief finalize endpoint creation, by creation its interface
- * If already set, then interface will be re-created
+ * @brief finalize endpoint, by :
+ * - mapping/unmapping endpoint instance with relative ssid instance
+ * - creating/deleting the endpoint interface, when needed.
+ * If interface and already set, and required for creation, then it will be re-created
  */
-swl_rc_ne wld_endpoint_finalizeCreation(T_EndPoint* pEP);
+swl_rc_ne wld_endpoint_finalize(T_EndPoint* pEP);
+
+/*
+ * check conditions to create endpoint interface
+ */
+bool wld_endpoint_needCreateIface(T_EndPoint* pEP);
+
+/*
+ * check conditions to delete endpoint interface
+ */
+bool wld_endpoint_needDestroyIface(T_EndPoint* pEP);
+
 #endif /* __WLD_ENDPOINT_H__ */

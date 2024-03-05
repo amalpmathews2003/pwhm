@@ -2059,6 +2059,22 @@ static void s_syncEpSSIDDm(T_EndPoint* pEP) {
 }
 
 /*
+ * check conditions to create endpoint interface
+ */
+bool wld_endpoint_needCreateIface(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, false, ME, "NULL");
+    return ((pEP->index <= 0) && (pEP->pRadio && pEP->pRadio->isSTASup && pEP->pRadio->isSTA));
+}
+
+/*
+ * check conditions to delete endpoint interface
+ */
+bool wld_endpoint_needDestroyIface(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, false, ME, "NULL");
+    return ((pEP->index > 0) && !(pEP->pRadio && pEP->pRadio->isSTASup && pEP->pRadio->isSTA));
+}
+
+/*
  * finalize AP interface creation and MAC/BSSID reading
  */
 static bool s_finalizeEpCreation(T_EndPoint* pEP) {
@@ -2073,7 +2089,7 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
     char epIfName[IFNAMSIZ] = {0};
     int epIfIndex = -1;
     int ret = -1;
-    if(pRad->isSTASup && pRad->isSTA) {
+    if(wld_endpoint_needCreateIface(pEP)) {
         swl_str_copy(epIfName, sizeof(epIfName), pRad->Name);
         epIfIndex = pRad->index;
         int ret = pRad->pFA->mfn_wrad_addendpointif(pRad, epIfName, sizeof(epIfName));
@@ -2153,10 +2169,12 @@ static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
 }
 
 /*
- * @brief finalize endpoint creation, by creation its interface
- * If already set, then interface will be re-created
+ * @brief finalize endpoint, by :
+ * - mapping/unmapping endpoint instance with relative ssid instance
+ * - creating/deleting the endpoint interface, when needed.
+ * If interface and already set, and required for creation, then it will be re-created
  */
-swl_rc_ne wld_endpoint_finalizeCreation(T_EndPoint* pEP) {
+swl_rc_ne wld_endpoint_finalize(T_EndPoint* pEP) {
     SAH_TRACEZ_IN(ME);
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pEP->pSSID, SWL_RC_INVALID_STATE, ME, "NULL");
