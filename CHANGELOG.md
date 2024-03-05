@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.40.1 - 2024-03-05(09:51:10 +0000)
+
+### Other
+
+- Fixed memory leak in pwhm leading to crash
+
 ## Release v5.40.0 - 2024-03-04(15:49:41 +0000)
 
 ### Other
