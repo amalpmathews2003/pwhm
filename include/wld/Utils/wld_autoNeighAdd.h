@@ -96,4 +96,17 @@ swl_rc_ne wld_autoNeighAdd_vapSetDelNeighbourAP(T_AccessPoint* pAP, bool set);
  */
 swl_rc_ne wld_autoNeighAdd_radioSetDelNeighbourAP(T_Radio* pRad, bool set);
 
+/**
+ * Reload a specific accesspoint to the neighbour list of other accesspoints by delete then set
+ *
+ * @param pAP pointer to accesspoint context
+ *
+ * @return
+ *  - Success: SWL_RC_OK
+ *  - Failure: SWL_RC_ERROR if auto neighbour addition feature disabled
+ *             or the radio operatingFrequencyBand not in NeighbourBands
+ *             or either failed to delete/set neighbor list
+ */
+swl_rc_ne wld_autoNeighAdd_vapReloadNeighbourAP(T_AccessPoint* pAP);
+
 #endif /* SRC_INCLUDE_WLD_UTILS_WLD_AUTONEIGHADD_H_ */

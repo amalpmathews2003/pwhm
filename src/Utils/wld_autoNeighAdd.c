@@ -168,6 +168,20 @@ swl_rc_ne wld_autoNeighAdd_radioSetDelNeighbourAP(T_Radio* pRad, bool set) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_autoNeighAdd_vapReloadNeighbourAP(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_ERROR, ME, "NULL");
+    ASSERTI_EQUALS(pAP->status, APSTI_ENABLED, SWL_RC_ERROR, ME, "%s deactivated", pAP->alias);
+    if(!swl_rc_isOk(wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, false))) {
+        SAH_TRACEZ_NOTICE(ME, "failed deleting AP from neighbor list of other APs");
+        return SWL_RC_ERROR;
+    }
+    if(!swl_rc_isOk(wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, true))) {
+        SAH_TRACEZ_NOTICE(ME, "failed adding AP from neighbor list of other APs");
+        return SWL_RC_ERROR;
+    }
+    return SWL_RC_OK;
+}
+
 static void s_setNeighbourBands_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED,
                                     amxd_param_t* param _UNUSED,
                                     const amxc_var_t* const newValue) {

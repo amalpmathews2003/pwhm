@@ -86,6 +86,7 @@
 #include "wld_ap_rssiMonitor.h"
 #include "wld_eventing.h"
 #include "Utils/wld_autoCommitMgr.h"
+#include "wld/Utils/wld_autoNeighAdd.h"
 #include "wld_ap_nl80211.h"
 #include "wld_hostapd_ap_api.h"
 #include "wld_dm_trans.h"
@@ -1817,6 +1818,8 @@ static void s_setDiscoveryMethod_pwf(void* priv _UNUSED, amxd_object_t* object, 
 
     pAP->discoveryMethod = discoveryMethod;
     SAH_TRACEZ_INFO(ME, "%s: Configure discovery method: %d", pAP->alias, pAP->discoveryMethod);
+
+    wld_autoNeighAdd_vapReloadNeighbourAP(pAP);
 
     pAP->pFA->mfn_wvap_set_discovery_method(pAP);
 
