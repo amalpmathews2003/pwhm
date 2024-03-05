@@ -67,6 +67,7 @@
 #include "wld/wld_hostapd_ap_api.h"
 #include "wld/wld_hostapd_cfgFile.h"
 #include "wld/wld_wpaSupp_ep_api.h"
+#include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
 #include "wld/wld_chanmgt.h"
@@ -802,16 +803,10 @@ static bool s_doSetEpMAC(T_EndPoint* pEP, T_Radio* pRadio) {
     return true;
 }
 
-static bool s_doConnectedEp(T_EndPoint* pEP, T_Radio* pRad) {
-    SAH_TRACEZ_INFO(ME, "%s: connected endpoint", pEP->Name);
-    if((pEP->connectionStatus == EPCS_CONNECTED) && wifiGen_hapd_isRunning(pRad)) {
-        // update hostapd channel
-        wld_secDmn_action_rc_ne rc = wld_rad_hostapd_setChannel(pRad);
-        if(!pEP->toggleBssOnReconnect) {
-            rc = SECDMN_ACTION_OK_DONE;
-        }
-        s_schedNextAction(rc, NULL, pRad);
-    }
+static bool s_doConnectEp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    ASSERTI_TRUE(wifiGen_wpaSupp_isAlive(pEP), true, ME, "%s: wpasupp not running", pEP->Name);
+    wld_wpaCtrl_sendCmdCheckResponse(pEP->wpaCtrlInterface, "ENABLE_NETWORK all", "OK");
+    wld_wpaCtrl_sendCmdCheckResponse(pEP->wpaCtrlInterface, "SELECT_NETWORK any", "OK");
     return true;
 }
 
@@ -827,10 +822,7 @@ static void s_syncOnEpConnected(void* userData, char* ifName, bool state) {
     T_Radio* pRad = (T_Radio*) userData;
     T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hapd not running", pRad->Name);
-    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_CONNECTED_EP);
-    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
-    wld_rad_doCommitIfUnblocked(pRad);
+    SAH_TRACEZ_INFO(ME, "%s: connected endpoint", pEP->Name);
 }
 
 static void s_registerWpaSuppRadEvtHandlers(wld_secDmn_t* wpaSupp) {
@@ -862,10 +854,11 @@ static bool s_doConfWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
 static bool s_doReloadWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
     ASSERTS_TRUE(wifiGen_wpaSupp_isRunning(pEP), true, ME, "%s: wpa_supplicant stopped", pEP->Name);
     SAH_TRACEZ_INFO(ME, "%s: try to reconfigure wpa_supplicant", pEP->Name);
-    if(wld_wpaSupp_ep_reconfigure(pEP) < SWL_RC_OK) {
+    if((!wifiGen_wpaSupp_isAlive(pEP)) || (wld_wpaSupp_ep_reconfigure(pEP) < SWL_RC_OK)) {
         SAH_TRACEZ_INFO(ME, "%s: force reload wpa_supplicant", pEP->Name);
         wifiGen_wpaSupp_reloadDaemon(pEP);
     }
+    pRad->fsmRad.timeout_msec = 500;
     return true;
 }
 /*
@@ -920,11 +913,17 @@ void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
     }
+    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_CONNECT_EP)) {
+        if(!wifiGen_wpaSupp_isRunning(pEP)) {
+            setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
+        }
+    }
     if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP)) {
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
     }
     if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP)) {
         clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
+        clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_CONNECT_EP);
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
     }
@@ -990,7 +989,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_ENABLE_RAD), .doRadFsmAction = s_doRadEnable},
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},
     {FSM_ACTION(GEN_FSM_ENABLE_EP), .doEpFsmAction = s_doEnableEp},
-    {FSM_ACTION(GEN_FSM_CONNECTED_EP), .doEpFsmAction = s_doConnectedEp},
+    {FSM_ACTION(GEN_FSM_CONNECT_EP), .doEpFsmAction = s_doConnectEp},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
     {FSM_ACTION(GEN_FSM_START_WPASUPP), .doEpFsmAction = s_doStartWpaSupp},
