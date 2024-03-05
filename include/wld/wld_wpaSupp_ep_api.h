@@ -72,5 +72,6 @@ swl_rc_ne wld_wpaSupp_ep_getAllStatusDetails(T_EndPoint* pEP, char* reply, size_
 swl_rc_ne wld_wpaSupp_ep_getOneStatusDetail(T_EndPoint* pEP, const char* key, char* valStr, size_t valStrSize);
 swl_rc_ne wld_wpaSupp_ep_getSsid(T_EndPoint* pEP, char* ssid, size_t ssidSize);
 swl_rc_ne wld_wpaSupp_ep_getConnState(T_EndPoint* pEP, wld_epConnectionStatus_e* pEPConnState);
+swl_rc_ne wld_wpaSupp_ep_reconfigure(T_EndPoint* pEP);
 
 #endif /* __WLD_WPA_SUPPLICANT_API_H__ */

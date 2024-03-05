@@ -66,6 +66,7 @@
 #include "wld/wld_rad_hostapd_api.h"
 #include "wld/wld_hostapd_ap_api.h"
 #include "wld/wld_hostapd_cfgFile.h"
+#include "wld/wld_wpaSupp_ep_api.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
 #include "wld/wld_chanmgt.h"
@@ -763,8 +764,11 @@ static bool s_doConfWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
 
 static bool s_doReloadWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
     ASSERTS_TRUE(wifiGen_wpaSupp_isRunning(pEP), true, ME, "%s: wpa_supplicant stopped", pEP->Name);
-    SAH_TRACEZ_INFO(ME, "%s: reload wpa_supplicant", pEP->Name);
-    wifiGen_wpaSupp_reloadDaemon(pEP);
+    SAH_TRACEZ_INFO(ME, "%s: try to reconfigure wpa_supplicant", pEP->Name);
+    if(wld_wpaSupp_ep_reconfigure(pEP) < SWL_RC_OK) {
+        SAH_TRACEZ_INFO(ME, "%s: force reload wpa_supplicant", pEP->Name);
+        wifiGen_wpaSupp_reloadDaemon(pEP);
+    }
     return true;
 }
 /*

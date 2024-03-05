@@ -208,6 +208,22 @@ swl_rc_ne wld_wpaSupp_ep_getConnState(T_EndPoint* pEP, wld_epConnectionStatus_e*
 }
 
 /**
+ * @brief Reload wpa_supp configuration
+ *
+ * @param pEP endpoint
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_reconfigure(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: reconfiguring EP", pEP->Name);
+
+    bool ret = s_sendWpaSuppCommand(pEP, "RECONFIGURE", "");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send reconfigure command", pEP->Name);
+    return SWL_RC_OK;
+}
+
+/**
  * @brief wld_wpaSupp_ep_startWpsPbc
  *
  * send wps_pbc command to wpa_supplicant
