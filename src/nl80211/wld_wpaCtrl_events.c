@@ -282,6 +282,16 @@ static void s_wpsStationSuccessEvent(wld_wpaCtrlInterface_t* pInterface, char* e
     CALL_INTF(pInterface, fWpsSuccessMsg, NULL);
 }
 
+static void s_wpsSetupUnlockedEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s WPS Setup UNLOCKED", pInterface->name);
+    CALL_INTF(pInterface, fWpsSetupLockedMsg, FALSE);
+}
+
+static void s_wpsSetupLockedEvent(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    SAH_TRACEZ_INFO(ME, "%s WPS Setup LOCKED", pInterface->name);
+    CALL_INTF(pInterface, fWpsSetupLockedMsg, TRUE);
+}
+
 static void s_apStationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     //Example: AP-STA-CONNECTED xx:xx:xx:xx:xx:xx
     char buf[SWL_MAC_CHAR_LEN] = {0};
@@ -717,6 +727,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-CRED-RECEIVED", &s_wpsCredReceivedEvent},
               {"WPS-SUCCESS", &s_wpsStationSuccessEvent},
               {"WPS-PBC-ACTIVE", &s_wpsInProgress},
+              {"WPS-AP-SETUP-UNLOCKED", &s_wpsSetupUnlockedEvent},
+              {"WPS-AP-SETUP-LOCKED", &s_wpsSetupLockedEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
               {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},

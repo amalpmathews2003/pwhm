@@ -220,8 +220,10 @@ static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName
     pAP->WMMEnable = (pAP->WMMCapability) ? 1 : 0;
     pAP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
     pAP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_PIN);
+    pAP->WPS_ApSetupLocked = FALSE;
     pAP->WPS_Configured = TRUE;
     pAP->WPS_Enable = 0; /* Disable by default. Only '1' VAP can enable the WPS */
+    pAP->WPS_Status = APWPS_DISABLED;
     pAP->defaultDeviceType = DEVICE_TYPE_DATA;
     memset(pAP->NASIdentifier, 0, NAS_IDENTIFIER_MAX_LEN);
     get_randomhexstr((unsigned char*) pAP->NASIdentifier, NAS_IDENTIFIER_MAX_LEN - 1);
@@ -937,7 +939,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_trans_select_object(&trans, wpsObj);
 
         amxd_trans_set_int32_t(&trans, "Enable", pAP->WPS_Enable);
-        amxd_trans_set_cstring_t(&trans, "Status", cstr_AP_status[pAP->WPS_Status]);
+        amxd_trans_set_cstring_t(&trans, "Status", cstr_AP_WPS_Status[pAP->WPS_Status]);
         amxd_trans_set_cstring_t(&trans, "SelfPIN", g_wpsConst.DefaultPin);
 
         wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsSupported);
@@ -2332,7 +2334,7 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
     vapUpdate.oldVapStatus = oldVapStatus;
     wld_event_trigger_callback(gWld_queue_vap_onStatusChange, &vapUpdate);
 
-
+    wld_wps_updateState(pAP);
     wld_apRssiMon_updateEnable(pAP);
 }
 

@@ -110,6 +110,9 @@ const int ci_AP_WPS_VERSUPPORTED[] = {
     0
 };
 
+const char* cstr_AP_WPS_Status[] = {"Disabled", "Error", "Configured", "Unconfigured", "SetupLocked", 0};
+SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(cstr_AP_WPS_Status) == (APWPS_STATUS_MAX + 1), "cstr_AP_WPS_Status not correctly defined");
+
 static void s_sendStateChangeEvent(T_SSID* pSSID, const char* wpsState, const char* changeReason) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     wld_wps_changeEvent_t changeEvent = {
@@ -341,6 +344,28 @@ void genSelfPIN() {
     s_updateSelfPIN(defaultPin);
 }
 
+void wld_wps_updateState(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    wld_wps_status_e oldApWpsStatus = pAP->WPS_Status;
+    bool wpsEnable = (pAP->WPS_Enable && (pAP->status == APSTI_ENABLED) &&
+                      (pAP->secModeEnabled && !swl_security_isApModeWEP(pAP->secModeEnabled) && (pAP->secModeEnabled != SWL_SECURITY_APMODE_WPA3_P)));
+
+    if(wpsEnable) {
+        if(pAP->WPS_ApSetupLocked) {
+            pAP->WPS_Status = APWPS_SETUPLOCKED;
+        } else {
+            pAP->WPS_Status = pAP->WPS_Configured ? APWPS_CONFIGURED : APWPS_UNCONFIGURED;
+        }
+    } else {
+        pAP->WPS_Status = APWPS_DISABLED;
+    }
+
+    ASSERTI_FALSE((oldApWpsStatus == pAP->WPS_Status), , ME, "%s: WPS status not changed", pAP->alias);
+    amxd_object_t* apWpsObj = amxd_object_get(pAP->pBus, "WPS");
+    ASSERT_NOT_NULL(apWpsObj, , ME, "NULL");
+    swl_typeCharPtr_commitObjectParam(apWpsObj, "Status", (char*) cstr_AP_WPS_Status[pAP->WPS_Status]);
+}
+
 /**
  * Callback when the field `WPS.SelfPIN` is written to.
  */
@@ -485,6 +510,13 @@ static void s_setWpsConfigMethodsEnabled_pwf(void* priv _UNUSED, amxd_object_t* 
         /* Ignore comparison with virtual bit settings of WPS 2.0 */
         bool needSync = ((!nv) || ((nv & M_WPS_CFG_MTHD_WPS10_ALL) != (pAP->WPS_ConfigMethodsEnabled & M_WPS_CFG_MTHD_WPS10_ALL)));
         pAP->WPS_ConfigMethodsEnabled = nv;
+
+        /**
+         * The ap_setup_locked is set in hostapd configuration file when one of the Pin configuration methods is enabled.
+         * In this case, the AP will be started in the setup locked state by default.
+         */
+        pAP->WPS_ApSetupLocked = pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL);
+
         if(needSync) {
             wld_ap_doWpsSync(pAP);
         }

@@ -83,6 +83,7 @@ static void delay_WPS_disable(void* userdata) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     amxd_object_t* apWpsObj = amxd_object_get(pAP->pBus, "WPS");
     swl_typeUInt8_commitObjectParam(apWpsObj, "Enable", pAP->WPS_Enable);
+    wld_wps_updateState(pAP);
 }
 
 static bool sync_changes(amxd_object_t* mf, const char* objectName, unsigned char maclist[][ETHER_ADDR_LEN], int* count, int maxentries) {

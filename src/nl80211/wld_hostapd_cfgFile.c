@@ -915,7 +915,15 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
                         (!pAP->WPS_Configured)));
     swl_mapChar_add(vapConfigMap, "wps_state", wps_enable ? (pAP->WPS_Configured ? "2" : "1") : "0");
     swl_mapChar_add(vapConfigMap, "wps_independent", "1");
-    swl_mapChar_add(vapConfigMap, "ap_setup_locked", "1");
+    /*
+     * Setting the ap_setup_locked parameter in hostapd configuration file is only relevant when one of the PIN configuration methods is enabled.
+     * AP Setup Locked Attribute will be included by default in WSC IE of the Beacon and probe response frames.
+     * And the AP will refuse to allow an externel registrar to run registration protocol using the AP's PIN. (AP acting as an enrollee)
+     * The AP Setup locked state will be reset when InitiateWPSPIN() is executed.
+     * */
+    if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
+        swl_mapChar_add(vapConfigMap, "ap_setup_locked", "1");
+    }
     swl_mapChar_add(vapConfigMap, "uuid", pRad->wpsConst->UUID);
     char* deviceName = swl_str_isEmpty(pRad->wpsConst->DevName) ? "unknownAp" : pRad->wpsConst->DevName;
     swl_mapChar_add(vapConfigMap, "device_name", deviceName);

@@ -578,6 +578,13 @@ static void s_wpsFail(void* userData, char* ifName _UNUSED) {
     wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_FAILURE, NULL);
 }
 
+static void s_wpsSetupLocked(void* userData, char* ifName _UNUSED, bool setupLocked) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    SAH_TRACEZ_INFO(ME, "%s: setup %s event received", pAP->alias, setupLocked? "locked" : "unlocked");
+    pAP->WPS_ApSetupLocked = setupLocked;
+    wld_wps_updateState(pAP);
+}
+
 static void s_apEnabledCb(void* userData, char* ifName) {
     ASSERTS_STR(ifName, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: AP iface enabled", ifName);
@@ -775,6 +782,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fWpsSuccessMsg = s_wpsSuccess;
     wpaCtrlVapEvtHandlers.fWpsOverlapMsg = s_wpsOverlap;
     wpaCtrlVapEvtHandlers.fWpsFailMsg = s_wpsFail;
+    wpaCtrlVapEvtHandlers.fWpsSetupLockedMsg = s_wpsSetupLocked;
     wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
     wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
     wpaCtrlVapEvtHandlers.fApStationAssocFailureCb = s_apStationAssocFailureEvt;

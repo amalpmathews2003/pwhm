@@ -494,12 +494,23 @@ typedef swl_mask_m wld_wps_cfgMethod_m;
 
 extern const char* cstr_WPS_CM_Supported[];
 extern const char* cstr_AP_WPS_VERSUPPORTED[];
+extern const char* cstr_AP_WPS_Status[];
+
 enum {
     APWPSVERSI_AUTO,
     APWPSVERSI_10,
     APWPSVERSI_20,
     APWPSVERSI_UNKNOWN
 };
+
+typedef enum {
+    APWPS_DISABLED,
+    APWPS_ERROR,
+    APWPS_CONFIGURED,
+    APWPS_UNCONFIGURED,
+    APWPS_SETUPLOCKED,
+    APWPS_STATUS_MAX
+} wld_wps_status_e;
 
 #define WLD_MAX_OUI_NUM     6
 
@@ -1810,7 +1821,8 @@ struct S_ACCESSPOINT {
 
     int WPS_CertMode;                               /* Correct default behavior for Certification Mode */
     int WPS_Enable;                                 /* WPS enabled? */
-    int WPS_Status;                                 /* WPS real status  */
+    wld_wps_status_e WPS_Status;                    /* WPS real status  */
+    bool WPS_ApSetupLocked;                         /* Whether WPS AP Pin is locked */
     int WPS_Registrar;                              /* Enable the Registrar */
     wld_wps_cfgMethod_m WPS_ConfigMethodsSupported; /* bit mask of supported wps config methods */
     wld_wps_cfgMethod_m WPS_ConfigMethodsEnabled;   /* bit mask of enabled wps config methods */
