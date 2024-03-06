@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.40.3 - 2024-03-06(10:25:09 +0000)
+
+### Other
+
+- : scanCombined crash
+
 ## Release v5.40.2 - 2024-03-05(15:28:45 +0000)
 
 ### Other
