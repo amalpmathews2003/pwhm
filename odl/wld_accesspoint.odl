@@ -124,7 +124,7 @@ define rrm_t{
 		 * <p> Station will be removed from driver without sending a deauth. </p>
 		 * @version 9.2
 		*/
-		bool cleanStation(%in string macaddress);
+		bool cleanStation(%mandatory %in string macaddress);
 
 		/**
 		 * <b>sendBssTransferRequest</b>

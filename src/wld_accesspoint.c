@@ -1973,6 +1973,8 @@ amxd_status_t _cleanStation(amxd_object_t* obj_AP,
     ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "NULL");
     ASSERT_TRUE(debugIsVapPointer(pAP), amxd_status_unknown_error, ME, "NULL");
     const char* macStr = GET_CHAR(args, "macaddress");
+    ASSERT_TRUE((swl_mac_charIsBroadcast((swl_macChar_t*) macStr)) || (swl_mac_charIsValidStaMac((swl_macChar_t*) macStr)),
+                amxd_status_invalid_value, ME, "macStr is invalid");
 
     SAH_TRACEZ_IN(ME);
     pAP->pFA->mfn_wvap_clean_sta(pAP, (char*) macStr, strlen(macStr));
