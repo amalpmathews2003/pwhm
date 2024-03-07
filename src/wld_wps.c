@@ -663,7 +663,8 @@ static amxd_status_t s_initiateWPS(T_AccessPoint* pAP, amxc_var_t* retval, swl_r
 }
 
 static void s_updateRelayApCredentials(T_AccessPoint* pAP, amxc_var_t* relayVar) {
-    pAP->addRelayApCredentials = amxc_var_dyncast(bool, relayVar) || amxd_object_get_bool(amxd_object_get(pAP->pBus, "WPS"), "RelayCredentialsEnable", NULL);
+    pAP->wpsSessionInfo.addRelayApCredentials = amxc_var_dyncast(bool, relayVar) || amxd_object_get_bool(amxd_object_get(pAP->pBus, "WPS"), "RelayCredentialsEnable", NULL);
+    pAP->wpsSessionInfo.pReferenceApRelay = pAP->pReferenceApRelay;
 }
 
 amxd_status_t _WPS_InitiateWPSPBC(amxd_object_t* object,
@@ -774,6 +775,31 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
         wld_sendPairingNotification(pAP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_START_PIN, NULL);
     }
     return status;
+}
+
+amxd_status_t _WPS_useRelayCredentials(amxd_object_t* object,
+                                       amxd_function_t* func _UNUSED,
+                                       amxc_var_t* args _UNUSED,
+                                       amxc_var_t* retval _UNUSED) {
+    amxd_object_t* pApObj = amxd_object_get_parent(object);
+    T_AccessPoint* pAP = wld_ap_fromObj(pApObj);
+    ASSERTS_NOT_NULL(pAP, amxd_status_ok, ME, "NULL");
+    ASSERTI_TRUE(pAP->wpsSessionInfo.WPS_PairingInProgress, amxd_status_invalid_action, ME, "No WPS on going");
+    const char* refApRelayPath = GET_CHAR(args, "refApRelayPath");
+    T_AccessPoint* relayAP = pAP->wpsSessionInfo.pReferenceApRelay;
+    if(refApRelayPath != NULL) {
+        relayAP = wld_ap_fromObj(amxd_object_findf(amxd_dm_get_root(get_wld_plugin_dm()), "%s", refApRelayPath));
+    }
+    ASSERTS_NOT_NULL(relayAP, amxd_status_invalid_value, ME, "No AP relay specified");
+    if(pAP->wpsSessionInfo.addRelayApCredentials && (pAP->wpsSessionInfo.pReferenceApRelay == relayAP)) {
+        SAH_TRACEZ_INFO(ME, "%s: Ongoing WPS session is already using relay credentials", pAP->alias);
+        return amxd_status_ok;
+    }
+    pAP->wpsSessionInfo.addRelayApCredentials = true;
+    char wpsCmd[] = "UPDATE";
+    pAP->pFA->mfn_wvap_wps_sync(pAP, wpsCmd, sizeof(wpsCmd), SET);
+    SAH_TRACEZ_WARNING(ME, "%s: WPS use AP %s relay credentials", pAP->alias, relayAP->name);
+    return amxd_status_ok;
 }
 
 amxd_status_t _WPS_cancelWPSPairing(amxd_object_t* object,

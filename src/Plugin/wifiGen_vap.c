@@ -373,9 +373,9 @@ int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
 static void s_syncRelayCredentials(T_AccessPoint* pAP) {
     wld_ap_hostapd_setParamValue(pAP, "skip_cred_build", "0", "WPS");
 
-    T_AccessPoint* relayAP = pAP->pReferenceApRelay;
+    T_AccessPoint* relayAP = pAP->wpsSessionInfo.pReferenceApRelay;
     ASSERTI_NOT_NULL(relayAP, , ME, "NULL");
-    ASSERTI_TRUE((relayAP != pAP) && pAP->addRelayApCredentials, , ME, "No relay enabled");
+    ASSERTI_TRUE((relayAP != pAP) && pAP->wpsSessionInfo.addRelayApCredentials, , ME, "No relay enabled");
 
     char wpsRelaySettings[256] = {'\0'};
     size_t wpsRelaySettingsLen = sizeof(wpsRelaySettings);
@@ -413,6 +413,10 @@ swl_rc_ne wifiGen_vap_wps_sync(T_AccessPoint* pAP, char* val, int bufsize, int s
     }
 
     s_syncRelayCredentials(pAP);
+
+    if(swl_str_matches(val, "UPDATE")) {
+        return SWL_RC_OK;
+    }
 
     /*
      * Empty val or asking for supported one of PushButton methods: start PBC

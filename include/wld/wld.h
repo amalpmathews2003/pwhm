@@ -1093,6 +1093,8 @@ typedef struct {
     amxd_object_t* intfObj;     /* VAP/EP obj */
     bool WPS_PairingInProgress; /* bool representing whether pairing is in progress */
     swl_macBin_t peerMac;       /* remote device MAC (Bssid for WPS enrollee (EP), Sta Mac for WPS registrar (AP)) */
+    T_AccessPoint* pReferenceApRelay;
+    bool addRelayApCredentials;
 } wld_wpsSessionInfo_t;
 
 typedef enum {

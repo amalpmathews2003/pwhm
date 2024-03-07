@@ -969,6 +969,11 @@ define rrm_t{
 			htable InitiateWPSPIN(%in string clientPIN, %in bool isRelay);
 
 			/**
+			 * Request to use Relay credentials for the ongoing WPS session.
+			 */
+			void useRelayCredentials(%in string refApRelayPath);
+
+			/**
 			 * Cancel WPS registrar if it was runnning.
 			 */
 			void cancelWPSPairing();
