@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.42.0 - 2024-03-08(16:54:38 +0000)
+
+### Other
+
+- : Add setRelayCredentials function
+
 ## Release v5.41.0 - 2024-03-08(15:15:06 +0000)
 
 ### Other
