@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.41.0 - 2024-03-08(15:15:06 +0000)
+
+### Other
+
+- - add wifi 7 affiliatedState
+
 ## Release v5.40.4 - 2024-03-07(16:29:51 +0000)
 
 ## Release v5.40.3 - 2024-03-06(10:25:09 +0000)
