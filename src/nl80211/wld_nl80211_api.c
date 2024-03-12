@@ -116,10 +116,7 @@ static swl_rc_ne s_getInterfaceInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* 
     ASSERT_NOT_EQUALS(ifaceInfo.ifIndex, WLD_NL80211_ID_UNDEF, SWL_RC_ERROR, ME, "missing ifIndex");
     ASSERT_NOT_EQUALS(ifaceInfo.ifIndex, 0, SWL_RC_ERROR, ME, "Invalid net dev index");
     ASSERT_NOT_EQUALS(ifaceInfo.name[0], 0, SWL_RC_ERROR, ME, "missing interface name");
-    if((!ifaceInfo.isSta) && (!ifaceInfo.isAp)) {
-        SAH_TRACEZ_INFO(ME, "interface %s is not AP/Station", ifaceInfo.name);
-        return SWL_RC_OK;
-    }
+
     if((requestData->pIfaces == NULL) || (requestData->nrIfacesMax == 0)) {
         SAH_TRACEZ_INFO(ME, "interface %s skipped: no storage available", ifaceInfo.name);
         return SWL_RC_OK;
