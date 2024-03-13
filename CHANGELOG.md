@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.42.2 - 2024-03-13(09:46:22 +0000)
+
+### Other
+
+- fix typo wpa key_mgmt WPA-EAP-256
+
 ## Release v5.42.1 - 2024-03-13(08:25:07 +0000)
 
 ### Other
