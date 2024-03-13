@@ -263,11 +263,15 @@ define rrm_t{
 		 *  this is indicated in beacon frames.*/
 		%persistent bool WMMEnable{
 			default true;
+			userflags %upc;
 		}
 		/** <p>Whether U-APSD support is currently enabled. When
 		 *  enabled, this is indicated in beacon frames.</p> Note:
 		 *  U-APSD can only be enabled if WMM is also enabled. */
-		%persistent bool UAPSDEnable;
+		%persistent bool UAPSDEnable {
+			default false;
+			userflags %upc;
+		}
 
 		/** <p>Enable / Disable the MultiCast feature on the interface
 		On a 5GHz by default enabled </p>
