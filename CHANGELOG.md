@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.42.1 - 2024-03-13(08:25:07 +0000)
+
+### Other
+
+- add SHA256 in RSN AKM when PMF is enabled
+
 ## Release v5.42.0 - 2024-03-08(16:54:38 +0000)
 
 ### Other
