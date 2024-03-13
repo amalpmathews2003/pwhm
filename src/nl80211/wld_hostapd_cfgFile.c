@@ -803,7 +803,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa", tval);
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-EAP " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-EAP-256 " : ""),
+                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-EAP-SHA256 " : ""),
                                  (pAP->IEEE80211rEnable ? "FT-EAP " : ""));
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_pairwise", "%s %s", (tval & 1) ? "TKIP" : "", (tval & 2) ? "CCMP" : "");
         swl_mapChar_add(vapConfigMap, "auth_server_addr", *pAP->radiusServerIPAddr ? pAP->radiusServerIPAddr : "127.0.0.1");
