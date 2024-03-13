@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.42.3 - 2024-03-13(15:11:32 +0000)
+
+### Other
+
+- : WMMEnable parameter is not upgrade persistent
+
 ## Release v5.42.2 - 2024-03-13(09:46:22 +0000)
 
 ### Other
