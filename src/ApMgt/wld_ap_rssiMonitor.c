@@ -605,11 +605,11 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
         sample->inactive = pAD->Inactive;
         sample->powerSave = pAD->powerSave;
         // mcs data
-        sample->txLinkBandwidth = pAD->DownlinkBandwidth;
+        sample->txLinkBandwidth = swl_chanspec_intToBw(pAD->DownlinkBandwidth);
         sample->txSpatialStream = pAD->downLinkRateSpec.numberOfSpatialStream;
         sample->txRateStandard = pAD->downLinkRateSpec.standard;
         sample->txMcsIndex = pAD->DownlinkMCS;
-        sample->rxLinkBandwidth = pAD->UplinkBandwidth;
+        sample->rxLinkBandwidth = swl_chanspec_intToBw(pAD->UplinkBandwidth);
         sample->rxSpatialStream = pAD->upLinkRateSpec.numberOfSpatialStream;
         sample->rxRateStandard = pAD->upLinkRateSpec.standard;
         sample->rxMcsIndex = pAD->UplinkMCS;

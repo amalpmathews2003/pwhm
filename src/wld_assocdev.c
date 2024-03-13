@@ -362,8 +362,8 @@ int wld_ad_remove_assocdev_from_bridge(T_AccessPoint* pAP, T_AssociatedDevice* p
     char* brName = pAP->bridgeName;
 
 
-    ASSERT_FALSE(brName == NULL || strlen(brName) == 0, -1, ME,
-                 "No bridge configured for ap %s", pAP->alias);
+    ASSERTI_FALSE(brName == NULL || strlen(brName) == 0, -1, ME,
+                  "No bridge configured for ap %s", pAP->alias);
 
     unsigned long args[4] = { BRCTL_DEL_FDB_ENTRIES,
         (unsigned long) pAD->MACAddress,

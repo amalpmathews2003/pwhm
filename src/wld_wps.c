@@ -210,7 +210,7 @@ static void s_sendNotif(amxd_object_t* wps, const char* name, const char* reason
     amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
 
     amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_REASON, reason);
-    if(swl_mac_charIsValidStaMac((swl_macChar_t*) macAddress)) {
+    if((macAddress != NULL) && swl_mac_charIsValidStaMac((swl_macChar_t*) macAddress)) {
         amxc_var_add_key(cstring_t, &notifMap, SWL_WPS_NOTIF_PARAM_MACADDRESS, macAddress);
     }
     if(credentials) {
