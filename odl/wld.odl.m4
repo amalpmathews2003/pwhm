@@ -216,7 +216,7 @@ m4_ifelse(DISABLE_NETMODEL,y,,``
     NetModel =  "nm_radio,nm_ssid";
     nm_ssid = {
         InstancePath = "WiFi.SSID.",
-        Tags = "ssid eth_link netdev",
+        Tags = "ssid netdev",
         Prefix = "ssid-"
     };
     nm_radio = {
