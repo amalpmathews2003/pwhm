@@ -3531,6 +3531,12 @@ void wld_rad_updateOperatingClass(T_Radio* pRad) {
     swl_chanspec_t chanspec = wld_rad_getSwlChanspec(pRad);
     swl_opClassCountry_e countryZone = getCountryZone(pRad->regulatoryDomainIdx);
     pRad->operatingClass = swl_chanspec_getLocalOperClass(&chanspec, countryZone);
+    if(pRad->operatingClass == 0) {
+        pRad->operatingClass = swl_chanspec_getOperClass(&chanspec);
+        SAH_TRACEZ_WARNING(ME, "%s: fall back to global operClass %d for chanspec %s",
+                           pRad->Name, pRad->operatingClass, swl_typeChanspecExt_toBuf32(chanspec).buf);
+    }
+
     ASSERT_TRUE(swl_typeUInt32_commitObjectParam(pRad->pBus, "OperatingClass", pRad->operatingClass), ,
                 ME, "%s: fail to commit operating class (%d)", pRad->Name, pRad->operatingClass);
     SAH_TRACEZ_INFO(ME, "%s: set operatingClass to %d", pRad->Name, pRad->operatingClass);
