@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.42.6 - 2024-03-15(07:39:36 +0000)
+
+### Other
+
+- wrong operating class 0 in pwhm
+
 ## Release v5.42.5 - 2024-03-14(10:04:38 +0000)
 
 ### Other
