@@ -262,8 +262,9 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
      * first, set dyn ena/disabling vap params, before applying any action
      */
     if((rc = wld_ap_hostapd_setEnableVap(pAP, enable)) < SECDMN_ACTION_OK_DONE) {
-        SAH_TRACEZ_ERROR(ME, "%s: fail to save enable %d", pAP->alias, enable);
-    } else if(!enable) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to save enable %d rc %d", pAP->alias, enable, rc);
+    }
+    if(!enable) {
         wld_ap_hostapd_deauthAllStations(pAP);
         if((rc = wld_ap_hostapd_enableVap(pAP, false)) == SECDMN_ACTION_OK_DONE) {
             /*
