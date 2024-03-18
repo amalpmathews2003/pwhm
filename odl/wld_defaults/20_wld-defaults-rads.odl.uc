@@ -47,6 +47,11 @@
                     parameter BaseMacOffset = {{RadioId}};
                     parameter UseLocalBitForGuest = true;
                 }
+                object ChannelMgt {
+                    object BgDfs {
+                        parameter PreclearEnable = true;
+                    }
+                }
             }
 {% elif (Radio.OperatingFrequency == "6GHz") : %}
             instance add ("{{Radio.Alias}}") {

@@ -2008,7 +2008,7 @@ define probelist_t{
 				 * to do its bgdfs clear
 				 */
 				%persistent bool AllowProvider{
-					default true;
+					default false;
 				}
 
 				/**
