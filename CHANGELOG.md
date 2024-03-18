@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.42.8 - 2024-03-18(15:31:26 +0000)
+
+### Other
+
+- - Enable BgDfs by default for 5GHz radio
+
 ## Release v5.42.7 - 2024-03-15(08:08:56 +0000)
 
 ### Other
