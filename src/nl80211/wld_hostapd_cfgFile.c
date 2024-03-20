@@ -703,7 +703,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         if(pAP->keyPassPhrase[0]) {    /* prefer AES key? ontop of TKIP */
             swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s%s",
                                      ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                     ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""),
+                                     ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
                                      (pAP->IEEE80211rEnable ? "FT-PSK " : ""));
             /* If key pass phrase is set, we use the Key pass phrase */
             if(tval == 3) {
@@ -716,7 +716,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
             /* Use the Pre Shared Key (PSK) */
             swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s",
                                      ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                     ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""));
+                                     ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""));
             swl_mapChar_add(vapConfigMap, "wpa_pairwise", "TKIP"); /* WPA or WPA2 with TKIP */
             swl_mapChar_add(vapConfigMap, "wpa_psk", pAP->preSharedKey);
         }
@@ -729,7 +729,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""),
+                                 ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
                                  "SAE");
         swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", "WPA-PSK SAE");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
@@ -803,7 +803,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa", tval);
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-EAP " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-EAP-SHA256 " : ""),
+                                 ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-EAP-SHA256 " : ""),
                                  (pAP->IEEE80211rEnable ? "FT-EAP " : ""));
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_pairwise", "%s %s", (tval & 1) ? "TKIP" : "", (tval & 2) ? "CCMP" : "");
         swl_mapChar_add(vapConfigMap, "auth_server_addr", *pAP->radiusServerIPAddr ? pAP->radiusServerIPAddr : "127.0.0.1");

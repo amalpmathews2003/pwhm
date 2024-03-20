@@ -213,7 +213,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "proto", "WPA");
         swl_mapCharFmt_addValStr(network, "key_mgmt", "%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""));
+                                 ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""));
         swl_mapChar_add(network, "key_mgmt", "WPA-PSK");
         swl_mapChar_add(network, "pairwise", "TKIP");
         swl_mapChar_add(network, "group", "TKIP");
@@ -227,7 +227,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapCharFmt_addValStr(network, "key_mgmt", "%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""));
+                                 ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""));
         swl_mapChar_add(network, "pairwise", "CCMP");
         swl_mapChar_add(network, "group", "CCMP TKIP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
@@ -240,7 +240,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapCharFmt_addValStr(network, "key_mgmt", "%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""));
+                                 ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""));
         swl_mapChar_add(network, "pairwise", "CCMP TKIP");
         swl_mapChar_add(network, "group", "TKIP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
@@ -253,7 +253,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapCharFmt_addValStr(network, "key_mgmt", "%s%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
-                                 ((mfp != SWL_SECURITY_MFPMODE_DISABLED) ? "WPA-PSK-SHA256 " : ""),
+                                 ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
                                  "SAE ");
         swl_mapChar_add(network, "pairwise", "CCMP");
         swl_mapChar_add(network, "group", "CCMP");
