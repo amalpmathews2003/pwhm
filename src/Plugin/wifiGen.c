@@ -103,6 +103,9 @@ bool wifiGen_init() {
     fta.mfn_wrad_radio_status = wifiGen_rad_status;
     fta.mfn_wrad_enable = wifiGen_rad_enable;
     fta.mfn_wrad_sync = wifiGen_rad_sync;
+    fta.mfn_wrad_secDmn_restart = wifiGen_rad_restart;
+    fta.mfn_wrad_secDmn_refresh = wifiGen_rad_refresh;
+    fta.mfn_wrad_toggle = wifiGen_rad_toggle;
     fta.mfn_wrad_regdomain = wifiGen_rad_regDomain;
     fta.mfn_wrad_txpow = wifiGen_rad_txpow;
     fta.mfn_wrad_setChanspec = wifiGen_rad_setChanspec;
@@ -161,6 +164,7 @@ bool wifiGen_init() {
     fta.mfn_wendpoint_multiap_enable = wifiGen_ep_multiApEnable;
     fta.mfn_wendpoint_sendManagementFrame = wifiGen_ep_sendManagementFrame;
     fta.mfn_wendpoint_set_mac_address = wifiGen_ep_setMacAddress;
+    fta.mfn_wendpoint_update = wifiGen_ep_update;
 
     s_vendor = wld_nl80211_registerVendor(&fta);
     ASSERT_NOT_NULL(s_vendor, false, ME, "NULL vendor");

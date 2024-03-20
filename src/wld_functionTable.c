@@ -622,6 +622,22 @@ static swl_rc_ne TRAP_mfn_wendpoint_updateConfigMaps(T_EndPoint* pEP _UNUSED, wl
     return SWL_RC_OK;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_secDmn_restart(T_Radio* rad _UNUSED, int set _UNUSED) {
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_secDmn_refresh(T_Radio* rad _UNUSED, int set _UNUSED) {
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_toggle(T_Radio* rad _UNUSED, int set _UNUSED) {
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wendpoint_update(T_EndPoint* pEP _UNUSED, int set _UNUSED) {
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 
 #define FTA_ASSIGN(x) \
@@ -672,6 +688,9 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_per_ant_rssi);
     FTA_ASSIGN(mfn_wrad_latest_power);
     FTA_ASSIGN(mfn_wrad_sync);
+    FTA_ASSIGN(mfn_wrad_secDmn_restart);
+    FTA_ASSIGN(mfn_wrad_secDmn_refresh);
+    FTA_ASSIGN(mfn_wrad_toggle);
     FTA_ASSIGN(mfn_wrad_getspectruminfo);
     FTA_ASSIGN(mfn_wrad_start_scan);
     FTA_ASSIGN(mfn_wrad_stop_scan);
@@ -763,6 +782,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wendpoint_set_mac_address);
     FTA_ASSIGN(mfn_wendpoint_sendManagementFrame);
     FTA_ASSIGN(mfn_wendpoint_updateConfigMaps);
+    FTA_ASSIGN(mfn_wendpoint_update);
 
     FTA_ASSIGN(mfn_wvap_request_rrm_report);
     FTA_ASSIGN(mfn_wvap_setEvtHandlers);

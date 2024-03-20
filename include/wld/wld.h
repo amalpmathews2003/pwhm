@@ -2147,6 +2147,9 @@ typedef int (APIENTRY* PFN_WRAD_ANTENNACTRL)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_STAMODE)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_REGDOMAIN)(T_Radio* rad, char* val, int bufsize, int set);
 typedef int (APIENTRY* PFN_WRAD_SYNC)(T_Radio* rad, int set);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SECDMN_RESTART)(T_Radio* rad, int set);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SECDMN_REFRESH)(T_Radio* rad, int set);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_TOGGLE)(T_Radio* rad, int set);
 typedef enum {
     beamforming_implicit,
     beamforming_explicit
@@ -2243,11 +2246,11 @@ typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_BSSID)(T_EndPoint* ep, swl_macChar_t*
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_STATS)(T_EndPoint* endpoint, T_EndPointStats* stats);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_WPS_START)(T_EndPoint* pEP, wld_wps_cfgMethod_e method, char* pin, char* ssid, swl_macChar_t* bssid);
 typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_WPS_CANCEL)(T_EndPoint* pEP);
+typedef swl_rc_ne (APIENTRY* PFN_WENDPOINT_UPDATE)(T_EndPoint* pEP, int set);
 typedef int (APIENTRY* PFN_WEP_ENABLE_VENDOR_ROAMING)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WEP_UPDATE_VENDOR_ROAMING)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WENDPOINT_MULTIAP_ENABLE)(T_EndPoint* pEP);
 typedef int (APIENTRY* PFN_WENDPOINT_SET_MAC_ADDR)(T_EndPoint* pEP);
-
 typedef int (APIENTRY* PFN_WEP_STATUS)(T_EndPoint* endpoint);
 
 /* Here we configure all the needed parts based on our given data structure */
@@ -2366,6 +2369,9 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     PFN_WRAD_UPDATE_PROB_REQ mfn_wrad_update_prob_req;        /**< Update probe requests */
     PFN_WRAD_SYNC mfn_wrad_sync;                              /**< Sync Enable/channel/band-mode/... */
+    PFN_WRAD_SECDMN_RESTART mfn_wrad_secDmn_restart;          /**< Restart radio secDmn */
+    PFN_WRAD_SECDMN_REFRESH mfn_wrad_secDmn_refresh;          /**< Refresh radio secDmn */
+    PFN_WRAD_TOGGLE mfn_wrad_toggle;                          /**< Toggle radio */
     PFN_WRAD_PER_ANTENNA_RSSI mfn_wrad_per_ant_rssi;          /**< Get the RSSI values of each antenna*/
     PFN_WRAD_LATEST_POWER mfn_wrad_latest_power;              /**< Get the power values of each antenna*/
     PFN_WRAD_UPDATE_CHANINFO mfn_wrad_update_chaninfo;        /**< Update the channel information and statistics*/
@@ -2497,6 +2503,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WEP_UPDATE_VENDOR_ROAMING mfn_wendpoint_update_vendor_roaming; /**< update vendor roam config */
     PFN_WENDPOINT_MULTIAP_ENABLE mfn_wendpoint_multiap_enable;         /**< Set MultiAP BackhaulSTA */
     PFN_WENDPOINT_SET_MAC_ADDR mfn_wendpoint_set_mac_address;          /**< Set Mac address on an endpoint interface */
+    PFN_WENDPOINT_UPDATE mfn_wendpoint_update;                         /**< Update endpoint with new configuration */
     PFN_WEP_STATUS mfn_wendpoint_status;
 
     swl_rc_ne (* mfn_wendpoint_sendManagementFrame)(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);

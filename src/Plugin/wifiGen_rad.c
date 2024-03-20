@@ -628,6 +628,35 @@ int wifiGen_rad_sync(T_Radio* pRad, int set) {
     return SWL_RC_OK;
 }
 
+int wifiGen_rad_restart(T_Radio* pRad, int set) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(set & SET, SWL_RC_INVALID_PARAM, ME, "Set Only");
+    SAH_TRACEZ_INFO(ME, "%s : set rad_restart", pRad->Name);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+    wld_rad_doCommitIfUnblocked(pRad);
+    return SWL_RC_OK;
+}
+
+int wifiGen_rad_refresh(T_Radio* pRad, int set) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(set & SET, SWL_RC_INVALID_PARAM, ME, "Set Only");
+    SAH_TRACEZ_INFO(ME, "%s : set rad_refresh", pRad->Name);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
+    wld_rad_doCommitIfUnblocked(pRad);
+    return SWL_RC_OK;
+}
+
+int wifiGen_rad_toggle(T_Radio* pRad, int set) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(set & SET, SWL_RC_INVALID_PARAM, ME, "Set Only");
+    SAH_TRACEZ_INFO(ME, "%s : set rad_toggle", pRad->Name);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+    wld_rad_doCommitIfUnblocked(pRad);
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) {
     if(set & SET) {
         const char* countryName = getShortCountryName(pRad->regulatoryDomainIdx);

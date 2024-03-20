@@ -196,6 +196,24 @@ swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP) {
 }
 
 /**
+ * @brief wifiGen_ep_update
+ *
+ * update wpa supplicant with new configuration
+ *
+ * @param pEP The current endpoint
+ * @return -  SWL_RC_OK
+ */
+int wifiGen_ep_update(T_EndPoint* pEP, int set) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(set & SET, SWL_RC_INVALID_PARAM, ME, "Set Only");
+    SAH_TRACEZ_INFO(ME, "%s : set wendpoint_update", pEP->Name);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
+    setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
+    wld_rad_doCommitIfUnblocked(pEP->pRadio);
+    return SWL_RC_OK;
+}
+
+/**
  * @brief wifiGen_ep_wpsStart
  *
  * start a WPS attempt for an endpoint.
