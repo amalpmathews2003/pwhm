@@ -104,6 +104,7 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
     ASSERT_NOT_NULL(pR, status, ME, "Radio structure for radio [%s] is missing", radioname);
     const char* apname = GET_CHAR(args, "vap");
     ASSERT_STR(apname, status, ME, "missing accesspoint instance alias");
+    const char* bridgename = GET_CHAR(args, "bridge");
     amxd_object_t* apObjTmpl = amxd_object_get(wifi, "AccessPoint");
     amxd_object_t* ssidObjTmpl = amxd_object_get(wifi, "SSID");
     amxd_object_t* apObj = amxd_object_get_instance(apObjTmpl, apname, 0);
@@ -141,6 +142,10 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
     }
     SAH_TRACEZ_INFO(ME, "%s: set trans apInst(%s) SSIDReference(%s)", pR->Name, apname, ssidRef);
     amxd_trans_set_value(cstring_t, &trans, "SSIDReference", ssidRef);
+    if(!swl_str_isEmpty(bridgename)) {
+        SAH_TRACEZ_INFO(ME, "%s: set trans apInst(%s) BridgeInterface(%s)", pR->Name, apname, bridgename);
+        amxd_trans_set_value(cstring_t, &trans, "BridgeInterface", bridgename);
+    }
     SAH_TRACEZ_INFO(ME, "%s: apply trans to add accesspoint (%s)", pR->Name, apname);
     status = amxd_trans_apply(&trans, get_wld_plugin_dm());
     amxd_trans_clean(&trans);

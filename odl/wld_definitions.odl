@@ -84,10 +84,11 @@
 	 *        (wl0,wl1,...)
 	 * @param radio Name of the RADIO interface that derrives the
 	 *        vap interface. (wifi0, wifi1,...)
+	 * @param bridge Name to which the VAP is added (br-lan, br-guest, ...)
 	 * @return Success if &gt;=0, the value represents the
 	 *         NETFINDEX. When 0 it's representing an error number.
 	 */
-	uint32 addVAPIntf(%in %mandatory string vap, %in %mandatory string radio); /* use WIFI_addVAPIntf */
+	uint32 addVAPIntf(%in %mandatory string vap, %in %mandatory string radio, %in string bridge); /* use WIFI_addVAPIntf */
 	/**
 	 * Delete a VAP interface from the physical radio interface.
 	 * Update also AccessPoint and SSID object fields. Before this
