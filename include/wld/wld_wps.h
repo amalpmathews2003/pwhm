@@ -89,6 +89,12 @@
 #define WPS_FAILURE_INVALID_PIN SWL_WPS_NOTIF_STARTERROR_REASON_INVALID_PIN
 #define WPS_FAILURE_CREDENTIALS SWL_WPS_NOTIF_STARTERROR_REASON_CREDENTIALS
 
+typedef struct {
+    T_SSID* pSSID;
+    const char* wpsState;
+    const char* changeReason;
+} wld_wps_changeEvent_t;
+
 // Default WPS session walk time
 #define WPS_WALK_TIME_DEFAULT 120
 //Safety WPS session timer: only used if session timeout is not notified by backend (driver).

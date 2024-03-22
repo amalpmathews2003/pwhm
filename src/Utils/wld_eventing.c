@@ -93,6 +93,8 @@ static wld_event_queue_t rqueue_vap_onAction = {.name = "evApAction"};
 static wld_event_queue_t rqueue_ep_onChange = {.name = "evEpChange"};
 static wld_event_queue_t rqueue_sta_onChange = {.name = "evStaChange"};
 static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
+static wld_event_queue_t rqueue_wps_onStateChange = {.name = "evWpsStateChange"};
+
 
 wld_event_queue_t* gWld_queue_rad_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
@@ -103,6 +105,7 @@ wld_event_queue_t* gWld_queue_ep_onChangeEvent = NULL;   // Called when ep struc
 wld_event_queue_t* gWld_queue_rad_onScan_change = NULL;
 wld_event_queue_t* gWld_queue_rad_onChangeEvent = NULL;
 wld_event_queue_t* gWld_queue_rad_onFrameEvent = NULL;
+wld_event_queue_t* gWld_queue_wps_onStateChange = NULL;
 
 wld_event_queue_t* gWld_queue_sta_onChangeEvent = NULL; // Called on station lifecycle changes. @type wld_ad_changeEvent_t.
 
@@ -147,6 +150,9 @@ void wld_event_init() {
 
     gWld_queue_sta_onChangeEvent = &rqueue_sta_onChange;
     amxc_llist_init(&gWld_queue_sta_onChangeEvent->subscribers);
+
+    gWld_queue_wps_onStateChange = &rqueue_wps_onStateChange;
+    amxc_llist_init(&gWld_queue_wps_onStateChange->subscribers);
 }
 
 /**
@@ -172,11 +178,13 @@ void wld_event_destroy() {
     wld_event_cleanup_queue(gWld_queue_ep_onStatusChange);
     wld_event_cleanup_queue(gWld_queue_vap_onStatusChange);
     wld_event_cleanup_queue(gWld_queue_vap_onChangeEvent);
+    wld_event_cleanup_queue(gWld_queue_vap_onAction);
     wld_event_cleanup_queue(gWld_queue_ep_onChangeEvent);
     wld_event_cleanup_queue(gWld_queue_rad_onScan_change);
     wld_event_cleanup_queue(gWld_queue_lifecycleEvent);
 
     wld_event_cleanup_queue(gWld_queue_sta_onChangeEvent);
+    wld_event_cleanup_queue(gWld_queue_wps_onStateChange);
 }
 
 /**

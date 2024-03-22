@@ -71,6 +71,7 @@
 #include "wld_wps.h"
 #include "wld_radio.h"
 #include "wld_accesspoint.h"
+#include "wld_eventing.h"
 #include "swl/swl_assert.h"
 #include "swl/swl_string.h"
 #include "swl/swl_uuid.h"
@@ -108,6 +109,16 @@ const int ci_AP_WPS_VERSUPPORTED[] = {
     APWPSVERSI_UNKNOWN,
     0
 };
+
+static void s_sendStateChangeEvent(T_SSID* pSSID, const char* wpsState, const char* changeReason) {
+    ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    wld_wps_changeEvent_t changeEvent = {
+        .pSSID = pSSID,
+        .wpsState = wpsState,
+        .changeReason = changeReason
+    };
+    wld_event_trigger_callback(gWld_queue_wps_onStateChange, &changeEvent);
+}
 
 amxd_status_t doCancelPairing(amxd_object_t* object) {
     ASSERTI_NOT_NULL(object, amxd_status_unknown_error, ME, "NULL");
@@ -257,6 +268,16 @@ void wld_wps_sendPairingNotification(amxd_object_t* object, uint32_t type, const
     }
 
     s_sendNotif(wps, name, reason, macAddress, credentials);
+
+    T_SSID* pSSID = NULL;
+    if(debugIsVapPointer(object->priv)) {
+        T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
+        pSSID = pAP->pSSID;
+    } else if(debugIsEpPointer(object->priv)) {
+        T_EndPoint* pEP = (T_EndPoint*) object->priv;
+        pSSID = pEP->pSSID;
+    }
+    s_sendStateChangeEvent(pSSID, name, reason);
 
     if(prevInProgress != inProgress) {
         pCtx->WPS_PairingInProgress = inProgress;
