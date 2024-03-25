@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.44.0 - 2024-03-25(11:45:21 +0000)
+
+### Other
+
+- - Add wps event for state change
+
 ## Release v5.43.0 - 2024-03-21(14:00:25 +0000)
 
 ## Release v5.42.10 - 2024-03-21(11:33:33 +0000)
