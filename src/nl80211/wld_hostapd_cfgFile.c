@@ -731,7 +731,6 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
                                  ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
                                  "SAE");
-        swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", "WPA-PSK SAE");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
