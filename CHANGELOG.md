@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.44.1 - 2024-03-26(16:02:19 +0000)
+
+### Other
+
+- fix autoMac calc to comply with 11ax MultiBSSID spec
+
 ## Release v5.44.0 - 2024-03-25(11:45:21 +0000)
 
 ### Other
