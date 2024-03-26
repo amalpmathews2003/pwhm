@@ -99,47 +99,57 @@ static bool s_updateVapAlias(T_Radio* pRad, T_AccessPoint* pAP, int if_count) {
     return true;
 }
 
-static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex) {
+static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIfIndex) {
     swl_rc_ne rc;
-    if(!apIndex) {
+    if(!apIfIndex) {
         rc = wld_rad_nl80211_setAp(pRad);
         pAP->index = pRad->index;
         pAP->wDevId = pRad->wDevId;
     } else {
         rc = wld_rad_nl80211_addVapInterface(pRad, pAP);
     }
-    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to create ap(%s)id(%d) on rad(%s)", pAP->alias, apIndex, pRad->Name);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to create ap(%s)id(%d) on rad(%s)", pAP->alias, apIfIndex, pRad->Name);
     rc = wifiGen_hapd_initVAP(pAP);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to init hapd interface", pAP->alias);
     rc = pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
     return rc;
 }
 
-static int s_bssIndex(T_AccessPoint* pAP) {
+static int s_apIfIndex(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, 0, ME, "NULL");
     ASSERTS_NOT_NULL(pAP->pRadio, pAP->ref_index, ME, "NULL");
     return (pAP->pRadio->isSTASup + pAP->ref_index);
 }
 
+static uint32_t s_apMacIndex(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, 0, ME, "NULL");
+    ASSERT_NOT_NULL(pAP->pSSID, 0, ME, "No mapped SSID");
+    ASSERT_NOT_NULL(pAP->pRadio, pAP->pSSID->autoMacRefIndex, ME, "No mapped radio");
+    return (pAP->pRadio->isSTASup + pAP->pSSID->autoMacRefIndex);
+}
+
 int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pAP->pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
+    uint32_t apMacRefIndex = pAP->pSSID->autoMacRefIndex;
 
     // Ap index is number of AP already initialized plus 1 if sta is supported, 0 otherwise.
-    int32_t apIndex = s_bssIndex(pAP);
-    SAH_TRACEZ_INFO(ME, "%s: add vap - [%s] %u", pRad->Name, pAP->name, apIndex);
+    int32_t apIfIndex = s_apIfIndex(pAP);
+    uint32_t apMacIndex = s_apMacIndex(pAP);
+    SAH_TRACEZ_INFO(ME, "%s: add vap - [%s] ap ifIdx %u macIdx %u", pRad->Name, pAP->name, apIfIndex, apMacIndex);
 
-    int maxNrAp = pRad->maxNrHwBss;
-    ASSERT_FALSE(apIndex >= maxNrAp, SWL_RC_INVALID_STATE, ME, "%s: Max Number of BSS reached : %d", pRad->Name, maxNrAp);
+    uint32_t maxNrAp = pRad->maxNrHwBss;
+    ASSERT_FALSE(apMacRefIndex >= maxNrAp, SWL_RC_INVALID_STATE, ME, "%s: Max Number of BSS reached : %d", pRad->Name, maxNrAp);
     ASSERT_FALSE(wld_rad_getSocket(pRad) < 0, SWL_RC_INVALID_STATE, ME, "%s: Unable to create socket", pRad->Name);
 
     pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
 
     //check need for updating base mac when adding next interface
-    if(apIndex > 0) {
-        bool changed = wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, apIndex + 1);
+    if(apMacIndex > 0) {
+        bool changed = wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, apMacIndex + 1);
         if(changed) {
-            SAH_TRACEZ_WARNING(ME, "%s: Shifting previous %u vap interfaces after mbss mac shift ", pRad->Name, (apIndex - pRad->isSTASup));
+            SAH_TRACEZ_WARNING(ME, "%s: Shifting previous %u vap interfaces after mbss mac shift ", pRad->Name, apMacRefIndex);
             //Brcm requires to re-apply the primary config's cur_etheraddr,
             //in order to clear all previously set secondary config ethernet addresses
             //and allow setting them again with shifted MACs
@@ -153,7 +163,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
             T_AccessPoint* tmpAp = NULL;
             wld_rad_forEachAp(tmpAp, pRad) {
                 swl_macBin_t macBin = SWL_MAC_BIN_NEW();
-                wld_ssid_generateBssid(pRad, tmpAp, s_bssIndex(tmpAp), &macBin);
+                wld_ssid_generateBssid(pRad, tmpAp, s_apMacIndex(tmpAp), &macBin);
                 wld_ssid_setBssid(tmpAp->pSSID, &macBin);
                 tmpAp->pFA->mfn_sync_ssid(tmpAp->pSSID->pBus, tmpAp->pSSID, SET);
                 wifiGen_vap_setBssid(tmpAp);
@@ -164,12 +174,12 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     }
 
     //retrieve interface name and update pAP->alias
-    s_updateVapAlias(pRad, pAP, apIndex);
+    s_updateVapAlias(pRad, pAP, apIfIndex);
     // actually create AP, and update netdev index.
-    s_createAp(pRad, pAP, apIndex);
+    s_createAp(pRad, pAP, apIfIndex);
 
     swl_macBin_t macBin = SWL_MAC_BIN_NEW();
-    wld_ssid_generateBssid(pRad, pAP, apIndex, &macBin);
+    wld_ssid_generateBssid(pRad, pAP, apMacIndex, &macBin);
     wld_ssid_setBssid(pAP->pSSID, &macBin);
 
     /* Set network address! */
@@ -177,8 +187,8 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
 
     pRad->pFA->mfn_wrad_enable(pRad, pRad->enable, SET);
 
-    SAH_TRACEZ_INFO(ME, "%s: created interface %s (%s) index %d - %u",
-                    pRad->Name, pAP->name, pAP->alias, pAP->index, apIndex);
+    SAH_TRACEZ_INFO(ME, "%s: created interface %s (%s) netdevIdx %d - ifIdx %u macIdx %u",
+                    pRad->Name, pAP->name, pAP->alias, pAP->index, apIfIndex, apMacIndex);
 
     return SWL_RC_OK;
 }

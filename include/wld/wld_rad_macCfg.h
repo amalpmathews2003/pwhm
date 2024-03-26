@@ -69,6 +69,8 @@
 
 bool wld_rad_macCfg_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss);
 bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad);
-swl_rc_ne wld_rad_macCfg_generateMac(T_Radio* pRad, uint32_t index, swl_macBin_t* macBin);
+swl_rc_ne wld_rad_macCfg_generateEpMac(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin);
+swl_rc_ne wld_rad_macCfg_generateBssid(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin);
+swl_rc_ne wld_rad_macCfg_generateDummyBssid(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin);
 
 #endif /* INCLUDE_WLD_WLD_RAD_MACCFG_H_ */

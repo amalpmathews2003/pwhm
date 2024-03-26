@@ -194,6 +194,8 @@ bool wld_rad_hasActiveIface(T_Radio* pRad);
 uint32_t wld_rad_countIfaces(T_Radio* pRad);
 uint32_t wld_rad_countVapIfaces(T_Radio* pRad);
 uint32_t wld_rad_countEpIfaces(T_Radio* pRad);
+uint32_t wld_rad_countMappedAPs(T_Radio* pRad);
+uint32_t wld_rad_countAPsByAutoMacSrc(T_Radio* pRad, wld_autoMacSrc_e autoMacSrc);
 
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);

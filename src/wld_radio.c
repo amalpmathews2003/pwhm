@@ -3285,6 +3285,54 @@ uint32_t wld_rad_countIfaces(T_Radio* pRad) {
     return (wld_rad_countVapIfaces(pRad) + wld_rad_countEpIfaces(pRad));
 }
 
+uint32_t wld_rad_countMappedAPs(T_Radio* pRad) {
+    uint32_t count = 0;
+    ASSERTS_NOT_NULL(pRad, count, ME, "NULL");
+    amxd_object_t* ssidTmplObj = amxd_object_findf(get_wld_object(), "SSID");
+    ASSERT_NOT_NULL(ssidTmplObj, count, ME, "Missing SSID template objs");
+    amxd_object_t* apTmplObj = amxd_object_findf(get_wld_object(), "AccessPoint");
+    ASSERT_NOT_NULL(apTmplObj, count, ME, "Missing SSID template objs");
+    amxd_object_for_each(instance, itSsid, ssidTmplObj) {
+        amxd_object_t* ssidObj = amxc_container_of(itSsid, amxd_object_t, it);
+        char* ssidLL = amxd_object_get_cstring_t(ssidObj, "LowerLayers", NULL);
+        T_Radio* pRadOfSsid = (T_Radio*) swla_object_getReferenceObjectPriv(ssidObj, ssidLL);
+        free(ssidLL);
+        if(pRadOfSsid != pRad) {
+            continue;
+        }
+        const char* ssidObjName = amxd_object_get_name(ssidObj, AMXD_OBJECT_NAMED);
+        amxd_object_for_each(instance, itAp, ssidTmplObj) {
+            amxd_object_t* apObj = amxc_container_of(itAp, amxd_object_t, it);
+            const char* apObjName = amxd_object_get_name(apObj, AMXD_OBJECT_NAMED);
+            bool matchSsid = (swl_str_matches(ssidObjName, apObjName));
+            char* apSsidRef = amxd_object_get_cstring_t(apObj, "SSIDReference", NULL);
+            if(!swl_str_isEmpty(apSsidRef)) {
+                matchSsid = (swla_object_getReferenceObject(apObj, apSsidRef) == ssidObj);
+            }
+            free(apSsidRef);
+            if(matchSsid) {
+                SAH_TRACEZ_INFO(ME, "AP obj %s is mapped to Radio %s", apObjName, pRad->Name);
+                count++;
+                break;
+            }
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "%d AP objs are mapped to Radio %s", count, pRad->Name);
+    return count;
+}
+
+uint32_t wld_rad_countAPsByAutoMacSrc(T_Radio* pRad, wld_autoMacSrc_e autoMacSrc) {
+    uint32_t count = 0;
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        T_SSID* pSSID = pAP->pSSID;
+        if((pSSID != NULL) && (pSSID->autoMacSrc == autoMacSrc)) {
+            count++;
+        }
+    }
+    return count;
+}
+
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size) {
     int i = 0;
     int j = 0;

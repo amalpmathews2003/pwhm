@@ -85,6 +85,8 @@ static char* SSID_SupStatus[] = {"Error", "LowerLayerDown", "NotPresent", "Dorma
 
 static amxc_llist_t sSsidList = {NULL, NULL};
 
+static const char* wld_autoMacSrc_str[WLD_AUTOMACSRC_MAX] = {"Dummy", "Radio"};
+
 static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
     T_SSID* pSSID = (T_SSID*) priv;
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
@@ -324,9 +326,15 @@ amxd_status_t _wld_ssid_setLowerLayers_pwf(amxd_object_t* object,
                         pSSID->Name, lowerLayer);
     }
     pSSID->RADIO_PARENT = pRad;
+    pSSID->autoMacSrc = WLD_AUTOMACSRC_RADIO_BASE;
 
     SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
+}
+
+static const char* s_getAutoMacSrcName(uint32_t srcId) {
+    ASSERT_TRUE(srcId < SWL_ARRAY_SIZE(wld_autoMacSrc_str), "Invalid", ME, "invalid id %d", srcId);
+    return wld_autoMacSrc_str[srcId];
 }
 
 void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin) {
@@ -334,13 +342,33 @@ void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macB
     ASSERT_NOT_NULL(pRad, , ME, "%s: No mapped radio", pSSID->Name);
     T_AccessPoint* pAP = pSSID->AP_HOOK;
     T_EndPoint* pEP = pSSID->ENDP_HOOK;
-    ASSERT_TRUE((pAP != NULL) || (pEP != NULL), , ME, "%s: No mapped AP/EP", pSSID->Name);
-    const char* ifName = ((pAP != NULL) ? pAP->alias : pEP->Name);
-    const char* addrType = ((pAP != NULL) ? "AP BSSID" : "EP MAC");
-    swl_rc_ne rc = wld_rad_macCfg_generateMac(pRad, index, macBin);
-    ASSERT_FALSE(rc < SWL_RC_OK, , ME, "%s: fail to generate %s", ifName, addrType);
-    SAH_TRACEZ_INFO(ME, "%s: gen %s "SWL_MAC_FMT "rank(%d)",
-                    ifName, addrType, SWL_MAC_ARG(macBin->bMac), index);
+    ASSERT_FALSE((pAP == NULL) && (pEP == NULL), , ME, "%s: No mapped AP/EP", pSSID->Name);
+    swl_rc_ne rc = SWL_RC_ERROR;
+    const char* ifname = (pAP != NULL) ? pAP->alias : pEP->Name;
+    const char* macType = (pAP != NULL) ? "AP BSSID" : "EP MAC";
+    const char* macSrc = s_getAutoMacSrcName(pSSID->autoMacSrc);
+
+    switch(pSSID->autoMacSrc) {
+    case WLD_AUTOMACSRC_RADIO_BASE: {
+        if(pAP != NULL) {
+            rc = wld_rad_macCfg_generateBssid(pRad, ifname, index, macBin);
+        } else {
+            rc = wld_rad_macCfg_generateEpMac(pRad, ifname, index, macBin);
+        }
+        break;
+    }
+    case WLD_AUTOMACSRC_DUMMY: {
+        ASSERT_NULL(pEP, , ME, "MUST Not generate dummy MAC address for Endpoint %s interface", ifname);
+        rc = wld_rad_macCfg_generateDummyBssid(pRad, ifname, index, macBin);
+        break;
+    }
+    default:
+        break;
+    }
+    ASSERT_TRUE(swl_rc_isOk(rc), , ME, "%s: fail to generate %s %s src %s",
+                pSSID->Name, ifname, macType, macSrc);
+    SAH_TRACEZ_INFO(ME, "%s: gen %s %s src %s rank(%d): "SWL_MAC_FMT,
+                    pRad->Name, ifname, macType, macSrc, index, SWL_MAC_ARG(macBin->bMac));
     pSSID->bssIndex = index;
 }
 

@@ -365,6 +365,7 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio Ctx");
     SAH_TRACEZ_INFO(ME, "pSSID(%p) pRad(%p)", pSSID, pRad);
     uint32_t idx = amxc_llist_size(&pRad->llAP);
+    uint32_t macRefIdx = wld_rad_countAPsByAutoMacSrc(pRad, WLD_AUTOMACSRC_RADIO_BASE);
     if(pAP != NULL) {
         bool ret = s_initAp(pAP, pRad, vapName, idx);
         ASSERT_EQUALS(ret, true, amxd_status_unknown_error, ME, "%s: fail to re-create accesspoint", vapName);
@@ -376,6 +377,7 @@ static amxd_status_t _linkApSsid(amxd_object_t* object, amxd_object_t* pSsidObj)
     SAH_TRACEZ_INFO(ME, "%s: add vap %s", pRad->Name, vapName);
     pSSID->AP_HOOK = pAP;
     pAP->pSSID = pSSID;
+    pAP->pSSID->autoMacRefIndex = macRefIdx;
 
     SAH_TRACEZ_WARNING(ME, "CREATE HOOK %s", pAP->name);
     pAP->pRadio->pFA->mfn_wvap_create_hook(pAP);

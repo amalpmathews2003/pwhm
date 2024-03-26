@@ -76,7 +76,7 @@
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
                     parameter BaseMacOffset = {{RadioId}};
-                    parameter UseLocalBitForGuest = true;
+                    parameter UseLocalBitForGuest = false;
                 }
             }
 {% endif; endfor; %}

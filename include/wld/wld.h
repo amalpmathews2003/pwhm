@@ -1649,6 +1649,11 @@ typedef struct {
     chanmgt_rad_state oldDetailedState;
 } wld_radio_status_change_event_t;
 
+typedef enum {
+    WLD_AUTOMACSRC_DUMMY,                        /* mac is generated from a dummy base */
+    WLD_AUTOMACSRC_RADIO_BASE,                   /* mac is generated from radio base mac */
+    WLD_AUTOMACSRC_MAX,
+} wld_autoMacSrc_e;
 
 struct S_SSID {
     amxc_llist_it_t it;
@@ -1670,6 +1675,8 @@ struct S_SSID {
     bool syncEnableToIntf;                    /* Whether the sync should be SSID to intf (true) or other way (false)*/
     uint32_t bssIndex;                        /* interface creation order among all radio's interfaces */
     int32_t mldUnit;                          /* the index in which "mld unit" this SSID is located */
+    wld_autoMacSrc_e autoMacSrc;              /* auto generated mac source: from radio (/or dummy) base mac, or statically learned from driver */
+    uint32_t autoMacRefIndex;                 /* mac address offset from source base mac */
 };
 
 typedef struct {
