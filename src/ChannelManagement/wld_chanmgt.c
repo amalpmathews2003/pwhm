@@ -374,6 +374,9 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
     if(pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) {
         pR->operatingChannelBandwidth = swl_chanspec_toRadBw(&chanspec);
     }
+    if((reason == CHAN_REASON_OBSS_COEX)) {
+        pR->targetChanspec.chanspec.bandwidth = chanspec.bandwidth;
+    }
 
     pR->currentChanspec.chanspec = chanspec;
     pR->currentChanspec.reason = reason;
