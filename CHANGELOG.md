@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.44.2 - 2024-03-27(10:08:51 +0000)
+
+### Other
+
+- : client cannot authenticate to vap 2.4GHz / 5GHz in WPA2-WPA3
+
 ## Release v5.44.1 - 2024-03-26(16:02:19 +0000)
 
 ### Other
