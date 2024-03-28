@@ -3233,6 +3233,16 @@ T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
     return NULL;
 }
 
+T_AccessPoint* wld_rad_getFirstBroadcastingAp(T_Radio* pRad) {
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if((pAP->index > 0) && (pRad->pFA->mfn_wvap_status(pAP) > 0) && pAP->SSIDAdvertisementEnabled) {
+            return pAP;
+        }
+    }
+    return NULL;
+}
+
 T_EndPoint* wld_rad_getFirstActiveEp(T_Radio* pRad) {
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {

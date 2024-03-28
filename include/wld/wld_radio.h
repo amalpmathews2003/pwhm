@@ -200,6 +200,7 @@ uint32_t wld_rad_countAPsByAutoMacSrc(T_Radio* pRad, wld_autoMacSrc_e autoMacSrc
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);
 T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad);
+T_AccessPoint* wld_rad_getFirstBroadcastingAp(T_Radio* pRad);
 T_EndPoint* wld_rad_getFirstActiveEp(T_Radio* pRad);
 
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size);
