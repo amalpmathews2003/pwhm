@@ -799,6 +799,7 @@ amxd_status_t _getSpectrumInfo(amxd_object_t* object,
 
     /* asynchronous call */
     if(retCode == SWL_RC_CONTINUE) {
+        s_notifyStartScan(pR, SCAN_TYPE_SPECTRUM, "getSpectrumInfo", retCode);
         swl_function_defer(&pR->scanState.scanFunInfo, func, retval);
         SAH_TRACEZ_OUT(ME);
         return amxd_status_deferred;
