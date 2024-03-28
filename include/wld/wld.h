@@ -815,8 +815,10 @@ typedef struct {
     uint32_t Tx_Retransmissions;
     uint32_t Tx_RetransmissionsFailed;
     uint32_t Rx_RetransmissionsFailed;
-    bool Active;                /* Whether station is actually connected, potentially not Authenticated */
-    bool seen;                  /* data field for maclist updates */
+    uint32_t retryCount;         /* The number of packets that were successfully transmitted after one or more retransmissions */
+    uint32_t multipleRetryCount; /* The number of packets that were successfully transmitted after more than one retransmission */
+    bool Active;                 /* Whether station is actually connected, potentially not Authenticated */
+    bool seen;                   /* data field for maclist updates */
     swl_radStd_e operatingStandard;
 
     wld_assocDev_capabilities_t assocCaps;
@@ -908,6 +910,8 @@ SWL_ARRAY_TYPE_H(gtWld_signalStatArray, gtSwl_type_double, MAX_NR_ANTENNA);
     X(Y, gtSwl_type_uint32, Rx_RetransmissionsFailed, "Rx_RetransmissionsFailed") \
     X(Y, gtSwl_type_uint32, Tx_Retransmissions, "Tx_Retransmissions") \
     X(Y, gtSwl_type_uint32, Tx_RetransmissionsFailed, "Tx_RetransmissionsFailed") \
+    X(Y, gtSwl_type_uint32, retryCount, "RetryCount") \
+    X(Y, gtSwl_type_uint32, multipleRetryCount, "MultipleRetryCount") \
     X(Y, gtSwl_type_bool, Active, "Active") \
     X(Y, gtSwl_type_radStd, operatingStandard, "OperatingStandard") \
     X(Y, gtSwl_type_uint32, Inactive, "Inactive") \

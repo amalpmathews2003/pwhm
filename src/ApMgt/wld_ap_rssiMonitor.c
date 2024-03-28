@@ -600,8 +600,8 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
         sample->tx_RetransmissionsFailed = pAD->Tx_RetransmissionsFailed;
         sample->txFrameCount = pAD->TxFrameCount;
         sample->rxFrameCount = pAD->RxFrameCount;
-        sample->retryCount = 0;
-        sample->multipleRetryCount = 0;
+        sample->retryCount = pAD->retryCount;
+        sample->multipleRetryCount = pAD->multipleRetryCount;
         sample->inactive = pAD->Inactive;
         sample->powerSave = pAD->powerSave;
         // mcs data

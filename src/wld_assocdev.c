@@ -1736,6 +1736,8 @@ void wld_ad_syncStats(T_AssociatedDevice* pAD) {
     SWLA_OBJECT_SET_PARAM_UINT32(object, "Rx_RetransmissionsFailed", pAD->Rx_RetransmissionsFailed);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_Retransmissions", pAD->Tx_Retransmissions);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "Tx_RetransmissionsFailed", pAD->Tx_RetransmissionsFailed);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "RetryCount", pAD->retryCount);
+    SWLA_OBJECT_SET_PARAM_UINT32(object, "MultipleRetryCount", pAD->multipleRetryCount);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "RxPacketCount", pAD->RxPacketCount);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "TxPacketCount", pAD->TxPacketCount);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "RxUnicastPacketCount", pAD->RxUnicastPacketCount);
