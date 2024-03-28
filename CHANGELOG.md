@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.45.2 - 2024-03-28(16:00:44 +0000)
+
+### Other
+
+- getSpectrumInfo with update does not work
+
 ## Release v5.45.1 - 2024-03-28(11:34:49 +0000)
 
 ### Other
