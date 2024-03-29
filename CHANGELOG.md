@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.46.1 - 2024-03-29(11:45:43 +0000)
+
+### Fixes
+
+- [tr181-pcm] Saved and defaults odl should not be included in the backup files
+
 ## Release v5.46.0 - 2024-03-29(08:01:08 +0000)
 
 ### Other
