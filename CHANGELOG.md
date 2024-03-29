@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.46.2 - 2024-03-29(13:59:05 +0000)
+
+### Other
+
+- - Add Associated device statistics for retransmitted packets
+
 ## Release v5.46.1 - 2024-03-29(11:45:43 +0000)
 
 ### Fixes
