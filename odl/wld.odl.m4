@@ -71,6 +71,7 @@
     // odl parser config options
     import-dbg = false;
     dm-eventing-enabled = true;
+    dm-events-before-start = true;
 
     populate-behavior = {
         duplicate-instance = "update"
