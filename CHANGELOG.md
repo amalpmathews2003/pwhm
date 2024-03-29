@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v5.46.0 - 2024-03-29(08:01:08 +0000)
+
+### Other
+
+- [WiFi Sensing] Add new util function
+
 ## Release v5.45.2 - 2024-03-28(16:00:44 +0000)
 
 ### Other
