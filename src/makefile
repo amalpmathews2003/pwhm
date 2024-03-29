@@ -5,7 +5,7 @@ include ../makefile.inc
 OBJDIR = ../output/$(MACHINE)
 
 # TARGETS
-TARGET_SO = $(OBJDIR)/$(COMPONENT).so
+TARGET_SO = $(OBJDIR)/libwld.so.$(VERSION)
 
 # directories
 # source directories
@@ -34,6 +34,7 @@ OBJECTS = $(addprefix $(OBJDIR)/,$(filter-out $(EXCLUDED_OBJECTS),$(OBJECTS_BASE
 SUBDIRS = $(addprefix $(OBJDIR),$(patsubst $(SRCDIR)%,%/,$(SUBDIRS_BASE)))
 
 CFLAGS += -std=gnu99 -fPIC -g -Wall -Werror -Wextra  \
+		-I. \
 		$(addprefix -I ,$(INCDIRS)) \
 		-I../include_priv/ChannelManagement/ \
 		-I../include_priv/VendorModule/ \
@@ -45,14 +46,15 @@ CFLAGS += -Wformat -Wformat-security -Wimplicit-function-declaration -Wl,--no-un
 LDFLAGS += $(STAGING_LIBDIR) -shared -lsahtrace -lswlc -lswla -lcrypto -lssl -lnl-3 -lnl-genl-3 -lrt -lm -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd -ldl
 
 ifeq ($(COVERAGE),y)
-CFLAGS +=-fprofile-arcs -ftest-coverage
-LDFLAGS += -fprofile-arcs -ftest-coverage
+CFLAGS +=-fprofile-arcs -ftest-coverage -fprofile-abs-path
+LDFLAGS += -fprofile-arcs -ftest-coverage -fprofile-abs-path
 endif
 
 all: $(TARGET_SO)
+	ln -sf libwld.so.$(VERSION) $(OBJDIR)/libwld.so
 
 $(TARGET_SO): $(OBJECTS)
-	$(CC) -Wl,-soname,$(COMPONENT).so -o $(@) $(OBJECTS) $(LDFLAGS)
+	$(CC) -Wl,-soname,libwld.so -o $(@) $(OBJECTS) $(LDFLAGS)
 
 -include $(OBJECTS:.o=.d)
 

@@ -2,34 +2,40 @@ ifndef STAGINGDIR
 	$(error "STAGINGDIR not defined")
 endif
 
-MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-SUT_DIR = $(dir $(MKFILE_PATH))/..
-$(info $$SUT_DIR is [${SUT_DIR}])
-
-SUT_OBJECTS = \
-	$(patsubst %.c, %.o, $(wildcard $(SUT_DIR)/test/testHelper/*.c))
-
-INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include)
+VERSION_PREFIX ?= $(shell git describe --tags 2>/dev/null | sed 's/[av][0-9]\+.*//')
+RAW_VERSION ?= $(if $(shell git describe --tags 2> /dev/null),$(shell git describe --tags),$(VERSION_PREFIX)v0.0.0)
+VERSION = $(if $(findstring .,$(RAW_VERSION)),$(subst $(VERSION_PREFIX)v,,$(strip $(RAW_VERSION))),$(strip $(RAW_VERSION)))
+MACHINE = $(shell $(CC) -dumpmachine)
 PKGCONFDIR = $(STAGINGDIR)/usr/lib/pkgconfig
+SRCDIR = $(realpath .) # compile only test source, plugin should be already compiled with COVERAGE=y option
+OBJDIR = $(realpath ../../output/$(MACHINE))/test
+TEST_COMMON_SRC_DIR = $(realpath ../testHelper/)
+LIB_OBJ_DIR = $(realpath ../../output/$(MACHINE))
 
-CFLAGS += -I$(SUT_DIR)/include \
-		  -I$(SUT_DIR)/include_priv \
-		  -I$(SUT_DIR)/include/wld \
-		  -I$(STAGINGDIR)/usr/include \
-		  -fprofile-arcs -ftest-coverage \
+INCDIRS = $(realpath ../../include_priv ../../include ../../include/wld ../testHelper/)
+INCDIRS += $(realpath $(STAGINGDIR)/usr/include)
+
+LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib:$(LIB_OBJ_DIR):$(LIB_OBJ_DIR)/Plugin
+
+SOURCES += $(wildcard $(TEST_COMMON_SRC_DIR)/*.c)
+SOURCES += $(wildcard ./*.c)
+OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
+TARGET = $(OBJDIR)/run_test_$(AUTO_TEST_FILE)
+
+CFLAGS += -fprofile-arcs -ftest-coverage -fprofile-abs-path \
 		  -g3 \
 		  -Wextra -Wall -Werror \
 		  $(addprefix -I ,$(INCDIRS)) \
 		  $(shell PKG_CONFIG_PATH=$(PKGCONFDIR) pkg-config --define-prefix --cflags sahtrace pcb cmocka swla swlc openssl test-toolbox)
-LDFLAGS += -fprofile-arcs -ftest-coverage  \
+
+LDFLAGS += -fprofile-arcs -ftest-coverage -fprofile-abs-path \
+		   -L../../output/$(MACHINE) \
+		   -L../../output/$(MACHINE)/Plugin \
+		   -l:libwld.so.$(VERSION) \
+		   -l:wld.so.$(VERSION) \
 		   -L$(STAGINGDIR)/lib \
 		   -L$(STAGINGDIR)/usr/lib \
 		   -Wl,-rpath,$(STAGINGDIR)/lib \
 		   -Wl,-rpath,$(STAGINGDIR)/usr/lib \
 		   $(shell PKG_CONFIG_PATH=$(PKGCONFDIR) pkg-config --define-prefix --libs sahtrace pcb cmocka swla swlc openssl test-toolbox) \
-		   -lamxb -lamxc -lamxd -lamxo -lamxp -lamxj\
-		   -L$(SUT_DIR)/src \
-		   -L$(SUT_DIR)/src/Plugin \
-		   -l:libwld.so \
-		   -l:wld.so \
-		   -lm \
+		   -lamxb -lamxc -lamxd -lamxo -lamxp -lamxj  -lm

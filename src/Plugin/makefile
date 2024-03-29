@@ -3,7 +3,7 @@ include ../../makefile.inc
 OBJDIR = ../../output/$(MACHINE)
 
 # TARGETS
-TARGET_SO = $(OBJDIR)/Plugin/wld.so
+TARGET_SO = $(OBJDIR)/Plugin/wld.so.$(VERSION)
 
 # directories
 # source directories
@@ -20,15 +20,23 @@ OBJECTS = $(addprefix $(OBJDIR)/Plugin/,$(SOURCES:.c=.o))
 SUBDIRS_BASE = $(shell find $(SRCDIR) -type d)
 SUBDIRS = $(addprefix $(OBJDIR)/Plugin,$(patsubst $(SRCDIR)%,%/,$(SUBDIRS_BASE)))
 
-CFLAGS := -std=gnu99 -fPIC -g -Wall -Werror -Wextra  \
+CFLAGS := -std=gnu99 -fPIC -g -Wall -Werror -Wextra $(CFLAGS) \
 		$(addprefix -I ,$(INCDIRS)) \
 		-I$(INCDIR_PRIV)/Plugin/ \
 		-I$(INCDIR)/ \
 		-DSAHTRACES_ENABLED -DSAHTRACES_LEVEL_DEFAULT=500
 CFLAGS += -Wformat -Wformat-security -Wimplicit-function-declaration -Wl,--no-undefined -Wno-unused-variable
-LDFLAGS := -L$(OBJDIR) $(STAGING_LIBDIR) -Wl,-rpath,/lib -Wl,-rpath,/usr/lib -shared  -lsahtrace -lswlc -lswla -lwld -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
+LDFLAGS := -L$(OBJDIR) $(LDFLAGS) $(STAGING_LIBDIR) -Wl,-rpath,/lib -Wl,-rpath,/usr/lib -shared  -lsahtrace -lswlc -lswla -lamxo -lamxb -lamxc -lamxm -lamxp -lamxd
+# Avoid linking un expected version of libwld library 
+LDFLAGS += -l:libwld.so.$(VERSION)
 
-all: $(TARGET_SO)
+ifeq ($(COVERAGE),y)
+CFLAGS +=-fprofile-arcs -ftest-coverage -fprofile-abs-path
+LDFLAGS += -fprofile-arcs -ftest-coverage -fprofile-abs-path
+endif
+
+all: $(TARGET_SO) 
+	ln -sf wld.so.$(VERSION) $(OBJDIR)/Plugin/wld.so
 
 $(TARGET_SO): $(OBJECTS)
 	$(CC) -Wl,-soname,wld.so -o $(@) $(OBJECTS) $(LDFLAGS)

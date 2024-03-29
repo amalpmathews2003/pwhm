@@ -207,7 +207,7 @@
     };
 
     import-dirs = [
-        "../../src/Plugin/",
+        "../../output/machine/Plugin",
         "${prefix}/usr/lib/amx/${name}",
         "${prefix}/usr/lib/amx/modules"
     ];

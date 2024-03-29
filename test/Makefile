@@ -1,39 +1,27 @@
-RUNTEST_SUB_MAKEFILES = $(wildcard */*/Makefile) $(wildcard */Makefile)
-RUNTEST_SUBDIRS = $(subst /Makefile,,$(RUNTEST_SUB_MAKEFILES))
-REPORT_XMLS = $(subst %,%.xml,$(RUNTEST_SUBDIRS))
+PKG_CONFIG_LIBDIR := /usr/lib/pkgconfig:/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:$(PKG_CONFIG_LIBDIR)
+MACHINE = $(shell $(CC) -dumpmachine)
+SUBDIRS=$(subst /Makefile,,$(wildcard */*/Makefile) $(wildcard */Makefile))
+UT_BUILDDIR = $(realpath ../output/$(MACHINE)/test)
+OBJDIR = $(realpath ../output/$(MACHINE))
+COVERREPORT = $(OBJDIR)/coverage/report
 
-# Workaround.
-# For some reason on local testruns sometimes there are build errors
-# because the PKG_CONFIG_LIBDIR set does not work, so unset it.
-unexport PKG_CONFIG_LIBDIR
-
-test: $(RUNTEST_SUBDIRS)
-runtest: test
-
-report: $(patsubst %,%.xml,$(REPORT_XMLS))
-
-$(RUNTEST_SUBDIRS):
-	$(MAKE) -C $(subst .xml,,$@) runtest
-
-%.xml:
-	$(MAKE) -C $(subst .xml,,$@) unit.xml
-	cp $(subst .xml,,$@)/unit.xml $@
-
-export GCOV_SETTINGS=--print-summary --root $(realpath ..)
-coverage_report:
-	mkdir -p coverage
-	gcovr $(GCOV_SETTINGS) # just for the output
-	gcovr $(GCOV_SETTINGS) --html --html-details -o coverage/swl.html
+run: 
+	for dir in $(SUBDIRS); do make -C $$dir $@  || exit -1; done
 
 clean:
-	rm -rf coverage
-	find . -name "*.o" -delete
-	find . -name "*.xml" -delete
-	find . -name "*.gcno" -delete
-	find . -name "*.gcda" -delete
-	find . -name "*.d" -delete
-	find . -name "test.*_test" -delete
-	
-	find . -name "gentest_*" -delete
+	rm -rf $(UT_BUILDDIR)/test_*.o
+	rm -rf $(UT_BUILDDIR)/$(COVERREPORT)
+	find .. -name "run_test" -delete
 
-.PHONY: $(RUNTEST_SUBDIRS) $(REPORT_XMLS) coverage_report report runtest test clean
+coverage:
+	mkdir -p $(COVERREPORT)
+	cd $(OBJDIR) && \
+	for i in $$(find . -type f -iname "*.o"); do \
+		gcov -c -b -f --long-file-names --preserve-paths $$i > /dev/null; \
+    done
+	cd $(OBJDIR) && for i in $$(find . -name "*.h.gcov"); do rm $$i > /dev/null; done
+	cd $(OBJDIR) && gcovr -k -p -r ../../ -g -s --html --html-details -o $(COVERREPORT)/index.html .
+	cd $(OBJDIR) && gcovr -k -p -r ../../ -g -s . | tee $(COVERREPORT)/gcovr_summary.txt
+
+
+.PHONY: run clean coverage
