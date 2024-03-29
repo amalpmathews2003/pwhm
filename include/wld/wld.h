@@ -1384,24 +1384,6 @@ typedef struct {
 } wld_rad_detailedChanState_t;
 
 typedef struct {
-    amxc_llist_it_t it;
-    swl_macChar_t macAddr;
-    uint32_t monitorInterval;
-    amxd_object_t* obj;
-} wld_csiClient_t;
-
-typedef struct {
-    uint32_t nullFrameCounter;          /* Null frames sent */
-    uint32_t m2mTransmitCounter;        /* Number of CSI records successfully xferred by M2M DMA */
-    uint32_t userTransmitCounter;       /* Number of CSI records successfully xferred by user over netlink socket */
-    uint32_t nullFrameAckFailCounter;   /* Null frames not successfully acknowledged */
-    uint32_t receivedOverflowCounter;   /* The application is not reading the records fast enough */
-    uint32_t transmitFailCounter;       /* SVMP to host memory xfer failures */
-    uint32_t userTransmitFailCounter;   /* CSIMON drops with nl send */
-    amxc_var_t* vendorCounters;         /* Vendor specific counters */
-} wld_csiState_t;
-
-typedef struct {
     uint8_t heBssColor;
     uint8_t heBssColorPartial;
     bool heHESIGASpatialReuseValue15Allowed;

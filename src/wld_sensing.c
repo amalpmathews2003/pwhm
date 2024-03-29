@@ -70,7 +70,7 @@
 
 #define ME "csi"
 
-static wld_csiClient_t* s_findClient(amxd_object_t* templateObj, const char* macAddr) {
+static wld_csiClient_t* s_findClientByMacFromTemplate(amxd_object_t* templateObj, const char* macAddr) {
     amxd_object_for_each(instance, it, templateObj) {
         amxd_object_t* clientObj = amxc_container_of(it, amxd_object_t, it);
         ASSERT_NOT_NULL(clientObj, NULL, ME, "NULL");
@@ -79,6 +79,18 @@ static wld_csiClient_t* s_findClient(amxd_object_t* templateObj, const char* mac
         free(entryMacAddr);
         if(match) {
             return clientObj->priv;
+        }
+    }
+    return NULL;
+}
+
+wld_csiClient_t* wld_sensing_findClientByMac(T_Radio* pRad, swl_macChar_t macAddr) {
+    amxc_llist_for_each(it, &pRad->csiClientList) {
+        wld_csiClient_t* client = amxc_llist_it_get_data(it, wld_csiClient_t, it);
+        if(swl_str_matches(client->macAddr.cMac, macAddr.cMac)) {
+            return client;
+        } else {
+            continue;
         }
     }
     return NULL;
@@ -131,7 +143,7 @@ amxd_status_t _Sensing_addClient(amxd_object_t* object,
     amxd_trans_t trans;
     amxd_object_t* clientTemplate = amxd_object_findf(object, "CSIClient");
     ASSERT_NOT_NULL(clientTemplate, amxd_status_unknown_error, ME, "%s: CSIClient object not found", pRad->Name);
-    wld_csiClient_t* client = s_findClient(clientTemplate, macAddr);
+    wld_csiClient_t* client = s_findClientByMacFromTemplate(clientTemplate, macAddr);
     if(client != NULL) {
         SAH_TRACEZ_INFO(ME, "%s: Client with MACAddress [%s] found in client list", pRad->Name, macAddr);
         ASSERT_TRANSACTION_INIT(client->obj, &trans, amxd_status_unknown_error, ME,
@@ -283,7 +295,7 @@ swl_rc_ne wld_sensing_delCsiClientEntry(T_Radio* pRad, swl_macBin_t* macAddr) {
     ASSERT_NOT_NULL(sensingTemplate, SWL_RC_ERROR, ME, "%s: Sensing object not found", pRad->Name);
     amxd_object_t* clientTemplate = amxd_object_findf(sensingTemplate, "CSIClient");
     ASSERT_NOT_NULL(clientTemplate, SWL_RC_ERROR, ME, "%s: CSIClient object not found", pRad->Name);
-    wld_csiClient_t* client = s_findClient(clientTemplate, macChar.cMac);
+    wld_csiClient_t* client = s_findClientByMacFromTemplate(clientTemplate, macChar.cMac);
     ASSERTI_NOT_NULL(client, SWL_RC_OK, ME, "%s: Client with MACAddress [%s] not found",
                      pRad->Name, macChar.cMac);
 
