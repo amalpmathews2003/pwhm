@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,16 +60,16 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_WPA_CTRL_API_H__
-#define __WLD_WPA_CTRL_API_H__
+#ifndef INCLUDE_PRIV_NL80211_WLD_SECDMNGRP_PRIV_H_
+#define INCLUDE_PRIV_NL80211_WLD_SECDMNGRP_PRIV_H_
 
-#include "wld_wpaCtrlInterface.h"
+#include "wld_secDmnGrp.h"
 
-bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd);
-bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len);
-bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse);
-bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
-swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...);
-void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
+swl_rc_ne wld_secDmnGrp_addMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn, const char* memberName);
+swl_rc_ne wld_secDmnGrp_setMemberEvtHdlrs(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn, wld_deamonEvtHandlers* pHdlrs, void* priv);
+swl_rc_ne wld_secDmnGrp_delMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
+swl_rc_ne wld_secDmnGrp_startMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
+swl_rc_ne wld_secDmnGrp_stopMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
+bool wld_secDmnGrp_isMemberStarted(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
 
-#endif /* __WLD_WPA_CTRL_API_H__ */
+#endif /* INCLUDE_PRIV_NL80211_WLD_SECDMNGRP_PRIV_H_ */

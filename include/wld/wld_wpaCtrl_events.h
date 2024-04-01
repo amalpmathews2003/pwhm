@@ -153,6 +153,7 @@ typedef void (* wld_wpaCtrl_stationScanFailedCb_f)(void* userData, char* ifName,
 typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse);
 typedef void (* wld_wpaCtrl_stationStartConnCb_f)(void* userData, char* ifName, const char* ssid, swl_macBin_t* bBssidMac, swl_chanspec_t* pChansSpec);
 typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* ifName, int error);
+typedef void (* wld_wpaCtrl_apIfaceEventCb_f)(void* userData, char* ifName);
 
 /*
  * @brief structure of AP/EP event handlers
@@ -181,6 +182,8 @@ typedef struct {
     wld_wpaCtrl_stationStartConnCb_f fStationStartConnCb;             // Endpoint starting connection
     wld_wpaCtrl_stationStartConnFailedCb_f fStationStartConnFailedCb; // Endpoint connection init failure
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
+    wld_wpaCtrl_apIfaceEventCb_f fApEnabledCb;
+    wld_wpaCtrl_apIfaceEventCb_f fApDisabledCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
@@ -222,7 +225,7 @@ typedef struct {
      * may be used to schedule fsm actions, post events
      * (from hostapd/wpa_supplicant)
      */
-    wld_wpaCtrl_syncOnReadyCb_f fSyncOnRadioUp;                       // Handler to sync ifaces when radio is up (ie mgr ready and APMain enabled)
+    wld_wpaCtrl_syncOnReadyCb_f fSyncOnRadioUp;                       // Handler to sync ifaces when radio is going up (ie mgr ready and APMain is(/being) enabled)
     wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpConnected;                   // Handler to sync radio conf when endpoint is connected
     wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpDisconnected;                // Handler to sync radio conf when endpoint is disconnected
     wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;           // EndPoint failing to scan BSS

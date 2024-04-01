@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,16 +60,52 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_WPA_CTRL_API_H__
-#define __WLD_WPA_CTRL_API_H__
+#ifndef INCLUDE_WLD_WLD_SECDMNGRP_H_
+#define INCLUDE_WLD_WLD_SECDMNGRP_H_
 
-#include "wld_wpaCtrlInterface.h"
+#include "wld_secDmn_types.h"
+#include "wld_secDmn.h"
 
-bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd);
-bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len);
-bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse);
-bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
-swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...);
-void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
+/*
+ * @brief handler to build dynamically arguments before starting daemon
+ * @param pSecDmnGrp pointer to group context
+ * @param userData user data provided at initialization
+ * @param pProc process to be started
+ * @return newly allocate string filled with new start args (freed by the API)
+ * If returned NULL, then previous start args will be using
+ */
+typedef char* (* wld_secDmnGrp_getArgsHandler)(wld_secDmnGrp_t* pSecDmnGrp, void* userData, const wld_process_t* pProc);
 
-#endif /* __WLD_WPA_CTRL_API_H__ */
+/*
+ * @brief handler to check whether a member is startable (ie has starting conditions)
+ * @param pSecDmnGrp pointer to group context
+ * @param userData user data provided at initialization
+ * @param pMember group member (pointer to sec deamon context)
+ * @return bool member starting conditions status (true when startable)
+ */
+typedef bool (* wld_secDmnGrp_isMemberStartable)(wld_secDmnGrp_t* pSecDmnGrp, void* userData, wld_secDmn_t* pMember);
+
+typedef struct {
+    wld_secDmnGrp_getArgsHandler getArgsCb;               /* handler to build dynamically arguments before starting daemon */
+    wld_secDmnGrp_isMemberStartable isMemberStartableCb;  /* handler to pre-check starting conditions of group member */
+} wld_secDmnGrp_EvtHandlers_t;
+
+swl_rc_ne wld_secDmnGrp_init(wld_secDmnGrp_t** ppSecDmnGrp, char* cmd, char* startArgs, const char* groupName);
+swl_rc_ne wld_secDmnGrp_cleanup(wld_secDmnGrp_t** ppSecDmn);
+swl_rc_ne wld_secDmnGrp_setEvtHandlers(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmnGrp_EvtHandlers_t* pHandlers, void* userData);
+bool wld_secDmnGrp_isEnabled(wld_secDmnGrp_t* pSecDmnGrp);
+bool wld_secDmnGrp_isRunning(wld_secDmnGrp_t* pSecDmnGrp);
+wld_process_t* wld_secDmnGrp_getProc(wld_secDmnGrp_t* pSecDmnGrp);
+
+/*
+ * In order to add/del members to group, secDmn APIs must be used
+ */
+
+uint32_t wld_secDmnGrp_getMembersCount(wld_secDmnGrp_t* pSecDmnGrp);
+const wld_secDmn_t* wld_secDmnGrp_getMemberByPos(wld_secDmnGrp_t* pSecDmnGrp, int32_t pos);
+const wld_secDmn_t* wld_secDmnGrp_getMemberByName(wld_secDmnGrp_t* pSecDmnGrp, const char* name);
+bool wld_secDmnGrp_hasMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
+swl_rc_ne wld_secDmnGrp_setMemberStartable(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn, bool isStartable);
+swl_rc_ne wld_secDmnGrp_dropMembers(wld_secDmnGrp_t* pSecDmnGrp);
+
+#endif /* INCLUDE_WLD_WLD_SECDMNGRP_H_ */

@@ -187,6 +187,32 @@ void wld_dmn_cleanupDaemon(wld_process_t* process) {
     process->restart_timer = NULL;
 }
 
+swl_rc_ne wld_dmn_createDeamon(wld_process_t** pDmnProcess, char* cmd, char* startArgs, wld_deamonEvtHandlers* pEvtHdlrs, void* pEvtData) {
+    ASSERT_STR(cmd, SWL_RC_INVALID_PARAM, ME, "invalid cmd");
+    ASSERT_NOT_NULL(pDmnProcess, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NULL(*pDmnProcess, SWL_RC_OK, ME, "already initialized");
+    wld_process_t* dmnProcess = calloc(1, sizeof(wld_process_t));
+    ASSERT_NOT_NULL(dmnProcess, SWL_RC_ERROR, ME, "NULL");
+    if((!wld_dmn_initializeDeamon(dmnProcess, cmd)) ||
+       (!wld_dmn_setDeamonEvtHandlers(dmnProcess, pEvtHdlrs, pEvtData))) {
+        SAH_TRACEZ_ERROR(ME, "fail to initialize daemon %s", cmd);
+        wld_dmn_cleanupDaemon(dmnProcess);
+        free(dmnProcess);
+        return SWL_RC_ERROR;
+    }
+    wld_dmn_setArgList(dmnProcess, startArgs);
+    *pDmnProcess = dmnProcess;
+    return SWL_RC_OK;
+}
+
+void wld_dmn_destroyDeamon(wld_process_t** pDmnProcess) {
+    ASSERTS_NOT_NULL(pDmnProcess, , ME, "NULL");
+    ASSERTS_NOT_NULL(*pDmnProcess, , ME, "NULL");
+    wld_dmn_cleanupDaemon(*pDmnProcess);
+    free(*pDmnProcess);
+    *pDmnProcess = NULL;
+}
+
 static void s_getCurArgs(wld_process_t* process, char* args, uint32_t maxLen) {
     ASSERT_NOT_NULL(process, , ME, "NULL");
     ASSERT_NOT_NULL(args, , ME, "NULL");
@@ -210,6 +236,16 @@ bool wld_dmn_startDeamon(wld_process_t* dmn_process) {
     ASSERT_TRUE(dmn_process->status != WLD_DAEMON_STATE_UP, false, ME, "Running");
 
     SAH_TRACEZ_INFO(ME, "Starting %s", dmn_process->cmd);
+
+    char* newStartArgs = NULL;
+    if(dmn_process->handlers.getArgsCb != NULL) {
+        char* newStartArgs = dmn_process->handlers.getArgsCb(dmn_process, dmn_process->userData);
+        if(newStartArgs != NULL) {
+            SAH_TRACEZ_INFO(ME, "Setting %s startArgs (%s)", dmn_process->cmd, newStartArgs);
+            wld_dmn_setArgList(dmn_process, newStartArgs);
+            free(newStartArgs);
+        }
+    }
 
     amxc_var_t settings;
     amxc_var_init(&settings);
@@ -242,6 +278,7 @@ bool wld_dmn_startDeamon(wld_process_t* dmn_process) {
     char curArgs[dmn_process->argLen + 1];
     s_getCurArgs(dmn_process, curArgs, sizeof(curArgs));
     SAH_TRACEZ_INFO(ME, "Successful start %s, args: %s", dmn_process->cmd, curArgs);
+    SWL_CALL(dmn_process->handlers.startCb, dmn_process, dmn_process->userData);
     return true;
 }
 

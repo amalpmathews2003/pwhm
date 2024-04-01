@@ -61,6 +61,7 @@
 ****************************************************************************/
 #include "wld_channel.h"
 #include "wld_radio.h"
+#include "wld_wpaCtrl_api.h"
 #include "wld_rad_hostapd_api.h"
 #include "wld_hostapd_ap_api.h"
 #include "wld_hostapd_cfgFile.h"
@@ -278,10 +279,12 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
  * @return SWL_RC_OK when the enabling cmd is sent. Otherwise error code.
  */
 swl_rc_ne wld_rad_hostapd_enable(T_Radio* pR) {
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
-    ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
-    bool ret = wld_ap_hostapd_sendCommand(primaryVap, "ENABLE", "enableHapd");
-    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: enabling failed", primaryVap->alias);
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pR->hostapd);
+    wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+    ASSERT_NOT_NULL(pIface, SWL_RC_ERROR, ME, "%s: hostapd has no wpactrl iface ready", pR->Name);
+    bool ret = wld_wpaCtrl_sendCmdCheckResponseExt(pIface, "ENABLE", "OK", 5000);
+    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: enabling failed", wld_wpaCtrlInterface_getName(pIface));
     return SWL_RC_OK;
 }
 
@@ -293,10 +296,12 @@ swl_rc_ne wld_rad_hostapd_enable(T_Radio* pR) {
  * @return SWL_RC_OK when the the disabling cmd is sent. Otherwise error code.
  */
 swl_rc_ne wld_rad_hostapd_disable(T_Radio* pR) {
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
-    ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
-    bool ret = wld_ap_hostapd_sendCommand(primaryVap, "DISABLE", "disableHapd");
-    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: disabling failed", primaryVap->alias);
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pR->hostapd);
+    wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+    ASSERT_NOT_NULL(pIface, SWL_RC_ERROR, ME, "%s: hostapd has no wpactrl iface ready", pR->Name);
+    bool ret = wld_wpaCtrl_sendCmdCheckResponseExt(pIface, "DISABLE", "OK", 5000);
+    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: disabling failed", wld_wpaCtrlInterface_getName(pIface));
     return SWL_RC_OK;
 }
 

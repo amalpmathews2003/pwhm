@@ -311,27 +311,38 @@ static bool s_doRadEnable(T_Radio* pRad) {
 static bool s_doRadSync(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: sync rad conf", pRad->Name);
     pRad->pFA->mfn_wrad_sync(pRad, SET | DIRECT);
-    if(wifiGen_hapd_isRunning(pRad)) {
+    if(wifiGen_hapd_isAlive(pRad)) {
         wld_rad_hostapd_setMiscParams(pRad);
     }
     return true;
 }
 
-static bool s_doStopHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hapd stopped", pRad->Name);
-    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD)) {
-        T_AccessPoint* pAP;
-        wld_rad_forEachAp(pAP, pRad) {
-            wld_ap_hostapd_deauthAllStations(pAP);
-            /*
-             * as we are stopping hostapd, no need to wait for deauth notif
-             * so we can cleanup ap's AD list
-             */
+static void s_deauthAllRadSta(T_Radio* pRad, bool noAck) {
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        wld_ap_hostapd_deauthAllStations(pAP);
+        if(noAck) {
             wld_vap_remove_all(pAP);
         }
     }
+}
+
+static bool s_doStopHostapd(T_Radio* pRad) {
+    ASSERTI_TRUE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hapd stopped", pRad->Name);
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD)) {
+        /*
+         * as we are stopping radio, no need to wait for deauth notif
+         * so we can cleanup ap's AD list
+         */
+        s_deauthAllRadSta(pRad, true);
+    }
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
-    wifiGen_hapd_stopDaemon(pRad);
+    swl_rc_ne rc = wifiGen_hapd_stopDaemon(pRad);
+    SAH_TRACEZ_INFO(ME, "%s: stop hostapd returns rc : %d", pRad->Name, rc);
+    if((rc == SWL_RC_CONTINUE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
+        SAH_TRACEZ_INFO(ME, "%s: need to disable hostapd", pRad->Name);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+    }
     pRad->fsmRad.timeout_msec = 100;
     return true;
 }
@@ -343,28 +354,44 @@ static bool s_doConfHostapd(T_Radio* pRad) {
 }
 
 static bool s_doUpdateHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    ASSERTI_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
     return true;
 }
 
 static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
-    ASSERTS_TRUE(state, , ME, "not up");
     T_Radio* pRad = (T_Radio*) userData;
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
+
+    bool needCommit = (pRad->fsmRad.FSM_State != FSM_RUN);
+    unsigned long* actionArray = (needCommit ? pRad->fsmRad.FSM_BitActionArray : pRad->fsmRad.FSM_AC_BitActionArray);
+
+    if(!wifiGen_hapd_isStartable(pRad)) {
+        SAH_TRACEZ_WARNING(ME, "%s: disable hostapd iface %s not expected to start", pRad->Name, ifName);
+        setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        if(needCommit) {
+            wld_rad_doCommitIfUnblocked(pRad);
+        }
+        return;
+    }
+
+    ASSERTW_TRUE(state, , ME, "%s: hostapd connected but main iface not yet ready", pRad->Name);
     // check and apply dyn detected cfg params
-    if((swl_secDmn_countCfgParamSuppAll(pRad->hostapd) > 0) &&
-       (swl_secDmn_countCfgParamSuppChecked(pRad->hostapd) == 0)) {
+    if(wld_secDmn_countCfgParamSuppByVal(pRad->hostapd, SWL_TRL_UNKNOWN) > 0) {
         SAH_TRACEZ_INFO(ME, "%s: try to detect and apply dyn cfg params", pRad->Name);
         wifiGen_hapd_writeConfig(pRad);
-        if(swl_secDmn_countCfgParamSuppByVal(pRad->hostapd, SWL_TRL_TRUE) > 0) {
+        if(wld_secDmn_countCfgParamSuppByVal(pRad->hostapd, SWL_TRL_TRUE) > 0) {
             wld_ap_hostapd_sendCommand(pAP, "RELOAD", "refreshConfig");
         }
     }
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
-    wld_rad_doCommitIfUnblocked(pRad);
+
+    setBitLongArray(actionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+    if(needCommit) {
+        wld_rad_doCommitIfUnblocked(pRad);
+    }
+
     /**
      * Radio is ready, and Main AP is ready: listening to mgmt frames is possible.
      * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
@@ -386,25 +413,44 @@ static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {
 }
 
 static bool s_doStartHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wld_rad_hasEnabledVap(pRad), true, ME, "%s: radio has no enabled vap", pRad->Name);
-    ASSERTS_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
-    ASSERTS_FALSE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd running", pRad->Name);
+    ASSERTS_TRUE(wifiGen_hapd_isStartable(pRad), true, ME, "%s: missing enabling conds", pRad->Name);
+    ASSERTS_FALSE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hostapd already started", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: start hostapd", pRad->Name);
-    wifiGen_hapd_startDaemon(pRad);
+    swl_rc_ne rc = wifiGen_hapd_startDaemon(pRad);
+    SAH_TRACEZ_INFO(ME, "%s: start hostapd returns rc : %d", pRad->Name, rc);
+    if((rc == SWL_RC_DONE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
+        SAH_TRACEZ_INFO(ME, "%s: need to enable hostapd", pRad->Name);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+    }
     s_registerHadpRadEvtHandlers(pRad->hostapd);
+    pRad->fsmRad.timeout_msec = 500;
     return true;
 }
 
 static bool s_doDisableHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    chanmgt_rad_state radDetState = CM_RAD_UNKNOWN;
+    swl_rc_ne rc = wifiGen_hapd_getRadState(pRad, &radDetState);
+    if((!swl_rc_isOk(rc)) || (radDetState == CM_RAD_DOWN)) {
+        SAH_TRACEZ_INFO(ME, "%s: hapd iface already disabled", pRad->Name);
+        return true;
+    }
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD)) {
+        /*
+         * as we are stopping radio, no need to wait for deauth notif
+         * so we can cleanup ap's AD list
+         */
+        s_deauthAllRadSta(pRad, true);
+    }
     wld_rad_hostapd_disable(pRad);
     pRad->fsmRad.timeout_msec = 500;
     return true;
 }
 
 static bool s_doEnableHostapd(T_Radio* pRad) {
-    ASSERTS_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    ASSERTS_TRUE(wifiGen_hapd_isAlive(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     wld_rad_hostapd_enable(pRad);
+    pRad->fsmRad.timeout_msec = 500;
     return true;
 }
 
@@ -500,7 +546,7 @@ static bool s_doSyncState(T_Radio* pRad) {
      * => we have to recover by toggling hapd (which eventually triggers a new dfs cac),
      *    otherwise radio remains passively down
      */
-    if((wifiGen_hapd_isAlive(pRad)) && (pRad->detailedState == CM_RAD_DOWN)) {
+    if((wld_rad_is_5ghz(pRad)) && (wifiGen_hapd_isAlive(pRad)) && (pRad->detailedState == CM_RAD_DOWN)) {
         swl_chanspec_t chanSpec;
         _UNUSED_(chanSpec);
         if((!wld_channel_is_band_usable(wld_rad_getSwlChanspec(pRad)) ||
@@ -648,7 +694,7 @@ static void s_checkPreRadDependency(T_Radio* pRad _UNUSED) {
         return;
     }
 
-    bool targetFthEnable = (pRad->enable && wld_rad_hasEnabledVap(pRad));
+    bool targetFthEnable = wifiGen_hapd_isStartable(pRad);
     bool targetBkhEnable = (pRad->enable && wld_rad_hasEnabledEp(pRad));
     bool targetEnable = (targetFthEnable || targetBkhEnable);
     bool currentEnable = wld_rad_isUpExt(pRad) || (wld_rad_hasActiveEp(pRad) && (!wld_rad_hasActiveVap(pRad)));
@@ -660,7 +706,7 @@ static void s_checkPreRadDependency(T_Radio* pRad _UNUSED) {
     if(targetEnable != currentEnable) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD);
     }
-    if(wifiGen_hapd_isRunning(pRad) != targetFthEnable) {
+    if(wifiGen_hapd_isStarted(pRad) != targetFthEnable) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
     }
     if(wifiGen_wpaSupp_isRunning(wld_rad_getFirstEp(pRad)) != targetBkhEnable) {
@@ -678,13 +724,9 @@ static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
     }
     if(s_fetchDynConfAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW) >= 0) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
-        if(!wifiGen_hapd_isRunning(pRad)) {
+        if(!wifiGen_hapd_isAlive(pRad)) {
             setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         }
-    }
-    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
-        s_clearLowerApplyActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
-        s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
     }
 }
 
@@ -695,7 +737,6 @@ static void s_checkRadDependency(T_Radio* pRad) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
     }
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
-        s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
     }
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE) ||
@@ -704,10 +745,24 @@ static void s_checkRadDependency(T_Radio* pRad) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
-    if((s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
-       (s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW) >= 0) ||
+
+    int applyAction = s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    int dynConfAction = s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    if((applyAction >= 0) || (dynConfAction >= 0) ||
        (isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL))) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+    }
+    if(applyAction >= 0) {
+        s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, applyAction);
+    }
+    if((applyAction == GEN_FSM_START_HOSTAPD)) {
+        if(dynConfAction >= 0) {
+            s_clearDynConfActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+            T_AccessPoint* pAP = NULL;
+            wld_rad_forEachAp(pAP, pRad) {
+                s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
+            }
+        }
     }
 }
 
@@ -745,9 +800,9 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_UPDATE_BEACON), .doVapFsmAction = s_doUpdateBeacon},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_UPDATE_WPASUPP), .doEpFsmAction = s_doReloadWpaSupp},
-    {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
     {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
     {FSM_ACTION(GEN_FSM_START_WPASUPP), .doEpFsmAction = s_doStartWpaSupp},
+    {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
     {FSM_ACTION(GEN_FSM_ENABLE_RAD), .doRadFsmAction = s_doRadEnable},
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},
     {FSM_ACTION(GEN_FSM_ENABLE_EP), .doEpFsmAction = s_doEnableEp},
@@ -788,6 +843,7 @@ static void s_radioChange(wld_rad_changeEvent_t* event) {
     ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
     if(event->changeType == WLD_RAD_CHANGE_INIT) {
         wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
+        s_registerHadpRadEvtHandlers(pRad->hostapd);
     } else if(event->changeType == WLD_RAD_CHANGE_DESTROY) {
         wld_event_remove_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
     }

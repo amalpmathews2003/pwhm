@@ -83,6 +83,7 @@ wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIf
         void* userdata = NULL; \
         wld_wpaCtrl_evtHandlers_cb handlers = {0}; \
         if(wld_wpaCtrlInterface_getEvtHandlers(pIntf, &userdata, &handlers)) { \
+            char* ifName = (char*) wld_wpaCtrlInterface_getName(pIntf); \
             SWL_CALL(handlers.fName, userdata, ifName, __VA_ARGS__); \
         } \
     }

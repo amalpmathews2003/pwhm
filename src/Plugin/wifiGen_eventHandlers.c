@@ -231,13 +231,17 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         chanmgt_rad_state hapdRadDetState = CM_RAD_UNKNOWN;
         wifiGen_hapd_getRadState(pRad, &hapdRadDetState);
         s_saveHapdRadDetState(pRad, hapdRadDetState);
-        if(hapdRadDetState == CM_RAD_UP) {
+        bool isRadReady = (hapdRadDetState == CM_RAD_UP);
+        bool isRadStarting = (hapdRadDetState == CM_RAD_FG_CAC) || (hapdRadDetState == CM_RAD_CONFIGURING);
+        if(isRadReady) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-            CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, true);
-            return;
         }
+        if(isRadReady || isRadStarting) {
+            CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, isRadReady);
+        }
+        return;
     }
     wld_rad_updateState(pRad, false);
 }
@@ -246,12 +250,13 @@ static void s_mainApSetupCompletedCb(void* userData, char* ifName) {
     SAH_TRACEZ_WARNING(ME, "%s: main AP has setup completed", ifName);
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    s_saveHapdRadDetState(pRad, CM_RAD_UP);
     // when main iface setup is completed, current chanspec is the last applied target chanspec
     pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
     s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
     wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-    CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, true);
+    if(s_saveHapdRadDetState(pRad, CM_RAD_UP)) {
+        CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, true);
+    }
     wld_rad_updateState(pRad, true);
 }
 
@@ -392,9 +397,11 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
                 chanmgt_rad_state radDetState = CM_RAD_UNKNOWN;
                 wifiGen_hapd_getRadState(pRad, &radDetState);
                 s_saveHapdRadDetState(pRad, radDetState);
-                if(radDetState == CM_RAD_UP) {
+                bool isRadReady = (radDetState == CM_RAD_UP);
+                bool isRadStarting = (radDetState == CM_RAD_FG_CAC) || (radDetState == CM_RAD_CONFIGURING);
+                if(isRadReady || isRadStarting) {
                     const char* ifName = wld_wpaCtrlInterface_getName(pAP->wpaCtrlInterface);
-                    CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, (char*) ifName, true);
+                    CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, (char*) ifName, isRadReady);
                 }
             }
         }
@@ -537,6 +544,22 @@ static void s_wpsOverlap(void* userData, char* ifName _UNUSED) {
 static void s_wpsFail(void* userData, char* ifName _UNUSED) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     wld_ap_sendPairingNotification(pAP, NOTIFY_PAIRING_DONE, WPS_CAUSE_FAILURE, NULL);
+}
+
+static void s_apEnabledCb(void* userData, char* ifName) {
+    ASSERTS_STR(ifName, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: AP iface enabled", ifName);
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_TRUE(debugIsVapPointer(pAP), , ME, "INVALID");
+    wld_vap_updateState(pAP);
+}
+
+static void s_apDisabledCb(void* userData, char* ifName) {
+    ASSERTS_STR(ifName, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: AP iface disabled", ifName);
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_TRUE(debugIsVapPointer(pAP), , ME, "INVALID");
+    wld_vap_updateState(pAP);
 }
 
 static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
@@ -726,6 +749,8 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
     wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
+    wpaCtrlVapEvtHandlers.fApEnabledCb = s_apEnabledCb;
+    wpaCtrlVapEvtHandlers.fApDisabledCb = s_apDisabledCb;
 
     if(pAP->wpaCtrlInterface != NULL) {
         ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),

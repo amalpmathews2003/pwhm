@@ -64,17 +64,17 @@
 #include "swl/swl_common.h"
 #include "swl/swl_string.h"
 #include "wld_secDmn.h"
+#include "wld_secDmnGrp_priv.h"
 
 #define ME "secDmn"
 
 void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
     wld_wpaCtrlMngr_disconnect(pSecDmn->wpaCtrlMngr);
-    wld_dmn_startDeamon(pSecDmn->dmnProcess);
-    wld_wpaCtrlMngr_connect(pSecDmn->wpaCtrlMngr);
+    wld_secDmn_start(pSecDmn);
 }
 
-static void s_restartDeamon(wld_process_t* pProc _UNUSED, void* userdata) {
+static void s_restartProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
     ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
     if(pSecDmn->handlers.restartCb != NULL) {
@@ -84,9 +84,10 @@ static void s_restartDeamon(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_restartCb(pSecDmn);
 }
 
-static void s_stopDeamon(wld_process_t* pProc _UNUSED, void* userdata) {
+static void s_stopProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
     ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
+    wld_wpaCtrlMngr_disconnect(pSecDmn->wpaCtrlMngr);
     if(pSecDmn->handlers.stopCb) {
         pSecDmn->handlers.stopCb(pSecDmn, pSecDmn->userData);
         return;
@@ -94,6 +95,18 @@ static void s_stopDeamon(wld_process_t* pProc _UNUSED, void* userdata) {
     //finalize secDmn cleanup
     wld_secDmn_stop(pSecDmn);
 }
+
+static void s_startProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
+    wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
+    ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
+    wld_wpaCtrlMngr_connect(pSecDmn->wpaCtrlMngr);
+}
+
+static wld_deamonEvtHandlers fProcCbs = {
+    .restartCb = s_restartProcCb,
+    .stopCb = s_stopProcCb,
+    .startCb = s_startProcCb,
+};
 
 swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir) {
     ASSERT_STR(cmd, SWL_RC_INVALID_PARAM, ME, "invalid cmd");
@@ -105,22 +118,13 @@ swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, c
         *ppSecDmn = pSecDmn;
     }
     ASSERT_NULL(pSecDmn->dmnProcess, SWL_RC_OK, ME, "already initialized");
-    pSecDmn->dmnProcess = calloc(1, sizeof(wld_process_t));
-    ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
-    wld_deamonEvtHandlers handlers = {
-        .restartCb = s_restartDeamon,
-        .stopCb = s_stopDeamon,
-    };
-    if((!wld_dmn_initializeDeamon(pSecDmn->dmnProcess, cmd)) ||
-       (!wld_dmn_setDeamonEvtHandlers(pSecDmn->dmnProcess, &handlers, pSecDmn)) ||
+    if((wld_dmn_createDeamon(&pSecDmn->selfDmnProcess, cmd, startArgs, &fProcCbs, pSecDmn) < SWL_RC_OK) ||
        (!wld_wpaCtrlMngr_init(&pSecDmn->wpaCtrlMngr, pSecDmn))) {
-        SAH_TRACEZ_ERROR(ME, "fail to initialize daemon %s", cmd);
-        wld_dmn_cleanupDaemon(pSecDmn->dmnProcess);
-        free(pSecDmn->dmnProcess);
-        pSecDmn->dmnProcess = NULL;
+        SAH_TRACEZ_ERROR(ME, "fail to initialize self daemon %s", cmd);
+        wld_dmn_destroyDeamon(&pSecDmn->selfDmnProcess);
         return SWL_RC_ERROR;
     }
-    wld_dmn_setArgList(pSecDmn->dmnProcess, startArgs);
+    pSecDmn->dmnProcess = pSecDmn->selfDmnProcess;
     swl_str_copyMalloc(&pSecDmn->cfgFile, cfgFile);
     swl_str_copyMalloc(&pSecDmn->ctrlIfaceDir, ctrlIfaceDir);
     swl_mapCharInt32_init(&pSecDmn->cfgParamSup);
@@ -143,41 +147,70 @@ swl_rc_ne wld_secDmn_cleanup(wld_secDmn_t** ppSecDmn) {
     wld_secDmn_t* pSecDmn = *ppSecDmn;
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_OK, ME, "cleaned up");
     wld_wpaCtrlMngr_cleanup(&pSecDmn->wpaCtrlMngr);
-    wld_dmn_cleanupDaemon(pSecDmn->dmnProcess);
-    swl_mapCharInt32_cleanup(&pSecDmn->cfgParamSup);
-    free(pSecDmn->dmnProcess);
+    wld_dmn_destroyDeamon(&pSecDmn->selfDmnProcess);
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        wld_secDmnGrp_delMember(pSecDmn->secDmnGroup, pSecDmn);
+    }
     pSecDmn->dmnProcess = NULL;
-    free(pSecDmn->cfgFile);
-    pSecDmn->cfgFile = NULL;
-    free(pSecDmn->ctrlIfaceDir);
-    pSecDmn->ctrlIfaceDir = NULL;
+    swl_mapCharInt32_cleanup(&pSecDmn->cfgParamSup);
+    W_SWL_FREE(pSecDmn->cfgFile);
+    W_SWL_FREE(pSecDmn->ctrlIfaceDir);
     free(pSecDmn);
     *ppSecDmn = NULL;
     return SWL_RC_OK;
 }
 
+/*
+ * @brief start a secDmn process
+ * If secDmn has a self daemon then it is started immediately
+ * If secDmn is a group member, then the process is finally started when all startable members are started
+ *
+ * @param pSecDmnGrp security daemon group ctx
+ * @param pSecDmn security daemon member ctx
+ *
+ * @return SWL_RC_OK when daemon process is being started
+ *         SWL_RC_CONTINUE when process waits for other startable members to start
+ *         SWL_RC_DONE when daemon process is already started (running)
+ *         error code otherwise
+ */
 swl_rc_ne wld_secDmn_start(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
-    ASSERTI_FALSE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_OK, ME, "already running");
-    wld_dmn_startDeamon(pSecDmn->dmnProcess);
-    wld_wpaCtrlMngr_connect(pSecDmn->wpaCtrlMngr);
-    return SWL_RC_OK;
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        return wld_secDmnGrp_startMember(pSecDmn->secDmnGroup, pSecDmn);
+    }
+    ASSERTI_FALSE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_DONE, ME, "already running");
+    return wld_dmn_startDeamon(pSecDmn->dmnProcess) ? SWL_RC_OK : SWL_RC_ERROR;
 }
 
+/*
+ * @brief stop a secDmn process
+ * If secDmn has a self daemon then it is stopped immediately
+ * If secDmn is a group member, then the process is finally stopped when all started members are stopped
+ *
+ * @param pSecDmn security daemon member ctx
+ *
+ * @return SWL_RC_OK when daemon process is being stopped
+ *         SWL_RC_CONTINUE when shared process waits for other members to stop
+ *         SWL_RC_DONE when daemon process is already stopped (not running)
+ *         error code otherwise
+ */
 swl_rc_ne wld_secDmn_stop(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
-    ASSERTI_TRUE(wld_dmn_isEnabled(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not running");
+    ASSERTI_TRUE(wld_dmn_isEnabled(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not enabled");
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        return wld_secDmnGrp_stopMember(pSecDmn->secDmnGroup, pSecDmn);
+    }
+    ASSERTI_TRUE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_DONE, ME, "already stopped");
     wld_wpaCtrlMngr_disconnect(pSecDmn->wpaCtrlMngr);
-    wld_dmn_stopDeamon(pSecDmn->dmnProcess);
-    return SWL_RC_OK;
+    return wld_dmn_stopDeamon(pSecDmn->dmnProcess) ? SWL_RC_OK : SWL_RC_ERROR;
 }
 
 swl_rc_ne wld_secDmn_reload(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
-    ASSERT_TRUE(wld_dmn_isEnabled(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not running");
+    ASSERT_TRUE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not running");
     amxp_subproc_kill(pSecDmn->dmnProcess->process->proc, SIGHUP);
     return SWL_RC_OK;
 }
@@ -186,6 +219,7 @@ swl_rc_ne wld_secDmn_setArgs(wld_secDmn_t* pSecDmn, char* startArgs) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
 
+    ASSERT_FALSE(wld_secDmn_isGrpMember(pSecDmn), SWL_RC_ERROR, ME, "grp member must not set args of grp process");
     wld_dmn_setArgList(pSecDmn->dmnProcess, startArgs);
 
     return SWL_RC_OK;
@@ -198,12 +232,22 @@ bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn) {
 
 bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        return wld_secDmnGrp_isMemberStarted(pSecDmn->secDmnGroup, pSecDmn);
+    }
     return wld_dmn_isEnabled(pSecDmn->dmnProcess);
 }
 
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
-    return (wld_secDmn_isRunning(pSecDmn) && wld_wpaCtrlMngr_isConnected(pSecDmn->wpaCtrlMngr));
+    return (wld_secDmn_isRunning(pSecDmn) && wld_wpaCtrlMngr_isConnected(pSecDmn->wpaCtrlMngr) &&
+            ((!wld_secDmn_isGrpMember(pSecDmn)) ||
+             (wld_secDmnGrp_isMemberStarted(pSecDmn->secDmnGroup, pSecDmn))));
+}
+
+wld_wpaCtrlMngr_t* wld_secDmn_getWpaCtrlMgr(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, NULL, ME, "NULL");
+    return pSecDmn->wpaCtrlMngr;
 }
 
 bool wld_secDmn_setCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param, swl_trl_e supp) {
@@ -228,12 +272,12 @@ swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param) {
     return *pVal;
 }
 
-uint32_t swl_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn) {
+uint32_t wld_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, 0, ME, "NULL");
     return swl_map_size(&pSecDmn->cfgParamSup);
 }
 
-uint32_t swl_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn) {
+uint32_t wld_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn) {
     uint32_t count = 0;
     ASSERTS_NOT_NULL(pSecDmn, count, ME, "NULL");
     swl_mapIt_t mapIt;
@@ -246,7 +290,7 @@ uint32_t swl_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn) {
     return count;
 }
 
-uint32_t swl_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp) {
+uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp) {
     uint32_t count = 0;
     ASSERTS_NOT_NULL(pSecDmn, count, ME, "NULL");
     swl_mapIt_t mapIt;
@@ -257,5 +301,56 @@ uint32_t swl_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp
         }
     }
     return count;
+}
+
+swl_rc_ne wld_secDmn_addToGrp(wld_secDmn_t* pSecDmn, wld_secDmnGrp_t* pSecDmnGrp, const char* memberName) {
+    ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
+    if(pSecDmnGrp == NULL) {
+        ASSERTS_NOT_NULL(pSecDmn->secDmnGroup, SWL_RC_INVALID_PARAM, ME, "No target grp provided");
+        SAH_TRACEZ_WARNING(ME, "removing secDmn %p from current group %p, and restore using self proc", pSecDmn, pSecDmnGrp);
+        wld_secDmnGrp_delMember(pSecDmnGrp, pSecDmn);
+        pSecDmn->dmnProcess = pSecDmn->selfDmnProcess;
+        return SWL_RC_OK;
+    }
+    if(pSecDmn->secDmnGroup != NULL) {
+        ASSERT_EQUALS(pSecDmn->secDmnGroup, pSecDmnGrp, SWL_RC_ERROR,
+                      ME, "secDmn %p is already in another group %p (than new %p)",
+                      pSecDmn, pSecDmn->secDmnGroup, pSecDmnGrp);
+        SAH_TRACEZ_INFO(ME, "secDmn %p already added to group %p", pSecDmn, pSecDmnGrp);
+        return SWL_RC_OK;
+    }
+    swl_rc_ne rc = wld_secDmnGrp_addMember(pSecDmnGrp, pSecDmn, memberName);
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "fail to add secDmn %p (%s) to group %p", pSecDmn, memberName, pSecDmnGrp);
+    wld_secDmnGrp_setMemberEvtHdlrs(pSecDmnGrp, pSecDmn, &fProcCbs, pSecDmn);
+    if(wld_dmn_isRunning(pSecDmn->selfDmnProcess)) {
+        SAH_TRACEZ_INFO(ME, "stop running self proc %p", pSecDmn->selfDmnProcess);
+        wld_dmn_stopDeamon(pSecDmn->selfDmnProcess);
+    }
+    pSecDmn->dmnProcess = wld_secDmnGrp_getProc(pSecDmnGrp);
+    pSecDmn->secDmnGroup = pSecDmnGrp;
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pSecDmn->secDmnGroup, SWL_RC_INVALID_STATE, ME, "NULL");
+    swl_rc_ne rc = wld_secDmnGrp_delMember(pSecDmn->secDmnGroup, pSecDmn);
+    pSecDmn->dmnProcess = pSecDmn->selfDmnProcess;
+    return rc;
+}
+
+bool wld_secDmn_isGrpMember(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pSecDmn->dmnProcess, false, ME, "NULL");
+    return (pSecDmn->dmnProcess == wld_secDmnGrp_getProc(pSecDmn->secDmnGroup));
+}
+
+wld_secDmnGrp_t* wld_secDmn_getGrp(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, NULL, ME, "NULL");
+    return pSecDmn->secDmnGroup;
+}
+
+uint32_t wld_secDmn_countGrpMembers(wld_secDmn_t* pSecDmn) {
+    return wld_secDmnGrp_getMembersCount(wld_secDmn_getGrp(pSecDmn));
 }
 

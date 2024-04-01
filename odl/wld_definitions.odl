@@ -281,6 +281,53 @@
 			default "6GHz";
 		}
 	}
+
+	/**
+	 * Security daemons management and configuration.
+	 * This object define some shared configuration of security daemons
+	 * that may be applied by pwhm generic plugin or on choice by loaded vendor modules, 
+	 * eg: hostapd single vs multi process instances ...
+	 *
+	 * @version 10.3
+	 */
+	%protected %persistent object DaemonMgt {
+
+		/*
+		 * Daemon to be managed
+		 */
+		%persistent object Daemon[] {
+			on action destroy call wld_dmnMgt_delDaemonEntry_odf;
+			on event "*" call wld_dmnMgt_setDaemonEntry_ocf;
+            
+			%persistent %unique %key string Alias;
+
+			/*
+			 * Daemon process name:
+			 * eg: hostapd, wpa_supplicant, ...
+			 */
+			%persistent %unique string Name;
+			
+			/*
+			 * Daemon execution settings
+			 */
+			%persistent object ExecutionSettings {
+				on event "*" call wld_dmnMgt_setDaemonExecSettings_ocf;
+			
+				/*
+				 * option to run a global instance for all radio devices
+				 * Possible values are:
+				 * Off: use multiple daemon instances
+				 * On: use global daemon instance
+				 * Auto: auto decide whether to use global daemon instance
+				 * based on hw platform and detected radio devices capabilities (frequency bands, operation standards, ...)
+				 */
+				%persistent string UseGlobalInstance {
+					on action validate call check_enum ["Off","On","Auto"];
+					default "Auto";
+				}
+			}
+		}
+	}
 	
 	%persistent object Vendor {
 	

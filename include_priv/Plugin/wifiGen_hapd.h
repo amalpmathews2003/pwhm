@@ -65,6 +65,8 @@
 
 #include "wld/wld.h"
 
+#define HOSTAPD_CMD "hostapd"
+
 swl_rc_ne wifiGen_hapd_init(T_Radio* pRad);
 swl_rc_ne wifiGen_hapd_initVAP(T_AccessPoint* pAP);
 void wifiGen_hapd_cleanup(T_Radio* pRad);
@@ -76,5 +78,10 @@ bool wifiGen_hapd_isRunning(T_Radio* pRad);
 bool wifiGen_hapd_isAlive(T_Radio* pRad);
 swl_rc_ne wifiGen_hapd_getRadState(T_Radio* pRad, chanmgt_rad_state* pDetailedState);
 swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad);
+uint32_t wifiGen_hapd_countGrpMembers(T_Radio* pRad);
+swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg);
+swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad);
+bool wifiGen_hapd_isStarted(T_Radio* pRad);
+bool wifiGen_hapd_isStartable(T_Radio* pRad);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_HAPD_H_ */

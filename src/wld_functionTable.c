@@ -119,6 +119,11 @@ static swl_rc_ne TRAP_mfn_wvap_setMldUnit(T_AccessPoint* ap) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wvdr_setDmnExecSettings(vendor_t* pVdr _UNUSED, const char* dmnName, wld_dmnMgt_dmnExecSettings_t* pCfg _UNUSED) {
+    SAH_TRACEZ_NOTICE(ME, "%p %p %p", pVdr, dmnName, pCfg);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 #define DEF_TRAP(type, func) \
     static int TRAP_ ## func(type * obj) { \
         _UNUSED_(obj); \
@@ -786,5 +791,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 
     FTA_ASSIGN(mfn_wvap_request_rrm_report);
     FTA_ASSIGN(mfn_wvap_setEvtHandlers);
+
+    FTA_ASSIGN(mfn_wvdr_setDmnExecSettings);
 }
 

@@ -94,6 +94,21 @@ amxd_object_t* wifi = NULL;
 // List of chipset vendor modules
 static amxc_llist_t vendors = {NULL, NULL};
 
+static vendor_t* s_getVdrFromIt(const amxc_llist_it_t* it) {
+    ASSERTS_NOT_NULL(it, NULL, ME, "NULL");
+    return amxc_llist_it_get_data(it, vendor_t, it);
+}
+vendor_t* wld_firstVdr() {
+    return s_getVdrFromIt(amxc_llist_get_first(&vendors));
+}
+vendor_t* wld_lastVdr() {
+    return s_getVdrFromIt(amxc_llist_get_last(&vendors));
+}
+vendor_t* wld_nextVdr(const vendor_t* pVdr) {
+    ASSERTS_NOT_NULL(pVdr, NULL, ME, "NULL");
+    return s_getVdrFromIt(amxc_llist_it_get_next(&pVdr->it));
+}
+
 static swl_macBin_t sWanAddr = {{0}};
 
 /**
@@ -226,6 +241,8 @@ vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta) {
         free(vendor);
         return NULL;
     }
+    SAH_TRACEZ_NOTICE(ME, "register vendor %s", vendor->name);
+    wld_dmnMgt_initDmnExecInfo(&vendor->globalHostapd);
     amxc_llist_append(&vendors, &vendor->it);
 
     wld_functionTable_init(vendor, fta);
@@ -257,6 +274,7 @@ static bool s_cleanVendor(vendor_t* vendor) {
     }
     ASSERT_FALSE(wld_isVendorUsed(vendor), false, ME, "Fail to clear vendor %s: still used", vendor->name);
     amxc_llist_it_take(&vendor->it);
+    wld_dmnMgt_cleanupDmnExecInfo(&vendor->globalHostapd);
     free(vendor->name);
     free(vendor);
     return true;
@@ -462,7 +480,7 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
 
     pRad->isReady = true;
 
-    SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %u", name, vendor->name, idx);
+    SAH_TRACEZ_WARNING(ME, "%s: radInit vendor %s, index %d/%d", name, vendor->name, idx, pRad->ref_index);
 
     return SWL_RC_OK;
 }

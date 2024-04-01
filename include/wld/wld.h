@@ -101,6 +101,7 @@
 #include "wld_fsm.h"
 #include "wld_sensing.h"
 #include "Utils/wld_autoCommitRadData.h"
+#include "Utils/wld_dmnMgt.h"
 #include "swla/swla_radioStandards.h"
 #include "swla/swla_chanspec.h"
 #include "swl/swl_uuid.h"
@@ -117,6 +118,7 @@
 #include "wld_dm_trans.h"
 #include "wld_nl80211_core.h"
 #include "wld_secDmn.h"
+#include "wld_secDmnGrp.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_wpaSupp_cfgManager.h"
 #include "swl/swl_80211.h"
@@ -2513,6 +2515,11 @@ typedef struct S_CWLD_FUNC_TABLE {
      * Notify set of mldUnit
      */
     swl_rc_ne (* mfn_wvap_setMldUnit)(T_AccessPoint* pAP);
+
+    /*
+     * Notify Dmn execution settings change to vendor
+     */
+    swl_rc_ne (* mfn_wvdr_setDmnExecSettings)(vendor_t* pVdr, const char* dmnName, wld_dmnMgt_dmnExecSettings_t* pCfg);
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {
@@ -2520,6 +2527,7 @@ struct vendor {
     char* name;
     T_CWLD_FUNC_TABLE fta;
     wld_fsmMngr_t* fsmMngr;
+    wld_dmnMgt_dmnExecInfo_t* globalHostapd;
 };
 
 typedef struct S_wld_callbackinfo {
@@ -2583,6 +2591,13 @@ T_Radio* wld_nextRad(T_Radio* pRad);
 
 bool wld_plugin_start();
 void wld_plugin_init(amxd_dm_t* dm, amxo_parser_t* parser);
+
+vendor_t* wld_firstVdr();
+vendor_t* wld_lastVdr();
+vendor_t* wld_nextVdr(const vendor_t* pVdr);
+
+#define wld_for_eachVdr(vdrPtr) \
+    for(vdrPtr = wld_firstVdr(); vdrPtr; vdrPtr = wld_nextVdr(vdrPtr))
 
 #ifdef __cplusplus
 } /* extern "C" */

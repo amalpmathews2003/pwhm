@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -58,18 +58,33 @@
 ** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ** POSSIBILITY OF SUCH DAMAGE.
 **
-****************************************************************************/
+*/
 
-#ifndef __WLD_WPA_CTRL_API_H__
-#define __WLD_WPA_CTRL_API_H__
+#ifndef INCLUDE_WLD_UTILS_WLD_DMNMGT_H_
+#define INCLUDE_WLD_UTILS_WLD_DMNMGT_H_
 
-#include "wld_wpaCtrlInterface.h"
+#include "swl/swl_common.h"
+#include "wld/wld_types.h"
+#include "wld/wld_secDmn_types.h"
 
-bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd);
-bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len);
-bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse);
-bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
-swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...);
-void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
+typedef struct {
+    swl_trl_e globalDmnSupported;             //global daemon is platform dependent, indicated by genPlugin/VdrMod, 0:No, 1:Yes, 2:Unknown
+    bool globalDmnRequired;                   //global daemon may be required to manage wifi 6e/7 features
+    wld_secDmnGrp_t* pGlobalDmnGrp;           //execution group when global instance is enabled
+} wld_dmnMgt_dmnExecInfo_t;
 
-#endif /* __WLD_WPA_CTRL_API_H__ */
+typedef struct {
+    swl_trl_e useGlobalInstance;              //use global daemon: 0:Off, 1:On, 2:auto ie enabled when required
+} wld_dmnMgt_dmnExecSettings_t;
+
+typedef struct {
+    char* name;
+    amxd_object_t* object;
+    wld_dmnMgt_dmnExecSettings_t exec;
+} wld_dmnMgt_dmnCtx_t;
+
+const wld_dmnMgt_dmnCtx_t* wld_dmnMgt_getDmnCtx(const char* dmnName);
+swl_rc_ne wld_dmnMgt_initDmnExecInfo(wld_dmnMgt_dmnExecInfo_t** ppDmnExecInfo);
+void wld_dmnMgt_cleanupDmnExecInfo(wld_dmnMgt_dmnExecInfo_t** ppDmnExecInfo);
+
+#endif /* INCLUDE_WLD_UTILS_WLD_DMNMGT_H_ */

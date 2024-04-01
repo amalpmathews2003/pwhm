@@ -451,6 +451,20 @@ static void s_apDisabledEvt(wld_wpaCtrlInterface_t* pInterface, char* event, cha
     }
 }
 
+static void s_apIfaceEnabledEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    // Example: INTERFACE-ENABLED
+    // This event notifies that main interface is going up (netlink status)
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    CALL_INTF_NA(pInterface, fApEnabledCb);
+}
+
+static void s_apIfaceDisabledEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params _UNUSED) {
+    // Example: INTERFACE-DISABLED
+    // This event notifies that main interface is going down (netlink status)
+    SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
+    CALL_INTF_NA(pInterface, fApDisabledCb);
+}
+
 static void s_ifaceTerminatingEvt(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
     // Example: CTRL-EVENT-TERMINATING
     SAH_TRACEZ_INFO(ME, "%s: %s", pInterface->name, event);
@@ -710,6 +724,8 @@ SWL_TABLE(sWpaCtrlEvents,
               {"AP-MGMT-FRAME-RECEIVED", &s_mgtFrameEvt},
               {"AP-ENABLED", &s_apEnabledEvt},
               {"AP-DISABLED", &s_apDisabledEvt},
+              {"INTERFACE-ENABLED", &s_apIfaceEnabledEvt},
+              {"INTERFACE-DISABLED", &s_apIfaceDisabledEvt},
               {"CTRL-EVENT-TERMINATING", &s_ifaceTerminatingEvt},
               {"DFS-CAC-START", &s_radDfsCacStartedEvt},
               {"DFS-CAC-COMPLETED", &s_radDfsCacDoneEvt},

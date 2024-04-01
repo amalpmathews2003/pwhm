@@ -69,11 +69,22 @@
 #include "wifiGen_ep.h"
 #include "wifiGen_fsm.h"
 #include "wifiGen_events.h"
+#include "wifiGen_hapd.h"
 
 #define ME "gen"
 
 static bool s_init = false;
 static vendor_t* s_vendor = NULL;
+
+swl_rc_ne wifiGen_setDmnExecSettings(vendor_t* pVdr, const char* dmnName, wld_dmnMgt_dmnExecSettings_t* pCfg) {
+    ASSERT_NOT_NULL(pVdr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_STR(dmnName, SWL_RC_INVALID_PARAM, ME, "Empty");
+    SAH_TRACEZ_INFO(ME, "%s: set daemon %s exec settings", pVdr->name, dmnName);
+    if(swl_str_matches(dmnName, HOSTAPD_CMD)) {
+        wifiGen_hapd_setGlobDmnSettings(pVdr, pCfg);
+    }
+    return SWL_RC_OK;
+}
 
 bool wifiGen_init() {
     ASSERT_FALSE(s_init, false, ME, "already initialized");
@@ -90,6 +101,7 @@ bool wifiGen_init() {
 
     //Misc functions
     fta.mfn_misc_has_support = wifiGen_rad_miscHasSupport;
+    fta.mfn_wvdr_setDmnExecSettings = wifiGen_setDmnExecSettings;
 
     //Wrad functions
     fta.mfn_wrad_create_hook = wifiGen_rad_createHook;

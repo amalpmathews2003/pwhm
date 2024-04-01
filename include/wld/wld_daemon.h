@@ -95,13 +95,34 @@ typedef struct {
  *
  * @param pProc process context
  * @param userdata private data context pointer registered when starting the process
- * @param pExitInfo pointer to child process exit info.
  */
 typedef void (* wld_dmn_stopHandler)(wld_process_t* pProc, void* userdata);
+
+/*
+ * @brief handler notifying child process's started
+ *
+ * @param pProc process context
+ * @param userdata private data context pointer registered when starting the process
+ */
+typedef void (* wld_dmn_startHandler)(wld_process_t* pProc, void* userdata);
+
+/*
+ * @brief handler called to build dynamically start arguments, just before starting process
+ *
+ * @param pProc process context
+ * @param userdata private data context pointer registered at initialization call
+ * @param newStartArgs string to be allocated and filled with new start args
+ *                     If returned NULL, then previous start args will be using
+ * @return newly allocate string filled with new start args (freed by the API)
+ * If returned NULL, then previous start args will be using
+ */
+typedef char* (* wld_dmn_getArgsHandler)(wld_process_t* pProc, void* userdata);
 
 typedef struct {
     wld_dmn_restartHandler restartCb; // optional handler to manage child process restarting
     wld_dmn_stopHandler stopCb;       // optional handler to get notification for child process end
+    wld_dmn_startHandler startCb;     // optional handler to get notification for child process start
+    wld_dmn_getArgsHandler getArgsCb; // optional handler to build process args dynamically just before starting it
 } wld_deamonEvtHandlers;
 
 /* wld daemon context. */
@@ -146,6 +167,16 @@ void wld_dmn_setMonitorConf(wld_daemonMonitorConf_t* pDmnMoniConf);
 bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd);
 bool wld_dmn_setDeamonEvtHandlers(wld_process_t* process, wld_deamonEvtHandlers* pHandlers, void* userData);
 void wld_dmn_cleanupDaemon(wld_process_t* process);
+
+/*
+ * @brief allocate and initialize a daemon process context
+ */
+swl_rc_ne wld_dmn_createDeamon(wld_process_t** pDmnProcess, char* cmd, char* startArgs, wld_deamonEvtHandlers* pEvtHdlrs, void* pEvtData);
+
+/*
+ * @brief cleanup and free a daemon process context
+ */
+void wld_dmn_destroyDeamon(wld_process_t** pDmnProcess);
 
 /* Start daemon. */
 bool wld_dmn_startDeamon(wld_process_t* dmn_process);

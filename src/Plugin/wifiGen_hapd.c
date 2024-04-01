@@ -60,6 +60,7 @@
 **
 ****************************************************************************/
 #include "wld/wld.h"
+#include "wld/wld_util.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_accesspoint.h"
 #include "wld/wld_linuxIfUtils.h"
@@ -69,11 +70,11 @@
 #include "wld/wld_hostapd_ap_api.h"
 #include "wifiGen_hapd.h"
 #include "wifiGen_events.h"
+#include "wifiGen_fsm.h"
 
 #define ME "genHapd"
 #define HOSTAPD_CONF_FILE_PATH_FORMAT "/tmp/%s_hapd.conf"
-#define HOSTAPD_CMD "hostapd"
-#define HOSTAPD_ARGS_FORMAT "-ddt %s"
+#define HOSTAPD_ARGS_FORMAT "-ddt"
 
 #define HOSTAPD_EXIT_REASON_SUCCESS 0
 /*
@@ -90,6 +91,16 @@
  */
 #define HOSTAPD_EXIT_REASON_LOAD_FAIL 1
 
+bool wifiGen_hapd_isStartable(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERT_NOT_NULL(pRad->hostapd, false, ME, "NULL");
+    return (pRad->enable && wld_rad_hasEnabledVap(pRad));
+}
+
+bool wifiGen_hapd_isStarted(T_Radio* pRad) {
+    return ((pRad != NULL) && (wld_secDmn_isEnabled(pRad->hostapd)));
+}
+
 static const char* s_getMainIface(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     const char* mainIface = pRad->Name;
@@ -104,8 +115,7 @@ static void s_restartHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     const char* mainIface = s_getMainIface(pRad);
-    ASSERTW_TRUE(wld_rad_hasEnabledVap(pRad), , ME, "%s: radio has no enabled vap", mainIface);
-    ASSERTW_TRUE(pRad->enable, , ME, "%s: radio disabled", mainIface);
+    ASSERTW_TRUE(wifiGen_hapd_isStartable(pRad), , ME, "%s: hostapd iface %s is not startable", pRad->Name, mainIface);
     ASSERTW_FALSE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hostapd running", mainIface);
     SAH_TRACEZ_WARNING(ME, "%s: restarting hostapd", mainIface);
     wld_secDmn_restartCb(pSecDmn);
@@ -142,7 +152,8 @@ swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     char confFilePath[128] = {0};
     swl_str_catFormat(confFilePath, sizeof(confFilePath), HOSTAPD_CONF_FILE_PATH_FORMAT, pRad->Name);
     char startArgs[128] = {0};
-    swl_str_catFormat(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT, confFilePath);
+    swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
+    swl_strlst_cat(startArgs, sizeof(startArgs), " ", confFilePath);
     swl_rc_ne rc = wld_secDmn_init(&pRad->hostapd, HOSTAPD_CMD, startArgs, confFilePath, HOSTAPD_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init hostapd", pRad->Name);
     s_initHapdDynCfgParamSupp(pRad);
@@ -182,13 +193,14 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
     SAH_TRACEZ_WARNING(ME, "%s: Stop hostapd", pRad->Name);
     swl_rc_ne rc = wld_secDmn_stop(pRad->hostapd);
     ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
+    ASSERTI_NOT_EQUALS(rc, SWL_RC_CONTINUE, rc, ME, "%s: hostapd being stopped", pRad->Name);
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
         if(pAP->index > 0) {
             wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, 0);
         }
     }
-    return SWL_RC_OK;
+    return rc;
 }
 
 swl_rc_ne wifiGen_hapd_reloadDaemon(T_Radio* pRad) {
@@ -289,4 +301,123 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
         wld_vap_updateState(pAP);
     }
     return ret;
+}
+
+uint32_t wifiGen_hapd_countGrpMembers(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, 0, ME, "NULL");
+    wld_secDmn_t* pSecDmn = pRad->hostapd;
+    ASSERTS_NOT_NULL(pSecDmn->dmnProcess, 0, ME, "NULL");
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        return wld_secDmnGrp_getMembersCount(wld_secDmn_getGrp(pSecDmn));
+    }
+    //default: one hostapd instance per radio
+    return 1;
+}
+
+static char* s_getGlobHapdArgsCb(wld_secDmnGrp_t* pSecDmnGrp, void* userData _UNUSED, const wld_process_t* pProc _UNUSED) {
+    char* args = NULL;
+    ASSERT_NOT_NULL(pSecDmnGrp, args, ME, "NULL");
+    char startArgs[256] = {0};
+    //set default start args
+    swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
+    for(uint32_t i = 0; i < wld_secDmnGrp_getMembersCount(pSecDmnGrp); i++) {
+        const wld_secDmn_t* pSecDmn = wld_secDmnGrp_getMemberByPos(pSecDmnGrp, i);
+        if((pSecDmn == NULL) || (swl_str_isEmpty(pSecDmn->cfgFile))) {
+            continue;
+        }
+        //concat all radio ifaces conf files
+        swl_strlst_cat(startArgs, sizeof(startArgs), " ", pSecDmn->cfgFile);
+    }
+    swl_str_copyMalloc(&args, startArgs);
+    return args;
+}
+
+static bool s_isHapdIfaceStartable(wld_secDmnGrp_t* pSecDmnGrp _UNUSED, void* userData _UNUSED, wld_secDmn_t* pSecDmn) {
+    ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
+    T_Radio* pRad = (T_Radio*) pSecDmn->userData;
+    ASSERT_TRUE(debugIsRadPointer(pRad), false, ME, "INVALID");
+    return wifiGen_hapd_isStartable(pRad);
+}
+
+static wld_secDmnGrp_EvtHandlers_t sGHapdEvtCbs = {
+    .getArgsCb = s_getGlobHapdArgsCb,
+    .isMemberStartableCb = s_isHapdIfaceStartable,
+};
+
+static swl_rc_ne s_initGlobalHapdGrp(vendor_t* pVdr, bool forceGlob) {
+    swl_rc_ne rc = SWL_RC_ERROR;
+    ASSERTS_NOT_NULL(pVdr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_dmnMgt_dmnExecInfo_t* gHapd = pVdr->globalHostapd;
+    ASSERT_NOT_NULL(gHapd, SWL_RC_INVALID_PARAM, ME, "No glob hapd ctx");
+    if((gHapd->globalDmnSupported == SWL_TRL_TRUE) || forceGlob) {
+        if(gHapd->pGlobalDmnGrp == NULL) {
+            SAH_TRACEZ_INFO(ME, "%s: initialize glob hostapd", pVdr->name);
+            char grpName[128] = {0};
+            swl_str_catFormat(grpName, sizeof(grpName), "%s-%s", HOSTAPD_CMD, pVdr->name);
+            rc = wld_secDmnGrp_init(&gHapd->pGlobalDmnGrp, HOSTAPD_CMD, HOSTAPD_ARGS_FORMAT, grpName);
+            wld_secDmnGrp_setEvtHandlers(gHapd->pGlobalDmnGrp, &sGHapdEvtCbs, pVdr);
+        }
+    } else if(gHapd->pGlobalDmnGrp != NULL) {
+        SAH_TRACEZ_INFO(ME, "%s: cleanup glob hostapd", pVdr->name);
+        rc = wld_secDmnGrp_cleanup(&gHapd->pGlobalDmnGrp);
+    }
+    return rc;
+}
+
+swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg) {
+    ASSERT_NOT_NULL(pVdr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_dmnMgt_dmnExecInfo_t* gHapd = pVdr->globalHostapd;
+    ASSERT_NOT_NULL(gHapd, SWL_RC_INVALID_PARAM, ME, "No glob hapd ctx");
+    bool forceGlob = (pCfg->useGlobalInstance == SWL_TRL_TRUE);
+    s_initGlobalHapdGrp(pVdr, forceGlob);
+    if(!forceGlob) {
+        ASSERTS_EQUALS(gHapd->globalDmnSupported, SWL_TRL_TRUE, SWL_RC_OK, ME, "glob hapd not supported on vdr %s", pVdr->name);
+    }
+    bool enableGlobHapd = ((pCfg->useGlobalInstance == SWL_TRL_TRUE) ||
+                           ((pCfg->useGlobalInstance == SWL_TRL_AUTO) && gHapd->globalDmnRequired));
+    if(wld_secDmnGrp_isEnabled(gHapd->pGlobalDmnGrp) != enableGlobHapd) {
+        if(!enableGlobHapd) {
+            SAH_TRACEZ_INFO(ME, "drop all members of gHapd %s", pVdr->name);
+            wld_secDmnGrp_dropMembers(gHapd->pGlobalDmnGrp);
+        }
+        T_Radio* pRad;
+        wld_for_eachRad(pRad) {
+            if(pRad->vendor == pVdr) {
+                if(enableGlobHapd) {
+                    SAH_TRACEZ_INFO(ME, "add member %s to gHapd %s", pRad->Name, pVdr->name);
+                    wld_secDmn_addToGrp(pRad->hostapd, gHapd->pGlobalDmnGrp, pRad->Name);
+                }
+                setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+                wld_rad_doCommitIfUnblocked(pRad);
+            }
+        }
+    }
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->vendor, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_dmnMgt_initDmnExecInfo(&pRad->vendor->globalHostapd);
+    wld_dmnMgt_dmnExecInfo_t* gHapd = pRad->vendor->globalHostapd;
+    if(gHapd->globalDmnSupported == SWL_TRL_FALSE) {
+        SAH_TRACEZ_INFO(ME, "%s: glob hapd %s not supported", pRad->Name, pRad->vendor->name);
+        gHapd->globalDmnRequired = false;
+        return SWL_RC_OK;
+    }
+    //global hostapd required for WiFi7 and WiFi6E (For RNR Mgmt)
+    if((SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE)) ||
+       ((SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AX)) &&
+        (SWL_BIT_IS_SET(pRad->supportedFrequencyBands, SWL_FREQ_BAND_EXT_6GHZ)))) {
+        gHapd->globalDmnRequired = true;
+    }
+    //global hostapd assumed supported since WiFi6
+    if(gHapd->globalDmnSupported == SWL_TRL_UNKNOWN) {
+        if((gHapd->globalDmnRequired) ||
+           (SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AX))) {
+            gHapd->globalDmnSupported = SWL_TRL_TRUE;
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "%s: glob hapd %s supp:%d, req:%d", pRad->Name, pRad->vendor->name, gHapd->globalDmnSupported, gHapd->globalDmnRequired);
+    return SWL_RC_OK;
 }

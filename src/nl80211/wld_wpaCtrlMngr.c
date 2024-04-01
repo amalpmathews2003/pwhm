@@ -298,8 +298,8 @@ bool wld_wpaCtrlMngr_isReady(wld_wpaCtrlMngr_t* pMgr) {
 bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
     ASSERTS_TRUE(wld_secDmn_isRunning(pMgr->pSecDmn), false, ME, "No running server");
-    wld_wpaCtrlInterface_t* mainIface = wld_wpaCtrlMngr_getInterface(pMgr, 0);
-    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(mainIface), false, ME, "main iface not Ready");
+    wld_wpaCtrlInterface_t* ifaceReady = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+    ASSERTS_NOT_NULL(ifaceReady, false, ME, "no iface Ready");
     return true;
 }
 

@@ -66,5 +66,19 @@
             parameter Enable = true;
             parameter DelayTime = 1000;
         }
+        object DaemonMgt {
+            object Daemon {
+                instance add ("hostapd", Name = "hostapd") {
+                    object ExecutionSettings {
+                        parameter UseGlobalInstance = "Off";
+                    }
+                }
+                instance add ("wpa_supplicant", Name = "wpa_supplicant") {
+                    object ExecutionSettings {
+                        parameter UseGlobalInstance = "Off";
+                    }
+                }
+            }
+        }
     }
 }

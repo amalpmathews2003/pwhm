@@ -65,10 +65,10 @@
 
 #include "wld_wpaCtrlMngr.h"
 #include "wld_daemon.h"
+#include "wld_secDmn_types.h"
 #include "swl/swl_common_trilean.h"
 #include "swl/swl_maps.h"
 
-typedef struct wld_secDmn wld_secDmn_t;
 typedef void (* wld_secDmn_restartHandler)(wld_secDmn_t* pSecDmn, void* userdata);
 typedef void (* wld_secDmn_stopHandler)(wld_secDmn_t* pSecDmn, void* userdata);
 
@@ -79,12 +79,16 @@ typedef struct {
 
 struct wld_secDmn {
     wld_wpaCtrlMngr_t* wpaCtrlMngr; /* wpaCtrlMngr */
-    wld_process_t* dmnProcess;      /* daemon context. */
+    wld_process_t* dmnProcess;      /* daemon process context: pointing to either self proc or group proc */
     char* cfgFile;                  /* config file path*/
     char* ctrlIfaceDir;             /* ctrl_interface directory: /var/run/xxx/*/
     wld_secDmnEvtHandlers handlers; /* optional handlers of secDmn events*/
     void* userData;                 /* optional user data available in restart handler. */
     swl_mapCharInt32_t cfgParamSup; /* list of dynamically checked config parameters support */
+
+    /* private: self//group process management */
+    wld_process_t* selfDmnProcess;  /* self daemon process context. */
+    wld_secDmnGrp_t* secDmnGroup;   /* grouped (/global) secDmn using one daemon process for multiple wpaCtrl mngrs */
 };
 
 swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir);
@@ -98,15 +102,22 @@ void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn);
+wld_wpaCtrlMngr_t* wld_secDmn_getWpaCtrlMgr(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_setCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param, swl_trl_e supp);
 swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param);
-uint32_t swl_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn);
-uint32_t swl_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn);
-uint32_t swl_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp);
+uint32_t wld_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn);
+uint32_t wld_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn);
+uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp);
 
 #define CALL_SECDMN_MGR_EXT(pSecDmn, fName, ifName, ...) \
     if(pSecDmn != NULL) { \
         CALL_MGR_EXT(pSecDmn->wpaCtrlMngr, fName, ifName, __VA_ARGS__) \
     }
+
+swl_rc_ne wld_secDmn_addToGrp(wld_secDmn_t* pSecDmn, wld_secDmnGrp_t* pSecDmnGrp, const char* memberName);
+swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn);
+wld_secDmnGrp_t* wld_secDmn_getGrp(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_isGrpMember(wld_secDmn_t* pSecDmn);
+uint32_t wld_secDmn_countGrpMembers(wld_secDmn_t* pSecDmn);
 
 #endif /* INCLUDE_WLD_WLD_SECDMN_H_ */

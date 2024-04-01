@@ -71,6 +71,7 @@
 
 #define MSG_LENGTH          (4096 * 3)
 #define CTRL_IFACE_CLIENT "/var/lib/wld/wpactrl-"
+#define DFLT_SYNC_CMD_TMOUT_MS 1000
 
 typedef enum {
     WPA_CONNECTION_CMD = 0,
@@ -119,7 +120,7 @@ bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd) {
     return s_sendCmd(pIface->cmdConn, cmd);
 }
 
-static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t reply_len) {
+static bool s_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t reply_len, uint32_t tmOutMSec) {
     SAH_TRACEZ_IN(ME);
     ASSERT_NOT_NULL(pConn, false, ME, "NULL");
     int fd = pConn->wpaPeer;
@@ -127,6 +128,7 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
     ASSERT_TRUE(fd > 0, false, ME, "%s: invalid fd for cmd (%s)", ifName, cmd);
 
     struct timeval tv;
+    uint32_t tvMs = tmOutMSec;
     int res;
     fd_set rfds;
 
@@ -138,11 +140,13 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
     ASSERT_TRUE(s_sendCmd(pConn, cmd), false, ME, "%s: fail to send sync cmd(%s)", ifName, cmd);
 
     do {
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
+        tvMs = SWL_MAX(tvMs, (uint32_t) DFLT_SYNC_CMD_TMOUT_MS);
+        tv.tv_sec = (tvMs / 1000);
+        tv.tv_usec = ((tvMs % 1000) * 1000);
         FD_ZERO(&rfds);
         FD_SET(fd, &rfds);
         res = select(fd + 1, &rfds, NULL, NULL, &tv);
+        tvMs = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
         if((res < 0) && (errno == EINTR)) {
             continue;
         }
@@ -169,6 +173,10 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
     return true;
 }
 
+static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t reply_len) {
+    return s_sendCmdSyncedExt(pConn, cmd, reply, reply_len, DFLT_SYNC_CMD_TMOUT_MS);
+}
+
 /**
  * @brief send command to wpa_ctrl server and wait for the reply
  *
@@ -184,21 +192,43 @@ bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, 
     return s_sendCmdSynced(pIface->cmdConn, cmd, reply, reply_len);
 }
 
-static bool s_sendCmdCheckResponse(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse) {
+static bool s_sendCmdCheckResponseExt(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse, uint32_t tmOutMSec) {
     ASSERT_NOT_NULL(pConn, false, ME, "NULL");
     SAH_TRACEZ_IN(ME);
     char reply[MSG_LENGTH] = {'\0'};
 
     // send the command
-    ASSERTS_TRUE(s_sendCmdSynced(pConn, cmd, reply, sizeof(reply) - 1), false, ME, "sending cmd %s failed", cmd);
+    ASSERTS_TRUE(s_sendCmdSyncedExt(pConn, cmd, reply, sizeof(reply) - 1, tmOutMSec), false, ME, "sending cmd %s failed", cmd);
     // check the response
     ASSERT_TRUE(swl_str_matches(reply, expectedResponse), false, ME, "cmd(%s) reply(%s): unmatch expect(%s)", cmd, reply, expectedResponse);
 
     return true;
 }
 
+static bool s_sendCmdCheckResponse(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse) {
+    return s_sendCmdCheckResponseExt(pConn, cmd, expectedResponse, DFLT_SYNC_CMD_TMOUT_MS);
+}
+
+
 /**
- * @brief send command to wpa_ctrl server and check the received reply
+ * @brief send synchronous command to wpa_ctrl server and check the received reply
+ * within a defined delay
+ *
+ * @param pIface :the wpa_ctrl interface to which the command is sent
+ * @param cmd : string command to be sent
+ * @param expectedResponse : string expected reply
+ * @param tmOutMSec sync cmd timeout duration in milliseconds
+ *
+ * @return true when the command is answered as expected, false otherwise
+ */
+bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec) {
+    ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
+    return s_sendCmdCheckResponseExt(pIface->cmdConn, cmd, expectedResponse, tmOutMSec);
+}
+
+/**
+ * @brief send synchronous command to wpa_ctrl server and check the received reply
+ * within default delay (1s)
  *
  * @param pIface :the wpa_ctrl interface to which the command is sent
  * @param cmd : string command to be sent

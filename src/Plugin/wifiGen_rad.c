@@ -524,6 +524,8 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     pRad->setRadio80211hEnable = (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ || pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) ? TRUE : FALSE;
     pRad->m_multiAPTypesSupported = M_MULTIAP_ALL;
 
+    wifiGen_hapd_initGlobDmnCap(pRad);
+
     /* First time force full config */
     pRad->fsmRad.FSM_SyncAll = TRUE;
 
@@ -754,7 +756,7 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
     }
     bool needCommit = (pRad->fsmRad.FSM_State != FSM_RUN);
     unsigned long* actionArray = (needCommit ? pRad->fsmRad.FSM_BitActionArray : pRad->fsmRad.FSM_AC_BitActionArray);
-    if(wifiGen_hapd_isRunning(pRad)) {
+    if(wifiGen_hapd_isAlive(pRad)) {
         chanmgt_rad_state detState = pRad->detailedState;
         wifiGen_hapd_getRadState(pRad, &detState);
         if((pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) &&
