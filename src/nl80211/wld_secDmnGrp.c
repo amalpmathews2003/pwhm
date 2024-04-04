@@ -73,30 +73,30 @@
 #define ACTION_DELAY_MS 500
 
 typedef enum {
-    WLD_SECDMN_STATE_IDLE,
-    WLD_SECDMN_STATE_START,
-    WLD_SECDMN_STATE_STOP,
+    WLD_SECDMN_STATE_IDLE,                          /* member is idle: not started or fully terminated (after process end) */
+    WLD_SECDMN_STATE_START,                         /* member asked to start */
+    WLD_SECDMN_STATE_STOP,                          /* member asked to stop */
     WLD_SECDMN_STATE_MAX,
 } wld_secDmn_state_t;
 
 struct wld_secDmnGrp {
     char* name;                                     /* group name */
-    bool isRunning;
+    bool isRunning;                                 /* group running state */
     wld_process_t* dmnProcess;                      /* daemon context. */
-    amxp_timer_t* actionTimer;
-    void* userData;
-    wld_secDmnGrp_EvtHandlers_t handlers;
+    amxp_timer_t* actionTimer;                      /* delayed action timer: to give time to cumulate start/stop requests */
+    void* userData;                                 /* private user data */
+    wld_secDmnGrp_EvtHandlers_t handlers;           /* group event handlers: to allow customizing group process (cmdline, args,...) */
     amxc_llist_t members;                           /* list of secDmn group members, running into same daemon process */
 };
 
 typedef struct {
     amxc_llist_it_t it;
     char* name;                                     /* member name */
-    wld_secDmn_t* pSecDmn;
-    wld_secDmn_state_t state;
+    wld_secDmn_t* pSecDmn;                          /* member secDmn context */
+    wld_secDmn_state_t state;                       /* member state */
     bool isStartable;                               /* flag to indicate if daemon is started or ready to be */
-    wld_deamonEvtHandlers dmnEvtHdlrs;
-    void* dmnEvtUserData;
+    wld_deamonEvtHandlers dmnEvtHdlrs;              /* member evt handlers: to forward proc event from group to members */
+    void* dmnEvtUserData;                           /* member evt user data */
 } wld_secDmnGrp_member_t;
 
 static void s_restartProcCb(wld_process_t* pProc, void* userdata) {
@@ -166,6 +166,7 @@ swl_rc_ne wld_secDmnGrp_init(wld_secDmnGrp_t** ppSecDmnGrp, char* cmd, char* sta
             swl_str_copyMalloc(&pSecDmnGrp->name, groupName);
         } else if(swl_str_isEmpty(pSecDmnGrp->name)) {
             char dfltName[swl_str_len(cmd) + 32];
+            //default group name: CMD-xxxx
             snprintf(dfltName, sizeof(dfltName), "%s-%p", cmd, pSecDmnGrp);
             swl_str_copyMalloc(&pSecDmnGrp->name, dfltName);
         }
@@ -205,6 +206,9 @@ wld_process_t* wld_secDmnGrp_getProc(wld_secDmnGrp_t* pSecDmnGrp) {
     return pSecDmnGrp->dmnProcess;
 }
 
+/*
+ * @brief internal api to add secDmn member to group
+ */
 swl_rc_ne wld_secDmnGrp_addMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn, const char* memberName) {
     ASSERTS_NOT_NULL(pSecDmnGrp, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -219,8 +223,10 @@ swl_rc_ne wld_secDmnGrp_addMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSe
     member->state = WLD_SECDMN_STATE_IDLE;
     char name[swl_str_len(pSecDmnGrp->name) + SWL_MAX(swl_str_len(memberName), (size_t) 32) + 2];
     if(!swl_str_isEmpty(memberName)) {
+        //custom member name: GROUP_NAME-MEMBER_NAME
         snprintf(name, sizeof(name), "%s-%s", pSecDmnGrp->name, memberName);
     } else {
+        //default member name: GROUP_NAME-memberId
         snprintf(name, sizeof(name), "%s-%zu", pSecDmnGrp->name, amxc_llist_size(&pSecDmnGrp->members));
     }
     swl_str_copyMalloc(&member->name, name);
@@ -229,6 +235,9 @@ swl_rc_ne wld_secDmnGrp_addMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSe
     return SWL_RC_OK;
 }
 
+/*
+ * @brief internal api to save secDmn member proc event handlers (/usedata): needed to forward proc event
+ */
 swl_rc_ne wld_secDmnGrp_setMemberEvtHdlrs(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn, wld_deamonEvtHandlers* pHdlrs, void* priv) {
     wld_secDmnGrp_member_t* member = s_getGrpMember(pSecDmnGrp, pSecDmn);
     ASSERTS_NOT_NULL(member, SWL_RC_INVALID_PARAM, ME, "Unknown member");

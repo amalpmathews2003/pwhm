@@ -339,6 +339,10 @@ static bool s_doStopHostapd(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
     swl_rc_ne rc = wifiGen_hapd_stopDaemon(pRad);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd returns rc : %d", pRad->Name, rc);
+    /*
+     * stop request accepted but delayed (hostapd still used by other radios)
+     * Therefore, hapd rad iface need to be disabled to force stop all vaps
+     */
     if((rc == SWL_RC_CONTINUE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
         SAH_TRACEZ_INFO(ME, "%s: need to disable hostapd", pRad->Name);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
@@ -418,6 +422,10 @@ static bool s_doStartHostapd(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: start hostapd", pRad->Name);
     swl_rc_ne rc = wifiGen_hapd_startDaemon(pRad);
     SAH_TRACEZ_INFO(ME, "%s: start hostapd returns rc : %d", pRad->Name, rc);
+    /*
+     * start request accepted but process already started ie (hostapd already used by other radios)
+     * Therefore, hapd rad iface need to be enabled to force starting main rad iface and vaps
+     */
     if((rc == SWL_RC_DONE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
         SAH_TRACEZ_INFO(ME, "%s: need to enable hostapd", pRad->Name);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);

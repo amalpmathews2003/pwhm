@@ -303,6 +303,18 @@ uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp
     return count;
 }
 
+/*
+ * @brief add secDmn member to a group
+ * Therefore, the secDmn is sharing same process with other members:
+ * The group process is started only when all startable members are started
+ * and it is stopped when all started members have asked to stop
+ *
+ * @param pSecDmn pointer to secDmn context
+ * @param pSecDmnGrp pointer to secDmn group context
+ * @param memberName optional member name used as string id
+ *
+ * @return SWL_RC_OK if successful, error code otherwise
+ */
 swl_rc_ne wld_secDmn_addToGrp(wld_secDmn_t* pSecDmn, wld_secDmnGrp_t* pSecDmnGrp, const char* memberName) {
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     if(pSecDmnGrp == NULL) {
@@ -331,6 +343,16 @@ swl_rc_ne wld_secDmn_addToGrp(wld_secDmn_t* pSecDmn, wld_secDmnGrp_t* pSecDmnGrp
     return SWL_RC_OK;
 }
 
+/*
+ * @brief delete secDmn member from a group
+ * Therefore, the secDmn is implicitly stopped before, and it is was the last
+ * running member, then the group process is terminated.
+ *
+ * @param pSecDmn pointer to secDmn context
+ * @param pSecDmnGrp pointer to secDmn group context
+ *
+ * @return SWL_RC_OK if successful, error code otherwise
+ */
 swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pSecDmn->secDmnGroup, SWL_RC_INVALID_STATE, ME, "NULL");
@@ -339,17 +361,26 @@ swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn) {
     return rc;
 }
 
+/*
+ * @brief returns whethersecDmn is a group member
+ */
 bool wld_secDmn_isGrpMember(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
     ASSERTS_NOT_NULL(pSecDmn->dmnProcess, false, ME, "NULL");
     return (pSecDmn->dmnProcess == wld_secDmnGrp_getProc(pSecDmn->secDmnGroup));
 }
 
+/*
+ * @brief returns the own group context, if secDmn is a member
+ */
 wld_secDmnGrp_t* wld_secDmn_getGrp(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, NULL, ME, "NULL");
     return pSecDmn->secDmnGroup;
 }
 
+/*
+ * @brief returns the count of members of the secDmn group
+ */
 uint32_t wld_secDmn_countGrpMembers(wld_secDmn_t* pSecDmn) {
     return wld_secDmnGrp_getMembersCount(wld_secDmn_getGrp(pSecDmn));
 }

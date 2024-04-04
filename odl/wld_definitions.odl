@@ -323,7 +323,7 @@
 				 */
 				%persistent string UseGlobalInstance {
 					on action validate call check_enum ["Off","On","Auto"];
-					default "Auto";
+					default "Off";
 				}
 			}
 		}
