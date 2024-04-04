@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.1.0 - 2024-04-04(17:08:16 +0000)
+
+### Other
+
+- use nl80211.h deployed by kernel isof toolchain
+
 ## Release v6.0.0 - 2024-04-04(16:16:20 +0000)
 
 ### Other
