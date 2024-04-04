@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.0.0 - 2024-04-04(16:16:20 +0000)
+
+### Other
+
+- add single hostapd apiDocs and set it Off by default
+
 ## Release v5.47.1 - 2024-04-02(13:18:08 +0000)
 
 ### Other
