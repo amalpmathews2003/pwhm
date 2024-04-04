@@ -68,7 +68,7 @@
 
 #include <linux/socket.h>
 #include <linux/netlink.h>
-#include <linux/nl80211.h>
+#include "wld_nl80211.h"
 
 #include "swl/swl_common.h"
 #include "swl/swl_unLiList.h"

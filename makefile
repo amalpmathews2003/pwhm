@@ -20,6 +20,7 @@ endef
 
 # targets
 all:
+	$(MAKE) -C include all
 	$(MAKE) -C src all
 	$(MAKE) -C odl all
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
