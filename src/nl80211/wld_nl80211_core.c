@@ -506,7 +506,7 @@ static void s_clearExpiredRequests(wld_nl80211_state_t* state) {
             SAH_TRACEZ_WARNING(ME, "request %p (seqId:%d) expired (%d >= %d): terminate it",
                                pReq, pReq->seqId, diff, pReq->timeout);
             (state->counters.reqExpired)++;
-            s_updateRequest(pReq, NULL, SWL_RC_ERROR);
+            s_updateRequest(pReq, NULL, SWL_RC_NOT_AVAILABLE);
         }
         it = itNext;
     }

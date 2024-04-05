@@ -273,7 +273,7 @@ static void test_wld_nl80211_sendCmdSync(void** mockaState _UNUSED) {
         //error case: invalid ifIndex: error:-22:Invalid argument
         {.state = s_sharedState, .cmd = NL80211_CMD_GET_INTERFACE, .expectedRc = SWL_RC_ERROR, .expectedData = {.message = "Error", .error = -EINVAL, }},
         //error case: request timeouted
-        {.state = state, .cmd = NL80211_CMD_GET_INTERFACE, .flags = NLM_F_DUMP, .expectedRc = SWL_RC_ERROR, .expectedData = {.message = "Error", }, .expectedTime = REQUEST_SYNC_TIMEOUT, },
+        {.state = state, .cmd = NL80211_CMD_GET_INTERFACE, .flags = NLM_F_DUMP, .expectedRc = SWL_RC_NOT_AVAILABLE, .expectedData = {.message = "Error", }, .expectedTime = REQUEST_SYNC_TIMEOUT, },
         //success: get available nl80211 interfaces
         {.state = s_sharedState, .cmd = NL80211_CMD_GET_INTERFACE, .flags = NLM_F_DUMP, .expectedRc = SWL_RC_OK, .expectedData = {.message = "Success", }},
     };
@@ -345,7 +345,7 @@ static void test_wld_nl80211_sendCmdAsync(void** mockaState _UNUSED) {
         //error case: invalid ifIndex: error:-22:Invalid argument
         {.state = s_sharedState, .cmd = NL80211_CMD_GET_INTERFACE, .expectedRc = SWL_RC_ERROR, .expectedData = {.message = "Error", .error = -EINVAL, }},
         //error case: request timeouted
-        {.state = state, .cmd = NL80211_CMD_GET_INTERFACE, .flags = NLM_F_DUMP, .expectedRc = SWL_RC_ERROR, .expectedData = {.message = "Error", }, .expectedTime = REQUEST_ASYNC_TIMEOUT, },
+        {.state = state, .cmd = NL80211_CMD_GET_INTERFACE, .flags = NLM_F_DUMP, .expectedRc = SWL_RC_NOT_AVAILABLE, .expectedData = {.message = "Error", }, .expectedTime = REQUEST_ASYNC_TIMEOUT, },
         //success: get available nl80211 interfaces
         {.state = s_sharedState, .cmd = NL80211_CMD_GET_INTERFACE, .flags = NLM_F_DUMP, .expectedRc = SWL_RC_DONE, .expectedData = {.message = "Success", }},
     };
