@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.1.1 - 2024-04-05(10:56:30 +0000)
+
+### Other
+
+- remove log spam during updating monitor stats
+
 ## Release v6.1.0 - 2024-04-04(17:08:16 +0000)
 
 ### Other
