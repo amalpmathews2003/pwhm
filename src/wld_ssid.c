@@ -134,7 +134,9 @@ T_SSID* s_createSsid(const char* name, uint32_t id) {
     amxc_llist_append(&sSsidList, &pSSID->it);
     amxp_timer_new(&pSSID->enableSyncTimer, s_syncEnable, pSSID);
     pSSID->enable = 0;
-    pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
+    swl_timeMono_t now = swl_time_getMonoSec();
+    pSSID->changeInfo.lastDisableTime = now;
+    pSSID->changeInfo.lastStatusChange = now;
     pSSID->mldUnit = -1;
     SAH_TRACEZ_INFO(ME, "created ssid(%s) ctx(%p) id(%d)", name, pSSID, id);
     SAH_TRACEZ_OUT(ME);
@@ -796,3 +798,17 @@ amxd_status_t _SSID_getStatusHistogram(amxd_object_t* object,
     return amxd_status_ok;
 }
 
+amxd_status_t _wld_ssid_getLastChange_prf(amxd_object_t* object,
+                                          amxd_param_t* param,
+                                          amxd_action_t reason,
+                                          const amxc_var_t* const args _UNUSED,
+                                          amxc_var_t* const retval,
+                                          void* priv _UNUSED) {
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
+    T_SSID* pSSID = wld_ssid_fromObj(object);
+    ASSERTS_NOT_NULL(pSSID, amxd_status_ok, ME, "no SSID mapped");
+    uint32_t lastChange = swl_time_getMonoSec() - pSSID->changeInfo.lastStatusChange;
+    amxc_var_set(uint32_t, retval, lastChange);
+    return amxd_status_ok;
+}

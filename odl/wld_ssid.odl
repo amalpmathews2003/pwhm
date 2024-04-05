@@ -159,7 +159,9 @@
 		/**
 		 * <p>The accumulated time in seconds since the SSID entered
 		 * its current operational state.</p> */
-		/* uint32 LastChange; */
+		%read-only uint32 LastChange {
+			on action read call wld_ssid_getLastChange_prf;
+		}
 		/**
 		 * <p> Comma-separated list (maximum length 1024) of strings.
 		 * Each list item MUST be the path name of an interface object
