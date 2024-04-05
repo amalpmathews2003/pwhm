@@ -1040,6 +1040,12 @@ define rrm_t{
 			 %persistent bool RestartOnRequest {
 				default false;
 			}
+
+			/**
+			 * The Wi-Fi Simple Configuration version supported by the device, a string of the form m.n where m is the major version and n is the minor version.
+			 * For example, a value of 1.0 denotes WSC 1.0 and a value of 2.0 denotes WSC 2.0.
+			 */
+			%read-only string Version;
 		}
 
 		/**

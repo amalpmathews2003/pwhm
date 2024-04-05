@@ -949,6 +949,10 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_trans_set_int32_t(&trans, "Configured", pAP->WPS_Configured);
         amxd_trans_set_cstring_t(&trans, "UUID", g_wpsConst.UUID);
 
+        TBuf[0] = 0;
+        swl_str_catFormat(TBuf, sizeof(TBuf), "%.1f", (float) g_wpsConst.wpsSupVer);
+        amxd_trans_set_cstring_t(&trans, "Version", TBuf);
+
         amxc_string_clean(&TBufStr);
 
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pAP->name);
