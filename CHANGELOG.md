@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.2.0 - 2024-04-05(13:12:11 +0000)
+
+### Other
+
+- - Add supported WPS version
+
 ## Release v6.1.2 - 2024-04-05(12:59:20 +0000)
 
 ### Other
