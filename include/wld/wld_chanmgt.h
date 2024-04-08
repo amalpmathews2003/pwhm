@@ -101,5 +101,7 @@ swl_channel_t wld_chanmgt_getTgtChannel(T_Radio* pRad);
 swl_bandwidth_e wld_chanmgt_getTgtBw(T_Radio* pRad);
 swl_chanspec_t wld_chanmgt_getCurChspec(T_Radio* pRad);
 swl_chanspec_t wld_chanmgt_getTgtChspec(T_Radio* pRad);
+swl_bandwidth_e wld_chanmgt_getAutoBwExt(wld_rad_bwSelectMode_e autoBwMode, swl_bandwidth_e maxBw, swl_chanspec_t tgtChspec);
+swl_bandwidth_e wld_chanmgt_getAutoBw(T_Radio* pR, swl_chanspec_t tgtChspec);
 
 #endif /* _WLD_CHANMGT_PCB_H_ */

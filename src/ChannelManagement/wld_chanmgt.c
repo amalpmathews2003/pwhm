@@ -430,6 +430,68 @@ static void s_updateTargetDm(void* data) {
     s_updateTargetChanspec(pR);
 }
 
+/*
+ * @brief select channel width when Auto bw is used
+ *
+ * @param autoBwMode auto bw selection mode
+ * @param maxBw max supported channel width
+ * @param tgtChspec input target chanspec:
+ *                  used reference channel with auto bw mode MaxCleared
+ *                          and filled with deduced channel width
+ *
+ * @return selected channel width, or SWL_BW_AUTO in case of error
+ */
+swl_bandwidth_e wld_chanmgt_getAutoBwExt(wld_rad_bwSelectMode_e autoBwMode, swl_bandwidth_e maxBw, swl_chanspec_t tgtChspec) {
+    swl_bandwidth_e tgtBw = SWL_BW_AUTO;
+    ASSERT_TRUE(autoBwMode < BW_SELECT_MODE_MAX, tgtBw, ME, "Invalid autoBwMode %d", autoBwMode);
+    ASSERT_FALSE(tgtChspec.band >= SWL_FREQ_BAND_EXT_NONE, tgtBw, ME, "target chanspec has unknown freqBand");
+
+    const char* autoBwModeStr = wld_rad_autoBwSelectMode_str[autoBwMode];
+    swl_bandwidth_e dfltBw = swl_bandwidth_defaults[(swl_freqBand_e) tgtChspec.band];
+    dfltBw = maxBw ? SWL_MIN(dfltBw, maxBw) : dfltBw;
+    if(autoBwMode == BW_SELECT_MODE_DEFAULT) {
+        tgtBw = dfltBw;
+    } else {
+        ASSERT_NOT_EQUALS(maxBw, SWL_BW_AUTO, tgtBw, ME, "unknown maxBw");
+        tgtChspec.bandwidth = maxBw;
+        swl_chanspec_t testChspec = tgtChspec;
+        // for all max mode variants, check first available channels (valid and without radar detection)
+        while(((!wld_channel_is_band_available(testChspec)) ||
+               (wld_channel_is_band_radar_detected(testChspec))) &&
+              (testChspec.bandwidth > 0)) {
+            testChspec.bandwidth--;
+        }
+        ASSERT_TRUE(testChspec.bandwidth > 0, tgtBw,
+                    ME, "can not select %s auto bw: no available channel in tgt chanspec %s)",
+                    autoBwModeStr, swl_typeChanspecExt_toBuf32(tgtChspec).buf);
+        swl_chanspec_t availChSpec = testChspec;
+        if(autoBwMode == BW_SELECT_MODE_MAXAVAILABLE) {
+            tgtBw = availChSpec.bandwidth;
+        } else if(autoBwMode == BW_SELECT_MODE_MAXCLEARED) {
+            while(!wld_channel_is_band_usable(testChspec) && testChspec.bandwidth > 0) {
+                testChspec.bandwidth--;
+            }
+            if(testChspec.bandwidth == SWL_BW_AUTO) {
+                testChspec.bandwidth = SWL_MIN(availChSpec.bandwidth, dfltBw);
+                SAH_TRACEZ_NOTICE(ME, "%s not cleared but clearable", swl_typeChanspecExt_toBuf32(testChspec).buf);
+            }
+            tgtBw = testChspec.bandwidth;
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "auto bw %s %d (max:%d) (tgtChspec:%s)",
+                    autoBwModeStr,
+                    swl_chanspec_bwToInt(tgtBw),
+                    swl_chanspec_bwToInt(maxBw),
+                    swl_typeChanspecExt_toBuf32(tgtChspec).buf
+                    );
+    return tgtBw;
+}
+
+swl_bandwidth_e wld_chanmgt_getAutoBw(T_Radio* pR, swl_chanspec_t tgtChspec) {
+    ASSERT_NOT_NULL(pR, SWL_BW_AUTO, ME, "NULL");
+    return wld_chanmgt_getAutoBwExt(pR->autoBwSelectMode, pR->maxChannelBandwidth, tgtChspec);
+}
+
 /**
  * Set target chanspec for a specific radio
  *
@@ -446,7 +508,7 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     swl_chanspec_t tgtChanspec = chanspec;
 
     if(tgtChanspec.bandwidth == SWL_BW_AUTO) {
-        tgtChanspec.bandwidth = swl_bandwidth_defaults[wld_rad_getFreqBand(pR)];
+        tgtChanspec.bandwidth = wld_chanmgt_getAutoBw(pR, tgtChanspec);
     }
     while(!wld_channel_is_band_available(tgtChanspec) && tgtChanspec.bandwidth > 0) {
         tgtChanspec.bandwidth--;

@@ -41,7 +41,7 @@
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
-                parameter AutoBandwidthSelectMode="MaxAvailable";
+                parameter AutoBandwidthSelectMode="MaxCleared";
                 object MACConfig {
                     parameter UseBaseMacOffset = true;
                     parameter BaseMacOffset = {{RadioId}};

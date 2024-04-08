@@ -542,8 +542,17 @@ static void s_setAutoBandwidthSelectMode_pwf(void* priv _UNUSED, amxd_object_t* 
     T_Radio* pRad = wld_rad_fromObj(object);
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     const char* TCBW = amxc_var_constcast(cstring_t, newValue);
-    SAH_TRACEZ_INFO(ME, "%s: set AutoBandwidthSelectMode %p", pRad->Name, TCBW);
-    pRad->autoBwSelectMode = swl_conv_charToEnum(TCBW, wld_rad_autoBwSelectMode_str, BW_SELECT_MODE_MAX, BW_SELECT_MODE_DEFAULT);
+    wld_rad_bwSelectMode_e autoBwSelectMode = swl_conv_charToEnum(TCBW, wld_rad_autoBwSelectMode_str, BW_SELECT_MODE_MAX, BW_SELECT_MODE_DEFAULT);
+    SAH_TRACEZ_INFO(ME, "%s: set AutoBandwidthSelectMode %s %d", pRad->Name, TCBW, autoBwSelectMode);
+    ASSERTI_NOT_EQUALS(pRad->autoBwSelectMode, autoBwSelectMode, , ME, "same value");
+    pRad->autoBwSelectMode = autoBwSelectMode;
+    ASSERTI_EQUALS(pRad->operatingChannelBandwidth, SWL_RAD_BW_AUTO, , ME, "%s: not auto bw", pRad->Name);
+    ASSERTI_FALSE(pRad->autoChannelEnable, , ME, "%s: let auto channel enabled control bandwidth", pRad->Name);
+    swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->channel, pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
+    SAH_TRACEZ_INFO(ME, "%s: set target chanspec %s with new AutoBWMode %s",
+                    pRad->Name, swl_typeChanspecExt_toBuf32(chanspec).buf, wld_rad_autoBwSelectMode_str[autoBwSelectMode]);
+    wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
+    wld_autoCommitMgr_notifyRadEdit(pRad);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -4195,8 +4204,8 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("WPS_Enrollee_Mode", s_setWPSEnrolMode_pwf),
                   SWLA_DM_PARAM_HDLR("KickRoamingStation", s_setKickRoamSta_pwf),
                   SWLA_DM_PARAM_HDLR("AutoChannelEnable", s_setAutoChannelEnable_pwf),
-                  SWLA_DM_PARAM_HDLR("AutoBandwidthSelectMode", s_setAutoBandwidthSelectMode_pwf),
                   SWLA_DM_PARAM_HDLR("OperatingChannelBandwidth", s_setOperatingChannelBandwidth_pwf),
+                  SWLA_DM_PARAM_HDLR("AutoBandwidthSelectMode", s_setAutoBandwidthSelectMode_pwf),
                   SWLA_DM_PARAM_HDLR("ObssCoexistenceEnable", s_setObssCoexistenceEnable_pwf),
                   SWLA_DM_PARAM_HDLR("ExtensionChannel", s_setExtensionChannel_pwf),
                   SWLA_DM_PARAM_HDLR("GuardInterval", s_setGuardInterval_pwf),

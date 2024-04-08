@@ -397,6 +397,7 @@ T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
     pR->bgdfs_config.available = false;
     pR->bgdfs_config.enable = false;
     pR->bgdfs_config.channel = 0;
+    pR->autoBwSelectMode = BW_SELECT_MODE_DEFAULT;
 
     /* Update our RO driver parameters in this T_Radio structure */
     pR->pFA->mfn_wrad_supports(pR, NULL, 0);
@@ -429,7 +430,6 @@ T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
         }
     }
     SAH_TRACEZ_INFO(ME, "%s: max bw: %u", pR->Name, pR->maxChannelBandwidth);
-    pR->autoBwSelectMode = BW_SELECT_MODE_DEFAULT;
 
     amxc_llist_init(&pR->channelChangeList);
 

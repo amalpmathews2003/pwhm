@@ -508,6 +508,157 @@ static void test_wld_checkChannelChange(void** state _UNUSED) {
     assert_int_equal((uint32_t) Time, (uint32_t) curTime);
 }
 
+typedef struct {
+    swl_chanspec_t tgtChSpec;
+    wld_rad_bwSelectMode_e autoBwMode;
+    swl_bandwidth_e maxBw;
+    swl_bandwidth_e expecBw;
+} autoBwModetestInfo_t;
+
+static void test_wld_setAutoBwMode(void** state _UNUSED) {
+    T_Radio* pR = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].rad;
+    pR->pFA->mfn_wrad_supports(pR, NULL, 0);
+    wld_channel_clear_passive_band((swl_chanspec_t) SWL_CHANSPEC_NEW(100, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+    wld_channel_mark_radar_detected_band((swl_chanspec_t) SWL_CHANSPEC_NEW(60, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+
+    autoBwModetestInfo_t tests[] = {
+        //default limited to maxBw 80
+        {
+            SWL_CHANSPEC_NEW(36, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_DEFAULT, SWL_BW_80MHZ,
+            SWL_BW_80MHZ,
+        },
+        //default limited to maxBw 40
+        {
+            SWL_CHANSPEC_NEW(36, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_DEFAULT, SWL_BW_40MHZ,
+            SWL_BW_40MHZ,
+        },
+        //max available limited to 80 because of radar on 60/20
+        {
+            SWL_CHANSPEC_NEW(40, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXAVAILABLE, SWL_BW_160MHZ,
+            SWL_BW_80MHZ,
+        },
+        //max cleared limited to 80 as prim is non-dfs, but no dfs chans has been cleared
+        {
+            SWL_CHANSPEC_NEW(40, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXCLEARED, SWL_BW_160MHZ,
+            SWL_BW_80MHZ,
+        },
+        //normal default 80
+        {
+            SWL_CHANSPEC_NEW(52, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_DEFAULT, SWL_BW_160MHZ,
+            SWL_BW_80MHZ,
+        },
+        //limited max cleared because of detected radar in chan 60
+        {
+            SWL_CHANSPEC_NEW(52, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXCLEARED, SWL_BW_160MHZ,
+            SWL_BW_40MHZ,
+        },
+        //max cleared initiated to default 80 (no previous clear, and no radar detected)
+        {
+            SWL_CHANSPEC_NEW(128, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXCLEARED, SWL_BW_160MHZ,
+            SWL_BW_80MHZ,
+        },
+        //max available limited to 20, last supported channel
+        {
+            SWL_CHANSPEC_NEW(140, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXAVAILABLE, SWL_BW_160MHZ,
+            SWL_BW_20MHZ,
+        },
+        //normal default 80
+        {
+            SWL_CHANSPEC_NEW(100, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_DEFAULT, SWL_BW_80MHZ,
+            SWL_BW_80MHZ,
+        },
+        //max available with all chanset supported withing max bw
+        {
+            SWL_CHANSPEC_NEW(100, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXAVAILABLE, SWL_BW_160MHZ,
+            SWL_BW_160MHZ,
+        },
+        //max cleared limited to only cleared 100/20
+        {
+            SWL_CHANSPEC_NEW(100, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ), BW_SELECT_MODE_MAXCLEARED, SWL_BW_160MHZ,
+            SWL_BW_20MHZ,
+        },
+        //normal default 20
+        {
+            SWL_CHANSPEC_NEW(1, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_2_4GHZ), BW_SELECT_MODE_DEFAULT, SWL_BW_40MHZ,
+            SWL_BW_20MHZ,
+        },
+        //max available on 2.4 aligned with max bw 20
+        {
+            SWL_CHANSPEC_NEW(6, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_2_4GHZ), BW_SELECT_MODE_MAXAVAILABLE, SWL_BW_20MHZ,
+            SWL_BW_20MHZ,
+        },
+        //max available on 2.4 aligned with max bw 40
+        {
+            SWL_CHANSPEC_NEW(11, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_2_4GHZ), BW_SELECT_MODE_MAXCLEARED, SWL_BW_40MHZ,
+            SWL_BW_40MHZ,
+        },
+        //error case: primary channel 14 is not supported
+        {
+            SWL_CHANSPEC_NEW(14, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_2_4GHZ), BW_SELECT_MODE_MAXCLEARED, SWL_BW_40MHZ,
+            SWL_BW_AUTO,
+        },
+        //error case: looking for max available, but has unknown max bw
+        {
+            SWL_CHANSPEC_NEW(3, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_2_4GHZ), BW_SELECT_MODE_MAXAVAILABLE, SWL_BW_AUTO,
+            SWL_BW_AUTO,
+        },
+    };
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(tests); i++) {
+        swl_bandwidth_e resBw = wld_chanmgt_getAutoBwExt(tests[i].autoBwMode, tests[i].maxBw, tests[i].tgtChSpec);
+        printf("#### [%d] in chspec(%s) maxBw(%d) autoBwMode(%s) / expec bw(%d) / out bw(%d)\n",
+               i, swl_typeChanspecExt_toBuf32(tests[i].tgtChSpec).buf, swl_chanspec_bwToInt(tests[i].maxBw), wld_rad_autoBwSelectMode_str[tests[i].autoBwMode],
+               swl_chanspec_bwToInt(tests[i].expecBw),
+               swl_chanspec_bwToInt(resBw));
+        assert_int_equal(resBw, tests[i].expecBw);
+    }
+    wld_channel_mark_passive_band((swl_chanspec_t) SWL_CHANSPEC_NEW(100, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+    wld_channel_clear_radar_detected_band((swl_chanspec_t) SWL_CHANSPEC_NEW(60, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+}
+
+static void test_wld_setAutoBwModeMaxCleared(void** state _UNUSED) {
+    T_Radio* pR = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].rad;
+    pR->pFA->mfn_wrad_supports(pR, NULL, 0);
+
+    autoBwModetestInfo_t test;
+    test.autoBwMode = BW_SELECT_MODE_MAXCLEARED;
+    test.maxBw = SWL_BW_160MHZ;
+
+    test.tgtChSpec = (swl_chanspec_t) SWL_CHANSPEC_NEW(40, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ);
+
+    //max cleared initiated to default 80 (no previous clear, and no radar detected)
+    swl_bandwidth_e resBw = wld_chanmgt_getAutoBwExt(test.autoBwMode, test.maxBw, test.tgtChSpec);
+    assert_int_equal(resBw, SWL_BW_80MHZ);
+
+    //max cleared extended to default 160 (prim nodfs + 52/80 cleared)
+    wld_channel_clear_passive_band((swl_chanspec_t) SWL_CHANSPEC_NEW(52, SWL_BW_80MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+    resBw = wld_chanmgt_getAutoBwExt(test.autoBwMode, test.maxBw, test.tgtChSpec);
+    assert_int_equal(resBw, SWL_BW_160MHZ);
+
+    test.tgtChSpec = (swl_chanspec_t) SWL_CHANSPEC_NEW(100, SWL_BW_AUTO, SWL_FREQ_BAND_EXT_5GHZ);
+
+    //max cleared initiated to default 80 (no previous clear, and no radar detected)
+    resBw = wld_chanmgt_getAutoBwExt(test.autoBwMode, test.maxBw, test.tgtChSpec);
+    assert_int_equal(resBw, SWL_BW_80MHZ);
+
+    wld_channel_clear_passive_band((swl_chanspec_t) SWL_CHANSPEC_NEW(100, SWL_BW_160MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+
+    //max cleared extended to 160
+    resBw = wld_chanmgt_getAutoBwExt(test.autoBwMode, test.maxBw, test.tgtChSpec);
+    assert_int_equal(resBw, SWL_BW_160MHZ);
+
+    wld_channel_mark_radar_detected_band((swl_chanspec_t) SWL_CHANSPEC_NEW(108, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+
+    //max cleared reduced to 40 because of radar detected in 108/20
+    resBw = wld_chanmgt_getAutoBwExt(test.autoBwMode, test.maxBw, test.tgtChSpec);
+    assert_int_equal(resBw, SWL_BW_40MHZ);
+
+    wld_channel_mark_radar_detected_band((swl_chanspec_t) SWL_CHANSPEC_NEW(100, SWL_BW_20MHZ, SWL_FREQ_BAND_EXT_5GHZ));
+
+    //max cleared null because of radar detected also on prim chan 100
+    resBw = wld_chanmgt_getAutoBwExt(test.autoBwMode, test.maxBw, test.tgtChSpec);
+    assert_int_equal(resBw, SWL_BW_AUTO);
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
     const struct CMUnitTest tests[] = {
@@ -517,6 +668,8 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_checkSync),
         cmocka_unit_test(test_wld_setChanspec),
         cmocka_unit_test(test_wld_checkChannelChange),
+        cmocka_unit_test(test_wld_setAutoBwMode),
+        cmocka_unit_test(test_wld_setAutoBwModeMaxCleared),
     };
     ttb_util_setFilter();
     return cmocka_run_group_tests(tests, setup_suite, teardown_suite);
