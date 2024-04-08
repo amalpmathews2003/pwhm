@@ -406,6 +406,17 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
     }
 }
 
+static void s_syncOnEpRadUp(void* userData, char* ifName, bool state _UNUSED) {
+    T_Radio* pRad = (T_Radio*) userData;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+
+    if(wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pEP->index, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0) < SWL_RC_OK) {
+        SAH_TRACEZ_WARNING(ME, "%s: fail to register for prob_req notifs from nl80211", pEP->alias);
+    }
+}
+
 static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {
     ASSERT_NOT_NULL(hostapd, , ME, "no hostapd ctx");
     void* userdata = NULL;
@@ -668,6 +679,7 @@ static void s_registerWpaSuppRadEvtHandlers(wld_secDmn_t* wpaSupp) {
     wld_wpaCtrl_radioEvtHandlers_cb handlers = {0};
     if(wld_wpaCtrlMngr_getEvtHandlers(wpaSupp->wpaCtrlMngr, &userdata, &handlers)) {
         handlers.fSyncOnEpConnected = s_syncOnEpConnected;
+        handlers.fSyncOnRadioUp = s_syncOnEpRadUp;
         wld_wpaCtrlMngr_setEvtHandlers(wpaSupp->wpaCtrlMngr, userdata, &handlers);
     }
 }

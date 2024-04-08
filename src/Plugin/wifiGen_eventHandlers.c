@@ -220,7 +220,9 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     ASSERTS_TRUE(isReady, , ME, "Not ready");
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    if(wld_rad_vap_from_name(pRad, ifName) != NULL) {
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
+    T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
+    if(pAP != NULL) {
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
         pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
@@ -241,6 +243,10 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         if(isRadReady || isRadStarting) {
             CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, isRadReady);
         }
+        return;
+    }
+    if(pEP != NULL) {
+        CALL_SECDMN_MGR_EXT(pEP->wpaSupp, fSyncOnRadioUp, ifName, true);
         return;
     }
     wld_rad_updateState(pRad, false);
