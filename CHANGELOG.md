@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.3.1 - 2024-04-08(15:05:17 +0000)
+
+### Other
+
+- don't return error when no Nasta monitor entry is present
+
 ## Release v6.3.0 - 2024-04-05(15:20:03 +0000)
 
 ### Other
