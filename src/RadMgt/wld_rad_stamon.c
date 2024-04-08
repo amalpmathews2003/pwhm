@@ -340,7 +340,7 @@ static amxd_status_t s_getDeviceStats(amxd_object_t* obj,
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(obj));
     ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "Invalid Radio Pointer");
     ASSERTI_TRUE(pRad->stationMonitorEnabled, amxd_status_ok, ME, "%s stamon disabled", pRad->Name);
-    ASSERTI_TRUE(!amxc_llist_is_empty(&pRad->naStations), amxd_status_unknown_error, ME, "No station monitor entry is present");
+    ASSERTI_TRUE(!amxc_llist_is_empty(&pRad->naStations), amxd_status_ok, ME, "No station monitor entry is present");
 
     swl_rc_ne rc = pRad->pFA->mfn_wrad_update_mon_stats(pRad);
     ASSERTS_NOT_EQUALS(rc, SWL_RC_NOT_IMPLEMENTED, amxd_status_ok, ME, "%s: staMon not supported", pRad->Name);
