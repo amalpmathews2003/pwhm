@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.3.2 - 2024-04-09(08:57:51 +0000)
+
+### Other
+
+- use autoBwMode MaxCleared for rad 5GHz
+
 ## Release v6.3.1 - 2024-04-08(15:05:17 +0000)
 
 ### Other
