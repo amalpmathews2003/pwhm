@@ -1364,6 +1364,83 @@ static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
     SAH_TRACEZ_OUT(ME);
 }
 
+amxd_status_t _wld_rad_validateBasicDataRates_pvf(amxd_object_t* object,
+                                                  amxd_param_t* param _UNUSED,
+                                                  amxd_action_t reason _UNUSED,
+                                                  const amxc_var_t* const args,
+                                                  amxc_var_t* const retval _UNUSED,
+                                                  void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    amxd_status_t status = amxd_status_invalid_value;
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
+
+    bool entireStringUsed;
+    swl_mcs_legacyIndex_m newBasicTxRates = swl_conv_charToMaskSep(newValue, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',', &entireStringUsed);
+    free(newValue);
+    bool validNewBasicTxRates = ((newBasicTxRates == 0) ||
+                                 (entireStringUsed && ((newBasicTxRates & pRad->supportedDataTransmitRates) == newBasicTxRates)));
+    ASSERT_TRUE(validNewBasicTxRates, status, ME, "%s: One or more of the configured basic rates are not supported", pRad->Name);
+    if(pRad->operationalDataTransmitRates != 0) {
+        SAH_TRACE_ERROR("= newBasicTxRates = %u, operationalDataTransmitRates = %u ==> %u", newBasicTxRates, pRad->operationalDataTransmitRates, newBasicTxRates & pRad->operationalDataTransmitRates);
+        ASSERT_TRUE(((newBasicTxRates & pRad->operationalDataTransmitRates) != 0), status, ME, "%s: Not allowed to disable all the basic transmit rates", pRad->Name);
+    }
+
+    return amxd_status_ok;
+}
+
+static void s_setBasicDataTransmitRates_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    char* basicDataTransmitRates = amxc_var_dyncast(cstring_t, newValue);
+    pRad->basicDataTransmitRates = swl_conv_charToMask(basicDataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE);
+    free(basicDataTransmitRates);
+    wld_rad_doSync(pRad);
+}
+
+amxd_status_t _wld_rad_validateOperationalDataRates_pvf(amxd_object_t* object,
+                                                        amxd_param_t* param _UNUSED,
+                                                        amxd_action_t reason _UNUSED,
+                                                        const amxc_var_t* const args,
+                                                        amxc_var_t* const retval _UNUSED,
+                                                        void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_instance, amxd_status_ok, ME, "obj is not instance");
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
+    amxd_status_t status = amxd_status_invalid_value;
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    ASSERT_NOT_NULL(newValue, status, ME, "NULL");
+
+    bool entireStringUsed;
+    swl_mcs_legacyIndex_m newOperationalTxRates = swl_conv_charToMaskSep(newValue, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',', &entireStringUsed);
+    free(newValue);
+
+    if((newOperationalTxRates == 0) || (newOperationalTxRates == pRad->supportedDataTransmitRates)) {
+        status = amxd_status_ok;
+    } else {
+        ASSERT_TRUE(entireStringUsed && ((newOperationalTxRates & pRad->supportedDataTransmitRates) == newOperationalTxRates),
+                    status, ME, "%s: One or more of the configured operational rates are not supported", pRad->Name);
+        ASSERT_NOT_EQUALS(pRad->basicDataTransmitRates, 0, status, ME, "%s: BasicDataRates must be set before to prevent disabling all basic supported rates", pRad->Name);
+        swl_mcs_legacyIndex_m newBasicTxRates = newOperationalTxRates & pRad->basicDataTransmitRates;
+        ASSERT_NOT_EQUALS(newBasicTxRates, 0, status, ME, "%s: Not allowed to disable all the basic transmit rates", pRad->Name);
+        status = amxd_status_ok;
+    }
+    return status;
+}
+
+static void s_setOperationalDataTransmitRates_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    char* operationalDataTransmitRates = amxc_var_dyncast(cstring_t, newValue);
+    pRad->operationalDataTransmitRates = swl_conv_charToMask(operationalDataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE);
+    free(operationalDataTransmitRates);
+    wld_rad_doSync(pRad);
+}
+
 amxd_status_t _wld_rad_getLastChange_prf(amxd_object_t* object,
                                          amxd_param_t* param,
                                          amxd_action_t reason,
@@ -1877,6 +1954,11 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_trans_set_cstring_t(&trans, "IEEE80211_Caps", TBuf);
 
         amxd_trans_set_cstring_t(&trans, "FirmwareVersion", pR->firmwareVersion);
+
+        TBuf[0] = '\0';
+        swl_conv_maskToCharSep(TBuf, sizeof(TBuf), pR->supportedDataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',');
+        amxd_trans_set_cstring_t(&trans, "SupportedDataTransmitRates", TBuf);
+
         wld_rad_update_operating_standard(pR, &trans);
 
         wld_rad_updateCapabilities(pR, &trans);
@@ -4256,6 +4338,8 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("OperatingStandardsFormat", wld_rad_setOperatingStandardsFormat_pwf),
                   SWLA_DM_PARAM_HDLR("DelayApUpPeriod", wld_rad_delayMgr_setDelayApUpPeriod_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("OperationalDataTransmitRates", s_setOperationalDataTransmitRates_pwf),
+                  SWLA_DM_PARAM_HDLR("BasicDataTransmitRates", s_setBasicDataTransmitRates_pwf),
                   ),
               .instAddedCb = s_addInstance_oaf);
 

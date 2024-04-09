@@ -143,6 +143,7 @@ typedef struct {
     swl_80211_vhtCapInfo_m vhtCapabilities;                  /* VHT(very High Throughput) 802.11n capabilities*/
     swl_80211_hecap_phyCapInfo_t hePhyCapabilities;          /* HE(High Efficiency) 802.11ax capabilities*/
     swl_mcs_t mcsStds[SWL_MCS_STANDARD_MAX];                 //support mcs standards (each indexed on its relative enum)
+    swl_mcs_legacyIndex_m supportedDataTransmitRates;        //supported data transmit rates
 } wld_nl80211_bandDef_t;
 
 typedef struct {

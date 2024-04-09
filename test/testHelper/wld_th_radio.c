@@ -186,6 +186,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->channel = cap->channel;
         rad->supportedStandards = cap->supportedStandards;
         rad->supportedChannelBandwidth = cap->supportedChannelBandwidth;
+        rad->supportedDataTransmitRates = cap->supportedDataTransmitRates;
         memcpy(&rad->cap, &cap->cap, sizeof(wld_radioCap_t));
         return 0;
     }

@@ -181,6 +181,9 @@ static void test_radioStatus(void** state _UNUSED) {
     wld_th_radio_addCustomCap(&testCap2);
     wld_th_radio_addCustomCap(&testCap5);
     wld_th_radio_addCustomCap(&testCap6);
+    testCap2.supportedDataTransmitRates = swl_conv_charToMask("1,2,5.5,6,9,11,12,18,24,36,48,54", swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE);
+    testCap5.supportedDataTransmitRates = swl_conv_charToMask("6,9,12,18,24,36,48,54", swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE);
+    testCap6.supportedDataTransmitRates = swl_conv_charToMask("6,9,12,18,24,36,48,54", swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE);
     T_Radio* pRad2 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi0");
     T_Radio* pRad5 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi1");
     T_Radio* pRad6 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi2");

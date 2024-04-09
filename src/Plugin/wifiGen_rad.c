@@ -361,7 +361,7 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     pRad->htCapabilities = pOperBand->htCapabilities;
     pRad->vhtCapabilities = pOperBand->vhtCapabilities;
     pRad->hePhyCapabilities = pOperBand->hePhyCapabilities;
-
+    pRad->supportedDataTransmitRates = pOperBand->supportedDataTransmitRates;
 }
 
 void s_readChanInfo(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {

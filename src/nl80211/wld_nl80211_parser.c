@@ -561,6 +561,36 @@ swl_rc_ne s_parseChans(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne s_parseDataTransmitRates(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
+    ASSERTS_NOT_NULL(tbBand, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_RATES], SWL_RC_OK, ME, "No freqs to parse");
+
+    struct nlattr* nlRate;
+    int remRate;
+    struct nlattr* tbRate[NL80211_BITRATE_ATTR_MAX + 1];
+    static struct nla_policy ratePolicy[NL80211_BITRATE_ATTR_MAX + 1] = {
+        [NL80211_BITRATE_ATTR_RATE] = { .type = NLA_U32 },
+        [NL80211_BITRATE_ATTR_2GHZ_SHORTPREAMBLE] = { .type = NLA_FLAG },
+    };
+
+    u_int32_t idx = 0;
+    char dataTransmitRates[64] = {'\0'};
+    nla_for_each_nested(nlRate, tbBand[NL80211_BAND_ATTR_RATES], remRate) {
+        nla_parse(tbRate, NL80211_BITRATE_ATTR_MAX, nla_data(nlRate), nla_len(nlRate), ratePolicy);
+        if(!tbRate[NL80211_BITRATE_ATTR_RATE]) {
+            continue;
+        }
+
+        float rate = 0.1 * nla_get_u32(tbRate[NL80211_BITRATE_ATTR_RATE]);
+        const char* format = ((rate == (int) rate)) ? "%s%.0f" : "%s%.1f";
+        swl_str_catFormat(dataTransmitRates, sizeof(dataTransmitRates), format, idx > 0 ? "," : "", rate);
+        idx++;
+    }
+    pBand->supportedDataTransmitRates = swl_conv_charToMask(dataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE);
+    return SWL_RC_OK;
+}
+
 swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
     ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -599,6 +629,7 @@ swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy
         s_parseVhtAttrs(tbBand, pBand);
         s_parseHeAttrs(tbBand, pBand);
         s_parseChans(tbBand, pBand);
+        s_parseDataTransmitRates(tbBand, pBand);
     }
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(pWiphy->bands); i++) {
         if(pWiphy->bands[i].nChans > 0) {

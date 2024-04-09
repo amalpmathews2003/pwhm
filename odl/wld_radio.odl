@@ -949,6 +949,36 @@ define probelist_t{
 		}
 
 		/**
+		 * Comma-separated list of strings. The set of data rates, in Mbps, that have to be supported by all stations that desire to join this BSS.
+		 * The stations have to be able to receive and transmit at each of the data rates listed in BasicDataTransmitRates.
+		 * For example, a value of “1,2”, indicates that stations support 1 Mbps and 2 Mbps. Most control packets use a data rate in BasicDataTransmitRates.
+		 */
+		%persistent string BasicDataTransmitRates{
+			on action validate call wld_rad_validateBasicDataRates_pvf;
+		}
+
+		/**
+		 * Comma-separated list of strings.
+		 * Maximum radio data transmit rates in Mbps for unicast frames (a superset of BasicDataTransmitRates).
+		 * Given the value of BasicDataTransmitRates from the example above, SupportedDataTransmitRates might be “1,2,5.5,11”,
+		 * indicating that unicast frames can additionally be transmitted at 5.5 Mbps and 11 Mbps.
+		 * SupportedDataTransmitRates indicates equipment capability. This radio is capable of supporting these data rates.
+		 */
+		%read-only string SupportedDataTransmitRates;
+
+		/**
+		 * Comma-separated list of strings.
+		 * Data transmit rates in Mbps for unicast frames at which the radio will permit operation with any associated station (a subset of SupportedDataTransmitRates).
+		 * Given the values of BasicDataTransmitRates and SupportedDataTransmitRates from the examples above, OperationalDataTransmitRates might be “1,2,5.5”,
+		 * indicating that the radio will only permit operation at 1 Mbps, 2 Mbps and 5.5 Mbps, even though it could theoretically operate at 11 Mbps.
+		 * This radio is limited to allowing operation only at these data rates.
+		 * Note: Setting OperationalDataTransmitRates can’t increase the set of possible data rates but could narrow them.
+		 */
+		%persistent string OperationalDataTransmitRates{
+			on action validate call wld_rad_validateOperationalDataRates_pvf;
+		}
+
+		/**
 		 * Target Wake Time is an 11ax feature that allows the AP to
 		 * communicate with stations when and how often they will need
 		 * to send and receive data to increase battery life.

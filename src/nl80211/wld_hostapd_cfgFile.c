@@ -104,6 +104,12 @@ static const char* s_hostapd_WPS_configMethods_str[] = {
 };
 SWL_ASSERT_STATIC(SWL_ARRAY_SIZE(s_hostapd_WPS_configMethods_str) == (WPS_CFG_MTHD_MAX + 1), "s_hostapd_WPS_configMethods_str not correctly defined");
 
+/*
+ * List of rates (in 100 kbps) that are included in the basic rate set.
+ * If this item is not included, default basic rate set is used.
+ * */
+static const char* s_hostapd_DataTransmitRates[] = {"10", "20", "55", "60", "90", "110", "120", "180", "240", "360", "480", "540", 0};
+
 static bool s_checkSGI(T_Radio* pRad, int guardInterval _UNUSED) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
     //check rad caps (sgi by mcs mode) and match with required guardInterval
@@ -445,6 +451,20 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     if(wld_rad_is_24ghz(pRad)) {
         bool enableShPreamble = (pRad->preambleType == PREAMBLE_TYPE_LONG) ? 0 : 1;
         swl_mapCharFmt_addValStr(radConfigMap, "preamble", "%u", enableShPreamble);
+    }
+
+    if((pRad->operationalDataTransmitRates != 0) && (pRad->supportedDataTransmitRates != pRad->operationalDataTransmitRates)) {
+        char operationalDataTransmitRates[64] = "";
+        swl_conv_maskToCharSep(operationalDataTransmitRates, sizeof(operationalDataTransmitRates),
+                               pRad->operationalDataTransmitRates, s_hostapd_DataTransmitRates, SWL_ARRAY_SIZE(s_hostapd_DataTransmitRates), ' ');
+        swl_mapCharFmt_addValStr(radConfigMap, "supported_rates", "%s", operationalDataTransmitRates);
+    }
+
+    if(pRad->basicDataTransmitRates != 0) {
+        char basicDataTransmitRates[64] = "";
+        swl_conv_maskToCharSep(basicDataTransmitRates, sizeof(basicDataTransmitRates),
+                               pRad->basicDataTransmitRates, s_hostapd_DataTransmitRates, SWL_ARRAY_SIZE(s_hostapd_DataTransmitRates), ' ');
+        swl_mapCharFmt_addValStr(radConfigMap, "basic_rates", "%s", basicDataTransmitRates);
     }
 
     pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
