@@ -61,6 +61,8 @@
 ****************************************************************************/
 #!/usr/bin/amxrt
 
+#include "global_amxb_timeouts.odl";
+
 %config {
     name = "wld";
     wld = {
