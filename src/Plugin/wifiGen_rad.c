@@ -214,7 +214,18 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
                (pBand->bfCapsSupported[COM_DIR_RECEIVE] & (M_RAD_BF_CAP_HE_SU | M_RAD_BF_CAP_HE_MU))) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "IMPL_BF");
             }
-            if(pBand->bfCapsSupported[COM_DIR_TRANSMIT] & (M_RAD_BF_CAP_VHT_MU | M_RAD_BF_CAP_HE_MU)) {
+            if((pBand->radStdsMask & M_SWL_RADSTD_BE)) {
+                if((pBand->bfCapsSupported[COM_DIR_TRANSMIT] &
+                    (M_RAD_BF_CAP_EHT_SU | M_RAD_BF_CAP_EHT_MU_80MHZ | M_RAD_BF_CAP_EHT_MU_160MHZ | M_RAD_BF_CAP_EHT_MU_320MHZ))) {
+                    wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "EXPL_BF");
+                }
+                if((pBand->bfCapsSupported[COM_DIR_RECEIVE] &
+                    (M_RAD_BF_CAP_EHT_SU | M_RAD_BF_CAP_EHT_MU_80MHZ | M_RAD_BF_CAP_EHT_MU_160MHZ | M_RAD_BF_CAP_EHT_MU_320MHZ))) {
+                    wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "IMPL_BF");
+                }
+            }
+            if(pBand->bfCapsSupported[COM_DIR_TRANSMIT] &
+               (M_RAD_BF_CAP_VHT_MU | M_RAD_BF_CAP_HE_MU | M_RAD_BF_CAP_EHT_MU_80MHZ | M_RAD_BF_CAP_EHT_MU_160MHZ | M_RAD_BF_CAP_EHT_MU_320MHZ)) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "MU_MIMO");
             }
             if(pWiphyInfo->suppFeatures.dfsOffload) {
@@ -241,6 +252,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             if(pWiphyInfo->suppFeatures.backgroundRadar) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "RADAR_BACKGROUND");
                 wld_bgdfs_setAvailable(pRad, true);
+            }
+            if(pWiphyInfo->suppMlo) {
+                wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "MLO");
             }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
             if((pRad->channel == 0) && (wld_rad_getFreqBand(pRad) == pBand->freqBand)) {
@@ -514,7 +528,9 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     pRad->extensionChannel = REXT_AUTO;          /* Auto */
     pRad->guardInterval = SWL_SGI_AUTO;          /* Auto == 400NSec*/
     pRad->MCS = 10;
-    if(pOperBand->radStdsMask & M_SWL_RADSTD_AX) {
+    if(pOperBand->radStdsMask & M_SWL_RADSTD_BE) {
+        pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_EHT].mcsIndex;
+    } else if(pOperBand->radStdsMask & M_SWL_RADSTD_AX) {
         pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_HE].mcsIndex;
     } else if(pOperBand->radStdsMask & M_SWL_RADSTD_AC) {
         pRad->MCS = pOperBand->mcsStds[SWL_MCS_STANDARD_VHT].mcsIndex;
@@ -535,6 +551,11 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     /* Enable WPS 2.0 -- Do this only when you know that WPS 2.0 is supported & needed! */
     pRad->wpsConst->wpsSupVer = 2;
+
+    pRad->cap.apCap7.emlmrSupported = wiphyInfo.extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_AP];
+    pRad->cap.staCap7.emlmrSupported = wiphyInfo.extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_STATION];
+    pRad->cap.apCap7.emlsrSupported = wiphyInfo.extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_AP];
+    pRad->cap.staCap7.emlsrSupported = wiphyInfo.extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_STATION];
 
     SAH_TRACEZ_OUT(ME);
     return SWL_RC_OK;

@@ -85,6 +85,13 @@
 #include <swl/swl_common_trilean.h>
 #include <swl/swl_common_mcs.h>
 
+typedef enum {
+    WLD_WIPHY_IFTYPE_AP,
+    WLD_WIPHY_IFTYPE_STATION,
+
+    WLD_WIPHY_IFTYPE_MAX,
+} wld_iftype_e;
+
 typedef struct {
     uint32_t chanWidth;       //channel width in MHz
     uint32_t ctrlFreq;        //frequency of the control channel in MHz
@@ -142,6 +149,7 @@ typedef struct {
     swl_80211_htCapInfo_m htCapabilities;                    /* HT(High Throughput) 802.11n physical capabilities*/
     swl_80211_vhtCapInfo_m vhtCapabilities;                  /* VHT(very High Throughput) 802.11n capabilities*/
     swl_80211_hecap_phyCapInfo_t hePhyCapabilities;          /* HE(High Efficiency) 802.11ax capabilities*/
+    swl_80211_ehtcap_phyCapInfo_t ehtPhyCapabilities;        /* EHT(Extremely High Throughput) 802.11be capabilities*/
     swl_mcs_t mcsStds[SWL_MCS_STANDARD_MAX];                 //support mcs standards (each indexed on its relative enum)
     swl_mcs_legacyIndex_m supportedDataTransmitRates;        //supported data transmit rates
 } wld_nl80211_bandDef_t;
@@ -160,6 +168,11 @@ typedef struct {
     bool backgroundRadar; // driver supports background CAC/Radar
 } wld_nl80211_wiphySuppFeatures;
 
+typedef struct {
+    bool emlsrSupport[WLD_WIPHY_IFTYPE_MAX];
+    bool emlmrSupport[WLD_WIPHY_IFTYPE_MAX];
+} wld_nl80211_wiphyExtCapas;
+
 #define WLD_NL80211_CIPHERS_MAX 14                  //(Cf: IEEE80211 Table 9-180—Cipher suite selectors: defined suite types 0..14)
 typedef struct {
     uint32_t genId;                                 //info generation id (unique for all wiphy info received chunks)
@@ -172,6 +185,7 @@ typedef struct {
     bool suppUAPSD;                                 //flag set when the device supports uapsd when working as AP. */
     bool suppAp;                                    //flag set when device supports AP mode
     bool suppEp;                                    //flag set when device supports Endpoint mode (aka. managed)
+    bool suppMlo;                                   //support MLO
     uint32_t nApMax;                                //max number of BSS (AP) that can be created
     uint32_t nEpMax;                                //max number of EP (managed) that can be created
     uint32_t nStaMax;                               //max number of clients that can be associated (<=0 if unknown)
@@ -182,6 +196,7 @@ typedef struct {
     uint32_t cipherSuites[WLD_NL80211_CIPHERS_MAX]; //supported cipher suites (Cf: IEEE80211 Table 9-180—Cipher suite selectors)
     wld_nl80211_wiphySuppFeatures suppFeatures;     //supported optional nl80211 features by the driver
     wld_nl80211_wiphySuppCmds suppCmds;             //supported optional nl80211 commands by the driver
+    wld_nl80211_wiphyExtCapas extCapas;
 } wld_nl80211_wiphyInfo_t;
 
 typedef struct {

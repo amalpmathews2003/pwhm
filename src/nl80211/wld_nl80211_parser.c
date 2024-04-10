@@ -394,19 +394,35 @@ typedef struct {
     uint16_t b_40_55;
     uint16_t b_56_71;
     uint16_t b_72_87;
-} __attribute__((packed)) hePhyCapInfo_t;
+} SWL_PACKED hePhyCapInfo_t;
+
+static bool s_isSupportedNlIfType(struct nlattr* tbIfType) {
+    struct nlattr* ift = NULL;
+    int rem = 0;
+    if(tbIfType == NULL) {
+        return true;
+    }
+    nla_for_each_nested(ift, tbIfType, rem) {
+        if((nla_type(ift) == NL80211_IFTYPE_STATION) ||
+           (nla_type(ift) == NL80211_IFTYPE_AP)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
     ASSERTS_NOT_NULL(tbBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_IFTYPE_DATA], SWL_RC_OK, ME, "no iftype data");
-    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_HE];
-    struct nlattr* nlIfType;
-    int rem;
-    int bandIftypeAttrMax = NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET;
-    struct nlattr* tbIfType[bandIftypeAttrMax + 1];
+    struct nlattr* nlIfType = NULL;
+    int rem = 0;
+    struct nlattr* tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_6GHZ_CAPA + 1] = {};
     nla_for_each_nested(nlIfType, tbBand[NL80211_BAND_ATTR_IFTYPE_DATA], rem) {
-        nla_parse(tbIfType, bandIftypeAttrMax, nla_data(nlIfType), nla_len(nlIfType), NULL);
+        nla_parse(tbIfType, NL80211_BAND_IFTYPE_ATTR_HE_6GHZ_CAPA, nla_data(nlIfType), nla_len(nlIfType), NULL);
+        if(!s_isSupportedNlIfType(tbIfType[NL80211_BAND_IFTYPE_ATTR_IFTYPES])) {
+            continue;
+        }
         struct nlattr* heCapPhyAttr = tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_CAP_PHY];
         struct nlattr* heCapMcsSetAttr = tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET];
         if(!heCapPhyAttr || !heCapMcsSetAttr) {
@@ -415,23 +431,24 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         /*
          * As defined in 9.4.2.248.3 HE PHY Capabilities Information field: B0..B87
          */
-        hePhyCapInfo_t htPhyCapInfo = {0};
-        NLA_GET_DATA(&htPhyCapInfo, heCapPhyAttr, sizeof(htPhyCapInfo));
+        swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_HE];
+        hePhyCapInfo_t hePhyCapInfo = {0};
+        NLA_GET_DATA(&hePhyCapInfo, heCapPhyAttr, sizeof(hePhyCapInfo));
         uint64_t phyCap[2] = { 0 };
         NLA_GET_DATA(phyCap, heCapPhyAttr, 11);
         pMcsStd->standard = SWL_MCS_STANDARD_HE;
         pMcsStd->bandwidth = SWL_BW_20MHZ;
         if(pBand->freqBand == SWL_FREQ_BAND_2_4GHZ) {
-            if(htPhyCapInfo.supp_40mhz_in_2_4ghz) {
+            if(hePhyCapInfo.supp_40mhz_in_2_4ghz) {
                 pMcsStd->bandwidth = SWL_BW_40MHZ;
                 pBand->chanWidthMask |= M_SWL_BW_40MHZ;
             }
         } else {
-            if(htPhyCapInfo.supp_40_80mhz_in_5ghz) {
+            if(hePhyCapInfo.supp_40_80mhz_in_5ghz) {
                 pMcsStd->bandwidth = SWL_BW_80MHZ;
-                pBand->chanWidthMask |= M_SWL_BW_40MHZ | M_SWL_BW_80MHZ;
+                pBand->chanWidthMask |= (M_SWL_BW_40MHZ | M_SWL_BW_80MHZ);
             }
-            if(htPhyCapInfo.supp_160mhz_in_5ghz || htPhyCapInfo.supp_160_80p80mhz_in_5ghz) {
+            if(hePhyCapInfo.supp_160mhz_in_5ghz || hePhyCapInfo.supp_160_80p80mhz_in_5ghz) {
                 pMcsStd->bandwidth = SWL_BW_160MHZ;
                 pBand->chanWidthMask |= M_SWL_BW_160MHZ;
             }
@@ -444,19 +461,19 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
          */
         pMcsStd->guardInterval = SWL_SGI_800;
         //SU Beamformer
-        if(htPhyCapInfo.su_beamformer) {
+        if(hePhyCapInfo.su_beamformer) {
             pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_HE_SU;
         }
         //SU Beamformee
-        if(htPhyCapInfo.su_beamformee) {
+        if(hePhyCapInfo.su_beamformee) {
             pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_HE_SU;
         }
         //MU Beamformer
-        if(htPhyCapInfo.mu_beamformer) {
+        if(hePhyCapInfo.mu_beamformer) {
             pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_HE_MU;
         }
         //Beamformee STS (<= 80Mhz or > 80MHz)
-        if(htPhyCapInfo.beamformee_sts_le_80mhz || htPhyCapInfo.beamformee_sts_gt_80mhz) {
+        if(hePhyCapInfo.beamformee_sts_le_80mhz || hePhyCapInfo.beamformee_sts_gt_80mhz) {
             pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_HE_MU;
         }
         /*
@@ -479,10 +496,107 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
 
         pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
         pBand->radStdsMask |= M_SWL_RADSTD_AX;
+        /* since structures are the same, it is safe to do a memcpy() */
+        memcpy(&pBand->hePhyCapabilities, &hePhyCapInfo, sizeof(pBand->hePhyCapabilities));
 
-        memcpy(&pBand->hePhyCapabilities, &htPhyCapInfo, sizeof(pBand->hePhyCapabilities));// since structures are the same, safe to do a memcpy
+        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_6GHZ_CAPA] != NULL) {
+            /* TODO */
+        }
     }
-    ASSERTS_EQUALS(pMcsStd->standard, SWL_MCS_STANDARD_HE, SWL_RC_OK, ME, "Missing HE caps");
+
+    return SWL_RC_DONE;
+}
+
+static swl_rc_ne s_parseEhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
+    ASSERTS_NOT_NULL(tbBand, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tbBand[NL80211_BAND_ATTR_IFTYPE_DATA], SWL_RC_OK, ME, "no iftype data");
+    struct nlattr* nlIfType = NULL;
+    int rem = 0;
+    struct nlattr* tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET + 1] = {};
+    nla_for_each_nested(nlIfType, tbBand[NL80211_BAND_ATTR_IFTYPE_DATA], rem) {
+        nla_parse(tbIfType, NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET, nla_data(nlIfType), nla_len(nlIfType), NULL);
+        if(!s_isSupportedNlIfType(tbIfType[NL80211_BAND_IFTYPE_ATTR_IFTYPES])) {
+            continue;
+        }
+
+        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MAC] != NULL) {
+            swl_80211_ehtcap_macCapInfo_t macCaps;
+            NLA_GET_DATA(&macCaps, tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MAC], sizeof(swl_80211_ehtcap_macCapInfo_t));
+            /* mark EHT as supported anyway */
+            pBand->radStdsMask |= M_SWL_RADSTD_BE;
+        }
+
+        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PHY] != NULL) {
+            swl_80211_ehtcap_phyCapInfo_t* phyCaps = &pBand->ehtPhyCapabilities;
+            swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_EHT];
+            NLA_GET_DATA(phyCaps, tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PHY], sizeof(swl_80211_ehtcap_phyCapInfo_t));
+
+            /* Support For 320MHz In 6 GHz */
+            if(phyCaps->support_320mhz &&
+               (pBand->freqBand == SWL_FREQ_BAND_6GHZ)) {
+                pBand->chanWidthMask |= M_SWL_BW_320MHZ;
+                pMcsStd->bandwidth = SWL_BW_320MHZ;
+            }
+            /* Rx 1024-QAM in wider Bandwidth DL OFDMA */
+            if(phyCaps->rx_1024qam_wider_bw_dl_ofdma_support) {
+                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 11);
+            }
+            /* Rx 4096-QAM in wider Bandwidth DL OFDMA */
+            if(phyCaps->rx_4096qam_wider_bw_dl_ofdma_support) {
+                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 13);
+            }
+            /* Support Of EHT DUP (EHT-MCS 14) in 6 GHz */
+            if(phyCaps->support_ehtdup_mcs14_6ghz &&
+               (pBand->freqBand == SWL_FREQ_BAND_6GHZ)) {
+                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 14);
+                pMcsStd->numberOfSpatialStream = 1;
+            }
+            /* Support Of EHT-MCS 15 in MRU */
+            if(phyCaps->support_eht_mcs15_mru != 0) {
+                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 15);
+                pMcsStd->numberOfSpatialStream = 1;
+            }
+            /* SU Beamformer */
+            if(phyCaps->su_beamformer) {
+                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_SU;
+            }
+            /* SU Beamformee */
+            if(phyCaps->su_beamformee) {
+                pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_EHT_SU;
+            }
+            /* MU Beamformer (<= 80MHz) */
+            if(phyCaps->mu_beamformer_80mhz) {
+                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_80MHZ;
+            }
+            /* MU Beamformer (160MHz) */
+            if(phyCaps->mu_beamformer_160mhz) {
+                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_160MHZ;
+            }
+            /* MU Beamformer (320MHz) */
+            if(phyCaps->mu_beamformer_320mhz) {
+                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_320MHZ;
+            }
+        }
+
+        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET] != NULL) {
+            swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_EHT];
+            uint8_t mcsSet[13] = {0};
+            NLA_GET_DATA(mcsSet, tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET], sizeof(mcsSet));
+            pMcsStd->standard = SWL_MCS_STANDARD_EHT;
+            pMcsStd->numberOfSpatialStream = 1;
+            pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, pBand->mcsStds[SWL_MCS_STANDARD_HE].mcsIndex);
+            pMcsStd->bandwidth = SWL_MAX(pMcsStd->bandwidth, pBand->mcsStds[SWL_MCS_STANDARD_HE].bandwidth);
+            pMcsStd->guardInterval = pBand->mcsStds[SWL_MCS_STANDARD_HE].guardInterval;
+            /* use max supported Spatial Stream found (can be different by MCS!) */
+            for(uint32_t i = 0; i < SWL_ARRAY_SIZE(mcsSet); i++) {
+                pMcsStd->numberOfSpatialStream = SWL_MAX(pMcsStd->numberOfSpatialStream,
+                                                         (uint32_t) (mcsSet[i] & 0xf));
+            }
+            pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
+        }
+    }
+
     return SWL_RC_DONE;
 }
 
@@ -597,7 +711,7 @@ swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy
     ASSERTS_NOT_NULL(tb[NL80211_ATTR_WIPHY_BANDS], SWL_RC_OK, ME, "No attr to parse");
     struct nlattr* nlBand;
     int remBand;
-    struct nlattr* tbBand[NL80211_BAND_ATTR_MAX + 1];
+    struct nlattr* tbBand[NL80211_BAND_ATTR_MAX + 1] = {};
     nla_for_each_nested(nlBand, tb[NL80211_ATTR_WIPHY_BANDS], remBand) {
         uint32_t nlFreqBand = nlBand->nla_type;
         swl_freqBand_e freqBand = wld_nl80211_freqBandNlToSwl(nlFreqBand);
@@ -628,6 +742,7 @@ swl_rc_ne s_parseWiphyBands(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy
         s_parseHtAttrs(tbBand, pBand);
         s_parseVhtAttrs(tbBand, pBand);
         s_parseHeAttrs(tbBand, pBand);
+        s_parseEhtAttrs(tbBand, pBand);
         s_parseChans(tbBand, pBand);
         s_parseDataTransmitRates(tbBand, pBand);
     }
@@ -681,6 +796,46 @@ static swl_rc_ne s_parseSuppFeatures(struct nlattr* tb[], wld_nl80211_wiphyInfo_
     return SWL_RC_OK;
 }
 
+SWL_TABLE(sNlIfTypeMaps,
+          ARR(uint16_t nlVal; wld_iftype_e wldVal; ),
+          ARR(swl_type_uint16, swl_type_uint16, ),
+          ARR({NL80211_IFTYPE_AP, WLD_WIPHY_IFTYPE_AP},
+              {NL80211_IFTYPE_STATION, WLD_WIPHY_IFTYPE_STATION},
+              ));
+
+static swl_rc_ne s_parseIfTypeExtCapa(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tb[NL80211_ATTR_IFTYPE_EXT_CAPA], SWL_RC_OK, ME, "No extra capabilities to parse");
+    struct nlattr* nlCapa;
+    int rem;
+    struct nlattr* tbCapa[NL80211_ATTR_MAX + 1];
+    nla_for_each_nested(nlCapa, tb[NL80211_ATTR_IFTYPE_EXT_CAPA], rem) {
+        nla_parse(tbCapa, NL80211_ATTR_MAX, nla_data(nlCapa), nla_len(nlCapa), NULL);
+        /* NL80211_ATTR_IFTYPE,
+         * NL80211_ATTR_EXT_CAPA,
+         * NL80211_ATTR_EXT_CAPA_MASK,
+         * NL80211_ATTR_EML_CAPABILITY,
+         * NL80211_ATTR_MLD_CAPA_AND_OPS,
+         */
+        wld_iftype_e* ifType = NULL;
+        if(tbCapa[NL80211_ATTR_IFTYPE] != NULL) {
+            uint16_t nlIfType = nla_type(tbCapa[NL80211_ATTR_IFTYPE]);
+            ifType = (wld_iftype_e*) swl_table_getMatchingValue(&sNlIfTypeMaps, 1, 0, &nlIfType);
+        }
+        ASSERTS_NOT_NULL(ifType, SWL_RC_ERROR, ME, "IfType not supported");
+        if(tbCapa[NL80211_ATTR_EML_CAPABILITY] != NULL) {
+            /* IEEE80211_EML_CAP_EMLSR_SUPP = 0x0001
+             * IEEE80211_EML_CAP_EMLMR_SUPPORT = 0x0080
+             */
+            uint16_t capa = nla_get_u16(tbCapa[NL80211_ATTR_EML_CAPABILITY]);
+            pWiphy->extCapas.emlsrSupport[*ifType] = (capa & 0x0001);
+            pWiphy->extCapas.emlmrSupport[*ifType] = (capa & 0x0080);
+        }
+    }
+    return SWL_RC_OK;
+}
+
 static swl_rc_ne s_parseSuppCmds(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
     ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -724,11 +879,14 @@ swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_
         memcpy(pWiphy->cipherSuites, nla_data(tb[NL80211_ATTR_CIPHER_SUITES]), pWiphy->nCipherSuites * sizeof(uint32_t));
     }
     NLA_GET_VAL(pWiphy->nStaMax, nla_get_u32, tb[NL80211_ATTR_MAX_AP_ASSOC_STA]);
+    /* check MLO support */
+    pWiphy->suppMlo = (tb[NL80211_ATTR_MLO_SUPPORT] != NULL);
     s_parseIfTypes(tb, pWiphy);
     s_parseIfCombi(tb, pWiphy);
     s_parseWiphyBands(tb, pWiphy);
     s_parseSuppFeatures(tb, pWiphy);
     s_parseSuppCmds(tb, pWiphy);
+    s_parseIfTypeExtCapa(tb, pWiphy);
     return SWL_RC_OK;
 }
 
@@ -742,7 +900,7 @@ swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_
  *         SWL_RC_OK parsing done but some fields are missing
  *         <= SWL_RC_ERROR parsing error
  */
-static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wld_nl80211_rateInfo_t* pRate) {
+static swl_rc_ne s_parseRateInfo(struct nlattr* pBitrateAttributre, wld_nl80211_rateInfo_t* pRate) {
     ASSERTS_NOT_NULL(pBitrateAttributre, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pRate, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -853,7 +1011,7 @@ static swl_rc_ne wld_nl80211_parseRateInfo(struct nlattr* pBitrateAttributre, wl
     return rc;
 }
 
-static swl_rc_ne wld_nl80211_parseSignalPerChain(struct nlattr* pSigPChain, int8_t* sigArray, uint32_t maxNChain, uint32_t* pNChains) {
+static swl_rc_ne s_parseSignalPerChain(struct nlattr* pSigPChain, int8_t* sigArray, uint32_t maxNChain, uint32_t* pNChains) {
     ASSERTS_NOT_NULL(pSigPChain, SWL_RC_INVALID_PARAM, ME, "NULL");
     struct nlattr* attr;
     uint32_t i = 0;
@@ -936,10 +1094,10 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
         pStation->rssiAvgDbm = nla_get_u8(pSinfo[NL80211_STA_INFO_SIGNAL_AVG]);
     }
     if(pSinfo[NL80211_STA_INFO_TX_BITRATE]) {
-        wld_nl80211_parseRateInfo(pSinfo[NL80211_STA_INFO_TX_BITRATE], &pStation->txRate);
+        s_parseRateInfo(pSinfo[NL80211_STA_INFO_TX_BITRATE], &pStation->txRate);
     }
     if(pSinfo[NL80211_STA_INFO_RX_BITRATE]) {
-        wld_nl80211_parseRateInfo(pSinfo[NL80211_STA_INFO_RX_BITRATE], &pStation->rxRate);
+        s_parseRateInfo(pSinfo[NL80211_STA_INFO_RX_BITRATE], &pStation->rxRate);
     }
     if(pSinfo[NL80211_STA_INFO_CONNECTED_TIME]) {
         pStation->connectedTime = nla_get_u32(pSinfo[NL80211_STA_INFO_CONNECTED_TIME]);
@@ -968,8 +1126,8 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
             pStation->flags.mfp = SWL_BIT_IS_SET(pSFlags->set, NL80211_STA_FLAG_MFP);
         }
     }
-    wld_nl80211_parseSignalPerChain(pSinfo[NL80211_STA_INFO_CHAIN_SIGNAL], pStation->rssiDbmByChain, MAX_NR_ANTENNA, &pStation->nrSignalChains);
-    wld_nl80211_parseSignalPerChain(pSinfo[NL80211_STA_INFO_CHAIN_SIGNAL_AVG], pStation->rssiAvgDbmByChain, MAX_NR_ANTENNA, NULL);
+    s_parseSignalPerChain(pSinfo[NL80211_STA_INFO_CHAIN_SIGNAL], pStation->rssiDbmByChain, MAX_NR_ANTENNA, &pStation->nrSignalChains);
+    s_parseSignalPerChain(pSinfo[NL80211_STA_INFO_CHAIN_SIGNAL_AVG], pStation->rssiAvgDbmByChain, MAX_NR_ANTENNA, NULL);
 
     return rc;
 }

@@ -143,6 +143,7 @@ SWL_TABLE(sChWidthIDsMaps,
               {0, SWL_BW_40MHZ},
               {1, SWL_BW_80MHZ},
               {2, SWL_BW_160MHZ},
+              {2, SWL_BW_320MHZ}, /* use same as 160MHz since hostapd will ignore it */
               ));
 
 static swl_rc_ne s_checkAndSetParamValueStr(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, const char* param, const char* valStr) {
@@ -445,6 +446,45 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_tx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_TX_ANTPAT_CONS
         }
     }
+    if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        /* ieee80211be: Whether IEEE 802.11be (EHT) is enabled
+         * 0 = disabled (default)
+         * 1 = enabled
+         */
+        swl_mapChar_add(radConfigMap, "ieee80211be", "1");
+
+        if(pChWId) {
+            /* if operClass is 137, eht_oper_chwidth will be ignored by hostapd */
+            if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "eht_oper_chwidth", *pChWId);
+            }
+            swl_mapCharFmt_addValInt32(radConfigMap, "eht_oper_centr_freq_seg0_idx", centerChan);
+        }
+        if(implicitBf) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_RECEIVE], RAD_BF_CAP_EHT_SU) &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_RECEIVE], RAD_BF_CAP_EHT_SU))) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "eht_su_beamformee", 1);
+            }
+        }
+        if(explicitBf) {
+            if(SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_SU) &&
+               (SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT) ||
+                SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_SU))) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "eht_su_beamformer", 1);
+            }
+            bool beamformerSupported = (tgtChW <= SWL_BW_80MHZ) ? SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_MU_80MHZ) :
+                (tgtChW == SWL_BW_160MHZ) ? SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_MU_160MHZ) :
+                (tgtChW == SWL_BW_320MHZ) ? SWL_BIT_IS_SET(pRad->bfCapsSupported[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_MU_320MHZ) : false;
+            bool beamformerEnabled = (tgtChW <= SWL_BW_80MHZ) ? SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_MU_80MHZ) :
+                (tgtChW == SWL_BW_160MHZ) ? SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_MU_160MHZ) :
+                (tgtChW == SWL_BW_320MHZ) ? SWL_BIT_IS_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_EHT_MU_320MHZ) :
+                SWL_BIT_IS_ONLY_SET(pRad->bfCapsEnabled[COM_DIR_TRANSMIT], RAD_BF_CAP_DEFAULT);
+            if(muMimo && beamformerSupported && beamformerEnabled) {
+                swl_mapCharFmt_addValInt32(radConfigMap, "eht_mu_beamformer", 1);
+            }
+        }
+    }
 
     int32_t rtsThreshold = -1;
     if(pRad->rtsThreshold < IEEE80211_MAX_RTS_THRESHOLD) {
@@ -704,6 +744,19 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
 
     if(pAP->cfg11u.qosMapSet[0] && pAP->WMMCapability) {
         swl_mapChar_add(vapConfigMap, "qos_map_set", pAP->cfg11u.qosMapSet);
+    }
+
+    if((pAP->pSSID != NULL) && wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        bool isMLO = pAP->pFA->mfn_misc_has_support(pRad, pAP, "MLO", 0);
+        if(isMLO && (pAP->pSSID->mldUnit > -1)) {
+            /* AP MLD - Whether this AP is a part of an AP MLD
+             * 0 = no (no MLO)
+             * 1 = yes (MLO) */
+            swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 1);
+        } else {
+            /* disable EHT for this specific BSS */
+            swl_mapCharFmt_addValInt32(vapConfigMap, "disable_11be", 1);
+        }
     }
 
     swl_security_mfpMode_e mfp = swl_security_getTargetMfpMode(pAP->secModeEnabled, pAP->mfpConfig);

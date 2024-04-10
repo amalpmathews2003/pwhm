@@ -1011,6 +1011,10 @@ typedef enum {
     RAD_BF_CAP_HE_SU,
     RAD_BF_CAP_HE_MU,
     RAD_BF_CAP_HE_CQI,
+    RAD_BF_CAP_EHT_SU,
+    RAD_BF_CAP_EHT_MU_80MHZ,
+    RAD_BF_CAP_EHT_MU_160MHZ,
+    RAD_BF_CAP_EHT_MU_320MHZ,
     RAD_BF_CAP_MAX
 } wld_rad_bf_cap_e;
 
@@ -1020,6 +1024,10 @@ typedef enum {
 #define M_RAD_BF_CAP_HE_SU (1 << RAD_BF_CAP_HE_SU)
 #define M_RAD_BF_CAP_HE_MU (1 << RAD_BF_CAP_HE_MU)
 #define M_RAD_BF_CAP_HE_CQI (1 << RAD_BF_CAP_HE_CQI)
+#define M_RAD_BF_CAP_EHT_SU (1 << RAD_BF_CAP_EHT_SU)
+#define M_RAD_BF_CAP_EHT_MU_80MHZ (1 << RAD_BF_CAP_EHT_MU_80MHZ)
+#define M_RAD_BF_CAP_EHT_MU_160MHZ (1 << RAD_BF_CAP_EHT_MU_160MHZ)
+#define M_RAD_BF_CAP_EHT_MU_320MHZ (1 << RAD_BF_CAP_EHT_MU_320MHZ)
 typedef uint32_t wld_rad_bf_cap_m;
 extern const char* g_str_wld_rad_bf_cap[];
 

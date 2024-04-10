@@ -156,7 +156,11 @@ const char* g_str_wld_rad_bf_cap[RAD_BF_CAP_MAX] = {
     "VHT_MU_BF",
     "HE_SU_BF",
     "HE_MU_BF",
-    "HE_CQI_BF"
+    "HE_CQI_BF",
+    "EHT_SU_BF",
+    "EHT_MU_80_BF",
+    "EHT_MU_160_BF",
+    "EHT_MU_320_BF",
 };
 
 const char* g_wld_channelChangeReason_str[CHAN_REASON_MAX + 1] = {

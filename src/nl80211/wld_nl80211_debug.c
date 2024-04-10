@@ -142,6 +142,11 @@ swl_rc_ne wld_nl80211_dumpWiphyInfo(wld_nl80211_wiphyInfo_t* pWiphyInfo, amxc_va
     amxc_var_add_key(uint32_t, pMap, "nrEpMax", pWiphyInfo->nEpMax);
     amxc_var_add_key(uint32_t, pMap, "nrStaMax", pWiphyInfo->nStaMax);
     amxc_var_add_key(bool, pMap, "suppUAPSD", pWiphyInfo->suppUAPSD);
+    amxc_var_add_key(bool, pMap, "suppMLO", pWiphyInfo->suppMlo);
+    amxc_var_add_key(bool, pMap, "suppEMLSR[AP]", pWiphyInfo->extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_AP]);
+    amxc_var_add_key(bool, pMap, "suppEMLMR[AP]", pWiphyInfo->extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_AP]);
+    amxc_var_add_key(bool, pMap, "suppEMLSR[STA]", pWiphyInfo->extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_STATION]);
+    amxc_var_add_key(bool, pMap, "suppEMLMR[STA]", pWiphyInfo->extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_STATION]);
 
     amxc_var_t* cipherSuitesList = amxc_var_add_key(amxc_llist_t, pMap, "suppCiphers", NULL);
 

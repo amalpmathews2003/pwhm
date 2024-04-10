@@ -799,11 +799,17 @@ define probelist_t{
 		 * <ul>
 		 * <li> 400nsec </li>
 		 * <li> 800nsec </li>
+		 * <li> 1xLTF_0.8us </li>
+		 * <li> 1xLTF_1.6us </li>
+		 * <li> 2xLTF_0.8us </li>
+		 * <li> 2xLTF_1.6us </li>
+		 * <li> 4xLTF_0.8us </li>
+		 * <li> 4xLTF_1.6us </li>
 		 * <li> Auto </li>
 		 * </ul>
 		 */
 		%persistent string GuardInterval{
-			on action validate call check_enum ["400nsec","800nsec","Auto"];
+			on action validate call check_enum ["400nsec","800nsec","1xLTF_0.8us","1xLTF_1.6us","2xLTF_0.8us","2xLTF_1.6us","4xLTF_0.8us","4xLTF_1.6us","Auto"];
 			default "Auto";
 		}
 
@@ -813,8 +819,9 @@ define probelist_t{
 		 * ([802.11n-2009]). A value of -1 indicates automatic selection
 		 * of the MCS index. </p>
 		 */
-		%persistent int32 MCS = -1{
+		%persistent int32 MCS {
 			on action validate call check_range { min = -1, max = 31 };
+			default -1;
 		}
 
 		/**

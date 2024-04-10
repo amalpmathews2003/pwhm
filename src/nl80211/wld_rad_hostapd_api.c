@@ -195,6 +195,12 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
     if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_AX)) {
         swl_strlst_catFormat(cmd, sizeof(cmd), " ", "he");
     }
+    if(SWL_BIT_IS_SET(operStd, SWL_RADSTD_BE)) {
+        swl_strlst_catFormat(cmd, sizeof(cmd), " ", "eht");
+    }
+
+    /* TODO: punct_bitmap */
+    /* TODO: blocktx */
 
     //send command
     bool ret = wld_ap_hostapd_sendCommand(primaryVap, cmd, "switch channel");
