@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.3.4 - 2024-04-11(07:39:19 +0000)
+
+### Other
+
+- : No Probe Request seen for repeaters
+
 ## Release v6.3.3 - 2024-04-09(16:00:48 +0000)
 
 ### Changes
