@@ -155,6 +155,12 @@
 		 * <p> The textual name of the SSID entry as assigned by the
 		 * CPE.</p> */
 		%read-only string Name;
+
+		/**
+		 * Custom netdev interface name:
+		 * when allowed and filled, it overrides the auto generated interface name
+		 */
+		%persistent %protected string CustomNetDevName;
 		
 		/**
 		 * <p>The accumulated time in seconds since the SSID entered

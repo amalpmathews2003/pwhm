@@ -282,6 +282,11 @@ static swl_rc_ne TRAP_mfn_wrad_notifyWifi7CfgUpdate(T_Radio* rad) {
     return SWL_RC_ERROR;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_getVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize) {
+    SAH_TRACEZ_NOTICE(ME, "%p %d %p %zu", pRad, ifaceShift, ifName, ifNameSize);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 DEF_TRAP(T_AccessPoint, mfn_wvap_status);
 DEF_TRAP(T_AccessPoint, mfn_wvap_fsm_state);
 DEF_TRAP(T_AccessPoint, mfn_wvap_fsm);
@@ -714,6 +719,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_sensing_resetStats);
     FTA_ASSIGN(mfn_wrad_firmwareVersion);
     FTA_ASSIGN(mfn_wrad_notifyWifi7CfgUpdate);
+    FTA_ASSIGN(mfn_wrad_getVapIfName);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);

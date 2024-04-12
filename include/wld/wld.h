@@ -1645,7 +1645,7 @@ typedef enum {
 
 struct S_SSID {
     amxc_llist_it_t it;
-    int debug;                                /* FIX ME */
+    int debug;                                /* Magic header to validate SSID ctx */
     wld_status_e status;                      /* == AP/ENDP.Status --> VAP up == TRUE else FALSE */
     wld_status_changeInfo_t changeInfo;       /* Status change info */
     T_Radio* RADIO_PARENT;                    /* Pointer to the T_Radio structure */
@@ -1665,6 +1665,7 @@ struct S_SSID {
     int32_t mldUnit;                          /* the index in which "mld unit" this SSID is located */
     wld_autoMacSrc_e autoMacSrc;              /* auto generated mac source: from radio (/or dummy) base mac, or statically learned from driver */
     uint32_t autoMacRefIndex;                 /* mac address offset from source base mac */
+    char customNetDevName[IFNAMSIZ];          /* custom interface name set by dm conf */
 };
 
 typedef struct {
@@ -2288,6 +2289,13 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_ADDVAP_EXT mfn_wrad_addVapExt;                  /**< Create a VAP interface on the RADIO, with pAp object provided*/
     PFN_WRAD_ADDVAPIF mfn_wrad_addvapif;                     /**< Create a VAP interface on the RADIO */
     PFN_WRAD_DELVAPIF mfn_wrad_delvapif;                     /**< Delete a VAP interface  */
+
+    /**
+     * Build vap interface name, based on the vendor iface naming rules
+     * param ifaceShift indicates the number of proceeding interfaces on the same radio
+     */
+    swl_rc_ne (* mfn_wrad_getVapIfName)(T_Radio* rad, uint32_t ifaceShift, char* ifName, size_t ifNameSize);
+
     PFN_WRAD_RADIO_STATUS mfn_wrad_radio_status;             /**< Collect (and update) radio status data */
     PFN_WRAD_ENABLE mfn_wrad_enable;                         /**< Enable/Disable the Radio interface */
     PFN_WRAD_MAXBITRATE mfn_wrad_maxbitrate;                 /**< Set/Get the MAX bit rate */

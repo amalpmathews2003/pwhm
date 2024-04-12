@@ -88,20 +88,38 @@ int wifiGen_vap_setBssid(T_AccessPoint* pAP) {
     return ret;
 }
 
+swl_rc_ne wifiGen_rad_getVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_str_copy(ifName, ifNameSize, NULL);
+    bool ret = false;
+    if(!ifaceShift) {
+        ret = swl_str_copy(ifName, ifNameSize, pRad->Name);
+    } else {
+        ret = swl_str_catFormat(ifName, ifNameSize, "%s.%d", pRad->Name, ifaceShift);
+    }
+    return (ret ? SWL_RC_OK : SWL_RC_ERROR);
+}
+
 static bool s_updateVapAlias(T_Radio* pRad, T_AccessPoint* pAP, int if_count) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
-    if(!if_count) {    // yes
-        snprintf(pAP->alias, sizeof(pAP->alias), "%s", pRad->Name);
-    } else {
-        snprintf(pAP->alias, sizeof(pAP->alias), "%s.%d", pRad->Name, if_count);
+    T_SSID* pSSID;
+
+    if(((pSSID = pAP->pSSID) != NULL) &&
+       (!swl_str_isEmpty(pSSID->customNetDevName))) {
+        return swl_str_copy(pAP->alias, sizeof(pAP->alias), pSSID->customNetDevName);
     }
-    return true;
+
+    swl_rc_ne rc = pRad->pFA->mfn_wrad_getVapIfName(pRad, if_count, pAP->alias, sizeof(pAP->alias));
+    if(rc == SWL_RC_NOT_IMPLEMENTED) {
+        rc = wifiGen_rad_getVapIfName(pRad, if_count, pAP->alias, sizeof(pAP->alias));
+    }
+    return swl_rc_isOk(rc);
 }
 
 static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIfIndex) {
     swl_rc_ne rc;
-    if(!apIfIndex) {
+    if((!apIfIndex) && (swl_str_matches(pAP->alias, pRad->Name))) {
         rc = wld_rad_nl80211_setAp(pRad);
         pAP->index = pRad->index;
         pAP->wDevId = pRad->wDevId;

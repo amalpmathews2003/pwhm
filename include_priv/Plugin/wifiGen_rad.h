@@ -74,6 +74,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP);
 int wifiGen_rad_delvapif(T_Radio* pRad, char* vapName);
 int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize);
 swl_rc_ne wifiGen_rad_delendpointif(T_Radio* pRad, char* endpoint);
+swl_rc_ne wifiGen_rad_getVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize);
 int wifiGen_rad_status(T_Radio* pRad);
 int wifiGen_rad_enable(T_Radio* rad, int val, int set);
 int wifiGen_rad_sync(T_Radio* pRad, int set);

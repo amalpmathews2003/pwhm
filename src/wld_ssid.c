@@ -647,8 +647,28 @@ static void s_setMacAddress_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setCustomNetDevName_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_SSID* pSSID = wld_ssid_fromObj(object);
+    ASSERT_NOT_NULL(pSSID, , ME, "INVALID");
+    const char* custNetDevName = amxc_var_constcast(cstring_t, newValue);
+    ASSERTS_FALSE(swl_str_matches(pSSID->customNetDevName, custNetDevName), , ME, "same value");
+    swl_str_copy(pSSID->customNetDevName, sizeof(pSSID->customNetDevName), custNetDevName);
+    int32_t ifIndex = pSSID->AP_HOOK ? pSSID->AP_HOOK->index : (pSSID->ENDP_HOOK ? pSSID->ENDP_HOOK->index : -1);
+    SAH_TRACEZ_INFO(ME, "%s: SET CustomNetDevName %s (ndIdx %u)",
+                    pSSID->Name, pSSID->customNetDevName, ifIndex);
+    if(ifIndex > 0) {
+        SAH_TRACEZ_WARNING(ME, "%s: interface %d already created: new custom ifname %s will be applied on next boot",
+                           pSSID->Name, ifIndex, custNetDevName);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 SWLA_DM_HDLRS(sSsidDmHdlrs,
               ARR(SWLA_DM_PARAM_HDLR("SSID", s_setSSID_pwf),
+                  SWLA_DM_PARAM_HDLR("CustomNetDevName", s_setCustomNetDevName_pwf),
                   SWLA_DM_PARAM_HDLR("MACAddress", s_setMacAddress_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
                   SWLA_DM_PARAM_HDLR("MLDUnit", s_setMLDUnit_pwf)
