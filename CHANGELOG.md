@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.5.0 - 2024-04-12(16:57:23 +0000)
+
+### Other
+
+- support setting custom iface name for EPs
+
 ## Release v6.4.0 - 2024-04-12(08:34:56 +0000)
 
 ### Other
