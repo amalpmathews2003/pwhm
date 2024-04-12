@@ -88,7 +88,7 @@ int wifiGen_vap_setBssid(T_AccessPoint* pAP) {
     return ret;
 }
 
-swl_rc_ne wifiGen_rad_getVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize) {
+swl_rc_ne wifiGen_rad_generateVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     swl_str_copy(ifName, ifNameSize, NULL);
     bool ret = false;
@@ -100,21 +100,33 @@ swl_rc_ne wifiGen_rad_getVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifN
     return (ret ? SWL_RC_OK : SWL_RC_ERROR);
 }
 
-static bool s_updateVapAlias(T_Radio* pRad, T_AccessPoint* pAP, int if_count) {
+static bool s_getNewVapIfaceName(T_Radio* pRad, T_SSID* pSSID, int if_count, char* ifName, size_t ifNameSize) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERT_NOT_NULL(pSSID, false, ME, "NULL");
+    swl_str_copy(ifName, ifNameSize, NULL);
+    char tgtIfname[IFNAMSIZ] = {0};
+    if((pSSID != NULL) && (!swl_str_isEmpty(pSSID->customNetDevName))) {
+        // use custom vap iface name when provided
+        swl_str_copy(tgtIfname, sizeof(tgtIfname), pSSID->customNetDevName);
+    } else {
+        // generate new vap iface name when supported, or fallback to local implementation
+        swl_rc_ne rc = pRad->pFA->mfn_wrad_generateVapIfName(pRad, if_count, tgtIfname, sizeof(tgtIfname));
+        if(rc == SWL_RC_NOT_IMPLEMENTED) {
+            rc = wifiGen_rad_generateVapIfName(pRad, if_count, tgtIfname, sizeof(tgtIfname));
+        }
+        ASSERT_TRUE(swl_rc_isOk(rc), false, ME, "%s: fail to generate new vap iface name", pRad->Name);
+    }
+    if((wld_vap_from_name(tgtIfname) != NULL) || (wld_vep_from_name(tgtIfname) != NULL)) {
+        SAH_TRACEZ_ERROR(ME, "%s: already added iface %s", pRad->Name, tgtIfname);
+        return false;
+    }
+    return swl_str_copy(ifName, ifNameSize, tgtIfname);
+}
+
+static bool s_updateVapIfaceName(T_Radio* pRad, T_AccessPoint* pAP, const char* vapIfName) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
-    T_SSID* pSSID;
-
-    if(((pSSID = pAP->pSSID) != NULL) &&
-       (!swl_str_isEmpty(pSSID->customNetDevName))) {
-        return swl_str_copy(pAP->alias, sizeof(pAP->alias), pSSID->customNetDevName);
-    }
-
-    swl_rc_ne rc = pRad->pFA->mfn_wrad_getVapIfName(pRad, if_count, pAP->alias, sizeof(pAP->alias));
-    if(rc == SWL_RC_NOT_IMPLEMENTED) {
-        rc = wifiGen_rad_getVapIfName(pRad, if_count, pAP->alias, sizeof(pAP->alias));
-    }
-    return swl_rc_isOk(rc);
+    return swl_str_copy(pAP->alias, sizeof(pAP->alias), vapIfName);
 }
 
 static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIfIndex) {
@@ -161,6 +173,11 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     ASSERT_FALSE(apMacRefIndex >= maxNrAp, SWL_RC_INVALID_STATE, ME, "%s: Max Number of BSS reached : %d", pRad->Name, maxNrAp);
     ASSERT_FALSE(wld_rad_getSocket(pRad) < 0, SWL_RC_INVALID_STATE, ME, "%s: Unable to create socket", pRad->Name);
 
+    char vapIfname[IFNAMSIZ] = {0};
+    //build new vap interface name and check that it is unique
+    ASSERT_TRUE(s_getNewVapIfaceName(pRad, pAP->pSSID, apIfIndex, vapIfname, sizeof(vapIfname)), SWL_RC_ERROR,
+                ME, "%s: fail to get new vap %s iface name", pRad->Name, pAP->name);
+
     pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
 
     //check need for updating base mac when adding next interface
@@ -192,7 +209,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     }
 
     //retrieve interface name and update pAP->alias
-    s_updateVapAlias(pRad, pAP, apIfIndex);
+    s_updateVapIfaceName(pRad, pAP, vapIfname);
     // actually create AP, and update netdev index.
     s_createAp(pRad, pAP, apIfIndex);
 
@@ -222,24 +239,73 @@ int wifiGen_rad_delvapif(T_Radio* pRad, char* vapName) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wifiGen_rad_generateEpIfName(T_Radio* pRad, uint32_t ifaceShift _UNUSED, char* ifName, size_t ifNameSize) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    // assumption: endpoint interface is the MAIN radio interface
+    bool ret = swl_str_copy(ifName, ifNameSize, pRad->Name);
+    return (ret ? SWL_RC_OK : SWL_RC_ERROR);
+}
+
+static bool s_getNewEpIfaceName(T_Radio* pRad, T_SSID* pSSID, int if_count, char* ifName, size_t ifNameSize) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERT_NOT_NULL(pSSID, false, ME, "NULL");
+    swl_str_copy(ifName, ifNameSize, NULL);
+    char tgtIfname[IFNAMSIZ] = {0};
+    if((pSSID != NULL) && (!swl_str_isEmpty(pSSID->customNetDevName))) {
+        // use custom endpoint iface name when provided
+        swl_str_copy(tgtIfname, sizeof(tgtIfname), pSSID->customNetDevName);
+    } else {
+        // generate new vap iface name when supported, or fallback to local implementation
+        swl_rc_ne rc = pRad->pFA->mfn_wrad_generateEpIfName(pRad, if_count, tgtIfname, sizeof(tgtIfname));
+        if(rc == SWL_RC_NOT_IMPLEMENTED) {
+            rc = wifiGen_rad_generateEpIfName(pRad, if_count, tgtIfname, sizeof(tgtIfname));
+        }
+        ASSERT_TRUE(swl_rc_isOk(rc), false, ME, "%s: fail to generate new endpoint iface name", pRad->Name);
+    }
+    if((wld_vap_from_name(tgtIfname) != NULL) || (wld_vep_from_name(tgtIfname) != NULL)) {
+        SAH_TRACEZ_ERROR(ME, "%s: already added iface %s", pRad->Name, tgtIfname);
+        return false;
+    }
+    return swl_str_copy(ifName, ifNameSize, tgtIfname);
+}
+
 int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(buf, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_TRUE(bufsize > 0, SWL_RC_INVALID_PARAM, ME, "null size");
 
     // assumption: endpoint interface is the MAIN radio interface
-    const char* epIfname = pRad->Name;
-    T_EndPoint* pEpExist = wld_rad_ep_from_name(pRad, epIfname);
-    ASSERT_NULL(pEpExist, SWL_RC_ERROR, ME, "%s: already created EP[%s] with ifname(%s)", pRad->Name, pEpExist->alias, pEpExist->Name);
+    char epIfname[IFNAMSIZ] = {0};
+    T_SSID* pSSID = NULL;
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        ASSERT_FALSE(pEP->index > 0, SWL_RC_ERROR, ME, "%s: rad has already EP %s created: can not add new one", pRad->Name, pEP->Name);
+        if(swl_str_isEmpty(pEP->Name)) {
+            pSSID = pEP->pSSID;
+            break;
+        }
+    }
+    // get new endpoint interface name and check that it is unique
+    ASSERT_TRUE(s_getNewEpIfaceName(pRad, pSSID, wld_rad_countIfaces(pRad), epIfname, sizeof(epIfname)), SWL_RC_ERROR,
+                ME, "%s: fail to get new endpoint iface name", pRad->Name);
     swl_str_copy(buf, bufsize, epIfname);
-    if(pRad->isSTA) {
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    memset(&ifaceInfo, 0, sizeof(ifaceInfo));
+    if((pRad->isSTA) && (swl_str_matches(pRad->Name, epIfname))) {
         wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), (char*) epIfname, false);
         wld_rad_nl80211_setSta(pRad);
         wld_rad_nl80211_set4Mac(pRad, true);
+        wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRad->index, &ifaceInfo);
+    } else {
+        swl_rc_ne rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRad->index, epIfname, NULL, false, true, &ifaceInfo);
+        ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to create new ep iface %s", pRad->Name, epIfname);
+    }
+    if(pEP != NULL) {
+        pEP->index = ifaceInfo.ifIndex;
+        pEP->wDevId = ifaceInfo.wDevId;
     }
 
-    /* Return the radio index number */
-    return pRad->index;
+    return ifaceInfo.ifIndex;
 }
 
 swl_rc_ne wifiGen_rad_delendpointif(T_Radio* pRad _UNUSED, char* endpoint) {

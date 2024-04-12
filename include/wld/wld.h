@@ -2291,10 +2291,16 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_DELVAPIF mfn_wrad_delvapif;                     /**< Delete a VAP interface  */
 
     /**
-     * Build vap interface name, based on the vendor iface naming rules
+     * generate vap interface name, based on the vendor iface naming rules
      * param ifaceShift indicates the number of proceeding interfaces on the same radio
      */
-    swl_rc_ne (* mfn_wrad_getVapIfName)(T_Radio* rad, uint32_t ifaceShift, char* ifName, size_t ifNameSize);
+    swl_rc_ne (* mfn_wrad_generateVapIfName)(T_Radio* rad, uint32_t ifaceShift, char* ifName, size_t ifNameSize);
+
+    /**
+     * generate endpoint interface name, based on the vendor iface naming rules
+     * param ifaceShift indicates the number of proceeding interfaces on the same radio
+     */
+    swl_rc_ne (* mfn_wrad_generateEpIfName)(T_Radio* rad, uint32_t ifaceShift, char* ifName, size_t ifNameSize);
 
     PFN_WRAD_RADIO_STATUS mfn_wrad_radio_status;             /**< Collect (and update) radio status data */
     PFN_WRAD_ENABLE mfn_wrad_enable;                         /**< Enable/Disable the Radio interface */

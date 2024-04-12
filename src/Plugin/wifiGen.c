@@ -110,6 +110,8 @@ bool wifiGen_init() {
     fta.mfn_wrad_delvapif = wifiGen_rad_delvapif;
     fta.mfn_wrad_addendpointif = wifiGen_rad_addEndpointIf;
     fta.mfn_wrad_delendpointif = wifiGen_rad_delendpointif;
+    fta.mfn_wrad_generateVapIfName = wifiGen_rad_generateVapIfName;
+    fta.mfn_wrad_generateEpIfName = wifiGen_rad_generateEpIfName;
     fta.mfn_wrad_poschans = wifiGen_rad_poschans;
     fta.mfn_wrad_supports = wifiGen_rad_supports;
     fta.mfn_wrad_radio_status = wifiGen_rad_status;
@@ -161,7 +163,6 @@ bool wifiGen_init() {
     fta.mfn_wvap_updated_neighbour = wifiGen_vap_updated_neighbor;
     fta.mfn_wvap_deleted_neighbour = wifiGen_vap_deleted_neighbor;
     fta.mfn_wvap_set_discovery_method = wifiGen_vap_setDiscoveryMethod;
-    fta.mfn_wrad_getVapIfName = wifiGen_rad_getVapIfName;
 
     //endpoint functions
     fta.mfn_wendpoint_create_hook = wifiGen_ep_createHook;
