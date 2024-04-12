@@ -85,10 +85,11 @@
 	 * @param radio Name of the RADIO interface that derrives the
 	 *        vap interface. (wifi0, wifi1,...)
 	 * @param bridge Name to which the VAP is added (br-lan, br-guest, ...)
+	 * @param ifname (optional) Custom netdev interface name
 	 * @return Success if &gt;=0, the value represents the
 	 *         NETFINDEX. When 0 it's representing an error number.
 	 */
-	uint32 addVAPIntf(%in %mandatory string vap, %in %mandatory string radio, %in string bridge); /* use WIFI_addVAPIntf */
+	uint32 addVAPIntf(%in %mandatory string vap, %in %mandatory string radio, %in string bridge, %in string ifname); /* use WIFI_addVAPIntf */
 	/**
 	 * Delete a VAP interface from the physical radio interface.
 	 * Update also AccessPoint and SSID object fields. Before this
@@ -108,11 +109,12 @@
 	 *        endpoint interface. (wifi0, wifi1,...)
 	 * @param endpoint Name of the EndPoint interface that will be created
 	 *        (wl0,wl1,...)
+	 * @param ifname (optional) Custom netdev interface name
 	 * @return Success if &gt;=0, the value represents the
 	 *         NETFINDEX. When 0 it's representing an error number.
 	 * @version 6.1
 	 */
-	uint32 addEndPointIntf(%in %mandatory string radio, %in %mandatory string endpoint);
+	uint32 addEndPointIntf(%in %mandatory string radio, %in %mandatory string endpoint, %in string ifname);
 	/**
 	 * Delete an EndPoint interface from the physical radio interface.
 	 * Update also EndPoint and SSID object fields. Before this

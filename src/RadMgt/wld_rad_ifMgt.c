@@ -105,6 +105,7 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
     const char* apname = GET_CHAR(args, "vap");
     ASSERT_STR(apname, status, ME, "missing accesspoint instance alias");
     const char* bridgename = GET_CHAR(args, "bridge");
+    const char* custNetDevName = GET_CHAR(args, "ifname");
     amxd_object_t* apObjTmpl = amxd_object_get(wifi, "AccessPoint");
     amxd_object_t* ssidObjTmpl = amxd_object_get(wifi, "SSID");
     amxd_object_t* apObj = amxd_object_get_instance(apObjTmpl, apname, 0);
@@ -145,6 +146,10 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
     if(!swl_str_isEmpty(bridgename)) {
         SAH_TRACEZ_INFO(ME, "%s: set trans apInst(%s) BridgeInterface(%s)", pR->Name, apname, bridgename);
         amxd_trans_set_value(cstring_t, &trans, "BridgeInterface", bridgename);
+    }
+    if(!swl_str_isEmpty(custNetDevName)) {
+        SAH_TRACEZ_INFO(ME, "%s: set trans apInst(%s) CustomNetDevName(%s)", pR->Name, apname, custNetDevName);
+        amxd_trans_set_value(cstring_t, &trans, "CustomNetDevName", custNetDevName);
     }
     SAH_TRACEZ_INFO(ME, "%s: apply trans to add accesspoint (%s)", pR->Name, apname);
     status = amxd_trans_apply(&trans, get_wld_plugin_dm());
@@ -211,6 +216,7 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     ASSERT_NOT_NULL(pR, status, ME, "Radio structure for radio [%s] is missing", radioname);
     const char* endpointname = GET_CHAR(args, "endpoint");
     ASSERT_STR(endpointname, status, ME, "missing endpoint instance alias");
+    const char* custNetDevName = GET_CHAR(args, "ifname");
     amxd_object_t* epObjTmpl = amxd_object_get(wifi, "EndPoint");
     amxd_object_t* ssidObjTmpl = amxd_object_get(wifi, "SSID");
     amxd_object_t* endpointObj = amxd_object_get_instance(epObjTmpl, endpointname, 0);
@@ -248,6 +254,10 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     }
     SAH_TRACEZ_INFO(ME, "%s: set trans epInst(%s) SSIDReference(%s)", pR->Name, endpointname, ssidRef);
     amxd_trans_set_value(cstring_t, &trans, "SSIDReference", ssidRef);
+    if(!swl_str_isEmpty(custNetDevName)) {
+        SAH_TRACEZ_INFO(ME, "%s: set trans epInst(%s) CustomNetDevName(%s)", pR->Name, endpointname, custNetDevName);
+        amxd_trans_set_value(cstring_t, &trans, "CustomNetDevName", custNetDevName);
+    }
     SAH_TRACEZ_INFO(ME, "%s: apply trans to add endpoint (%s)", pR->Name, endpointname);
     status = amxd_trans_apply(&trans, get_wld_plugin_dm());
     amxd_trans_clean(&trans);
