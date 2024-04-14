@@ -2169,7 +2169,6 @@ amxd_status_t _FSM_Start(amxd_object_t* wifi,
     SAH_TRACEZ_INFO(ME, "mfn_wvap_fsm");
     if(ret == FSM_WAIT) {
         amxd_function_defer(func, &pR->call_id, retval, NULL, pR);
-        amxc_var_set(int32_t, retval, ret);
         return amxd_status_deferred;
     }
 
@@ -2762,7 +2761,6 @@ amxd_status_t _Radio_commit(amxd_object_t* object,
 
     if(ret == FSM_WAIT) {
         amxd_function_defer(func, &pR->call_id, retval, Radio_Commit_Abort, pR);
-        amxc_var_set(int32_t, retval, ret);
         return amxd_status_deferred;
     }
 
