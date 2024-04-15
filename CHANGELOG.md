@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.8.0 - 2024-04-15(10:42:07 +0000)
+
+### Other
+
+- - Add data transmit rates configuration
+
 ## Release v6.7.0 - 2024-04-15(07:04:32 +0000)
 
 ### Other
