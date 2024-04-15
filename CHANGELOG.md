@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.7.0 - 2024-04-15(07:04:32 +0000)
+
+### Other
+
+- - Prevent enabling multiple ACS entities simultaneously
+
 ## Release v6.6.1 - 2024-04-14(12:16:57 +0000)
 
 ### Other
