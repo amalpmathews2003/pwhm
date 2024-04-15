@@ -449,6 +449,18 @@ static void s_setWPSEnrolMode_pwf(void* priv _UNUSED, amxd_object_t* object, amx
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setExternalAcsMgmt_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+
+    pRad->externalAcsMgmt = amxc_var_dyncast(bool, newValue);
+
+    SAH_TRACEZ_INFO(ME, "%s: External ACS management: enable=%d", pRad->Name, pRad->externalAcsMgmt);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 static void s_setAutoChannelEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pRad = wld_rad_fromObj(object);
@@ -462,6 +474,12 @@ static void s_setAutoChannelEnable_pwf(void* priv _UNUSED, amxd_object_t* object
                     pRad->autoChannelEnable,
                     pRad->autoChannelSetByUser,
                     newAutochan);
+
+    if(pRad->externalAcsMgmt) {
+        SAH_TRACEZ_WARNING(ME, "%s: External ACS management: ACS enable=%d", pRad->Name, newAutochan);
+        pRad->autoChannelSetByUser = newAutochan;
+        return;
+    }
 
     swl_rc_ne ret = pRad->pFA->mfn_wrad_autochannelenable(pRad, newAutochan, SET);
     wld_autoCommitMgr_notifyRadEdit(pRad);
@@ -1874,7 +1892,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         bool commit = false;
 
         tmp_bool = amxd_object_get_bool(object, "AutoChannelEnable", NULL);
-        if(pR->autoChannelEnable != tmp_bool) {
+        if(!pR->externalAcsMgmt && (pR->autoChannelEnable != tmp_bool)) {
             pR->autoChannelEnable = tmp_bool;
             pR->pFA->mfn_wrad_autochannelenable(pR, pR->autoChannelEnable, SET);
         }
@@ -4201,6 +4219,7 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("STASupported_Mode", s_setStaSupMode_pwf),
                   SWLA_DM_PARAM_HDLR("WPS_Enrollee_Mode", s_setWPSEnrolMode_pwf),
                   SWLA_DM_PARAM_HDLR("KickRoamingStation", s_setKickRoamSta_pwf),
+                  SWLA_DM_PARAM_HDLR("ExternalAcsMgmt", s_setExternalAcsMgmt_pwf),
                   SWLA_DM_PARAM_HDLR("AutoChannelEnable", s_setAutoChannelEnable_pwf),
                   SWLA_DM_PARAM_HDLR("OperatingChannelBandwidth", s_setOperatingChannelBandwidth_pwf),
                   SWLA_DM_PARAM_HDLR("AutoBandwidthSelectMode", s_setAutoBandwidthSelectMode_pwf),

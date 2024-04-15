@@ -632,6 +632,13 @@ define probelist_t{
 		%read-only bool AutoChannelSupported;
 
 		/**
+		 * <p>Indicates whether automatic channel selection is managed
+		 * by an external process. </p> */
+		%persistent %private bool ExternalAcsMgmt{
+			default false;
+		}
+
+		/**
 		 * <p>Enable or disable automatic channel selection. Set to
 		 * false to disable the automatic channel selection procedure,
 		 * in which case the currently selected channel remains

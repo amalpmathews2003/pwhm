@@ -199,7 +199,9 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     swl_chanspec_t tgtChspec = wld_chanmgt_getTgtChspec(pRad);
 
     /* force AcsBootChannel when Radio is down to the next up */
-    if(!wld_rad_isUpExt(pRad) && pRad->autoChannelEnable && (pRad->acsBootChannel != -1)) {
+    if(!wld_rad_isUpExt(pRad) &&
+       (pRad->autoChannelEnable || (pRad->externalAcsMgmt && pRad->autoChannelSetByUser)) &&
+       (pRad->acsBootChannel != -1)) {
         swl_freqBand_e f = wld_rad_getFreqBand(pRad);
         tgtChspec.channel = pRad->acsBootChannel ? : swl_channel_defaults[f];
         tgtChspec.bandwidth = swl_bandwidth_defaults[f];
@@ -446,6 +448,11 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     }
 
     pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
+
+    if(pRad->externalAcsMgmt) {
+        SAH_TRACEZ_INFO(ME, "%s: Restore radio channel config due to external ACS mgmt enabled", pRad->Name);
+        swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);
+    }
 }
 
 /**

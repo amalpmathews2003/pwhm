@@ -1470,6 +1470,12 @@ struct WLD_RADIO {
     wld_channelChangeReason_e channelChangeReason; /* The cause of the last channel change */
     int autoChannelSupported;
     /**
+     * Indicates whether automatic channel selection is managed by an external process
+     * When set, autoChannelSetByUser will reflect the automatic channel selection state (enabled/disabled)
+     * and the autoChannelEnable is not set to avoid calling the LL APIs implementation for automatic channel selection.
+     **/
+    bool externalAcsMgmt;
+    /**
      * Indicates whether autochannel is enabled internally for
      * When set, we set channel on 0.
      **/
