@@ -515,6 +515,7 @@ static bool s_doSetMfList(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
 static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    wld_ap_hostapd_sendCommand(pAP, "PMKSA_FLUSH", "refreshConfig");
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setSecParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set secret key", pAP->alias);
     s_schedNextAction(rc, pAP, pRad);
