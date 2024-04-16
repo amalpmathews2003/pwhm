@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.9.0 - 2024-04-16(15:18:16 +0000)
+
+### Other
+
+- add generic implementation of BG DFS start/stop APIs
+
 ## Release v6.8.2 - 2024-04-16(13:32:40 +0000)
 
 ### Other
