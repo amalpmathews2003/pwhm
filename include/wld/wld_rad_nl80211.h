@@ -370,6 +370,27 @@ swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResult
 swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2);
 
 /*
+ * @brief start background DFS
+ *
+ * @param pRadio pointer to radio context
+ * @param args pointer to background DFS args context
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_bgDfsStart(T_Radio* pRadio, wld_startBgdfsArgs_t* args);
+
+/*
+ * @brief stop background DFS
+ *
+ * @param pRadio pointer to radio context
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_bgDfsStop(T_Radio* pRadio);
+
+/*
  * @brief common function to send vendor sub command
  *
  * @param pRadio pointer to radio context

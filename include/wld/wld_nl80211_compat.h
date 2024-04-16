@@ -260,4 +260,13 @@
 //defined since kernel >= 5.11
 #define NL80211_ATTR_SAE_PWE NL80211_ATTR(298)
 
+//defined since kernel >= 5.17
+#define NL80211_ATTR_RADAR_BACKGROUND NL80211_ATTR(308)
+
+//defined since kernel >= 6.0
+#define NL80211_ATTR_MLO_LINK_ID NL80211_ATTR(313)
+
+//defined since kernel > 6.9
+#define NL80211_CMD_STOP_BGRADAR_DETECT ((NL80211_CMD_MAX >= 157) ? 157 : NL80211_CMD(155))
+
 #endif /* INCLUDE_WLD_WLD_NL80211_COMPAT_H_ */

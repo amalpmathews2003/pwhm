@@ -66,6 +66,7 @@
 #include "wld_nl80211_api_priv.h"
 #include "wld_nl80211_api.h"
 #include "wld_nl80211_parser.h"
+#include "wld_nl80211_utils.h"
 
 #include "swl/swl_common.h"
 #include "swl/swl_assert.h"
@@ -796,6 +797,53 @@ swl_rc_ne wld_nl80211_setRegDomain(wld_nl80211_state_t* state, uint32_t wiphy, c
     }
     NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_REG_ALPHA2, swl_str_len(alpha2) + 1, alpha2));
     rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_REQ_SET_REG, 0, 0, &attribs);
+    NL_ATTRS_CLEAR(&attribs);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_bgDfsStart(wld_nl80211_state_t* state, uint32_t ifIndex, int8_t ifMloLinkId, swl_chanspec_t bgDfsChanspec) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(state, rc, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "Starting BG_DFS ifIndex(%d) %u/%s",
+                    ifIndex, bgDfsChanspec.channel, swl_bandwidth_str[bgDfsChanspec.bandwidth]);
+
+    NL_ATTRS(attribs, ARR());
+    if((ifMloLinkId != MLO_LINK_ID_UNKNOWN) && (ifMloLinkId >= 0)) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_MLO_LINK_ID, ifMloLinkId));
+    }
+    NL_ATTRS_ADD(&attribs, NL_ATTR(NL80211_ATTR_RADAR_BACKGROUND));
+
+    uint32_t channelWidth = wld_nl80211_bwSwlToNl(bgDfsChanspec.bandwidth);
+    NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_CHANNEL_WIDTH, channelWidth));
+
+    uint32_t channelFreqMHz;
+    swl_chanspec_channelToMHz(&bgDfsChanspec, &channelFreqMHz);
+    NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY_FREQ, channelFreqMHz));
+
+    swl_channel_t centerChannel = swl_chanspec_getCentreChannel(&bgDfsChanspec);
+    bgDfsChanspec.channel = centerChannel;
+    uint32_t centerFreqMHz;
+    swl_chanspec_channelToMHz(&bgDfsChanspec, &centerFreqMHz);
+    NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_CENTER_FREQ1, centerFreqMHz));
+
+    rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_RADAR_DETECT, 0, ifIndex, &attribs);
+    NL_ATTRS_CLEAR(&attribs);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_bgDfsStop(wld_nl80211_state_t* state, uint32_t ifIndex, int8_t ifMloLinkId) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(state, rc, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "Stopping BG_DFS ifIndex(%d)", ifIndex);
+
+    NL_ATTRS(attribs, ARR());
+    if((ifMloLinkId != MLO_LINK_ID_UNKNOWN) && (ifMloLinkId >= 0)) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_MLO_LINK_ID, ifMloLinkId));
+    }
+
+    rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_STOP_BGRADAR_DETECT, 0, ifIndex, &attribs);
     NL_ATTRS_CLEAR(&attribs);
     return rc;
 }

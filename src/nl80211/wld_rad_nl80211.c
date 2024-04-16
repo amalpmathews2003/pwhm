@@ -64,6 +64,7 @@
  */
 
 #include "wld_rad_nl80211.h"
+#include "wld_nl80211_utils.h"
 #include "swl/swl_common.h"
 #include "swl/swl_common_time.h"
 #include "wld_radio.h"
@@ -527,6 +528,29 @@ swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {
     SAH_TRACEZ_WARNING(ME, "%s: setting reg domain %s", pRadio->Name, alpha2);
     rc = wld_nl80211_setRegDomain(wld_nl80211_getSharedState(), pRadio->wiphy, alpha2);
     return rc;
+}
+
+swl_rc_ne wld_rad_nl80211_bgDfsStart(T_Radio* pRadio, wld_startBgdfsArgs_t* args) {
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(args, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: Starting BG_DFS %u/%s",
+                    pRadio->Name, args->channel, swl_bandwidth_str[args->bandwidth]);
+
+    swl_chanspec_t bgDfsChanspec = SWL_CHANSPEC_NEW(args->channel, args->bandwidth, pRadio->operatingFrequencyBand);
+    uint32_t index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+
+    return wld_nl80211_bgDfsStart(wld_nl80211_getSharedState(), index, MLO_LINK_ID_UNKNOWN, bgDfsChanspec);
+}
+
+swl_rc_ne wld_rad_nl80211_bgDfsStop(T_Radio* pRadio) {
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: Stopping BG_DFS", pRadio->Name);
+
+    uint32_t index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+
+    return wld_nl80211_bgDfsStop(wld_nl80211_getSharedState(), index, MLO_LINK_ID_UNKNOWN);
 }
 
 swl_rc_ne wld_rad_nl80211_registerFrame(T_Radio* pRadio, uint16_t type, const char* pattern, size_t patternLen) {

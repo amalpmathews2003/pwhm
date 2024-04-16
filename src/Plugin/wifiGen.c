@@ -135,6 +135,10 @@ bool wifiGen_init() {
     fta.mfn_wrad_airstats = wifiGen_rad_getAirStats;
     fta.mfn_wrad_getspectruminfo = wifiGen_rad_getSpectrumInfo;
 
+    /* Wrad BG DFS fta control */
+    fta.mfn_wrad_bgdfs_start_ext = wifiGen_rad_bgDfsStartExt;
+    fta.mfn_wrad_bgdfs_stop = wifiGen_rad_bgDfsStop;
+
     //vap functions
     fta.mfn_wvap_create_hook = wifiGen_vap_createHook;
     fta.mfn_wvap_destroy_hook = wifiGen_vap_destroyHook;

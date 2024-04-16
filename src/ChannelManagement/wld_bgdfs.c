@@ -229,6 +229,7 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
                        swl_timespec_diffToMillisec(&pRad->bgdfs_config.clearStartTime, &pRad->bgdfs_config.clearEndTime));
 
     wld_bgdfsType_e type = pRad->bgdfs_config.type;
+    ASSERT_TRUE((type < BGDFS_TYPE_MAX), , ME, "%s: invalid bgdfs config type %d", pRad->Name, type);
 
     switch(result) {
     case DFS_RESULT_OK:

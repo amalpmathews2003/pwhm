@@ -70,6 +70,8 @@
 #include "wld_nl80211_attr.h"
 #include "wld_nl80211_types.h"
 
+#define MLO_LINK_ID_UNKNOWN -1
+
 /*
  * @brief return registered handlers table, defining wld implementation for nl80211
  *
@@ -469,6 +471,31 @@ swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifInde
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_setRegDomain(wld_nl80211_state_t* state, uint32_t wiphy, const char* alpha2);
+
+/*
+ * @brief start a background DFS
+ *
+ * @param state nl80211 socket manager
+ * @param ifIndex network interface index indicating relative device
+ * @param ifMloLinkId network interface MLO Link ID, otherwise MLO_LINK_ID_UNKNOWN for non-MLD
+ * @param bgDfsChanspec background DFS chanspec
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_bgDfsStart(wld_nl80211_state_t* state, uint32_t ifIndex, int8_t ifMloLinkId, swl_chanspec_t bgDfsChanspec);
+
+/*
+ * @brief stop a background DFS
+ *
+ * @param state nl80211 socket manager
+ * @param ifIndex network interface index indicating relative device
+ * @param ifMloLinkId network interface MLO Link ID, otherwise MLO_LINK_ID_UNKNOWN for non-MLD
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_bgDfsStop(wld_nl80211_state_t* state, uint32_t ifIndex, int8_t ifMloLinkId);
 
 /*
  * @brief common function to send vendor sub command

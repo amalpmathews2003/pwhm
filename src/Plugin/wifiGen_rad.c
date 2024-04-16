@@ -240,6 +240,7 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             }
             if(pWiphyInfo->suppFeatures.backgroundRadar) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "RADAR_BACKGROUND");
+                wld_bgdfs_setAvailable(pRad, true);
             }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
             if((pRad->channel == 0) && (wld_rad_getFreqBand(pRad) == pBand->freqBand)) {
@@ -564,6 +565,9 @@ int wifiGen_rad_status(T_Radio* pRad) {
          */
         SAH_TRACEZ_INFO(ME, "%s: curr band(c:%d/b:%d) is not yet usable",
                         pRad->Name, currChanSpec.channel, swl_chanspec_bwToInt(currChanSpec.bandwidth));
+    } else if(wld_bgdfs_isRunning(pRad)) {
+        // In this situation, there is a background dfs running.
+        SAH_TRACEZ_INFO(ME, "%s: background dfs is running", pRad->Name);
     } else if(wld_rad_hasActiveIface(pRad)) {
         /*
          * radio is considered up when:
@@ -571,6 +575,7 @@ int wifiGen_rad_status(T_Radio* pRad) {
          * 2) radio's main/child interface is operational (i.e running with lower up)
          * 3) current chanspec is usable (it is safety check, as net link may remain RUNNING even
          *    after a dfs radar detection)
+         * 4) no background dfs is running
          */
         SAH_TRACEZ_INFO(ME, "%s: radio is up", pRad->Name);
         pRad->detailedState = CM_RAD_UP;
@@ -965,5 +970,29 @@ swl_rc_ne wifiGen_rad_getSpectrumInfo(T_Radio* rad, bool update, amxc_llist_t* l
         pEntry->nrCoChannelAP = wld_util_countScanResultEntriesPerChannel(&rad->scanState.lastScanResults, pEntry->channel);
     }
 
+    return rc;
+}
+
+swl_rc_ne wifiGen_rad_bgDfsStartExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(args, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(pRad->pFA->mfn_misc_has_support(pRad, NULL, "RADAR_BACKGROUND", 0), SWL_RC_ERROR, ME,
+                "%s: radar background not supported", pRad->Name);
+    ASSERT_TRUE((wld_rad_isUpExt(pRad) && !wld_bgdfs_isRunning(pRad)), SWL_RC_ERROR, ME, "%s: not ready", pRad->Name);
+
+    swl_rc_ne rc = wld_rad_nl80211_bgDfsStart(pRad, args);
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to start bgDfs", pRad->Name);
+    wld_bgdfs_notifyClearStarted(pRad, args->channel, args->bandwidth, BGDFS_TYPE_CLEAR);
+    return rc;
+}
+
+swl_rc_ne wifiGen_rad_bgDfsStop(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_bgdfs_isRunning(pRad), SWL_RC_OK, ME, "%s: bgDfs not running", pRad->Name);
+
+    swl_rc_ne rc = wld_rad_nl80211_bgDfsStop(pRad);
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to stop bgDfs", pRad->Name);
+    wld_bgdfs_notifyClearEnded(pRad, DFS_RESULT_OTHER);
+    wld_rad_updateState(pRad, false);
     return rc;
 }

@@ -287,11 +287,18 @@ static void s_dfsCacStartedCb(void* userData, char* ifName, swl_chanspec_t* chan
     }
     s_syncCurrentChannel(pRad, reason);
     wld_channel_mark_passive_band(*chanSpec);
-    swl_chanspec_t radChanspec = wld_rad_getSwlChanspec(pRad);
-    if(swl_channel_isInChanspec(&radChanspec, chanSpec->channel)) {
+
+    swl_chanspec_t curChanspec = wld_chanmgt_getCurChspec(pRad);
+    swl_chanspec_t tgtChanspec = wld_chanmgt_getTgtChspec(pRad);
+
+    if(swl_channel_isInChanspec(&curChanspec, chanSpec->channel)) {
         pRad->detailedState = CM_RAD_FG_CAC;
-        wld_rad_updateState(pRad, false);
+    } else if(swl_channel_isInChanspec(&tgtChanspec, chanSpec->channel)) {
+        pRad->detailedState = CM_RAD_BG_CAC;
+    } else {
+        pRad->detailedState = CM_RAD_BG_CAC_NS;
     }
+    wld_rad_updateState(pRad, false);
 }
 
 static void s_dfsCacDoneCb(void* userData, char* ifName, swl_chanspec_t* chanSpec, bool success) {
@@ -309,6 +316,9 @@ static void s_dfsCacDoneCb(void* userData, char* ifName, swl_chanspec_t* chanSpe
         // CAC aborted: so mark temporary radio as down, until fallback to alternative channel (eg: non-dfs)
         // Radio detailed status will then be rectified
         pRad->detailedState = CM_RAD_DOWN;
+    }
+    if(wld_bgdfs_isRunning(pRad)) {
+        wld_bgdfs_notifyClearEnded(pRad, (success ? DFS_RESULT_OK : DFS_RESULT_OTHER));
     }
     wld_rad_updateState(pRad, false);
 }
