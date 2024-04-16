@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.8.2 - 2024-04-16(13:32:40 +0000)
+
+### Other
+
+- : Unable to Connect to 6GHz Band with Default KeyPassPhrase
+
 ## Release v6.8.1 - 2024-04-16(11:41:01 +0000)
 
 ### Other
