@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.8.1 - 2024-04-16(11:41:01 +0000)
+
+### Other
+
+- set 4mac flag on new custom named EP iface
+
 ## Release v6.8.0 - 2024-04-15(10:42:07 +0000)
 
 ### Other
