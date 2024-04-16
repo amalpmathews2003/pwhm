@@ -81,3 +81,13 @@ swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtF
                                               (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &g_swl_macBin_bCast, flags, pEP->index);
 }
 
+swl_rc_ne wld_ep_nl80211_setSta(T_EndPoint* pEP) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_nl80211_setInterfaceType(wld_nl80211_getSharedState(), pEP->index, false, true);
+}
+
+swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_nl80211_setInterfaceUse4Mac(wld_nl80211_getSharedState(), pEP->index, use4Mac);
+}
+

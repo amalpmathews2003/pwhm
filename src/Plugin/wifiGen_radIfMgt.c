@@ -68,6 +68,7 @@
 #include "wld/wld_ssid.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_rad_nl80211.h"
+#include "wld/wld_ep_nl80211.h"
 #include "swl/swl_common.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_hapd.h"
@@ -293,8 +294,6 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     memset(&ifaceInfo, 0, sizeof(ifaceInfo));
     if((pRad->isSTA) && (swl_str_matches(pRad->Name, epIfname))) {
         wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), (char*) epIfname, false);
-        wld_rad_nl80211_setSta(pRad);
-        wld_rad_nl80211_set4Mac(pRad, true);
         wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRad->index, &ifaceInfo);
     } else {
         swl_rc_ne rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRad->index, epIfname, NULL, false, true, &ifaceInfo);
@@ -303,6 +302,8 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     if(pEP != NULL) {
         pEP->index = ifaceInfo.ifIndex;
         pEP->wDevId = ifaceInfo.wDevId;
+        wld_ep_nl80211_setSta(pEP);
+        wld_ep_nl80211_set4Mac(pEP, true);
     }
 
     return ifaceInfo.ifIndex;

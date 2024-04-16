@@ -73,5 +73,6 @@
 
 swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen, swl_chanspec_t* chanspec,
                                                 uint32_t flags);
-
+swl_rc_ne wld_ep_nl80211_setSta(T_EndPoint* pEP);
+swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac);
 #endif /* INCLUDE_WLD_WLD_EP_NL80211_H_ */
