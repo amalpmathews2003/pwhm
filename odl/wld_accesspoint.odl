@@ -372,6 +372,16 @@ define rrm_t{
 		%persistent string ReferenceApRelay;
 
 		/**
+		 * Reports information about the CPE operation mode. Enumeration of:
+		 * Router: Indicates operation as a router.
+		 * Bridge/Extender: Indicates operation as a range extender or acess point in bridge mode.
+		 */
+		string CpeOperationMode {
+			on action validate call check_enum ["Router","Bridge/Extender"];
+			default "Router";
+		}
+
+		/**
 		 * List of MAC Addresses allowed or blocked on the current AP depending of the mode.
 		 * @version 9.3
 		 */
