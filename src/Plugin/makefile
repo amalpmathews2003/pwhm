@@ -20,7 +20,7 @@ OBJECTS = $(addprefix $(OBJDIR)/Plugin/,$(SOURCES:.c=.o))
 SUBDIRS_BASE = $(shell find $(SRCDIR) -type d)
 SUBDIRS = $(addprefix $(OBJDIR)/Plugin,$(patsubst $(SRCDIR)%,%/,$(SUBDIRS_BASE)))
 
-CFLAGS := -std=gnu99 -fPIC -g -Wall -Werror -Wextra $(CFLAGS) \
+CFLAGS := $(CFLAGS) -std=gnu99 -fPIC -g -Wall -Werror -Wextra \
 		$(addprefix -I ,$(INCDIRS)) \
 		-I$(INCDIR_PRIV)/Plugin/ \
 		-I$(INCDIR)/ \
