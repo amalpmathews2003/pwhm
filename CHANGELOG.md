@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.9.1 - 2024-04-18(15:34:06 +0000)
+
+### Other
+
+- fix new vap ifname checking conditions
+
 ## Release v6.9.0 - 2024-04-16(15:18:16 +0000)
 
 ### Other
