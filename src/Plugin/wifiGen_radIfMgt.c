@@ -117,7 +117,10 @@ static bool s_getNewVapIfaceName(T_Radio* pRad, T_SSID* pSSID, int if_count, cha
         }
         ASSERT_TRUE(swl_rc_isOk(rc), false, ME, "%s: fail to generate new vap iface name", pRad->Name);
     }
-    if((wld_vap_from_name(tgtIfname) != NULL) || (wld_vep_from_name(tgtIfname) != NULL)) {
+    T_AccessPoint* pAP;
+    T_EndPoint* pEP;
+    if((((pAP = wld_vap_from_name(tgtIfname)) != NULL) && (pAP->pSSID != pSSID)) ||
+       (((pEP = wld_vep_from_name(tgtIfname)) != NULL) && (pEP->pSSID != pSSID))) {
         SAH_TRACEZ_ERROR(ME, "%s: already added iface %s", pRad->Name, tgtIfname);
         return false;
     }
