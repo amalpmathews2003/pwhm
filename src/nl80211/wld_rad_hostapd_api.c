@@ -249,7 +249,11 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
     wld_hostapd_cfgFile_setRadioConfig(pRad, &radParams);
     const char* miscRadParams[] = {
         "rts_threshold", "preamble",
-        "supported_rates", "basic_rates"
+        "supported_rates", "basic_rates",
+        "he_bss_color", "he_spr_srg_partial_bssid", "he_bss_color_partial",
+        "he_spr_sr_control", "he_spr_non_srg_obss_pd_max_offset",
+        "he_spr_srg_obss_pd_min_offset", "he_spr_srg_obss_pd_max_offset",
+        "he_spr_srg_bss_colors",
     };
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(miscRadParams); i++) {
         wld_ap_hostapd_setParamValue(primaryVap, miscRadParams[i], swl_mapChar_get(&radParams, (char*) miscRadParams[i]), "");
