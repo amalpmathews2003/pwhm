@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.9.3 - 2024-04-22(08:25:31 +0000)
+
+### Other
+
+- refresh EP connStatus when wpa_supplicant mgr is ready
+
 ## Release v6.9.2 - 2024-04-19(11:49:59 +0000)
 
 ### Other
