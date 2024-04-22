@@ -462,8 +462,8 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     //toggle to force loading nl80211 wiphy caps
     int radState = wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pRad->Name);
     if(radState == 0) {
-        pRad->pFA->mfn_wrad_enable(pRad, 1, SET | DIRECT);
-        pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
+        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 1);
+        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 0);
     }
 
     //set default regdomain to let driver update wiphy band channels
