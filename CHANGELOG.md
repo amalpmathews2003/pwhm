@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.9.4 - 2024-04-22(09:13:15 +0000)
+
+### Other
+
+- fix wpa_supp startup issue
+
 ## Release v6.9.3 - 2024-04-22(08:25:31 +0000)
 
 ### Other
