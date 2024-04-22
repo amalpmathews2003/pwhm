@@ -214,6 +214,34 @@ int wifiGen_ep_update(T_EndPoint* pEP, int set) {
 }
 
 /**
+ * @brief wifiGen_ep_connStatus
+ *
+ * get the endpoint connection status
+ *
+ * @param pEP The current endpoint
+ * @param pConnState The current endpoint connection status
+ * @return - SWL_RC_OK if successful
+ *         - error code otherwise
+ */
+swl_rc_ne wifiGen_ep_connStatus(T_EndPoint* pEP, wld_epConnectionStatus_e* pConnState) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_epConnectionStatus_e connState = pEP->connectionStatus;
+    if(wifiGen_ep_status(pEP) < SWL_RC_OK) {
+        connState = EPCS_DISABLED;
+    } else if(wld_wpaSupp_ep_getConnState(pEP, &connState) < SWL_RC_OK) {
+        connState = EPCS_IDLE;
+    } else if((pEP->connectionStatus == EPCS_WPS_PAIRING) &&
+              ((connState == EPCS_DISCOVERING) || (connState == EPCS_CONNECTING))) {
+        connState = EPCS_WPS_PAIRING;
+    }
+    SAH_TRACEZ_INFO(ME, "%s: connSta %s => %s", pEP->Name,
+                    cstr_EndPoint_connectionStatus[pEP->connectionStatus],
+                    cstr_EndPoint_connectionStatus[connState]);
+    W_SWL_SETPTR(pConnState, connState);
+    return SWL_RC_OK;
+}
+
+/**
  * @brief wifiGen_ep_wpsStart
  *
  * start a WPS attempt for an endpoint.

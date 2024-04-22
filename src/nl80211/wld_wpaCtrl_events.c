@@ -75,8 +75,13 @@
 static int s_getValueStr(const char* pData, const char* pKey, char* pValue, int* length) {
     ASSERTS_STR(pData, 0, ME, "Empty data");
     ASSERTS_STR(pKey, 0, ME, "Empty key");
-    char* paramStart = strstr(pData, pKey);
-    ASSERTI_NOT_NULL(paramStart, 0, ME, "Failed to find token %s", pKey);
+    char* paramStart = (char*) pData;
+    while(((paramStart = strstr(paramStart, pKey)) != NULL) &&
+          (paramStart != pData) && (isalnum(*(paramStart - 1)))) {
+        //skip found key when it is a suffix
+        paramStart += strlen(pKey);
+    }
+    ASSERTI_STR(paramStart, 0, ME, "Failed to find token %s", pKey);
     char* paramEnd = &paramStart[strlen(pKey)];
     ASSERTI_EQUALS(paramEnd[0], '=', 0, ME, "partial token %s", pKey);
     char* valueStart = &paramEnd[1];

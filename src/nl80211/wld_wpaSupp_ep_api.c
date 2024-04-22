@@ -95,22 +95,115 @@ swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP) {
     return SWL_RC_OK;
 }
 
+/*
+ * @brief get the EP's global status information
+ * eg: when ep is connected
+ * bssid=98:42:65:2d:23:43
+ * freq=5260
+ * ssid=prplos
+ * id=0
+ * mode=station
+ * multi_ap_profile=0
+ * multi_ap_primary_vlanid=0
+ * wifi_generation=6
+ * pairwise_cipher=CCMP
+ * group_cipher=CCMP
+ * key_mgmt=WPA2-PSK
+ * wpa_state=COMPLETED
+ * address=4e:ba:7d:80:80:87
+ * uuid=4c5b5a59-4f5c-f048-ff5c-50484c5b5a59
+ * ieee80211ac=1
+ *
+ * @param pEP endpoint
+ * @param reply output buffer
+ * @param maxReplySize output buffer size
+ *
+ * @return SWL_RC_OK on success, error code otherwise
+ */
+swl_rc_ne wld_wpaSupp_ep_getAllStatusDetails(T_EndPoint* pEP, char* reply, size_t replySize) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: Send STATUS command", pEP->Name);
+    bool ret = wld_wpaCtrl_sendCmdSynced(pEP->wpaCtrlInterface, "STATUS", reply, replySize);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to query ep status", pEP->Name);
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_wpaSupp_ep_getOneStatusDetail(T_EndPoint* pEP, const char* key, char* valStr, size_t valStrSize) {
+    char reply[1024] = {0};
+    swl_rc_ne rc = wld_wpaSupp_ep_getAllStatusDetails(pEP, reply, sizeof(reply));
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "failed to get global ep status");
+    int valStrLen = wld_wpaCtrl_getValueStr(reply, key, valStr, valStrSize);
+    ASSERT_FALSE(valStrLen <= 0, SWL_RC_ERROR, ME, "%s: not found status field %s", pEP->Name, key);
+    SAH_TRACEZ_INFO(ME, "%s: %s = (%s)", pEP->Name, key, valStr);
+    ASSERT_TRUE(valStrLen < (int) valStrSize, SWL_RC_ERROR,
+                ME, "%s: buffer too short for field %s (l:%d,s:%zu)", pEP->Name, key, valStrLen, valStrSize);
+    return SWL_RC_OK;
+}
+
 /**
  * @brief get the AP's bssid to which the endpoint is connected
  *
  * @param pEP endpoint
- * @param cMac the bssid address
- * @return - SWL_RC_OK when the command is sent successfully
+ * @param bssid the bssid string value
+ * @return - SWL_RC_OK when the value is retrieved successfully (valid)
  *         - Otherwise SWL_RC_ERROR
  */
 swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid) {
-    SAH_TRACEZ_INFO(ME, "%s: Send STATUS command", pEP->Name);
-    char reply[1024] = {0};
-    int ret = wld_wpaCtrl_sendCmdSynced(pEP->wpaCtrlInterface, "STATUS", reply, sizeof(reply));
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to send status command", pEP->Name);
-    ret = wld_wpaCtrl_getValueStr(reply, "bssid", bssid->cMac, SWL_MAC_CHAR_LEN);
-    ASSERT_TRUE(ret > 0, SWL_RC_ERROR, ME, "%s: not found endpoint bssid", pEP->Name);
-    SAH_TRACEZ_INFO(ME, "%s: bssid[%s]", pEP->Name, bssid->cMac);
+    swl_macChar_t tmpBssid = SWL_MAC_CHAR_NEW();
+    swl_rc_ne rc = wld_wpaSupp_ep_getOneStatusDetail(pEP, "bssid", tmpBssid.cMac, SWL_MAC_CHAR_LEN);
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "failed to get endpoint bssid");
+    ASSERT_TRUE(swl_mac_charIsValidStaMac(&tmpBssid), SWL_RC_ERROR, ME, "%s: invalid bssid (%s)", pEP->Name, tmpBssid.cMac);
+    W_SWL_SETPTR(bssid, tmpBssid);
+    return SWL_RC_OK;
+}
+
+/**
+ * @brief get the AP's SSID to which the endpoint is connected
+ *
+ * @param pEP endpoint
+ * @param ssid the remote AP ssid buffer
+ * @param ssidSize the remote AP ssid buffer size
+ * @return - SWL_RC_OK when the value is retrieved successfully (valid)
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_getSsid(T_EndPoint* pEP, char* ssid, size_t ssidSize) {
+    return wld_wpaSupp_ep_getOneStatusDetail(pEP, "ssid", ssid, ssidSize);
+}
+
+SWL_TABLE(sWpaStateDescMaps,
+          ARR(char* wpaStateDesc; wld_epConnectionStatus_e epConnState; ),
+          ARR(swl_type_charPtr, swl_type_uint32, ),
+          ARR({"DISCONNECTED", EPCS_DISCONNECTED},
+              {"INACTIVE", EPCS_IDLE},
+              {"INTERFACE_DISABLED", EPCS_IDLE},
+              {"SCANNING", EPCS_DISCOVERING},
+              {"AUTHENTICATING", EPCS_CONNECTING},
+              {"ASSOCIATING", EPCS_CONNECTING},
+              {"ASSOCIATED", EPCS_CONNECTING},
+              {"4WAY_HANDSHAKE", EPCS_CONNECTING},
+              {"GROUP_HANDSHAKE", EPCS_CONNECTING},
+              {"COMPLETED", EPCS_CONNECTED},
+              ));
+/**
+ * @brief get the EP's current connection status
+ * "DISCONNECTED", "INACTIVE", "INTERFACE_DISABLED", "SCANNING", "AUTHENTICATING",
+ * "ASSOCIATING", "ASSOCIATED", "4WAY_HANDSHAKE", "GROUP_HANDSHAKE", "COMPLETED"
+ * @param pEP endpoint
+ * @param pEPConnState output endpoint connection state based on retrieved wpa_state
+ * @return - SWL_RC_OK when the wpa_state is found and parsed successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_wpaSupp_ep_getConnState(T_EndPoint* pEP, wld_epConnectionStatus_e* pEPConnState) {
+    ASSERTS_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pEP->wpaCtrlInterface), SWL_RC_ERROR,
+                 ME, "%s: main wpactrl iface is not ready", pEP->Name);
+    char state[64] = {0};
+    swl_rc_ne rc = wld_wpaSupp_ep_getOneStatusDetail(pEP, "wpa_state", state, sizeof(state));
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: failed to get endpoint wpa_state", pEP->Name);
+    wld_epConnectionStatus_e* pConnDetState = (wld_epConnectionStatus_e*) swl_table_getMatchingValue(&sWpaStateDescMaps, 1, 0, state);
+    ASSERTI_NOT_NULL(pConnDetState, SWL_RC_ERROR, ME, "%s: unknown conn state(%s)", pEP->Name, state);
+    W_SWL_SETPTR(pEPConnState, *pConnDetState);
+    SAH_TRACEZ_INFO(ME, "%s: ep state(%s) -> connState(%d)", pEP->Name, state, *pConnDetState);
     return SWL_RC_OK;
 }
 

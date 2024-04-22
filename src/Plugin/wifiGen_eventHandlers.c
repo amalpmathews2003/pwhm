@@ -63,11 +63,13 @@
 #include "wifiGen_hapd.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_fsm.h"
+#include "wifiGen_ep.h"
 #include "wld/wld_wpaCtrlMngr.h"
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
+#include "wld/wld_wpaSupp_ep_api.h"
 #include "wld/wld_secDmn.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_accesspoint.h"
@@ -246,6 +248,13 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         return;
     }
     if(pEP != NULL) {
+        wld_epConnectionStatus_e connState = pEP->connectionStatus;
+        wifiGen_ep_connStatus(pEP, &connState);
+        if(connState == EPCS_CONNECTED) {
+            CALL_INTF_EXT(pEP->wpaCtrlInterface, fStationConnectedCb, NULL, 0);
+        } else {
+            wld_endpoint_setConnectionStatus(pEP, connState, EPE_NONE);
+        }
         CALL_SECDMN_MGR_EXT(pEP->wpaSupp, fSyncOnRadioUp, ifName, true);
         return;
     }
@@ -810,11 +819,22 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
     T_EndPoint* pEP = (T_EndPoint*) pRef;
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
-
-    SAH_TRACEZ_INFO(ME, "%s: station connected to "MAC_PRINT_FMT, pEP->Name, MAC_PRINT_ARG(bBssidMac->bMac));
-
     T_Radio* pRad = pEP->pRadio;
     ASSERT_NOT_NULL(pRad, , ME, "%s: no radio mapped", pEP->Name);
+
+    swl_macChar_t tmpBssidStr = SWL_MAC_CHAR_NEW();
+    if((bBssidMac != NULL) && (!swl_mac_binIsNull(bBssidMac))) {
+        memcpy(pEP->pSSID->BSSID, bBssidMac->bMac, SWL_MAC_BIN_LEN);
+        swl_mac_binToChar(&tmpBssidStr, bBssidMac);
+    } else if(wld_wpaSupp_ep_getBssid(pEP, &tmpBssidStr) >= SWL_RC_OK) {
+        swl_mac_charToBin((swl_macBin_t*) pEP->pSSID->BSSID, &tmpBssidStr);
+    }
+    char tmpSsid[128] = {0};
+    if(wld_wpaSupp_ep_getSsid(pEP, tmpSsid, sizeof(tmpSsid)) >= SWL_RC_OK) {
+        swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), tmpSsid);
+    }
+
+    SAH_TRACEZ_INFO(ME, "%s: station connected to ssid(%s) bssid(%s)", pEP->Name, tmpSsid, tmpBssidStr.cMac);
     wld_endpoint_sync_connection(pEP, true, 0);
 
     // update radio datamodel
