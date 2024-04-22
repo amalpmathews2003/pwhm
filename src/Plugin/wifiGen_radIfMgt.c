@@ -68,7 +68,6 @@
 #include "wld/wld_ssid.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_rad_nl80211.h"
-#include "wld/wld_ep_nl80211.h"
 #include "swl/swl_common.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_hapd.h"
@@ -295,18 +294,23 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     swl_str_copy(buf, bufsize, epIfname);
     wld_nl80211_ifaceInfo_t ifaceInfo;
     memset(&ifaceInfo, 0, sizeof(ifaceInfo));
+    swl_macBin_t epMacAddr = SWL_MAC_BIN_NEW();
+    memcpy(epMacAddr.bMac, pRad->MACAddr, SWL_MAC_BIN_LEN);
+    wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
     if((pRad->isSTA) && (swl_str_matches(pRad->Name, epIfname))) {
-        wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), (char*) epIfname, false);
+        wld_rad_nl80211_setSta(pRad);
+        wld_rad_nl80211_set4Mac(pRad, true);
         wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRad->index, &ifaceInfo);
     } else {
         swl_rc_ne rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRad->index, epIfname, NULL, false, true, &ifaceInfo);
         ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to create new ep iface %s", pRad->Name, epIfname);
+        wld_nl80211_setInterfaceUse4Mac(wld_nl80211_getSharedState(), ifaceInfo.ifIndex, true);
+        wld_linuxIfUtils_setMac(wld_rad_getSocket(pRad), epIfname, &epMacAddr);
     }
     if(pEP != NULL) {
         pEP->index = ifaceInfo.ifIndex;
         pEP->wDevId = ifaceInfo.wDevId;
-        wld_ep_nl80211_setSta(pEP);
-        wld_ep_nl80211_set4Mac(pEP, true);
+        wld_ssid_setMac(pEP->pSSID, &epMacAddr);
     }
 
     return ifaceInfo.ifIndex;
@@ -316,8 +320,9 @@ swl_rc_ne wifiGen_rad_delendpointif(T_Radio* pRad _UNUSED, char* endpoint) {
     ASSERT_STR(endpoint, SWL_RC_INVALID_PARAM, ME, "NULL");
     int ifIndex = -1;
     swl_rc_ne rc = wld_linuxIfUtils_getIfIndexExt(endpoint, &ifIndex);
-    ASSERTS_FALSE((rc < SWL_RC_OK) || (ifIndex <= 0), rc, ME, "no ifIndex for endpoint %s", endpoint);
+    ASSERT_FALSE((rc < SWL_RC_OK) || (ifIndex <= 0), rc, ME, "no ifIndex for endpoint %s", endpoint);
     ASSERT_NOT_EQUALS(pRad->index, ifIndex, SWL_RC_ERROR, ME, "%s: can not delete main rad iface", endpoint);
+    SAH_TRACEZ_WARNING(ME, "%s: deleting endpoint %s ifIndex %d", pRad->Name, endpoint, ifIndex);
     rc = wld_nl80211_delInterface(wld_nl80211_getSharedState(), ifIndex);
     return rc;
 }
