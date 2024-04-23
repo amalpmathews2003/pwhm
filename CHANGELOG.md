@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.10.1 - 2024-04-23(16:32:45 +0000)
+
+### Other
+
+- wld_gen debug command is not working
+
 ## Release v6.10.0 - 2024-04-23(09:20:50 +0000)
 
 ### Other
