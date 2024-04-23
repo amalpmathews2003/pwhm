@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.9.7 - 2024-04-23(08:57:50 +0000)
+
+### Other
+
+- cannot switch to 40MHz - fallback in 20MHz
+
 ## Release v6.9.6 - 2024-04-22(13:51:00 +0000)
 
 ### Other
