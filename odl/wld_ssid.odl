@@ -157,6 +157,12 @@
 		%read-only string Name;
 
 		/**
+		 * Description of the SSID.
+		 * Ex: "Guest SSID"
+		 */
+		%persistent %protected string Description;
+
+		/**
 		 * Custom netdev interface name:
 		 * when allowed and filled, it overrides the auto generated interface name
 		 */
