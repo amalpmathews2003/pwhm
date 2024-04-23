@@ -91,7 +91,7 @@ case $1 in
         $0 start
         ;;
     debuginfo)
-        ubus-cli "WiFi.?"
+        ba-cli "WiFi.?"
         /usr/lib/debuginfo/debug_wifi.sh
         ;;
     log)
