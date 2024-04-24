@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.11.0 - 2024-04-24(07:42:37 +0000)
+
+### Other
+
+- : Need data model parameter to set Description under different Network connections
+
 ## Release v6.10.1 - 2024-04-23(16:32:45 +0000)
 
 ### Other
