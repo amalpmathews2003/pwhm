@@ -175,15 +175,20 @@ amxd_status_t _wld_ap_validateSecurity_ovf(amxd_object_t* object,
     case SWL_SECURITY_APMODE_NONE:
     case SWL_SECURITY_APMODE_OWE:
         break;
-    case SWL_SECURITY_APMODE_WEP64:        /* 5/10 */
-    case SWL_SECURITY_APMODE_WEP128:       /* 13/26 */
-    case SWL_SECURITY_APMODE_WEP128IV:     /* 16/32 */
+    case SWL_SECURITY_APMODE_WEP64:       /* 5/10 */
+    case SWL_SECURITY_APMODE_WEP128:      /* 13/26 */
+    case SWL_SECURITY_APMODE_WEP128IV:  { /* 16/32 */
         // allow valid wepkey and empty (leading to auto generated wep-128 key)
-        if(!swl_str_isEmpty(wepKey) && (isValidWEPKey(wepKey) == SWL_SECURITY_APMODE_UNKNOWN)) {
-            SAH_TRACEZ_ERROR(ME, "%s: invalid WEP key (%s)", oname, wepKey);
+        swl_security_apMode_e wepModeFromKey = isValidWEPKey(wepKey);
+        if(wepModeFromKey != modeEnabledId) {
+            SAH_TRACEZ_ERROR(ME, "%s: invalid WEP key (%s) (len:%zu) for mode(%s) (expected(%s))",
+                             oname, wepKey, swl_str_len(wepKey),
+                             swl_security_apModeToString(modeEnabledId, SWL_SECURITY_APMODEFMT_DEFAULT),
+                             swl_security_apModeToString(wepModeFromKey, SWL_SECURITY_APMODEFMT_DEFAULT));
             valid = false;
         }
         break;
+    }
     case SWL_SECURITY_APMODE_WPA_P:
         if(!((!swl_str_isEmpty(preSharedKey) && isValidPSKKey(preSharedKey)) ||
              (!swl_str_isEmpty(keyPassPhrase) && isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)))) {
