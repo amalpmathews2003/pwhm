@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.11.1 - 2024-04-25(13:57:43 +0000)
+
+### Other
+
+- cannot set security mode WEP-64 on vap guest 2.4GHz
+
 ## Release v6.11.0 - 2024-04-24(07:42:37 +0000)
 
 ### Other
