@@ -878,8 +878,26 @@ static wld_event_callback_t s_onRadioChange = {
     .callback = (wld_event_callback_fun) s_radioChange,
 };
 
+static void s_stationChange(wld_ad_changeEvent_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    T_AccessPoint* pAP = event->vap;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
+    if((event->changeType == WLD_AD_CHANGE_EVENT_ASSOC) || (event->changeType == WLD_AD_CHANGE_EVENT_DISASSOC)) {
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+        wld_rad_doCommitIfUnblocked(pRad);
+    }
+}
+
+static wld_event_callback_t s_onStationChange = {
+    .callback = (wld_event_callback_fun) s_stationChange,
+};
+
 void wifiGen_fsm_doInit(vendor_t* vendor) {
     ASSERT_NOT_NULL(vendor, , ME, "NULL");
     wld_fsm_init(vendor, &mngr);
     wld_event_add_callback(gWld_queue_rad_onChangeEvent, &s_onRadioChange);
+    wld_event_add_callback(gWld_queue_sta_onChangeEvent, &s_onStationChange);
 }

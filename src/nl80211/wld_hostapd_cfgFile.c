@@ -731,12 +731,25 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "start_disabled", "1");
     }
     /*
-     * set BSS max_sta when having explicit value in AP conf,
-     * and different than global radio max_sta (learned by hostapd from driver side)
+     * Compare how many stations are still allowed on the access point and its radio.
+     * In case the number of remaining allowed stations on the radio is smaller than the
+     * number of remaining allowed stations on the access point, we set the BSS max_num_sta
+     * to honor the radio limit. This is necessary because hostapd does not have a limit per
+     * radio, only per access point.
      */
-    if((pAP->MaxStations > 0) && (pAP->MaxStations != pRad->maxStations)) {
-        swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", pAP->MaxStations);
+    int32_t curMaxNumSta = 0;
+    SAH_TRACEZ_INFO(ME, "%s: pRad->maxStations = %d pRad->currentStations = %d", pRad->Name, pRad->maxStations, pRad->currentStations);
+    SAH_TRACEZ_INFO(ME, "%s: pAP->MaxStations = %d  pAP->ActiveAssociatedDeviceNumberOfEntries = %d", pAP->alias, pAP->MaxStations, pAP->ActiveAssociatedDeviceNumberOfEntries);
+    if((pRad->maxStations > 0) && (pRad->maxStations - pRad->currentStations < pAP->MaxStations - pAP->ActiveAssociatedDeviceNumberOfEntries)) {
+        curMaxNumSta = pAP->ActiveAssociatedDeviceNumberOfEntries + pRad->maxStations - pRad->currentStations;
+        if(curMaxNumSta < 0) { // race condition where multiple stations associated simultaneously
+            curMaxNumSta = 0;
+        }
+    } else {
+        curMaxNumSta = pAP->MaxStations;
     }
+    SAH_TRACEZ_INFO(ME, "%s: curMaxNumSta = %d", pAP->alias, curMaxNumSta);
+    swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", curMaxNumSta);
 
     s_setVapIeee80211rConfig(pAP, vapConfigMap);
 

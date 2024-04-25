@@ -662,6 +662,8 @@ int wifiGen_rad_sync(T_Radio* pRad, int set) {
     // Rad sync: just toggles and re-apply current config with secDmn
     ASSERTI_FALSE(set & DIRECT, SWL_RC_OK, ME, "%s: no rad conf can be directly applied/synced out of secDmn", pRad->Name);
     setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_RAD);
+    // Rad MaxAssociatedDevices is implemented through AP MaxAssociatedDevices, so we need to set GEN_FSM_MOD_AP
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
     return SWL_RC_OK;
 }
 
