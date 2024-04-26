@@ -652,7 +652,7 @@ define probelist_t{
 		 * by the automatic channel selection procedure. </p>
 		 */
 		%persistent bool AutoChannelEnable{
-			default true;
+			default false;
 			userflags %upc;
 		}
 

@@ -8,7 +8,6 @@
             instance add ("{{Radio.Alias}}") {
                 parameter OperatingFrequencyBand = "2.4GHz";
                 parameter Enable = 1;
-                parameter AutoChannelEnable = 0;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;
                 parameter AirtimeFairnessEnabled = 1;
@@ -27,7 +26,6 @@
             instance add ("{{Radio.Alias}}") {
                 parameter OperatingFrequencyBand = "5GHz";
                 parameter Enable = 1;
-                parameter AutoChannelEnable = 0;
                 parameter IEEE80211hEnabled = true;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;
@@ -57,7 +55,6 @@
             instance add ("{{Radio.Alias}}") {
                 parameter OperatingFrequencyBand = "6GHz";
                 parameter Enable = 1;
-                parameter AutoChannelEnable = 0;
                 parameter IEEE80211hEnabled = true;
                 parameter RegulatoryDomain = "DE";
                 parameter AP_Mode = 1;
