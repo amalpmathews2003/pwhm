@@ -170,6 +170,7 @@
 		 *  settings to be used by the end point.*/
 		%persistent string ProfileReference {
 			default "";
+			userflags %upc;
 		}
 		/** The value MUST be the path name of a row in the SSID table.
 		 *  If the referenced object is deleted, the parameter value
