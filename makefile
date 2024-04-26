@@ -64,6 +64,7 @@ ifeq ($(CONFIG_ACCESSPOINT),y)
 	ln -sfr $(DEST)/etc/amx/wld/wld_defaults-ap/* $(DEST)/etc/amx/wld/wld_defaults/
 endif
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(DEST)$(ACLDIR)/admin/$(COMPONENT).json
+	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT)-internal.json $(DEST)$(ACLDIR)/admin/$(COMPONENT)-internal.json
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/Plugin/wld.so.$(VERSION) $(DEST)$(LIBDIR)/amx/wld/wld.so.$(VERSION)
@@ -112,6 +113,7 @@ ifeq ($(CONFIG_ACCESSPOINT),y)
 	ln -sfr $(PKGDIR)/etc/amx/wld/wld_defaults-ap/* $(PKGDIR)/etc/amx/wld/wld_defaults/
 endif
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
+	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT)-internal.json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT)-internal.json
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKGDIR)$(PKG_CONFIG_LIBDIR)/wld.pc
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/Plugin/wld.so.$(VERSION) $(PKGDIR)$(LIBDIR)/amx/wld/wld.so.$(VERSION)
