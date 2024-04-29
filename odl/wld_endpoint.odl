@@ -315,7 +315,7 @@
 			 * @version 10.0
 			 */
 			%read-only string OperatingStandard{
-				on action validate call check_enum ["Unknown","a","b","g","n","ac","be"];
+				on action validate call check_enum ["Unknown","a","b","g","n","ac","ax","be"];
 				default "Unknown";
 			}
 			
