@@ -158,12 +158,31 @@ int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set) {
     return ret;
 }
 
+void s_updateAssocDevWds(T_AccessPoint* pAP) {
+    ASSERTI_FALSE(pAP->wdsEnable, , ME, "WDS enabled");
+    int i;
+    T_AssociatedDevice* pAD;
+    int totalNrDev = pAP->AssociatedDeviceNumberOfEntries;
+    for(i = 0; i < totalNrDev; i++) {
+        pAD = pAP->AssociatedDevice[totalNrDev - 1 - i];
+        if(pAD->wdsIntf != NULL) {
+            SAH_TRACEZ_WARNING(ME, "%s: kicked for reason 'WDS mode disabled'", pAD->Name);
+            pAP->pFA->mfn_wvap_kick_sta_reason(pAP,
+                                               (char*) pAD->MACAddress,
+                                               sizeof(swl_macBin_t),
+                                               SWL_IEEE80211_DEAUTH_REASON_NONE);
+            pAD->wdsIntf->index = -1;
+        }
+    }
+}
+
 int wifiGen_vap_sync(T_AccessPoint* pAP, int set) {
     int ret = 0;
 
     if(set & SET) {
         SAH_TRACEZ_INFO(ME, "%s : set vap_sync", pAP->alias);
         ret = setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+        s_updateAssocDevWds(pAP);
     }
     return ret;
 }
@@ -204,11 +223,10 @@ static swl_rc_ne s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
 
     wld_rad_getCurrentNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
 
-    T_AssociatedDevice* pAD;
-    wld_nl80211_stationInfo_t* pStationInfo = NULL;
     // Add new devices from driver maclist
     for(uint32_t id = 0; id < nStations; id++) {
-        pStationInfo = &pAllStaInfo[id];
+        T_AssociatedDevice* pAD = NULL;
+        wld_nl80211_stationInfo_t* pStationInfo = &pAllStaInfo[id];
         if((pAD = wld_vap_find_asociatedDevice(pAP, &pStationInfo->macAddr)) == NULL) {
             if((pAD = wld_create_associatedDevice(pAP, &pStationInfo->macAddr)) == NULL) {
                 SAH_TRACEZ_ERROR(ME, "%s: could not create new detected AD "SWL_MAC_FMT,
@@ -263,6 +281,7 @@ swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
     SAH_TRACEZ_INFO(ME, "pAD->Name = %s", pAD->Name);
 
     wld_nl80211_stationInfo_t stationInfo;
+    memset(&stationInfo, 0, sizeof(wld_nl80211_stationInfo_t));
     swl_rc_ne rc = wld_ap_nl80211_getStationInfo(pAP, (swl_macBin_t*) pAD->MACAddress, &stationInfo);
     if(rc >= SWL_RC_OK) {
         wld_rad_getCurrentNoise(pAP->pRadio, &pAP->pRadio->stats.noise);

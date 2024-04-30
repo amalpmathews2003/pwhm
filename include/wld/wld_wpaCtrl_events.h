@@ -147,6 +147,8 @@ typedef void (* wld_wpaCtrl_wpsCredReceivedMsg_f)(void* userData, char* ifName, 
 typedef void (* wld_wpaCtrl_wpsSetupLockedMsg_f)(void* userData, char* ifName, bool setupLocked);
 typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_apStationAssocFailureCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
+typedef void (* wld_wpaCtrl_wdsIfaceAddedCb_f)(void* userData, char* ifName, char* wdsName, swl_macBin_t* bStationMac);
+typedef void (* wld_wpaCtrl_wdsIfaceRemovedCb_f)(void* userData, char* ifName, char* wdsName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status, swl_macChar_t* targetBssid);
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, swl_80211_mgmtFrame_t* frame, size_t frameLen, char* frameStr);
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
@@ -175,6 +177,8 @@ typedef struct {
     wld_wpaCtrl_apStationConnectivityCb_f fApStationConnectedCb;
     wld_wpaCtrl_apStationConnectivityCb_f fApStationDisconnectedCb;
     wld_wpaCtrl_apStationAssocFailureCb_f fApStationAssocFailureCb;
+    wld_wpaCtrl_wdsIfaceAddedCb_f fWdsIfaceAddedCb;
+    wld_wpaCtrl_wdsIfaceRemovedCb_f fWdsIfaceRemovedCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationAssociatedCb;

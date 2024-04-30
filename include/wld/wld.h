@@ -802,6 +802,12 @@ typedef struct {
 } wld_affiliatedSta_t;
 
 typedef struct {
+    amxc_llist_it_t entry;
+    int32_t index;
+    swl_macBin_t bStaMac;
+} wld_wds_intf_t;
+
+typedef struct {
     char Name[32];                            /* Name tag.*/
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* MAC address of station */
     amxd_object_t* object;
@@ -902,6 +908,7 @@ typedef struct {
     swla_dm_objActionReadCtx_t onActionReadCtx;
     uint32_t nrCreatedAffiliatedStaLinks;
     amxc_llist_t affiliatedStaList;         /* list of wld_affiliatedSta_t objects */
+    wld_wds_intf_t* wdsIntf;                /* wds interface info */
 } T_AssociatedDevice;
 
 
@@ -1888,6 +1895,7 @@ struct S_ACCESSPOINT {
     swl_circTable_t lastAssocReq;             /* (mac, bssid, assoc/reassoc frame, timestamp,assocType) where station mac format: xx:xx:xx:xx:xx:xx */
     uint32_t lastDevIndex;
     wld_extMod_dataList_t extDataList;        /* list of extention data for non-chipset vendor modules */
+    amxc_llist_t llIntfWds;                   /* list of wds interface related to this VAP (wld_wds_intf_t) */
 };
 
 typedef struct SWL_PACKED {

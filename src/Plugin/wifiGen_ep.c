@@ -345,7 +345,7 @@ swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
     stats->rxbyte = stationInfo.rxBytes;
     stats->rxPackets = stationInfo.rxPackets;
     stats->rxRetries = 0;
-    stats->Retransmissions = stationInfo.txRetries;
+    stats->Retransmissions = SWL_MIN((stationInfo.txRetries * 100) / stationInfo.txPackets, (uint32_t) 100);
     stats->operatingStandard = SWL_MAX(
         swl_mcs_radStdFromMcsStd(stationInfo.txRate.mcsInfo.standard, pEP->pRadio->operatingFrequencyBand),
         swl_mcs_radStdFromMcsStd(stationInfo.rxRate.mcsInfo.standard, pEP->pRadio->operatingFrequencyBand));
@@ -360,6 +360,7 @@ swl_rc_ne wifiGen_ep_stats(T_EndPoint* pEP, T_EndPointStats* stats) {
     if(pEP->currentProfile && (stationInfo.flags.authorized == SWL_TRL_TRUE)) {
         stats->assocCaps.currentSecurity = pEP->currentProfile->secModeEnabled;
     }
+    stats->assocCaps.freqCapabilities = pEP->pRadio->supportedFrequencyBands;
 
     SAH_TRACEZ_INFO(ME, "get stats for %s OK", pEP->Name);
 

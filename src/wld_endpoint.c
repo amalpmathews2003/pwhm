@@ -281,7 +281,7 @@ static void s_writeStats(T_EndPoint* pEP, uint64_t call_id _UNUSED, amxc_var_t* 
     amxc_var_t map;
     amxc_var_init(&map);
     amxc_var_set_type(&map, AMXC_VAR_ID_HTABLE);
-    //Add data
+    amxd_object_get_params(object, &map, amxd_dm_access_private);
     amxc_var_move(variant, &map);
     amxc_var_clean(&map);
 }

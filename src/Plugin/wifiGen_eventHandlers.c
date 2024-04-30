@@ -625,10 +625,76 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "%s: disconnecting station "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
+    SAH_TRACEZ_INFO(ME, "%s: disconnecting station " MAC_PRINT_FMT, pAP->alias,
+                    MAC_PRINT_ARG(macAddress->bMac));
 
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
+
+    wld_ad_add_disconnection(pAP, pAD);
+    wld_sensing_delCsiClientEntry(pAP->pRadio, macAddress);
+}
+
+static void s_addWdsEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* wdsIntfName) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_STR(wdsIntfName, , ME, "NULL/empty");
+
+    int32_t index = -1;
+    swl_rc_ne rc = wld_linuxIfUtils_getIfIndexExt(wdsIntfName, &index);
+    ASSERT_FALSE((rc < SWL_RC_OK), , ME, "WDS '%s' intf index not found", wdsIntfName);
+
+    pAD->wdsIntf = calloc(1, sizeof(wld_wds_intf_t));
+    ASSERT_NOT_NULL(pAD->wdsIntf, , ME, "memory allocation fails");
+
+    pAD->wdsIntf->index = index;
+    memcpy(&pAD->wdsIntf->bStaMac, pAD->MACAddress, sizeof(swl_macBin_t));
+    amxc_llist_append(&pAP->llIntfWds, &pAD->wdsIntf->entry);
+}
+
+static void s_wdsCreatedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_macBin_t* macAddress) {
+    T_AccessPoint* pAP = (T_AccessPoint*) pRef;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: connecting WDS station " MAC_PRINT_FMT " to intf %s", pAP->alias,
+                    MAC_PRINT_ARG(macAddress->bMac), wdsIntfName);
+
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
+    if(pAD == NULL) {
+        pAD = wld_create_associatedDevice(pAP, macAddress);
+        ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
+        SAH_TRACEZ_INFO(ME, "%s: created device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
+    }
+
+    pAD->Active = true;
+    s_addWdsEntry(pAP, pAD, wdsIntfName);
+
+    pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
+    wld_ad_add_connection_success(pAP, pAD);
+}
+
+static void s_delWdsEntry(T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD->wdsIntf, , ME, "NULL");
+    pAD->wdsIntf->index = -1;
+    amxc_llist_it_take(&pAD->wdsIntf->entry);
+    free(pAD->wdsIntf);
+    pAD->wdsIntf = NULL;
+}
+
+static void s_wdsRemovedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_macBin_t* macAddress) {
+    T_AccessPoint* pAP = (T_AccessPoint*) pRef;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(ifName, , ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: disconnecting WDS station " MAC_PRINT_FMT " from %s", pAP->alias,
+                    MAC_PRINT_ARG(macAddress->bMac), wdsIntfName);
+
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+
+    s_delWdsEntry(pAD);
 
     wld_ad_add_disconnection(pAP, pAD);
     wld_sensing_delCsiClientEntry(pAP->pRadio, macAddress);
@@ -785,6 +851,8 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fWpsSetupLockedMsg = s_wpsSetupLocked;
     wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
     wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
+    wpaCtrlVapEvtHandlers.fWdsIfaceAddedCb = s_wdsCreatedEvt;
+    wpaCtrlVapEvtHandlers.fWdsIfaceRemovedCb = s_wdsRemovedEvt;
     wpaCtrlVapEvtHandlers.fApStationAssocFailureCb = s_apStationAssocFailureEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;

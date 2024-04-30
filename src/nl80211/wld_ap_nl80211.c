@@ -106,12 +106,48 @@ swl_rc_ne wld_ap_nl80211_delVapInterface(T_AccessPoint* pAP) {
 
 swl_rc_ne wld_ap_nl80211_getStationInfo(T_AccessPoint* pAP, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    amxc_llist_for_each(it, &pAP->llIntfWds) {
+        wld_wds_intf_t* wdsIntf = amxc_llist_it_get_data(it, wld_wds_intf_t, entry);
+        if(SWL_MAC_BIN_MATCHES(&wdsIntf->bStaMac, pMac)) {
+            swl_rc_ne rc = wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), wdsIntf->index, pMac, pStationInfo);
+            SAH_TRACEZ_INFO(ME, "%s: wds stats " SWL_MAC_FMT " %s found", pAP->name,
+                            SWL_MAC_ARG(pMac->bMac),
+                            (rc < SWL_RC_OK) ? "not" : "");
+            if(rc < SWL_RC_OK) {
+                break;
+            }
+            return rc;
+        }
+    }
     return wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), pAP->index, pMac, pStationInfo);
 }
 
 swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), pAP->index, ppStationInfo, pnrStation);
+    ASSERT_NOT_NULL(ppStationInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pnrStation, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_nl80211_stationInfo_t* staInfo = NULL;
+    uint32_t nrStation = 0;
+    swl_rc_ne rc = wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), pAP->index, ppStationInfo, pnrStation);
+    if(!amxc_llist_is_empty(&pAP->llIntfWds)) {
+        nrStation = *pnrStation;
+        staInfo = realloc(*ppStationInfo, (nrStation + amxc_llist_size(&pAP->llIntfWds)) * sizeof(wld_nl80211_stationInfo_t));
+        ASSERTS_NOT_NULL(staInfo, rc, ME, "memory reallocation failed");
+        amxc_llist_for_each(it, &pAP->llIntfWds) {
+            wld_wds_intf_t* wdsIntf = amxc_llist_it_get_data(it, wld_wds_intf_t, entry);
+            wld_nl80211_stationInfo_t wdsStaInfo;
+            rc = wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), wdsIntf->index,
+                                            &wdsIntf->bStaMac, &wdsStaInfo);
+            if(rc < SWL_RC_OK) {
+                continue;
+            }
+            memcpy(&staInfo[nrStation], &wdsStaInfo, sizeof(wld_nl80211_stationInfo_t));
+            nrStation++;
+        }
+        W_SWL_SETPTR(ppStationInfo, staInfo);
+        W_SWL_SETPTR(pnrStation, nrStation);
+    }
+    return nrStation > 0 ? SWL_RC_OK : rc;
 }
 
 swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_AssociatedDevice* pAD, wld_nl80211_stationInfo_t* pStationInfo) {

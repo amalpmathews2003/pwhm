@@ -328,13 +328,28 @@ static void s_apStationAssocFailure(wld_wpaCtrlInterface_t* pInterface, char* ev
 
 static void s_wdsStationInterfaceRemoved(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
     //Example: WDS-STA-INTERFACE-REMOVED ifname=wlan0.sta1 sta_addr=d6:ee:57:0d:f2:aa
+    char wdsIntfName[128] = {0};
     char staAddr[SWL_MAC_CHAR_LEN] = {0};
     swl_macBin_t bStationMac;
 
+    ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "ifname", wdsIntfName, sizeof(wdsIntfName)) > 0, , ME, "WDS interface not found");
     ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "sta_addr", staAddr, sizeof(staAddr)) > 0, , ME, "STA addr not found");
     ASSERTI_TRUE(swl_mac_charToBin(&bStationMac, (swl_macChar_t*) staAddr), , ME, "fail to convert mac address to binary");
-    SAH_TRACEZ_INFO(ME, "%s %s sta_addr =%s", pInterface->name, event, staAddr);
-    CALL_INTF(pInterface, fApStationDisconnectedCb, &bStationMac);
+    SAH_TRACEZ_INFO(ME, "%s %s sta_addr='%s' wds_intf='%s'", pInterface->name, event, staAddr, wdsIntfName);
+    CALL_INTF(pInterface, fWdsIfaceRemovedCb, wdsIntfName, &bStationMac);
+}
+
+static void s_wdsStationInterfaceAdded(wld_wpaCtrlInterface_t* pInterface, char* event, char* params) {
+    //Example: WDS-STA-INTERFACE-ADDED ifname=wlan0.sta1 sta_addr=d6:ee:57:0d:f2:aa
+    char wdsIntfName[128] = {0};
+    char staAddr[SWL_MAC_CHAR_LEN] = {0};
+    swl_macBin_t bStationMac;
+
+    ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "ifname", wdsIntfName, sizeof(wdsIntfName)) > 0, , ME, "WDS interface not found");
+    ASSERTI_TRUE(wld_wpaCtrl_getValueStr(params, "sta_addr", staAddr, sizeof(staAddr)) > 0, , ME, "STA addr not found");
+    ASSERTI_TRUE(swl_mac_charToBin(&bStationMac, (swl_macChar_t*) staAddr), , ME, "fail to convert mac address to binary");
+    SAH_TRACEZ_INFO(ME, "%s %s sta_addr='%s' wds_intf='%s'", pInterface->name, event, staAddr, wdsIntfName);
+    CALL_INTF(pInterface, fWdsIfaceAddedCb, wdsIntfName, &bStationMac);
 }
 
 static void s_btmResponse(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -731,6 +746,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-AP-SETUP-LOCKED", &s_wpsSetupLockedEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
+              {"WDS-STA-INTERFACE-ADDED", &s_wdsStationInterfaceAdded},
               {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},
               {"AP-STA-POSSIBLE-PSK-MISMATCH", &s_apStationAssocFailure},
               {"CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER", &s_apStationAssocFailure},

@@ -459,6 +459,12 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
     wld_extMod_cleanupDataList(&pAD->extDataList, pAD);
 
     wld_apRssiMon_destroyStaHistory(pAP->AssociatedDevice[index]);
+
+    if(pAD->wdsIntf != NULL) {
+        amxc_llist_it_take(&pAD->wdsIntf->entry);
+        free(pAD->wdsIntf);
+    }
+
     free(pAP->AssociatedDevice[index]);
 
     for(int i = index; i < (pAP->AssociatedDeviceNumberOfEntries - 1); i++) {

@@ -889,6 +889,10 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(pAP->mboEnable) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "mbo", pAP->mboEnable);
     }
+    /* WDS */
+    if(pAP->wdsEnable) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wds_sta", pAP->wdsEnable);
+    }
 }
 
 /**
