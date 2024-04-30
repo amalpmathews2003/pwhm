@@ -617,6 +617,7 @@ static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
     bool enaConds = (pRad->enable && pEP->enable && (pEP->index > 0));
     wld_endpoint_setConnectionStatus(pEP, enaConds ? EPCS_IDLE : EPCS_DISABLED, EPE_NONE);
     ASSERTS_TRUE(enaConds, true, ME, "%d: ep not ready", pEP->Name);
+    wld_endpoint_resetStats(pEP);
     SAH_TRACEZ_INFO(ME, "%s: enable endpoint", pEP->Name);
     ASSERT_TRUE(pEP->toggleBssOnReconnect, true, ME, "%s: do not disable hostapd", pEP->Name);
     // check if there is a running hostapd in order to disable it in order allow to wpa_supplicant to connect.

@@ -222,6 +222,7 @@
 		/** Throughput statistics for this end point.  <b>Not
 		 *  clear how we can handle this? ToBe Defined!!!</b> */
 		%read-only object Stats{
+			on action read call wld_endpoint_getStats_orf;
 			/** The data transmit rate in kbps that was most recently used
 			 *  for transmission from the access point to the end point
 			 *  device.*/

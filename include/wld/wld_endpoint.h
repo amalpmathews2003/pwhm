@@ -75,6 +75,7 @@ void wld_endpoint_setProfileSecurity_ocf(void* priv, amxd_object_t* object, cons
 
 bool wld_endpoint_isReady(T_EndPoint* pEP);
 bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats);
+void wld_endpoint_resetStats(T_EndPoint* pEP);
 bool wld_endpoint_validate_profile(const T_EndPointProfile* Profile);
 void wld_endpoint_setConnectionStatus(T_EndPoint* pEP, wld_epConnectionStatus_e connectionStatus, wld_epError_e error);
 void wld_endpoint_sync_connection(T_EndPoint* pEP, bool connected, wld_epError_e error);
@@ -88,6 +89,12 @@ amxd_status_t _EndPoint_WPS_cancelPairing(amxd_object_t* obj,
                                           amxd_function_t* func,
                                           amxc_var_t* args,
                                           amxc_var_t* ret);
+amxd_status_t _wld_endpoint_getStats_orf(amxd_object_t* const object,
+                                         amxd_param_t* const param,
+                                         amxd_action_t reason,
+                                         const amxc_var_t* const args,
+                                         amxc_var_t* const action_retval,
+                                         void* priv);
 void wld_endpoint_create_reconnect_timer(T_EndPoint* pEP);
 void wld_endpoint_reconfigure(T_EndPoint* pEP);
 void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit);

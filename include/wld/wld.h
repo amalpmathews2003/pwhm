@@ -1994,6 +1994,29 @@ typedef struct {
     uint32_t nrAssocAttemptsSinceDc;
 } wld_ep_assocStats_t;
 
+typedef struct {
+    uint32_t LastDataDownlinkRate;
+    uint32_t LastDataUplinkRate;
+    int32_t SignalStrength;     // Received signal strength in dBm, -1 if unavailable
+    int32_t noise;              // Measured noise floor in dBm, -1 if unavailable
+    int32_t SignalNoiseRatio;   // Signal to noise radio, dBm, 0 if unavailable
+    int32_t RSSI;               // Received signal strength indicator in percent
+    uint32_t Retransmissions;
+    uint64_t txbyte;            /**< tx data bytes */
+    uint32_t txPackets;         /**< tx data packets */
+    uint32_t txRetries;         /**< tx data packet retries */
+    uint64_t rxbyte;            /**< rx data bytes */
+    uint32_t rxPackets;         /**< rx data packets */
+    uint32_t rxRetries;         /**< rx data packet retries */
+
+
+    wld_assocDev_capabilities_t assocCaps;
+    swl_radStd_e operatingStandard;
+
+    uint16_t maxRxStream;
+    uint16_t maxTxStream;
+} T_EndPointStats;
+
 struct _EndPointProfile;
 typedef struct _EndPointProfile T_EndPointProfile;
 
@@ -2050,6 +2073,8 @@ struct S_EndPoint {
     wld_wpaCtrlInterface_t* wpaCtrlInterface; /* wpaCtrlInterface to wpa_supplicant interface */
     wld_secDmn_t* wpaSupp;                    /* wpa_supplicant daemon context. */
     uint64_t wDevId;                          /* nl80211 wireless device id */
+    T_EndPointStats stats;
+    swla_dm_objActionReadCtx_t onActionReadCtx;
 };
 
 typedef struct {
@@ -2079,28 +2104,7 @@ struct _EndPointProfile {
     T_EndPoint* endpoint;
 };
 
-typedef struct {
-    uint32_t LastDataDownlinkRate;
-    uint32_t LastDataUplinkRate;
-    int32_t SignalStrength;     // Received signal strength in dBm, -1 if unavailable
-    int32_t noise;              // Measured noise floor in dBm, -1 if unavailable
-    int32_t SignalNoiseRatio;   // Signal to noise radio, dBm, 0 if unavailable
-    int32_t RSSI;               // Received signal strength indicator in percent
-    uint32_t Retransmissions;
-    uint64_t txbyte;            /**< tx data bytes */
-    uint32_t txPackets;         /**< tx data packets */
-    uint32_t txRetries;         /**< tx data packet retries */
-    uint64_t rxbyte;            /**< rx data bytes */
-    uint32_t rxPackets;         /**< rx data packets */
-    uint32_t rxRetries;         /**< rx data packet retries */
 
-
-    wld_assocDev_capabilities_t assocCaps;
-    swl_radStd_e operatingStandard;
-
-    uint16_t maxRxStream;
-    uint16_t maxTxStream;
-} T_EndPointStats;
 
 typedef struct wld_spectrumChannelInfoEntry {
     amxc_llist_it_t it;

@@ -316,6 +316,130 @@ void wld_endpoint_writeStats(T_EndPoint* pEP, T_EndPointStats* stats, bool succe
     pEP->statsCall.call_id = 0;
 }
 
+static void s_copyEpStats(T_Stats* pStats, T_EndPointStats* pEpStats) {
+    ASSERTS_NOT_NULL(pStats, , ME, "NULL");
+    ASSERTS_NOT_NULL(pEpStats, , ME, "NULL");
+    pStats->BytesSent = pEpStats->txbyte;
+    pStats->BytesReceived = pEpStats->rxbyte;
+    pStats->PacketsSent = pEpStats->txPackets;
+    pStats->PacketsReceived = pEpStats->rxPackets;
+    pStats->RetransCount = pEpStats->Retransmissions;
+    pStats->RetryCount = pEpStats->txRetries + pEpStats->rxRetries;
+    pStats->noise = pEpStats->noise;
+}
+
+static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
+    ASSERTI_TRUE(vendorOui->count != 0, , ME, "No OUI Vendor");
+    char buffer[SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM];
+    memset(buffer, 0, sizeof(buffer));
+    swl_typeOui_arrayToChar(buffer, SWL_OUI_STR_LEN * WLD_MAX_OUI_NUM, &vendorOui->oui[0], vendorOui->count);
+    amxc_string_set(output, buffer);
+}
+
+void wld_endpoint_syncCapabilities(amxd_object_t* obj, wld_assocDev_capabilities_t* caps) {
+    ASSERT_NOT_NULL(obj, , ME, "NULL");
+    ASSERT_NOT_NULL(caps, , ME, "NULL");
+
+    char mcsList[100];
+    memset(mcsList, 0, sizeof(mcsList));
+    swl_conv_uint8ArrayToChar(mcsList, sizeof(mcsList), caps->supportedMCS.mcs, caps->supportedMCS.mcsNbr);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "SupportedMCS", mcsList);
+
+    amxc_string_t TBufStr;
+    amxc_string_init(&TBufStr, 0);
+    s_getOUIValue(&TBufStr, &caps->vendorOUI);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "VendorOUI", amxc_string_get(&TBufStr, 0));
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "SecurityModeEnabled", swl_security_apModeToString(caps->currentSecurity, SWL_SECURITY_APMODEFMT_LEGACY));
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
+
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
+    char buffer[256];
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->htCapabilities, swl_staCapHt_str, SWL_STACAP_HT_MAX);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "HtCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->vhtCapabilities, swl_staCapVht_str, SWL_STACAP_VHT_MAX);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "VhtCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->heCapabilities, swl_staCapHe_str, SWL_STACAP_HE_MAX);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "HeCapabilities", buffer);
+
+    char frequencyCapabilitiesStr[128] = {0};
+    swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "FrequencyCapabilities", frequencyCapabilitiesStr);
+    amxc_string_clean(&TBufStr);
+}
+
+amxd_status_t wld_endpoint_stats2Obj(amxd_object_t* obj, T_EndPointStats* stats) {
+    ASSERT_NOT_NULL(obj, amxd_status_unknown_error, ME, "NULL");
+    ASSERT_NOT_NULL(stats, amxd_status_unknown_error, ME, "NULL");
+
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "LastDataDownlinkRate", stats->LastDataDownlinkRate);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "LastDataUplinkRate", stats->LastDataUplinkRate);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "Retransmissions", stats->Retransmissions);
+    SWLA_OBJECT_SET_PARAM_INT32(obj, "SignalStrength", stats->SignalStrength);
+    SWLA_OBJECT_SET_PARAM_INT32(obj, "SignalNoiseRatio", stats->SignalNoiseRatio);
+    SWLA_OBJECT_SET_PARAM_INT32(obj, "Noise", stats->noise);
+    SWLA_OBJECT_SET_PARAM_INT32(obj, "RSSI", stats->RSSI);
+    SWLA_OBJECT_SET_PARAM_UINT64(obj, "TxBytes", stats->txbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "TxPacketCount", stats->txPackets);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "Tx_Retransmissions", stats->txRetries);
+    SWLA_OBJECT_SET_PARAM_UINT64(obj, "RxBytes", stats->rxbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "RxPacketCount", stats->rxPackets);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "Rx_Retransmissions", stats->rxRetries);
+
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "OperatingStandard", swl_radStd_unknown_str[stats->operatingStandard]);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MaxRxSpatialStreamsSupported", stats->maxRxStream);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MaxTxSpatialStreamsSupported", stats->maxTxStream);
+
+    wld_endpoint_syncCapabilities(obj, &stats->assocCaps);
+
+
+    return amxd_status_ok;
+}
+void wld_endpoint_resetStats(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: reset Endpoint Stats", pEP->alias);
+    memset(&pEP->stats, 0, sizeof(T_EndPointStats));
+}
+
+static swl_rc_ne s_getEndpointStats(amxd_object_t* object) {
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pEP, false, ME, "pEP is NULL, no device present");
+
+    T_EndPointStats* epStats = &pEP->stats;
+    if(pEP->pFA->mfn_wendpoint_stats(pEP, epStats) >= SWL_RC_OK) {
+        /* Update statistics */
+        s_copyEpStats(&pEP->pSSID->stats, epStats);
+        wld_endpoint_stats2Obj(object, epStats);
+    }
+
+    return true;
+}
+
+amxd_status_t _wld_endpoint_getStats_orf(amxd_object_t* const object,
+                                         amxd_param_t* const param,
+                                         amxd_action_t reason,
+                                         const amxc_var_t* const args,
+                                         amxc_var_t* const action_retval,
+                                         void* priv) {
+
+    amxd_status_t status = amxd_status_ok;
+    if((reason != action_object_read) && (reason != action_param_read)) {
+        status = amxd_status_function_not_implemented;
+        return status;
+    }
+    ASSERT_NOT_NULL(object, amxd_status_ok, ME, " obj is NULL");
+    T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pEP, amxd_status_ok, ME, "EndPoint not present");
+
+
+    if(!pEP || !debugIsEpPointer(pEP)) {
+        SAH_TRACEZ_INFO(ME, "EndPoint not present !");
+        return amxd_status_unknown_error;
+    }
+
+    status = swla_dm_procObjActionRead(object, param, reason, args, action_retval, priv, &pEP->onActionReadCtx, s_getEndpointStats);
+    return status;
+}
+
 /*
    static void s_stats_cancel_handler(function_call_t* fcall, void* userdata _UNUSED) {
     T_EndPoint* pEP = fcall_userData(fcall);
@@ -340,12 +464,11 @@ amxd_status_t _getStats(amxd_object_t* object,
     ASSERT_FALSE(pEP->statsCall.running, amxd_status_unknown_error, ME, "Stats call running");
 
     uint64_t call_id = amxc_var_constcast(uint64_t, retval);
-    T_EndPointStats stats;
-    memset(&stats, 0, sizeof(T_EndPointStats));
-    swl_rc_ne retVal = pEP->pFA->mfn_wendpoint_stats(pEP, &stats);
+
+    swl_rc_ne retVal = pEP->pFA->mfn_wendpoint_stats(pEP, &pEP->stats);
 
     if(retVal == SWL_RC_OK) {
-        s_writeStats(pEP, call_id, retval, &stats);
+        s_writeStats(pEP, call_id, retval, &pEP->stats);
         return amxd_status_ok;
     } else if(retVal == SWL_RC_CONTINUE) {
         pEP->statsCall.running = true;
@@ -353,7 +476,7 @@ amxd_status_t _getStats(amxd_object_t* object,
         SAH_TRACEZ_OUT(ME);
         return amxd_status_deferred;
     } else {
-        SAH_TRACEZ_ERROR(ME, "%s : failed stats", pEP->Name);
+        SAH_TRACEZ_ERROR(ME, "%s : failed stats", pEP->alias);
         return amxd_status_unknown_error;
     }
 }
@@ -424,6 +547,8 @@ static void s_setDefaults(T_EndPoint* pEP, const char* endpointname) {
     pEP->WPS_Enable = true;
 
     pEP->toggleBssOnReconnect = true;
+
+    memset(&pEP->stats, 0, sizeof(T_EndPointStats));
 
     pEP->WPS_ConfigMethodsSupported = (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL | M_WPS_CFG_MTHD_PBC_ALL | M_WPS_CFG_MTHD_PIN);
     pEP->WPS_ConfigMethodsEnabled = (M_WPS_CFG_MTHD_PBC | M_WPS_CFG_MTHD_DISPLAY);
