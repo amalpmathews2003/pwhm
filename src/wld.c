@@ -485,6 +485,12 @@ int wld_addRadio(const char* name, vendor_t* vendor, int idx) {
     return SWL_RC_OK;
 }
 
+int wld_addRadioToList(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
+    amxc_llist_append(&g_radios, &pRad->it);
+    return SWL_RC_OK;
+}
+
 void wld_deleteRadioObj(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     char name[IFNAMSIZ];

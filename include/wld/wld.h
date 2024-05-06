@@ -2583,6 +2583,7 @@ bool wld_unregisterAllVendors();
 
 int wld_addRadio(const char* name, vendor_t* vendor, int idx);
 T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx);
+int wld_addRadioToList(T_Radio* pRad);
 void wld_deleteRadio(const char* name);
 void wld_deleteRadioObj(T_Radio* pRad);
 void wld_deleteAllRadios();
