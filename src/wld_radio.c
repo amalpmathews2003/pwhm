@@ -1976,6 +1976,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         wld_rad_updateCapabilities(pR, &trans);
         wld_radio_updateAntennaExt(pR, &trans);
+        wld_radio_updateNaStaMonitor(pR, &trans);
         wld_bgdfs_update(pR, &trans);
 
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pR->Name);

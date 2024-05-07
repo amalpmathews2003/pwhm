@@ -1591,6 +1591,7 @@ struct WLD_RADIO {
     int fsmTO;
 
     bool stationMonitorEnabled;
+    bool stationMonitorOffChannelSupported;
 
     /**
      * @listof T_NonAssociatedDevice

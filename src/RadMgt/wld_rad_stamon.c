@@ -74,6 +74,7 @@
 #include "wld_util.h"
 #include "wld_radio.h"
 #include "swl/swl_assert.h"
+#include "swla/swla_trans.h"
 #include "wld_rad_stamon.h"
 #include "wld_monitor.h"
 
@@ -438,6 +439,18 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     wld_radStaMon_updateActive(pR);
 
     SAH_TRACEZ_OUT(ME);
+}
+
+void wld_radio_updateNaStaMonitor(T_Radio* pRad, amxd_trans_t* trans) {
+    amxd_object_t* hwObject = amxd_object_findf(pRad->pBus, "NaStaMonitor");
+
+    swla_trans_t tmpTrans;
+    amxd_trans_t* targetTrans = swla_trans_init(&tmpTrans, trans, hwObject);
+    ASSERT_NOT_NULL(targetTrans, , ME, "NULL");
+
+    amxd_trans_set_bool(targetTrans, "OffChannelSupported", pRad->stationMonitorOffChannelSupported);
+
+    swla_trans_finalize(&tmpTrans, NULL);
 }
 
 static int32_t wld_rad_staMon_getStats(amxc_var_t* myList, T_RssiEventing* ev, amxc_llist_t* devList) {

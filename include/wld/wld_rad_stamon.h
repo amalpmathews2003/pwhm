@@ -73,5 +73,6 @@ T_MonitorDevice* wld_rad_staMon_getMonitorDevice(T_Radio* pRad, const char* macA
 
 wld_nasta_t* wld_rad_staMon_getDevice(const char* macAddrStr, amxc_llist_t* devList);
 wld_nasta_t* wld_rad_staMon_getDeviceExt(const swl_macBin_t* pMacBin, amxc_llist_t* devList);
+void wld_radio_updateNaStaMonitor(T_Radio* pRad, amxd_trans_t* trans);
 
 #endif /* SRC_INCLUDE_WLD_WLD_RAD_STAMON_H_ */

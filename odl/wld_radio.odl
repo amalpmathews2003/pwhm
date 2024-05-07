@@ -2208,6 +2208,11 @@ define probelist_t{
 			}
 
 			/**
+			 * If Off channel NaSta is supported by this radio.
+			 */
+			%read-only bool OffChannelSupported;
+
+			/**
 			 * <p> A table of the devices currently monitored with the accesspoint.</p>
 			 * @version 9.0
 			*/
