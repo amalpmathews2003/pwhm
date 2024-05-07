@@ -935,6 +935,13 @@ define probelist_t{
 		}
 
 		/**
+		* This determines whether or not packet aggregation (commonly called "frame aggregation") is enabled.
+		*/
+		%persistent bool PacketAggregationEnable{
+			default true;
+		}
+
+		/**
 		* The type of preamble.
 		* Longer preambles (more overhead) are needed by 802.11g to coexist with legacy systems 802.11 and 802.11b.
 		* Enumeration of:

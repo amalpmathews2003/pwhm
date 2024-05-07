@@ -1024,6 +1024,19 @@ static void s_setPreambleType_pwf(void* priv _UNUSED, amxd_object_t* object, amx
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setPacketAggregationEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERTI_NOT_NULL(pRad, , ME, "NULL");
+    bool packetAggregationEnable = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set packet aggregation enable %u", pRad->Name, packetAggregationEnable);
+    pRad->packetAggregationEnable = packetAggregationEnable;
+    wld_rad_doSync(pRad);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 /* Setting Target Wake Time Enable */
 static void s_setTargetWakeTimeEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -4318,6 +4331,7 @@ SWLA_DM_HDLRS(sRadioDmHdlrs,
                   SWLA_DM_PARAM_HDLR("BeaconPeriod", s_setBeaconPeriod_pwf),
                   SWLA_DM_PARAM_HDLR("DTIMPeriod", s_setDtimPeriod_pwf),
                   SWLA_DM_PARAM_HDLR("PreambleType", s_setPreambleType_pwf),
+                  SWLA_DM_PARAM_HDLR("PacketAggregationEnable", s_setPacketAggregationEnable_pwf),
                   SWLA_DM_PARAM_HDLR("TargetWakeTimeEnable", s_setTargetWakeTimeEnable_pwf),
                   SWLA_DM_PARAM_HDLR("OfdmaEnable", s_setOfdmaEnable_pwf),
                   SWLA_DM_PARAM_HDLR("HeCapsEnabled", s_setHeCaps_pwf),

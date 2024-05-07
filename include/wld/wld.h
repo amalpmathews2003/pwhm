@@ -1559,6 +1559,7 @@ struct WLD_RADIO {
     uint32_t beaconPeriod;                          /* Beaconing period in ms */
     uint32_t dtimPeriod;                            /* Delivery Traffic Information Map period, in nrBeacons*/
     wld_preamble_type_e preambleType;               /* Longer preamble are needed by 802.11g to coexist with legacy systems 802.11 and 802.11b */
+    bool packetAggregationEnable;                   /* Enable packet Aggregation (commonly called "frame aggregation") */
     unsigned int DFSChannelChangeEventCounter;      /* Number of DFS channel change events */
     swl_timeReal_t DFSChannelChangeEventTimestamp;  /* Last DFS channel change event realTime value */
     uint8_t dfsFileLogLimit;                        /* MAX number of DFS events to be saved into dfsEvent log file */

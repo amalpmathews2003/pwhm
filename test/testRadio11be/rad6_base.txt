@@ -21,6 +21,7 @@
     "VHTCapabilities": "AAAAAA==",
     "IEEE80211kSupported": false,
     "TransmitPower": -1,
+    "PacketAggregationEnable": true,
     "AutoChannelRefreshPeriod": 0,
     "RTSThreshold": 2347,
     "DFSChannelChangeEventTimestamp": "0001-01-01T00:00:00Z",
