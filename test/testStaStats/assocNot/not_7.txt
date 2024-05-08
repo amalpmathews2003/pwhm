@@ -5,6 +5,9 @@
         "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].AffiliatedSta.",
         "parameters": {
             "Active": false,
+            "LinkID": 0,
+            "APName": "",
+            "MACAddress": "",
             "BSSID": ""
         },
         "path": "WiFi.AccessPoint.2.AssociatedDevice.2.AffiliatedSta."

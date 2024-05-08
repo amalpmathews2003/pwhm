@@ -784,11 +784,17 @@ typedef struct {
     swl_timeSpecReal_t measurementTimestampAssoc; /* timestamp of first rssi monitor update since Wi-Fi assoc event */
 } wld_assocDev_history_t;
 
+/**
+ * This structure represents a single "physical" link on a single frequency.
+ * All values in this structure only apply to this physical link, and the radio on which
+ * this link resides.
+ */
 typedef struct {
     amxd_object_t* object;
     amxc_llist_it_t it;
-
     T_AccessPoint* pAP;
+    swl_macBin_t mac;
+    uint32_t linkId;
     uint32_t index;
     bool active;
     uint64_t bytesSent;
@@ -797,8 +803,11 @@ typedef struct {
     uint32_t packetsReceived;
     uint32_t errorsSent;
     int32_t signalStrength;
+    int32_t noise;
     uint32_t lastDataDownlinkRate;
     uint32_t lastDataUplinkRate;
+    swl_mcs_t upLinkRateSpec;              /* Up link rate info (standard, mcs index, guard interval, number of spacial streams, bandwidth) */
+    swl_mcs_t downLinkRateSpec;            /* down link rate info (standard, mcs index, guard interval, number of spacial streams, bandwidth) */
 } wld_affiliatedSta_t;
 
 typedef struct {

@@ -127,6 +127,13 @@ static void s_fillAfSta(wld_affiliatedSta_t* afSta, uint32_t baseVal, int32_t si
     afSta->bytesReceived = 10 * baseVal;
     afSta->lastDataDownlinkRate = 2000 * baseVal;
     afSta->lastDataUplinkRate = 1000 * baseVal;
+    afSta->upLinkRateSpec.standard = SWL_MCS_STANDARD_EHT;
+    afSta->upLinkRateSpec.guardInterval = SWL_SGI_1600;
+    afSta->upLinkRateSpec.mcsIndex = baseVal;
+    afSta->upLinkRateSpec.numberOfSpatialStream = 2;
+    afSta->upLinkRateSpec.bandwidth = SWL_BW_80MHZ;
+    memcpy(&afSta->downLinkRateSpec, &afSta->upLinkRateSpec, sizeof(swl_mcs_t));
+    afSta->downLinkRateSpec.mcsIndex = SWL_MCS_MAX - 1 - baseVal;
 
     afSta->signalStrength = sigStrength;
 

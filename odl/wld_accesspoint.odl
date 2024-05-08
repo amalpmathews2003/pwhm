@@ -1862,10 +1862,26 @@ define rrm_t{
 			%read-only object AffiliatedSta[] {
 
 				/**
+				 * The name of the AccessPoint interface, of which this object represents the link between the MLD station and
+				 * the MLD accesspoint.
+				 */
+				%read-only string APName;
+
+				/**
+				 * The Link ID of the affiliated AP, which provides the connection for this AffiliatedSta.
+				 */
+				%read-only uint32 LinkID;
+				
+				/**
 				 * The BSSID of the Accesspoint interface, of which this object represents the link between the MLD station and 
 				 * the MLD accesspoint
 				 */
 				%read-only string BSSID;
+
+				/**
+				* [MACAddress] The MAC address of the affiliated sta
+				*/
+				%read-only string MACAddress;
 				
 				/**
 				 * Whether this affiliated Sta link is currently active.
@@ -1913,6 +1929,12 @@ define rrm_t{
 				 * The data transmit rate in kbps that was most recently used for transmission of data from the affiliated STA to the access point.
 				 */
 				%read-only %volatile uint32 LastDataUplinkRate;
+
+				/** String representation of full transmit rateSpec */
+				%volatile %read-only string DownlinkRateSpec;
+
+				/** String representation of full receive rateSpec */
+				%volatile %read-only string UplinkRateSpec;
 			}
 		}
 

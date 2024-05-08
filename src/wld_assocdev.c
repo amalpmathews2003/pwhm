@@ -1655,8 +1655,18 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
                 swl_macChar_t bssid;
                 swl_mac_binToChar(&bssid, (swl_macBin_t*) affiliatedSta->pAP->pSSID->MACAddress);
                 amxd_trans_set_cstring_t(&trans, "BSSID", bssid.cMac);
+                amxd_trans_set_cstring_t(&trans, "APName", affiliatedSta->pAP->name);
             }
+            swl_typeMacBin_toTransParamRef(&trans, "MACAddress", &affiliatedSta->mac);
             amxd_trans_set_bool(&trans, "Active", affiliatedSta->active);
+            amxd_trans_set_uint32_t(&trans, "LinkID", affiliatedSta->linkId);
+
+            amxd_trans_set_uint32_t(&trans, "LastDataDownlinkRate", affiliatedSta->lastDataDownlinkRate);
+            amxd_trans_set_uint32_t(&trans, "LastDataUplinkRate", affiliatedSta->lastDataUplinkRate);
+
+            swl_typeMcs_toTransParamRef(&trans, "DownlinkRateSpec", &affiliatedSta->downLinkRateSpec);
+            swl_typeMcs_toTransParamRef(&trans, "UplinkRateSpec", &affiliatedSta->upLinkRateSpec);
+
 
             amxd_trans_select_object(&trans, object);
         }
