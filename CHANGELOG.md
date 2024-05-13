@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.12.0 - 2024-05-13(15:37:41 +0000)
+
+### Other
+
+- - add generated file to gitIgnore
+- - Add radio PacketAggregationEnable parameter
+
 ## Release v6.11.6 - 2024-04-29(12:58:45 +0000)
 
 ### Other
