@@ -80,6 +80,7 @@
 #include "wld/wld_endpoint.h"
 #include "wld/wld_chanmgt.h"
 #include "wld/wld_sensing.h"
+#include "wld/wld_eventing.h"
 #include "wld/Utils/wld_autoNeighAdd.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_ieee802_1x_defs.h"
@@ -658,9 +659,14 @@ static void s_addWdsEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* wds
     pAD->wdsIntf = calloc(1, sizeof(wld_wds_intf_t));
     ASSERT_NOT_NULL(pAD->wdsIntf, , ME, "memory allocation fails");
 
+    pAD->wdsIntf->active = true;
+    pAD->wdsIntf->name = strdup(wdsIntfName);
     pAD->wdsIntf->index = index;
+    pAD->wdsIntf->ap = pAP;
     memcpy(&pAD->wdsIntf->bStaMac, pAD->MACAddress, sizeof(swl_macBin_t));
     amxc_llist_append(&pAP->llIntfWds, &pAD->wdsIntf->entry);
+
+    wld_event_trigger_callback(gWld_queue_wdsInterface, pAD->wdsIntf);
 }
 
 static void s_wdsCreatedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_macBin_t* macAddress) {
@@ -688,8 +694,11 @@ static void s_wdsCreatedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_mac
 static void s_delWdsEntry(T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
     ASSERT_NOT_NULL(pAD->wdsIntf, , ME, "NULL");
+    pAD->wdsIntf->active = false;
+    wld_event_trigger_callback(gWld_queue_wdsInterface, pAD->wdsIntf);
     pAD->wdsIntf->index = -1;
     amxc_llist_it_take(&pAD->wdsIntf->entry);
+    free(pAD->wdsIntf->name);
     free(pAD->wdsIntf);
     pAD->wdsIntf = NULL;
 }

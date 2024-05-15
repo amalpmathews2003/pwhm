@@ -168,10 +168,9 @@ void s_updateAssocDevWds(T_AccessPoint* pAP) {
         if(pAD->wdsIntf != NULL) {
             SAH_TRACEZ_WARNING(ME, "%s: kicked for reason 'WDS mode disabled'", pAD->Name);
             pAP->pFA->mfn_wvap_kick_sta_reason(pAP,
-                                               (char*) pAD->MACAddress,
-                                               sizeof(swl_macBin_t),
+                                               (char*) pAD->Name,
+                                               SWL_MAC_CHAR_LEN,
                                                SWL_IEEE80211_DEAUTH_REASON_NONE);
-            pAD->wdsIntf->index = -1;
         }
     }
 }

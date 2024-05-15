@@ -115,6 +115,7 @@ extern wld_event_queue_t* gWld_queue_rad_onFrameEvent;
 extern wld_event_queue_t* gWld_queue_sta_onChangeEvent;
 
 extern wld_event_queue_t* gWld_queue_lifecycleEvent;
+extern wld_event_queue_t* gWld_queue_wdsInterface;
 
 
 

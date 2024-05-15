@@ -812,8 +812,11 @@ typedef struct {
 
 typedef struct {
     amxc_llist_it_t entry;
+    bool active;
+    char* name;
     int32_t index;
     swl_macBin_t bStaMac;
+    T_AccessPoint* ap;
 } wld_wds_intf_t;
 
 typedef struct {

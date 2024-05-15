@@ -94,7 +94,7 @@ static wld_event_queue_t rqueue_ep_onChange = {.name = "evEpChange"};
 static wld_event_queue_t rqueue_sta_onChange = {.name = "evStaChange"};
 static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
 static wld_event_queue_t rqueue_wps_onStateChange = {.name = "evWpsStateChange"};
-
+static wld_event_queue_t rqueue_wdsInterfaceEv = {.name = "wdsInterfaceEv"};
 
 wld_event_queue_t* gWld_queue_rad_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
@@ -111,6 +111,7 @@ wld_event_queue_t* gWld_queue_sta_onChangeEvent = NULL; // Called on station lif
 
 
 wld_event_queue_t* gWld_queue_lifecycleEvent = NULL;
+wld_event_queue_t* gWld_queue_wdsInterface = NULL;
 
 /**
  * Initialize the eventing module
@@ -153,6 +154,9 @@ void wld_event_init() {
 
     gWld_queue_wps_onStateChange = &rqueue_wps_onStateChange;
     amxc_llist_init(&gWld_queue_wps_onStateChange->subscribers);
+
+    gWld_queue_wdsInterface = &rqueue_wdsInterfaceEv;
+    amxc_llist_init(&gWld_queue_wdsInterface->subscribers);
 }
 
 /**
@@ -182,9 +186,9 @@ void wld_event_destroy() {
     wld_event_cleanup_queue(gWld_queue_ep_onChangeEvent);
     wld_event_cleanup_queue(gWld_queue_rad_onScan_change);
     wld_event_cleanup_queue(gWld_queue_lifecycleEvent);
-
     wld_event_cleanup_queue(gWld_queue_sta_onChangeEvent);
     wld_event_cleanup_queue(gWld_queue_wps_onStateChange);
+    wld_event_cleanup_queue(gWld_queue_wdsInterface);
 }
 
 /**
