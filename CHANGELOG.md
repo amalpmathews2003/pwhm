@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.14.0 - 2024-05-15(10:19:59 +0000)
+
+### Other
+
+- : Add OffChannelSupport read-only parameter
+
 ## Release v6.13.1 - 2024-05-14(17:13:36 +0000)
 
 ## Release v6.13.0 - 2024-05-14(16:30:23 +0000)
