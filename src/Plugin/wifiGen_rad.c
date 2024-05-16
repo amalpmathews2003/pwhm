@@ -762,9 +762,43 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
     }
 
 }
+
+/*
+ * @brief called to check and start ZW DFS, if enabled and needed, before setting
+ * the new chanspec.
+ *
+ * @param pRad radio context
+ * @param direct whether direct set chanspec
+ *
+ * @return SWL_RC_DONE in case of no ZW DFS needed, SWL_RC_CONTINUE otherwise.
+ */
+static swl_rc_ne s_checkAndStartZwDfs(T_Radio* pRad, bool direct) {
+    if(!wld_rad_is_5ghz(pRad) ||
+       !swl_channel_isDfs(pRad->targetChanspec.chanspec.channel) ||
+       !wld_rad_isUpExt(pRad) ||
+       (wld_chanmgt_getCurBw(pRad) > pRad->maxChannelBandwidth) ||
+       (pRad->bgdfs_config.status == BGDFS_STATUS_OFF)) {
+        return SWL_RC_DONE;
+    }
+    if(wld_channel_is_band_passive(pRad->targetChanspec.chanspec)) {
+        swl_rc_ne rc = pRad->pFA->mfn_wrad_zwdfs_start(pRad, direct);
+        if(rc >= SWL_RC_OK) {
+            return SWL_RC_CONTINUE;
+        }
+    }
+    return SWL_RC_DONE;
+}
+
 swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
 
     SAH_TRACEZ_INFO(ME, "%s: direct:%d", pRad->Name, direct);
+
+    swl_rc_ne rc = s_checkAndStartZwDfs(pRad, direct);
+    SAH_TRACEZ_INFO(ME, "%s: ZW DFS status: %s", pRad->Name, swl_rc_toString(rc));
+    if(rc != SWL_RC_DONE) {
+        return rc;
+    }
+
     if(!direct) {
         setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL);
         return SWL_RC_OK;
@@ -778,7 +812,7 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
            ((detState == CM_RAD_UP) || (detState == CM_RAD_FG_CAC))) {
             if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
                (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
-                swl_rc_ne rc = wld_rad_hostapd_switchChannel(pRad);
+                rc = wld_rad_hostapd_switchChannel(pRad);
                 return (rc < SWL_RC_OK) ? SWL_RC_ERROR : SWL_RC_DONE;
             }
         }

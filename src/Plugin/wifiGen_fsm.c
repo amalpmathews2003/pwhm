@@ -76,6 +76,7 @@
 #include "wifiGen_hapd.h"
 #include "wifiGen_wpaSupp.h"
 #include "wifiGen_events.h"
+#include "wifiGen_zwdfs.h"
 
 #define ME "genFsm"
 
@@ -865,8 +866,10 @@ static void s_radioChange(wld_rad_changeEvent_t* event) {
     if(event->changeType == WLD_RAD_CHANGE_INIT) {
         wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
         s_registerHadpRadEvtHandlers(pRad->hostapd);
+        wifiGen_zwdfs_init(pRad);
     } else if(event->changeType == WLD_RAD_CHANGE_DESTROY) {
         wld_event_remove_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
+        wifiGen_zwdfs_deinit(pRad);
     }
 }
 

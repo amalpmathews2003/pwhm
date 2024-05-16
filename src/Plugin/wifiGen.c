@@ -70,6 +70,7 @@
 #include "wifiGen_fsm.h"
 #include "wifiGen_events.h"
 #include "wifiGen_hapd.h"
+#include "wifiGen_zwdfs.h"
 
 #define ME "gen"
 
@@ -138,6 +139,10 @@ bool wifiGen_init() {
     /* Wrad BG DFS fta control */
     fta.mfn_wrad_bgdfs_start_ext = wifiGen_rad_bgDfsStartExt;
     fta.mfn_wrad_bgdfs_stop = wifiGen_rad_bgDfsStop;
+
+    /* Wrad ZW DFS fta control */
+    fta.mfn_wrad_zwdfs_start = wifiGen_zwdfs_start;
+    fta.mfn_wrad_zwdfs_stop = wifiGen_zwdfs_stop;
 
     //vap functions
     fta.mfn_wvap_create_hook = wifiGen_vap_createHook;

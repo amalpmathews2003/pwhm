@@ -1659,6 +1659,7 @@ struct WLD_RADIO {
     swl_mcs_legacyIndex_m supportedDataTransmitRates;   /* Supported data transmit rates in Mbps */
     swl_mcs_legacyIndex_m operationalDataTransmitRates; /* Data transmit rates in Mbps at which the radio will permit operation with any associated station */
     swl_mcs_legacyIndex_m basicDataTransmitRates;       /* The set of data rates, in Mbps, that have to be supported by all stations that desire to join this BSS */
+    void* zwdfsData;                                    /* ZW DFS data */
 };
 
 typedef struct {

@@ -130,6 +130,7 @@ m4_ifelse(DISABLE_PERSIST,y,``
                    "genStaC" = 200,
                    "genVap" = 200,
                    "genWsup" = 200,
+                   "genZwd" = 200,
                    "hapdAP" = 200,
                    "hapdCfg" = 200,
                    "hapdRad" = 200,
