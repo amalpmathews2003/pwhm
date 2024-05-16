@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.15.0 - 2024-05-16(09:39:48 +0000)
+
+### Other
+
+- - Add seamless DFS support based on generic implementation of ZW DFS fta start/stop
+
 ## Release v6.14.0 - 2024-05-15(10:19:59 +0000)
 
 ### Other
