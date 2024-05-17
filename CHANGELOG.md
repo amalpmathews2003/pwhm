@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.16.0 - 2024-05-17(09:02:58 +0000)
+
+### Other
+
+- - add extra MLD fields and some mld support
+
 ## Release v6.15.1 - 2024-05-17(06:36:32 +0000)
 
 ### Other
