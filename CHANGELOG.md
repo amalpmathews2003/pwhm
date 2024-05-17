@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.15.1 - 2024-05-17(06:36:32 +0000)
+
+### Other
+
+- missing connection info and stats of a connected endpoint
+
 ## Release v6.15.0 - 2024-05-16(09:39:48 +0000)
 
 ### Other
