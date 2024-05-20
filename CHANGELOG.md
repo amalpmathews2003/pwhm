@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.16.1 - 2024-05-20(13:13:35 +0000)
+
+### Other
+
+- Admin cannot access to Device.WiFi.Radio.*.SupportedOperatingChannelBandwidth
+
 ## Release v6.16.0 - 2024-05-17(09:02:58 +0000)
 
 ### Other
