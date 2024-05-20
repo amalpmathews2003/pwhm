@@ -51,6 +51,10 @@
         "Order": 2,
         "Param": "rw-n"
     },
+    "Device.WiFi.Radio.*.SupportedOperatingChannelBandwidths": {
+        "Order": 2,
+        "Param": "r--n"
+    },
     "Device.WiFi.Radio.*.TransmitPower": {
         "Order": 2,
         "Param": "rw-n"
