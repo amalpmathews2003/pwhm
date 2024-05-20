@@ -201,7 +201,11 @@ static swl_rc_ne s_checkAndSetParamValueInt32(wld_wpaCtrlInterface_t* pIface, sw
 void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigMap) {
     ASSERTS_NOT_NULL(radConfigMap, , ME, "NULL");
     swl_mapChar_add(radConfigMap, "driver", "nl80211");
-    swl_mapChar_add(radConfigMap, "hw_mode", pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ ? "g" : "a");
+    if(wld_rad_is_24ghz(pRad)) {
+        swl_mapChar_add(radConfigMap, "hw_mode", SWL_BIT_IS_ONLY_SET(pRad->operatingStandards, SWL_RADSTD_B) ? "b" : "g");
+    } else {
+        swl_mapChar_add(radConfigMap, "hw_mode", "a");
+    }
     swl_chanspec_t tgtChspec = wld_chanmgt_getTgtChspec(pRad);
 
     /* force AcsBootChannel when Radio is down to the next up */
