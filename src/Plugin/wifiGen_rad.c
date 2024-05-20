@@ -368,7 +368,7 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
         }
         pRad->maxChannelBandwidth = swl_radBw_toBw[pRad->runningChannelBandwidth];
     }
-    pRad->IEEE80211hSupported = (pRad->supportedFrequencyBands & (M_SWL_FREQ_BAND_5GHZ | M_SWL_FREQ_BAND_6GHZ)) ? 1 : 0;
+    pRad->IEEE80211hSupported = (pRad->supportedFrequencyBands & M_SWL_FREQ_BAND_5GHZ) ? 1 : 0;
     pRad->IEEE80211kSupported = true;
     pRad->IEEE80211rSupported = true;
     if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AX)) {
