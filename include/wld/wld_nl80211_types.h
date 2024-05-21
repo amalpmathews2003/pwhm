@@ -206,6 +206,12 @@ typedef struct {
 } wld_nl80211_mgmtFrame_t;
 
 typedef struct {
+    swl_80211_mgmtFrame_t* frame;
+    size_t frameLen;
+    bool ack;
+} wld_nl80211_mgmtFrameTxStatus_t;
+
+typedef struct {
     uint32_t bitrate;  // total bitrate (kbps) (u16/u32)
     swl_mcs_t mcsInfo; // mcs info
     uint8_t heDcm;     // HE DCM value (u8, 0/1)

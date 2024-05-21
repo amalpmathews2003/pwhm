@@ -151,4 +151,15 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
  */
 swl_rc_ne wld_nl80211_parseMgmtFrame(struct nlattr* tb[], wld_nl80211_mgmtFrame_t* mgmtFrame);
 
+/*
+ * @brief parse nl msg attributes into tx mgmt frame struct
+ *
+ * @param tb array of attributes from parsed nl msg
+ * @param txMgmtFrame pointer to mgmt frame struct to be filled
+ *
+ * @return SWL_RC_OK parsing done successfully
+ *         <= SWL_RC_ERROR parsing error
+ */
+swl_rc_ne wld_nl80211_parseMgmtFrameTxStatus(struct nlattr* tb[], wld_nl80211_mgmtFrameTxStatus_t* mgmtFrameTxStatus);
+
 #endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_PARSER_H_ */

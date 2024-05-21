@@ -619,7 +619,7 @@ wld_nl80211_listener_t* wld_nl80211_addEvtListener(wld_nl80211_state_t* state,
     }
     if(ifIndex != WLD_NL80211_ID_UNDEF) {
         //here, add membership for nl80211 multicast groups related to iface (MLME, CONFIG)
-        //nl_socket_add_membership(pListener->state->nl_sock, g_nl80211DriverIDs.mlme_mcgrp_id);
+        nl_socket_add_membership(pListener->state->nl_sock, g_nl80211DriverIDs.mlme_mcgrp_id);
     }
     return pListener;
 }
@@ -660,7 +660,7 @@ static void s_clearEvtHandlers(wld_nl80211_state_t* state) {
         //here, drop memberships of all nl80211 multicast groups
         nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.scan_mcgrp_id);
         nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.config_mcgrp_id);
-        //nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.mlme_mcgrp_id);
+        nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.mlme_mcgrp_id);
         if(g_nl80211DriverIDs.vendor_grp_id >= 0) {
             nl_socket_drop_membership(state->nl_sock, g_nl80211DriverIDs.vendor_grp_id);
         }

@@ -116,6 +116,33 @@ static swl_rc_ne s_mgmtFrameEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr
     return SWL_RC_DONE;
 }
 
+static swl_rc_ne s_mgmtFrameTxStatusEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.mlme_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+
+    uint32_t wiphy = wld_nl80211_getWiphy(tb);
+    uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
+    SAH_TRACEZ_INFO(ME, "Status of transmitted Mgmt frame reported on (w:%u, i:%u)", wiphy, ifIndex);
+
+    wld_nl80211_mgmtFrameTxStatus_t mgmtFrameTxStatus;
+    memset(&mgmtFrameTxStatus, 0, sizeof(wld_nl80211_mgmtFrameTxStatus_t));
+
+    rc = wld_nl80211_parseMgmtFrameTxStatus(tb, &mgmtFrameTxStatus);
+    ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "Invalid frame");
+
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fMgtFrameTxStatusEvtCb(pListener->pRef, pListener->pData, mgmtFrameTxStatus.frameLen, mgmtFrameTxStatus.frame, mgmtFrameTxStatus.ack);
+    });
+
+    return SWL_RC_DONE;
+}
+
 static swl_rc_ne s_unspecEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
     swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
     ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
@@ -301,7 +328,7 @@ SWL_TABLE(sNl80211Msgs,
               {MSG_ID_NAME(NL80211_CMD_DISCONNECT), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_NEW_PEER_CANDIDATE), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_MICHAEL_MIC_FAILURE), s_commonEvtCb, OFFSET_UNDEF},
-              {MSG_ID_NAME(NL80211_CMD_FRAME_TX_STATUS), s_commonEvtCb, OFFSET_UNDEF},
+              {MSG_ID_NAME(NL80211_CMD_FRAME_TX_STATUS), s_mgmtFrameTxStatusEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fMgtFrameTxStatusEvtCb)},
               {MSG_ID_NAME(NL80211_CMD_SET_REKEY_OFFLOAD), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_PMKSA_CANDIDATE), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_PROBE_CLIENT), s_commonEvtCb, OFFSET_UNDEF},
@@ -350,6 +377,7 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
     }
     if(pListener->ifIndex != WLD_NL80211_ID_UNDEF) {
         //Iface events handlers to be set here
+        pListener->handlers.fMgtFrameTxStatusEvtCb = handlers->fMgtFrameTxStatusEvtCb;
     }
     //common events handlers to be set here
     pListener->handlers.fUnspecEvtCb = handlers->fUnspecEvtCb;

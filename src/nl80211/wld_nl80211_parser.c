@@ -157,6 +157,16 @@ swl_rc_ne wld_nl80211_parseMgmtFrame(struct nlattr* tb[], wld_nl80211_mgmtFrame_
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_nl80211_parseMgmtFrameTxStatus(struct nlattr* tb[], wld_nl80211_mgmtFrameTxStatus_t* mgmtFrameTxStatus) {
+    ASSERTS_NOT_NULL(mgmtFrameTxStatus, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    mgmtFrameTxStatus->frameLen = nla_len(tb[NL80211_ATTR_FRAME]);
+    mgmtFrameTxStatus->frame = swl_80211_getMgmtFrame((swl_bit8_t*) nla_data(tb[NL80211_ATTR_FRAME]), mgmtFrameTxStatus->frameLen);
+    ASSERTS_NOT_NULL(mgmtFrameTxStatus->frame, SWL_RC_INVALID_PARAM, ME, "Invalid frame");
+    mgmtFrameTxStatus->ack = (tb[NL80211_ATTR_ACK] != NULL);
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceInfo_t* pWlIface) {
     ASSERT_NOT_NULL(pWlIface, SWL_RC_INVALID_PARAM, ME, "NULL");
     memset(pWlIface, 0, sizeof(*pWlIface));

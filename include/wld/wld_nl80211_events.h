@@ -123,17 +123,32 @@ typedef void (* wld_nl80211_vendorEvtCb_f)(void* pRef, void* pData, struct nlmsg
 typedef void (* wld_nl80211_mgmtFrameEvtCb_f)(void* pRef, void* pData, size_t frameLen, swl_80211_mgmtFrame_t* frame, int32_t frameRssi);
 
 /*
+ * @brief generic transmitted mgmt frame status callback
+ *
+ * @param pRef user private reference provided when registering handlers
+ * @param pData user private data provided when registering handlers
+ * @param frameLen the size of the transmitted mgmt frame
+ * @param frame pointer to the transmitted mgmt frame
+ * @param ack indicating whether the transmitted frame was acknowledged by the recipient
+ *
+ * @return void
+ *
+ */
+typedef void (* wld_nl80211_mgmtFrameTxStatusEvtCb_f)(void* pRef, void* pData, size_t frameLen, swl_80211_mgmtFrame_t* frame, bool isAck);
+
+/*
  * @brief structure of event handlers
  */
 typedef struct {
-    wld_nl80211_genIfaceEvtCb_f fUnspecEvtCb;     // unspecified event is never sent by kernel: only defined for test purpose
-    wld_nl80211_ifaceInfoEvtCb_f fNewInterfaceCb; // created virtual interface
-    wld_nl80211_ifaceInfoEvtCb_f fDelInterfaceCb; // deleted virtual interface
-    wld_nl80211_genIfaceEvtCb_f fScanStartedCb;   // scan is started successfully and running
-    wld_nl80211_genIfaceEvtCb_f fScanAbortedCb;   // running scan was aborted
-    wld_nl80211_genIfaceEvtCb_f fScanDoneCb;      // scan is terminated and results can be retrieved
-    wld_nl80211_vendorEvtCb_f fVendorEvtCb;       // vendor event is reported
-    wld_nl80211_mgmtFrameEvtCb_f fMgtFrameEvtCb;  // a management frame is reported
+    wld_nl80211_genIfaceEvtCb_f fUnspecEvtCb;                     // unspecified event is never sent by kernel: only defined for test purpose
+    wld_nl80211_ifaceInfoEvtCb_f fNewInterfaceCb;                 // created virtual interface
+    wld_nl80211_ifaceInfoEvtCb_f fDelInterfaceCb;                 // deleted virtual interface
+    wld_nl80211_genIfaceEvtCb_f fScanStartedCb;                   // scan is started successfully and running
+    wld_nl80211_genIfaceEvtCb_f fScanAbortedCb;                   // running scan was aborted
+    wld_nl80211_genIfaceEvtCb_f fScanDoneCb;                      // scan is terminated and results can be retrieved
+    wld_nl80211_vendorEvtCb_f fVendorEvtCb;                       // vendor event is reported
+    wld_nl80211_mgmtFrameEvtCb_f fMgtFrameEvtCb;                  // a management frame is reported
+    wld_nl80211_mgmtFrameTxStatusEvtCb_f fMgtFrameTxStatusEvtCb;  // status of transmitted management frame is reported
 } wld_nl80211_evtHandlers_cb;
 
 /*
