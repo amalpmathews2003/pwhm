@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.16.3 - 2024-05-21(12:22:28 +0000)
+
+### Other
+
+- allow using zwdfs fsm with vendor bgdfs implentation
+
 ## Release v6.16.2 - 2024-05-20(13:22:59 +0000)
 
 ## Release v6.16.1 - 2024-05-20(13:13:35 +0000)
