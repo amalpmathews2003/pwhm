@@ -537,8 +537,7 @@ int wifiGen_vap_updateApStats(T_AccessPoint* pAP) {
 
 swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* sta, wld_rrmReq_t* req) {
     SAH_TRACEZ_INFO(ME, "%s: send rrm to %s %u/%u %s %s", pAP->alias, sta->cMac, req->operClass, req->channel, req->bssid.cMac, req->ssid);
-    return wld_ap_hostapd_requestRRMReport(pAP, sta, req->modeMask, req->operClass, req->channel, req->addNeighbor, req->interval,
-                                           req->duration, req->mode, &req->bssid, req->ssid);
+    return wld_ap_hostapd_requestRRMReport_ext(pAP, sta, req);
 }
 
 static swl_rc_ne s_reloadApNeighbors(T_AccessPoint* pAP) {

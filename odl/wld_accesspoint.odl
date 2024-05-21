@@ -185,12 +185,13 @@ define rrm_t{
 		 * @param interval : optional max random interval between scans.
 		 * @param mode : optional beacon request mode : 0-Passive, 1-Active, 2-Table.
 		 * @param neighbor : optional add AP Channel Report if neighbour detection is active (default true).
+		 * @param optionalElements : optional, hex string of optional subelements per Table 9-104 802.11-2020; concatenated at the end of the frame; must respect rules from Section 9.4.3
 		 * @return
 		 * a variant list containing rrm_t entries.
 		 * If no measurement report was received, or the timeout was 0, then an empty list is returned.
 		 * @version 9.0
 		 */
-		list sendRemoteMeasumentRequest(%in %mandatory string mac, %in string bssid, %in uint8 class, %in uint8 channel, %in uint32 timeout, %in string ssid, %in uint8 token, %in uint8 mode, %in uint8 modeMask, %in uint16 duration, %in uint16 interval, %in bool neighbor);
+		list sendRemoteMeasumentRequest(%in %mandatory string mac, %in string bssid, %in uint8 class, %in uint8 channel, %in uint32 timeout, %in string ssid, %in uint8 token, %in uint8 mode, %in uint8 modeMask, %in uint16 duration, %in uint16 interval, %in bool neighbor, %in string optionalElements);
 
 		/**
 		 * get the last assoc request sent by a station to a vap

@@ -2231,6 +2231,7 @@ typedef struct {
     swl_macChar_t bssid;
     char ssid[SSID_NAME_LEN];
     bool addNeighbor;
+    char* optionalEltHexStr;
 } wld_rrmReq_t;
 typedef int (APIENTRY* PFN_WRAD_PER_ANTENNA_RSSI)(T_Radio* rad, T_ANTENNA_RSSI*);
 typedef int (APIENTRY* PFN_WRAD_LATEST_POWER)(T_Radio* rad, T_ANTENNA_POWER*);

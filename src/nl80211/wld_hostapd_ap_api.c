@@ -74,6 +74,9 @@
 #define WPS_START  "WPS_PBC"
 #define WPS_CANCEL "WPS_CANCEL"
 
+
+#define HOSTAPD_CTRL_IFACE_RCV_BUFSIZE 4096
+
 bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
     ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), false, ME, "%s: wpactrl link not ready", pAP->alias);
@@ -1127,21 +1130,22 @@ swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
  * @brief send RRM beacon Request
  * @param pAP accesspoint
  * @param sta mac address
- * @param operClass (optional) class to scan
- * @param channel (optional) channel to scan
- * @param timeout (optional) time to wait in milliseconds
- * @param bssid (optional) bssid argument
- * @param ssid (optional) ssid
+ * @param req wld struct with rrmRequest
  */
-swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_t* sta, uint8_t reqMode, uint8_t operClass, swl_channel_t channel, bool addNeighbor,
-                                          uint16_t randomInterval, uint16_t measurementDuration, uint8_t measurementMode, const swl_macChar_t* bssid, const char* ssid) {
+swl_rc_ne wld_ap_hostapd_requestRRMReport_ext(T_AccessPoint* pAP, const swl_macChar_t* sta, wld_rrmReq_t* req) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(sta, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(req, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
-    char cmd[256] = {'\0'};
+
+    size_t cmdLen = 256 + swl_str_len(req->optionalEltHexStr);
+    ASSERT_TRUE((cmdLen < HOSTAPD_CTRL_IFACE_RCV_BUFSIZE), SWL_RC_ERROR, ME, "optional elements too long");
+    char cmd[cmdLen];
+    memset(cmd, 0, cmdLen);
+
     swl_macBin_t bMac;
-    SWL_MAC_CHAR_TO_BIN(&bMac, bssid);
+    SWL_MAC_CHAR_TO_BIN(&bMac, &(req->bssid));
     snprintf(cmd, sizeof(cmd), "REQ_BEACON %s "
              "req_mode=%.2x "
              "%.2x"
@@ -1150,14 +1154,14 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
              "%.4x"
              "%.2x"
              "%.2x%.2x%.2x%.2x%.2x%.2x",
-             sta->cMac, reqMode, operClass, channel, htons(randomInterval), htons(measurementDuration), measurementMode, MAC_PRINT_ARG(bMac.bMac));
+             sta->cMac, req->modeMask, req->operClass, req->channel, htons(req->interval), htons(req->duration), req->mode, MAC_PRINT_ARG(bMac.bMac));
 
     /* add SSID subelement. */
-    if(ssid != NULL) {
-        size_t ssidLen = swl_str_len(ssid);
+    if(req->ssid != NULL) {
+        size_t ssidLen = swl_str_len(req->ssid);
         swl_str_catFormat(cmd, sizeof(cmd), "00%.2x", (unsigned int) ssidLen);
         for(size_t i = 0; i < ssidLen; i++) {
-            bool ok = swl_str_catFormat(cmd, sizeof(cmd), "%.2x", ssid[i]);
+            bool ok = swl_str_catFormat(cmd, sizeof(cmd), "%.2x", req->ssid[i]);
             ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding SSID subelement failed");
         }
     }
@@ -1167,9 +1171,9 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
     ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding Reporting Detail subelement failed");
 
     /* add AP Channel Report subelements. */
-    if(addNeighbor) {
+    if(req->addNeighbor) {
         T_Radio* pRad = pAP->pRadio;
-        if(channel != pRad->channel) {
+        if(req->channel != pRad->channel) {
             swl_freqBandExt_e freqBand = swl_chanspec_operClassToFreq(pRad->operatingClass);
             swl_operatingClass_t operClass = swl_chanspec_getOperClassDirect(pRad->channel, freqBand, SWL_BW_20MHZ);
             ok = swl_str_catFormat(cmd, sizeof(cmd), "3302%.2x%.2x", operClass, pRad->channel);
@@ -1178,7 +1182,7 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
 
         amxc_llist_for_each(it, &pAP->neighbours) {
             T_ApNeighbour* neigh = amxc_llist_it_get_data(it, T_ApNeighbour, it);
-            if(channel != neigh->channel) {
+            if(req->channel != neigh->channel) {
                 swl_freqBandExt_e freqBand = swl_chanspec_operClassToFreq(neigh->operatingClass);
                 swl_operatingClass_t operClass = swl_chanspec_getOperClassDirect(neigh->channel, freqBand, SWL_BW_20MHZ);
                 ok = swl_str_catFormat(cmd, sizeof(cmd), "3302%.2x%.2x", operClass, neigh->channel);
@@ -1186,6 +1190,12 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
             }
         }
     }
+    /* add optional subelements */
+    if(!swl_str_isEmpty(req->optionalEltHexStr)) {
+        ok = swl_str_catFormat(cmd, sizeof(cmd), "%s", req->optionalEltHexStr);
+        ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding optional subelements failed");
+    }
+
 
     char reply[8] = {0};
     bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, cmd, reply, sizeof(reply));
@@ -1194,6 +1204,36 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
     ok = swl_typeInt32_fromChar(&token, reply);
     ASSERT_TRUE(ok && (token >= 0), SWL_RC_ERROR, ME, "%s: Bad response %s : token %u reply(%s)", pAP->alias, cmd, token, reply);
     return SWL_RC_OK;
+}
+
+/**
+ * @brief send RRM beacon Request
+ * @param pAP accesspoint
+ * @param sta mac address
+ * @param operClass (optional) class to scan
+ * @param channel (optional) channel to scan
+ * @param timeout (optional) time to wait in milliseconds
+ * @param bssid (optional) bssid argument
+ * @param ssid (optional) ssid
+ */
+swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_t* sta, uint8_t reqMode, uint8_t operClass, swl_channel_t channel, bool addNeighbor,
+                                          uint16_t randomInterval, uint16_t measurementDuration, uint8_t measurementMode, const swl_macChar_t* bssid, const char* ssid) {
+
+    wld_rrmReq_t reqCall;
+    memset(&reqCall, 0, sizeof(reqCall));
+
+    swl_str_copy(reqCall.bssid.cMac, SWL_MAC_CHAR_LEN, bssid->cMac);
+    swl_str_copy(reqCall.ssid, SSID_NAME_LEN, ssid);
+
+    reqCall.modeMask = reqMode;
+    reqCall.operClass = operClass;
+    reqCall.channel = channel;
+    reqCall.addNeighbor = addNeighbor;
+    reqCall.interval = randomInterval;
+    reqCall.duration = measurementDuration;
+    reqCall.mode = measurementMode;
+
+    return wld_ap_hostapd_requestRRMReport_ext(pAP, sta, &reqCall);
 }
 
 swl_trl_e wld_hostapd_ap_getCfgParamSupp(T_AccessPoint* pAP, const char* param) {

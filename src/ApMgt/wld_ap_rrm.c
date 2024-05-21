@@ -215,9 +215,18 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
     tpVar = amxc_var_get_key(args, "neighbor", AMXC_VAR_FLAG_DEFAULT);
     reqCall.addNeighbor = (tpVar == NULL) ? true : amxc_var_dyncast(bool, tpVar);
 
+    const char* optionalElem = GET_CHAR(args, "optionalElements");
+    if(swl_hex_isHexChar(optionalElem, swl_str_len(optionalElem))) {
+        swl_str_copyMalloc(&reqCall.optionalEltHexStr, optionalElem);
+    } else if(!swl_str_isEmpty(optionalElem)) {
+        SAH_TRACEZ_ERROR(ME, "invalid optElt hex string(%s)", optionalElem);
+    }
+
     amxd_status_t status = amxd_status_ok;
 
     swl_rc_ne cmdRetval = pAP->pFA->mfn_wvap_request_rrm_report(pAP, &cStation, &reqCall);
+
+    W_SWL_FREE(reqCall.optionalEltHexStr);
 
     if(cmdRetval == SWL_RC_NOT_IMPLEMENTED) {
         SAH_TRACEZ_ERROR(ME, "Function not supported");
