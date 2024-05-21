@@ -67,6 +67,8 @@
 #include "wld_nl80211_api.h"
 #include "wld_nl80211_parser.h"
 #include "wld_nl80211_utils.h"
+#include "wld_linuxIfUtils.h"
+#include "dirent.h"
 
 #include "swl/swl_common.h"
 #include "swl/swl_assert.h"
@@ -74,6 +76,7 @@
 
 #define ME "nlApi"
 #define NL80211_WLD_VENDOR_NAME "nl80211"
+#define SYSFS_IEEE80211_PATH "/sys/class/ieee80211/"
 
 const T_CWLD_FUNC_TABLE* wld_nl80211_getVendorTable() {
     vendor_t* pVendor = wld_getVendorByName(NL80211_WLD_VENDOR_NAME);
@@ -223,9 +226,9 @@ swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t ifIndex,
     return wld_nl80211_newInterfaceExt(state, ifIndex, ifName, &ifaceConf, pIfaceInfo);
 }
 
-swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex, const char* ifName,
-                                      wld_nl80211_newIfaceConf_t* pIfaceConf,
-                                      wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+static swl_rc_ne s_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex, uint32_t wiphyId, const char* ifName,
+                                   wld_nl80211_newIfaceConf_t* pIfaceConf,
+                                   wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(ifName, rc, ME, "NULL");
     ASSERT_NOT_EQUALS(ifName[0], 0, rc, ME, "empty name");
@@ -240,8 +243,9 @@ swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifInd
                  //to make the interface being destroyed when the socket is closed
                  NL_ATTR(NL80211_ATTR_SOCKET_OWNER)));
     //add mac if provided and valid; driver may support setting mac on interface creation
-    if(!swl_mac_binIsBroadcast(&pIfaceConf->mac) && !swl_mac_binIsNull(&pIfaceConf->mac)) {
-        NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pIfaceConf->mac.bMac));
+    bool setMac = (!swl_mac_binIsBroadcast(&pIfaceConf->mac) && !swl_mac_binIsNull(&pIfaceConf->mac));
+    if(!ifIndex) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY, wiphyId));
     }
     struct getWirelessIfacesData_s requestData = {
         .nrIfacesMax = 1,
@@ -251,10 +255,112 @@ swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifInd
     rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_NEW_INTERFACE, 0,
                                  ifIndex, &attribs, s_getInterfaceInfoCb, &requestData);
     NL_ATTRS_CLEAR(&attribs);
-    if((requestData.nrIfaces > 0) && pIfaceInfo) {
-        memcpy(pIfaceInfo, requestData.pIfaces, sizeof(wld_nl80211_ifaceInfo_t));
+    if(requestData.nrIfaces > 0) {
+        wld_nl80211_ifaceInfo_t* pIface = &requestData.pIfaces[0];
+        if(setMac && !swl_mac_binMatches(&pIfaceConf->mac, &pIface->mac)) {
+            wld_linuxIfUtils_setMacExt(pIface->name, &pIfaceConf->mac);
+        }
+        if(pIfaceInfo) {
+            memcpy(pIfaceInfo, pIface, sizeof(wld_nl80211_ifaceInfo_t));
+        }
     }
     free(requestData.pIfaces);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex, const char* ifName,
+                                      wld_nl80211_newIfaceConf_t* pIfaceConf,
+                                      wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+    return s_newInterfaceExt(state, ifIndex, 0, ifName, pIfaceConf, pIfaceInfo);
+}
+
+swl_rc_ne wld_nl80211_newWiphyInterface(wld_nl80211_state_t* state, uint32_t wiphyId, const char* ifName,
+                                        wld_nl80211_newIfaceConf_t* pIfaceConf,
+                                        wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+    return s_newInterfaceExt(state, 0, wiphyId, ifName, pIfaceConf, pIfaceInfo);
+}
+
+static wld_nl80211_ifaceInfo_t* s_getWlIfaceByName(const char* ifName, const uint32_t nrWiphyMax, const uint32_t nrWifaceMax,
+                                                   wld_nl80211_ifaceInfo_t wlIfaces[nrWiphyMax][nrWifaceMax]) {
+    for(uint32_t i = 0; i < nrWiphyMax; i++) {
+        for(uint32_t j = 0; j < nrWifaceMax; j++) {
+            wld_nl80211_ifaceInfo_t* pIface = &wlIfaces[i][j];
+            if((pIface->ifIndex > 0) && (swl_str_matches(pIface->name, ifName))) {
+                return pIface;
+            }
+        }
+    }
+    return NULL;
+}
+
+static uint32_t s_getWlIfacesByWiphy(uint32_t wiphy, const uint32_t maxWiphys, const uint32_t maxWlIfaces,
+                                     wld_nl80211_ifaceInfo_t wlIfaces[maxWiphys][maxWlIfaces],
+                                     wld_nl80211_ifaceInfo_t** pWiphyWlIfaces) {
+    uint32_t count = 0;
+    for(uint32_t i = 0; (i < maxWiphys) && (!count); i++) {
+        for(uint32_t j = 0; (j < maxWlIfaces) && (wlIfaces[i][j].ifIndex > 0) && (wlIfaces[i][j].wiphy == wiphy); j++) {
+            W_SWL_SETPTR(pWiphyWlIfaces, &wlIfaces[i][0]);
+            count++;
+        }
+    }
+    return count;
+}
+
+static swl_rc_ne s_createNewVapIface(wld_nl80211_wiphyInfo_t* pWiphy, const char* ifname, wld_nl80211_ifaceInfo_t* pOutVapInfo) {
+    wld_nl80211_newIfaceConf_t ifaceConf;
+    memset(&ifaceConf, 0, sizeof(ifaceConf));
+    ifaceConf.type = NL80211_IFTYPE_AP;
+    wld_nl80211_ifaceInfo_t newVapInfo;
+    wld_nl80211_ifaceInfo_t* pNewVapInfo = (pOutVapInfo ? : &newVapInfo);
+    memset(pNewVapInfo, 0, sizeof(newVapInfo));
+    swl_rc_ne rc = wld_nl80211_newWiphyInterface(wld_nl80211_getSharedState(), pWiphy->wiphy, ifname, &ifaceConf, pNewVapInfo);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to create vap iface %s on wiphy (%d:%s) (%d:%s)",
+                 ifname, pWiphy->wiphy, pWiphy->name, errno, strerror(errno));
+    SAH_TRACEZ_WARNING(ME, "created default iface %s netdevIdx %d mac %s on wiphy (%d:%s)",
+                       pNewVapInfo->name, pNewVapInfo->ifIndex, swl_typeMacBin_toBuf32(pNewVapInfo->mac).buf,
+                       pNewVapInfo->wiphy, pWiphy->name);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_addDefaultWiphyInterfacesExt(const char* custIfNamePfx,
+                                                   const uint32_t maxWiphys, const uint32_t maxWlIfaces,
+                                                   wld_nl80211_ifaceInfo_t wlIfacesInfo[maxWiphys][maxWlIfaces]) {
+    const char* ifNamePfx = (!swl_str_isEmpty(custIfNamePfx) ? custIfNamePfx : NL80211_DFLT_IFNAME_PFX);
+    wld_nl80211_wiphyInfo_t wiphysInfo[maxWiphys];
+    memset(wiphysInfo, 0, sizeof(wiphysInfo));
+    uint32_t nrWiphys = 0;
+    swl_rc_ne rc = wld_nl80211_getAllWiphyInfo(wld_nl80211_getSharedState(), maxWiphys, wiphysInfo, &nrWiphys);
+    ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "Fail to get all wiphy");
+    ASSERT_TRUE(nrWiphys > 0, SWL_RC_ERROR, ME, "no wiphy detected");
+    for(uint8_t i = 0; i < nrWiphys; i++) {
+        wld_nl80211_wiphyInfo_t* pWiphy = &wiphysInfo[i];
+        wld_nl80211_ifaceInfo_t* pWiphyWlIfaces = NULL;
+        uint32_t nrWiphyBands = swl_bit32_getNrSet(pWiphy->freqBandsMask);
+        uint32_t nrWiphyWlIfaces = s_getWlIfacesByWiphy(pWiphy->wiphy, maxWiphys, maxWlIfaces, wlIfacesInfo, &pWiphyWlIfaces);
+        SAH_TRACEZ_WARNING(ME, "detected wiphy[%d] %s id:%d (maxNr:%d) nrWiphyBands %d (m:0x%x) nrWiphyWlIfaces %d",
+                           i, pWiphy->name, pWiphy->wiphy, nrWiphys, nrWiphyBands, pWiphy->freqBandsMask, nrWiphyWlIfaces);
+        if((!nrWiphyBands) || (nrWiphyWlIfaces >= nrWiphyBands)) {
+            continue;
+        }
+        uint32_t maxWiphyWlIfaces = (pWiphy->nApMax ? SWL_MIN(pWiphy->nApMax, maxWlIfaces) : maxWlIfaces);
+        swl_bit32_t bandMask = pWiphy->freqBandsMask;
+        int32_t bandPos;
+        while(((bandPos = swl_bit32_getLowest(bandMask)) >= 0) && (nrWiphyWlIfaces < maxWiphyWlIfaces)) {
+            SAH_TRACEZ_WARNING(ME, "proc bandPos %d bandMask 0x%x nrWiphyWlIfaces %d maxWiphyWlIfaces %d",
+                               bandPos, bandMask, nrWiphyWlIfaces, maxWiphyWlIfaces);
+            W_SWL_BIT_CLEAR(bandMask, bandPos);
+            char wlIfName[IFNAMSIZ];
+            snprintf(wlIfName, sizeof(wlIfName), "%s%d", ifNamePfx, bandPos);
+            wld_nl80211_ifaceInfo_t* pExWl = s_getWlIfaceByName(wlIfName, maxWiphys, maxWlIfaces, wlIfacesInfo);
+            if(pExWl != NULL) {
+                if(pExWl->wiphy == pWiphy->wiphy) {
+                    continue;
+                }
+                swl_str_catFormat(wlIfName, sizeof(wlIfName), "p%d", pWiphy->wiphy);
+            }
+            s_createNewVapIface(pWiphy, wlIfName, &pWiphyWlIfaces[nrWiphyWlIfaces++]);
+        }
+    }
     return rc;
 }
 
@@ -358,29 +464,52 @@ swl_rc_ne wld_nl80211_getWiphyInfo(wld_nl80211_state_t* state, uint32_t ifIndex,
     return rc;
 }
 
+static int s_filterWiphyNames(const struct dirent* pEntry) {
+    const char* fname = pEntry->d_name;
+    if(swl_str_startsWith(fname, "phy")) {
+        return 1;
+    }
+    return 0;
+}
+
+static int32_t s_countWiphyFromFS(void) {
+    struct dirent** namelist;
+    const char* sysPath = SYSFS_IEEE80211_PATH;
+    int count = 0;
+    int n = scandir(sysPath, &namelist, s_filterWiphyNames, alphasort);
+    ASSERT_NOT_EQUALS(n, -1, SWL_RC_ERROR, ME, "fail to scan dir %s", sysPath);
+    count = n;
+    while(n--) {
+        free(namelist[n]);
+    }
+    free(namelist);
+    return count;
+}
+
 swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t nrWiphyMax, wld_nl80211_wiphyInfo_t pWiphyIfs[nrWiphyMax],
                                       uint32_t* pNrWiphy) {
     memset(pWiphyIfs, 0, nrWiphyMax * sizeof(wld_nl80211_wiphyInfo_t));
     NL_ATTRS(attribs,
              ARR(NL_ATTR(NL80211_ATTR_SPLIT_WIPHY_DUMP)));
+    uint32_t nrWiphyMaxInt = SWL_MAX((int32_t) nrWiphyMax, SWL_MAX(0, s_countWiphyFromFS()));
     struct getWiphyData_s requestData = {
-        .nrWiphyMax = nrWiphyMax,
+        .nrWiphyMax = nrWiphyMaxInt,
         .nrWiphy = 0,
-        .pWiphys = calloc(nrWiphyMax, sizeof(wld_nl80211_wiphyInfo_t)),
+        .pWiphys = calloc(nrWiphyMaxInt, sizeof(wld_nl80211_wiphyInfo_t)),
         .ifIndex = 0,
     };
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_WIPHY, NLM_F_DUMP,
                                            0, &attribs, s_getWiphyInfoCb, &requestData);
     NL_ATTRS_CLEAR(&attribs);
     if(pNrWiphy != NULL) {
-        *pNrWiphy = requestData.nrWiphy;
+        *pNrWiphy = SWL_MIN(requestData.nrWiphy, nrWiphyMax);
     }
     if(requestData.nrWiphy == 0) {
         SAH_TRACEZ_ERROR(ME, "no Wiphy found");
         rc = SWL_RC_ERROR;
     } else if(nrWiphyMax > 0) {
         //reverse copy to restore proper detection order
-        for(uint32_t i = 0; i < requestData.nrWiphy; i++) {
+        for(uint32_t i = 0; (i < nrWiphyMax) && (i < requestData.nrWiphy); i++) {
             pWiphyIfs[i] = requestData.pWiphys[requestData.nrWiphy - i - 1];
         }
     }

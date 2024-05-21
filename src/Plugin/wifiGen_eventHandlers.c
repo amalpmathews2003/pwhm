@@ -418,6 +418,9 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         pAP->index = pIfaceInfo->ifIndex;
         pAP->wDevId = pIfaceInfo->wDevId;
         pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
+        if(swl_str_matches(pRad->Name, pIfaceInfo->name)) {
+            pRad->index = pIfaceInfo->ifIndex;
+        }
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
         wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
         if(pMgr != NULL) {
@@ -449,9 +452,17 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     if(pAP != NULL) {
         wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, false);
         wld_ap_nl80211_delEvtListener(pAP);
+        bool restoreVap = ((pAP == wld_rad_firstAp(pRad)) && ((uint32_t) pAP->index == pIfaceInfo->ifIndex));
         pAP->index = 0;
         pAP->wDevId = 0;
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
+        if(restoreVap) {
+            SAH_TRACEZ_WARNING(ME, "%s: main iface %s (devIdx:%d) => must be re-created", pRad->Name, pIfaceInfo->name, pIfaceInfo->ifIndex);
+            wld_rad_nl80211_addVapInterface(pRad, pAP);
+            if((uint32_t) pRad->index == pIfaceInfo->ifIndex) {
+                pRad->index = pAP->index;
+            }
+        }
     }
 }
 
@@ -580,7 +591,7 @@ static void s_wpsFail(void* userData, char* ifName _UNUSED) {
 
 static void s_wpsSetupLocked(void* userData, char* ifName _UNUSED, bool setupLocked) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
-    SAH_TRACEZ_INFO(ME, "%s: setup %s event received", pAP->alias, setupLocked? "locked" : "unlocked");
+    SAH_TRACEZ_INFO(ME, "%s: setup %s event received", pAP->alias, setupLocked ? "locked" : "unlocked");
     pAP->WPS_ApSetupLocked = setupLocked;
     wld_wps_updateState(pAP);
 }

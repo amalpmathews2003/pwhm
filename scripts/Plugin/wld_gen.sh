@@ -56,7 +56,6 @@ kill_process()
 start()
 {
     get_base_wan_address
-    prevent_netifd_to_configure_wireless
     mkdir -p /var/lib/${name}
     touch /var/lib/${name}/${name}_config.odl
 
@@ -67,6 +66,8 @@ start()
     for FILE in $(ls -1 /usr/lib/amx/${name}/modules/*/modPreInit.sh 2> /dev/null); do
        $FILE
     done
+
+    prevent_netifd_to_configure_wireless
 
     ${name} -D
 }

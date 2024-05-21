@@ -134,7 +134,11 @@ swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP) {
     if(swl_str_matches(ifaceInfo.name, pAP->alias)) {
         rc = wld_rad_nl80211_setAp(pRadio);
     } else {
-        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pAP->alias, NULL, true, false, &ifaceInfo);
+        swl_macBin_t* pMac = NULL;
+        if((pAP->pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pAP->pSSID->MACAddress))) {
+            pMac = (swl_macBin_t*) pAP->pSSID->MACAddress;
+        }
+        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pAP->alias, pMac, true, false, &ifaceInfo);
     }
     ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add VAP(%s) on radio(%s)", pAP->alias, pRadio->Name);
     pAP->index = ifaceInfo.ifIndex;
@@ -162,12 +166,41 @@ swl_rc_ne wld_rad_nl80211_addEpInterface(T_Radio* pRadio, T_EndPoint* pEP) {
     if(swl_str_matches(ifaceInfo.name, pEP->alias)) {
         rc = wld_rad_nl80211_setSta(pRadio);
     } else {
-        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pEP->Name, NULL, false, true, &ifaceInfo);
+        swl_macBin_t* pMac = NULL;
+        if((pEP->pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pEP->pSSID->MACAddress))) {
+            pMac = (swl_macBin_t*) pEP->pSSID->MACAddress;
+        }
+        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pEP->Name, pMac, false, true, &ifaceInfo);
     }
     ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add EP(%s) on radio(%s)", pEP->alias, pRadio->Name);
     pEP->index = ifaceInfo.ifIndex;
     pEP->wDevId = ifaceInfo.wDevId;
     return rc;
+}
+
+uint8_t wld_rad_nl80211_addRadios(vendor_t* vendor,
+                                  const uint32_t maxWiphys, const uint32_t maxWlIfaces,
+                                  wld_nl80211_ifaceInfo_t wlIfacesInfo[maxWiphys][maxWlIfaces]) {
+    uint8_t index = 0;
+    ASSERT_NOT_NULL(vendor, index, ME, "NULL");
+    for(uint32_t i = 0; i < maxWlIfaces && index < maxWiphys; i++) {
+        for(uint32_t j = 0; j < maxWiphys && index < maxWiphys; j++) {
+            wld_nl80211_ifaceInfo_t* pIface = &wlIfacesInfo[j][i];
+            if(pIface->ifIndex <= 0) {
+                continue;
+            }
+            T_Radio* pRad = wld_rad_get_radio(pIface->name);
+            if(pRad == NULL) {
+                SAH_TRACEZ_WARNING(ME, "Interface %s handled by %s", pIface->name, vendor->name);
+                wld_addRadio(pIface->name, vendor, -1);
+            } else {
+                SAH_TRACEZ_WARNING(ME, "Interface %s already handled by %s", pIface->name, pRad->vendor->name);
+            }
+            index++;
+        }
+    }
+    ASSERTW_NOT_EQUALS(index, 0, index, ME, "NO nl80211 Wireless interfaces found");
+    return index;
 }
 
 swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t* pWiphyInfo) {

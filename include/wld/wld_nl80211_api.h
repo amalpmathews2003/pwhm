@@ -71,6 +71,7 @@
 #include "wld_nl80211_types.h"
 
 #define MLO_LINK_ID_UNKNOWN -1
+#define NL80211_DFLT_IFNAME_PFX "wlan"
 
 /*
  * @brief return registered handlers table, defining wld implementation for nl80211
@@ -207,6 +208,43 @@ swl_rc_ne wld_nl80211_newInterface(wld_nl80211_state_t* state, uint32_t IfIndex,
 swl_rc_ne wld_nl80211_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex, const char* ifName,
                                       wld_nl80211_newIfaceConf_t* pIfaceConf,
                                       wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
+ * @brief create a new virtual interface on top of wiphy (radio)
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param wiphyId physical device index
+ * @param ifName new virtual interface name
+ * @param pIfaceConf new virtual interface conf (type: (AP, EP or monitor), mac address)
+ * @param pIfaceInfo (output)(optional) resulting info of the newly created interface.
+ *        It will indicate the assigned ifIndex for the new interface, and the used mac address
+ *        (shall be the one provided as argument, if mac can be set on interface creation)
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_newWiphyInterface(wld_nl80211_state_t* state, uint32_t wiphyId, const char* ifName,
+                                        wld_nl80211_newIfaceConf_t* pIfaceConf,
+                                        wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
+ * @brief add default wl AP ifaces for all bands of available wiphy devices
+ * (input: all available nl80211 interfaces sorted per wiphy, and by increasing net dev index, in 2D array per wiphy)
+ * (Synchronous api)
+ *
+ * @param custIfNamePfx custom wl interface name prefix (if empty, default prefix "wlan" is used)
+ * @param maxWiphys max wiphy value to fetch (i.e max wiphy devices)
+ * @param maxWlIfaces max number of interfaces per wiphy (i.e max AP/EP per radio)
+ * @param wlIfacesInfo (In/out) 2D array of interfaces, used as input for existing wiphy/ifIndex
+ *                              and filled with potential added wl AP ifaces info struct
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_addDefaultWiphyInterfacesExt(const char* custIfNamePfx,
+                                                   const uint32_t maxWiphys, const uint32_t maxWlIfaces,
+                                                   wld_nl80211_ifaceInfo_t wlIfacesInfo[maxWiphys][maxWlIfaces]);
 
 /*
  * @brief delete a virtual interface (AP or EP)

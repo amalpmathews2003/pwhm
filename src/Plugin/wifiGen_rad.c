@@ -304,6 +304,8 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
          */
         if(swl_bit32_getNrSet(ownRadFB) == 1) {
             pRad->operatingFrequencyBand = swl_bit32_getHighest(ownRadFB);
+        } else if(swl_bit32_getNrSet(ownRadFB) > 1) {
+            pRad->operatingFrequencyBand = swl_bit32_getLowest(ownRadFB);
         } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] <= 2) && (SWL_BIT_IS_SET(ownRadFB, SWL_FREQ_BAND_EXT_2_4GHZ))) {
             pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_2_4GHZ;
         } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] > 2) && (SWL_BIT_IS_SET(ownRadFB, SWL_FREQ_BAND_EXT_6GHZ))) {

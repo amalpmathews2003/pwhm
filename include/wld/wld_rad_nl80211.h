@@ -164,6 +164,21 @@ swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP);
 swl_rc_ne wld_rad_nl80211_addEpInterface(T_Radio* pRadio, T_EndPoint* pEP);
 
 /*
+ * @brief register all unassigned radio devices (via main nl2011 wl ifaces) to provided vendor context
+ * (Synchronous api)
+ *
+ * @param vendor vendor context
+ * @param maxWiphys max wiphy value to fetch (i.e max wiphy devices)
+ * @param maxWlIfaces max number of interfaces per wiphy (i.e max AP/EP per radio)
+ * @param wlIfacesInfo (input) 2D array of wl interfaces, including all existing wiphy/wlIfIndex
+ *
+ * @return count of detected and registered radio devices
+ */
+uint8_t wld_rad_nl80211_addRadios(vendor_t* vendor,
+                                  const uint32_t maxWiphys, const uint32_t maxWlIfaces,
+                                  wld_nl80211_ifaceInfo_t wlIfacesInfo[maxWiphys][maxWlIfaces]);
+
+/*
  * @brief get info of radio device
  * This includes:
  * - supported radio standards, freq Bands (+chanList), channel widths

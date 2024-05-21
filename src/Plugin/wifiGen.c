@@ -200,25 +200,21 @@ bool wifiGen_init() {
 int wifiGen_addRadios() {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(s_vendor, SWL_RC_INVALID_PARAM, ME, "NULL");
-    wld_nl80211_ifaceInfo_t wlIfacesInfo[MAXNROF_RADIO][MAXNROF_ACCESSPOINT];
+    size_t maxWiphys = MAXNROF_RADIO;
+    size_t maxWlIfaces = MAXNROF_ACCESSPOINT;
+    wld_nl80211_ifaceInfo_t wlIfacesInfo[maxWiphys][maxWlIfaces];
     memset(wlIfacesInfo, 0, sizeof(wlIfacesInfo));
-    rc = wld_nl80211_getInterfaces(MAXNROF_RADIO, MAXNROF_ACCESSPOINT, wlIfacesInfo);
+
+    // get current wl ifaces created by the driver
+    rc = wld_nl80211_getInterfaces(maxWiphys, maxWlIfaces, wlIfacesInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get nl80211 interfaces");
-    uint8_t index = 0;
-    for(uint32_t i = 0; i < MAXNROF_RADIO; i++) {
-        wld_nl80211_ifaceInfo_t* pMainIface = &wlIfacesInfo[i][0];
-        if(pMainIface->ifIndex <= 0) {
-            continue;
-        }
-        T_Radio* pRad = wld_rad_get_radio(pMainIface->name);
-        if(pRad == NULL) {
-            SAH_TRACEZ_WARNING(ME, "Interface %s handled by %s", pMainIface->name, s_vendor->name);
-            wld_addRadio(pMainIface->name, s_vendor, -1);
-        } else {
-            SAH_TRACEZ_WARNING(ME, "Interface %s already handled by %s", pMainIface->name, pRad->vendor->name);
-        }
-        index++;
-    }
+
+    // add missing default wl ifaces (to cover all wiphy bands)
+    rc = wld_nl80211_addDefaultWiphyInterfacesExt("wlan", maxWiphys, maxWlIfaces, wlIfacesInfo);
+    ASSERT_EQUALS(rc, SWL_RC_OK, rc, ME, "Fail to check default wl ifaces");
+
+    // register unassigned radio devices to genPlugin vendor
+    uint8_t index = wld_rad_nl80211_addRadios(s_vendor, maxWiphys, maxWlIfaces, wlIfacesInfo);
     ASSERTW_NOT_EQUALS(index, 0, SWL_RC_ERROR, ME, "NO Wireless interface found");
 
     return SWL_RC_OK;
