@@ -212,6 +212,7 @@ m4_ifelse(DISABLE_PERSIST,y,``
                    "wldFsm" = 200,
                    "wldScan" = 200,
                    "wldTrap" = 200,
+                   "wldZwd" = 200,
                    "wpaCtrl" = 200,
                    "wpaSupp" = 200,
                    "wps" = 200,

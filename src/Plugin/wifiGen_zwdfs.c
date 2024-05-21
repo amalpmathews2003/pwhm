@@ -72,8 +72,7 @@
 
 swl_rc_ne wifiGen_zwdfs_init(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTI_TRUE(pRad->pFA->mfn_misc_has_support(pRad, NULL, "RADAR_BACKGROUND", 0), SWL_RC_ERROR, ME,
-                 "%s: radar background not supported", pRad->Name);
+    ASSERTI_TRUE(pRad->bgdfs_config.available, SWL_RC_ERROR, ME, "%s: bg dfs not supported", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: Init ZWDFS FSM", pRad->Name);
     return wld_zwdfs_init(pRad);
 }
@@ -86,8 +85,8 @@ swl_rc_ne wifiGen_zwdfs_deinit(T_Radio* pRad) {
 
 swl_rc_ne wifiGen_zwdfs_start(T_Radio* pRad, bool direct) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTI_TRUE(pRad->pFA->mfn_misc_has_support(pRad, NULL, "RADAR_BACKGROUND", 0), SWL_RC_ERROR, ME,
-                 "%s: radar background not supported", pRad->Name);
+    ASSERTI_TRUE(pRad->bgdfs_config.available, SWL_RC_ERROR, ME, "%s: bg dfs not supported", pRad->Name);
+    ASSERTI_TRUE(pRad->bgdfs_config.enable, SWL_RC_ERROR, ME, "%s: bg dfs not enabled", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: Start ZWDFS direct (%d)", pRad->Name, direct);
     return wld_zwdfs_start(pRad, direct);
 }

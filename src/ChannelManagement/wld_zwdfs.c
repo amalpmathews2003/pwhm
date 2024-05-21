@@ -71,7 +71,7 @@
 #include "wld_chanmgt.h"
 #include "wld_zwdfs.h"
 
-#define ME "wld"
+#define ME "wldZwd"
 
 static const char* s_fsmStateName[] = {"INIT", "FG_CLEARING", "BG_CLEARING", "SWITCHING", "INVALID"};
 
@@ -104,7 +104,7 @@ static wld_zwdfs_fsmState_e s_handleFsmStartEvent(const wld_zwdfs_fsmCtx_t* pCtx
         args.bandwidth = wld_chanmgt_getCurBw(pRad);
     }
     SAH_TRACEZ_INFO(ME, "%s: ZW_DFS OFFLOAD CAC start", pRad->Name);
-    SWL_CALL(pRad->pFA->mfn_wrad_bgdfs_start_ext, pRad, &args);
+    rc = pRad->pFA->mfn_wrad_bgdfs_start_ext(pRad, &args);
     if(rc < SWL_RC_OK) {
         SAH_TRACEZ_INFO(ME, "%s: ZW_DFS error starting OFFLOAD CAC", pRad->Name);
         SWL_CALL(pRad->pFA->mfn_wrad_setChanspec, pRad, pCtx->direct);
