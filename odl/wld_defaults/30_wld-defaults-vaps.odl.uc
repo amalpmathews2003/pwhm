@@ -37,7 +37,7 @@ if (RadioIndex >= 0) : %}
 {% endif %}
 {% endif %}
                 object Security {
-                    parameter RekeyingInterval = 0;
+                    parameter RekeyingInterval = 3600;
 {% if (Itf.OperatingFrequency == "6GHz") : %}
                     parameter ModesAvailable = "WPA3-Personal";
                     parameter ModeEnabled = "WPA3-Personal";
