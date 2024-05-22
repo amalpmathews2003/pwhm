@@ -99,6 +99,7 @@ uint16_t wld_ad_getFarStaCount(T_AccessPoint* pAP, int threshold);
 void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_ad_add_disconnection(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
+void wld_ad_startDelayDisassocNotifTimer(T_AssociatedDevice* pAD);
 
 wld_affiliatedSta_t* wld_ad_getAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp);
 wld_affiliatedSta_t* wld_ad_getOrAddAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp);

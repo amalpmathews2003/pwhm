@@ -643,6 +643,10 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
 
+    // The AP-STA-DISCONNECTED event is received before the AP-MGMT-FRAME-RECEIVED event.
+    // Start timer to Delay sending associated device disconnection notification:
+    // This delay makes it possible to set the lastDeauthReason from the received deauth mgmt frame.
+    wld_ad_startDelayDisassocNotifTimer(pAD);
     wld_ad_add_disconnection(pAP, pAD);
     wld_sensing_delCsiClientEntry(pAP->pRadio, macAddress);
 }
@@ -813,12 +817,38 @@ static void s_actionFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t
     wld_vap_notifyActionFrame(pAP, frameStr);
 }
 
+static void s_disassocCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_disassocFrameBody_t* disassocFrame) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(disassocFrame, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s Disassoc Frame received from "MAC_PRINT_FMT " reasonCode [%u]", pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac), disassocFrame->reason);
+    wld_vap_notifyDeauthDisassocFrame(pAP, "MgmtDisassocFrame", &frame->transmitter, disassocFrame->reason, false);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->transmitter);
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    pAD->lastDeauthReason = disassocFrame->reason;
+}
+
+static void s_deauthCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_deauthFrameBody_t* deauthFrame) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(deauthFrame, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s Deauth Frame received from "MAC_PRINT_FMT " reasonCode [%u]", pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac), deauthFrame->reason);
+    wld_vap_notifyDeauthDisassocFrame(pAP, "MgmtDeauthFrame", &frame->transmitter, deauthFrame->reason, false);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->transmitter);
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    pAD->lastDeauthReason = deauthFrame->reason;
+}
+
 static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameHandlers = {
     .fProcActionFrame = s_actionFrameCb,
     .fProcAssocReq = s_assocReqCb,
     .fProcReAssocReq = s_reassocReqCb,
     .fProcBtmQuery = s_btmQueryCb,
     .fProcBtmResp = s_btmRespCb,
+    .fProcDisassoc = s_disassocCb,
+    .fProcDeauth = s_deauthCb,
 };
 
 static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, swl_80211_mgmtFrame_t* mgmtFrame, size_t frameLen, char* frameStr _UNUSED) {
@@ -855,6 +885,42 @@ static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin
     amxc_var_clean(&retval);
 }
 
+static void s_disassocTxFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_disassocFrameBody_t* disassocFrame) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(disassocFrame, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s Disassoc Frame transmitted to "MAC_PRINT_FMT " reasonCode [%u]", pAP->alias, MAC_PRINT_ARG(frame->destination.bMac), disassocFrame->reason);
+    wld_vap_notifyDeauthDisassocFrame(pAP, "MgmtDisassocFrame", &frame->destination, disassocFrame->reason, true);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->destination);
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    pAD->lastDeauthReason = disassocFrame->reason;
+}
+
+static void s_deauthTxFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_deauthFrameBody_t* deauthFrame) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(frame, , ME, "NULL");
+    ASSERT_NOT_NULL(deauthFrame, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s Deauth Frame Transmitted to "MAC_PRINT_FMT " reasonCode [%u]", pAP->alias, MAC_PRINT_ARG(frame->destination.bMac), deauthFrame->reason);
+    wld_vap_notifyDeauthDisassocFrame(pAP, "MgmtDeauthFrame", &frame->destination, deauthFrame->reason, true);
+    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->destination);
+    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
+    pAD->lastDeauthReason = deauthFrame->reason;
+}
+
+static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameTxStatusHandlers = {
+    .fProcDisassoc = s_disassocTxFrameCb,
+    .fProcDeauth = s_deauthTxFrameCb,
+};
+
+static void s_mgmtFrameTxStatusCb(void* pRef, void* pData _UNUSED, size_t frameLen, swl_80211_mgmtFrame_t* mgmtFrame, bool isAck _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) pRef;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(mgmtFrame, , ME, "NULL");
+    swl_80211_handleMgmtFrame(pRef, (swl_bit8_t*) mgmtFrame, frameLen, &s_mgmtFrameTxStatusHandlers);
+}
+
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -889,6 +955,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     memset(&nl80211VapEvtHandlers, 0, sizeof(nl80211VapEvtHandlers));
 
     //Set here the nl80211 VAP event handlers
+    nl80211VapEvtHandlers.fMgtFrameTxStatusEvtCb = s_mgmtFrameTxStatusCb;
     wld_ap_nl80211_setEvtListener(pAP, NULL, &nl80211VapEvtHandlers);
 
     return SWL_RC_OK;

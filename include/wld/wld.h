@@ -921,6 +921,7 @@ typedef struct {
     uint32_t nrCreatedAffiliatedStaLinks;
     amxc_llist_t affiliatedStaList;         /* list of wld_affiliatedSta_t objects */
     wld_wds_intf_t* wdsIntf;                /* wds interface info */
+    amxp_timer_t* delayDisassocNotif;
 } T_AssociatedDevice;
 
 

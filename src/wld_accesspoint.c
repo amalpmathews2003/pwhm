@@ -2045,6 +2045,29 @@ swl_rc_ne wld_vap_notifyActionFrame(T_AccessPoint* pAP, const char* frame) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_vap_notifyDeauthDisassocFrame(T_AccessPoint* pAP, const char* eventName, swl_macBin_t* staMacAddress, swl_IEEE80211deauthReason_ne reason, bool isTxFrame) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pAP->pBus, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(eventName, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(staMacAddress, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "%s: notify %s %s reason=%u", pAP->alias, isTxFrame ? "transmitted" : "received", eventName, reason);
+
+    swl_macChar_t staMac;
+    swl_mac_binToChar(&staMac, staMacAddress);
+    amxc_var_t notifMap;
+    amxc_var_init(&notifMap);
+    amxc_var_set_type(&notifMap, AMXC_VAR_ID_HTABLE);
+    amxc_var_t* tmpMap = amxc_var_add_key(amxc_htable_t, &notifMap, "Data", NULL);
+    amxc_var_add_key(cstring_t, tmpMap, "station", staMac.cMac);
+    amxc_var_add_key(uint16_t, tmpMap, "reason", reason);
+    amxc_var_add_key(bool, tmpMap, "TxFrame", isTxFrame);
+    amxd_object_trigger_signal(pAP->pBus, eventName, &notifMap);
+    amxc_var_clean(&notifMap);
+
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     SAH_TRACEZ_IN(ME);
 
@@ -2191,6 +2214,12 @@ bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
         if(inactiveSta == NULL) {
             continue;
         }
+
+        amxp_timer_state_t timerState = amxp_timer_get_state(inactiveSta->delayDisassocNotif);
+        if((timerState == amxp_timer_running) || (timerState == amxp_timer_started)) {
+            continue;
+        }
+
         SAH_TRACEZ_INFO(ME, "Destroying oldest failed-auth entry (%s) out of %d",
                         inactiveSta->Name,
                         inactiveStaCount);

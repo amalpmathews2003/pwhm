@@ -465,6 +465,10 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
         free(pAD->wdsIntf);
     }
 
+    if(pAD->delayDisassocNotif != NULL) {
+        amxp_timer_delete(&pAD->delayDisassocNotif);
+    }
+
     free(pAP->AssociatedDevice[index]);
 
     for(int i = index; i < (pAP->AssociatedDeviceNumberOfEntries - 1); i++) {
@@ -1196,27 +1200,53 @@ void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     wld_vap_syncNrDev(pAP);
 }
 
-static void s_addDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_IEEE80211deauthReason_ne deauthReason) {
+static wld_ad_dcLog_t* s_getOrAddDcEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
     bool hasLog = (log != NULL);
     if(!hasLog) {
         log = swl_unLiList_allocElement(&pAP->staDcList.list);
-        ASSERT_NOT_NULL(log, , ME, "%s: failed to create dc entry for %s", pAP->name, pAD->Name);
+        ASSERT_NOT_NULL(log, NULL, ME, "%s: failed to create dc entry for %s", pAP->name, pAD->Name);
         memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
     }
-    pAD->lastDeauthReason = deauthReason;
     swl_timespec_getMono(&log->dcTime);
-
-    s_sendDisassocNotification(pAP, pAD);
     SAH_TRACEZ_INFO(ME, "%s: addLog %s (had %u)", swl_typeMacBin_toBuf32(log->macAddress).buf,
                     swl_typeTimeSpecMono_toBuf32(log->dcTime).buf, hasLog);
+    return log;
 }
 
+static void s_delayDisassocNotifHdlr(amxp_timer_t* timer _UNUSED, void* userdata) {
+    T_AssociatedDevice* pAD = (T_AssociatedDevice*) userdata;
+    ASSERT_NOT_NULL(pAD, , ME, "pAD NULL");
+    T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    s_sendDisassocNotification(pAP, pAD);
+    wld_vap_cleanup_stationlist(pAP);
+}
+
+void wld_ad_startDelayDisassocNotifTimer(T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, , ME, "pAD NULL");
+    if(pAD->delayDisassocNotif == NULL) {
+        amxp_timer_new(&pAD->delayDisassocNotif, s_delayDisassocNotifHdlr, pAD);
+        SAH_TRACEZ_INFO(ME, "New assoDev disconnect timer created %p", pAD->delayDisassocNotif);
+    }
+    if(pAD->delayDisassocNotif != NULL) {
+        amxp_timer_state_t timerState = amxp_timer_get_state(pAD->delayDisassocNotif);
+        if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
+            SAH_TRACEZ_INFO(ME, "Start delay assocDev Disconnect timer %p", pAD->delayDisassocNotif);
+            amxp_timer_start(pAD->delayDisassocNotif, 300);
+        }
+    }
+}
 
 static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failSec, swl_IEEE80211deauthReason_ne deauthReason) {
     ASSERTI_TRUE(pAD->Active, , ME, "%s : inactive sta dc %s", pAP->alias, pAD->Name);
 
     SAH_TRACEZ_INFO(ME, "%s : Dc %s Auth %u", pAP->alias, pAD->Name, pAD->AuthenticationState);
+
+    pAD->latestStateChangeTime = swl_time_getMonoSec();
+    pAD->disassociationTime = swl_time_getMonoSec();
+    pAD->connectionDuration = swl_time_getMonoSec() - pAD->associationTime;
+
     if(!pAD->AuthenticationState && !pAD->hadSecFailure) {
         if(failSec) {
             s_incrementAssocCounter(pAP, "FailSecurity");
@@ -1226,24 +1256,18 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         }
     } else if(pAD->AuthenticationState) {
         s_incrementAssocCounter(pAP, "Disconnect");
-        s_addDcEntry(pAP, pAD, deauthReason);
+        pAD->lastDeauthReason = deauthReason;
+        amxp_timer_state_t timerState = amxp_timer_get_state(pAD->delayDisassocNotif);
+        if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
+            s_sendDisassocNotification(pAP, pAD);
+        }
     }
 
-    uint32_t timeOnline = swl_time_getMonoSec() - pAD->associationTime;
     SAH_TRACEZ_WARNING(ME, "%s: Disassoc sta %s - auth %u - assoc @ %s - active %u sec - SNR %i - reason %u",
                        pAP->alias, pAD->Name, pAD->AuthenticationState, swl_typeTimeMono_toBuf32(pAD->associationTime).buf,
-                       timeOnline, pAD->SignalNoiseRatio, deauthReason);
-    pAD->latestStateChangeTime = swl_time_getMonoSec();
-    pAD->disassociationTime = swl_time_getMonoSec();
-    pAD->connectionDuration = timeOnline;
+                       pAD->connectionDuration, pAD->SignalNoiseRatio, deauthReason);
 
-    wld_ad_dcLog_t* log = s_findDcEntry(pAP, (swl_macBin_t*) &pAD->MACAddress);
-    if(log == NULL) {
-        log = swl_unLiList_allocElement(&pAP->staDcList.list);
-    }
-    log->dcTime = swl_timespec_getMonoVal();
-    memcpy(&log->macAddress, &pAD->MACAddress, ETHER_ADDR_LEN);
-
+    wld_ad_dcLog_t* log = s_getOrAddDcEntry(pAP, pAD);
     s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_DISASSOC, log);
 
     pAD->AuthenticationState = 0;

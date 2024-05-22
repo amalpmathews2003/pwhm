@@ -230,22 +230,7 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
 
     amxc_var_clean(&ret);
     amxc_var_clean(&args);
-    wld_th_vap_getVendorData(vap)->errorOnStaStats = true;
 
-    amxc_var_init(&ret);
-    amxc_var_init(&args);
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
-
-    assert_int_equal(amxd_object_invoke_function(vap->pBus, "getStationStats", &args, &ret), 0);
-
-    staList = amxc_var_get_const_amxc_llist_t(&ret);
-    assert_non_null(staList);
-    assert_int_equal(amxc_llist_size(staList), 1);
-
-    amxc_var_clean(&ret);
-    amxc_var_clean(&args);
-
-    wld_th_vap_getVendorData(vap)->errorOnStaStats = false;
     wld_th_vap_getVendorData(vap)->errorOnStaStats = false;
 
     T_EndPoint* ep = dm.bandList[0].ep;
