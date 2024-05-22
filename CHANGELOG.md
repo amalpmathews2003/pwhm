@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.17.0 - 2024-05-22(10:26:30 +0000)
+
+### Other
+
+- add missing default radio ifaces when loading wiphy
+
 ## Release v6.16.3 - 2024-05-21(12:22:28 +0000)
 
 ### Other
