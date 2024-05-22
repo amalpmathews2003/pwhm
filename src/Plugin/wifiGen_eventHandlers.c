@@ -406,6 +406,10 @@ void s_syncVapInfo(T_AccessPoint* pAP) {
     swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
     ASSERT_NOT_NULL(pAP->pSSID, , ME, "NULL");
     swl_typeUInt32_commitObjectParam(pAP->pSSID->pBus, "Index", pAP->index);
+    T_Radio* pRad = pAP->pRadio;
+    if(pRad != NULL) {
+        swl_typeUInt32_commitObjectParam(pRad->pBus, "Index", pRad->index);
+    }
     wld_vap_updateState(pAP);
 }
 
@@ -414,14 +418,15 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_NOT_NULL(pIfaceInfo, , ME, "NULL");
     SAH_TRACEZ_NOTICE(ME, "%s: interface created (devIdx:%d)", pIfaceInfo->name, pIfaceInfo->ifIndex);
+    if(swl_str_matches(pRad->Name, pIfaceInfo->name)) {
+        pRad->index = pIfaceInfo->ifIndex;
+        pRad->wDevId = pIfaceInfo->wDevId;
+    }
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, pIfaceInfo->name);
     if(pAP != NULL) {
         pAP->index = pIfaceInfo->ifIndex;
         pAP->wDevId = pIfaceInfo->wDevId;
         pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
-        if(swl_str_matches(pRad->Name, pIfaceInfo->name)) {
-            pRad->index = pIfaceInfo->ifIndex;
-        }
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
         wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
         if(pMgr != NULL) {
@@ -453,17 +458,12 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     if(pAP != NULL) {
         wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, false);
         wld_ap_nl80211_delEvtListener(pAP);
-        bool restoreVap = ((pAP == wld_rad_firstAp(pRad)) && ((uint32_t) pAP->index == pIfaceInfo->ifIndex));
         pAP->index = 0;
         pAP->wDevId = 0;
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
-        if(restoreVap) {
-            SAH_TRACEZ_WARNING(ME, "%s: main iface %s (devIdx:%d) => must be re-created", pRad->Name, pIfaceInfo->name, pIfaceInfo->ifIndex);
-            wld_rad_nl80211_addVapInterface(pRad, pAP);
-            if((uint32_t) pRad->index == pIfaceInfo->ifIndex) {
-                pRad->index = pAP->index;
-            }
-        }
+    }
+    if((uint32_t) pRad->index == pIfaceInfo->ifIndex) {
+        pRad->index = pRad->wDevId = 0;
     }
 }
 

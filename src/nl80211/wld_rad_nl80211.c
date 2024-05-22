@@ -114,11 +114,27 @@ swl_rc_ne wld_rad_nl80211_set4Mac(T_Radio* pRadio, bool use4Mac) {
     return wld_nl80211_setInterfaceUse4Mac(wld_nl80211_getSharedState(), pRadio->index, use4Mac);
 }
 
+swl_rc_ne wld_rad_nl80211_addInterface(T_Radio* pRadio, const char* ifname, swl_macBin_t* mac, bool isSta, wld_nl80211_ifaceInfo_t* pOutIfInfo) {
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_nl80211_newIfaceConf_t ifaceConf;
+    memset(&ifaceConf, 0, sizeof(ifaceConf));
+    ifaceConf.type = isSta ? NL80211_IFTYPE_STATION : NL80211_IFTYPE_AP;
+    if(mac) {
+        ifaceConf.mac = *mac;
+    }
+    wld_nl80211_ifaceInfo_t newIfInfo;
+    wld_nl80211_ifaceInfo_t* pNewIfInfo = pOutIfInfo ? : &newIfInfo;
+    memset(pNewIfInfo, 0, sizeof(*pNewIfInfo));
+    swl_rc_ne rc = wld_nl80211_newWiphyInterface(wld_nl80211_getSharedState(), pRadio->wiphy, ifname, &ifaceConf, pNewIfInfo);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to create iface %s", pRadio->Name, ifname);
+    return rc;
+}
+
 swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
     ASSERT_NOT_NULL(pAP, rc, ME, "NULL");
-    ASSERT_NOT_EQUALS(pAP->alias[0], 0, rc, ME, "Empty alias");
+    ASSERT_STR(pAP->alias, rc, ME, "Empty ifname");
     wld_nl80211_ifaceInfo_t ifaceInfo;
     if(pAP->index > 0) {
         rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pAP->index, &ifaceInfo);
@@ -129,16 +145,14 @@ swl_rc_ne wld_rad_nl80211_addVapInterface(T_Radio* pRadio, T_AccessPoint* pAP) {
         return SWL_RC_OK;
 
     }
-    rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRadio->index, &ifaceInfo);
-    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get radio(%s) main iface info", pRadio->Name);
-    if(swl_str_matches(ifaceInfo.name, pAP->alias)) {
+    if(swl_str_matches(pRadio->Name, pAP->alias) && (pAP->index > 0) && (pRadio->index == pAP->index)) {
         rc = wld_rad_nl80211_setAp(pRadio);
     } else {
         swl_macBin_t* pMac = NULL;
         if((pAP->pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pAP->pSSID->MACAddress))) {
             pMac = (swl_macBin_t*) pAP->pSSID->MACAddress;
         }
-        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pAP->alias, pMac, true, false, &ifaceInfo);
+        rc = wld_rad_nl80211_addInterface(pRadio, pAP->alias, pMac, false, &ifaceInfo);
     }
     ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add VAP(%s) on radio(%s)", pAP->alias, pRadio->Name);
     pAP->index = ifaceInfo.ifIndex;
@@ -150,29 +164,27 @@ swl_rc_ne wld_rad_nl80211_addEpInterface(T_Radio* pRadio, T_EndPoint* pEP) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
     ASSERT_NOT_NULL(pEP, rc, ME, "NULL");
-    ASSERT_NOT_EQUALS(pEP->alias[0], 0, rc, ME, "Empty alias");
+    ASSERT_STR(pEP->Name, rc, ME, "Empty ifname");
 
     wld_nl80211_ifaceInfo_t ifaceInfo;
     if(pEP->index > 0) {
         rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pEP->index, &ifaceInfo);
-        if((rc < SWL_RC_OK) || (!swl_str_matches(pEP->alias, ifaceInfo.name))) {
-            SAH_TRACEZ_ERROR(ME, "unmatched ep(%s) ifIndex(%d)", pEP->alias, pEP->index);
+        if((rc < SWL_RC_OK) || (!swl_str_matches(pEP->Name, ifaceInfo.name))) {
+            SAH_TRACEZ_ERROR(ME, "unmatched ep(%s) ifIndex(%d)", pEP->Name, pEP->index);
             return SWL_RC_ERROR;
         }
         return SWL_RC_OK;
     }
-    rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRadio->index, &ifaceInfo);
-    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get radio(%s) main iface info", pRadio->Name);
-    if(swl_str_matches(ifaceInfo.name, pEP->alias)) {
+    if(swl_str_matches(pRadio->Name, pEP->Name) && (pEP->index > 0) && (pRadio->index == pEP->index)) {
         rc = wld_rad_nl80211_setSta(pRadio);
     } else {
         swl_macBin_t* pMac = NULL;
         if((pEP->pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pEP->pSSID->MACAddress))) {
             pMac = (swl_macBin_t*) pEP->pSSID->MACAddress;
         }
-        rc = wld_nl80211_newInterface(wld_nl80211_getSharedState(), pRadio->index, pEP->Name, pMac, false, true, &ifaceInfo);
+        rc = wld_rad_nl80211_addInterface(pRadio, pEP->Name, pMac, true, &ifaceInfo);
     }
-    ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add EP(%s) on radio(%s)", pEP->alias, pRadio->Name);
+    ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add EP(%s) on radio(%s)", pEP->Name, pRadio->Name);
     pEP->index = ifaceInfo.ifIndex;
     pEP->wDevId = ifaceInfo.wDevId;
     return rc;
