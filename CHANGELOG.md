@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.19.0 - 2024-05-23(18:13:41 +0000)
+
+### Other
+
+- - add wds queue and events
+
 ## Release v6.18.1 - 2024-05-23(15:36:40 +0000)
 
 ### Other
