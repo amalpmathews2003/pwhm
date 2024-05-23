@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.18.1 - 2024-05-23(15:36:40 +0000)
+
+### Other
+
+- - Set RekeyingInterval default value to 3600 under AccessPoint.Security
+
 ## Release v6.18.0 - 2024-05-23(09:09:57 +0000)
 
 ### Other
