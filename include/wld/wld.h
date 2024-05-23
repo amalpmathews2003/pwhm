@@ -1598,10 +1598,11 @@ struct WLD_RADIO {
 
     T_Stats stats;                                  /* Radio statistics */
     T_CONST_WPS* wpsConst;                          /* WPS constant strings (Build defined) */
-    int currentStations;                            /* Stat the current # of endpoints connected to this radio */
+    int currentStations;                            /* Stat the current # of stations connected to this radio */
     uint32_t currentVideoStations;                  /* Stat the current # of video endpoints connected to to this radio */
-    int maxStations;                                /* Stat the MAX # of endpoints this radio can handle */
+    int maxStations;                                /* config the MAX # of stations this radio can handle */
     uint32_t maxNrHwBss;                            /* The max nr of Bss that radio can create (determined by hardware) */
+    uint32_t maxNrHwSta;                            /* The max nr of stations that radio can create (determined by hardware) */
 
     amxc_llist_t llAP;                              /* VAP linked list on this radio (used when commit is used)! */
     amxc_llist_t llEndPoints;                       /* Endpoints linked list on this radio (used when commit is used)! */

@@ -737,16 +737,14 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
      * to honor the radio limit. This is necessary because hostapd does not have a limit per
      * radio, only per access point.
      */
-    int32_t curMaxNumSta = 0;
+    int32_t curMaxNumSta = (pAP->MaxStations < 0) ? (int32_t) pRad->maxNrHwSta : pAP->MaxStations;
     SAH_TRACEZ_INFO(ME, "%s: pRad->maxStations = %d pRad->currentStations = %d", pRad->Name, pRad->maxStations, pRad->currentStations);
-    SAH_TRACEZ_INFO(ME, "%s: pAP->MaxStations = %d  pAP->ActiveAssociatedDeviceNumberOfEntries = %d", pAP->alias, pAP->MaxStations, pAP->ActiveAssociatedDeviceNumberOfEntries);
-    if((pRad->maxStations > 0) && (pRad->maxStations - pRad->currentStations < pAP->MaxStations - pAP->ActiveAssociatedDeviceNumberOfEntries)) {
+    SAH_TRACEZ_INFO(ME, "%s: pAP->MaxStations = %d  pAP->ActiveAssociatedDeviceNumberOfEntries = %d", pAP->alias, curMaxNumSta, pAP->ActiveAssociatedDeviceNumberOfEntries);
+    if((pRad->maxStations > 0) && (pRad->maxStations - pRad->currentStations < curMaxNumSta - pAP->ActiveAssociatedDeviceNumberOfEntries)) {
         curMaxNumSta = pAP->ActiveAssociatedDeviceNumberOfEntries + pRad->maxStations - pRad->currentStations;
         if(curMaxNumSta < 0) { // race condition where multiple stations associated simultaneously
             curMaxNumSta = 0;
         }
-    } else {
-        curMaxNumSta = pAP->MaxStations;
     }
     SAH_TRACEZ_INFO(ME, "%s: curMaxNumSta = %d", pAP->alias, curMaxNumSta);
     swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", curMaxNumSta);

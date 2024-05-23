@@ -1368,6 +1368,11 @@ static void s_setMultiUserMIMO_pwf(void* priv _UNUSED, amxd_object_t* object, am
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_saveMaxStations(T_Radio* pR) {
+    ASSERT_TRUE(swl_typeUInt32_commitObjectParam(pR->pBus, "MaxAssociatedDevices", pR->maxStations), ,
+                ME, "%s: fail to commit maxAssocDevices (%d)", pR->Name, pR->maxStations);
+}
+
 static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
@@ -1375,6 +1380,11 @@ static void s_setMaxStations_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
     ASSERTS_NOT_NULL(pR, , ME, "NULL");
     int nMaxSta = amxc_var_dyncast(int32_t, newValue);
     SAH_TRACEZ_INFO(ME, "%s: set MaxStations %d", pR->Name, nMaxSta);
+    if((nMaxSta < 0) || (nMaxSta > (int) pR->maxNrHwSta)) {
+        SAH_TRACEZ_WARNING(ME, "%s: restore Max Hw Stations %d isof conf %d", pR->Name, pR->maxNrHwSta, nMaxSta);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_saveMaxStations, pR);
+        return;
+    }
     pR->maxStations = nMaxSta;
     wld_rad_doSync(pR);
 

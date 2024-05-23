@@ -181,7 +181,7 @@ static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName
     pAP->SSIDAdvertisementEnabled = 1;
     pAP->status = APSTI_DISABLED;
     pAP->secModesSupported = M_SWL_SECURITY_APMODE_NONE;
-    pAP->MaxStations = -1;
+    pAP->MaxStations = pRad->maxNrHwSta;
 
     pAP->UAPSDCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "UAPSD", 0);
     pAP->WMMCapability = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "WME", 0);
@@ -552,7 +552,7 @@ void wld_ap_doWpsSync(T_AccessPoint* pAP) {
     wld_autoCommitMgr_notifyVapEdit(pAP);
 }
 
-void s_saveMaxStations(T_AccessPoint* pAP) {
+static void s_saveMaxStations(T_AccessPoint* pAP) {
     ASSERT_TRUE(swl_typeUInt32_commitObjectParam(pAP->pBus, "MaxAssociatedDevices", pAP->MaxStations), ,
                 ME, "%s: fail to commit maxAssocDevices (%d)", pAP->alias, pAP->MaxStations);
 }

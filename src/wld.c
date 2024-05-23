@@ -456,6 +456,7 @@ T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
         } else if(pR->maxStations > (int) g_MaxNrSta) {
             g_MaxNrSta = pR->maxStations;
         }
+        pR->maxNrHwSta = pR->maxStations;
     }
 
     amxc_llist_init(&pR->scanState.stats.extendedStat);
