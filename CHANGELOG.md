@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.18.0 - 2024-05-23(09:09:57 +0000)
+
+### Other
+
+- - add EHT/80211BE support detection
+
 ## Release v6.17.0 - 2024-05-22(10:26:30 +0000)
 
 ### Other
