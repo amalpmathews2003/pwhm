@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.20.2 - 2024-05-24(13:35:14 +0000)
+
+### Other
+
+- - MaxAssociatedDevices on radio is not working
+
 ## Release v6.20.1 - 2024-05-24(12:20:00 +0000)
 
 ## Release v6.20.0 - 2024-05-24(11:49:50 +0000)
