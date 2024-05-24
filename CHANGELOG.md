@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.20.0 - 2024-05-24(11:49:50 +0000)
+
+### Other
+
+- - Handle the transmitted management frames status event
+
 ## Release v6.19.1 - 2024-05-24(07:44:47 +0000)
 
 ### Other
