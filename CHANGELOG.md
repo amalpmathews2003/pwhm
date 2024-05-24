@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.19.1 - 2024-05-24(07:44:47 +0000)
+
+### Other
+
+- add nl80211 vap/ep iface using rad wiphyid iso ifIdx
+
 ## Release v6.19.0 - 2024-05-23(18:13:41 +0000)
 
 ### Other
