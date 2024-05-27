@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.20.3 - 2024-05-27(10:04:29 +0000)
+
+### Other
+
+- : Sometimes 6GHz assoc is failing
+
 ## Release v6.20.2 - 2024-05-24(13:35:14 +0000)
 
 ### Other
