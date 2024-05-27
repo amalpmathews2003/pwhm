@@ -530,7 +530,7 @@ int wifiGen_vap_updateApStats(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_TRUE(pAP->index > 0, SWL_RC_OK, ME, "%s: no stats to update as iface is not found", pAP->alias);
     ASSERT_NOT_NULL(pAP->pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_TRUE(wld_linuxIfStats_getInterfaceStats(pAP->alias, &pAP->pSSID->stats), SWL_RC_ERROR,
+    ASSERT_TRUE(wld_linuxIfStats_getVapStats(pAP, &pAP->pSSID->stats), SWL_RC_ERROR,
                 ME, "Fail to get stats for AP %s", pAP->alias);
     return SWL_RC_OK;
 }

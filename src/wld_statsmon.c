@@ -75,7 +75,7 @@
 
 static time_t latestStateChangeTime = 0;
 
-static T_Stats* addRadioStats(T_Stats* pDst, const T_intf_txrxstats* pSrc) {
+static T_Stats* s_addRadioStats(T_Stats* pDst, const T_intf_txrxstats* pSrc) {
     if(pDst && pSrc) {
         pDst->BytesSent += pSrc->txBytes;
         pDst->BytesReceived += pSrc->rxBytes;
@@ -94,23 +94,23 @@ static T_Stats* addRadioStats(T_Stats* pDst, const T_intf_txrxstats* pSrc) {
     return NULL;
 }
 
-static T_Stats* moveTxRxStats2Stats(T_Stats* pDst, const T_intf_txrxstats* pSrc) {
+static T_Stats* s_addTxRxStats2Stats(T_Stats* pDst, const T_intf_txrxstats* pSrc) {
     if(pDst && pSrc) {
-        pDst->BytesSent = pSrc->txBytes;
-        pDst->BytesReceived = pSrc->rxBytes;
-        pDst->PacketsSent = pSrc->txPackets;
-        pDst->PacketsReceived = pSrc->rxPackets;
-        pDst->ErrorsSent = pSrc->txErrs;
-        pDst->ErrorsReceived = pSrc->rxErrs;
-        pDst->DiscardPacketsSent = pSrc->txDrop;
-        pDst->DiscardPacketsReceived = pSrc->rxDrop;
-        pDst->UnicastPacketsSent = 0;
-        pDst->UnicastPacketsReceived = 0;
-        pDst->MulticastPacketsSent = pSrc->txCompressed;
-        pDst->MulticastPacketsReceived = pSrc->rxMulticast;
-        pDst->BroadcastPacketsSent = pSrc->txFifo;
-        pDst->BroadcastPacketsReceived = pSrc->rxFrame;
-        pDst->UnknownProtoPacketsReceived = 0;
+        pDst->BytesSent += pSrc->txBytes;
+        pDst->BytesReceived += pSrc->rxBytes;
+        pDst->PacketsSent += pSrc->txPackets;
+        pDst->PacketsReceived += pSrc->rxPackets;
+        pDst->ErrorsSent += pSrc->txErrs;
+        pDst->ErrorsReceived += pSrc->rxErrs;
+        pDst->DiscardPacketsSent += pSrc->txDrop;
+        pDst->DiscardPacketsReceived += pSrc->rxDrop;
+        pDst->UnicastPacketsSent += 0;
+        pDst->UnicastPacketsReceived += 0;
+        pDst->MulticastPacketsSent += pSrc->txCompressed;
+        pDst->MulticastPacketsReceived += pSrc->rxMulticast;
+        pDst->BroadcastPacketsSent += pSrc->txFifo;
+        pDst->BroadcastPacketsReceived += pSrc->rxFrame;
+        pDst->UnknownProtoPacketsReceived += 0;
 
         pDst->latestStatsUpdateTime = swl_time_getMonoSec();
         return pDst;
@@ -118,8 +118,8 @@ static T_Stats* moveTxRxStats2Stats(T_Stats* pDst, const T_intf_txrxstats* pSrc)
     return NULL;
 }
 
-static int getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
-    ASSERTS_NOT_NULL(pCh, 0, ME, "NULL");
+static int s_getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
+    ASSERTS_STR(pCh, 0, ME, "Empty");
     T_intf_txrxstats intfStats;
     memset(&intfStats, 0, sizeof(intfStats));
     char* pT;
@@ -142,34 +142,38 @@ static int getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
            &intfStats.txCarrier, &intfStats.txCompressed);
 
     if(pR != NULL) {
-        if(!strcmp(pR->Name, intfStats.intfName)) {
-            addRadioStats(&pR->stats, &intfStats);
+        if(pR == wld_rad_from_name(intfStats.intfName)) {
+            s_addRadioStats(&pR->stats, &intfStats);
             return 1;
         }
 
-        T_AccessPoint* pAP;
-        wld_rad_forEachAp(pAP, pR) {
-            if(swl_str_matches(pAP->alias, intfStats.intfName)) {
-                moveTxRxStats2Stats(&pAP->pSSID->stats, &intfStats);
-                addRadioStats(&pR->stats, &intfStats);
-                return 1;
-            }
+        T_AccessPoint* pAP = wld_rad_vap_from_name(pR, intfStats.intfName);
+        if(pAP != NULL) {
+            s_addTxRxStats2Stats(&pAP->pSSID->stats, &intfStats);
+            s_addRadioStats(&pR->stats, &intfStats);
+            return 1;
         }
 
-        T_EndPoint* pEP;
-        wld_rad_forEachEp(pEP, pR) {
-            if(swl_str_matches(pEP->alias, intfStats.intfName)) {
-                moveTxRxStats2Stats(&pEP->pSSID->stats, &intfStats);
-                addRadioStats(&pR->stats, &intfStats);
-                return 1;
-            }
+        pAP = wld_rad_vap_from_wds_name(pR, intfStats.intfName);
+        if(pAP != NULL) {
+            s_addTxRxStats2Stats(&pAP->pSSID->stats, &intfStats);
+            s_addRadioStats(&pR->stats, &intfStats);
+            return 1;
         }
-    } else {
-        if(pSSID != NULL) {
-            if((pSSID->AP_HOOK && swl_str_matches(pSSID->AP_HOOK->alias, intfStats.intfName)) || (pSSID->ENDP_HOOK && swl_str_matches(pSSID->ENDP_HOOK->alias, intfStats.intfName))) {
-                moveTxRxStats2Stats(&pSSID->stats, &intfStats);
-                return 1;
-            }
+
+        T_EndPoint* pEP = wld_rad_ep_from_name(pR, intfStats.intfName);
+        if(pEP != NULL) {
+            memset(&pEP->pSSID->stats, 0, sizeof(T_Stats));
+            s_addTxRxStats2Stats(&pEP->pSSID->stats, &intfStats);
+            s_addRadioStats(&pR->stats, &intfStats);
+            return 1;
+        }
+    } else if((pSSID != NULL) && ((pR = pSSID->RADIO_PARENT) != NULL)) {
+        if((wld_rad_vap_from_wds_name(pR, intfStats.intfName) != NULL) ||
+           (wld_rad_vap_from_name(pR, intfStats.intfName) != NULL) ||
+           (wld_rad_ep_from_name(pR, intfStats.intfName) != NULL)) {
+            s_addTxRxStats2Stats(&pSSID->stats, &intfStats);
+            return 1;
         }
     }
 
@@ -179,7 +183,7 @@ static int getLinuxLineStats(char* pCh, T_Radio* pR, T_SSID* pSSID) {
 /*
     Read out the Linux system stats and store them in the TxRxStats buffer.
  */
-static int wld_statsmon_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
+static int s_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
     FILE* hf;
     char buf[512];
 
@@ -190,9 +194,19 @@ static int wld_statsmon_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
     if(!hf) {
         return -errno;
     }
+    if(pR) {
+        T_AccessPoint* pAP = NULL;
+        memset(&pR->stats, 0, sizeof(T_Stats));
+        wld_rad_forEachAp(pAP, pR) {
+            memset(&pAP->pSSID->stats, 0, sizeof(T_Stats));
+        }
+    }
+    if(pSSID) {
+        memset(&pSSID->stats, 0, sizeof(T_Stats));
+    }
     // proc file system has no size so we can't optimize. If our timeout collaps we update all stats.
     while(fgets(buf, sizeof(buf), hf)) {
-        getLinuxLineStats(buf, pR, pSSID);
+        s_getLinuxLineStats(buf, pR, pSSID);
     }
     fclose(hf);
     latestStateChangeTime = time(NULL);
@@ -206,14 +220,14 @@ static int wld_statsmon_getLinuxStats(T_Radio* pR, T_SSID* pSSID) {
 T_Stats* wld_statsmon_updateVAPStats(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, NULL, ME, "NULL");
     T_SSID* pSSID = pAP->pSSID;
-    wld_statsmon_getLinuxStats(NULL, pSSID);
+    s_getLinuxStats(NULL, pSSID);
     return &pSSID->stats;
 }
 
 T_Stats* wld_statsmon_updateEPStats(T_EndPoint* pEP) {
     ASSERTS_NOT_NULL(pEP, NULL, ME, "NULL");
     T_SSID* pSSID = pEP->pSSID;
-    wld_statsmon_getLinuxStats(NULL, pSSID);
+    s_getLinuxStats(NULL, pSSID);
     return &pSSID->stats;
 }
 
@@ -221,7 +235,7 @@ T_Stats* wld_statsmon_updateRADStats(T_Radio* pR) {
     ASSERTS_NOT_NULL(pR, NULL, ME, "NULL");
     memset(&pR->stats, 0, sizeof(T_Stats));
     pR->stats.TemperatureDegreesCelsius = WLD_TEMP_INVALID_CELSIUS;    //set it to Invalid/Default value
-    wld_statsmon_getLinuxStats(pR, NULL);
+    s_getLinuxStats(pR, NULL);
     return &pR->stats;
 }
 

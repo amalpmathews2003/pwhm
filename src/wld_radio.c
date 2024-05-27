@@ -2995,6 +2995,21 @@ T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname) {
     return NULL;
 }
 
+/* find VAP with matching WDS name */
+T_AccessPoint* wld_rad_vap_from_wds_name(T_Radio* pR, const char* ifname) {
+    T_AccessPoint* pAP = NULL;
+
+    wld_rad_forEachAp(pAP, pR) {
+        amxc_llist_for_each(it, &pAP->llIntfWds) {
+            wld_wds_intf_t* wdsIntf = amxc_llist_it_get_data(it, wld_wds_intf_t, entry);
+            if(swl_str_matches(ifname, wdsIntf->name)) {
+                return pAP;
+            }
+        }
+    }
+    return NULL;
+}
+
 /* find EP with matching name */
 T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
     T_EndPoint* pEP = NULL;

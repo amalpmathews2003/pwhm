@@ -72,6 +72,7 @@
  */
 
 bool wld_linuxIfStats_getInterfaceStats(const char* pIfaceName, T_Stats* pInterfaceStats);
+bool wld_linuxIfStats_getVapStats(T_AccessPoint* pAP, T_Stats* pVapStats);
 bool wld_linuxIfStats_getAllVapStats(T_Radio* pRadio, T_Stats* pAllVapStats);
 bool wld_linuxIfStats_getAllEpStats(T_Radio* pRadio, T_Stats* pAllEpStats);
 bool wld_linuxIfStats_getRadioStats(T_Radio* pRadio, T_Stats* pRadioStats);

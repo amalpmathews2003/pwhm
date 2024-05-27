@@ -329,6 +329,38 @@ bool wld_linuxIfStats_getInterfaceStats(const char* pIfaceName, T_Stats* pInterf
     return result;
 }
 
+/**
+ * Get virtual accespoints statistics
+ */
+bool wld_linuxIfStats_getVapStats(T_AccessPoint* pAP, T_Stats* pVapStats) {
+
+    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERT_NOT_NULL(pVapStats, false, ME, "NULL");
+
+    SAH_TRACEZ_INFO(ME, "statistics for AP interface = %s", pAP->alias);
+
+    if(pAP->index <= 0) {
+        return false;
+    }
+
+    memset(pVapStats, 0, sizeof(T_Stats));
+    if(!wld_linuxIfStats_getInterfaceStats(pAP->alias, pVapStats)) {
+        SAH_TRACEZ_ERROR(ME, "Failed to get interface statistics for interface %s", pAP->alias);
+        return false;
+    }
+
+    amxc_llist_for_each(it, &pAP->llIntfWds) {
+        T_Stats interfaceStats;
+        memset(&interfaceStats, 0, sizeof(interfaceStats));
+        wld_wds_intf_t* wdsIntf = amxc_llist_it_get_data(it, wld_wds_intf_t, entry);
+        SAH_TRACEZ_INFO(ME, "statistics WDS interface = %s", wdsIntf->name);
+        if(wld_linuxIfStats_getInterfaceStats(wdsIntf->name, &interfaceStats)) {
+            s_accumulateStats(pVapStats, &interfaceStats);
+        }
+    }
+
+    return true;
+}
 
 /**
  * Get All virtual accespoints statistics
@@ -349,20 +381,8 @@ bool wld_linuxIfStats_getAllVapStats(T_Radio* pRadio, T_Stats* pAllVapStats) {
     for(amxc_llist_it_t* it = (amxc_llist_it_t*) amxc_llist_get_first(&pRadio->llAP); it; it = (amxc_llist_it_t*) amxc_llist_it_get_next(it)) {
         pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
 
-        SAH_TRACEZ_INFO(ME, "Radio AP interface = %s", pAP->alias);
-
-        if(pAP->index <= 0) {
-            continue;
-        }
-        if(!wld_linuxIfStats_getInterfaceStats(pAP->alias, &interfaceStats)) {
-            SAH_TRACEZ_ERROR(ME, "Failed to get interface statistics for interface %s", pAP->alias);
-            result |= false;
-            continue;
-        }
-
+        result |= wld_linuxIfStats_getVapStats(pAP, &interfaceStats);
         s_accumulateStats(pAllVapStats, &interfaceStats);
-
-        result |= true;
     }
 
     return result;

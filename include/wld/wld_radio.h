@@ -133,6 +133,7 @@ amxd_status_t _FSM_Start(amxd_object_t* wifi,
 T_AccessPoint* wld_rad_getFirstVap(T_Radio* pR);
 T_EndPoint* wld_rad_getFirstEp(T_Radio* pR);
 T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname);
+T_AccessPoint* wld_rad_vap_from_wds_name(T_Radio* pR, const char* ifname);
 T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname);
 T_AccessPoint* wld_vap_from_name(const char* ifname);
 T_EndPoint* wld_vep_from_name(const char* ifname);
