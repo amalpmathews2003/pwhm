@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.20.4 - 2024-05-27(13:47:34 +0000)
+
+### Other
+
+- - 6Ghz radio dm sync not working
+
 ## Release v6.20.3 - 2024-05-27(10:04:29 +0000)
 
 ### Other
