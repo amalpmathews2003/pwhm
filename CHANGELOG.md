@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.20.5 - 2024-05-27(14:22:28 +0000)
+
+### Other
+
+- - VAP stats do not include WDS
+
 ## Release v6.20.4 - 2024-05-27(13:47:34 +0000)
 
 ### Other
