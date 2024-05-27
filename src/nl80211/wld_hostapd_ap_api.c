@@ -361,7 +361,7 @@ static bool s_setParam(T_AccessPoint* pAP, const char* param, const char* value,
     ASSERTS_NOT_NULL(param, false, ME, "NULL");
     bool ret = wld_ap_hostapd_setParamValue(pAP, param, value, param);
     wld_secDmn_action_rc_ne* pMappedAction = (wld_secDmn_action_rc_ne*) swl_table_getMatchingValue(&sHapdCfgParamsActionMap, 1, 0, param);
-    if(pAP->status == APSTI_DISABLED) {
+    if((pAP->status == APSTI_DISABLED) && !pAP->enable) {
         W_SWL_SETPTR(pAction, SECDMN_ACTION_OK_DONE);
     } else if(pMappedAction != NULL) {
         //keep most critical action
