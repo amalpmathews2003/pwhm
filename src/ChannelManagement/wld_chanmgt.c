@@ -726,7 +726,7 @@ void wld_chanmgt_saveChanges(T_Radio* pRad, amxd_trans_t* trans) {
 
     swl_channel_t channel = amxd_object_get_uint32_t(pRad->pBus, "Channel", NULL);
     if((channel == 0) || (channel == pRad->channel)) {
-        if(channel == 0) {
+        if((channel == 0) && (pRad->channel != 0)) {
             amxd_trans_set_uint32_t(targetTrans, "Channel", pRad->channel);
         }
         amxd_trans_set_cstring_t(targetTrans, "ChannelsInUse", pRad->channelsInUse);

@@ -541,7 +541,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     swl_table_columnToArrayOffset(pRad->transmitPowerSupported, 64, &sPowerTable, 0, 0);
 
     pRad->transmitPower = 100;
-    pRad->setRadio80211hEnable = (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ || pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) ? TRUE : FALSE;
+    pRad->setRadio80211hEnable = (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ );
     pRad->m_multiAPTypesSupported = M_MULTIAP_ALL;
 
     wifiGen_hapd_initGlobDmnCap(pRad);
