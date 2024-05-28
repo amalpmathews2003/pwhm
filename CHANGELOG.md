@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.21.0 - 2024-05-28(15:29:17 +0000)
+
+### Other
+
+- - Manage received and transmitted Deauth/Disassoc management frames
+
 ## Release v6.20.5 - 2024-05-27(14:22:28 +0000)
 
 ### Other
