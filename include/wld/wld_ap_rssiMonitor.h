@@ -82,6 +82,7 @@ void wld_apRssiMon_createStaHistory(T_AssociatedDevice* pAD, uint32_t historyLen
 void wld_apRssiMon_destroyStaHistory(T_AssociatedDevice* pAD);
 void wld_apRssiMon_updateHistoryLen(T_AccessPoint* pAP);
 void wld_apRssiMon_cleanStaHistory(wld_assocDev_history_t* staHistory, uint32_t historyLen);
+void wld_apRssiMon_cleanStaHistorySamples(wld_assocDev_history_t* staHistory, uint32_t historyLen);
 void wld_apRssiMon_cleanStaHistoryAll(T_AccessPoint* pAP);
 wld_staHistory_t* wld_apRssiMon_getOldestStaSample(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 wld_staHistory_t* wld_apRssiMon_getStaSampleIndexed(T_AccessPoint* pAP, T_AssociatedDevice* pAD, int32_t index);

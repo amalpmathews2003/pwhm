@@ -174,6 +174,10 @@ void wldu_llist_mapInternal(amxc_llist_t* list, size_t offset, void (* map)(void
 #define WLD_EMPTY_MAC_ADDRESS "00:00:00:00:00:00"
 #define WLD_BROADCAST_MAC_ADDRES "FF:FF:FF:FF:FF:FF"
 
+/* Helper macros for deltas on unsigned types */
+#define DELTA64(inNew, inOld) ((inNew >= inOld) ? (inNew - inOld) : (ULLONG_MAX - ((uint64_t) inOld) + ((uint64_t) inNew)))
+#define DELTA32(inNew, inOld) ((inNew >= inOld) ? (inNew - inOld) : (UINT32_MAX - ((uint32_t) inOld) + ((uint32_t) inNew)))
+
 static const uint8_t wld_ether_bcast[ETHER_ADDR_LEN] = {255, 255, 255, 255, 255, 255};
 static const uint8_t wld_ether_null[ETHER_ADDR_LEN] = {0, 0, 0, 0, 0, 0};
 

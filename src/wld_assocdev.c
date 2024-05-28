@@ -303,23 +303,6 @@ static void s_sendDisassocNotification(T_AccessPoint* pAP, T_AssociatedDevice* p
     disassocEvent.txErrors = pAD->TxFailures;
     disassocEvent.inactive = pAD->Inactive;
 
-
-    wld_staHistory_t* hist = wld_apRssiMon_getOldestStaSample(pAP, pAD);
-    if((hist != NULL) && !swl_timespec_equals(&pAD->lastSampleTime, &hist->timestamp)) {
-        disassocEvent.recentSampleTime = hist->timestamp;
-        disassocEvent.recentTxBytes = pAD->TxBytes - hist->txBytes;
-        disassocEvent.recentRxBytes = pAD->RxBytes - hist->rxBytes;
-        disassocEvent.recentTxPacketCount = pAD->TxPacketCount - hist->txPacketCount;
-        disassocEvent.recentRxPacketCount = pAD->RxPacketCount - hist->rxPacketCount;
-        disassocEvent.recentTxError = pAD->TxFailures - hist->txError;
-        disassocEvent.recentRxError = pAD->RxFailures - hist->rxError;
-        disassocEvent.recentTxFrameCount = pAD->TxFrameCount - hist->txFrameCount;
-        disassocEvent.recentRxFrameCount = pAD->RxFrameCount - hist->rxFrameCount;
-        disassocEvent.recentTxRetransmissions = pAD->Tx_Retransmissions - hist->tx_Retransmissions;
-        disassocEvent.recentTxRetransmissionsFailed = pAD->Tx_RetransmissionsFailed - hist->tx_RetransmissionsFailed;
-        disassocEvent.recentRxRetransmissions = pAD->Rx_Retransmissions - hist->rx_Retransmissions;
-        disassocEvent.recentRxRetransmissionsFailed = pAD->Rx_RetransmissionsFailed - hist->rx_RetransmissionsFailed;
-    }
     wld_apRssiMon_signalRange_t sigRange;
     memset(&sigRange, 0, sizeof(wld_apRssiMon_signalRange_t));
     bool getSig = wld_apRssiMon_getMinMaxSignal(pAP, pAD, &sigRange);
@@ -330,6 +313,29 @@ static void s_sendDisassocNotification(T_AccessPoint* pAP, T_AssociatedDevice* p
         disassocEvent.recentMaxNoise = sigRange.maxNoise;
         disassocEvent.recentMinSNR = sigRange.minSNR;
         disassocEvent.recentMaxSNR = sigRange.maxSNR;
+    }
+
+    wld_staHistory_t* hist = wld_apRssiMon_getOldestStaSample(pAP, pAD);
+    if((hist != NULL) && !swl_timespec_equals(&pAD->lastSampleTime, &hist->timestamp)) {
+
+        if(hist->txBytes > pAD->TxBytes) {
+            SAH_TRACEZ_WARNING(ME, "Traffic counters overloop detected: "MAC_PRINT_FMT ": TxBytes %llu hist > TxBytes %llu",
+                               MAC_PRINT_ARG(pAD->MACAddress), (long long unsigned int) pAD->TxBytes, (long long unsigned int) hist->txBytes);
+        }
+
+        disassocEvent.recentSampleTime = hist->timestamp;
+        disassocEvent.recentTxPacketCount = DELTA32(pAD->TxPacketCount, hist->txPacketCount);
+        disassocEvent.recentRxPacketCount = DELTA32(pAD->RxPacketCount, hist->rxPacketCount);
+        disassocEvent.recentTxBytes = DELTA64(pAD->TxBytes, hist->txBytes);
+        disassocEvent.recentRxBytes = DELTA64(pAD->RxBytes, hist->rxBytes);
+        disassocEvent.recentTxError = DELTA32(pAD->TxFailures, hist->txError);
+        disassocEvent.recentRxError = DELTA32(pAD->RxFailures, hist->rxError);
+        disassocEvent.recentTxFrameCount = DELTA32(pAD->TxFrameCount, hist->txFrameCount);
+        disassocEvent.recentRxFrameCount = DELTA32(pAD->RxFrameCount, hist->rxFrameCount);
+        disassocEvent.recentTxRetransmissions = DELTA32(pAD->Tx_Retransmissions, hist->tx_Retransmissions);
+        disassocEvent.recentTxRetransmissionsFailed = DELTA32(pAD->Tx_RetransmissionsFailed, hist->tx_RetransmissionsFailed);
+        disassocEvent.recentRxRetransmissions = DELTA32(pAD->Rx_Retransmissions, hist->rx_Retransmissions);
+        disassocEvent.recentRxRetransmissionsFailed = DELTA32(pAD->Rx_RetransmissionsFailed, hist->rx_RetransmissionsFailed);
     }
 
     amxc_var_t myVar;
@@ -1221,9 +1227,13 @@ static void s_delayDisassocNotifHdlr(amxp_timer_t* timer _UNUSED, void* userdata
     T_AssociatedDevice* pAD = (T_AssociatedDevice*) userdata;
     ASSERT_NOT_NULL(pAD, , ME, "pAD NULL");
     T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
-    s_sendDisassocNotification(pAP, pAD);
-    wld_vap_cleanup_stationlist(pAP);
+    if(pAP != NULL) {
+        s_sendDisassocNotification(pAP, pAD);
+        wld_vap_cleanup_stationlist(pAP);
+    }
+    ASSERTS_NOT_NULL(pAD->staHistory, , ME, "No sta history");
+    //cleanup the disconnected stations rssiMon history
+    wld_apRssiMon_cleanStaHistory(pAD->staHistory, pAD->staHistory->nr_valid_samples);
 }
 
 void wld_ad_startDelayDisassocNotifTimer(T_AssociatedDevice* pAD) {
@@ -1263,6 +1273,8 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
         amxp_timer_state_t timerState = amxp_timer_get_state(pAD->delayDisassocNotif);
         if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
             s_sendDisassocNotification(pAP, pAD);
+            //cleanup the disconnected sta rssiMon history
+            wld_apRssiMon_cleanStaHistory(pAD->staHistory, pAD->staHistory->nr_valid_samples);
         }
     }
 

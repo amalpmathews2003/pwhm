@@ -444,6 +444,12 @@ void wld_apRssiMon_cleanStaHistory(wld_assocDev_history_t* staHistory, uint32_t 
     staHistory->noiseAssoc = DEFAULT_BASE_RSSI;
     staHistory->signalNoiseRatioAssoc = 0;
 
+    wld_apRssiMon_cleanStaHistorySamples(staHistory, historyLen);
+}
+
+void wld_apRssiMon_cleanStaHistorySamples(wld_assocDev_history_t* staHistory, uint32_t historyLen) {
+    ASSERT_NOT_NULL(staHistory, , ME, "NULL");
+
     memset(staHistory->samples, 0, historyLen * sizeof(wld_staHistory_t));
 }
 
