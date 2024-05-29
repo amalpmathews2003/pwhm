@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.21.1 - 2024-05-29(12:29:13 +0000)
+
+### Other
+
+- : Bandwidth move to 20MHz when AutoChannelEnable=0
+
 ## Release v6.21.0 - 2024-05-28(15:29:17 +0000)
 
 ### Other
