@@ -17,7 +17,7 @@
     "LastChange": 7,
     "STA_Mode": false,
     "RadCapabilitiesHePhysStr": "",
-    "OperatingClass": 0,
+    "OperatingClass": 4,
     "VHTCapabilities": "AAAAAA==",
     "IEEE80211kSupported": false,
     "TransmitPower": -1,

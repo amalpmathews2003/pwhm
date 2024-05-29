@@ -698,7 +698,7 @@ void wld_chanmgt_checkInitChannel(T_Radio* pRad) {
     //otherwise fall back to implicit default chanspec per freqBand
     swl_chanspec_t radChanspec = wld_rad_getSwlChanspec(pRad);
     if(swl_chanspec_channelToMHzDef(&radChanspec, 0) != 0) {
-        defaultChanspec = radChanspec;
+        defaultChanspec.channel = radChanspec.channel;
     }
     wld_chanmgt_reportCurrentChanspec(pRad, defaultChanspec, CHAN_REASON_INITIAL);
 }
