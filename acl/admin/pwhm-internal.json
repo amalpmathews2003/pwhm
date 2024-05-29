@@ -7,8 +7,10 @@
         "Order": 2,
         "Param": "rw-n"
     },
-    "WiFi.AccessPoint.*.MACFiltering.Entry.*.MACAddress": {
+    "WiFi.AccessPoint.*.MACFiltering.Entry.": {
         "Order": 2,
-        "Param": "rw-n"
-    },
+        "Param": "rw-n",
+        "InstantiatedObj": "rwxn",
+        "CommandEvent": "rwxn"
+    }
 }
