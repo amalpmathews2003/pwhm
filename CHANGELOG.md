@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.21.2 - 2024-05-29(18:27:26 +0000)
+
+### Other
+
+- Admin cannot access to WiFi.AccessPoint. missing config in json file
+
 ## Release v6.21.1 - 2024-05-29(12:29:13 +0000)
 
 ### Other
