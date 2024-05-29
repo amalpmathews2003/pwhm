@@ -379,6 +379,7 @@ SWL_TABLE(sChWidthMaps,
               {3, "80 MHz", SWL_BW_80MHZ},         //CHAN_WIDTH_80
               {4, "80+80 MHz", SWL_BW_160MHZ},     //CHAN_WIDTH_80P80
               {5, "160 MHz", SWL_BW_160MHZ},       //CHAN_WIDTH_160
+              {10, "320 MHz", SWL_BW_320MHZ},      //CHAN_WIDTH_320
               ));
 static swl_rc_ne s_freqParamToChanSpec(char* params, const char* key, swl_chanspec_t* pChanSpec) {
     ASSERTS_STR(params, SWL_RC_INVALID_PARAM, ME, "Empty");
@@ -407,6 +408,16 @@ static swl_rc_ne s_chWidthDescToChanSpec(char* params, const char* key, swl_chan
     swl_bandwidth_e* pBwEnu = (swl_bandwidth_e*) swl_table_getMatchingValue(&sChWidthMaps, 2, 1, chWidthStr);
     ASSERTS_NOT_NULL(pBwEnu, SWL_RC_ERROR, ME, "unknown channel width desc (%s)", chWidthStr);
     pChanSpec->bandwidth = *pBwEnu;
+
+    // Central frequency is needed to differentiate between 320MHz-1 and 320MHz-2
+    ASSERTS_EQUALS(pChanSpec->bandwidth, SWL_BW_320MHZ, SWL_RC_OK, ME, "Not using 320MHz");
+    uint32_t centerFreq = 0;
+    ASSERTS_TRUE(wld_wpaCtrl_getValueIntExt(params, "cf1", (int32_t*) &centerFreq), SWL_RC_ERROR,
+                 ME, "Missing cf1 param");
+    swl_chanspec_t chanSpecCenter;
+    swl_rc_ne rc = swl_chanspec_fromMHz(&chanSpecCenter, centerFreq);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get chanspec for freq(%d)", centerFreq);
+    pChanSpec->extensionHigh = chanSpecCenter.extensionHigh;
     return SWL_RC_OK;
 }
 

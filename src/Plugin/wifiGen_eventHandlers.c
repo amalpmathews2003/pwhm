@@ -191,8 +191,8 @@ static void s_syncCurrentChannel(T_Radio* pRad, wld_channelChangeReason_e reason
 static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t* chanSpec) {
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    SAH_TRACEZ_WARNING(ME, "%s: channel switch event central_chan=%d bandwidth=%d band=%d", pRad->Name,
-                       chanSpec->channel, chanSpec->bandwidth, chanSpec->band);
+    SAH_TRACEZ_WARNING(ME, "%s: channel switch event central_chan=%d bandwidth=%s band=%s ext=%d", pRad->Name,
+                       chanSpec->channel, swl_bandwidth_str[chanSpec->bandwidth], swl_freqBandExt_str[chanSpec->band], chanSpec->extensionHigh);
 
     if(wld_rad_is_24ghz(pRad) && (wld_chanmgt_getTgtBw(pRad) != chanSpec->bandwidth) &&
        (wld_chanmgt_getCurBw(pRad) == SWL_BW_40MHZ) && (chanSpec->bandwidth == SWL_BW_20MHZ) && (pRad->currentChanspec.chanspec.channel == chanSpec->channel)) {

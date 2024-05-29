@@ -419,9 +419,12 @@ swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* dbm) {
 swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     ASSERT_NOT_NULL(pIfaceInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
-    swl_rc_ne rc = swl_chanspec_channelFromMHz(pChanSpec, pIfaceInfo->chanSpec.ctrlFreq);
-    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get channel");
-    pChanSpec->bandwidth = swl_chanspec_intToBw(pIfaceInfo->chanSpec.chanWidth);
+    swl_chanspec_t ctrlChanspec;
+    swl_rc_ne rc = swl_chanspec_channelFromMHz(&ctrlChanspec, pIfaceInfo->chanSpec.ctrlFreq);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get ctrl channel");
+    rc = swl_chanspec_channelFromMHz(pChanSpec, pIfaceInfo->chanSpec.centerFreq1);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get center channel");
+    pChanSpec->channel = ctrlChanspec.channel;
     return SWL_RC_OK;
 }
 

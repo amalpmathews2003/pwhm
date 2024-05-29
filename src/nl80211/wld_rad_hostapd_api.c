@@ -147,6 +147,21 @@ static swl_rc_ne s_calculateSecChannelOffset(swl_bandwidth_e bandwidth, uint32_t
             ret = SWL_RC_ERROR;
         }
         break;
+    case SWL_BW_320MHZ:
+        if((freq + 150 == center_freq) || (freq + 110 == center_freq) ||
+           (freq - 90 == center_freq) || (freq - 130 == center_freq) ||
+           (freq + 70 == center_freq) || (freq + 30 == center_freq) ||
+           (freq - 10 == center_freq) || (freq - 50 == center_freq)) {
+            *sec_channel_offset = 1;
+        } else if((freq + 130 == center_freq) || (freq + 90 == center_freq) ||
+                  (freq - 110 == center_freq) || (freq - 150 == center_freq) ||
+                  (freq + 50 == center_freq) || (freq + 10 == center_freq) ||
+                  (freq - 30 == center_freq) || (freq - 70 == center_freq)) {
+            *sec_channel_offset = -1;
+        } else {
+            ret = SWL_RC_ERROR;
+        }
+        break;
     default:
         ret = SWL_RC_ERROR;
         break;
@@ -254,6 +269,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
         "channel", "op_class", "ht_capab",
         "vht_capab", "vht_oper_centr_freq_seg0_idx", "vht_oper_chwidth",
         "he_oper_centr_freq_seg0_idx", "he_oper_chwidth",
+        "eht_oper_centr_freq_seg0_idx", "eht_oper_chwidth",
     };
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(chanParams); i++) {
         wld_ap_hostapd_setParamValue(primaryVap, chanParams[i], swl_mapChar_get(&radParams, (char*) chanParams[i]), "");
