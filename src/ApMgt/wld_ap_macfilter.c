@@ -145,7 +145,7 @@ static void s_updateMACFilterAddressList(T_AccessPoint* pAP) {
         swl_str_toUpper(pAP->MF_AddressList, strlen(pAP->MF_AddressList));
         newList = pAP->MF_AddressList;
     }
-    swl_typeCharPtr_toObjectParam(pAP->pBus, "MACFilterAddressList", (char*) newList);
+    swl_typeCharPtr_commitObjectParam(pAP->pBus, "MACFilterAddressList", (char*) newList);
 }
 
 /**
