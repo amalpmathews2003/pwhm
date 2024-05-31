@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.22.2 - 2024-05-31(12:08:50 +0000)
+
+### Other
+
+- check optional ssid arg in rrm request command
+
 ## Release v6.22.1 - 2024-05-31(11:57:01 +0000)
 
 ### Other
