@@ -1157,7 +1157,7 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport_ext(T_AccessPoint* pAP, const swl_macC
              sta->cMac, req->modeMask, req->operClass, req->channel, htons(req->interval), htons(req->duration), req->mode, MAC_PRINT_ARG(bMac.bMac));
 
     /* add SSID subelement. */
-    if(req->ssid != NULL) {
+    if(!swl_str_isEmpty(req->ssid)) {
         size_t ssidLen = swl_str_len(req->ssid);
         swl_str_catFormat(cmd, sizeof(cmd), "00%.2x", (unsigned int) ssidLen);
         for(size_t i = 0; i < ssidLen; i++) {
