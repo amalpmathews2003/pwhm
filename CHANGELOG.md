@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.22.0 - 2024-05-31(08:46:15 +0000)
+
+### Other
+
+- - add optional parameter to sendRemoteMeasumentRequest
+
 ## Release v6.21.2 - 2024-05-29(18:27:26 +0000)
 
 ### Other
