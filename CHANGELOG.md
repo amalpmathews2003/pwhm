@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.23.0 - 2024-06-03(12:09:53 +0000)
+
+### Other
+
+- - add MLO Mode for associated device
+
 ## Release v6.22.2 - 2024-05-31(12:08:50 +0000)
 
 ### Other
