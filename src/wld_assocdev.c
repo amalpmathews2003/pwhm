@@ -1657,6 +1657,10 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
         swl_conv_maskToChar(buffer, sizeof(buffer), pAD->uniiBandsCapabilities, swl_uniiBand_str, SWL_BAND_MAX);
         amxd_trans_set_value(cstring_t, &trans, "UNIIBandsCapabilities", buffer);
 
+        amxd_trans_set_value(uint32_t, &trans, "ActiveNumberOfAffiliatedSta", wld_ad_getNrActiveAffiliatedSta(pAD));
+        swl_type_toTransParamString((swl_type_t*) &gtSwl_type_mlo_mode, &trans, "MLOMode", &pAD->mloMode);
+
+
         amxc_llist_for_each(it, &pAD->affiliatedStaList) {
             wld_affiliatedSta_t* affiliatedSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
 
@@ -1694,6 +1698,7 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
 
             amxd_trans_select_object(&trans, object);
         }
+
     }
 
     if(pAD->probeReqCaps.updateTime != pAD->lastProbeCapUpdateTime) {

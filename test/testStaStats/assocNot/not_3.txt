@@ -16,6 +16,10 @@
                 "from": "0001-01-01T00:00:00Z",
                 "to": "2022-01-01T00:00:12Z"
             },
+            "MLOMode": {
+                "from": "",
+                "to": "Unknown"
+            },
             "MACAddress": {
                 "from": "",
                 "to": "18:58:80:C2:FC:A0"

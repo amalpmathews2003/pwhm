@@ -111,6 +111,7 @@
 #include "swl/swl_returnCode.h"
 #include "swla/swla_tupleType.h"
 #include "swl/types/swl_arrayType.h"
+#include "swl/swl_mlo.h"
 #include "swla/swla_namedTupleType.h"
 #include "swla/swla_circTable.h"
 #include "swla/swla_object.h"
@@ -922,6 +923,7 @@ typedef struct {
     amxc_llist_t affiliatedStaList;         /* list of wld_affiliatedSta_t objects */
     wld_wds_intf_t* wdsIntf;                /* wds interface info */
     amxp_timer_t* delayDisassocNotif;
+    swl_mlo_mode_e mloMode;                 /* the Mlo mode */
 } T_AssociatedDevice;
 
 
@@ -975,7 +977,9 @@ SWL_ARRAY_TYPE_H(gtWld_signalStatArray, gtSwl_type_double, MAX_NR_ANTENNA);
     X(Y, gtSwl_type_uint32, MaxUplinkRateSupported, "MaxUplinkRateSupported") \
     X(Y, gtSwl_type_uint32, MaxUplinkRateReached, "MaxUplinkRateReached") \
     X(Y, gtSwl_type_bandwidthUnknown, MaxBandwidthSupported, "MaxBandwidthSupported") \
-    X(Y, gtSwl_type_bool, powerSave, "PowerSave")
+    X(Y, gtSwl_type_bool, powerSave, "PowerSave") \
+    X(Y, gtSwl_type_mlo_mode, mloMode, "MLOMode")
+
 
 SWL_NTT_H_ANNOTATE(gtWld_associatedDevice, T_AssociatedDevice, X_T_ASSOCIATED_DEVICE_ANNOT);
 

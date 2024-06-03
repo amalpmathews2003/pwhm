@@ -1638,6 +1638,23 @@ define rrm_t{
 			 */
 			%read-only string HeCapabilities;
 
+
+			/**
+			 * MLO Mode of the associated device.
+			 * The current operating mode of the MLO 
+			 * * Unknown : No MLO available, or mode unknown.
+			 * * EMLSR : Enhanced Multi LInk Single Radio.
+			 * * NSTR : Non-Simultaneous Transmit and Receive.
+			 * * STR : Simultaneous Transmit and Receive.
+			 * * EMLMR : Enhanced Multi Link Multi Radio.
+			 */
+			%read-only string MLOMode;
+
+			/**
+			 * The number of affiliated sta links that are currently active
+			 */
+			%read-only uint32 ActiveNumberOfAffiliatedSta;
+
 			/**
 			 * RRM Enabled Capabilities of the associated device
 			 * It can be a single or combination of following values:
