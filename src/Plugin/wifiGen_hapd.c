@@ -306,6 +306,14 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
             //that were potentially stopped by hapd when disabling one AP
             SAH_TRACEZ_INFO(ME, "%s: sync enable vap", pAP->alias);
             pAP->pFA->mfn_wvap_enable(pAP, pAP->enable, SET | DIRECT);
+            wld_secDmn_action_rc_ne rc;
+            /*
+             * first, set dyn ena/disabling vap params, before applying any action
+             */
+            if((rc = wld_ap_hostapd_setEnableVap(pAP, pAP->enable)) < SECDMN_ACTION_OK_DONE) {
+                SAH_TRACEZ_ERROR(ME, "%s: fail to save enable %d rc %d", pAP->alias, pAP->enable, rc);
+            }
+
             if(!wld_ap_hostapd_updateBeacon(pAP, "syncAp")) {
                 ret = SWL_RC_ERROR;
             }

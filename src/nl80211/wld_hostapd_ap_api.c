@@ -701,7 +701,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setEnableVap(T_AccessPoint* pAP, bool ena
     SAH_TRACEZ_INFO(ME, "%s: save enable vap %d", pAP->alias, enable);
     bool ret = (wld_ap_hostapd_setParamValue(pAP, "start_disabled", (enable ? "0" : "1"), "bcastOnStart") &&
                 wld_ap_hostapd_setParamValue(pAP, "send_probe_response", (enable ? "1" : "0"), "sndPrbResp"));
-    ASSERTS_TRUE(ret, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_TRUE(ret, SECDMN_ACTION_ERROR, ME, "Error setting hostapd enable vap");
     return SECDMN_ACTION_OK_DONE;
 }
 
