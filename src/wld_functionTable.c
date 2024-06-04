@@ -119,6 +119,14 @@ static swl_rc_ne TRAP_mfn_wvap_setMldUnit(T_AccessPoint* ap) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wvap_getMloStats(T_AccessPoint* ap, wld_mloStats_t* mloStats) {
+    _UNUSED_(ap);
+    _UNUSED_(mloStats);
+    SAH_TRACEZ_NOTICE(ME, "%p", ap);
+    // Ignore silently.
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static swl_rc_ne TRAP_mfn_wvdr_setDmnExecSettings(vendor_t* pVdr _UNUSED, const char* dmnName, wld_dmnMgt_dmnExecSettings_t* pCfg _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p %p %p", pVdr, dmnName, pCfg);
     return SWL_RC_NOT_IMPLEMENTED;
@@ -764,6 +772,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_fsm);
     FTA_ASSIGN(mfn_wvap_fsm_nodelay);
     FTA_ASSIGN(mfn_wvap_setMldUnit);
+    FTA_ASSIGN(mfn_wvap_getMloStats);
 
 
     FTA_ASSIGN(mfn_wrad_fsm_state);

@@ -2328,6 +2328,103 @@ define rrm_t{
 			on action validate call wld_ap_validateDiscoveryMethod_pvf;
 		}
 
+		/**
+		 * The Access Points (APs) affiliated to the AP MLD.
+		 * [EasyMesh] Source: Agent AP MLD Configuration TLV.
+		 */
+		%read-only object MLOStats {
+			on action read call wld_ap_getMloStats_orf;
+
+			/**
+			 * Primary / Auxilary
+			 */
+			%read-only string MLORole;
+
+			/**
+			 * The Link ID assigned to this affiliated AP.
+			 * [EasyMesh] source: Agent AP MLD Configuration TLV.
+			 */
+			%read-only uint32 LinkID;
+
+			/**
+			 * The number of packets transmitted to the Affiliated AP.
+			 * Note: this counter counts only MLD traffic through this BSSID, not legacy (non-MLD) traffic.
+			 */
+			%volatile %read-only uint32 PacketsSent;
+
+			/**
+			 * The total number of packets received from the associated client MLD.
+			 */
+			%volatile %read-only uint32 PacketsReceived;
+
+			/**
+			 * Total number of unicast bytes transmitted to MLD STAs associated with the affiliated AP.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 UnicastBytesSent;
+
+			/**
+			 * Total number of unicast bytes received from MLD STAs associated with the affiliated AP.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 UnicastBytesReceived;
+
+			/**
+			 * The number of packets which could not be transmitted by the Affiliated AP due to errors.
+			 * This counter counts only MLD traffic through this BSSID, not legacy (non-MLD) traffic.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 ErrorsSent;
+
+			/**
+			 * Total multicast bytes transmitted to MLD STAs associated with the affiliated AP.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 MulticastBytesSent;
+
+			/**
+			 * Total multicast bytes received from MLD STAs associated with the affiliated AP.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 MulticastBytesReceived;
+
+			/**
+			 * Total broadcast bytes transmitted to MLD STAs associated with the affiliated AP.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 BroadcastBytesSent;
+
+			/**
+			 * Total broadcast bytes received from MLD STAs associated with the affiliated AP.
+			 * [EasyMesh] source: Affiliated AP Metrics TLV.
+			 */
+			%volatile %read-only uint32 BroadcastBytesReceived;
+
+			/**
+			 * Estimated Service Parameters information field for AC=BE,
+			 * defined per [Figure 9-637/802.11-2020] and referenced in [Section 17.2.22/EasyMesh].
+			 */
+			%volatile %read-only string EstServiceParametersBE;
+
+			/**
+			 * Estimated Service Parameters information field for AC=BK,
+			 * defined per [Figure 9-637/802.11-2020] and referenced in [Section 17.2.22/EasyMesh].
+			 */
+			%volatile %read-only string EstServiceParametersBK;
+
+			/**
+			 * Estimated Service Parameters information field for AC=VI,
+			 * defined per [Figure 9-637/802.11-2020] and referenced in [Section 17.2.22/EasyMesh].
+			 */
+			%volatile %read-only string EstServiceParametersVI;
+
+			/**
+			 * Estimated Service Parameters information field for AC=VO,
+			 * defined per [Figure 9-637/802.11-2020] and referenced in [Section 17.2.22/EasyMesh].
+			 */
+			%volatile %read-only string EstServiceParametersVO;
+		}
+
 			/**
 			 * Perform event based RSSi Monitoring. When a significant "step" has been detected
 			 * compared to the previous value, an event is sent out.

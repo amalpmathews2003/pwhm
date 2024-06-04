@@ -2237,6 +2237,18 @@ typedef struct {
     bool addNeighbor;
     char* optionalEltHexStr;
 } wld_rrmReq_t;
+typedef struct {
+    uint32_t linkid;            /*!< linkid of the affiliated accesspoint */
+    uint32_t txPackets;         /*!< tx data packets */
+    uint32_t txUbyte;           /*!< tx data Unicast bytes */
+    uint32_t txBbyte;           /*!< tx data Broadcast bytes */
+    uint32_t txMbyte;           /*!< tx data Multicast bytes */
+    uint32_t txEbyte;           /*!< tx data error bytes */
+    uint32_t rxPackets;         /*!< rx data packets */
+    uint32_t rxUbyte;           /*!< rx data Unicast bytes */
+    uint32_t rxBbyte;           /*!< rx data Broadcast bytes */
+    uint32_t rxMbyte;           /*!< rx data Multicast bytes */
+} wld_mloStats_t;
 typedef int (APIENTRY* PFN_WRAD_PER_ANTENNA_RSSI)(T_Radio* rad, T_ANTENNA_RSSI*);
 typedef int (APIENTRY* PFN_WRAD_LATEST_POWER)(T_Radio* rad, T_ANTENNA_POWER*);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_UPDATE_CHANINFO)(T_Radio* rad);
@@ -2598,6 +2610,9 @@ typedef struct S_CWLD_FUNC_TABLE {
      * Notify Dmn execution settings change to vendor
      */
     swl_rc_ne (* mfn_wvdr_setDmnExecSettings)(vendor_t* pVdr, const char* dmnName, wld_dmnMgt_dmnExecSettings_t* pCfg);
+
+    /** get stats counters of requested affiliated accesspoint BSS */
+    swl_rc_ne (* mfn_wvap_getMloStats)(T_AccessPoint* vap, wld_mloStats_t* stats);
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {
