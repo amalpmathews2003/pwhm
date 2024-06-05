@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.24.0 - 2024-06-05(09:24:16 +0000)
+
+### Other
+
+- - Update ODL with missing Wifi7/MLO stats
+
 ## Release v6.23.0 - 2024-06-03(12:09:53 +0000)
 
 ### Other
