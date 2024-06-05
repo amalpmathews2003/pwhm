@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.24.1 - 2024-06-05(10:04:51 +0000)
+
+### Other
+
+- Steering is not working
+
 ## Release v6.24.0 - 2024-06-05(09:24:16 +0000)
 
 ### Other
