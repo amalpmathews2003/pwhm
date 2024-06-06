@@ -931,7 +931,7 @@ int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards) {
 
     SAH_TRACEZ_INFO(ME, "%s : Set standards %#x", pRad->Name, radioStandards);
     pRad->operatingStandards = radioStandards;
-    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+    setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_RAD);
     return 1;
 }
 

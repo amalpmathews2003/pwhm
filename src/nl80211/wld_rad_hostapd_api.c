@@ -291,7 +291,8 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
         "he_bss_color", "he_spr_srg_partial_bssid", "he_bss_color_partial",
         "he_spr_sr_control", "he_spr_non_srg_obss_pd_max_offset",
         "he_spr_srg_obss_pd_min_offset", "he_spr_srg_obss_pd_max_offset",
-        "he_spr_srg_bss_colors", "mbssid",
+        "he_spr_srg_bss_colors", "mbssid", "hw_mode", "ieee80211n",
+        "ieee80211ac", "ieee80211ax", "ieee80211be",
     };
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(miscRadParams); i++) {
         wld_ap_hostapd_setParamValue(primaryVap, miscRadParams[i], swl_mapChar_get(&radParams, (char*) miscRadParams[i]), "");

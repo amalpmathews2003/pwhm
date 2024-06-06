@@ -239,9 +239,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     SAH_TRACEZ_INFO(ME, "%s: operStd:0x%x suppStd:0x%x operChw:%d maxChW:%d tgtChW:%d chan:%d",
                     pRad->Name, pRad->operatingStandards, pRad->supportedStandards,
                     pRad->operatingChannelBandwidth, pRad->maxChannelBandwidth, tgtChW, tgtChan);
-
+    if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_N)) {
+        swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211n", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N));
+    }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
-        swl_mapChar_add(radConfigMap, "ieee80211n", "1");
         char htCaps[256] = {0};
         if(wld_channel_hasChannelWidthCovered(tgtChspec, SWL_BW_40MHZ)) {
             wld_channel_extensionPos_e extChanPos = wld_channel_getExtensionChannel(tgtChspec, pRad->extensionChannel);
@@ -288,8 +289,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     bool implicitBf = (pRad->implicitBeamFormingSupported && pRad->implicitBeamFormingEnabled);
     bool explicitBf = (pRad->explicitBeamFormingSupported && pRad->explicitBeamFormingEnabled);
     bool muMimo = (pRad->multiUserMIMOSupported && pRad->multiUserMIMOEnabled);
+    if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AC)) {
+        swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211ac", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AC));
+    }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AC)) {
-        swl_mapChar_add(radConfigMap, "ieee80211ac", "1");
         if(pChWId) {
             tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 0, pChWId);
             swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
@@ -368,8 +371,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapChar_add(radConfigMap, "vht_capab", vhtCaps);
         }
     }
+    if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AX)) {
+        swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211ax", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AX));
+    }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AX)) {
-        swl_mapChar_add(radConfigMap, "ieee80211ax", "1");
         if(pChWId) {
             tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 0, pChWId);
             swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
@@ -459,12 +464,14 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
             swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_tx_ant_pat", 0);        // corresponds to HE_6GHZ_BAND_CAP_TX_ANTPAT_CONS
         }
     }
+    if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE)) {
+        swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211be", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE));
+    }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
         /* ieee80211be: Whether IEEE 802.11be (EHT) is enabled
          * 0 = disabled (default)
          * 1 = enabled
          */
-        swl_mapChar_add(radConfigMap, "ieee80211be", "1");
 
         uint32_t* pEhtChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 1, 2, &tgtChW);
         if(pEhtChWId) {

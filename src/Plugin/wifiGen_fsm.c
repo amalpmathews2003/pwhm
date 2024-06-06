@@ -330,6 +330,7 @@ static bool s_doRadSync(T_Radio* pRad) {
     pRad->pFA->mfn_wrad_sync(pRad, SET | DIRECT);
     if(wifiGen_hapd_isAlive(pRad)) {
         wld_rad_hostapd_setMiscParams(pRad);
+        wld_rad_hostapd_setChannel(pRad);
     }
     return true;
 }
