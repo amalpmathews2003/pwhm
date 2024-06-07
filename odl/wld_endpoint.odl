@@ -505,7 +505,7 @@
 			 *  provides a mechanism for an ACS to label this instance for
 			 *  future reference. An initial unique value MUST be assigned
 			 *  when the CPE creates an instance of this object.*/
-			%persistent string Alias{
+			%persistent %unique %key string Alias{
 			   userflags %upc;
 			}
 			/** The profile identifier in use by the connection. The SSID is
