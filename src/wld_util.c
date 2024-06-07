@@ -202,7 +202,7 @@ const T_COUNTRYCODE Rad_CountryCode[] = {
     {4009, "Japan_9", "J9", SWL_OP_CLASS_COUNTRY_JP},
     {4010, "Japan_10", "J10", SWL_OP_CLASS_COUNTRY_JP},
     {   0, "Jersey", "JE", SWL_OP_CLASS_COUNTRY_MAX},
-    { 400, "Jordan", "JO", SWL_OP_CLASS_COUNTRY_MAX},
+    { 400, "Jordan", "JO", SWL_OP_CLASS_COUNTRY_JP},
     { 398, "Kazakhstan", "KZ", SWL_OP_CLASS_COUNTRY_MAX},
     { 404, "Kenya", "KE", SWL_OP_CLASS_COUNTRY_MAX},
     {   0, "Kiribati", "KI", SWL_OP_CLASS_COUNTRY_MAX},
