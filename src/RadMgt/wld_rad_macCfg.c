@@ -292,11 +292,13 @@ swl_rc_ne wld_rad_macCfg_generateDummyBssid(T_Radio* pRad, const char* ifname, u
     ASSERT_NOT_NULL(macBin, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     memcpy(macBin->bMac, &g_swl_macBin_null, SWL_MAC_BIN_LEN);
+    // Set 3 LSB bytes based on radio base mac
+    memcpy(&macBin->bMac[3], &pRad->MACAddr[3], 3);
     // Set on local interfaces the locally administered bit.
     macBin->bMac[0] |= 0x02;
     // Use guest offset increment for local interfaces mac
     swl_mac_binAddVal(macBin, (1 << 8) * (1 + pRad->ref_index), -1);
-    swl_mac_binAddVal(macBin, 1 + index, 18);
+    swl_mac_binAddVal(macBin, index, 18);
     SAH_TRACEZ_WARNING(ME, "RADIO %s dummy BSS iface %s rank(%d) MAC "SWL_MAC_FMT " Rad "SWL_MAC_FMT,
                        pRad->Name, ifname, index,
                        SWL_MAC_ARG(macBin->bMac), SWL_MAC_ARG(pRad->MACAddr));
