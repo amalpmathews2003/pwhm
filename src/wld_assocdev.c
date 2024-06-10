@@ -719,6 +719,8 @@ static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* r
             amxc_var_t tmpAfStaVar;
             amxc_var_init(&tmpAfStaVar);
             swla_dm_getObjectParams(afSta->object, &tmpAfStaVar, &pAD->onActionReadCtx);
+            amxc_var_add_new_key_uint32_t(&tmpAfStaVar, "ObjectIndex", amxd_object_get_index(afSta->object));
+
 
             amxc_var_t* test = amxc_var_add_new_amxc_htable_t(&affiliatedStaList, &tmpAfStaVar.data.vm);
             if(test == NULL) {
@@ -728,6 +730,7 @@ static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* r
         }
 
         amxc_var_add_new_key_amxc_llist_t(&tmpVar, "AffiliatedSta", &affiliatedStaList.data.vl);
+        amxc_var_add_new_key_uint32_t(&tmpVar, "ObjectIndex", amxd_object_get_index(pAD->object));
         amxc_var_clean(&affiliatedStaList);
 
         amxc_var_add_new_amxc_htable_t(retval, &tmpVar.data.vm);

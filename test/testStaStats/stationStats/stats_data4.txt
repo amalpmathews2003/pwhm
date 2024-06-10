@@ -29,8 +29,9 @@
 
         ],
         "Noise": -91,
-        "AvgSignalStrengthByChain": 0,
         "TxMulticastPacketCount": 243,
+        "ObjectIndex": 1,
+        "AvgSignalStrengthByChain": 0,
         "Rx_RetransmissionsFailed": 3,
         "PowerSave": false,
         "AvgSignalStrength": -18,
