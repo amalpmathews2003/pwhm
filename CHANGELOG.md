@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.24.5 - 2024-06-10(13:43:42 +0000)
+
+### Other
+
+- - AffiliatedSta not present in higher level data model
+
 ## Release v6.24.4 - 2024-06-10(09:54:59 +0000)
 
 ### Other
