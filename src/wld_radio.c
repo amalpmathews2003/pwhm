@@ -1787,7 +1787,7 @@ wld_ap_dm_m wld_rad_getDiscoveryMethod(T_Radio* pR) {
 
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pR) {
-        if(pAP->status != APSTI_ENABLED) {
+        if(!pAP->enable) {
             continue;
         }
         if(pAP->discoveryMethod != M_AP_DM_DEFAULT) {
