@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.24.2 - 2024-06-10(06:31:19 +0000)
+
+### Other
+
+- - Update default odl file genetation to enable radio STA mode
+
 ## Release v6.24.1 - 2024-06-05(10:04:51 +0000)
 
 ### Other
