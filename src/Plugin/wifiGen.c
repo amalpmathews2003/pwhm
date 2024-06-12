@@ -109,6 +109,7 @@ bool wifiGen_init() {
     fta.mfn_wrad_destroy_hook = wifiGen_rad_destroyHook;
     fta.mfn_wrad_addVapExt = wifiGen_rad_addVapExt;
     fta.mfn_wrad_delvapif = wifiGen_rad_delvapif;
+    fta.mfn_wrad_addvapif = wifiGen_rad_addvapif;
     fta.mfn_wrad_addendpointif = wifiGen_rad_addEndpointIf;
     fta.mfn_wrad_delendpointif = wifiGen_rad_delendpointif;
     fta.mfn_wrad_generateVapIfName = wifiGen_rad_generateVapIfName;

@@ -132,16 +132,49 @@ static bool s_updateVapIfaceName(T_Radio* pRad, T_AccessPoint* pAP, const char* 
     return swl_str_copy(pAP->alias, sizeof(pAP->alias), vapIfName);
 }
 
-static int s_createAp(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIfIndex) {
-    swl_rc_ne rc;
-    if((!apIfIndex) && (swl_str_matches(pAP->alias, pRad->Name))) {
-        rc = wld_rad_nl80211_setAp(pRad);
-        pAP->index = pRad->index;
-        pAP->wDevId = pRad->wDevId;
-    } else {
-        rc = wld_rad_nl80211_addVapInterface(pRad, pAP);
+int wifiGen_rad_addvapif(T_Radio* pRad, char* ifname, int ifnameSize) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRad, rc, ME, "NULL");
+    ASSERT_STR(ifname, rc, ME, "%s: missing new vapIfName", pRad->Name);
+    swl_macBin_t* pMac = NULL;
+    T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifname);
+    if((pAP != NULL) && (pAP->pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pAP->pSSID->MACAddress))) {
+        pMac = (swl_macBin_t*) pAP->pSSID->MACAddress;
     }
-    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to create ap(%s)id(%d) on rad(%s)", pAP->alias, apIfIndex, pRad->Name);
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    rc = wld_rad_nl80211_addInterface(pRad, ifname, pMac, false, &ifaceInfo);
+    ASSERT_FALSE(rc < SWL_RC_ERROR, rc, ME, "fail to add VAP(%s) on radio(%s)", ifname, pRad->Name);
+    swl_str_copy(ifname, ifnameSize, ifaceInfo.name);
+    return ifaceInfo.ifIndex;
+}
+
+swl_rc_ne wifiGen_rad_addVap(T_Radio* pRad, T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    char* ifname = pAP->alias;
+    int ret = pRad->pFA->mfn_wrad_addvapif(pRad, ifname, 0);
+    if(ret == SWL_RC_NOT_IMPLEMENTED) {
+        SAH_TRACEZ_WARNING(ME, "fallback to default addVapIf impl AP(%s)/Rad(%s)", ifname, pRad->Name);
+        ret = wifiGen_rad_addvapif(pRad, ifname, 0);
+    }
+    ASSERT_FALSE(ret <= 0, SWL_RC_ERROR, ME, "fail to create ap(%s) on rad(%s) ret:%d", ifname, pRad->Name, ret);
+    int ifIndex = -1;
+    ret = wld_linuxIfUtils_getIfIndex(wld_rad_getSocket(pRad), ifname, &ifIndex);
+    ASSERT_FALSE((ret < 0) || (ifIndex <= 0), SWL_RC_ERROR, ME, "fail to get ap(%s) info on rad(%s)", pAP->alias, pRad->Name);
+    pAP->index = ifIndex;
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    if(wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), ifIndex, &ifaceInfo) >= 0) {
+        pAP->wDevId = ifaceInfo.wDevId;
+    }
+    return SWL_RC_OK;
+}
+
+static swl_rc_ne s_createAp(T_Radio* pRad, T_AccessPoint* pAP) {
+    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    ASSERT_NOT_NULL(pRad, rc, ME, "NULL");
+    ASSERT_NOT_NULL(pAP, rc, ME, "NULL");
+    rc = wifiGen_rad_addVap(pRad, pAP);
+    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to create ap(%s) on rad(%s)", pAP->alias, pRad->Name);
     rc = wifiGen_hapd_initVAP(pAP);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "%s: fail to init hapd interface", pAP->alias);
     rc = pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
@@ -211,14 +244,14 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
         }
     }
 
-    //retrieve interface name and update pAP->alias
+    // retrieve interface name and update pAP->alias
     s_updateVapIfaceName(pRad, pAP, vapIfname);
-    // actually create AP, and update netdev index.
-    s_createAp(pRad, pAP, apIfIndex);
-
+    // generate BSSID and save it
     swl_macBin_t macBin = SWL_MAC_BIN_NEW();
     wld_ssid_generateBssid(pRad, pAP, apMacIndex, &macBin);
     wld_ssid_setBssid(pAP->pSSID, &macBin);
+    // actually create AP, and update netdev index.
+    s_createAp(pRad, pAP);
 
     /* Set network address! */
     wifiGen_vap_setBssid(pAP);

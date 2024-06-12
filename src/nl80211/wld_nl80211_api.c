@@ -244,6 +244,9 @@ static swl_rc_ne s_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex,
                  NL_ATTR(NL80211_ATTR_SOCKET_OWNER)));
     //add mac if provided and valid; driver may support setting mac on interface creation
     bool setMac = (!swl_mac_binIsBroadcast(&pIfaceConf->mac) && !swl_mac_binIsNull(&pIfaceConf->mac));
+    if(setMac) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_DATA(NL80211_ATTR_MAC, SWL_MAC_BIN_LEN, pIfaceConf->mac.bMac));
+    }
     if(!ifIndex) {
         NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_WIPHY, wiphyId));
     }
@@ -259,10 +262,9 @@ static swl_rc_ne s_newInterfaceExt(wld_nl80211_state_t* state, uint32_t ifIndex,
         wld_nl80211_ifaceInfo_t* pIface = &requestData.pIfaces[0];
         if(setMac && !swl_mac_binMatches(&pIfaceConf->mac, &pIface->mac)) {
             wld_linuxIfUtils_setMacExt(pIface->name, &pIfaceConf->mac);
+            wld_linuxIfUtils_getMacExt(pIface->name, &pIface->mac);
         }
-        if(pIfaceInfo) {
-            memcpy(pIfaceInfo, pIface, sizeof(wld_nl80211_ifaceInfo_t));
-        }
+        W_SWL_SETPTR(pIfaceInfo, *pIface);
     }
     free(requestData.pIfaces);
     return rc;

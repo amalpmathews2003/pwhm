@@ -2154,8 +2154,14 @@ extern "C" {
 typedef int (APIENTRY* PFN_WRAD_ADDVAP_EXT)(T_Radio* rad, T_AccessPoint* vap);
 
 
-/* This function will physically create an VAP interface and attach it to the bottom layer */
-typedef int (APIENTRY* PFN_WRAD_ADDVAPIF)(T_Radio* rad, char* vap, int bufsize);
+/*
+ * @brief: create an VAP interface and attach it to the bottom layer
+ * @param rad internal radio context
+ * @param vapIfName the expected netdev interface name, MUST not be empty
+ * @param vapIfNameSize ifname buffer size, to get a copy of the final iface name
+ * @return the netdev index of the created interface (>0), error code <=0 otherwise
+ */
+typedef int (APIENTRY* PFN_WRAD_ADDVAPIF)(T_Radio* rad, char* vapIfName, int vapIfNameSize);
 typedef int (APIENTRY* PFN_WRAD_DELVAPIF)(T_Radio* rad, char* vap);
 typedef int (APIENTRY* PFN_WRAD_ADDENDPOINTIF)(T_Radio* rad, char* endpoint, int bufsize);
 typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);

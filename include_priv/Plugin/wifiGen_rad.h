@@ -65,6 +65,7 @@
 
 #include "wld/wld.h"
 
+/* FTA APIs */
 int wifiGen_rad_createHook(T_Radio* pRad);
 void wifiGen_rad_destroyHook(T_Radio* pRad);
 int wifiGen_rad_poschans(T_Radio* pRad, uint8_t* buf, int bufsize);
@@ -72,6 +73,7 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf, int bufsize);
 int wifiGen_rad_miscHasSupport(T_Radio* rad, T_AccessPoint* vap, char* buf, int bufsize);
 int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP);
 int wifiGen_rad_delvapif(T_Radio* pRad, char* vapName);
+int wifiGen_rad_addvapif(T_Radio* pRad, char* ifname, int ifnameSize);
 int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize);
 swl_rc_ne wifiGen_rad_delendpointif(T_Radio* pRad, char* endpoint);
 swl_rc_ne wifiGen_rad_generateVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize);
@@ -89,7 +91,6 @@ swl_rc_ne wifiGen_rad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpec);
 int wifiGen_rad_antennactrl(T_Radio* pRad, int val, int set);
 int wifiGen_rad_staMode(T_Radio* pRad, int val, int set);
 int wifiGen_rad_supstd(T_Radio* pRad, swl_radioStandard_m radioStandards);
-void wifiGen_rad_initBands(T_Radio* pRad);
 swl_rc_ne wifiGen_rad_stats(T_Radio* pRad);
 int wifiGen_rad_delayedCommitUpdate(T_Radio* pRad);
 swl_rc_ne wifiGen_rad_getScanResults(T_Radio* rad, wld_scanResults_t* results);
@@ -97,5 +98,9 @@ swl_rc_ne wifiGen_rad_getAirStats(T_Radio* pRad, wld_airStats_t* pStats);
 swl_rc_ne wifiGen_rad_getSpectrumInfo(T_Radio* rad, bool update _UNUSED, amxc_llist_t* llSpectrumChannelInfo);
 swl_rc_ne wifiGen_rad_bgDfsStartExt(T_Radio* pRad, wld_startBgdfsArgs_t* args);
 swl_rc_ne wifiGen_rad_bgDfsStop(T_Radio* pRad);
+
+/* Internal APIs */
+void wifiGen_rad_initBands(T_Radio* pRad);
+swl_rc_ne wifiGen_rad_addVap(T_Radio* pRad, T_AccessPoint* pAP);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_RAD_H_ */
