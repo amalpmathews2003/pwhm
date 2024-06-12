@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.24.7 - 2024-06-12(14:34:53 +0000)
+
+### Other
+
+- -[Wi-Fi] WEP modes are not supported but in ModesSupported list
+
 ## Release v6.24.6 - 2024-06-11(12:06:06 +0000)
 
 ### Other
