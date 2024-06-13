@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.25.0 - 2024-06-13(13:29:29 +0000)
+
+### Other
+
+- - Support station inactivity timeout
+
 ## Release v6.24.7 - 2024-06-12(14:34:53 +0000)
 
 ### Other
