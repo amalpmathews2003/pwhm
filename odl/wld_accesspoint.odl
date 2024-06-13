@@ -402,6 +402,14 @@ define rrm_t{
 		}
 
 		/**
+		 * Station inactivity limit
+		 * If a station does not send anything in StaInactivityTimeout, it will be deauthenticated.
+		 */
+		%persistent %protected uint16 StaInactivityTimeout {
+			default 60;
+		}
+
+		/**
 		 * Object encapsulating IEEE 802.11r configuration parameters.
 		 * @version 9.1
 		 */

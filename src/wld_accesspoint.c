@@ -1872,6 +1872,19 @@ static void s_setMACAddressControlEnabled_pwf(void* priv _UNUSED, amxd_object_t*
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setStaInactivityTimeout_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+    uint16_t StaInactivityTimeout = amxc_var_dyncast(uint16_t, newValue);
+    SAH_TRACEZ_INFO(ME, "%s: set StaInactivityTimeout %u", pAP->alias, StaInactivityTimeout);
+    pAP->StaInactivityTimeout = StaInactivityTimeout;
+    wld_ap_doSync(pAP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 T_AccessPoint* wld_ap_create(T_Radio* pRad, const char* vapName, uint32_t idx) {
     return s_createAp(pRad, vapName, idx, NULL);
 }
@@ -2649,6 +2662,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("MACFilterAddressList", wld_apMacFilter_setAddressList_pwf),
                   SWLA_DM_PARAM_HDLR("Enable", s_setApEnable_pwf),
                   SWLA_DM_PARAM_HDLR("MACAddressControlEnabled", s_setMACAddressControlEnabled_pwf),
+                  SWLA_DM_PARAM_HDLR("StaInactivityTimeout", s_setStaInactivityTimeout_pwf),
                   ),
               .instAddedCb = s_addApInst_oaf, );
 

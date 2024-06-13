@@ -319,6 +319,7 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"multi_ap_backhaul_ssid", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap_backhaul_wpa_psk", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap_backhaul_wpa_passphrase", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"ap_max_inactivity", SECDMN_ACTION_OK_NEED_SIGHUP},
               //params set and applied on bss with reload_wpa_psk and update_beacon
               {"ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
@@ -679,7 +680,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "ft_over_ds", "multi_ap", "qos_map_set",
         "wps_state", "config_methods", "uuid", "ap_pin",
         "rrm_neighbor_report", "ieee80211w", "mbo",
-        "wmm_enabled", "uapsd_advertisement_enabled", "rnr",
+        "wmm_enabled", "uapsd_advertisement_enabled", "rnr", "ap_max_inactivity",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);

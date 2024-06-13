@@ -961,6 +961,14 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(pAP->wdsEnable) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "wds_sta", pAP->wdsEnable);
     }
+    /*
+     * If a station does not send anything in ap_max_inactivity seconds,
+     * an empty data frame is sent to it in order to verify whether it is still in range.
+     * If this frame is not ACKed, the station will be disassociated and then deauthenticated.
+     */
+    if(pAP->StaInactivityTimeout) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "ap_max_inactivity", pAP->StaInactivityTimeout);
+    }
 }
 
 /**

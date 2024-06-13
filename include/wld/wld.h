@@ -1824,6 +1824,7 @@ struct S_ACCESSPOINT {
     int ActiveAssociatedDeviceNumberOfEntries;
     int AssociatedDeviceNumberOfEntries;
     int MaxStations;
+    uint16_t StaInactivityTimeout;
     bool IEEE80211kEnable;
     bool IEEE80211rEnable;
     bool IEEE80211rFTOverDSEnable;
