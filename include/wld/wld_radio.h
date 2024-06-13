@@ -229,6 +229,8 @@ void wld_rad_doSync(T_Radio* pRad);
 int wld_rad_doCommitIfUnblocked(T_Radio* pR);
 bool wld_rad_has_endpoint_enabled(T_Radio* rad);
 T_EndPoint* wld_rad_getEnabledEndpoint(T_Radio* rad);
+bool wld_rad_hasRunningEndpoint(T_Radio* rad);
+T_EndPoint* wld_rad_getRunningEndpoint(T_Radio* rad);
 bool wld_rad_hasWpsActiveEndpoint(T_Radio* rad);
 T_EndPoint* wld_rad_getWpsActiveEndpoint(T_Radio* rad);
 void wld_rad_updateActiveDevices(T_Radio* pRad, amxd_trans_t* trans);

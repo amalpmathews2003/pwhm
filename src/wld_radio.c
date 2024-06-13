@@ -323,8 +323,8 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
          * to avoid any channel that may lose connection with
          * AP
          */
-        T_EndPoint* ep = wld_rad_getEnabledEndpoint(pR);
-        if(ep && (ep->connectionStatus == EPCS_CONNECTED)) {
+        T_EndPoint* ep = wld_rad_getRunningEndpoint(pR);
+        if(ep != NULL) {
             SAH_TRACEZ_INFO(ME, "%s: EP %s connected, not change channel", pR->Name, ep->Name);
             SAH_TRACEZ_OUT(ME);
             return;
@@ -2004,6 +2004,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         bool commit = false;
 
         tmp_bool = amxd_object_get_bool(object, "AutoChannelEnable", NULL);
+        tmp_bool &= (!wld_rad_hasRunningEndpoint(pR));
         if(!pR->externalAcsMgmt && (pR->autoChannelEnable != tmp_bool)) {
             pR->autoChannelEnable = tmp_bool;
             pR->pFA->mfn_wrad_autochannelenable(pR, pR->autoChannelEnable, SET);
@@ -3707,6 +3708,27 @@ T_EndPoint* wld_rad_getEnabledEndpoint(T_Radio* rad) {
     wld_rad_forEachEp(pEndpoint, rad) {
         if(pEndpoint && pEndpoint->enable) {
             return pEndpoint;
+        }
+    }
+    return NULL;
+}
+
+bool wld_rad_hasRunningEndpoint(T_Radio* rad) {
+    return wld_rad_getRunningEndpoint(rad) != NULL;
+}
+
+T_EndPoint* wld_rad_getRunningEndpoint(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
+    T_EndPoint* pEP = NULL;
+
+    /* Check if NO EP is connecting/connected with saved profile or wps session */
+    wld_rad_forEachEp(pEP, pRad) {
+        if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) >= SWL_RC_OK) &&
+           ((pEP->wpsSessionInfo.WPS_PairingInProgress) ||
+            (pEP->connectionStatus == EPCS_DISCOVERING) ||
+            (pEP->connectionStatus == EPCS_CONNECTING) ||
+            (pEP->connectionStatus == EPCS_CONNECTED))) {
+            return pEP;
         }
     }
     return NULL;

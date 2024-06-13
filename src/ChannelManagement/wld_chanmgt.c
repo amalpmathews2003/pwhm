@@ -246,6 +246,7 @@ static swl_rc_ne s_writeChangeToOdl(wld_rad_chanChange_t* change) {
 }
 
 static void s_saveChannelChange(wld_rad_chanChange_t* change) {
+    ASSERT_NOT_NULL(change, , ME, "NULL");
     ASSERTS_FALSE(s_writeChangeToOdl(change) < SWL_RC_OK, , ME, "Fail to save channel change");
     s_sendNotification(change);
 }
@@ -333,7 +334,7 @@ static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
     pR->timerReqChanspec = NULL;
 }
 
-swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
+static swl_rc_ne s_refreshCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
     ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
 
     if(swl_typeChanspec_equals(chanspec, pR->currentChanspec.chanspec)) {
@@ -364,18 +365,8 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
     pR->totalNrCurrentChanspecChanges++;
     pR->channelChangeCounters[reason]++;
 
-    if(swl_function_deferIsActive(&pR->callIdReqChanspec)) {
-        bool success = swl_type_equals(swl_type_chanspec, &pR->targetChanspec.chanspec, &chanspec);
-        success &= (pR->targetChanspec.reason == reason);
-        amxd_status_t status = success ? amxd_status_ok : amxd_status_unknown_error;
-        s_setChanspecDone(pR, status);
-    }
-
     if(pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) {
         pR->operatingChannelBandwidth = swl_chanspec_toRadBw(&chanspec);
-    }
-    if((reason == CHAN_REASON_OBSS_COEX)) {
-        pR->targetChanspec.chanspec.bandwidth = chanspec.bandwidth;
     }
 
     pR->currentChanspec.chanspec = chanspec;
@@ -390,9 +381,6 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
         memset(pR->targetChanspec.reasonExt, 0, sizeof(pR->targetChanspec.reasonExt));
     }
 
-
-    wld_rad_chanChange_t* change = s_logChannelChange(pR, oldSpec);
-
     if(s_isChanspecSync(pR)) {
         pR->channelShowing = CHANNEL_INTERNAL_STATUS_SYNC;
         swl_str_copy(pR->currentChanspec.reasonExt, sizeof(pR->currentChanspec.reasonExt), pR->targetChanspec.reasonExt);
@@ -403,26 +391,58 @@ swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec
     wld_rad_updateChannelsInUse(pR);
 
     if(pR->hasDmReady) {
-        s_saveChannelChange(change);
+        s_saveChannelChange(s_logChannelChange(pR, oldSpec));
         s_saveCurrentChanspec(pR);
     }
 
     /* notify about channel change status */
     wld_rad_triggerChangeEvent(pR, WLD_RAD_CHANGE_CHANSPEC, NULL);
 
+    return SWL_RC_OK;
+
+}
+
+static swl_rc_ne s_checkTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
+    ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
+
+    if(swl_function_deferIsActive(&pR->callIdReqChanspec)) {
+        bool success = swl_type_equals(swl_type_chanspec, &pR->targetChanspec.chanspec, &chanspec);
+        success &= (pR->targetChanspec.reason == reason);
+        amxd_status_t status = success ? amxd_status_ok : amxd_status_unknown_error;
+        s_setChanspecDone(pR, status);
+    }
+
+    if((reason == CHAN_REASON_OBSS_COEX)) {
+        pR->targetChanspec.chanspec.bandwidth = chanspec.bandwidth;
+    }
+
     /* Reset to default channel if an invalid channel switch occurred */
     if(reason == CHAN_REASON_INVALID) {
         swl_chanspec_t resetChanspec = SWL_CHANSPEC_NEW(swl_channel_defaults[pR->operatingFrequencyBand],
                                                         pR->targetChanspec.chanspec.bandwidth,
                                                         pR->operatingFrequencyBand);
-        SAH_TRACEZ_ERROR(ME, "%s: Invalid channel switch <%u>, reset to default channel <%u>", pR->Name, pR->channel, resetChanspec.channel);
-        wld_chanmgt_setTargetChanspec(pR, resetChanspec, true, CHAN_REASON_RESET, NULL);
+        SAH_TRACEZ_ERROR(ME, "%s: Invalid channel switch <%u>, reset to default channel <%u>", pR->Name, pR->channel,
+                         resetChanspec.channel);
+        return wld_chanmgt_setTargetChanspec(pR, resetChanspec, true, CHAN_REASON_RESET, NULL);
     }
+
+    if((reason == CHAN_REASON_EP_MOVE) && !swl_typeChanspec_equals(pR->targetChanspec.chanspec, chanspec)) {
+        return wld_chanmgt_setTargetChanspec(pR, chanspec, true, reason, "force EP chanspec");
+    }
+
     if((reason == CHAN_REASON_INITIAL) && (pR->targetChanspec.chanspec.channel == 0)) {
-        wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_INITIAL, NULL);
+        return wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_INITIAL, NULL);
     }
 
     return SWL_RC_OK;
+
+}
+
+swl_rc_ne wld_chanmgt_reportCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld_channelChangeReason_e reason) {
+    ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
+    swl_rc_ne rc = s_refreshCurrentChanspec(pR, chanspec, reason);
+    s_checkTargetChanspec(pR, chanspec, reason);
+    return rc;
 }
 
 static void s_updateTargetDm(void* data) {
@@ -603,6 +623,11 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
     if(!wld_rad_hasChannel(pR, channel)) {
         SAH_TRACEZ_ERROR(ME, "%s: Invalid channel %d", pR->Name, channel);
         return amxd_status_invalid_arg;
+    }
+
+    if(wld_rad_hasRunningEndpoint(pR)) {
+        SAH_TRACEZ_WARNING(ME, "%s: EP connected, do not change channel", pR->Name);
+        return amxd_status_invalid_action;
     }
 
     swl_freqBandExt_e freqBand = pR->operatingFrequencyBand;
