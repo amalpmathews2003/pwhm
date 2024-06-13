@@ -761,8 +761,8 @@ int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
         swl_rc_ne retVal = SWL_RC_OK;
 
         SAH_TRACEZ_INFO(ME, "%s: setPow %i / max %i diff %i => %i", pRad->Name, val, maxPow, *tgtVal, tgtPow);
-        // arg in mbm, so * 100
-        retVal = wld_rad_nl80211_setTxPowerLimited(pRad, tgtPow * 100);
+
+        retVal = wld_rad_nl80211_setTxPowerLimited(pRad, tgtPow);
 
         return (retVal == SWL_RC_OK ? WLD_OK : WLD_ERROR);
     } else {
