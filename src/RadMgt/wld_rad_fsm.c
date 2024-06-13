@@ -337,6 +337,24 @@ static void s_ensureHasLock(T_Radio* rad) {
     }
 }
 
+static bool s_hasPendingActions(T_Radio* rad) {
+    if(rad->fsmRad.FSM_SyncAll || areBitsSetLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW)) {
+        return true;
+    }
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, rad) {
+        if(pAP->fsm.FSM_SyncAll || areBitsSetLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW)) {
+            return true;
+        }
+    }
+    T_EndPoint* pEP = NULL;
+    wld_rad_forEachEp(pEP, rad) {
+        if(pEP->fsm.FSM_SyncAll || areBitsSetLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 static void s_performSync(T_Radio* rad) {
     T_AccessPoint* pAP;
@@ -345,7 +363,11 @@ static void s_performSync(T_Radio* rad) {
     // Entry point to actually start configuring.
     // dependency, rad and vap should follow after.
     s_ensureHasLock(rad);
-    rad->fsmRad.FSM_ComPend = 0;    // Clear PENDING marker!
+
+    /* clear pending marker if no new actions already waiting */
+    if(!s_hasPendingActions(rad)) {
+        rad->fsmRad.FSM_ComPend = 0;
+    }
 
     /* We're passing here if we've a pending commit */
     wld_rad_forEachAp(pAP, rad) {
