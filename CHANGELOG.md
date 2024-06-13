@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.25.1 - 2024-06-13(13:41:20 +0000)
+
+### Other
+
+- - fix reset pending FSM actions
+
 ## Release v6.25.0 - 2024-06-13(13:29:29 +0000)
 
 ### Other
