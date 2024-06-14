@@ -459,6 +459,10 @@ swl_rc_ne s_updateChannels(T_Radio* pRad, wld_nl80211_bandDef_t* pOperBand) {
             maxBwInt = radBwInt;
             maxBw = swl_chanspec_intToBw(maxBwInt);
             W_SWL_BIT_SET(suppChW, radBw);
+            if(radBw == SWL_RAD_BW_320MHZ1) {
+                //assume extension high is supported by standard
+                W_SWL_BIT_SET(suppChW, SWL_RAD_BW_320MHZ2);
+            }
         }
     }
     pRad->maxChannelBandwidth = maxBw;

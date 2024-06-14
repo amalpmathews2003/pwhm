@@ -422,7 +422,7 @@ swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wl
     swl_chanspec_t ctrlChanspec;
     swl_rc_ne rc = swl_chanspec_channelFromMHz(&ctrlChanspec, pIfaceInfo->chanSpec.ctrlFreq);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get ctrl channel");
-    rc = swl_chanspec_channelFromMHz(pChanSpec, pIfaceInfo->chanSpec.centerFreq1);
+    rc = swl_chanspec_fromMHz(pChanSpec, pIfaceInfo->chanSpec.centerFreq1);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get center channel");
     pChanSpec->channel = ctrlChanspec.channel;
     return SWL_RC_OK;
