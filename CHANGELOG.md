@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.0 - 2024-06-14(08:25:28 +0000)
+
+### Other
+
+- add gen impl of FTA addVapIf
+
 ## Release v6.25.2 - 2024-06-13(13:56:10 +0000)
 
 ## Release v6.25.1 - 2024-06-13(13:41:20 +0000)
