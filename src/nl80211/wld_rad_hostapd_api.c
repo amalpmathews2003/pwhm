@@ -131,6 +131,21 @@ static swl_rc_ne s_calculateSecChannelOffset(swl_bandwidth_e bandwidth, uint32_t
             ret = SWL_RC_ERROR;
         }
         break;
+    case SWL_BW_320MHZ:
+        if((freq + 150 == center_freq) || (freq + 110 == center_freq) ||
+           (freq + 70 == center_freq) || (freq + 30 == center_freq) ||
+           (freq - 10 == center_freq) || (freq - 50 == center_freq) ||
+           (freq - 90 == center_freq) || (freq - 130 == center_freq)) {
+            *sec_channel_offset = 1;
+        } else if((freq + 90 == center_freq) || (freq + 130 == center_freq) ||
+                  (freq + 10 == center_freq) || (freq + 50 == center_freq) ||
+                  (freq - 70 == center_freq) || (freq - 30 == center_freq) ||
+                  (freq - 150 == center_freq) || (freq - 110 == center_freq)) {
+            *sec_channel_offset = -1;
+        } else {
+            ret = SWL_RC_ERROR;
+        }
+        break;
     default:
         ret = SWL_RC_ERROR;
         break;
