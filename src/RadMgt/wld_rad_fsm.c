@@ -338,7 +338,9 @@ static void s_ensureHasLock(T_Radio* rad) {
 }
 
 static bool s_hasPendingActions(T_Radio* rad) {
-    if(rad->fsmRad.FSM_SyncAll || areBitsSetLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW)) {
+    if(rad->fsmRad.FSM_SyncAll ||
+       areBitsSetLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW) ||
+       areBitsSetLongArray(rad->fsmRad.FSM_CSC, FSM_BW)) {
         return true;
     }
     T_AccessPoint* pAP = NULL;
