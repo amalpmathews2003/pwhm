@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.2 - 2024-06-17(08:32:20 +0000)
+
+### Other
+
+- add multiple BSSID advertisement support in IEEE 802.11ax
+
 ## Release v6.26.1 - 2024-06-14(13:44:20 +0000)
 
 ### Other
