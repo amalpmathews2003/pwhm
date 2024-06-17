@@ -77,6 +77,8 @@ bool wld_wpaCtrlInterface_isReady(const wld_wpaCtrlInterface_t* pIface);
 const char* wld_wpaCtrlInterface_getPath(const wld_wpaCtrlInterface_t* pIface);
 const char* wld_wpaCtrlInterface_getName(const wld_wpaCtrlInterface_t* pIface);
 wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIface);
+void wld_wpaCtrlInterface_setEnable(wld_wpaCtrlInterface_t* pIface, bool enable);
+bool wld_wpaCtrlInterface_isEnabled(const wld_wpaCtrlInterface_t* pIface);
 
 #define CALL_INTF_EXT(pIntf, fName, ...) \
     { \

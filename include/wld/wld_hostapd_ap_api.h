@@ -140,5 +140,6 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport_ext(T_AccessPoint* pAP, const swl_macC
 
 swl_trl_e wld_hostapd_ap_getCfgParamSupp(T_AccessPoint* pAP, const char* param);
 swl_rc_ne wld_hostapd_ap_sendCfgParam(T_AccessPoint* pAP, const char* param, const char* value);
+bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP);
 
 #endif /* __WLD_AP_API_H__ */

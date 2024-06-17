@@ -139,6 +139,10 @@ T_AccessPoint* wld_vap_from_name(const char* ifname);
 T_EndPoint* wld_vep_from_name(const char* ifname);
 T_Radio* wld_rad_from_name(const char* ifname);
 T_Radio* wld_rad_fromObj(amxd_object_t* radObj);
+T_AccessPoint* wld_rad_getFirstEnabledVap(T_Radio* pR);
+uint32_t wld_rad_countEnabledVaps(T_Radio* pR);
+wld_mbssidAdvertisement_mode_e wld_rad_getMbssidAdsMode(T_Radio* pRad);
+bool wld_rad_hasMbssidAds(T_Radio* pRad);
 
 T_AccessPoint* wld_rad_getVapByIndex(T_Radio* pRad, int index);
 T_EndPoint* wld_rad_getEpByIndex(T_Radio* pRad, int index);

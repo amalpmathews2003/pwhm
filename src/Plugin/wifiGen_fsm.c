@@ -255,10 +255,26 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
 
 static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERTI_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
-    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    ASSERTI_TRUE(wifiGen_hapd_isAlive(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     bool enable = pAP->enable;
     SAH_TRACEZ_INFO(ME, "%s: enable vap %d", pAP->alias, enable);
     wld_secDmn_action_rc_ne rc;
+    T_AccessPoint* pMainAPCur = wld_rad_hostapd_getRunMainVap(pRad);
+    T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
+    bool mainIfaceChanged = ((pMainAPCur != pMainAPCfg) && ((pAP == pMainAPCur) || (pAP == pMainAPCfg)));
+    bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_isEnabled(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
+    if(mainIfaceChanged || wpaCtrlEnaChanged) {
+        wifiGen_hapd_enableVapWpaCtrlIface(pAP);
+        if(mainIfaceChanged) {
+            SAH_TRACEZ_WARNING(ME, "%s: Main iface changed: sched toggle radio %s", pAP->alias, pRad->Name);
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        }
+        SAH_TRACEZ_WARNING(ME, "%s: sched reload all radio %s VAPs to update wpaCtrl ifaces", pAP->alias, pRad->Name);
+        s_schedNextAction(SECDMN_ACTION_OK_NEED_SIGHUP, pAP, pRad);
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
+        return true;
+    }
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
     /*
      * first, set dyn ena/disabling vap params, before applying any action
      */
@@ -360,8 +376,11 @@ static bool s_doConfHostapd(T_Radio* pRad) {
 
 static bool s_doUpdateHostapd(T_Radio* pRad) {
     ASSERTI_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    wifiGen_hapd_restoreMainIface(pRad);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
+    //delay before restore warm applicable params after reloading conf file with sighup
+    pRad->fsmRad.timeout_msec = 500;
     return true;
 }
 

@@ -66,6 +66,7 @@
 #include "wld_util.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgManager_priv.h"
+#include "wld_rad_hostapd_api.h"
 
 #define ME "fileMgr"
 
@@ -124,9 +125,13 @@ bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP) 
     amxc_llist_init(&config->vaps);
     amxc_llist_for_each(ap_it, pllAP) {
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
-        bool isInterface = (pAp->ref_index == 0);
+        bool isInterface = (pAp == wld_rad_hostapd_getCfgMainVap(pAp->pRadio));
         wld_hostapdVapInfo_t* vapInfo = s_createHostapdVapInfo(isInterface, pAp->alias);
-        amxc_llist_append(&config->vaps, &vapInfo->it);
+        if(isInterface) {
+            amxc_llist_prepend(&config->vaps, &vapInfo->it);
+        } else {
+            amxc_llist_append(&config->vaps, &vapInfo->it);
+        }
     }
     SAH_TRACEZ_OUT(ME);
     return true;

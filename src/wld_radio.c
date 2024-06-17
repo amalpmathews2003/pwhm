@@ -192,6 +192,8 @@ static const char* g_wld_radFeatures_str[WLD_FEATURE_MAX] = {"Seamless DFS", "Ba
 
 static const char* g_wld_preambleType[PREAMBLE_TYPE_MAX] = {"short", "long", "auto"};
 
+static const char* g_wld_mbssidAdvertisementMode[MBSSID_ADVERTISEMENT_MODE_MAX] = {"Auto", "Off", "On", "Enhanced"};
+
 amxc_llist_t g_radios = { NULL, NULL };
 
 SWL_ARRAY_TYPE_C(gtWld_type_statusArray, gtSwl_type_uint32, RST_MAX, true, true);
@@ -2983,6 +2985,55 @@ T_EndPoint* wld_rad_getFirstEp(T_Radio* pR) {
     return (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
 }
 
+T_AccessPoint* wld_rad_getFirstEnabledVap(T_Radio* pR) {
+    ASSERT_NOT_NULL(pR, NULL, ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pR) {
+        if(pAP->enable && pAP->pSSID && pAP->pSSID->enable) {
+            return pAP;
+        }
+    }
+    return NULL;
+}
+
+uint32_t wld_rad_countEnabledVaps(T_Radio* pR) {
+    uint32_t count = 0;
+    ASSERT_NOT_NULL(pR, count, ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pR) {
+        if(pAP->enable && pAP->pSSID && pAP->pSSID->enable) {
+            count++;
+        }
+    }
+    return count;
+}
+
+wld_mbssidAdvertisement_mode_e wld_rad_getMbssidAdsMode(T_Radio* pRad) {
+    wld_mbssidAdvertisement_mode_e mode = MBSSID_ADVERTISEMENT_MODE_OFF;
+    ASSERTS_NOT_NULL(pRad, mode, ME, "NULL");
+    swl_radioStandard_m stds = pRad->supportedStandards;
+    if(!SWL_BIT_IS_ONLY_SET(pRad->operatingStandards, SWL_RADSTD_AUTO)) {
+        stds &= pRad->operatingStandards;
+    }
+    if(swl_bit32_getHighest(stds) >= SWL_RADSTD_AX) {
+        if(pRad->mbssidAdsMode == MBSSID_ADVERTISEMENT_MODE_AUTO) {
+            if(wld_rad_is_6ghz(pRad)) {
+                int32_t hMode = swl_bit32_getHighest(pRad->suppMbssidAdsModes);
+                if((hMode > -1) && (hMode < MBSSID_ADVERTISEMENT_MODE_MAX)) {
+                    mode = (wld_mbssidAdvertisement_mode_e) hMode;
+                }
+            }
+        } else if(SWL_BIT_IS_SET(pRad->suppMbssidAdsModes, pRad->mbssidAdsMode)) {
+            mode = pRad->mbssidAdsMode;
+        }
+    }
+    return mode;
+}
+
+bool wld_rad_hasMbssidAds(T_Radio* pRad) {
+    return (wld_rad_getMbssidAdsMode(pRad) != MBSSID_ADVERTISEMENT_MODE_OFF);
+}
+
 /* find VAP with matching name */
 T_AccessPoint* wld_rad_vap_from_name(T_Radio* pR, const char* ifname) {
     T_AccessPoint* pAP = NULL;
@@ -4555,6 +4606,22 @@ static void s_setSRGPartialBSSIDBitmap_pwf(void* priv _UNUSED, amxd_object_t* ob
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setMBSSIDAdvertisementMode_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    const char* mbssidModeStr = amxc_var_constcast(cstring_t, newValue);
+    ASSERT_NOT_NULL(mbssidModeStr, , ME, "NULL");
+    wld_mbssidAdvertisement_mode_e newMbssidMode = swl_conv_charToEnum(mbssidModeStr, g_wld_mbssidAdvertisementMode, MBSSID_ADVERTISEMENT_MODE_MAX, MBSSID_ADVERTISEMENT_MODE_OFF);
+    ASSERTS_NOT_EQUALS(newMbssidMode, pR->mbssidAdsMode, , ME, "EQUALS");
+
+    pR->mbssidAdsMode = newMbssidMode;
+    wld_rad_doSync(pR);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 SWLA_DM_HDLRS(sRadio11axDmHdlrs,
               ARR(SWLA_DM_PARAM_HDLR("BssColor", s_setBssColor_pwf),
                   SWLA_DM_PARAM_HDLR("BssColorPartial", s_setBssColorPartial_pwf),
@@ -4567,6 +4634,7 @@ SWLA_DM_HDLRS(sRadio11axDmHdlrs,
                   SWLA_DM_PARAM_HDLR("SRGOBSSPDMaxOffset", s_setSRGOBSSPDMaxOffset_pwf),
                   SWLA_DM_PARAM_HDLR("SRGBSSColorBitmap", s_setSRGBSSColorBitmap_pwf),
                   SWLA_DM_PARAM_HDLR("SRGPartialBSSIDBitmap", s_setSRGPartialBSSIDBitmap_pwf),
+                  SWLA_DM_PARAM_HDLR("MBSSIDAdvertisementMode", s_setMBSSIDAdvertisementMode_pwf),
                   ));
 
 void _wld_rad_11ax_setConf_ocf(const char* const sig_name,

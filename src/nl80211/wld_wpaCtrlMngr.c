@@ -96,6 +96,9 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
             pMgr->wpaCtrlConnectAttempts += MAX_CONNECTION_ATTEMPTS;
             break;
         }
+        if(!wld_wpaCtrlInterface_isEnabled(pIface)) {
+            continue;
+        }
         if(!wld_wpaCtrlInterface_open(pIface)) {
             pMgr->wpaCtrlConnectAttempts++;
             break;
@@ -104,7 +107,7 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
         }
     }
 
-    uint32_t nExpecIfaces = swl_unLiList_size(&pMgr->ifaces);
+    uint32_t nExpecIfaces = wld_wpaCtrlMngr_countEnabledInterfaces(pMgr);
     if((nIfacesReady > 0) && (nIfacesReady == nExpecIfaces)) {
         pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
         ASSERTS_NOT_NULL(pIface, , ME, "NULL");
@@ -253,8 +256,21 @@ uint32_t wld_wpaCtrlMngr_countInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
     return swl_unLiList_size(&pMgr->ifaces);
 }
 
+uint32_t wld_wpaCtrlMngr_countEnabledInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
+    uint32_t count = 0;
+    ASSERT_NOT_NULL(pMgr, count, ME, "NULL");
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &pMgr->ifaces) {
+        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(wld_wpaCtrlInterface_isEnabled(pIface)) {
+            count++;
+        }
+    }
+    return count;
+}
+
 wld_secDmn_t* wld_wpaCtrlMngr_getSecDmn(const wld_wpaCtrlMngr_t* pMgr) {
-    ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
+    ASSERTS_NOT_NULL(pMgr, NULL, ME, "NULL");
     return pMgr->pSecDmn;
 }
 

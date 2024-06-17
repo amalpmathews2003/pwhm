@@ -197,6 +197,8 @@ typedef struct {
     wld_nl80211_wiphySuppFeatures suppFeatures;     //supported optional nl80211 features by the driver
     wld_nl80211_wiphySuppCmds suppCmds;             //supported optional nl80211 commands by the driver
     wld_nl80211_wiphyExtCapas extCapas;
+    uint8_t maxMbssidAdsIfaces;                     //max number of advertised MBSSID interfaces supported by the driver. (MBSSID support when max >= 2)
+    uint8_t maxMbssidEmaPeriod;                     //maximum profile periodicity of Enhanced Multi-BSSID Advertisement (EMA support when max > 0)
 } wld_nl80211_wiphyInfo_t;
 
 typedef struct {

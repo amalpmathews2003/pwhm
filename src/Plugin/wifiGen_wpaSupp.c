@@ -121,6 +121,7 @@ swl_rc_ne wifiGen_wpaSupp_startDaemon(T_EndPoint* pEP) {
     swl_rc_ne rc = s_writeWpaSupArgsToBuf(startArgs, sizeof(startArgs), NULL, 0, pEP);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to set wpa_supplicant args", pEP->Name);
     wld_dmn_setArgList(pEP->wpaSupp->dmnProcess, startArgs);
+    wld_wpaCtrlInterface_setEnable(pEP->wpaCtrlInterface, pEP->enable);
     return wld_secDmn_start(pEP->wpaSupp);
 }
 

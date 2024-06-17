@@ -256,6 +256,13 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             if(pWiphyInfo->suppMlo) {
                 wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "MLO");
             }
+            if(pWiphyInfo->maxMbssidAdsIfaces > 0) {
+                W_SWL_BIT_SET(pRad->suppMbssidAdsModes, MBSSID_ADVERTISEMENT_MODE_ON);
+                if(pWiphyInfo->maxMbssidEmaPeriod > 0) {
+                    wld_rad_addSuppDrvCap(pRad, pBand->freqBand, "EMA");
+                    W_SWL_BIT_SET(pRad->suppMbssidAdsModes, MBSSID_ADVERTISEMENT_MODE_ENHANCED);
+                }
+            }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
             if((pRad->channel == 0) && (wld_rad_getFreqBand(pRad) == pBand->freqBand)) {
                 swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
@@ -706,7 +713,7 @@ swl_rc_ne wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set) 
             return wld_rad_nl80211_setRegDomain(pRad, countryName);
         }
         if(wifiGen_hapd_isAlive(pRad)) {
-            wld_ap_hostapd_setParamValue(wld_rad_firstAp(pRad), "country_code", pRad->regulatoryDomain, "updating regulatory domain");
+            wld_ap_hostapd_setParamValue(wld_rad_hostapd_getCfgMainVap(pRad), "country_code", pRad->regulatoryDomain, "updating regulatory domain");
         }
         setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE);
     } else {

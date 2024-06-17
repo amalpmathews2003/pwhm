@@ -76,7 +76,8 @@ typedef struct wpaCtrlConnection {
 } wpaCtrlConnection_t;
 
 struct wld_wpaCtrlInterface {
-    char* name; //interface name
+    char* name;  //interface name
+    bool enable; //establish connection
     wpaCtrlConnection_t* cmdConn;
     wpaCtrlConnection_t* eventConn;
     /* isReady is true when eventConn and cmdConn are established and PING/PONG over cmdConn

@@ -870,6 +870,51 @@ static swl_rc_ne s_parseSuppCmds(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* p
     return SWL_RC_OK;
 }
 
+static swl_rc_ne s_parseMbssidAds(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
+    ASSERT_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    pWiphy->wiphy = wld_nl80211_getWiphy(tb);
+    struct nlattr* pMbssidConfAttr = tb[NL80211_ATTR_MBSSID_CONFIG];
+    ASSERTS_NOT_NULL(pMbssidConfAttr, SWL_RC_OK, ME, "No MBSSID info to parse");
+    swl_rc_ne rc = SWL_RC_OK;
+
+    struct nlattr* pMbssidInfo[NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY + 1] = {};
+
+    static struct nla_policy mbssidConfPolicy[NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY + 1] = {
+        [NL80211_MBSSID_CONFIG_ATTR_MAX_INTERFACES] = { .type = NLA_U8 },
+        [NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY] = { .type = NLA_U8 },
+    };
+
+    rc = nla_parse_nested(pMbssidInfo, NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY, pMbssidConfAttr, mbssidConfPolicy);
+    if(rc != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to parse nested MBSSID Conf attributes!");
+        return SWL_RC_ERROR;
+    }
+
+    if(pMbssidInfo[NL80211_MBSSID_CONFIG_ATTR_MAX_INTERFACES]) {
+        uint8_t maxMbssidAdsIfaces = nla_get_u8(pMbssidInfo[NL80211_MBSSID_CONFIG_ATTR_MAX_INTERFACES]);
+        uint8_t maxMbssidEmaPeriod = 0;
+        if(pMbssidInfo[NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY]) {
+            maxMbssidEmaPeriod = nla_get_u8(pMbssidInfo[NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY]);
+        }
+        /*
+         * Driver should indicate MBSSID support by setting
+         * wiphy->mbssid_max_interfaces to a value more than or equal to 2.
+         */
+        if(maxMbssidAdsIfaces >= 2) {
+            pWiphy->maxMbssidAdsIfaces = maxMbssidAdsIfaces;
+            /*
+             * Driver should indicate EMA support to the userspace
+             * by setting wiphy->ema_max_profile_periodicity to a non-zero value.
+             */
+            pWiphy->maxMbssidEmaPeriod = maxMbssidEmaPeriod;
+        }
+        SAH_TRACEZ_INFO(ME, "%s: maxMbssidAdsIfaces %u maxMbssidEmaPeriod %u",
+                        pWiphy->name, maxMbssidAdsIfaces, maxMbssidEmaPeriod);
+    }
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
     ASSERT_NOT_NULL(pWiphy, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -897,6 +942,7 @@ swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_
     s_parseSuppFeatures(tb, pWiphy);
     s_parseSuppCmds(tb, pWiphy);
     s_parseIfTypeExtCapa(tb, pWiphy);
+    s_parseMbssidAds(tb, pWiphy);
     return SWL_RC_OK;
 }
 

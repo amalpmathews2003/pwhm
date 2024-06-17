@@ -72,6 +72,7 @@
 #include "wld_wpaSupp_parser.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgFile.h"
+#include "wld_rad_hostapd_api.h"
 #include "wld_chanmgt.h"
 #include "wld_wpaCtrlMngr.h"
 #include "wld_wpaCtrlInterface.h"
@@ -189,6 +190,15 @@ static swl_rc_ne s_checkAndSetParamValueFmt(wld_wpaCtrlInterface_t* pIface, swl_
 
 static swl_rc_ne s_checkAndSetParamValueInt32(wld_wpaCtrlInterface_t* pIface, swl_mapChar_t* mapChar, char* param, int32_t value) {
     return s_checkAndSetParamValueFmt(pIface, mapChar, param, "%d", value);
+}
+
+void s_filterEntries(swl_mapChar_t* configMap, const char* keys[], uint32_t nKeys) {
+    for(uint32_t i = 0; i < nKeys; i++) {
+        swl_mapEntry_t* entry;
+        if((entry = swl_mapChar_getEntry(configMap, (char*) keys[i])) != NULL) {
+            swl_map_deleteEntry(configMap, entry);
+        }
+    }
 }
 
 /**
@@ -511,7 +521,19 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         swl_mapCharFmt_addValStr(radConfigMap, "basic_rates", "%s", basicDataTransmitRates);
     }
 
+    wld_mbssidAdvertisement_mode_e mbssidAdsMode = wld_rad_getMbssidAdsMode(pRad);
+    bool configMbssid = (mbssidAdsMode != MBSSID_ADVERTISEMENT_MODE_OFF) && (wld_rad_countEnabledVaps(pRad) > 1);
+    if(configMbssid) {
+        SAH_TRACEZ_INFO(ME, "%s: Setting MBSSID Advertisement %d", pRad->Name, mbssidAdsMode);
+        swl_mapCharFmt_addValInt32(radConfigMap, "mbssid", (mbssidAdsMode == MBSSID_ADVERTISEMENT_MODE_ENHANCED) ? 2 : 1);
+    }
+
     pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
+
+    if(!configMbssid) {
+        const char* mbssidKeys[] = {"mbssid", "ema"};
+        s_filterEntries(radConfigMap, mbssidKeys, SWL_ARRAY_SIZE(mbssidKeys));
+    }
 
     if(pRad->externalAcsMgmt) {
         SAH_TRACEZ_INFO(ME, "%s: Restore radio channel config due to external ACS mgmt enabled", pRad->Name);
@@ -691,18 +713,22 @@ static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap,
  * @param pAP a vap
  * @param cfgF a pointer to the the configuration file of the hostapd
  *
- * @return void
+ * @return bool true when vap section is saved
  */
-static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
+static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     T_SSID* pSSID = pAP->pSSID;
-    ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
     T_Radio* pRad = pAP->pRadio;
-    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERTS_NOT_NULL(vapConfigMap, false, ME, "NULL");
     int tval = 0;
-    if(pAP->ref_index == 0) {
+    if(pAP == wld_rad_hostapd_getCfgMainVap(pRad)) {
         swl_mapChar_add(vapConfigMap, "interface", pAP->alias);
     } else {
+        if(!wld_hostapd_ap_needWpaCtrlIface(pAP)) {
+            SAH_TRACEZ_WARNING(ME, "%s: skip disabled bss", pAP->alias);
+            return false;
+        }
         swl_mapChar_add(vapConfigMap, "bss", pAP->alias);
         swl_macChar_t bssidStr;
         SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
@@ -969,6 +995,7 @@ static void s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(pAP->StaInactivityTimeout) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "ap_max_inactivity", pAP->StaInactivityTimeout);
     }
+    return true;
 }
 
 /**
@@ -1087,7 +1114,7 @@ void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConf
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
 
-    s_setVapCommonConfig(pAP, vapConfigMap);
+    ASSERTS_TRUE(s_setVapCommonConfig(pAP, vapConfigMap), , ME, "%s: skipped", pAP->alias);
     s_setVapWpsConfig(pAP, vapConfigMap);
     s_setVapMultiApConf(pAP, vapConfigMap, multiAPConfig);
 
@@ -1114,27 +1141,38 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
     swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
     wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
 
-    swl_mapChar_t* multiAPConfig = NULL;
-    amxc_llist_for_each(ap_it, &pRad->llAP) {
-        T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
-        if(SWL_BIT_IS_ONLY_SET(pAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
-            SAH_TRACEZ_INFO(ME, "AP %s configured as pure BackhaulBSS, save config for later", pAp->alias);
-            multiAPConfig = wld_hostapd_getConfigMap(config, pAp->alias);
-            wld_hostapd_cfgFile_setVapConfig(pAp, multiAPConfig, multiAPConfig);
-        }
-        // extracting last backhaul BSS config into multiAPConfig
-        // where last - according to the order of amxc_llist_for_each iterator
-    }
-
-    amxc_llist_for_each(ap_it, &pRad->llAP) {
-        T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
-        if(!SWL_BIT_IS_ONLY_SET(pAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
-            SAH_TRACEZ_INFO(ME, "AP %s not configured as pure BackhaulBSS", pAp->alias);
-
-            swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pAp->alias);
-            wld_hostapd_cfgFile_setVapConfig(pAp, vapConfigMap, multiAPConfig);
+    /*
+     * sort active vaps to be saved
+     * 1- pure backhaul vaps
+     * 2- other vaps
+     */
+    swl_unLiList_t aVaps;
+    swl_unLiList_init(&aVaps, sizeof(T_AccessPoint*));
+    T_AccessPoint* pTmpAp = NULL;
+    wld_rad_forEachAp(pTmpAp, pRad) {
+        if(wld_hostapd_ap_needWpaCtrlIface(pTmpAp)) {
+            bool isPureBkh = SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS);
+            swl_unLiList_insert(&aVaps, isPureBkh - 1, &pTmpAp);
         }
     }
+
+    /*
+     * save vaps config:
+     */
+    swl_mapChar_t* defMultiAPConfig = NULL;
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &aVaps) {
+        if((pTmpAp = *(swl_unLiList_data(&it, T_AccessPoint * *))) != NULL) {
+            swl_mapChar_t* multiAPConfig = defMultiAPConfig;
+            swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pTmpAp->alias);
+            if(SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
+                defMultiAPConfig = defMultiAPConfig ? : vapConfigMap;
+                multiAPConfig = vapConfigMap;
+            }
+            wld_hostapd_cfgFile_setVapConfig(pTmpAp, vapConfigMap, multiAPConfig);
+        }
+    }
+    swl_unLiList_destroy(&aVaps);
 
     wld_hostapd_writeConfig(config, cfgFileName);
     wld_hostapd_deleteConfig(config);

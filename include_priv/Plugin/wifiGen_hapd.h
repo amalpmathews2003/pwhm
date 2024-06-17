@@ -83,5 +83,7 @@ swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSett
 swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad);
 bool wifiGen_hapd_isStarted(T_Radio* pRad);
 bool wifiGen_hapd_isStartable(T_Radio* pRad);
+void wifiGen_hapd_restoreMainIface(T_Radio* pRad);
+void wifiGen_hapd_enableVapWpaCtrlIface(T_AccessPoint* pAP);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_HAPD_H_ */

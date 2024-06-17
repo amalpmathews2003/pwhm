@@ -1432,6 +1432,19 @@ typedef struct {
     swl_timeMono_t changeTime;
 } wld_rad_detailedChanState_t;
 
+typedef enum {
+    MBSSID_ADVERTISEMENT_MODE_AUTO,
+    MBSSID_ADVERTISEMENT_MODE_OFF,
+    MBSSID_ADVERTISEMENT_MODE_ON,
+    MBSSID_ADVERTISEMENT_MODE_ENHANCED,
+    MBSSID_ADVERTISEMENT_MODE_MAX
+} wld_mbssidAdvertisement_mode_e;
+
+typedef swl_mask_m wld_mbssidAdvertisement_mode_m;
+
+#define M_WLD_MBSSID_ADS_MODE_ON (1 << MBSSID_ADVERTISEMENT_MODE_ON)
+#define M_WLD_MBSSID_ADS_MODE_ENHANCED (1 << MBSSID_ADVERTISEMENT_MODE_ENHANCED)
+
 typedef struct {
     uint8_t heBssColor;
     uint8_t heBssColorPartial;
@@ -1686,6 +1699,9 @@ struct WLD_RADIO {
     swl_mcs_legacyIndex_m operationalDataTransmitRates; /* Data transmit rates in Mbps at which the radio will permit operation with any associated station */
     swl_mcs_legacyIndex_m basicDataTransmitRates;       /* The set of data rates, in Mbps, that have to be supported by all stations that desire to join this BSS */
     void* zwdfsData;                                    /* ZW DFS data */
+
+    wld_mbssidAdvertisement_mode_m suppMbssidAdsModes;  /* supported MBSSID Advertisement modes */
+    wld_mbssidAdvertisement_mode_e mbssidAdsMode;       /* operating MBSSID Advertisement mode. */
 };
 
 typedef struct {

@@ -62,6 +62,8 @@
 #include <arpa/inet.h>
 #include "wld.h"
 #include "wld_util.h"
+#include "wld_radio.h"
+#include "wld_rad_hostapd_api.h"
 #include "wld_hostapd_cfgFile.h"
 #include "wld_hostapd_ap_api.h"
 #include "wld_wpaCtrl_api.h"
@@ -77,7 +79,7 @@
 
 #define HOSTAPD_CTRL_IFACE_RCV_BUFSIZE 4096
 
-bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
+static bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
     ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), false, ME, "%s: wpactrl link not ready", pAP->alias);
     T_Radio* pR = pAP->pRadio;
@@ -95,6 +97,11 @@ bool s_sendHostapdCommand(T_AccessPoint* pAP, char* cmd, const char* reason) {
  * @return true when the  UPDATE_BEACON cmd is executed successfully. Otherwise false.
  */
 bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    if(wld_rad_hasMbssidAds(pRad)) {
+        pAP = wld_rad_hostapd_getCfgMainVap(pRad);
+    }
     return s_sendHostapdCommand(pAP, "UPDATE_BEACON", reason);
 }
 
@@ -1277,5 +1284,15 @@ swl_rc_ne wld_hostapd_ap_sendCfgParam(T_AccessPoint* pAP, const char* param, con
         }
     }
     return rc;
+}
+
+/*
+ * @brief check if AP needs to have a wpactrl connection to hostapd
+ */
+bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    return pAP->enable || (!wld_rad_hasMbssidAds(pRad));
 }
 

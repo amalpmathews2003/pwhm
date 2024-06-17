@@ -189,7 +189,33 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
  */
 bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
+    ASSERT_STR(cmd, false, ME, "No cmd");
     return s_sendCmdSynced(pIface->cmdConn, cmd, reply, reply_len);
+}
+
+/**
+ * @brief send synchronous command to wpa_ctrl server and check a parameter value in the reply
+ *
+ * @param pIface :the wpa_ctrl interface to which the command is sent
+ * @param cmd : string command to be sent
+ * @param key : parameter name to be fetched in the reply (key=value)
+ * @param valStr : buffer where to store the parameter value
+ * @param valStrSize : max length of parameter value
+ *
+ * @return true if the command is answered, false otherwise
+ */
+swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, char* valStr, size_t valStrSize) {
+    ASSERT_NOT_NULL(pIface, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_STR(key, SWL_RC_INVALID_PARAM, ME, "No key");
+    char reply[MSG_LENGTH] = {'\0'};
+    bool ret = wld_wpaCtrl_sendCmdSynced(pIface, cmd, reply, sizeof(reply));
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "failed to get cmd(%s) reply", cmd);
+    int valStrLen = wld_wpaCtrl_getValueStr(reply, key, valStr, valStrSize);
+    ASSERT_FALSE(valStrLen <= 0, SWL_RC_ERROR, ME, "%s: not found status field %s", pIface->name, key);
+    SAH_TRACEZ_INFO(ME, "%s: %s = (%s)", pIface->name, key, valStr);
+    ASSERT_TRUE(valStrLen < (int) valStrSize, SWL_RC_ERROR,
+                ME, "%s: buffer too short for field %s (l:%d,s:%zu)", pIface->name, key, valStrLen, valStrSize);
+    return SWL_RC_OK;
 }
 
 static bool s_sendCmdCheckResponseExt(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse, uint32_t tmOutMSec) {
@@ -443,6 +469,7 @@ bool wld_wpaCtrlInterface_init(wld_wpaCtrlInterface_t** ppIface, char* interface
     }
     swl_str_copyMalloc(&pIface->name, interfaceName);
     pIface->isReady = false;
+    pIface->enable = false;
 
     // init connection for events
     bool ret = s_wpaCtrlInitConnection(&(pIface->eventConn), pIface, WPA_CONNECTION_EVENT, serverPath);
@@ -498,8 +525,18 @@ const char* wld_wpaCtrlInterface_getName(const wld_wpaCtrlInterface_t* pIface) {
 }
 
 wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIface) {
-    ASSERT_NOT_NULL(pIface, NULL, ME, "NULL");
+    ASSERTS_NOT_NULL(pIface, NULL, ME, "NULL");
     return pIface->pMgr;
+}
+
+void wld_wpaCtrlInterface_setEnable(wld_wpaCtrlInterface_t* pIface, bool enable) {
+    ASSERTS_NOT_NULL(pIface, , ME, "NULL");
+    pIface->enable = enable;
+}
+
+bool wld_wpaCtrlInterface_isEnabled(const wld_wpaCtrlInterface_t* pIface) {
+    ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
+    return pIface->enable;
 }
 
 /**
@@ -514,6 +551,7 @@ wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIf
  */
 bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
+    ASSERTW_TRUE(pIface->enable, false, ME, "%s: skip disabled interface", pIface->name);
     pIface->isReady = false;
 
     /*

@@ -85,6 +85,7 @@ wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstReadyInterface(const wld_wpaCtrl
 uint32_t wld_wpaCtrlMngr_countInterfaces(const wld_wpaCtrlMngr_t* pMgr);
 struct wld_secDmn* wld_wpaCtrlMngr_getSecDmn(const wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_ping(const wld_wpaCtrlMngr_t* pMgr);
+uint32_t wld_wpaCtrlMngr_countEnabledInterfaces(const wld_wpaCtrlMngr_t* pMgr);
 
 #define CALL_MGR_EXT(pMgr, fName, ifName, ...) \
     { \

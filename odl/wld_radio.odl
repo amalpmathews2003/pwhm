@@ -2901,8 +2901,20 @@ define probelist_t{
 			 * SRGPartialBSSIDBitmap = "0,1,3,5,63"
 			 */
 			%persistent string SRGPartialBSSIDBitmap;
-		}
-		
+
+			/**
+			* Indicates the multiple BSSID advertisement enabled mode.
+			* Possible values:
+			* Off = disable the multiple BSSID advertisement
+			* On = enable the multiple BSSID advertisement
+			* Enhanced = enable the enhanced multiple BSSID advertisement
+			* Auto = decision based on capabilities and supported standards 
+			*/
+			%persistent string MBSSIDAdvertisementMode {
+			    on action validate call check_enum ["Off", "On", "Enhanced", "Auto"];
+			    default "Auto";
+			}
+		}	
 		
 		/**
 		 * This object represents the capabilities of the radio.

@@ -66,12 +66,14 @@
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_hostapd_cfgFile.h"
+#include "wld/wld_rad_hostapd_api.h"
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_wpaCtrl_events.h"
 #include "wld/wld_hostapd_ap_api.h"
 #include "wifiGen_hapd.h"
 #include "wifiGen_events.h"
 #include "wifiGen_fsm.h"
+#include "wifiGen_rad.h"
 
 #define ME "genHapd"
 #define HOSTAPD_CONF_FILE_PATH_FORMAT "/tmp/%s_hapd.conf"
@@ -102,12 +104,13 @@ bool wifiGen_hapd_isStarted(T_Radio* pRad) {
     return ((pRad != NULL) && (wld_secDmn_isEnabled(pRad->hostapd)));
 }
 
-static void s_restoreMainIface(T_Radio* pRad) {
-    T_AccessPoint* pMainAP = wld_rad_getFirstVap(pRad);
-    ASSERTS_NOT_NULL(pMainAP, , ME, "No vaps");
-    ASSERTS_FALSE(pMainAP->index > 0, , ME, "already created");
+void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
+    T_AccessPoint* pMainAP = wld_rad_hostapd_getCfgMainVap(pRad);
+    ASSERTI_NOT_NULL(pMainAP, , ME, "No vaps");
+    wifiGen_hapd_enableVapWpaCtrlIface(pMainAP);
+    ASSERTI_FALSE(pMainAP->index > 0, , ME, "%s already created", pMainAP->alias);
     SAH_TRACEZ_WARNING(ME, "%s: main iface %s => must be re-created", pRad->Name, pMainAP->alias);
-    wld_rad_nl80211_addVapInterface(pRad, pMainAP);
+    wifiGen_rad_addVap(pRad, pMainAP);
     if(swl_str_matches(pRad->Name, pMainAP->alias)) {
         pRad->index = pMainAP->index;
         pRad->wDevId = pMainAP->wDevId;
@@ -117,7 +120,7 @@ static void s_restoreMainIface(T_Radio* pRad) {
 static const char* s_getMainIface(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
     const char* mainIface = pRad->Name;
-    T_AccessPoint* pMainAP = wld_rad_getFirstVap(pRad);
+    T_AccessPoint* pMainAP = wld_rad_hostapd_getCfgMainVap(pRad);
     if(pMainAP != NULL) {
         mainIface = pMainAP->alias;
     }
@@ -148,7 +151,7 @@ static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
     //finalize hapd cleanup
     wifiGen_hapd_stopDaemon(pRad);
     //restore main iface if removed by hostapd
-    s_restoreMainIface(pRad);
+    wifiGen_hapd_restoreMainIface(pRad);
 }
 
 static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
@@ -197,11 +200,27 @@ void wifiGen_hapd_cleanup(T_Radio* pRad) {
     wld_secDmn_cleanup(&pRad->hostapd);
 }
 
+void wifiGen_hapd_enableVapWpaCtrlIface(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, , ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    bool ena = wld_hostapd_ap_needWpaCtrlIface(pAP);
+    wld_wpaCtrlInterface_setEnable(pAP->wpaCtrlInterface, ena);
+}
+
+static void s_enableWpaCtrlIfaces(T_Radio* pRad) {
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        wifiGen_hapd_enableVapWpaCtrlIface(pAP);
+    }
+}
+
 swl_rc_ne wifiGen_hapd_startDaemon(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "%s: Start hostapd", pRad->Name);
     //restore main iface if removed by hostapd
-    s_restoreMainIface(pRad);
+    wifiGen_hapd_restoreMainIface(pRad);
+    s_enableWpaCtrlIfaces(pRad);
     return wld_secDmn_start(pRad->hostapd);
 }
 
@@ -361,6 +380,7 @@ static bool s_isHapdIfaceStartable(wld_secDmnGrp_t* pSecDmnGrp _UNUSED, void* us
     ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
     T_Radio* pRad = (T_Radio*) pSecDmn->userData;
     ASSERT_TRUE(debugIsRadPointer(pRad), false, ME, "INVALID");
+    wifiGen_hapd_restoreMainIface(pRad);
     return wifiGen_hapd_isStartable(pRad);
 }
 

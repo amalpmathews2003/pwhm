@@ -59,6 +59,7 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include "wld_util.h"
 #include "wld_channel.h"
 #include "wld_radio.h"
 #include "wld_wpaCtrl_api.h"
@@ -68,6 +69,21 @@
 #include "swl/map/swl_mapCharFmt.h"
 
 #define ME "hapdRad"
+
+static wld_wpaCtrlInterface_t* s_getFirstReadyIface(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pRad->hostapd);
+    return wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+}
+
+static bool s_sendHostapdCommand(T_Radio* pR, char* cmd, const char* reason) {
+    ASSERT_NOT_NULL(pR, false, ME, "NULL");
+    wld_wpaCtrlInterface_t* wpaCtrlInterface = s_getFirstReadyIface(pR);
+    ASSERT_NOT_NULL(wpaCtrlInterface, false, ME, "%s: hostapd has no wpactrl iface ready", pR->Name);
+    SAH_TRACEZ_INFO(ME, "%s: send hostapd cmd %s for %s",
+                    wld_wpaCtrlInterface_getName(wpaCtrlInterface), cmd, reason);
+    return wld_wpaCtrl_sendCmdCheckResponse(wpaCtrlInterface, cmd, "OK");
+}
 
 /** @brief update the the Operating Standard in the hostapd
  *
@@ -146,7 +162,7 @@ static swl_rc_ne s_calculateSecChannelOffset(swl_bandwidth_e bandwidth, uint32_t
  *         - Otherwise SWL_RC_ERROR or SWL_RC_INVALID_PARAM
  */
 swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    T_AccessPoint* primaryVap = wld_rad_hostapd_getCfgMainVap(pR);
     ASSERT_NOT_NULL(primaryVap, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     swl_chanspec_t chanspec = pR->targetChanspec.chanspec;
@@ -215,8 +231,8 @@ swl_rc_ne wld_rad_hostapd_switchChannel(T_Radio* pR) {
  * @return SWL_RC_OK when the Hostapd config is reloaded. Otherwise error code.
  */
 swl_rc_ne wld_rad_hostapd_reload(T_Radio* pR) {
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
-    bool ret = wld_ap_hostapd_sendCommand(primaryVap, "RELOAD", "reload conf");
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    bool ret = s_sendHostapdCommand(pR, "RELOAD", "reload conf");
     ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "%s: reload fail", pR->Name);
     return SWL_RC_OK;
 }
@@ -229,7 +245,7 @@ swl_rc_ne wld_rad_hostapd_reload(T_Radio* pR) {
  * @return SECDMN_ACTION_OK_NEED_TOGGLE when the Hostapd config is set. Otherwise SECDMN_ACTION_ERROR.
  */
 wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pR);
+    T_AccessPoint* primaryVap = wld_rad_hostapd_getCfgMainVap(pR);
     ASSERT_NOT_NULL(primaryVap, SECDMN_ACTION_ERROR, ME, "NULL");
     swl_mapChar_t radParams;
     swl_mapChar_init(&radParams);
@@ -247,7 +263,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setChannel(T_Radio* pR) {
 }
 
 wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
-    T_AccessPoint* primaryVap = wld_rad_firstAp(pRad);
+    T_AccessPoint* primaryVap = wld_rad_hostapd_getCfgMainVap(pRad);
     ASSERT_NOT_NULL(primaryVap, SECDMN_ACTION_ERROR, ME, "NULL");
 
     swl_mapChar_t radParams;
@@ -259,7 +275,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
         "he_bss_color", "he_spr_srg_partial_bssid", "he_bss_color_partial",
         "he_spr_sr_control", "he_spr_non_srg_obss_pd_max_offset",
         "he_spr_srg_obss_pd_min_offset", "he_spr_srg_obss_pd_max_offset",
-        "he_spr_srg_bss_colors",
+        "he_spr_srg_bss_colors", "mbssid",
     };
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(miscRadParams); i++) {
         wld_ap_hostapd_setParamValue(primaryVap, miscRadParams[i], swl_mapChar_get(&radParams, (char*) miscRadParams[i]), "");
@@ -319,5 +335,35 @@ swl_rc_ne wld_rad_hostapd_disable(T_Radio* pR) {
 swl_trl_e wld_rad_hostapd_getCfgParamSupp(T_Radio* pRad, const char* param) {
     ASSERT_NOT_NULL(pRad, SWL_TRL_UNKNOWN, ME, "NULL");
     return wld_secDmn_getCfgParamSupp(pRad->hostapd, param);
+}
+
+T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad) {
+    T_AccessPoint* pMainAP = wld_rad_getFirstEnabledVap(pRad);
+    if((!wld_rad_hasMbssidAds(pRad)) || (pMainAP == NULL)) {
+        pMainAP = wld_rad_getFirstVap(pRad);
+    }
+    return pMainAP;
+}
+
+T_AccessPoint* wld_rad_hostapd_getRunMainVap(T_Radio* pRad) {
+    char curMainIface[64] = {0};
+    wld_rad_hostapd_getCmdReplyParamStr(pRad, "STATUS-DRIVER", "ifname", curMainIface, sizeof(curMainIface));
+    return wld_rad_vap_from_name(pRad, curMainIface);
+}
+
+swl_rc_ne wld_rad_hostapd_getCmdReplyParamStr(T_Radio* pRad, const char* cmd, const char* key, char* valStr, size_t valStrSize) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pRad->hostapd);
+    wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+    return wld_wpaCtrl_getSyncCmdParamVal(pIface, cmd, key, valStr, valStrSize);
+}
+
+int32_t wld_rad_hostapd_getCmdReplyParam32Def(T_Radio* pRad, const char* cmd, const char* key, int32_t defVal) {
+    char valStr[32] = {0};
+    ASSERTS_TRUE(swl_rc_isOk(wld_rad_hostapd_getCmdReplyParamStr(pRad, cmd, key, valStr, sizeof(valStr))), defVal, ME, "Not found");
+    ASSERTS_STR(valStr, defVal, ME, "Empty");
+    int32_t valInt = defVal;
+    ASSERTS_TRUE(swl_rc_isOk(wldu_convStrToNum(valStr, &valInt, sizeof(valInt), 10, true)), defVal, ME, "fail to convert");
+    return valInt;
 }
 
