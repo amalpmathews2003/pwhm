@@ -1630,6 +1630,10 @@ define probelist_t{
 		%read-only object ScanResults{
 
 			/**
+			 * Indicates if the scanning is actually in progress.
+			 */
+			%read-only bool ScanInProgress;
+			/**
 			 * The amount of accesspoints that are currently on the same channel as we are
 			 */
 			%read-only uint16 NrCoChannelAP;

@@ -158,6 +158,12 @@ static void s_updateScanStats(T_Radio* pRad) {
 
 }
 
+static void s_updateScanProcState(T_Radio* pRad, bool inProgressFlag) {
+    if((pRad->pBus != NULL) && (pRad->hasDmReady)) {
+        swl_typeBool_commitObjectParam(amxd_object_get(pRad->pBus, "ScanResults"), "ScanInProgress", inProgressFlag);
+    }
+}
+
 void wld_radio_copySsidsToResult(wld_scanResults_t* results, amxc_llist_t* ssid_list) {
     ASSERTS_NOT_NULL(results, , ME, "NULL");
     ASSERTS_NOT_NULL(ssid_list, , ME, "NULL");
@@ -288,6 +294,7 @@ static void s_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* s
         pRad->scanState.lastScanTime = swl_time_getMonoSec();
 
         swl_str_copy(pRad->scanState.scanReason, sizeof(pRad->scanState.scanReason), scanReason);
+        s_updateScanProcState(pRad, true);
     } else {
         pRad->scanState.stats.nrScanError++;
         stats->errorCount++;
@@ -1016,6 +1023,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
     /* Scan is done */
     swl_str_copy(pR->scanState.scanReason, sizeof(pR->scanState.scanReason), "None");
     pR->scanState.scanType = SCAN_TYPE_NONE;
+    s_updateScanProcState(pR, false);
 }
 
 bool wld_scan_isRunning(T_Radio* pR) {
