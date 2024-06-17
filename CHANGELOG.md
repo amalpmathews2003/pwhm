@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.3 - 2024-06-17(16:04:29 +0000)
+
+### Other
+
+- fix default 6ghz vap wpactrl connection
+
 ## Release v6.26.2 - 2024-06-17(08:32:20 +0000)
 
 ### Other
