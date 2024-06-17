@@ -3607,35 +3607,33 @@ void wld_rad_updateChannelsInUse(T_Radio* pRad) {
     swl_typeUInt8_arrayToChar(pRad->channelsInUse, sizeof(pRad->channelsInUse), chanInUse, nbChanInUse);
 }
 
-bool wld_rad_is_6ghz(const T_Radio* pRad) {
+static bool s_checkRadFreqBand(const T_Radio* pRad, swl_freqBandExt_e freqBand) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
 
-    return (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ);
+    if(pRad->operatingFrequencyBand == freqBand) {
+        return true;
+    }
+    if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_AUTO) && (SWL_BIT_IS_SET(pRad->supportedFrequencyBands, freqBand))) {
+        swl_chanspec_t chSpec = SWL_CHANSPEC_NEW(pRad->channel, SWL_BW_AUTO, freqBand);
+        if((swl_chanspec_channelFromMHz(&chSpec, swl_chanspec_channelToMHzDef(&chSpec, 0)) >= SWL_RC_OK) &&
+           (chSpec.band == freqBand)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool wld_rad_is_6ghz(const T_Radio* pRad) {
+    return s_checkRadFreqBand(pRad, SWL_FREQ_BAND_EXT_6GHZ);
 }
 
 bool wld_rad_is_5ghz(const T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-
-    if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) ||
-       ((pRad->supportedFrequencyBands & M_SWL_FREQ_BAND_EXT_5GHZ) &&
-        ((pRad->channel >= 36) && (pRad->channel % 4 == 0)))) {
-        return true;
-    } else {
-        return false;
-    }
+    return s_checkRadFreqBand(pRad, SWL_FREQ_BAND_EXT_5GHZ);
 }
 
-
 bool wld_rad_is_24ghz(const T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-
-    if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ) ||
-       ((pRad->supportedFrequencyBands & M_SWL_FREQ_BAND_EXT_2_4GHZ) &&
-        (pRad->channel < 36))) {
-        return true;
-    } else {
-        return false;
-    }
+    return s_checkRadFreqBand(pRad, SWL_FREQ_BAND_EXT_2_4GHZ);
 }
 
 bool wld_rad_is_on_dfs(T_Radio* pRad) {
