@@ -350,6 +350,19 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
             W_SWL_BIT_SET(pRad->supportedStandards, SWL_RADSTD_A);
         }
     }
+    if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_2_4GHZ) {
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_A);
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_AC);
+    } else if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) {
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_B);
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_G);
+    } else if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_A);
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_B);
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_G);
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_N);
+        W_SWL_BIT_CLEAR(pRad->supportedStandards, SWL_RADSTD_AC);
+    }
     wld_nl80211_bandDef_t* pOperBand = &bands[pRad->operatingFrequencyBand];
     if(pOperBand->chanWidthMask > 0) {
         pRad->maxChannelBandwidth = swl_bit32_getHighest(pOperBand->chanWidthMask);
