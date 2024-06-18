@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.5 - 2024-06-18(07:45:52 +0000)
+
+### Other
+
+- ignore invalid supp rad standards of multiband wiphy
+
 ## Release v6.26.4 - 2024-06-18(07:24:15 +0000)
 
 ### Other
