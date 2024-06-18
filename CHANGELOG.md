@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.4 - 2024-06-18(07:24:15 +0000)
+
+### Other
+
+- - Endpoint Profile Alias is empty
+
 ## Release v6.26.3 - 2024-06-17(16:04:29 +0000)
 
 ### Other
