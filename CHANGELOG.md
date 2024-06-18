@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.6 - 2024-06-18(07:54:47 +0000)
+
+### Other
+
+- : 320MHz bandwidth changes is not working
+
 ## Release v6.26.5 - 2024-06-18(07:45:52 +0000)
 
 ### Other
