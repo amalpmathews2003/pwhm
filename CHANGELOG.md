@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.9 - 2024-06-19(11:17:42 +0000)
+
+### Other
+
+- -RecentTxBytes/RecentRxBytes_values_way_to_large_to_be_possible
+
 ## Release v6.26.8 - 2024-06-19(11:09:00 +0000)
 
 ### Other
