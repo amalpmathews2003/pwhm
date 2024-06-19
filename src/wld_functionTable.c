@@ -181,6 +181,15 @@ static swl_rc_ne TRAP_mfn_wvdr_setDmnExecSettings(vendor_t* pVdr _UNUSED, const 
         return -1; \
     }
 
+#define DEF_TRAP_char_int_no_impl(type, func) \
+    static swl_rc_ne TRAP_ ## func(type * obj, char* a, int b) { \
+        _UNUSED_(obj); \
+        _UNUSED_(a); \
+        _UNUSED_(b); \
+        SAH_TRACEZ_NOTICE(ME, "%p %s %d", obj, a, b); \
+        return SWL_RC_NOT_IMPLEMENTED; \
+    }
+
 #define DEF_TRAP_char_int_int(type, func) \
     static int TRAP_ ## func(type * obj, char* a, int b, int c) { \
         _UNUSED_(obj); \
@@ -222,7 +231,7 @@ DEF_TRAP_int_int(T_Radio, mfn_wrad_rx_powersave);
 DEF_TRAP_int_int(T_Radio, mfn_wrad_multiusermimo);
 DEF_TRAP_int(T_Radio, mfn_wrad_startacs);
 DEF_TRAP_int(T_Radio, mfn_wrad_sync);
-DEF_TRAP_char_int(T_Radio, mfn_wrad_addvapif);
+DEF_TRAP_char_int_no_impl(T_Radio, mfn_wrad_addvapif);
 DEF_TRAP_char_int(T_Radio, mfn_wrad_supfreqbands);
 DEF_TRAP_uint32(T_Radio, mfn_wrad_supstd);
 DEF_TRAP_char_int(T_Radio, mfn_wrad_supports);

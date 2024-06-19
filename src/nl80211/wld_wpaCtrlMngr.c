@@ -115,7 +115,7 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
         pMgr->wpaCtrlConnectAttempts = 0;
         amxp_timer_stop(pMgr->connectTimer);
         CALL_MGR(pMgr, pIface->name, fMngrReadyCb, true);
-    } else if(pMgr->wpaCtrlConnectAttempts < MAX_CONNECTION_ATTEMPTS) {
+    } else if((nExpecIfaces > 0) && (pMgr->wpaCtrlConnectAttempts < MAX_CONNECTION_ATTEMPTS)) {
         SAH_TRACEZ_WARNING(ME, "%s: wpa_ctrl server not yet ready (%d/%d), waiting (%d/%d)..",
                            srvName, nIfacesReady, nExpecIfaces,
                            pMgr->wpaCtrlConnectAttempts, MAX_CONNECTION_ATTEMPTS);
