@@ -517,6 +517,88 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
     return SWL_RC_DONE;
 }
 
+static void s_parseEhtCapPhy(const struct nlattr* tbIfType, wld_nl80211_bandDef_t* pBand) {
+    ASSERTS_NOT_NULL(tbIfType, , ME, "NULL)");
+
+    swl_80211_ehtcap_phyCapInfo_t* phyCaps = &pBand->ehtPhyCapabilities;
+    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_EHT];
+    NLA_GET_DATA(phyCaps, tbIfType, sizeof(swl_80211_ehtcap_phyCapInfo_t));
+
+    if(memcmp(phyCaps, &((swl_80211_ehtcap_phyCapInfo_t) {0}), sizeof(swl_80211_ehtcap_phyCapInfo_t)) == 0) {
+        return;
+    }
+
+    pBand->radStdsMask |= M_SWL_RADSTD_BE;
+
+    /* Support For 320MHz In 6 GHz */
+    if(phyCaps->support_320mhz &&
+       (pBand->freqBand == SWL_FREQ_BAND_6GHZ)) {
+        pBand->chanWidthMask |= M_SWL_BW_320MHZ;
+        pMcsStd->bandwidth = SWL_BW_320MHZ;
+    }
+    /* Rx 1024-QAM in wider Bandwidth DL OFDMA */
+    if(phyCaps->rx_1024qam_wider_bw_dl_ofdma_support) {
+        pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 11);
+    }
+    /* Rx 4096-QAM in wider Bandwidth DL OFDMA */
+    if(phyCaps->rx_4096qam_wider_bw_dl_ofdma_support) {
+        pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 13);
+    }
+    /* Support Of EHT DUP (EHT-MCS 14) in 6 GHz */
+    if(phyCaps->support_ehtdup_mcs14_6ghz &&
+       (pBand->freqBand == SWL_FREQ_BAND_6GHZ)) {
+        pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 14);
+        pMcsStd->numberOfSpatialStream = 1;
+    }
+    /* Support Of EHT-MCS 15 in MRU */
+    if(phyCaps->support_eht_mcs15_mru != 0) {
+        pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 15);
+        pMcsStd->numberOfSpatialStream = 1;
+    }
+    /* SU Beamformer */
+    if(phyCaps->su_beamformer) {
+        pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_SU;
+    }
+    /* SU Beamformee */
+    if(phyCaps->su_beamformee) {
+        pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_EHT_SU;
+    }
+    /* MU Beamformer (<= 80MHz) */
+    if(phyCaps->mu_beamformer_80mhz) {
+        pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_80MHZ;
+    }
+    /* MU Beamformer (160MHz) */
+    if(phyCaps->mu_beamformer_160mhz) {
+        pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_160MHZ;
+    }
+    /* MU Beamformer (320MHz) */
+    if(phyCaps->mu_beamformer_320mhz) {
+        pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_320MHZ;
+    }
+}
+
+static void s_parseEhtCapMcsSet(const struct nlattr* tbIfType, wld_nl80211_bandDef_t* pBand) {
+    ASSERTS_NOT_NULL(tbIfType, , ME, "NULL)");
+    swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_EHT];
+    uint8_t mcsSet[13] = {0};
+    NLA_GET_DATA(mcsSet, tbIfType, sizeof(mcsSet));
+    if(memcmp(mcsSet, &((uint8_t[13]) {0}), sizeof(mcsSet)) == 0) {
+        return;
+    }
+    pBand->radStdsMask |= M_SWL_RADSTD_BE;
+    pMcsStd->standard = SWL_MCS_STANDARD_EHT;
+    pMcsStd->numberOfSpatialStream = 1;
+    pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, pBand->mcsStds[SWL_MCS_STANDARD_HE].mcsIndex);
+    pMcsStd->bandwidth = SWL_MAX(pMcsStd->bandwidth, pBand->mcsStds[SWL_MCS_STANDARD_HE].bandwidth);
+    pMcsStd->guardInterval = pBand->mcsStds[SWL_MCS_STANDARD_HE].guardInterval;
+    /* use max supported Spatial Stream found (can be different by MCS!) */
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(mcsSet); i++) {
+        pMcsStd->numberOfSpatialStream = SWL_MAX(pMcsStd->numberOfSpatialStream,
+                (uint32_t) (mcsSet[i] & 0xf));
+    }
+    pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
+}
+
 static swl_rc_ne s_parseEhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
     ASSERTS_NOT_NULL(tbBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -529,82 +611,8 @@ static swl_rc_ne s_parseEhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t*
         if(!s_isSupportedNlIfType(tbIfType[NL80211_BAND_IFTYPE_ATTR_IFTYPES])) {
             continue;
         }
-
-        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MAC] != NULL) {
-            swl_80211_ehtcap_macCapInfo_t macCaps;
-            NLA_GET_DATA(&macCaps, tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MAC], sizeof(swl_80211_ehtcap_macCapInfo_t));
-            /* mark EHT as supported anyway */
-            pBand->radStdsMask |= M_SWL_RADSTD_BE;
-        }
-
-        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PHY] != NULL) {
-            swl_80211_ehtcap_phyCapInfo_t* phyCaps = &pBand->ehtPhyCapabilities;
-            swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_EHT];
-            NLA_GET_DATA(phyCaps, tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PHY], sizeof(swl_80211_ehtcap_phyCapInfo_t));
-
-            /* Support For 320MHz In 6 GHz */
-            if(phyCaps->support_320mhz &&
-               (pBand->freqBand == SWL_FREQ_BAND_6GHZ)) {
-                pBand->chanWidthMask |= M_SWL_BW_320MHZ;
-                pMcsStd->bandwidth = SWL_BW_320MHZ;
-            }
-            /* Rx 1024-QAM in wider Bandwidth DL OFDMA */
-            if(phyCaps->rx_1024qam_wider_bw_dl_ofdma_support) {
-                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 11);
-            }
-            /* Rx 4096-QAM in wider Bandwidth DL OFDMA */
-            if(phyCaps->rx_4096qam_wider_bw_dl_ofdma_support) {
-                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 13);
-            }
-            /* Support Of EHT DUP (EHT-MCS 14) in 6 GHz */
-            if(phyCaps->support_ehtdup_mcs14_6ghz &&
-               (pBand->freqBand == SWL_FREQ_BAND_6GHZ)) {
-                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 14);
-                pMcsStd->numberOfSpatialStream = 1;
-            }
-            /* Support Of EHT-MCS 15 in MRU */
-            if(phyCaps->support_eht_mcs15_mru != 0) {
-                pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, (uint32_t) 15);
-                pMcsStd->numberOfSpatialStream = 1;
-            }
-            /* SU Beamformer */
-            if(phyCaps->su_beamformer) {
-                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_SU;
-            }
-            /* SU Beamformee */
-            if(phyCaps->su_beamformee) {
-                pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_EHT_SU;
-            }
-            /* MU Beamformer (<= 80MHz) */
-            if(phyCaps->mu_beamformer_80mhz) {
-                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_80MHZ;
-            }
-            /* MU Beamformer (160MHz) */
-            if(phyCaps->mu_beamformer_160mhz) {
-                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_160MHZ;
-            }
-            /* MU Beamformer (320MHz) */
-            if(phyCaps->mu_beamformer_320mhz) {
-                pBand->bfCapsSupported[COM_DIR_TRANSMIT] |= M_RAD_BF_CAP_EHT_MU_320MHZ;
-            }
-        }
-
-        if(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET] != NULL) {
-            swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_EHT];
-            uint8_t mcsSet[13] = {0};
-            NLA_GET_DATA(mcsSet, tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET], sizeof(mcsSet));
-            pMcsStd->standard = SWL_MCS_STANDARD_EHT;
-            pMcsStd->numberOfSpatialStream = 1;
-            pMcsStd->mcsIndex = SWL_MAX(pMcsStd->mcsIndex, pBand->mcsStds[SWL_MCS_STANDARD_HE].mcsIndex);
-            pMcsStd->bandwidth = SWL_MAX(pMcsStd->bandwidth, pBand->mcsStds[SWL_MCS_STANDARD_HE].bandwidth);
-            pMcsStd->guardInterval = pBand->mcsStds[SWL_MCS_STANDARD_HE].guardInterval;
-            /* use max supported Spatial Stream found (can be different by MCS!) */
-            for(uint32_t i = 0; i < SWL_ARRAY_SIZE(mcsSet); i++) {
-                pMcsStd->numberOfSpatialStream = SWL_MAX(pMcsStd->numberOfSpatialStream,
-                                                         (uint32_t) (mcsSet[i] & 0xf));
-            }
-            pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
-        }
+        s_parseEhtCapPhy(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PHY], pBand);
+        s_parseEhtCapMcsSet(tbIfType[NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET], pBand);
     }
 
     return SWL_RC_DONE;
