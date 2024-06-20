@@ -46,6 +46,7 @@ install: all
 	$(INSTALL) -D -p -m 0644 odl/wld_ssid.odl $(DEST)/etc/amx/wld/wld_ssid.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_accesspoint.odl $(DEST)/etc/amx/wld/wld_accesspoint.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(DEST)/etc/amx/wld/wld_endpoint.odl
+	$(INSTALL) -D -p -m 0644 odl/wld_mapping.odl $(DEST)/etc/amx/tr181-device/extensions/01_device-wifi_pwhm_mapping.odl
 ifneq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/* $(DEST)/etc/amx/wld/wld_defaults/
@@ -94,6 +95,7 @@ package: all
 	$(INSTALL) -D -p -m 0644 odl/wld_ssid.odl $(PKGDIR)/etc/amx/wld/wld_ssid.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_accesspoint.odl $(PKGDIR)/etc/amx/wld/wld_accesspoint.odl
 	$(INSTALL) -D -p -m 0644 odl/wld_endpoint.odl $(PKGDIR)/etc/amx/wld/wld_endpoint.odl
+	$(INSTALL) -D -p -m 0644 odl/wld_mapping.odl $(PKGDIR)/etc/amx/tr181-device/extensions/01_device-wifi_pwhm_mapping.odl
 ifneq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults/* $(PKGDIR)/etc/amx/wld/wld_defaults/
@@ -142,6 +144,7 @@ doc:
 	$(eval ODLFILES += odl/wld_ssid.odl)
 	$(eval ODLFILES += odl/wld_accesspoint.odl)
 	$(eval ODLFILES += odl/wld_endpoint.odl)
+	$(eval ODLFILES += odl/wld_mapping.odl)
 
 	mkdir -p output/xml
 	mkdir -p output/html
