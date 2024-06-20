@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.13 - 2024-06-20(16:48:01 +0000)
+
+### Other
+
+- enable amx doc check and disable pcb doc check
+- Map WiFi. to Device.WiFi.
+
 ## Release v6.26.12 - 2024-06-20(09:06:11 +0000)
 
 ### Other
