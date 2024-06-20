@@ -323,7 +323,7 @@ static swl_rc_ne s_handleEvent(wld_nl80211_state_t* state, struct nlmsghdr* nlh)
     if(nlh->nlmsg_type == NLMSG_ERROR) {
         struct nlmsgerr* e = (struct nlmsgerr*) msgData;
         // error == 0 means ack/success
-        ASSERT_EQUALS(e->error, 0, SWL_RC_ERROR, ME, "nl error msg, error:%d:%s", e->error, strerror(-(e->error)));
+        ASSERT_EQUALS(e->error, 0, SWL_RC_ERROR, ME, "nl error msg, error:%d", e->error);
         return SWL_RC_OK;
     }
 
@@ -476,7 +476,7 @@ static swl_rc_ne s_handleReply(wld_nl80211_state_t* state, struct nlmsghdr* nlh)
         rc = SWL_RC_ERROR;
     } else if((nlh->nlmsg_type == NLMSG_ERROR) && (e->error != 0)) {
         // error == 0 means ack/success
-        SAH_TRACEZ_ERROR(ME, "nl error msg, error:%d:%s", e->error, strerror(-(e->error)));
+        SAH_TRACEZ_ERROR(ME, "nl error msg, error:%d", e->error);
         rc = SWL_RC_ERROR;
     }
     return s_updateRequest(pReq, nlh, rc);
