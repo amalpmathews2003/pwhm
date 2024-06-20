@@ -285,6 +285,7 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         }
     }
     uint32_t* pChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 0, 2, &tgtChW);
+    uint32_t* pEhtChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 1, 2, &tgtChW);
 
     bool implicitBf = (pRad->implicitBeamFormingSupported && pRad->implicitBeamFormingEnabled);
     bool explicitBf = (pRad->explicitBeamFormingSupported && pRad->explicitBeamFormingEnabled);
@@ -294,7 +295,9 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AC)) {
         if(pChWId) {
-            tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 0, pChWId);
+            if(pEhtChWId && (*pChWId != *pEhtChWId)) {
+                tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 0, pChWId);
+            }
             swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
             swl_mapCharFmt_addValInt32(radConfigMap, "vht_oper_chwidth", *pChWId);
             swl_mapCharFmt_addValInt32(radConfigMap, "vht_oper_centr_freq_seg0_idx", centerChan);
@@ -376,7 +379,9 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AX)) {
         if(pChWId) {
-            tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 0, pChWId);
+            if(pEhtChWId && (*pChWId != *pEhtChWId)) {
+                tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 0, pChWId);
+            }
             swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
             swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_chwidth", *pChWId);
             swl_mapCharFmt_addValInt32(radConfigMap, "he_oper_centr_freq_seg0_idx", centerChan);
@@ -475,7 +480,9 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
 
         uint32_t* pEhtChWId = (uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 1, 2, &tgtChW);
         if(pEhtChWId) {
-            tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 1, pEhtChWId);
+            if(pChWId && (*pChWId != *pEhtChWId)) {
+                tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 1, pEhtChWId);
+            }
             swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
             /* if operClass is 137, eht_oper_chwidth will be ignored by hostapd */
             if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
