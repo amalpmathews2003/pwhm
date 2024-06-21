@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.2 - 2024-06-21(15:17:03 +0000)
+
+### Other
+
+- fasten initial wpactrl connection
+
 ## Release v6.27.1 - 2024-06-21(15:07:47 +0000)
 
 ### Other
