@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.0 - 2024-06-21(12:31:04 +0000)
+
+### Other
+
+- - Add debug of channel
+
 ## Release v6.26.14 - 2024-06-21(07:52:29 +0000)
 
 ### Other
