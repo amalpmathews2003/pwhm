@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.26.14 - 2024-06-21(07:52:29 +0000)
+
+### Other
+
+- : fix crash when displaying errno string
+
 ## Release v6.26.13 - 2024-06-20(16:48:01 +0000)
 
 ### Other
