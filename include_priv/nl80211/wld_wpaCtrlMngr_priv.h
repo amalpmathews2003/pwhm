@@ -63,8 +63,8 @@
 #ifndef __WLD_WPA_CTRL_MNGR_PRIV_H__
 #define __WLD_WPA_CTRL_MNGR_PRIV_H__
 
-#define MAX_CONNECTION_ATTEMPTS 15
-#define FIRST_DELAY_MS 1500
+#define MAX_CONNECTION_ATTEMPTS 20
+#define FIRST_DELAY_MS 500
 #define RETRY_DELAY_MS 500
 
 #include "swl/swl_unLiList.h"
