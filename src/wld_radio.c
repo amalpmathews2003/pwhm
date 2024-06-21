@@ -251,7 +251,8 @@ static void s_setKickRoamSta_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
     bool flag = amxc_var_dyncast(bool, newValue);
     SAH_TRACEZ_INFO(ME, "%s: setKickRoamSta %d", pR->Name, flag);
     pR->kickRoamStaEnabled = flag;
-
+    pR->fsmRad.FSM_SyncAll = TRUE;
+    wld_autoCommitMgr_notifyRadEdit(pR);
     SAH_TRACEZ_OUT(ME);
 }
 

@@ -1008,6 +1008,11 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(pAP->StaInactivityTimeout) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "ap_max_inactivity", pAP->StaInactivityTimeout);
     }
+    /* when kickoff roaming station is active, number of tries during 4-way handshak is increased*/
+    if(pRad->kickRoamStaEnabled) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_update_count", 8);
+        swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_pairwise_update_count", 8);
+    }
     return true;
 }
 
