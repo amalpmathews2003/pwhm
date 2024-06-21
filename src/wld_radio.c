@@ -4396,6 +4396,8 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         swl_rc_ne ret = s_getTxPowerPct(pR, &txPwrPct);
         amxc_var_add_key(int32_t, retval, "txPwrPct", txPwrPct);
         amxc_var_add_key(cstring_t, retval, "Result", swl_rc_toString(ret));
+    } else if(swl_str_matchesIgnoreCase(feature, "printChannels")) {
+        wld_channel_print(pR);
     } else if(swl_str_matchesIgnoreCase(feature, "dump")) {
         s_dumpRadioDebug(pR, retval);
     } else {

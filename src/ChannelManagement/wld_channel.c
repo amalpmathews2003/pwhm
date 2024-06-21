@@ -674,9 +674,10 @@ void wld_channel_print(T_Radio* rad) {
     wld_band_data* band = get_band(rad->operatingFrequencyBand);
     ASSERTS_NOT_NULL(band, , ME, "null freqband");
     for(i = 0; i < band->nr_channels; i++) {
-        SAH_TRACEZ_ERROR(ME, "chan %u flag %u",
+        SAH_TRACEZ_ERROR(ME, "chan %u flag %u clear %u",
                          band->channels[i].channel,
-                         band->channels[i].flags
+                         band->channels[i].flags,
+                         band->channels[i].clearTime
                          );
     }
 }
