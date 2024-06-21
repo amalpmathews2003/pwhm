@@ -3115,18 +3115,43 @@ T_EndPoint* wld_vep_from_name(const char* ifname) {
 }
 
 /*
+ * @brief check whether object is valid radio obj instance
+ */
+bool wld_rad_isRadObj(amxd_object_t* radObj) {
+    ASSERTS_EQUALS(amxd_object_get_type(radObj), amxd_object_instance, false, ME, "Not instance");
+    amxd_object_t* parentObj = amxd_object_get_parent(radObj);
+    ASSERT_EQUALS(get_wld_object(), amxd_object_get_parent(parentObj), false, ME, "wrong location");
+    const char* parentName = amxd_object_get_name(parentObj, AMXD_OBJECT_NAMED);
+    ASSERT_TRUE(swl_str_matches(parentName, "Radio"), false, ME, "invalid parent obj(%s)", parentName);
+    return true;
+}
+/*
  * @brief return radio ctx of radio object
  */
 T_Radio* wld_rad_fromObj(amxd_object_t* radObj) {
-    ASSERTS_EQUALS(amxd_object_get_type(radObj), amxd_object_instance, NULL, ME, "Not instance");
-    amxd_object_t* parentObj = amxd_object_get_parent(radObj);
-    ASSERT_EQUALS(get_wld_object(), amxd_object_get_parent(parentObj), NULL, ME, "wrong location");
-    const char* parentName = amxd_object_get_name(parentObj, AMXD_OBJECT_NAMED);
-    ASSERT_TRUE(swl_str_matches(parentName, "Radio"), NULL, ME, "invalid parent obj(%s)", parentName);
+    ASSERTS_TRUE(wld_rad_isRadObj(radObj), NULL, ME, "Not rad obj instance");
     T_Radio* pRad = (T_Radio*) radObj->priv;
     ASSERTI_NOT_NULL(pRad, NULL, ME, "NULL");
     ASSERT_TRUE(debugIsRadPointer(pRad), NULL, ME, "INVALID");
     return pRad;
+}
+
+/*
+ * @brief return radio ctx of previous radio object
+ */
+T_Radio* wld_rad_prevRadFromObj(amxd_object_t* radObj) {
+    ASSERTS_TRUE(wld_rad_isRadObj(radObj), NULL, ME, "ref is not radio obj");
+    return wld_rad_fromObj(wld_util_getPrevObjInst(radObj));
+}
+
+/*
+ * @brief return radio ctx of previous radio list node
+ */
+T_Radio* wld_rad_prevRadFromList(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
+    amxc_llist_it_t* it = amxc_llist_it_get_previous(&pRad->it);
+    ASSERTS_NOT_NULL(it, NULL, ME, "No previous rad ctx");
+    return amxc_container_of(it, T_Radio, it);
 }
 
 bool wld_radio_notify_scanresults(amxd_object_t* obj) {

@@ -182,15 +182,14 @@ bool wld_rad_macCfg_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss) {
 bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
     bool change = false;
-    amxc_llist_it_t* prevListIt = pRad->it.prev;
+    T_Radio* prevRad = wld_rad_prevRadFromObj(pRad->pBus);
     swl_macBin_t prevMacAddr;
     memcpy(prevMacAddr.bMac, pRad->MACAddr, SWL_MAC_BIN_LEN);
 
     if(pRad->macCfg.useBaseMacOffset) {
         memcpy(pRad->MACAddr, wld_getWanAddr()->bMac, ETHER_ADDR_LEN);
         swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, pRad->macCfg.baseMacOffset, -1);
-    } else if(prevListIt != NULL) {
-        T_Radio* prevRad = amxc_llist_it_get_data(prevListIt, T_Radio, it);
+    } else if(prevRad != NULL) {
         memcpy(pRad->MACAddr, prevRad->mbssBaseMACAddr.bMac, SWL_MAC_BIN_LEN);
         swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, s_getMacOffset(pRad, prevRad), -1);
     }
@@ -202,7 +201,7 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
         change = true;
     }
 
-    SAH_TRACEZ_INFO(ME, "%s: set MAC "SWL_MAC_FMT " %u %p", pRad->Name, SWL_MAC_ARG(pRad->MACAddr), pRad->macCfg.useBaseMacOffset, prevListIt);
+    SAH_TRACEZ_INFO(ME, "%s: set MAC "SWL_MAC_FMT " %u %p", pRad->Name, SWL_MAC_ARG(pRad->MACAddr), pRad->macCfg.useBaseMacOffset, prevRad);
     return change;
 }
 

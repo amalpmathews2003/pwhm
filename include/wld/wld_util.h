@@ -358,6 +358,16 @@ amxd_status_t wld_util_statsObj2Var(amxc_var_t* map, amxd_object_t* statsObj);
 void wld_util_initCustomAlias(amxd_trans_t* trans, amxd_object_t* object);
 
 /*
+ * @brief return previous object instance
+ */
+amxd_object_t* wld_util_getPrevObjInst(amxd_object_t* instance);
+
+/*
+ * @brief return next object instance
+ */
+amxd_object_t* wld_util_getNextObjInst(amxd_object_t* instance);
+
+/*
  * @brief get real reference path:
  * when input Reference path (from upper layer instance) is available
  * then check it against currently referenced object path (regardless referencePath has indexed/named formats).

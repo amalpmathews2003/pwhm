@@ -2363,6 +2363,26 @@ void wld_util_initCustomAlias(amxd_trans_t* trans, amxd_object_t* object) {
     free(customAlias);
 }
 
+/*
+ * @brief return previous object instance
+ */
+amxd_object_t* wld_util_getPrevObjInst(amxd_object_t* instance) {
+    ASSERTS_EQUALS(amxd_object_get_type(instance), amxd_object_instance, NULL, ME, "Not instance");
+    amxc_llist_it_t* it = amxc_llist_it_get_previous(&instance->it);
+    ASSERTS_NOT_NULL(it, NULL, ME, "No previous iteration");
+    return amxc_container_of(it, amxd_object_t, it);
+}
+
+/*
+ * @brief return next object instance
+ */
+amxd_object_t* wld_util_getNextObjInst(amxd_object_t* instance) {
+    ASSERTS_EQUALS(amxd_object_get_type(instance), amxd_object_instance, NULL, ME, "Not instance");
+    amxc_llist_it_t* it = amxc_llist_it_get_next(&instance->it);
+    ASSERTS_NOT_NULL(it, NULL, ME, "No next iteration");
+    return amxc_container_of(it, amxd_object_t, it);
+}
+
 wld_spectrumChannelInfoEntry_t* wld_util_getSpectrumEntryByChannel(amxc_llist_t* pSpectrumInfoList, swl_channel_t channel) {
     ASSERTS_NOT_NULL(pSpectrumInfoList, NULL, ME, "NULL");
     amxc_llist_for_each(it, pSpectrumInfoList) {

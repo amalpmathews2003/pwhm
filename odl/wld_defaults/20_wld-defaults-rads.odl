@@ -75,8 +75,7 @@
                 parameter TargetWakeTimeEnable = 1;
                 parameter ObssCoexistenceEnable = 1;
                 object MACConfig {
-                    parameter UseBaseMacOffset = true;
-                    parameter BaseMacOffset = 1;
+                    parameter UseBaseMacOffset = false;
                     parameter UseLocalBitForGuest = true;
                 }
             }
@@ -98,8 +97,7 @@
                 }
                 parameter AutoBandwidthSelectMode="MaxCleared";
                 object MACConfig {
-                    parameter UseBaseMacOffset = true;
-                    parameter BaseMacOffset = 2;
+                    parameter UseBaseMacOffset = false;
                     parameter UseLocalBitForGuest = true;
                 }
             }
