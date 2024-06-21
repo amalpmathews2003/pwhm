@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.1 - 2024-06-21(15:07:47 +0000)
+
+### Other
+
+- fix auto generated mac overlap
+
 ## Release v6.27.0 - 2024-06-21(12:31:04 +0000)
 
 ### Other
