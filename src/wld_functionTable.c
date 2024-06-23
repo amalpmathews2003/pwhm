@@ -328,7 +328,7 @@ DEF_TRAP_char_int_int(T_AccessPoint, mfn_wvap_kick_sta);
 DEF_TRAP_char_int_int(T_AccessPoint, mfn_wvap_kick_sta_reason);
 DEF_TRAP_int_int(T_AccessPoint, mfn_hspot_enable);
 DEF_TRAP_int(T_AccessPoint, mfn_hspot_config);
-DEF_TRAP_char_int(T_AccessPoint, mfn_wvap_clean_sta);
+DEF_TRAP_char_int_no_impl(T_AccessPoint, mfn_wvap_clean_sta);
 DEF_TRAP(T_AccessPoint, mfn_wvap_multiap_update_type);
 DEF_TRAP(T_AccessPoint, mfn_wvap_setMboDenyReason);
 DEF_TRAP(T_AccessPoint, mfn_wvap_set_ap_role);
