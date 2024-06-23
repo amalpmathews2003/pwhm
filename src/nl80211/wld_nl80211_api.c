@@ -370,11 +370,22 @@ swl_rc_ne wld_nl80211_delInterface(wld_nl80211_state_t* state, uint32_t ifIndex)
     return wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_DEL_INTERFACE, 0, ifIndex, NULL);
 }
 
+static swl_rc_ne s_registerFrameCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv _UNUSED) {
+    ASSERT_NOT_NULL(nlh, SWL_RC_ERROR, ME, "NULL");
+    ASSERTI_TRUE((rc <= SWL_RC_ERROR), rc, ME, "Register for Mgmt Frame notifications OK");
+    ASSERTS_EQUALS(nlh->nlmsg_type, NLMSG_ERROR, SWL_RC_OK, ME, "not error msg");
+    struct nlmsgerr* e = (struct nlmsgerr*) nlmsg_data(nlh);
+    ASSERT_NOT_NULL(e, rc, ME, "NULL");
+    ASSERT_NOT_EQUALS(e->error, -EALREADY, SWL_RC_OK, ME, "Already registered for the mgmt frame notifications");
+    SAH_TRACEZ_WARNING(ME, "Fail to register for mgmt frame notifications, error:%d", e->error);
+    return SWL_RC_ERROR;
+}
+
 swl_rc_ne wld_nl80211_registerFrame(wld_nl80211_state_t* state, uint32_t ifIndex, uint16_t type, const char* pattern, size_t patternLen) {
     NL_ATTRS(attribs,
              ARR(NL_ATTR_VAL(NL80211_ATTR_FRAME_TYPE, type),
                  NL_ATTR_DATA(NL80211_ATTR_FRAME_MATCH, patternLen, pattern)));
-    swl_rc_ne rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_REGISTER_ACTION, 0, ifIndex, &attribs);
+    swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_REGISTER_ACTION, 0, ifIndex, &attribs, s_registerFrameCb, NULL);
     NL_ATTRS_CLEAR(&attribs);
     return rc;
 }
