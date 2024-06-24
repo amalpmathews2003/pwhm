@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.5 - 2024-06-24(09:23:42 +0000)
+
+### Other
+
+- manage radio air stats for each band with single wiphy
+
 ## Release v6.27.4 - 2024-06-24(08:12:39 +0000)
 
 ### Other
