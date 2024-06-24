@@ -323,10 +323,8 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
          * If multiple bands are supported OR we don't know, fine tune selection based on available antennas
          * ans considering already registered radios (exclusive freq bands, except for 5ghz where multiple device can be detected
          */
-        if(swl_bit32_getNrSet(ownRadFB) == 1) {
+        if(swl_bit32_getNrSet(ownRadFB) >= 1) {
             pRad->operatingFrequencyBand = swl_bit32_getHighest(ownRadFB);
-        } else if(swl_bit32_getNrSet(ownRadFB) > 1) {
-            pRad->operatingFrequencyBand = swl_bit32_getLowest(ownRadFB);
         } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] <= 2) && (SWL_BIT_IS_SET(ownRadFB, SWL_FREQ_BAND_EXT_2_4GHZ))) {
             pRad->operatingFrequencyBand = SWL_FREQ_BAND_EXT_2_4GHZ;
         } else if((pRad->nrAntenna[COM_DIR_TRANSMIT] > 2) && (SWL_BIT_IS_SET(ownRadFB, SWL_FREQ_BAND_EXT_6GHZ))) {
