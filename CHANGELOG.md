@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.6 - 2024-06-24(12:42:24 +0000)
+
+### Other
+
+- - Handle register mgmt frame command reply
+
 ## Release v6.27.5 - 2024-06-24(09:23:42 +0000)
 
 ### Other
