@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.4 - 2024-06-24(08:12:39 +0000)
+
+### Other
+
+- - fix fta return value
+
 ## Release v6.27.3 - 2024-06-24(07:32:38 +0000)
 
 ### Other
