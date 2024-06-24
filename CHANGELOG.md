@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.3 - 2024-06-24(07:32:38 +0000)
+
+### Other
+
+- fix radio baseMacAddress duplication
+
 ## Release v6.27.2 - 2024-06-21(15:17:03 +0000)
 
 ### Other
