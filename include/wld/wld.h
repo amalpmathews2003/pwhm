@@ -1615,6 +1615,7 @@ struct WLD_RADIO {
     unsigned long drv_caps;                         /* Driver capablities for this Radio */
 
     T_Stats stats;                                  /* Radio statistics */
+    swla_dm_objActionReadCtx_t onReadStatsCtx;      /* Radio.Stats object read handler ctx */
     T_CONST_WPS* wpsConst;                          /* WPS constant strings (Build defined) */
     int currentStations;                            /* Stat the current # of stations connected to this radio */
     uint32_t currentVideoStations;                  /* Stat the current # of video endpoints connected to to this radio */

@@ -699,17 +699,18 @@ static void s_setGuardInterval_pwf(void* priv _UNUSED, amxd_object_t* object, am
     SAH_TRACEZ_OUT(ME);
 }
 
-static void s_updateRadioStatsValues(T_Radio* pR, amxd_object_t* stats) {
-    ASSERT_NOT_NULL(pR, , ME, "pRadio NULL");
+static swl_rc_ne s_updateRadioStatsValues(amxd_object_t* const stats) {
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(stats));
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    int ret = pR->pFA->mfn_wrad_stats(pR);
-    // Update the stats with Linux counters if we don't handle them in the plugin.
-    if(ret < 0) {
+    if(!(wld_rad_hasActiveVap(pR) || wld_rad_hasRunningEndpoint(pR)) || (pR->pFA->mfn_wrad_stats(pR) < 0)) {
+        // Update the stats with Linux counters if we don't handle them in the plugin.
         wld_updateRadioStats(pR, NULL);
     }
 
-    ASSERT_NOT_NULL(stats, , ME, "stats NULL");
-    wld_util_stats2Obj(stats, &pR->stats);
+    ASSERT_NOT_NULL(stats, SWL_RC_INVALID_PARAM, ME, "stats NULL");
+    wld_util_stats2Obj((amxd_object_t*) stats, &pR->stats);
+    return SWL_RC_OK;
 }
 
 amxd_status_t _getRadioStats(amxd_object_t* object,
@@ -717,15 +718,14 @@ amxd_status_t _getRadioStats(amxd_object_t* object,
                              amxc_var_t* args _UNUSED,
                              amxc_var_t* retval) {
 
-    SAH_TRACEZ_INFO(ME, "getRadioStats");
-    T_Radio* pR = object->priv;
-
-    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
-    ASSERT_TRUE(debugIsRadPointer(pR), amxd_status_unknown_error, ME, "NULL");
     amxd_object_t* stats = amxd_object_get(object, "Stats");
 
     // Update the stats object
-    s_updateRadioStatsValues(pR, stats);
+    swl_rc_ne rc = s_updateRadioStatsValues(stats);
+    ASSERT_TRUE(swl_rc_isOk(rc), amxd_status_unknown_error, ME, "fail to update radio stats");
+
+    // copy stats object to returned variant
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     wld_util_statsObj2Var(retval, stats);
 
     return amxd_status_ok;
@@ -737,22 +737,9 @@ amxd_status_t _wld_radio_getStats_orf(amxd_object_t* const object,
                                       const amxc_var_t* const args,
                                       amxc_var_t* const action_retval,
                                       void* priv) {
-    SAH_TRACEZ_IN(ME);
-
-    amxd_status_t status = amxd_status_ok;
-    if(reason != action_object_read) {
-        status = amxd_status_function_not_implemented;
-        return status;
-    }
-
-    amxd_object_t* parentObj = amxd_object_get_parent(object);
-    ASSERT_NOT_NULL(parentObj, amxd_status_ok, ME, "parentObj is NULL");
-
-    T_Radio* pR = (T_Radio*) parentObj->priv;
-    s_updateRadioStatsValues(pR, object);
-
-    status = amxd_action_object_read(object, param, reason, args, action_retval, priv);
-    return status;
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "No mapped radio");
+    return swla_dm_procObjActionRead(object, param, reason, args, action_retval, priv, &pR->onReadStatsCtx, s_updateRadioStatsValues);
 }
 
 amxd_status_t _wld_rad_getChannelLoad_prf(amxd_object_t* object,

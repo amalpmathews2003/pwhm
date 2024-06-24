@@ -300,4 +300,11 @@ struct wld_nl80211_channelSurveyInfo {
     int8_t noiseDbm;       // Noise level of channel (u8, dBm).
 };
 
+/*
+ * config params for survey dump request
+ */
+struct wld_nl80211_channelSurveyParam {
+    swl_freqBandExt_e selectFreqBand; // selected frequency band in results
+};
+
 #endif /* INCLUDE_WLD_WLD_NL80211_TYPES_H_ */

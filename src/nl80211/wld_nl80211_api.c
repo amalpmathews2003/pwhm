@@ -633,6 +633,7 @@ struct getSurveyInfoData_s {
     const uint32_t nrChanSurveyInfoMax;
     uint32_t nrChanSurveyInfo;
     wld_nl80211_channelSurveyInfo_t* pChanSurveyInfo;
+    swl_freqBandExt_e selectFreqBand;
 };
 
 static swl_rc_ne s_getChanSurveyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) {
@@ -663,6 +664,15 @@ static swl_rc_ne s_getChanSurveyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void*
     rc = wld_nl80211_parseChanSurveyInfo(tb, &chanSurveyInfo);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "parsing channel survey info failed");
 
+    if(requestData->selectFreqBand != SWL_FREQ_BAND_EXT_AUTO) {
+        swl_chanspec_t entryChSpec = SWL_CHANSPEC_EMPTY;
+        if((swl_chanspec_channelFromMHz(&entryChSpec, chanSurveyInfo.frequencyMHz) < SWL_RC_OK) ||
+           (entryChSpec.band != requestData->selectFreqBand)) {
+            // skip entries out of selected frequency band
+            return SWL_RC_OK;
+        }
+    }
+
     if((requestData->pChanSurveyInfo == NULL) || (requestData->nrChanSurveyInfoMax == 0)) {
         SAH_TRACEZ_INFO(ME, "No memory available for saving channel survey info");
         return SWL_RC_OK;
@@ -679,12 +689,14 @@ static swl_rc_ne s_getChanSurveyInfoCb(swl_rc_ne rc, struct nlmsghdr* nlh, void*
     return rc;
 }
 
-swl_rc_ne wld_nl80211_getSurveyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnChanSurveyInfo) {
+swl_rc_ne wld_nl80211_getSurveyInfoExt(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_channelSurveyParam_t* pConfig,
+                                       wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnChanSurveyInfo) {
 
     struct getSurveyInfoData_s requestData = {
         .nrChanSurveyInfoMax = WLD_MAX_POSSIBLE_CHANNELS,
         .nrChanSurveyInfo = 0,
         .pChanSurveyInfo = calloc(WLD_MAX_POSSIBLE_CHANNELS, sizeof(wld_nl80211_channelSurveyInfo_t)),
+        .selectFreqBand = (pConfig ? pConfig->selectFreqBand : SWL_FREQ_BAND_EXT_AUTO),
     };
 
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state, NL80211_CMD_GET_SURVEY, NLM_F_DUMP, ifIndex, NULL, s_getChanSurveyInfoCb, &requestData);
@@ -704,6 +716,10 @@ swl_rc_ne wld_nl80211_getSurveyInfo(wld_nl80211_state_t* state, uint32_t ifIndex
     }
     free(requestData.pChanSurveyInfo);
     return rc;
+}
+
+swl_rc_ne wld_nl80211_getSurveyInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnChanSurveyInfo) {
+    return wld_nl80211_getSurveyInfoExt(state, ifIndex, NULL, ppChanSurveyInfo, pnChanSurveyInfo);
 }
 
 swl_rc_ne wld_nl80211_setWiphyAntennas(wld_nl80211_state_t* state, uint32_t ifIndex, uint32_t txMapAnt, uint32_t rxMapAnt) {

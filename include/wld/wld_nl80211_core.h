@@ -82,6 +82,7 @@ typedef struct wld_nl80211_listener wld_nl80211_listener_t;
  * (detailed definitions in wld_nl80211_types.h)
  */
 typedef struct wld_nl80211_channelSurveyInfo wld_nl80211_channelSurveyInfo_t;
+typedef struct wld_nl80211_channelSurveyParam wld_nl80211_channelSurveyParam_t;
 
 /*
  * @brief statistic counters of nl80211 socket manager

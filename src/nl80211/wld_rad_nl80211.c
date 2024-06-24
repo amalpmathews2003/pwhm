@@ -238,7 +238,10 @@ swl_rc_ne wld_rad_nl80211_getWiphyInfo(T_Radio* pRadio, wld_nl80211_wiphyInfo_t*
 swl_rc_ne wld_rad_nl80211_getSurveyInfo(T_Radio* pRadio, wld_nl80211_channelSurveyInfo_t** ppChanSurveyInfo, uint32_t* pnrChanSurveyInfo) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     uint32_t ifIndex = wld_rad_getFirstEnabledIfaceIndex(pRadio);
-    return wld_nl80211_getSurveyInfo(wld_nl80211_getSharedState(), ifIndex, ppChanSurveyInfo, pnrChanSurveyInfo);
+    wld_nl80211_channelSurveyParam_t config = {
+        .selectFreqBand = pRadio->operatingFrequencyBand,
+    };
+    return wld_nl80211_getSurveyInfoExt(wld_nl80211_getSharedState(), ifIndex, &config, ppChanSurveyInfo, pnrChanSurveyInfo);
 }
 
 /*
