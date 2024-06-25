@@ -3213,43 +3213,6 @@ amxd_status_t _getRadioAirStats(amxd_object_t* object,
     return amxd_status_ok;
 }
 
-/**
- * Retrieves the rssi on a per antenna basis. Currently we offer enough
- * space for up to 8 antenna's.
- */
-amxd_status_t _getPerAntennaRssi(amxd_object_t* object,
-                                 amxd_function_t* func _UNUSED,
-                                 amxc_var_t* args _UNUSED,
-                                 amxc_var_t* retval) {
-
-    SAH_TRACEZ_IN(ME);
-
-    amxd_status_t status = amxd_status_ok;
-    T_Radio* pR = wld_rad_fromObj(object);
-    ASSERT_NOT_NULL(pR, amxd_status_ok, ME, "Not mapped to radio ctx");
-
-    if(pR->enable == 0) {
-        SAH_TRACEZ_INFO(ME, "No air statistics when disabled");
-
-        return amxd_status_ok;
-    }
-
-    T_ANTENNA_RSSI antenna_stats;
-    int ret = pR->pFA->mfn_wrad_per_ant_rssi(pR, &antenna_stats);
-
-    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
-
-    if(ret == WLD_ERROR_NOT_IMPLEMENTED) {
-        SAH_TRACEZ_INFO(ME, "Function not supported");
-        status = amxd_status_ok;
-    } else if(ret < 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to get per antenna rssi info");
-        status = amxd_status_unknown_error;
-    }
-
-    return status;
-}
-
 amxd_status_t _getLatestPower(amxd_object_t* object,
                               amxd_function_t* func _UNUSED,
                               amxc_var_t* args _UNUSED,

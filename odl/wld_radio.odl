@@ -284,11 +284,6 @@ define probelist_t{
 		htable getRadioStats();
 
 		/**
-		 * Get the RSSI value per antenna for the radio, and test for radio defect.
-		 */
-		htable getPerAntennaRssi();
-
-		/**
 		 * Get the latest TX Power value for each antenna of the radio.
 		 */
 		htable getLatestPower();
