@@ -1,5 +1,7 @@
 #!/bin/sh
+if [ -e "/lib/functions/system.sh" ]; then
 . /lib/functions/system.sh
+fi
 
 [ -f /etc/environment ] && source /etc/environment
 ulimit -c ${ULIMIT_CONFIGURATION:-0}
@@ -30,7 +32,9 @@ get_base_wan_address()
         fi
         [ -z "$WLAN_ADDR" ] || return
     fi
-    export WLAN_ADDR=$(macaddr_add $(cat /sys/class/net/br-lan/address) +1)
+    if [ -e "/sys/class/net/br-lan" ]; then
+        export WLAN_ADDR=$(macaddr_add $(cat /sys/class/net/br-lan/address) +1)
+    fi
 }
 
 kill_process()
