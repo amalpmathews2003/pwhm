@@ -634,4 +634,38 @@ swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_802
  */
 swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* nlh, void** data, size_t* dataLen);
 
+/*
+ * @brief convert nl80211 channel desc into swl format
+ *
+ * @param pSwlChanSpec pointer to swl chanspec info struct to be filled
+ * @param pNlChanSpec source pointer to nl80211 chspec info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_chanSpecNlToSwl(swl_chanspec_t* pSwlChanSpec, wld_nl80211_chanSpec_t* pNlChanSpec);
+
+/*
+ * @brief get channel specification from nl80211 interface info
+ *
+ * @param pChanSpec pointer to chanspec info struct to be filled
+ * @param pIfaceInfo source pointer to interface info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo);
+
+/*
+ * @brief get current channel info
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex interface net dev index
+ * @param pChanSpec pointer to chanspec info struct to be filled
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getChanSpec(wld_nl80211_state_t* state, uint32_t ifIndex, swl_chanspec_t* pChanSpec);
+
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */

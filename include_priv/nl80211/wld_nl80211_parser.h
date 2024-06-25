@@ -162,4 +162,15 @@ swl_rc_ne wld_nl80211_parseMgmtFrame(struct nlattr* tb[], wld_nl80211_mgmtFrame_
  */
 swl_rc_ne wld_nl80211_parseMgmtFrameTxStatus(struct nlattr* tb[], wld_nl80211_mgmtFrameTxStatus_t* mgmtFrameTxStatus);
 
+/*
+ * @brief parse nl msg attributes into radar event struct
+ *
+ * @param tb array of attributes from parsed nl msg
+ * @param pRadarEvtInfo pointer to radar event struct to be filled
+ *
+ * @return SWL_RC_OK parsing done successfully
+ *         <= SWL_RC_ERROR parsing error
+ */
+swl_rc_ne wld_nl80211_parseRadarInfo(struct nlattr* tb[], wld_nl80211_radarEvtInfo_t* pRadarEvtInfo);
+
 #endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_PARSER_H_ */

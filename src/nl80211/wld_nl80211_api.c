@@ -1120,3 +1120,31 @@ swl_rc_ne wld_nl80211_getVendorDataFromVendorMsg(swl_rc_ne rc, struct nlmsghdr* 
 
     return rc;
 }
+
+swl_rc_ne wld_nl80211_chanSpecNlToSwl(swl_chanspec_t* pSwlChanSpec, wld_nl80211_chanSpec_t* pNlChanSpec) {
+    ASSERT_NOT_NULL(pSwlChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pNlChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_chanspec_t ctrlChanspec;
+    swl_rc_ne rc = swl_chanspec_channelFromMHz(&ctrlChanspec, pNlChanSpec->ctrlFreq);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get ctrl channel");
+    rc = swl_chanspec_fromMHz(pSwlChanSpec, pNlChanSpec->centerFreq1);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get center channel");
+    pSwlChanSpec->channel = ctrlChanspec.channel;
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+    ASSERT_NOT_NULL(pIfaceInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_nl80211_chanSpecNlToSwl(pChanSpec, &pIfaceInfo->chanSpec);
+}
+
+swl_rc_ne wld_nl80211_getChanSpec(wld_nl80211_state_t* state, uint32_t ifIndex, swl_chanspec_t* pChanSpec) {
+    ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(ifIndex > 0, SWL_RC_INVALID_PARAM, ME, "invalid ifindex");
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    swl_rc_ne rc = wld_nl80211_getInterfaceInfo(state, ifIndex, &ifaceInfo);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "no iface info");
+    rc = wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo);
+    return rc;
+}
+

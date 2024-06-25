@@ -581,6 +581,33 @@ T_Radio* wld_getRadioByIndex(int index) {
 }
 
 /**
+ * Return the first radio with the given netdev index of one of the interface built on top of it.
+ * In case of duplicate, the first one in the list is returned.
+ */
+T_Radio* wld_getRadioOfIfaceIndex(int index) {
+    ASSERTS_TRUE(index > 0, NULL, ME, "null");
+    T_Radio* pRad;
+    T_AccessPoint* pAP;
+    T_EndPoint* pEP;
+    wld_for_eachRad(pRad) {
+        if(pRad->index == index) {
+            return pRad;
+        }
+        wld_rad_forEachAp(pAP, pRad) {
+            if(pAP->index == index) {
+                return pAP->pRadio;
+            }
+        }
+        wld_rad_forEachEp(pEP, pRad) {
+            if(pEP->index == index) {
+                return pEP->pRadio;
+            }
+        }
+    }
+    return NULL;
+}
+
+/**
  * Return the first radio with the given netdev index
  * In case of duplicate, the first one in the list is returned.
  */

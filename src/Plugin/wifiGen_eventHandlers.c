@@ -468,6 +468,34 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
     }
 }
 
+void s_radarEvtCb(void* pRef, void* pData _UNUSED, wld_nl80211_radarEvtInfo_t* radarEvtInfo) {
+    ASSERT_NOT_NULL(radarEvtInfo, , ME, "NULL");
+    ASSERT_NOT_EQUALS(radarEvtInfo->event, WLD_NL80211_RADAR_EVT_UNKNOWN, , ME, "unknown");
+    T_Radio* pRad = wld_getRadioOfIfaceIndex(radarEvtInfo->ifIndex) ? : pRef;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    switch(radarEvtInfo->event) {
+    case WLD_NL80211_RADAR_CAC_STARTED: {
+        swl_chanspec_t chanspec = SWL_CHANSPEC_EMPTY;
+        swl_rc_ne rc = wld_nl80211_chanSpecNlToSwl(&chanspec, &radarEvtInfo->chanSpec);
+        ASSERT_TRUE(swl_rc_isOk(rc), , ME, "%s: fail to convert dfs evt chanspec", pRad->Name);
+        uint32_t cacTime = wld_channel_is_band_passive(chanspec) ? wld_channel_get_band_clear_time(chanspec) : 0;
+        SAH_TRACEZ_INFO(ME, "%s: (w:%d,i:%d) dfs cac started on chspec %s bg:%d",
+                        pRad->Name, radarEvtInfo->wiphy, radarEvtInfo->ifIndex,
+                        swl_typeChanspecExt_toBuf32Ref(&chanspec).buf, radarEvtInfo->isBackground);
+        if(radarEvtInfo->isBackground && !wld_bgdfs_isRunning(pRad)) {
+            /*
+             * bgcac started event may not be detected by hostapd
+             * so use nl80211 event listener to fix this missing
+             */
+            wld_bgdfs_notifyClearStarted(pRad, chanspec.channel, chanspec.bandwidth, BGDFS_TYPE_CLEAR);
+            s_dfsCacStartedCb(pRad, pRad->Name, &chanspec, cacTime);
+        }
+        break;
+    }
+    default: break;
+    }
+}
+
 /*
  * @brief: force refreshing vaps ifindex as sometimes we miss the nl80211 iface added/removed events
  */
@@ -561,6 +589,7 @@ swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     nl80211RadEvtHandlers.fScanAbortedCb = s_scanAbortedCb;
     nl80211RadEvtHandlers.fScanDoneCb = s_scanDoneCb;
     nl80211RadEvtHandlers.fMgtFrameEvtCb = s_frameReceivedCb;
+    nl80211RadEvtHandlers.fRadarEventCb = s_radarEvtCb;
     wld_rad_nl80211_setEvtListener(pRad, NULL, &nl80211RadEvtHandlers);
 
     return SWL_RC_OK;

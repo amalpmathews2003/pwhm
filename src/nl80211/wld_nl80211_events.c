@@ -264,6 +264,25 @@ static swl_rc_ne s_scanResultsCb(swl_unLiList_t* pListenerList, struct nlmsghdr*
     return SWL_RC_DONE;
 }
 
+static swl_rc_ne s_radarEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.mlme_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    wld_nl80211_radarEvtInfo_t radarEvtInfo;
+    rc = wld_nl80211_parseRadarInfo(tb, &radarEvtInfo);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "parsing failed");
+    SAH_TRACEZ_INFO(ME, "receive radar event %d on w:%d,i:%d", radarEvtInfo.event, radarEvtInfo.wiphy, radarEvtInfo.ifIndex);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fRadarEventCb(pListener->pRef, pListener->pData, &radarEvtInfo);
+    });
+
+    return SWL_RC_DONE;
+}
+
 #define OFFSET_UNDEF (-1)
 #define MSG_ID_NAME(x) x, #x
 
@@ -311,7 +330,7 @@ SWL_TABLE(sNl80211Msgs,
               /* NL80211_MCGRP_MLME */
               {MSG_ID_NAME(NL80211_CMD_REMAIN_ON_CHANNEL), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_CANCEL_REMAIN_ON_CHANNEL), s_commonEvtCb, OFFSET_UNDEF},
-              {MSG_ID_NAME(NL80211_CMD_RADAR_DETECT), s_commonEvtCb, OFFSET_UNDEF},
+              {MSG_ID_NAME(NL80211_CMD_RADAR_DETECT), s_radarEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fRadarEventCb)},
               {MSG_ID_NAME(NL80211_CMD_CH_SWITCH_STARTED_NOTIFY), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_CH_SWITCH_NOTIFY), s_commonEvtCb, OFFSET_UNDEF},
               {MSG_ID_NAME(NL80211_CMD_NOTIFY_CQM), s_commonEvtCb, OFFSET_UNDEF},
@@ -374,6 +393,7 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
         pListener->handlers.fScanAbortedCb = handlers->fScanAbortedCb;
         pListener->handlers.fScanDoneCb = handlers->fScanDoneCb;
         pListener->handlers.fMgtFrameEvtCb = handlers->fMgtFrameEvtCb;
+        pListener->handlers.fRadarEventCb = handlers->fRadarEventCb;
     }
     if(pListener->ifIndex != WLD_NL80211_ID_UNDEF) {
         //Iface events handlers to be set here

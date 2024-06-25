@@ -420,25 +420,11 @@ swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* dbm) {
 }
 
 swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
-    ASSERT_NOT_NULL(pIfaceInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
-    swl_chanspec_t ctrlChanspec;
-    swl_rc_ne rc = swl_chanspec_channelFromMHz(&ctrlChanspec, pIfaceInfo->chanSpec.ctrlFreq);
-    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get ctrl channel");
-    rc = swl_chanspec_fromMHz(pChanSpec, pIfaceInfo->chanSpec.centerFreq1);
-    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get center channel");
-    pChanSpec->channel = ctrlChanspec.channel;
-    return SWL_RC_OK;
+    return wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, pIfaceInfo);
 }
 
 static swl_rc_ne s_getChanSpec(int ifIndex, swl_chanspec_t* pChanSpec) {
-    ASSERTS_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTS_TRUE(ifIndex > 0, SWL_RC_INVALID_PARAM, ME, "invalid ifindex");
-    wld_nl80211_ifaceInfo_t ifaceInfo;
-    swl_rc_ne rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), ifIndex, &ifaceInfo);
-    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "no iface info");
-    rc = wld_rad_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo);
-    return rc;
+    return wld_nl80211_getChanSpec(wld_nl80211_getSharedState(), ifIndex, pChanSpec);
 }
 
 swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec) {

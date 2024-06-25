@@ -594,7 +594,7 @@ static void s_parseEhtCapMcsSet(const struct nlattr* tbIfType, wld_nl80211_bandD
     /* use max supported Spatial Stream found (can be different by MCS!) */
     for(uint32_t i = 0; i < SWL_ARRAY_SIZE(mcsSet); i++) {
         pMcsStd->numberOfSpatialStream = SWL_MAX(pMcsStd->numberOfSpatialStream,
-                (uint32_t) (mcsSet[i] & 0xf));
+                                                 (uint32_t) (mcsSet[i] & 0xf));
     }
     pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
 }
@@ -1324,6 +1324,21 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
         return SWL_RC_CONTINUE;
     }
 
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_nl80211_parseRadarInfo(struct nlattr* tb[], wld_nl80211_radarEvtInfo_t* pRadarEvtInfo) {
+    ASSERT_NOT_NULL(pRadarEvtInfo, SWL_RC_INVALID_PARAM, ME, "NULL");
+    memset(pRadarEvtInfo, 0, sizeof(*pRadarEvtInfo));
+    ASSERT_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    pRadarEvtInfo->wiphy = wld_nl80211_getWiphy(tb);
+    pRadarEvtInfo->ifIndex = wld_nl80211_getIfIndex(tb);
+    pRadarEvtInfo->event = WLD_NL80211_RADAR_EVT_UNKNOWN;
+    NLA_GET_VAL(pRadarEvtInfo->event, nla_get_u32, tb[NL80211_ATTR_RADAR_EVENT]);
+    wld_nl80211_parseChanSpec(tb, &pRadarEvtInfo->chanSpec);
+    if(tb[NL80211_ATTR_RADAR_BACKGROUND]) {
+        pRadarEvtInfo->isBackground = true;
+    }
     return SWL_RC_OK;
 }
 

@@ -307,4 +307,24 @@ struct wld_nl80211_channelSurveyParam {
     swl_freqBandExt_e selectFreqBand; // selected frequency band in results
 };
 
+typedef enum {
+    WLD_NL80211_RADAR_DETECTED,        // radar detected
+    WLD_NL80211_RADAR_CAC_FINISHED,    // CAC finished
+    WLD_NL80211_RADAR_CAC_ABORTED,     // CAC canceled
+    WLD_NL80211_RADAR_NOP_FINISHED,    // Radar NonOperatingPeriod finished
+    WLD_NL80211_RADAR_PRE_CAC_EXPIRED, // previous CAC expired
+    WLD_NL80211_RADAR_CAC_STARTED,     // CAC started
+    WLD_NL80211_RADAR_EVT_UNKNOWN,     // unknown event (shall not happen)
+    WLD_NL80211_RADAR_EVT_MAX,
+} wld_nl80211_radarEvent_e;
+
+typedef struct {
+    uint32_t wiphy;                  //wiphy id
+    uint32_t ifIndex;                //net dev index
+    uint64_t wDevId;                 //nl80211 wireless device id
+    wld_nl80211_radarEvent_e event;  //radar event
+    bool isBackground;               //flag for background clearing
+    wld_nl80211_chanSpec_t chanSpec; //channel info
+} wld_nl80211_radarEvtInfo_t;
+
 #endif /* INCLUDE_WLD_WLD_NL80211_TYPES_H_ */

@@ -591,6 +591,9 @@ int wifiGen_rad_status(T_Radio* pRad) {
     if(!wld_rad_hasEnabledIface(pRad)) {
         SAH_TRACEZ_INFO(ME, "%s: has no enabled interface", pRad->Name);
         pRad->detailedState = CM_RAD_DOWN;
+    } else if(wld_bgdfs_isRunning(pRad)) {
+        // In this situation, there is a background dfs running.
+        SAH_TRACEZ_INFO(ME, "%s: background dfs is running", pRad->Name);
     } else if(((pActiveEp = wld_rad_getFirstActiveEp(pRad)) != NULL) &&
               ((wld_linuxIfUtils_getLinkStateExt(pActiveEp->Name) > 0) || (!wld_rad_hasEnabledVap(pRad)))) {
         /*
@@ -612,9 +615,6 @@ int wifiGen_rad_status(T_Radio* pRad) {
          */
         SAH_TRACEZ_INFO(ME, "%s: curr band(c:%d/b:%d) is not yet usable",
                         pRad->Name, currChanSpec.channel, swl_chanspec_bwToInt(currChanSpec.bandwidth));
-    } else if(wld_bgdfs_isRunning(pRad)) {
-        // In this situation, there is a background dfs running.
-        SAH_TRACEZ_INFO(ME, "%s: background dfs is running", pRad->Name);
     } else if(wld_rad_hasActiveIface(pRad)) {
         /*
          * radio is considered up when:
@@ -1074,7 +1074,7 @@ swl_rc_ne wifiGen_rad_bgDfsStartExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
 
     swl_rc_ne rc = wld_rad_nl80211_bgDfsStart(pRad, args);
     ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to start bgDfs", pRad->Name);
-    wld_bgdfs_notifyClearStarted(pRad, args->channel, args->bandwidth, BGDFS_TYPE_CLEAR);
+    // let bgdfs start event update the datamodel
     return rc;
 }
 

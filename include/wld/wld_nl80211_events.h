@@ -137,6 +137,18 @@ typedef void (* wld_nl80211_mgmtFrameEvtCb_f)(void* pRef, void* pData, size_t fr
 typedef void (* wld_nl80211_mgmtFrameTxStatusEvtCb_f)(void* pRef, void* pData, size_t frameLen, swl_80211_mgmtFrame_t* frame, bool isAck);
 
 /*
+ * @brief generic dfs/radar event callback
+ *
+ * @param pRef user private reference provided when registering handlers
+ * @param pData user private data provided when registering handlers
+ * @param dfsEvtInfo the pointer to the radar event info
+ *
+ * @return void
+ *
+ */
+typedef void (* wld_nl80211_radarEvtCb_f)(void* pRef, void* pData, wld_nl80211_radarEvtInfo_t* dfsEvtInfo);
+
+/*
  * @brief structure of event handlers
  */
 typedef struct {
@@ -149,6 +161,7 @@ typedef struct {
     wld_nl80211_vendorEvtCb_f fVendorEvtCb;                       // vendor event is reported
     wld_nl80211_mgmtFrameEvtCb_f fMgtFrameEvtCb;                  // a management frame is reported
     wld_nl80211_mgmtFrameTxStatusEvtCb_f fMgtFrameTxStatusEvtCb;  // status of transmitted management frame is reported
+    wld_nl80211_radarEvtCb_f fRadarEventCb;                       // DFS/radar event is reported
 } wld_nl80211_evtHandlers_cb;
 
 /*
