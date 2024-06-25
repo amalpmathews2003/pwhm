@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.27.7 - 2024-06-25(07:48:19 +0000)
+
+### Other
+
+- detect bg cac starting event from nl80211
+
 ## Release v6.27.6 - 2024-06-24(12:42:24 +0000)
 
 ### Other
