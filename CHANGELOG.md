@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.1 - 2024-06-26(14:24:15 +0000)
+
+### Other
+
+- : SSIDs are not broadcasted
+
 ## Release v6.28.0 - 2024-06-26(07:57:11 +0000)
 
 ### Other
