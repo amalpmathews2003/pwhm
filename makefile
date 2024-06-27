@@ -73,6 +73,10 @@ endif
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 scripts/Plugin/wld_gen.sh $(DEST)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
 endif
+ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
+	$(INSTALL) -d -m 0755 $(DEST)$(PROCMONDIR)
+	ln -sfr $(DEST)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT) $(DEST)$(PROCMONDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
+endif
 	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
 	ln -sfr $(DEST)/usr/bin/amxrt $(DEST)$(BINDIR)/wld
 	$(INSTALL) -D -p -m 0755 scripts/debug_wifi.sh $(DEST)/usr/lib/debuginfo/debug_wifi.sh
@@ -122,6 +126,11 @@ ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 endif
 ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
 	$(INSTALL) -D -p -m 0755 scripts/Plugin/wld_gen.sh $(PKGDIR)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
+endif
+ifneq ($(CONFIG_SAH_WLD_INIT_LEGACY),y)
+	$(INSTALL) -d -m 0755 $(PKGDIR)$(PROCMONDIR)
+	rm -f $(PKGDIR)$(PROCMONDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
+	ln -sfr $(PKGDIR)$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT) $(PKGDIR)$(PROCMONDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)
 endif
 	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
 	rm -f $(PKGDIR)$(BINDIR)/wld
