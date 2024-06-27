@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.2 - 2024-06-27(08:38:36 +0000)
+
+### Other
+
+- - update endpoint profile status
+- temporary enable 11be with no MLO
+
 ## Release v6.28.1 - 2024-06-26(14:24:15 +0000)
 
 ### Other
