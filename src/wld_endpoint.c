@@ -91,7 +91,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
                                 wld_intfStatus_e status,
                                 wld_epConnectionStatus_e connectionStatus,
                                 wld_epError_e error);
-static void s_setProfileStatus(T_EndPointProfile* profile, bool connected);
+static void s_setProfileStatus(T_EndPointProfile* profile);
 static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata);
 static swl_rc_ne endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id, amxc_var_t* args);
 static void endpoint_reconnect_handler(amxp_timer_t* timer, void* userdata);
@@ -656,7 +656,6 @@ static bool s_initEp(T_EndPoint* pEP, T_Radio* pRad, const char* epName) {
  */
 bool syncData_Object2EndPointProfile(amxd_object_t* object) {
     T_EndPointProfile* pProfile = NULL;
-    T_EndPoint* pEP = NULL;
     bool changed = false;
     uint8_t BSSID[6] = {'\0'};
     uint8_t tmp_priority = 0;
@@ -671,10 +670,11 @@ bool syncData_Object2EndPointProfile(amxd_object_t* object) {
         return false;
     }
 
-    pEP = pProfile->endpoint;
-    if(!pEP) {
-        SAH_TRACEZ_ERROR(ME, "Failed to find Endpoint struct within Profile");
-        return false;
+    bool tmpBool = amxd_object_get_bool(object, "Enable", NULL);
+    if(tmpBool != pProfile->enable) {
+        changed = true;
+        pProfile->enable = tmpBool;
+        s_setProfileStatus(pProfile);
     }
 
     tmp_priority = amxd_object_get_uint8_t(object, "Priority", NULL);
@@ -806,28 +806,12 @@ void wld_endpoint_setProfile_ocf(void* priv _UNUSED, amxd_object_t* object, cons
     ASSERT_EQUALS(pProfile->endpoint, pEP, , ME, "Failed to find Endpoint structure");
     ASSERTS_FALSE(pEP->internalChange, , ME, "ignore internal change");
 
-    bool profileEnableChanged = false;
-    bool profileChanged = false;
+    bool profileChanged = syncData_Object2EndPointProfile(object);
 
-    SAH_TRACEZ_INFO(ME, "%s: Syncing : EndpointProfile enable parameter --> T_EndpointProfile", pEP->Name);
-    bool tmpBool = amxd_object_get_bool(object, "Enable", NULL);
-    if(tmpBool != pProfile->enable) {
-        profileEnableChanged = true;
-        pProfile->enable = tmpBool;
-    }
-
-    SAH_TRACEZ_INFO(ME, "Syncing : EndpointProfile object --> T_EndpointProfile");
-    profileChanged = syncData_Object2EndPointProfile(object);
     ASSERTI_EQUALS(pEP->currentProfile, pProfile, , ME, "Changed profile is not currently selected : done");
-    ASSERTI_TRUE(profileEnableChanged || profileChanged, , ME, "Profile enabled field and profile parameters not changed : done");
+    ASSERTI_TRUE(profileChanged, , ME, "Profile enabled field and profile parameters not changed : done");
 
-    if(profileEnableChanged) {
-        s_setProfileStatus(pProfile, false);
-    }
-
-    if(profileChanged || profileEnableChanged) {
-        wld_endpoint_reconfigure(pEP);
-    }
+    wld_endpoint_reconfigure(pEP);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -842,18 +826,18 @@ void wld_endpoint_setProfileSecurity_ocf(void* priv _UNUSED, amxd_object_t* obje
     SAH_TRACEZ_IN(ME);
 
     amxd_object_t* profileObject = amxd_object_get_parent(object);
+    ASSERT_NOT_NULL(profileObject, , ME, "invalid object");
     T_EndPointProfile* pProfile = (T_EndPointProfile*) profileObject->priv;
     ASSERT_NOT_NULL(pProfile, , ME, "Profile is not yet set");
     T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(amxd_object_get_parent(profileObject)));
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
 
-    SAH_TRACEZ_INFO(ME, "%s: pProfile(%p), pEP->currentProfile(%p)", pEP->Name, pProfile, pEP->currentProfile);
+    bool profileChanged = syncData_Object2EndPointProfile(profileObject);
 
-    bool profileChanged = syncData_Object2EndPointProfile(profileObject) && (pProfile == pEP->currentProfile);
+    ASSERTI_EQUALS(pEP->currentProfile, pProfile, , ME, "Changed profile is not currently selected : done");
+    ASSERTI_TRUE(profileChanged, , ME, "Profile enabled field and profile parameters not changed : done");
 
-    if(profileChanged) {
-        wld_endpoint_reconfigure(pEP);
-    }
+    wld_endpoint_reconfigure(pEP);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -1158,16 +1142,14 @@ void wld_endpoint_setConnectionStatus(T_EndPoint* pEP, wld_epConnectionStatus_e 
                     connectionStatus, pEP->connectionStatus,
                     error, status, pEP->status, connected);
 
-    if(pEP->currentProfile) {
-        s_setProfileStatus(pEP->currentProfile, connected);
-        if(connected) {
-            //update enpoint's SSID  with the current connected profile.
-            swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), pEP->currentProfile->SSID);
-        }
+    if((pEP->currentProfile != NULL) && connected) {
+        //update enpoint's SSID  with the current connected profile.
+        swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), pEP->currentProfile->SSID);
     }
 
     int previousStatus = pEP->connectionStatus;
     s_setEndpointStatus(pEP, status, connectionStatus, error);
+    s_setProfileStatus(pEP->currentProfile);
 
     if(!connected && wld_endpoint_isReady(pEP)) {
         //We are not connected, but we should be. Start the reconnection
@@ -1590,9 +1572,17 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
  * @param profile The endpoint profile
  * @param connected Is the profile connected or not
  */
-static void s_setProfileStatus(T_EndPointProfile* profile, bool connected) {
+static void s_setProfileStatus(T_EndPointProfile* profile) {
+    ASSERT_NOT_NULL(profile, , ME, "NULL");
+
     amxd_object_t* object = profile->pBus;
     wld_epProfileStatus_e status;
+
+    T_EndPoint* pEP = profile->endpoint;
+    bool connected = (pEP != NULL) ?
+        (pEP->currentProfile == profile) ?
+        (pEP->connectionStatus == EPCS_CONNECTED) : false
+            : false;
 
     SAH_TRACEZ_INFO(ME, "enable %d; profile->status %d; connected %d",
                     profile->enable, profile->status, connected);
@@ -1605,17 +1595,10 @@ static void s_setProfileStatus(T_EndPointProfile* profile, bool connected) {
 
     if(status != profile->status) {
         profile->status = status;
-
         amxd_trans_t trans;
         ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s : trans init failure", profile->alias);
-
         amxd_trans_set_cstring_t(&trans, "Status",
                                  cstr_EndPointProfile_status[profile->status]);
-        bool prevValue = profile->endpoint->internalChange;
-        profile->endpoint->internalChange = true;
-        profile->endpoint->internalChange = prevValue;
-
-
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", profile->alias);
     }
 }
@@ -1652,6 +1635,7 @@ void wld_endpoint_performConnectCommit(T_EndPoint* pEP, bool alwaysCommit) {
     if(pEP->pFA->mfn_wendpoint_connect_ap(pEP->currentProfile) < 0) {
         SAH_TRACEZ_ERROR(ME, "Failed to connect to AP");
         s_setEndpointStatus(pEP, APSTI_ENABLED, EPCS_ERROR, EPE_ERROR_MISCONFIGURED);
+        s_setProfileStatus(pEP->currentProfile);
     }
 
     if(alwaysCommit) {
