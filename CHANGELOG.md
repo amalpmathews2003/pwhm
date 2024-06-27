@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.5 - 2024-06-27(17:12:30 +0000)
+
+### Other
+
+- - Cannot restart wifi plugin
+
 ## Release v6.28.4 - 2024-06-27(16:09:37 +0000)
 
 ### Other
