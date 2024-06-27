@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.4 - 2024-06-27(16:09:37 +0000)
+
+### Other
+
+- : Crash on hostapd process after reboot
+
 ## Release v6.28.3 - 2024-06-27(09:25:40 +0000)
 
 ### Other
