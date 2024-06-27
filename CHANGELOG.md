@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.3 - 2024-06-27(09:25:40 +0000)
+
+### Other
+
+- detect bg cac abort event from nl80211
+
 ## Release v6.28.2 - 2024-06-27(08:38:36 +0000)
 
 ### Other
