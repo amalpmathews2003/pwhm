@@ -855,13 +855,28 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
     if(wifiGen_hapd_isAlive(pRad)) {
         chanmgt_rad_state detState = pRad->detailedState;
         wifiGen_hapd_getRadState(pRad, &detState);
-        if((pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) &&
-           ((detState == CM_RAD_UP) || (detState == CM_RAD_FG_CAC))) {
-            if((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
-               (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0))) {
+        bool isTgtChspecRunning = false;
+        swl_chanspec_t runningChSpec = SWL_CHANSPEC_EMPTY;
+        if((detState == CM_RAD_UP) || (detState == CM_RAD_FG_CAC)) {
+            if(swl_rc_isOk(wld_rad_nl80211_getChannel(pRad, &runningChSpec))) {
+                isTgtChspecRunning = (swl_typeChanspec_equals(runningChSpec, pRad->targetChanspec.chanspec));
+            }
+            if((pRad->pFA->mfn_misc_has_support(pRad, NULL, "CSA", 0)) &&
+               ((wld_channel_is_band_usable(pRad->targetChanspec.chanspec)) ||
+                (pRad->pFA->mfn_misc_has_support(pRad, NULL, "DFS_OFFLOAD", 0)))) {
+                if(isTgtChspecRunning) {
+                    SAH_TRACEZ_WARNING(ME, "%s: chanspec %s already running, nothing new to be warm applied",
+                                       pRad->Name, swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf);
+                    return SWL_RC_DONE;
+                }
                 rc = wld_rad_hostapd_switchChannel(pRad);
                 return (rc < SWL_RC_OK) ? SWL_RC_ERROR : SWL_RC_DONE;
             }
+        }
+        if(isTgtChspecRunning && (pRad->autoChannelEnable == (wld_rad_hostapd_getCfgChannel(pRad) == 0))) {
+            SAH_TRACEZ_WARNING(ME, "%s: chanspec %s already running, nothing new to be cold applied",
+                               pRad->Name, swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf);
+            return SWL_RC_DONE;
         }
         /*
          * channel can not be warm applied (with CSA)

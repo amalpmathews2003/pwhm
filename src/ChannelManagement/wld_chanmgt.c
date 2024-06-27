@@ -581,6 +581,9 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     /* Change channel */
     if(reason != CHAN_REASON_INITIAL) {
         rc = pR->pFA->mfn_wrad_setChanspec(pR, direct);
+        if(swl_rc_isOk(rc) && !direct) {
+            wld_autoCommitMgr_notifyRadEdit(pR);
+        }
     }
 
     if(s_isChanspecSync(pR)) {

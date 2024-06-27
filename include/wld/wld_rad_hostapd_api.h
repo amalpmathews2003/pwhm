@@ -78,5 +78,8 @@ T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad);
 T_AccessPoint* wld_rad_hostapd_getRunMainVap(T_Radio* pRad);
 swl_rc_ne wld_rad_hostapd_getCmdReplyParamStr(T_Radio* pRad, const char* cmd, const char* key, char* valStr, size_t valStrSize);
 int32_t wld_rad_hostapd_getCmdReplyParam32Def(T_Radio* pRad, const char* cmd, const char* key, int32_t defVal);
+swl_rc_ne wld_rad_hostapd_getCfgParamStr(T_Radio* pRad, const char* key, char* valStr, size_t valStrSize);
+int32_t wld_rad_hostapd_getCfgParamInt32Def(T_Radio* pRad, const char* key, int32_t defVal);
+swl_channel_t wld_rad_hostapd_getCfgChannel(T_Radio* pRad);
 
 #endif /* __WLD_RAD_API_H__ */

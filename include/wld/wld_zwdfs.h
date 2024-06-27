@@ -93,6 +93,7 @@ typedef struct {
     T_Radio* pRad;
     bool direct;
     amxp_timer_t* timer;
+    swl_chanspec_t tgtChSpec;
 } wld_zwdfs_fsmCtx_t;
 
 typedef struct {

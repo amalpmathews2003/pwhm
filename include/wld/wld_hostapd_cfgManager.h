@@ -76,4 +76,6 @@ bool wld_hostapd_writeConfig(wld_hostapd_config_t* conf, char* path);
 bool wld_hostapd_addConfigParam(wld_hostapd_config_t* conf, const char* bssName, const char* key, const char* value);
 bool wld_hostapd_delConfigParam(wld_hostapd_config_t* conf, char* bssName, char* key);
 swl_mapChar_t* wld_hostapd_getConfigMap(wld_hostapd_config_t* conf, char* bssName);
+const char* wld_hostapd_getConfigParamValStr(wld_hostapd_config_t* conf, char* bssName, const char* key);
+
 #endif /* __WLD_HOSTAPD_CFG_MANAGER_H__ */

@@ -484,10 +484,7 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
                 tgtChspec.bandwidth = *(uint32_t*) swl_table_getMatchingValue(&sChWidthIDsMaps, 2, 1, pEhtChWId);
             }
             swl_channel_t centerChan = swl_chanspec_getCentreChannel(&tgtChspec);
-            /* if operClass is 137, eht_oper_chwidth will be ignored by hostapd */
-            if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
-                swl_mapCharFmt_addValInt32(radConfigMap, "eht_oper_chwidth", *pEhtChWId);
-            }
+            swl_mapCharFmt_addValInt32(radConfigMap, "eht_oper_chwidth", *pEhtChWId);
             swl_mapCharFmt_addValInt32(radConfigMap, "eht_oper_centr_freq_seg0_idx", centerChan);
         }
         if(implicitBf) {

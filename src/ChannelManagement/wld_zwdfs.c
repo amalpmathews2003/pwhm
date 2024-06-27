@@ -75,11 +75,16 @@
 
 static const char* s_fsmStateName[] = {"INIT", "FG_CLEARING", "BG_CLEARING", "SWITCHING", "INVALID"};
 
+static void s_setZwdfsTgtChspec(wld_zwdfs_fsmCtx_t* pCtx, swl_chanspec_t srcChSpec) {
+    ASSERT_NOT_NULL(pCtx, , ME, "NULL");
+    memcpy(&pCtx->tgtChSpec, &srcChSpec, sizeof(swl_chanspec_t));
+}
 static wld_zwdfs_fsmState_e s_handleFsmStartEvent(const wld_zwdfs_fsmCtx_t* pCtx) {
     T_Radio* pRad = pCtx->pRad;
     ASSERT_NOT_NULL(pRad, ZWDFS_FSM_STATE_INIT, ME, "NULL");
     swl_rc_ne rc = SWL_RC_OK;
     bool isBgDfsEnabled = (pRad->bgdfs_config.status != BGDFS_STATUS_OFF);
+    s_setZwdfsTgtChspec((wld_zwdfs_fsmCtx_t*) pCtx, pRad->targetChanspec.chanspec);
     if(pRad->detailedState == CM_RAD_FG_CAC) {
         /* next state */
         return ZWDFS_FSM_STATE_FG_CLEARING;
@@ -128,6 +133,7 @@ static wld_zwdfs_fsmState_e s_handleFsmSwitchedEvent(const wld_zwdfs_fsmCtx_t* p
     T_Radio* pRad = pCtx->pRad;
     ASSERT_NOT_NULL(pRad, ZWDFS_FSM_STATE_INIT, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: ZW_DFS switch end", pRad->Name);
+    s_setZwdfsTgtChspec((wld_zwdfs_fsmCtx_t*) pCtx, ((swl_chanspec_t) SWL_CHANSPEC_EMPTY));
     if(pCtx->timer) {
         amxp_timer_stop(pCtx->timer);
     }
@@ -139,6 +145,7 @@ static wld_zwdfs_fsmState_e s_handleFsmStopEvent(const wld_zwdfs_fsmCtx_t* pCtx)
     T_Radio* pRad = pCtx->pRad;
     ASSERT_NOT_NULL(pRad, ZWDFS_FSM_STATE_INIT, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: ZW_DFS stopped", pRad->Name);
+    s_setZwdfsTgtChspec((wld_zwdfs_fsmCtx_t*) pCtx, ((swl_chanspec_t) SWL_CHANSPEC_EMPTY));
     SWL_CALL(pRad->pFA->mfn_wrad_bgdfs_stop, pRad);
     if(pCtx->timer) {
         amxp_timer_stop(pCtx->timer);
@@ -158,6 +165,7 @@ static wld_zwdfs_fsmAction_t s_zwdfs_fsmActions[] = {
     {ZWDFS_FSM_STATE_BG_CLEARING, ZWDFS_FSM_EVENT_RADAR, s_handleFsmStopEvent},
     {ZWDFS_FSM_STATE_BG_CLEARING, ZWDFS_FSM_EVENT_START, s_handleFsmStartEvent},
     {ZWDFS_FSM_STATE_BG_CLEARING, ZWDFS_FSM_EVENT_STOP, s_handleFsmStopEvent},
+    {ZWDFS_FSM_STATE_BG_CLEARING, ZWDFS_FSM_EVENT_END, s_handleFsmSwitchedEvent},
     /* ZWDFS_FSM_STATE_SWITCHING */
     {ZWDFS_FSM_STATE_SWITCHING, ZWDFS_FSM_EVENT_END, s_handleFsmSwitchedEvent},
     {ZWDFS_FSM_STATE_SWITCHING, ZWDFS_FSM_EVENT_START, s_handleFsmStartEvent},
@@ -194,12 +202,17 @@ static void s_radioStatusChange(wld_radio_status_change_event_t* event) {
         (oldState == CM_RAD_BG_CAC_NS) ||
         (oldState == CM_RAD_BG_CAC_EXT_NS);
     SAH_TRACEZ_INFO(ME, "%s: handle state event (%d -> %d)", pRad->Name, oldState, pRad->detailedState);
+    bool isSameTgtChspec = swl_typeChanspecExt_equals(pRad->targetChanspec.chanspec, fsm->fsmCtx.tgtChSpec);
+    SAH_TRACEZ_INFO(ME, "%s: isCac:%d, isSameTgtChspec:%d (%s - %s)",
+                    pRad->Name, isCac, isSameTgtChspec,
+                    swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf,
+                    swl_typeChanspecExt_toBuf32(fsm->fsmCtx.tgtChSpec).buf);
     switch(pRad->detailedState) {
     case CM_RAD_DOWN:
         s_execFsm(fsm, isCac ? ZWDFS_FSM_EVENT_RADAR : ZWDFS_FSM_EVENT_END, &fsm->fsmCtx);
         break;
     case CM_RAD_UP:
-        s_execFsm(fsm, isCac ? ZWDFS_FSM_EVENT_CLEAR_DONE : ZWDFS_FSM_EVENT_END, &fsm->fsmCtx);
+        s_execFsm(fsm, (isCac && isSameTgtChspec) ? ZWDFS_FSM_EVENT_CLEAR_DONE : ZWDFS_FSM_EVENT_END, &fsm->fsmCtx);
         break;
     case CM_RAD_FG_CAC:
     case CM_RAD_BG_CAC:
@@ -240,12 +253,23 @@ static void s_zwdfsTimeout(amxp_timer_t* timer _UNUSED, void* userdata _UNUSED) 
     s_execFsm(fsm, ZWDFS_FSM_EVENT_STOP, &fsm->fsmCtx);
 }
 
+static void s_zwdfs_restart(wld_zwdfs_fsmCtx_t* pFsmCtx) {
+    ASSERT_NOT_NULL(pFsmCtx, , ME, "NULL");
+    wld_zwdfs_start(pFsmCtx->pRad, pFsmCtx->direct);
+}
+
 swl_rc_ne wld_zwdfs_start(T_Radio* pRad, bool direct) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_zwdfs_fsm_t* fsm = (wld_zwdfs_fsm_t*) pRad->zwdfsData;
     ASSERTI_NOT_NULL(fsm, SWL_RC_ERROR, ME, "%s: invalid fsm", pRad->Name);
     fsm->fsmCtx.pRad = pRad;
     fsm->fsmCtx.direct = direct;
+    amxp_timer_state_t timerState = amxp_timer_get_state(fsm->fsmCtx.timer);
+    if((timerState == amxp_timer_running) || (timerState == amxp_timer_started)) {
+        SAH_TRACEZ_INFO(ME, "%s: delay restarting zwdfs", pRad->Name);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_zwdfs_restart, &fsm->fsmCtx);
+        return wld_zwdfs_stop(pRad);
+    }
     amxp_timer_delete(&fsm->fsmCtx.timer);
     int ret = amxp_timer_new(&fsm->fsmCtx.timer, s_zwdfsTimeout, pRad);
     ASSERT_FALSE(ret != 0, SWL_RC_ERROR, ME, "%s: error timer", pRad->Name);

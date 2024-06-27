@@ -384,3 +384,29 @@ int32_t wld_rad_hostapd_getCmdReplyParam32Def(T_Radio* pRad, const char* cmd, co
     return valInt;
 }
 
+swl_rc_ne wld_rad_hostapd_getCfgParamStr(T_Radio* pRad, const char* key, char* valStr, size_t valStrSize) {
+    ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->hostapd, SWL_RC_INVALID_STATE, ME, "NULL");
+    ASSERTS_STR(key, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pRad->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SWL_RC_ERROR, ME, "no saved config");
+    ret = swl_str_copy(valStr, valStrSize, wld_hostapd_getConfigParamValStr(config, NULL, key));
+    wld_hostapd_deleteConfig(config);
+    ASSERTI_TRUE(ret, SWL_RC_ERROR, ME, "fail to copy result");
+    return SWL_RC_OK;
+}
+
+int32_t wld_rad_hostapd_getCfgParamInt32Def(T_Radio* pRad, const char* key, int32_t defVal) {
+    char valStr[32] = {0};
+    ASSERTS_TRUE(swl_rc_isOk(wld_rad_hostapd_getCfgParamStr(pRad, key, valStr, sizeof(valStr))), defVal, ME, "Not found");
+    ASSERTS_STR(valStr, defVal, ME, "Empty");
+    int32_t valInt = defVal;
+    ASSERTS_TRUE(swl_rc_isOk(wldu_convStrToNum(valStr, &valInt, sizeof(valInt), 10, true)), defVal, ME, "fail to convert");
+    return valInt;
+}
+
+swl_channel_t wld_rad_hostapd_getCfgChannel(T_Radio* pRad) {
+    return wld_rad_hostapd_getCfgParamInt32Def(pRad, "channel", SWL_CHANNEL_INVALID);
+}
+

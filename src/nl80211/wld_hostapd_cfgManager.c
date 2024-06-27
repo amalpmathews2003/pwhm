@@ -406,3 +406,11 @@ swl_mapChar_t* wld_hostapd_getConfigMap(wld_hostapd_config_t* conf, char* bssNam
     return NULL;
 }
 
+const char* wld_hostapd_getConfigParamValStr(wld_hostapd_config_t* conf, char* bssName, const char* key) {
+    swl_mapChar_t* configMap = wld_hostapd_getConfigMap(conf, bssName);
+    ASSERTS_NOT_NULL(configMap, NULL, ME, "NULL");
+    swl_mapEntry_t* entry = swl_mapChar_getEntry(configMap, (char*) key);
+    ASSERTI_NOT_NULL(entry, NULL, ME, "key (%s) Not found", key);
+    return swl_map_getEntryKeyValue(configMap, entry);
+}
+

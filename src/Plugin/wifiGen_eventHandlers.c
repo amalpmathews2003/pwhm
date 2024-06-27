@@ -473,22 +473,26 @@ void s_radarEvtCb(void* pRef, void* pData _UNUSED, wld_nl80211_radarEvtInfo_t* r
     ASSERT_NOT_EQUALS(radarEvtInfo->event, WLD_NL80211_RADAR_EVT_UNKNOWN, , ME, "unknown");
     T_Radio* pRad = wld_getRadioOfIfaceIndex(radarEvtInfo->ifIndex) ? : pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    swl_chanspec_t chanspec = SWL_CHANSPEC_EMPTY;
+    swl_rc_ne rc = wld_nl80211_chanSpecNlToSwl(&chanspec, &radarEvtInfo->chanSpec);
+    ASSERT_TRUE(swl_rc_isOk(rc), , ME, "%s: fail to convert dfs evt chanspec", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: (w:%d,i:%d) dfs cac event %d on chspec %s bg:%d",
+                    pRad->Name, radarEvtInfo->wiphy, radarEvtInfo->ifIndex, radarEvtInfo->event,
+                    swl_typeChanspecExt_toBuf32Ref(&chanspec).buf, radarEvtInfo->isBackground);
+    ASSERTS_TRUE(radarEvtInfo->isBackground, , ME, "only process bgDfs events");
     switch(radarEvtInfo->event) {
     case WLD_NL80211_RADAR_CAC_STARTED: {
-        swl_chanspec_t chanspec = SWL_CHANSPEC_EMPTY;
-        swl_rc_ne rc = wld_nl80211_chanSpecNlToSwl(&chanspec, &radarEvtInfo->chanSpec);
-        ASSERT_TRUE(swl_rc_isOk(rc), , ME, "%s: fail to convert dfs evt chanspec", pRad->Name);
-        uint32_t cacTime = wld_channel_is_band_passive(chanspec) ? wld_channel_get_band_clear_time(chanspec) : 0;
-        SAH_TRACEZ_INFO(ME, "%s: (w:%d,i:%d) dfs cac started on chspec %s bg:%d",
-                        pRad->Name, radarEvtInfo->wiphy, radarEvtInfo->ifIndex,
-                        swl_typeChanspecExt_toBuf32Ref(&chanspec).buf, radarEvtInfo->isBackground);
-        if(radarEvtInfo->isBackground && !wld_bgdfs_isRunning(pRad)) {
-            /*
-             * bgcac started event may not be detected by hostapd
-             * so use nl80211 event listener to fix this missing
-             */
+        if(!wld_bgdfs_isRunning(pRad)) {
             wld_bgdfs_notifyClearStarted(pRad, chanspec.channel, chanspec.bandwidth, BGDFS_TYPE_CLEAR);
-            s_dfsCacStartedCb(pRad, pRad->Name, &chanspec, cacTime);
+            s_dfsCacStartedCb(pRad, pRad->Name, &chanspec, wld_channel_get_band_clear_time(chanspec));
+        }
+        break;
+    }
+    case WLD_NL80211_RADAR_CAC_ABORTED: {
+        if(wld_bgdfs_isRunning(pRad)) {
+            /* stop ZeroWait DFS if any */
+            pRad->pFA->mfn_wrad_zwdfs_stop(pRad);
+            s_dfsCacDoneCb(pRad, pRad->Name, &chanspec, false);
         }
         break;
     }
