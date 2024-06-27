@@ -805,15 +805,14 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
 
     if((pAP->pSSID != NULL) && wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
         bool isMLO = pAP->pFA->mfn_misc_has_support(pRad, pAP, "MLO", 0);
-        if(isMLO && (pAP->pSSID->mldUnit > -1)) {
+        if(isMLO && (pAP->pSSID->mldUnit > -1) && (wld_getNrApMldLinksById(pAP->pSSID->mldUnit) >= 1)) {
             /* AP MLD - Whether this AP is a part of an AP MLD
              * 0 = no (no MLO)
              * 1 = yes (MLO) */
-            swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 1);
-        } else {
-            /* disable EHT for this specific BSS */
-            swl_mapCharFmt_addValInt32(vapConfigMap, "disable_11be", 1);
+            // keep mlo disabled for now until managing interface links
+            swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 0);
         }
+        // TODO: manage 11be exclusion in specific BSSs
     }
 
     swl_security_mfpMode_e mfp = swl_security_getTargetMfpMode(pAP->secModeEnabled, pAP->mfpConfig);

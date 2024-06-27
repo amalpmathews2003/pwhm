@@ -455,7 +455,7 @@ static void s_setMLDUnit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     if(pSSID->mldUnit == newMldUnit) {
         return;
     }
-    SAH_TRACEZ_INFO(ME, "%s: SET MLD_UNIT %u %u", pSSID->Name, pSSID->mldUnit, newMldUnit);
+    SAH_TRACEZ_INFO(ME, "%s: SET MLD_UNIT %d %d", pSSID->Name, pSSID->mldUnit, newMldUnit);
 
     pSSID->mldUnit = newMldUnit;
     if(pSSID->AP_HOOK != NULL) {
