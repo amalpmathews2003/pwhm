@@ -707,6 +707,18 @@ static void s_addWdsEntry(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* wds
     wld_event_trigger_callback(gWld_queue_wdsInterface, pAD->wdsIntf);
 }
 
+static void s_delWdsEntry(T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD->wdsIntf, , ME, "NULL");
+    pAD->wdsIntf->active = false;
+    wld_event_trigger_callback(gWld_queue_wdsInterface, pAD->wdsIntf);
+    pAD->wdsIntf->index = -1;
+    amxc_llist_it_take(&pAD->wdsIntf->entry);
+    free(pAD->wdsIntf->name);
+    free(pAD->wdsIntf);
+    pAD->wdsIntf = NULL;
+}
+
 static void s_wdsCreatedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_macBin_t* macAddress) {
     T_AccessPoint* pAP = (T_AccessPoint*) pRef;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
@@ -723,22 +735,14 @@ static void s_wdsCreatedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_mac
     }
 
     pAD->Active = true;
+    /* AssociatedDevice should have only one WDS interface.
+     * delete old one, if any is still there */
+    s_delWdsEntry(pAD);
+    /* and create new one */
     s_addWdsEntry(pAP, pAD, wdsIntfName);
 
     pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
     wld_ad_add_connection_success(pAP, pAD);
-}
-
-static void s_delWdsEntry(T_AssociatedDevice* pAD) {
-    ASSERT_NOT_NULL(pAD, , ME, "NULL");
-    ASSERT_NOT_NULL(pAD->wdsIntf, , ME, "NULL");
-    pAD->wdsIntf->active = false;
-    wld_event_trigger_callback(gWld_queue_wdsInterface, pAD->wdsIntf);
-    pAD->wdsIntf->index = -1;
-    amxc_llist_it_take(&pAD->wdsIntf->entry);
-    free(pAD->wdsIntf->name);
-    free(pAD->wdsIntf);
-    pAD->wdsIntf = NULL;
 }
 
 static void s_wdsRemovedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_macBin_t* macAddress) {
