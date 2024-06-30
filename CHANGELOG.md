@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.6 - 2024-06-30(07:52:44 +0000)
+
+### Other
+
+- - delete old wds before using new one.
+
 ## Release v6.28.5 - 2024-06-27(17:12:30 +0000)
 
 ### Other
