@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.8 - 2024-07-01(16:37:41 +0000)
+
+### Other
+
+- wait for wiphy device loading on boot
+
 ## Release v6.28.7 - 2024-07-01(09:01:16 +0000)
 
 ### Other
