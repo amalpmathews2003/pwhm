@@ -159,6 +159,44 @@ static swl_rc_ne s_unspecEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* n
     return SWL_RC_DONE;
 }
 
+static swl_rc_ne s_newWiphyEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.config_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    wld_nl80211_wiphyInfo_t wiphyInfo;
+    memset(&wiphyInfo, 0, sizeof(wiphyInfo));
+    rc = wld_nl80211_parseWiphyInfo(tb, &wiphyInfo);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "parsing failed");
+    SAH_TRACEZ_INFO(ME, "new wiphy notified : w:%d,name:%s", wiphyInfo.wiphy, wiphyInfo.name);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fNewWiphyCb(pListener->pRef, pListener->pData, &wiphyInfo);
+    });
+    return SWL_RC_DONE;
+}
+
+static swl_rc_ne s_delWiphyEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
+    swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
+    ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
+    if((nlh->nlmsg_type != g_nl80211DriverIDs.family_id) &&
+       (nlh->nlmsg_type != g_nl80211DriverIDs.config_mcgrp_id)) {
+        SAH_TRACEZ_INFO(ME, "skip msgtype %d", nlh->nlmsg_type);
+        return SWL_RC_OK;
+    }
+    wld_nl80211_wiphyInfo_t wiphyInfo;
+    memset(&wiphyInfo, 0, sizeof(wiphyInfo));
+    rc = wld_nl80211_parseWiphyInfo(tb, &wiphyInfo);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "parsing failed");
+    SAH_TRACEZ_INFO(ME, "deleted wiphy notified : w:%d,name:%s", wiphyInfo.wiphy, wiphyInfo.name);
+    FOR_EACH_LISTENER(pListener, pListenerList, {
+        pListener->handlers.fDelWiphyCb(pListener->pRef, pListener->pData, &wiphyInfo);
+    });
+    return SWL_RC_DONE;
+}
+
 static swl_rc_ne s_newInterfaceEvtCb(swl_unLiList_t* pListenerList, struct nlmsghdr* nlh, struct nlattr* tb[]) {
     swl_rc_ne rc = s_commonEvtCb(pListenerList, nlh, tb);
     ASSERTS_EQUALS(rc, SWL_RC_OK, rc, ME, "abort evt parsing");
@@ -323,8 +361,8 @@ SWL_TABLE(sNl80211Msgs,
               {MSG_ID_NAME(NL80211_CMD_NEW_SCAN_RESULTS), s_scanResultsCb, offsetof(wld_nl80211_evtHandlers_cb, fScanDoneCb)},
               {MSG_ID_NAME(NL80211_CMD_START_SCHED_SCAN), s_commonEvtCb, OFFSET_UNDEF},
               /* NL80211_MCGRP_CONFIG */
-              {MSG_ID_NAME(NL80211_CMD_NEW_WIPHY), s_commonEvtCb, OFFSET_UNDEF},
-              {MSG_ID_NAME(NL80211_CMD_DEL_WIPHY), s_commonEvtCb, OFFSET_UNDEF},
+              {MSG_ID_NAME(NL80211_CMD_NEW_WIPHY), s_newWiphyEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fNewWiphyCb)},
+              {MSG_ID_NAME(NL80211_CMD_DEL_WIPHY), s_delWiphyEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fDelWiphyCb)},
               {MSG_ID_NAME(NL80211_CMD_NEW_INTERFACE), s_newInterfaceEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fNewInterfaceCb)},
               {MSG_ID_NAME(NL80211_CMD_DEL_INTERFACE), s_delInterfaceEvtCb, offsetof(wld_nl80211_evtHandlers_cb, fDelInterfaceCb)},
               /* NL80211_MCGRP_MLME */
@@ -402,6 +440,8 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
     //common events handlers to be set here
     pListener->handlers.fUnspecEvtCb = handlers->fUnspecEvtCb;
     pListener->handlers.fCheckTgtCb = handlers->fCheckTgtCb;
+    pListener->handlers.fNewWiphyCb = handlers->fNewWiphyCb;
+    pListener->handlers.fDelWiphyCb = handlers->fDelWiphyCb;
     return SWL_RC_OK;
 }
 

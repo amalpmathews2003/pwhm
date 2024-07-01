@@ -84,11 +84,16 @@ static void s_sendLifecycleEvent(wld_lifecycleEvent_e change) {
 
 }
 
+static void s_addGenRadiosAndLoadConf(void* userdata _UNUSED) {
+    wifiGen_addRadios();
+    wld_persist_onStart();
+}
+
 void _app_start(const char* const event_name _UNUSED,
                 const amxc_var_t* const event_data _UNUSED,
                 void* const priv _UNUSED) {
     SAH_TRACEZ_WARNING(ME, "data model is loaded");
-    wld_persist_onStart();
+    wifiGen_waitForGenRadios(NULL, s_addGenRadiosAndLoadConf);
     s_sendLifecycleEvent(WLD_LIFECYCLE_EVENT_DATAMODEL_LOADED);
 }
 
@@ -138,14 +143,13 @@ int _wld_main(int reason,
         }
         free(modDir);
 
+        wifiGen_init();
+        s_initPluginConf();
+
         //Init info struct to be filled with need info
         wld_vendorModule_initInfo_t initInfo;
         memset(&initInfo, 0, sizeof(initInfo));
-
-        wifiGen_init();
-        s_initPluginConf();
         wld_vendorModuleMgr_initAll(&initInfo);
-        wifiGen_addRadios();
 
         s_sendLifecycleEvent(WLD_LIFECYCLE_EVENT_INIT_DONE);
 
@@ -157,6 +161,7 @@ int _wld_main(int reason,
         wld_vendorModuleMgr_deinitAll();
         wld_cleanup();
         wld_vendorModuleMgr_unloadAll();
+        wifiGen_deinit();
         break;
     default:
         break;

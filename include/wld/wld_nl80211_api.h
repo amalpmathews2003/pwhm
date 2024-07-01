@@ -299,6 +299,17 @@ swl_rc_ne wld_nl80211_setInterfaceType(wld_nl80211_state_t* state, uint32_t ifIn
  */
 swl_rc_ne wld_nl80211_setInterfaceUse4Mac(wld_nl80211_state_t* state, uint32_t ifIndex, bool use4Mac);
 
+
+/*
+ * @brief count current number of registered nl80211 wiphy devices
+ * in sysfs /sys/class/ieee80211/
+ *
+ *
+ * @return >= 0 in case of success
+ *         -1 otherwise
+ */
+int32_t wld_nl80211_countWiphyFromFS();
+
 /*
  * @brief get wiphy (radio) info: radio caps, supported bands/chans, dfs status, operStds, ...)
  * (Synchronous api)

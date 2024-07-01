@@ -64,6 +64,7 @@
 #include "wld/wld_radio.h"
 #include "wld/wld_nl80211_api.h"
 #include "wld/wld_rad_nl80211.h"
+#include "wifiGen.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_vap.h"
 #include "wifiGen_ep.h"
@@ -219,5 +220,47 @@ int wifiGen_addRadios() {
     ASSERTW_NOT_EQUALS(index, 0, SWL_RC_ERROR, ME, "NO Wireless interface found");
 
     return SWL_RC_OK;
+}
+
+static struct globWiphyMonCtx_s {
+    wld_nl80211_listener_t* listener;
+    wifiGen_wiphyDevReadyCb_f fcb;
+    void* userdata;
+} gGlobWiphyMoniCtx = {NULL, NULL, NULL};
+
+static void s_newWiphyInfoEvtCb(void* pRef, void* pData _UNUSED, wld_nl80211_wiphyInfo_t* pWiphyInfo) {
+    struct globWiphyMonCtx_s* ctx = (struct globWiphyMonCtx_s*) pRef;
+    ASSERT_NOT_NULL(ctx, , ME, "NULL");
+    ASSERT_NOT_NULL(pWiphyInfo, , ME, "NULL");
+    SAH_TRACEZ_WARNING(ME, "wiphy id:%d name:%s is added", pWiphyInfo->wiphy, pWiphyInfo->name);
+    if(!wld_countRadios()) {
+        SAH_TRACEZ_WARNING(ME, "first wiphy detection: start adding gen radios");
+        SWL_CALL(ctx->fcb, ctx->userdata);
+    }
+}
+
+swl_rc_ne wifiGen_waitForGenRadios(void* userData, wifiGen_wiphyDevReadyCb_f fcb) {
+    if((wld_nl80211_countWiphyFromFS() > 0) || (wld_countRadios() > 0)) {
+        SWL_CALL(fcb, userData);
+        return SWL_RC_DONE;
+    }
+    ASSERT_NOT_NULL(fcb, SWL_RC_INVALID_PARAM, ME, "missing callback");
+    gGlobWiphyMoniCtx.fcb = fcb;
+    if(gGlobWiphyMoniCtx.listener == NULL) {
+        SAH_TRACEZ_WARNING(ME, "no vdr radio neither wiphy dev: WAIT FOR DETECTION");
+        wld_nl80211_evtHandlers_cb handlers;
+        memset(&handlers, 0, sizeof(handlers));
+        handlers.fNewWiphyCb = s_newWiphyInfoEvtCb;
+        gGlobWiphyMoniCtx.listener = wld_nl80211_addGlobalEvtListener(wld_nl80211_getSharedState(), &gGlobWiphyMoniCtx, NULL, &handlers);
+        ASSERT_NOT_NULL(gGlobWiphyMoniCtx.listener, SWL_RC_ERROR, ME, "fail to add global listener");
+    }
+    return SWL_RC_CONTINUE;
+}
+
+bool wifiGen_deinit() {
+    ASSERT_TRUE(s_init, false, ME, "already de-initialized");
+    wld_nl80211_delEvtListener(&gGlobWiphyMoniCtx.listener);
+    s_init = false;
+    return true;
 }
 

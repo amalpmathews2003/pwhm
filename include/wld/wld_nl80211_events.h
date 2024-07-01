@@ -96,6 +96,18 @@ typedef bool (* wld_nl80211_checkTgtCb_f)(void* pRef, void* pData, int32_t wiphy
 typedef void (* wld_nl80211_genIfaceEvtCb_f)(void* pRef, void* pData, uint32_t wiphy, uint32_t ifIndex);
 
 /*
+ * @brief callback for created/deleted wiphy device
+ *
+ * @param pRef user private reference provided when registering handlers
+ * @param pData user private data provided when registering handlers
+ * @param pWiphyInfo: pointer to wiphy device info structure
+ *
+ * @return void
+ *
+ */
+typedef void (* wld_nl80211_wiphyInfoEvtCb_f)(void* pRef, void* pData, wld_nl80211_wiphyInfo_t* pWiphyInfo);
+
+/*
  * @brief callback for created/deleted virtual interface notif
  *
  * @param pRef user private reference provided when registering handlers
@@ -176,6 +188,8 @@ typedef struct {
     wld_nl80211_mgmtFrameTxStatusEvtCb_f fMgtFrameTxStatusEvtCb;  // status of transmitted management frame is reported
     wld_nl80211_radarEvtCb_f fRadarEventCb;                       // DFS/radar event is reported
     wld_nl80211_checkTgtCb_f fCheckTgtCb;                         // handler to check target listener
+    wld_nl80211_wiphyInfoEvtCb_f fNewWiphyCb;                     // created wiphy device
+    wld_nl80211_wiphyInfoEvtCb_f fDelWiphyCb;                     // deleted wiphy device
 } wld_nl80211_evtHandlers_cb;
 
 /*

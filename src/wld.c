@@ -546,6 +546,15 @@ void wld_deleteAllRadios() {
     }
 }
 
+uint32_t wld_countRadios() {
+    uint32_t count = 0;
+    T_Radio* pRad = NULL;
+    wld_for_eachRad(pRad) {
+        count += (pRad->index > 0);
+    }
+    return count;
+}
+
 void wld_deleteAllVaps() {
     T_Radio* pRad;
     wld_for_eachRad(pRad) {

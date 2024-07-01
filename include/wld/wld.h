@@ -2670,6 +2670,7 @@ void wld_deleteRadioObj(T_Radio* pRad);
 void wld_deleteAllRadios();
 void wld_deleteAllVaps();
 void wld_deleteAllEps();
+uint32_t wld_countRadios();
 
 T_Radio* wld_getRadioByIndex(int index);
 T_Radio* wld_getRadioByName(const char* name);

@@ -485,7 +485,7 @@ static int s_filterWiphyNames(const struct dirent* pEntry) {
     return 0;
 }
 
-static int32_t s_countWiphyFromFS(void) {
+int32_t wld_nl80211_countWiphyFromFS(void) {
     struct dirent** namelist;
     const char* sysPath = SYSFS_IEEE80211_PATH;
     int count = 0;
@@ -504,7 +504,7 @@ swl_rc_ne wld_nl80211_getAllWiphyInfo(wld_nl80211_state_t* state, const uint32_t
     memset(pWiphyIfs, 0, nrWiphyMax * sizeof(wld_nl80211_wiphyInfo_t));
     NL_ATTRS(attribs,
              ARR(NL_ATTR(NL80211_ATTR_SPLIT_WIPHY_DUMP)));
-    uint32_t nrWiphyMaxInt = SWL_MAX((int32_t) nrWiphyMax, SWL_MAX(0, s_countWiphyFromFS()));
+    uint32_t nrWiphyMaxInt = SWL_MAX((int32_t) nrWiphyMax, SWL_MAX(0, wld_nl80211_countWiphyFromFS()));
     struct getWiphyData_s requestData = {
         .nrWiphyMax = nrWiphyMaxInt,
         .nrWiphy = 0,

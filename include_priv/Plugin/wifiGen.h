@@ -66,4 +66,9 @@
 bool wifiGen_init();
 int wifiGen_addRadios();
 
+typedef void (* wifiGen_wiphyDevReadyCb_f)(void* userData);
+swl_rc_ne wifiGen_waitForGenRadios(void* pData, wifiGen_wiphyDevReadyCb_f fcb);
+
+bool wifiGen_deinit();
+
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_H_ */
