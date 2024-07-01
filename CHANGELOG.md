@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.7 - 2024-07-01(09:01:16 +0000)
+
+### Other
+
+- manage multi band scan in single wiphy mode
+
 ## Release v6.28.6 - 2024-06-30(07:52:44 +0000)
 
 ### Other
