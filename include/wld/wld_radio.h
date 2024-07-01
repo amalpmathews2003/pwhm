@@ -162,6 +162,7 @@ void wld_scan_destroy(T_Radio* pR);
 void wld_scan_done(T_Radio* pR, bool success);
 bool wld_scan_isRunning(T_Radio* pR);
 swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason);
+swl_rc_ne wld_scan_stop(T_Radio* pRad);
 swl_rc_ne wld_scan_updateChanimInfo(T_Radio* pRad);
 void wld_scan_cleanupScanResultSSID(wld_scanResultSSID_t* ssid);
 void wld_scan_cleanupScanResults(wld_scanResults_t* res);
@@ -204,6 +205,7 @@ uint32_t wld_rad_countVapIfaces(T_Radio* pRad);
 uint32_t wld_rad_countEpIfaces(T_Radio* pRad);
 uint32_t wld_rad_countMappedAPs(T_Radio* pRad);
 uint32_t wld_rad_countAPsByAutoMacSrc(T_Radio* pRad, wld_autoMacSrc_e autoMacSrc);
+uint32_t wld_rad_countWiphyRads(uint32_t wiphy);
 
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);

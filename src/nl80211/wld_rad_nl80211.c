@@ -73,6 +73,18 @@
 
 #define ME "nlRad"
 
+static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex) {
+    T_Radio* pRad = (T_Radio*) pRef;
+    ASSERTS_TRUE(debugIsRadPointer(pRad), false, ME, "NULL");
+    if(ifIndex > 0) {
+        return (wld_getRadioOfIfaceIndex(ifIndex) == pRad);
+    }
+    if(wiphy >= 0) {
+        return (wiphy == (int32_t) pRad->wiphy);
+    }
+    return false;
+}
+
 swl_rc_ne wld_rad_nl80211_setEvtListener(T_Radio* pRadio, void* pData, const wld_nl80211_evtHandlers_cb* const handlers) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     swl_rc_ne rc = wld_nl80211_delEvtListener(&pRadio->nl80211Listener);
@@ -84,7 +96,11 @@ swl_rc_ne wld_rad_nl80211_setEvtListener(T_Radio* pRadio, void* pData, const wld
     uint32_t ifIndex = WLD_NL80211_ID_ANY;
     SAH_TRACEZ_INFO(ME, "rad(%s): add evt listener wiphy(%d)/ifIndex(%d)", pRadio->Name, wiphy, ifIndex);
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
-    pRadio->nl80211Listener = wld_nl80211_addEvtListener(state, wiphy, ifIndex, pRadio, pData, handlers);
+    wld_nl80211_evtHandlers_cb locHdlrs = *handlers;
+    if(locHdlrs.fCheckTgtCb == NULL) {
+        locHdlrs.fCheckTgtCb = s_chechTgtRadListener;
+    }
+    pRadio->nl80211Listener = wld_nl80211_addEvtListener(state, wiphy, ifIndex, pRadio, pData, &locHdlrs);
     ASSERT_NOT_NULL(pRadio->nl80211Listener, SWL_RC_ERROR,
                     ME, "rad(%s): fail to add evt listener wiphy(%d)/ifIndex(%d)", pRadio->Name, wiphy, ifIndex);
     return SWL_RC_OK;
@@ -451,127 +467,6 @@ swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec)
         }
     }
     return rc;
-}
-
-static void s_setScanDuration(T_Radio* pRadio, wld_nl80211_scanParams_t* params) {
-    ASSERTS_NOT_NULL(params, , ME, "NULL");
-    params->measDuration = 0;
-    params->measDurationMandatory = false;
-    ASSERTS_NOT_NULL(pRadio, , ME, "NULL");
-    wld_scan_config_t* pCfg = &pRadio->scanState.cfg;
-    bool suppScanDwell = pRadio->pFA->mfn_misc_has_support(pRadio, NULL, "SCAN_DWELL", 0);
-    ASSERTI_TRUE(suppScanDwell, , ME, "%s: nl80211 driver does not support setting scan dwell", pRadio->Name);
-
-    //consider passive scan for freqBand 6GHz
-    if((pRadio->operatingFrequencyBand != SWL_FREQ_BAND_EXT_6GHZ) && (swl_unLiList_size(&params->ssids) > 0)) {
-        if((pCfg->activeChannelTime >= SCAN_ACTIVE_DWELL_MIN) && (pCfg->activeChannelTime <= SCAN_ACTIVE_DWELL_MAX)) {
-            params->measDuration = pCfg->activeChannelTime;
-            params->measDurationMandatory = true;
-        } else if(pCfg->activeChannelTime == -1) {
-            params->measDuration = SCAN_ACTIVE_DWELL_DEFAULT;
-        }
-    } else if((pCfg->passiveChannelTime >= SCAN_PASSIVE_DWELL_MIN) && (pCfg->passiveChannelTime <= SCAN_PASSIVE_DWELL_MAX)) {
-        params->measDuration = pCfg->passiveChannelTime;
-        params->measDurationMandatory = true;
-    } else if(pCfg->passiveChannelTime == -1) {
-        params->measDuration = SCAN_PASSIVE_DWELL_DEFAULT;
-    }
-}
-
-swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags) {
-    wld_scanArgs_t* args = &pRadio->scanState.cfg.scanArguments;
-    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
-    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
-    wld_nl80211_state_t* state = wld_nl80211_getSharedState();
-    wld_nl80211_scanParams_t params;
-    memset(&params, 0, sizeof(wld_nl80211_scanParams_t));
-    swl_unLiList_init(&params.ssids, sizeof(char*));
-    swl_unLiList_init(&params.freqs, sizeof(uint32_t));
-    params.iesLen = 0;
-    if(args) {
-        int i;
-        for(i = 0; i < args->chanCount; i++) {
-            if(!wld_rad_hasChannel(pRadio, args->chanlist[i])) {
-                SAH_TRACEZ_ERROR(ME, "rad(%s) does not support scan chan(%d)",
-                                 pRadio->Name, args->chanlist[i]);
-                goto scan_error;
-            }
-            swl_chanspec_t chanspec = swl_chanspec_fromDm(args->chanlist[i],
-                                                          pRadio->operatingChannelBandwidth,
-                                                          pRadio->operatingFrequencyBand);
-            uint32_t freq = wld_channel_getFrequencyOfChannel(chanspec);
-            swl_unLiList_add(&params.freqs, &freq);
-        }
-        if(args->ssid[0] && (args->ssidLen > 0)) {
-            char* ssid = args->ssid;
-            swl_unLiList_add(&params.ssids, &ssid);
-        }
-        if(swl_mac_binIsNull(&args->bssid) == false) {
-            memcpy(&params.bssid, &args->bssid, SWL_MAC_BIN_LEN);
-        }
-    }
-    if(pFlags != NULL) {
-        memcpy(&params.flags, pFlags, sizeof(wld_nl80211_scanFlags_t));
-    }
-    s_setScanDuration(pRadio, &params);
-
-    /*
-     * start_scan command has to be sent to enabled interface (UP)
-     * (even when secondary VAP, while primary is disabled)
-     */
-    int index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
-    rc = wld_nl80211_startScan(state, index, &params);
-scan_error:
-    swl_unLiList_destroy(&params.ssids);
-    swl_unLiList_destroy(&params.freqs);
-    return rc;
-}
-
-swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio) {
-    wld_nl80211_scanFlags_t flags = {.flush = true};
-    return wld_rad_nl80211_startScanExt(pRadio, &flags);
-}
-
-swl_rc_ne wld_rad_nl80211_abortScan(T_Radio* pRadio) {
-    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
-    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
-    /*
-     * abort_scan command has to be sent to enabled interface (UP)
-     * (even when secondary VAP, while primary is disabled)
-     */
-    int index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
-    return wld_nl80211_abortScan(wld_nl80211_getSharedState(), index);
-}
-
-struct getScanResultsData_s {
-    T_Radio* pRadio;
-    scanResultsCb_f fScanResultsCb;
-    void* priv;
-};
-static void s_scanResultsCb(void* priv, swl_rc_ne rc, wld_scanResults_t* results) {
-    struct getScanResultsData_s* pScanResultsData = (struct getScanResultsData_s*) priv;
-    ASSERTS_NOT_NULL(pScanResultsData, , ME, "NULL");
-    if(pScanResultsData->fScanResultsCb != NULL) {
-        pScanResultsData->fScanResultsCb(pScanResultsData->priv, rc, results);
-    }
-    free(pScanResultsData);
-}
-swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResultsCb_f fScanResultsCb) {
-    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
-    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
-    struct getScanResultsData_s* pScanResultsData = calloc(1, sizeof(struct getScanResultsData_s));
-    if(pScanResultsData == NULL) {
-        SAH_TRACEZ_ERROR(ME, "Fail to alloc getScanResults req data");
-        rc = SWL_RC_ERROR;
-        if(fScanResultsCb) {
-            fScanResultsCb(priv, rc, NULL);
-        }
-        return rc;
-    }
-    pScanResultsData->pRadio = pRadio;
-    pScanResultsData->fScanResultsCb = fScanResultsCb;
-    pScanResultsData->priv = priv;
-    return wld_nl80211_getScanResults(wld_nl80211_getSharedState(), pRadio->index, pScanResultsData, s_scanResultsCb);
 }
 
 swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {

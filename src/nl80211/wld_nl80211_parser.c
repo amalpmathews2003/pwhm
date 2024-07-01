@@ -1242,6 +1242,10 @@ static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDev
     pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
     swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
     pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
+    uint8_t operClass = swl_chanspec_getOperClass(&chanSpec);
+    if(operClass > 0) {
+        pResult->operClass = operClass;
+    }
     pResult->ssidLen = SWL_MIN((uint8_t) sizeof(pResult->ssid), pWirelessDevIE->ssidLen);
     memcpy(pResult->ssid, pWirelessDevIE->ssid, pResult->ssidLen);
     pResult->operatingStandards = pWirelessDevIE->operatingStandards;
@@ -1298,6 +1302,8 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
     if(swl_chanspec_channelFromMHz(&chanSpec, freq) == SWL_RC_OK) {
         pResult->channel = chanSpec.channel;
         pResult->centreChannel = chanSpec.channel;
+        chanSpec.bandwidth = SWL_BW_20MHZ;
+        pResult->operClass = swl_chanspec_getOperClass(&chanSpec);
     }
 
     //get information elements from probe_resp or from beacon

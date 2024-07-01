@@ -3558,6 +3558,15 @@ uint32_t wld_rad_countAPsByAutoMacSrc(T_Radio* pRad, wld_autoMacSrc_e autoMacSrc
     return count;
 }
 
+uint32_t wld_rad_countWiphyRads(uint32_t wiphy) {
+    uint32_t count = 0;
+    T_Radio* pR;
+    wld_for_eachRad(pR) {
+        count += ((pR->wiphy == wiphy) && (pR->index > 0));
+    }
+    return count;
+}
+
 bool wld_rad_isChannelSubset(T_Radio* pRad, uint8_t* chanlist, int size) {
     int i = 0;
     int j = 0;

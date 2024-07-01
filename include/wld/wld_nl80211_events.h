@@ -70,6 +70,19 @@
 #include "wld_nl80211_types.h"
 
 /*
+ * @brief dynamic checker of nl80211 event target listener
+ *
+ * @param pRef user private reference provided when registering handlers
+ * @param pData user private data provided when registering handlers
+ * @param wiphy: wiphy id read from received event (WLD_NL80211_ID_UNDEF if not found)
+ * @param ifIndex: iface net dev index read from received event (WLD_NL80211_ID_UNDEF if not found)
+ *
+ * @return void
+ *
+ */
+typedef bool (* wld_nl80211_checkTgtCb_f)(void* pRef, void* pData, int32_t wiphy, int32_t ifIndex);
+
+/*
  * @brief generic callback for nl80211 event
  *
  * @param pRef user private reference provided when registering handlers
@@ -162,6 +175,7 @@ typedef struct {
     wld_nl80211_mgmtFrameEvtCb_f fMgtFrameEvtCb;                  // a management frame is reported
     wld_nl80211_mgmtFrameTxStatusEvtCb_f fMgtFrameTxStatusEvtCb;  // status of transmitted management frame is reported
     wld_nl80211_radarEvtCb_f fRadarEventCb;                       // DFS/radar event is reported
+    wld_nl80211_checkTgtCb_f fCheckTgtCb;                         // handler to check target listener
 } wld_nl80211_evtHandlers_cb;
 
 /*

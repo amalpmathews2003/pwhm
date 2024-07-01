@@ -401,6 +401,7 @@ swl_rc_ne wld_nl80211_updateEventHandlers(wld_nl80211_listener_t* pListener, con
     }
     //common events handlers to be set here
     pListener->handlers.fUnspecEvtCb = handlers->fUnspecEvtCb;
+    pListener->handlers.fCheckTgtCb = handlers->fCheckTgtCb;
     return SWL_RC_OK;
 }
 

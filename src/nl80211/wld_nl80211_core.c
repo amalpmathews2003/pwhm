@@ -287,7 +287,8 @@ static swl_rc_ne s_findListenersOfEvent(wld_nl80211_state_t* state, uint32_t wip
             continue;
         }
         if((ifIndex == pL->ifIndex) ||
-           ((wiphy == pL->wiphy) && (pL->ifIndex == WLD_NL80211_ID_ANY)) ||
+           ((wiphy == pL->wiphy) && (pL->ifIndex == WLD_NL80211_ID_ANY) &&
+            (!pL->handlers.fCheckTgtCb || pL->handlers.fCheckTgtCb(pL->pRef, pL->pData, wiphy, ifIndex))) ||
            (pL->wiphy == WLD_NL80211_ID_ANY)) {
             SAH_TRACEZ_INFO(ME, "find listener(w:%d,i:%d) for evt(%d) over w:%d,i:%d",
                             pL->wiphy, pL->ifIndex, cmd, wiphy, ifIndex);

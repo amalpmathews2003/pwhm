@@ -352,6 +352,11 @@ static amxd_status_t s_startScan(amxd_object_t* object,
         }
         scanArgs->chanCount = len;
     }
+    if(!scanArgs->chanCount) {
+        scanArgs->chanCount = SWL_MIN(pR->nrPossibleChannels, WLD_MAX_POSSIBLE_CHANNELS);
+        memcpy(scanArgs->chanlist, pR->possibleChannels, scanArgs->chanCount * sizeof(uint8_t));
+        SAH_TRACEZ_INFO(ME, "%s: force scan only on %d possible channels", pR->Name, scanArgs->chanCount);
+    }
 
     if(ssid != NULL) {
         len = strlen(ssid);
@@ -419,17 +424,16 @@ amxd_status_t _stopScan(amxd_object_t* object,
     T_Radio* pR = object->priv;
     ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
 
-    if(!wld_scan_isRunning(pR)) {
+    swl_rc_ne rc = wld_scan_stop(pR);
+    if(rc == SWL_RC_INVALID_STATE) {
         SAH_TRACEZ_ERROR(ME, "%s: no scan running", pR->Name);
         return amxd_status_invalid_action;
     }
 
-    if(pR->pFA->mfn_wrad_stop_scan(pR) < 0) {
+    if(rc < SWL_RC_OK) {
         SAH_TRACEZ_ERROR(ME, "Unable to stop scan");
         return amxd_status_unknown_error;
     }
-
-    wld_scan_done(pR, false);
 
     return amxd_status_ok;
 }
@@ -1263,6 +1267,16 @@ swl_rc_ne wld_scan_start(T_Radio* pRad, wld_scan_type_e type, const char* reason
 
     s_notifyStartScan(pRad, type, reason, error);
     return error;
+}
+
+swl_rc_ne wld_scan_stop(T_Radio* pRad) {
+    ASSERTS_TRUE(wld_scan_isRunning(pRad), SWL_RC_INVALID_STATE, ME, "no internal scan running");
+    if(pRad->pFA->mfn_wrad_stop_scan(pRad) < 0) {
+        SAH_TRACEZ_ERROR(ME, "%s: Unable to stop scan", pRad->Name);
+        return SWL_RC_ERROR;
+    }
+    wld_scan_done(pRad, false);
+    return SWL_RC_OK;
 }
 
 static wld_event_callback_t s_scanStatus_cb = {
