@@ -236,6 +236,23 @@ define probelist_t{
 		list scan(%in string SSID, %in string BSSID, %in string channels, %in int32 minRssi, %in string scanReason);
 
 		/**
+		 * Start a scan all possible channels of the radio is configured for
+		 * This function returns immediately, the results will be received later when the results are ready.
+		 * 1. By default all possible channels of the radio will be scanned.
+		 * @param DwellTime: The duration of time to scan each Dynamic Frequency Selection (DFS) channel in milliseconds. A value of 50 milliseconds is suggested.
+		 * @param DFDSDwellTime:  The duration of time to scan each Dynamic Frequency Selection (DFS) channel in milliseconds.
+		 * thus it will have no effect.
+		 * @param HomeTime: The time in milliseconds after which the driver has to go back to the original channel before scanning the next 
+		 * channel to avoid disruption. This param  is not configurable in the nL80211 std, thus it will have no effect.
+		 * @param SSID: optional string indicates the SSID to scan.
+		 * @return htable including:
+		 * "Status" of the the request, which is one of the following strings:
+		 * Success, Error_Not_Ready, Error_Timeout, Error_Invalid_Input, Error_Interface_Down
+		 * And "ScanResult" list with all the detected AccessPoints, sorted by the Operating class value.
+		 */
+		htable FullScan(%mandatory %in uint32 DwellTime, %mandatory %in uint32 DFDSDwellTime, %in uint32 HomeTime, %in string SSID);
+
+		/**
 		 * Start a scan based on all possible channels of the radio or specified ssid/channel list.
 		 * 1. By default all possible channels of the radio will be scanned.
 		 * 2. if SSID is specified: Scan the SSID in the spectrum the radio is configured for.

@@ -65,6 +65,8 @@
 #define ME "wldScan"
 
 #define DIAG_SCAN_REASON "NeighboringDiag"
+#define FULL_SCAN_REASON "FullScan"
+
 typedef struct {
     swl_function_deferredInfo_t callInfo;
     amxc_llist_t runningRads;   /* list of radios running diag scan. */
@@ -669,6 +671,252 @@ static void wld_rad_scan_SendDoneNotification(T_Radio* pR, bool success) {
     free(path);
 }
 
+void fillFullScanResultsList(amxc_var_t* pScanResultList, T_Radio* pRad, wld_scanResults_t* pScanResults) {
+    ASSERTS_NOT_NULL(pScanResultList, , ME, "pScanResultList NULL");
+    ASSERTS_NOT_NULL(pScanResults, , ME, "pScanResults NULL");
+    ASSERTS_NOT_NULL(pRad, , ME, "pScanArgs NULL");
+
+    wld_scanArgs_t* pScanArgs = &pRad->scanState.cfg.scanArguments;
+    ASSERT_NOT_NULL(pScanArgs, , ME, "NULL");
+
+    char* filterSSid = pScanArgs->ssidLen > 0 ? pScanArgs->ssid : NULL;
+
+    typedef struct {
+        amxc_llist_it_t it;
+        uint8_t operatingClass;
+        amxc_llist_t channelScanList;
+    } op_class_scan_t;
+
+    typedef struct {
+        amxc_llist_it_t channelScanIt;
+        uint8_t channel;
+        swl_timeMono_t timeStamp;
+        uint8_t utilization;
+        uint8_t noise;
+        amxc_llist_t neighborBssList;
+    } channel_scan_t;
+
+    typedef struct {
+        amxc_llist_it_t neighborBssIt;
+        swl_macBin_t bssid;
+        char ssid[SSID_NAME_LEN];
+        uint8_t signalStrength;
+        int32_t channelBandwidth;
+        uint8_t channelUtilization;
+        uint StationCount;
+        swl_security_apMode_e securityModeEnabled;
+        swl_security_encMode_e encryptionMode;
+        swl_radioStandard_m supportedStandards;
+        swl_radioStandard_m operatingStandards;
+        cstring_t basicDataTransferRates;
+        cstring_t supportedDataTransferRates;
+        uint supportedNss;
+        uint dtimPeriod;
+        uint beaconPeriod;
+    } neighbor_bss_t;
+
+    amxc_llist_t operatingClassList;
+    amxc_llist_init(&operatingClassList);
+
+    amxc_llist_for_each(it, &pScanResults->ssids) {
+        wld_scanResultSSID_t* pSsid = amxc_container_of(it, wld_scanResultSSID_t, it);
+        if(filterSSid != NULL) {
+            char ssidStr[SSID_NAME_LEN];
+            memset(ssidStr, 0, sizeof(ssidStr));
+            convSsid2Str(pSsid->ssid, pSsid->ssidLen, ssidStr, sizeof(ssidStr));
+            if(swl_str_matches(ssidStr, pScanArgs->ssid) == false) {
+                SAH_TRACEZ_INFO(ME, "Received scan result with SSID %s while the scan was started with param SSID %s", ssidStr, pScanArgs->ssid);
+                amxc_llist_it_take(&pSsid->it);
+                free(pSsid);
+                continue;
+            }
+        }
+
+        op_class_scan_t* pOpClassScan = NULL;
+        amxc_llist_for_each(it, &operatingClassList) {
+            op_class_scan_t* pData = amxc_llist_it_get_data(it, op_class_scan_t, it);
+            if(pData->operatingClass == pSsid->operClass) {
+                pOpClassScan = pData;
+                break;
+            }
+        }
+        // no OpClassScan object --> create it
+        if(pOpClassScan == NULL) {
+            pOpClassScan = calloc(1, sizeof(op_class_scan_t));
+            if(pOpClassScan == NULL) {
+                SAH_TRACEZ_ERROR(ME, "fail to alloc sop_class_scan_t");
+                return;
+            }
+
+            pOpClassScan->operatingClass = pSsid->operClass;
+
+            amxc_llist_it_init(&pOpClassScan->it);
+            amxc_llist_init(&pOpClassScan->channelScanList);
+            amxc_llist_append(&operatingClassList, &pOpClassScan->it);
+        }
+
+        channel_scan_t* pChannelScan = NULL;
+        amxc_llist_for_each(it, &pOpClassScan->channelScanList) {
+            channel_scan_t* pData = amxc_llist_it_get_data(it, channel_scan_t, channelScanIt);
+            if(pData->channel == pSsid->channel) {
+                pChannelScan = pData;
+                break;
+            }
+        }
+        if(pChannelScan == NULL) {
+            pChannelScan = calloc(1, sizeof(channel_scan_t));
+            if(pChannelScan == NULL) {
+                SAH_TRACEZ_ERROR(ME, "fail to alloc channel_scan_t");
+                return;
+            }
+            pChannelScan->channel = pSsid->channel;
+            swl_timeMono_t now = swl_time_getMonoSec();
+            pChannelScan->timeStamp = now;
+            pChannelScan->utilization = 0;  //TODO: from where to get it ?
+            pChannelScan->noise = pSsid->noise;
+            amxc_llist_it_init(&pChannelScan->channelScanIt);
+            amxc_llist_init(&pChannelScan->neighborBssList);
+            amxc_llist_append(&pOpClassScan->channelScanList, &pChannelScan->channelScanIt);
+        }
+
+        neighbor_bss_t* pNeighborBss = NULL;
+        amxc_llist_for_each(it, &pChannelScan->neighborBssList) {
+            neighbor_bss_t* pData = amxc_llist_it_get_data(it, neighbor_bss_t, neighborBssIt);
+            if(swl_mac_binMatches(&pData->bssid, &pSsid->bssid)) {
+                pNeighborBss = pData;
+                break;
+            }
+        }
+        // no NeighborBSS object --> create it
+        if(pNeighborBss == NULL) {
+            pNeighborBss = calloc(1, sizeof(neighbor_bss_t));
+            if(pNeighborBss == NULL) {
+                SAH_TRACEZ_ERROR(ME, "fail to alloc neighbor_bss_t");
+                return;
+            }
+
+            pNeighborBss->bssid = pSsid->bssid;
+            memset(pNeighborBss->ssid, 0, sizeof(pNeighborBss->ssid));
+            convSsid2Str(pSsid->ssid, pSsid->ssidLen, pNeighborBss->ssid, sizeof(pNeighborBss->ssid));
+            pNeighborBss->signalStrength = pSsid->rssi;
+            pNeighborBss->channelBandwidth = pSsid->bandwidth;
+            pNeighborBss->channelUtilization = 0;
+            pNeighborBss->StationCount = 0;      // will be ftreated in  SSW-8679
+            pNeighborBss->securityModeEnabled = pSsid->secModeEnabled;
+            pNeighborBss->encryptionMode = pSsid->encryptionMode;
+
+            pNeighborBss->supportedStandards = pSsid->operatingStandards; // will be ftreated in  SSW-8679
+            pNeighborBss->operatingStandards = pSsid->operatingStandards;
+
+            pNeighborBss->basicDataTransferRates = NULL;
+            pNeighborBss->supportedDataTransferRates = NULL;
+            pNeighborBss->supportedNss = 0; // will be ftreated in  SSW-8679
+            pNeighborBss->dtimPeriod = 0;   // will be ftreated in  SSW-8679
+            pNeighborBss->beaconPeriod = 0; // will be ftreated in  SSW-8679
+
+            amxc_llist_it_init(&pNeighborBss->neighborBssIt);
+            amxc_llist_append(&pChannelScan->neighborBssList, &pNeighborBss->neighborBssIt);
+        }
+    }
+
+    //Fill the amxrt response
+    swl_timeReal_t now = swl_time_getRealSec();
+    char dateBuffer[64] = {'\0'};
+    swl_typeTimeReal_toChar(dateBuffer, sizeof(dateBuffer), now);
+    amxc_var_t* pScanResultObject = amxc_var_add(amxc_htable_t, pScanResultList, NULL);
+
+    amxc_var_add_key(cstring_t, pScanResultObject, "TimeStamp", dateBuffer);
+
+    amxc_var_t* opClassScanRoot = amxc_var_add_key(amxc_llist_t, pScanResultObject, "OpClassScan", NULL);
+
+    amxc_llist_for_each(operatingClass_it, &operatingClassList) {
+        op_class_scan_t* pOperatingClass = amxc_llist_it_get_data(operatingClass_it, op_class_scan_t, it);
+        amxc_var_t* opClassScanObject = amxc_var_add(amxc_htable_t, opClassScanRoot, NULL);
+        amxc_var_add_key(uint8_t, opClassScanObject, "OperatingClass", pOperatingClass->operatingClass);
+        if(amxc_llist_size(&pOperatingClass->channelScanList) == 0) {
+            continue;
+        }
+        amxc_var_t* pChannelScanList = amxc_var_add_key(amxc_llist_t, opClassScanObject, "ChannelScan", NULL);
+        amxc_llist_for_each(it, &pOperatingClass->channelScanList) {
+            channel_scan_t* pChannelScan = amxc_llist_it_get_data(it, channel_scan_t, channelScanIt);
+            amxc_var_t* pChannelScanHashTable = amxc_var_add(amxc_htable_t, pChannelScanList, NULL);
+            amxc_var_add_key(uint8_t, pChannelScanHashTable, "Channel", pChannelScan->channel);
+            amxc_var_add_key(cstring_t, pChannelScanHashTable, "TimeStamp", dateBuffer);
+            amxc_var_add_key(uint8_t, pChannelScanHashTable, "Utilization", pChannelScan->utilization);
+            amxc_var_add_key(uint8_t, pChannelScanHashTable, "Noise", pChannelScan->noise);
+
+            if(amxc_llist_size(&pChannelScan->neighborBssList) == 0) {
+                continue;
+            }
+            amxc_var_t* pNeighborBssList = amxc_var_add_key(amxc_llist_t, pChannelScanHashTable, "NeighborBSS", NULL);
+            amxc_llist_for_each(it, &pChannelScan->neighborBssList) {
+                amxc_var_t* pNeighborBssHashTable = amxc_var_add(amxc_htable_t, pNeighborBssList, NULL);
+                neighbor_bss_t* pNeighborBss = amxc_llist_it_get_data(it, neighbor_bss_t, neighborBssIt);
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "SSID", pNeighborBss->ssid);
+                swl_macChar_t macStr;
+                swl_mac_binToChar(&macStr, &pNeighborBss->bssid);
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "BSSID", macStr.cMac);
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "TimeStamp", dateBuffer);
+                amxc_var_add_key(uint8_t, pNeighborBssHashTable, "SignalStrength", pNeighborBss->signalStrength);
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "ChannelBandwidth", Rad_SupBW[swl_chanspec_intToBw(pNeighborBss->channelBandwidth)]);
+                amxc_var_add_key(uint8_t, pNeighborBssHashTable, "ChannelUtilization", pNeighborBss->channelUtilization);
+                amxc_var_add_key(uint32_t, pNeighborBssHashTable, "StationCount", pNeighborBss->StationCount);  // pwhm does not receive StationCount as this stage
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "SecurityModeEnabled", swl_security_apModeToString(pNeighborBss->securityModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "EncryptionMode", swl_security_encMode_str[ pNeighborBss->encryptionMode ]);
+
+                char operatingStandardsChar[32] = "";
+                swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar),
+                                  pNeighborBss->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "OperatingStandards", operatingStandardsChar);
+
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "SupportedStandards", operatingStandardsChar);
+
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "BasicDataTransferRates", "");
+                amxc_var_add_key(cstring_t, pNeighborBssHashTable, "SupportedDataTransferRates", "");
+
+                amxc_var_add_key(uint32_t, pNeighborBssHashTable, "SupportedNSS", pNeighborBss->supportedNss);
+                amxc_var_add_key(uint32_t, pNeighborBssHashTable, "DTIMPeriod", pNeighborBss->dtimPeriod);
+                amxc_var_add_key(uint32_t, pNeighborBssHashTable, "BeaconPeriod", pNeighborBss->beaconPeriod);
+
+                amxc_llist_it_take(&pNeighborBss->neighborBssIt);
+                free(pNeighborBss);
+
+            }
+            amxc_llist_it_take(&pChannelScan->channelScanIt);
+            free(pChannelScan);
+        }
+        amxc_llist_it_take(&pOperatingClass->it);
+        free(pOperatingClass);
+    }
+    amxc_llist_clean(&operatingClassList, NULL);
+
+}
+
+static void s_sendFullScanResult(T_Radio* pRadio, bool success) {
+    if(success) {
+        amxc_var_t retMap;
+        amxc_var_init(&retMap);
+        amxc_var_set_type(&retMap, AMXC_VAR_ID_HTABLE);
+
+        amxc_var_t* pScanResultList = amxc_var_add_key(amxc_llist_t, &retMap, "ScanResult", NULL);
+
+        wld_scanResults_t scanRes;
+        amxc_llist_init(&scanRes.ssids);
+
+        // Get data
+        if(pRadio->pFA->mfn_wrad_scan_results(pRadio, &scanRes) >= SWL_RC_OK) {
+            fillFullScanResultsList(pScanResultList, pRadio, &scanRes);
+        } else {
+            SAH_TRACEZ_ERROR(ME, "%s: Unable to retrieve scan results", pRadio->Name);
+        }
+        wld_scan_cleanupScanResults(&scanRes);
+        swl_function_deferDone(&pRadio->scanState.scanFunInfo, amxd_status_ok, NULL, &retMap);
+        amxc_var_clean(&retMap);
+    } else {
+        swl_function_deferDone(&pRadio->scanState.scanFunInfo, amxd_status_unknown_error, NULL, NULL);
+    }
+}
+
 /**
  * Send scan results back to the caller and reset the scanState call_id.
  **/
@@ -677,31 +925,36 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
     ASSERT_TRUE(swl_function_deferIsActive(&pR->scanState.scanFunInfo), , ME, "%s no call_id", pR->Name);
     ASSERT_TRUE(wld_scan_isRunning(pR), , ME, "%s no scan", pR->Name);
 
-    amxc_var_t ret;
-    amxc_var_init(&ret);
+    if(swl_str_matches(pR->scanState.scanReason, FULL_SCAN_REASON)) {
+        s_sendFullScanResult(pR, *success);
 
-    switch(pR->scanState.scanType) {
-    case SCAN_TYPE_SSID:
-        if(!s_getScanResults(pR, &ret, pR->scanState.minRssi)) {
+    } else {
+        amxc_var_t ret;
+        amxc_var_init(&ret);
+
+        switch(pR->scanState.scanType) {
+        case SCAN_TYPE_SSID:
+            if(!s_getScanResults(pR, &ret, pR->scanState.minRssi)) {
+                *success = false;
+            }
+            break;
+        case SCAN_TYPE_SPECTRUM:
+            if(*success) {
+                s_prepareSpectrumOutput(pR, &ret);
+            }
+            break;
+        case SCAN_TYPE_COMBINED:
+            s_getAllScanMeasurements(pR, &ret, pR->scanState.minRssi);
+            break;
+        default:
+            SAH_TRACEZ_ERROR(ME, "%s scan type unknown %s", pR->Name, pR->scanState.scanReason);
             *success = false;
         }
-        break;
-    case SCAN_TYPE_SPECTRUM:
-        if(*success) {
-            s_prepareSpectrumOutput(pR, &ret);
-        }
-        break;
-    case SCAN_TYPE_COMBINED:
-        s_getAllScanMeasurements(pR, &ret, pR->scanState.minRssi);
-        break;
-    default:
-        SAH_TRACEZ_ERROR(ME, "%s scan type unknown %s", pR->Name, pR->scanState.scanReason);
-        *success = false;
+
+        swl_function_deferDone(&pR->scanState.scanFunInfo, success ? amxd_status_ok : amxd_status_unknown_error, NULL, &ret);
+
+        amxc_var_clean(&ret);
     }
-
-    swl_function_deferDone(&pR->scanState.scanFunInfo, success ? amxd_status_ok : amxd_status_unknown_error, NULL, &ret);
-
-    amxc_var_clean(&ret);
     pR->scanState.minRssi = INT32_MIN;
 }
 
@@ -1071,6 +1324,82 @@ static void s_radScanStatusUpdateCb(wld_scanEvent_t* event) {
 static wld_event_callback_t s_radScanStatusCbContainer = {
     .callback = (wld_event_callback_fun) s_radScanStatusUpdateCb
 };
+
+
+
+amxd_status_t _Radio_FullScan(amxd_object_t* object,
+                              amxd_function_t* func _UNUSED,
+                              amxc_var_t* args,
+                              amxc_var_t* retval) {
+
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t res = amxd_status_ok;
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    swl_usp_cmdStatus_ne status = SWL_USP_CMD_STATUS_SUCCESS;
+
+    T_Radio* pR = object->priv;
+    if(pR == NULL) {
+        status = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
+        SAH_TRACEZ_ERROR(ME, "%s: NULL", pR->Name);
+        goto error;
+
+    }
+
+    if(!wld_rad_isActive(pR)) {
+        SAH_TRACEZ_ERROR(ME, "%s: down!, status= %d", pR->Name, pR->status);
+        status = SWL_USP_CMD_STATUS_ERROR_INTERFACE_DOWN;
+        goto error;
+    }
+
+    if(!s_isScanRequestReady(pR)) {
+        SAH_TRACEZ_ERROR(ME, "%s: not ready for scan", pR->Name);
+        status = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
+        goto error;
+    }
+
+    if(swl_function_deferIsActive(&pR->scanState.scanFunInfo)) { //make sure the scan is not active on this radio
+        SAH_TRACEZ_ERROR(ME, "%s: radio scan is active", pR->Name);
+        status = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
+        goto error;
+    }
+
+
+    amxd_object_t* scanconfigObj = amxd_object_get(object, "ScanConfig");
+    ASSERTS_NOT_NULL(scanconfigObj, amxd_status_unknown_error, ME, "NULL");
+    uint32_t dwellTime = GET_INT32(args, "DwellTime");
+    amxd_object_set_int32_t(scanconfigObj, "ActiveChannelTime", dwellTime);
+    amxc_var_add_key(cstring_t, args, "scanReason", FULL_SCAN_REASON);
+    const char* ssid = GET_CHAR(args, "SSID");
+    if(ssid != NULL) {
+        amxc_var_add_key(cstring_t, args, "SSID", ssid);
+    }
+
+    res = s_startScan(object, NULL, args, retval, SCAN_TYPE_SSID);
+
+    if(res == amxd_status_invalid_function_argument) {
+        status = SWL_USP_CMD_STATUS_ERROR_INVALID_INPUT;
+        goto error;
+    } else if(res != amxd_status_deferred) {
+        status = SWL_USP_CMD_STATUS_ERROR_TIMEOUT;
+        goto error;
+    }
+
+    amxc_var_add_key(cstring_t, retval, "Status",
+                     swl_uspCmdStatus_toString(status));
+
+
+    return swl_function_defer(&pR->scanState.scanFunInfo, func, retval);
+
+
+
+error:
+    amxc_var_add_key(cstring_t, retval, "Status",
+                     swl_uspCmdStatus_toString(status));
+    SAH_TRACEZ_OUT(ME);
+    return res;
+
+}
+
 
 static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad, wld_scanResultSSID_t* pSsid) {
     ASSERTS_NOT_NULL(pResultListMap, , ME, "NULL");
