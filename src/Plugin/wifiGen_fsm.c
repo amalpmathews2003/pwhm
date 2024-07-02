@@ -256,10 +256,11 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
 static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERTI_TRUE(pRad->enable, true, ME, "%s: radio disabled", pRad->Name);
     ASSERTI_TRUE(wifiGen_hapd_isAlive(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    T_AccessPoint* pMainAPCur = wld_rad_hostapd_getRunMainVap(pRad);
+    ASSERT_NOT_NULL(pMainAPCur, true, ME, "%s: no main vap iface for rad %s", pAP->alias, pRad->Name);
     bool enable = pAP->enable;
     SAH_TRACEZ_INFO(ME, "%s: enable vap %d", pAP->alias, enable);
     wld_secDmn_action_rc_ne rc;
-    T_AccessPoint* pMainAPCur = wld_rad_hostapd_getRunMainVap(pRad);
     T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
     bool mainIfaceChanged = ((pMainAPCur != pMainAPCfg) && ((pAP == pMainAPCur) || (pAP == pMainAPCfg)));
     bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_isEnabled(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
@@ -842,13 +843,13 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_UPDATE_BEACON), .doVapFsmAction = s_doUpdateBeacon},
     {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_UPDATE_WPASUPP), .doEpFsmAction = s_doReloadWpaSupp},
-    {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
-    {FSM_ACTION(GEN_FSM_START_WPASUPP), .doEpFsmAction = s_doStartWpaSupp},
     {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
     {FSM_ACTION(GEN_FSM_ENABLE_RAD), .doRadFsmAction = s_doRadEnable},
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},
     {FSM_ACTION(GEN_FSM_ENABLE_EP), .doEpFsmAction = s_doEnableEp},
     {FSM_ACTION(GEN_FSM_CONNECTED_EP), .doEpFsmAction = s_doConnectedEp},
+    {FSM_ACTION(GEN_FSM_START_HOSTAPD), .doRadFsmAction = s_doStartHostapd},
+    {FSM_ACTION(GEN_FSM_START_WPASUPP), .doEpFsmAction = s_doStartWpaSupp},
     {FSM_ACTION(GEN_FSM_SYNC_STATE), .doRadFsmAction = s_doSyncState},
 };
 
