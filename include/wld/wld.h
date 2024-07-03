@@ -1146,13 +1146,6 @@ typedef struct {
     bool addRelayApCredentials;
 } wld_wpsSessionInfo_t;
 
-typedef enum {
-    BLOCKSCANMODE_DISABLE,
-    BLOCKSCANMODE_PRIO,
-    BLOCKSCANMODE_ALL,
-    BLOCKSCANMODE_MAX,
-} wld_blockScanMode_e;
-extern const char* g_str_wld_blockScanMode[];
 
 //Note : scan type is more of what triggered the scanning not what the result has!
 typedef enum {
@@ -1237,7 +1230,6 @@ typedef struct {
     int32_t scanRequestInterval;
     int32_t scanChannelCount;
     int32_t maxChannelsPerScan;
-    wld_blockScanMode_e blockScanMode;
     char* fastScanReasons;
     wld_scanArgs_t scanArguments;
 } wld_scan_config_t;

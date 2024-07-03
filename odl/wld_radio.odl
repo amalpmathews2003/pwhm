@@ -2646,18 +2646,6 @@ define probelist_t{
 			}
 
 			/**
-			 * Block scan feature configuration
-			 * Disable : never block scan.
-			 * Prio : block scan if prio traffic is busy.
-			 * All : block scan if either prio or normal traffic is busy.
-			 * @version 10.0
-			 */
-			%persistent string BlockScanMode{
-				on action validate call check_enum ["Disable","Prio","All"];
-				default "Disable";
-			}
-
-			/**
 			 * When scans started for these reasons, the scan will be
 			 * forced as fast, so any "slow scan" interruption mitigation will be disabled.
 			 *

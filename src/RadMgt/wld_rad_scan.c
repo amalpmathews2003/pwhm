@@ -78,12 +78,6 @@ typedef struct {
  */
 neighboringWiFiDiagnosticInfo_t g_neighWiFiDiag;
 
-const char* g_str_wld_blockScanMode[BLOCKSCANMODE_MAX] = {
-    "Disable",
-    "Prio",
-    "All",
-};
-
 static amxd_object_t* s_scanStatsInitialize(T_Radio* pRad, const char* scanReason) {
     amxd_object_t* scanStatsTemp = amxd_object_findf(pRad->pBus, "ScanStats.ScanReason");
     ASSERTS_NOT_NULL(scanStatsTemp, NULL, ME, "ScanReason Obj NULL");
@@ -110,9 +104,6 @@ static void s_setScanConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const
     pRad->scanState.cfg.homeTime = amxd_object_get_int32_t(object, "HomeTime", NULL);
     pRad->scanState.cfg.activeChannelTime = amxd_object_get_int32_t(object, "ActiveChannelTime", NULL);
     pRad->scanState.cfg.passiveChannelTime = amxd_object_get_int32_t(object, "PassiveChannelTime", NULL);
-    char* blockScanMode = amxd_object_get_cstring_t(object, "BlockScanMode", NULL);
-    pRad->scanState.cfg.blockScanMode = swl_conv_charToEnum(blockScanMode, g_str_wld_blockScanMode, BLOCKSCANMODE_MAX, BLOCKSCANMODE_DISABLE);
-    free(blockScanMode);
     pRad->scanState.cfg.maxChannelsPerScan = amxd_object_get_int32_t(object, "MaxChannelsPerScan", NULL);
     pRad->scanState.cfg.scanRequestInterval = amxd_object_get_int32_t(object, "ScanRequestInterval", NULL);
     pRad->scanState.cfg.scanChannelCount = amxd_object_get_int32_t(object, "ScanChannelCount", NULL);
@@ -390,15 +381,6 @@ static amxd_status_t s_startScan(amxd_object_t* object,
     }
 
     snprintf(scanArgs->reason, sizeof(scanArgs->reason), "%s", reason);
-
-    if((pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_ALL)
-       || ( pR->scanState.cfg.blockScanMode == BLOCKSCANMODE_PRIO)) {
-        SAH_TRACEZ_ERROR(ME, "Scan blocked");
-        pR->scanState.stats.nrScanBlocked++;
-        s_updateScanStats(pR);
-        errorCode = amxd_status_unknown_error;
-        goto error;
-    }
 
     swl_rc_ne scanResult = wld_scan_start(pR, scanType, reason);
     if(scanResult < SWL_RC_OK) {
