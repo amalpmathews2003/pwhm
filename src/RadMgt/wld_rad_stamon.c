@@ -242,7 +242,8 @@ static amxd_status_t s_staMon_deleteNastaDevice(amxc_var_t* args, amxc_llist_t* 
 
     wld_nasta_t* pMD = wld_rad_staMon_getDevice(macAddr, devList);
     ASSERTI_NOT_NULL(pMD, amxd_status_ok, ME, "No entry for mac %s", macAddr);
-    amxd_object_delete(&pMD->obj);
+    swl_object_delInstWithTransOnLocalDm(pMD->obj);
+    pMD->obj = NULL;
 
     return amxd_status_ok;
 }
@@ -415,7 +416,8 @@ amxd_status_t _clearNonAssociatedDevices(amxd_object_t* obj,
     while(it != NULL) {
         T_NonAssociatedDevice* pMD = amxc_llist_it_get_data(it, T_NonAssociatedDevice, it);
         if(pMD) {
-            amxd_object_delete(&pMD->obj);
+            swl_object_delInstWithTransOnLocalDm(pMD->obj);
+            pMD->obj = NULL;
         }
         it = amxc_llist_get_first(&pRad->naStations);
     }
@@ -529,14 +531,14 @@ void wld_radStaMon_destroy(T_Radio* pRad) {
     while(!amxc_llist_is_empty(&pRad->naStations)) {
         it = amxc_llist_get_first(&pRad->naStations);
         wld_nasta_t* pNaSta = amxc_llist_it_get_data(it, wld_nasta_t, it);
-        amxd_object_delete(&pNaSta->obj);
+        swl_object_delInstWithTransOnLocalDm(pNaSta->obj);
         pNaSta->obj = NULL;
     }
 
     while(!amxc_llist_is_empty(&pRad->monitorDev)) {
         it = amxc_llist_get_first(&pRad->monitorDev);
         wld_nasta_t* pMonDev = amxc_llist_it_get_data(it, wld_nasta_t, it);
-        amxd_object_delete(&pMonDev->obj);
+        swl_object_delInstWithTransOnLocalDm(pMonDev->obj);
         pMonDev->obj = NULL;
     }
     T_RssiEventing* ev = &pRad->naStaRssiMonitor;
@@ -668,7 +670,7 @@ amxd_status_t _clearMonitorDevices(amxd_object_t* obj,
     while(it != NULL) {
         T_MonitorDevice* pMD = amxc_llist_it_get_data(it, T_MonitorDevice, it);
         if(pMD) {
-            amxd_object_delete(&pMD->obj);
+            swl_object_delInstWithTransOnLocalDm(pMD->obj);
         }
         it = amxc_llist_get_first(&pRad->monitorDev);
     }

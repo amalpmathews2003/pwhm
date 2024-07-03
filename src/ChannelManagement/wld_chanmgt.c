@@ -205,7 +205,8 @@ static void s_cleanChannelListTillSize(T_Radio* pRad, size_t maxSize) {
         amxc_llist_it_t* nextIt = it->next;
         wld_rad_chanChange_t* change = amxc_llist_it_get_data(it, wld_rad_chanChange_t, it);
         amxc_llist_it_take(&change->it);
-        amxd_object_delete(&change->object);
+        swl_object_delInstWithTransOnLocalDm(change->object);
+        change->object = NULL;
         free(change);
         it = nextIt;
     }

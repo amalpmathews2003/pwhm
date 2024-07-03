@@ -882,7 +882,8 @@ static void wld_scan_update_clear_obj(amxd_object_t* objScan) {
     amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
     amxd_object_for_each(instance, it, chanTemplate) {
         amxd_object_t* chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
-        amxd_object_delete(&chanObj);
+        swl_object_delInstWithTransOnLocalDm(chanObj);
+        chanObj = NULL;
     }
 }
 
