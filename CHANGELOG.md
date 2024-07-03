@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.9 - 2024-07-03(07:44:13 +0000)
+
+### Other
+
+- start hostapd/wpa_supp at the end of FSM
+
 ## Release v6.28.8 - 2024-07-01(16:37:41 +0000)
 
 ### Other
