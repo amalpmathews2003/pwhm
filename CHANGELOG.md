@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.11 - 2024-07-03(13:18:15 +0000)
+
+### Other
+
+- - Clean up the private feature get Rssi per antenna.
+
 ## Release v6.28.10 - 2024-07-03(11:43:10 +0000)
 
 ### Other
