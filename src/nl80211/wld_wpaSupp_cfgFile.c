@@ -119,12 +119,12 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
     return SWL_RC_OK;
 }
 
-static swl_rc_ne s_setPsk(swl_mapChar_t* network, T_EndPointProfile* epProfile) {
+static swl_rc_ne s_setPsk(swl_mapChar_t* network, T_EndPointProfile* epProfile, bool hashKeyPassPhrase) {
     char* keyPassPhrase = NULL;
     char md5Key[PSK_KEY_SIZE_LEN * 2 - 1] = {'\0'};
     char temp[PSK_KEY_SIZE_LEN + 2] = {0};
     swl_rc_ne ret = SWL_RC_ERROR;
-    if((!swl_str_isEmpty(epProfile->keyPassPhrase)) && (swl_str_len(epProfile->keyPassPhrase) != (PSK_KEY_SIZE_LEN - 1))) {
+    if(hashKeyPassPhrase && (!swl_str_isEmpty(epProfile->keyPassPhrase)) && (swl_str_len(epProfile->keyPassPhrase) != (PSK_KEY_SIZE_LEN - 1))) {
         wldu_convCreds2MD5(epProfile->SSID, epProfile->keyPassPhrase, md5Key, PSK_KEY_SIZE_LEN * 2 - 1);
         md5Key[PSK_KEY_SIZE_LEN - 1] = '\0';
         keyPassPhrase = md5Key;
@@ -218,7 +218,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "pairwise", "TKIP");
         swl_mapChar_add(network, "group", "TKIP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
-        ASSERT_EQUALS(s_setPsk(network, epProfile), SWL_RC_OK, SWL_RC_ERROR, ME,
+        ASSERT_EQUALS(s_setPsk(network, epProfile, true), SWL_RC_OK, SWL_RC_ERROR, ME,
                       "%s: fail to set psk", pEP->Name);
     }
     break;
@@ -231,7 +231,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "pairwise", "CCMP");
         swl_mapChar_add(network, "group", "CCMP TKIP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
-        ASSERT_EQUALS(s_setPsk(network, epProfile), SWL_RC_OK, SWL_RC_ERROR, ME,
+        ASSERT_EQUALS(s_setPsk(network, epProfile, true), SWL_RC_OK, SWL_RC_ERROR, ME,
                       "%s: fail to set psk", pEP->Name);
     }
     break;
@@ -244,7 +244,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "pairwise", "CCMP TKIP");
         swl_mapChar_add(network, "group", "TKIP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
-        ASSERT_EQUALS(s_setPsk(network, epProfile), SWL_RC_OK, SWL_RC_ERROR, ME,
+        ASSERT_EQUALS(s_setPsk(network, epProfile, true), SWL_RC_OK, SWL_RC_ERROR, ME,
                       "%s: fail to set psk", pEP->Name);
     }
     break;
@@ -258,9 +258,8 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "pairwise", "CCMP");
         swl_mapChar_add(network, "group", "CCMP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
-        ASSERT_EQUALS(s_setSaePassword(network, epProfile), SWL_RC_OK, SWL_RC_ERROR, ME,
-                      "%s: fail to set SAE password", pEP->Name);
-        ASSERT_EQUALS(s_setPsk(network, epProfile), SWL_RC_OK, SWL_RC_ERROR, ME,
+        bool hashKeyPassPhrase = (s_setSaePassword(network, epProfile) == SWL_RC_OK);
+        ASSERT_EQUALS(s_setPsk(network, epProfile, hashKeyPassPhrase), SWL_RC_OK, SWL_RC_ERROR, ME,
                       "%s: fail to set psk", pEP->Name);
     }
     break;
@@ -271,8 +270,11 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "pairwise", "CCMP");
         swl_mapChar_add(network, "group", "CCMP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
-        ASSERT_EQUALS(s_setSaePassword(network, epProfile), SWL_RC_OK, SWL_RC_ERROR, ME,
-                      "%s: fail to set SAE password", pEP->Name);
+        if(s_setSaePassword(network, epProfile) < SWL_RC_OK) {
+            SAH_TRACEZ_INFO(ME, "%s: fail to set SAE password", pEP->Name);
+            ASSERT_EQUALS(s_setPsk(network, epProfile, false), SWL_RC_OK, SWL_RC_ERROR, ME,
+                          "%s: fail to set psk", pEP->Name);
+        }
     }
     break;
     default:
