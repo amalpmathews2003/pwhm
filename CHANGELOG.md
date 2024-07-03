@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.10 - 2024-07-03(11:43:10 +0000)
+
+### Other
+
+- - Ep connection issues with WPA3 and WPA2-WPA3 security modes
+
 ## Release v6.28.9 - 2024-07-03(07:44:13 +0000)
 
 ### Other
