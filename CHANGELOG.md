@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.12 - 2024-07-04(08:29:16 +0000)
+
+### Other
+
+- - unable to scan radio
+
 ## Release v6.28.11 - 2024-07-03(13:18:15 +0000)
 
 ### Other
