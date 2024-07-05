@@ -197,7 +197,7 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
 
     wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, s_getNrReqBss(pRad));
     if(memcmp(pRad->MACAddr, prevMacAddr.bMac, SWL_MAC_BIN_LEN)) {
-        pRad->pFA->mfn_sync_radio(pRad->pBus, pRad, SET);
+        swl_typeMacBin_commitObjectParamRef(pRad->pBus, "BaseMACAddress", (swl_macBin_t*) pRad->MACAddr);
         change = true;
     }
 
