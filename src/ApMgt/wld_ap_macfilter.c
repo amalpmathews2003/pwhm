@@ -347,6 +347,7 @@ static bool s_addEntryObject(T_AccessPoint* pAP,
     amxd_trans_set_value(cstring_t, &trans, "MACAddress", macStr);
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, false, ME, "%s : trans apply failure", pAP->alias);
     SAH_TRACEZ_INFO(ME, "%s: Added %s entry %s", pAP->alias, listName, macStr);
+    trans.current->priv = trans.current;
     return true;
 }
 

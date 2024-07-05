@@ -369,11 +369,40 @@ static void test_setMfAddrList(void** state _UNUSED) {
     assert_int_equal(vap->MF_EntryCount, 0);
 }
 
+static void test_changeMfAddrList(void** state _UNUSED) {
+    T_AccessPoint* vap = dm.bandList[SWL_FREQ_BAND_2_4GHZ].vapPriv;
+
+    char mfAddrListStr1[128] = "00:11:22:AA:BB:CC";
+    assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", mfAddrListStr1));
+    ttb_mockTimer_goToFutureMs(5);
+    assert_string_equal(vap->MF_AddressList, mfAddrListStr1);
+    assert_int_equal(vap->MF_EntryCount, 1);
+    swl_macBin_t macBin1;
+    swl_typeMacBin_fromChar(&macBin1, mfAddrListStr1);
+    assert_memory_equal(vap->MF_Entry[0], macBin1.bMac, SWL_MAC_BIN_LEN);
+
+    char mfAddrListStr2[128] = "00:11:22:AA:BB:CD";
+    assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", mfAddrListStr2));
+    ttb_mockTimer_goToFutureMs(5);
+    assert_string_equal(vap->MF_AddressList, mfAddrListStr2);
+    assert_int_equal(vap->MF_EntryCount, 1);
+    swl_macBin_t macBin2;
+    swl_typeMacBin_fromChar(&macBin2, mfAddrListStr2);
+    assert_memory_equal(vap->MF_Entry[0], macBin2.bMac, SWL_MAC_BIN_LEN);
+
+    // remove entries to free memory for valgrind
+    assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", ""));
+    ttb_mockTimer_goToFutureMs(1);
+    assert_int_equal(vap->MF_EntryCount, 0);
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
+    sahTraceAddZone(400, "apMf");
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_addDelMfPf),
         cmocka_unit_test(test_setMfAddrList),
+        cmocka_unit_test(test_changeMfAddrList),
     };
     int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();
