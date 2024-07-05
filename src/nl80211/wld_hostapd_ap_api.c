@@ -300,12 +300,12 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"wps_state", SECDMN_ACTION_OK_NEED_RESTART},
               //params set and applied with main iface toggle
               {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_TOGGLE},
+              {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_TOGGLE},
               //params set and applied with global saved hostapd conf reloading
               {"wpa", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"wpa_pairwise", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"wpa_key_mgmt", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"ieee80211w", SECDMN_ACTION_OK_NEED_SIGHUP},
-              {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"auth_server_addr", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"auth_server_port", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"own_ip_addr", SECDMN_ACTION_OK_NEED_SIGHUP},
