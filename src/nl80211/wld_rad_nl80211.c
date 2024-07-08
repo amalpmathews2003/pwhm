@@ -226,7 +226,8 @@ uint8_t wld_rad_nl80211_addRadios(vendor_t* vendor,
                                   wld_nl80211_ifaceInfo_t wlIfacesInfo[maxWiphys][maxWlIfaces]) {
     uint8_t index = 0;
     ASSERT_NOT_NULL(vendor, index, ME, "NULL");
-    for(uint32_t i = 0; i < maxWlIfaces && index < maxWiphys; i++) {
+    uint32_t isSingleWiphy = (wld_nl80211_countWiphyFromFS() == 1);
+    for(uint32_t i = 0; i < (isSingleWiphy ? maxWlIfaces : 1) && index < maxWiphys; i++) {
         for(uint32_t j = 0; j < maxWiphys && index < maxWiphys; j++) {
             wld_nl80211_ifaceInfo_t* pIface = &wlIfacesInfo[j][i];
             if(pIface->ifIndex <= 0) {
