@@ -289,65 +289,6 @@ uint32_t wld_getMaxNrSSIDs();
 //Requested function not implemented
 #define WLD_ERROR_NOT_IMPLEMENTED SWL_RC_NOT_IMPLEMENTED
 
-/* FSM_BW */
-#if (FSM_BW == 4)
-#define BAQ_FSM_BITSTATE(x)                                 \
-    do {                                                    \
-        x->fsm.FSM_CSC[0] = x->fsm.FSM_BitActionArray[0];       \
-        x->fsm.FSM_CSC[1] = x->fsm.FSM_BitActionArray[1];       \
-        x->fsm.FSM_CSC[2] = x->fsm.FSM_BitActionArray[2];       \
-        x->fsm.FSM_CSC[3] = x->fsm.FSM_BitActionArray[3];       \
-    } while(0)
-
-#define RES_FSM_BITSTATE(x)                                 \
-    do {                                                    \
-        x->fsm.FSM_BitActionArray[0] = x->fsm.FSM_CSC[0];       \
-        x->fsm.FSM_BitActionArray[1] = x->fsm.FSM_CSC[1];       \
-        x->fsm.FSM_BitActionArray[2] = x->fsm.FSM_CSC[2];       \
-        x->fsm.FSM_BitActionArray[3] = x->fsm.FSM_CSC[3];       \
-    } while(0)
-
-#define SCH_FSM_BITSTATE(x)                                 \
-    x->fsm.FSM_CSC[0] == x->fsm.FSM_BitActionArray[0] || \
-    x->fsm.FSM_CSC[1] == x->fsm.FSM_BitActionArray[1] || \
-    x->fsm.FSM_CSC[2] == x->fsm.FSM_BitActionArray[2] || \
-    x->fsm.FSM_CSC[3] == x->fsm.FSM_BitActionArray[3]
-
-#define BAQ_RAD_FSM_BITSTATE(x)                             \
-    do {                                                    \
-        x->fsmRad.FSM_CSC[0] = x->fsmRad.FSM_BitActionArray[0]; \
-        x->fsmRad.FSM_CSC[1] = x->fsmRad.FSM_BitActionArray[1]; \
-        x->fsmRad.FSM_CSC[2] = x->fsmRad.FSM_BitActionArray[2]; \
-        x->fsmRad.FSM_CSC[3] = x->fsmRad.FSM_BitActionArray[3]; \
-    } while(0)
-
-#endif
-
-#if (FSM_BW == 2)
-#define BAQ_FSM_BITSTATE(x)                                 \
-    do {                                                    \
-        x->fsm.FSM_CSC[0] = x->fsm.FSM_BitActionArray[0];       \
-        x->fsm.FSM_CSC[1] = x->fsm.FSM_BitActionArray[1];       \
-    } while(0)
-
-#define RES_FSM_BITSTATE(x)                                 \
-    do {                                                    \
-        x->fsm.FSM_BitActionArray[0] = x->fsm.FSM_CSC[0];       \
-        x->fsm.FSM_BitActionArray[1] = x->fsm.FSM_CSC[1];       \
-    } while(0)
-
-#define SCH_FSM_BITSTATE(x)                                 \
-    x->fsm.FSM_CSC[0] == x->fsm.FSM_BitActionArray[0] || \
-    x->fsm.FSM_CSC[1] == x->fsm.FSM_BitActionArray[1]
-
-#define BAQ_RAD_FSM_BITSTATE(x)                             \
-    do {                                                    \
-        x->fsmRad.FSM_CSC[0] = x->fsmRad.FSM_BitActionArray[0]; \
-        x->fsmRad.FSM_CSC[1] = x->fsmRad.FSM_BitActionArray[1]; \
-    } while(0)
-
-#endif
-
 extern amxb_bus_ctx_t* wld_plugin_amx;
 extern amxd_dm_t* wld_plugin_dm;
 extern amxo_parser_t* wld_plugin_parser;
@@ -617,7 +558,6 @@ typedef struct {
     int FSM_Loop;                             // Keep looping on the same FSM state (danger).
     int FSM_SrcVAP;                           // VAP State Run Count. Track if state has been done
     unsigned long FSM_BitActionArray[FSM_BW]; // 'bit' states?
-    unsigned long FSM_CSC[FSM_BW];            // Check State Change.
     amxp_timer_t* timer;
     int TODC;                                 // TimeOut Delayed Commit
     amxp_timer_t* obj_DelayCommit;
@@ -625,6 +565,8 @@ typedef struct {
 
     /* Isolate ongoing Active Commit (AC) actions from inbetween config/commits */
     unsigned long FSM_AC_BitActionArray[FSM_BW];
+
+    /* The state of the FSM_BitActionArray at last dependency copy to AC" */
     unsigned long FSM_AC_CSC[FSM_BW];
     swl_timeMono_t FSM_ComPend_Start;         //time when commit pend started
     uint32_t retryCount;                      //how many times fase has been retried.

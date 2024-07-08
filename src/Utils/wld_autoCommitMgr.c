@@ -81,7 +81,7 @@ void s_startRadioAutoCommit(T_Radio* pRad) {
     amxp_timer_state_t state = pRad->autoCommitData.timer->state;
 
     ASSERTI_TRUE(state != amxp_timer_running && state != amxp_timer_started, , ME, "%s: timer started", pRad->Name);
-    ASSERTI_TRUE(pRad->fsmRad.FSM_State == FSM_IDLE, , ME, "%s: FSM started", pRad->Name);
+    ASSERTI_TRUE(pRad->fsmRad.FSM_ComPend == 0, , ME, "%s: FSM commit pending", pRad->Name);
 
     swl_timeSpecMono_t time;
     swl_timespec_getMono(&time);

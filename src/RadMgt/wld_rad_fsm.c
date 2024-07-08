@@ -114,12 +114,11 @@ static void s_printFsmBits(T_Radio* rad) {
         }
     }
 
-    SAH_TRACEZ_WARNING(ME, "FSM RAD %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
+    SAH_TRACEZ_WARNING(ME, "FSM RAD %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
                        rad->Name,
                        rad->enable,
                        rad->fsmRad.FSM_BitActionArray[0], rad->fsmRad.FSM_BitActionArray[1],
-                       rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1],
-                       rad->fsmRad.FSM_CSC[0], rad->fsmRad.FSM_CSC[1]);
+                       rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1]);
 
 }
 
@@ -139,23 +138,24 @@ static void s_copyPredepenencyBits(T_Radio* rad) {
 }
 
 /**
- * Redo dependency. Shall only be allowed if radio is in GLOBAL_SYNC stage
+ * Redo dependency. Shall only be allowed if radio is in GLOBAL_SYNC stage.
+ *
  */
 void wld_rad_fsm_redoDependency(T_Radio* rad) {
     if(rad->fsmRad.FSM_State != FSM_SYNC_GLOBAL) {
-        SAH_TRACEZ_ERROR(ME, "%s: trying to redy dependency during %u", rad->Name, rad->fsmRad.FSM_State);
+        SAH_TRACEZ_ERROR(ME, "%s: trying to redo dependency during %u", rad->Name, rad->fsmRad.FSM_State);
         return;
     }
-    // move bits back to what they were pre dependency
+    // move bits back to what they were at point of copy to FSM_AC.
 
-    longArrayCopy(rad->fsmRad.FSM_BitActionArray, rad->fsmRad.FSM_AC_CSC, FSM_BW);
+    longArrayBitOr(rad->fsmRad.FSM_BitActionArray, rad->fsmRad.FSM_AC_CSC, FSM_BW);
     amxc_llist_for_each(it, &rad->llAP) {
         T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
-        longArrayCopy(pAP->fsm.FSM_BitActionArray, pAP->fsm.FSM_AC_CSC, FSM_BW);
+        longArrayBitOr(pAP->fsm.FSM_BitActionArray, pAP->fsm.FSM_AC_CSC, FSM_BW);
     }
     amxc_llist_for_each(it, &rad->llEndPoints) {
         T_EndPoint* pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
-        longArrayCopy(pEP->fsm.FSM_BitActionArray, pEP->fsm.FSM_AC_CSC, FSM_BW);
+        longArrayBitOr(pEP->fsm.FSM_BitActionArray, pEP->fsm.FSM_AC_CSC, FSM_BW);
     }
 
     longArrayClean(rad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
@@ -203,57 +203,62 @@ int wld_rad_fsm_clearFsmBitForAll(T_Radio* pR, int bitNr) {
 }
 
 /**
- * This function shall update the radio FSM_CSC bit array. It shall set it
- * to the OR of the Radio FSM_BA, VAP FSM_BA and Endpoint FSM_BA. If there are then
- * any bits in the FSM_CSC, we should do a commit. If not, no commit is necessary, since there is not
- * a single instance requiring any FSM change.
+ * This function shall collect all bits that are currently pending to be set across the radio, and all its vaps and endpoints.
+ * It shall set it the output to the OR of the Radio FSM_BA, VAP FSM_BA and Endpoint FSM_BA.
+ * If the output contains any bits, a commit can be done, as there is actually something to do
+ * If the output is empty, then there is nothing to be done in the FSM.
+ *
+ * This function shall NOT change the syncAll, as it does not write anything anywhere.
+ * The syncAll shall be handled in the s_performSync call in the FSM_DEPENDENCY stage of fsm.
  */
-static void s_collectDependencies(T_Radio* rad) {
+static void s_collectDependencies(T_Radio* rad, unsigned long bitArray[FSM_BW]) {
     T_AccessPoint* pAP;
     T_EndPoint* pEP;
-    //Initialize CSC cache to radio bits
-    longArrayCopy(rad->fsmRad.FSM_CSC, rad->fsmRad.FSM_BitActionArray, FSM_BW);
+
+    longArrayCopy(bitArray, rad->fsmRad.FSM_BitActionArray, FSM_BW);
+    if(rad->fsmRad.FSM_SyncAll) {
+        markAllBitsLongArray(bitArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
+        return;
+    }
 
     /* collect all dependencies on all attached vap interfaces, mirror it on the RAD interface */
     wld_rad_forEachAp(pAP, rad) {
-        if(rad->fsmRad.FSM_SyncAll || pAP->fsm.FSM_SyncAll) {
-            /* This is the correct place todo this.
-               During dependency check some overlapping states can be cleared */
-            markAllBitsLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
-            pAP->fsm.FSM_SyncAll = FALSE;
+        if(pAP->fsm.FSM_SyncAll) {
+            markAllBitsLongArray(bitArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
+            return;
+        } else {
+            longArrayBitOr(bitArray, pAP->fsm.FSM_BitActionArray, FSM_BW);
         }
-
-        longArrayBitOr(rad->fsmRad.FSM_CSC, pAP->fsm.FSM_BitActionArray, FSM_BW);
     }
 
     wld_rad_forEachEp(pEP, rad) {
-        if(rad->fsmRad.FSM_SyncAll || pEP->fsm.FSM_SyncAll) {
-            /* This is the correct place todo this.
-               During dependency check some overlapping states can be cleared */
-            markAllBitsLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
-            pEP->fsm.FSM_SyncAll = FALSE;
+        if(pEP->fsm.FSM_SyncAll) {
+            markAllBitsLongArray(bitArray, FSM_BW, s_getMngr(rad)->nrFsmBits);
+            return;
+        } else {
+            longArrayBitOr(bitArray, pEP->fsm.FSM_BitActionArray, FSM_BW);
         }
-        longArrayBitOr(rad->fsmRad.FSM_CSC, pEP->fsm.FSM_BitActionArray, FSM_BW);
     }
-
-    rad->fsmRad.FSM_SyncAll = FALSE;
 }
 
 static bool s_checkCommitPending(T_Radio* rad, FSM_STATE targetState) {
 
-    s_collectDependencies(rad);
-    if(rad->fsmRad.FSM_ComPend && areBitsSetLongArray(rad->fsmRad.FSM_CSC, FSM_BW)) {
+    unsigned long bitArray[FSM_BW] = {0};
+
+    s_collectDependencies(rad, bitArray);
+    if(rad->fsmRad.FSM_ComPend && areBitsSetLongArray(bitArray, FSM_BW)) {
         /* We've a extra COMMIT pending! */
-        SAH_TRACEZ_WARNING(ME, "%s: restarting FSM commit", rad->Name);
+        SAH_TRACEZ_WARNING(ME, "%s: restarting FSM commit from %u to %u (bits pending 0x%08lx // 0x%08lx)", rad->Name,
+                           rad->fsmRad.FSM_State, targetState, bitArray[0], bitArray[1]);
         rad->fsmRad.FSM_State = targetState;
         return true;
     } else if(rad->fsmRad.FSM_ComPend) {
         SAH_TRACEZ_WARNING(ME, "%s: Commit pending without bits, ignore", rad->Name);
         rad->fsmRad.FSM_ComPend = 0;
-    } else if(areBitsSetLongArray(rad->fsmRad.FSM_CSC, FSM_BW)) {
+    } else if(areBitsSetLongArray(bitArray, FSM_BW)) {
         SAH_TRACEZ_WARNING(ME, "%s: Bits pending 0x%08lx // 0x%08lx, ignore since no commit",
                            rad->Name,
-                           rad->fsmRad.FSM_CSC[0], rad->fsmRad.FSM_CSC[1]);
+                           bitArray[0], bitArray[1]);
     } else {
         SAH_TRACEZ_INFO(ME, "%s check ok", rad->Name);
     }
@@ -337,27 +342,6 @@ static void s_ensureHasLock(T_Radio* rad) {
     }
 }
 
-static bool s_hasPendingActions(T_Radio* rad) {
-    if(rad->fsmRad.FSM_SyncAll ||
-       areBitsSetLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW) ||
-       areBitsSetLongArray(rad->fsmRad.FSM_CSC, FSM_BW)) {
-        return true;
-    }
-    T_AccessPoint* pAP = NULL;
-    wld_rad_forEachAp(pAP, rad) {
-        if(pAP->fsm.FSM_SyncAll || areBitsSetLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW)) {
-            return true;
-        }
-    }
-    T_EndPoint* pEP = NULL;
-    wld_rad_forEachEp(pEP, rad) {
-        if(pEP->fsm.FSM_SyncAll || areBitsSetLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 static void s_performSync(T_Radio* rad) {
     T_AccessPoint* pAP;
     T_EndPoint* pEP;
@@ -365,11 +349,6 @@ static void s_performSync(T_Radio* rad) {
     // Entry point to actually start configuring.
     // dependency, rad and vap should follow after.
     s_ensureHasLock(rad);
-
-    /* clear pending marker if no new actions already waiting */
-    if(!s_hasPendingActions(rad)) {
-        rad->fsmRad.FSM_ComPend = 0;
-    }
 
     /* We're passing here if we've a pending commit */
     wld_rad_forEachAp(pAP, rad) {
@@ -457,11 +436,12 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     /* State machine is active but some task take more time before we can continue */
     SAH_TRACEZ_INFO(ME, "%s: run fsm %d", rad->Name, rad->fsmRad.FSM_State);
     switch(rad->fsmRad.FSM_State) {
-    case FSM_IDLE:
-        s_collectDependencies(rad);
+    case FSM_IDLE: {
+        unsigned long bitArray[FSM_BW] = {0};
+        s_collectDependencies(rad, bitArray);
 
         /* Is there an action bit set ? */
-        if(areBitsSetLongArray(rad->fsmRad.FSM_CSC, FSM_BW)) {
+        if(areBitsSetLongArray(bitArray, FSM_BW)) {
             /* Yes, create a timer... if needed so we can shedule the task */
             if(!rad->fsmRad.timer) {
                 if((amxp_timer_new(&rad->fsmRad.timer, s_fsmRun_thf, rad))) {
@@ -484,7 +464,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
             }
         }
         break;
-
+    }
     case FSM_WAIT: {
         bool waitForVaps = !wld_rad_areAllVapsDone(rad);
         bool waitForWps = wld_rad_hasWpsActiveEndpoint(rad);
@@ -534,13 +514,14 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_SYNC_VAP:
     case FSM_DEPENDENCY: {
 
-        s_copyPredepenencyBits(rad);
         s_performSync(rad);
-
         SWL_CALL(s_getMngr(rad)->checkPreDependency, rad);
 
+
+        s_copyPredepenencyBits(rad);
         s_syncVap(rad);
         s_syncEp(rad);
+        rad->fsmRad.FSM_ComPend = 0;
 
         SWL_CALL(s_getMngr(rad)->checkRadDependency, rad);
 

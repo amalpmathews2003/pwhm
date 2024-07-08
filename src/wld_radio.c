@@ -2275,7 +2275,6 @@ amxd_status_t _FSM_Start(amxd_object_t* wifi,
     ASSERT_NOT_NULL(pR, status, ME, "No radio mapped to vapname %s", vapname);
 
     /* Set a bit in our state machine bit-array */
-    clearAllBitsLongArray(pAP->fsm.FSM_CSC, FSM_BW);            /* Clear also current state */
     setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, (int) val_int32);
 
     SAH_TRACEZ_INFO(ME, "setBitLongArray");
@@ -4374,8 +4373,6 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         amxc_var_add_key(cstring_t, retval, "FSM_BitArray", buffer);
         snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_AC_BitActionArray[0], pR->fsmRad.FSM_AC_BitActionArray[1]);
         amxc_var_add_key(cstring_t, retval, "FSM_AC_BitArray", buffer);
-        snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_CSC[0], pR->fsmRad.FSM_CSC[1]);
-        amxc_var_add_key(cstring_t, retval, "FSM_CSC", buffer);
     } else if(swl_str_matchesIgnoreCase(feature, "getTxPwrPct")) {
         int32_t txPwrPct = -1;
         swl_rc_ne ret = s_getTxPowerPct(pR, &txPwrPct);
