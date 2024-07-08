@@ -144,20 +144,36 @@ static int s_ifaceInfoCmp(const void* e1, const void* e2) {
     }
     return (pIface1->wiphy - pIface2->wiphy);
 }
-swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nrWiphyMax, const uint32_t nrWifaceMax,
-                                    wld_nl80211_ifaceInfo_t wlIfaces[nrWiphyMax][nrWifaceMax]) {
-    memset(wlIfaces, 0, nrWiphyMax * nrWifaceMax * sizeof(wld_nl80211_ifaceInfo_t));
+swl_rc_ne wld_nl80211_getInterfacesList(wld_nl80211_state_t* state, wld_nl80211_ifaceInfo_t** pWlIfaces, uint32_t maxWlIfaces, uint32_t* pNrWlIfaces) {
+    ASSERT_NOT_NULL(pWlIfaces, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pNrWlIfaces, SWL_RC_INVALID_PARAM, ME, "NULL");
+    int32_t maxIfaces = (int32_t) maxWlIfaces ? : wld_nl80211_countWiphyFromFS() * 32;
+    ASSERT_TRUE(maxIfaces > 0, SWL_RC_ERROR, ME, "null target size");
     struct getWirelessIfacesData_s requestData = {
-        .nrIfacesMax = nrWiphyMax * nrWifaceMax,
+        .nrIfacesMax = maxIfaces,
         .nrIfaces = 0,
-        .pIfaces = calloc(nrWiphyMax * nrWifaceMax, sizeof(wld_nl80211_ifaceInfo_t)),
+        .pIfaces = calloc(maxIfaces, sizeof(wld_nl80211_ifaceInfo_t)),
     };
-    wld_nl80211_state_t* state = wld_nl80211_getSharedState();
     swl_rc_ne rc = wld_nl80211_sendCmdSync(state,
                                            NL80211_CMD_GET_INTERFACE, NLM_F_DUMP,
                                            0, NULL, s_getInterfaceInfoCb, &requestData);
     //sort wlifaces by wiphy then ifIndex, to get ordered vaps per radio
     qsort(requestData.pIfaces, requestData.nrIfaces, sizeof(wld_nl80211_ifaceInfo_t), s_ifaceInfoCmp);
+    W_SWL_SETPTR(pNrWlIfaces, requestData.nrIfaces);
+    W_SWL_SETPTR(pWlIfaces, requestData.pIfaces);
+    return rc;
+}
+
+swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nrWiphyMax, const uint32_t nrWifaceMax,
+                                    wld_nl80211_ifaceInfo_t wlIfaces[nrWiphyMax][nrWifaceMax]) {
+    size_t maxIfaces = nrWiphyMax * nrWifaceMax;
+    struct getWirelessIfacesData_s requestData = {
+        .nrIfacesMax = maxIfaces,
+        .nrIfaces = 0,
+        .pIfaces = NULL,
+    };
+    memset(wlIfaces, 0, maxIfaces * sizeof(wld_nl80211_ifaceInfo_t));
+    swl_rc_ne rc = wld_nl80211_getInterfacesList(wld_nl80211_getSharedState(), &requestData.pIfaces, requestData.nrIfacesMax, &requestData.nrIfaces);
     wld_nl80211_ifaceInfo_t* pWlIface;
     uint32_t lastWiphy = WLD_NL80211_ID_UNDEF;
     uint32_t curWiphyPos = 0;
@@ -191,6 +207,7 @@ swl_rc_ne wld_nl80211_getInterfaces(const uint32_t nrWiphyMax, const uint32_t nr
 }
 
 swl_rc_ne wld_nl80211_getInterfaceInfo(wld_nl80211_state_t* state, uint32_t ifIndex, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
+    ASSERT_TRUE(ifIndex > 0, SWL_RC_INVALID_PARAM, ME, "null ifIndex");
     struct getWirelessIfacesData_s requestData = {
         .nrIfacesMax = 1,
         .nrIfaces = 0,
@@ -769,7 +786,8 @@ swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, i
     wld_nl80211_ifaceInfo_t ifaceInfo;
     swl_rc_ne rc = wld_nl80211_getInterfaceInfo(state, ifIndex, &ifaceInfo);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get radio main iface info");
-    *dbm = ifaceInfo.txPower;
+    //return iface txpower or primary link txpower
+    *dbm = ((!ifaceInfo.txPower) && (ifaceInfo.nMloLinks > 0)) ? ifaceInfo.mloLinks[0].txPower : ifaceInfo.txPower;
     return rc;
 }
 
@@ -1144,7 +1162,75 @@ swl_rc_ne wld_nl80211_getChanSpec(wld_nl80211_state_t* state, uint32_t ifIndex, 
     wld_nl80211_ifaceInfo_t ifaceInfo;
     swl_rc_ne rc = wld_nl80211_getInterfaceInfo(state, ifIndex, &ifaceInfo);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "no iface info");
-    rc = wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo);
+    //return iface chanspec or primary link chanspec
+    wld_nl80211_chanSpec_t* pNlChspec = &ifaceInfo.chanSpec;
+    if((!pNlChspec->ctrlFreq) && (ifaceInfo.nMloLinks > 0)) {
+        pNlChspec = &ifaceInfo.mloLinks[0].chanSpec;
+    }
+    rc = wld_nl80211_chanSpecNlToSwl(pChanSpec, pNlChspec);
+    return rc;
+}
+
+const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_fetchIfaceMloLinkByMac(wld_nl80211_ifaceInfo_t* pIface, swl_macBin_t* pLinkMac) {
+    ASSERTS_NOT_NULL(pIface, NULL, ME, "NULL");
+    ASSERTS_NOT_NULL(pLinkMac, NULL, ME, "NULL");
+    ASSERTS_FALSE(swl_mac_binIsNull(pLinkMac), NULL, ME, "invalid linkMac");
+    for(uint32_t i = 0; i < pIface->nMloLinks; i++) {
+        const wld_nl80211_ifaceMloLinkInfo_t* pLink = &pIface->mloLinks[i];
+        if(swl_mac_binMatches(&pLink->link.linkMac, pLinkMac)) {
+            return pLink;
+        }
+    }
+    return NULL;
+}
+
+const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_fetchIfaceMloLinkById(wld_nl80211_ifaceInfo_t* pIface, int32_t linkId) {
+    ASSERTS_NOT_NULL(pIface, NULL, ME, "NULL");
+    ASSERTS_TRUE(linkId >= 0, NULL, ME, "invalid linkId");
+    for(uint32_t i = 0; i < pIface->nMloLinks; i++) {
+        const wld_nl80211_ifaceMloLinkInfo_t* pLink = &pIface->mloLinks[i];
+        if(pLink->link.linkId == linkId) {
+            return pLink;
+        }
+    }
+    return NULL;
+}
+
+const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_getIfaceMloLinkAtPos(wld_nl80211_ifaceInfo_t* pIface, uint32_t linkPos) {
+    ASSERTS_NOT_NULL(pIface, NULL, ME, "NULL");
+    ASSERTS_TRUE((pIface->nMloLinks > 0) && (linkPos < pIface->nMloLinks), NULL, ME, "no mlo Link");
+    return &pIface->mloLinks[linkPos];
+}
+
+swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macBin_t* pLinkMac, wld_nl80211_ifaceInfo_t* pIface) {
+    if(pIface != NULL) {
+        memset(pIface, 0, sizeof(*pIface));
+    }
+    ASSERT_NOT_NULL(pLinkMac, SWL_RC_INVALID_PARAM, ME, "NULL mac");
+    ASSERTI_FALSE(swl_mac_binIsNull(pLinkMac), SWL_RC_INVALID_PARAM, ME, "empty mac");
+    struct getWirelessIfacesData_s requestData = {0, 0, NULL};
+    swl_rc_ne rc = wld_nl80211_getInterfacesList(state, &requestData.pIfaces, requestData.nrIfacesMax, &requestData.nrIfaces);
+    if(rc >= SWL_RC_OK) {
+        uint32_t i;
+        for(i = 0; i < requestData.nrIfaces; i++) {
+            wld_nl80211_ifaceInfo_t* pTmpIface = &requestData.pIfaces[i];
+            const wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo = wld_nl80211_fetchIfaceMloLinkByMac(pTmpIface, pLinkMac);
+            if(pLinkInfo == NULL) {
+                continue;
+            }
+            if(pIface != NULL) {
+                memcpy(pIface, pTmpIface, sizeof(*pIface));
+                //copy current link rad info to mld
+                pIface->chanSpec = pLinkInfo->chanSpec;
+                pIface->txPower = pLinkInfo->txPower;
+            }
+            break;
+        }
+        if(i == requestData.nrIfaces) {
+            rc = SWL_RC_NOT_AVAILABLE;
+        }
+    }
+    W_SWL_FREE(requestData.pIfaces);
     return rc;
 }
 

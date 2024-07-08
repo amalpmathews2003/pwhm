@@ -100,18 +100,40 @@ typedef struct {
 } wld_nl80211_chanSpec_t;
 
 typedef struct {
-    uint32_t wiphy;                  //wiphy id
-    uint32_t ifIndex;                //net dev index
-    uint64_t wDevId;                 //nl80211 wireless device id
-    char name[IFNAMSIZ];             //net dev name
-    swl_macBin_t mac;                //interface mac
-    bool isMain;                     //flag when interface is main (primVap, mainEP)
-    bool isAp;                       //flag when interface is accesspoint
-    bool isSta;                      //flag when interface is endpoint
-    bool use4Mac;                    //enabled 4mac mode
+    int32_t linkId;                  //MLO link Id (>= 0)
+    swl_macBin_t linkMac;            //MLO link mac
+    swl_macBin_t mldMac;             //MLD mac
+} wld_nl80211_mloLinkInfo_t;
+
+typedef struct {
+    wld_nl80211_mloLinkInfo_t link;  //MLO link info
+    uint32_t linkPos;                //MLO link position in mlo links list
+    uint32_t mldIfIndex;             //MLD iface net dev index
     wld_nl80211_chanSpec_t chanSpec; //channel info
     uint32_t txPower;                //current tx power in dbm
-    char ssid[SSID_NAME_LEN];        //bss/ess ssid
+} wld_nl80211_ifaceMloLinkInfo_t;
+
+/*
+ * define max num of MLO links: to avoid dyn allocation of links list
+ * But it is usually equal to max distinct radio links
+ */
+#define WLD_NL80211_MAX_MLO_LINKS 4
+typedef struct {
+    uint32_t wiphy;                                                     //wiphy id
+    uint32_t ifIndex;                                                   //net dev index
+    uint64_t wDevId;                                                    //nl80211 wireless device id
+    char name[IFNAMSIZ];                                                //net dev name
+    swl_macBin_t mac;                                                   //interface mac
+    bool isMain;                                                        //flag when interface is main (primVap, mainEP)
+    bool isAp;                                                          //flag when interface is accesspoint
+    bool isSta;                                                         //flag when interface is endpoint
+    bool use4Mac;                                                       //enabled 4mac mode
+    wld_nl80211_chanSpec_t chanSpec;                                    //channel info
+    uint32_t txPower;                                                   //current tx power in dbm
+    char ssid[SSID_NAME_LEN];                                           //bss/ess ssid
+
+    uint32_t nMloLinks;                                                 //number of valid MLO links in this interface
+    wld_nl80211_ifaceMloLinkInfo_t mloLinks[WLD_NL80211_MAX_MLO_LINKS]; //array of iface MLO links info
 } wld_nl80211_ifaceInfo_t;
 
 typedef struct {

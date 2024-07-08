@@ -75,4 +75,16 @@ swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtF
                                                 uint32_t flags);
 swl_rc_ne wld_ep_nl80211_setSta(T_EndPoint* pEP);
 swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac);
+
+/*
+ * @brief looks for relative STA MLD interface including MLO link matching EP mac address
+ *
+ * @param pEP pointer to endpoint context
+ * @param pMldIfaceInfo pointer to mld interface context
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ep_nl80211_findMldIfaceInfo(T_EndPoint* pEP, wld_nl80211_ifaceInfo_t* pMldIfaceInfo);
+
 #endif /* INCLUDE_WLD_WLD_EP_NL80211_H_ */

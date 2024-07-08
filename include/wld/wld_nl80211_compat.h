@@ -280,22 +280,20 @@
 //defined since kernel >= 5.17
 #define NL80211_ATTR_RADAR_BACKGROUND NL80211_ATTR(308)
 
-/* defined since kernel >= 5.17-rc3 */
+/* defined since kernel >= 5.18 */
 #define NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MAC 8
 #define NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PHY 9
 #define NL80211_BAND_IFTYPE_ATTR_EHT_CAP_MCS_SET 10
 #define NL80211_BAND_IFTYPE_ATTR_EHT_CAP_PPE 11
 #define NL80211_CHAN_WIDTH_320 13
 
-/* defined since kernel >= 5.19-rc1 */
+//defined since kernel >= 6.0
+#define NL80211_ATTR_MLO_LINKS NL80211_ATTR(312)
+#define NL80211_ATTR_MLO_LINK_ID NL80211_ATTR(313)
+#define NL80211_ATTR_MLD_ADDR NL80211_ATTR(314)
 #define NL80211_ATTR_MLO_SUPPORT NL80211_ATTR(315)
-
-/* defined since kernel >= 5.19-rc6 */
 #define NL80211_ATTR_EML_CAPABILITY NL80211_ATTR(317)
 #define NL80211_ATTR_MLD_CAPA_AND_OPS NL80211_ATTR(318)
-
-//defined since kernel >= 6.0
-#define NL80211_ATTR_MLO_LINK_ID NL80211_ATTR(313)
 
 //defined since kernel > 6.9
 #define NL80211_CMD_STOP_BGRADAR_DETECT ((NL80211_CMD_MAX >= 157) ? 157 : NL80211_CMD(155))
