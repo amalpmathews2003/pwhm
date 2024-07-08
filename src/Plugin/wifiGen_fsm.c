@@ -868,6 +868,10 @@ static void s_vapStatusUpdateCb(wld_vap_status_change_event_t* event) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     T_SSID* pSSID = pAP->pSSID;
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
+
+
     if((pAP->status == APSTI_ENABLED) && (pSSID->status == RST_UP)) {
         wifiGen_vap_postUpActions(pAP);
     } else if(pSSID->status == RST_DOWN) {
