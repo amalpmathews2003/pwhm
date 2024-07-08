@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.18 - 2024-07-08(14:26:33 +0000)
+
+### Other
+
+- - Extra radio in data model
+
 ## Release v6.28.17 - 2024-07-08(13:30:34 +0000)
 
 ### Other
