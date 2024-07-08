@@ -185,6 +185,54 @@ swl_rc_ne wld_nl80211_parseMgmtFrameTxStatus(struct nlattr* tb[], wld_nl80211_mg
     return SWL_RC_OK;
 }
 
+static swl_rc_ne s_parseMloLink(struct nlattr* tb[], wld_nl80211_mloLinkInfo_t* pMloLink) {
+    ASSERTS_NOT_NULL(pMloLink, SWL_RC_INVALID_PARAM, ME, "NULL");
+    memset(pMloLink, 0, sizeof(*pMloLink));
+    pMloLink->linkId = -1;
+    ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(tb[NL80211_ATTR_MLO_LINK_ID], SWL_RC_ERROR, ME, "no link id attrib");
+    pMloLink->linkId = nla_get_u8(tb[NL80211_ATTR_MLO_LINK_ID]);
+    NLA_GET_DATA(pMloLink->linkMac.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
+    NLA_GET_DATA(pMloLink->mldMac.bMac, tb[NL80211_ATTR_MLD_ADDR], SWL_MAC_BIN_LEN);
+    return SWL_RC_OK;
+}
+
+static uint32_t s_parseMloLinks(struct nlattr* tb[], wld_nl80211_ifaceMloLinkInfo_t pIfaceMloLinks[], uint32_t maxLinks) {
+    uint32_t nMloLinks = 0;
+    ASSERTS_NOT_NULL(tb, nMloLinks, ME, "NULL");
+    ASSERTS_NOT_NULL(pIfaceMloLinks, nMloLinks, ME, "null target");
+    ASSERTS_TRUE(maxLinks > 0, nMloLinks, ME, "empty target");
+    memset(pIfaceMloLinks, 0, maxLinks * sizeof(*pIfaceMloLinks));
+    ASSERTS_NOT_NULL(tb[NL80211_ATTR_MLO_LINKS], nMloLinks, ME, "No attr to parse");
+    int rem = 0;
+    struct nlattr* list;
+    struct nlattr* link[NL80211_ATTR_MAX + 1];
+    nla_for_each_nested(list, tb[NL80211_ATTR_MLO_LINKS], rem) {
+        nla_parse_nested(link, NL80211_ATTR_MAX, list, NULL);
+        wld_nl80211_mloLinkInfo_t linkInfo;
+        if((s_parseMloLink(link, &linkInfo) < SWL_RC_OK) || (linkInfo.linkId < 0) || (swl_mac_binIsNull(&linkInfo.linkMac))) {
+            SAH_TRACEZ_WARNING(ME, "skip link %d: missing info", linkInfo.linkId);
+            continue;
+        }
+        if(nMloLinks >= maxLinks) {
+            SAH_TRACEZ_WARNING(ME, "skip linkId %d: nlinks exceeds max %d", linkInfo.linkId, maxLinks);
+            continue;
+        }
+        if(swl_mac_binIsNull(&linkInfo.mldMac)) {
+            NLA_GET_DATA(linkInfo.mldMac.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
+        }
+        wld_nl80211_ifaceMloLinkInfo_t* pIfaceLinkInfo = &pIfaceMloLinks[nMloLinks];
+        pIfaceLinkInfo->link = linkInfo;
+        pIfaceLinkInfo->linkPos = nMloLinks;
+        pIfaceLinkInfo->mldIfIndex = wld_nl80211_getIfIndex(tb);
+        wld_nl80211_parseChanSpec(link, &pIfaceLinkInfo->chanSpec);
+        NLA_GET_VAL(pIfaceLinkInfo->txPower, nla_get_u32, link[NL80211_ATTR_WIPHY_TX_POWER_LEVEL]);
+        pIfaceLinkInfo->txPower /= 100;
+        nMloLinks++;
+    }
+    return nMloLinks;
+}
+
 swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceInfo_t* pWlIface) {
     ASSERT_NOT_NULL(pWlIface, SWL_RC_INVALID_PARAM, ME, "NULL");
     memset(pWlIface, 0, sizeof(*pWlIface));
@@ -206,6 +254,7 @@ swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceI
     pWlIface->txPower /= 100;
     NLA_GET_VAL(pWlIface->use4Mac, nla_get_u8, tb[NL80211_ATTR_4ADDR]);
     NLA_GET_DATA(pWlIface->ssid, tb[NL80211_ATTR_SSID], (sizeof(pWlIface->ssid) - 1));
+    pWlIface->nMloLinks = s_parseMloLinks(tb, pWlIface->mloLinks, SWL_ARRAY_SIZE(pWlIface->mloLinks));
     return SWL_RC_OK;
 }
 

@@ -111,6 +111,18 @@ swl_rc_ne wld_nl80211_dumpIfaceInfo(wld_nl80211_ifaceInfo_t* pIfaceInfo, amxc_va
     amxc_var_add_key(uint32_t, pMap, "freq", pIfaceInfo->chanSpec.ctrlFreq);
     amxc_var_add_key(uint32_t, pMap, "bw", pIfaceInfo->chanSpec.chanWidth);
     amxc_var_add_key(uint32_t, pMap, "txPwr", pIfaceInfo->txPower);
+    amxc_var_add_key(uint32_t, pMap, "nMloLinks", pIfaceInfo->nMloLinks);
+    amxc_var_t* mloLinksList = amxc_var_add_key(amxc_llist_t, pMap, "mloLinks", NULL);
+    for(uint32_t i = 0; i < pIfaceInfo->nMloLinks; i++) {
+        wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo = &pIfaceInfo->mloLinks[i];
+        amxc_var_t* mloLinkMap = amxc_var_add(amxc_htable_t, mloLinksList, NULL);
+        amxc_var_add_key(uint8_t, mloLinkMap, "linkId", pLinkInfo->link.linkId);
+        swl_mac_binToChar(&macChar, &pLinkInfo->link.linkMac);
+        amxc_var_add_key(cstring_t, mloLinkMap, "linkMac", macChar.cMac);
+        amxc_var_add_key(uint32_t, mloLinkMap, "freq", pLinkInfo->chanSpec.ctrlFreq);
+        amxc_var_add_key(uint32_t, mloLinkMap, "bw", pLinkInfo->chanSpec.chanWidth);
+        amxc_var_add_key(uint32_t, mloLinkMap, "txPwr", pLinkInfo->txPower);
+    }
     if(retMap) {
         s_dumpMap(pMap);
     } else {

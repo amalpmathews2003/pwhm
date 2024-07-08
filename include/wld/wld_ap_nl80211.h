@@ -230,4 +230,15 @@ swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mg
  */
 swl_rc_ne wld_ap_nl80211_registerFrame(T_AccessPoint* pAP, uint16_t type, const char* pattern, size_t patternLen);
 
+/*
+ * @brief looks for relative AP MLD interface including MLO link matching AP mac address
+ *
+ * @param pAP pointer to accesspoint context
+ * @param pMldIfaceInfo pointer to mld interface context
+ *
+ * @return SWL_RC_OK on success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_ap_nl80211_findMldIfaceInfo(T_AccessPoint* pAP, wld_nl80211_ifaceInfo_t* pMldIfaceInfo);
+
 #endif /* INCLUDE_WLD_WLD_AP_NL80211_H_ */

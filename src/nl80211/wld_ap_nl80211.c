@@ -90,6 +90,14 @@ swl_rc_ne wld_ap_nl80211_delEvtListener(T_AccessPoint* pAP) {
     return wld_nl80211_delEvtListener(&pAP->nl80211Listener);
 }
 
+swl_rc_ne wld_ap_nl80211_findMldIfaceInfo(T_AccessPoint* pAP, wld_nl80211_ifaceInfo_t* pMldIfaceInfo) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_STATE, ME, "No ssid");
+    swl_macBin_t* pLinkMac = (swl_macBin_t*) pSSID->MACAddress;
+    return wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_getSharedState(), pLinkMac, pMldIfaceInfo);
+}
+
 swl_rc_ne wld_ap_nl80211_getInterfaceInfo(T_AccessPoint* pAP, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     return wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pAP->index, pIfaceInfo);

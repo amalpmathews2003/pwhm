@@ -91,3 +91,11 @@ swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac) {
     return wld_nl80211_setInterfaceUse4Mac(wld_nl80211_getSharedState(), pEP->index, use4Mac);
 }
 
+swl_rc_ne wld_ep_nl80211_findMldIfaceInfo(T_EndPoint* pEP, wld_nl80211_ifaceInfo_t* pMldIfaceInfo) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_SSID* pSSID = pEP->pSSID;
+    ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_STATE, ME, "No ssid");
+    swl_macBin_t* pLinkMac = (swl_macBin_t*) pSSID->MACAddress;
+    return wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_getSharedState(), pLinkMac, pMldIfaceInfo);
+}
+

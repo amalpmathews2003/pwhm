@@ -140,6 +140,21 @@ const wld_fsmMngr_t* wld_nl80211_getFsmMngr();
 vendor_t* wld_nl80211_registerVendor(T_CWLD_FUNC_TABLE* fta);
 
 /*
+ * @brief get all available nl80211 interfaces in row,
+ * sorted per wiphy, and by increasing net dev index
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param pWlIfaces (output) pointer to wl ifaces array, to be freed by the caller
+ * @param maxWlIfaces max number of interfaces to retrieve
+ * @param pNrWlIfaces (output) pointer to resulting count of wl interfaces
+ *
+ * @return SWL_RC_OK in case of success
+ *         SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getInterfacesList(wld_nl80211_state_t* state, wld_nl80211_ifaceInfo_t** pWlIfaces, uint32_t maxWlIfaces, uint32_t* pNrWlIfaces);
+
+/*
  * @brief get all available nl80211 interfaces sorted per wiphy, and by increasing net dev index, in 2D array per wiphy
  * (Synchronous api)
  *
@@ -678,5 +693,47 @@ swl_rc_ne wld_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_getChanSpec(wld_nl80211_state_t* state, uint32_t ifIndex, swl_chanspec_t* pChanSpec);
+
+/*
+ * @brief seeking by mac for interface MLO link info into included interface MLO links
+ *
+ * @param pIface pointer to input mld interface info
+ * @param pLinkMac link mac address
+ *
+ * @return pointer to found interface MLO link info, NULL otherwise
+ */
+const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_fetchIfaceMloLinkByMac(wld_nl80211_ifaceInfo_t* pIface, swl_macBin_t* pLinkMac);
+
+/*
+ * @brief seeking by linkId for interface MLO link info into included interface MLO links
+ *
+ * @param pIface pointer to input mld interface info
+ * @param linkId MLO link id to look for
+ *
+ * @return pointer to found interface MLO link info, NULL otherwise
+ */
+const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_fetchIfaceMloLinkById(wld_nl80211_ifaceInfo_t* pIface, int32_t linkId);
+
+/*
+ * @brief get by position the interface MLO link info
+ *
+ * @param pIface pointer to input mld interface info
+ * @param linkPos link position (0: primary, 1..X: secondaryX..)
+ *
+ * @return pointer to found interface MLO link info, NULL otherwise
+ */
+const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_getIfaceMloLinkAtPos(wld_nl80211_ifaceInfo_t* pIface, uint32_t linkPos);
+
+/*
+ * @brief find mld interface hosting specific mlo link mac
+ *
+ * @param state nl80211 socket manager context
+ * @param pLinkMac link mac address
+ * @param pIface (output) pointer to resulting mld interface info
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macBin_t* pLinkMac, wld_nl80211_ifaceInfo_t* pIface);
 
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */
