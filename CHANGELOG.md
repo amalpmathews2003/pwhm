@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.17 - 2024-07-08(13:30:34 +0000)
+
+### Other
+
+- - WiFi FSM toggling of Vendor FSM
+
 ## Release v6.28.16 - 2024-07-08(10:45:17 +0000)
 
 ### Other
