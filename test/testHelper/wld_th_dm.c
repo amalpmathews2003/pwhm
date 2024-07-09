@@ -199,3 +199,10 @@ void wld_th_dm_destroy(wld_th_dm_t* dm) {
 void wld_th_dm_handleEvents(wld_th_dm_t* dm _UNUSED) {
     assert_non_null(dm);
 }
+
+void wld_th_dm_clearFsm(wld_th_dm_t* dm) {
+    for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
+        wld_th_rad_clearCommits(dm->bandList[i].rad);
+        wld_th_vap_clearCommits(dm->bandList[i].vapPriv);
+    }
+}

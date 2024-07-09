@@ -3877,8 +3877,10 @@ void wld_rad_increment_counter(T_Radio* pRad, T_EventCounterList* counters, uint
     ASSERTI_TRUE(index < counters->nrCounters, , ME, "VALUE");
     T_EventCounter* value = &(counters->values[index]);
     value->counter++;
-    const char* oldInfo = amxd_object_get_cstring_t(value->object, "Info", NULL);
+
+    char* oldInfo = amxd_object_get_cstring_t(value->object, "Info", NULL);
     SAH_TRACEZ_WARNING(ME, "EVENT %s: %s : %u : %s (was %s)", pRad->Name, counters->names[index], value->counter, info, oldInfo);
+    free(oldInfo);
 
     value->lastEventTime = swl_time_getMonoSec();
 
@@ -4085,6 +4087,7 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
                         swl_typeTimeMono_toBuf32(pRad->changeInfo.lastStatusChange).buf);
     }
 
+    SAH_TRACEZ_ERROR(ME, "%s update %u -> %u", pRad->Name, oldStatus, pRad->status);
     if(oldStatus != pRad->status) {
         pRad->changeInfo.lastStatusChange = swl_time_getMonoSec();
         pRad->changeInfo.nrStatusChanges++;
@@ -4373,6 +4376,9 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         amxc_var_add_key(cstring_t, retval, "FSM_BitArray", buffer);
         snprintf(buffer, sizeof(buffer), "0x%08lx - 0x%08lx", pR->fsmRad.FSM_AC_BitActionArray[0], pR->fsmRad.FSM_AC_BitActionArray[1]);
         amxc_var_add_key(cstring_t, retval, "FSM_AC_BitArray", buffer);
+        amxc_var_add_key(uint32_t, retval, "nrStart", pR->fsmStats.nrStarts);
+        amxc_var_add_key(uint32_t, retval, "nrRunStarts", pR->fsmStats.nrRunStarts);
+        amxc_var_add_key(uint32_t, retval, "nrFinish", pR->fsmStats.nrFinish);
     } else if(swl_str_matchesIgnoreCase(feature, "getTxPwrPct")) {
         int32_t txPwrPct = -1;
         swl_rc_ne ret = s_getTxPowerPct(pR, &txPwrPct);

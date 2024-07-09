@@ -59,93 +59,40 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#include <sys/signalfd.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/stat.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
+#ifndef SRC_TEST_TESTHELPER_WLD_TH_FSM_H_
+#define SRC_TEST_TESTHELPER_WLD_TH_FSM_H_
 
+#define WLD_TH_FSM_BITS 2
 
-#include "wld.h"
-#include "wld_util.h"
-#include "wld_th_ep.h"
-#include "wld_th_mockVendor.h"
-#include "test-toolbox/ttb_mockTimer.h"
+#include "wld/wld.h"
+#include "wld/wld_types.h"
 
-#define ME "TH_EP"
+extern wld_fsmMngr_action_t wld_th_fsm_actions[];
+extern wld_fsmMngr_t wld_th_fsm_mngr;
 
-T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, T_Radio* radio, const char* name) {
-    assert_non_null(bus_ctx);
-    assert_non_null(mockVendor);
-    assert_non_null(radio);
-    assert_non_null(name);
+typedef enum {
+    WLD_TH_FSM_EP_DISCONNECT_AP,
+    WLD_TH_FSM_SET_VAP_ENABLE_DOWN,
+    WLD_TH_FSM_SET_RAD_ENABLE_DOWN,
+    WLD_TH_FSM_SET_IWPRIV_CMDS,
+    WLD_TH_FSM_SET_RAD_ENABLE,
+    WLD_TH_FSM_SET_VAP_ENABLE,
+    WLD_TH_FSM_SET_EP_ENABLE,
+    WLD_TH_FSM_MAX
+} wld_th_fsmStates_e;
 
-    amxc_var_t args;
-    amxc_var_init(&args);
+#define M_WLD_TH_FSM_EP_DISCONNECT_AP (1 << WLD_TH_FSM_EP_DISCONNECT_AP)
+#define M_WLD_TH_FSM_SET_VAP_ENABLE_DOWN (1 << WLD_TH_FSM_SET_VAP_ENABLE_DOWN)
+#define M_WLD_TH_FSM_SET_RAD_ENABLE_DOWN (1 << WLD_TH_FSM_SET_RAD_ENABLE_DOWN)
+#define M_WLD_TH_FSM_STOP_HOSTAPD (1 << WLD_TH_FSM_STOP_HOSTAPD)
+#define M_WLD_TH_FSM_SET_IWPRIV_CMDS (1 << WLD_TH_FSM_SET_IWPRIV_CMDS)
+#define M_WLD_TH_FSM_SET_RAD_ENABLE (1 << WLD_TH_FSM_SET_RAD_ENABLE)
+#define M_WLD_TH_FSM_START_HOSTAPD (1 << WLD_TH_FSM_START_HOSTAPD)
+#define M_WLD_TH_FSM_SET_VAP_ENABLE (1 << WLD_TH_FSM_SET_VAP_ENABLE)
+#define M_WLD_TH_FSM_SET_EP_ENABLE (1 << WLD_TH_FSM_SET_EP_ENABLE)
 
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &args, "radio", radio->Name);
-    amxc_var_add_key(cstring_t, &args, "endpoint", name);
+void whm_th_fsm_useMgr(bool testFsm);
+void whm_th_fsm_doInit(vendor_t* vendor);
 
-    assert_int_equal(amxb_call(bus_ctx, "WiFi.", "addEndPointIntf", &args, NULL, 5), AMXB_STATUS_OK);
-    amxc_var_clean(&args);
-
-    T_EndPoint* ep = wld_getEndpointByAlias(name);
-    return ep;
-}
-
-void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name) {
-    assert_non_null(bus_ctx);
-    assert_non_null(mockVendor);
-    assert_non_null(name);
-    amxc_var_t args;
-    amxc_var_init(&args);
-
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &args, "endpoint", name);
-
-    assert_int_equal(amxb_call(bus_ctx, "WiFi.", "delEndPointIntf", &args, NULL, 5), AMXB_STATUS_OK);
-    amxc_var_clean(&args);
-}
-
-amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name) {
-    assert_non_null(ep);
-    assert_non_null(name);
-    amxd_object_t* epObj = ep->pBus;
-    assert_non_null(epObj);
-    amxd_object_t* profilesObj = amxd_object_findf(epObj, "Profile");
-    amxd_trans_t trans;
-    swl_object_prepareTransaction(&trans, profilesObj);
-    amxd_trans_add_inst(&trans, 0, name);
-    assert_int_equal(swl_object_finalizeTransactionOnLocalDm(&trans), amxd_status_ok);
-    ttb_mockTimer_goToFutureMs(1);
-    return amxd_object_get_instance(profilesObj, name, 0);
-}
-
-void wld_th_ep_doFsmClean(T_EndPoint* pEP) {
-    assert_non_null(pEP);
-    clearAllBitsLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW);
-}
-
-void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit) {
-    assert_non_null(pEP);
-    if(commit) {
-        swl_typeUInt8_commitObjectParam(pEP->pBus, "Enable", enable);
-        ttb_mockTimer_goToFutureMs(1000);
-    } else {
-        swl_typeUInt8_toObjectParam(pEP->pBus, "Enable", enable);
-    }
-}
-
-swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP _UNUSED, T_EndPointStats* stats) {
-    assert_non_null(pEP);
-    stats->txbyte = 12991;
-    stats->txPackets = 65;
-    stats->assocCaps.currentSecurity = SWL_SECURITY_APMODE_WPA2_P;
-    return SWL_RC_OK;
-}
+#endif /* SRC_TEST_TESTHELPER_WLD_TH_FSM_H_ */

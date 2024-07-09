@@ -78,6 +78,9 @@
 #include "wld_assocdev.h"
 #include "wld_th_mockVendor.h"
 #include "test-toolbox/ttb_mockTimer.h"
+#include "test-toolbox/ttb.h"
+
+#define ME "thVAP"
 
 
 int wld_th_vap_vendorCb_addVapIf(T_Radio* rad _UNUSED, char* vap _UNUSED, int bufsize _UNUSED) {
@@ -237,9 +240,30 @@ int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set) {
     int ret = enable;
     printf("VAP:%s State:%d-->%d - Set:%d\n", pAP->alias, pAP->enable, enable, set);
 
-    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, 1);
+    if((enable == 0) && (set == SET)) {
+        setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, WLD_TH_FSM_SET_VAP_ENABLE_DOWN);
+    } else {
+        setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, WLD_TH_FSM_SET_VAP_ENABLE);
+    }
 
     return ret;
+}
+
+
+int wld_th_vap_ssid(T_AccessPoint* pAP, char* buf, int bufsize, int set) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    if(set & SET) {
+        if(pSSID->SSID != buf) {
+            swl_str_copy(pSSID->SSID, sizeof(pSSID->SSID), buf);
+            SAH_TRACEZ_INFO(ME, "%s - %s", pAP->alias, pSSID->SSID);
+        }
+    } else {
+        swl_str_copy(buf, bufsize, pSSID->SSID);
+    }
+    return SWL_RC_OK;
 }
 
 void wld_th_vap_doFsmClean(T_AccessPoint* pAP) {
@@ -250,4 +274,42 @@ void wld_th_vap_doFsmClean(T_AccessPoint* pAP) {
 wld_th_vap_vendorData_t* wld_th_vap_getVendorData(T_AccessPoint* pAP) {
     assert_non_null(pAP);
     return (wld_th_vap_vendorData_t*) pAP->vendorData;
+}
+
+
+void wld_th_vap_clearCommits(T_AccessPoint* pAP) {
+    wld_th_vap_vendorData_t* vd = wld_th_vap_getVendorData(pAP);
+    ttb_assert_non_null(vd);
+
+    for(uint32_t i = 0; i < WLD_TH_FSM_MAX; i++) {
+        vd->fsmCommits[i] = 0;
+    }
+}
+void wld_th_vap_checkCommitAll(T_AccessPoint* pAP) {
+    wld_th_vap_vendorData_t* vd = wld_th_vap_getVendorData(pAP);
+    ttb_assert_non_null(vd);
+
+    for(uint32_t i = 0; i < WLD_TH_FSM_MAX; i++) {
+        ttb_assert_addPrint("Check %u", i);
+        if(wld_th_fsm_actions[i].doVapFsmAction != NULL) {
+            ttb_assert_int_eq(vd->fsmCommits[i], 1);
+        } else {
+            ttb_assert_int_eq(vd->fsmCommits[i], 0);
+        }
+        ttb_assert_removeLastPrint();
+    }
+}
+void wld_th_vap_checkCommitted(T_AccessPoint* pAP, swl_mask_m commitMask) {
+    wld_th_vap_vendorData_t* vd = wld_th_vap_getVendorData(pAP);
+    ttb_assert_non_null(vd);
+
+    for(uint32_t i = 0; i < WLD_TH_FSM_MAX; i++) {
+        ttb_assert_addPrint("Check %u", i);
+        if((wld_th_fsm_actions[i].doVapFsmAction != NULL) && SWL_BIT_IS_SET(commitMask, i)) {
+            ttb_assert_int_eq(vd->fsmCommits[i], 1);
+        } else {
+            ttb_assert_int_eq(vd->fsmCommits[i], 0);
+        }
+        ttb_assert_removeLastPrint();
+    }
 }

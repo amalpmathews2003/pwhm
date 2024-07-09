@@ -237,8 +237,6 @@ static void test_sensing_enable(void** state _UNUSED) {
 
         sensing_enable(pRad, radObj, sensingVendorData);
 
-        // Free memory
-        sensingFreeVendorData(pRad);
     }
 
 }
@@ -333,9 +331,6 @@ static void test_sensing_start_stop(void** state _UNUSED) {
             csiClientObj = getCsiClientChildObject(bandTab[tabIndex], csiClientListIndex + 1);
             assert_null(csiClientObj);
         }
-
-        // Free memory
-        sensingFreeVendorData(pRad);
     }
 }
 

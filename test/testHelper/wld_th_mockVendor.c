@@ -68,8 +68,11 @@
 #include "wld_eventing.h"
 #include "Plugin/wifiGen_vap.h"
 #include "wld_th_sensing.h"
+#include "wld_th_fsm.h"
 
 static T_CWLD_FUNC_TABLE s_functionTable = {
+    .mfn_wrad_create_hook = wld_th_rad_create_hook,
+    .mfn_wrad_destroy_hook = wld_th_rad_destroy_hook,
     .mfn_wrad_supports = wld_th_radio_vendorCb_supports,
     .mfn_wrad_addendpointif = wld_th_radio_vendorCb_addEndpointIf,
     .mfn_wrad_delendpointif = wld_th_radio_vendorCb_delEndpointIf,
@@ -94,6 +97,7 @@ static T_CWLD_FUNC_TABLE s_functionTable = {
     .mfn_wvap_enable = wld_th_vap_enable,
     .mfn_wvap_get_station_stats = wld_th_vap_getStationStats,
     .mfn_wvap_status = wld_th_vap_status,
+    .mfn_wvap_ssid = wld_th_vap_ssid,
     .mfn_wendpoint_stats = wld_th_ep_getStats,
 };
 
@@ -123,6 +127,7 @@ vendor_t* wld_th_mockVendor_register(wld_th_mockVendor_t* mockVendor) {
 
     vendor_t* vendor = wld_registerVendor(wld_th_mockVendor_name(mockVendor), &s_functionTable);
     mockVendor->vendor = vendor;
+    whm_th_fsm_doInit(vendor);
     return vendor;
 }
 

@@ -76,6 +76,8 @@
 #include <amxo/amxo_save.h>
 #include <amxb/amxb.h>
 
+#include "wld_th_fsm.h"
+
 typedef struct {
     swl_llist_iterator_t it;
     char name[32];
@@ -93,11 +95,28 @@ typedef struct {
     swl_mcs_legacyIndex_m supportedDataTransmitRates;
 } wld_th_radCap_t;
 
+
+typedef struct {
+    bool csiEnable;
+    swl_macChar_t macAddr;
+    uint32_t monitorInterval;
+    uint32_t maxClientsNbrs;
+    uint32_t maxMonitorInterval;
+    wld_csiState_t csimonState;
+} wld_th_rad_sensing_vendorData_t;
+
+typedef struct {
+    wld_th_rad_sensing_vendorData_t sensingData;
+    uint32_t fsmCommits[WLD_TH_FSM_MAX];
+} wld_th_rad_vendorData_t;
+
 T_Radio* wld_th_radio_create(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, const char* name);
 
 int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad, char* endpoint, int bufsize);
 int wld_th_radio_vendorCb_delEndpointIf(T_Radio* radio, char* endpoint);
 int wld_th_radio_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
+int wld_th_rad_create_hook(T_Radio* pRad);
+void wld_th_rad_destroy_hook(T_Radio* pRad);
 void wld_th_radio_addCustomCap(wld_th_radCap_t* cap);
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf, int bufsize);
 int wld_th_mfn_wrad_airtimefairness(T_Radio* rad, int val, int set);
@@ -112,4 +131,9 @@ void wld_th_rad_setRadEnable(T_Radio* rad, bool enable, bool commit);
 int wld_th_rad_startScan(T_Radio* rad);
 int wld_th_rad_getScanResults(T_Radio* rad, wld_scanResults_t* results);
 int wld_th_rad_setChanspec(T_Radio* rad, bool direct);
+
+wld_th_rad_vendorData_t* wld_th_rad_getVendorData(T_Radio* rad);
+void wld_th_rad_clearCommits(T_Radio* rad);
+void wld_th_rad_checkCommitAll(T_Radio* rad);
+void wld_th_rad_checkCommitted(T_Radio* rad, swl_mask_m commitMask);
 #endif

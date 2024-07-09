@@ -103,5 +103,6 @@ bool wld_th_dm_initFreq(wld_th_dm_t* dm, swl_freqBand_m initMask);
 void wld_th_dm_destroy(wld_th_dm_t* dm);
 
 void wld_th_dm_handleEvents(wld_th_dm_t* dm);
+void wld_th_dm_clearFsm(wld_th_dm_t* dm);
 
 #endif /* SRC_TEST_TESTHELPER_WLD_TH_DM_H_ */

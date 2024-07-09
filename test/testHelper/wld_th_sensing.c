@@ -61,6 +61,7 @@
 ****************************************************************************/
 
 #include "wld_th_vap.h"
+#include "wld_th_radio.h"
 #include "wld.h"
 #include "wld_accesspoint.h"
 #include "wld_radio.h"
@@ -71,21 +72,11 @@
 
 wld_th_rad_sensing_vendorData_t* sensingGetVendorData(T_Radio* pRad) {
     ttb_assert_non_null(pRad);
-    if(!pRad->vendorData) {
-        wld_th_rad_sensing_vendorData_t* vendorData = calloc(1, sizeof(wld_th_rad_sensing_vendorData_t));
-        ttb_assert_non_null(vendorData);
-        pRad->vendorData = vendorData;
-    }
-    return pRad->vendorData;
+    wld_th_rad_vendorData_t* vd = wld_th_rad_getVendorData(pRad);
+    ttb_assert_non_null(vd);
+    return &vd->sensingData;
 }
 
-void sensingFreeVendorData(T_Radio* pRad) {
-    ttb_assert_non_null(pRad);
-    if(pRad->vendorData) {
-        free(pRad->vendorData);
-        pRad->vendorData = NULL;
-    }
-}
 
 swl_rc_ne wld_th_rad_sensing_cmd(T_Radio* pRad) {
     ttb_assert_non_null(pRad);

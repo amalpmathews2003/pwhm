@@ -77,6 +77,8 @@
 #include "../testHelper/wld_th_dm.h"
 #include "swl/ttb/swl_ttb.h"
 
+#define ME "TST_RST"
+
 static wld_th_dm_t dm;
 
 static int s_setupSuite(void** state _UNUSED) {
@@ -92,8 +94,8 @@ static int s_teardownSuite(void** state _UNUSED) {
 static void s_performCheck(ttb_object_t* radObj, wld_status_changeInfo_t* targetData, const char* status) {
     char* odlStatus = NULL;
 
-    assert_true(swl_typeCharPtr_fromObjectParam(radObj, "Status", &odlStatus));
-    assert_string_equal(odlStatus, status);
+    ttb_assert_true(swl_typeCharPtr_fromObjectParam(radObj, "Status", &odlStatus));
+    ttb_assert_str_eq(odlStatus, status);
     free(odlStatus);
 
     swl_timeMono_t changeTime = 0;
@@ -168,7 +170,7 @@ static void s_updateSingleStatus(radioStatusTestState_t* state, bool enable, wld
 }
 
 static void s_updateStatus(radioStatusGlobalState_t* state, bool radEnable, wld_status_e radStatus, bool vapEnable, wld_status_e vapStatus, uint32_t line) {
-    printf("%u : update status rad %u %s / vap %u %s\n", line, radEnable, wld_status_str[radStatus], vapEnable, wld_status_str[vapStatus]);
+    SAH_TRACEZ_ERROR(ME, "%u : update status rad %u %s / vap %u %s", line, radEnable, wld_status_str[radStatus], vapEnable, wld_status_str[vapStatus]);
     s_updateSingleStatus(&state->radState, radEnable, radStatus);
     s_updateSingleStatus(&state->vapState, vapEnable, vapStatus);
 
@@ -264,6 +266,8 @@ static void test_radioStatus(void** state _UNUSED) {
 }
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
+    sahTraceOpen("testApp", TRACE_TYPE_STDERR);
+
     sahTraceSetLevel(TRACE_LEVEL_INFO);
     sahTraceAddZone(TRACE_LEVEL_APP_INFO, "ssid");
     const struct CMUnitTest tests[] = {

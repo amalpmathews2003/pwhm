@@ -572,6 +572,11 @@ typedef struct {
     uint32_t retryCount;                      //how many times fase has been retried.
 } T_FSM;
 
+typedef struct {
+    uint32_t nrStarts;                       // The number of time the FSM moved from IDLE to non IDLE
+    uint32_t nrRunStarts;                    // The number of times the FSM moved to "run" mode
+    uint32_t nrFinish;                       // The number of times the FSM moved to "run" mode
+} wld_fsmStats_t;
 
 typedef struct wld_apNeighbour {
     amxc_llist_it_t it;
@@ -1563,6 +1568,7 @@ struct WLD_RADIO {
 
     FSM_STATE fsm_radio_st;                         /* Radio FSM state? */
     T_FSM fsmRad;                                   /* Global Radio FSM state */
+    wld_fsmStats_t fsmStats;                        /* Statistics on FSM usage */
     int fsmTO;
 
     bool stationMonitorEnabled;

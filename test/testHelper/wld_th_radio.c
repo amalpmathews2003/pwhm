@@ -153,6 +153,18 @@ void s_readChanInfo(T_Radio* pRad) {
     }
 }
 
+int wld_th_rad_create_hook(T_Radio* pRad) {
+    ttb_assert_non_null(pRad);
+    ttb_assert_null(pRad->vendorData);
+    pRad->vendorData = calloc(1, sizeof(wld_th_rad_vendorData_t));
+    return 0;
+}
+void wld_th_rad_destroy_hook(T_Radio* pRad) {
+    ttb_assert_non_null(pRad);
+    ttb_assert_non_null(pRad->vendorData);
+    free(pRad->vendorData);
+    pRad->vendorData = NULL;
+}
 
 void wld_th_radio_addCustomCap(wld_th_radCap_t* cap) {
     swl_llist_append(&s_capList, &cap->it);
@@ -322,5 +334,51 @@ int wld_th_rad_setChanspec(T_Radio* rad, bool direct) {
     }
     wld_chanmgt_reportCurrentChanspec(rad, rad->targetChanspec.chanspec, rad->targetChanspec.reason);
     return SWL_RC_OK;
+}
+
+wld_th_rad_vendorData_t* wld_th_rad_getVendorData(T_Radio* rad) {
+    if(rad == NULL) {
+        return NULL;
+    }
+    return (wld_th_rad_vendorData_t*) rad->vendorData;
+}
+
+void wld_th_rad_clearCommits(T_Radio* rad) {
+    wld_th_rad_vendorData_t* vd = wld_th_rad_getVendorData(rad);
+    ttb_assert_non_null(vd);
+
+    for(uint32_t i = 0; i < WLD_TH_FSM_MAX; i++) {
+        vd->fsmCommits[i] = 0;
+    }
+}
+void wld_th_rad_checkCommitAll(T_Radio* rad) {
+    wld_th_rad_vendorData_t* vd = wld_th_rad_getVendorData(rad);
+    ttb_assert_non_null(vd);
+
+    for(uint32_t i = 0; i < WLD_TH_FSM_MAX; i++) {
+        ttb_assert_addPrint("Check %u", i);
+        if(wld_th_fsm_actions[i].doRadFsmAction != NULL) {
+            ttb_assert_int_eq(vd->fsmCommits[i], 1);
+        } else {
+            ttb_assert_int_eq(vd->fsmCommits[i], 0);
+        }
+        ttb_assert_removeLastPrint();
+
+    }
+}
+void wld_th_rad_checkCommitted(T_Radio* rad, swl_mask_m commitMask) {
+    wld_th_rad_vendorData_t* vd = wld_th_rad_getVendorData(rad);
+    ttb_assert_non_null(vd);
+
+    for(uint32_t i = 0; i < WLD_TH_FSM_MAX; i++) {
+        ttb_assert_addPrint("Check %u", i);
+        if((wld_th_fsm_actions[i].doRadFsmAction != NULL) && SWL_BIT_IS_SET(commitMask, i)) {
+            ttb_assert_int_eq(vd->fsmCommits[i], 1);
+        } else {
+            ttb_assert_int_eq(vd->fsmCommits[i], 0);
+        }
+        ttb_assert_removeLastPrint();
+
+    }
 }
 

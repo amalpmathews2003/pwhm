@@ -79,10 +79,16 @@
 #include "wld/wld.h"
 #include "wld/wld_accesspoint.h"
 
+#include "wld_th_fsm.h"
+
+typedef void (* wld_th_vap_doVapFsmAction)(T_AccessPoint* pAP, T_Radio* pRad, wld_th_fsmStates_e state);
+
 typedef struct {
     bool errorOnStaStats;
     uint32_t nrStaInFile;
     char* staStatsFileName;
+    uint32_t fsmCommits[WLD_TH_FSM_MAX];
+    wld_th_vap_doVapFsmAction fsmCallback[WLD_TH_FSM_MAX];
 } wld_th_vap_vendorData_t;
 
 T_AccessPoint* wld_th_vap_createVap(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
@@ -96,10 +102,15 @@ int wld_th_vap_vendorCb_addVapIf(T_Radio* rad, char* vap, int bufsize);
 int wld_th_vap_status(T_AccessPoint* pAP);
 swl_rc_ne wld_th_vap_getStationStats(T_AccessPoint* pAP);
 int wld_th_vap_enable(T_AccessPoint* pAP, int enable, int set);
+int wld_th_vap_ssid(T_AccessPoint* pAP, char* buf, int bufsize, int set);
 
 //Helper functions
 void wld_th_vap_doFsmClean(T_AccessPoint* pAP);
 wld_th_vap_vendorData_t* wld_th_vap_getVendorData(T_AccessPoint* pAP);
 void wld_th_vap_setSSIDEnable(T_AccessPoint* pAP, bool enable, bool commit);
 void wld_th_vap_setApEnable(T_AccessPoint* pAP, bool enable, bool commit);
+
+void wld_th_vap_clearCommits(T_AccessPoint* pAP);
+void wld_th_vap_checkCommitAll(T_AccessPoint* pAP);
+void wld_th_vap_checkCommitted(T_AccessPoint* pAP, swl_mask_m commitMask);
 #endif

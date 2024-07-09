@@ -457,6 +457,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
                    (0 == amxp_timer_start(rad->fsmRad.timer, rad->fsmRad.timeout_msec))) {
                     SAH_TRACEZ_WARNING(ME, "Starting FSM commit %s", rad->Name);
                     rad->fsm_radio_st = FSM_RUN;              // Lock the RADIO for our FSM
+                    rad->fsmStats.nrStarts++;
                     rad->fsmRad.FSM_State = FSM_WAIT;
                     rad->fsmRad.FSM_Retry = WLD_FSM_MAX_WAIT; // When failing, wait 10 seconds to allow init / WPS to finish ?
                     rad->fsmRad.FSM_Loop = 0;                 // Be sure this is resetted!
@@ -534,6 +535,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         rad->fsmRad.retryCount = 0;
         if(s_getMngr(rad)->waitGlobalSync == NULL) {
             rad->fsmRad.FSM_State = FSM_RUN;
+            rad->fsmStats.nrRunStarts++;
         } else {
             rad->fsmRad.FSM_State = FSM_SYNC_GLOBAL;
         }
@@ -543,6 +545,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         bool wait = s_getMngr(rad)->waitGlobalSync(rad);
         if(!wait) {
             rad->fsmRad.FSM_State = FSM_RUN;
+            rad->fsmStats.nrRunStarts++;
         }
         break;
     }
@@ -695,6 +698,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         /* Update here our wireless STATUS field to the datamodel */
         wld_rad_updateState(rad, false);
 
+        rad->fsmStats.nrFinish++;
         rad->fsmRad.FSM_State = FSM_IDLE;
         rad->fsm_radio_st = FSM_IDLE;    // UnLock the RADIO
         rad->fsmRad.timeout_msec = 0;
