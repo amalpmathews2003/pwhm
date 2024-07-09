@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.19 - 2024-07-09(15:40:10 +0000)
+
+### Other
+
+- - WiFi bits not executed
+
 ## Release v6.28.18 - 2024-07-08(14:26:33 +0000)
 
 ### Other
