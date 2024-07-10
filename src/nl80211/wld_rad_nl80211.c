@@ -73,17 +73,6 @@
 
 #define ME "nlRad"
 
-static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex) {
-    T_Radio* pRad = (T_Radio*) pRef;
-    ASSERTS_TRUE(debugIsRadPointer(pRad), false, ME, "NULL");
-    if(ifIndex > 0) {
-        return (wld_getRadioOfIfaceIndex(ifIndex) == pRad);
-    }
-    if(wiphy >= 0) {
-        return (wiphy == (int32_t) pRad->wiphy);
-    }
-    return false;
-}
 
 swl_rc_ne wld_rad_nl80211_setEvtListener(T_Radio* pRadio, void* pData, const wld_nl80211_evtHandlers_cb* const handlers) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -96,11 +85,7 @@ swl_rc_ne wld_rad_nl80211_setEvtListener(T_Radio* pRadio, void* pData, const wld
     uint32_t ifIndex = WLD_NL80211_ID_ANY;
     SAH_TRACEZ_INFO(ME, "rad(%s): add evt listener wiphy(%d)/ifIndex(%d)", pRadio->Name, wiphy, ifIndex);
     wld_nl80211_state_t* state = wld_nl80211_getSharedState();
-    wld_nl80211_evtHandlers_cb locHdlrs = *handlers;
-    if(locHdlrs.fCheckTgtCb == NULL) {
-        locHdlrs.fCheckTgtCb = s_chechTgtRadListener;
-    }
-    pRadio->nl80211Listener = wld_nl80211_addEvtListener(state, wiphy, ifIndex, pRadio, pData, &locHdlrs);
+    pRadio->nl80211Listener = wld_nl80211_addEvtListener(state, wiphy, ifIndex, pRadio, pData, handlers);
     ASSERT_NOT_NULL(pRadio->nl80211Listener, SWL_RC_ERROR,
                     ME, "rad(%s): fail to add evt listener wiphy(%d)/ifIndex(%d)", pRadio->Name, wiphy, ifIndex);
     return SWL_RC_OK;

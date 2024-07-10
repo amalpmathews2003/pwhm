@@ -578,6 +578,19 @@ static void s_frameReceivedCb(void* pRef, void* pData _UNUSED, size_t frameLen, 
     wld_rad_triggerFrameEvent(pRad, (swl_bit8_t*) frame, frameLen, rssi);
 }
 
+
+static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex) {
+    T_Radio* pRad = (T_Radio*) pRef;
+    ASSERTS_TRUE(debugIsRadPointer(pRad), false, ME, "NULL");
+    if(ifIndex > 0) {
+        return (wld_getRadioOfIfaceIndex(ifIndex) == pRad);
+    }
+    if(wiphy >= 0) {
+        return (wiphy == (int32_t) pRad->wiphy);
+    }
+    return false;
+}
+
 swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pRad->hostapd, SWL_RC_ERROR, ME, "NULL");
@@ -594,6 +607,7 @@ swl_rc_ne wifiGen_setRadEvtHandlers(T_Radio* pRad) {
     nl80211RadEvtHandlers.fScanDoneCb = s_scanDoneCb;
     nl80211RadEvtHandlers.fMgtFrameEvtCb = s_frameReceivedCb;
     nl80211RadEvtHandlers.fRadarEventCb = s_radarEvtCb;
+    nl80211RadEvtHandlers.fCheckTgtCb = s_chechTgtRadListener;
     wld_rad_nl80211_setEvtListener(pRad, NULL, &nl80211RadEvtHandlers);
 
     return SWL_RC_OK;
