@@ -202,7 +202,12 @@ amxd_status_t _setNeighbourAP(amxd_object_t* obj,
     } else {
         SAH_TRACEZ_INFO(ME, "Create new Neighbor with bssid [%s]", bssid);
         ASSERT_TRANSACTION_INIT(amxd_object_get(pAP->pBus, "Neighbour"), &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pAP->alias);
-        amxd_trans_add_inst(&trans, 0, NULL);
+        swl_macBin_t binBssid;
+        swl_mac_charToBin(&binBssid, &cBssidStd);
+        swl_mac_binToCharSep(&cBssidStd, &binBssid, false, '-');
+        char name[SWL_MAC_CHAR_LEN + 1];
+        snprintf(name, sizeof(name), "_%s", cBssidStd.cMac);
+        amxd_trans_add_inst(&trans, 0, name);
     }
 
     SAH_TRACEZ_INFO(ME, "Updating neighbour object with provided arguments");
