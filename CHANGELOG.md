@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.22 - 2024-07-10(14:08:55 +0000)
+
+### Other
+
+- - MACFilterAddressList modification does not work
+
 ## Release v6.28.21 - 2024-07-10(13:54:36 +0000)
 
 ### Other
