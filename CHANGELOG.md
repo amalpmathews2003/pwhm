@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.20 - 2024-07-10(09:41:50 +0000)
+
+### Other
+
+- - add FSM unit test and some simple statistics
+
 ## Release v6.28.19 - 2024-07-09(15:40:10 +0000)
 
 ### Other
