@@ -579,12 +579,18 @@ static void s_frameReceivedCb(void* pRef, void* pData _UNUSED, size_t frameLen, 
 }
 
 
-static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex) {
+static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex, const char* ifName) {
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERTS_TRUE(debugIsRadPointer(pRad), false, ME, "NULL");
+    //1) try to match radios of known ifIndex or ifName
     if(ifIndex > 0) {
-        return (wld_getRadioOfIfaceIndex(ifIndex) == pRad);
+        T_Radio* pTgtRad = NULL;
+        if(((pTgtRad = wld_getRadioOfIfaceIndex(ifIndex)) != NULL) ||
+           ((!swl_str_isEmpty(ifName)) && ((pTgtRad = wld_getRadioOfIfaceName(ifName)) != NULL))) {
+            return (pTgtRad == pRad);
+        }
     }
+    //2) otherwise, only match wiphy id
     if(wiphy >= 0) {
         return (wiphy == (int32_t) pRad->wiphy);
     }

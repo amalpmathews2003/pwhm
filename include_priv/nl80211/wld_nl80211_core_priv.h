@@ -68,6 +68,7 @@
 #include <sys/socket.h>
 #include "wld_nl80211_compat.h"
 #include "wld_nl80211_core.h"
+#include "wld_nl80211_utils.h"
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -122,25 +123,5 @@ struct wld_nl80211_state {
  * @return string name of known nl80211 msg, "unknown" otherwise
  */
 const char* wld_nl80211_msgName(uint32_t cmd);
-
-/*
- * @brief get the wiphy id from nl msg attributes
- *
- * @param tb array of parsed attributes
- *
- * @return wiphy id >= 0
- *         WLD_NL80211_ID_UNDEF if not found
- */
-uint32_t wld_nl80211_getWiphy(struct nlattr* tb[]);
-
-/*
- * @brief get the interface net dev index from nl msg attributes
- *
- * @param tb array of parsed attributes
- *
- * @return interface id > 0
- *         WLD_NL80211_ID_UNDEF if not found
- */
-uint32_t wld_nl80211_getIfIndex(struct nlattr* tb[]);
 
 #endif /* __WLD_NL80211_CORE_PRIV_H__ */

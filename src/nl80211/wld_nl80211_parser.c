@@ -108,6 +108,24 @@ uint32_t wld_nl80211_getIfIndex(struct nlattr* tb[]) {
     return ifIndex;
 }
 
+/*
+ * @brief fetch interface netdev name from nl80211 attributes
+ *
+ * @param tb nl attributes array
+ * @param tgtBuf target buffer
+ * @param tgtBufSize target buffer size
+ *
+ * @return size_t length of the retrieved string
+ */
+size_t wld_nl80211_getIfName(struct nlattr* tb[], char* tgtBuf, size_t tgtBufSize) {
+    ASSERTS_NOT_NULL(tb, 0, ME, "NULL");
+    ASSERTS_NOT_NULL(tgtBuf, 0, ME, "NULL");
+    ASSERTS_TRUE(tgtBufSize > 0, 0, ME, "NULL");
+    memset(tgtBuf, 0, tgtBufSize);
+    NLA_GET_DATA(tgtBuf, tb[NL80211_ATTR_IFNAME], tgtBufSize - 1);
+    return swl_str_len(tgtBuf);
+}
+
 swl_rc_ne wld_nl80211_parseChanSpec(struct nlattr* tb[], wld_nl80211_chanSpec_t* pChanSpec) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERTS_NOT_NULL(tb, rc, ME, "NULL");
