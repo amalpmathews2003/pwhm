@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.0 - 2024-07-11(12:34:55 +0000)
+
+### Other
+
+- detect nl80211 interface mld links
+
 ## Release v6.28.23 - 2024-07-11(09:05:12 +0000)
 
 ### Other
