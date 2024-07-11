@@ -80,7 +80,7 @@
  * @return void
  *
  */
-typedef bool (* wld_nl80211_checkTgtCb_f)(void* pRef, void* pData, int32_t wiphy, int32_t ifIndex);
+typedef bool (* wld_nl80211_checkTgtCb_f)(void* pRef, void* pData, int32_t wiphy, int32_t ifIndex, const char* ifName);
 
 /*
  * @brief generic callback for nl80211 event

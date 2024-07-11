@@ -617,6 +617,27 @@ T_Radio* wld_getRadioOfIfaceIndex(int index) {
 }
 
 /**
+ * Return the first radio with the given netdev ifName of one of the interface built on top of it.
+ * In case of duplicate, the first one in the list is returned.
+ */
+T_Radio* wld_getRadioOfIfaceName(const char* ifName) {
+    ASSERTS_STR(ifName, NULL, ME, "null");
+    T_Radio* pRad = wld_rad_from_name(ifName);
+    if(pRad != NULL) {
+        return pRad;
+    }
+    T_AccessPoint* pAP = wld_vap_from_name(ifName);
+    if(pAP != NULL) {
+        return pAP->pRadio;
+    }
+    T_EndPoint* pEP = wld_vep_from_name(ifName);
+    if(pEP != NULL) {
+        return pEP->pRadio;
+    }
+    return NULL;
+}
+
+/**
  * Return the first radio with the given netdev index
  * In case of duplicate, the first one in the list is returned.
  */

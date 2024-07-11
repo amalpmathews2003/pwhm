@@ -111,6 +111,17 @@ uint32_t wld_nl80211_getWiphy(struct nlattr* tb[]);
 uint32_t wld_nl80211_getIfIndex(struct nlattr* tb[]);
 
 /*
+ * @brief fetch interface netdev name from nl80211 attributes
+ *
+ * @param tb nl attributes array
+ * @param tgtBuf target buffer
+ * @param tgtBufSize target buffer size
+ *
+ * @return size_t length of the retrieved string
+ */
+size_t wld_nl80211_getIfName(struct nlattr* tb[], char* tgtBuf, size_t tgtBufSize);
+
+/*
  * @brief convert NL80211_CHAN_WIDTH_xxx into swl bandwidth enum ID
  *
  * @param nl80211Bw nl80211 bandwidth id
