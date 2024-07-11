@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.28.23 - 2024-07-11(09:05:12 +0000)
+
+### Other
+
+- improve fetch target radio for nl80211 notif
+
 ## Release v6.28.22 - 2024-07-10(14:08:55 +0000)
 
 ### Other
