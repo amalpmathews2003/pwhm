@@ -314,14 +314,24 @@ static wld_nl80211_ifaceInfo_t* s_getWlIfaceByName(const char* ifName, const uin
 
 static uint32_t s_getWlIfacesByWiphy(uint32_t wiphy, const uint32_t maxWiphys, const uint32_t maxWlIfaces,
                                      wld_nl80211_ifaceInfo_t wlIfaces[maxWiphys][maxWlIfaces],
-                                     wld_nl80211_ifaceInfo_t** pWiphyWlIfaces) {
+                                     wld_nl80211_ifaceInfo_t** ppWiphyWlIfaces) {
     uint32_t count = 0;
+    ASSERT_TRUE((maxWiphys > 0) && (maxWlIfaces > 0), count, ME, "empty list");
+    ASSERT_NOT_NULL(wlIfaces, count, ME, "NULL");
+    wld_nl80211_ifaceInfo_t* pWiphyWlIfaces = NULL;
+    if(wiphy < maxWiphys) {
+        pWiphyWlIfaces = wlIfaces[wiphy];
+    }
     for(uint32_t i = 0; (i < maxWiphys) && (!count); i++) {
+        if((pWiphyWlIfaces == NULL) && (!wlIfaces[i][0].ifIndex)) {
+            pWiphyWlIfaces = wlIfaces[i];
+        }
         for(uint32_t j = 0; (j < maxWlIfaces) && (wlIfaces[i][j].ifIndex > 0) && (wlIfaces[i][j].wiphy == wiphy); j++) {
-            W_SWL_SETPTR(pWiphyWlIfaces, &wlIfaces[i][0]);
+            pWiphyWlIfaces = wlIfaces[i];
             count++;
         }
     }
+    W_SWL_SETPTR(ppWiphyWlIfaces, pWiphyWlIfaces);
     return count;
 }
 
@@ -358,7 +368,7 @@ swl_rc_ne wld_nl80211_addDefaultWiphyInterfacesExt(const char* custIfNamePfx,
         uint32_t nrWiphyWlIfaces = s_getWlIfacesByWiphy(pWiphy->wiphy, maxWiphys, maxWlIfaces, wlIfacesInfo, &pWiphyWlIfaces);
         SAH_TRACEZ_WARNING(ME, "detected wiphy[%d] %s id:%d (maxNr:%d) nrWiphyBands %d (m:0x%x) nrWiphyWlIfaces %d",
                            i, pWiphy->name, pWiphy->wiphy, nrWiphys, nrWiphyBands, pWiphy->freqBandsMask, nrWiphyWlIfaces);
-        if((!nrWiphyBands) || (nrWiphyWlIfaces >= nrWiphyBands)) {
+        if((!nrWiphyBands) || (nrWiphyWlIfaces >= nrWiphyBands) || (pWiphyWlIfaces == NULL)) {
             continue;
         }
         uint32_t maxWiphyWlIfaces = (pWiphy->nApMax ? SWL_MIN(pWiphy->nApMax, maxWlIfaces) : maxWlIfaces);
