@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.1 - 2024-07-12(08:57:33 +0000)
+
+### Other
+
+- manage detecting single wiphy with no wl ifaces
+
 ## Release v6.29.0 - 2024-07-11(12:34:55 +0000)
 
 ### Other
