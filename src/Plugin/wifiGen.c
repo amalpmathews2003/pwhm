@@ -222,21 +222,34 @@ int wifiGen_addRadios() {
     return SWL_RC_OK;
 }
 
+#define NEW_WIPHY_HANDLE_DELAY 3000
+
 static struct globWiphyMonCtx_s {
     wld_nl80211_listener_t* listener;
     wifiGen_wiphyDevReadyCb_f fcb;
     void* userdata;
-} gGlobWiphyMoniCtx = {NULL, NULL, NULL};
+    amxp_timer_t* pTimer;
+} gGlobWiphyMoniCtx = {NULL, NULL, NULL, NULL};
+
+static void s_handleNewWiphy(amxp_timer_t* timer _UNUSED, void* userdata) {
+    struct globWiphyMonCtx_s* ctx = (struct globWiphyMonCtx_s*) userdata;
+    ASSERT_NOT_NULL(ctx, , ME, "NULL");
+    if(!wld_countRadios()) {
+        SAH_TRACEZ_WARNING(ME, "first wiphy detection: start adding gen radios");
+        SWL_CALL(ctx->fcb, ctx->userdata);
+    } else {
+        SAH_TRACEZ_INFO(ME, "other radios are registered");
+    }
+}
 
 static void s_newWiphyInfoEvtCb(void* pRef, void* pData _UNUSED, wld_nl80211_wiphyInfo_t* pWiphyInfo) {
     struct globWiphyMonCtx_s* ctx = (struct globWiphyMonCtx_s*) pRef;
     ASSERT_NOT_NULL(ctx, , ME, "NULL");
     ASSERT_NOT_NULL(pWiphyInfo, , ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "wiphy id:%d name:%s is added", pWiphyInfo->wiphy, pWiphyInfo->name);
-    if(!wld_countRadios()) {
-        SAH_TRACEZ_WARNING(ME, "first wiphy detection: start adding gen radios");
-        SWL_CALL(ctx->fcb, ctx->userdata);
-    }
+    //give time to driver to finalize default wl interface creation
+    SAH_TRACEZ_INFO(ME, "delay processing new wl ifaces");
+    amxp_timer_start(ctx->pTimer, NEW_WIPHY_HANDLE_DELAY);
 }
 
 swl_rc_ne wifiGen_waitForGenRadios(void* userData, wifiGen_wiphyDevReadyCb_f fcb) {
@@ -252,6 +265,7 @@ swl_rc_ne wifiGen_waitForGenRadios(void* userData, wifiGen_wiphyDevReadyCb_f fcb
         memset(&handlers, 0, sizeof(handlers));
         handlers.fNewWiphyCb = s_newWiphyInfoEvtCb;
         gGlobWiphyMoniCtx.listener = wld_nl80211_addGlobalEvtListener(wld_nl80211_getSharedState(), &gGlobWiphyMoniCtx, NULL, &handlers);
+        amxp_timer_new(&gGlobWiphyMoniCtx.pTimer, s_handleNewWiphy, &gGlobWiphyMoniCtx);
         ASSERT_NOT_NULL(gGlobWiphyMoniCtx.listener, SWL_RC_ERROR, ME, "fail to add global listener");
     }
     return SWL_RC_CONTINUE;
@@ -260,6 +274,7 @@ swl_rc_ne wifiGen_waitForGenRadios(void* userData, wifiGen_wiphyDevReadyCb_f fcb
 bool wifiGen_deinit() {
     ASSERT_TRUE(s_init, false, ME, "already de-initialized");
     wld_nl80211_delEvtListener(&gGlobWiphyMoniCtx.listener);
+    amxp_timer_delete(&gGlobWiphyMoniCtx.pTimer);
     s_init = false;
     return true;
 }
