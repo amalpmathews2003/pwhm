@@ -243,8 +243,14 @@ m4_ifelse(DISABLE_NETMODEL,y,,``
         "${prefix}${plugin-dir}/modules"
     ];
 
+    m4_ifelse(ENABLE_PCB_SERVER_SOCKET,y,
+        listen += ["pcb:/var/run/pwhm_pcb.sock"];
+    )
     m4_ifelse(ENABLE_USP_SERVER_SOCKET,y,
-    listen = [ 'usp:/var/run/pwhm_usp.sock' ];
+        listen += ["usp:/var/run/pwhm_usp.sock"];
+    )
+
+    m4_ifelse(ENABLE_USP_SERVER_SOCKET,y,
     backend-dir = [
         "/usr/bin/mods/amxb/"`,'
         "/usr/bin/mods/usp/"
