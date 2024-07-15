@@ -494,6 +494,7 @@ void wld_ad_init_oui(wld_assocDev_capabilities_t* caps) {
         memset(&caps->vendorOUI.oui[i], 0, sizeof(uint8_t) * SWL_OUI_BYTE_LEN);
     }
     caps->vendorOUI.count = 0;
+    caps->linkBandwidthSetByDriver = true; // by default we assume the driver will set the link bandwidth
 }
 
 /* create T_AssociatedDevice and populate MACAddress and Name fields */
@@ -552,6 +553,8 @@ T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBi
     pAD->AvgSignalStrengthByChain = 0;
 
     wld_apRssiMon_createStaHistory(pAD, pAP->rssiEventing.historyLen);
+
+    pAD->operatingStandardSetByDriver = true; // by default we assume the driver will set the operating standard
 
     s_sendChangeEvent(pAP, pAD, WLD_AD_CHANGE_EVENT_CREATE, NULL);
 
@@ -1901,9 +1904,15 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
     memcpy(&cap->supportedHe80x80MCS, &pWirelessDevIE->supportedHe80x80MCS, sizeof(pWirelessDevIE->supportedHe80x80MCS));
 
     if(pDev->operatingStandard == SWL_RADSTD_AUTO) {
+        pDev->operatingStandardSetByDriver = false;
+    }
+    if(!pDev->operatingStandardSetByDriver) {
         pDev->operatingStandard = SWL_MIN(swl_bit32_getHighest(pWirelessDevIE->operatingStandards), swl_bit32_getHighest(pRad->operatingStandards));
     }
     if(cap->linkBandwidth == SWL_BW_AUTO) {
+        cap->linkBandwidthSetByDriver = false;
+    }
+    if(!cap->linkBandwidthSetByDriver) {
         cap->linkBandwidth = SWL_MIN(wld_util_getMaxBwCap(cap), swl_radBw_toBw[pRad->runningChannelBandwidth]);
     }
 }
