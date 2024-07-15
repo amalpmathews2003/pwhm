@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.2 - 2024-07-15(09:51:56 +0000)
+
+### Other
+
+- Neighbours are not instantiated
+
 ## Release v6.29.1 - 2024-07-12(08:57:33 +0000)
 
 ### Other
