@@ -727,6 +727,7 @@ typedef struct {
     swl_security_apMode_e currentSecurity;
     wld_enc_modes_e encryptMode;
     swl_bandwidth_e linkBandwidth;
+    bool linkBandwidthSetByDriver;
 
     swl_staCapHt_m htCapabilities;      /* bitmap of HT (11n) SGI, MU and beamforming capabilities */
     swl_staCapVht_m vhtCapabilities;    /* bitmap of VHT (11ac) SGI, MU and beamforming capabilities */
@@ -851,6 +852,7 @@ typedef struct {
     uint32_t multipleRetryCount; /* The number of packets that were successfully transmitted after more than one retransmission */
     bool Active;                 /* Whether station is actually connected, potentially not Authenticated */
     bool seen;                   /* data field for maclist updates */
+    bool operatingStandardSetByDriver;
     swl_radStd_e operatingStandard;
 
     wld_assocDev_capabilities_t assocCaps;
