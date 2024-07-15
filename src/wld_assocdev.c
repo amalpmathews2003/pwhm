@@ -1892,10 +1892,18 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
     cap->rrmOnChannelMaxDuration = pWirelessDevIE->rrmOnChannelMaxDuration;
     cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;
     cap->currentSecurity = pWirelessDevIE->secModeEnabled;
-    pDev->MaxRxSpatialStreamsSupported = pWirelessDevIE->maxRxSpatialStreamsSupported;
-    pDev->MaxTxSpatialStreamsSupported = pWirelessDevIE->maxTxSpatialStreamsSupported;
-    pDev->MaxDownlinkRateSupported = pWirelessDevIE->maxDownlinkRateSupported;
-    pDev->MaxUplinkRateSupported = pWirelessDevIE->maxUplinkRateSupported;
+    if(pWirelessDevIE->maxRxSpatialStreamsSupported > 0) {
+        pDev->MaxRxSpatialStreamsSupported = pWirelessDevIE->maxRxSpatialStreamsSupported;
+    }
+    if(pWirelessDevIE->maxTxSpatialStreamsSupported > 0) {
+        pDev->MaxTxSpatialStreamsSupported = pWirelessDevIE->maxTxSpatialStreamsSupported;
+    }
+    if(pWirelessDevIE->maxDownlinkRateSupported > 0) {
+        pDev->MaxDownlinkRateSupported = pWirelessDevIE->maxDownlinkRateSupported;
+    }
+    if(pWirelessDevIE->maxUplinkRateSupported > 0) {
+        pDev->MaxUplinkRateSupported = pWirelessDevIE->maxUplinkRateSupported;
+    }
     memcpy(&cap->supportedMCS, &pWirelessDevIE->supportedMCS, sizeof(swl_mcs_supMCS_t));
     memcpy(&cap->supportedHtMCS, &pWirelessDevIE->supportedHtMCS, sizeof(swl_mcs_supMCS_t));
     memcpy(&cap->supportedVhtMCS, &pWirelessDevIE->supportedVhtMCS, sizeof(pWirelessDevIE->supportedVhtMCS));
@@ -1903,11 +1911,13 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
     memcpy(&cap->supportedHe160MCS, &pWirelessDevIE->supportedHe160MCS, sizeof(pWirelessDevIE->supportedHe160MCS));
     memcpy(&cap->supportedHe80x80MCS, &pWirelessDevIE->supportedHe80x80MCS, sizeof(pWirelessDevIE->supportedHe80x80MCS));
 
-    if(pDev->operatingStandard == SWL_RADSTD_AUTO) {
-        pDev->operatingStandardSetByDriver = false;
-    }
-    if(!pDev->operatingStandardSetByDriver) {
-        pDev->operatingStandard = SWL_MIN(swl_bit32_getHighest(pWirelessDevIE->operatingStandards), swl_bit32_getHighest(pRad->operatingStandards));
+    if(pWirelessDevIE->operatingStandards > 0) {
+        if(pDev->operatingStandard == SWL_RADSTD_AUTO) {
+            pDev->operatingStandardSetByDriver = false;
+        }
+        if(!pDev->operatingStandardSetByDriver) {
+            pDev->operatingStandard = SWL_MIN(swl_bit32_getHighest(pWirelessDevIE->operatingStandards), swl_bit32_getHighest(pRad->operatingStandards));
+        }
     }
     if(cap->linkBandwidth == SWL_BW_AUTO) {
         cap->linkBandwidthSetByDriver = false;
