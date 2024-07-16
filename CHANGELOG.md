@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.4 - 2024-07-16(08:56:09 +0000)
+
+### Other
+
+- : Add pcb socket in pwhm
+
 ## Release v6.29.3 - 2024-07-16(07:13:34 +0000)
 
 ### Other
