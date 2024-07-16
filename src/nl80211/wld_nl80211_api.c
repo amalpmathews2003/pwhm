@@ -1153,11 +1153,13 @@ swl_rc_ne wld_nl80211_chanSpecNlToSwl(swl_chanspec_t* pSwlChanSpec, wld_nl80211_
     ASSERT_NOT_NULL(pSwlChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pNlChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
     swl_chanspec_t ctrlChanspec;
+    swl_chanspec_t centerChanspec;
     swl_rc_ne rc = swl_chanspec_channelFromMHz(&ctrlChanspec, pNlChanSpec->ctrlFreq);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get ctrl channel");
-    rc = swl_chanspec_fromMHz(pSwlChanSpec, pNlChanSpec->centerFreq1);
+    rc = swl_chanspec_channelFromMHz(&centerChanspec, pNlChanSpec->centerFreq1);
     ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get center channel");
-    pSwlChanSpec->channel = ctrlChanspec.channel;
+    rc = swl_chanspec_fromFreqCtrlCentre(pSwlChanSpec, ctrlChanspec.band, ctrlChanspec.channel, centerChanspec.channel);
+    ASSERTS_FALSE(rc < SWL_RC_OK, rc, ME, "fail to get Channel Spec");
     return SWL_RC_OK;
 }
 
