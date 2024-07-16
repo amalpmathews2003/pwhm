@@ -329,6 +329,7 @@ static void s_readCtrl(int fd, void* priv _UNUSED) {
 static void s_wpaCtrlCloseConnection(wpaCtrlConnection_t* pConn) {
     ASSERTS_NOT_NULL(pConn, , ME, "NULL");
     ASSERTS_TRUE(pConn->wpaPeer > 0, , ME, "NULL");
+    close(pConn->wpaPeer);
     unlink(pConn->clientAddr.sun_path);
     amxo_connection_remove(get_wld_plugin_parser(), pConn->wpaPeer);
     pConn->wpaPeer = 0;
