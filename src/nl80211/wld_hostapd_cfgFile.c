@@ -747,11 +747,11 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
             return false;
         }
         swl_mapChar_add(vapConfigMap, "bss", pAP->alias);
-        swl_macChar_t bssidStr;
-        SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
-        swl_mapChar_add(vapConfigMap, "bssid", bssidStr.cMac);
-        swl_mapChar_add(vapConfigMap, "use_driver_iface_addr", "1");
     }
+    swl_macChar_t bssidStr;
+    SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
+    swl_mapChar_add(vapConfigMap, "bssid", bssidStr.cMac);
+    swl_mapChar_add(vapConfigMap, "use_driver_iface_addr", "1");
     if(strlen(pAP->bridgeName) > 0) {
         swl_mapChar_add(vapConfigMap, "bridge", pAP->bridgeName);
     }

@@ -63,17 +63,9 @@
 #ifndef __WLD_WPA_CTRL_INTERFACE_PRIV_H__
 #define __WLD_WPA_CTRL_INTERFACE_PRIV_H__
 
-#include <sys/un.h>
-
 #include "wld_wpaCtrlInterface.h"
 #include "wld_wpaCtrlMngr.h"
-
-typedef struct wpaCtrlConnection {
-    struct sockaddr_un clientAddr;
-    struct sockaddr_un serverAddr;
-    int wpaPeer;
-    wld_wpaCtrlInterface_t* pInterface;
-} wpaCtrlConnection_t;
+#include "wld_wpaCtrlConnection_priv.h"
 
 struct wld_wpaCtrlInterface {
     char* name;  //interface name
@@ -86,6 +78,7 @@ struct wld_wpaCtrlInterface {
     void* userData;
     wld_wpaCtrlMngr_t* pMgr;
     wld_wpaCtrl_evtHandlers_cb handlers;
+    int32_t linkId;
 };
 
 // Call interface handler protected against null interface and null handler
@@ -99,5 +92,10 @@ struct wld_wpaCtrlInterface {
     if(pIntf != NULL) { \
         SWL_CALL(pIntf->handlers.fName, pIntf->userData, pIntf->name); \
     }
+
+/*
+ * MLD Link wpa socket name format "<IFACEX>_link<Y>"
+ */
+bool wld_wpaCtrlInterface_parseSockName(const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId);
 
 #endif /* __WLD_WPA_CTRL_INTERFACE_PRIV_H__ */

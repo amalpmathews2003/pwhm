@@ -460,7 +460,8 @@ static bool s_doStartHostapd(T_Radio* pRad) {
      */
     if((rc == SWL_RC_DONE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
         SAH_TRACEZ_INFO(ME, "%s: need to enable hostapd", pRad->Name);
-        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+        //update hostapd conf to consider changed configs before enabling it
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
     }
     s_registerHadpRadEvtHandlers(pRad->hostapd);
     pRad->fsmRad.timeout_msec = 500;

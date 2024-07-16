@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,27 +60,41 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#ifndef INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_
+#define INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_
 
-#include "wld.h"
-#include "wld_wpaCtrl_types.h"
+#include <sys/un.h>
+#include "swl/swl_common.h"
 
-void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+#define CTRL_IFACE_CLIENT "/var/lib/wld/wpactrl-"
+#define DFLT_SYNC_CMD_TMOUT_MS 1000
 
-void wld_ssid_cleanAll();
-void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
-void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex, swl_macBin_t* macBin);
-void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin);
-void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin);
-void wld_ssid_setMac(T_SSID* pSSID, swl_macBin_t* macBin);
+typedef void (* wld_wpaCtrlConnection_readDataCb_f)(void* userData, char* msgData, size_t msgLen);
 
-T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
-T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
-T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin);
-T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin);
-T_SSID* wld_ssid_getSsidByIfName(const char* ifName);
-wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
+typedef struct {
+    wld_wpaCtrlConnection_readDataCb_f fReadDataCb;
+} wld_wpaCtrlConnection_evtHandlers_cb;
 
-#endif /* __WLD_SSID_H__ */
+typedef struct wpaCtrlConnection {
+    struct sockaddr_un clientAddr;
+    struct sockaddr_un serverAddr;
+    char* sockName;
+    int wpaPeer;
+    void* userData;
+    wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs;
+} wpaCtrlConnection_t;
+
+swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* sockName, const char* serverPath);
+swl_rc_ne wld_wpaCtrlConnection_setEvtHandlers(wpaCtrlConnection_t* pConn, void* userData, wld_wpaCtrlConnection_evtHandlers_cb* pEvtHdlrs);
+swl_rc_ne wld_wpaCtrlConnection_open(wpaCtrlConnection_t* pConn);
+swl_rc_ne wld_wpaCtrlConnection_sendCmd(wpaCtrlConnection_t* pConn, const char* cmd);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t replyLen, uint32_t tmOutMSec);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t replyLen);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdCheckResponseExt(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdCheckResponse(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse);
+swl_rc_ne wld_wpaCtrlConnection_close(wpaCtrlConnection_t* pConn);
+swl_rc_ne wld_wpaCtrlConnection_cleanup(wpaCtrlConnection_t** ppConn);
+const char* wld_wpaCtrlConnection_getConnCliPath(wpaCtrlConnection_t* pConn);
+const char* wld_wpaCtrlConnection_getConnSrvPath(wpaCtrlConnection_t* pConn);
+
+#endif /* INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_ */

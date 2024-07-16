@@ -303,6 +303,11 @@ uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp
     return count;
 }
 
+const char* wld_secDmn_getCtrlIfaceDirPath(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, "", ME, "NULL");
+    return pSecDmn->ctrlIfaceDir;
+}
+
 /*
  * @brief add secDmn member to a group
  * Therefore, the secDmn is sharing same process with other members:

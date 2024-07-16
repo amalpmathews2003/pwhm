@@ -63,6 +63,7 @@
 #include "wld.h"
 #include "wld_util.h"
 #include "wld_radio.h"
+#include "wld_ssid.h"
 #include "wld_rad_hostapd_api.h"
 #include "wld_hostapd_cfgFile.h"
 #include "wld_hostapd_ap_api.h"
@@ -1298,5 +1299,61 @@ bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP) {
     return (pAP->enable) ||
            (!wld_rad_hasMbssidAds(pRad)) ||
            ((pAP == wld_rad_hostapd_getCfgMainVap(pRad)) && (!wld_rad_countEnabledVaps(pRad)));
+}
+
+T_AccessPoint* wld_hostapd_ap_fetchApLinkOfSock(T_AccessPoint* pAPMld, const char* sockName) {
+    ASSERT_STR(sockName, NULL, ME, "empty socket name");
+    ASSERT_NOT_NULL(pAPMld, NULL, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAPMld->wpaCtrlInterface);
+    wld_secDmn_t* pSecDmn = wld_wpaCtrlMngr_getSecDmn(pMgr);
+    const char* serverPath = wld_secDmn_getCtrlIfaceDirPath(pSecDmn);
+    ASSERT_STR(serverPath, NULL, ME, "%s: empty wpa server path", pAPMld->alias);
+    T_SSID* pMldSSID = pAPMld->pSSID;
+    ASSERT_NOT_NULL(pMldSSID, NULL, ME, "NULL");
+    T_SSID* pLinkSSID = NULL;
+    size_t maxMsgLen = wld_wpaCtrl_getMaxMsgLen();
+    char reply[maxMsgLen];
+    memset(reply, 0, sizeof(reply));
+    swl_rc_ne rc = wld_wpaCtrl_queryToSock(serverPath, sockName, "GET_CONFIG", reply, sizeof(reply));
+    ASSERTI_TRUE(swl_rc_isOk(rc), NULL, ME, "%s: fail to get hostapd config over %s/%s", pAPMld->alias, serverPath, sockName);
+    char valStr[128] = {0};
+    char ssidStr[64] = {0};
+    swl_macBin_t macBin = SWL_MAC_BIN_NEW();
+    if((wld_wpaCtrl_getValueStr(reply, "bssid", valStr, sizeof(valStr)) > 0) &&
+       (swl_typeMacBin_fromChar(&macBin, valStr)) && (!swl_mac_binIsNull(&macBin)) &&
+       ((pLinkSSID = wld_ssid_getSsidByMacAddress(&macBin)) != NULL)) {
+        SAH_TRACEZ_INFO(ME, "sock(%s): GET_CONFIG linkMac(%s) => pSSID(%s)",
+                        sockName, swl_typeMacBin_toBuf32(macBin).buf, pLinkSSID->Name);
+        return pLinkSSID->AP_HOOK;
+    }
+    wld_wpaCtrl_getValueStr(reply, "ssid", ssidStr, sizeof(ssidStr));
+    rc = wld_wpaCtrl_queryToSock(serverPath, sockName, "STATUS", reply, sizeof(reply));
+    ASSERTI_TRUE(swl_rc_isOk(rc), NULL, ME, "%s: fail to get hostapd status over %s/%s", pAPMld->alias, serverPath, sockName);
+    swl_chanspec_t chspec = SWL_CHANSPEC_EMPTY;
+    int32_t freq = 0;
+    if((wld_wpaCtrl_getValueIntExt(reply, "freq", &freq)) &&
+       (swl_chanspec_channelFromMHz(&chspec, freq) >= SWL_RC_OK)) {
+        SAH_TRACEZ_INFO(ME, "sock(%s): STATUS: bssid(%s) ssid(%s) freq:%d chspec(%s)",
+                        sockName, swl_typeMacBin_toBuf32(macBin).buf, ssidStr,
+                        freq, swl_typeChanspecExt_toBuf32(chspec).buf);
+    }
+    ASSERTI_TRUE(chspec.channel > 0, NULL, ME, "%s: no channel configured", pAPMld->alias);
+    T_Radio* pRad = NULL;
+    wld_for_eachRad(pRad) {
+        if(pRad->operatingFrequencyBand != chspec.band) {
+            continue;
+        }
+        T_AccessPoint* pAP = NULL;
+        wld_rad_forEachAp(pAP, pRad) {
+            pLinkSSID = pAP->pSSID;
+            if((pLinkSSID != NULL) && (pLinkSSID->mldUnit == pMldSSID->mldUnit) &&
+               ((swl_str_isEmpty(ssidStr) || (swl_str_matches(pLinkSSID->SSID, ssidStr))))) {
+                SAH_TRACEZ_INFO(ME, "sock(%s): BASIC MATCH ssid(%s) mldUnit(%d) => pSSID(%s)",
+                                sockName, pLinkSSID->SSID, pLinkSSID->mldUnit, pLinkSSID->Name);
+                return pLinkSSID->AP_HOOK;
+            }
+        }
+    }
+    return NULL;
 }
 

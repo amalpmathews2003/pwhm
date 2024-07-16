@@ -63,14 +63,21 @@
 #ifndef __WLD_WPA_CTRL_API_H__
 #define __WLD_WPA_CTRL_API_H__
 
-#include "wld_wpaCtrlInterface.h"
+#include "wld_wpaCtrl_types.h"
+#include "swl/swl_common.h"
 
 bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd);
-bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len);
+bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t replyLen);
 bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse);
 bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
 swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...);
 swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, char* valStr, size_t valStrSize);
 void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
+bool wld_wpaCtrl_checkSockPath(const char* sockPath);
+swl_rc_ne wld_wpaCtrl_queryToSock(const char* serverPath, const char* sockName, const char* cmd, char* reply, size_t replyLen);
+size_t wld_wpaCtrl_getMaxMsgLen();
+swl_rc_ne wld_wpaCtrl_setMaxMsgLen(size_t msgLen);
+const char* wld_wpaCtrlInterface_getSockNameLinkPfx();
+swl_rc_ne wld_wpaCtrlInterface_setSockNameLinkPfx(const char* newLinkPfx);
 
 #endif /* __WLD_WPA_CTRL_API_H__ */

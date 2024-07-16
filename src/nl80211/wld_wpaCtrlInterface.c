@@ -66,12 +66,9 @@
 #include "wld.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_wpaCtrlInterface_priv.h"
+#include "wld_util.h"
 
 #define ME "wpaCtrl"
-
-#define MSG_LENGTH          (4096 * 3)
-#define CTRL_IFACE_CLIENT "/var/lib/wld/wpactrl-"
-#define DFLT_SYNC_CMD_TMOUT_MS 1000
 
 typedef enum {
     WPA_CONNECTION_CMD = 0,
@@ -79,31 +76,51 @@ typedef enum {
     WPA_CONNECTION_MAX
 } wld_wpaCtrlConnectionType_e;
 
-static const char* s_getConnCliPath(wpaCtrlConnection_t* pConn) {
-    ASSERTS_NOT_NULL(pConn, "", ME, "NULL");
-    return pConn->clientAddr.sun_path;
+/*
+ * MLD Link wpa socket name format "<IFACEX>_link<Y>"
+ */
+
+static char sSockNameLinkPfx[64] = {"_link"};
+
+const char* wld_wpaCtrlInterface_getSockNameLinkPfx() {
+    return sSockNameLinkPfx;
 }
 
-static const char* s_getConnSrvPath(wpaCtrlConnection_t* pConn) {
-    ASSERTS_NOT_NULL(pConn, "", ME, "NULL");
-    return pConn->serverAddr.sun_path;
+swl_rc_ne wld_wpaCtrlInterface_setSockNameLinkPfx(const char* newLinkPfx) {
+    ASSERT_STR(newLinkPfx, SWL_RC_INVALID_PARAM, ME, "empty link prefix");
+    ASSERT_TRUE(swl_str_len(newLinkPfx) < sizeof(sSockNameLinkPfx), SWL_RC_INVALID_PARAM, ME, "over-sized link prefix");
+    swl_str_copy(sSockNameLinkPfx, sizeof(sSockNameLinkPfx), newLinkPfx);
+    return SWL_RC_OK;
 }
 
-static bool s_sendCmd(wpaCtrlConnection_t* pConn, const char* cmd) {
-    ASSERTS_NOT_NULL(pConn, false, ME, "NULL");
-    ASSERTS_NOT_EQUALS(pConn->wpaPeer, 0, false, ME, "NULL");
-    int fd = pConn->wpaPeer;
-    ASSERTS_TRUE(fd > 0, false, ME, "fd <= 0");
+static bool s_parseSockName(const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId) {
+    W_SWL_SETPTR(pLinkId, -1);
+    swl_str_copy(ifName, ifNameSize, NULL);
+    ASSERT_STR(sockName, false, ME, "empty");
+    ssize_t linkInfoPos = swl_str_find(sockName, sSockNameLinkPfx);
+    if(linkInfoPos < 0) {
+        return swl_str_copy(ifName, ifNameSize, sockName);
+    }
+    int32_t linkId = -1;
+    const char* linkIdStr = &sockName[linkInfoPos + swl_str_len(sSockNameLinkPfx)];
+    if(!swl_rc_isOk(wldu_convStrToNum(linkIdStr, &linkId, sizeof(linkId), 10, true))) {
+        SAH_TRACEZ_ERROR(ME, "fail to fetch link id in sock name %s", sockName);
+        return false;
+    }
+    W_SWL_SETPTR(pLinkId, linkId);
+    return swl_str_ncopy(ifName, ifNameSize, sockName, linkInfoPos);
+}
 
-    const char* srvPath = s_getConnSrvPath(pConn);
-    size_t len = strlen(cmd);
-    ssize_t ret = send(fd, cmd, len, 0);
-    SAH_TRACEZ_INFO(ME, "send cmd (%s) to (%s)", cmd, srvPath);
-    ASSERT_EQUALS(ret, (ssize_t) len, false, ME, "Failed to send cmd (%s) to (%s): ret(%d), err(%d:%s)",
-                  cmd, srvPath,
-                  (int32_t) ret, errno, strerror(errno));
-
+static bool s_formatSockName(char* srvSockName, size_t srvSockNameSize, const char* ifName, int32_t linkId) {
+    swl_str_copy(srvSockName, srvSockNameSize, ifName);
+    if(linkId >= 0) {
+        swl_str_catFormat(srvSockName, srvSockNameSize, "%s%d", sSockNameLinkPfx, linkId);
+    }
     return true;
+}
+
+bool wld_wpaCtrlInterface_parseSockName(const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId) {
+    return s_parseSockName(sockName, ifName, ifNameSize, pLinkId);
 }
 
 /**
@@ -117,64 +134,7 @@ static bool s_sendCmd(wpaCtrlConnection_t* pConn, const char* cmd) {
  */
 bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
-    return s_sendCmd(pIface->cmdConn, cmd);
-}
-
-static bool s_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t reply_len, uint32_t tmOutMSec) {
-    SAH_TRACEZ_IN(ME);
-    ASSERT_NOT_NULL(pConn, false, ME, "NULL");
-    int fd = pConn->wpaPeer;
-    const char* ifName = wld_wpaCtrlInterface_getName(pConn->pInterface);
-    ASSERT_TRUE(fd > 0, false, ME, "%s: invalid fd for cmd (%s)", ifName, cmd);
-
-    struct timeval tv;
-    uint32_t tvMs = tmOutMSec;
-    int res;
-    fd_set rfds;
-
-    /* clear pending replies to avoid getting answer of timeouted request */
-    char dropBuf[reply_len];
-    while(recv(fd, dropBuf, reply_len, 0) > 0) {
-    }
-
-    ASSERT_TRUE(s_sendCmd(pConn, cmd), false, ME, "%s: fail to send sync cmd(%s)", ifName, cmd);
-
-    do {
-        tvMs = SWL_MAX(tvMs, (uint32_t) DFLT_SYNC_CMD_TMOUT_MS);
-        tv.tv_sec = (tvMs / 1000);
-        tv.tv_usec = ((tvMs % 1000) * 1000);
-        FD_ZERO(&rfds);
-        FD_SET(fd, &rfds);
-        res = select(fd + 1, &rfds, NULL, NULL, &tv);
-        tvMs = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-        if((res < 0) && (errno == EINTR)) {
-            continue;
-        }
-        ASSERT_FALSE(res < 0, false, ME, "%s: select err(%d:%s)", ifName, errno, strerror(errno));
-        ASSERT_NOT_EQUALS(res, 0, false, ME, "%s: cmd(%s) timed out", ifName, cmd);
-        ASSERT_NOT_EQUALS(FD_ISSET(fd, &rfds), 0, false, ME, "%s: missing reply on fd(%d)", ifName, fd);
-        ssize_t nr = recv(fd, reply, reply_len, 0);
-        ASSERT_FALSE(nr < 0, false, ME, "%s: recv err(%d:%s)", ifName, errno, strerror(errno));
-        /* ignore reply when looking like a wpactrl event */
-        if(((nr > 0) && (reply[0] == '<')) ||
-           ((nr > 6) && ( strncmp(reply, "IFNAME=", 7) == 0))) {
-            continue;
-        }
-        nr = SWL_MIN(nr, (ssize_t) reply_len - 1);
-        reply[nr] = '\0';
-        /* remove systematic carriage return at end of buffer */
-        if((nr > 0) && (reply[nr - 1] == '\n')) {
-            reply[nr - 1] = '\0';
-        }
-        break;
-    } while(1);
-
-    SAH_TRACEZ_OUT(ME);
-    return true;
-}
-
-static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t reply_len) {
-    return s_sendCmdSyncedExt(pConn, cmd, reply, reply_len, DFLT_SYNC_CMD_TMOUT_MS);
+    return swl_rc_isOk(wld_wpaCtrlConnection_sendCmd(pIface->cmdConn, cmd));
 }
 
 /**
@@ -189,8 +149,7 @@ static bool s_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* r
  */
 bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t reply_len) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
-    ASSERT_STR(cmd, false, ME, "No cmd");
-    return s_sendCmdSynced(pIface->cmdConn, cmd, reply, reply_len);
+    return swl_rc_isOk(wld_wpaCtrlConnection_sendCmdSynced(pIface->cmdConn, cmd, reply, reply_len));
 }
 
 /**
@@ -207,7 +166,9 @@ bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, 
 swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, char* valStr, size_t valStrSize) {
     ASSERT_NOT_NULL(pIface, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_STR(key, SWL_RC_INVALID_PARAM, ME, "No key");
-    char reply[MSG_LENGTH] = {'\0'};
+    size_t maxMsgLen = wld_wpaCtrl_getMaxMsgLen();
+    char reply[maxMsgLen];
+    memset(reply, 0, sizeof(reply));
     bool ret = wld_wpaCtrl_sendCmdSynced(pIface, cmd, reply, sizeof(reply));
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "failed to get cmd(%s) reply", cmd);
     int valStrLen = wld_wpaCtrl_getValueStr(reply, key, valStr, valStrSize);
@@ -217,24 +178,6 @@ swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const c
                 ME, "%s: buffer too short for field %s (l:%d,s:%zu)", pIface->name, key, valStrLen, valStrSize);
     return SWL_RC_OK;
 }
-
-static bool s_sendCmdCheckResponseExt(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse, uint32_t tmOutMSec) {
-    ASSERT_NOT_NULL(pConn, false, ME, "NULL");
-    SAH_TRACEZ_IN(ME);
-    char reply[MSG_LENGTH] = {'\0'};
-
-    // send the command
-    ASSERTS_TRUE(s_sendCmdSyncedExt(pConn, cmd, reply, sizeof(reply) - 1, tmOutMSec), false, ME, "sending cmd %s failed", cmd);
-    // check the response
-    ASSERT_TRUE(swl_str_matches(reply, expectedResponse), false, ME, "cmd(%s) reply(%s): unmatch expect(%s)", cmd, reply, expectedResponse);
-
-    return true;
-}
-
-static bool s_sendCmdCheckResponse(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse) {
-    return s_sendCmdCheckResponseExt(pConn, cmd, expectedResponse, DFLT_SYNC_CMD_TMOUT_MS);
-}
-
 
 /**
  * @brief send synchronous command to wpa_ctrl server and check the received reply
@@ -249,7 +192,7 @@ static bool s_sendCmdCheckResponse(wpaCtrlConnection_t* pConn, char* cmd, char* 
  */
 bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
-    return s_sendCmdCheckResponseExt(pIface->cmdConn, cmd, expectedResponse, tmOutMSec);
+    return swl_rc_isOk(wld_wpaCtrlConnection_sendCmdCheckResponseExt(pIface->cmdConn, cmd, expectedResponse, tmOutMSec));
 }
 
 /**
@@ -264,7 +207,7 @@ bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* c
  */
 bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
-    return s_sendCmdCheckResponse(pIface->cmdConn, cmd, expectedResponse);
+    return swl_rc_isOk(wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->cmdConn, cmd, expectedResponse));
 }
 
 /**
@@ -289,133 +232,7 @@ swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, ch
     ret = vsnprintf(cmdStr, sizeof(cmdStr), cmdFormat, args);
     va_end(args);
     ASSERT_FALSE(ret < 0, SWL_RC_INVALID_PARAM, ME, "Fail to format cmd string");
-    ret = s_sendCmdCheckResponse(pIface->cmdConn, cmdStr, expectedResponse);
-    return (ret ? SWL_RC_OK : SWL_RC_ERROR);
-}
-
-/**
- * @brief callback for received data from wpa_ctrl server
- *
- * @param peer : pointer to source context
- *
- * @return false on error. Otherwise, true
- */
-static void s_readCtrl(int fd, void* priv _UNUSED) {
-    SAH_TRACEZ_IN(ME);
-    char msgData[2048] = {'\0'};
-    ssize_t msgDataLen;
-    ASSERTS_TRUE(fd > 0, , ME, "fd <= 0");
-
-    msgDataLen = recv(fd, msgData, (sizeof(msgData) - 1), MSG_DONTWAIT);
-    ASSERTS_FALSE(msgDataLen <= 0, , ME, "recv() failed (%d:%s)", errno, strerror(errno));
-    msgData[msgDataLen] = '\0';
-    amxo_connection_t* con = amxo_connection_get(get_wld_plugin_parser(), fd);
-    ASSERT_NOT_NULL(con, , ME, "con NULL");
-    wpaCtrlConnection_t* pConn = (wpaCtrlConnection_t*) con->priv;
-    const char* srvPath = s_getConnSrvPath(pConn);
-    SAH_TRACEZ_INFO(ME, "received data(%s) from (%s)", msgData, srvPath);
-    ASSERTS_NOT_NULL(pConn, , ME, "NULL");
-    wld_wpaCtrl_processMsg(pConn->pInterface, msgData, msgDataLen);
-    SAH_TRACEZ_OUT(ME);
-}
-
-/**
- * @brief close wpa_connection to wpa_ctrl server
- *
- * @param ppConn connection to close and reset
- *
- * @return void
- */
-static void s_wpaCtrlCloseConnection(wpaCtrlConnection_t* pConn) {
-    ASSERTS_NOT_NULL(pConn, , ME, "NULL");
-    ASSERTS_TRUE(pConn->wpaPeer > 0, , ME, "NULL");
-    unlink(pConn->clientAddr.sun_path);
-    amxo_connection_remove(get_wld_plugin_parser(), pConn->wpaPeer);
-    pConn->wpaPeer = 0;
-}
-
-static void s_wpaCtrlCleanConnection(wpaCtrlConnection_t** ppConn) {
-    ASSERTS_NOT_NULL(ppConn, , ME, "NULL");
-    s_wpaCtrlCloseConnection(*ppConn);
-    free(*ppConn);
-    *ppConn = NULL;
-}
-
-/**
- * @brief initialize connection to wpa_ctrl server
- *
- * @param ppConn: connection to allocate and establish
- * @param interfaceName interface name
- * @param type WPA_CONNECTION_CMD, WPA_CONNECTION_EVENT
- * @param userdata the data used by the callback
- * @param handler the callback function is triggered when data is received on the opened connection
- *
- * @return true on success. Otherwise, false.
- */
-static bool s_wpaCtrlInitConnection(wpaCtrlConnection_t** ppConn, wld_wpaCtrlInterface_t* pIface, uint32_t connId, char* serverPath) {
-    ASSERT_NOT_NULL(ppConn, false, ME, "NULL");
-    ASSERT_NOT_NULL(pIface, false, ME, "NULL");
-    char* interfaceName = pIface->name;
-    ASSERT_TRUE(interfaceName && interfaceName[0], false, ME, "invalid interfaceName");
-    ASSERT_TRUE(serverPath && serverPath[0], false, ME, "invalid serverPath");
-
-    wpaCtrlConnection_t* pConn = *ppConn;
-    if(pConn == NULL) {
-        pConn = calloc(1, sizeof(wpaCtrlConnection_t));
-        ASSERT_NOT_NULL(pConn, false, ME, "%s: fail to alloc wpa_ctrl connection", interfaceName);
-        pConn->pInterface = pIface;
-        *ppConn = pConn;
-    } else if(pConn->wpaPeer != 0) {
-        s_wpaCtrlCloseConnection(pConn);
-    }
-
-    pConn->serverAddr.sun_family = AF_UNIX;
-    snprintf(pConn->serverAddr.sun_path, sizeof(pConn->clientAddr.sun_path), "%s/%s", serverPath, interfaceName);
-    pConn->clientAddr.sun_family = AF_UNIX;
-    snprintf(pConn->clientAddr.sun_path, sizeof(pConn->serverAddr.sun_path), CTRL_IFACE_CLIENT "%s-%u", interfaceName, connId);
-
-    SAH_TRACEZ_INFO(ME, "%s: init connection (%s) to (%s)", interfaceName,
-                    s_getConnCliPath(pConn),
-                    s_getConnSrvPath(pConn));
-    return true;
-}
-
-/**
- * @brief open connection to wpa_ctrl server
- *
- * @param pConn: connection to be established
- *
- * @return true on success. Otherwise, false.
- */
-static bool s_wpaCtrlOpenConnection(wpaCtrlConnection_t* pConn) {
-    ASSERT_NOT_NULL(pConn, false, ME, "NULL");
-    ASSERTS_FALSE(pConn->wpaPeer > 0, true, ME, "already connected");
-    int fd = socket(PF_UNIX, SOCK_DGRAM, 0);
-    ASSERT_FALSE(fd < 0, false, ME, "socket(PF_UNIX, SOCK_DGRAM, 0) failed");
-    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
-
-    int ret = bind(fd, (struct sockaddr*) &(pConn->clientAddr), sizeof(struct sockaddr_un));
-    if((ret < 0) && (errno == EADDRINUSE)) {
-        unlink(pConn->clientAddr.sun_path);
-        ret = bind(fd, (struct sockaddr*) &(pConn->clientAddr), sizeof(struct sockaddr_un));
-    }
-    if((ret < 0) ||
-       (connect(fd, (struct sockaddr*) &(pConn->serverAddr), sizeof(struct sockaddr_un)) < 0) ||
-       (amxo_connection_add(get_wld_plugin_parser(), fd, s_readCtrl, "readCtrl", AMXO_CUSTOM, pConn) != 0)) {
-        SAH_TRACEZ_INFO(ME, "failed to open connection (%s) to (%s) err:%d:%s",
-                        s_getConnCliPath(pConn),
-                        s_getConnSrvPath(pConn),
-                        errno, strerror(errno));
-        close(fd);
-        s_wpaCtrlCloseConnection(pConn);
-        return false;
-    }
-    pConn->wpaPeer = fd;
-
-    SAH_TRACEZ_INFO(ME, "open connection (%s) to (%s)",
-                    s_getConnCliPath(pConn),
-                    s_getConnSrvPath(pConn));
-    return true;
+    return wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->cmdConn, cmdStr, expectedResponse);
 }
 
 /**
@@ -430,16 +247,15 @@ void wld_wpaCtrlInterface_close(wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, , ME, "NULL");
     // Send DETACH before closing connection
     if(wld_wpaCtrlMngr_isConnected(pIface->pMgr) && pIface->isReady && (pIface->eventConn != NULL)) {
-        bool ret = s_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK");
-        if(ret == false) {
-            SAH_TRACEZ_ERROR(ME, "detach failed from (%s)", s_getConnSrvPath(pIface->eventConn));
+        if(!swl_rc_isOk(wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK"))) {
+            SAH_TRACEZ_ERROR(ME, "detach failed from (%s)", wld_wpaCtrlConnection_getConnSrvPath(pIface->eventConn));
         }
     }
 
     // Close command connection socket
-    s_wpaCtrlCloseConnection(pIface->cmdConn);
+    wld_wpaCtrlConnection_close(pIface->cmdConn);
     // Close event socket
-    s_wpaCtrlCloseConnection(pIface->eventConn);
+    wld_wpaCtrlConnection_close(pIface->eventConn);
     pIface->isReady = false;
 }
 
@@ -448,38 +264,69 @@ void wld_wpaCtrlInterface_cleanup(wld_wpaCtrlInterface_t** ppIface) {
     wld_wpaCtrlInterface_t* pIface = *ppIface;
     ASSERTS_NOT_NULL(pIface, , ME, "NULL");
     wld_wpaCtrlInterface_close(pIface);
-    s_wpaCtrlCleanConnection(&pIface->cmdConn);
-    s_wpaCtrlCleanConnection(&pIface->eventConn);
+    wld_wpaCtrlConnection_cleanup(&pIface->cmdConn);
+    wld_wpaCtrlConnection_cleanup(&pIface->eventConn);
     wld_wpaCtrlMngr_unregisterInterface(pIface->pMgr, pIface);
+    free(pIface->name);
     free(pIface);
     *ppIface = NULL;
 }
 
-bool wld_wpaCtrlInterface_init(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, char* serverPath) {
+bool s_initInterface(wld_wpaCtrlInterface_t** ppIface, const char* ifName, int32_t linkId, const char* sockName, const char* serverPath) {
     SAH_TRACEZ_IN(ME);
     ASSERTS_NOT_NULL(ppIface, false, ME, "NULL");
+    ASSERT_STR(ifName, false, ME, "empty iface name");
+    ASSERT_STR(sockName, false, ME, "empty socket name");
+    ASSERT_STR(serverPath, false, ME, "empty server path");
 
     wld_wpaCtrlInterface_t* pIface = *ppIface;
     if(pIface == NULL) {
         pIface = calloc(1, sizeof(wld_wpaCtrlInterface_t));
-        ASSERT_NOT_NULL(pIface, false, ME, "%s: fail to allocate context", interfaceName);
+        ASSERT_NOT_NULL(pIface, false, ME, "%s: fail to allocate context", ifName);
+        pIface->linkId = -1;
         *ppIface = pIface;
     } else {
         wld_wpaCtrlInterface_close(pIface);
     }
-    swl_str_copyMalloc(&pIface->name, interfaceName);
+
+    swl_str_copyMalloc(&pIface->name, ifName);
+    pIface->linkId = linkId;
     pIface->isReady = false;
     pIface->enable = false;
 
     // init connection for events
-    bool ret = s_wpaCtrlInitConnection(&(pIface->eventConn), pIface, WPA_CONNECTION_EVENT, serverPath);
+    bool ret = swl_rc_isOk(wld_wpaCtrlConnection_init(&(pIface->eventConn), WPA_CONNECTION_EVENT, sockName, serverPath));
     // init connection for synchronous commands
-    ret |= s_wpaCtrlInitConnection(&(pIface->cmdConn), pIface, WPA_CONNECTION_CMD, serverPath);
+    ret |= swl_rc_isOk(wld_wpaCtrlConnection_init(&(pIface->cmdConn), WPA_CONNECTION_CMD, sockName, serverPath));
 
     if(!ret) {
         SAH_TRACEZ_ERROR(ME, "fail to init interface connections");
+    } else {
+        wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs = {
+            .fReadDataCb = (wld_wpaCtrlConnection_readDataCb_f) wld_wpaCtrl_processMsg,
+        };
+        wld_wpaCtrlConnection_setEvtHandlers(pIface->eventConn, pIface, &evtHdlrs);
+        wld_wpaCtrlConnection_setEvtHandlers(pIface->cmdConn, pIface, &evtHdlrs);
     }
     return ret;
+}
+
+bool wld_wpaCtrlInterface_initWithSockName(wld_wpaCtrlInterface_t** ppIface, const char* sockName, const char* serverPath) {
+    SAH_TRACEZ_IN(ME);
+    int32_t linkId = -1;
+    char ifName[swl_str_len(sockName) + 2];
+    s_parseSockName(sockName, ifName, sizeof(ifName), &linkId);
+    return s_initInterface(ppIface, ifName, linkId, sockName, serverPath);
+}
+
+bool wld_wpaCtrlInterface_initWithLink(wld_wpaCtrlInterface_t** ppIface, const char* interfaceName, int32_t linkId, const char* serverPath) {
+    char sockName[256] = {0};
+    s_formatSockName(sockName, sizeof(sockName), interfaceName, linkId);
+    return s_initInterface(ppIface, interfaceName, linkId, sockName, serverPath);
+}
+
+bool wld_wpaCtrlInterface_init(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, char* serverPath) {
+    return s_initInterface(ppIface, interfaceName, -1, interfaceName, serverPath);
 }
 
 bool wld_wpaCtrlInterface_setEvtHandlers(wld_wpaCtrlInterface_t* pIface, void* userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers) {
@@ -506,7 +353,7 @@ bool wld_wpaCtrlInterface_getEvtHandlers(wld_wpaCtrlInterface_t* pIface, void** 
 
 bool wld_wpaCtrlInterface_ping(const wld_wpaCtrlInterface_t* pIface) {
     return ((pIface != NULL) &&
-            (s_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG")));
+            (swl_rc_isOk(wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->cmdConn, "PING", "PONG"))));
 }
 
 bool wld_wpaCtrlInterface_isReady(const wld_wpaCtrlInterface_t* pIface) {
@@ -516,12 +363,17 @@ bool wld_wpaCtrlInterface_isReady(const wld_wpaCtrlInterface_t* pIface) {
 
 const char* wld_wpaCtrlInterface_getPath(const wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, "", ME, "NULL");
-    return s_getConnSrvPath(pIface->cmdConn);
+    return wld_wpaCtrlConnection_getConnSrvPath(pIface->cmdConn);
 }
 
 const char* wld_wpaCtrlInterface_getName(const wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, "", ME, "NULL");
     return pIface->name;
+}
+
+int32_t wld_wpaCtrlInterface_getLinkId(const wld_wpaCtrlInterface_t* pIface) {
+    ASSERTS_NOT_NULL(pIface, -1, ME, "NULL");
+    return pIface->linkId;
 }
 
 wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIface) {
@@ -537,6 +389,17 @@ void wld_wpaCtrlInterface_setEnable(wld_wpaCtrlInterface_t* pIface, bool enable)
 bool wld_wpaCtrlInterface_isEnabled(const wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, false, ME, "NULL");
     return pIface->enable;
+}
+
+const char* wld_wpaCtrlInterface_getConnectionPath(const wld_wpaCtrlInterface_t* pIface) {
+    ASSERTS_NOT_NULL(pIface, "", ME, "NULL");
+    ASSERTS_NOT_NULL(pIface->cmdConn, "", ME, "NULL");
+    return wld_wpaCtrlConnection_getConnSrvPath(pIface->cmdConn);
+}
+
+bool wld_wpaCtrlInterface_checkConnectionPath(const wld_wpaCtrlInterface_t* pIface) {
+    const char* path = wld_wpaCtrlInterface_getConnectionPath(pIface);
+    return wld_wpaCtrl_checkSockPath(path);
 }
 
 /**
@@ -558,8 +421,8 @@ bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
      * create a socket for event
      * and send attach command to wpa_ctrl server to register for unsolicited msg
      */
-    if((!s_wpaCtrlOpenConnection(pIface->eventConn)) ||
-       (!s_sendCmdCheckResponse(pIface->eventConn, "ATTACH", "OK"))) {
+    if((!swl_rc_isOk(wld_wpaCtrlConnection_open(pIface->eventConn))) ||
+       (!swl_rc_isOk(wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->eventConn, "ATTACH", "OK")))) {
         SAH_TRACEZ_ERROR(ME, "%s: fail to establish event connection", pIface->name);
         return false;
     }
@@ -567,7 +430,7 @@ bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
     /*
      * create a socket for cmd
      */
-    if(!s_wpaCtrlOpenConnection(pIface->cmdConn)) {
+    if(!swl_rc_isOk(wld_wpaCtrlConnection_open(pIface->cmdConn))) {
         SAH_TRACEZ_ERROR(ME, "%s: fail to establish cmd connection", pIface->name);
         return false;
     }

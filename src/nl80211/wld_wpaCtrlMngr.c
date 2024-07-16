@@ -64,11 +64,159 @@
 #include "swl/swl_string.h"
 #include "wld_wpaCtrlMngr_priv.h"
 #include "wld_wpaCtrlInterface_priv.h"
+#include "wld_ssid.h"
+#include "wld_nl80211_api.h"
+#include "wld_linuxIfUtils.h"
+#include <dirent.h>
 
 #define ME "wpaCtrl"
 
+static T_SSID* s_fetchLinkSSIDWithNl80211(const char* ifname, int32_t linkId) {
+    int ifIndex = -1;
+    int ret = wld_linuxIfUtils_getIfIndexExt((char*) ifname, &ifIndex);
+    ASSERTS_TRUE(ret >= 0, NULL, ME, "%s: fail to get iface index", ifname);
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    memset(&ifaceInfo, 0, sizeof(ifaceInfo));
+    ret = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), ifIndex, &ifaceInfo);
+    ASSERTS_TRUE(swl_rc_isOk(ret), NULL, "%s: fail to get nl iface info", ifname);
+    swl_macBin_t* pMac = NULL;
+    if((ifaceInfo.nMloLinks > 0) && (linkId >= 0)) {
+        wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo =
+            (wld_nl80211_ifaceMloLinkInfo_t* ) wld_nl80211_fetchIfaceMloLinkById(&ifaceInfo, linkId);
+        ASSERTI_NOT_NULL(pLinkInfo, NULL, ME, "%s: has not mld link id %d", ifname, linkId);
+        pMac = &pLinkInfo->link.linkMac;
+    } else {
+        pMac = &ifaceInfo.mac;
+    }
+    ASSERTS_FALSE(swl_mac_binIsNull(pMac), NULL, ME, "%s: link id %d has null mac", ifname, linkId);
+    T_SSID* pSSID = wld_ssid_getSsidByMacAddress(pMac);
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "%s: link id %d has no ssid", ifname, linkId);
+    SAH_TRACEZ_INFO(ME, "fetch with NL80211: ifname(%s) link(%d) ifIndex(%d) => linkMac(%s) => pSSID(%s)",
+                    ifname, linkId, ifIndex,
+                    swl_typeMacBin_toBuf32Ref(pMac).buf, pSSID->Name);
+    return pSSID;
+}
+
+static T_SSID* s_fetchLinkSSIDWithWpaCtrl(const char* ifname, int32_t linkId, const char* sockName) {
+    T_SSID* pMldSSID = wld_ssid_getSsidByIfName(ifname);
+    wld_wpaCtrlInterface_t* pMldWpaIface = wld_ssid_getWpaCtrlIface(pMldSSID);
+    char* linkIfName = NULL;
+    CALL_INTF(pMldWpaIface, fFetchLinkIfaceCb, linkId, sockName, &linkIfName);
+    ASSERTS_NOT_NULL(linkIfName, NULL, ME, "%s: link id %d has not ifname", ifname, linkId);
+    T_SSID* pSSID = wld_ssid_getSsidByIfName(linkIfName);
+    free(linkIfName);
+    ASSERTI_NOT_NULL(pSSID, NULL, ME, "%s: link id %d has no ssid", ifname, linkId);
+    SAH_TRACEZ_INFO(ME, "sock(%s): fetch Custom SSID[%s] ssid(%s) mldUnit(%d)",
+                    sockName, pSSID->Name, pSSID->SSID, pSSID->mldUnit);
+    return pSSID;
+}
+
+static T_SSID* s_fetchLinkSSID(const char* sockName) {
+    T_SSID* pSSID = NULL;
+    ASSERTS_STR(sockName, pSSID, ME, "empty socket name");
+    char ifName[swl_str_len(sockName) + 1];
+    int32_t linkId = -1;
+    int ret = wld_wpaCtrlInterface_parseSockName(sockName, ifName, sizeof(ifName), &linkId);
+    ASSERT_TRUE(ret, pSSID, ME, "fail to parse sockName");
+    pSSID = wld_ssid_getSsidByIfName(ifName);
+    ASSERT_NOT_NULL(pSSID, pSSID, ME, "no ssid is matching ifName(%s) linkId(%d) of sock(%s)",
+                    ifName, linkId, sockName);
+    if(linkId < 0) {
+        SAH_TRACEZ_INFO(ME, "sock(%s): ssid wpa iface: ifname(%s) => pSSID(%s)",
+                        sockName, ifName, pSSID->Name);
+        return pSSID;
+    }
+    ASSERT_TRUE(pSSID->mldUnit >= 0, NULL, ME, "unknown ssid(%s) is not mld member", pSSID->Name);
+    if(((pSSID = s_fetchLinkSSIDWithNl80211(ifName, linkId)) != NULL) ||
+       ((pSSID = s_fetchLinkSSIDWithWpaCtrl(ifName, linkId, sockName)) != NULL)) {
+        return pSSID;
+    }
+    SAH_TRACEZ_WARNING(ME, "sock(%s): Fail to match any SSID", sockName);
+    return NULL;
+}
+
+static int s_filterNames(const struct dirent* pEntry) {
+    const char* fname = pEntry->d_name;
+    if(swl_str_startsWith(fname, ".") || swl_str_startsWith(fname, "..")) {
+        return 0;
+    }
+    return 1;
+}
+
+swl_rc_ne s_checkMgrIfaces(wld_wpaCtrlMngr_t* pMgr) {
+    uint32_t nIfacesReady = wld_wpaCtrlMngr_countReadyInterfaces(pMgr);
+    uint32_t nExpecIfaces = wld_wpaCtrlMngr_countEnabledInterfaces(pMgr);
+    if((!nIfacesReady) || (nIfacesReady < nExpecIfaces)) {
+        return SWL_RC_CONTINUE;
+    }
+    amxp_timer_state_t timerState = amxp_timer_get_state(pMgr->connectTimer);
+    if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
+        return SWL_RC_OK;
+    }
+    pMgr->wpaCtrlConnectAttempts = 0;
+    amxp_timer_stop(pMgr->connectTimer);
+    if(nExpecIfaces > 0) {
+        wld_wpaCtrlInterface_t* pFstIface = wld_wpaCtrlMngr_getFirstInterface(pMgr);
+        wld_wpaCtrlInterface_t* pReadyIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+        char* srvName = pReadyIface ? pReadyIface->name : pFstIface ? pFstIface->name : "";
+        SAH_TRACEZ_INFO(ME, "%s: wpa_ctrl server is ready (%d/%d connected)", srvName, nIfacesReady, nExpecIfaces);
+        CALL_MGR(pMgr, srvName, fMngrReadyCb, true);
+    }
+    return SWL_RC_DONE;
+}
+
+swl_rc_ne s_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr) {
+    ASSERTS_NOT_NULL(pMgr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    const char* ctrlDirPath = wld_secDmn_getCtrlIfaceDirPath(pMgr->pSecDmn);
+    ASSERT_STR(ctrlDirPath, SWL_RC_INVALID_STATE, ME, "no ctrl iface dir");
+    struct dirent** namelist;
+    int n = scandir(ctrlDirPath, &namelist, s_filterNames, alphasort);
+    ASSERT_NOT_EQUALS(n, -1, SWL_RC_ERROR, ME, "fail to scan dir %s", ctrlDirPath);
+    char srvName[64] = {0};
+    for(int i = 0; i < n; i++) {
+        const char* fname = namelist[i]->d_name;
+        T_SSID* pSSID = s_fetchLinkSSID(fname);
+        wld_wpaCtrlInterface_t* pIface = wld_ssid_getWpaCtrlIface(pSSID);
+        wld_wpaCtrlMngr_t* pCurrMgr = wld_wpaCtrlInterface_getMgr(pIface);
+        if((pCurrMgr == pMgr) && (wld_secDmn_isRunning(pCurrMgr->pSecDmn))) {
+            if(!wld_wpaCtrlInterface_isReady(pIface)) {
+                wld_wpaCtrlInterface_setEnable(pIface, true);
+                wld_wpaCtrlInterface_open(pIface);
+            }
+            if(!srvName[0]) {
+                swl_str_copy(srvName, sizeof(srvName), pIface->name);
+            }
+        }
+        free(namelist[i]);
+    }
+    free(namelist);
+    swl_rc_ne rc = SWL_RC_ERROR;
+    if(!wld_secDmn_isRunning(pMgr->pSecDmn)) {
+        SAH_TRACEZ_ERROR(ME, "%s: daemon not started yet, no need to connect", srvName);
+        //no need to retry, as long as sec daemon is not running
+        pMgr->wpaCtrlConnectAttempts += MAX_CONNECTION_ATTEMPTS;
+    } else if((rc = s_checkMgrIfaces(pMgr)) == SWL_RC_CONTINUE) {
+        pMgr->wpaCtrlConnectAttempts++;
+    }
+    if(pMgr->wpaCtrlConnectAttempts > 0) {
+        uint32_t nIfacesReady = wld_wpaCtrlMngr_countReadyInterfaces(pMgr);
+        uint32_t nExpecIfaces = wld_wpaCtrlMngr_countEnabledInterfaces(pMgr);
+        if((nExpecIfaces > 0) && (pMgr->wpaCtrlConnectAttempts < MAX_CONNECTION_ATTEMPTS)) {
+            SAH_TRACEZ_WARNING(ME, "%s: wpa_ctrl server not yet ready (%d/%d), waiting (%d/%d)..",
+                               srvName, nIfacesReady, nExpecIfaces,
+                               pMgr->wpaCtrlConnectAttempts, MAX_CONNECTION_ATTEMPTS);
+        } else {
+            pMgr->wpaCtrlConnectAttempts = 0;
+            amxp_timer_stop(pMgr->connectTimer);
+            SAH_TRACEZ_WARNING(ME, "%s: stop connecting to wpa_ctrl server", srvName);
+            rc = SWL_RC_ERROR;
+        }
+    }
+    return rc;
+}
+
 /**
- * @brief Try to connect to all registered wpa_ctrl interfaces
+ * @brief Try to connect to all detected wpa_ctrl interfaces
  *
  * @param timer pointer to timer context
  * @param userdata pointer to wpa_ctrl manager context
@@ -79,51 +227,7 @@ static void s_reconnectMgrTimer(amxp_timer_t* timer, void* userdata) {
     ASSERTS_NOT_NULL(timer, , ME, "NULL");
     ASSERTS_NOT_NULL(userdata, , ME, "NULL");
     wld_wpaCtrlMngr_t* pMgr = (wld_wpaCtrlMngr_t*) userdata;
-
-    uint32_t nIfacesReady = 0;
-    const char* srvName = "";
-    swl_unLiListIt_t it;
-    wld_wpaCtrlInterface_t* pIface = NULL;
-    swl_unLiList_for_each(it, &pMgr->ifaces) {
-        pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
-        if(!srvName[0]) {
-            srvName = wld_wpaCtrlInterface_getName(pIface);
-        }
-        if((pMgr->pSecDmn != NULL) &&
-           (!wld_secDmn_isRunning(pMgr->pSecDmn))) {
-            SAH_TRACEZ_ERROR(ME, "%s: %s not started yet, no need to reconnect", srvName, pMgr->pSecDmn->dmnProcess->cmd);
-            //no need to retry, as long as sec daemon is not running
-            pMgr->wpaCtrlConnectAttempts += MAX_CONNECTION_ATTEMPTS;
-            break;
-        }
-        if(!wld_wpaCtrlInterface_isEnabled(pIface)) {
-            continue;
-        }
-        if(!wld_wpaCtrlInterface_open(pIface)) {
-            pMgr->wpaCtrlConnectAttempts++;
-            break;
-        } else {
-            nIfacesReady++;
-        }
-    }
-
-    uint32_t nExpecIfaces = wld_wpaCtrlMngr_countEnabledInterfaces(pMgr);
-    if((nIfacesReady > 0) && (nIfacesReady == nExpecIfaces)) {
-        pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
-        ASSERTS_NOT_NULL(pIface, , ME, "NULL");
-        SAH_TRACEZ_INFO(ME, "%s: wpa_ctrl server is ready (%d/%d connected)", srvName, nIfacesReady, nExpecIfaces);
-        pMgr->wpaCtrlConnectAttempts = 0;
-        amxp_timer_stop(pMgr->connectTimer);
-        CALL_MGR(pMgr, pIface->name, fMngrReadyCb, true);
-    } else if((nExpecIfaces > 0) && (pMgr->wpaCtrlConnectAttempts < MAX_CONNECTION_ATTEMPTS)) {
-        SAH_TRACEZ_WARNING(ME, "%s: wpa_ctrl server not yet ready (%d/%d), waiting (%d/%d)..",
-                           srvName, nIfacesReady, nExpecIfaces,
-                           pMgr->wpaCtrlConnectAttempts, MAX_CONNECTION_ATTEMPTS);
-    } else {
-        pMgr->wpaCtrlConnectAttempts = 0;
-        amxp_timer_stop(pMgr->connectTimer);
-        SAH_TRACEZ_ERROR(ME, "%s: Fail to connect to wpa_ctrl server", srvName);
-    }
+    s_checkAllIfaces(pMgr);
 }
 
 /**
@@ -263,6 +367,19 @@ uint32_t wld_wpaCtrlMngr_countEnabledInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
     swl_unLiList_for_each(it, &pMgr->ifaces) {
         wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
         if(wld_wpaCtrlInterface_isEnabled(pIface)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+uint32_t wld_wpaCtrlMngr_countReadyInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
+    uint32_t count = 0;
+    ASSERT_NOT_NULL(pMgr, count, ME, "NULL");
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &pMgr->ifaces) {
+        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(wld_wpaCtrlInterface_isReady(pIface)) {
             count++;
         }
     }

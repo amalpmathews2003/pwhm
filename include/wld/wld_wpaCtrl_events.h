@@ -159,6 +159,12 @@ typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* if
 typedef void (* wld_wpaCtrl_apIfaceEventCb_f)(void* userData, char* ifName);
 
 /*
+ * custom handler to fetch MLD Link iface name from wpa ctrl socket
+ * pLinkIfName is inside the handler and shall be freed by the caller
+ */
+typedef void (* wld_wpaCtrl_fetchLinkIfaceCb_f)(void* userData, const char* mldIfName, int32_t linkId, const char* sockName, char** pLinkIfName);
+
+/*
  * @brief structure of AP/EP event handlers
  */
 typedef struct {
@@ -190,6 +196,7 @@ typedef struct {
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
     wld_wpaCtrl_apIfaceEventCb_f fApEnabledCb;
     wld_wpaCtrl_apIfaceEventCb_f fApDisabledCb;
+    wld_wpaCtrl_fetchLinkIfaceCb_f fFetchLinkIfaceCb;                 // advanced/custom fetch of link iface name from wpa socket
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);

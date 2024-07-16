@@ -380,6 +380,7 @@ static bool s_isHapdIfaceStartable(wld_secDmnGrp_t* pSecDmnGrp _UNUSED, void* us
     ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
     T_Radio* pRad = (T_Radio*) pSecDmn->userData;
     ASSERT_TRUE(debugIsRadPointer(pRad), false, ME, "INVALID");
+    s_enableWpaCtrlIfaces(pRad);
     wifiGen_hapd_restoreMainIface(pRad);
     return wifiGen_hapd_isStartable(pRad);
 }
