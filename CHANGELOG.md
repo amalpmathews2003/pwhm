@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.5 - 2024-07-17(07:24:09 +0000)
+
+### Other
+
+- - wpa control socket never closed
+
 ## Release v6.29.4 - 2024-07-16(08:56:09 +0000)
 
 ### Other
