@@ -463,7 +463,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
             wifiGen_hapd_enableVapWpaCtrlIface(pAP);
             if(wifiGen_hapd_isRunning(pRad)) {
                 T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
-                if((pMainAPCfg != pAP) && (!wld_wpaCtrlInterface_isReady(pMainAPCfg->wpaCtrlInterface))) {
+                if((pMainAPCfg != NULL) && (pMainAPCfg != pAP) && (!wld_wpaCtrlInterface_isReady(pMainAPCfg->wpaCtrlInterface))) {
                     wifiGen_hapd_enableVapWpaCtrlIface(pMainAPCfg);
                     wld_wpaCtrlInterface_open(pMainAPCfg->wpaCtrlInterface);
                 }
