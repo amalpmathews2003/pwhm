@@ -4087,8 +4087,12 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
                         swl_typeTimeMono_toBuf32(pRad->changeInfo.lastStatusChange).buf);
     }
 
-    SAH_TRACEZ_ERROR(ME, "%s update %u -> %u", pRad->Name, oldStatus, pRad->status);
     if(oldStatus != pRad->status) {
+        SAH_TRACEZ_WARNING(ME, "%s update %s(%u) -> %s(%u)",
+                           pRad->Name,
+                           wld_status_str[oldStatus], oldStatus,
+                           wld_status_str[pRad->status], pRad->status);
+
         pRad->changeInfo.lastStatusChange = swl_time_getMonoSec();
         pRad->changeInfo.nrStatusChanges++;
 
@@ -4099,6 +4103,9 @@ void wld_rad_updateState(T_Radio* pRad, bool forceVapUpdate) {
             swl_typeTimeMono_toTransParam(&trans, "LastStatusChangeTimeStamp", pRad->changeInfo.lastStatusChange);
             ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pRad->Name);
         }
+    } else {
+        SAH_TRACEZ_INFO(ME, "%s: check state same update %s(%u) ", pRad->Name, wld_status_str[pRad->status], pRad->status);
+
     }
 
     if((oldStatus == pRad->status) && !forceVapUpdate) {
