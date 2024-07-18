@@ -1174,7 +1174,7 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport_ext(T_AccessPoint* pAP, const swl_macC
     }
 
     /* add Reporting Detail subelement */
-    bool ok = swl_str_catFormat(cmd, sizeof(cmd), "020100");
+    bool ok = swl_str_catFormat(cmd, sizeof(cmd), "020102");
     ASSERT_TRUE(ok, SWL_RC_ERROR, ME, "adding Reporting Detail subelement failed");
 
     /* add AP Channel Report subelements. */
