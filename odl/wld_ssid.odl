@@ -160,7 +160,9 @@
 		 * Description of the SSID.
 		 * Ex: "Guest SSID"
 		 */
-		%persistent %protected string Description;
+		%persistent %protected string Description {
+			userflags %upc;
+		}
 
 		/**
 		 * Custom netdev interface name:
