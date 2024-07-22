@@ -1082,7 +1082,14 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
         amxd_trans_set_cstring_t(&trans, "ProfileReference", profileRef);
         free(profileRef);
     } else {
-        amxd_trans_set_cstring_t(&trans, "ProfileReference", "");
+        uint32_t loadProfs = amxc_llist_size(&pEP->llProfiles);
+        uint32_t savedProfs = amxd_object_get_instance_count(amxd_object_get(pEP->pBus, "Profile"));
+        if(loadProfs != savedProfs) {
+            SAH_TRACEZ_WARNING(ME, "%s: loaded profiles %d != saved profiles %d => skip resetting profileReference", pEP->Name, loadProfs, savedProfs);
+        } else {
+            SAH_TRACEZ_WARNING(ME, "%s: resetting profileReference", pEP->Name);
+            amxd_trans_set_cstring_t(&trans, "ProfileReference", "");
+        }
     }
 
     TBuf[0] = 0;
