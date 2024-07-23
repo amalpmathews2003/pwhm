@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.8 - 2024-07-23(08:24:47 +0000)
+
+### Other
+
+- sync issue when ProfileReference set before profile
+
 ## Release v6.29.7 - 2024-07-17(15:18:25 +0000)
 
 ### Other
