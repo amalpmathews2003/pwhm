@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,64 +60,29 @@
 **
 ****************************************************************************/
 
-#include "wld.h"
-#include "wld_util.h"
-#include "wld_accesspoint.h"
-#include "wld_ssid.h"
-#include "wld_radio.h"
-#include "wld_assocdev.h"
-#include "wld_apMld.h"
+#ifndef SRC_INCLUDE_WLD_WLD_MLD_H_
+#define SRC_INCLUDE_WLD_WLD_MLD_H_
 
-#define ME "mld"
+#include "wld_types.h"
 
-/**
- * Retrieve the affiliatedStaInfo for a given MAC Address associated to a given MLD unit.
- *
- * @param info: the struct in which the affiliated sta info will be written
- * @param mldUnit: the mld unit ID of the ap MLD.
- * @param mac: the mac address for which to do a lookup for a matching affiliated sta.
- *
- * @return
- *  - true if an affiliated sta with the given mac address has been found. The info struct
- * shall be properly filled in with the affiliated sta, the associated device to which the affiliated sta belongs,
- * and the access point to which the associated device is associated.
- * - false if no matching affiliated sta can be found, or some error took place. In this case, the info
- * parameter will not be touched.
- */
-bool wld_apMld_fetchAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, int32_t mldUnit, swl_macBin_t* mac) {
-    ASSERT_NOT_NULL(info, false, ME, "NULL");
-    ASSERT_NOT_NULL(mac, false, ME, "NULL");
+swl_rc_ne wld_mld_initMgr(wld_mldMgr_t** ppMgr);
+swl_rc_ne wld_mld_deinitMgr(wld_mldMgr_t** ppMgr);
 
-    T_Radio* pRad = NULL;
-    wld_for_eachRad(pRad) {
-        T_AccessPoint* tmpAp = NULL;
-        wld_rad_forEachAp(tmpAp, pRad) {
-            if(tmpAp == NULL) {
-                continue;
-            }
+wld_mldLink_t* wld_mld_registerLink(T_SSID* pSSID, int32_t unit);
+swl_rc_ne wld_mld_unregisterLink(T_SSID* pSSID);
+wld_mldLink_t* wld_mld_selectPrimaryLink(wld_mldLink_t* pLink);
+swl_rc_ne wld_mld_setPrimaryLink(wld_mldLink_t* pLink);
+wld_mldLink_t* wld_mld_getPrimaryLink(wld_mldLink_t* pLink);
+T_SSID* wld_mld_getPrimaryLinkSsid(wld_mldLink_t* pLink);
+const char* wld_mld_getPrimaryLinkIfName(wld_mldLink_t* pLink);
+int32_t wld_mld_getPrimaryLinkIfIndex(wld_mldLink_t* pLink);
+swl_rc_ne wld_mld_setLinkId(wld_mldLink_t* pLink, int32_t linkId);
+int16_t wld_mld_getLinkId(const wld_mldLink_t* pLink);
+const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink);
+bool wld_mld_isLinkActive(wld_mldLink_t* pLink);
+bool wld_mld_isLinkEnabled(wld_mldLink_t* pLink);
+uint32_t wld_mld_countNeighLinks(wld_mldLink_t* pLink);
+uint32_t wld_mld_countNeighActiveLinks(wld_mldLink_t* pLink);
+uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink);
 
-            if(tmpAp->pSSID == NULL) {
-                continue;
-            }
-
-            if(tmpAp->pSSID->mldUnit != mldUnit) {
-                continue;
-            }
-
-            for(int i = 0; i < tmpAp->AssociatedDeviceNumberOfEntries; i++) {
-                T_AssociatedDevice* pAD = tmpAp->AssociatedDevice[i];
-                amxc_llist_for_each(it, &pAD->affiliatedStaList) {
-                    wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
-                    if(swl_mac_binMatches(&afSta->mac, mac)) {
-                        info->afSta = afSta;
-                        info->pAD = pAD;
-                        info->mainAp = tmpAp;
-                        return true;
-                    }
-                }
-            }
-        }
-    }
-
-    return false;
-}
+#endif /* SRC_INCLUDE_WLD_WLD_MLD_H_ */

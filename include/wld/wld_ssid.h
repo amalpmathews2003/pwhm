@@ -64,7 +64,6 @@
 #define __WLD_SSID_H__
 
 #include "wld.h"
-#include "wld_wpaCtrl_types.h"
 
 void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
 void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
@@ -81,6 +80,8 @@ T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
 T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin);
 T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin);
 T_SSID* wld_ssid_getSsidByIfName(const char* ifName);
-wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
+wld_ssidType_e wld_ssid_getType(T_SSID* pSSID);
+const char* wld_ssid_getIfName(T_SSID* pSSID);
+int32_t wld_ssid_getIfIndex(T_SSID* pSSID);
 
 #endif /* __WLD_SSID_H__ */

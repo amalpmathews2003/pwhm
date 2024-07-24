@@ -97,9 +97,28 @@ static T_SSID* s_fetchLinkSSIDWithNl80211(const char* ifname, int32_t linkId) {
     return pSSID;
 }
 
+static wld_wpaCtrlInterface_t** s_getWpaCtrlIfaceRef(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    if(pSSID->AP_HOOK != NULL) {
+        return &pSSID->AP_HOOK->wpaCtrlInterface;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return &pSSID->ENDP_HOOK->wpaCtrlInterface;
+    }
+    return NULL;
+}
+
+static wld_wpaCtrlInterface_t* s_getWpaCtrlIface(T_SSID* pSSID) {
+    wld_wpaCtrlInterface_t** ppIface = s_getWpaCtrlIfaceRef(pSSID);
+    if(ppIface != NULL) {
+        return *ppIface;
+    }
+    return NULL;
+}
+
 static T_SSID* s_fetchLinkSSIDWithWpaCtrl(const char* ifname, int32_t linkId, const char* sockName) {
     T_SSID* pMldSSID = wld_ssid_getSsidByIfName(ifname);
-    wld_wpaCtrlInterface_t* pMldWpaIface = wld_ssid_getWpaCtrlIface(pMldSSID);
+    wld_wpaCtrlInterface_t* pMldWpaIface = s_getWpaCtrlIface(pMldSSID);
     char* linkIfName = NULL;
     CALL_INTF(pMldWpaIface, fFetchLinkIfaceCb, linkId, sockName, &linkIfName);
     ASSERTS_NOT_NULL(linkIfName, NULL, ME, "%s: link id %d has not ifname", ifname, linkId);
@@ -176,7 +195,7 @@ swl_rc_ne s_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr) {
     for(int i = 0; i < n; i++) {
         const char* fname = namelist[i]->d_name;
         T_SSID* pSSID = s_fetchLinkSSID(fname);
-        wld_wpaCtrlInterface_t* pIface = wld_ssid_getWpaCtrlIface(pSSID);
+        wld_wpaCtrlInterface_t* pIface = s_getWpaCtrlIface(pSSID);
         wld_wpaCtrlMngr_t* pCurrMgr = wld_wpaCtrlInterface_getMgr(pIface);
         if((pCurrMgr == pMgr) && (wld_secDmn_isRunning(pCurrMgr->pSecDmn))) {
             if(!wld_wpaCtrlInterface_isReady(pIface)) {
