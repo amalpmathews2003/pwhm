@@ -93,13 +93,13 @@ swl_rc_ne wld_wpaCtrlInterface_setSockNameLinkPfx(const char* newLinkPfx) {
     return SWL_RC_OK;
 }
 
-static bool s_parseSockName(const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId) {
+bool wld_wpaCtrlInterface_parseSockName(const char* sockName, char* linkName, size_t linkNameSize, int32_t* pLinkId) {
     W_SWL_SETPTR(pLinkId, -1);
-    swl_str_copy(ifName, ifNameSize, NULL);
+    swl_str_copy(linkName, linkNameSize, NULL);
     ASSERT_STR(sockName, false, ME, "empty");
     ssize_t linkInfoPos = swl_str_find(sockName, sSockNameLinkPfx);
     if(linkInfoPos < 0) {
-        return swl_str_copy(ifName, ifNameSize, sockName);
+        return swl_str_copy(linkName, linkNameSize, sockName);
     }
     int32_t linkId = -1;
     const char* linkIdStr = &sockName[linkInfoPos + swl_str_len(sSockNameLinkPfx)];
@@ -108,19 +108,7 @@ static bool s_parseSockName(const char* sockName, char* ifName, size_t ifNameSiz
         return false;
     }
     W_SWL_SETPTR(pLinkId, linkId);
-    return swl_str_ncopy(ifName, ifNameSize, sockName, linkInfoPos);
-}
-
-static bool s_formatSockName(char* srvSockName, size_t srvSockNameSize, const char* ifName, int32_t linkId) {
-    swl_str_copy(srvSockName, srvSockNameSize, ifName);
-    if(linkId >= 0) {
-        swl_str_catFormat(srvSockName, srvSockNameSize, "%s%d", sSockNameLinkPfx, linkId);
-    }
-    return true;
-}
-
-bool wld_wpaCtrlInterface_parseSockName(const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId) {
-    return s_parseSockName(sockName, ifName, ifNameSize, pLinkId);
+    return swl_str_ncopy(linkName, linkNameSize, sockName, linkInfoPos);
 }
 
 /**
@@ -272,61 +260,49 @@ void wld_wpaCtrlInterface_cleanup(wld_wpaCtrlInterface_t** ppIface) {
     *ppIface = NULL;
 }
 
-bool s_initInterface(wld_wpaCtrlInterface_t** ppIface, const char* ifName, int32_t linkId, const char* sockName, const char* serverPath) {
-    SAH_TRACEZ_IN(ME);
+bool wld_wpaCtrlInterface_setConnectionInfo(wld_wpaCtrlInterface_t* pIface, const char* serverPath, const char* sockName) {
+    ASSERT_NOT_NULL(pIface, false, ME, "NULL");
+    ASSERT_STR(serverPath, false, ME, "%s: empty server path", pIface->name);
+    ASSERT_STR(sockName, false, ME, "%s: empty socket name", pIface->name);
+    wld_wpaCtrlInterface_close(pIface);
+    pIface->enable = false;
+    // init connection for events
+    bool ret = swl_rc_isOk(wld_wpaCtrlConnection_init(&(pIface->eventConn), WPA_CONNECTION_EVENT, serverPath, sockName));
+    // init connection for synchronous commands
+    ret |= swl_rc_isOk(wld_wpaCtrlConnection_init(&(pIface->cmdConn), WPA_CONNECTION_CMD, serverPath, sockName));
+    ASSERT_TRUE(ret, ret, ME, "%s: fail to init interface connections (%s/%s)", pIface->name, serverPath, sockName);
+
+    wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs = {
+        .fReadDataCb = (wld_wpaCtrlConnection_readDataCb_f) wld_wpaCtrl_processMsg,
+    };
+    wld_wpaCtrlConnection_setEvtHandlers(pIface->eventConn, pIface, &evtHdlrs);
+    wld_wpaCtrlConnection_setEvtHandlers(pIface->cmdConn, pIface, &evtHdlrs);
+
+    return ret;
+}
+
+bool wld_wpaCtrlInterface_initWithSockName(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, const char* serverPath, const char* sockName) {
     ASSERTS_NOT_NULL(ppIface, false, ME, "NULL");
-    ASSERT_STR(ifName, false, ME, "empty iface name");
-    ASSERT_STR(sockName, false, ME, "empty socket name");
-    ASSERT_STR(serverPath, false, ME, "empty server path");
+    ASSERT_STR(interfaceName, false, ME, "empty iface name");
+    ASSERT_STR(serverPath, false, ME, "%s: empty server path", interfaceName);
+    ASSERT_STR(sockName, false, ME, "%s: empty socket name", interfaceName);
 
     wld_wpaCtrlInterface_t* pIface = *ppIface;
     if(pIface == NULL) {
         pIface = calloc(1, sizeof(wld_wpaCtrlInterface_t));
-        ASSERT_NOT_NULL(pIface, false, ME, "%s: fail to allocate context", ifName);
-        pIface->linkId = -1;
+        ASSERT_NOT_NULL(pIface, false, ME, "%s: fail to allocate context", interfaceName);
         *ppIface = pIface;
-    } else {
-        wld_wpaCtrlInterface_close(pIface);
     }
+    swl_str_copyMalloc(&pIface->name, interfaceName);
 
-    swl_str_copyMalloc(&pIface->name, ifName);
-    pIface->linkId = linkId;
-    pIface->isReady = false;
-    pIface->enable = false;
+    bool ret = wld_wpaCtrlInterface_setConnectionInfo(pIface, serverPath, sockName);
+    ASSERT_TRUE(ret, ret, ME, "fail to init interface connections");
 
-    // init connection for events
-    bool ret = swl_rc_isOk(wld_wpaCtrlConnection_init(&(pIface->eventConn), WPA_CONNECTION_EVENT, sockName, serverPath));
-    // init connection for synchronous commands
-    ret |= swl_rc_isOk(wld_wpaCtrlConnection_init(&(pIface->cmdConn), WPA_CONNECTION_CMD, sockName, serverPath));
-
-    if(!ret) {
-        SAH_TRACEZ_ERROR(ME, "fail to init interface connections");
-    } else {
-        wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs = {
-            .fReadDataCb = (wld_wpaCtrlConnection_readDataCb_f) wld_wpaCtrl_processMsg,
-        };
-        wld_wpaCtrlConnection_setEvtHandlers(pIface->eventConn, pIface, &evtHdlrs);
-        wld_wpaCtrlConnection_setEvtHandlers(pIface->cmdConn, pIface, &evtHdlrs);
-    }
     return ret;
 }
 
-bool wld_wpaCtrlInterface_initWithSockName(wld_wpaCtrlInterface_t** ppIface, const char* sockName, const char* serverPath) {
-    SAH_TRACEZ_IN(ME);
-    int32_t linkId = -1;
-    char ifName[swl_str_len(sockName) + 2];
-    s_parseSockName(sockName, ifName, sizeof(ifName), &linkId);
-    return s_initInterface(ppIface, ifName, linkId, sockName, serverPath);
-}
-
-bool wld_wpaCtrlInterface_initWithLink(wld_wpaCtrlInterface_t** ppIface, const char* interfaceName, int32_t linkId, const char* serverPath) {
-    char sockName[256] = {0};
-    s_formatSockName(sockName, sizeof(sockName), interfaceName, linkId);
-    return s_initInterface(ppIface, interfaceName, linkId, sockName, serverPath);
-}
-
 bool wld_wpaCtrlInterface_init(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, char* serverPath) {
-    return s_initInterface(ppIface, interfaceName, -1, interfaceName, serverPath);
+    return wld_wpaCtrlInterface_initWithSockName(ppIface, interfaceName, serverPath, interfaceName);
 }
 
 bool wld_wpaCtrlInterface_setEvtHandlers(wld_wpaCtrlInterface_t* pIface, void* userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers) {
@@ -371,11 +347,6 @@ const char* wld_wpaCtrlInterface_getName(const wld_wpaCtrlInterface_t* pIface) {
     return pIface->name;
 }
 
-int32_t wld_wpaCtrlInterface_getLinkId(const wld_wpaCtrlInterface_t* pIface) {
-    ASSERTS_NOT_NULL(pIface, -1, ME, "NULL");
-    return pIface->linkId;
-}
-
 wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, NULL, ME, "NULL");
     return pIface->pMgr;
@@ -400,6 +371,11 @@ const char* wld_wpaCtrlInterface_getConnectionPath(const wld_wpaCtrlInterface_t*
 bool wld_wpaCtrlInterface_checkConnectionPath(const wld_wpaCtrlInterface_t* pIface) {
     const char* path = wld_wpaCtrlInterface_getConnectionPath(pIface);
     return wld_wpaCtrl_checkSockPath(path);
+}
+
+const char* wld_wpaCtrlInterface_getConnectionSockName(const wld_wpaCtrlInterface_t* pIface) {
+    ASSERTS_NOT_NULL(pIface, "", ME, "NULL");
+    return wld_wpaCtrlConnection_getConnSockName(pIface->cmdConn);
 }
 
 /**

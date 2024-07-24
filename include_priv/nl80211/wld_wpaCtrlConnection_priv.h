@@ -78,13 +78,12 @@ typedef struct {
 typedef struct wpaCtrlConnection {
     struct sockaddr_un clientAddr;
     struct sockaddr_un serverAddr;
-    char* sockName;
     int wpaPeer;
     void* userData;
     wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs;
 } wpaCtrlConnection_t;
 
-swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* sockName, const char* serverPath);
+swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* serverPath, const char* sockName);
 swl_rc_ne wld_wpaCtrlConnection_setEvtHandlers(wpaCtrlConnection_t* pConn, void* userData, wld_wpaCtrlConnection_evtHandlers_cb* pEvtHdlrs);
 swl_rc_ne wld_wpaCtrlConnection_open(wpaCtrlConnection_t* pConn);
 swl_rc_ne wld_wpaCtrlConnection_sendCmd(wpaCtrlConnection_t* pConn, const char* cmd);
@@ -96,5 +95,6 @@ swl_rc_ne wld_wpaCtrlConnection_close(wpaCtrlConnection_t* pConn);
 swl_rc_ne wld_wpaCtrlConnection_cleanup(wpaCtrlConnection_t** ppConn);
 const char* wld_wpaCtrlConnection_getConnCliPath(wpaCtrlConnection_t* pConn);
 const char* wld_wpaCtrlConnection_getConnSrvPath(wpaCtrlConnection_t* pConn);
+const char* wld_wpaCtrlConnection_getConnSockName(wpaCtrlConnection_t* pConn);
 
 #endif /* INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_ */

@@ -105,6 +105,13 @@ const char* wld_wpaCtrlConnection_getConnSrvPath(wpaCtrlConnection_t* pConn) {
     return s_getConnSrvPath(pConn);
 }
 
+const char* wld_wpaCtrlConnection_getConnSockName(wpaCtrlConnection_t* pConn) {
+    ASSERTS_NOT_NULL(pConn, "", ME, "NULL");
+    const char* path = s_getConnSrvPath(pConn);
+    char* pSep = strrchr(path, '/');
+    return (pSep ? &pSep[1] : path);
+}
+
 swl_rc_ne wld_wpaCtrlConnection_close(wpaCtrlConnection_t* pConn) {
     ASSERTS_NOT_NULL(pConn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_TRUE(pConn->wpaPeer > 0, SWL_RC_OK, ME, "NULL");
@@ -126,15 +133,14 @@ swl_rc_ne wld_wpaCtrlConnection_cleanup(wpaCtrlConnection_t** ppConn) {
     SAH_TRACEZ_INFO(ME, "cleanup connection (%s) to (%s)",
                     s_getConnCliPath(pConn),
                     s_getConnSrvPath(pConn));
-    W_SWL_FREE(pConn->sockName);
     W_SWL_FREE(*ppConn);
     return SWL_RC_OK;
 }
 
-swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* sockName, const char* serverPath) {
+swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* serverPath, const char* sockName) {
     ASSERT_NOT_NULL(ppConn, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERT_STR(sockName, SWL_RC_INVALID_PARAM, ME, "empty sock name");
     ASSERT_STR(serverPath, SWL_RC_INVALID_PARAM, ME, "empty server path");
+    ASSERT_STR(sockName, SWL_RC_INVALID_PARAM, ME, "empty sock name");
 
     wpaCtrlConnection_t* pConn = *ppConn;
     if(pConn == NULL) {
@@ -145,7 +151,6 @@ swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t conn
         wld_wpaCtrlConnection_close(pConn);
     }
 
-    swl_str_copyMalloc(&pConn->sockName, sockName);
     pConn->serverAddr.sun_family = AF_UNIX;
     snprintf(pConn->serverAddr.sun_path, sizeof(pConn->serverAddr.sun_path), "%s/%s", serverPath, sockName);
     pConn->clientAddr.sun_family = AF_UNIX;
@@ -242,7 +247,7 @@ swl_rc_ne wld_wpaCtrlConnection_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, con
     SAH_TRACEZ_IN(ME);
     ASSERT_NOT_NULL(pConn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_STR(cmd, SWL_RC_INVALID_PARAM, ME, "empty cmd");
-    const char* sockName = pConn->sockName;
+    const char* sockName = wld_wpaCtrlConnection_getConnSockName(pConn);
     int fd = pConn->wpaPeer;
     ASSERT_TRUE(fd > 0, SWL_RC_INVALID_STATE, ME, "%s: invalid fd for cmd (%s)", sockName, cmd);
 
@@ -328,7 +333,7 @@ swl_rc_ne wld_wpaCtrl_queryToSock(const char* serverPath, const char* sockName, 
     ASSERT_TRUE(wld_wpaCtrl_checkSockPath(sockPath), SWL_RC_INVALID_PARAM, ME, "wrong socket path (%s)", sockPath);
     wpaCtrlConnection_t* pConn = NULL;
     swl_rc_ne rc;
-    if(((rc = wld_wpaCtrlConnection_init(&pConn, -1, sockName, serverPath)) >= SWL_RC_OK) &&
+    if(((rc = wld_wpaCtrlConnection_init(&pConn, -1, serverPath, sockName)) >= SWL_RC_OK) &&
        ((rc = wld_wpaCtrlConnection_open(pConn)) >= SWL_RC_OK)) {
         rc = wld_wpaCtrlConnection_sendCmdSynced(pConn, cmd, reply, replyLen);
     }

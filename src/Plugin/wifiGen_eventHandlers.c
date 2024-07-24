@@ -460,17 +460,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
         wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
         if(pMgr != NULL) {
-            wifiGen_hapd_enableVapWpaCtrlIface(pAP);
-            if(wifiGen_hapd_isRunning(pRad)) {
-                T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
-                if((pMainAPCfg != NULL) && (pMainAPCfg != pAP) && (!wld_wpaCtrlInterface_isReady(pMainAPCfg->wpaCtrlInterface))) {
-                    wifiGen_hapd_enableVapWpaCtrlIface(pMainAPCfg);
-                    wld_wpaCtrlInterface_open(pMainAPCfg->wpaCtrlInterface);
-                }
-                if(!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface)) {
-                    wld_wpaCtrlInterface_open(pAP->wpaCtrlInterface);
-                }
-            }
+            wld_wpaCtrlMngr_checkAllIfaces(pMgr);
             if(s_checkEnabledIfacesCreatedReady(pMgr, pRad)) {
                 chanmgt_rad_state radDetState = CM_RAD_UNKNOWN;
                 wifiGen_hapd_getRadState(pRad, &radDetState);

@@ -78,7 +78,6 @@ struct wld_wpaCtrlInterface {
     void* userData;
     wld_wpaCtrlMngr_t* pMgr;
     wld_wpaCtrl_evtHandlers_cb handlers;
-    int32_t linkId;
 };
 
 // Call interface handler protected against null interface and null handler
@@ -96,6 +95,6 @@ struct wld_wpaCtrlInterface {
 /*
  * MLD Link wpa socket name format "<IFACEX>_link<Y>"
  */
-bool wld_wpaCtrlInterface_parseSockName(const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId);
+bool wld_wpaCtrlInterface_parseSockName(const char* sockName, char* linkName, size_t linkNameSize, int32_t* pLinkId);
 
 #endif /* __WLD_WPA_CTRL_INTERFACE_PRIV_H__ */
