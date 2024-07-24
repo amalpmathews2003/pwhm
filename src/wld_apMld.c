@@ -59,40 +59,14 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <debug/sahtrace.h>
-#include <assert.h>
-
-
 
 #include "wld.h"
 #include "wld_util.h"
 #include "wld_accesspoint.h"
 #include "wld_ssid.h"
 #include "wld_radio.h"
-#include "wld_wps.h"
 #include "wld_assocdev.h"
 #include "wld_apMld.h"
-#include "swl/swl_common.h"
-#include "swl/swl_assert.h"
-#include "swl/swl_string.h"
-#include "swl/swl_ieee802_1x_defs.h"
-#include "swl/swl_hex.h"
-#include "swl/swl_genericFrameParser.h"
-#include "swl/swl_staCap.h"
-#include "wld_ap_rssiMonitor.h"
-#include "wld_eventing.h"
-#include "Utils/wld_autoCommitMgr.h"
-#include "Utils/wld_autoNeighAdd.h"
-#include "wld_ap_nl80211.h"
-#include "wld_hostapd_ap_api.h"
-#include "wld_dm_trans.h"
-#include "Features/wld_persist.h"
-#include "wld_extMod.h"
 
 #define ME "mld"
 

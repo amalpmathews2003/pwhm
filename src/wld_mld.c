@@ -1,0 +1,463 @@
+/****************************************************************************
+**
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
+** conditions are met:
+**
+** 1. Redistributions of source code must retain the above copyright
+** notice, this list of conditions and the following disclaimer.
+**
+** 2. Redistributions in binary form must reproduce the above
+** copyright notice, this list of conditions and the following
+** disclaimer in the documentation and/or other materials provided
+** with the distribution.
+**
+** Subject to the terms and conditions of this license, each
+** copyright holder and contributor hereby grants to those receiving
+** rights under this license a perpetual, worldwide, non-exclusive,
+** no-charge, royalty-free, irrevocable (except for failure to
+** satisfy the conditions of this license) patent license to make,
+** have made, use, offer to sell, sell, import, and otherwise
+** transfer this software, where such license applies only to those
+** patent claims, already acquired or hereafter acquired, licensable
+** by such copyright holder or contributor that are necessarily
+** infringed by:
+**
+** (a) their Contribution(s) (the licensed copyrights of copyright
+** holders and non-copyrightable additions of contributors, in
+** source or binary form) alone; or
+**
+** (b) combination of their Contribution(s) with the work of
+** authorship to which such Contribution(s) was added by such
+** copyright holder or contributor, if, at the time the Contribution
+** is added, such addition causes such combination to be necessarily
+** infringed. The patent license shall not apply to any other
+** combinations which include the Contribution.
+**
+** Except as expressly stated above, no rights or licenses from any
+** copyright holder or contributor is granted under this license,
+** whether expressly, by implication, estoppel or otherwise.
+**
+** DISCLAIMER
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+** CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+** POSSIBILITY OF SUCH DAMAGE.
+**
+****************************************************************************/
+
+#include "wld.h"
+#include "wld_mld.h"
+#include "wld_ssid.h"
+#include "wld_util.h"
+#include "wld_radioOperatingStandards.h"
+#include "wld_chanmgt.h"
+
+#define ME "mld"
+
+typedef struct {
+    wld_ssidType_e type;
+    amxc_llist_t mlds;
+} wld_mldGroup_t;
+
+struct wld_mldMgr {
+    bool init;
+    wld_mldGroup_t groups[WLD_SSID_TYPE_MAX];
+};
+
+typedef struct {
+    amxc_llist_it_t it;
+    uint8_t unit;
+    amxc_llist_t links;
+    wld_mldGroup_t* pGroup;
+    wld_mldLink_t* pPrimLink;
+} wld_mld_t;
+
+struct wld_mldLink {
+    amxc_llist_it_t it;
+    T_SSID* pSSID;
+    int16_t linkId;
+    wld_mld_t* pMld;
+};
+
+static const char* sGroupNames[WLD_SSID_TYPE_MAX] = {"UNKNOWN", "APMLD", "STAMLD"};
+
+static wld_mldGroup_t* s_getGroup(wld_mld_t* pMld) {
+    ASSERTS_NOT_NULL(pMld, NULL, ME, "NULL");
+    ASSERTS_TRUE(amxc_llist_it_is_in_list(&pMld->it), NULL, ME, "Not a list item");
+    ASSERTS_TRUE(pMld->pGroup, NULL, ME, "Not a list item");
+    ASSERT_EQUALS(&pMld->pGroup->mlds, pMld->it.llist, NULL, ME, "unmatched list");
+    return pMld->pGroup;
+}
+
+const char* s_getMldGroupName(wld_mld_t* pMld) {
+    ASSERTS_NOT_NULL(pMld, "", ME, "NULL");
+    wld_mldGroup_t* pGroup = s_getGroup(pMld);
+    ASSERTS_NOT_NULL(pGroup, "", ME, "no mld group");
+    ASSERT_TRUE(pGroup->type < SWL_ARRAY_SIZE(sGroupNames), "", ME, "type is out of range");
+    return sGroupNames[pGroup->type];
+}
+
+const char* s_getLinkName(wld_mldLink_t* pLink) {
+    const char* name = "unknown";
+    ASSERTS_NOT_NULL(pLink, name, ME, "NULL");
+    ASSERTS_NOT_NULL(pLink->pSSID, name, ME, "NULL");
+    return pLink->pSSID->Name;
+}
+
+const char* wld_mld_getLinkName(wld_mldLink_t* pLink) {
+    return s_getLinkName(pLink);
+}
+
+static wld_mldMgr_t* s_getMgr(T_SSID* pSSID) {
+    if((pSSID == NULL) ||
+       (pSSID->RADIO_PARENT == NULL) ||
+       (pSSID->RADIO_PARENT->vendor == NULL) ||
+       (pSSID->RADIO_PARENT->vendor->pMldMgr == NULL) ||
+       (!pSSID->RADIO_PARENT->vendor->pMldMgr->init)) {
+        return NULL;
+    }
+    return pSSID->RADIO_PARENT->vendor->pMldMgr;
+}
+
+static wld_mldGroup_t* s_findGroupInMgr(wld_mldMgr_t* pMgr, wld_ssidType_e type) {
+    ASSERTS_NOT_NULL(pMgr, NULL, ME, "NULL");
+    ASSERT_TRUE(pMgr->init, NULL, ME, "Not initialized");
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(pMgr->groups); i++) {
+        if(pMgr->groups[i].type == type) {
+            return &pMgr->groups[i];
+        }
+    }
+    return NULL;
+}
+
+static wld_mldGroup_t* s_getLinkGroup(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    return s_getGroup(pLink->pMld);
+}
+
+static bool s_isTypedLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
+    wld_ssidType_e type = wld_ssid_getType(pLink->pSSID);
+    ASSERTS_NOT_EQUALS(type, WLD_SSID_TYPE_UNKNOWN, false, ME, "ssid not typed");
+    wld_mldGroup_t* pGroup = s_getLinkGroup(pLink);
+    ASSERTS_NOT_NULL(pGroup, false, ME, "no mld group");
+    return (pGroup->type == type);
+}
+
+static swl_rc_ne s_findMldInGroup(wld_mldGroup_t* pGroup, int32_t unit, wld_mld_t** ppMld, wld_mld_t** ppNextMld) {
+    W_SWL_SETPTR(ppMld, NULL);
+    W_SWL_SETPTR(ppNextMld, NULL);
+    ASSERTS_NOT_NULL(pGroup, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(unit >= 0, SWL_RC_INVALID_PARAM, ME, "invalid mld unit");
+    wld_mld_t* pNextMld = NULL;
+    amxc_llist_for_each(it, &pGroup->mlds) {
+        wld_mld_t* pMld = amxc_container_of(it, wld_mld_t, it);
+        if(pMld->unit == unit) {
+            W_SWL_SETPTR(ppMld, pMld);
+        }
+        //mlds are sorted by mld unit
+        if((pMld->unit > unit) && (pNextMld == NULL)) {
+            pNextMld = pMld;
+            W_SWL_SETPTR(ppNextMld, pNextMld);
+        }
+    }
+    return SWL_RC_OK;
+}
+
+static wld_mld_t* s_setMldInGroup(wld_mldGroup_t* pGroup, int32_t unit) {
+    ASSERTS_NOT_NULL(pGroup, NULL, ME, "NULL");
+    ASSERTS_TRUE(unit >= 0, NULL, ME, "invalid mld unit");
+    wld_mld_t* pMld = NULL;
+    wld_mld_t* pNextMld = NULL;
+    s_findMldInGroup(pGroup, unit, &pMld, &pNextMld);
+    ASSERTI_NULL(pMld, pMld, ME, "mld %d (%p) already in list %d", unit, pMld, pGroup->type);
+    SAH_TRACEZ_INFO(ME, "create mld %d in list %d", unit, pGroup->type);
+    pMld = calloc(1, sizeof(*pMld));
+    ASSERT_NOT_NULL(pMld, pMld, ME, "alloc failure");
+    amxc_llist_init(&pMld->links);
+    pMld->unit = unit;
+    pMld->pGroup = pGroup;
+    if(pNextMld == NULL) {
+        amxc_llist_append(&pGroup->mlds, &pMld->it);
+    } else {
+        //mlds are sorted by mld unit
+        amxc_llist_it_insert_before(&pNextMld->it, &pMld->it);
+    }
+    return pMld;
+}
+
+static wld_mld_t* s_getTargetMld(T_SSID* pSSID, int32_t unit) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    ASSERTS_TRUE(unit >= 0, NULL, ME, "No mld unit");
+    T_Radio* pRad = pSSID->RADIO_PARENT;
+    ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
+    ASSERTS_TRUE(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE), NULL, ME, "11be not supp");
+    wld_ssidType_e mldType = wld_ssid_getType(pSSID);
+    wld_mldGroup_t* pGroup = s_findGroupInMgr(s_getMgr(pSSID), mldType);
+    ASSERTS_NOT_NULL(pGroup, NULL, ME, "no group available for mld type %d", mldType);
+    return s_setMldInGroup(pGroup, unit);
+}
+
+static void s_deinitMld(wld_mld_t* pMld);
+
+static wld_mldLink_t* s_takeLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    wld_mld_t* pMld = pLink->pMld;
+    wld_mld_resetLinkId(pLink);
+    amxc_llist_it_take(&pLink->it);
+    pLink->pMld = NULL;
+    if(pMld != NULL) {
+        SAH_TRACEZ_INFO(ME, "take link %d (%p) out of mld %p", pLink->linkId, pLink, pMld);
+        if(amxc_llist_is_empty(&pMld->links)) {
+            s_deinitMld(pMld);
+        }
+    }
+    return pLink;
+}
+
+static void s_deinitLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "deinit link %d (%p)", pLink->linkId, pLink);
+    s_takeLink(pLink);
+    if(pLink->pSSID) {
+        pLink->pSSID->pMldLink = NULL;
+    }
+    free(pLink);
+}
+
+static void s_deinitLinkIt(amxc_llist_it_t* it) {
+    ASSERTS_NOT_NULL(it, , ME, "NULL");
+    wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
+    s_deinitLink(pLink);
+}
+
+static void s_deinitMld(wld_mld_t* pMld) {
+    ASSERTS_NOT_NULL(pMld, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "deinit mld %d (%p) including %zu links ", pMld->unit, pMld, amxc_llist_size(&pMld->links));
+    amxc_llist_it_take(&pMld->it);
+    amxc_llist_clean(&pMld->links, s_deinitLinkIt);
+    pMld->pGroup = NULL;
+    free(pMld);
+}
+
+static void s_deinitMldIt(amxc_llist_it_t* it) {
+    ASSERTS_NOT_NULL(it, , ME, "NULL");
+    wld_mld_t* pMld = amxc_container_of(it, wld_mld_t, it);
+    s_deinitMld(pMld);
+}
+
+static void s_deinitMldGroup(wld_mldGroup_t* pGroup) {
+    ASSERTS_NOT_NULL(pGroup, , ME, "NULL");
+    amxc_llist_clean(&pGroup->mlds, s_deinitMldIt);
+}
+
+static void s_initMldGroup(wld_mldGroup_t* pGroup, wld_ssidType_e type) {
+    ASSERTS_NOT_NULL(pGroup, , ME, "NULL");
+    pGroup->type = type;
+    amxc_llist_init(&pGroup->mlds);
+}
+
+swl_rc_ne wld_mld_initMgr(wld_mldMgr_t** ppMgr) {
+    ASSERT_NOT_NULL(ppMgr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_mldMgr_t* pMgr = *ppMgr;
+    if(pMgr == NULL) {
+        pMgr = calloc(1, sizeof(*pMgr));
+        ASSERT_NOT_NULL(pMgr, SWL_RC_ERROR, ME, "fail to alloc mld mgr");
+        *ppMgr = pMgr;
+    }
+    ASSERTI_FALSE(pMgr->init, SWL_RC_OK, ME, "already initialized");
+    for(wld_ssidType_e type = WLD_SSID_TYPE_UNKNOWN; type < WLD_SSID_TYPE_MAX; type++) {
+        s_initMldGroup(&pMgr->groups[type], type);
+    }
+    pMgr->init = true;
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_mld_deinitMgr(wld_mldMgr_t** ppMgr) {
+    ASSERT_NOT_NULL(ppMgr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    wld_mldMgr_t* pMgr = *ppMgr;
+    ASSERTI_NOT_NULL(pMgr, SWL_RC_OK, ME, "already deinitialized");
+    for(wld_ssidType_e type = WLD_SSID_TYPE_UNKNOWN; type < WLD_SSID_TYPE_MAX; type++) {
+        s_deinitMldGroup(&pMgr->groups[type]);
+    }
+    pMgr->init = false;
+    free(pMgr);
+    *ppMgr = NULL;
+    return SWL_RC_OK;
+}
+
+wld_mldLink_t* wld_mld_registerLink(T_SSID* pSSID, int32_t unit) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    wld_mld_t* pTgtMld = s_getTargetMld(pSSID, unit);
+    wld_mldLink_t* pLink = pSSID->pMldLink;
+    wld_mld_t* pMld = NULL;
+    if(pLink != NULL) {
+        if(pTgtMld == NULL) {
+            SAH_TRACEZ_INFO(ME, "%s: remove link %p, set with unit %d", pSSID->Name, pLink, unit);
+            s_deinitLink(pLink);
+            return NULL;
+        }
+        pMld = pLink->pMld;
+        if(pMld == pTgtMld) {
+            SAH_TRACEZ_INFO(ME, "%s: same target mld %p (%d) for link %p, set with unit %d", pSSID->Name, pMld, pMld->unit, pLink, unit);
+            return pLink;
+        }
+        if(pMld != NULL) {
+            SAH_TRACEZ_INFO(ME, "%s: extract link %p from mld %p, unit %d->%d", pSSID->Name, pLink, pMld, pMld->unit, unit);
+            s_takeLink(pLink);
+            pMld = NULL;
+        } else {
+            SAH_TRACEZ_ERROR(ME, "%s: link %p exists without mld => remove it", pSSID->Name, pLink);
+            s_deinitLink(pLink);
+            pLink = NULL;
+        }
+    }
+    if(pLink == NULL) {
+        ASSERTI_NOT_NULL(pTgtMld, pLink, ME, "%s: no target unit %d", pSSID->Name, unit);
+        pLink = calloc(1, sizeof(*pLink));
+        ASSERT_NOT_NULL(pLink, pLink, ME, "%s: fail to alloc pLink (unit %d)", pSSID->Name, unit);
+        pLink->linkId = NO_LINK_ID;
+    }
+    SAH_TRACEZ_INFO(ME, "%s: append link %p to mld %p, unit %d", pSSID->Name, pLink, pTgtMld, pTgtMld->unit);
+    amxc_llist_append(&pTgtMld->links, &pLink->it);
+    pLink->pMld = pTgtMld;
+    pLink->pSSID = pSSID;
+    pSSID->pMldLink = pLink;
+    return pLink;
+}
+
+swl_rc_ne wld_mld_unregisterLink(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
+    s_deinitLink(pSSID->pMldLink);
+    pSSID->pMldLink = NULL;
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_mld_setPrimaryLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(wld_mld_isLinkEnabled(pLink), SWL_RC_ERROR, ME, "disabled link %s can not be set as primary", s_getLinkName(pLink));
+    wld_mld_t* pMld = pLink->pMld;
+    ASSERT_NOT_NULL(pMld, SWL_RC_ERROR, ME, "NULL");
+    pMld->pPrimLink = pLink;
+    return SWL_RC_OK;
+}
+
+wld_mldLink_t* wld_mld_getPrimaryLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    ASSERTI_TRUE(s_isTypedLink(pLink), NULL, ME, "untyped link %s has no primary link", s_getLinkName(pLink));
+    wld_mld_t* pMld = pLink->pMld;
+    ASSERT_NOT_NULL(pMld, NULL, ME, "NULL");
+    amxc_llist_for_each(it, &pMld->links) {
+        wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
+        if(wld_mld_isLinkEnabled(pLink) && (pMld->pPrimLink == pLink)) {
+            return pLink;
+        }
+    }
+    return NULL;
+}
+
+T_SSID* wld_mld_getLinkSsid(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    return pLink->pSSID;
+}
+
+T_SSID* wld_mld_getPrimaryLinkSsid(wld_mldLink_t* pLink) {
+    return wld_mld_getLinkSsid(wld_mld_getPrimaryLink(pLink));
+}
+
+const char* wld_mld_getPrimaryLinkIfName(wld_mldLink_t* pLink) {
+    return wld_ssid_getIfName(wld_mld_getPrimaryLinkSsid(pLink));
+}
+
+int32_t wld_mld_getPrimaryLinkIfIndex(wld_mldLink_t* pLink) {
+    return wld_ssid_getIfIndex(wld_mld_getPrimaryLinkSsid(pLink));
+}
+
+bool wld_mld_isLinkActive(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
+    return (pLink->linkId >= 0);
+}
+
+bool wld_mld_isLinkEnabled(wld_mldLink_t* pLink) {
+    ASSERTS_TRUE(s_isTypedLink(pLink), false, ME, "NULL");
+    T_SSID* pSSID = pLink->pSSID;
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    T_Radio* pRad = pSSID->RADIO_PARENT;
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    return (pSSID->enable && pRad->enable);
+}
+
+uint32_t wld_mld_countNeighLinks(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, 0, ME, "NULL");
+    ASSERTS_TRUE(amxc_llist_it_is_in_list(&pLink->it), 0, ME, "Not a list item");
+    return amxc_llist_size(pLink->it.llist);
+}
+
+uint32_t wld_mld_countNeighActiveLinks(wld_mldLink_t* pLink) {
+    uint32_t count = 0;
+    ASSERTS_NOT_NULL(pLink, count, ME, "NULL");
+    ASSERTS_TRUE(amxc_llist_it_is_in_list(&pLink->it), count, ME, "Not a list item");
+    amxc_llist_for_each(it, pLink->it.llist) {
+        wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
+        count += wld_mld_isLinkActive(pLink);
+    }
+    return count;
+}
+
+uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink) {
+    uint32_t count = 0;
+    ASSERTS_NOT_NULL(pLink, count, ME, "NULL");
+    ASSERTS_TRUE(amxc_llist_it_is_in_list(&pLink->it), count, ME, "Not a list item");
+    amxc_llist_for_each(it, pLink->it.llist) {
+        wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
+        count += wld_mld_isLinkEnabled(pLink);
+    }
+    return count;
+}
+
+swl_rc_ne wld_mld_setLinkId(wld_mldLink_t* pLink, int32_t linkId) {
+    ASSERTS_NOT_NULL(pLink, SWL_RC_INVALID_PARAM, ME, "NULL");
+    if((!s_isTypedLink(pLink)) && (linkId != NO_LINK_ID)) {
+        SAH_TRACEZ_WARNING(ME, "link %s is untyped: resetting linkId (in:%d)",
+                           s_getLinkName(pLink), linkId);
+        linkId = NO_LINK_ID;
+    }
+    ASSERTS_NOT_EQUALS(pLink->linkId, linkId, SWL_RC_OK, ME, "same value");
+    SAH_TRACEZ_INFO(ME, "set link %s id: %d => %d", s_getLinkName(pLink), pLink->linkId, linkId);
+    /*
+     * if linkId is set to -1 when it was primary (ie current linkId value is 0)
+     * then a notification for MLDPrimaryChange must be sent so that other MLD Links update the primary link
+     */
+    pLink->linkId = linkId;
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_mld_resetLinkId(wld_mldLink_t* pLink) {
+    return wld_mld_setLinkId(pLink, NO_LINK_ID);
+}
+
+int16_t wld_mld_getLinkId(const wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NO_LINK_ID, ME, "NULL");
+    return pLink->linkId;
+}
+
+const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, "", ME, "NULL");
+    return wld_ssid_getIfName(pLink->pSSID);
+}
+

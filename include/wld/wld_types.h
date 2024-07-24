@@ -76,6 +76,9 @@ typedef struct S_SSID T_SSID;
 typedef struct S_EndPoint T_EndPoint;
 typedef struct vendor vendor_t;
 typedef struct wld_tinyRoam wld_tinyRoam_t;
+typedef struct wld_mldMgr wld_mldMgr_t;
+typedef struct wld_mldLink wld_mldLink_t;
+
 /*
  * Deprecated types with old syntax T_xxx , only defined for backward compatibility with legacy code
  * Please use wld_xxx_t types for new development.
@@ -117,6 +120,12 @@ typedef enum {
     RST_MAX
 } wld_status_e;
 
+typedef enum {
+    WLD_SSID_TYPE_UNKNOWN,
+    WLD_SSID_TYPE_AP,
+    WLD_SSID_TYPE_EP,
+    WLD_SSID_TYPE_MAX,
+} wld_ssidType_e;
 
 typedef enum {
     FSM_IDLE,        /* Task not yet created */

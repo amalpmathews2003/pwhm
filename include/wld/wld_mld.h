@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,33 +60,33 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+#ifndef SRC_INCLUDE_WLD_WLD_MLD_H_
+#define SRC_INCLUDE_WLD_WLD_MLD_H_
 
-#include "wld.h"
+#include "wld_types.h"
 
-void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
+#define NO_LINK_ID (-1)
 
-void wld_ssid_cleanAll();
-void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
-bool wld_ssid_isSSIDConfigured(T_SSID* pSSID);
-void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex, swl_macBin_t* macBin);
-void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin);
-void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin);
-void wld_ssid_setMac(T_SSID* pSSID, swl_macBin_t* macBin);
-bool wld_ssid_hasAutoMacBssIndex(T_SSID* pSSID, int32_t* pBssIndex);
-int32_t wld_rad_getHighestVapAutoMacBssIndex(T_Radio* pRad);
+swl_rc_ne wld_mld_initMgr(wld_mldMgr_t** ppMgr);
+swl_rc_ne wld_mld_deinitMgr(wld_mldMgr_t** ppMgr);
 
-T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
-T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
-T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin);
-T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin);
-wld_ssidType_e wld_ssid_getType(T_SSID* pSSID);
-const char* wld_ssid_getIfName(T_SSID* pSSID);
-int32_t wld_ssid_getIfIndex(T_SSID* pSSID);
+wld_mldLink_t* wld_mld_registerLink(T_SSID* pSSID, int32_t unit);
+swl_rc_ne wld_mld_unregisterLink(T_SSID* pSSID);
+T_SSID* wld_mld_getLinkSsid(wld_mldLink_t* pLink);
+const char* wld_mld_getLinkName(wld_mldLink_t* pLink);
+swl_rc_ne wld_mld_setPrimaryLink(wld_mldLink_t* pLink);
+wld_mldLink_t* wld_mld_getPrimaryLink(wld_mldLink_t* pLink);
+T_SSID* wld_mld_getPrimaryLinkSsid(wld_mldLink_t* pLink);
+const char* wld_mld_getPrimaryLinkIfName(wld_mldLink_t* pLink);
+int32_t wld_mld_getPrimaryLinkIfIndex(wld_mldLink_t* pLink);
+swl_rc_ne wld_mld_setLinkId(wld_mldLink_t* pLink, int32_t linkId);
+swl_rc_ne wld_mld_resetLinkId(wld_mldLink_t* pLink);
+int16_t wld_mld_getLinkId(const wld_mldLink_t* pLink);
+const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink);
+bool wld_mld_isLinkActive(wld_mldLink_t* pLink);
+bool wld_mld_isLinkEnabled(wld_mldLink_t* pLink);
+uint32_t wld_mld_countNeighLinks(wld_mldLink_t* pLink);
+uint32_t wld_mld_countNeighActiveLinks(wld_mldLink_t* pLink);
+uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink);
 
-T_SSID* wld_ssid_getSsidByIfName(const char* ifName);
-wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
-
-#endif /* __WLD_SSID_H__ */
+#endif /* SRC_INCLUDE_WLD_WLD_MLD_H_ */

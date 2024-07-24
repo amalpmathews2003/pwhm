@@ -494,6 +494,39 @@ wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID) {
     return NULL;
 }
 
+wld_ssidType_e wld_ssid_getType(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, WLD_SSID_TYPE_UNKNOWN, ME, "NULL");
+    if(pSSID->AP_HOOK != NULL) {
+        return WLD_SSID_TYPE_AP;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return WLD_SSID_TYPE_EP;
+    }
+    return WLD_SSID_TYPE_UNKNOWN;
+}
+
+const char* wld_ssid_getIfName(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, "", ME, "NULL");
+    if(pSSID->AP_HOOK != NULL) {
+        return pSSID->AP_HOOK->alias;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return pSSID->ENDP_HOOK->Name;
+    }
+    return "";
+}
+
+int32_t wld_ssid_getIfIndex(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, -1, ME, "NULL");
+    if(pSSID->AP_HOOK != NULL) {
+        return pSSID->AP_HOOK->index;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return pSSID->ENDP_HOOK->index;
+    }
+    return -1;
+}
+
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);
@@ -533,11 +566,9 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
 }
 
 
-static void s_setMLDUnit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+static void s_checkMLDUnit(T_SSID* pSSID, int32_t newMldUnit) {
     SAH_TRACEZ_IN(ME);
-    T_SSID* pSSID = wld_ssid_fromObj(object);
     ASSERT_NOT_NULL(pSSID, , ME, "INVALID");
-    int32_t newMldUnit = amxc_var_get_int32_t(newValue);
     if(pSSID->mldUnit == newMldUnit) {
         return;
     }
@@ -547,7 +578,17 @@ static void s_setMLDUnit_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     if(pSSID->AP_HOOK != NULL) {
         T_AccessPoint* pAP = pSSID->AP_HOOK;
         pAP->pFA->mfn_wvap_setMldUnit(pAP);
+        wld_autoCommitMgr_notifyVapEdit(pAP);
     }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setSSIDConf_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+    T_SSID* pSSID = wld_ssid_fromObj(object);
+    ASSERT_NOT_NULL(pSSID, , ME, "INVALID");
+    s_checkMLDUnit(pSSID, amxd_object_get_int32_t(object, "MLDUnit", NULL));
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -741,7 +782,7 @@ static void s_setCustomNetDevName_pwf(void* priv _UNUSED, amxd_object_t* object,
     const char* custNetDevName = amxc_var_constcast(cstring_t, newValue);
     ASSERTS_FALSE(swl_str_matches(pSSID->customNetDevName, custNetDevName), , ME, "same value");
     swl_str_copy(pSSID->customNetDevName, sizeof(pSSID->customNetDevName), custNetDevName);
-    int32_t ifIndex = pSSID->AP_HOOK ? pSSID->AP_HOOK->index : (pSSID->ENDP_HOOK ? pSSID->ENDP_HOOK->index : -1);
+    int32_t ifIndex = wld_ssid_getIfIndex(pSSID);
     SAH_TRACEZ_INFO(ME, "%s: SET CustomNetDevName %s (ndIdx %u)",
                     pSSID->Name, pSSID->customNetDevName, ifIndex);
     if(ifIndex > 0) {
@@ -756,9 +797,8 @@ SWLA_DM_HDLRS(sSsidDmHdlrs,
               ARR(SWLA_DM_PARAM_HDLR("SSID", s_setSSID_pwf),
                   SWLA_DM_PARAM_HDLR("CustomNetDevName", s_setCustomNetDevName_pwf),
                   SWLA_DM_PARAM_HDLR("MACAddress", s_setMacAddress_pwf),
-                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf),
-                  SWLA_DM_PARAM_HDLR("MLDUnit", s_setMLDUnit_pwf)
-                  ));
+                  SWLA_DM_PARAM_HDLR("Enable", s_setEnable_pwf)),
+              .objChangedCb = s_setSSIDConf_ocf);
 
 void _wld_ssid_setConf_ocf(const char* const sig_name,
                            const amxc_var_t* const data,
