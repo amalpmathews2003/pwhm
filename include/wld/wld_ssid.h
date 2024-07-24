@@ -79,5 +79,8 @@ T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
 T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
 T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin);
 T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin);
+wld_ssidType_e wld_ssid_getType(T_SSID* pSSID);
+const char* wld_ssid_getIfName(T_SSID* pSSID);
+int32_t wld_ssid_getIfIndex(T_SSID* pSSID);
 
 #endif /* __WLD_SSID_H__ */

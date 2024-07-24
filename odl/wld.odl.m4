@@ -137,6 +137,7 @@ m4_ifelse(DISABLE_PERSIST,y,``
                    "linuxIfStats" = 200,
                    "mapCFmt" = 200,
                    "mapCGen" = 200,
+                   "mld" = 200,
                    "netUtil" = 200,
                    "nlAP" = 200,
                    "nlApi" = 200,
