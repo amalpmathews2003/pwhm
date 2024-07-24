@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.29.9 - 2024-07-24(06:49:16 +0000)
+
+### Other
+
+- : Access point edited names not restored
+
 ## Release v6.29.8 - 2024-07-23(08:24:47 +0000)
 
 ### Other
