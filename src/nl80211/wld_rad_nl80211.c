@@ -64,6 +64,7 @@
  */
 
 #include "wld_rad_nl80211.h"
+#include "wld_ssid_nl80211_priv.h"
 #include "wld_nl80211_utils.h"
 #include "wld_linuxIfUtils.h"
 #include "swl/swl_common.h"
@@ -98,6 +99,10 @@ swl_rc_ne wld_rad_nl80211_delEvtListener(T_Radio* pRadio) {
 
 swl_rc_ne wld_rad_nl80211_getInterfaceInfo(T_Radio* pRadio, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_SSID* pSSID = wld_ssid_getSsidByIfName(pRadio->Name);
+    if(pSSID != NULL) {
+        return wld_ssid_nl80211_getInterfaceInfo(pSSID, pIfaceInfo);
+    }
     return wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), pRadio->index, pIfaceInfo);
 }
 

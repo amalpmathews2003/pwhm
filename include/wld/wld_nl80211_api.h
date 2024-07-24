@@ -730,10 +730,11 @@ const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_getIfaceMloLinkAtPos(wld_nl802
  * @param state nl80211 socket manager context
  * @param pLinkMac link mac address
  * @param pIface (output) pointer to resulting mld interface info
+ * @param pLinkId (output) pointer filled with mld link id
  *
  * @return SWL_RC_OK in case of success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macBin_t* pLinkMac, wld_nl80211_ifaceInfo_t* pIface);
+swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macBin_t* pLinkMac, wld_nl80211_ifaceInfo_t* pIface, int32_t* pLinkId);
 
 #endif /* INCLUDE_WLD_WLD_NL80211_API_H_ */
