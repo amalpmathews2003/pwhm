@@ -373,8 +373,15 @@ swl_rc_ne wld_ap_hostapd_setParamAction(const char* paramName, wld_secDmn_action
 
 static bool s_setParam(T_AccessPoint* pAP, const char* param, const char* value, wld_secDmn_action_rc_ne* pAction) {
     ASSERTS_NOT_NULL(param, false, ME, "NULL");
-    bool ret = wld_ap_hostapd_setParamValue(pAP, param, value, param);
+    bool ret = true;
     wld_secDmn_action_rc_ne* pMappedAction = (wld_secDmn_action_rc_ne*) swl_table_getMatchingValue(&sHapdCfgParamsActionMap, 1, 0, param);
+    if((pMappedAction != NULL) &&
+       ((*pMappedAction == SECDMN_ACTION_OK_NEED_SIGHUP) ||
+        (*pMappedAction == SECDMN_ACTION_OK_NEED_RESTART))) {
+        SAH_TRACEZ_INFO(ME, "%s: param(%s)/value(%s) to be cold applied", pAP->alias, param, value);
+    } else {
+        ret = wld_ap_hostapd_setParamValue(pAP, param, value, param);
+    }
     if((pAP->status == APSTI_DISABLED) && !pAP->enable) {
         W_SWL_SETPTR(pAction, SECDMN_ACTION_OK_DONE);
     } else if(pMappedAction != NULL) {
@@ -383,9 +390,9 @@ static bool s_setParam(T_AccessPoint* pAP, const char* param, const char* value,
     } else if(ret) {
         /*
          * If param is successfully set but has no specific applying action,
-         * then reload whole save hostapd conf
+         * then reload whole saved hostapd conf
          */
-        W_SWL_SETPTR(pAction, SECDMN_ACTION_OK_NEED_SIGHUP);
+        W_SWL_SETPTR(pAction, SWL_MAX(*pAction, SECDMN_ACTION_OK_NEED_SIGHUP));
     }
     return ret;
 }
