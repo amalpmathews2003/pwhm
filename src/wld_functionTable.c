@@ -392,6 +392,13 @@ static swl_rc_ne TRAP_mfn_wrad_getspectruminfo(T_Radio* rad, bool update, amxc_l
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_getscanfilterinfo(T_Radio* rad, bool* isFilterActive) {
+    _UNUSED_(rad);
+    _UNUSED_(isFilterActive);
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static swl_rc_ne TRAP_mfn_wrad_airstats(T_Radio* rad, wld_airStats_t* stats) {
     _UNUSED_(rad);
     _UNUSED_(stats);
@@ -726,6 +733,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_secDmn_refresh);
     FTA_ASSIGN(mfn_wrad_toggle);
     FTA_ASSIGN(mfn_wrad_getspectruminfo);
+    FTA_ASSIGN(mfn_wrad_getscanfilterinfo);
     FTA_ASSIGN(mfn_wrad_start_scan);
     FTA_ASSIGN(mfn_wrad_stop_scan);
     FTA_ASSIGN(mfn_wrad_scan_results);

@@ -2151,6 +2151,7 @@ typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);
 
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, amxc_llist_t* llSpectrumChannelInfo);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, wld_scanResults_t* results);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETSCANFILTERINFO)(T_Radio* rad, bool* isFilterActive);
 
 /* Our common function table that all VENDOR WIFI drivers must be able to handle... */
 
@@ -2542,6 +2543,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_SYNC_EP mfn_sync_ep;                             /**< Resync data with our internal EndPoint structure */
 
     PFN_WRAD_GETSPECTRUMINFO mfn_wrad_getspectruminfo;
+    PFN_WRAD_GETSCANFILTERINFO mfn_wrad_getscanfilterinfo;
 
     /**
      * Start a scan, using the scanState.cfg.scanArguments data in T_Radio to complete it.

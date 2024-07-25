@@ -253,6 +253,15 @@ static wld_scanReasonStats_t* s_getOrCreateStats(T_Radio* pRad, const char* reas
     return stats;
 }
 
+static bool s_isExternalScanFilter(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    bool isfilter = false;
+
+    swl_rc_ne error = pRad->pFA->mfn_wrad_getscanfilterinfo(pRad, &isfilter);
+
+    return (error == SWL_RC_OK) ? isfilter : false;
+}
+
 static void s_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* scanReason, swl_rc_ne resultCode) {
 
     if(scanReason == NULL) {
@@ -435,6 +444,10 @@ static amxd_status_t s_scanRequest(T_Radio* pR,
     ASSERT_TRUE(scanType < SCAN_TYPE_MAX, amxd_status_invalid_function_argument,
                 ME, "Invalid scan type index %u", scanType);
 
+    if(s_isExternalScanFilter(pR) == true) {
+        return amxd_status_permission_denied;
+    }
+
     /* start the scan */
     amxd_status_t res = s_startScan(object, func, args, retval, scanType);
     ASSERT_EQUALS(res, amxd_status_deferred, res, ME, "%s: scan failed", pR->Name);
@@ -462,6 +475,7 @@ amxd_status_t _scan(amxd_object_t* object,
                     amxc_var_t* retval) {
     T_Radio* pR = object->priv;
     ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
     return s_scanRequest(pR, object, func, args, retval, SCAN_TYPE_SSID);
 }
 
@@ -471,6 +485,7 @@ amxd_status_t _scanCombinedData(amxd_object_t* object,
                                 amxc_var_t* retval) {
     T_Radio* pR = object->priv;
     ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
     return s_scanRequest(pR, object, func, args, retval, SCAN_TYPE_COMBINED);
 }
 
@@ -480,6 +495,7 @@ amxd_status_t _Radio_startScan(amxd_object_t* object,
                                amxc_var_t* retval) {
     T_Radio* pR = object->priv;
     ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
     amxd_status_t res = s_scanRequest(pR, object, NULL, args, retval, SCAN_TYPE_SSID);
     /* return OK when deferred */
     return (res == amxd_status_deferred) ? amxd_status_ok : res;
@@ -1365,7 +1381,12 @@ amxd_status_t _Radio_FullScan(amxd_object_t* object,
         status = SWL_USP_CMD_STATUS_ERROR_NOT_READY;
         SAH_TRACEZ_ERROR(ME, "%s: NULL", pR->Name);
         goto error;
+    }
 
+    if(s_isExternalScanFilter(pR) == true) {
+        res = amxd_status_permission_denied;
+        status = SWL_USP_CMD_STATUS_CANCELED;
+        goto error;
     }
 
     if(!wld_rad_isActive(pR)) {
