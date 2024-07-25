@@ -263,14 +263,14 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     wld_secDmn_action_rc_ne rc;
     T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
     bool mainIfaceChanged = ((pMainAPCur != pMainAPCfg) && ((pAP == pMainAPCur) || (pAP == pMainAPCfg)));
-    bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_isEnabled(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
+    bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
     if(mainIfaceChanged || wpaCtrlEnaChanged) {
         wifiGen_hapd_enableVapWpaCtrlIface(pAP);
         if(mainIfaceChanged) {
-            SAH_TRACEZ_WARNING(ME, "%s: Main iface changed: sched toggle radio %s", pAP->alias, pRad->Name);
-            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+            SAH_TRACEZ_WARNING(ME, "%s: Main iface changed %s => %s", pAP->alias, pMainAPCur->alias, pMainAPCfg->alias);
         }
         SAH_TRACEZ_WARNING(ME, "%s: sched reload all radio %s VAPs to update wpaCtrl ifaces", pAP->alias, pRad->Name);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         s_schedNextAction(SECDMN_ACTION_OK_NEED_SIGHUP, pAP, pRad);
         setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
         return true;

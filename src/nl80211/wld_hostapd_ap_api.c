@@ -1289,16 +1289,13 @@ swl_rc_ne wld_hostapd_ap_sendCfgParam(T_AccessPoint* pAP, const char* param, con
 /*
  * @brief check if AP needs to have a wpactrl connection to hostapd
  * 1- any enabled vap
- * 2- any disabled vap when no Mbssid Advertisement mode is set
- * 3- first radio's vap when no vap is enabled
+ * 2- first radio's vap when no vap is enabled
  */
 bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, false, ME, "NULL");
     T_Radio* pRad = pAP->pRadio;
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    return (pAP->enable) ||
-           (!wld_rad_hasMbssidAds(pRad)) ||
-           ((pAP == wld_rad_hostapd_getCfgMainVap(pRad)) && (!wld_rad_countEnabledVaps(pRad)));
+    return (pAP->enable) || (pAP == wld_rad_hostapd_getCfgMainVap(pRad));
 }
 
 T_AccessPoint* wld_hostapd_ap_fetchApLinkOfSock(T_AccessPoint* pAPMld, const char* sockName) {
