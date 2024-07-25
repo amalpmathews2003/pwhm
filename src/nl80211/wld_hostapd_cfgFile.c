@@ -63,6 +63,8 @@
 #include "wld_accesspoint.h"
 #include "wld_radio.h"
 #include "wld_accesspoint.h"
+#include "wld_ssid.h"
+#include "wld_mld.h"
 #include "wld_util.h"
 #include "swl/swl_hex.h"
 #include "swl/map/swl_mapCharFmt.h"
@@ -707,6 +709,24 @@ static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap,
     }
 }
 
+static const char* s_getLinkIface(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, "", ME, "NULL");
+    T_Radio* pRad = pSSID->RADIO_PARENT;
+    ASSERTS_NOT_NULL(pRad, "", ME, "NULL");
+    bool isMLO = (pRad->pFA->mfn_misc_has_support(pRad, NULL, "MLO", 0) > 0);
+    if(isMLO) {
+        wld_mldLink_t* pCurPrimLink = wld_mld_getPrimaryLink(pSSID->pMldLink);
+        if(pCurPrimLink != NULL) {
+            return wld_mld_getLinkIfName(pCurPrimLink);
+        }
+        wld_mldLink_t* pPrimLink = wld_mld_selectPrimaryLink(pSSID->pMldLink);
+        if(pPrimLink != NULL) {
+            return wld_mld_getLinkIfName(pPrimLink);
+        }
+    }
+    return wld_ssid_getIfName(pSSID);
+}
+
 /**
  * @brief set the common parameters of a vap (ssid, secMode, keyPassphrase, bssid, ...)
  *
@@ -723,13 +743,13 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     ASSERTS_NOT_NULL(vapConfigMap, false, ME, "NULL");
     int tval = 0;
     if(pAP == wld_rad_hostapd_getCfgMainVap(pRad)) {
-        swl_mapChar_add(vapConfigMap, "interface", pAP->alias);
+        swl_mapChar_add(vapConfigMap, "interface", (char*) s_getLinkIface(pSSID));
     } else {
         if(!wld_hostapd_ap_needWpaCtrlIface(pAP)) {
             SAH_TRACEZ_WARNING(ME, "%s: skip disabled bss", pAP->alias);
             return false;
         }
-        swl_mapChar_add(vapConfigMap, "bss", pAP->alias);
+        swl_mapChar_add(vapConfigMap, "bss", (char*) s_getLinkIface(pSSID));
     }
     swl_macChar_t bssidStr;
     SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
@@ -784,13 +804,13 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     }
 
     if((pAP->pSSID != NULL) && wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
-        bool isMLO = pAP->pFA->mfn_misc_has_support(pRad, pAP, "MLO", 0);
-        if(isMLO && (pAP->pSSID->mldUnit > -1) && (wld_getNrApMldLinksById(pAP->pSSID->mldUnit) >= 1)) {
+        bool isMLO = (pAP->pFA->mfn_misc_has_support(pRad, pAP, "MLO", 0) > 0);
+        if(isMLO && (wld_mld_countNeighEnabledLinks(pSSID->pMldLink) > 0)) {
             /* AP MLD - Whether this AP is a part of an AP MLD
              * 0 = no (no MLO)
              * 1 = yes (MLO) */
             // keep mlo disabled for now until managing interface links
-            swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 0);
+            swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 1);
         }
         // TODO: manage 11be exclusion in specific BSSs
     }

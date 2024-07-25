@@ -257,6 +257,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
                 SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
                 pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
             }
+            wld_mld_unregisterLink(pSSID);
             SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
             /* Destroy vap*/
             pR->pFA->mfn_wvap_destroy_hook(pAP);
@@ -427,6 +428,7 @@ static bool s_finalizeApCreation(T_AccessPoint* pAP) {
     pAP->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
 
     wld_ad_initFastReconnectCounters(pAP);
+    wld_mld_registerLink(pSSID, pSSID->mldUnit);
     s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_CREATE_FINAL, NULL);
 
     //delay sync AP and SSID Dm after all conf has been loaded
