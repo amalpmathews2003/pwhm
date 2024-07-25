@@ -472,6 +472,25 @@ swl_rc_ne wld_rad_nl80211_setRegDomain(T_Radio* pRadio, const char* alpha2) {
     return rc;
 }
 
+swl_rc_ne wld_rad_nl80211_getFirstEnabledVapLinkInfo(T_Radio* pRadio, int32_t* pIfIndex, int8_t* pLinkId) {
+    int8_t ifMloLinkId = MLO_LINK_ID_UNKNOWN;
+    int32_t index = 0;
+    W_SWL_SETPTR(pIfIndex, index);
+    W_SWL_SETPTR(pLinkId, ifMloLinkId);
+    ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_AccessPoint* pMainAp = wld_rad_getFirstEnabledVap(pRadio);
+    if(pMainAp != NULL) {
+        index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pMainAp->pSSID);
+        ifMloLinkId = wld_ssid_nl80211_getMldLinkId(pMainAp->pSSID);
+    }
+    if(index <= 0) {
+        index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    }
+    W_SWL_SETPTR(pIfIndex, index);
+    W_SWL_SETPTR(pLinkId, ifMloLinkId);
+    return SWL_RC_OK;
+}
+
 swl_rc_ne wld_rad_nl80211_bgDfsStart(T_Radio* pRadio, wld_startBgdfsArgs_t* args) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(args, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -480,9 +499,11 @@ swl_rc_ne wld_rad_nl80211_bgDfsStart(T_Radio* pRadio, wld_startBgdfsArgs_t* args
                     pRadio->Name, args->channel, swl_bandwidth_str[args->bandwidth]);
 
     swl_chanspec_t bgDfsChanspec = SWL_CHANSPEC_NEW(args->channel, args->bandwidth, pRadio->operatingFrequencyBand);
-    uint32_t index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    int8_t ifMloLinkId = MLO_LINK_ID_UNKNOWN;
+    int32_t index = 0;
+    wld_rad_nl80211_getFirstEnabledVapLinkInfo(pRadio, &index, &ifMloLinkId);
 
-    return wld_nl80211_bgDfsStart(wld_nl80211_getSharedState(), index, MLO_LINK_ID_UNKNOWN, bgDfsChanspec);
+    return wld_nl80211_bgDfsStart(wld_nl80211_getSharedState(), index, ifMloLinkId, bgDfsChanspec);
 }
 
 swl_rc_ne wld_rad_nl80211_bgDfsStop(T_Radio* pRadio) {
@@ -490,9 +511,11 @@ swl_rc_ne wld_rad_nl80211_bgDfsStop(T_Radio* pRadio) {
 
     SAH_TRACEZ_INFO(ME, "%s: Stopping BG_DFS", pRadio->Name);
 
-    uint32_t index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    int8_t ifMloLinkId = MLO_LINK_ID_UNKNOWN;
+    int32_t index = 0;
+    wld_rad_nl80211_getFirstEnabledVapLinkInfo(pRadio, &index, &ifMloLinkId);
 
-    return wld_nl80211_bgDfsStop(wld_nl80211_getSharedState(), index, MLO_LINK_ID_UNKNOWN);
+    return wld_nl80211_bgDfsStop(wld_nl80211_getSharedState(), index, ifMloLinkId);
 }
 
 swl_rc_ne wld_rad_nl80211_registerFrame(T_Radio* pRadio, uint16_t type, const char* pattern, size_t patternLen) {

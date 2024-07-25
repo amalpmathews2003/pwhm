@@ -78,8 +78,11 @@ swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtF
     T_SSID* pSSID = pEP->pSSID;
     ASSERT_NOT_NULL(pSSID, rc, ME, "NULL");
 
+    uint32_t index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pSSID);
+    int8_t ifMloLinkId = wld_ssid_nl80211_getMldLinkId(pSSID);
     return wld_nl80211_sendManagementFrameCmd(wld_nl80211_getSharedState(), fc, dataBytes, dataBytesLen, chanspec,
-                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &g_swl_macBin_bCast, flags, pEP->index);
+                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &g_swl_macBin_bCast, flags,
+                                              index, ifMloLinkId);
 }
 
 swl_rc_ne wld_ep_nl80211_setSta(T_EndPoint* pEP) {
