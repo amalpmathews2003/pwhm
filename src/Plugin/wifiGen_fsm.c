@@ -124,12 +124,13 @@ static int s_fetchHigherAction(unsigned long* bitMapArr, uint32_t bitMapArrSize,
                                const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
                                int32_t minId) {
     ASSERTS_FALSE(minId < 0, -1, ME, "out of order");
+    int selId = -1;
     for(int32_t i = minId; i >= 0 && i < (int32_t) actionArrSize; i--) {
         if(isBitSetLongArray(bitMapArr, bitMapArrSize, actionArr[i])) {
-            return i;
+            selId = i;
         }
     }
-    return -1;
+    return selId;
 }
 /*
  * returns the enum id of the first met scheduled fsm action (among provided actionArray),
@@ -791,7 +792,16 @@ static void s_checkRadDependency(T_Radio* pRad) {
     }
 
     int applyAction = s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    if(applyAction >= 0) {
+        applyAction = sApplyActions[applyAction];
+        if(wifiGen_hapd_countGrpMembers(pRad) > 1) {
+            applyAction = SWL_MIN(applyAction, GEN_FSM_ENABLE_HOSTAPD);
+        }
+    }
     int dynConfAction = s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    if(dynConfAction >= 0) {
+        dynConfAction = sDynConfActions[dynConfAction];
+    }
     if((applyAction >= 0) || (dynConfAction >= 0) ||
        (isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL))) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
