@@ -87,7 +87,13 @@ swl_rc_ne wld_ssid_nl80211_getMldIfaceInfo(T_SSID* pSSID, wld_nl80211_ifaceInfo_
        (wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_getSharedState(), pLinkMac, &mldIfaceInfo, &linkId) >= SWL_RC_OK)) {
         ifIndex = mldIfaceInfo.ifIndex;
         wld_nl80211_ifaceMloLinkInfo_t* pIfaceMloLinkInfo = (wld_nl80211_ifaceMloLinkInfo_t*) wld_nl80211_fetchIfaceMloLinkById(&mldIfaceInfo, linkId);
-        ASSERT_NOT_NULL(pIfaceMloLinkInfo, SWL_RC_ERROR, ME, "fail to get mld iface info");
+        ASSERT_NOT_NULL(pIfaceMloLinkInfo, SWL_RC_ERROR, ME, "unmatch linkId(%d) in mld iface(ifName:%s)(ifId:%d) nLinks(%d)",
+                        linkId, mldIfaceInfo.name, mldIfaceInfo.ifIndex, mldIfaceInfo.nMloLinks);
+        ASSERT_TRUE(swl_typeMacBin_equalsRef(pLinkMac, &pIfaceMloLinkInfo->link.linkMac), SWL_RC_ERROR,
+                    ME, "unmatch linkMac(%s) in mld iface(ifName:%s)(ifId:%d) linkId(%d/%d) linkMac(%s)",
+                    swl_typeMacBin_toBuf32Ref(pLinkMac).buf,
+                    mldIfaceInfo.name, mldIfaceInfo.ifIndex, linkId, mldIfaceInfo.nMloLinks,
+                    swl_typeMacBin_toBuf32Ref(&pIfaceMloLinkInfo->link.linkMac).buf);
         pLinkMac = &pIfaceMloLinkInfo->link.linkMac;
         mldIfaceInfo.chanSpec = pIfaceMloLinkInfo->chanSpec;
         mldIfaceInfo.txPower = pIfaceMloLinkInfo->txPower;
