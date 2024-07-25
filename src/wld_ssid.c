@@ -580,6 +580,7 @@ static void s_checkMLDUnit(T_SSID* pSSID, int32_t newMldUnit) {
         pAP->pFA->mfn_wvap_setMldUnit(pAP);
         wld_autoCommitMgr_notifyVapEdit(pAP);
     }
+    wld_mld_registerLink(pSSID, pSSID->mldUnit);
 
     SAH_TRACEZ_OUT(ME);
 }

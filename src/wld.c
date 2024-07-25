@@ -267,6 +267,7 @@ vendor_t* wld_registerVendor(const char* name, T_CWLD_FUNC_TABLE* fta) {
     }
     SAH_TRACEZ_NOTICE(ME, "register vendor %s", vendor->name);
     wld_dmnMgt_initDmnExecInfo(&vendor->globalHostapd);
+    wld_mld_initMgr(&vendor->pMldMgr);
     amxc_llist_append(&vendors, &vendor->it);
 
     wld_functionTable_init(vendor, fta);
@@ -299,6 +300,7 @@ static bool s_cleanVendor(vendor_t* vendor) {
     ASSERT_FALSE(wld_isVendorUsed(vendor), false, ME, "Fail to clear vendor %s: still used", vendor->name);
     amxc_llist_it_take(&vendor->it);
     wld_dmnMgt_cleanupDmnExecInfo(&vendor->globalHostapd);
+    wld_mld_deinitMgr(&vendor->pMldMgr);
     free(vendor->name);
     free(vendor);
     return true;

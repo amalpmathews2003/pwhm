@@ -607,6 +607,7 @@ static void s_deinitEP(T_EndPoint* pEP) {
     if(pR) {
         if(pEP->index > 0) {
             pR->pFA->mfn_wendpoint_disconnect(pEP);
+            wld_mld_unregisterLink(pSSID);
             pR->pFA->mfn_wendpoint_enable(pEP, false);
             wld_rad_doRadioCommit(pR);
             wld_endpoint_reconfigure(pEP);
@@ -2129,6 +2130,7 @@ static bool s_finalizeEpCreation(T_EndPoint* pEP) {
     }
     free(epMac);
 
+    wld_mld_registerLink(pSSID, pSSID->mldUnit);
     s_sendChangeEvent(pEP, WLD_EP_CHANGE_EVENT_CREATE_FINAL, NULL);
 
     //delay sync AP and SSID Dm after all conf has been loaded
