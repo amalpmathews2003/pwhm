@@ -68,6 +68,7 @@
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_80211.h"
 #include "swl/swl_returnCode.h"
+#include "wld_wpaCtrl_types.h"
 
 #define WPA_MSG_LEVEL_INFO "<3>"
 
@@ -159,12 +160,6 @@ typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* if
 typedef void (* wld_wpaCtrl_apIfaceEventCb_f)(void* userData, char* ifName);
 
 /*
- * custom handler to fetch MLD Link iface name from wpa ctrl socket
- * pLinkIfName is inside the handler and shall be freed by the caller
- */
-typedef void (* wld_wpaCtrl_fetchLinkIfaceCb_f)(void* userData, const char* mldIfName, int32_t linkId, const char* sockName, char** pLinkIfName);
-
-/*
  * @brief structure of AP/EP event handlers
  */
 typedef struct {
@@ -196,7 +191,6 @@ typedef struct {
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
     wld_wpaCtrl_apIfaceEventCb_f fApEnabledCb;
     wld_wpaCtrl_apIfaceEventCb_f fApDisabledCb;
-    wld_wpaCtrl_fetchLinkIfaceCb_f fFetchLinkIfaceCb;                 // advanced/custom fetch of link iface name from wpa socket
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
@@ -212,6 +206,18 @@ typedef void (* wld_wpaCtrl_dfsNewChannelCb_f)(void* userData, char* ifName, swl
 typedef void (* wld_wpaCtrl_mainApSetupCompletedCb_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_mainApDisabledCb_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_syncOnReadyCb_f)(void* userData, char* ifName, bool state);
+
+/*
+ * custom handler to fetch MLD Link iface name from wpa ctrl socket
+ * pLinkIfName is inside the handler and shall be freed by the caller
+ */
+typedef void (* wld_wpaCtrl_fetchLinkIfaceCb_f)(void* userData, wld_wpaCtrlMngr_t* pMgr, const char* sockName, char** pLinkIfName);
+
+/*
+ * custom handler to parse wpa ctrl socket name and extract MLD iface and link id
+ */
+typedef void (* wld_wpaCtrl_parseSockNameCb_f)(void* userData, wld_wpaCtrlMngr_t* pMgr, const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId);
+
 
 /*
  * @brief structure of Radio event handlers
@@ -232,6 +238,8 @@ typedef struct {
     wld_wpaCtrl_dfsNewChannelCb_f fDfsNewChannelCb; //fallback after dfs radar detection
     wld_wpaCtrl_mainApSetupCompletedCb_f fMainApSetupCompletedCb;
     wld_wpaCtrl_mainApDisabledCb_f fMainApDisabledCb;
+    wld_wpaCtrl_fetchLinkIfaceCb_f fFetchLinkIfaceCb;                 // advanced/custom fetch of link iface name from wpa socket
+    wld_wpaCtrl_parseSockNameCb_f fParseSockNameCb;                   // advanced/custom of wpa socket name
 
     /*
      * radio sync handlers:

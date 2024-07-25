@@ -65,91 +65,24 @@
 #include "wld_wpaCtrlMngr_priv.h"
 #include "wld_wpaCtrlInterface_priv.h"
 #include "wld_ssid.h"
-#include "wld_nl80211_api.h"
-#include "wld_linuxIfUtils.h"
 #include <dirent.h>
 
 #define ME "wpaCtrl"
 
-static T_SSID* s_fetchLinkSSIDWithNl80211(const char* mldIface, int32_t linkId) {
-    int ifIndex = -1;
-    int ret = wld_linuxIfUtils_getIfIndexExt((char*) mldIface, &ifIndex);
-    ASSERTS_TRUE(ret >= 0, NULL, ME, "fail to get iface %s index", mldIface);
-    wld_nl80211_ifaceInfo_t ifaceInfo;
-    memset(&ifaceInfo, 0, sizeof(ifaceInfo));
-    ret = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), ifIndex, &ifaceInfo);
-    ASSERTS_TRUE(swl_rc_isOk(ret), NULL, "fail to get nl iface %s info", mldIface);
-    swl_macBin_t* pMac = NULL;
-    if((ifaceInfo.nMloLinks > 0) && (linkId >= 0)) {
-        wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo =
-            (wld_nl80211_ifaceMloLinkInfo_t* ) wld_nl80211_fetchIfaceMloLinkById(&ifaceInfo, linkId);
-        ASSERTI_NOT_NULL(pLinkInfo, NULL, ME, "mld iface(%s) linkId(%d) is not found", mldIface, linkId);
-        pMac = &pLinkInfo->link.linkMac;
-    } else {
-        pMac = &ifaceInfo.mac;
-    }
-    ASSERTS_FALSE(swl_mac_binIsNull(pMac), NULL, ME, "iface(%s) linkId(%d) has null mac", mldIface, linkId);
-    T_SSID* pSSID = wld_ssid_getSsidByMacAddress(pMac);
-    ASSERTS_NOT_NULL(pSSID, NULL, ME, "iface(%s) linkId(%d) has no ssid ctx", mldIface, linkId);
-    SAH_TRACEZ_INFO(ME, "fetch with NL80211: iface(%s) linkId(%d) => linkMac(%s) => pSSID(%s)",
-                    mldIface, linkId,
-                    swl_typeMacBin_toBuf32Ref(pMac).buf, pSSID->Name);
-    return pSSID;
-}
-
-static wld_wpaCtrlInterface_t** s_getWpaCtrlIfaceRef(T_SSID* pSSID) {
-    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
-    if(pSSID->AP_HOOK != NULL) {
-        return &pSSID->AP_HOOK->wpaCtrlInterface;
-    }
-    if(pSSID->ENDP_HOOK != NULL) {
-        return &pSSID->ENDP_HOOK->wpaCtrlInterface;
-    }
-    return NULL;
-}
-
-static wld_wpaCtrlInterface_t* s_getWpaCtrlIface(T_SSID* pSSID) {
-    wld_wpaCtrlInterface_t** ppIface = s_getWpaCtrlIfaceRef(pSSID);
-    if(ppIface != NULL) {
-        return *ppIface;
-    }
-    return NULL;
-}
-
-static T_SSID* s_fetchLinkSSIDWithWpaCtrl(const char* mldIface, int32_t linkId, const char* sockName) {
-    T_SSID* pMldSSID = wld_ssid_getSsidByIfName(mldIface);
-    wld_wpaCtrlInterface_t* pMldWpaIface = s_getWpaCtrlIface(pMldSSID);
-    char* linkIface = NULL;
-    CALL_INTF(pMldWpaIface, fFetchLinkIfaceCb, linkId, sockName, &linkIface);
-    ASSERTS_NOT_NULL(linkIface, NULL, ME, "iface(%s) linkId(%d) does not point any link", mldIface, linkId);
-    T_SSID* pSSID = wld_ssid_getSsidByIfName(linkIface);
-    W_SWL_FREE(linkIface);
-    ASSERTI_NOT_NULL(pSSID, NULL, ME, "iface(%s) linkId(%d) has no ssid", mldIface, linkId);
-    SAH_TRACEZ_INFO(ME, "fetch with CUSTOM wpa: iface(%s) linkId(%d) sock(%s) => pSSID(%s)",
-                    mldIface, linkId, sockName, pSSID->Name);
-    return pSSID;
-}
-
-static T_SSID* s_fetchLinkSSID(const char* sockName, const char* mldIface, int32_t linkId) {
+static T_SSID* s_fetchLinkSSID(wld_wpaCtrlMngr_t* pMgr, const char* sockName) {
     ASSERTS_STR(sockName, NULL, ME, "empty socket name");
-    T_SSID* pSSID = wld_ssid_getSsidByIfName(mldIface);
-    ASSERT_NOT_NULL(pSSID, NULL, ME, "no ssid is matching iface(%s) linkId(%d) of sock(%s)",
-                    mldIface, linkId, sockName);
-    if(linkId < 0) {
-        ASSERTI_FALSE(wld_mld_isLinkEnabled(pSSID->pMldLink), NULL,
-                      ME, "skip sock(%s): wait for mld link socket for ssid %s", sockName, pSSID->Name);
-        SAH_TRACEZ_INFO(ME, "fetch DIRECT: iface(%s) linkId(%d) sock(%s) => pSSID(%s)",
-                        mldIface, linkId, sockName, pSSID->Name);
+    T_SSID* pSSID = wld_ssid_getSsidByIfName(sockName);
+    if(pSSID != NULL) {
+        SAH_TRACEZ_INFO(ME, "fetch DIRECT: sock(%s) => pSSID(%s)",
+                        sockName, pSSID->Name);
         return pSSID;
     }
-    ASSERT_TRUE(pSSID->mldUnit >= 0, NULL, ME, "iface(%s) linkId(%d) sock(%s) => ssid(%s) is not mld member",
-                mldIface, linkId, sockName, pSSID->Name);
-    if(((pSSID = s_fetchLinkSSIDWithNl80211(mldIface, linkId)) != NULL) ||
-       ((pSSID = s_fetchLinkSSIDWithWpaCtrl(mldIface, linkId, sockName)) != NULL)) {
-        return pSSID;
-    }
-    SAH_TRACEZ_WARNING(ME, "sock(%s): Fail to match any SSID", sockName);
-    return NULL;
+    char* linkIface = NULL;
+    CALL_MGR(pMgr, pMgr, fFetchLinkIfaceCb, sockName, &linkIface);
+    pSSID = wld_ssid_getSsidByIfName(linkIface);
+    free(linkIface);
+    ASSERTW_NOT_NULL(pSSID, pSSID, ME, "sock(%s): Fail to match any SSID", sockName)
+    return pSSID;
 }
 
 static int s_filterNames(const struct dirent* pEntry) {
@@ -169,24 +102,13 @@ swl_rc_ne wld_wpaCtrlMngr_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr) {
     ASSERT_NOT_EQUALS(n, -1, SWL_RC_ERROR, ME, "fail to scan dir %s", ctrlDirPath);
     for(int i = 0; i < n; i++) {
         const char* sockName = namelist[i]->d_name;
-        char mldIface[swl_str_len(sockName) + 1];
-        int32_t linkId = -1;
-        if(!wld_wpaCtrlInterface_parseSockName(sockName, mldIface, sizeof(mldIface), &linkId)) {
-            SAH_TRACEZ_ERROR(ME, "fail to parse sockName (%s)", sockName);
-            free(namelist[i]);
-            continue;
-        }
-        T_SSID* pSSID = s_fetchLinkSSID(sockName, mldIface, linkId);
-        wld_wpaCtrlInterface_t* pIface = s_getWpaCtrlIface(pSSID);
+        T_SSID* pSSID = s_fetchLinkSSID(pMgr, sockName);
+        wld_wpaCtrlInterface_t* pIface = wld_ssid_getWpaCtrlIface(pSSID);
         wld_wpaCtrlMngr_t* pCurrMgr = wld_wpaCtrlInterface_getMgr(pIface);
         if((pCurrMgr != NULL) && (wld_secDmn_isRunning(pCurrMgr->pSecDmn))) {
             if(!swl_str_matches(wld_wpaCtrlInterface_getConnectionSockName(pIface), sockName)) {
                 wld_wpaCtrlInterface_setConnectionInfo(pIface, ctrlDirPath, sockName);
             }
-            if(swl_str_matches(wld_ssid_getIfName(pSSID), mldIface)) {
-                wld_mld_setPrimaryLink(pSSID->pMldLink);
-            }
-            wld_mld_setLinkId(pSSID->pMldLink, linkId);
             if((pCurrMgr == pMgr) && (!wld_wpaCtrlInterface_isReady(pIface))) {
                 wld_wpaCtrlInterface_setEnable(pIface, true);
                 wld_wpaCtrlInterface_open(pIface);

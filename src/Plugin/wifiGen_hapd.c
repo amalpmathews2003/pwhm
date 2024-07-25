@@ -94,6 +94,30 @@
  */
 #define HOSTAPD_EXIT_REASON_LOAD_FAIL 1
 
+/*
+ * MLD Link wpa socket name format "<IFACEX>_link<Y>"
+ */
+
+static char sSockNameLinkPfx[64] = {"_link"};
+
+bool wifiGen_hapd_parseSockName(const char* sockName, char* linkName, size_t linkNameSize, int32_t* pLinkId) {
+    W_SWL_SETPTR(pLinkId, -1);
+    swl_str_copy(linkName, linkNameSize, NULL);
+    ASSERT_STR(sockName, false, ME, "empty");
+    ssize_t linkInfoPos = swl_str_find(sockName, sSockNameLinkPfx);
+    if(linkInfoPos < 0) {
+        return swl_str_copy(linkName, linkNameSize, sockName);
+    }
+    int32_t linkId = -1;
+    const char* linkIdStr = &sockName[linkInfoPos + swl_str_len(sSockNameLinkPfx)];
+    if(!swl_rc_isOk(wldu_convStrToNum(linkIdStr, &linkId, sizeof(linkId), 10, true))) {
+        SAH_TRACEZ_ERROR(ME, "fail to fetch link id in sock name %s", sockName);
+        return false;
+    }
+    W_SWL_SETPTR(pLinkId, linkId);
+    return swl_str_ncopy(linkName, linkNameSize, sockName, linkInfoPos);
+}
+
 bool wifiGen_hapd_isStartable(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     ASSERT_NOT_NULL(pRad->hostapd, false, ME, "NULL");

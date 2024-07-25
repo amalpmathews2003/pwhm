@@ -500,6 +500,25 @@ int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID) {
     return ifIndex;
 }
 
+wld_wpaCtrlInterface_t** wld_ssid_getWpaCtrlIfaceRef(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    if(pSSID->AP_HOOK != NULL) {
+        return &pSSID->AP_HOOK->wpaCtrlInterface;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return &pSSID->ENDP_HOOK->wpaCtrlInterface;
+    }
+    return NULL;
+}
+
+wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID) {
+    wld_wpaCtrlInterface_t** ppIface = wld_ssid_getWpaCtrlIfaceRef(pSSID);
+    if(ppIface != NULL) {
+        return *ppIface;
+    }
+    return NULL;
+}
+
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);

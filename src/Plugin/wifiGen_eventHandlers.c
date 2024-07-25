@@ -66,6 +66,8 @@
 #include "wifiGen_ep.h"
 #include "wld/wld_wpaCtrlMngr.h"
 #include "wld/wld_wpaCtrl_api.h"
+#include "wld/wld_wpaCtrlInterface.h"
+#include "wld/wld_nl80211_api.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
@@ -74,6 +76,7 @@
 #include "wld/wld_secDmn.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_accesspoint.h"
+#include "wld/wld_ssid.h"
 #include "wld/wld_wps.h"
 #include "wld/wld_assocdev.h"
 #include "wld/wld_util.h"
@@ -385,6 +388,111 @@ static void s_dfsNewChannelCb(void* userData, char* ifName, swl_chanspec_t* chan
     s_saveChanChanged(pRad, &currChanSpec, CHAN_REASON_DFS);
 }
 
+static T_SSID* s_fetchLinkSSIDWithNl80211(const char* mldIface, int32_t linkId) {
+    int ifIndex = -1;
+    int ret = wld_linuxIfUtils_getIfIndexExt((char*) mldIface, &ifIndex);
+    ASSERTS_TRUE(ret >= 0, NULL, ME, "fail to get iface %s index", mldIface);
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    memset(&ifaceInfo, 0, sizeof(ifaceInfo));
+    ret = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), ifIndex, &ifaceInfo);
+    ASSERTS_TRUE(swl_rc_isOk(ret), NULL, "fail to get nl iface %s info", mldIface);
+    swl_macBin_t* pMac = NULL;
+    if((ifaceInfo.nMloLinks > 0) && (linkId >= 0)) {
+        wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo =
+            (wld_nl80211_ifaceMloLinkInfo_t* ) wld_nl80211_fetchIfaceMloLinkById(&ifaceInfo, linkId);
+        ASSERTI_NOT_NULL(pLinkInfo, NULL, ME, "mld iface(%s) linkId(%d) is not found", mldIface, linkId);
+        pMac = &pLinkInfo->link.linkMac;
+    } else {
+        pMac = &ifaceInfo.mac;
+    }
+    ASSERTS_FALSE(swl_mac_binIsNull(pMac), NULL, ME, "iface(%s) linkId(%d) has null mac", mldIface, linkId);
+    T_SSID* pSSID = wld_ssid_getSsidByMacAddress(pMac);
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "iface(%s) linkId(%d) has no ssid ctx", mldIface, linkId);
+    SAH_TRACEZ_INFO(ME, "fetch with NL80211: iface(%s) linkId(%d) => linkMac(%s) => pSSID(%s)",
+                    mldIface, linkId,
+                    swl_typeMacBin_toBuf32Ref(pMac).buf, pSSID->Name);
+    return pSSID;
+}
+
+static T_SSID* s_fetchLinkSSIDWithWpaCtrl(const char* mldIface, int32_t linkId, const char* sockName) {
+    T_SSID* pLinkSSID = NULL;
+    T_SSID* pMldSSID = wld_ssid_getSsidByIfName(mldIface);
+    ASSERTS_NOT_NULL(pMldSSID, NULL, ME, "NULL");
+    if(pMldSSID->AP_HOOK != NULL) {
+        T_AccessPoint* pAPLink = wld_hostapd_ap_fetchApLinkOfSock(pMldSSID->AP_HOOK, sockName);
+        ASSERTI_NOT_NULL(pAPLink, NULL, ME, "no APLink for mld %s link %d (sock %s)", mldIface, linkId, sockName);
+        SAH_TRACEZ_INFO(ME, "Found APLink %s for mld %s link %d (sock %s)", pAPLink->alias, mldIface, linkId, sockName);
+        pLinkSSID = pAPLink->pSSID;
+    } else if(pMldSSID->ENDP_HOOK != NULL) {
+        /*
+         * TODO: manage STA link fetch with wpa_supplicant cmds
+         */
+        SAH_TRACEZ_ERROR(ME, "no STALink can be fetched for mld %s link %d (sock %s)", mldIface, linkId, sockName);
+        return NULL;
+    }
+    ASSERTI_NOT_NULL(pLinkSSID, NULL, ME, "iface(%s) linkId(%d) (sock %s) has no ssid", mldIface, linkId, sockName);
+    SAH_TRACEZ_INFO(ME, "fetch with CUSTOM wpa: iface(%s) linkId(%d) sock(%s) => pSSID(%s)",
+                    mldIface, linkId, sockName, pLinkSSID->Name);
+    return pLinkSSID;
+}
+
+static T_SSID* s_fetchLinkSSID(const char* mldIface, int32_t linkId, const char* sockName) {
+    T_SSID* pSSID = wld_ssid_getSsidByIfName(mldIface);
+    ASSERT_NOT_NULL(pSSID, NULL, ME, "no ssid is matching iface(%s) linkId(%d) of sock(%s)",
+                    mldIface, linkId, sockName);
+    if(linkId < 0) {
+        ASSERTI_FALSE(wld_mld_isLinkEnabled(pSSID->pMldLink), NULL,
+                      ME, "skip sock(%s): wait for mld link socket for ssid %s", sockName, pSSID->Name);
+        SAH_TRACEZ_INFO(ME, "fetch DIRECT: iface(%s) linkId(%d) sock(%s) => pSSID(%s)",
+                        mldIface, linkId, sockName, pSSID->Name);
+        return pSSID;
+    }
+    ASSERT_TRUE(pSSID->mldUnit >= 0, NULL, ME, "iface(%s) linkId(%d) sock(%s) => ssid(%s) is not mld member",
+                mldIface, linkId, sockName, pSSID->Name);
+    if(((pSSID = s_fetchLinkSSIDWithNl80211(mldIface, linkId)) != NULL) ||
+       ((pSSID = s_fetchLinkSSIDWithWpaCtrl(mldIface, linkId, sockName)) != NULL)) {
+        return pSSID;
+    }
+    return NULL;
+}
+
+static void s_fetchLinkIfaceCb(void* userData _UNUSED, wld_wpaCtrlMngr_t* pMgr, const char* sockName, char** ppLinkIfName) {
+    ASSERT_NOT_NULL(ppLinkIfName, , ME, "NULL");
+    swl_str_copyMalloc(ppLinkIfName, NULL);
+    ASSERT_STR(sockName, , ME, "empty socket name");
+    char mldIface[swl_str_len(sockName) + 1];
+    memset(mldIface, 0, sizeof(mldIface));
+    int32_t linkId = -1;
+    CALL_MGR_EXT(pMgr, fParseSockNameCb, pMgr, sockName, mldIface, sizeof(mldIface), &linkId);
+    if(!swl_str_isEmpty(mldIface)) {
+        SAH_TRACEZ_ERROR(ME, "fail to parse sockName (%s)", sockName);
+        return;
+    }
+    T_SSID* pLinkSSID = s_fetchLinkSSID(mldIface, linkId, sockName);
+    ASSERTW_NOT_NULL(pLinkSSID, , ME, "sock(%s): Fail to match any SSID", sockName);
+    const char* pLinkIfName = wld_ssid_getIfName(pLinkSSID);
+    swl_str_copyMalloc(ppLinkIfName, pLinkIfName);
+    if(wld_mld_getLinkId(pLinkSSID->pMldLink) != linkId) {
+        wld_mld_setLinkId(pLinkSSID->pMldLink, linkId);
+        if(swl_str_matches(pLinkIfName, mldIface)) {
+            wld_mld_setPrimaryLink(pLinkSSID->pMldLink);
+        }
+    }
+}
+
+static void s_parseSockNameCb(void* userData _UNUSED, wld_wpaCtrlMngr_t* pMgr, const char* sockName, char* ifName, size_t ifNameSize, int32_t* pLinkId) {
+    swl_str_copy(ifName, ifNameSize, NULL);
+    W_SWL_SETPTR(pLinkId, -1);
+    ASSERT_NOT_NULL(pMgr, , ME, "NULL");
+    const char* refIface = wld_wpaCtrlInterface_getName(wld_wpaCtrlMngr_getFirstInterface(pMgr));
+    ASSERT_STR(refIface, , ME, "Fail to get reference wpactrl iface (pMgr:%p)", pMgr);
+    if(wld_vap_from_name(refIface) != NULL) {
+        wifiGen_hapd_parseSockName(sockName, ifName, ifNameSize, pLinkId);
+        return;
+    }
+    SAH_TRACEZ_WARNING(ME, "not found parser for socket name %s", sockName);
+}
+
 #define SET_HDLR(tgt, src) {tgt = (tgt ? : src); }
 
 static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Radio* pRad) {
@@ -406,6 +514,8 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsRadarDetectedCb, s_dfsRadarDetectedCb);
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsNopFinishedCb, s_dfsNopFinishedCb);
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsNewChannelCb, s_dfsNewChannelCb);
+    SET_HDLR(wpaCtrlRadEvthandlers.fFetchLinkIfaceCb, s_fetchLinkIfaceCb);
+    SET_HDLR(wpaCtrlRadEvthandlers.fParseSockNameCb, s_parseSockNameCb);
     wld_wpaCtrlMngr_setEvtHandlers(wpaCtrlMngr, pRad, &wpaCtrlRadEvthandlers);
     return SWL_RC_OK;
 }
@@ -1009,17 +1119,6 @@ static void s_mgmtFrameTxStatusCb(void* pRef, void* pData _UNUSED, size_t frameL
     swl_80211_handleMgmtFrame(pRef, (swl_bit8_t*) mgmtFrame, frameLen, &s_mgmtFrameTxStatusHandlers);
 }
 
-static void s_fetchApLinkIfaceCb(void* userData, const char* mldIfName, int32_t linkId, const char* sockName, char** pLinkIfName) {
-    ASSERTS_STR(mldIfName, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: fetch link id %d iface from wpa socket", mldIfName, linkId);
-    T_AccessPoint* pAPMld = (T_AccessPoint*) userData;
-    ASSERT_TRUE(debugIsVapPointer(pAPMld), , ME, "INVALID");
-    T_AccessPoint* pAPLink = wld_hostapd_ap_fetchApLinkOfSock(pAPMld, sockName);
-    ASSERTI_NOT_NULL(pAPLink, , ME, "no APLink for mld %s link %d (sock %s)", mldIfName, linkId, sockName);
-    SAH_TRACEZ_INFO(ME, "Found APLink %s for mld %s link %d (sock %s)", pAPLink->alias, mldIfName, linkId, sockName);
-    swl_str_copyMalloc(pLinkIfName, pAPLink->alias);
-}
-
 swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -1044,7 +1143,6 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
     wpaCtrlVapEvtHandlers.fApEnabledCb = s_apEnabledCb;
     wpaCtrlVapEvtHandlers.fApDisabledCb = s_apDisabledCb;
-    wpaCtrlVapEvtHandlers.fFetchLinkIfaceCb = s_fetchApLinkIfaceCb;
 
     if(pAP->wpaCtrlInterface != NULL) {
         ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),

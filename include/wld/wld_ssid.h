@@ -64,6 +64,7 @@
 #define __WLD_SSID_H__
 
 #include "wld.h"
+#include "wld_wpaCtrl_types.h"
 
 void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
 void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
@@ -87,5 +88,8 @@ int32_t wld_ssid_getIfIndex(T_SSID* pSSID);
 bool wld_ssid_isLinkEnabled(T_SSID* pSSID);
 bool wld_ssid_isLinkActive(T_SSID* pSSID);
 int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID);
+
+wld_wpaCtrlInterface_t** wld_ssid_getWpaCtrlIfaceRef(T_SSID* pSSID);
+wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
 
 #endif /* __WLD_SSID_H__ */
