@@ -185,7 +185,8 @@ static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
      * here declare hostapd cfg params to check (or to define) as supported or not
      * wld_secDmn_setCfgParamSupp(pRad->hostapd, "custom_param", SWL_TRL_UNKNOWN);
      */
-    wld_secDmn_setCfgParamSupp(pRad->hostapd, "rnr", SWL_TRL_UNKNOWN);
+    bool hasRnr = (swl_bit32_getHighest(pRad->supportedStandards) >= SWL_RADSTD_AX);
+    wld_secDmn_setCfgParamSupp(pRad->hostapd, "rnr", hasRnr ? SWL_TRL_TRUE : SWL_TRL_UNKNOWN);
     wld_secDmn_setCfgParamSupp(pRad->hostapd, "config_id", SWL_TRL_UNKNOWN);
 }
 

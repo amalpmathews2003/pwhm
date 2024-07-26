@@ -131,7 +131,12 @@ static void s_setDmnExecSettings_ocf(void* priv _UNUSED, amxd_object_t* object, 
         const char* pname = amxc_var_key(newValue);
         if(swl_str_matches(pname, "UseGlobalInstance")) {
             valStr = amxc_var_dyncast(cstring_t, newValue);
-            swl_trl_fromChar(&pDmnCtx->exec.useGlobalInstance, valStr, SWL_TRL_FORMAT_AUTO);
+            swl_trl_e valTrl;
+            swl_trl_fromChar(&valTrl, valStr, SWL_TRL_FORMAT_AUTO);
+            if(pDmnCtx->exec.useGlobalInstance == valTrl) {
+                continue;
+            }
+            pDmnCtx->exec.useGlobalInstance = valTrl;
         } else {
             continue;
         }
