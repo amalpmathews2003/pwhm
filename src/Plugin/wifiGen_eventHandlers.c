@@ -942,9 +942,14 @@ static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame,
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
     ASSERT_NOT_NULL(frame, , ME, "NULL");
     ASSERT_NOT_NULL(pAP->pSSID, , ME, "%s: Ap has No SSID", pAP->alias);
-    ASSERT_TRUE(SWL_MAC_BIN_MATCHES(pAP->pSSID->BSSID, &frame->bssid), ,
-                ME, "%s: bssid does not match ap("MAC_PRINT_FMT ") frame("MAC_PRINT_FMT ")",
-                pAP->alias, MAC_PRINT_ARG(pAP->pSSID->BSSID), MAC_PRINT_ARG(frame->bssid.bMac));
+    if(!SWL_MAC_BIN_MATCHES(pAP->pSSID->BSSID, &frame->bssid)) {
+        T_SSID* pSSIDPrim = wld_mld_getPrimaryLinkSsid(pAP->pSSID->pMldLink);
+        if((pSSIDPrim == NULL) || (!SWL_MAC_BIN_MATCHES(pSSIDPrim->BSSID, &frame->bssid))) {
+            SAH_TRACEZ_ERROR(ME, "%s: bssid does not match ap("MAC_PRINT_FMT ") frame("MAC_PRINT_FMT ")",
+                             pAP->alias, MAC_PRINT_ARG(pAP->pSSID->BSSID), MAC_PRINT_ARG(frame->bssid.bMac));
+            return;
+        }
+    }
 
     T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &frame->transmitter);
     ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac));
