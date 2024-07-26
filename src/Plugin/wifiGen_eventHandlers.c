@@ -453,6 +453,7 @@ static T_SSID* s_fetchLinkSSID(const char* mldIface, int32_t linkId, const char*
        ((pSSID = s_fetchLinkSSIDWithWpaCtrl(mldIface, linkId, sockName)) != NULL)) {
         return pSSID;
     }
+    ASSERTW_NOT_NULL(pSSID, pSSID, ME, "sock(%s): Fail to match any SSID", sockName);
     return NULL;
 }
 
@@ -464,12 +465,12 @@ static void s_fetchLinkIfaceCb(void* userData _UNUSED, wld_wpaCtrlMngr_t* pMgr, 
     memset(mldIface, 0, sizeof(mldIface));
     int32_t linkId = -1;
     CALL_MGR_EXT(pMgr, fParseSockNameCb, pMgr, sockName, mldIface, sizeof(mldIface), &linkId);
-    if(!swl_str_isEmpty(mldIface)) {
+    if(swl_str_isEmpty(mldIface)) {
         SAH_TRACEZ_ERROR(ME, "fail to parse sockName (%s)", sockName);
         return;
     }
     T_SSID* pLinkSSID = s_fetchLinkSSID(mldIface, linkId, sockName);
-    ASSERTW_NOT_NULL(pLinkSSID, , ME, "sock(%s): Fail to match any SSID", sockName);
+    ASSERTS_NOT_NULL(pLinkSSID, , ME, "sock(%s): Fail to match any SSID", sockName);
     const char* pLinkIfName = wld_ssid_getIfName(pLinkSSID);
     swl_str_copyMalloc(ppLinkIfName, pLinkIfName);
     if(wld_mld_getLinkId(pLinkSSID->pMldLink) != linkId) {

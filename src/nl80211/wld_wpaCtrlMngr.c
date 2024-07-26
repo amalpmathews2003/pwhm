@@ -71,16 +71,16 @@
 
 static T_SSID* s_fetchLinkSSID(wld_wpaCtrlMngr_t* pMgr, const char* sockName) {
     ASSERTS_STR(sockName, NULL, ME, "empty socket name");
-    T_SSID* pSSID = wld_ssid_getSsidByIfName(sockName);
-    if(pSSID != NULL) {
-        SAH_TRACEZ_INFO(ME, "fetch DIRECT: sock(%s) => pSSID(%s)",
-                        sockName, pSSID->Name);
-        return pSSID;
-    }
     char* linkIface = NULL;
     CALL_MGR(pMgr, pMgr, fFetchLinkIfaceCb, sockName, &linkIface);
-    pSSID = wld_ssid_getSsidByIfName(linkIface);
+    T_SSID* pSSID = wld_ssid_getSsidByIfName(linkIface);
     free(linkIface);
+    if((pSSID == NULL) && ((pSSID = wld_ssid_getSsidByIfName(sockName)) != NULL)) {
+        ASSERTI_FALSE(wld_mld_isLinkEnabled(pSSID->pMldLink), NULL,
+                      ME, "skip sock(%s): wait for mld link socket for ssid %s", sockName, pSSID->Name);
+        SAH_TRACEZ_INFO(ME, "fetch DIRECT: sock(%s) => pSSID(%s)",
+                        sockName, pSSID->Name);
+    }
     ASSERTW_NOT_NULL(pSSID, pSSID, ME, "sock(%s): Fail to match any SSID", sockName)
     return pSSID;
 }
