@@ -574,10 +574,18 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     /* Enable WPS 2.0 -- Do this only when you know that WPS 2.0 is supported & needed! */
     pRad->wpsConst->wpsSupVer = 2;
 
-    pRad->cap.apCap7.emlmrSupported = wiphyInfo.extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_AP];
-    pRad->cap.staCap7.emlmrSupported = wiphyInfo.extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_STATION];
-    pRad->cap.apCap7.emlsrSupported = wiphyInfo.extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_AP];
-    pRad->cap.staCap7.emlsrSupported = wiphyInfo.extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_STATION];
+    if(pOperBand->radStdsMask & M_SWL_RADSTD_BE) {
+        pRad->cap.apCap7.emlmrSupported = wiphyInfo.extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_AP];
+        pRad->cap.staCap7.emlmrSupported = wiphyInfo.extCapas.emlmrSupport[WLD_WIPHY_IFTYPE_STATION];
+        pRad->cap.apCap7.emlsrSupported = wiphyInfo.extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_AP];
+        pRad->cap.staCap7.emlsrSupported = wiphyInfo.extCapas.emlsrSupport[WLD_WIPHY_IFTYPE_STATION];
+        /*
+         * Simultaneous Transmit Receive (STR) and Non-Simulatenous Transmit Receive (NSTR) modes
+         * are basically supported in wifi7, as for Enhanced Multi-Link Single Radio (EMLSR)
+         */
+        pRad->cap.apCap7.strSupported = pRad->cap.apCap7.nstrSupported = pRad->cap.apCap7.emlsrSupported;
+        pRad->cap.staCap7.strSupported = pRad->cap.staCap7.nstrSupported = pRad->cap.staCap7.emlsrSupported;
+    }
 
     SAH_TRACEZ_OUT(ME);
     return SWL_RC_OK;
