@@ -326,7 +326,9 @@ static void s_dfsCacStartedCb(void* userData, char* ifName, swl_chanspec_t* chan
     if(wld_channel_is_radar_detected(pRad->currentChanspec.chanspec)) {
         reason = CHAN_REASON_DFS;
     }
-    s_syncCurrentChannel(pRad, reason);
+    if(!wld_bgdfs_isRunning(pRad)) {
+        s_syncCurrentChannel(pRad, reason);
+    }
     wld_channel_mark_passive_band(*chanSpec);
 
     swl_chanspec_t curChanspec = wld_chanmgt_getCurChspec(pRad);
@@ -378,6 +380,9 @@ static void s_dfsRadarDetectedCb(void* userData, char* ifName, swl_chanspec_t* c
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     wld_channel_mark_radar_detected_band(*chanSpec);
+    if(wld_bgdfs_isRunning(pRad)) {
+        wld_bgdfs_notifyClearEnded(pRad, DFS_RESULT_RADAR);
+    }
     wld_rad_updateState(pRad, false);
     wld_chanmgt_writeDfsChannels(pRad);
 }
@@ -624,15 +629,17 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
 void s_radarEvtCb(void* pRef, void* pData _UNUSED, wld_nl80211_radarEvtInfo_t* radarEvtInfo) {
     ASSERT_NOT_NULL(radarEvtInfo, , ME, "NULL");
     ASSERT_NOT_EQUALS(radarEvtInfo->event, WLD_NL80211_RADAR_EVT_UNKNOWN, , ME, "unknown");
-    T_Radio* pRad = wld_getRadioOfIfaceIndex(radarEvtInfo->ifIndex) ? : pRef;
+    T_Radio* pRad = (T_Radio*) pRef;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     swl_chanspec_t chanspec = SWL_CHANSPEC_EMPTY;
     swl_rc_ne rc = wld_nl80211_chanSpecNlToSwl(&chanspec, &radarEvtInfo->chanSpec);
     ASSERT_TRUE(swl_rc_isOk(rc), , ME, "%s: fail to convert dfs evt chanspec", pRad->Name);
+    ASSERTS_EQUALS(pRad->operatingFrequencyBand, chanspec.band, , ME, "%s: unmatching freqBand", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: (w:%d,i:%d) dfs cac event %d on chspec %s bg:%d",
                     pRad->Name, radarEvtInfo->wiphy, radarEvtInfo->ifIndex, radarEvtInfo->event,
                     swl_typeChanspecExt_toBuf32Ref(&chanspec).buf, radarEvtInfo->isBackground);
     ASSERTS_TRUE(radarEvtInfo->isBackground, , ME, "only process bgDfs events");
+    ASSERTS_NOT_EQUALS(pRad->bgdfs_config.status, BGDFS_STATUS_OFF, , ME, "%s: bgDfs not supported");
     switch(radarEvtInfo->event) {
     case WLD_NL80211_RADAR_CAC_STARTED: {
         if(!wld_bgdfs_isRunning(pRad)) {
@@ -648,6 +655,13 @@ void s_radarEvtCb(void* pRef, void* pData _UNUSED, wld_nl80211_radarEvtInfo_t* r
             s_dfsCacDoneCb(pRad, pRad->Name, &chanspec, false);
         }
         break;
+    }
+    case WLD_NL80211_RADAR_DETECTED: {
+        if(wld_bgdfs_isRunning(pRad)) {
+            /* stop ZeroWait DFS if any */
+            pRad->pFA->mfn_wrad_zwdfs_stop(pRad);
+            s_dfsRadarDetectedCb(pRad, pRad->Name, &chanspec);
+        }
     }
     default: break;
     }
