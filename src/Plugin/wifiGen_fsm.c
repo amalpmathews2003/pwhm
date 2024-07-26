@@ -68,6 +68,7 @@
 #include "wld/wld_hostapd_cfgFile.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_ap_nl80211.h"
+#include "wld/wld_chanmgt.h"
 
 #include "wifiGen_fsm.h"
 
@@ -504,6 +505,11 @@ static bool s_doSetCountryCode(T_Radio* pRad) {
         wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, 0);
     }
     pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
+    if(pRad->operatingChannelBandwidth == SWL_RAD_BW_AUTO) {
+        SAH_TRACEZ_INFO(ME, "%s: refresh target chanspec with autobw after regdomain setting", pRad->Name);
+        swl_chanspec_t chanspec = swl_chanspec_fromDm(wld_chanmgt_getTgtChannel(pRad), pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
+        wld_chanmgt_setTargetChanspec(pRad, chanspec, true, pRad->targetChanspec.reason, pRad->targetChanspec.reasonExt);
+    }
     return true;
 }
 
