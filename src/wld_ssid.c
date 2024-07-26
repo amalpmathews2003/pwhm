@@ -604,7 +604,7 @@ static amxd_status_t s_updateSsidStatsValues(T_SSID* pSSID, amxd_object_t* stats
 
         T_EndPointStats epStats;
         memset(&epStats, 0, sizeof(epStats));
-        if(pEP->pFA->mfn_wendpoint_stats(pEP, &epStats) < SWL_RC_OK) {
+        if((!wld_rad_hasRunningEndpoint(pEP->pRadio)) || (pEP->pFA->mfn_wendpoint_stats(pEP, &epStats) < SWL_RC_OK)) {
             /* Update the stats with Linux counters if we don't handle them in the vendor plugin. */
             wld_updateEPStats(pEP, NULL);
         } else {
@@ -613,7 +613,7 @@ static amxd_status_t s_updateSsidStatsValues(T_SSID* pSSID, amxd_object_t* stats
 
     } else if(debugIsVapPointer(pAP)) {
 
-        if(pAP->pFA->mfn_wvap_update_ap_stats(pAP) < SWL_RC_OK) {
+        if((pAP->status != APSTI_ENABLED) || (pAP->pFA->mfn_wvap_update_ap_stats(pAP) < SWL_RC_OK)) {
             /* Update the stats with Linux counters if we don't handle them in the vendor plugin. */
             wld_updateVAPStats(pAP, NULL);
         }
