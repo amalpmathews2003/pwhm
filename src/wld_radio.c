@@ -3399,6 +3399,42 @@ bool wld_rad_hasEnabledIface(T_Radio* pRad) {
     return (wld_rad_getFirstEnabledIfaceIndex(pRad) > 0);
 }
 
+bool wld_rad_hasLinkIfIndex(T_Radio* pRad, int32_t ifIndex) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERTS_TRUE(ifIndex > 0, false, ME, "invalid");
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(wld_ssid_getLinkIfIndex(pAP->pSSID) == ifIndex) {
+            return true;
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        if(wld_ssid_getLinkIfIndex(pEP->pSSID) == ifIndex) {
+            return true;
+        }
+    }
+    return (wld_getRadioByIndex(ifIndex) == pRad);
+}
+
+bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERTS_STR(ifName, false, ME, "invalid");
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(swl_str_matches(wld_ssid_getLinkIfName(pAP->pSSID), ifName)) {
+            return true;
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        if(swl_str_matches(wld_ssid_getLinkIfName(pEP->pSSID), ifName)) {
+            return true;
+        }
+    }
+    return (wld_rad_from_name(ifName) == pRad);
+}
+
 T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {

@@ -542,6 +542,21 @@ typedef void (* scanResultsCb_f) (void* priv, swl_rc_ne rc, wld_scanResults_t* r
 swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb);
 
 /*
+ * @brief subscribe to get asynchronous scan results, filtered by freq band
+ *
+ * @param state nl80211 socket manager
+ * @param ifIndex network interface index indicating relative radio device
+ * @param priv user data that will returned in the result handler
+ * @param fScanResultsCb handler that will be called when results are ready
+ * @param band frequency band to be matched (AUTO means any freqBand)
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getScanResultsPerFreqBand(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb,
+                                                swl_freqBandExt_e band);
+
+/*
  * @brief set regulatory ISO/IEC 3166-1 alpha2 country code
  * (applicable as global or on phy device)
  *

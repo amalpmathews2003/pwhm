@@ -892,6 +892,7 @@ swl_rc_ne wld_nl80211_abortScan(wld_nl80211_state_t* state, uint32_t ifIndex) {
 }
 
 struct getScanResultsData_s {
+    swl_freqBandExt_e band;
     scanResultsCb_f fScanResultsCb;
     wld_scanResults_t results;
     void* priv;
@@ -916,8 +917,9 @@ static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) 
     wld_scanResultSSID_t result;
     memset(&result, 0, sizeof(result));
     struct nlattr* tb[NL80211_ATTR_MAX + 1] = {};
+    swl_freqBandExt_e band = requestData ? requestData->band : SWL_FREQ_BAND_EXT_AUTO;
     if((nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL) != 0) ||
-       ((rc = wld_nl80211_parseScanResult(tb, &result)) < SWL_RC_OK)) {
+       ((rc = wld_nl80211_parseScanResultPerFreqBand(tb, &result, band)) < SWL_RC_OK)) {
         SAH_TRACEZ_ERROR(ME, "Failed to parse nl msg evt(%d)", gnlh->cmd);
         goto scanFinish;
     }
@@ -955,7 +957,7 @@ scanFinish:
     return rc;
 }
 
-swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb) {
+swl_rc_ne wld_nl80211_getScanResultsPerFreqBand(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb, swl_freqBandExt_e band) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(state, rc, ME, "NULL");
     struct getScanResultsData_s* pScanResultsData = calloc(1, sizeof(struct getScanResultsData_s));
@@ -966,11 +968,16 @@ swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifInde
         }
         return rc;
     }
+    pScanResultsData->band = band;
     pScanResultsData->fScanResultsCb = fScanResultsCb;
     amxc_llist_init(&pScanResultsData->results.ssids);
     pScanResultsData->priv = priv;
     rc = wld_nl80211_sendCmd(false, state, NL80211_CMD_GET_SCAN, NLM_F_DUMP, ifIndex, NULL, s_scanResultCb, pScanResultsData, NULL);
     return rc;
+}
+
+swl_rc_ne wld_nl80211_getScanResults(wld_nl80211_state_t* state, uint32_t ifIndex, void* priv, scanResultsCb_f fScanResultsCb) {
+    return wld_nl80211_getScanResultsPerFreqBand(state, ifIndex, priv, fScanResultsCb, SWL_FREQ_BAND_EXT_AUTO);
 }
 
 swl_rc_ne wld_nl80211_setRegDomain(wld_nl80211_state_t* state, uint32_t wiphy, const char* alpha2) {
