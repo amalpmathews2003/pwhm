@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.30.1 - 2024-07-31(12:28:05 +0000)
+
+### Other
+
+- - fix SSID sync looping
+
 ## Release v6.30.0 - 2024-07-26(14:59:08 +0000)
 
 ### Other
