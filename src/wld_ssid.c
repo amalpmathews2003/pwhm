@@ -87,6 +87,16 @@ static amxc_llist_t sSsidList = {NULL, NULL};
 
 static const char* wld_autoMacSrc_str[WLD_AUTOMACSRC_MAX] = {"Dummy", "Radio"};
 
+static void s_setEnable_internal(T_SSID* pSSID, bool enable) {
+    pSSID->enable = enable;
+    if(enable) {
+        pSSID->changeInfo.nrEnables++;
+        pSSID->changeInfo.lastEnableTime = swl_time_getMonoSec();
+    } else {
+        pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
+    }
+}
+
 static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
     T_SSID* pSSID = (T_SSID*) priv;
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
@@ -115,13 +125,16 @@ static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
             pTgtObj = pSSID->pBus;
             tgtEnable = pEP->enable;
         }
+        if(pTgtObj != NULL) {
+            /* set internal enable, so that writer handler can ignore next
+             * change notification */
+            s_setEnable_internal(pSSID, tgtEnable);
+        }
     }
     if(pTgtObj != NULL) {
         swl_typeUInt8_commitObjectParam(pTgtObj, "Enable", tgtEnable);
     }
-
 }
-
 
 T_SSID* s_createSsid(const char* name, uint32_t id) {
     ASSERT_STR(name, NULL, ME, "Empty name");
@@ -433,14 +446,7 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
         return;
     }
     SAH_TRACEZ_INFO(ME, "%s: SET ENABLE %u %u", pSSID->Name, pSSID->enable, newEnable);
-    pSSID->enable = newEnable;
-    if(newEnable) {
-        pSSID->changeInfo.nrEnables++;
-        pSSID->changeInfo.lastEnableTime = swl_time_getMonoSec();
-    } else {
-        pSSID->changeInfo.lastDisableTime = swl_time_getMonoSec();
-    }
-
+    s_setEnable_internal(pSSID, newEnable);
     wld_ssid_syncEnable(pSSID, true);
 
     SAH_TRACEZ_OUT(ME);
