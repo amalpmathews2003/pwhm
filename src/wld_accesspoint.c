@@ -794,6 +794,7 @@ static void s_setSsidAdvEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, a
     if(debugIsSsidPointer(pSSID)) {
         pAP->pFA->mfn_wvap_ssid(pAP, (char*) pSSID->SSID, strlen(pSSID->SSID), SET);
         wld_autoCommitMgr_notifyVapEdit(pAP);
+        wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, pAP->SSIDAdvertisementEnabled);
     }
     wld_ap_doSync(pAP);
 

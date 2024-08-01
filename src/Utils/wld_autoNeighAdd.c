@@ -79,6 +79,7 @@ static wld_autoNeighAddConfig_t s_neighAddConfig;
  */
 static swl_rc_ne s_setNeighbourAP(T_AccessPoint* pAP, T_AccessPoint* targetAP) {
     ASSERTI_TRUE(pAP->enable, SWL_RC_ERROR, ME, "%s not enabled", pAP->alias);
+    ASSERTI_TRUE(pAP->SSIDAdvertisementEnabled, SWL_RC_ERROR, ME, "%s ssid advertisment is disabled", pAP->alias);
 
     amxd_trans_t trans;
     swl_macChar_t macChar = SWL_MAC_CHAR_NEW();
