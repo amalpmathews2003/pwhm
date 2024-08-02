@@ -88,6 +88,8 @@ static amxc_llist_t sSsidList = {NULL, NULL};
 static const char* wld_autoMacSrc_str[WLD_AUTOMACSRC_MAX] = {"Dummy", "Radio"};
 
 static void s_setEnable_internal(T_SSID* pSSID, bool enable) {
+    ASSERTS_NOT_EQUALS(pSSID->enable, enable, , ME, "same value");
+    SAH_TRACEZ_INFO(ME, "%s: SSID Enable %u -> %u", pSSID->Name, pSSID->enable, enable);
     pSSID->enable = enable;
     if(enable) {
         pSSID->changeInfo.nrEnables++;
@@ -98,6 +100,7 @@ static void s_setEnable_internal(T_SSID* pSSID, bool enable) {
 }
 
 static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
+    SAH_TRACEZ_IN(ME);
     T_SSID* pSSID = (T_SSID*) priv;
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
@@ -134,6 +137,7 @@ static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
     if(pTgtObj != NULL) {
         swl_typeUInt8_commitObjectParam(pTgtObj, "Enable", tgtEnable);
     }
+    SAH_TRACEZ_OUT(ME);
 }
 
 T_SSID* s_createSsid(const char* name, uint32_t id) {
@@ -445,7 +449,6 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
     if(pSSID->enable == newEnable) {
         return;
     }
-    SAH_TRACEZ_INFO(ME, "%s: SET ENABLE %u %u", pSSID->Name, pSSID->enable, newEnable);
     s_setEnable_internal(pSSID, newEnable);
     wld_ssid_syncEnable(pSSID, true);
 
@@ -772,7 +775,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
 
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pS->Name);
     } else {
-        /* Get AP data from OBJ to AP */
+        /* Get SSID data from OBJ to pSSID */
         s_setSSID_pwf(NULL, object,
                       amxd_object_get_param_def(object, "SSID"),
                       amxd_object_get_param_value(object, "SSID"));
@@ -781,9 +784,12 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
                             amxd_object_get_param_def(object, "MACAddress"),
                             amxd_object_get_param_value(object, "MACAddress"));
 
-        s_setEnable_pwf(NULL, object,
-                        amxd_object_get_param_def(object, "Enable"),
-                        amxd_object_get_param_value(object, "Enable"));
+        if((amxp_timer_get_state(pS->enableSyncTimer) != amxp_timer_started) &&
+           (amxp_timer_get_state(pS->enableSyncTimer) != amxp_timer_running)) {
+            s_setEnable_pwf(NULL, object,
+                            amxd_object_get_param_def(object, "Enable"),
+                            amxd_object_get_param_value(object, "Enable"));
+        }
     }
     SAH_TRACEZ_OUT(ME);
 }
