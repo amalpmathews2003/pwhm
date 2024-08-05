@@ -1071,7 +1071,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         free(pskKey);
 
         char* keyPassPhrase = amxd_object_get_cstring_t(secObj, "KeyPassPhrase", NULL);
-        if(!swl_str_nmatches(pAP->keyPassPhrase, keyPassPhrase, swl_str_len(pAP->keyPassPhrase))) {
+        if(!swl_str_matches(pAP->keyPassPhrase, keyPassPhrase)) {
             if(isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
                 swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), keyPassPhrase);
                 wld_ap_sec_doSync(pAP);
