@@ -242,7 +242,7 @@ define probelist_t{
 		 * @param DwellTime: The duration of time to scan each Dynamic Frequency Selection (DFS) channel in milliseconds. A value of 50 milliseconds is suggested.
 		 * @param DFDSDwellTime:  The duration of time to scan each Dynamic Frequency Selection (DFS) channel in milliseconds.
 		 * thus it will have no effect.
-		 * @param HomeTime: The time in milliseconds after which the driver has to go back to the original channel before scanning the next 
+		 * @param HomeTime: The time in milliseconds after which the driver has to go back to the original channel before scanning the next
 		 * channel to avoid disruption. This param  is not configurable in the nL80211 std, thus it will have no effect.
 		 * @param SSID: optional string indicates the SSID to scan.
 		 * @return htable including:
@@ -708,7 +708,7 @@ define probelist_t{
 		 * <p>This radio’s WiFi firmware version. </p>
 		 */
 		%read-only string FirmwareVersion;
-		
+
 		 /**
 		 * Comma-separated list of strings. These are the valid writable values for OperatingChannelBandwidth.
 		 * Each list item is an enumeration of: Each list item is an enumeration of:
@@ -728,7 +728,7 @@ define probelist_t{
 
 		/**
 		 * The desired channel bandwidth (applicable to 802.11n specifications
-		 * only). 
+		 * only).
 		 * The value MUST be a member of the list reported by the SupportedOperatingChannelBandwidths parameter.
 		 */
 		%persistent string OperatingChannelBandwidth{   /* Selected by channel */
@@ -1317,19 +1317,19 @@ define probelist_t{
 
 			/* Event instance created when radar detected */
 			object Event[] {
-			
+
 				/* Timestamp of detected radar */
 				%read-only datetime TimeStamp;
-				
+
 				/* Channel of detected radar. This may not match the primary channel of the radio */
 				%read-only uint32 Channel;
-				
+
 				/* Bandwidth of detected radar. This is a plain bandwidth, and not an OperatingChannelBandwidth */
 				%read-only string Bandwidth{
 					on action validate call check_enum ["20MHz","40MHz","80MHz","160MHz","320MHz","Auto"];
 					default "Auto";
 				}
-				
+
 				/* Channel to which the radio went after DFS detection */
 				%read-only uint32 NewChannel;
 
@@ -1341,13 +1341,13 @@ define probelist_t{
 
 				/* List of channels on which radar was actually detected */
 				%read-only string DFSRadarDetectionList;
-				
+
 				/* Detected radar's zone */
 				%read-only string RadarZone{
 					on action validate call check_enum ["NONE", "ETSI", "STG", "UNCLASSIFIED", "FCC", "JP"];
 					default "NONE";
 				}
-				
+
 				/* Detected radar's index */
 				%read-only uint8 RadarIndex;
 			}
@@ -1619,7 +1619,7 @@ define probelist_t{
 		 * or due to interference. Updated on reading or on getRadioAirStats().
 		 * range [0,100]
 		 */
-		%volatile %read-only uint16 ChannelLoad {
+		%read-only uint16 ChannelLoad {
 			on action read call wld_rad_getChannelLoad_prf;
 		}
 
@@ -1816,7 +1816,7 @@ define probelist_t{
 				%read-only uint16 Channel;
 
 				/**
-				 * Target channel bandwidth by the radio in order to switch on it. 
+				 * Target channel bandwidth by the radio in order to switch on it.
 				 * Values shall match the possible values in SupportedOperatingChannelBandwidth.
 				 * </ul>
 				 */
@@ -1868,7 +1868,7 @@ define probelist_t{
 				%read-only uint16 Channel;
 
 				/**
-				 * Current channel bandwidth by the radio in order to switch on it. 
+				 * Current channel bandwidth by the radio in order to switch on it.
 				 * Values shall match the possible values in SupportedOperatingChannelBandwidth.
 				 * </ul>
 				 */
@@ -2912,19 +2912,19 @@ define probelist_t{
 			* Off = disable the multiple BSSID advertisement
 			* On = enable the multiple BSSID advertisement
 			* Enhanced = enable the enhanced multiple BSSID advertisement
-			* Auto = decision based on capabilities and supported standards 
+			* Auto = decision based on capabilities and supported standards
 			*/
 			%persistent string MBSSIDAdvertisementMode {
 			    on action validate call check_enum ["Off", "On", "Enhanced", "Auto"];
 			    default "Auto";
 			}
-		}	
-		
+		}
+
 		/**
 		 * This object represents the capabilities of the radio.
 		 */
 		%read-only object Capabilities{
-		
+
 			/**
 			 *This object describes the Wi-Fi 7 capabilities for the AP role.
 			 */
@@ -2933,24 +2933,24 @@ define probelist_t{
 				 * Indicates if the Enhanced Multi-Link Multi-Radio (EMLMR) operation is supported.
 				 */
 				%read-only bool EMLMRSupport;
-				
+
 				/**
 				 * Indicates if Enhanced Multi-Link Single-Radio (EMLSR) operation is supported.
 				 */
 				%read-only bool EMLSRSupport;
-				
+
 				/**
 				 * Indicates if Simultaneous Transmit and Receive (STR) operation is supported.
 				 */
 				%read-only bool STRSupport;
-				
+
 				/**
 				 * Indicates if Non-Simultaneous Transmit and Receive (NSTR) operation is supported.
-				 */ 
+				 */
 				%read-only bool NSTRSupport;
-			
+
 			}
-		
+
 			/**
 			 *This object describes the Wi-Fi 7 capabilities for the Sta role.
 			 */
@@ -2959,22 +2959,22 @@ define probelist_t{
 				 * Indicates if the Enhanced Multi-Link Multi-Radio (EMLMR) operation is supported.
 				 */
 				%read-only bool EMLMRSupport;
-				
+
 				/**
 				 * Indicates if Enhanced Multi-Link Single-Radio (EMLSR) operation is supported.
 				 */
 				%read-only bool EMLSRSupport;
-				
+
 				/**
 				 * Indicates if Simultaneous Transmit and Receive (STR) operation is supported.
 				 */
 				%read-only bool STRSupport;
-				
+
 				/**
 				 * Indicates if Non-Simultaneous Transmit and Receive (NSTR) operation is supported.
-				 */ 
+				 */
 				%read-only bool NSTRSupport;
-			
+
 			}
 		}
 
