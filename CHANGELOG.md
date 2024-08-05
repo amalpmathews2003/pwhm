@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.30.3 - 2024-08-05(12:11:35 +0000)
+
+### Other
+
+- Set Reporting Detail subelement to default value
+
 ## Release v6.30.2 - 2024-08-05(11:54:33 +0000)
 
 ### Other
