@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.30.2 - 2024-08-05(11:54:33 +0000)
+
+### Other
+
+- - Fix Enable sync between Endpoint/Accesspoint and SSID.
+
 ## Release v6.30.1 - 2024-07-31(12:28:05 +0000)
 
 ### Other
