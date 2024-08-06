@@ -845,8 +845,10 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
             /* If key pass phrase is set, we use the Key pass phrase */
             if(tval == 3) {
                 swl_mapChar_add(vapConfigMap, "wpa_pairwise", "TKIP CCMP"); /* WPA_WPA2 */
+                swl_mapChar_add(vapConfigMap, "rsn_pairwise", "TKIP CCMP"); /* WPA_WPA2 */
             } else {
                 swl_mapChar_add(vapConfigMap, "wpa_pairwise", (tval == 1) ? "TKIP" : "CCMP");
+                swl_mapChar_add(vapConfigMap, "rsn_pairwise", (tval == 1) ? "TKIP" : "CCMP");
             }
             swl_mapChar_add(vapConfigMap, wpa_key_str, pAP->keyPassPhrase);
         } else {
@@ -855,6 +857,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
                                      ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
                                      ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""));
             swl_mapChar_add(vapConfigMap, "wpa_pairwise", "TKIP"); /* WPA or WPA2 with TKIP */
+            swl_mapChar_add(vapConfigMap, "rsn_pairwise", "TKIP"); /* WPA or WPA2 with TKIP */
             swl_mapChar_add(vapConfigMap, "wpa_psk", pAP->preSharedKey);
         }
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
@@ -869,6 +872,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
                                  ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
                                  "SAE");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
+        swl_mapChar_add(vapConfigMap, "rsn_pairwise", "CCMP");
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
         swl_mapChar_add(vapConfigMap, wpa_key_str, pAP->keyPassPhrase);
@@ -892,6 +896,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
                                  "SAE ",
                                  (pAP->IEEE80211rEnable ? "FT-SAE " : ""));
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
+        swl_mapChar_add(vapConfigMap, "rsn_pairwise", "CCMP");
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
         // If sae_password is set, wpa_passphrase is ignored by hostapd
@@ -912,6 +917,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     {
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapChar_add(vapConfigMap, "wpa_pairwise", "CCMP");
+        swl_mapChar_add(vapConfigMap, "rsn_pairwise", "CCMP");
         swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", "OWE");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "2");
         T_AccessPoint* transitionAp;
@@ -942,6 +948,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
                                  ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-EAP-SHA256 " : ""),
                                  (pAP->IEEE80211rEnable ? "FT-EAP " : ""));
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_pairwise", "%s %s", (tval & 1) ? "TKIP" : "", (tval & 2) ? "CCMP" : "");
+        swl_mapCharFmt_addValStr(vapConfigMap, "rsn_pairwise", "%s %s", (tval & 1) ? "TKIP" : "", (tval & 2) ? "CCMP" : "");
         swl_mapChar_add(vapConfigMap, "auth_server_addr", *pAP->radiusServerIPAddr ? pAP->radiusServerIPAddr : "127.0.0.1");
         swl_mapCharFmt_addValInt32(vapConfigMap, "auth_server_port", pAP->radiusServerPort);
 

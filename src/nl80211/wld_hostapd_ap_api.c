@@ -304,6 +304,7 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"wpa", SECDMN_ACTION_OK_NEED_TOGGLE},
               //params set and applied with global saved hostapd conf reloading
               {"wpa_pairwise", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"rsn_pairwise", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"wpa_key_mgmt", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"ieee80211w", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"auth_server_addr", SECDMN_ACTION_OK_NEED_SIGHUP},
@@ -551,7 +552,7 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecurityModeExt(T_AccessPoint* pA
     ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     //when switching into or out of wep mode, we need to toggle hostapd to apply security mode
-    const char* secParams[] = {"wpa", "wpa_pairwise", "wpa_key_mgmt", "wep_default_key", "sae_pwe", };
+    const char* secParams[] = {"wpa", "wpa_pairwise", "rsn_pairwise", "wpa_key_mgmt", "wep_default_key", "sae_pwe", };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             secParams, SWL_ARRAY_SIZE(secParams), &action);
     return action;
