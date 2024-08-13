@@ -358,7 +358,7 @@ amxd_status_t _wld_ap_validatePreSharedKey_pvf(amxd_object_t* object _UNUSED,
     const char* currentValue = amxc_var_constcast(cstring_t, &param->value);
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
-    if(swl_str_matches(currentValue, newValue) || isValidPSKKey(newValue)) {
+    if(swl_str_isEmpty(newValue) || swl_str_matches(currentValue, newValue) || isValidPSKKey(newValue)) {
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "invalid PreSharedKey (%s)", newValue);
@@ -381,7 +381,7 @@ amxd_status_t _wld_ap_validateKeyPassPhrase_pvf(amxd_object_t* object _UNUSED,
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
     ASSERT_NOT_NULL(newValue, status, ME, "NULL");
-    if(swl_str_matches(currentValue, newValue) || isValidAESKey(newValue, PSK_KEY_SIZE_LEN - 1)) {
+    if(swl_str_isEmpty(newValue) || swl_str_matches(currentValue, newValue) || isValidAESKey(newValue, PSK_KEY_SIZE_LEN - 1)) {
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "Invalid AES Key (%s)", newValue);
@@ -423,7 +423,7 @@ amxd_status_t _wld_ap_validateSaePassphrase_pvf(amxd_object_t* object _UNUSED,
     ASSERT_NOT_NULL(currentValue, status, ME, "NULL");
     char* newValue = amxc_var_dyncast(cstring_t, args);
     ASSERT_NOT_NULL(newValue, status, ME, "NULL");
-    if(swl_str_matches(currentValue, newValue) || isValidAESKey(newValue, SAE_KEY_SIZE_LEN)) {
+    if(swl_str_isEmpty(newValue) || swl_str_matches(currentValue, newValue) || isValidAESKey(newValue, SAE_KEY_SIZE_LEN)) {
         status = amxd_status_ok;
     } else {
         SAH_TRACEZ_ERROR(ME, "Invalid SAE Key (%s)", newValue);
