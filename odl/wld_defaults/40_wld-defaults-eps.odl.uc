@@ -18,7 +18,6 @@
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{BssId + 1}}.";
                 parameter Enable = 0;
-                parameter BridgeInterface = "{{BD.Bridges.Lan.Name}}";
                 parameter MultiAPEnable = 1;
                 object WPS {
                     parameter Enable = 1;
