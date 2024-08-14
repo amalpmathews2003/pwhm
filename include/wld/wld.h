@@ -1684,6 +1684,8 @@ struct S_SSID {
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* Mac Address of the interface */
     char SSID[36];                            /* VAP SSID broadcast name */
     char Name[32];                            /* Contains the datamodel name of this SSID */
+    int32_t Multi_ap_profile;
+    int32_t Multi_ap_primary_vlanid;
     T_Stats stats;
     bool enable;                              /* Copied state of AccessPoint.enabled */
     amxd_object_t* pBus;                      /* Keep a copy of the amxd_object_t */

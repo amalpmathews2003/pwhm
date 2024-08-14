@@ -206,6 +206,12 @@
 		%persistent string MACAddress{
 			on action validate call is_valid_macaddr;
 		}
+		int32 Multi_ap_profile {
+				default 0;
+		}
+		int32 Multi_ap_primary_vlanid {
+				default 0;
+		}
 		/**
 		 *  <p> The current service set identifier in use by the
 		 *  connection. The SSID is an identifier that is attached to
