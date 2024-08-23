@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.31.1 - 2024-08-23(15:16:07 +0000)
+
+### Other
+
+- : 2.4GHz radio is reconfiguring itself in loop
+
 ## Release v6.31.0 - 2024-08-23(12:16:44 +0000)
 
 ### Other
