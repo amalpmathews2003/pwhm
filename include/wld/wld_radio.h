@@ -229,6 +229,7 @@ swl_chanspec_t wld_rad_getSwlChanspec(T_Radio* pRad);
 uint32_t wld_rad_getCurrentFreq(T_Radio* pRad);
 swl_rc_ne wld_rad_getCurrentNoise(T_Radio* pRad, int32_t* pNoise);
 
+void wld_rad_triggerDelayCommit(T_Radio* pRad, uint32_t delay, bool restartIfActive);
 int wld_rad_doRadioCommit(T_Radio* pR);
 void wld_rad_doSync(T_Radio* pRad);
 int wld_rad_doCommitIfUnblocked(T_Radio* pR);

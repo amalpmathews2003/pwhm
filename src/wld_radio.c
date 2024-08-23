@@ -1551,10 +1551,7 @@ amxd_status_t _DFS_drvdbg(amxd_object_t* object,
     pR->pFA->mfn_wrad_dfsradartrigger(pR, act_idx);
 
     /* Update ongoing channel states...*/
-    if(pR->pFA->mfn_wrad_fsm_delay_commit) {
-        pR->fsmRad.TODC = 1000;
-        amxp_timer_start(pR->fsmRad.obj_DelayCommit, pR->fsmRad.TODC);
-    }
+    wld_rad_triggerDelayCommit(pR, 1000, false);
 
     amxc_var_set(int32_t, retval, 0);
     return amxd_status_ok;
@@ -2791,6 +2788,38 @@ amxd_status_t _sync(amxd_object_t* object,
     return amxd_status_ok;
 }
 
+/**
+ * Trigger the "delay commit handler".
+ *
+ * If restartIfActive is false, then if the delay commit timer is already started, nothing will happen.
+ * If restartIfActive is true, then delay commit started will be restarted if already running.
+ */
+void wld_rad_triggerDelayCommit(T_Radio* pRad, uint32_t delay, bool restartIfActive) {
+    /* Start timer for late commit update... */
+    if(!pRad->pFA->mfn_wrad_fsm_delay_commit) {
+        return;
+    }
+
+    amxp_timer_state_t timerState = amxp_timer_get_state(pRad->fsmRad.obj_DelayCommit);
+    if(((timerState == amxp_timer_started ) || (timerState == amxp_timer_running))
+       && !restartIfActive) {
+        return;
+    }
+
+    pRad->fsmRad.TODC = delay; /* 10 seconds */
+    if(!pRad->fsmRad.obj_DelayCommit) {
+        amxp_timer_new(&pRad->fsmRad.obj_DelayCommit, rad_delayed_commit_time_handler, pRad);
+        if(pRad->fsmRad.obj_DelayCommit != NULL) {
+            SAH_TRACEZ_INFO(ME, "Create delayCommit timer %s", pRad->Name);
+        } else {
+            SAH_TRACEZ_ERROR(ME, "Failed to create delay commit timer %s", pRad->Name);
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "Start delayCommit callback %s - %d", pRad->Name, pRad->fsmRad.TODC);
+    amxp_timer_start(pRad->fsmRad.obj_DelayCommit, pRad->fsmRad.TODC);
+
+}
+
 int wld_rad_doRadioCommit(T_Radio* pRad) {
     int ret = -1;
     if(!pRad || !debugIsRadPointer(pRad)) {
@@ -2798,20 +2827,7 @@ int wld_rad_doRadioCommit(T_Radio* pRad) {
         return -1;
     }
 
-    /* Start timer for late commit update... */
-    if(pRad->pFA->mfn_wrad_fsm_delay_commit) {
-        pRad->fsmRad.TODC = 10000; /* 10 seconds */
-        if(!pRad->fsmRad.obj_DelayCommit) {
-            amxp_timer_new(&pRad->fsmRad.obj_DelayCommit, rad_delayed_commit_time_handler, pRad);
-            if(pRad->fsmRad.obj_DelayCommit != NULL) {
-                SAH_TRACEZ_INFO(ME, "Create delayCommit timer %s", pRad->Name);
-            } else {
-                SAH_TRACEZ_ERROR(ME, "Failed to create delay commit timer %s", pRad->Name);
-            }
-        }
-        SAH_TRACEZ_INFO(ME, "Start delayCommit callback %s - %d", pRad->Name, pRad->fsmRad.TODC);
-        amxp_timer_start(pRad->fsmRad.obj_DelayCommit, pRad->fsmRad.TODC);
-    }
+    wld_rad_triggerDelayCommit(pRad, 10000, true);
 
     if((pRad->fsm_radio_st == FSM_IDLE) && !pRad->fsmRad.timer) {
         ret = pRad->pFA->mfn_wrad_fsm(pRad);
