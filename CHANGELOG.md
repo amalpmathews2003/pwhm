@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.31.0 - 2024-08-23(12:16:44 +0000)
+
+### Other
+
+- - provide function to start delay commit timer
+
 ## Release v6.30.6 - 2024-08-19(08:13:40 +0000)
 
 ### Other
