@@ -248,7 +248,7 @@ static void s_manageMf(T_AccessPoint* vap, mfDesc_t* pMf, const char* categF, mf
     if(!expecSuccess) {
         return;
     }
-    ttb_mockTimer_goToFutureMs(1);
+    ttb_mockTimer_goToFutureMs(100);
 
     /*
      * checking phase: go through the required MF/PF Entry/TempEntry instance list
@@ -354,7 +354,7 @@ static void test_setMfAddrList(void** state _UNUSED) {
     T_AccessPoint* vap = dm.bandList[SWL_FREQ_BAND_2_4GHZ].vapPriv;
     char mfAddrListStr[128] = "00:11:22:AA:BB:a0,00:11:22:AA:BB:a1";
     assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", mfAddrListStr));
-    ttb_mockTimer_goToFutureMs(1);
+    ttb_mockTimer_goToFutureMs(100);
     swl_macBin_t macBin;
     char* p = mfAddrListStr;
     uint32_t id = 0;
@@ -365,7 +365,7 @@ static void test_setMfAddrList(void** state _UNUSED) {
     }
     assert_int_equal(vap->MF_EntryCount, id);
     assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", ""));
-    ttb_mockTimer_goToFutureMs(1);
+    ttb_mockTimer_goToFutureMs(100);
     assert_int_equal(vap->MF_EntryCount, 0);
 }
 
@@ -374,7 +374,7 @@ static void test_changeMfAddrList(void** state _UNUSED) {
 
     char mfAddrListStr1[128] = "00:11:22:AA:BB:CC";
     assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", mfAddrListStr1));
-    ttb_mockTimer_goToFutureMs(5);
+    ttb_mockTimer_goToFutureMs(100);
     assert_string_equal(vap->MF_AddressList, mfAddrListStr1);
     assert_int_equal(vap->MF_EntryCount, 1);
     swl_macBin_t macBin1;
@@ -383,7 +383,7 @@ static void test_changeMfAddrList(void** state _UNUSED) {
 
     char mfAddrListStr2[128] = "00:11:22:AA:BB:CD";
     assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", mfAddrListStr2));
-    ttb_mockTimer_goToFutureMs(5);
+    ttb_mockTimer_goToFutureMs(100);
     assert_string_equal(vap->MF_AddressList, mfAddrListStr2);
     assert_int_equal(vap->MF_EntryCount, 1);
     swl_macBin_t macBin2;
@@ -392,7 +392,7 @@ static void test_changeMfAddrList(void** state _UNUSED) {
 
     // remove entries to free memory for valgrind
     assert_true(swl_typeCharPtr_commitObjectParam(vap->pBus, "MACFilterAddressList", ""));
-    ttb_mockTimer_goToFutureMs(1);
+    ttb_mockTimer_goToFutureMs(100);
     assert_int_equal(vap->MF_EntryCount, 0);
 }
 

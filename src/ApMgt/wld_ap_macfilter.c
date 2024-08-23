@@ -197,7 +197,7 @@ static void s_syncMACFiltering(amxd_object_t* object) {
         }
 
         if(sync_changes(mf, "Entry", pAP->MF_Entry, &pAP->MF_EntryCount, MAXNROF_MFENTRY)) {
-            swla_delayExec_add((swla_delayExecFun_cbf) s_updateMACFilterAddressList, pAP);
+            swla_delayExec_addTimeout((swla_delayExecFun_cbf) s_updateMACFilterAddressList, pAP, 100);
             needSyncToHw = true;
         }
         if(sync_changes(mf, "TempEntry", pAP->MF_Temp_Entry, &pAP->MF_TempEntryCount, MAXNROF_MFENTRY)) {
