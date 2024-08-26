@@ -1542,7 +1542,7 @@ struct WLD_RADIO {
     bool explicitBeamFormingSupported;
     bool explicitBeamFormingEnabled;
     swl_80211_htCapInfo_m htCapabilities;           /* HT(High Throughput) 802.11n capabilities*/
-    swl_80211_vhtCapInfo_m vhtCapabilities;         /* VHT(very High Throughput) 802.11n capabilities*/
+    swl_80211_vhtCapInfo_m vhtCapabilities;         /* VHT(very High Throughput) 802.11ac capabilities*/
     swl_80211_hecap_phyCapInfo_t hePhyCapabilities; /* HE(High Efficiency) 802.11ax physical capabilities*/
     wld_rifs_mode_e RIFSEnabled;
     bool airtimeFairnessEnabled;                    /* Enable airtime fairness feature */

@@ -1190,16 +1190,17 @@ define probelist_t{
 		*/
 		%read-only string RadCapabilitiesHTStr;
 
-		/** Radio 802.11n VHT(Very High Throughput) capabilities, raw values,in base64 as per the Tr181 Spec.
-		*   See standard section "9.4.2.157.2 VHT Capabilities Information field" for bits details.
+		/** Radio 802.11ac VHT(Very High Throughput) capabilities.
+		 *  The bit format is the one defined in IEEE 802.11 (4 bytes), not the one defined in
+		 *  EasyMesh (6 bytes) and used by TR-181.
+		 *  See 802.11 standard section "9.4.2.157.2 VHT Capabilities Information field" for bit details.
+		 *  The value is encoded in base64 in little-endian order (LSB first).
 		*/
-		%read-only string VHTCapabilities;
+		%protected %read-only string VHTCapabilities;
 
 		/**
-		 * Radio 802.11n VHT(Very High Throughput) capabilities. List of strings  with these
+		 * Radio 802.11ac VHT(Very High Throughput) capabilities. List of strings  with these
 		 * possible values:
-		 * * MAX_MPDU
-		 * * SUP_WIDTH
 		 * * RX_LDPC
 		 * * SGI_80
 		 * * SGI_160
@@ -1207,16 +1208,13 @@ define probelist_t{
 		 * * RX_STBC
 		 * * SU_BFR
 		 * * SU_BFE
-		 * * BFE_STS_CAP
-		 * * NR_SDIM
 		 * * MU_BFR
 		 * * MU_BFE
 		 * * TXOP_PS
-		 * * MAX_AMPDU_EXP
+		 * * HTC_VHT
 		 * * LINK_ADAPT_CAP
 		 * * RX_ANT_PAT_CONS
 		 * * TX_ANT_PAT_CONS
-		 * * EXT_NSS_SUP
 		*/
 		%read-only string RadCapabilitiesVHTStr;
 
