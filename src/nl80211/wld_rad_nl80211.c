@@ -305,15 +305,21 @@ swl_rc_ne wld_rad_nl80211_getAirStatsFromSurveyInfo(T_Radio* pRadio, wld_airStat
     wld_nl80211_channelSurveyInfo_t currChanSurveyInfo;
     memcpy(&currChanSurveyInfo, pChanSurveyInfo, sizeof(*pChanSurveyInfo));
     if((pLastActiveChanSurveyInfo->frequencyMHz == currChanSurveyInfo.frequencyMHz) &&
-       (pLastActiveChanSurveyInfo->timeOn > 0) &&
-       (pLastActiveChanSurveyInfo->timeOn < currChanSurveyInfo.timeOn)) {
-        currChanSurveyInfo.timeOn -= pLastActiveChanSurveyInfo->timeOn;
-        currChanSurveyInfo.timeBusy -= pLastActiveChanSurveyInfo->timeBusy;
-        currChanSurveyInfo.timeExtBusy -= pLastActiveChanSurveyInfo->timeExtBusy;
-        currChanSurveyInfo.timeRx -= pLastActiveChanSurveyInfo->timeRx;
-        currChanSurveyInfo.timeTx -= pLastActiveChanSurveyInfo->timeTx;
-        currChanSurveyInfo.timeScan -= pLastActiveChanSurveyInfo->timeScan;
-        currChanSurveyInfo.timeRxInBss -= pLastActiveChanSurveyInfo->timeRxInBss;
+       (pLastActiveChanSurveyInfo->timeOn > 0)) {
+        if((pLastActiveChanSurveyInfo->timeOn == currChanSurveyInfo.timeOn)) {
+            SAH_TRACEZ_NOTICE(ME, "%s: Current and last survey timeOn must be different", pRadio->Name);
+            memcpy(pStats, pRadio->pLastAirStats, sizeof(*pStats));
+            return SWL_RC_OK;
+        }
+        if(pLastActiveChanSurveyInfo->timeOn < currChanSurveyInfo.timeOn) {
+            currChanSurveyInfo.timeOn -= pLastActiveChanSurveyInfo->timeOn;
+            currChanSurveyInfo.timeBusy -= pLastActiveChanSurveyInfo->timeBusy;
+            currChanSurveyInfo.timeExtBusy -= pLastActiveChanSurveyInfo->timeExtBusy;
+            currChanSurveyInfo.timeRx -= pLastActiveChanSurveyInfo->timeRx;
+            currChanSurveyInfo.timeTx -= pLastActiveChanSurveyInfo->timeTx;
+            currChanSurveyInfo.timeScan -= pLastActiveChanSurveyInfo->timeScan;
+            currChanSurveyInfo.timeRxInBss -= pLastActiveChanSurveyInfo->timeRxInBss;
+        }
     }
     memcpy(pLastActiveChanSurveyInfo, pChanSurveyInfo, sizeof(*pChanSurveyInfo));
 
