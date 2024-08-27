@@ -480,6 +480,14 @@ typedef uint32_t wld_multiap_type_m;
 #define M_MULTIAP_BACKHAUL_STA  (1 << MULTIAP_BACKHAUL_STA)
 #define M_MULTIAP_ALL           ((1 << MULTIAP_MAX) - 1)
 
+typedef enum {
+    MULTIAP_NOT_SUPPORTED = 0, // Multi-AP functionality not supported
+    MULTIAP_PROFILE_1 = 1,     // Supports EasyMesh R1 functionality
+    MULTIAP_PROFILE_2,         // Supports EasyMesh R2 functionality
+    MULTIAP_PROFILE_3,         // Supports EasyMesh R3 and greater functionalities
+    MULTIAP_PROFILE_MAX
+} wld_multiap_profile_e;
+
 extern const char* wld_apRole_str[];
 typedef enum {
     AP_ROLE_OFF,
@@ -1871,6 +1879,8 @@ struct S_ACCESSPOINT {
     T_ApMgtStats mgtStats;               /* Statistics with regards to management */
     bool wdsEnable;                      /* Enable 4 mac address */
     wld_multiap_type_m multiAPType;      /* Bitmask of all MultiAP type applied to this accesspoint */
+    wld_multiap_profile_e multiAPProfile;/* MultiAP profile status */
+    int16_t multiAPVlanId;               /* Primary VLAN ID config for MultiAP */
     wld_apRole_e apRole;                 /* Current AccessPoint role */
     T_AccessPoint* pReferenceApRelay;    /* Use the credentials of this AP inside WPS M8 */
     bool mboEnable;                      /* Enable multi band operation*/
@@ -2265,6 +2275,8 @@ typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, 
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);
+typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_PROFILE)(T_AccessPoint* vap);
+typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_VLANID)(T_AccessPoint* vap);
 typedef int (APIENTRY* PNF_WVAP_SET_MBO_DENY_REASON)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_SET_AP_ROLE)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_ADD_VENDOR_IE)(T_AccessPoint* vap, wld_vendorIe_t* vendor_ie);
@@ -2480,6 +2492,9 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
     PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */
     PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;   /**< Set MultiAP type */
+    PFN_WVAP_MULTIAP_UPDATE_PROFILE mfn_wvap_multiap_update_profile;   /**< Set MultiAP profile */
+    PFN_WVAP_MULTIAP_UPDATE_PROFILE mfn_wvap_multiap_update_vlanid;   /**< Set MultiAP VLAN ID */
+
     PNF_WVAP_SET_MBO_DENY_REASON mfn_wvap_setMboDenyReason;      /**< Set MBO Assoc Disallow Reason*/
     PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                   /**< Set AccessPoint role */
     PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;               /**< Add vendor IE */
