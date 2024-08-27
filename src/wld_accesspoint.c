@@ -873,6 +873,9 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         swl_conv_transParamSetMask(&trans, "MultiAPType", pAP->multiAPType, cstr_MultiAPType, MULTIAP_MAX);
 
+        amxd_trans_set_uint8_t(&trans, "MultiAPProfile", pAP->multiAPProfile);
+        amxd_trans_set_uint16_t(&trans, "MultiAPVlanId", pAP->multiAPVlanId);
+
         amxd_trans_set_int32_t(&trans, "AssociatedDeviceNumberOfEntries", pAP->AssociatedDeviceNumberOfEntries);
         amxd_trans_set_int32_t(&trans, "ActiveAssociatedDeviceNumberOfEntries", pAP->ActiveAssociatedDeviceNumberOfEntries);
         if(amxd_object_get_int32_t(object, "MaxAssociatedDevices", NULL) <= 0) {
@@ -1302,6 +1305,39 @@ static void s_setMultiAPType_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
 
     SAH_TRACEZ_OUT(ME);
 }
+
+static void s_setMultiAPProfile_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    uint8_t multiApProfile = amxc_var_dyncast(uint8_t, newValue);
+    if(multiApProfile != pAP->multiAPProfile) {
+        pAP->multiAPProfile = multiApProfile;
+        pAP->pFA->mfn_wvap_multiap_update_profile(pAP);
+        wld_autoCommitMgr_notifyVapEdit(pAP);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setMultiAPVlanId_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, , ME, "INVALID");
+
+    uint16_t multiApVlanId = amxc_var_dyncast(uint16_t, newValue);
+    if(multiApVlanId != pAP->multiAPVlanId) {
+        pAP->multiAPVlanId = multiApVlanId;
+        pAP->pFA->mfn_wvap_multiap_update_vlanid(pAP);
+        wld_autoCommitMgr_notifyVapEdit(pAP);
+    }
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 
 static void s_setApRole_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -2653,6 +2689,8 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("MBOEnable", s_setMBOEnable_pwf),
                   SWLA_DM_PARAM_HDLR("MBOAssocDisallowReason", s_setMBOAssocDisallowReason_pwf),
                   SWLA_DM_PARAM_HDLR("MultiAPType", s_setMultiAPType_pwf),
+                  SWLA_DM_PARAM_HDLR("MultiAPProfile", s_setMultiAPProfile_pwf),
+                  SWLA_DM_PARAM_HDLR("MultiAPVlanId", s_setMultiAPVlanId_pwf),
                   SWLA_DM_PARAM_HDLR("ApRole", s_setApRole_pwf),
                   SWLA_DM_PARAM_HDLR("ReferenceApRelay", s_setReferenceApRelay_pwf),
                   SWLA_DM_PARAM_HDLR("MaxAssociatedDevices", s_setMaxStations_pwf),
