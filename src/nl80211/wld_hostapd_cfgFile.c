@@ -674,6 +674,9 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
 #define M_HOSTAPD_MULTI_AP_BBSS     0x1
 #define M_HOSTAPD_MULTI_AP_FBSS     0x2
 
+#define MIN_VLAN_ID 1
+#define MAX_VLAN_ID 4094
+
 static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap, swl_mapChar_t* multiAPConfig) {
     ASSERTS_NOT_NULL(pAP, , ME, "NULL");
     ASSERTS_NOT_NULL(vapConfigMap, , ME, "NULL");
@@ -686,6 +689,15 @@ static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap,
     }
 
     swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap", hapdMultiApType);
+
+    //Multi-AP profile will be set only when MultiAPType is not 0(=disabled).
+    if(hapdMultiApType && (pAP->multiAPProfile > MULTIAP_NOT_SUPPORTED)) {
+        swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap_profile", pAP->multiAPProfile);
+        if((pAP->multiAPVlanId >= MIN_VLAN_ID) && (pAP->multiAPVlanId <= MAX_VLAN_ID)) {
+            swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap_vlanid", pAP->multiAPVlanId);
+        }
+    }
+
     char* wpsState = swl_mapChar_get(vapConfigMap, "wps_state");
     if((!swl_str_isEmpty(wpsState)) && (!swl_str_matches(wpsState, "0")) && (hapdMultiApType & M_HOSTAPD_MULTI_AP_FBSS)) {
         /*

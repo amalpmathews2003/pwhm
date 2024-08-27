@@ -353,6 +353,23 @@ define rrm_t{
 		}
 
 		/**
+		 * Defines Multi-AP profile details as defined in Wi-Fi EasyMesh specification
+		 */
+		%persistent uint8 MultiAPProfile {
+			default 0;
+			on action validate call check_range { min = 0, max = 3 };
+		}
+
+		/**
+		 * Updates Multi-AP Default 802.1Q Setting subelement
+		 * Valid range is from 0 to 4094. 0 indicates VLAN disabled.
+		 */
+		%persistent uint16 MultiAPVlanId {
+			default 0;
+			on action validate call check_range { min = 0, max = 4094 };
+		}
+
+		/**
 		 * Define in which role AccessPoint will be used, IE in the Beacon will be added.
 		 * Off : undefined role, no additional IE.
 		 * Main: everyone should be able to connect.

@@ -325,6 +325,18 @@ int wifiGen_vap_multiap_update_type(T_AccessPoint* pAP) {
     return 0;
 }
 
+int wifiGen_vap_multiap_update_profile(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+    return 0;
+}
+
+int wifiGen_vap_multiap_update_vlanid(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
+    return 0;
+}
+
 swl_rc_ne wifiGen_vap_sta_transfer(T_AccessPoint* pAP, wld_transferStaArgs_t* params) {
     return wld_ap_hostapd_transferStation(pAP, params);
 }

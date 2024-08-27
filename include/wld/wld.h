@@ -480,6 +480,14 @@ typedef uint32_t wld_multiap_type_m;
 #define M_MULTIAP_BACKHAUL_STA  (1 << MULTIAP_BACKHAUL_STA)
 #define M_MULTIAP_ALL           ((1 << MULTIAP_MAX) - 1)
 
+typedef enum {
+    MULTIAP_NOT_SUPPORTED = 0, // Multi-AP functionality not supported
+    MULTIAP_PROFILE_1 = 1,     // Supports EasyMesh R1 functionality
+    MULTIAP_PROFILE_2,         // Supports EasyMesh R2 functionality
+    MULTIAP_PROFILE_3,         // Supports EasyMesh R3 and greater functionalities
+    MULTIAP_PROFILE_MAX
+} wld_multiap_profile_e;
+
 extern const char* wld_apRole_str[];
 typedef enum {
     AP_ROLE_OFF,
@@ -1860,25 +1868,27 @@ struct S_ACCESSPOINT {
     //int wlradio_sk; Use RADIO pointer for this (if needed)
     int wlvap_sk;
     T_FSM fsm;
-    struct S_CWLD_FUNC_TABLE* pFA;       /* Function Array */
+    struct S_CWLD_FUNC_TABLE* pFA;        /* Function Array */
     amxc_llist_it_t it;
-    amxd_object_t* pBus;                 /* Keep a copy of the amxd_object_t */
-    void* vendorData;                    /* Additional vendor specific data for chipset vendor only*/
+    amxd_object_t* pBus;                  /* Keep a copy of the amxd_object_t */
+    void* vendorData;                     /* Additional vendor specific data for chipset vendor only*/
 
-    int dbgEnable;                       /* Enable Deamon debugging */
-    char* dbgOutput;                     /* Filename to store data  */
-    T_RssiEventing rssiEventing;         /* Struct to keep track of RssiEventing */
-    T_ApMgtStats mgtStats;               /* Statistics with regards to management */
-    bool wdsEnable;                      /* Enable 4 mac address */
-    wld_multiap_type_m multiAPType;      /* Bitmask of all MultiAP type applied to this accesspoint */
-    wld_apRole_e apRole;                 /* Current AccessPoint role */
-    T_AccessPoint* pReferenceApRelay;    /* Use the credentials of this AP inside WPS M8 */
-    bool mboEnable;                      /* Enable multi band operation*/
-    wld_mbo_denyReason_e mboDenyReason;  /* MBO Assoc Disallow Reason to add to the MBO IE*/
-    bool enableVendorIEs;                /* Enable the broadcast of custom vendor IEs */
-    amxc_llist_t vendorIEs;              /* List of vendor IE */
-    wld_fcallState_t stationsStatsState; /* Station stats state */
-    wld_vapConfigDriver_t driverCfg;     /* Detailed driver config options */
+    int dbgEnable;                        /* Enable Deamon debugging */
+    char* dbgOutput;                      /* Filename to store data  */
+    T_RssiEventing rssiEventing;          /* Struct to keep track of RssiEventing */
+    T_ApMgtStats mgtStats;                /* Statistics with regards to management */
+    bool wdsEnable;                       /* Enable 4 mac address */
+    wld_multiap_type_m multiAPType;       /* Bitmask of all MultiAP type applied to this accesspoint */
+    wld_multiap_profile_e multiAPProfile; /* MultiAP profile status */
+    uint16_t multiAPVlanId;               /* Primary VLAN ID config for MultiAP */
+    wld_apRole_e apRole;                  /* Current AccessPoint role */
+    T_AccessPoint* pReferenceApRelay;     /* Use the credentials of this AP inside WPS M8 */
+    bool mboEnable;                       /* Enable multi band operation*/
+    wld_mbo_denyReason_e mboDenyReason;   /* MBO Assoc Disallow Reason to add to the MBO IE*/
+    bool enableVendorIEs;                 /* Enable the broadcast of custom vendor IEs */
+    amxc_llist_t vendorIEs;               /* List of vendor IE */
+    wld_fcallState_t stationsStatsState;  /* Station stats state */
+    wld_vapConfigDriver_t driverCfg;      /* Detailed driver config options */
 
     /* Table of recent station disconnections.
      * Only for stations that were authenticated. Stations that did not get authenticated
@@ -2265,6 +2275,8 @@ typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, 
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_TYPE)(T_AccessPoint* vap);
+typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_PROFILE)(T_AccessPoint* vap);
+typedef int (APIENTRY* PFN_WVAP_MULTIAP_UPDATE_VLANID)(T_AccessPoint* vap);
 typedef int (APIENTRY* PNF_WVAP_SET_MBO_DENY_REASON)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_SET_AP_ROLE)(T_AccessPoint* vap);
 typedef int (APIENTRY* PFN_WVAP_ADD_VENDOR_IE)(T_AccessPoint* vap, wld_vendorIe_t* vendor_ie);
@@ -2475,37 +2487,40 @@ typedef struct S_CWLD_FUNC_TABLE {
      */
     swl_rc_ne (* mfn_wvap_transfer_sta)(T_AccessPoint* vap, wld_transferStaArgs_t* params);
     swl_rc_ne (* mfn_wvap_sendManagementFrame)(T_AccessPoint* vap, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec);
-    swl_rc_ne (* mfn_wvap_setEvtHandlers)(T_AccessPoint* vap);   /**< Set the event handlers from the VAP */
+    swl_rc_ne (* mfn_wvap_setEvtHandlers)(T_AccessPoint* vap);       /**< Set the event handlers from the VAP */
 
-    PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;            /**< Send a 802.11k remote measurement request */
-    PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                       /**< Cleanup a non connected station from the VAP */
-    PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;   /**< Set MultiAP type */
-    PNF_WVAP_SET_MBO_DENY_REASON mfn_wvap_setMboDenyReason;      /**< Set MBO Assoc Disallow Reason*/
-    PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                   /**< Set AccessPoint role */
-    PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;               /**< Add vendor IE */
-    PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;               /**< Del vendor IE */
-    PFN_WVAP_ENAB_VENDOR_IE mfn_wvap_enab_vendor_ie;             /**< Enable vendor IEs */
-    PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method; /**< Set BSS discovery method */
-    PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;          /**< Set Config Driver */
+    PFN_WVAP_RRM_REQUEST mfn_wvap_request_rrm_report;                /**< Send a 802.11k remote measurement request */
+    PFN_WVAP_CLEAN_STA mfn_wvap_clean_sta;                           /**< Cleanup a non connected station from the VAP */
+    PFN_WVAP_MULTIAP_UPDATE_TYPE mfn_wvap_multiap_update_type;       /**< Set MultiAP type */
+    PFN_WVAP_MULTIAP_UPDATE_PROFILE mfn_wvap_multiap_update_profile; /**< Set MultiAP profile */
+    PFN_WVAP_MULTIAP_UPDATE_PROFILE mfn_wvap_multiap_update_vlanid;  /**< Set MultiAP VLAN ID */
 
-    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                    /**< bool, for driver capabilities
-                                                                    "WEP","TKIP","AES","AES_CCM",
-                                                                    "CKIP","FF","TURBOP","NOTUSED"
-                                                                    "IBSS","PMGT","HOSTAP","AHDEMO",
-                                                                    "SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE",
-                                                                    "MONITOR","TKIPMIC","WPA1","WPA2",
-                                                                    "WPA","BURST","WME","WDS",
-                                                                    "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
-                                                                    "EXPL_BF", "IMPL_BF",
-                                                                    "DFS_OFFLOAD","CSA","SAE","SAE_PWE","SCAN_DWELL" */
+    PNF_WVAP_SET_MBO_DENY_REASON mfn_wvap_setMboDenyReason;          /**< Set MBO Assoc Disallow Reason*/
+    PFN_WVAP_SET_AP_ROLE mfn_wvap_set_ap_role;                       /**< Set AccessPoint role */
+    PFN_WVAP_ADD_VENDOR_IE mfn_wvap_add_vendor_ie;                   /**< Add vendor IE */
+    PFN_WVAP_DEL_VENDOR_IE mfn_wvap_del_vendor_ie;                   /**< Del vendor IE */
+    PFN_WVAP_ENAB_VENDOR_IE mfn_wvap_enab_vendor_ie;                 /**< Enable vendor IEs */
+    PFN_WVAP_SET_DISCOVERY_METHOD mfn_wvap_set_discovery_method;     /**< Set BSS discovery method */
+    PFN_WVAP_SET_CONFIG_DRV mfn_wvap_set_config_driver;              /**< Set Config Driver */
 
-    PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                       /**< Get the FSM state of the VAP */
-    PFN_WVAP_FSM mfn_wvap_fsm;                                   /**< Do the tasks in parts (use of callback timer) */
-    PFN_WVAP_FSM_NODELAY mfn_wvap_fsm_nodelay;                   /**< Do all at once... */
+    PFN_WRAD_HASSUPPORT mfn_misc_has_support;                        /**< bool, for driver capabilities
+                                                                        "WEP","TKIP","AES","AES_CCM",
+                                                                        "CKIP","FF","TURBOP","NOTUSED"
+                                                                        "IBSS","PMGT","HOSTAP","AHDEMO",
+                                                                        "SWRETRY","TXPMGT","SHSLOT","SHPREAMBLE",
+                                                                        "MONITOR","TKIPMIC","WPA1","WPA2",
+                                                                        "WPA","BURST","WME","WDS",
+                                                                        "WME_TKIPMIC","BGSCAN","UAPSD","FASTCC",
+                                                                        "EXPL_BF", "IMPL_BF",
+                                                                        "DFS_OFFLOAD","CSA","SAE","SAE_PWE","SCAN_DWELL" */
 
-    PFN_WRAD_FSM_STATE mfn_wrad_fsm_state;                       /**< Get the FSM state of the RADIO */
-    PFN_WRAD_FSM mfn_wrad_fsm;                                   /**< Do the tasks in parts (use of callback timer) */
-    PFN_WRAD_FSM_NODELAY mfn_wrad_fsm_nodelay;                   /**< Do all at once... */
+    PFN_WVAP_FSM_STATE mfn_wvap_fsm_state;                           /**< Get the FSM state of the VAP */
+    PFN_WVAP_FSM mfn_wvap_fsm;                                       /**< Do the tasks in parts (use of callback timer) */
+    PFN_WVAP_FSM_NODELAY mfn_wvap_fsm_nodelay;                       /**< Do all at once... */
+
+    PFN_WRAD_FSM_STATE mfn_wrad_fsm_state;                           /**< Get the FSM state of the RADIO */
+    PFN_WRAD_FSM mfn_wrad_fsm;                                       /**< Do the tasks in parts (use of callback timer) */
+    PFN_WRAD_FSM_NODELAY mfn_wrad_fsm_nodelay;                       /**< Do all at once... */
 
     /**
      * Request the driver to reset the current fsm commit of the given radio
