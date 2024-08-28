@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.31.3 - 2024-08-28(11:41:19 +0000)
+
+### Other
+
+- Fix RadioAirStats wrong values issue
+
 ## Release v6.31.2 - 2024-08-27(12:20:55 +0000)
 
 ### Other
