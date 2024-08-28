@@ -378,6 +378,8 @@ static bool s_doConfHostapd(T_Radio* pRad) {
 
 static bool s_doUpdateHostapd(T_Radio* pRad) {
     ASSERTI_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    ASSERTI_TRUE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hostapd instance not started", pRad->Name);
+
     wifiGen_hapd_restoreMainIface(pRad);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
