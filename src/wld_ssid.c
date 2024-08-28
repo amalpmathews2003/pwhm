@@ -258,6 +258,12 @@ static void s_cleanSSID(T_SSID* pSSID, bool direct) {
         pSSID->pBus->priv = NULL;
     }
     free(pSSID);
+    if(pAP != NULL) {
+        pAP->pSSID = NULL;
+    } else if(pEP != NULL) {
+        pEP->pSSID = NULL;
+    }
+
 }
 
 /* Be sure that our attached memory structure is cleared */

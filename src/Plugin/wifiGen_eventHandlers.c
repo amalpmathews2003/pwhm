@@ -461,7 +461,7 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         wld_ap_nl80211_delEvtListener(pAP);
         pAP->index = 0;
         pAP->wDevId = 0;
-        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
+        s_syncVapInfo(pAP);
     }
     if((uint32_t) pRad->index == pIfaceInfo->ifIndex) {
         pRad->index = pRad->wDevId = 0;

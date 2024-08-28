@@ -251,20 +251,18 @@ static void s_deinitAP(T_AccessPoint* pAP) {
     T_SSID* pSSID = pAP->pSSID;
     SAH_TRACEZ_WARNING(ME, "DELETE %s %p", pAP->name, pR);
     if(pR) {
-        if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
-            if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
-                /* Deauthentify all stations */
-                SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
-                pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
-            }
-            SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
-            /* Destroy vap*/
-            pR->pFA->mfn_wvap_destroy_hook(pAP);
-            /* Sync Rad */
-            wld_rad_doSync(pR);
-            /* Try to delete the requested interface by calling the HW function */
-            pR->pFA->mfn_wrad_delvapif(pR, pAP->alias);
+        if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
+            /* Deauthentify all stations */
+            SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
+            pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
         }
+        SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
+        /* Destroy vap*/
+        pR->pFA->mfn_wvap_destroy_hook(pAP);
+        /* Sync Rad */
+        wld_rad_doSync(pR);
+        /* Try to delete the requested interface by calling the HW function */
+        pR->pFA->mfn_wrad_delvapif(pR, pAP->alias);
         pAP->alias[0] = 0;
         pAP->index = 0;
         /* Take EP also out the Radio */
