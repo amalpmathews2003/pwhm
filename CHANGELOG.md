@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.31.5 - 2024-08-28(15:22:08 +0000)
+
+### Other
+
+- [prplos 23.05][MxL] Import default pwhm endpoint odl files from prplos v22.03
+
 ## Release v6.31.4 - 2024-08-28(15:11:37 +0000)
 
 ### Other
