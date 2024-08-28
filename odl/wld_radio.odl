@@ -1025,13 +1025,14 @@ define probelist_t{
 
 		/**
 		 * Comma-separated list of strings containing which 11AX HE features are supported.
-		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
+		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO, STA_UL_OFDMA, STA_UL_MUMIMO, HE_ER_SU_PPDU_RX.
 		 */
 		%read-only string HeCapsSupported;
 
 		/**
 		 * Comma-separated list of strings containing which 11AX HE features are enabled.
-		 * Valid entries are : DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO.
+		 * Valid entries are : DEFAULT, DL_OFDMA, UL_OFDMA, DL_MUMIMO, UL_MUMIMO, STA_UL_OFDMA, STA_UL_MUMIMO, HE_ER_SU_PPDU_RX.
+		 * * DEFAULT means the default driver value, as read from driver at boot. DEFAULT can be combined with other entries.
 		 */
 		%persistent string HeCapsEnabled;
 

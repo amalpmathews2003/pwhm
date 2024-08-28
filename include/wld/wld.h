@@ -946,17 +946,25 @@ typedef struct wld_nasta {
 } wld_nasta_t;
 
 typedef enum {
+    HE_CAP_DEFAULT,
     HE_CAP_DL_OFDMA,
     HE_CAP_UL_OFDMA,
     HE_CAP_DL_MUMIMO,
     HE_CAP_UL_MUMIMO,
+    HE_CAP_STA_UL_OFDMA,
+    HE_CAP_STA_UL_MUMIMO,
+    HE_CAP_HE_ER_SU_PPDU_RX,
     HE_CAP_MAX
 } wld_he_cap_e;
 
+#define M_HE_CAP_DEFAULT (1 << HE_CAP_DEFAULT)
 #define M_HE_CAP_DL_OFDMA (1 << HE_CAP_DL_OFDMA)
 #define M_HE_CAP_UL_OFDMA (1 << HE_CAP_UL_OFDMA)
 #define M_HE_CAP_DL_MUMIMO (1 << HE_CAP_DL_MUMIMO)
 #define M_HE_CAP_UL_MUMIMO (1 << HE_CAP_UL_MUMIMO)
+#define M_HE_CAP_STA_UL_OFDMA (1 << HE_CAP_STA_UL_OFDMA)
+#define M_HE_CAP_STA_UL_MUMIMO (1 << HE_CAP_STA_UL_MUMIMO)
+#define M_HE_CAP_ER_SU_PPDU_RX (1 << HE_CAP_HE_ER_SU_PPDU_RX)
 typedef uint32_t wld_he_cap_m;
 extern const char* g_str_wld_he_cap[];
 

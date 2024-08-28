@@ -144,10 +144,14 @@ const char* cstr_chanmgt_rad_state[CM_RAD_MAX + 1] = {
 };
 
 const char* g_str_wld_he_cap[HE_CAP_MAX] = {
+    "DEFAULT",
     "DL_OFDMA",
     "UL_OFDMA",
     "DL_MUMIMO",
-    "UL_MUMIMO"
+    "UL_MUMIMO",
+    "STA_UL_OFDMA",
+    "STA_UL_MUMIMO",
+    "HE_ER_SU_PPDU_RX"
 };
 
 const char* g_str_wld_rad_bf_cap[RAD_BF_CAP_MAX] = {
