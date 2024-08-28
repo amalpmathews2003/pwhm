@@ -1702,6 +1702,11 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
                 swl_mac_binToChar(&bssid, (swl_macBin_t*) affiliatedSta->pAP->pSSID->MACAddress);
                 amxd_trans_set_cstring_t(&trans, "BSSID", bssid.cMac);
                 amxd_trans_set_cstring_t(&trans, "APName", affiliatedSta->pAP->name);
+                T_Radio* pRad = affiliatedSta->pAP->pRadio;
+                if(pRad != NULL) {
+                    amxd_trans_set_cstring_t(&trans, "FrequencyBand", swl_freqBandExt_str[pRad->operatingFrequencyBand]);
+                }
+
             }
             swl_typeMacBin_toTransParamRef(&trans, "MACAddress", &affiliatedSta->mac);
             amxd_trans_set_bool(&trans, "Active", affiliatedSta->active);

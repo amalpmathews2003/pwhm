@@ -1905,6 +1905,14 @@ define rrm_t{
 				%read-only string BSSID;
 
 				/**
+				 * The frequency band on which this affiliated sta is connected.
+				 * Possible values are "2.4GHz", "5GHz" and "6GHz"
+				 * This shall match the operating frequency of the Radio of the AccessPoint to which this 
+				 * AffiliatedSta is connected.
+				 */
+				%read-only string FrequencyBand;
+
+				/**
 				* [MACAddress] The MAC address of the affiliated sta
 				*/
 				%read-only string MACAddress;

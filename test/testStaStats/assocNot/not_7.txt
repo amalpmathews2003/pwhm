@@ -4,6 +4,7 @@
         "notification": "dm:object-added",
         "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[2].AffiliatedSta.",
         "parameters": {
+            "FrequencyBand": "",
             "Active": false,
             "LinkID": 0,
             "APName": "",
