@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.32.0 - 2024-08-28(17:35:08 +0000)
+
+### Other
+
+- - allow more HE capabities and default option
+
 ## Release v6.31.5 - 2024-08-28(15:22:08 +0000)
 
 ### Other
