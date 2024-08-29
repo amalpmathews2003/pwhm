@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.33.0 - 2024-08-29(07:30:05 +0000)
+
+### Other
+
+- - Add frequency to affiliated sta
+
 ## Release v6.32.0 - 2024-08-28(17:35:08 +0000)
 
 ### Other
