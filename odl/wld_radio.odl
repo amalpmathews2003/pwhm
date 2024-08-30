@@ -2184,9 +2184,10 @@ define probelist_t{
 			 * @param channel: optional channel on which seeking station (otherwise: current radio channel)
 			 * @param bandwidth: optional bandwidth in MHz used for the scan (otherwise: current radio channelWidth)
 			 * @param operatingClass: optional operating class used for the scan (otherwise: current radio operating class)
+			 * @param bssid: Must be set if the station's bssid is required by the driver
 			 * <p> Create a new entry in NonAssociatedDevice table </p>
 			*/
-			void createNonAssociatedDevice(%in %mandatory string macaddress, %in uint8 channel, %in uint8 bandwidth, %in uint8 operatingClass);
+			void createNonAssociatedDevice(%in %mandatory string macaddress, %in uint8 channel, %in uint8 bandwidth, %in uint8 operatingClass, %in string bssid);
 
 			/**
 			 * <b>deleteNonAssociatedDevice</b>

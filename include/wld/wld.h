@@ -942,6 +942,7 @@ SWL_NTT_H_ANNOTATE(gtWld_associatedDevice, T_AssociatedDevice, X_T_ASSOCIATED_DE
 
 typedef struct wld_nasta {
     amxc_llist_it_t it;
+    swl_macBin_t bssid;                       /* Must be set if the station's bssid is required by the driver */
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* MAC address of station */
     int32_t SignalStrength;
     int32_t monRssi;
