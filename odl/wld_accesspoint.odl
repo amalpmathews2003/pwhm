@@ -364,9 +364,9 @@ define rrm_t{
 		 * Updates Multi-AP Default 802.1Q Setting subelement
 		 * Valid range is from 0 to 4095. -1 indicates no VLAN.
 		 */
-		%persistent int16 MultiAPVlanId {
-			default -1;
-			on action validate call check_range { min = -1, max = 4095 };
+		%persistent uint16 MultiAPVlanId {
+			default 0;
+			on action validate call check_range { min = 0, max = 4095 };
 		}
 
 		/**

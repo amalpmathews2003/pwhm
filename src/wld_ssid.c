@@ -758,6 +758,10 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pS, int set) {
             wldu_convStr2Mac(pS->BSSID, ETHER_ADDR_LEN, (char*) TBuf, ETHER_ADDR_STR_LEN);
         }
         amxd_trans_set_cstring_t(&trans, "BSSID", TBuf);
+        if(pEP && pEP->pSSID){
+            amxd_trans_set_uint32_t(&trans, "Multi_ap_profile", pEP->pSSID->Multi_ap_profile);
+		      amxd_trans_set_uint32_t(&trans, "Multi_ap_primary_vlanid", pEP->pSSID->Multi_ap_primary_vlanid);
+		  }
 
         TBuf[0] = 0;
         int32_t ifIndex = 0;

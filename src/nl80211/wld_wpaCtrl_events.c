@@ -619,7 +619,7 @@ static void s_stationAssociated(wld_wpaCtrlInterface_t* pInterface, char* event,
     SAH_TRACEZ_INFO(ME, "%s: Associated with BSSID(%s)",
                     pInterface->name, swl_typeMacBin_toBuf32Ref(&bssidBin).buf);
 
-    CALL_INTF(pInterface, fStationAssociatedCb, &bssidBin, 0);
+    CALL_INTF(pInterface, fStationAssociatedCb, &bssidBin, 0, 0, 0);
 }
 
 static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
@@ -629,19 +629,26 @@ static void s_stationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* even
     swl_macBin_t bBssidMac;
     swl_mac_charToBin(&bBssidMac, (swl_macChar_t*) bssid);
     uint8_t reasonCode = wld_wpaCtrl_getValueInt(params, "reason");
-    CALL_INTF(pInterface, fStationDisconnectedCb, &bBssidMac, reasonCode);
+    CALL_INTF(pInterface, fStationDisconnectedCb, &bBssidMac, reasonCode, 0 , 0);
 }
 
 static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: <3>CTRL-EVENT-CONNECTED - Connection to 98:42:65:2d:27:b0 completed [id=0 id_str=]
     swl_macBin_t bBssidMac = SWL_MAC_BIN_NEW();
     const char* msgPfx = "- Connection to ";
+
+    int32_t multi_ap_profile = 0;
+    int32_t multi_ap_primary_vlan_id = 0;
+
     if(swl_str_startsWith(params, msgPfx)) {
         char bssid[SWL_MAC_CHAR_LEN] = {0};
         swl_str_copy(bssid, SWL_MAC_CHAR_LEN, &params[strlen(msgPfx)]);
         SWL_MAC_CHAR_TO_BIN(&bBssidMac, bssid);
     }
-    CALL_INTF(pInterface, fStationConnectedCb, &bBssidMac, 0);
+	 multi_ap_profile = wld_wpaCtrl_getValueInt(params, "multi_ap_profile");
+	 multi_ap_primary_vlan_id = wld_wpaCtrl_getValueInt(params, "multi_ap_primary_vlanid");
+
+    CALL_INTF(pInterface, fStationConnectedCb, &bBssidMac, 0, multi_ap_profile, multi_ap_primary_vlan_id);
 }
 
 static void s_stationScanFailed(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {

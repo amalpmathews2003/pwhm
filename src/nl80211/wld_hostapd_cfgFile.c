@@ -691,7 +691,7 @@ static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap,
     if (hapdMultiApType && (pAP->multiAPProfile > MULTIAP_NOT_SUPPORTED)) {
         swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap_profile", pAP->multiAPProfile);
         if(pAP->multiAPVlanId > 0 && pAP->multiAPVlanId < 4095) {
-            swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap_vlanid", pAP->multiAPVlanId);
+            swl_mapCharFmt_addValInt32(vapConfigMap, "multi_ap_primary_vlanid", pAP->multiAPVlanId);
         }
     }
 

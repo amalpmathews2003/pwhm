@@ -340,7 +340,7 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"uapsd_advertisement_enabled", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               {"rnr", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               {"multi_ap_profile", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
-              {"multi_ap_vlanid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
+              {"multi_ap_primary_vlanid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               //params set and applied without any action
               {"max_num_sta", SECDMN_ACTION_OK_DONE},
               ));
@@ -691,7 +691,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "wps_state", "config_methods", "uuid", "ap_pin",
         "rrm_neighbor_report", "ieee80211w", "mbo",
         "wmm_enabled", "uapsd_advertisement_enabled", "rnr", "ap_max_inactivity",
-        "multi_ap_profile", "multi_ap_vlanid",
+        "multi_ap_profile", "multi_ap_primary_vlanid",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);

@@ -1688,6 +1688,8 @@ struct S_SSID {
     unsigned char MACAddress[ETHER_ADDR_LEN]; /* Mac Address of the interface */
     char SSID[36];                            /* VAP SSID broadcast name */
     char Name[32];                            /* Contains the datamodel name of this SSID */
+    int32_t Multi_ap_profile;
+    int32_t Multi_ap_primary_vlanid;
     T_Stats stats;
     bool enable;                              /* Copied state of AccessPoint.enabled */
     amxd_object_t* pBus;                      /* Keep a copy of the amxd_object_t */
@@ -1880,7 +1882,7 @@ struct S_ACCESSPOINT {
     bool wdsEnable;                      /* Enable 4 mac address */
     wld_multiap_type_m multiAPType;      /* Bitmask of all MultiAP type applied to this accesspoint */
     wld_multiap_profile_e multiAPProfile;/* MultiAP profile status */
-    int16_t multiAPVlanId;               /* Primary VLAN ID config for MultiAP */
+    uint16_t multiAPVlanId;               /* Primary VLAN ID config for MultiAP */
     wld_apRole_e apRole;                 /* Current AccessPoint role */
     T_AccessPoint* pReferenceApRelay;    /* Use the credentials of this AP inside WPS M8 */
     bool mboEnable;                      /* Enable multi band operation*/
