@@ -372,11 +372,14 @@ bool wld_wpaCtrlMngr_ping(const wld_wpaCtrlMngr_t* pMgr) {
 bool wld_wpaCtrlMngr_isReady(wld_wpaCtrlMngr_t* pMgr) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
     ASSERTI_NOT_EQUALS(swl_unLiList_size(&pMgr->ifaces), 0, false, ME, "Empty");
+    ASSERTI_NOT_EQUALS(wld_wpaCtrlMngr_countEnabledInterfaces(pMgr), 0, false, ME, "No enabled ifaces");
     swl_unLiListIt_t it;
     swl_unLiList_for_each(it, &pMgr->ifaces) {
         wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
         ASSERT_NOT_NULL(pIface, false, ME, "NULL");
-        ASSERTS_TRUE(pIface->isReady, false, ME, "Not ready");
+        if(pIface->enable) {
+            ASSERTS_TRUE(pIface->isReady, false, ME, "Not ready");
+        }
     }
     return true;
 }
