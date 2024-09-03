@@ -63,6 +63,8 @@
 #ifndef __WLD_HOSTAPD_CFG_MANAGER_H__
 #define __WLD_HOSTAPD_CFG_MANAGER_H__
 
+#include "wld_types.h"
+
 struct wld_hostapdVapInfo;
 typedef struct wld_hostapdVapInfo wld_hostapdVapInfo_t;
 
@@ -70,12 +72,14 @@ struct wld_hostapd_config;
 typedef struct wld_hostapd_config wld_hostapd_config_t;
 
 bool wld_hostapd_loadConfig(wld_hostapd_config_t** conf, char* path);
-bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP);
+bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, T_Radio* pRad);
 bool wld_hostapd_deleteConfig(wld_hostapd_config_t* conf);
 bool wld_hostapd_writeConfig(wld_hostapd_config_t* conf, char* path);
 bool wld_hostapd_addConfigParam(wld_hostapd_config_t* conf, const char* bssName, const char* key, const char* value);
 bool wld_hostapd_delConfigParam(wld_hostapd_config_t* conf, char* bssName, char* key);
 swl_mapChar_t* wld_hostapd_getConfigMap(wld_hostapd_config_t* conf, char* bssName);
 const char* wld_hostapd_getConfigParamValStr(wld_hostapd_config_t* conf, char* bssName, const char* key);
+swl_mapChar_t* wld_hostapd_getConfigMapByBssid(wld_hostapd_config_t* conf, swl_macBin_t* bssid);
+const char* wld_hostapd_getConfigParamByBssidValStr(wld_hostapd_config_t* conf, swl_macBin_t* bssid, const char* key);
 
 #endif /* __WLD_HOSTAPD_CFG_MANAGER_H__ */

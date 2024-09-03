@@ -66,6 +66,8 @@
 #include "wld_util.h"
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgManager_priv.h"
+#include "wld_hostapd_cfgFile.h"
+#include "wld_radio.h"
 #include "wld_rad_hostapd_api.h"
 
 #define ME "fileMgr"
@@ -104,22 +106,20 @@ static void s_deleteHostapdVapInfo(wld_hostapdVapInfo_t* vapInfo) {
 }
 
 /**
- * @brief create wld_hostapd_config_t structure from the vap list
+ * @brief allocate and initialize wld_hostapd_config_t structure from the vap list
  *
  * @param conf the structure mapping the content of hostapd configuration file
  * @param llAP vap linked list
  *
  * @return true on success.
  * Otherwise, false:
- *      - conf is NULL or path is NULL
- *      - config file not found
  */
-bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP) {
+static bool s_initConfig(wld_hostapd_config_t** pConf, amxc_llist_t* pllAP) {
     SAH_TRACEZ_IN(ME);
-    ASSERTS_NOT_NULL(conf, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pConf, false, ME, "NULL");
     wld_hostapd_config_t* config = calloc(1, sizeof(wld_hostapd_config_t));
-    ASSERT_NOT_NULL(config, false, ME, "Config allocation of failed");
-    *conf = config;
+    ASSERT_NOT_NULL(config, false, ME, "Config allocation failed");
+    *pConf = config;
     // Init the header map
     swl_mapChar_init(&(config->header));
     amxc_llist_init(&config->vaps);
@@ -127,6 +127,11 @@ bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP) 
         T_AccessPoint* pAp = amxc_llist_it_get_data(ap_it, T_AccessPoint, it);
         bool isInterface = (pAp == wld_rad_hostapd_getCfgMainVap(pAp->pRadio));
         wld_hostapdVapInfo_t* vapInfo = s_createHostapdVapInfo(isInterface, pAp->alias);
+        if(vapInfo == NULL) {
+            SAH_TRACEZ_ERROR(ME, "%s: fail to alloc vap conf section", pAp->alias);
+            continue;
+        }
+        memcpy(&vapInfo->bssid, pAp->pSSID->MACAddress, SWL_MAC_BIN_LEN);
         if(isInterface) {
             amxc_llist_prepend(&config->vaps, &vapInfo->it);
         } else {
@@ -136,6 +141,66 @@ bool wld_hostapd_createConfig(wld_hostapd_config_t** conf, amxc_llist_t* pllAP) 
     SAH_TRACEZ_OUT(ME);
     return true;
 }
+
+/**
+ * @brief create wld_hostapd_config_t structure from Radio and Vaps configuration
+ *
+ * @param conf the structure mapping the content of hostapd configuration file
+ * @param pRad radio ctx
+ *
+ * @return true on success.
+ * Otherwise, false:
+ *      - conf is NULL
+ *      - Radio is NULL or has not vaps
+ */
+bool wld_hostapd_createConfig(wld_hostapd_config_t** pConf, T_Radio* pRad) {
+    SAH_TRACEZ_IN(ME);
+    ASSERTS_NOT_NULL(pConf, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERTS_FALSE(amxc_llist_is_empty(&pRad->llAP), false, ME, "No vaps");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = s_initConfig(&config, &pRad->llAP);
+    ASSERT_TRUE(ret, false, ME, "Bad config");
+    *pConf = config;
+    swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
+    wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
+
+    /*
+     * sort active vaps to be saved
+     * 1- pure backhaul vaps
+     * 2- other vaps
+     */
+    swl_unLiList_t aVaps;
+    swl_unLiList_init(&aVaps, sizeof(T_AccessPoint*));
+    T_AccessPoint* pTmpAp = NULL;
+    wld_rad_forEachAp(pTmpAp, pRad) {
+        if(wld_hostapd_ap_needWpaCtrlIface(pTmpAp)) {
+            bool isPureBkh = SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS);
+            swl_unLiList_insert(&aVaps, isPureBkh - 1, &pTmpAp);
+        }
+    }
+
+    /*
+     * save vaps config:
+     */
+    swl_mapChar_t* defMultiAPConfig = NULL;
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &aVaps) {
+        if((pTmpAp = *(swl_unLiList_data(&it, T_AccessPoint * *))) != NULL) {
+            swl_mapChar_t* multiAPConfig = defMultiAPConfig;
+            swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pTmpAp->pSSID->BSSID);
+            if(SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
+                defMultiAPConfig = defMultiAPConfig ? : vapConfigMap;
+                multiAPConfig = vapConfigMap;
+            }
+            wld_hostapd_cfgFile_setVapConfig(pTmpAp, vapConfigMap, multiAPConfig);
+        }
+    }
+    swl_unLiList_destroy(&aVaps);
+    SAH_TRACEZ_OUT(ME);
+    return true;
+}
+
 /**
  * @brief load the hostapd configuration from hostpad config file into wld_hostapd_config_t structure
  *
@@ -213,6 +278,9 @@ bool wld_hostapd_loadConfig(wld_hostapd_config_t** conf, char* path) {
             swl_mapChar_add(&(config->header), key, value);
         } else {
             swl_mapChar_add(&(lastVap->vapParams), key, value);
+            if(swl_str_matches(key, "bssid")) {
+                swl_typeMacBin_fromChar(&lastVap->bssid, value);
+            }
         }
     }
     fclose(fp);
@@ -412,5 +480,30 @@ const char* wld_hostapd_getConfigParamValStr(wld_hostapd_config_t* conf, char* b
     swl_mapEntry_t* entry = swl_mapChar_getEntry(configMap, (char*) key);
     ASSERTI_NOT_NULL(entry, NULL, ME, "key (%s) Not found", key);
     return swl_map_getEntryValueValue(configMap, entry);
+}
+
+swl_mapChar_t* wld_hostapd_getConfigMapByBssid(wld_hostapd_config_t* conf, swl_macBin_t* bssid) {
+    SAH_TRACEZ_IN(ME);
+    ASSERTS_NOT_NULL(conf, NULL, ME, "NULL");
+    if(bssid == NULL) {
+        return &(conf->header);
+    } else {
+        amxc_llist_for_each(it, &conf->vaps) {
+            wld_hostapdVapInfo_t* vapInfo = amxc_llist_it_get_data(it, wld_hostapdVapInfo_t, it);
+            if(swl_typeMacBin_equalsRef(&vapInfo->bssid, bssid)) {
+                return &(vapInfo->vapParams);
+            }
+        }
+    }
+    SAH_TRACEZ_OUT(ME);
+    return NULL;
+}
+
+const char* wld_hostapd_getConfigParamByBssidValStr(wld_hostapd_config_t* conf, swl_macBin_t* bssid, const char* key) {
+    swl_mapChar_t* configMap = wld_hostapd_getConfigMapByBssid(conf, bssid);
+    ASSERTS_NOT_NULL(configMap, NULL, ME, "NULL");
+    swl_mapEntry_t* entry = swl_mapChar_getEntry(configMap, (char*) key);
+    ASSERTI_NOT_NULL(entry, NULL, ME, "key (%s) Not found", key);
+    return swl_map_getEntryKeyValue(configMap, entry);
 }
 
