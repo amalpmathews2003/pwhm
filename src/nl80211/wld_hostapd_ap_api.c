@@ -438,7 +438,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSsid(T_AccessPoint* pAP, const char* s
     wld_hostapd_config_t* config = NULL;
     ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
     if(pCurrVapParams != NULL) {
         //hostapd requires backhaul_ssid included in double quotes
         char bhSsid[strlen(ssid) + 3];
@@ -531,7 +531,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP) {
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
     swl_mapChar_t newVapParams;
     swl_mapChar_t* pNewVapParams = &newVapParams;
     swl_mapChar_init(pNewVapParams);
@@ -568,7 +568,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP) {
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
     swl_mapChar_t newVapParams;
     swl_mapChar_t* pNewVapParams = &newVapParams;
     swl_mapChar_init(pNewVapParams);
@@ -594,11 +594,11 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP) {
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
-    swl_mapChar_t newVapParams;
-    swl_mapChar_t* pNewVapParams = &newVapParams;
-    swl_mapChar_init(pNewVapParams);
-    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
+    wld_hostapd_config_t* pNewCfg = NULL;
+    ret = wld_hostapd_createConfig(&pNewCfg, pR);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no new config");
+    swl_mapChar_t* pNewVapParams = wld_hostapd_getConfigMapByBssid(pNewCfg, (swl_macBin_t*) pAP->pSSID->BSSID);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
 
     action = SWL_MAX(action, s_ap_hostapd_setSecurityModeExt(pAP, pCurrVapParams, pNewVapParams));
@@ -617,7 +617,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP) {
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             secParams, SWL_ARRAY_SIZE(secParams), &action);
-    swl_mapChar_cleanup(pNewVapParams);
+    wld_hostapd_deleteConfig(pNewCfg);
     wld_hostapd_deleteConfig(config);
     return action;
 }
@@ -639,7 +639,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, 
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     s_setChangedParam(pAP, pCurrVapParams, "ignore_broadcast_ssid", (enable ? "0" : "2"), &action);
     wld_hostapd_deleteConfig(config);
@@ -658,7 +658,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setClientIsolation(T_AccessPoint* pAP) {
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     s_setChangedParam(pAP, pCurrVapParams, "ap_isolate", (pAP->clientIsolationEnable ? "0" : "1"), &action);
     wld_hostapd_deleteConfig(config);
@@ -680,11 +680,11 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
-    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMap(config, pAP->alias);
-    swl_mapChar_t newVapParams;
-    swl_mapChar_t* pNewVapParams = &newVapParams;
-    swl_mapChar_init(pNewVapParams);
-    wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
+    wld_hostapd_config_t* pNewCfg = NULL;
+    ret = wld_hostapd_createConfig(&pNewCfg, pR);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no new config");
+    swl_mapChar_t* pNewVapParams = wld_hostapd_getConfigMapByBssid(pNewCfg, (swl_macBin_t*) pAP->pSSID->BSSID);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     const char* params[] = {
         "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",
@@ -696,7 +696,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
-    swl_mapChar_cleanup(pNewVapParams);
+    wld_hostapd_deleteConfig(pNewCfg);
     wld_hostapd_deleteConfig(config);
     return action;
 }
@@ -1262,7 +1262,7 @@ swl_trl_e wld_hostapd_ap_getCfgParamSupp(T_AccessPoint* pAP, const char* param) 
     wld_hostapd_config_t* config = NULL;
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, trl, ME, "no saved config");
-    swl_mapChar_t* configMap = wld_hostapd_getConfigMap(config, pAP->alias);
+    swl_mapChar_t* configMap = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
     if((configMap != NULL) && (swl_mapChar_has(configMap, (char*) param))) {
         trl = SWL_TRL_TRUE;
     }

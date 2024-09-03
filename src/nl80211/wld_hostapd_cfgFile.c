@@ -742,11 +742,11 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
             return false;
         }
         swl_mapChar_add(vapConfigMap, "bss", pAP->alias);
-        swl_macChar_t bssidStr;
-        SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
-        swl_mapChar_add(vapConfigMap, "bssid", bssidStr.cMac);
-        swl_mapChar_add(vapConfigMap, "use_driver_iface_addr", "1");
     }
+    swl_macChar_t bssidStr;
+    SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
+    swl_mapChar_add(vapConfigMap, "bssid", bssidStr.cMac);
+    swl_mapChar_add(vapConfigMap, "use_driver_iface_addr", "1");
     if(strlen(pAP->bridgeName) > 0) {
         swl_mapChar_add(vapConfigMap, "bridge", pAP->bridgeName);
     }
@@ -1159,45 +1159,9 @@ void wld_hostapd_cfgFile_create(T_Radio* pRad, char* cfgFileName) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERT_STR(cfgFileName, , ME, "Empty path");
     ASSERTS_FALSE(amxc_llist_is_empty(&pRad->llAP), , ME, "No vaps");
-    wld_hostapd_config_t* config;
-    bool ret = wld_hostapd_createConfig(&config, &pRad->llAP);
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_createConfig(&config, pRad);
     ASSERT_TRUE(ret, , ME, "Bad config");
-    swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
-    wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
-
-    /*
-     * sort active vaps to be saved
-     * 1- pure backhaul vaps
-     * 2- other vaps
-     */
-    swl_unLiList_t aVaps;
-    swl_unLiList_init(&aVaps, sizeof(T_AccessPoint*));
-    T_AccessPoint* pTmpAp = NULL;
-    wld_rad_forEachAp(pTmpAp, pRad) {
-        if(wld_hostapd_ap_needWpaCtrlIface(pTmpAp)) {
-            bool isPureBkh = SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS);
-            swl_unLiList_insert(&aVaps, isPureBkh - 1, &pTmpAp);
-        }
-    }
-
-    /*
-     * save vaps config:
-     */
-    swl_mapChar_t* defMultiAPConfig = NULL;
-    swl_unLiListIt_t it;
-    swl_unLiList_for_each(it, &aVaps) {
-        if((pTmpAp = *(swl_unLiList_data(&it, T_AccessPoint * *))) != NULL) {
-            swl_mapChar_t* multiAPConfig = defMultiAPConfig;
-            swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMap(config, pTmpAp->alias);
-            if(SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
-                defMultiAPConfig = defMultiAPConfig ? : vapConfigMap;
-                multiAPConfig = vapConfigMap;
-            }
-            wld_hostapd_cfgFile_setVapConfig(pTmpAp, vapConfigMap, multiAPConfig);
-        }
-    }
-    swl_unLiList_destroy(&aVaps);
-
     wld_hostapd_writeConfig(config, cfgFileName);
     wld_hostapd_deleteConfig(config);
 }

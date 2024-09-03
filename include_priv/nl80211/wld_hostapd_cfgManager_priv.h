@@ -68,6 +68,7 @@ struct wld_hostapdVapInfo {
     amxc_llist_it_t it;
     bool isInterface;
     char* bssName;
+    swl_macBin_t bssid;
     swl_mapChar_t vapParams;
 };
 
