@@ -111,7 +111,14 @@ int wifiGen_rad_miscHasSupport(T_Radio* pRad, T_AccessPoint* pAp, char* buf, int
         swl_str_copy(buf, bufsize, wld_rad_getSuppDrvCaps(pRad, band));
         return 1;
     }
-    return wld_rad_findSuppDrvCap(pRad, band, buf);
+    bool ret = (wld_rad_findSuppDrvCap(pRad, band, buf) == SWL_TRL_TRUE);
+    if(ret) {
+        if(swl_str_matches(buf, "MLO")) {
+            //Only consider MLO capability when running multiband single hostapd
+            ret &= (wifiGen_hapd_countGrpMembers(pRad) > 1);
+        }
+    }
+    return ret;
 }
 
 int wifiGen_rad_createHook(T_Radio* pRad) {

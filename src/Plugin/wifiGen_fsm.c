@@ -886,6 +886,9 @@ static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
         if(!wifiGen_hapd_isAlive(pRad)) {
             setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         }
+        T_SSID* pSSID = pAP->pSSID;
+        ASSERTS_NOT_NULL(pSSID, , ME, "%s: no ssid ctx", pAP->alias);
+        wld_mld_setLinkConfigured(pSSID->pMldLink, wld_mld_isLinkUsable(pSSID->pMldLink));
     }
 }
 

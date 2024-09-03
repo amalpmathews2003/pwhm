@@ -171,4 +171,41 @@ T_SSID* wifiGen_mld_fetchSockLinkSSID(wld_wpaCtrlMngr_t* pMgr, const char* sockN
     return pLinkSSID;
 }
 
+static wld_mldLink_t* s_selectPrimaryLink(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    wld_mldLink_t* pLink = pSSID->pMldLink;
+    ASSERTI_TRUE(wld_mld_isLinkUsable(pLink), NULL, ME, "no primary link can be selected for link %s", pSSID->Name);
+
+    wld_mldLink_t* pPrimLink = NULL;
+    wld_mldLink_t* pNgLink = NULL;
+    wld_for_eachNeighMldLink(pNgLink, pLink) {
+        if(wld_mld_isLinkUsable(pNgLink) && wld_mld_isLinkConfigured(pNgLink)) {
+            pPrimLink = pNgLink;
+            break;
+        }
+    }
+
+    ASSERTI_NOT_NULL(pPrimLink, NULL, ME, "%s: no primary link can be selected for for mld unit(%d)", pSSID->Name, pSSID->mldUnit);
+    SAH_TRACEZ_INFO(ME, "%s: select primary link (%s) for mld unit(%d)",
+                    pSSID->Name, wld_mld_getLinkName(pPrimLink), pSSID->mldUnit);
+
+    return pPrimLink;
+}
+
+T_SSID* wifiGen_mld_selectPrimLinkSSID(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    if(!wld_ssid_hasMloSupport(pSSID)) {
+        return pSSID;
+    }
+    wld_mldLink_t* pCurPrimLink = wld_mld_getPrimaryLink(pSSID->pMldLink);
+    if(pCurPrimLink != NULL) {
+        return wld_mld_getLinkSsid(pCurPrimLink);
+    }
+    wld_mldLink_t* pPrimLink = s_selectPrimaryLink(pSSID);
+    if(pPrimLink != NULL) {
+        return wld_mld_getLinkSsid(pPrimLink);
+    }
+    return pSSID;
+}
+
 
