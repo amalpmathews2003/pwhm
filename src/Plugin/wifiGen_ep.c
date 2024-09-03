@@ -189,8 +189,10 @@ swl_rc_ne wifiGen_ep_connectAp(T_EndPointProfile* epProfile) {
  */
 swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    ASSERTI_TRUE(pEP->index > 0, SWL_RC_ERROR, ME, "%s: iface has no netdev index", pEP->alias);
-    int ret = wld_linuxIfUtils_getState(wld_rad_getSocket(pEP->pRadio), pEP->Name);
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    swl_rc_ne rc = wld_ep_nl80211_getInterfaceInfo(pEP, &ifaceInfo);
+    ASSERTI_TRUE(swl_rc_isOk(rc), SWL_RC_ERROR, ME, "%s: Fail to get nl80211 ep iface info", pEP->alias);
+    int ret = wld_linuxIfUtils_getState(wld_rad_getSocket(pEP->pRadio), ifaceInfo.name);
     ASSERTI_FALSE(ret <= 0, SWL_RC_ERROR, ME, "%s: ep iface down", pEP->alias);
     return SWL_RC_OK;
 }
