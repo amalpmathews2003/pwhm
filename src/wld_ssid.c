@@ -78,6 +78,7 @@
 #include "swl/swl_assert.h"
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld/Utils/wld_autoNeighAdd.h"
+#include "wld_linuxIfUtils.h"
 
 #define ME "ssid"
 
@@ -525,6 +526,47 @@ int32_t wld_ssid_getIfIndex(T_SSID* pSSID) {
         return pSSID->ENDP_HOOK->index;
     }
     return -1;
+}
+
+bool wld_ssid_isLinkEnabled(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    ASSERTS_FALSE(swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress), false, ME, "no mac");
+    const char* ifname = wld_ssid_getIfName(pSSID);
+    ASSERTS_FALSE(swl_str_isEmpty(ifname), false, ME, "no ifname");
+    int ret = SWL_RC_NOT_IMPLEMENTED;
+    if(pSSID->AP_HOOK != NULL) {
+        ret = pSSID->AP_HOOK->pFA->mfn_wvap_enable(pSSID->AP_HOOK, 0, GET | DIRECT);
+    }
+    if(ret == SWL_RC_NOT_IMPLEMENTED) {
+        ret = wld_linuxIfUtils_getStateExt((char*) ifname);
+    }
+    return (ret > 0);
+}
+
+bool wld_ssid_isLinkActive(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    ASSERTS_FALSE(swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress), false, ME, "no mac");
+    const char* ifname = wld_ssid_getIfName(pSSID);
+    ASSERTS_FALSE(swl_str_isEmpty(ifname), false, ME, "no ifname");
+    if(pSSID->AP_HOOK != NULL) {
+        return (pSSID->AP_HOOK->pFA->mfn_wvap_status(pSSID->AP_HOOK) > 0);
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return (pSSID->ENDP_HOOK->pFA->mfn_wendpoint_status(pSSID->ENDP_HOOK) >= SWL_RC_OK);
+    }
+    return false;
+}
+
+int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, -1, ME, "NULL");
+    const char* ifname = wld_mld_getPrimaryLinkIfName(pSSID->pMldLink);
+    if(swl_str_isEmpty(ifname)) {
+        ifname = wld_ssid_getIfName(pSSID);
+    }
+    ASSERTS_FALSE(swl_str_isEmpty(ifname), false, ME, "no ifname");
+    int ifIndex = 0;
+    wld_linuxIfUtils_getIfIndexExt((char*) ifname, &ifIndex);
+    return ifIndex;
 }
 
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {

@@ -3440,16 +3440,14 @@ bool wld_rad_hasActiveEp(T_Radio* pRad) {
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
-        if((pAP->index > 0) &&
-           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pAP->alias) > 0)) {
-            return pAP->index;
+        if(wld_ssid_isLinkEnabled(pAP->pSSID)) {
+            return wld_ssid_getLinkIfIndex(pAP->pSSID);
         }
     }
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
-        if((pEP->index > 0) &&
-           (wld_linuxIfUtils_getState(wld_rad_getSocket(pRad), pEP->Name) > 0)) {
-            return pEP->index;
+        if(wld_ssid_isLinkEnabled(pEP->pSSID)) {
+            return wld_ssid_getLinkIfIndex(pEP->pSSID);
         }
     }
     return 0;
@@ -3462,7 +3460,7 @@ bool wld_rad_hasEnabledIface(T_Radio* pRad) {
 T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
-        if((pAP->index > 0) && (pRad->pFA->mfn_wvap_status(pAP) > 0)) {
+        if(wld_ssid_isLinkActive(pAP->pSSID)) {
             return pAP;
         }
     }
@@ -3472,7 +3470,7 @@ T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
 T_AccessPoint* wld_rad_getFirstBroadcastingAp(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {
-        if((pAP->index > 0) && (pRad->pFA->mfn_wvap_status(pAP) > 0) && pAP->SSIDAdvertisementEnabled) {
+        if(wld_ssid_isLinkActive(pAP->pSSID) && pAP->SSIDAdvertisementEnabled) {
             return pAP;
         }
     }
@@ -3482,7 +3480,7 @@ T_AccessPoint* wld_rad_getFirstBroadcastingAp(T_Radio* pRad) {
 T_EndPoint* wld_rad_getFirstActiveEp(T_Radio* pRad) {
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRad) {
-        if((pEP->index > 0) && (pRad->pFA->mfn_wendpoint_status(pEP) >= SWL_RC_OK)) {
+        if(wld_ssid_isLinkActive(pEP->pSSID)) {
             return pEP;
         }
     }
@@ -3493,11 +3491,11 @@ uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, 0, ME, "NULL");
     T_AccessPoint* pAP = wld_rad_getFirstActiveAp(pRad);
     if(pAP != NULL) {
-        return pAP->index;
+        return wld_ssid_getLinkIfIndex(pAP->pSSID);
     }
     T_EndPoint* pEP = wld_rad_getFirstActiveEp(pRad);
     if(pEP != NULL) {
-        return pEP->index;
+        return wld_ssid_getLinkIfIndex(pEP->pSSID);
     }
     if((pRad->index > 0) && (wld_rad_isUpExt(pRad))) {
         return pRad->index;

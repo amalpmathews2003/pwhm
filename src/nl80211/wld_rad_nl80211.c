@@ -64,6 +64,8 @@
  */
 
 #include "wld_rad_nl80211.h"
+#include "wld_ap_nl80211.h"
+#include "wld_ep_nl80211.h"
 #include "wld_ssid_nl80211_priv.h"
 #include "wld_nl80211_utils.h"
 #include "wld_linuxIfUtils.h"
@@ -436,32 +438,34 @@ swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wl
     return wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, pIfaceInfo);
 }
 
-static swl_rc_ne s_getChanSpec(int ifIndex, swl_chanspec_t* pChanSpec) {
-    return wld_nl80211_getChanSpec(wld_nl80211_getSharedState(), ifIndex, pChanSpec);
-}
-
 swl_rc_ne wld_rad_nl80211_getChannel(T_Radio* pRadio, swl_chanspec_t* pChanSpec) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pChanSpec, SWL_RC_INVALID_PARAM, ME, "NULL");
     swl_rc_ne rc;
-    if((rc = s_getChanSpec(pRadio->index, pChanSpec)) >= SWL_RC_OK) {
-        return rc;
-    }
+    wld_nl80211_ifaceInfo_t ifaceInfo;
     /*
      * disabled main iface (usually matching radio iface) may not carry channel info
      * so fetch first vap iface having channel info
      */
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRadio) {
-        if((rc = s_getChanSpec(pAP->index, pChanSpec)) >= SWL_RC_OK) {
+        if((pAP->enable) &&
+           (wld_ap_nl80211_getInterfaceInfo(pAP, &ifaceInfo) >= SWL_RC_OK) &&
+           ((rc = wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo)) >= SWL_RC_OK)) {
             return rc;
         }
     }
     T_EndPoint* pEP;
     wld_rad_forEachEp(pEP, pRadio) {
-        if((rc = s_getChanSpec(pEP->index, pChanSpec)) >= SWL_RC_OK) {
+        if((pEP->enable) &&
+           (wld_ep_nl80211_getInterfaceInfo(pEP, &ifaceInfo) >= SWL_RC_OK) &&
+           ((rc = wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo)) >= SWL_RC_OK)) {
             return rc;
         }
+    }
+    if(((rc = wld_rad_nl80211_getInterfaceInfo(pRadio, &ifaceInfo)) >= SWL_RC_OK) &&
+       ((rc = wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, &ifaceInfo)) >= SWL_RC_OK)) {
+        return rc;
     }
     return rc;
 }

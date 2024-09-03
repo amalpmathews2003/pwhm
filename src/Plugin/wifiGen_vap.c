@@ -129,10 +129,23 @@ int wifiGen_vap_status(T_AccessPoint* pAP) {
     return true;
 }
 
+static int s_getVapEnable(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, 0, ME, "NULL");
+    wld_nl80211_ifaceInfo_t ifaceInfo;
+    memset(&ifaceInfo, 0, sizeof(ifaceInfo));
+    swl_rc_ne rc = wld_ap_nl80211_getInterfaceInfo(pAP, &ifaceInfo);
+    ASSERTS_TRUE(swl_rc_isOk(rc), 0, ME, "%s: fail to get iface info", pAP->name);
+    if(ifaceInfo.nMloLinks > 0) {
+        ASSERTI_NOT_EQUALS(ifaceInfo.chanSpec.ctrlFreq, 0, 0, ME, "%s: radio link disabled", ifaceInfo.name);
+    }
+    return (wld_linuxIfUtils_getStateExt(ifaceInfo.name) > 0);
+}
+
 int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set) {
+    ASSERT_NOT_NULL(pAP, 0, ME, "NULL");
     int ret;
-    SAH_TRACEZ_INFO(ME, "VAP:%s State:%d-->%d - Set:%d", pAP->alias, pAP->enable, enable, set);
     if(set & SET) {
+        SAH_TRACEZ_INFO(ME, "VAP:%s State:%d-->%d - Set:%d", pAP->alias, pAP->enable, enable, set);
         if(set & DIRECT) {
             /*
              * we need to disable passive bss net ifaces (except the radio interface),
@@ -142,16 +155,17 @@ int wifiGen_vap_enable(T_AccessPoint* pAP, int enable, int set) {
             if((enable) ||
                (pAP->index != pAP->pRadio->index) ||
                (pAP->pRadio->isSTA && pAP->pRadio->isSTASup) ||
-               (!pAP->pRadio->enable)) {
+               (!pAP->pRadio->enable) ||
+               (wld_mld_countNeighEnabledLinks(pAP->pSSID->pMldLink) == 0)) {
                 wld_linuxIfUtils_setState(wld_rad_getSocket(pAP->pRadio), pAP->alias, enable);
             }
-            return (wld_linuxIfUtils_getState(wld_rad_getSocket(pAP->pRadio), pAP->alias) > 0);
+            return s_getVapEnable(pAP);
         }
         ret = enable;
         setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_AP);
     } else {
         if(set & DIRECT) {
-            return (wld_linuxIfUtils_getState(wld_rad_getSocket(pAP->pRadio), pAP->alias) > 0);
+            return s_getVapEnable(pAP);
         }
         ret = pAP->enable;
     }
