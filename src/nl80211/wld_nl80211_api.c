@@ -1094,7 +1094,8 @@ swl_rc_ne wld_nl80211_sendVendorSubCmdAttr(wld_nl80211_state_t* state, uint32_t 
 }
 
 swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_80211_mgmtFrameControl_t* fc, swl_bit8_t* data, size_t dataLen,
-                                             swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags, uint32_t ifIndex) {
+                                             swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags,
+                                             uint32_t ifIndex, int8_t ifMloLinkId) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(state, rc, ME, "NULL");
     ASSERT_NOT_NULL(chanspec, rc, ME, "NULL");
@@ -1121,6 +1122,9 @@ swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_802
                  NL_ATTR(NL80211_ATTR_TX_NO_CCK_RATE),
                  NL_ATTR(NL80211_ATTR_DONT_WAIT_FOR_ACK),
                  NL_ATTR_DATA(NL80211_ATTR_FRAME, frameLen, frame)));
+    if((ifMloLinkId != MLO_LINK_ID_UNKNOWN) && (ifMloLinkId >= 0)) {
+        NL_ATTRS_ADD(&attribs, NL_ATTR_VAL(NL80211_ATTR_MLO_LINK_ID, ifMloLinkId));
+    }
     rc = wld_nl80211_sendCmdSyncWithAck(state, NL80211_CMD_ACTION, flags, ifIndex, &attribs);
     NL_ATTRS_CLEAR(&attribs);
     return rc;
