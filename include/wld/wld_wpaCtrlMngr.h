@@ -82,10 +82,13 @@ wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterface(const wld_wpaCtrlMngr_t* pM
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(const wld_wpaCtrlMngr_t* pMgr, const char* name);
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstInterface(const wld_wpaCtrlMngr_t* pMgr);
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstReadyInterface(const wld_wpaCtrlMngr_t* pMgr);
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstNotReadyInterface(const wld_wpaCtrlMngr_t* pMgr);
+swl_rc_ne wld_wpaCtrlMngr_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr);
 uint32_t wld_wpaCtrlMngr_countInterfaces(const wld_wpaCtrlMngr_t* pMgr);
 struct wld_secDmn* wld_wpaCtrlMngr_getSecDmn(const wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_ping(const wld_wpaCtrlMngr_t* pMgr);
 uint32_t wld_wpaCtrlMngr_countEnabledInterfaces(const wld_wpaCtrlMngr_t* pMgr);
+uint32_t wld_wpaCtrlMngr_countReadyInterfaces(const wld_wpaCtrlMngr_t* pMgr);
 
 #define CALL_MGR_EXT(pMgr, fName, ifName, ...) \
     { \

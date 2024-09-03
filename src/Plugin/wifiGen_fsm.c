@@ -270,7 +270,7 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     wld_secDmn_action_rc_ne rc;
     T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
     bool mainIfaceChanged = ((pMainAPCur != pMainAPCfg) && ((pAP == pMainAPCur) || (pAP == pMainAPCfg)));
-    bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_isEnabled(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
+    bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
     if(mainIfaceChanged || wpaCtrlEnaChanged) {
         wifiGen_hapd_enableVapWpaCtrlIface(pAP);
         if(mainIfaceChanged) {

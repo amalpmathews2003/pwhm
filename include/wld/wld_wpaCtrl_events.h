@@ -68,6 +68,7 @@
 #include "swl/swl_ieee802_1x_defs.h"
 #include "swl/swl_80211.h"
 #include "swl/swl_returnCode.h"
+#include "wld_wpaCtrl_types.h"
 
 #define WPA_MSG_LEVEL_INFO "<3>"
 
@@ -207,6 +208,12 @@ typedef void (* wld_wpaCtrl_mainApDisabledCb_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_syncOnReadyCb_f)(void* userData, char* ifName, bool state);
 
 /*
+ * handler to fetch MLD Link iface name from wpa ctrl socket name
+ * pLinkIfName is allocated inside the handler and shall be freed by the caller
+ */
+typedef void (* wld_wpaCtrl_fetchSocketLinkIface_f)(void* userData, wld_wpaCtrlMngr_t* pMgr, const char* sockName, char** pLinkIfName);
+
+/*
  * @brief structure of Radio event handlers
  */
 typedef struct {
@@ -234,6 +241,7 @@ typedef struct {
     wld_wpaCtrl_syncOnReadyCb_f fSyncOnRadioUp;                       // Handler to sync ifaces when radio is going up (ie mgr ready and APMain is(/being) enabled)
     wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpConnected;                   // Handler to sync radio conf when endpoint is connected
     wld_wpaCtrl_syncOnReadyCb_f fSyncOnEpDisconnected;                // Handler to sync radio conf when endpoint is disconnected
+    wld_wpaCtrl_fetchSocketLinkIface_f fFetchSockLinkIface;           // Handler to fetch of link iface name from wpa socket file name
     wld_wpaCtrl_stationScanFailedCb_f fStationScanFailedCb;           // EndPoint failing to scan BSS
     wld_wpaCtrl_stationStartConnCb_f fStationStartConnCb;             // Endpoint starting connection
     wld_wpaCtrl_stationStartConnFailedCb_f fStationStartConnFailedCb; // Endpoint connection init failure
