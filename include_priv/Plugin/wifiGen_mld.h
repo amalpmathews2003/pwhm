@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,32 +60,13 @@
 **
 ****************************************************************************/
 
-#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_HAPD_H_
-#define INCLUDE_PRIV_PLUGIN_WIFIGEN_HAPD_H_
+#ifndef INCLUDE_PRIV_PLUGIN_WIFIGEN_MLD_H_
+#define INCLUDE_PRIV_PLUGIN_WIFIGEN_MLD_H_
 
-#include "wld/wld.h"
+#include "wld/wld_types.h"
+#include "wld/wld_wpaCtrl_types.h"
 
-#define HOSTAPD_CMD "hostapd"
+T_SSID* wifiGen_mld_fetchSockLinkSSID(wld_wpaCtrlMngr_t* pMgr, const char* sockName);
 
-swl_rc_ne wifiGen_hapd_init(T_Radio* pRad);
-swl_rc_ne wifiGen_hapd_initVAP(T_AccessPoint* pAP);
-void wifiGen_hapd_cleanup(T_Radio* pRad);
-swl_rc_ne wifiGen_hapd_startDaemon(T_Radio* pRad);
-swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad);
-swl_rc_ne wifiGen_hapd_reloadDaemon(T_Radio* pRad);
-void wifiGen_hapd_writeConfig(T_Radio* pRad);
-bool wifiGen_hapd_isRunning(T_Radio* pRad);
-bool wifiGen_hapd_isAlive(T_Radio* pRad);
-swl_rc_ne wifiGen_hapd_getRadState(T_Radio* pRad, chanmgt_rad_state* pDetailedState);
-swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad);
-uint32_t wifiGen_hapd_countGrpMembers(T_Radio* pRad);
-swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg);
-swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad);
-bool wifiGen_hapd_isStarted(T_Radio* pRad);
-bool wifiGen_hapd_isStartable(T_Radio* pRad);
-void wifiGen_hapd_restoreMainIface(T_Radio* pRad);
-void wifiGen_hapd_enableVapWpaCtrlIface(T_AccessPoint* pAP);
-bool wifiGen_hapd_parseSockName(const char* sockName, char* linkName, size_t linkNameSize, int32_t* pLinkId);
-T_AccessPoint* wifiGen_hapd_fetchSockApLink(T_AccessPoint* pAPMld, const char* sockName);
+#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_MLD_H_ */
 
-#endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_HAPD_H_ */

@@ -64,6 +64,7 @@
 #include "wifiGen_rad.h"
 #include "wifiGen_fsm.h"
 #include "wifiGen_ep.h"
+#include "wifiGen_mld.h"
 #include "wld/wld_wpaCtrlMngr.h"
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_rad_nl80211.h"
@@ -78,6 +79,7 @@
 #include "wld/wld_util.h"
 #include "wld/wld_radio.h"
 #include "wld/wld_endpoint.h"
+#include "wld/wld_ssid.h"
 #include "wld/wld_chanmgt.h"
 #include "wld/wld_sensing.h"
 #include "wld/wld_eventing.h"
@@ -252,12 +254,19 @@ static bool s_saveHapdRadDetState(T_Radio* pRad, chanmgt_rad_state radDetState) 
 }
 static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
-    ASSERTS_TRUE(isReady, , ME, "Not ready");
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
     T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
     if(pAP != NULL) {
+        if(!isReady) {
+            wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pRad->hostapd);
+            if((pMgr != NULL) && (!wld_wpaCtrlMngr_isReady(pMgr)) && (wld_secDmn_isEnabled(pRad->hostapd))) {
+                SAH_TRACEZ_WARNING(ME, "%s: hostapd still enabled: restarting wpactrl mgr connection", pRad->Name);
+                wld_wpaCtrlMngr_connect(pMgr);
+            }
+            return;
+        }
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
         pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
@@ -280,6 +289,7 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         }
         return;
     }
+    ASSERTS_TRUE(isReady, , ME, "Not ready");
     if(pEP != NULL) {
         wld_epConnectionStatus_e connState = pEP->connectionStatus;
         wifiGen_ep_connStatus(pEP, &connState);
@@ -401,6 +411,14 @@ static void s_dfsNewChannelCb(void* userData _UNUSED, char* ifName, swl_chanspec
     SAH_TRACEZ_WARNING(ME, "%s: DFS-NEW-CHANNEL: %s", ifName, swl_typeChanspecExt_toBuf32Ref(chanSpec).buf);
 }
 
+static void s_fetchSockLinkIface(void* userData _UNUSED, wld_wpaCtrlMngr_t* pMgr, const char* sockName, char** ppLinkIfName) {
+    ASSERT_NOT_NULL(ppLinkIfName, , ME, "NULL");
+    swl_str_copyMalloc(ppLinkIfName, NULL);
+    const char* pLinkIfName = wld_ssid_getIfName(wifiGen_mld_fetchSockLinkSSID(pMgr, sockName));
+    ASSERTI_STR(sockName, , ME, "no link iface mapped to wpa sock (%s)", sockName);
+    swl_str_copyMalloc(ppLinkIfName, pLinkIfName);
+}
+
 #define SET_HDLR(tgt, src) {tgt = (tgt ? : src); }
 
 static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Radio* pRad) {
@@ -422,6 +440,7 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsRadarDetectedCb, s_dfsRadarDetectedCb);
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsNopFinishedCb, s_dfsNopFinishedCb);
     SET_HDLR(wpaCtrlRadEvthandlers.fDfsNewChannelCb, s_dfsNewChannelCb);
+    SET_HDLR(wpaCtrlRadEvthandlers.fFetchSockLinkIface, s_fetchSockLinkIface);
     wld_wpaCtrlMngr_setEvtHandlers(wpaCtrlMngr, pRad, &wpaCtrlRadEvthandlers);
     return SWL_RC_OK;
 }
@@ -436,6 +455,27 @@ void s_syncVapInfo(T_AccessPoint* pAP) {
         swl_typeUInt32_commitObjectParam(pRad->pBus, "Index", pRad->index);
     }
     wld_vap_updateState(pAP);
+}
+
+static uint32_t s_checkEnabledIfacesCreatedReady(wld_wpaCtrlMngr_t* pMgr, T_Radio* pRad) {
+    uint32_t countEnabled = wld_wpaCtrlMngr_countEnabledInterfaces(pMgr);
+    uint32_t countReady = 0;
+    for(uint32_t i = 0; i < wld_wpaCtrlMngr_countInterfaces(pMgr); i++) {
+        wld_wpaCtrlInterface_t* pWpaIface = wld_wpaCtrlMngr_getInterface(pMgr, i);
+        if(!wld_wpaCtrlInterface_isReady(pWpaIface)) {
+            continue;
+        }
+        const char* ifname = wld_wpaCtrlInterface_getName(pWpaIface);
+        T_AccessPoint* pAP = NULL;
+        T_EndPoint* pEP = NULL;
+
+        if((((pAP = wld_rad_vap_from_name(pRad, ifname)) != NULL) && (pAP->index > 0)) ||
+           (((pEP = wld_rad_ep_from_name(pRad, ifname)) != NULL) && (pEP->index > 0))) {
+            countReady++;
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "%s: wpaIfaces enabled:%d createdReady:%d", pRad->Name, countEnabled, countReady);
+    return (countReady >= countEnabled);
 }
 
 static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
@@ -455,17 +495,17 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
         wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
         if(pMgr != NULL) {
-            wifiGen_hapd_enableVapWpaCtrlIface(pAP);
-            if((wifiGen_hapd_isRunning(pRad)) &&
-               (!wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface))) {
-                wld_wpaCtrlInterface_open(pAP->wpaCtrlInterface);
-            }
-            if(wld_rad_countVapIfaces(pRad) == wld_wpaCtrlMngr_countEnabledInterfaces(pMgr)) {
+            wld_wpaCtrlMngr_checkAllIfaces(pMgr);
+            if(s_checkEnabledIfacesCreatedReady(pMgr, pRad)) {
                 chanmgt_rad_state radDetState = CM_RAD_UNKNOWN;
                 wifiGen_hapd_getRadState(pRad, &radDetState);
-                s_saveHapdRadDetState(pRad, radDetState);
+                if(!s_saveHapdRadDetState(pRad, radDetState)) {
+                    return;
+                }
                 bool isRadReady = (radDetState == CM_RAD_UP);
                 bool isRadStarting = (radDetState == CM_RAD_FG_CAC) || (radDetState == CM_RAD_CONFIGURING);
+                SAH_TRACEZ_INFO(ME, "%s: rad %s isRadReady:%d isRadStarting:%d",
+                                pAP->alias, pRad->Name, isRadReady, isRadStarting);
                 if(isRadReady || isRadStarting) {
                     const char* ifName = wld_wpaCtrlInterface_getName(pAP->wpaCtrlInterface);
                     CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, (char*) ifName, isRadReady);
