@@ -445,13 +445,16 @@ static char* s_getGlobHapdArgsCb(wld_secDmnGrp_t* pSecDmnGrp, void* userData _UN
     char startArgs[256] = {0};
     //set default start args
     swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
-    for(uint32_t i = 0; i < wld_secDmnGrp_getMembersCount(pSecDmnGrp); i++) {
-        const wld_secDmn_t* pSecDmn = wld_secDmnGrp_getMemberByPos(pSecDmnGrp, i);
-        if((pSecDmn == NULL) || (swl_str_isEmpty(pSecDmn->cfgFile))) {
-            continue;
+    amxd_object_for_each(instance, itRad, amxd_object_findf(get_wld_object(), "Radio")) {
+        amxd_object_t* radObj = amxc_container_of(itRad, amxd_object_t, it);
+        T_Radio* pRad = NULL;
+        wld_secDmn_t* pSecDmn = NULL;
+        if(((pRad = (T_Radio*) radObj->priv) != NULL) && (debugIsRadPointer(pRad)) &&
+           ((pSecDmn = pRad->hostapd) != NULL) && (wld_secDmnGrp_hasMember(pSecDmnGrp, pSecDmn)) &&
+           (!swl_str_isEmpty(pSecDmn->cfgFile))) {
+            //concat all radio ifaces conf files, following the datamodel order, which is also the fsm order
+            swl_strlst_cat(startArgs, sizeof(startArgs), " ", pSecDmn->cfgFile);
         }
-        //concat all radio ifaces conf files
-        swl_strlst_cat(startArgs, sizeof(startArgs), " ", pSecDmn->cfgFile);
     }
     swl_str_copyMalloc(&args, startArgs);
     return args;

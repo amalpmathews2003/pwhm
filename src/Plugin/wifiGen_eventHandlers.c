@@ -746,6 +746,18 @@ static void s_apDisabledCb(void* userData, char* ifName) {
     wld_vap_updateState(pAP);
 }
 
+static void s_selectPrimLinkIface(void* userData, const char* ifName, char** pPrimLinkIfName) {
+    ASSERT_NOT_NULL(pPrimLinkIfName, , ME, "NULL");
+    swl_str_copyMalloc(pPrimLinkIfName, NULL);
+    ASSERT_STR(ifName, , ME, "empty ifname");
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_EQUALS(wld_vap_from_name(ifName), pAP, , ME, "vap (%p) ifname (%s) mismatch", pAP, ifName);
+    const char* pLinkIfName = wld_ssid_getIfName(wifiGen_mld_selectPrimLinkSSID(pAP->pSSID));
+    ASSERTI_STR(pLinkIfName, , ME, "no prim link iface for iface (%s)", ifName);
+    SAH_TRACEZ_INFO(ME, "select primary link iface (%s) for link (%s)", pLinkIfName, ifName);
+    swl_str_copyMalloc(pPrimLinkIfName, pLinkIfName);
+}
+
 static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
     T_AccessPoint* pAP = (T_AccessPoint*) pRef;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
@@ -1082,6 +1094,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
     wpaCtrlVapEvtHandlers.fApEnabledCb = s_apEnabledCb;
     wpaCtrlVapEvtHandlers.fApDisabledCb = s_apDisabledCb;
+    wpaCtrlVapEvtHandlers.fSelectPrimLinkIface = s_selectPrimLinkIface;
 
     if(pAP->wpaCtrlInterface != NULL) {
         ASSERT_TRUE(wld_wpaCtrlInterface_setEvtHandlers(pAP->wpaCtrlInterface, pAP, &wpaCtrlVapEvtHandlers),
