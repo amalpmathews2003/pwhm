@@ -357,7 +357,7 @@ swl_trl_e wld_rad_hostapd_getCfgParamSupp(T_Radio* pRad, const char* param) {
 
 T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad) {
     T_AccessPoint* pMainAP = wld_rad_getFirstEnabledVap(pRad);
-    if((!wld_rad_hasMbssidAds(pRad)) || (pMainAP == NULL)) {
+    if(pMainAP == NULL) {
         pMainAP = wld_rad_getFirstVap(pRad);
     }
     return pMainAP;
