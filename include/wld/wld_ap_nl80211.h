@@ -97,10 +97,11 @@ swl_rc_ne wld_ap_nl80211_setEvtListener(T_AccessPoint* pAP, void* pData, const w
 swl_rc_ne wld_ap_nl80211_delEvtListener(T_AccessPoint* pAP);
 
 /*
- * @brief get info of main/secondary AP interface
- * This includes some :
+ * @brief get info of single AP or AP MLD interface info
+ * This includes :
  * - physical info like relative radio current channel and tx power
  * - logical info: interface name, mac, type, ssid
+ * - MLO link matching AP mac address
  *
  * @param pAP pointer to accesspoint context
  * @param pIfaceInfo pointer to interface info struct to be filled

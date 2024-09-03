@@ -77,7 +77,8 @@ swl_rc_ne wld_ep_nl80211_setSta(T_EndPoint* pEP);
 swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac);
 
 /*
- * @brief looks for relative STA MLD interface including MLO link matching EP mac address
+ * @brief looks for single or STA MLD interface info
+ * (STA MLD info including MLO link matching EP mac address)
  *
  * @param pEP pointer to endpoint context
  * @param pMldIfaceInfo pointer to mld interface context
@@ -85,6 +86,6 @@ swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac);
  * @return SWL_RC_OK on success
  *         <= SWL_RC_ERROR otherwise
  */
-swl_rc_ne wld_ep_nl80211_findMldIfaceInfo(T_EndPoint* pEP, wld_nl80211_ifaceInfo_t* pMldIfaceInfo);
+swl_rc_ne wld_ep_nl80211_getInterfaceInfo(T_EndPoint* pEP, wld_nl80211_ifaceInfo_t* pMldIfaceInfo);
 
 #endif /* INCLUDE_WLD_WLD_EP_NL80211_H_ */
