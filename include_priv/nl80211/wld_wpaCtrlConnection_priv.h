@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,22 +60,41 @@
 **
 ****************************************************************************/
 
-#ifndef __WLD_WPA_CTRL_API_H__
-#define __WLD_WPA_CTRL_API_H__
+#ifndef INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_
+#define INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_
 
-#include "wld_wpaCtrl_types.h"
+#include <sys/un.h>
 #include "swl/swl_common.h"
 
-bool wld_wpaCtrl_sendCmd(wld_wpaCtrlInterface_t* pIface, const char* cmd);
-bool wld_wpaCtrl_sendCmdSynced(wld_wpaCtrlInterface_t* pIface, const char* cmd, char* reply, size_t replyLen);
-bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse);
-bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
-swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...);
-swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, char* valStr, size_t valStrSize);
-void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
-bool wld_wpaCtrl_checkSockPath(const char* sockPath);
-swl_rc_ne wld_wpaCtrl_queryToSock(const char* serverPath, const char* sockName, const char* cmd, char* reply, size_t replyLen);
-size_t wld_wpaCtrl_getMaxMsgLen();
-swl_rc_ne wld_wpaCtrl_setMaxMsgLen(size_t msgLen);
+#define CTRL_IFACE_CLIENT "/var/lib/wld/wpactrl-"
+#define DFLT_SYNC_CMD_TMOUT_MS 1000
 
-#endif /* __WLD_WPA_CTRL_API_H__ */
+typedef void (* wld_wpaCtrlConnection_readDataCb_f)(void* userData, char* msgData, size_t msgLen);
+
+typedef struct {
+    wld_wpaCtrlConnection_readDataCb_f fReadDataCb;
+} wld_wpaCtrlConnection_evtHandlers_cb;
+
+typedef struct wpaCtrlConnection {
+    struct sockaddr_un clientAddr;
+    struct sockaddr_un serverAddr;
+    int wpaPeer;
+    void* userData;
+    wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs;
+} wpaCtrlConnection_t;
+
+swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* serverPath, const char* sockName);
+swl_rc_ne wld_wpaCtrlConnection_setEvtHandlers(wpaCtrlConnection_t* pConn, void* userData, wld_wpaCtrlConnection_evtHandlers_cb* pEvtHdlrs);
+swl_rc_ne wld_wpaCtrlConnection_open(wpaCtrlConnection_t* pConn);
+swl_rc_ne wld_wpaCtrlConnection_sendCmd(wpaCtrlConnection_t* pConn, const char* cmd);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t replyLen, uint32_t tmOutMSec);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdSynced(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t replyLen);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdCheckResponseExt(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
+swl_rc_ne wld_wpaCtrlConnection_sendCmdCheckResponse(wpaCtrlConnection_t* pConn, char* cmd, char* expectedResponse);
+swl_rc_ne wld_wpaCtrlConnection_close(wpaCtrlConnection_t* pConn);
+swl_rc_ne wld_wpaCtrlConnection_cleanup(wpaCtrlConnection_t** ppConn);
+const char* wld_wpaCtrlConnection_getConnCliPath(wpaCtrlConnection_t* pConn);
+const char* wld_wpaCtrlConnection_getConnSrvPath(wpaCtrlConnection_t* pConn);
+const char* wld_wpaCtrlConnection_getConnSockName(wpaCtrlConnection_t* pConn);
+
+#endif /* INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_ */

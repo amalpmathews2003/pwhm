@@ -470,6 +470,30 @@ T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin) {
     return NULL;
 }
 
+T_SSID* wld_ssid_getSsidByIfName(const char* ifName) {
+    ASSERTS_STR(ifName, NULL, ME, "NULL");
+    T_AccessPoint* pAP = wld_vap_from_name(ifName);
+    if(pAP != NULL) {
+        return pAP->pSSID;
+    }
+    T_EndPoint* pEP = wld_vep_from_name(ifName);
+    if(pEP != NULL) {
+        return pEP->pSSID;
+    }
+    return NULL;
+}
+
+wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
+    if(pSSID->AP_HOOK != NULL) {
+        return pSSID->AP_HOOK->wpaCtrlInterface;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        return pSSID->ENDP_HOOK->wpaCtrlInterface;
+    }
+    return NULL;
+}
+
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);

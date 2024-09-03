@@ -83,4 +83,7 @@ T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
 T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin);
 T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin);
 
+T_SSID* wld_ssid_getSsidByIfName(const char* ifName);
+wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
+
 #endif /* __WLD_SSID_H__ */

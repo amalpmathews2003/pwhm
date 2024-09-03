@@ -67,6 +67,8 @@
 #include "wld_wpaCtrl_events.h"
 
 bool wld_wpaCtrlInterface_init(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, char* serverPath);
+bool wld_wpaCtrlInterface_initWithSockName(wld_wpaCtrlInterface_t** ppIface, char* interfaceName, const char* serverPath, const char* sockName);
+bool wld_wpaCtrlInterface_setConnectionInfo(wld_wpaCtrlInterface_t* pIface, const char* serverPath, const char* sockName);
 bool wld_wpaCtrlInterface_setEvtHandlers(wld_wpaCtrlInterface_t* pIface, void* userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers);
 bool wld_wpaCtrlInterface_getEvtHandlers(wld_wpaCtrlInterface_t* pIface, void** userdata, wld_wpaCtrl_evtHandlers_cb* pHandlers);
 bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface);
@@ -79,6 +81,9 @@ const char* wld_wpaCtrlInterface_getName(const wld_wpaCtrlInterface_t* pIface);
 wld_wpaCtrlMngr_t* wld_wpaCtrlInterface_getMgr(const wld_wpaCtrlInterface_t* pIface);
 void wld_wpaCtrlInterface_setEnable(wld_wpaCtrlInterface_t* pIface, bool enable);
 bool wld_wpaCtrlInterface_isEnabled(const wld_wpaCtrlInterface_t* pIface);
+const char* wld_wpaCtrlInterface_getConnectionPath(const wld_wpaCtrlInterface_t* pIface);
+bool wld_wpaCtrlInterface_checkConnectionPath(const wld_wpaCtrlInterface_t* pIface);
+const char* wld_wpaCtrlInterface_getConnectionSockName(const wld_wpaCtrlInterface_t* pIface);
 
 #define CALL_INTF_EXT(pIntf, fName, ...) \
     { \

@@ -119,6 +119,7 @@ swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param);
 uint32_t wld_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn);
 uint32_t wld_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn);
 uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp);
+const char* wld_secDmn_getCtrlIfaceDirPath(wld_secDmn_t* pSecDmn);
 
 #define CALL_SECDMN_MGR_EXT(pSecDmn, fName, ifName, ...) \
     if(pSecDmn != NULL) { \
