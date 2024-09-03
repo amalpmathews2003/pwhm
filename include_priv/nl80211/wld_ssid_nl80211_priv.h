@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,41 +59,16 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-/*
- * This file implements wrapper functions to use nl80211 generic apis with T_EndPoint context
- */
 
-#include "wld_rad_nl80211.h"
-#include "wld_ssid_nl80211_priv.h"
-#include "swl/swl_common.h"
-#include "swl/swl_common_time.h"
-#include "wld_radio.h"
+#ifndef INCLUDE_PRIV_NL80211_WLD_SSID_NL80211_PRIV_H_
+#define INCLUDE_PRIV_NL80211_WLD_SSID_NL80211_PRIV_H_
 
-#define ME "nlEp"
+#include "wld_ssid.h"
+#include "wld_nl80211_api.h"
 
-swl_rc_ne wld_ep_nl80211_sendManagementFrameCmd(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* tgtMac, swl_bit8_t* dataBytes, size_t dataBytesLen, swl_chanspec_t* chanspec,
-                                                uint32_t flags) {
-    swl_rc_ne rc = SWL_RC_INVALID_PARAM;
-    ASSERT_NOT_NULL(pEP, rc, ME, "NULL");
-    T_SSID* pSSID = pEP->pSSID;
-    ASSERT_NOT_NULL(pSSID, rc, ME, "NULL");
+swl_rc_ne wld_ssid_nl80211_getMldIfaceInfo(T_SSID* pSSID, wld_nl80211_ifaceInfo_t* pMldIfaceInfo, int32_t* pLinkId);
+swl_rc_ne wld_ssid_nl80211_getInterfaceInfo(T_SSID* pSSID, wld_nl80211_ifaceInfo_t* pIfaceInfo);
+uint32_t wld_ssid_nl80211_getPrimaryLinkIfIndex(T_SSID* pSSID);
+int8_t wld_ssid_nl80211_getMldLinkId(T_SSID* pSSID);
 
-    return wld_nl80211_sendManagementFrameCmd(wld_nl80211_getSharedState(), fc, dataBytes, dataBytesLen, chanspec,
-                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &g_swl_macBin_bCast, flags, pEP->index);
-}
-
-swl_rc_ne wld_ep_nl80211_setSta(T_EndPoint* pEP) {
-    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_setInterfaceType(wld_nl80211_getSharedState(), pEP->index, false, true);
-}
-
-swl_rc_ne wld_ep_nl80211_set4Mac(T_EndPoint* pEP, bool use4Mac) {
-    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_setInterfaceUse4Mac(wld_nl80211_getSharedState(), pEP->index, use4Mac);
-}
-
-swl_rc_ne wld_ep_nl80211_getInterfaceInfo(T_EndPoint* pEP, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
-    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_ssid_nl80211_getInterfaceInfo(pEP->pSSID, pIfaceInfo);
-}
-
+#endif /* INCLUDE_PRIV_NL80211_WLD_SSID_NL80211_PRIV_H_ */

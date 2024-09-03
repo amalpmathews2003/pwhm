@@ -1214,10 +1214,11 @@ const wld_nl80211_ifaceMloLinkInfo_t* wld_nl80211_getIfaceMloLinkAtPos(wld_nl802
     return &pIface->mloLinks[linkPos];
 }
 
-swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macBin_t* pLinkMac, wld_nl80211_ifaceInfo_t* pIface) {
+swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macBin_t* pLinkMac, wld_nl80211_ifaceInfo_t* pIface, int32_t* pLinkId) {
     if(pIface != NULL) {
         memset(pIface, 0, sizeof(*pIface));
     }
+    W_SWL_SETPTR(pLinkId, -1);
     ASSERT_NOT_NULL(pLinkMac, SWL_RC_INVALID_PARAM, ME, "NULL mac");
     ASSERTI_FALSE(swl_mac_binIsNull(pLinkMac), SWL_RC_INVALID_PARAM, ME, "empty mac");
     struct getWirelessIfacesData_s requestData = {0, 0, NULL};
@@ -1226,16 +1227,14 @@ swl_rc_ne wld_nl80211_findMldIfaceByLinkMac(wld_nl80211_state_t* state, swl_macB
         uint32_t i;
         for(i = 0; i < requestData.nrIfaces; i++) {
             wld_nl80211_ifaceInfo_t* pTmpIface = &requestData.pIfaces[i];
-            const wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo = wld_nl80211_fetchIfaceMloLinkByMac(pTmpIface, pLinkMac);
-            if(pLinkInfo == NULL) {
+            const wld_nl80211_ifaceMloLinkInfo_t* pTmpLinkInfo = wld_nl80211_fetchIfaceMloLinkByMac(pTmpIface, pLinkMac);
+            if(pTmpLinkInfo == NULL) {
                 continue;
             }
             if(pIface != NULL) {
                 memcpy(pIface, pTmpIface, sizeof(*pIface));
-                //copy current link rad info to mld
-                pIface->chanSpec = pLinkInfo->chanSpec;
-                pIface->txPower = pLinkInfo->txPower;
             }
+            W_SWL_SETPTR(pLinkId, pTmpLinkInfo->link.linkId);
             break;
         }
         if(i == requestData.nrIfaces) {

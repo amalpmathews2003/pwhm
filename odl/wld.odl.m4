@@ -149,6 +149,7 @@ m4_ifelse(DISABLE_PERSIST,y,``
                    "nlParser" = 200,
                    "nlRad" = 200,
                    "nlScan" = 200,
+                   "nlSsid" = 200,
                    "nlUtils" = 200,
                    "rad" = 200,
                    "radCaps" = 200,
