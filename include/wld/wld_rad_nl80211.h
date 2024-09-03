@@ -473,4 +473,16 @@ swl_rc_ne wld_rad_nl80211_sendVendorSubCmdAttr(T_Radio* pRadio, uint32_t oui, in
  */
 swl_rc_ne wld_rad_nl80211_registerFrame(T_Radio* pRadio, uint16_t type, const char* pattern, size_t patternLen);
 
+/*
+ * @brief get first enabled radio's vap mld link info (mld iface index, and mld link id)
+ *
+ * @param pRadio pointer to radio context
+ * @param pIfIndex pointer to mld iface index to be filled
+ * @param pLinkId pointer to mld link id to be filled
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getFirstEnabledVapLinkInfo(T_Radio* pRadio, int32_t* pIfIndex, int8_t* pLinkId);
+
 #endif /* INCLUDE_WLD_WLD_RAD_NL80211_H_ */

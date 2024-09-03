@@ -244,8 +244,10 @@ swl_rc_ne wld_ap_nl80211_sendManagementFrameCmd(T_AccessPoint* pAP, swl_80211_mg
     T_SSID* pSSID = pAP->pSSID;
     ASSERT_NOT_NULL(pSSID, rc, ME, "NULL");
 
+    uint32_t index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pSSID);
+    int8_t ifMloLinkId = wld_ssid_nl80211_getMldLinkId(pSSID);
     return wld_nl80211_sendManagementFrameCmd(wld_nl80211_getSharedState(), fc, dataBytes, dataBytesLen, chanspec,
-                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &pSSID->BSSID, flags, pAP->index);
+                                              (swl_macBin_t*) &pSSID->MACAddress, tgtMac, (swl_macBin_t*) &pSSID->BSSID, flags, index, ifMloLinkId);
 }
 
 swl_rc_ne wld_ap_nl80211_registerFrame(T_AccessPoint* pAP, uint16_t type, const char* pattern, size_t patternLen) {

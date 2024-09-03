@@ -636,12 +636,14 @@ swl_rc_ne wld_nl80211_sendVendorSubCmdAttr(wld_nl80211_state_t* state, uint32_t 
  * @param bssid BSSID MACAddress to be written in header
  * @param flags optional nl80211 msg flags
  * @param ifIndex interface net dev index
+ * @param ifMloLinkId network interface MLO Link ID, otherwise MLO_LINK_ID_UNKNOWN for non-MLD
  *
  * @return SWL_RC_OK on success
  *         <= SWL_RC_ERROR otherwise
  */
 swl_rc_ne wld_nl80211_sendManagementFrameCmd(wld_nl80211_state_t* state, swl_80211_mgmtFrameControl_t* fc, swl_bit8_t* data, size_t dataLen,
-                                             swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags, uint32_t ifIndex);
+                                             swl_chanspec_t* chanspec, swl_macBin_t* src, swl_macBin_t* dst, swl_macBin_t* bssid, uint32_t flags,
+                                             uint32_t ifIndex, int8_t ifMloLinkId);
 
 
 /*
