@@ -194,6 +194,16 @@ static swl_rc_ne s_parseMloLink(struct nlattr* tb[], wld_nl80211_mloLinkInfo_t* 
     pMloLink->linkId = nla_get_u8(tb[NL80211_ATTR_MLO_LINK_ID]);
     NLA_GET_DATA(pMloLink->linkMac.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
     NLA_GET_DATA(pMloLink->mldMac.bMac, tb[NL80211_ATTR_MLD_ADDR], SWL_MAC_BIN_LEN);
+    NLA_GET_VAL(pMloLink->stats.txBytes, nla_get_u64, tb[NL80211_STA_INFO_TX_BYTES64]);
+    NLA_GET_VAL(pMloLink->stats.rxBytes, nla_get_u64, tb[NL80211_STA_INFO_RX_BYTES64]);
+    NLA_GET_VAL(pMloLink->stats.txPackets, nla_get_u32, tb[NL80211_STA_INFO_TX_PACKETS]);
+    NLA_GET_VAL(pMloLink->stats.rxPackets, nla_get_u32, tb[NL80211_STA_INFO_RX_PACKETS]);
+    NLA_GET_VAL(pMloLink->stats.txRetries, nla_get_u32, tb[NL80211_STA_INFO_TX_RETRIES]);
+    NLA_GET_VAL(pMloLink->stats.rxRetries, nla_get_u32, tb[NL80211_STA_INFO_RX_RETRIES]);
+    NLA_GET_VAL(pMloLink->stats.txErrors, nla_get_u32, tb[NL80211_STA_INFO_TX_FAILED]);
+    NLA_GET_VAL(pMloLink->stats.rxErrors, nla_get_u64, tb[NL80211_STA_INFO_RX_DROP_MISC]);
+    NLA_GET_VAL(pMloLink->stats.rssiDbm, nla_get_u8, tb[NL80211_STA_INFO_SIGNAL]);
+    NLA_GET_VAL(pMloLink->stats.rssiAvgDbm, nla_get_u8, tb[NL80211_STA_INFO_SIGNAL_AVG]);
     return SWL_RC_OK;
 }
 
@@ -1064,6 +1074,10 @@ static swl_rc_ne s_parseRateInfo(struct nlattr* pBitrateAttributre, wld_nl80211_
     ratePolicy[NL80211_RATE_INFO_160_MHZ_WIDTH].type = NLA_FLAG;
     ratePolicy[NL80211_RATE_INFO_10_MHZ_WIDTH].type = NLA_FLAG;
     ratePolicy[NL80211_RATE_INFO_5_MHZ_WIDTH].type = NLA_FLAG;
+    ratePolicy[NL80211_RATE_INFO_EHT_MCS].type = NLA_U8;
+    ratePolicy[NL80211_RATE_INFO_EHT_NSS].type = NLA_U8;
+    ratePolicy[NL80211_RATE_INFO_EHT_GI].type = NLA_U8;
+    ratePolicy[NL80211_RATE_INFO_EHT_RU_ALLOC].type = NLA_U8;
 
 
     rc = nla_parse_nested(pRinfo, NL80211_RATE_INFO_MAX, pBitrateAttributre, ratePolicy);
@@ -1087,7 +1101,14 @@ static swl_rc_ne s_parseRateInfo(struct nlattr* pBitrateAttributre, wld_nl80211_
     // legacy: to allow default stats for a/b/g std and passive rx devices
     pRate->mcsInfo.standard = SWL_MCS_STANDARD_LEGACY;
 
-    if(pRinfo[NL80211_RATE_INFO_HE_MCS]) {
+    if(pRinfo[NL80211_RATE_INFO_EHT_MCS]) {
+        pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_EHT_MCS]);
+        pRate->mcsInfo.standard = SWL_MCS_STANDARD_EHT;
+        if(pRinfo[NL80211_RATE_INFO_EHT_NSS]) {
+            pRate->mcsInfo.numberOfSpatialStream = nla_get_u8(pRinfo[NL80211_RATE_INFO_EHT_NSS]);
+        }
+        pRate->mcsInfo.guardInterval = SWL_SGI_3200;
+    } else if(pRinfo[NL80211_RATE_INFO_HE_MCS]) {
         pRate->mcsInfo.mcsIndex = (uint32_t) nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_MCS]);
         pRate->mcsInfo.standard = SWL_MCS_STANDARD_HE;
         if(pRinfo[NL80211_RATE_INFO_HE_NSS]) {
@@ -1110,7 +1131,16 @@ static swl_rc_ne s_parseRateInfo(struct nlattr* pBitrateAttributre, wld_nl80211_
     }
 
     // Get guard interval
-    if(pRinfo[NL80211_RATE_INFO_HE_GI]) {
+    if(pRinfo[NL80211_RATE_INFO_EHT_GI]) {
+        uint8_t sgi = nla_get_u8(pRinfo[NL80211_RATE_INFO_EHT_GI]);
+        if(sgi == NL80211_RATE_INFO_EHT_GI_0_8) {
+            pRate->mcsInfo.guardInterval = SWL_SGI_800;
+        } else if(sgi == NL80211_RATE_INFO_EHT_GI_1_6) {
+            pRate->mcsInfo.guardInterval = SWL_SGI_1600;
+        } else if(sgi == NL80211_RATE_INFO_EHT_GI_3_2) {
+            pRate->mcsInfo.guardInterval = SWL_SGI_3200;
+        }
+    } else if(pRinfo[NL80211_RATE_INFO_HE_GI]) {
         uint8_t sgi = nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_GI]);
         if(sgi == NL80211_RATE_INFO_HE_GI_0_8) {
             pRate->mcsInfo.guardInterval = SWL_SGI_800;
@@ -1126,6 +1156,12 @@ static swl_rc_ne s_parseRateInfo(struct nlattr* pBitrateAttributre, wld_nl80211_
     // Get HE DCM (u8, 0/1)
     if(pRinfo[NL80211_RATE_INFO_HE_DCM]) {
         pRate->heDcm = nla_get_u8(pRinfo[NL80211_RATE_INFO_HE_DCM]);
+    }
+
+    /* HE/EHT OFDMA */
+    if((pRinfo[NL80211_RATE_INFO_HE_RU_ALLOC] != NULL) ||
+       (pRinfo[NL80211_RATE_INFO_EHT_RU_ALLOC] != NULL)) {
+        pRate->ofdma = 1;
     }
 
     // Get Bandwidth value
@@ -1199,6 +1235,33 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
         return SWL_RC_ERROR;
     }
     NLA_GET_DATA(pStation->macAddr.bMac, tb[NL80211_ATTR_MAC], SWL_MAC_BIN_LEN);
+    pStation->linkId = -1;
+    if(tb[NL80211_ATTR_MLO_LINK_ID] != NULL) {
+        pStation->linkId = nla_get_u8(tb[NL80211_ATTR_MLO_LINK_ID]);
+    }
+    if(tb[NL80211_ATTR_MLD_ADDR] != NULL) {
+        NLA_GET_DATA(pStation->macMld.bMac, tb[NL80211_ATTR_MLD_ADDR], SWL_MAC_BIN_LEN);
+    }
+    if(tb[NL80211_ATTR_MLO_LINKS] != NULL) {
+        int rem = 0;
+        struct nlattr* list;
+        struct nlattr* link[NL80211_ATTR_MAX + 1];
+        uint32_t i = 0;
+        nla_for_each_nested(list, tb[NL80211_ATTR_MLO_LINKS], rem) {
+            if(i >= SWL_ARRAY_SIZE(pStation->linksInfo)) {
+                SAH_TRACEZ_WARNING(ME, "skip nlinks exceeds max %zu", SWL_ARRAY_SIZE(pStation->linksInfo));
+                break;
+            }
+            nla_parse_nested(link, NL80211_ATTR_MAX, list, NULL);
+            if((s_parseMloLink(link, &pStation->linksInfo[i]) < SWL_RC_OK) ||
+               (pStation->linksInfo[i].linkId < 0) ||
+               (swl_mac_binIsNull(&pStation->linksInfo[i].linkMac))) {
+                SAH_TRACEZ_WARNING(ME, "skip link %d: missing info", pStation->linksInfo[i].linkId);
+                continue;
+            }
+            pStation->nrLinks = ++i;
+        }
+    }
     if(pSinfo[NL80211_STA_INFO_INACTIVE_TIME]) {
         pStation->inactiveTime = nla_get_u32(pSinfo[NL80211_STA_INFO_INACTIVE_TIME]);
     }

@@ -68,6 +68,7 @@
 #include "wld_hostapd_ap_api.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_accesspoint.h"
+#include "wld_assocdev.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_common_mac.h"
 
@@ -1122,22 +1123,8 @@ SWL_TABLE(sAkmSuiteSelectorMap,
               {"00-0f-ac-8", SWL_SECURITY_APMODE_WPA3_P},      // SAE (SHA256)
               {"00-0f-ac-9", SWL_SECURITY_APMODE_WPA3_P},      // FT-SAE (SHA256) (11r)
               ));
-swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
-    // when failing to get sta info from hostpad, consider security mode unknown
-    if(!swl_security_isApModeValid(pAD->assocCaps.currentSecurity)) {
-        pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_UNKNOWN;
-    }
-    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
-    char buff[WLD_L_BUF] = {0};
-    snprintf(buff, sizeof(buff), "STA %.17s", pAD->Name);
-    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
-    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, buff, ret);
-    ASSERTI_TRUE(swl_str_nmatchesIgnoreCase(buff, pAD->Name, strlen(pAD->Name)), SWL_RC_ERROR,
-                 ME, "%s: wrong sta %s info: received(%s)",
-                 pAP->alias, pAD->Name, buff);
-
+static void s_parseHostapdStaCmdResponse(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* buff) {
     char valStr[WLD_M_BUF] = {0};
     int32_t val = 0;
 
@@ -1168,6 +1155,45 @@ swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
         if(pCurrSec) {
             pAD->assocCaps.currentSecurity = *pCurrSec;
         }
+    }
+}
+
+swl_rc_ne wld_ap_hostapd_getStaInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
+    ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "NULL");
+    // when failing to get sta info from hostpad, consider security mode unknown
+    if(!swl_security_isApModeValid(pAD->assocCaps.currentSecurity)) {
+        pAD->assocCaps.currentSecurity = SWL_SECURITY_APMODE_UNKNOWN;
+    }
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    char buff[WLD_L_BUF] = {0};
+    snprintf(buff, sizeof(buff), "STA %.17s", pAD->Name);
+    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, buff, ret);
+    ASSERTI_TRUE(swl_str_nmatchesIgnoreCase(buff, pAD->Name, strlen(pAD->Name)), SWL_RC_ERROR,
+                 ME, "%s: wrong sta %s info: received(%s)",
+                 pAP->alias, pAD->Name, buff);
+    s_parseHostapdStaCmdResponse(pAP, pAD, buff);
+    return SWL_RC_OK;
+}
+
+
+swl_rc_ne wld_ap_hostapd_getAllStaInfo(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    char buff[WLD_L_BUF] = "STA-FIRST";
+    swl_macBin_t staMac = SWL_MAC_BIN_NEW();
+    swl_macChar_t staMacStr = SWL_MAC_CHAR_NEW();
+    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
+    memcpy(staMacStr.cMac, buff, SWL_MAC_CHAR_LEN - 1);
+    while(ret && swl_mac_charIsValidStaMac(&staMacStr) && swl_mac_charToBin(&staMac, &staMacStr)) {
+        T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &staMac);
+        if(pAD != NULL) {
+            s_parseHostapdStaCmdResponse(pAP, pAD, buff);
+        }
+        /* get next station in the list */
+        snprintf(buff, sizeof(buff), "STA-NEXT %s", staMacStr.cMac);
+        ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
+        ASSERTS_FALSE(swl_str_nmatches(buff, "FAIL", 4), SWL_RC_OK, ME, "no more station");
+        memcpy(staMacStr.cMac, buff, SWL_MAC_CHAR_LEN - 1);
     }
     return SWL_RC_OK;
 }

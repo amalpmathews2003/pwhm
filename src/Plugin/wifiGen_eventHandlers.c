@@ -902,10 +902,60 @@ static void s_btmReplyEvt(void* userData, char* ifName _UNUSED, swl_macChar_t* m
     wld_ap_bss_done(pAP, mac, (int) replyCode, targetBssid);
 }
 
+static void s_handleAssocMsgAffiliatedSta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_macBin_t* mac,
+                                          swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pAD, , ME, "NULL");
+    ASSERT_NOT_NULL(mac, , ME, "NULL");
+    ASSERT_NOT_NULL(pWirelessDevIE, , ME, "NULL");
+
+    /* handle only affiliatedSta */
+    ASSERTS_FALSE(swl_mac_binIsNull(&pWirelessDevIE->ehtMldMacAddress), , ME, NULL);
+
+    /* default to EMLSR if supported */
+    pAD->mloMode = SWL_BIT_IS_SET(pWirelessDevIE->ehtEmlCapabilities, SWL_STACAP_EHT_EML_EMLSR) ?
+        SWL_MLO_MODE_EMLSR :
+        SWL_BIT_IS_SET(pWirelessDevIE->ehtEmlCapabilities, SWL_STACAP_EHT_EML_EMLMR) ?
+        SWL_MLO_MODE_EMLMR :
+        SWL_MLO_MODE_NSTR;
+
+    /* force 802.11BE */
+    pAD->operatingStandard = SWL_RADSTD_BE;
+
+    wld_affiliatedSta_t* afSta = wld_ad_getOrAddAffiliatedSta(pAD, pAP);
+    ASSERT_NOT_NULL(afSta, , ME, "%s: create affiliatedSta (linkId:%u,mac:%s) failed for sta(%s)!", pAP->alias,
+                    wld_mld_getLinkId(pAP->pSSID->pMldLink), swl_typeMacBin_toBuf32Ref(mac).buf,
+                    pAD->Name);
+    afSta->active = true;
+    afSta->mac = *mac;
+    afSta->linkId = wld_mld_getLinkId(pAP->pSSID->pMldLink);
+    afSta->lastDataDownlinkRate = pWirelessDevIE->maxDownlinkRateSupported;
+    afSta->lastDataUplinkRate = pWirelessDevIE->maxUplinkRateSupported;
+
+    /* add detected STA Profile in the Multi-Link */
+    for(uint8_t i = 0; i < SWL_ARRAY_SIZE(pWirelessDevIE->ehtLinksMacAddress); i++) {
+        if(SWL_BIT_IS_SET(pWirelessDevIE->ehtLinksMask, i)) {
+            T_SSID* pSSIDLink = wld_mld_getLinkSsidByLinkId(pAP->pSSID->pMldLink, i);
+            if(pSSIDLink == NULL) {
+                continue;
+            }
+            wld_affiliatedSta_t* afSta = wld_ad_getOrAddAffiliatedSta(pAD, pSSIDLink->AP_HOOK);
+            ASSERT_NOT_NULL(afSta, , ME, "%s: create affiliatedSta (linkId:%u,mac:%s) failed for sta(%s)!",
+                            pSSIDLink->AP_HOOK->alias,
+                            i, swl_typeMacBin_toBuf32Ref(&pWirelessDevIE->ehtLinksMacAddress[i]).buf,
+                            pAD->Name);
+            afSta->mac = pWirelessDevIE->ehtLinksMacAddress[i];
+            afSta->active = true;
+            afSta->linkId = i;
+        }
+    }
+}
+
 static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame, size_t frameLen, swl_bit8_t* iesData, size_t iesLen) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(pAP->pRadio, , ME, "NULL");
     ASSERT_NOT_NULL(frame, , ME, "NULL");
-    ASSERT_NOT_NULL(pAP->pSSID, , ME, "%s: Ap has No SSID", pAP->alias);
+    ASSERT_NOT_NULL(pAP->pSSID, , ME, "%s: AP has No SSID", pAP->alias);
     if(!SWL_MAC_BIN_MATCHES(pAP->pSSID->BSSID, &frame->bssid)) {
         T_SSID* pSSIDPrim = wld_mld_getPrimaryLinkSsid(pAP->pSSID->pMldLink);
         if((pSSIDPrim == NULL) || (!SWL_MAC_BIN_MATCHES(pSSIDPrim->BSSID, &frame->bssid))) {
@@ -914,14 +964,23 @@ static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame,
             return;
         }
     }
-
-    T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &frame->transmitter);
-    ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(frame->transmitter.bMac));
+    swl_wirelessDevice_infoElements_t wirelessDevIE;
+    swl_parsingArgs_t parsingArgs = {
+        .seenOnChanspec = swl_chanspec_fromDm(pAP->pRadio->channel, pAP->pRadio->runningChannelBandwidth, pAP->pRadio->operatingFrequencyBand),
+    };
+    ssize_t parsedLen = swl_80211_parseInfoElementsBuffer(&wirelessDevIE, &parsingArgs, iesLen, iesData);
+    ASSERTW_FALSE(parsedLen < (ssize_t) iesLen, , ME, "Partial IEs parsing (%zi/%zu)", parsedLen, iesLen);
+    swl_macBin_t* mac = swl_mac_binIsNull(&wirelessDevIE.ehtMldMacAddress) ? &frame->transmitter : &wirelessDevIE.ehtMldMacAddress;
+    SAH_TRACEZ_INFO(ME, "%s: create AssociatedDevice(%s) for Association Request from (%s)", pAP->alias,
+                    swl_typeMacBin_toBuf32Ref(mac).buf,
+                    swl_typeMacBin_toBuf32Ref(&frame->transmitter).buf);
+    T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, mac);
+    ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device %s", pAP->alias,
+                    swl_typeMacBin_toBuf32Ref(mac).buf);
     wld_vap_saveAssocReq(pAP, (swl_bit8_t*) frame, frameLen);
-
     wld_ad_handleAssocMsg(pAP, pAD, iesData, iesLen);
+    s_handleAssocMsgAffiliatedSta(pAP, pAD, &frame->transmitter, &wirelessDevIE);
     W_SWL_BIT_SET(pAD->assocCaps.freqCapabilities, pAP->pRadio->operatingFrequencyBand);
-
     wld_ad_add_connection_try(pAP, pAD);
 }
 

@@ -120,7 +120,8 @@ swl_rc_ne wld_ap_nl80211_getStationInfo(T_AccessPoint* pAP, const swl_macBin_t* 
             return rc;
         }
     }
-    return wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), pAP->index, pMac, pStationInfo);
+    uint32_t index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pAP->pSSID);
+    return wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), index, pMac, pStationInfo);
 }
 
 swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation) {
@@ -129,7 +130,8 @@ swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stat
     ASSERT_NOT_NULL(pnrStation, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_nl80211_stationInfo_t* staInfo = NULL;
     uint32_t nrStation = 0;
-    swl_rc_ne rc = wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), pAP->index, ppStationInfo, pnrStation);
+    uint32_t index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pAP->pSSID);
+    swl_rc_ne rc = wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), index, ppStationInfo, pnrStation);
     if(!amxc_llist_is_empty(&pAP->llIntfWds)) {
         nrStation = *pnrStation;
         staInfo = realloc(*ppStationInfo, (nrStation + amxc_llist_size(&pAP->llIntfWds)) * sizeof(wld_nl80211_stationInfo_t));

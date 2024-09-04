@@ -231,6 +231,7 @@ static swl_rc_ne wld_nl80211_dumpRateInfo(wld_nl80211_rateInfo_t* pRateInfo, amx
     amxc_var_add_key(uint32_t, retMap, "Bitrate", pRateInfo->bitrate);
     amxc_var_add_key(cstring_t, retMap, "mcsInfo", swl_typeMcs_toBuf32(pRateInfo->mcsInfo).buf);
     amxc_var_add_key(uint8_t, retMap, "HeDcm", pRateInfo->heDcm);
+    amxc_var_add_key(uint8_t, retMap, "OFDMA", pRateInfo->ofdma);
     return SWL_RC_OK;
 }
 
@@ -243,10 +244,29 @@ swl_rc_ne wld_nl80211_dumpStationInfo(wld_nl80211_stationInfo_t* pStationInfo, a
     amxc_var_t* pMap = (retMap ? retMap : &localVar);
     ASSERTS_NOT_NULL(pMap, SWL_RC_ERROR, ME, "NULL");
 
-    swl_macChar_t cMacAddr;
-    swl_mac_binToChar(&cMacAddr, &pStationInfo->macAddr);
+    amxc_var_add_key(cstring_t, pMap, "MacAddress",
+                     swl_typeMacBin_toBuf32Ref(&pStationInfo->macAddr).buf);
+    amxc_var_add_key(cstring_t, pMap, "MldAddress",
+                     swl_typeMacBin_toBuf32Ref(&pStationInfo->macMld).buf);
+    amxc_var_add_key(int8_t, pMap, "linkId", pStationInfo->linkId);
 
-    amxc_var_add_key(cstring_t, pMap, "MacAddress", cMacAddr.cMac);
+    amxc_var_t* varLinksList = amxc_var_add_new_key_amxc_llist_t(pMap, "links", NULL);
+    for(int i = 0; i < pStationInfo->nrLinks; i++) {
+        amxc_var_t* var = amxc_var_add_new_amxc_htable_t(varLinksList, NULL);
+        amxc_var_add_key(uint8_t, var, "id", pStationInfo->linksInfo[i].linkId);
+        amxc_var_add_key(cstring_t, var, "mld", swl_typeMacBin_toBuf32Ref(&pStationInfo->linksInfo[i].mldMac).buf);
+        amxc_var_add_key(cstring_t, var, "mac", swl_typeMacBin_toBuf32Ref(&pStationInfo->linksInfo[i].linkMac).buf);
+        amxc_var_add_key(uint64_t, var, "rxBytes", pStationInfo->linksInfo[i].stats.rxBytes);
+        amxc_var_add_key(uint64_t, var, "txBytes", pStationInfo->linksInfo[i].stats.txBytes);
+        amxc_var_add_key(uint32_t, var, "rxPackets", pStationInfo->linksInfo[i].stats.rxPackets);
+        amxc_var_add_key(uint32_t, var, "txPackets", pStationInfo->linksInfo[i].stats.txPackets);
+        amxc_var_add_key(uint32_t, var, "rxRetries", pStationInfo->linksInfo[i].stats.rxRetries);
+        amxc_var_add_key(uint32_t, var, "txRetries", pStationInfo->linksInfo[i].stats.txRetries);
+        amxc_var_add_key(uint64_t, var, "rxFailed", pStationInfo->linksInfo[i].stats.rxErrors);
+        amxc_var_add_key(uint32_t, var, "txFailed", pStationInfo->linksInfo[i].stats.txErrors);
+        amxc_var_add_key(int8_t, var, "signal", pStationInfo->linksInfo[i].stats.rssiDbm);
+        amxc_var_add_key(int8_t, var, "signalAverage", pStationInfo->linksInfo[i].stats.rssiAvgDbm);
+    }
     amxc_var_add_key(uint32_t, pMap, "inactiveTimeMs", pStationInfo->inactiveTime);
     amxc_var_add_key(uint64_t, pMap, "rxBytes", pStationInfo->rxBytes);
     amxc_var_add_key(uint64_t, pMap, "txBytes", pStationInfo->txBytes);
