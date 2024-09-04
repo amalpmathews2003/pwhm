@@ -607,20 +607,50 @@ swl_macBin_t* wld_ad_getMacBin(T_AssociatedDevice* pAD) {
     return (swl_macBin_t*) pAD->MACAddress;
 }
 
-T_AssociatedDevice* wld_vap_find_asociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
+static T_AssociatedDevice* s_findAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
     ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
     ASSERT_NOT_NULL(macAddress, NULL, ME, "NULL");
-    int i;
-    T_AssociatedDevice* pAD;
-
-    for(i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+    T_AssociatedDevice* pAD = NULL;
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
         pAD = pAP->AssociatedDevice[i];
-
+        ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
         if(swl_mac_binMatches(macAddress, wld_ad_getMacBin(pAD))) {
             return pAD;
         }
+        amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+            wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+            if(swl_mac_binMatches(macAddress, &afSta->mac)) {
+                return pAD;
+            }
+        }
     }
     return NULL;
+}
+
+static T_AssociatedDevice* s_findMldAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
+    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(macAddress, NULL, ME, "NULL");
+    ASSERTS_NOT_NULL(pAP->pSSID->pMldLink, NULL, ME, "no MLD");
+    wld_mldLink_t* pLink = NULL;
+    wld_for_eachNeighMldLink(pLink, pAP->pSSID->pMldLink) {
+        T_SSID* pSSID = wld_mld_getLinkSsid(pLink);
+        if(pSSID == NULL) {
+            continue;
+        }
+        T_AccessPoint* pAfAP = pSSID->AP_HOOK;
+        T_AssociatedDevice* pAD = s_findAssociatedDevice(pAfAP, macAddress);
+        ASSERTS_NULL(pAD, pAD, ME, "found")
+    }
+    return NULL;
+}
+
+T_AssociatedDevice* wld_vap_find_asociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
+    ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(macAddress, NULL, ME, "NULL");
+    ASSERTS_FALSE(swl_mac_binIsBroadcast(macAddress), NULL, ME, "ignore broadcast mac");
+    T_AssociatedDevice* pAD = s_findMldAssociatedDevice(pAP, macAddress);
+    ASSERTS_NULL(pAD, pAD, ME, "found");
+    return s_findAssociatedDevice(pAP, macAddress);
 }
 
 T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
@@ -1310,7 +1340,7 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
  * Note that even if security is off, if it succeeds to connect, we consider it authenticated.
  */
 void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
-    ASSERTI_FALSE(pAD->AuthenticationState, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
+    ASSERTS_FALSE(pAD->AuthenticationState, , ME, "%s : already auth %s", pAP->alias, pAD->Name);
 
     if(!pAD->Active) {
         wld_ad_add_connection_try(pAP, pAD);
@@ -1943,6 +1973,7 @@ void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8
 
     pAD->capabilities = 0;
     pAD->vendorCapabilities = 0;
+    pAD->mloMode = SWL_MLO_MODE_UNKNOWN;
     pAD->assocCaps.updateTime = swl_time_getMonoSec();
     pAD->lastSampleTime = swl_timespec_getMonoVal();
 

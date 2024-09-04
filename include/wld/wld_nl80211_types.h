@@ -100,9 +100,23 @@ typedef struct {
 } wld_nl80211_chanSpec_t;
 
 typedef struct {
+    uint64_t txBytes;
+    uint64_t rxBytes;
+    uint32_t txPackets;
+    uint32_t rxPackets;
+    uint32_t txRetries;
+    uint32_t rxRetries;
+    uint32_t txErrors;
+    uint64_t rxErrors;
+    int8_t rssiDbm;
+    int8_t rssiAvgDbm;
+} wld_nl80211_mloLinkInfoStats_t;
+
+typedef struct {
     int32_t linkId;                  //MLO link Id (>= 0)
     swl_macBin_t linkMac;            //MLO link mac
     swl_macBin_t mldMac;             //MLD mac
+    wld_nl80211_mloLinkInfoStats_t stats;
 } wld_nl80211_mloLinkInfo_t;
 
 typedef struct {
@@ -239,6 +253,7 @@ typedef struct {
     uint32_t bitrate;  // total bitrate (kbps) (u16/u32)
     swl_mcs_t mcsInfo; // mcs info
     uint8_t heDcm;     // HE DCM value (u8, 0/1)
+    uint8_t ofdma;
 } wld_nl80211_rateInfo_t;
 
 typedef struct {
@@ -251,7 +266,9 @@ typedef struct {
 } wld_nl80211_stationFlags_t;
 
 typedef struct {
-    swl_macBin_t macAddr;                     // station's address MAC
+    swl_macBin_t macAddr;                     // legacy station's address MAC or affiliated non-AP STA MAC
+    swl_macBin_t macMld;                      // non-AP MLD's address MAC (zero for legacy)
+    int8_t linkId;                            // AP MLD's linkId used by the non-AP STA affiliated to the non-AP MLD (-1 for legacy)
     uint32_t inactiveTime;                    // time since last activity (u32, milliseconds)
     uint64_t rxBytes;                         // total received bytes
     uint64_t txBytes;                         // total transmitted bytes
@@ -269,6 +286,8 @@ typedef struct {
     uint32_t nrSignalChains;                  // nb chains on which signal is detected
     int8_t rssiDbmByChain[MAX_NR_ANTENNA];    // per-chain signal strength of last PPDU (dBm)
     int8_t rssiAvgDbmByChain[MAX_NR_ANTENNA]; // per-chain signal strength average (dBm)
+    uint8_t nrLinks;                          // QCA push all links of the non-AP MLD
+    wld_nl80211_mloLinkInfo_t linksInfo[WLD_NL80211_MAX_MLO_LINKS];
 
 } wld_nl80211_stationInfo_t;
 

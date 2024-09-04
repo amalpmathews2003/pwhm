@@ -401,6 +401,18 @@ T_SSID* wld_mld_getLinkSsid(wld_mldLink_t* pLink) {
     return pLink->pSSID;
 }
 
+T_SSID* wld_mld_getLinkSsidByLinkId(wld_mldLink_t* pLink, int8_t linkId) {
+    ASSERTS_FALSE(linkId < 0, NULL, ME, "invalid link ID");
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    amxc_llist_for_each(it, pLink->it.llist) {
+        wld_mldLink_t* pNeighLink = amxc_container_of(it, wld_mldLink_t, it);
+        if(wld_mld_getLinkId(pNeighLink) == linkId) {
+            return wld_mld_getLinkSsid(pNeighLink);
+        }
+    }
+    return NULL;
+}
+
 T_SSID* wld_mld_getPrimaryLinkSsid(wld_mldLink_t* pLink) {
     return wld_mld_getLinkSsid(wld_mld_getPrimaryLink(pLink));
 }

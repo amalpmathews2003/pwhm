@@ -92,6 +92,7 @@ swl_rc_ne wld_mld_deinitMgr(wld_mldMgr_t** ppMgr);
 wld_mldLink_t* wld_mld_registerLink(T_SSID* pSSID, int32_t unit);
 swl_rc_ne wld_mld_unregisterLink(T_SSID* pSSID);
 T_SSID* wld_mld_getLinkSsid(wld_mldLink_t* pLink);
+T_SSID* wld_mld_getLinkSsidByLinkId(wld_mldLink_t* pLink, int8_t linkId);
 const char* wld_mld_getLinkName(wld_mldLink_t* pLink);
 swl_rc_ne wld_mld_setPrimaryLink(wld_mldLink_t* pLink);
 wld_mldLink_t* wld_mld_getPrimaryLink(wld_mldLink_t* pLink);
