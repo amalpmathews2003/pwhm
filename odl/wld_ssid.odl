@@ -183,6 +183,7 @@
 		 * the referenced object is deleted, the corresponding item MUST
 		 * be removed from the list.</p> */
 		%persistent string LowerLayers{
+			on action write call set_object_ref_simple;
 			on action write call wld_ssid_setLowerLayers_pwf;
 		}
 		

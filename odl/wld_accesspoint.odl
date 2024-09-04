@@ -240,7 +240,9 @@ define rrm_t{
 		/** The value MUST be the path name of a row in the SSID table.
 		 *  If the referenced object is deleted, the parameter value
 		 *  MUST be set to an empty string.  */
-		%persistent string SSIDReference;
+		%persistent string SSIDReference {
+			on action write call set_object_ref_simple;
+		}
 
 		/** Indicates whether or not beacons include the SSID name. */
 		%persistent bool SSIDAdvertisementEnabled{
