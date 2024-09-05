@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.35.0 - 2024-09-05(12:40:30 +0000)
+
+### Other
+
+- : Add bssid parameter for NaSta
+
 ## Release v6.34.1 - 2024-09-05(06:41:22 +0000)
 
 ### Other
