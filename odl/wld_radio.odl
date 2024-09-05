@@ -2259,6 +2259,11 @@ define probelist_t{
 				%read-only string MACAddress;
 
 				/**
+				 * If set, driver will try to monitor packets from this BSSID.
+				 */
+				%read-only string RequestedBSSID;
+
+				/**
 				 * An indicator of radio signal strength of the uplink from the
 				 * monitored device to the access point, measured in dBm.
 				 * (measured RSSI of the device).

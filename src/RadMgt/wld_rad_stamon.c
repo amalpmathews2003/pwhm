@@ -125,7 +125,7 @@ static amxd_status_t s_staMon_addDevice(T_Radio* pRad, amxd_object_t* instance_o
     instance_object->priv = pMD;
     memcpy(pMD->MACAddress, macAddr.bMac, ETHER_ADDR_LEN);
 
-    const char* bssidStr = GET_CHAR(params, "BSSID");
+    const char* bssidStr = GET_CHAR(params, "RequestedBSSID");
     if(bssidStr != NULL) {
         ASSERT_TRUE(swl_typeMacBin_fromChar(&pMD->bssid, bssidStr), amxd_status_unknown_error, ME, "bssidStr %s is not accepted! ", bssidStr);
     }
@@ -199,6 +199,7 @@ static amxd_status_t s_stamon_createDevice(amxd_object_t* parent, const char* te
     ASSERT_NOT_NULL(template, amxd_status_unknown_error, ME, "NULL");
 
     const char* macAddr = GET_CHAR(args, "macaddress");
+    const char* bssid = GET_CHAR(args, "bssid");
     ASSERT_TRUE(swl_mac_charIsValidStaMac((swl_macChar_t*) macAddr), amxd_status_invalid_value, ME, "invalid MACAddress (%s)", macAddr);
     SAH_TRACEZ_INFO(ME, "Creating Device instance with template %s and macAddr %s", template, macAddr);
 
@@ -216,6 +217,7 @@ static amxd_status_t s_stamon_createDevice(amxd_object_t* parent, const char* te
         snprintf(alias, sizeof(alias), "_%s", macAddr);
         amxc_var_add_key(cstring_t, &values, "Alias", alias);
         amxc_var_add_key(cstring_t, &values, "MACAddress", macAddr);
+        amxc_var_add_key(cstring_t, &values, "RequestedBSSID", (bssid != NULL) ? bssid : "");
 
         amxc_var_t* varChan = GET_ARG(args, "channel");
         if(varChan != NULL) {
