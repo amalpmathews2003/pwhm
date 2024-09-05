@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.34.1 - 2024-09-05(06:41:22 +0000)
+
+### Other
+
+- : [Terminating dot][tr181] fix Wifi
+
 ## Release v6.34.0 - 2024-09-03(15:10:51 +0000)
 
 ## Release v6.33.1 - 2024-08-30(10:42:44 +0000)
