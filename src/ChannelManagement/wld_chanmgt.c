@@ -559,6 +559,9 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     pR->totalNrTargetChanspecChanges++;
 
     pR->channel = tgtChanspec.channel;
+    if(pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) {
+        pR->operatingChannelBandwidth = swl_chanspec_toRadBw(&tgtChanspec);
+    }
 
     memset(&pR->targetChanspec.chanspec, 0, sizeof(swl_chanspec_t));
     pR->targetChanspec.chanspec = tgtChanspec;
