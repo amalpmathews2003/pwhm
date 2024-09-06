@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.35.2 - 2024-09-06(10:40:30 +0000)
+
+### Other
+
+- mxl-getting-invalid-number-of-mapped-bss
+
 ## Release v6.35.1 - 2024-09-05(14:05:51 +0000)
 
 ### Other
