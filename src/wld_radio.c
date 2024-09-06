@@ -3498,7 +3498,7 @@ uint32_t wld_rad_countMappedAPs(T_Radio* pRad) {
     amxd_object_t* ssidTmplObj = amxd_object_findf(get_wld_object(), "SSID");
     ASSERT_NOT_NULL(ssidTmplObj, count, ME, "Missing SSID template objs");
     amxd_object_t* apTmplObj = amxd_object_findf(get_wld_object(), "AccessPoint");
-    ASSERT_NOT_NULL(apTmplObj, count, ME, "Missing SSID template objs");
+    ASSERT_NOT_NULL(apTmplObj, count, ME, "Missing AccessPoint template objs");
     amxd_object_for_each(instance, itSsid, ssidTmplObj) {
         amxd_object_t* ssidObj = amxc_container_of(itSsid, amxd_object_t, it);
         char* ssidLL = amxd_object_get_cstring_t(ssidObj, "LowerLayers", NULL);
@@ -3508,7 +3508,7 @@ uint32_t wld_rad_countMappedAPs(T_Radio* pRad) {
             continue;
         }
         const char* ssidObjName = amxd_object_get_name(ssidObj, AMXD_OBJECT_NAMED);
-        amxd_object_for_each(instance, itAp, ssidTmplObj) {
+        amxd_object_for_each(instance, itAp, apTmplObj) {
             amxd_object_t* apObj = amxc_container_of(itAp, amxd_object_t, it);
             const char* apObjName = amxd_object_get_name(apObj, AMXD_OBJECT_NAMED);
             bool matchSsid = (swl_str_matches(ssidObjName, apObjName));
