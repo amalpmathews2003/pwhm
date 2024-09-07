@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.36.0 - 2024-09-07(15:07:33 +0000)
+
+### Other
+
+- - Minor fixes in VHTCapabilities
+
 ## Release v6.35.3 - 2024-09-06(14:05:25 +0000)
 
 ### Other
