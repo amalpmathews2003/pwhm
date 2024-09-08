@@ -1312,7 +1312,9 @@ static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDev
     if(pWirelessDevIE->operChanInfo.channel > 0) {
         pResult->channel = pWirelessDevIE->operChanInfo.channel;
     }
-    pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
+    if(pWirelessDevIE->operChanInfo.bandwidth != SWL_BW_AUTO) {
+        pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
+    }
     swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
     pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
     swl_operatingClass_t operClass = swl_chanspec_getOperClass(&chanSpec);
@@ -1326,7 +1328,7 @@ static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDev
     pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
 }
 
-swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t* pResult) {
+swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanResultSSID_t* pResult, swl_freqBandExt_e band) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(tb, rc, ME, "NULL");
     ASSERT_NOT_NULL(pResult, rc, ME, "NULL");
@@ -1374,13 +1376,18 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
     NLA_GET_VAL(freq, nla_get_u32, bss[NL80211_BSS_FREQUENCY]);
     swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
     if(swl_chanspec_channelFromMHz(&chanSpec, freq) == SWL_RC_OK) {
+        if(band < SWL_FREQ_BAND_EXT_AUTO) {
+            ASSERTS_EQUALS(chanSpec.band, band, rc, ME, "skip mismatched freq band");
+        }
+        chanSpec.bandwidth = SWL_BW_20MHZ;
         pResult->channel = chanSpec.channel;
         pResult->centreChannel = chanSpec.channel;
-        chanSpec.bandwidth = SWL_BW_20MHZ;
+        pResult->bandwidth = swl_chanspec_bwToInt(chanSpec.bandwidth);
         pResult->operClass = swl_chanspec_getOperClass(&chanSpec);
     }
 
     //get information elements from probe_resp or from beacon
+    pResult->ssidLen = SWL_80211_SSID_STR_LEN; // border-sized to detect ssid missing (even when empty (hidden))
     if(bss[NL80211_BSS_BEACON_IES] || bss[NL80211_BSS_INFORMATION_ELEMENTS]) {
         uint32_t iesAttr = (bss[NL80211_BSS_INFORMATION_ELEMENTS])
             ? NL80211_BSS_INFORMATION_ELEMENTS
@@ -1399,12 +1406,17 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
         s_copyScanInfoFromIEs(pResult, &wirelessDevIE);
     }
 
-    if(!pResult->channel || !pResult->ssidLen) {
+    if(!pResult->channel || (pResult->ssidLen >= SWL_80211_SSID_STR_LEN)) {
+        pResult->ssidLen = 0;
         SAH_TRACEZ_NOTICE(ME, "missing channel and ssid info");
         return SWL_RC_CONTINUE;
     }
 
     return SWL_RC_OK;
+}
+
+swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t* pResult) {
+    return wld_nl80211_parseScanResultPerFreqBand(tb, pResult, SWL_FREQ_BAND_EXT_AUTO);
 }
 
 swl_rc_ne wld_nl80211_parseRadarInfo(struct nlattr* tb[], wld_nl80211_radarEvtInfo_t* pRadarEvtInfo) {

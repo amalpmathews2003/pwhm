@@ -624,26 +624,33 @@ static void s_scanResultsCb(void* priv, swl_rc_ne rc, wld_scanResults_t* results
 }
 
 static void s_scanDoneCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED, uint32_t ifIndex _UNUSED) {
-    SAH_TRACEZ_INFO(ME, "scan done on wiphy:%d iface:%d", wiphy, ifIndex);
     T_Radio* pRad = (T_Radio*) pRef;
-    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    ASSERTI_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
-    SAH_TRACEZ_INFO(ME, "%s: getting scan async results", pRad->Name);
+    const char* radName = pRad ? pRad->Name : "";
+    SAH_TRACEZ_INFO(ME, "%s: scan done on wiphy:%d iface:%d", radName, wiphy, ifIndex);
+    if((pRad == NULL) || (pRad->wiphy != wiphy) || (!wld_rad_hasLinkIfIndex(pRad, ifIndex))) {
+        return;
+    }
+    SAH_TRACEZ_INFO(ME, "%s: getting scan async results", radName);
     wld_rad_nl80211_getScanResults(pRad, pRad, s_scanResultsCb);
 }
 
 static void s_scanAbortedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED, uint32_t ifIndex _UNUSED) {
-    SAH_TRACEZ_INFO(ME, "scan aborted on wiphy:%d iface:%d", wiphy, ifIndex);
     T_Radio* pRad = (T_Radio*) pRef;
-    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
-    ASSERTI_NOT_EQUALS(pRad->scanState.scanType, SCAN_TYPE_NONE, , ME, "%s: No user scan running", pRad->Name);
+    const char* radName = pRad ? pRad->Name : "";
+    SAH_TRACEZ_INFO(ME, "%s: scan aborted on wiphy:%d iface:%d", radName, wiphy, ifIndex);
+    if((pRad == NULL) || (pRad->wiphy != wiphy) || (!wld_rad_hasLinkIfIndex(pRad, ifIndex))) {
+        return;
+    }
     wld_scan_done(pRad, false);
 }
 
 static void s_scanStartedCb(void* pRef, void* pData _UNUSED, uint32_t wiphy _UNUSED, uint32_t ifIndex _UNUSED) {
-    SAH_TRACEZ_INFO(ME, "scan started on wiphy:%d iface:%d", wiphy, ifIndex);
     T_Radio* pRad = (T_Radio*) pRef;
-    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    const char* radName = pRad ? pRad->Name : "";
+    SAH_TRACEZ_INFO(ME, "%s: scan started on wiphy:%d iface:%d", radName, wiphy, ifIndex);
+    if((pRad == NULL) || (pRad->wiphy != wiphy) || (!wld_rad_hasLinkIfIndex(pRad, ifIndex))) {
+        return;
+    }
 }
 
 static void s_frameReceivedCb(void* pRef, void* pData _UNUSED, size_t frameLen, swl_80211_mgmtFrame_t* frame, int32_t rssi) {
@@ -659,10 +666,8 @@ static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy
     ASSERTS_TRUE(debugIsRadPointer(pRad), false, ME, "NULL");
     //1) try to match radios of known ifIndex or ifName
     if(ifIndex > 0) {
-        T_Radio* pTgtRad = NULL;
-        if(((pTgtRad = wld_getRadioOfIfaceIndex(ifIndex)) != NULL) ||
-           ((!swl_str_isEmpty(ifName)) && ((pTgtRad = wld_getRadioOfIfaceName(ifName)) != NULL))) {
-            return (pTgtRad == pRad);
+        if(wld_rad_hasLinkIfIndex(pRad, ifIndex) || wld_rad_hasLinkIfName(pRad, ifName)) {
+            return true;
         }
     }
     //2) otherwise, only match wiphy id

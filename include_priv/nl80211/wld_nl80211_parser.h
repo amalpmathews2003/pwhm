@@ -136,9 +136,24 @@ swl_rc_ne wld_nl80211_parseChanSurveyInfo(struct nlattr* tb[], wld_nl80211_chann
  * @param pResult pointer to scan result struct to be filled
  *
  * @return SWL_RC_OK parsing done successfully
+ *         SWL_RC_CONTINUE partial result to be skipped
  *         <= SWL_RC_ERROR parsing error
  */
 swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t* pResult);
+
+
+/*
+ * @brief parse nl msg attributes into scan result struct, and skip unmatched frequency band
+ *
+ * @param tb array of attributes from parsed nl msg
+ * @param pResult pointer to scan result struct to be filled
+ * @param band frequency band to be matched
+ *
+ * @return SWL_RC_OK parsing done successfully
+ *         SWL_RC_CONTINUE partial result to be skipped
+ *         <= SWL_RC_ERROR parsing error
+ */
+swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanResultSSID_t* pResult, swl_freqBandExt_e band);
 
 /*
  * @brief parse nl msg attributes into mgmt frame struct

@@ -77,6 +77,7 @@ typedef struct {
     amxc_llist_it_t it;
     T_Radio* pRad;
     wld_nl80211_scanFlags_t flags;
+    bool isStarted;
 } scanInfo_t;
 
 static amxc_llist_t sScanPool = {NULL, NULL};
@@ -197,6 +198,23 @@ static bool s_addScanFreq(T_Radio* pRadio, swl_channel_t chan, swl_unLiList_t* p
     return true;
 }
 
+bool wld_nl80211_hasStartedScan(void* pRef, uint32_t wiphyId, int32_t ifIndex) {
+    if(amxc_llist_is_empty(&sScanPool)) {
+        ASSERTS_TRUE(debugIsRadPointer(pRef), false, ME, "invalid");
+        return wld_scan_isRunning(pRef);
+    }
+    amxc_llist_for_each(it, &sScanPool) {
+        scanInfo_t* pScanInfo = amxc_container_of(it, scanInfo_t, it);
+        if((pScanInfo->isStarted) &&
+           (pScanInfo->pRad != NULL) && (pScanInfo->pRad->wiphy == wiphyId) &&
+           ((pRef == NULL) || (pScanInfo->pRad == (T_Radio*) pRef)) &&
+           ((ifIndex < 0) || (wld_rad_hasLinkIfIndex(pScanInfo->pRad, ifIndex)))) {
+            return true;
+        }
+    }
+    return false;
+}
+
 swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     scanInfo_t* pScanInfo = NULL;
@@ -217,7 +235,7 @@ swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t*
     }
 
     if(wld_rad_countWiphyRads(pRadio->wiphy) > 1) {
-        scanInfo_t* pScanInfo = s_addScan(pRadio, pFlags);
+        pScanInfo = s_addScan(pRadio, pFlags);
         scanInfo_t* pNextScanInfo = s_getNextScan(pRadio->wiphy);
         ASSERTW_EQUALS(pScanInfo, pNextScanInfo, SWL_RC_CONTINUE,
                        ME, "%s: add scan request to pending scan pool", pRadio->Name);
@@ -257,6 +275,8 @@ scan_error:
 scan_exit:
     if(!swl_rc_isOk(rc)) {
         s_scheduleNextScan(pRadio);
+    } else if(pScanInfo != NULL) {
+        pScanInfo->isStarted = true;
     }
     return rc;
 }
@@ -329,6 +349,6 @@ swl_rc_ne wld_rad_nl80211_getScanResults(T_Radio* pRadio, void* priv, scanResult
     pScanResultsData->pRadio = pRadio;
     pScanResultsData->fScanResultsCb = fScanResultsCb;
     pScanResultsData->priv = priv;
-    return wld_nl80211_getScanResults(wld_nl80211_getSharedState(), pRadio->index, pScanResultsData, s_scanResultsCb);
+    return wld_nl80211_getScanResultsPerFreqBand(wld_nl80211_getSharedState(), pRadio->index, pScanResultsData, s_scanResultsCb, pRadio->operatingFrequencyBand);
 }
 

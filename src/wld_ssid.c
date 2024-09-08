@@ -557,13 +557,19 @@ bool wld_ssid_isLinkActive(T_SSID* pSSID) {
     return false;
 }
 
-int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID) {
-    ASSERTS_NOT_NULL(pSSID, -1, ME, "NULL");
+const char* wld_ssid_getLinkIfName(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, "", ME, "NULL");
     const char* ifname = wld_mld_getPrimaryLinkIfName(pSSID->pMldLink);
     if(swl_str_isEmpty(ifname)) {
         ifname = wld_ssid_getIfName(pSSID);
     }
-    ASSERTS_FALSE(swl_str_isEmpty(ifname), false, ME, "no ifname");
+    return ifname;
+}
+
+int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, -1, ME, "NULL");
+    const char* ifname = wld_ssid_getLinkIfName(pSSID);
+    ASSERTS_FALSE(swl_str_isEmpty(ifname), -1, ME, "no ifname");
     int ifIndex = 0;
     wld_linuxIfUtils_getIfIndexExt((char*) ifname, &ifIndex);
     return ifIndex;

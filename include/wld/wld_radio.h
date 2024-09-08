@@ -208,6 +208,8 @@ uint32_t wld_rad_countEpIfaces(T_Radio* pRad);
 uint32_t wld_rad_countMappedAPs(T_Radio* pRad);
 uint32_t wld_rad_countAPsByAutoMacSrc(T_Radio* pRad, wld_autoMacSrc_e autoMacSrc);
 uint32_t wld_rad_countWiphyRads(uint32_t wiphy);
+bool wld_rad_hasLinkIfIndex(T_Radio* pRad, int32_t ifIndex);
+bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName);
 
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);
