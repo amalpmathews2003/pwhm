@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,38 +59,9 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#ifndef INCLUDE_PRIV_NL80211_WLD_NL80211_SCAN_PRIV_H_
+#define INCLUDE_PRIV_NL80211_WLD_NL80211_SCAN_PRIV_H_
 
-#ifndef __WLD_SSID_H__
-#define __WLD_SSID_H__
+bool wld_nl80211_hasStartedScan(void* pRef, uint32_t wiphyId, int32_t ifIndex);
 
-#include "wld.h"
-#include "wld_wpaCtrl_types.h"
-
-void wld_ssid_setStatus(T_SSID* pSSID, wld_status_e status, bool commit);
-void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
-
-void wld_ssid_cleanAll();
-void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
-void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex, swl_macBin_t* macBin);
-void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin);
-void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin);
-void wld_ssid_setMac(T_SSID* pSSID, swl_macBin_t* macBin);
-
-T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
-T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
-T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin);
-T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin);
-
-T_SSID* wld_ssid_getSsidByIfName(const char* ifName);
-wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
-
-wld_ssidType_e wld_ssid_getType(T_SSID* pSSID);
-const char* wld_ssid_getIfName(T_SSID* pSSID);
-int32_t wld_ssid_getIfIndex(T_SSID* pSSID);
-
-bool wld_ssid_isLinkEnabled(T_SSID* pSSID);
-bool wld_ssid_isLinkActive(T_SSID* pSSID);
-int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID);
-const char* wld_ssid_getLinkIfName(T_SSID* pSSID);
-
-#endif /* __WLD_SSID_H__ */
+#endif /* INCLUDE_PRIV_NL80211_WLD_NL80211_SCAN_PRIV_H_ */

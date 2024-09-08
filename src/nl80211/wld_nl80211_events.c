@@ -66,6 +66,7 @@
 #include "wld.h"
 #include "wld_nl80211_core_priv.h"
 #include "wld_nl80211_events_priv.h"
+#include "wld_nl80211_scan_priv.h"
 #include "wld_nl80211_parser.h"
 #include "swl/swl_common.h"
 #include "swla/swla_table.h"
@@ -262,6 +263,9 @@ static swl_rc_ne s_scanStartedCb(swl_unLiList_t* pListenerList, struct nlmsghdr*
     uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
     SAH_TRACEZ_INFO(ME, "scan started on w:%d,i:%d", wiphy, ifIndex);
     FOR_EACH_LISTENER(pListener, pListenerList, {
+        if(!wld_nl80211_hasStartedScan(pListener->pRef, wiphy, ifIndex)) {
+            continue;
+        }
         pListener->handlers.fScanStartedCb(pListener->pRef, pListener->pData, wiphy, ifIndex);
     });
     return SWL_RC_DONE;
@@ -297,6 +301,9 @@ static swl_rc_ne s_scanResultsCb(swl_unLiList_t* pListenerList, struct nlmsghdr*
     ASSERTS_EQUALS(nlh->nlmsg_seq, 0, SWL_RC_DONE, ME, "not notif");
     SAH_TRACEZ_INFO(ME, "scan done on w:%d,i:%d", wiphy, ifIndex);
     FOR_EACH_LISTENER(pListener, pListenerList, {
+        if(!wld_nl80211_hasStartedScan(pListener->pRef, wiphy, ifIndex)) {
+            continue;
+        }
         pListener->handlers.fScanDoneCb(pListener->pRef, pListener->pData, wiphy, ifIndex);
     });
     return SWL_RC_DONE;
