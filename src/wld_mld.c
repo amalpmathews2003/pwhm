@@ -92,6 +92,7 @@ struct wld_mldLink {
     T_SSID* pSSID;
     int16_t linkId;
     wld_mld_t* pMld;
+    bool configured;
 };
 
 static const char* sGroupNames[WLD_SSID_TYPE_MAX] = {"UNKNOWN", "APMLD", "STAMLD"};
@@ -220,6 +221,7 @@ static wld_mldLink_t* s_takeLink(wld_mldLink_t* pLink) {
     wld_mld_t* pMld = pLink->pMld;
     wld_mld_setLinkId(pLink, NO_LINK_ID);
     amxc_llist_it_take(&pLink->it);
+    pLink->configured = false;
     pLink->pMld = NULL;
     if(pMld != NULL) {
         SAH_TRACEZ_INFO(ME, "take link %d (%p) out of mld %p", pLink->linkId, pLink, pMld);
@@ -353,6 +355,8 @@ swl_rc_ne wld_mld_setPrimaryLink(wld_mldLink_t* pLink) {
     ASSERT_TRUE(wld_mld_isLinkEnabled(pLink), SWL_RC_ERROR, ME, "disabled link %s can not be set as primary", s_getLinkName(pLink));
     wld_mld_t* pMld = pLink->pMld;
     ASSERT_NOT_NULL(pMld, SWL_RC_ERROR, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "set primary link %s of mld unit %d",
+                    s_getLinkName(pLink), pMld->unit);
     pMld->pPrimLink = pLink;
     return SWL_RC_OK;
 }
@@ -437,6 +441,9 @@ swl_rc_ne wld_mld_setLinkId(wld_mldLink_t* pLink, int32_t linkId) {
                            s_getLinkName(pLink), linkId);
         linkId = NO_LINK_ID;
     }
+    if(linkId >= 0) {
+        wld_mld_setLinkConfigured(pLink, true);
+    }
     ASSERTS_NOT_EQUALS(pLink->linkId, linkId, SWL_RC_OK, ME, "same value");
     SAH_TRACEZ_INFO(ME, "set link %s id: %d => %d", s_getLinkName(pLink), pLink->linkId, linkId);
     /*
@@ -459,5 +466,73 @@ int16_t wld_mld_getLinkId(const wld_mldLink_t* pLink) {
 const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink) {
     ASSERTS_NOT_NULL(pLink, "", ME, "NULL");
     return wld_ssid_getIfName(pLink->pSSID);
+}
+
+bool wld_mld_isLinkUsable(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
+    if(!wld_mld_isLinkEnabled(pLink)) {
+        return false;
+    }
+    T_SSID* pSSID = pLink->pSSID;
+    if(swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress)) {
+        return false;
+    }
+    T_Radio* pRad = pSSID->RADIO_PARENT;
+    if((!wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) ||
+       (pRad->pFA->mfn_misc_has_support(pRad, NULL, "MLO", 0) <= 0)) {
+        return false;
+    }
+    return true;
+}
+
+bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag) {
+    ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
+    flag &= wld_mld_isLinkEnabled(pLink);
+    ASSERTS_NOT_EQUALS(pLink->configured, flag, true, ME, "same link %s config value %d", s_getLinkName(pLink), flag);
+    SAH_TRACEZ_INFO(ME, "%s: set link configured %d", s_getLinkName(pLink), flag);
+    pLink->configured = flag;
+    wld_mld_t* pMld = pLink->pMld;
+    ASSERTI_NOT_NULL(pMld, !flag, ME, "link %s has no mld", s_getLinkName(pLink));
+    amxc_llist_t* pList = &pMld->links;
+    if(!flag) {
+        amxc_llist_append(pList, &pLink->it);
+    } else {
+        bool sorted = false;
+        amxc_llist_for_each_reverse(it, pList) {
+            wld_mldLink_t* pLinkRef = amxc_container_of(it, wld_mldLink_t, it);
+            if((pLinkRef != pLink) && (pLinkRef->configured)) {
+                amxc_llist_it_insert_after(it, &pLink->it);
+                sorted = true;
+                break;
+            }
+        }
+        if(!sorted) {
+            amxc_llist_prepend(pList, &pLink->it);
+        }
+    }
+    return true;
+}
+
+bool wld_mld_isLinkConfigured(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
+    return pLink->configured;
+}
+
+static wld_mldLink_t* s_linkFromIt(amxc_llist_it_t* it) {
+    ASSERTS_NOT_NULL(it, NULL, ME, "NULL");
+    return amxc_llist_it_get_data(it, wld_mldLink_t, it);
+}
+
+wld_mldLink_t* wld_mld_firstNeighLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    wld_mld_t* pMld = pLink->pMld;
+    ASSERT_NOT_NULL(pMld, NULL, ME, "NULL");
+    return s_linkFromIt(amxc_llist_get_first(&pMld->links));
+}
+
+wld_mldLink_t* wld_mld_nextNeighLink(wld_mldLink_t* pLink) {
+    ASSERTS_NOT_NULL(pLink, NULL, ME, "NULL");
+    amxc_llist_it_t* it = amxc_llist_it_get_next(&pLink->it);
+    return s_linkFromIt(it);
 }
 
