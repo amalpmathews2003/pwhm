@@ -160,6 +160,12 @@ typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* if
 typedef void (* wld_wpaCtrl_apIfaceEventCb_f)(void* userData, char* ifName);
 
 /*
+ * handler to select MLD iface (primary link) name of a provided SSID (AP/STA link) interface
+ * pLinkIfName is allocated inside the handler and must be freed by the caller
+ */
+typedef void (* wld_wpaCtrl_selectPrimLinkIface_f)(void* userData, const char* ifName, char** pPrimLinkIfName);
+
+/*
  * @brief structure of AP/EP event handlers
  */
 typedef struct {
@@ -191,6 +197,14 @@ typedef struct {
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
     wld_wpaCtrl_apIfaceEventCb_f fApEnabledCb;
     wld_wpaCtrl_apIfaceEventCb_f fApDisabledCb;
+
+    /*
+     * AP/EP sync handlers:
+     * may be used to prepare/schedule fsm actions, or post events processing
+     * (from hostapd/wpa_supplicant)
+     */
+    wld_wpaCtrl_selectPrimLinkIface_f fSelectPrimLinkIface; // Handler to select primary link iface name for SSID iface
+
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);

@@ -3493,6 +3493,12 @@ bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName) {
     return (wld_rad_from_name(ifName) == pRad);
 }
 
+bool wld_rad_hasMloSupport(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    return ((wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) &&
+            (pRad->pFA->mfn_misc_has_support(pRad, NULL, "MLO", 0) == true));
+}
+
 T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {

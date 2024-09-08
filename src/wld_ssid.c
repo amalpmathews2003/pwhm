@@ -575,6 +575,11 @@ int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID) {
     return ifIndex;
 }
 
+bool wld_ssid_hasMloSupport(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    return wld_rad_hasMloSupport(pSSID->RADIO_PARENT);
+}
+
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);

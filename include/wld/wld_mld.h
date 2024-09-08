@@ -85,8 +85,17 @@ int16_t wld_mld_getLinkId(const wld_mldLink_t* pLink);
 const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink);
 bool wld_mld_isLinkActive(wld_mldLink_t* pLink);
 bool wld_mld_isLinkEnabled(wld_mldLink_t* pLink);
+bool wld_mld_isLinkUsable(wld_mldLink_t* pLink);
+bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag);
+bool wld_mld_isLinkConfigured(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighLinks(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighActiveLinks(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink);
+
+wld_mldLink_t* wld_mld_firstNeighLink(wld_mldLink_t* pLink);
+wld_mldLink_t* wld_mld_nextNeighLink(wld_mldLink_t* pLink);
+
+#define wld_for_eachNeighMldLink(pNeighLink, pRefLink) \
+    for(pNeighLink = wld_mld_firstNeighLink(pRefLink); pNeighLink; pNeighLink = wld_mld_nextNeighLink(pNeighLink))
 
 #endif /* SRC_INCLUDE_WLD_WLD_MLD_H_ */
