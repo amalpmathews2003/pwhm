@@ -244,7 +244,8 @@ scan_error:
 }
 
 swl_rc_ne wld_rad_nl80211_startScan(T_Radio* pRadio) {
-    wld_nl80211_scanFlags_t flags = {.flush = true};
+    wld_scanArgs_t* args = &pRadio->scanState.cfg.scanArguments;
+    wld_nl80211_scanFlags_t flags = {.flush = args->enableFlush};
     return wld_rad_nl80211_startScanExt(pRadio, &flags);
 }
 

@@ -1177,6 +1177,7 @@ typedef struct wld_scanArgs {
     bool updateUsageStats;
     bool fastScan;
     char reason[64];
+    bool enableFlush;
 } wld_scanArgs_t;
 
 #define SCAN_REASON_MAX 5

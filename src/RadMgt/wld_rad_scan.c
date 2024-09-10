@@ -335,6 +335,8 @@ static amxd_status_t s_startScan(amxd_object_t* object,
 
     memset(scanArgs, 0, sizeof(wld_scanArgs_t));
 
+    scanArgs->enableFlush = true;
+
     if(channels != NULL) {
         // chanlist must have at most nrPossible elements,
         // otherwise there will be elements that are not part of possible channels.
