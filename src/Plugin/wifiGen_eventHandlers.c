@@ -391,13 +391,8 @@ static void s_dfsNopFinishedCb(void* userData _UNUSED, char* ifName, swl_chanspe
     wld_chanmgt_writeDfsChannels(pRad);
 }
 
-static void s_dfsNewChannelCb(void* userData, char* ifName, swl_chanspec_t* chanSpec) {
-    SAH_TRACEZ_WARNING(ME, "%s: DFS Radar detection will trigger switching to channel %d", ifName, chanSpec->channel);
-    T_Radio* pRad = (T_Radio*) userData;
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    swl_chanspec_t currChanSpec = *chanSpec;
-    currChanSpec.bandwidth = swl_radBw_toBw[pRad->runningChannelBandwidth];
-    s_saveChanChanged(pRad, &currChanSpec, CHAN_REASON_DFS);
+static void s_dfsNewChannelCb(void* userData _UNUSED, char* ifName, swl_chanspec_t* chanSpec) {
+    SAH_TRACEZ_WARNING(ME, "%s: DFS-NEW-CHANNEL: %s", ifName, swl_typeChanspecExt_toBuf32Ref(chanSpec).buf);
 }
 
 #define SET_HDLR(tgt, src) {tgt = (tgt ? : src); }
