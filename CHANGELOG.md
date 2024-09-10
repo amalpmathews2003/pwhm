@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.36.1 - 2024-09-10(13:50:21 +0000)
+
+### Other
+
+- fix overlapping fsm commits
+
 ## Release v6.36.0 - 2024-09-07(15:07:33 +0000)
 
 ### Other
