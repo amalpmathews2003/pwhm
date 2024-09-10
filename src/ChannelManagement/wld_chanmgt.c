@@ -407,7 +407,11 @@ static swl_rc_ne s_checkTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld
     ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
 
     if(swl_function_deferIsActive(&pR->callIdReqChanspec)) {
-        bool success = swl_type_equals(swl_type_chanspec, &pR->targetChanspec.chanspec, &chanspec);
+        swl_chanspec_t tmpChSpec = chanspec;
+        if(pR->targetChanspec.chanspec.extensionHigh == SWL_CHANSPEC_EXT_AUTO) {
+            tmpChSpec.extensionHigh = SWL_CHANSPEC_EXT_AUTO;
+        }
+        bool success = swl_type_equals(swl_type_chanspec, &pR->targetChanspec.chanspec, &tmpChSpec);
         success &= (pR->targetChanspec.reason == reason);
         amxd_status_t status = success ? amxd_status_ok : amxd_status_unknown_error;
         s_setChanspecDone(pR, status);

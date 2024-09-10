@@ -176,6 +176,25 @@ static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_chan
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pChanSpec, , ME, "NULL");
     ASSERTS_TRUE(pChanSpec->channel > 0, , ME, "invalid chan");
+    if(pRad->targetChanspec.reason == reason) {
+        swl_chanspec_t chSpec = *pChanSpec;
+        if(pRad->targetChanspec.chanspec.extensionHigh == SWL_CHANSPEC_EXT_AUTO) {
+            chSpec.extensionHigh = SWL_CHANSPEC_EXT_AUTO;
+        }
+        if(!swl_typeChanspec_equals(pRad->targetChanspec.chanspec, chSpec)) {
+            SAH_TRACEZ_WARNING(ME, "%s: target chspec %s is not that requested %s (reason %s): reset curr chan to force notif",
+                               pRad->Name, swl_typeChanspecExt_toBuf32Ref(pChanSpec).buf,
+                               swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf,
+                               g_wld_channelChangeReason_str[reason]);
+            if(swl_typeChanspec_equals(pRad->currentChanspec.chanspec, *pChanSpec)) {
+                // reset saved CurrChannel to force considering chanspec read from driver
+                pRad->currentChanspec.chanspec.channel = 0;
+            }
+            // reset saved tgtChannel to force sync with chanspec read from driver
+            pRad->targetChanspec.chanspec.channel = 0;
+            reason = CHAN_REASON_INITIAL;
+        }
+    }
     swl_rc_ne rc = wld_chanmgt_reportCurrentChanspec(pRad, *pChanSpec, reason);
     ASSERTS_FALSE(rc < SWL_RC_OK, , ME, "no changes to be reported");
     wld_rad_updateOperatingClass(pRad);
