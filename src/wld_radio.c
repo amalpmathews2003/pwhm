@@ -4393,6 +4393,9 @@ amxd_status_t _Radio_debug(amxd_object_t* object,
         amxc_var_add_key(uint32_t, retval, "fsmState", pR->fsmRad.FSM_State);
         amxc_var_add_key(uint32_t, retval, "fsmReqState", pR->fsmRad.FSM_ReqState);
         amxc_var_add_key(int32_t, retval, "fsmRetry", pR->fsmRad.FSM_Retry);
+        amxc_var_add_key(int32_t, retval, "fsmComPend", pR->fsmRad.FSM_ComPend);
+        amxc_var_add_key(int32_t, retval, "fsmDelay", pR->fsmRad.FSM_Delay);
+        amxc_var_add_key(int32_t, retval, "fsmLoop", pR->fsmRad.FSM_Loop);
         amxc_var_add_key(uint32_t, retval, "timeout", pR->fsmRad.timeout_msec);
         amxc_var_add_key(bool, retval, "timerPresent", pR->fsmRad.timer != NULL);
         amxc_var_add_key(uint32_t, retval, "timeRemaining", amxp_timer_remaining_time(pR->fsmRad.timer));

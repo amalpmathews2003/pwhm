@@ -248,12 +248,12 @@ static bool s_checkCommitPending(T_Radio* rad, FSM_STATE targetState) {
     s_collectDependencies(rad, bitArray);
     if(rad->fsmRad.FSM_ComPend && areBitsSetLongArray(bitArray, FSM_BW)) {
         /* We've a extra COMMIT pending! */
-        SAH_TRACEZ_WARNING(ME, "%s: restarting FSM commit from %u to %u (bits pending 0x%08lx // 0x%08lx)", rad->Name,
-                           rad->fsmRad.FSM_State, targetState, bitArray[0], bitArray[1]);
+        SAH_TRACEZ_WARNING(ME, "%s: restarting FSM commit from %u to %u (bits pending 0x%08lx // 0x%08lx) (FsmComPend:%d)", rad->Name,
+                           rad->fsmRad.FSM_State, targetState, bitArray[0], bitArray[1], rad->fsmRad.FSM_ComPend);
         rad->fsmRad.FSM_State = targetState;
         return true;
     } else if(rad->fsmRad.FSM_ComPend) {
-        SAH_TRACEZ_WARNING(ME, "%s: Commit pending without bits, ignore", rad->Name);
+        SAH_TRACEZ_WARNING(ME, "%s: Commit pending (%d) without bits, ignore", rad->Name, rad->fsmRad.FSM_ComPend);
         rad->fsmRad.FSM_ComPend = 0;
     } else if(areBitsSetLongArray(bitArray, FSM_BW)) {
         SAH_TRACEZ_WARNING(ME, "%s: Bits pending 0x%08lx // 0x%08lx, ignore since no commit",
@@ -671,7 +671,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         rad->fsmRad.FSM_State = FSM_FINISH;
         // Release lock
         bool last = s_areAnyWaiting();
-        SAH_TRACEZ_WARNING(ME, "%s: check compend FSM %u %p", rad->Name, last, s_getMngr(rad)->doFinish);
+        SAH_TRACEZ_WARNING(ME, "%s: check compend FSM %u %p (FsmComPend:%d)", rad->Name, last, s_getMngr(rad)->doFinish, rad->fsmRad.FSM_ComPend);
         SWL_CALL(s_getMngr(rad)->doCompendCheck, rad, last);
         s_freeLock(rad);
         break;
@@ -695,9 +695,6 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
             break;
         }
 
-        /* Update here our wireless STATUS field to the datamodel */
-        wld_rad_updateState(rad, false);
-
         rad->fsmStats.nrFinish++;
         rad->fsmRad.FSM_State = FSM_IDLE;
         rad->fsm_radio_st = FSM_IDLE;    // UnLock the RADIO
@@ -711,6 +708,10 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
             fsm_delay_reply(rad->call_id, amxd_status_ok, NULL);
             rad->call_id = 0;
         }
+
+        /* Update here our wireless STATUS field to the datamodel */
+        wld_rad_updateState(rad, false);
+
         break;
 
     case FSM_FATAL:
