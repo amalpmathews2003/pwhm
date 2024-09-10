@@ -239,7 +239,7 @@ swl_rc_ne wld_nl80211_parseInterfaceInfo(struct nlattr* tb[], wld_nl80211_ifaceI
     ASSERT_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
     pWlIface->wiphy = wld_nl80211_getWiphy(tb);
     pWlIface->ifIndex = wld_nl80211_getIfIndex(tb);
-    NLA_GET_DATA(pWlIface->name, tb[NL80211_ATTR_IFNAME], (sizeof(pWlIface->name) - 1));
+    wld_nl80211_getIfName(tb, pWlIface->name, sizeof(pWlIface->name));
     uint32_t ifType = NL80211_IFTYPE_UNSPECIFIED;
     NLA_GET_VAL(ifType, nla_get_u32, tb[NL80211_ATTR_IFTYPE]);
     pWlIface->isAp = (ifType == NL80211_IFTYPE_AP);
@@ -882,11 +882,19 @@ static swl_rc_ne s_parseSuppFeatures(struct nlattr* tb[], wld_nl80211_wiphyInfo_
 }
 
 SWL_TABLE(sNlIfTypeMaps,
-          ARR(uint16_t nlVal; wld_iftype_e wldVal; ),
-          ARR(swl_type_uint16, swl_type_uint16, ),
+          ARR(uint32_t nlVal; wld_iftype_e wldVal; ),
+          ARR(swl_type_uint32, swl_type_uint16, ),
           ARR({NL80211_IFTYPE_AP, WLD_WIPHY_IFTYPE_AP},
               {NL80211_IFTYPE_STATION, WLD_WIPHY_IFTYPE_STATION},
               ));
+
+/* IEEE P802.11be/D5.01, March 2024: Figure 9-1072j - EML Capabilities subfield format */
+typedef struct {
+    uint16_t emlsr_support : 1;
+    uint16_t b_1_6 : 6;
+    uint16_t emlmr_support : 1;
+    uint16_t b_8_15 : 8;
+} SWL_PACKED ehtEmlCapInfo_t;
 
 static swl_rc_ne s_parseIfTypeExtCapa(struct nlattr* tb[], wld_nl80211_wiphyInfo_t* pWiphy) {
     ASSERTS_NOT_NULL(tb, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -905,17 +913,15 @@ static swl_rc_ne s_parseIfTypeExtCapa(struct nlattr* tb[], wld_nl80211_wiphyInfo
          */
         wld_iftype_e* ifType = NULL;
         if(tbCapa[NL80211_ATTR_IFTYPE] != NULL) {
-            uint16_t nlIfType = nla_type(tbCapa[NL80211_ATTR_IFTYPE]);
+            uint32_t nlIfType = nla_get_u32(tbCapa[NL80211_ATTR_IFTYPE]);
             ifType = (wld_iftype_e*) swl_table_getMatchingValue(&sNlIfTypeMaps, 1, 0, &nlIfType);
         }
         ASSERTS_NOT_NULL(ifType, SWL_RC_ERROR, ME, "IfType not supported");
         if(tbCapa[NL80211_ATTR_EML_CAPABILITY] != NULL) {
-            /* IEEE80211_EML_CAP_EMLSR_SUPP = 0x0001
-             * IEEE80211_EML_CAP_EMLMR_SUPPORT = 0x0080
-             */
-            uint16_t capa = nla_get_u16(tbCapa[NL80211_ATTR_EML_CAPABILITY]);
-            pWiphy->extCapas.emlsrSupport[*ifType] = (capa & 0x0001);
-            pWiphy->extCapas.emlmrSupport[*ifType] = (capa & 0x0080);
+            ehtEmlCapInfo_t emlCapInfo = {0};
+            NLA_GET_DATA(&emlCapInfo, tbCapa[NL80211_ATTR_EML_CAPABILITY], sizeof(emlCapInfo));
+            pWiphy->extCapas.emlsrSupport[*ifType] = emlCapInfo.emlsr_support;
+            pWiphy->extCapas.emlmrSupport[*ifType] = emlCapInfo.emlmr_support;
         }
     }
     return SWL_RC_OK;
