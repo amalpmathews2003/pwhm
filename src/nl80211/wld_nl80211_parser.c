@@ -1330,7 +1330,6 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(tb, rc, ME, "NULL");
     ASSERT_NOT_NULL(pResult, rc, ME, "NULL");
-    rc = SWL_RC_ERROR;
     uint32_t wiphy = wld_nl80211_getWiphy(tb);
     ASSERT_NOT_EQUALS(wiphy, WLD_NL80211_ID_UNDEF, rc, ME, "missing wiphy");
     ASSERT_NOT_NULL(tb[NL80211_ATTR_BSS], rc, ME, "no bss info in scan result");
@@ -1349,6 +1348,8 @@ swl_rc_ne wld_nl80211_parseScanResult(struct nlattr* tb[], wld_scanResultSSID_t*
         [NL80211_BSS_BEACON_IES] = { .type = NLA_UNSPEC },
     };
 
+    //skip invalid/partially parsed entries
+    rc = SWL_RC_CONTINUE;
     if(nla_parse_nested(bss, NL80211_BSS_MAX, tb[NL80211_ATTR_BSS], bss_policy)) {
         SAH_TRACEZ_ERROR(ME, "failed to parse nested bss attributes");
         return rc;
