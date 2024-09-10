@@ -223,6 +223,8 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
     pRad->bgdfs_config.clearEndTime = swl_timespec_getMonoVal();
     pRad->bgdfs_config.lastResult = result;
 
+    swl_chanspec_t cacChSpec = SWL_CHANSPEC_NEW(pRad->bgdfs_config.channel, pRad->bgdfs_config.bandwidth, pRad->operatingFrequencyBand);
+
     SAH_TRACEZ_WARNING(ME, "%s : end clear %u / %u : %u after %" PRId64 " ms",
                        pRad->Name, pRad->bgdfs_config.channel, swl_bandwidth_int[pRad->bgdfs_config.bandwidth],
                        result,
@@ -233,6 +235,7 @@ void wld_bgdfs_notifyClearEnded(T_Radio* pRad, wld_dfsResult_e result) {
 
     switch(result) {
     case DFS_RESULT_OK:
+        wld_channel_clear_passive_band(cacChSpec);
         pRad->bgdfs_stats.nrClearSuccess[type]++;
         break;
     case DFS_RESULT_RADAR:
