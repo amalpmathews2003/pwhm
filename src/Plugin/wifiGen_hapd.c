@@ -161,8 +161,9 @@ static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
      * here declare hostapd cfg params to check (or to define) as supported or not
      * wld_secDmn_setCfgParamSupp(pRad->hostapd, "custom_param", SWL_TRL_UNKNOWN);
      */
-    wld_secDmn_setCfgParamSupp(pRad->hostapd, "rnr", SWL_TRL_UNKNOWN);
-    wld_secDmn_setCfgParamSupp(pRad->hostapd, "config_id", SWL_TRL_UNKNOWN);
+    bool hasRnr = (swl_bit32_getHighest(pRad->supportedStandards) >= SWL_RADSTD_AX);
+    wld_secDmn_setCfgParamSupp(pRad->hostapd, "rnr", hasRnr ? SWL_TRL_TRUE : SWL_TRL_UNKNOWN);
+    wld_secDmn_setCfgParamSupp(pRad->hostapd, "config_id", SWL_TRL_TRUE);
 }
 
 swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
@@ -174,7 +175,6 @@ swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     swl_strlst_cat(startArgs, sizeof(startArgs), " ", confFilePath);
     swl_rc_ne rc = wld_secDmn_init(&pRad->hostapd, HOSTAPD_CMD, startArgs, confFilePath, HOSTAPD_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init hostapd", pRad->Name);
-    s_initHapdDynCfgParamSupp(pRad);
     wld_secDmnEvtHandlers handlers;
     memset(&handlers, 0, sizeof(handlers));
     handlers.restartCb = s_restartHapdCb;
@@ -429,6 +429,10 @@ swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSett
         wld_for_eachRad(pRad) {
             if(pRad->vendor == pVdr) {
                 if(enableGlobHapd) {
+                    if(wld_secDmnGrp_hasMember(gHapd->pGlobalDmnGrp, pRad->hostapd)) {
+                        SAH_TRACEZ_INFO(ME, "member %s already added to gHapd %s", pRad->Name, pVdr->name);
+                        continue;
+                    }
                     SAH_TRACEZ_INFO(ME, "add member %s to gHapd %s", pRad->Name, pVdr->name);
                     wld_secDmn_addToGrp(pRad->hostapd, gHapd->pGlobalDmnGrp, pRad->Name);
                 }
@@ -463,6 +467,7 @@ swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad) {
             gHapd->globalDmnSupported = SWL_TRL_TRUE;
         }
     }
+    s_initHapdDynCfgParamSupp(pRad);
     SAH_TRACEZ_INFO(ME, "%s: glob hapd %s supp:%d, req:%d", pRad->Name, pRad->vendor->name, gHapd->globalDmnSupported, gHapd->globalDmnRequired);
     return SWL_RC_OK;
 }
