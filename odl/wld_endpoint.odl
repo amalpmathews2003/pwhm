@@ -142,6 +142,23 @@
 		%persistent bool MultiAPEnable;
 
 		/**
+		 * Defines Multi-AP profile details as defined in Wi-Fi EasyMesh specification
+		 */
+		%persistent uint8 MultiAPProfile {
+			default 0;
+			on action validate call check_range { min = 0, max = 3 };
+		}
+
+		/**
+		 * Updates Multi-AP Default 802.1Q Setting subelement
+		 * Valid range is from 0 to 4094. 0 indicates VLAN disabled.
+		 */
+		%persistent uint16 MultiAPVlanId {
+			default 0;
+			on action validate call check_range { min = 0, max = 4094 };
+		}
+
+		/**
 		 * The threshold for the number of reconnects at which we perform a radio toggle
 		 * Set to 0 to disable.
 		 */
