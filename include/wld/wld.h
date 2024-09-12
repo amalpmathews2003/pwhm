@@ -2071,6 +2071,9 @@ struct S_EndPoint {
     bool multiAPEnable;              /* Set MultiAP BackhaulSTA on this EndPoint */
     bool toggleBssOnReconnect;       /* Disable hostapd on EP reconnection */
 
+    wld_multiap_profile_e multiAPProfile; /* MultiAP profile status */
+    uint16_t multiAPVlanId;               /* Primary VLAN ID config for MultiAP */
+
     wld_tinyRoam_t* tinyRoam;
     wld_fcallState_t statsCall;
 
