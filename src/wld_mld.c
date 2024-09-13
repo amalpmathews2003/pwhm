@@ -66,6 +66,7 @@
 #include "wld_util.h"
 #include "wld_radioOperatingStandards.h"
 #include "wld_chanmgt.h"
+#include "wld_eventing.h"
 
 #define ME "mld"
 
@@ -96,6 +97,18 @@ struct wld_mldLink {
 };
 
 static const char* sGroupNames[WLD_SSID_TYPE_MAX] = {"UNKNOWN", "APMLD", "STAMLD"};
+
+static void s_sendChangeEvent(wld_mldChangeEvent_e event, wld_ssidType_e mldType, int32_t mldUnit, T_SSID* pEvtLinkSsid) {
+    wld_mldChange_t change;
+    memset(&change, 0, sizeof(change));
+    change.event = event;
+    change.mldType = mldType;
+    change.mldUnit = mldUnit;
+    change.pEvtLinkSsid = pEvtLinkSsid;
+    SAH_TRACEZ_INFO(ME, "send mld notif %d (type:%s unit:%d evtLinkSsid:(%s))",
+                    event, sGroupNames[mldType], mldUnit, (pEvtLinkSsid ? pEvtLinkSsid->Name : ""));
+    wld_event_trigger_callback(gWld_queue_mld_onChangeEvent, &change);
+}
 
 static wld_mldGroup_t* s_getGroup(wld_mld_t* pMld) {
     ASSERTS_NOT_NULL(pMld, NULL, ME, "NULL");
@@ -226,7 +239,12 @@ static wld_mldLink_t* s_takeLink(wld_mldLink_t* pLink) {
     if(pMld != NULL) {
         SAH_TRACEZ_INFO(ME, "take link %d (%p) out of mld %p", pLink->linkId, pLink, pMld);
         if(amxc_llist_is_empty(&pMld->links)) {
+            wld_mldGroup_t* pGroup = pMld->pGroup;
+            uint8_t unit = pMld->unit;
             s_deinitMld(pMld);
+            if(pGroup != NULL) {
+                s_sendChangeEvent(WLD_MLD_EVT_DEL, pGroup->type, unit, pLink->pSSID);
+            }
         }
     }
     return pLink;
@@ -340,6 +358,9 @@ wld_mldLink_t* wld_mld_registerLink(T_SSID* pSSID, int32_t unit) {
     pLink->pMld = pTgtMld;
     pLink->pSSID = pSSID;
     pSSID->pMldLink = pLink;
+    if(amxc_llist_size(&pTgtMld->links) == 1) {
+        s_sendChangeEvent(WLD_MLD_EVT_ADD, pTgtMld->pGroup->type, unit, pSSID);
+    }
     return pLink;
 }
 
@@ -507,6 +528,9 @@ bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag) {
         if(!sorted) {
             amxc_llist_prepend(pList, &pLink->it);
         }
+    }
+    if(pMld->pGroup != NULL) {
+        s_sendChangeEvent(WLD_MLD_EVT_UPDATE, pMld->pGroup->type, pMld->unit, pLink->pSSID);
     }
     return true;
 }

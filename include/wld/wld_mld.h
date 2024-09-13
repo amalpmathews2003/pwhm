@@ -67,6 +67,25 @@
 
 #define NO_LINK_ID (-1)
 
+/*
+ * event needed to make mld members react when one link / mld change
+ */
+typedef enum {
+    WLD_MLD_EVT_ADD,           // when mld is added: first link added (registered to mldUnit)
+    WLD_MLD_EVT_UPDATE,        // when mld is updated: one of the member links is added/removed/disabled/enabled
+    WLD_MLD_EVT_DEL,           // when mld is removed: last link removed (unregistered from mldUnit)
+} wld_mldChangeEvent_e;
+
+/**
+ * Event called when a mld unit or link has changed
+ */
+typedef struct {
+    wld_mldChangeEvent_e event;
+    wld_ssidType_e mldType;
+    int32_t mldUnit;
+    T_SSID* pEvtLinkSsid;
+} wld_mldChange_t;
+
 swl_rc_ne wld_mld_initMgr(wld_mldMgr_t** ppMgr);
 swl_rc_ne wld_mld_deinitMgr(wld_mldMgr_t** ppMgr);
 

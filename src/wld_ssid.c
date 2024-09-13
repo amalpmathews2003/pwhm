@@ -92,6 +92,7 @@ static void s_setEnable_internal(T_SSID* pSSID, bool enable) {
     ASSERTS_NOT_EQUALS(pSSID->enable, enable, , ME, "same value");
     SAH_TRACEZ_INFO(ME, "%s: SSID Enable %u -> %u", pSSID->Name, pSSID->enable, enable);
     pSSID->enable = enable;
+    wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     if(enable) {
         pSSID->changeInfo.nrEnables++;
         pSSID->changeInfo.lastEnableTime = swl_time_getMonoSec();
@@ -628,6 +629,7 @@ static void s_checkMLDUnit(T_SSID* pSSID, int32_t newMldUnit) {
     SAH_TRACEZ_INFO(ME, "%s: SET MLD_UNIT %d %d", pSSID->Name, pSSID->mldUnit, newMldUnit);
 
     pSSID->mldUnit = newMldUnit;
+    wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     if(pSSID->AP_HOOK != NULL) {
         T_AccessPoint* pAP = pSSID->AP_HOOK;
         pAP->pFA->mfn_wvap_setMldUnit(pAP);

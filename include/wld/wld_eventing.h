@@ -117,6 +117,7 @@ extern wld_event_queue_t* gWld_queue_sta_onChangeEvent;
 extern wld_event_queue_t* gWld_queue_lifecycleEvent;
 extern wld_event_queue_t* gWld_queue_wdsInterface;
 
+extern wld_event_queue_t* gWld_queue_mld_onChangeEvent;
 
 
 void wld_event_add_callback(wld_event_queue_t* queue, wld_event_callback_t* callback);

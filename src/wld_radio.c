@@ -250,6 +250,19 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
         pR->changeInfo.lastDisableTime = swl_time_getMonoSec();
     }
 
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pR) {
+        if(pAP->pSSID != NULL) {
+            wld_mld_setLinkConfigured(pAP->pSSID->pMldLink, false);
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pR) {
+        if(pEP->pSSID != NULL) {
+            wld_mld_setLinkConfigured(pEP->pSSID->pMldLink, false);
+        }
+    }
+
     SAH_TRACEZ_OUT(ME);
 }
 

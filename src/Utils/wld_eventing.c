@@ -95,6 +95,7 @@ static wld_event_queue_t rqueue_sta_onChange = {.name = "evStaChange"};
 static wld_event_queue_t rqueue_lifecycleEvent = {.name = "evLifecycle"};
 static wld_event_queue_t rqueue_wps_onStateChange = {.name = "evWpsStateChange"};
 static wld_event_queue_t rqueue_wdsInterfaceEv = {.name = "wdsInterfaceEv"};
+static wld_event_queue_t rqueue_mld_onChange = {.name = "evMldChange"};
 
 wld_event_queue_t* gWld_queue_rad_onStatusChange = NULL;
 wld_event_queue_t* gWld_queue_ep_onStatusChange = NULL;
@@ -109,6 +110,7 @@ wld_event_queue_t* gWld_queue_wps_onStateChange = NULL;
 
 wld_event_queue_t* gWld_queue_sta_onChangeEvent = NULL; // Called on station lifecycle changes. @type wld_ad_changeEvent_t.
 
+wld_event_queue_t* gWld_queue_mld_onChangeEvent = NULL;
 
 wld_event_queue_t* gWld_queue_lifecycleEvent = NULL;
 wld_event_queue_t* gWld_queue_wdsInterface = NULL;
@@ -157,6 +159,9 @@ void wld_event_init() {
 
     gWld_queue_wdsInterface = &rqueue_wdsInterfaceEv;
     amxc_llist_init(&gWld_queue_wdsInterface->subscribers);
+
+    gWld_queue_mld_onChangeEvent = &rqueue_mld_onChange;
+    amxc_llist_init(&gWld_queue_mld_onChangeEvent->subscribers);
 }
 
 /**
@@ -189,6 +194,7 @@ void wld_event_destroy() {
     wld_event_cleanup_queue(gWld_queue_sta_onChangeEvent);
     wld_event_cleanup_queue(gWld_queue_wps_onStateChange);
     wld_event_cleanup_queue(gWld_queue_wdsInterface);
+    wld_event_cleanup_queue(gWld_queue_mld_onChangeEvent);
 }
 
 /**
