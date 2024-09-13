@@ -94,6 +94,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setClientIsolation(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP);
+wld_secDmn_action_rc_ne wld_ap_hostapd_setMldParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setEnableVap(T_AccessPoint* pAP, bool enable);
 wld_secDmn_action_rc_ne wld_ap_hostapd_enableVap(T_AccessPoint* pAP, bool enable);
 

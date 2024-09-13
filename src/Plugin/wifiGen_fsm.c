@@ -102,6 +102,7 @@ static const wifiGen_fsmStates_e sApplyActions[] = {
  * at runtime, without restarting hostapd
  */
 static const wifiGen_fsmStates_e sDynConfActions[] = {
+    GEN_FSM_MOD_MLD,
     GEN_FSM_MOD_SSID,
     GEN_FSM_ENABLE_AP,
     GEN_FSM_MOD_SEC,
@@ -596,6 +597,26 @@ static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     return true;
 }
 
+static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
+    ASSERTI_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
+    ASSERTI_TRUE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hostapd instance not started", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: checking mld conf changes", pAP->alias);
+    wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setMldParams(pAP);
+    ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
+    s_schedNextAction(rc, pAP, pRad);
+    if(rc == SECDMN_ACTION_OK_NEED_RESTART) {
+        uint32_t nActLnks = wld_mld_countNeighActiveLinks(pAP->pSSID->pMldLink);
+        bool needRestart = (nActLnks > 1);
+        SAH_TRACEZ_INFO(ME, "%s: nbActiveLinks %d, needHapdRestart:%d", pAP->alias, nActLnks, needRestart);
+        wld_secDmn_setRestartNeeded(pRad->hostapd, needRestart);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
+        s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+        s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
+    }
+    return true;
+}
+
 static bool s_doSyncAp(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
@@ -894,6 +915,7 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_SYNC_RAD), .doRadFsmAction = s_doRadSync},
     {FSM_ACTION(GEN_FSM_MOD_COUNTRYCODE), .doRadFsmAction = s_doSetCountryCode},
     {FSM_ACTION(GEN_FSM_MOD_BSSID), .doVapFsmAction = s_doSetBssid},
+    {FSM_ACTION(GEN_FSM_MOD_MLD), .doVapFsmAction = s_doSetApMld},
     {FSM_ACTION(GEN_FSM_MOD_SEC), .doVapFsmAction = s_doSetApSec},
     {FSM_ACTION(GEN_FSM_MOD_AP), .doVapFsmAction = s_doSyncAp},
     {FSM_ACTION(GEN_FSM_MOD_SSID), .doVapFsmAction = s_doSetSsid},

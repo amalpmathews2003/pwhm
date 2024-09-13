@@ -62,6 +62,7 @@
 #include "wld_util.h"
 #include "wld_channel.h"
 #include "wld_radio.h"
+#include "wld_accesspoint.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_rad_hostapd_api.h"
 #include "wld_hostapd_ap_api.h"
@@ -363,9 +364,23 @@ T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad) {
 }
 
 T_AccessPoint* wld_rad_hostapd_getRunMainVap(T_Radio* pRad) {
-    char curMainIface[64] = {0};
-    wld_rad_hostapd_getCmdReplyParamStr(pRad, "STATUS-DRIVER", "ifname", curMainIface, sizeof(curMainIface));
-    return wld_rad_vap_from_name(pRad, curMainIface);
+    char buf[64] = {0};
+    swl_rc_ne rc = wld_rad_hostapd_getCmdReplyParamStr(pRad, "STATUS-DRIVER", "ifname", buf, sizeof(buf));
+    ASSERTI_TRUE(swl_rc_isOk(rc), NULL, ME, "%s: fail to get main hapd iface name", pRad->Name);
+    ASSERTI_STR(buf, NULL, ME, "%s: empty main hapd iface name", pRad->Name);
+    T_AccessPoint* pAP = wld_vap_get_vap(buf);
+    ASSERTI_NOT_NULL(pAP, NULL, ME, "%s: empty main hapd iface name", pRad->Name);
+    if(pAP->pRadio == pRad) {
+        return pAP;
+    }
+    buf[0] = 0;
+    rc = wld_rad_hostapd_getCmdReplyParamStr(pRad, "STATUS", "bssid[0]", buf, sizeof(buf));
+    ASSERTI_TRUE(swl_rc_isOk(rc), NULL, ME, "%s: fail to get main hapd iface bssid", pRad->Name);
+    swl_macBin_t bssid = SWL_MAC_BIN_NEW();
+    ASSERTI_TRUE(swl_typeMacBin_fromChar(&bssid, buf), NULL, ME, "%s: invalid main bssid (%s)", pRad->Name, buf);
+    ASSERTI_FALSE(swl_mac_binIsNull(&bssid), NULL, ME, "%s: null main bssid", pRad->Name);
+    pAP = wld_ap_getVapByBssid(&bssid);
+    return pAP;
 }
 
 swl_rc_ne wld_rad_hostapd_getCmdReplyParamStr(T_Radio* pRad, const char* cmd, const char* key, char* valStr, size_t valStrSize) {
