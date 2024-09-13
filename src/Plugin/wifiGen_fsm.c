@@ -280,6 +280,7 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
             //clear remaining dyn conf actions, as hostapd is up to be restarted
             s_clearRadLowerApplyActions(pRad, GEN_FSM_START_HOSTAPD);
             s_clearRadDynConfActions(pRad);
+            wld_secDmn_setRestartNeeded(pRad->hostapd, true);
         }
         break;
     case SECDMN_ACTION_OK_NEED_TOGGLE:
@@ -414,8 +415,15 @@ static bool s_doStopHostapd(T_Radio* pRad) {
          */
         s_deauthAllRadSta(pRad, true);
     }
+    swl_rc_ne rc;
+    if(wld_secDmn_checkRestartNeeded(pRad->hostapd)) {
+        SAH_TRACEZ_INFO(ME, "%s: restarting hostapd", pRad->Name);
+        rc = wld_secDmn_restart(pRad->hostapd);
+        SAH_TRACEZ_INFO(ME, "%s: restart hostapd returns rc : %d", pRad->Name, rc);
+        return true;
+    }
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
-    swl_rc_ne rc = wifiGen_hapd_stopDaemon(pRad);
+    rc = wifiGen_hapd_stopDaemon(pRad);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd returns rc : %d", pRad->Name, rc);
     /*
      * stop request accepted but delayed (hostapd still used by other radios)
@@ -540,6 +548,10 @@ static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {
 
 static bool s_doStartHostapd(T_Radio* pRad) {
     ASSERTS_TRUE(wifiGen_hapd_isStartable(pRad), true, ME, "%s: missing enabling conds", pRad->Name);
+    if(wld_secDmn_isRestarting(pRad->hostapd)) {
+        SAH_TRACEZ_INFO(ME, "%s: hostapd already is restarting: no need to force immediate start", pRad->Name);
+        return true;
+    }
     ASSERTS_FALSE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hostapd already started", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: start hostapd", pRad->Name);
     swl_rc_ne rc = wifiGen_hapd_startDaemon(pRad);
