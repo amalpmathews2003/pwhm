@@ -211,7 +211,7 @@ swl_rc_ne wld_secDmn_reload(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
     ASSERT_TRUE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not running");
-    amxp_subproc_kill(pSecDmn->dmnProcess->process->proc, SIGHUP);
+    wld_dmn_reloadDeamon(pSecDmn->dmnProcess);
     return SWL_RC_OK;
 }
 

@@ -118,11 +118,20 @@ typedef void (* wld_dmn_startHandler)(wld_process_t* pProc, void* userdata);
  */
 typedef char* (* wld_dmn_getArgsHandler)(wld_process_t* pProc, void* userdata);
 
+/*
+ * @brief handler to reload child process in custom way (default SIGHUP)
+ *
+ * @param pProc process context
+ * @param userdata private data context pointer registered when starting the process
+ */
+typedef bool (* wld_dmn_reloadHandler)(wld_process_t* pProc, void* userdata);
+
 typedef struct {
     wld_dmn_restartHandler restartCb; // optional handler to manage child process restarting
     wld_dmn_stopHandler stopCb;       // optional handler to get notification for child process end
     wld_dmn_startHandler startCb;     // optional handler to get notification for child process start
     wld_dmn_getArgsHandler getArgsCb; // optional handler to build process args dynamically just before starting it
+    wld_dmn_reloadHandler reload;     // optional handler to reload process configuration
 } wld_deamonEvtHandlers;
 
 /* wld daemon context. */
@@ -184,6 +193,8 @@ bool wld_dmn_startDeamonExt(wld_process_t* dmn_process);
 /* Sop daemon. */
 bool wld_dmn_stopDeamon(wld_process_t* dmn_process);
 bool wld_dmn_stopCb(wld_process_t* p);
+/* Reload daemon */
+bool wld_dmn_reloadDeamon(wld_process_t* dmn_process);
 
 bool wld_dmn_isRunning(wld_process_t* process);
 bool wld_dmn_isEnabled(wld_process_t* process);
