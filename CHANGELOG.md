@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.36.3 - 2024-09-13(09:52:24 +0000)
+
+### Other
+
+- mxl-allowing-vap-addition-more-than-permissible-limit
+
 ## Release v6.36.1 - 2024-09-10(13:50:21 +0000)
 
 ### Other
