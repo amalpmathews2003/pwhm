@@ -78,6 +78,7 @@
 #include "wifiGen_wpaSupp.h"
 #include "wifiGen_events.h"
 #include "wifiGen_zwdfs.h"
+#include "wifiGen_mld.h"
 
 #define ME "genFsm"
 
@@ -1004,9 +1005,28 @@ static wld_event_callback_t s_onStationChange = {
     .callback = (wld_event_callback_fun) s_stationChange,
 };
 
+static void s_mldChange(wld_mldChange_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "detect mld event %d mldtype %d unit %d", event->event, event->mldType, event->mldUnit);
+    ASSERTI_NOT_EQUALS(event->mldType, WLD_SSID_TYPE_UNKNOWN, , ME, "untyped mld");
+    T_SSID* pSSID = event->pEvtLinkSsid;
+    ASSERT_NOT_NULL(pSSID, , ME, "No link ssid");
+    T_Radio* pRad = pSSID->RADIO_PARENT;
+    ASSERT_NOT_NULL(pRad, , ME, "No link radio");
+    ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
+    if(event->event == WLD_MLD_EVT_UPDATE) {
+        wifiGen_mld_reconfigureNeighLinkSSIDs(pSSID);
+    }
+}
+
+static wld_event_callback_t s_onMldChange = {
+    .callback = (wld_event_callback_fun) s_mldChange,
+};
+
 void wifiGen_fsm_doInit(vendor_t* vendor) {
     ASSERT_NOT_NULL(vendor, , ME, "NULL");
     wld_fsm_init(vendor, &mngr);
     wld_event_add_callback(gWld_queue_rad_onChangeEvent, &s_onRadioChange);
     wld_event_add_callback(gWld_queue_sta_onChangeEvent, &s_onStationChange);
+    wld_event_add_callback(gWld_queue_mld_onChangeEvent, &s_onMldChange);
 }

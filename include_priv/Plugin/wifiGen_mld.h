@@ -68,6 +68,7 @@
 
 T_SSID* wifiGen_mld_fetchSockLinkSSID(wld_wpaCtrlMngr_t* pMgr, const char* sockName);
 T_SSID* wifiGen_mld_selectPrimLinkSSID(T_SSID* pSSID);
+swl_rc_ne wifiGen_mld_reconfigureNeighLinkSSIDs(T_SSID* pSSID);
 
 #endif /* INCLUDE_PRIV_PLUGIN_WIFIGEN_MLD_H_ */
 
