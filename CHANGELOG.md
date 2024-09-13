@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.36.5 - 2024-09-13(18:08:03 +0000)
+
+### Other
+
+- Support of socket in pwhm
+
 ## Release v6.36.4 - 2024-09-13(11:26:53 +0000)
 
 ## Release v6.36.3 - 2024-09-13(09:52:24 +0000)
