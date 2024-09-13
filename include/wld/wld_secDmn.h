@@ -70,11 +70,17 @@
 #include "swl/swl_maps.h"
 
 typedef void (* wld_secDmn_restartHandler)(wld_secDmn_t* pSecDmn, void* userdata);
-typedef void (* wld_secDmn_stopHandler)(wld_secDmn_t* pSecDmn, void* userdata);
+typedef void (* wld_secDmn_onStopHandler)(wld_secDmn_t* pSecDmn, void* userdata);
+typedef void (* wld_secDmn_onStartHandler)(wld_secDmn_t* pSecDmn, void* userdata);
+typedef char* (* wld_secDmn_getArgsHandler)(wld_secDmn_t* pSecDmn, void* userdata);
+typedef bool (* wld_secDmn_stopHandler)(wld_secDmn_t* pSecDmn, void* userdata);
 
 typedef struct {
     wld_secDmn_restartHandler restartCb; // optional handler to manage security daemon restarting
-    wld_secDmn_stopHandler stopCb;       // optional handler to get notification for security daemon process end
+    wld_secDmn_onStopHandler stopCb;     // optional handler to get notification for security daemon process end
+    wld_secDmn_onStartHandler startCb;   // optional handler post-startup
+    wld_secDmn_getArgsHandler getArgs;   // optional handler to provide security daemon arguments on startup
+    wld_secDmn_stopHandler stop;         // optional handler to terminate security daemon
 } wld_secDmnEvtHandlers;
 
 struct wld_secDmn {
@@ -89,6 +95,7 @@ struct wld_secDmn {
     /* private: self//group process management */
     wld_process_t* selfDmnProcess;  /* self daemon process context. */
     wld_secDmnGrp_t* secDmnGroup;   /* grouped (/global) secDmn using one daemon process for multiple wpaCtrl mngrs */
+    bool needRestart;               /* flag indicating whether dmn process need a forced restart */
 };
 
 swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir);
@@ -99,6 +106,10 @@ swl_rc_ne wld_secDmn_stop(wld_secDmn_t* pSecDmn);
 swl_rc_ne wld_secDmn_reload(wld_secDmn_t* pSecDmn);
 swl_rc_ne wld_secDmn_setArgs(wld_secDmn_t* pSecDmn, char* startArgs);
 void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn);
+swl_rc_ne wld_secDmn_restart(wld_secDmn_t* pSecDmn);
+swl_rc_ne wld_secDmn_setRestartNeeded(wld_secDmn_t* pSecDmn, bool flag);
+bool wld_secDmn_checkRestartNeeded(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_isRestarting(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn);
