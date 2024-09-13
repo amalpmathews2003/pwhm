@@ -71,5 +71,7 @@ swl_rc_ne wld_secDmnGrp_delMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSe
 swl_rc_ne wld_secDmnGrp_startMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
 swl_rc_ne wld_secDmnGrp_stopMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
 bool wld_secDmnGrp_isMemberStarted(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
+bool wld_secDmnGrp_isMemberRestarting(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
+swl_rc_ne wld_secDmnGrp_restartMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);
 
 #endif /* INCLUDE_PRIV_NL80211_WLD_SECDMNGRP_PRIV_H_ */

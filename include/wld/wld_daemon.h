@@ -75,6 +75,7 @@ typedef enum {
     WLD_DAEMON_STATE_DOWN,
     WLD_DAEMON_STATE_ERROR,
     WLD_DAEMON_STATE_DESTROYED,
+    WLD_DAEMON_STATE_RESTARTING,
     WLD_DAEMON_STATE_MAX,
 } wld_deamonState_e;
 
@@ -96,7 +97,7 @@ typedef struct {
  * @param pProc process context
  * @param userdata private data context pointer registered when starting the process
  */
-typedef void (* wld_dmn_stopHandler)(wld_process_t* pProc, void* userdata);
+typedef void (* wld_dmn_onStopHandler)(wld_process_t* pProc, void* userdata);
 
 /*
  * @brief handler notifying child process's started
@@ -104,7 +105,7 @@ typedef void (* wld_dmn_stopHandler)(wld_process_t* pProc, void* userdata);
  * @param pProc process context
  * @param userdata private data context pointer registered when starting the process
  */
-typedef void (* wld_dmn_startHandler)(wld_process_t* pProc, void* userdata);
+typedef void (* wld_dmn_onStartHandler)(wld_process_t* pProc, void* userdata);
 
 /*
  * @brief handler called to build dynamically start arguments, just before starting process
@@ -126,12 +127,21 @@ typedef char* (* wld_dmn_getArgsHandler)(wld_process_t* pProc, void* userdata);
  */
 typedef bool (* wld_dmn_reloadHandler)(wld_process_t* pProc, void* userdata);
 
+/*
+ * @brief handler to terminate child process in custom way (default SIGTERM/SIGKILL)
+ *
+ * @param pProc process context
+ * @param userdata private data context pointer registered when starting the process
+ */
+typedef bool (* wld_dmn_stopHandler)(wld_process_t* pProc, void* userdata);
+
 typedef struct {
     wld_dmn_restartHandler restartCb; // optional handler to manage child process restarting
-    wld_dmn_stopHandler stopCb;       // optional handler to get notification for child process end
-    wld_dmn_startHandler startCb;     // optional handler to get notification for child process start
+    wld_dmn_onStopHandler stopCb;     // optional handler called after child process end
+    wld_dmn_onStartHandler startCb;   // optional handler called after child process start
     wld_dmn_getArgsHandler getArgsCb; // optional handler to build process args dynamically just before starting it
     wld_dmn_reloadHandler reload;     // optional handler to reload process configuration
+    wld_dmn_stopHandler stop;         // optional handler to terminate process
 } wld_deamonEvtHandlers;
 
 /* wld daemon context. */
@@ -189,8 +199,8 @@ void wld_dmn_destroyDeamon(wld_process_t** pDmnProcess);
 
 /* Start daemon. */
 bool wld_dmn_startDeamon(wld_process_t* dmn_process);
-bool wld_dmn_startDeamonExt(wld_process_t* dmn_process);
-/* Sop daemon. */
+bool wld_dmn_restartDeamon(wld_process_t* dmn_process);
+/* Stop daemon. */
 bool wld_dmn_stopDeamon(wld_process_t* dmn_process);
 bool wld_dmn_stopCb(wld_process_t* p);
 /* Reload daemon */
@@ -198,6 +208,7 @@ bool wld_dmn_reloadDeamon(wld_process_t* dmn_process);
 
 bool wld_dmn_isRunning(wld_process_t* process);
 bool wld_dmn_isEnabled(wld_process_t* process);
+bool wld_dmn_isRestarting(wld_process_t* process);
 
 /* init or reinit the daemon arg list , before starting/restarting it. */
 void wld_dmn_setArgList(wld_process_t* process, char* args);

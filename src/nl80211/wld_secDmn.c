@@ -77,6 +77,7 @@ void wld_secDmn_restartCb(wld_secDmn_t* pSecDmn) {
 static void s_restartProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
     ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
+    wld_secDmn_setRestartNeeded(pSecDmn, false);
     if(pSecDmn->handlers.restartCb != NULL) {
         pSecDmn->handlers.restartCb(pSecDmn, pSecDmn->userData);
         return;
@@ -84,7 +85,7 @@ static void s_restartProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_restartCb(pSecDmn);
 }
 
-static void s_stopProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
+static void s_onStopProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
     ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
     wld_wpaCtrlMngr_disconnect(pSecDmn->wpaCtrlMngr);
@@ -96,16 +97,39 @@ static void s_stopProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_stop(pSecDmn);
 }
 
-static void s_startProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
+static void s_onStartProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
     wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
     ASSERT_NOT_NULL(pSecDmn, , ME, "NULL");
     wld_wpaCtrlMngr_connect(pSecDmn->wpaCtrlMngr);
+    if(pSecDmn->handlers.startCb) {
+        pSecDmn->handlers.startCb(pSecDmn, pSecDmn->userData);
+    }
+}
+
+static char* s_getArgsProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
+    wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
+    ASSERT_NOT_NULL(pSecDmn, NULL, ME, "NULL");
+    if(pSecDmn->handlers.getArgs) {
+        return pSecDmn->handlers.getArgs(pSecDmn, pSecDmn->userData);
+    }
+    return NULL;
+}
+
+static bool s_stopProcCb(wld_process_t* pProc _UNUSED, void* userdata) {
+    wld_secDmn_t* pSecDmn = (wld_secDmn_t*) userdata;
+    ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
+    if(pSecDmn->handlers.stop) {
+        return pSecDmn->handlers.stop(pSecDmn, pSecDmn->userData);
+    }
+    return false;
 }
 
 static wld_deamonEvtHandlers fProcCbs = {
     .restartCb = s_restartProcCb,
-    .stopCb = s_stopProcCb,
-    .startCb = s_startProcCb,
+    .stopCb = s_onStopProcCb,
+    .startCb = s_onStartProcCb,
+    .getArgsCb = s_getArgsProcCb,
+    .stop = s_stopProcCb,
 };
 
 swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, char* cfgFile, char* ctrlIfaceDir) {
@@ -176,6 +200,7 @@ swl_rc_ne wld_secDmn_cleanup(wld_secDmn_t** ppSecDmn) {
 swl_rc_ne wld_secDmn_start(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
+    wld_secDmn_setRestartNeeded(pSecDmn, false);
     if(wld_secDmn_isGrpMember(pSecDmn)) {
         return wld_secDmnGrp_startMember(pSecDmn->secDmnGroup, pSecDmn);
     }
@@ -199,6 +224,7 @@ swl_rc_ne wld_secDmn_stop(wld_secDmn_t* pSecDmn) {
     ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
     ASSERTI_TRUE(wld_dmn_isEnabled(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not enabled");
+    wld_secDmn_setRestartNeeded(pSecDmn, false);
     if(wld_secDmn_isGrpMember(pSecDmn)) {
         return wld_secDmnGrp_stopMember(pSecDmn->secDmnGroup, pSecDmn);
     }
@@ -213,6 +239,38 @@ swl_rc_ne wld_secDmn_reload(wld_secDmn_t* pSecDmn) {
     ASSERT_TRUE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not running");
     wld_dmn_reloadDeamon(pSecDmn->dmnProcess);
     return SWL_RC_OK;
+}
+
+swl_rc_ne wld_secDmn_restart(wld_secDmn_t* pSecDmn) {
+    ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pSecDmn->dmnProcess, SWL_RC_ERROR, ME, "NULL");
+    ASSERT_TRUE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_ERROR, ME, "not running");
+    wld_secDmn_setRestartNeeded(pSecDmn, false);
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        return wld_secDmnGrp_restartMember(pSecDmn->secDmnGroup, pSecDmn);
+    }
+    wld_dmn_restartDeamon(pSecDmn->dmnProcess);
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_secDmn_setRestartNeeded(wld_secDmn_t* pSecDmn, bool flag) {
+    ASSERT_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
+    pSecDmn->needRestart = flag;
+    return SWL_RC_OK;
+}
+
+bool wld_secDmn_checkRestartNeeded(wld_secDmn_t* pSecDmn) {
+    ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
+    return pSecDmn->needRestart;
+}
+
+bool wld_secDmn_isRestarting(wld_secDmn_t* pSecDmn) {
+    ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
+    ASSERT_NOT_NULL(pSecDmn->dmnProcess, false, ME, "NULL");
+    if(wld_secDmn_isGrpMember(pSecDmn)) {
+        return wld_secDmnGrp_isMemberRestarting(pSecDmn->secDmnGroup, pSecDmn);
+    }
+    return wld_dmn_isRestarting(pSecDmn->dmnProcess);
 }
 
 swl_rc_ne wld_secDmn_setArgs(wld_secDmn_t* pSecDmn, char* startArgs) {
@@ -340,6 +398,7 @@ swl_rc_ne wld_secDmn_addToGrp(wld_secDmn_t* pSecDmn, wld_secDmnGrp_t* pSecDmnGrp
     }
     pSecDmn->dmnProcess = wld_secDmnGrp_getProc(pSecDmnGrp);
     pSecDmn->secDmnGroup = pSecDmnGrp;
+    wld_secDmn_setRestartNeeded(pSecDmn, false);
     return SWL_RC_OK;
 }
 
@@ -358,6 +417,7 @@ swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn->secDmnGroup, SWL_RC_INVALID_STATE, ME, "NULL");
     swl_rc_ne rc = wld_secDmnGrp_delMember(pSecDmn->secDmnGroup, pSecDmn);
     pSecDmn->dmnProcess = pSecDmn->selfDmnProcess;
+    wld_secDmn_setRestartNeeded(pSecDmn, false);
     return rc;
 }
 

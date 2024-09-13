@@ -68,7 +68,7 @@
 
 #define ME "wldDmn"
 
-const char* g_str_wld_dmn_state[] = {"Init", "Up", "Down", "Error", "Error", "Destroyed", };
+const char* g_str_wld_dmn_state[] = {"Init", "Up", "Down", "Error", "Error", "Destroyed", "Restarting", };
 
 static wld_daemonMonitorConf_t s_dmnMoniConf = {
     .enableParam = false,
@@ -278,17 +278,24 @@ bool wld_dmn_startDeamon(wld_process_t* dmn_process) {
     amxp_slot_connect(amxp_subproc_get_sigmngr(dmn_process->process->proc),
                       "stop", NULL, s_stopHandler, dmn_process);
 
-    if((dmn_process->status == WLD_DAEMON_STATE_ERROR) && (amxp_timer_get_state(dmn_process->restart_timer) == amxp_timer_off)) {
-        SAH_TRACEZ_ERROR(ME, "Process %s restarts after a crash.", dmn_process->cmd);
-        dmn_process->restarts++;
-        dmn_process->totalRestarts++;
-    } else {
+    amxp_timer_state_t tmState = amxp_timer_get_state(dmn_process->restart_timer);
+    if((tmState == amxp_timer_started) || (tmState == amxp_timer_running)) {
         if(dmn_process->status == WLD_DAEMON_STATE_ERROR) {
             SAH_TRACEZ_ERROR(ME, "Plugin called crashed process %s to start", dmn_process->cmd);
+        } else if(dmn_process->status == WLD_DAEMON_STATE_RESTARTING) {
+            SAH_TRACEZ_WARNING(ME, "Plugin force immediate restart of process %s", dmn_process->cmd);
         }
         amxp_timer_stop(dmn_process->restart_timer);
         dmn_process->fails = 0;
         dmn_process->restarts = 0;
+    } else {
+        if(dmn_process->status == WLD_DAEMON_STATE_ERROR) {
+            SAH_TRACEZ_ERROR(ME, "Process %s restarts after a crash.", dmn_process->cmd);
+        } else if(dmn_process->status == WLD_DAEMON_STATE_RESTARTING) {
+            SAH_TRACEZ_ERROR(ME, "Process %s restarts by user request.", dmn_process->cmd);
+        }
+        dmn_process->restarts++;
+        dmn_process->totalRestarts++;
     }
 
     dmn_process->status = WLD_DAEMON_STATE_UP;
@@ -313,6 +320,7 @@ bool wld_dmn_stopDeamon(wld_process_t* dmn_process) {
     SAH_TRACEZ_INFO(ME, "stopping up %s", dmn_process->cmd);
 
     amxp_timer_stop(dmn_process->restart_timer);
+
     amxp_slot_disconnect_with_priv(amxp_subproc_get_sigmngr(dmn_process->process->proc),
                                    s_stopHandler, dmn_process);
 
@@ -329,6 +337,40 @@ bool wld_dmn_stopDeamon(wld_process_t* dmn_process) {
     return true;
 }
 
+bool wld_dmn_restartDeamon(wld_process_t* dmn_process) {
+    ASSERT_NOT_NULL(dmn_process, false, ME, "NULL");
+    amxp_proc_ctrl_t* p = dmn_process->process;
+    const char* name = dmn_process->cmd;
+
+    ASSERT_NOT_NULL(p, false, ME, "NULL");
+    ASSERT_NOT_NULL(name, false, ME, "NULL");
+    ASSERTI_TRUE(amxp_subproc_is_running(p->proc), true, ME, "Stopped %s", name);
+
+    SAH_TRACEZ_INFO(ME, "restarting %s", dmn_process->cmd);
+
+    amxp_timer_stop(dmn_process->restart_timer);
+
+    bool ret = false;
+    if(dmn_process->handlers.stop) {
+        SAH_TRACEZ_INFO(ME, "terminate %s via user handler", name);
+        ret = dmn_process->handlers.stop(dmn_process, dmn_process->userData);
+    }
+    if(!ret) {
+        SAH_TRACEZ_INFO(ME, "stop %s with signals", name);
+        amxp_subproc_kill(p->proc, SIGTERM);
+    }
+
+    memset(&dmn_process->lastExitInfo, 0, sizeof(wld_deamonExitInfo_t));
+
+    //rely on the restart timer to start again the process and being fully stopped
+    //(detection through child process status notification)
+    dmn_process->status = WLD_DAEMON_STATE_RESTARTING;
+    dmn_process->enabled = true;
+
+    SAH_TRACEZ_INFO(ME, "%s restart initiated", name);
+    return true;
+}
+
 bool wld_dmn_stopCb(wld_process_t* end_process) {
     if(end_process == NULL) {
         SAH_TRACEZ_ERROR(ME, "Unknown stopped unexpectedly");
@@ -337,7 +379,6 @@ bool wld_dmn_stopCb(wld_process_t* end_process) {
     ASSERTS_NOT_EQUALS(end_process->status, WLD_DAEMON_STATE_ERROR, true,
                        ME, "Process %s crash already processed", end_process->cmd);
 
-    end_process->status = WLD_DAEMON_STATE_ERROR;
     wld_deamonExitInfo_t* pExitInfo = &end_process->lastExitInfo;
     memset(pExitInfo, 0, sizeof(wld_deamonExitInfo_t));
     pExitInfo->isExited = (amxp_subproc_ifexited(end_process->process->proc) != 0);
@@ -348,6 +389,15 @@ bool wld_dmn_stopCb(wld_process_t* end_process) {
     if(pExitInfo->isSignaled) {
         pExitInfo->termSignal = amxp_subproc_get_termsig(end_process->process->proc);
     }
+
+    if(end_process->status == WLD_DAEMON_STATE_RESTARTING) {
+        SWL_CALL(end_process->handlers.stopCb, end_process, end_process->userData);
+        amxp_timer_start(end_process->restart_timer, 100 /* ms */);
+        SAH_TRACEZ_WARNING(ME, "User requested Process %s restart now.", end_process->cmd);
+        return true;
+    }
+
+    end_process->status = WLD_DAEMON_STATE_ERROR;
     SAH_TRACEZ_ERROR(ME, "Process %s stopped unexpectedly (e:%d/r:%d/k:%d/s:%d)",
                      end_process->cmd,
                      pExitInfo->isExited, pExitInfo->exitStatus,
@@ -375,10 +425,10 @@ bool wld_dmn_stopCb(wld_process_t* end_process) {
                 s_dmnMoniConf.minRestartInterval :
                 (s_dmnMoniConf.minRestartInterval - elapsedTime);
             amxp_timer_start(end_process->restart_timer, restartInterval * 1000);
-            SAH_TRACEZ_ERROR(ME, "Process %s restart in %d s.", end_process->cmd, restartInterval);
+            SAH_TRACEZ_ERROR(ME, "Dead Process %s restart in %d s.", end_process->cmd, restartInterval);
         } else {
             amxp_timer_start(end_process->restart_timer, 100 /* ms */);
-            SAH_TRACEZ_ERROR(ME, "Process %s restart now.", end_process->cmd);
+            SAH_TRACEZ_ERROR(ME, "Dead Process %s restart now.", end_process->cmd);
         }
     }
 
@@ -395,6 +445,17 @@ bool wld_dmn_isRunning(wld_process_t* process) {
 bool wld_dmn_isEnabled(wld_process_t* process) {
     ASSERT_NOT_NULL(process, false, ME, "NULL");
     return process->enabled;
+}
+
+bool wld_dmn_isRestarting(wld_process_t* process) {
+    ASSERT_NOT_NULL(process, false, ME, "NULL");
+    amxp_timer_state_t tmState = amxp_timer_get_state(process->restart_timer);
+    if(((tmState == amxp_timer_started) || (tmState == amxp_timer_running)) &&
+       ((process->status == WLD_DAEMON_STATE_RESTARTING) ||
+        (process->status == WLD_DAEMON_STATE_ERROR))) {
+        return true;
+    }
+    return false;
 }
 
 void wld_dmn_setArgList(wld_process_t* process, char* args) {

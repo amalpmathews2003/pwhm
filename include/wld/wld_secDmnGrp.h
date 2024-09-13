@@ -85,9 +85,19 @@ typedef char* (* wld_secDmnGrp_getArgsHandler)(wld_secDmnGrp_t* pSecDmnGrp, void
  */
 typedef bool (* wld_secDmnGrp_isMemberStartable)(wld_secDmnGrp_t* pSecDmnGrp, void* userData, wld_secDmn_t* pMember);
 
+/*
+ * @brief generic handler to check whether a member is pending for runtime action
+ * @param pSecDmnGrp pointer to group context
+ * @param userData user data provided at initialization
+ * @param pMember group member (pointer to sec deamon context)
+ * @return bool member reload readiness (true when ready to be reloaded)
+ */
+typedef bool (* wld_secDmnGrp_hasMemberRtmAction)(wld_secDmnGrp_t* pSecDmnGrp, void* userData, wld_secDmn_t* pMember);
+
 typedef struct {
     wld_secDmnGrp_getArgsHandler getArgsCb;               /* handler to build dynamically arguments before starting daemon */
     wld_secDmnGrp_isMemberStartable isMemberStartableCb;  /* handler to pre-check starting conditions of group member */
+    wld_secDmnGrp_hasMemberRtmAction hasSchedRestartCb;   /* handler to check whether member is pending for restart. */
 } wld_secDmnGrp_EvtHandlers_t;
 
 swl_rc_ne wld_secDmnGrp_init(wld_secDmnGrp_t** ppSecDmnGrp, char* cmd, char* startArgs, const char* groupName);
