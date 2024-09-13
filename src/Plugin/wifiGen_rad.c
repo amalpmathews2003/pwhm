@@ -912,11 +912,16 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
          * channel can not be warm applied (with CSA)
          * then hostapd must be toggled for cold applying (with DFS clearing if needed)
          */
+        SAH_TRACEZ_WARNING(ME, "%s: connected cold applying of chanspec %s",
+                           pRad->Name, swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf);
         wld_rad_hostapd_setChannel(pRad);
         if(detState != CM_RAD_DOWN) {
             setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         }
         setBitLongArray(actionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+    } else {
+        SAH_TRACEZ_WARNING(ME, "%s: disconnected, no applying of chanspec %s",
+                           pRad->Name, swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf);
     }
     rc = SWL_RC_OK;
 saveConf:

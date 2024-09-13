@@ -71,6 +71,7 @@ typedef enum {
     GEN_FSM_SYNC_RAD,             /* Sync Radio conf (cold.down(wt nl80211) / hot.up(wt secDmn))*/
     GEN_FSM_MOD_COUNTRYCODE,      /* Modify the country code */
     GEN_FSM_MOD_BSSID,            /* Modify the BSSID */
+    GEN_FSM_MOD_MLD,              /* Sync MLD params */
     GEN_FSM_MOD_SEC,              /* Set AP Security */
     GEN_FSM_MOD_AP,               /* Sync AP non-security params */
     GEN_FSM_MOD_SSID,             /* Set SSID */

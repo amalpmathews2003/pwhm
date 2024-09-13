@@ -403,6 +403,13 @@ swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wifiGen_vap_setMldUnit(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: applying MLDUnit %d", pAP->alias, pAP->pSSID->mldUnit);
+    setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_MLD);
+    return SWL_RC_OK;
+}
+
 int wifiGen_vap_mf_sync(T_AccessPoint* vap, int set) {
     swl_rc_ne rc = SWL_RC_OK;
     ASSERTS_TRUE(set & SET, rc, ME, "Only do set");
