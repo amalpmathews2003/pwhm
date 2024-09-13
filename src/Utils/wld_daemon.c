@@ -230,6 +230,25 @@ static void s_stopHandler(const char* const sig_name _UNUSED,
     wld_dmn_stopCb(dmn_process);
 }
 
+
+bool wld_dmn_reloadDeamon(wld_process_t* dmn_process) {
+    ASSERT_NOT_NULL(dmn_process, false, ME, "NULL");
+    ASSERT_NOT_NULL(dmn_process->process, false, ME, "NULL");
+    ASSERT_EQUALS(dmn_process->status, WLD_DAEMON_STATE_UP, false, ME, "Not Running");
+    const char* name = dmn_process->cmd;
+
+    bool ret = false;
+    if(dmn_process->handlers.reload) {
+        SAH_TRACEZ_INFO(ME, "reload %s via user handler", name);
+        ret = dmn_process->handlers.reload(dmn_process, dmn_process->userData);
+    }
+    if(!ret) {
+        SAH_TRACEZ_INFO(ME, "reload %s with signals", name);
+        ret = (amxp_subproc_kill(dmn_process->process->proc, SIGHUP) == 0);
+    }
+    return ret;
+}
+
 bool wld_dmn_startDeamon(wld_process_t* dmn_process) {
     ASSERT_NOT_NULL(dmn_process, false, ME, "NULL");
     ASSERT_NOT_NULL(dmn_process->process, false, ME, "NULL");
