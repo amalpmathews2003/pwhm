@@ -211,6 +211,7 @@ static const char* s_getMainIface(T_Radio* pRad) {
 static void s_restartHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    wifiGen_hapd_restoreMainIface(pRad);
     const char* mainIface = s_getMainIface(pRad);
     ASSERTW_TRUE(wifiGen_hapd_isStartable(pRad), , ME, "%s: hostapd iface %s is not startable", pRad->Name, mainIface);
     ASSERTW_FALSE(wifiGen_hapd_isRunning(pRad), , ME, "%s: hostapd running", mainIface);
@@ -218,12 +219,12 @@ static void s_restartHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     wld_secDmn_restartCb(pSecDmn);
 }
 
-static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
+static void s_onStopHapdCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     const char* mainIface = s_getMainIface(pRad);
     SAH_TRACEZ_WARNING(ME, "%s: hostapd stopped", mainIface);
-    wld_deamonExitInfo_t* pExitInfo = &pHapdInst->dmnProcess->lastExitInfo;
+    wld_deamonExitInfo_t* pExitInfo = &pSecDmn->dmnProcess->lastExitInfo;
     if((pExitInfo != NULL) && (pExitInfo->isExited) &&
        (pExitInfo->exitStatus == HOSTAPD_EXIT_REASON_LOAD_FAIL)) {
         SAH_TRACEZ_ERROR(ME, "%s: invalid hostapd configuration", mainIface);
@@ -233,6 +234,47 @@ static void s_stopHapdCb(wld_secDmn_t* pHapdInst _UNUSED, void* userdata) {
     wifiGen_hapd_stopDaemon(pRad);
     //restore main iface if removed by hostapd
     wifiGen_hapd_restoreMainIface(pRad);
+}
+
+static void s_onStartHapdCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
+    T_Radio* pRad = (T_Radio*) userdata;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    const char* mainIface = s_getMainIface(pRad);
+    SAH_TRACEZ_WARNING(ME, "%s: hostapd started", mainIface);
+    wld_wpaCtrlMngr_connect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
+}
+
+static char* s_getHapdArgsCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
+    char* args = NULL;
+    ASSERT_NOT_NULL(pSecDmn, args, ME, "NULL");
+    char startArgs[256] = {0};
+    //set default start args
+    swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
+    if(!swl_str_isEmpty(pSecDmn->cfgFile)) {
+        swl_strlst_cat(startArgs, sizeof(startArgs), " ", pSecDmn->cfgFile);
+    }
+    swl_str_copyMalloc(&args, startArgs);
+    return args;
+}
+
+static bool s_stopHapdCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
+    T_Radio* pRad = (T_Radio*) userdata;
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pSecDmn);
+    bool ret = false;
+    if(wld_wpaCtrlMngr_isReady(pMgr)) {
+        wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+        if(wld_wpaCtrlInterface_checkConnectionPath(pIface)) {
+            SAH_TRACEZ_WARNING(ME, "terminating hostapd over %s", wld_wpaCtrlInterface_getName(pIface));
+            ret = wld_wpaCtrl_sendCmdCheckResponse(pIface, "TERMINATE", "OK");
+        }
+    }
+    wld_wpaCtrlMngr_disconnect(pMgr);
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        wld_mld_resetLinkId(pAP->pSSID->pMldLink);
+    }
+    return ret;
 }
 
 static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
@@ -251,15 +293,15 @@ swl_rc_ne wifiGen_hapd_init(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     char confFilePath[128] = {0};
     swl_str_catFormat(confFilePath, sizeof(confFilePath), HOSTAPD_CONF_FILE_PATH_FORMAT, pRad->Name);
-    char startArgs[128] = {0};
-    swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
-    swl_strlst_cat(startArgs, sizeof(startArgs), " ", confFilePath);
-    swl_rc_ne rc = wld_secDmn_init(&pRad->hostapd, HOSTAPD_CMD, startArgs, confFilePath, HOSTAPD_CTRL_IFACE_DIR);
+    swl_rc_ne rc = wld_secDmn_init(&pRad->hostapd, HOSTAPD_CMD, NULL, confFilePath, HOSTAPD_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init hostapd", pRad->Name);
     wld_secDmnEvtHandlers handlers;
     memset(&handlers, 0, sizeof(handlers));
     handlers.restartCb = s_restartHapdCb;
-    handlers.stopCb = s_stopHapdCb;
+    handlers.stopCb = s_onStopHapdCb;
+    handlers.startCb = s_onStartHapdCb;
+    handlers.getArgs = s_getHapdArgsCb;
+    handlers.stop = s_stopHapdCb;
     wld_secDmn_setEvtHandlers(pRad->hostapd, &handlers, pRad);
     return SWL_RC_OK;
 }
@@ -469,9 +511,30 @@ static bool s_isHapdIfaceStartable(wld_secDmnGrp_t* pSecDmnGrp _UNUSED, void* us
     return wifiGen_hapd_isStartable(pRad);
 }
 
+static bool s_hasRtmSchedState(T_Radio* pRad, wifiGen_fsmStates_e fsmAc) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    ASSERTS_NOT_EQUALS(pRad->fsmRad.FSM_State, FSM_IDLE, false, ME, "%s: fsm is idle", pRad->Name);
+    if((pRad->fsmRad.FSM_SyncAll) ||
+       (((pRad->fsmRad.FSM_State < FSM_DEPENDENCY) && isBitSetLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, fsmAc)) ||
+        ((pRad->fsmRad.FSM_State >= FSM_DEPENDENCY) && isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, fsmAc)))) {
+        SAH_TRACEZ_INFO(ME, "%s: fsm state:%d, fsmAc:%d ongoing", pRad->Name, pRad->fsmRad.FSM_State, fsmAc);
+        return true;
+    }
+    return false;
+}
+
+static bool s_hasHapdSchedRestart(wld_secDmnGrp_t* pSecDmnGrp _UNUSED, void* userData _UNUSED, wld_secDmn_t* pSecDmn) {
+    ASSERT_NOT_NULL(pSecDmn, false, ME, "NULL");
+    T_Radio* pRad = (T_Radio*) pSecDmn->userData;
+    ASSERT_TRUE(debugIsRadPointer(pRad), false, ME, "INVALID");
+    ASSERTI_TRUE(wld_secDmn_isRunning(pSecDmn), false, ME, "%s: secDmn not running", pRad->Name);
+    return s_hasRtmSchedState(pRad, GEN_FSM_START_HOSTAPD);
+}
+
 static wld_secDmnGrp_EvtHandlers_t sGHapdEvtCbs = {
     .getArgsCb = s_getGlobHapdArgsCb,
     .isMemberStartableCb = s_isHapdIfaceStartable,
+    .hasSchedRestartCb = s_hasHapdSchedRestart,
 };
 
 static swl_rc_ne s_initGlobalHapdGrp(vendor_t* pVdr, bool forceGlob) {
