@@ -607,9 +607,15 @@ static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
     s_schedNextAction(rc, pAP, pRad);
     if(rc == SECDMN_ACTION_OK_NEED_RESTART) {
-        uint32_t nActLnks = wld_mld_countNeighActiveLinks(pAP->pSSID->pMldLink);
-        bool needRestart = (nActLnks > 1);
-        SAH_TRACEZ_INFO(ME, "%s: nbActiveLinks %d, needHapdRestart:%d", pAP->alias, nActLnks, needRestart);
+        int32_t curLinkId = -1;
+        char mldIface[64] = {0};
+        const char* sockName = wld_wpaCtrlInterface_getConnectionSockName(pAP->wpaCtrlInterface);
+        wifiGen_hapd_parseSockName(sockName, mldIface, sizeof(mldIface), &curLinkId);
+        T_SSID* pMldLinkSsid = wld_ssid_getSsidByIfName(mldIface);
+        uint32_t nCurLinks = pMldLinkSsid ? wld_mld_countNeighEnabledLinks(pMldLinkSsid->pMldLink) : 0;
+        bool needRestart = (curLinkId >= 0) && (nCurLinks > 1) && (wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface));
+        SAH_TRACEZ_INFO(ME, "%s: curSockName(%s) curLinkId(%d) nCurLinks(%d) => needHapdRestart:%d",
+                        pAP->alias, sockName, curLinkId, nCurLinks, needRestart);
         wld_secDmn_setRestartNeeded(pRad->hostapd, needRestart);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
         s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
