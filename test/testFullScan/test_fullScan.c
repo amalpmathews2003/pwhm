@@ -257,6 +257,7 @@ static void test_startAndGetScan(void** state _UNUSED) {
     }
     uint32_t totalResults = amxc_llist_size(&res.ssids);
     uint32_t match = 0;
+    ttb_mockTimer_goToFutureMs(100);
     amxd_object_t* chan_template = amxd_object_findf(pRad->pBus, "ScanResults.SurroundingChannels");
     assert_int_equal(amxd_object_get_instance_count(chan_template), NB_SURROUNDING_CHANNELS);
     amxd_object_for_each(instance, it, chan_template) {

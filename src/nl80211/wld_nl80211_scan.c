@@ -71,7 +71,7 @@
 #include "wld_radio.h"
 #include "wld_util.h"
 
-#define ME "nlRad"
+#define ME "nlScan"
 
 typedef struct {
     amxc_llist_it_t it;

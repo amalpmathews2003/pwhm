@@ -151,9 +151,9 @@ static void s_updateScanStats(T_Radio* pRad) {
 
 }
 
-static void s_updateScanProcState(T_Radio* pRad, bool inProgressFlag) {
+static void s_updateScanProcState(T_Radio* pRad) {
     if((pRad->pBus != NULL) && (pRad->hasDmReady)) {
-        swl_typeBool_commitObjectParam(amxd_object_get(pRad->pBus, "ScanResults"), "ScanInProgress", inProgressFlag);
+        swl_typeBool_commitObjectParam(amxd_object_get(pRad->pBus, "ScanResults"), "ScanInProgress", wld_scan_isRunning(pRad));
     }
 }
 
@@ -287,13 +287,13 @@ static void s_notifyStartScan(T_Radio* pRad, wld_scan_type_e type, const char* s
         pRad->scanState.lastScanTime = swl_time_getMonoSec();
 
         swl_str_copy(pRad->scanState.scanReason, sizeof(pRad->scanState.scanReason), scanReason);
-        s_updateScanProcState(pRad, true);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_updateScanProcState, pRad);
     } else {
         pRad->scanState.stats.nrScanError++;
         stats->errorCount++;
     }
 
-    s_updateScanStats(pRad);
+    swla_delayExec_add((swla_delayExecFun_cbf) s_updateScanStats, pRad);
 }
 
 static bool s_isScanRequestReady(T_Radio* pR) {
@@ -967,31 +967,44 @@ static void wld_rad_scan_FinishScanCall(T_Radio* pR, bool* success) {
  *  the object of the scan results of the given radio
  * @param channel
  *  the channel for which we want the channel object
+ * @param pChanObj
+ *  the channel for which we want the channel object
  * @return
  *  if the channel object existed in the data model, we return that channel
  *  if the channel is zero, we return null
  *  otherwise we create a new channel object.
  */
-amxd_object_t* wld_scan_update_get_channel(amxd_object_t* objScan, uint16_t channel) {
-    if(channel == 0) {
-        return NULL;
-    }
+static swl_rc_ne s_getOrAddChannelObj(amxd_object_t* objScan, uint16_t channel, amxd_object_t** pChanObj) {
+    W_SWL_SETPTR(pChanObj, NULL);
+    ASSERT_NOT_NULL(objScan, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_EQUALS(channel, 0, SWL_RC_INVALID_PARAM, ME, "null channel");
 
     amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
-    ASSERT_NOT_NULL(chanTemplate, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(chanTemplate, SWL_RC_ERROR, ME, "Not Channel templ obj");
     amxd_object_t* chanObj = NULL;
     amxd_object_for_each(instance, it, chanTemplate) {
         chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
         if(amxd_object_get_uint16_t(chanObj, "Channel", NULL) == channel) {
-            return chanObj;
+            W_SWL_SETPTR(pChanObj, chanObj);
+            return SWL_RC_OK;
         }
     }
-    amxd_status_t ret = amxd_object_new_instance(&chanObj, chanTemplate, NULL, 0, NULL);
-    ASSERT_EQUALS(ret, amxd_status_ok, NULL,
-                  ME, "fail to create channel instance for channel %d ret:%d", channel, ret);
-    amxd_object_set_uint16_t(chanObj, "Channel", channel);
-
-    return chanObj;
+    amxd_trans_t trans;
+    amxd_status_t status = swl_object_prepareTransaction(&trans, chanTemplate);
+    ASSERT_EQUALS(status, amxd_status_ok, SWL_RC_ERROR, ME, "Fail to prepare scan Chan %d trans: %s",
+                  channel, amxd_status_string(status));
+    amxd_object_t* lastInst = amxc_container_of(amxc_llist_get_last(&chanTemplate->instances), amxd_object_t, it);
+    uint32_t newIdx = amxd_object_get_index(lastInst) + 1;
+    amxd_trans_add_inst(&trans, newIdx, NULL);
+    amxd_trans_set_value(uint16_t, &trans, "Channel", channel);
+    status = swl_object_finalizeTransaction(&trans, swl_lib_getLocalDm());
+    ASSERT_EQUALS(status, amxd_status_ok, SWL_RC_ERROR, ME, "Fail to create scan channel obj[%d] ch:%d: %s",
+                  newIdx, channel, amxd_status_string(status));
+    chanObj = amxd_object_get_instance(chanTemplate, NULL, newIdx);
+    ASSERT_NOT_NULL(chanObj, SWL_RC_ERROR, ME, "fail to locate new channel obj[%d] ch:%d",
+                    newIdx, channel);
+    W_SWL_SETPTR(pChanObj, chanObj);
+    return SWL_RC_OK;
 }
 
 /**
@@ -1097,56 +1110,68 @@ static amxd_object_t* s_findScanApGroup(amxd_object_t* ap_template, swl_macChar_
 /**
  * Add a given SSID result to the given channel.
  */
-static void wld_scan_update_add_ssid(amxd_object_t* channel, wld_scanResultSSID_t* ssid) {
+static void s_updateOrAddSsidObj(amxd_object_t* chanObj, wld_scanResultSSID_t* ssid) {
     ASSERT_NOT_NULL(ssid, , ME, "NULL");
-    amxd_object_t* ap_template = amxd_object_get(channel, "Accesspoint");
-    ASSERT_NOT_NULL(ap_template, , ME, "Null ap template");
+    amxd_object_t* apTempl = amxd_object_get(chanObj, "Accesspoint");
+    ASSERT_NOT_NULL(apTempl, , ME, "Null ap template");
 
     swl_macChar_t bssidStr = SWL_MAC_CHAR_NEW();
     swl_mac_binToChar(&bssidStr, &ssid->bssid);
 
-    amxd_object_t* ap_val = s_findScanApGroup(ap_template, &bssidStr, ssid->rssi);
+    amxd_object_t* apObj = s_findScanApGroup(apTempl, &bssidStr, ssid->rssi);
 
-    amxd_status_t ret;
-    if(ap_val == NULL) {
-        uint32_t id = amxd_object_get_instance_count(ap_template) + 1;
-        ret = amxd_object_new_instance(&ap_val, ap_template, NULL, id, NULL);
-        ASSERT_EQUALS(ret, amxd_status_ok, , ME, "Fail to create scan AP instance (ret %d)", ret);
-        amxd_object_set_int16_t(ap_val, "RSSI", ssid->rssi);
-        amxd_object_set_cstring_t(ap_val, "BSSID", bssidStr.cMac);
-
+    amxd_trans_t trans;
+    amxd_status_t status;
+    if(apObj == NULL) {
+        status = swl_object_prepareTransaction(&trans, apTempl);
+        ASSERT_EQUALS(status, amxd_status_ok, , ME, "Fail to prepare scan AP+SSID trans: %s", amxd_status_string(status));
+        amxd_object_t* lastInst = amxc_container_of(amxc_llist_get_last(&apTempl->instances), amxd_object_t, it);
+        uint32_t newIdx = amxd_object_get_index(lastInst) + 1;
+        amxd_trans_add_inst(&trans, newIdx, NULL);
+        amxd_trans_set_value(int16_t, &trans, "RSSI", ssid->rssi);
+        amxd_trans_set_value(cstring_t, &trans, "BSSID", bssidStr.cMac);
+    } else {
+        status = swl_object_prepareTransaction(&trans, apObj);
+        ASSERT_EQUALS(status, amxd_status_ok, , ME, "Fail to prepare scan SSID trans: %s", amxd_status_string(status));
     }
-    amxd_object_t* ap_ssid_template = amxd_object_get(ap_val, "SSID");
-    amxd_object_t* ap_ssid = NULL;
-    ret = amxd_object_new_instance(&ap_ssid, ap_ssid_template, NULL, 0, NULL);
-    ASSERT_EQUALS(ret, amxd_status_ok, , ME, "Fail to create scan SSID instance (ret %d)", ret);
+    amxd_trans_select_pathf(&trans, ".SSID");
+    amxd_trans_add_inst(&trans, 0, NULL);
     char* ssidStr = wld_ssid_to_string(ssid->ssid, ssid->ssidLen);
-    amxd_object_set_cstring_t(ap_ssid, "SSID", ssidStr);
-    amxd_object_set_cstring_t(ap_ssid, "BSSID", bssidStr.cMac);
-    amxd_object_set_uint16_t(ap_ssid, "Bandwidth", ssid->bandwidth);
+    amxd_trans_set_value(cstring_t, &trans, "SSID", ssidStr);
+    amxd_trans_set_value(cstring_t, &trans, "BSSID", bssidStr.cMac);
+    amxd_trans_set_value(uint16_t, &trans, "Bandwidth", ssid->bandwidth);
     free(ssidStr);
+    status = swl_object_finalizeTransaction(&trans, swl_lib_getLocalDm());
+    ASSERT_EQUALS(status, amxd_status_ok, , ME, "Fail to apply scan SSID trans: %s", amxd_status_string(status));
 }
 
 /**
  * Clear the scan results. Should be called before we start adding new
  * results for the latest scan.
  */
-static void wld_scan_update_clear_obj(amxd_object_t* objScan) {
+static void s_clearChannelObjs(amxd_object_t* objScan) {
     amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
+    ASSERT_NOT_NULL(chanTemplate, , ME, "Fail to find Channel Template");
+    amxd_trans_t trans;
+    amxd_status_t status = swl_object_prepareTransaction(&trans, chanTemplate);
+    ASSERT_EQUALS(status, amxd_status_ok, , ME, "Fail to prepare clear scan chan trans: %s",
+                  amxd_status_string(status));
     amxd_object_for_each(instance, it, chanTemplate) {
         amxd_object_t* chanObj = amxc_llist_it_get_data(it, amxd_object_t, it);
-        swl_object_delInstWithTransOnLocalDm(chanObj);
-        chanObj = NULL;
+        amxd_trans_del_inst(&trans, amxd_object_get_index(chanObj), NULL);
     }
+    status = swl_object_finalizeTransaction(&trans, swl_lib_getLocalDm());
+    ASSERT_EQUALS(status, amxd_status_ok, , ME, "Fail to apply clear scan Chans trans: %s",
+                  amxd_status_string(status));
 }
 
 /**
  * Count the number of access points that are on the same channel as the radio currently is.
  */
-static void wld_scan_count_cochannel(T_Radio* pR, amxd_object_t* objScan) {
+static void s_updateCountCochannel(T_Radio* pR, amxd_object_t* objScan) {
     uint16_t channel = amxd_object_get_uint16_t(pR->pBus, "Channel", NULL);
 
-    uint32_t nrCoChannel = 0;
+    uint16_t nrCoChannel = 0;
     amxd_object_t* chanTemplate = amxd_object_get(objScan, "SurroundingChannels");
     amxd_object_t* chanObj = NULL;
 
@@ -1158,7 +1183,7 @@ static void wld_scan_count_cochannel(T_Radio* pR, amxd_object_t* objScan) {
             break;
         }
     }
-    amxd_object_set_uint16_t(objScan, "NrCoChannelAP", nrCoChannel);
+    swl_typeUInt16_commitObjectParam(objScan, "NrCoChannelAP", nrCoChannel);
 }
 
 void wld_scan_cleanupScanResultSSID(wld_scanResultSSID_t* ssid) {
@@ -1190,7 +1215,7 @@ void wld_scan_cleanupScanResults(wld_scanResults_t* res) {
  * This will remove the currently stored scan results, and replace the with the results from the latest scan.
  * It will just retrieve the latest results, it will NOT perform a scan itself.
  */
-static void wld_scan_update_obj_results(T_Radio* pR) {
+static void s_updateScanResultObjs(T_Radio* pR) {
     wld_scanResults_t res;
 
     amxc_llist_init(&res.ssids);
@@ -1199,16 +1224,20 @@ static void wld_scan_update_obj_results(T_Radio* pR) {
         SAH_TRACEZ_ERROR(ME, "failed to get results");
         return;
     }
-    amxd_object_t* obj_scan = amxd_object_get(pR->pBus, "ScanResults");
+    amxd_object_t* objScan = amxd_object_get(pR->pBus, "ScanResults");
+    ASSERT_NOT_NULL(objScan, , ME, "No ScanResults obj template");
 
-    wld_scan_update_clear_obj(obj_scan);
+    s_clearChannelObjs(objScan);
     amxc_llist_for_each(it, &res.ssids) {
         wld_scanResultSSID_t* ssid = amxc_container_of(it, wld_scanResultSSID_t, it);
-        amxd_object_t* channel = wld_scan_update_get_channel(obj_scan, ssid->channel);
-        wld_scan_update_add_ssid(channel, ssid);
+        amxd_object_t* chanObj = NULL;
+        if(s_getOrAddChannelObj(objScan, ssid->channel, &chanObj) < SWL_RC_OK) {
+            continue;
+        }
+        s_updateOrAddSsidObj(chanObj, ssid);
         wld_scan_cleanupScanResultSSID(ssid);
     }
-    wld_scan_count_cochannel(pR, obj_scan);
+    s_updateCountCochannel(pR, objScan);
 }
 
 /**
@@ -1240,7 +1269,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
             stats->errorCount++;
         }
     }
-    s_updateScanStats(pR);
+    swla_delayExec_add((swla_delayExecFun_cbf) s_updateScanStats, pR);
 
     wld_scanEvent_t ev;
     memset(&ev, 0, sizeof(ev));
@@ -1252,7 +1281,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
     wld_event_trigger_callback(gWld_queue_rad_onScan_change, &ev);
 
     if(success && (pR->scanState.scanType > SCAN_TYPE_INTERNAL)) {
-        wld_scan_update_obj_results(pR);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_updateScanResultObjs, pR);
     }
 
     wld_rad_scan_SendDoneNotification(pR, success);
@@ -1263,7 +1292,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
     /* Scan is done */
     swl_str_copy(pR->scanState.scanReason, sizeof(pR->scanState.scanReason), "None");
     pR->scanState.scanType = SCAN_TYPE_NONE;
-    s_updateScanProcState(pR, false);
+    swla_delayExec_add((swla_delayExecFun_cbf) s_updateScanProcState, pR);
 }
 
 bool wld_scan_isRunning(T_Radio* pR) {

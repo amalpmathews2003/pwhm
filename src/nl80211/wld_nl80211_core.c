@@ -112,6 +112,7 @@ typedef struct {
     void* priv;                    //user data
     wld_nl80211_handler_f handler; //handler to process replies
     swl_rc_ne* pStatus;            //pointer to status, where to save request result before clearing context.
+    uint32_t cmd;
 } nlRequest_t;
 
 /*
@@ -479,7 +480,14 @@ static swl_rc_ne s_handleReply(wld_nl80211_state_t* state, struct nlmsghdr* nlh)
         rc = SWL_RC_ERROR;
     } else if((nlh->nlmsg_type == NLMSG_ERROR) && (e->error != 0)) {
         // error == 0 means ack/success
-        SAH_TRACEZ_ERROR(ME, "nl error msg, error:%d", e->error);
+        int errId = (e->error > 0) ? e->error : -(e->error);
+        char errMsg[256] = {0};
+        strerror_r(errId, errMsg, sizeof(errMsg));
+        int cmdId = pReq->cmd;
+        const char* cmdStr = wld_nl80211_msgName(cmdId) ? : "unknown";
+        SAH_TRACEZ_ERROR(ME, "nl error:%d (errno:%d:%s) msg:(cmd:%d:%s)",
+                         e->error, errId, errMsg,
+                         cmdId, cmdStr);
         rc = SWL_RC_ERROR;
     }
     return s_updateRequest(pReq, nlh, rc);
@@ -859,6 +867,10 @@ static swl_rc_ne s_sendMsg(wld_nl80211_state_t* state, struct nl_msg* msg,
     pReq->pStatus = pStatus;
     pReq->timestamp = swl_time_getMonoSec();
     pReq->timeout = timeout;
+    struct genlmsghdr* gnlh = (struct genlmsghdr*) nlmsg_data(hdr);
+    if(gnlh) {
+        pReq->cmd = gnlh->cmd;
+    }
     SAH_TRACEZ_INFO(ME, "sending nl request with seqId:%d flags(0x%x)", seqId, hdr->nlmsg_flags);
     int nlRet = s_nlSend(state, state->nl_sock, msg);
     if(nlRet < 0) {
