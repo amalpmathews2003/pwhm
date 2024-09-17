@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.36.8 - 2024-09-17(14:30:43 +0000)
+
+### Other
+
+- - Scan results OUI list not cleaned
+
 ## Release v6.36.7 - 2024-09-17(13:35:38 +0000)
 
 ### Other
