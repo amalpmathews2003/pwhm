@@ -172,19 +172,10 @@ void wld_radio_copySsidsToResult(wld_scanResults_t* results, amxc_llist_t* ssid_
     }
 }
 
+//@deprecated. Please use wld_scan_cleanupScanResultSSID
 bool wld_radio_scanresults_cleanup(wld_scanResults_t* results) {
-
     SAH_TRACEZ_INFO(ME, "Cleanup scanresults");
-
-    amxc_llist_it_t* it = amxc_llist_get_first(&results->ssids);
-    while(it != NULL) {
-        wld_scanResultSSID_t* SR_ssid = amxc_llist_it_get_data(it, wld_scanResultSSID_t, it);
-        it = amxc_llist_it_get_next(it);
-        amxc_llist_it_take(&SR_ssid->it);
-        free(SR_ssid);
-        SR_ssid = NULL;
-    }
-
+    wld_scan_cleanupScanResults(results);
     return true;
 }
 

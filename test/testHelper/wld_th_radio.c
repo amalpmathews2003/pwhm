@@ -322,6 +322,19 @@ int wld_th_rad_getScanResults(T_Radio* pRad, wld_scanResults_t* results) {
         wld_scanResultSSID_t* pCopy = calloc(1, sizeof(wld_scanResultSSID_t));
         assert_non_null(pCopy);
         memcpy(pCopy, pResult, sizeof(*pCopy));
+        amxc_llist_init(&pCopy->vendorIEs);
+
+        amxc_llist_for_each(vendorIt, &pResult->vendorIEs) {
+            wld_vendorIe_t* vendorIE = amxc_llist_it_get_data(vendorIt, wld_vendorIe_t, it);
+            wld_vendorIe_t* newVendorIE = calloc(1, sizeof(wld_vendorIe_t));
+            snprintf(newVendorIE->oui, SWL_OUI_STR_LEN, "%s", vendorIE->oui);
+            snprintf(newVendorIE->data, strlen(vendorIE->data) + 1, "%s", vendorIE->data);
+            amxc_llist_append(&pCopy->vendorIEs, &newVendorIE->it);
+        }
+
+
+
+
         amxc_llist_it_init(&pCopy->it);
         amxc_llist_append(&results->ssids, &pCopy->it);
     }

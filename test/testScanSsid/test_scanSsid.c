@@ -119,6 +119,14 @@ static int s_setupSuite(void** state _UNUSED) {
                     item->operatingStandards |= M_SWL_RADSTD_N;
                 }
             }
+            for(uint32_t i = 0; i < 2; i++) {
+                wld_vendorIe_t* vendorIe = calloc(1, sizeof(wld_vendorIe_t));
+                vendorIe->frame_type = M_VENDOR_IE_BEACON;
+                char* tmp = (i == 0 ? "AA:BB:00" : "AA:BB:11");
+                memcpy(vendorIe->oui, tmp, sizeof(vendorIe->oui));
+                amxc_llist_append(&item->vendorIEs, &vendorIe->it);
+            }
+
             amxc_llist_append(&results->ssids, &item->it);
         }
     }
@@ -182,7 +190,7 @@ static void test_startAndGetScan(void** state _UNUSED) {
             }
         }
     }
-    wld_scan_cleanupScanResults(&res);
+    wld_radio_scanresults_cleanup(&res);
     assert_int_equal(totalResults, match);
     assert_int_equal(totalResults, NB_SCAN_RESULTS);
 }
