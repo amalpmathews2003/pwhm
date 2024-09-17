@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.36.7 - 2024-09-17(13:35:38 +0000)
+
+### Other
+
+- - Failed to generate documentation for component "services_pwhm"
+
 ## Release v6.36.6 - 2024-09-17(12:26:53 +0000)
 
 ### Other
