@@ -2060,17 +2060,17 @@ struct S_EndPoint {
 
     int enable;
     T_FSM fsm;
-    struct S_CWLD_FUNC_TABLE* pFA;   /* Function Array */
+    struct S_CWLD_FUNC_TABLE* pFA;        /* Function Array */
     amxc_llist_it_t it;
-    amxd_object_t* pBus;             /* Keep a copy of the amxd_object_t */
-    void* vendorData;                /* Additional vendor specific data */
-    bool internalChange;             /* true when changing the data model internally for preventing handlers from executing. */
+    amxd_object_t* pBus;                  /* Keep a copy of the amxd_object_t */
+    void* vendorData;                     /* Additional vendor specific data */
+    bool internalChange;                  /* true when changing the data model internally for preventing handlers from executing. */
 
-    amxp_timer_t* reconnectTimer;    /* Timer to retry connecting when the connection is lost/could not be made */
-    uint32_t reconnectDelay;         /* Minimum time before try to reconnect */
-    uint32_t reconnectInterval;      /* Minimum time between two reconnections attempt */
-    bool multiAPEnable;              /* Set MultiAP BackhaulSTA on this EndPoint */
-    bool toggleBssOnReconnect;       /* Disable hostapd on EP reconnection */
+    amxp_timer_t* reconnectTimer;         /* Timer to retry connecting when the connection is lost/could not be made */
+    uint32_t reconnectDelay;              /* Minimum time before try to reconnect */
+    uint32_t reconnectInterval;           /* Minimum time between two reconnections attempt */
+    bool multiAPEnable;                   /* Set MultiAP BackhaulSTA on this EndPoint */
+    bool toggleBssOnReconnect;            /* Disable hostapd on EP reconnection */
 
     wld_multiap_profile_e multiAPProfile; /* MultiAP profile status */
     uint16_t multiAPVlanId;               /* Primary VLAN ID config for MultiAP */
