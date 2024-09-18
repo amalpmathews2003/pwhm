@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.37.1 - 2024-09-18(11:15:20 +0000)
+
+### Other
+
+- fix initial currChanpec of restarted hostapd
+
 ## Release v6.37.0 - 2024-09-17(14:47:54 +0000)
 
 ## Release v6.36.8 - 2024-09-17(14:30:43 +0000)
