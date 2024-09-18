@@ -256,7 +256,7 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         wifiGen_rad_initBands(pRad);
         pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
         //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
-        s_syncCurrentChannel(pRad, CHAN_REASON_PERSISTANCE);
+        s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
         //update rad status from hapd main iface state
         //when radio is not yet UP via EP connection, then update detailed state from hapd
         chanmgt_rad_state hapdRadDetState = CM_RAD_UNKNOWN;
