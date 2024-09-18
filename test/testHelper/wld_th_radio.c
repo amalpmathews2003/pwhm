@@ -146,7 +146,7 @@ void s_readChanInfo(T_Radio* pRad) {
     for(int i = 0; i < pRad->nrPossibleChannels; i++) {
         swl_chanspec_t cs = swl_chanspec_fromDm(pRad->possibleChannels[i], pRad->operatingChannelBandwidth, pRad->operatingFrequencyBand);
         wld_channel_mark_available_channel(cs);
-        if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) && swl_channel_isDfs(possibleChannels5[i])) {
+        if((pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ) && swl_channel_isDfs(pRad->possibleChannels[i])) {
             wld_channel_mark_radar_req_channel(cs);
             wld_channel_mark_passive_channel(cs);
         }
@@ -181,6 +181,15 @@ wld_th_radCap_t* s_findCap(const char* radName) {
     return NULL;
 }
 
+int wld_th_rad_vendorCb_poschans(T_Radio* rad, uint8_t* buf _UNUSED, int bufsize _UNUSED) {
+    assert_non_null(rad);
+    wld_channel_init_channels(rad);
+    s_readChanInfo(rad);
+    wld_rad_write_possible_channels(rad);
+    wld_chanmgt_writeDfsChannels(rad);
+    return 0;
+}
+
 /** Implements #PFN_WRAD_SUPPORTS */
 int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize _UNUSED) {
     assert_non_null(rad);
@@ -200,6 +209,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->supportedChannelBandwidth = cap->supportedChannelBandwidth;
         rad->supportedDataTransmitRates = cap->supportedDataTransmitRates;
         memcpy(&rad->cap, &cap->cap, sizeof(wld_radioCap_t));
+        wld_th_rad_vendorCb_poschans(rad, NULL, 0);
         return 0;
     }
 
@@ -241,9 +251,7 @@ int wld_th_radio_vendorCb_supports(T_Radio* rad, char* buf _UNUSED, int bufsize 
         rad->supportedStandards = M_SWL_RADSTD_B | M_SWL_RADSTD_G | M_SWL_RADSTD_N | M_SWL_RADSTD_AX;
     }
 
-    wld_channel_init_channels(rad);
-    s_readChanInfo(rad);
-    wld_rad_write_possible_channels(rad);
+    wld_th_rad_vendorCb_poschans(rad, NULL, 0);
 
 
     rad->detailedState = CM_RAD_DOWN;

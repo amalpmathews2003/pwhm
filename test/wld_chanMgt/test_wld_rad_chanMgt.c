@@ -659,6 +659,90 @@ static void test_wld_setAutoBwModeMaxCleared(void** state _UNUSED) {
     assert_int_equal(resBw, SWL_BW_AUTO);
 }
 
+static void s_updatePosChansAndCheckDefaultChan(T_Radio* rad, swl_channel_t posChans[], size_t nPosChans, swl_channel_t expDefChan) {
+    rad->nrPossibleChannels = nPosChans;
+    memcpy(rad->possibleChannels, posChans, nPosChans);
+    rad->pFA->mfn_wrad_poschans(rad, NULL, 0);
+    assert_int_equal(wld_chanmgt_getDefaultSupportedChannel(rad), expDefChan);
+}
+
+static void test_wld_getDefaultChannel(void** state _UNUSED) {
+    T_Radio* rad = dm.bandList[SWL_FREQ_BAND_EXT_2_4GHZ].rad;
+    assert_int_equal(wld_chanmgt_getDefaultSupportedChannel(rad), 1);
+
+    rad = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].rad;
+    swl_channel_t alt5g_0[] = {36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140};
+    s_updatePosChansAndCheckDefaultChan(rad, alt5g_0, sizeof(alt5g_0), 36);
+    swl_channel_t alt5g_1[] = {100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140};
+    s_updatePosChansAndCheckDefaultChan(rad, alt5g_1, sizeof(alt5g_1), 100);
+    swl_channel_t alt5g_2[] = {100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165};
+    s_updatePosChansAndCheckDefaultChan(rad, alt5g_2, sizeof(alt5g_2), 149);
+    s_updatePosChansAndCheckDefaultChan(rad, NULL, 0, 36);
+    rad->pFA->mfn_wrad_supports(rad, NULL, 0);
+    assert_int_equal(wld_chanmgt_getDefaultSupportedChannel(rad), 36);
+
+    rad = dm.bandList[SWL_FREQ_BAND_EXT_6GHZ].rad;
+    assert_int_equal(wld_chanmgt_getDefaultSupportedChannel(rad), 37);
+    s_updatePosChansAndCheckDefaultChan(rad, NULL, 0, 1);
+    rad->pFA->mfn_wrad_supports(rad, NULL, 0);
+    assert_int_equal(wld_chanmgt_getDefaultSupportedChannel(rad), 37);
+}
+
+static void s_updateMaxBwAndCheckDefaultBw(T_Radio* rad, swl_bandwidth_e maxBw, swl_bandwidth_e expDefBw) {
+    rad->maxChannelBandwidth = maxBw;
+    swl_chanspec_t chSpec = SWL_CHANSPEC_NEW(0, maxBw, SWL_FREQ_BAND_EXT_AUTO);
+    swl_radBw_e maxRadBw = swl_chanspec_toRadBw(&chSpec);
+    rad->supportedChannelBandwidth = ( 1 << (maxRadBw + 1)) - 1;
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), expDefBw);
+}
+
+static void test_wld_getDefaultBandwidth(void** state _UNUSED) {
+    T_Radio* rad = dm.bandList[SWL_FREQ_BAND_EXT_2_4GHZ].rad;
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), SWL_BW_20MHZ);
+    s_updateMaxBwAndCheckDefaultBw(rad, SWL_BW_40MHZ, SWL_BW_20MHZ);
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), SWL_BW_20MHZ);
+
+    rad = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].rad;
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), SWL_BW_80MHZ);
+    s_updateMaxBwAndCheckDefaultBw(rad, SWL_BW_40MHZ, SWL_BW_40MHZ);
+    s_updateMaxBwAndCheckDefaultBw(rad, SWL_BW_160MHZ, SWL_BW_80MHZ);
+    rad->pFA->mfn_wrad_supports(rad, NULL, 0);
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), SWL_BW_80MHZ);
+
+    rad = dm.bandList[SWL_FREQ_BAND_EXT_6GHZ].rad;
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), SWL_BW_160MHZ);
+    s_updateMaxBwAndCheckDefaultBw(rad, SWL_BW_320MHZ, SWL_BW_160MHZ);
+    s_updateMaxBwAndCheckDefaultBw(rad, SWL_BW_80MHZ, SWL_BW_80MHZ);
+    s_updateMaxBwAndCheckDefaultBw(rad, SWL_BW_AUTO, SWL_BW_20MHZ);
+    rad->pFA->mfn_wrad_supports(rad, NULL, 0);
+    assert_int_equal(wld_chanmgt_getDefaultSupportedBandwidth(rad), SWL_BW_160MHZ);
+}
+
+static void test_wld_compareDefaultChannel(void** state _UNUSED) {
+    struct test {
+        swl_freqBandExt_e freqBand;
+        swl_channel_t curChan;
+        swl_channel_t newChan;
+        swl_channel_t expChan;
+    } tests[] = {
+        {SWL_FREQ_BAND_EXT_2_4GHZ, 1, 6, 1},
+        {SWL_FREQ_BAND_EXT_2_4GHZ, 6, 1, 6},
+        {SWL_FREQ_BAND_EXT_5GHZ, 36, 100, 36},
+        {SWL_FREQ_BAND_EXT_5GHZ, 100, 149, 149},
+        {SWL_FREQ_BAND_EXT_5GHZ, 64, 108, 64},
+        {SWL_FREQ_BAND_EXT_6GHZ, 1, 5, 5},
+        {SWL_FREQ_BAND_EXT_6GHZ, 5, 1, 5},
+        {SWL_FREQ_BAND_EXT_6GHZ, 21, 69, 69},
+        {SWL_FREQ_BAND_EXT_6GHZ, 37, 93, 37},
+        {SWL_FREQ_BAND_EXT_6GHZ, 0, 9, 9},
+        {SWL_FREQ_BAND_EXT_6GHZ, 13, 0, 13},
+    };
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(tests); i++) {
+        struct test* pTest = &tests[i];
+        assert_int_equal(wld_chanmgt_getBetterDefaultChannel(pTest->freqBand, pTest->curChan, pTest->newChan), pTest->expChan);
+    }
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
     const struct CMUnitTest tests[] = {
@@ -670,6 +754,9 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_checkChannelChange),
         cmocka_unit_test(test_wld_setAutoBwMode),
         cmocka_unit_test(test_wld_setAutoBwModeMaxCleared),
+        cmocka_unit_test(test_wld_getDefaultChannel),
+        cmocka_unit_test(test_wld_getDefaultBandwidth),
+        cmocka_unit_test(test_wld_compareDefaultChannel),
     };
     ttb_util_setFilter();
     return cmocka_run_group_tests(tests, setup_suite, teardown_suite);

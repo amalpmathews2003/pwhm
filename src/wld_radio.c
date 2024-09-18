@@ -313,7 +313,11 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     T_Radio* pR = wld_rad_fromObj(object);
     ASSERTI_NOT_NULL(pR, , ME, "No radio mapped");
     swl_channel_t channel = amxc_var_dyncast(int32_t, newValue);
-    ASSERTI_NOT_EQUALS(channel, pR->channel, , ME, "%s: Same channel %d", pR->Name, channel);
+    if((channel == pR->channel) &&
+       (!swl_typeChanspec_equals(wld_chanmgt_getTgtChspec(pR), (swl_chanspec_t) SWL_CHANSPEC_EMPTY))) {
+        SAH_TRACEZ_INFO(ME, "%s: Same channel %d", pR->Name, channel);
+        return;
+    }
 
 
     SAH_TRACEZ_INFO(ME, "%s: set RadioChannel %d", pR->Name, channel);
@@ -547,7 +551,11 @@ static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t
     const char* OCBW = amxc_var_constcast(cstring_t, newValue);
 
     swl_radBw_e radBw = swl_conv_charToEnum(OCBW, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
-    ASSERTI_NOT_EQUALS(radBw, pRad->operatingChannelBandwidth, , ME, "%s: Same bandwidth %s", pRad->Name, swl_radBw_str[radBw]);
+    if((radBw == pRad->operatingChannelBandwidth) &&
+       (!swl_typeChanspec_equals(wld_chanmgt_getTgtChspec(pRad), (swl_chanspec_t) SWL_CHANSPEC_EMPTY))) {
+        SAH_TRACEZ_INFO(ME, "%s: Same bandwidth %s", pRad->Name, swl_radBw_str[radBw]);
+        return;
+    }
     bool autoBwChange = (pRad->operatingChannelBandwidth == SWL_RAD_BW_AUTO || radBw == SWL_RAD_BW_AUTO);
 
     pRad->operatingChannelBandwidth = radBw;

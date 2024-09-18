@@ -223,9 +223,8 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     if(!wld_rad_isUpExt(pRad) &&
        (pRad->autoChannelEnable || (pRad->externalAcsMgmt && pRad->autoChannelSetByUser)) &&
        (pRad->acsBootChannel != -1)) {
-        swl_freqBand_e f = wld_rad_getFreqBand(pRad);
-        tgtChspec.channel = pRad->acsBootChannel ? : swl_channel_defaults[f];
-        tgtChspec.bandwidth = swl_bandwidth_defaults[f];
+        tgtChspec.channel = pRad->acsBootChannel ? : wld_chanmgt_getDefaultSupportedChannel(pRad);
+        tgtChspec.bandwidth = wld_chanmgt_getDefaultSupportedBandwidth(pRad);
     }
 
     swl_channel_t tgtChan = tgtChspec.channel;

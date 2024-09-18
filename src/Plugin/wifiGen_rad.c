@@ -150,6 +150,19 @@ static void s_updateNrAntenna(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWiphyInfo
     pRad->nrActiveAntenna[COM_DIR_RECEIVE] = pWiphyInfo->nrActiveAntenna[COM_DIR_RECEIVE];
 }
 
+swl_channel_t s_getDefaultSupportedChannel(wld_nl80211_bandDef_t* pBand) {
+    swl_channel_t defChan = SWL_CHANNEL_INVALID;
+    ASSERTS_NOT_NULL(pBand, defChan, ME, "NULL");
+    for(uint32_t i = 0; i < pBand->nChans; i++) {
+        swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+        if(swl_chanspec_channelFromMHz(&chanSpec, pBand->chans[i].ctrlFreq) != SWL_RC_OK) {
+            continue;
+        }
+        defChan = wld_chanmgt_getBetterDefaultChannel((swl_freqBandExt_e) pBand->freqBand, defChan, chanSpec.channel);
+    }
+    return defChan;
+}
+
 #define SUITE(oui, id)  (((oui) << 8) | (id))
 /* cipher suite selectors */
 #define WLAN_CIPHER_SUITE_USE_GROUP     SUITE(0x000FAC, 0)
@@ -265,9 +278,9 @@ static void s_initialiseCapabilities(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWi
             }
             SAH_TRACEZ_INFO(ME, "%s: Caps[%s]={%s}", pRad->Name, swl_freqBand_str[pBand->freqBand], wld_rad_getSuppDrvCaps(pRad, pBand->freqBand));
             if((pRad->channel == 0) && (wld_rad_getFreqBand(pRad) == pBand->freqBand)) {
-                swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
-                if(swl_chanspec_channelFromMHz(&chanSpec, pBand->chans[0].ctrlFreq) == SWL_RC_OK) {
-                    pRad->channel = chanSpec.channel;
+                swl_channel_t defChan = s_getDefaultSupportedChannel(pBand);
+                if(defChan) {
+                    pRad->channel = defChan;
                     SAH_TRACEZ_INFO(ME, "%s: get first supported channel %u", pRad->Name, pRad->channel);
                 }
             }

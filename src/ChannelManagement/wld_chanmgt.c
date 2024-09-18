@@ -84,6 +84,8 @@
 /* timeout in msec for the setChanspec */
 #define WLD_CHANMGT_REQ_CHANGE_CS_TIMEOUT 10000
 
+#define WLD_CHANMGT_DEF_6G_FCC_CHAN 37
+
 static void s_saveClearedChannels(T_Radio* pRad, amxd_trans_t* pTrans) {
     swl_channel_t clearList[50];
     memset(clearList, 0, sizeof(clearList));
@@ -423,11 +425,11 @@ static swl_rc_ne s_checkTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld
 
     /* Reset to default channel if an invalid channel switch occurred */
     if(reason == CHAN_REASON_INVALID) {
-        swl_chanspec_t resetChanspec = SWL_CHANSPEC_NEW(swl_channel_defaults[pR->operatingFrequencyBand],
+        swl_chanspec_t resetChanspec = SWL_CHANSPEC_NEW(wld_chanmgt_getDefaultSupportedChannel(pR),
                                                         pR->targetChanspec.chanspec.bandwidth,
                                                         pR->operatingFrequencyBand);
-        SAH_TRACEZ_ERROR(ME, "%s: Invalid channel switch <%u>, reset to default channel <%u>", pR->Name, pR->channel,
-                         resetChanspec.channel);
+        SAH_TRACEZ_ERROR(ME, "%s: Invalid channel switch <%u>, reset to default chanspec <%s>", pR->Name, pR->channel,
+                         swl_typeChanspecExt_toBuf32(resetChanspec).buf);
         return wld_chanmgt_setTargetChanspec(pR, resetChanspec, true, CHAN_REASON_RESET, NULL);
     }
 
@@ -718,6 +720,59 @@ static void s_setAcsBootChannel_pwf(void* priv _UNUSED, amxd_object_t* object, a
     SAH_TRACEZ_OUT(ME);
 }
 
+/*
+ * default channel:
+ * - must belong to supported channel list
+ * - for 5GHz freqBand, the first non-dfs supported channel is selected
+ * - for 6GHz freqBand, the first supported PSC channel greater or equal to 37,
+ *                      otherwise, take the first PSC
+ * - otherwise, take the first supported channel
+ */
+swl_channel_t wld_chanmgt_getBetterDefaultChannel(swl_freqBandExt_e freqBand, swl_channel_t curChan, swl_channel_t newChan) {
+    if((curChan == 0) ||
+       ((freqBand == SWL_FREQ_BAND_EXT_5GHZ) &&
+        (!swl_channel_isDfs(newChan)) && (swl_channel_isDfs(curChan))) ||
+       ((freqBand == SWL_FREQ_BAND_EXT_6GHZ) &&
+        (swl_channel_is6gPsc(newChan)) &&
+        ((!swl_channel_is6gPsc(curChan)) || (curChan < WLD_CHANMGT_DEF_6G_FCC_CHAN)))) {
+        return newChan;
+    }
+    return curChan;
+}
+
+static void s_selectDefaultChannel(T_Radio* pRad, void* data, int channel) {
+    swl_channel_t* pChan = (swl_channel_t*) data;
+    swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(channel, SWL_BW_AUTO, pRad->operatingFrequencyBand);
+    ASSERTS_TRUE(wld_channel_is_available(chanspec), , ME, "chan %d not available", channel);
+    *pChan = wld_chanmgt_getBetterDefaultChannel(pRad->operatingFrequencyBand, *pChan, chanspec.channel);
+}
+
+swl_channel_t wld_chanmgt_getDefaultSupportedChannel(T_Radio* pRad) {
+    swl_channel_t defChan = SWL_CHANNEL_INVALID;
+    ASSERTS_NOT_NULL(pRad, defChan, ME, "NULL");
+    wld_channel_do_for_each_channel(pRad, &defChan, s_selectDefaultChannel);
+    if(!defChan) {
+        defChan = swl_channel_defaults[wld_rad_getFreqBand(pRad)];
+        SAH_TRACEZ_WARNING(ME, "%s: rad has not supp chans, assume default chan %d", pRad->Name, defChan);
+    }
+    return defChan;
+}
+
+swl_bandwidth_e wld_chanmgt_getDefaultSupportedBandwidth(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, SWL_BW_AUTO, ME, "NULL");
+    swl_bandwidth_e defBw = swl_bandwidth_defaults[wld_rad_getFreqBand(pRad)];
+    ASSERTW_TRUE(pRad->supportedChannelBandwidth > M_SWL_BW_AUTO, SWL_BW_20MHZ, ME, "%s: no info about supported BW: assume default 20MHz", pRad->Name);
+    while(defBw > SWL_BW_AUTO) {
+        swl_chanspec_t chSpec = SWL_CHANSPEC_NEW(0, defBw, SWL_FREQ_BAND_EXT_AUTO);
+        swl_radBw_e radBw = swl_chanspec_toRadBw(&chSpec);
+        if(SWL_BIT_IS_SET(pRad->supportedChannelBandwidth, radBw)) {
+            break;
+        }
+        defBw--;
+    }
+    return defBw;
+}
+
 /**
  * Ensure current channels is properly filled in with default.
  */
@@ -727,9 +782,9 @@ void wld_chanmgt_checkInitChannel(T_Radio* pRad) {
     }
     pRad->channelChangeListSize = 10;
 
-    swl_freqBand_e freqB = wld_rad_getFreqBand(pRad);
-    swl_chanspec_t defaultChanspec = SWL_CHANSPEC_NEW(swl_channel_defaults[freqB],
-                                                      swl_bandwidth_defaults[freqB], pRad->operatingFrequencyBand);
+    swl_chanspec_t defaultChanspec = SWL_CHANSPEC_NEW(wld_chanmgt_getDefaultSupportedChannel(pRad),
+                                                      wld_chanmgt_getDefaultSupportedBandwidth(pRad),
+                                                      pRad->operatingFrequencyBand);
     //consider the default chanspec from the driver
     //otherwise fall back to implicit default chanspec per freqBand
     swl_chanspec_t radChanspec = wld_rad_getSwlChanspec(pRad);
