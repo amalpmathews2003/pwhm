@@ -646,7 +646,7 @@ define probelist_t{
 		/**
 		 * <p>Indicates whether automatic channel selection is managed
 		 * by an external process. </p> */
-		%persistent %private bool ExternalAcsMgmt{
+		%persistent %protected bool ExternalAcsMgmt{
 			default false;
 		}
 
