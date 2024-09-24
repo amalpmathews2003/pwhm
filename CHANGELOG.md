@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.37.3 - 2024-09-24(16:33:14 +0000)
+
+### Other
+
+- : Fix ExternalAcsMgmt value not loaded on reboot
+
 ## Release v6.37.2 - 2024-09-18(11:28:41 +0000)
 
 ### Other
