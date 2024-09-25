@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.37.4 - 2024-09-25(09:38:49 +0000)
+
+### Other
+
+- - Allow profile Alias to be used as profile reference
+
 ## Release v6.37.3 - 2024-09-24(16:33:14 +0000)
 
 ### Other
