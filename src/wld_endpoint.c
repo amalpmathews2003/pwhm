@@ -231,8 +231,15 @@ static void s_setProfileReference_pwf(void* priv _UNUSED, amxd_object_t* object,
     T_EndPointProfile* oldProfile = pEP->currentProfile;
     pEP->currentProfile = NULL;
 
-    amxd_object_t* newProfileObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", newProfileRef);
+    amxd_object_t* newProfileObj = NULL;
+
+    if(swl_str_countChar(newProfileRef, '.') > 0) {
+        newProfileObj = amxd_object_findf(amxd_dm_get_root(wld_plugin_dm), "%s", newProfileRef);
+    } else {
+        newProfileObj = amxd_object_findf(pEP->pBus, "Profile.%s", newProfileRef);
+    }
     ASSERT_NOT_NULL(newProfileObj, , ME, "No profile found matching the profileRef [%s]", newProfileRef);
+
 
     T_EndPointProfile* newProfile = (T_EndPointProfile*) newProfileObj->priv;
     int comparison = wld_endpoint_isProfileIdentical(oldProfile, newProfile);
