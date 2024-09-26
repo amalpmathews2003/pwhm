@@ -1085,9 +1085,13 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
     wld_util_initCustomAlias(&trans, object);
 
     if(pEP->currentProfile) {
-        char* profileRef = amxd_object_get_path(pEP->currentProfile->pBus, AMXD_OBJECT_INDEXED);
-        amxd_trans_set_cstring_t(&trans, "ProfileReference", profileRef);
-        free(profileRef);
+        char* curProfileStr = amxd_object_get_cstring_t(pEP->pBus, "ProfileReference", NULL);
+        if((swl_str_isEmpty(curProfileStr) || (swl_str_countChar(curProfileStr, '.') > 0))) {
+            char* profileRef = amxd_object_get_path(pEP->currentProfile->pBus, AMXD_OBJECT_INDEXED);
+            amxd_trans_set_cstring_t(&trans, "ProfileReference", profileRef);
+            free(profileRef);
+        }
+        free(curProfileStr);
     } else {
         uint32_t loadProfs = amxc_llist_size(&pEP->llProfiles);
         uint32_t savedProfs = amxd_object_get_instance_count(amxd_object_get(pEP->pBus, "Profile"));
