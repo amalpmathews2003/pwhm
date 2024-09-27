@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.0 - 2024-09-27(16:12:22 +0000)
+
+### Other
+
+- - Adding a handler to filter the incoming scan requests.
+
 ## Release v6.38.0 - 2024-09-27(13:56:55 +0000)
 
 ### Other
