@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.38.0 - 2024-09-27(13:56:55 +0000)
+
+### Other
+
+- : ScanResults update enabling
+
 ## Release v6.37.5 - 2024-09-26(13:22:26 +0000)
 
 ### Other
