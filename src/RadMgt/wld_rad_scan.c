@@ -109,6 +109,7 @@ static void s_setScanConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const
     pRad->scanState.cfg.maxChannelsPerScan = amxd_object_get_int32_t(object, "MaxChannelsPerScan", NULL);
     pRad->scanState.cfg.scanRequestInterval = amxd_object_get_int32_t(object, "ScanRequestInterval", NULL);
     pRad->scanState.cfg.scanChannelCount = amxd_object_get_int32_t(object, "ScanChannelCount", NULL);
+    pRad->scanState.cfg.enableScanResultsDm = amxd_object_get_bool(object, "EnableScanResultsDm", NULL);
 
     if(pRad->scanState.cfg.fastScanReasons != NULL) {
         free(pRad->scanState.cfg.fastScanReasons);
@@ -1229,6 +1230,8 @@ static void s_updateScanResultObjs(T_Radio* pR) {
         wld_scan_cleanupScanResultSSID(ssid);
     }
     s_updateCountCochannel(pR, objScan);
+
+    wld_radio_scanresults_cleanup(&res);
 }
 
 /**
@@ -1271,7 +1274,7 @@ void wld_scan_done(T_Radio* pR, bool success) {
     ev.scanReason = pR->scanState.scanReason;
     wld_event_trigger_callback(gWld_queue_rad_onScan_change, &ev);
 
-    if(success && (pR->scanState.scanType > SCAN_TYPE_INTERNAL)) {
+    if(success && (pR->scanState.scanType > SCAN_TYPE_INTERNAL) && pR->scanState.cfg.enableScanResultsDm) {
         swla_delayExec_add((swla_delayExecFun_cbf) s_updateScanResultObjs, pR);
     }
 

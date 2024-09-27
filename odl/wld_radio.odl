@@ -2617,6 +2617,13 @@ define probelist_t{
 			on event "*" call wld_rad_setScanConfig_ocf;
 
 			/**
+			 * Enable the ScanResults datamodel update.
+			 */
+			%protected %persistent bool EnableScanResultsDm {
+				default true;
+			}
+
+			/**
 			 * Number of channels sent to the driver per scan request when stations are not present.
 			 * -1 means default config from driver.
 			 * @version 10.2

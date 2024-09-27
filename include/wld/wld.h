@@ -1198,6 +1198,7 @@ typedef struct {
     int32_t maxChannelsPerScan;
     char* fastScanReasons;
     wld_scanArgs_t scanArguments;
+    bool enableScanResultsDm;
 } wld_scan_config_t;
 
 typedef struct {
