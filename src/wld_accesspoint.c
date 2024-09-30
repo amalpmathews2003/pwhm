@@ -2766,7 +2766,6 @@ void _wld_ap_setConf_ocf(const char* const sig_name,
 }
 
 static void s_updateMloStats(amxd_object_t* const obj, wld_mloStats_t* stats) {
-    SWLA_OBJECT_SET_PARAM_UINT32(obj, "LinkID", stats->linkid);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "PacketsSent", stats->txPackets);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "PacketsReceived", stats->rxPackets);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastBytesSent", stats->txUbyte);

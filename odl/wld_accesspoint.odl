@@ -2396,22 +2396,11 @@ define rrm_t{
 		}
 
 		/**
-		 * The Access Points (APs) affiliated to the AP MLD.
-		 * [EasyMesh] Source: Agent AP MLD Configuration TLV.
+		 * Statistics for the Access Points (APs) affiliated to the AP MLD.
+		 * [EasyMesh] Source: Affiliated AP Metrics TLV [Section 17.2.101/EasyMesh].
 		 */
 		%read-only object MLOStats {
 			on action read call wld_ap_getMloStats_orf;
-
-			/**
-			 * Primary / Auxilary
-			 */
-			%read-only string MLORole;
-
-			/**
-			 * The Link ID assigned to this affiliated AP.
-			 * [EasyMesh] source: Agent AP MLD Configuration TLV.
-			 */
-			%read-only uint32 LinkID;
 
 			/**
 			 * The number of packets transmitted to the Affiliated AP.
