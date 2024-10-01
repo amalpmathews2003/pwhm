@@ -596,7 +596,7 @@ void wld_vap_remove_all(T_AccessPoint* pAP) {
     int totalNrDev = pAP->AssociatedDeviceNumberOfEntries;
     for(i = 0; i < totalNrDev; i++) {
         pAD = pAP->AssociatedDevice[totalNrDev - 1 - i];
-        if(pAD->Active) {
+        if(pAD && pAD->Active) {
             wld_ad_add_disconnection(pAP, pAD);
         }
     }
