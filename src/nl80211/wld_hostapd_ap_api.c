@@ -613,6 +613,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP) {
         "transition_disable",
         "mobility_domain",
         "wps_state",
+        "disable_pmksa_caching", "wpa_disable_eapol_key_retries", "okc",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             secParams, SWL_ARRAY_SIZE(secParams), &action);
