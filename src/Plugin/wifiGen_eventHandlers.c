@@ -660,13 +660,22 @@ static void s_frameReceivedCb(void* pRef, void* pData _UNUSED, size_t frameLen, 
 }
 
 
-static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex, const char* ifName) {
+static bool s_chechTgtRadListener(void* pRef, void* pData _UNUSED, int32_t wiphy, int32_t ifIndex, uint32_t freqMHz, const char* ifName) {
     T_Radio* pRad = (T_Radio*) pRef;
     ASSERTS_TRUE(debugIsRadPointer(pRad), false, ME, "NULL");
     //1) try to match radios of known ifIndex or ifName
     if(ifIndex > 0) {
         if(wld_rad_hasLinkIfIndex(pRad, ifIndex) || wld_rad_hasLinkIfName(pRad, ifName)) {
             return true;
+        }
+
+        swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+        if(swl_rc_isOk(swl_chanspec_channelFromMHz(&chanSpec, freqMHz))) {
+            T_SSID* pSSID = wld_ssid_getSsidByIfIndex(ifIndex);
+            return ((pRad->operatingFrequencyBand == chanSpec.band) &&
+                    (pSSID != NULL) &&
+                    ((pSSID->RADIO_PARENT == pRad) ||
+                     (wld_mld_getNeighLinkByRad(pSSID->pMldLink, pRad)) != NULL));
         }
     }
     //2) otherwise, only match wiphy id

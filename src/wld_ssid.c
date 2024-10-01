@@ -421,6 +421,20 @@ T_SSID* wld_ssid_getSsidByBssid(swl_macBin_t* macBin) {
     return NULL;
 }
 
+T_SSID* wld_ssid_getSsidByIfIndex(int32_t ifIndex) {
+    ASSERTS_FALSE(ifIndex <= 0, NULL, ME, "Invalid ifIndex %d", ifIndex);
+    amxc_llist_for_each(it, &sSsidList) {
+        T_SSID* pSSID = amxc_container_of(it, T_SSID, it);
+        T_AccessPoint* pAP = pSSID->AP_HOOK;
+        T_EndPoint* pEP = pSSID->ENDP_HOOK;
+        if(((pAP != NULL) && ((int32_t) pAP->index == ifIndex))
+           || ((pEP != NULL) && ((int32_t) pEP->index == ifIndex))) {
+            return pSSID;
+        }
+    }
+    return NULL;
+}
+
 T_SSID* wld_ssid_getSsidByMacAddress(swl_macBin_t* macBin) {
     amxc_llist_for_each(it, &sSsidList) {
         T_SSID* pSSID = amxc_container_of(it, T_SSID, it);

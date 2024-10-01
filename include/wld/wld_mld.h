@@ -111,6 +111,7 @@ bool wld_mld_isLinkConfigured(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighLinks(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighActiveLinks(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink);
+wld_mldLink_t* wld_mld_getNeighLinkByRad(wld_mldLink_t* pLink, T_Radio* pRad);
 
 wld_mldLink_t* wld_mld_firstNeighLink(wld_mldLink_t* pLink);
 wld_mldLink_t* wld_mld_nextNeighLink(wld_mldLink_t* pLink);
