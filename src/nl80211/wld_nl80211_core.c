@@ -275,7 +275,7 @@ int s_listenerCmp(const void* e1, const void* e2) {
     //wiphyId1 < wiphyId2 < .... < wiphyIdAny < wiphyIdUndef
     return (pL2->wiphy - pL1->wiphy);
 }
-static swl_rc_ne s_findListenersOfEvent(wld_nl80211_state_t* state, uint32_t wiphy, uint32_t ifIndex, const char* ifName, uint32_t cmd, swl_unLiList_t* pList) {
+static swl_rc_ne s_findListenersOfEvent(wld_nl80211_state_t* state, uint32_t wiphy, uint32_t ifIndex, uint32_t ctrlFreq, const char* ifName, uint32_t cmd, swl_unLiList_t* pList) {
     ASSERTS_NOT_NULL(state, SWL_RC_INVALID_PARAM, ME, NULL);
     ASSERTS_NOT_NULL(pList, SWL_RC_INVALID_PARAM, ME, NULL);
     swl_unLiList_init(pList, sizeof(wld_nl80211_listener_t*));
@@ -289,7 +289,7 @@ static swl_rc_ne s_findListenersOfEvent(wld_nl80211_state_t* state, uint32_t wip
         }
         if((ifIndex == pL->ifIndex) ||
            ((wiphy == pL->wiphy) && (pL->ifIndex == WLD_NL80211_ID_ANY) &&
-            (!pL->handlers.fCheckTgtCb || pL->handlers.fCheckTgtCb(pL->pRef, pL->pData, wiphy, ifIndex, ifName))) ||
+            (!pL->handlers.fCheckTgtCb || pL->handlers.fCheckTgtCb(pL->pRef, pL->pData, wiphy, ifIndex, ctrlFreq, ifName))) ||
            (pL->wiphy == WLD_NL80211_ID_ANY)) {
             SAH_TRACEZ_INFO(ME, "find listener(w:%d,i:%d) for evt(%d) over w:%d,i:%d",
                             pL->wiphy, pL->ifIndex, cmd, wiphy, ifIndex);
@@ -349,8 +349,12 @@ static swl_rc_ne s_handleEvent(wld_nl80211_state_t* state, struct nlmsghdr* nlh)
     uint32_t ifIndex = wld_nl80211_getIfIndex(tb);
     char ifName[IFNAMSIZ] = {0};
     wld_nl80211_getIfName(tb, ifName, sizeof(ifName));
+    uint32_t ctrlFreq = 0;
+    if(tb[NL80211_ATTR_WIPHY_FREQ] != NULL) {
+        ctrlFreq = nla_get_u32(tb[NL80211_ATTR_WIPHY_FREQ]);
+    }
     swl_unLiList_t listeners;
-    s_findListenersOfEvent(state, wiphy, ifIndex, ifName, gnlh->cmd, &listeners);
+    s_findListenersOfEvent(state, wiphy, ifIndex, ctrlFreq, ifName, gnlh->cmd, &listeners);
     ASSERTI_NOT_EQUALS(swl_unLiList_size(&listeners), 0, SWL_RC_CONTINUE, ME, "unhandled evt(%d:%s) (w:%d,i:%d)",
                        gnlh->cmd, wld_nl80211_msgName(gnlh->cmd), wiphy, ifIndex);
     //parse event and call listener handler
