@@ -72,6 +72,7 @@ bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd,
 bool wld_wpaCtrl_sendCmdCheckResponseExt(wld_wpaCtrlInterface_t* pIface, char* cmd, char* expectedResponse, uint32_t tmOutMSec);
 swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...);
 swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, char* valStr, size_t valStrSize);
+swl_rc_ne wld_wpaCtrl_getSyncCmdParamValInt32Def(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, int32_t* pRetVal, int32_t defVal);
 void wld_wpaCtrl_processMsg(wld_wpaCtrlInterface_t* pInterface, char* msgData, size_t len);
 bool wld_wpaCtrl_checkSockPath(const char* sockPath);
 swl_rc_ne wld_wpaCtrl_queryToSock(const char* serverPath, const char* sockName, const char* cmd, char* reply, size_t replyLen);
