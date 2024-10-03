@@ -81,6 +81,11 @@
 
 #define ME "genFsm"
 
+typedef struct {
+    T_Radio* pRad;
+    swl_chanspec_t chanspec;
+} chanspecInfo_t;
+
 /*
  * List of actions that can be used to apply hostapd configuration,
  * starting from the most global (most critical)
@@ -389,6 +394,16 @@ static bool s_doUpdateHostapd(T_Radio* pRad) {
     return true;
 }
 
+static void s_syncFixedChannel(chanspecInfo_t* pUserConf) {
+    ASSERTS_NOT_NULL(pUserConf, , ME, "NULL");
+    swl_chanspec_t userChanspec = pUserConf->chanspec;
+    T_Radio* pRad = pUserConf->pRad;
+    free(pUserConf);
+    ASSERTI_FALSE(swl_typeChanspec_equals(pRad->targetChanspec.chanspec, userChanspec), , ME, "%s: Chanspec equality %s", pRad->Name, swl_typeChanspecExt_toBuf32(userChanspec).buf);
+    SAH_TRACEZ_WARNING(ME, "%s: restore user config %s", pRad->Name, swl_typeChanspecExt_toBuf32(userChanspec).buf);
+    wld_chanmgt_setTargetChanspec(pRad, userChanspec, false, CHAN_REASON_MANUAL, NULL);
+}
+
 static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
     T_Radio* pRad = (T_Radio*) userData;
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
@@ -413,6 +428,17 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
         wifiGen_hapd_writeConfig(pRad);
         if(wld_secDmn_countCfgParamSuppByVal(pRad->hostapd, SWL_TRL_TRUE) > 0) {
             wld_ap_hostapd_sendCommand(pAP, "RELOAD", "refreshConfig");
+        }
+    }
+
+    if(!pRad->autoChannelEnable
+       && (pRad->userChanspec.channel != 0)
+       && pRad->externalAcsMgmt) {
+        chanspecInfo_t* userChanspec = calloc(1, sizeof(chanspecInfo_t));
+        if(userChanspec != NULL) {
+            userChanspec->pRad = pRad;
+            userChanspec->chanspec = pRad->userChanspec;
+            swla_delayExec_addTimeout((swla_delayExecFun_cbf) s_syncFixedChannel, userChanspec, 100);
         }
     }
 

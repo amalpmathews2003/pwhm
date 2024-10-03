@@ -1508,6 +1508,7 @@ struct WLD_RADIO {
     swl_function_deferredInfo_t callIdReqChanspec;
     amxp_timer_t* timerReqChanspec;
     wld_rad_detailedChanState_t currentChanspec;
+    swl_chanspec_t userChanspec;
     uint16_t totalNrTargetChanspecChanges;                  /* Total number of target chanspec changes */
     uint16_t totalNrCurrentChanspecChanges;                 /* Total number of current chanspec changes */
     uint16_t channelChangeCounters[CHAN_REASON_MAX];        /* Counter for channel changes */

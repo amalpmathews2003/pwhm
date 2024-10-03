@@ -350,6 +350,7 @@ static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
         pR->channelChangeReason = CHAN_REASON_MANUAL;
         swl_chanspec_t chanspec = swl_chanspec_fromDm(channel, pR->operatingChannelBandwidth, pR->operatingFrequencyBand);
         swl_rc_ne retcode = wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_MANUAL, NULL);
+        pR->userChanspec = pR->targetChanspec.chanspec;
         if(retcode < SWL_RC_OK) {
             /* If target channel is not valid, reset channel entry */
             wld_rad_chan_update_model(pR, NULL);
@@ -563,6 +564,7 @@ static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t
 
     swl_chanspec_t chanspec = swl_chanspec_fromDm(pRad->channel, radBw, pRad->operatingFrequencyBand);
     wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
+    pRad->userChanspec = pRad->targetChanspec.chanspec;
     SAH_TRACEZ_INFO(ME, "%s: set OCBW %s : %u", pRad->Name, swl_radBw_str[radBw], autoBwChange);
 
     if(autoBwChange) {
@@ -589,6 +591,7 @@ static void s_setAutoBandwidthSelectMode_pwf(void* priv _UNUSED, amxd_object_t* 
     SAH_TRACEZ_INFO(ME, "%s: set target chanspec %s with new AutoBWMode %s",
                     pRad->Name, swl_typeChanspecExt_toBuf32(chanspec).buf, wld_rad_autoBwSelectMode_str[autoBwSelectMode]);
     wld_chanmgt_setTargetChanspec(pRad, chanspec, false, CHAN_REASON_MANUAL, NULL);
+    pRad->userChanspec = pRad->targetChanspec.chanspec;
     wld_autoCommitMgr_notifyRadEdit(pRad);
 
     SAH_TRACEZ_OUT(ME);

@@ -668,6 +668,7 @@ amxd_status_t _Radio_setChanspec(amxd_object_t* obj,
     ASSERT_FALSE(rc < SWL_RC_OK, amxd_status_unknown_error,
                  ME, "%s: fail to set channel %d", pR->Name, channel);
     chanspec = pR->targetChanspec.chanspec;
+    pR->userChanspec = pR->targetChanspec.chanspec;
 
     /* release/notify old call, if any.*/
     if(swl_function_deferIsActive(&pR->callIdReqChanspec)) {
