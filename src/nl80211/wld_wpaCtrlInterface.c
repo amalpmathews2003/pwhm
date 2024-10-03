@@ -133,6 +133,32 @@ swl_rc_ne wld_wpaCtrl_getSyncCmdParamVal(wld_wpaCtrlInterface_t* pIface, const c
 }
 
 /**
+ * @brief send synchronous command to wpa_ctrl server
+ * and convert a parameter value in the reply (string in base 10) to int32
+ * or return default value
+ *
+ * @param pIface :the wpa_ctrl interface to which the command is sent
+ * @param cmd : string command to be sent
+ * @param key : parameter name to be fetched in the reply (key=value)
+ * @param pRetVal: pointer to resulting int value
+ * @param defVal : default value returned on failure
+ *
+ * @return converted int32 value or defVal on failure
+ */
+swl_rc_ne wld_wpaCtrl_getSyncCmdParamValInt32Def(wld_wpaCtrlInterface_t* pIface, const char* cmd, const char* key, int32_t* pRetVal, int32_t defVal) {
+    char valStr[32] = {0};
+    W_SWL_SETPTR(pRetVal, defVal);
+    swl_rc_ne rc = wld_wpaCtrl_getSyncCmdParamVal(pIface, cmd, key, valStr, sizeof(valStr));
+    ASSERTS_TRUE(swl_rc_isOk(rc), rc, ME, "Not found");
+    ASSERTS_STR(valStr, SWL_RC_NOT_AVAILABLE, ME, "Empty");
+    int32_t valInt = defVal;
+    rc = wldu_convStrToNum(valStr, &valInt, sizeof(valInt), 10, true);
+    ASSERTS_TRUE(swl_rc_isOk(rc), SWL_RC_ERROR, ME, "fail to convert");
+    W_SWL_SETPTR(pRetVal, valInt);
+    return SWL_RC_OK;
+}
+
+/**
  * @brief send synchronous command to wpa_ctrl server and check the received reply
  * within a defined delay
  *

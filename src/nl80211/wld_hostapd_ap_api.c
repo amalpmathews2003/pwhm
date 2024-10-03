@@ -1282,6 +1282,15 @@ swl_rc_ne wld_ap_hostapd_requestRRMReport(T_AccessPoint* pAP, const swl_macChar_
     return wld_ap_hostapd_requestRRMReport_ext(pAP, sta, &reqCall);
 }
 
+swl_rc_ne wld_ap_hostapd_getNumMldLinks(T_AccessPoint* pAP, uint32_t* pNLinks) {
+    int32_t val = 0;
+    W_SWL_SETPTR(pNLinks, val);
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc = wld_wpaCtrl_getSyncCmdParamValInt32Def(pAP->wpaCtrlInterface, "STATUS", "num_links", &val, val);
+    W_SWL_SETPTR(pNLinks, val);
+    return rc;
+}
+
 swl_trl_e wld_hostapd_ap_getCfgParamSupp(T_AccessPoint* pAP, const char* param) {
     ASSERT_NOT_NULL(pAP, SWL_TRL_UNKNOWN, ME, "NULL");
     wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
