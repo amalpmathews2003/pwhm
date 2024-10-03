@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.3 - 2024-10-03(16:02:29 +0000)
+
+### Other
+
+- Radio operatingChannelBandwidth is not restored
+
 ## Release v6.39.2 - 2024-10-03(07:49:17 +0000)
 
 ## Release v6.39.1 - 2024-10-01(07:39:09 +0000)
