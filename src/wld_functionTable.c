@@ -98,6 +98,12 @@ static swl_rc_ne TRAP_mfn_wrad_stop_scan(T_Radio* rad) {
     return SWL_RC_ERROR;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_continue_external_scan(T_Radio* rad) {
+    _UNUSED_(rad);
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static int TRAP_mfn_wrad_addVapExt(T_Radio* rad, T_AccessPoint* ap) {
     _UNUSED_(rad);
     _UNUSED_(ap);
@@ -736,6 +742,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_getscanfilterinfo);
     FTA_ASSIGN(mfn_wrad_start_scan);
     FTA_ASSIGN(mfn_wrad_stop_scan);
+    FTA_ASSIGN(mfn_wrad_continue_external_scan);
     FTA_ASSIGN(mfn_wrad_scan_results);
     FTA_ASSIGN(mfn_wrad_update_mon_stats);
     FTA_ASSIGN(mfn_wrad_setup_stamon);

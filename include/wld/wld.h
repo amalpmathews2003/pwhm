@@ -2557,6 +2557,16 @@ typedef struct S_CWLD_FUNC_TABLE {
      */
     swl_rc_ne (* mfn_wrad_stop_scan)(T_Radio* pRad);
 
+    /*
+     * @brief request optional external scan manager whether to continue or finish the scanning sequence
+     *
+     * @param pRad pointer to radio context
+     *
+     * @return SWL_RC_OK if scan should be continued
+     *         <= SWL_RC_ERROR to finish it
+     */
+    swl_rc_ne (* mfn_wrad_continue_external_scan)(T_Radio* pRad);
+
     PFN_WRAD_SCAN_RESULTS mfn_wrad_scan_results;
 
     /* <<ADD Functions that do combined task or no HW related >> */

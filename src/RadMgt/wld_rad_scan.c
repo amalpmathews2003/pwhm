@@ -1263,6 +1263,11 @@ void wld_scan_done(T_Radio* pR, bool success) {
                     pR->Name, success, pR->scanState.scanReason, wld_scan_isRunning(pR),
                     swl_function_deferIsActive(&pR->scanState.scanFunInfo));
 
+    if(pR->pFA->mfn_wrad_continue_external_scan(pR) == SWL_RC_OK) {
+        // scan continued by external scan manager
+        return;
+    }
+
     if(!wld_scan_isRunning(pR)) {
         return;
     }
