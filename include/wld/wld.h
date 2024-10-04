@@ -2650,6 +2650,7 @@ T_Radio* wld_getRadioByIndex(int index);
 T_Radio* wld_getRadioByName(const char* name);
 T_Radio* wld_getRadioOfIfaceIndex(int index);
 T_Radio* wld_getRadioOfIfaceName(const char* ifName);
+T_Radio* wld_getRadioByWiPhyId(int32_t wiPhyId);
 T_Radio* wld_getUinitRadioByBand(swl_freqBandExt_e band);
 T_EndPoint* wld_getEndpointByAlias(const char* name);
 T_AccessPoint* wld_getAccesspointByAlias(const char* name);

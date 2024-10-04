@@ -209,9 +209,14 @@ const char* radCounterDefaults[WLD_RAD_EV_MAX] = {
     "",
 };
 
-static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBandExt_e band) {
+static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBandExt_e band, int32_t wiPhyId) {
+
     ASSERT_NOT_NULL(pRadioObj, amxd_status_unknown_error, ME, "NULL");
-    T_Radio* pRad = wld_getUinitRadioByBand(band);
+    T_Radio* pRad = wld_getRadioByWiPhyId(wiPhyId);
+
+    if((pRad == NULL) || (!SWL_BIT_IS_SET(pRad->supportedFrequencyBands, band))) {
+        pRad = wld_getUinitRadioByBand(band);
+    }
     ASSERTW_NOT_NULL(pRad, amxd_status_unknown_error, ME, "No uninit pRad for frequency %s", swl_freqBandExt_str[band]);
 
     ASSERT_NULL(pRadioObj->priv, amxd_status_unknown_error, ME, "pRadioObj->priv not NULL %s", pRad->Name);
@@ -1664,10 +1669,18 @@ amxd_status_t _wld_rad_setOperatingFrequencyBand_pwf(amxd_object_t* object,
 
     swl_freqBandExt_e band = swl_conv_charToEnum(OFB, Rad_SupFreqBands, SWL_FREQ_BAND_EXT_MAX, SWL_FREQ_BAND_EXT_2_4GHZ);
 
+    amxd_status_t get_status = amxd_status_ok;
+    int32_t wiPhyId = amxd_object_get_int32_t(object, "WiPhyId", &get_status);
+    if(get_status != amxd_status_ok) {
+        SAH_TRACEZ_WARNING(ME, "can not read predef WiPhyId param");
+        wiPhyId = -1;
+    }
+    SAH_TRACEZ_INFO(ME, "Value of WiPhyId:%d", wiPhyId);
+
     /* Link radio/object */
     bool newMap = false;
     if(object->priv == NULL) {
-        newMap = (_linkFirstUinitRadio(object, band) == amxd_status_ok);
+        newMap = (_linkFirstUinitRadio(object, band, wiPhyId) == amxd_status_ok);
     }
 
     T_Radio* pR = object->priv;

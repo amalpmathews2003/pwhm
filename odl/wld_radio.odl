@@ -369,6 +369,16 @@ define probelist_t{
 			default "NotPresent";
 		}
 
+		/**
+		 * nl80211 Wireless Physical Id
+		 * hw identifier allowing to match specific radio device
+		 * in addition to frequency band
+		 * default -1: means unspecified wiphyId
+		 */
+		%persistent %private int32 WiPhyId {
+		    on action validate call check_minimum -1;
+		    default -1;
+		}
 
 		/**
 		 * Timestamp of the last time status changed.

@@ -651,6 +651,18 @@ T_Radio* wld_getRadioByName(const char* name) {
     return NULL;
 }
 
+T_Radio* wld_getRadioByWiPhyId(int32_t wiPhyId) {
+    T_Radio* pRad = NULL;
+    wld_for_eachRad(pRad) {
+        if(pRad->wiphy == (uint32_t) wiPhyId) {
+            SAH_TRACEZ_INFO(ME, "Matched wiPhyId :%d pRad->wiphy:%d", wiPhyId, pRad->wiphy);
+            return pRad;
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "Not Matched wiPhyId :%d with any pRad->wiphy", wiPhyId);
+    return NULL;
+}
+
 T_Radio* wld_getUinitRadioByBand(swl_freqBandExt_e band) {
     T_Radio* pRadCand = NULL;
     T_Radio* pRad;
