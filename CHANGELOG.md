@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.4 - 2024-10-04(11:58:40 +0000)
+
+### Other
+
+- Add enable flush scan argument
+
 ## Release v6.39.3 - 2024-10-03(16:02:29 +0000)
 
 ### Other
