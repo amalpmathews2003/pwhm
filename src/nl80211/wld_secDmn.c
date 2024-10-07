@@ -445,3 +445,19 @@ uint32_t wld_secDmn_countGrpMembers(wld_secDmn_t* pSecDmn) {
     return wld_secDmnGrp_getMembersCount(wld_secDmn_getGrp(pSecDmn));
 }
 
+/*
+ * @brief returns the count of active (ie connected) members of the secDmn group
+ */
+uint32_t wld_secDmn_countActiveGrpMembers(wld_secDmn_t* pSecDmn) {
+    return wld_secDmnGrp_getActiveMembersCount(wld_secDmn_getGrp(pSecDmn));
+}
+
+/*
+ * @brief returns whether active (ie connected) alone or the only one in secDmn group
+ */
+bool wld_secDmn_isActiveAlone(wld_secDmn_t* pSecDmn) {
+    return ((wld_secDmn_isAlive(pSecDmn)) &&
+            ((!wld_secDmn_isGrpMember(pSecDmn)) ||
+             (wld_secDmn_countActiveGrpMembers(pSecDmn) == 1)));
+}
+
