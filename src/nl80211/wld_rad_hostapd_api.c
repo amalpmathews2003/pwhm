@@ -355,10 +355,26 @@ swl_trl_e wld_rad_hostapd_getCfgParamSupp(T_Radio* pRad, const char* param) {
     return wld_secDmn_getCfgParamSupp(pRad->hostapd, param);
 }
 
+T_AccessPoint* wld_rad_hostapd_getFirstConnectedVap(T_Radio* pRad) {
+    if(pRad && pRad->enable) {
+        T_AccessPoint* pAP = NULL;
+        wld_rad_forEachAp(pAP, pRad) {
+            if(pAP->enable &&
+               wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface)) {
+                return pAP;
+            }
+        }
+    }
+    return NULL;
+}
+
 T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad) {
-    T_AccessPoint* pMainAP = wld_rad_getFirstEnabledVap(pRad);
-    if(pMainAP == NULL) {
-        pMainAP = wld_rad_getFirstVap(pRad);
+    T_AccessPoint* pMainAP = NULL;
+    if(wld_rad_hasMbssidAds(pRad) ||
+       ((pMainAP = wld_rad_hostapd_getFirstConnectedVap(pRad)) == NULL)) {
+        if((pMainAP = wld_rad_getFirstEnabledVap(pRad)) == NULL) {
+            pMainAP = wld_rad_getFirstVap(pRad);
+        }
     }
     return pMainAP;
 }
