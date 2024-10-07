@@ -704,7 +704,6 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "rrm_neighbor_report", "ieee80211w", "mbo",
         "wmm_enabled", "uapsd_advertisement_enabled", "rnr", "ap_max_inactivity",
         "multi_ap_profile", "multi_ap_vlanid",
-        "interface", "bss", "mld_ap",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);

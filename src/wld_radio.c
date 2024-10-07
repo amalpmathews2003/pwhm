@@ -3491,6 +3491,18 @@ bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName) {
     return (wld_rad_from_name(ifName) == pRad);
 }
 
+bool wld_rad_hasActiveApMldMultiLink(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if((pAP->pSSID != NULL) &&
+           (wld_mld_isLinkActiveInMultiLink(pAP->pSSID->pMldLink))) {
+            return true;
+        }
+    }
+    return false;
+}
+
 T_AccessPoint* wld_rad_getFirstActiveAp(T_Radio* pRad) {
     T_AccessPoint* pAP;
     wld_rad_forEachAp(pAP, pRad) {

@@ -108,6 +108,7 @@ bool wld_mld_isLinkEnabled(wld_mldLink_t* pLink);
 bool wld_mld_isLinkUsable(wld_mldLink_t* pLink);
 bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag);
 bool wld_mld_isLinkConfigured(wld_mldLink_t* pLink);
+bool wld_mld_isLinkActiveInMultiLink(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighLinks(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighActiveLinks(wld_mldLink_t* pLink);
 uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink);
