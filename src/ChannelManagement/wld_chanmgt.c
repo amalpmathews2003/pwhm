@@ -537,6 +537,8 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
 
     swl_chanspec_t tgtChanspec = chanspec;
 
+    bool bwChangeRequested = ((reason == CHAN_REASON_MANUAL) && tgtChanspec.bandwidth != SWL_BW_AUTO);
+
     if(tgtChanspec.bandwidth == SWL_BW_AUTO) {
         tgtChanspec.bandwidth = wld_chanmgt_getAutoBw(pR, tgtChanspec);
     }
@@ -565,7 +567,8 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     pR->totalNrTargetChanspecChanges++;
 
     pR->channel = tgtChanspec.channel;
-    if(pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) {
+
+    if((pR->operatingChannelBandwidth != SWL_RAD_BW_AUTO) || bwChangeRequested) {
         pR->operatingChannelBandwidth = swl_chanspec_toRadBw(&tgtChanspec);
     }
 
@@ -580,7 +583,8 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
         memset(pR->targetChanspec.reasonExt, 0, sizeof(pR->targetChanspec.reasonExt));
     }
 
-    if(tgtChanspec.channel == amxd_object_get_uint8_t(pR->pBus, "Channel", NULL)) {
+    swl_radBw_e dmRadBw = swl_conv_objectParamEnum(pR->pBus, "OperatingChannelBandwidth", swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
+    if((tgtChanspec.channel == amxd_object_get_uint8_t(pR->pBus, "Channel", NULL)) && (pR->operatingChannelBandwidth == dmRadBw)) {
         /* operating channel did not change yet, exposed channel in DM is the target */
         pR->channelShowing = CHANNEL_INTERNAL_STATUS_TARGET;
     } else {

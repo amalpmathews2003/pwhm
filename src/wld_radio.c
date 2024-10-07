@@ -4280,6 +4280,7 @@ static void s_dumpRadioDebug(T_Radio* pR, amxc_var_t* retval) {
     amxc_var_add_key(cstring_t, retval, "OperatingFrequencyBand", swl_freqBandExt_str[pR->operatingFrequencyBand]);
     swl_conv_addMaskToMap(retval, "SupportedStandards", pR->supportedStandards, swl_radStd_str, SWL_RADSTD_MAX);
     swl_conv_addMaskToMap(retval, "OperatingStandards", pR->operatingStandards, swl_radStd_str, SWL_RADSTD_MAX);
+    amxc_var_add_key(cstring_t, retval, "OperatingChannelBandwidth", swl_radBw_str[pR->operatingChannelBandwidth]);
 }
 
 amxd_status_t _Radio_debug(amxd_object_t* object,
