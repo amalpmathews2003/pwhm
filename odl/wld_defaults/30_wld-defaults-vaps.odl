@@ -92,7 +92,7 @@
                 parameter IEEE80211kEnabled = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
-                    parameter ModeEnabled = "WPA2-Personal";
+                    parameter ModeEnabled = "WPA2-WPA3-Personal";
                     parameter KeyPassPhrase = "password";
                     parameter RekeyingInterval = 3600;
                 }
@@ -110,7 +110,7 @@
                 parameter WDSEnable = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
                 object Security {
-                    parameter ModeEnabled = "WPA2-Personal";
+                    parameter ModeEnabled = "WPA2-WPA3-Personal";
                     parameter KeyPassPhrase = "password";
                     parameter RekeyingInterval = 3600;
                 }
@@ -125,7 +125,7 @@
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Guest";
                 object Security {
-                    parameter ModeEnabled = "WPA2-Personal";
+                    parameter ModeEnabled = "WPA2-WPA3-Personal";
                     parameter KeyPassPhrase = "passwordGuest";
                     parameter RekeyingInterval = 3600;
                 }
@@ -140,7 +140,7 @@
                 parameter Enable = 0;
                 parameter DefaultDeviceType = "Guest";
                 object Security {
-                    parameter ModeEnabled = "WPA2-Personal";
+                    parameter ModeEnabled = "WPA2-WPA3-Personal";
                     parameter KeyPassPhrase = "passwordGuest";
                     parameter RekeyingInterval = 3600;
                 }
