@@ -211,6 +211,7 @@ uint32_t wld_rad_countWiphyRads(uint32_t wiphy);
 bool wld_rad_hasLinkIfIndex(T_Radio* pRad, int32_t ifIndex);
 bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName);
 bool wld_rad_hasMloSupport(T_Radio* pRad);
+bool wld_rad_hasActiveApMldMultiLink(T_Radio* pRad);
 
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);

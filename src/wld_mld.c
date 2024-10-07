@@ -553,6 +553,11 @@ bool wld_mld_isLinkConfigured(wld_mldLink_t* pLink) {
     return pLink->configured;
 }
 
+bool wld_mld_isLinkActiveInMultiLink(wld_mldLink_t* pLink) {
+    ASSERTS_TRUE(wld_mld_isLinkActive(pLink), false, ME, "NULL");
+    return (wld_mld_countNeighActiveLinks(pLink) > 1);
+}
+
 static wld_mldLink_t* s_linkFromIt(amxc_llist_it_t* it) {
     ASSERTS_NOT_NULL(it, NULL, ME, "NULL");
     return amxc_llist_it_get_data(it, wld_mldLink_t, it);
