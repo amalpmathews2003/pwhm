@@ -156,15 +156,15 @@ static swl_rc_ne s_checkAndSetParamValueStr(wld_wpaCtrlInterface_t* pIface, swl_
     ASSERTS_NOT_EQUALS(trl, SWL_TRL_FALSE, SWL_RC_INVALID_PARAM, ME, "param %s not supported", param);
     int32_t ret = 0;
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
+    if(trl == SWL_TRL_FALSE) {
+        return SWL_RC_ERROR;
+    }
+    rc = wld_wpaCtrl_sendCmdFmtCheckResponse(pIface, "OK", "SET %s %s", param, valStr);
     if(trl == SWL_TRL_UNKNOWN) {
-        rc = wld_wpaCtrl_sendCmdFmtCheckResponse(pIface, "OK", "SET %s %s", param, valStr);
         if(rc == SWL_RC_OK) {
-            trl = SWL_TRL_TRUE;
+            wld_secDmn_setCfgParamSupp(pSecDmn, param, SWL_TRL_TRUE);
         } else if(rc == SWL_RC_ERROR) {
-            trl = SWL_TRL_FALSE;
-        }
-        if(trl != SWL_TRL_UNKNOWN) {
-            wld_secDmn_setCfgParamSupp(pSecDmn, param, trl);
+            wld_secDmn_setCfgParamSupp(pSecDmn, param, SWL_TRL_FALSE);
         }
     }
     if(trl == SWL_TRL_TRUE) {
