@@ -64,6 +64,7 @@
 #include <sys/un.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <unistd.h>
 #include "wld.h"
 #include "wld_wpaCtrlConnection_priv.h"
 #include <swl/fileOps/swl_fileUtils.h>
@@ -322,7 +323,7 @@ swl_rc_ne wld_wpaCtrlConnection_sendCmdCheckResponse(wpaCtrlConnection_t* pConn,
 
 bool wld_wpaCtrl_checkSockPath(const char* sockPath) {
     ASSERTS_STR(sockPath, false, ME, "empty");
-    return (swl_fileUtils_getFileSize(sockPath) >= 0);
+    return (access(sockPath, F_OK) == 0);
 }
 
 swl_rc_ne wld_wpaCtrl_queryToSock(const char* serverPath, const char* sockName, const char* cmd, char* reply, size_t replyLen) {

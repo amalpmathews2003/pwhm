@@ -112,6 +112,7 @@ wld_process_t* wld_secDmnGrp_getProc(wld_secDmnGrp_t* pSecDmnGrp);
  */
 
 uint32_t wld_secDmnGrp_getMembersCount(wld_secDmnGrp_t* pSecDmnGrp);
+uint32_t wld_secDmnGrp_getActiveMembersCount(wld_secDmnGrp_t* pSecDmnGrp);
 const wld_secDmn_t* wld_secDmnGrp_getMemberByPos(wld_secDmnGrp_t* pSecDmnGrp, int32_t pos);
 const wld_secDmn_t* wld_secDmnGrp_getMemberByName(wld_secDmnGrp_t* pSecDmnGrp, const char* name);
 bool wld_secDmnGrp_hasMember(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmn_t* pSecDmn);

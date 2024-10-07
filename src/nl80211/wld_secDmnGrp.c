@@ -628,6 +628,16 @@ uint32_t wld_secDmnGrp_getMembersCount(wld_secDmnGrp_t* pSecDmnGrp) {
     return amxc_llist_size(&pSecDmnGrp->members);
 }
 
+uint32_t wld_secDmnGrp_getActiveMembersCount(wld_secDmnGrp_t* pSecDmnGrp) {
+    ASSERTS_NOT_NULL(pSecDmnGrp, 0, ME, "NULL");
+    uint32_t count = 0;
+    amxc_llist_for_each(it, &pSecDmnGrp->members) {
+        wld_secDmnGrp_member_t* member = amxc_container_of(it, wld_secDmnGrp_member_t, it);
+        count += wld_secDmn_isAlive(member->pSecDmn);
+    }
+    return count;
+}
+
 const wld_secDmn_t* wld_secDmnGrp_getMemberByPos(wld_secDmnGrp_t* pSecDmnGrp, int32_t pos) {
     ASSERTS_NOT_NULL(pSecDmnGrp, NULL, ME, "NULL");
     amxc_llist_it_t* itRes = NULL;

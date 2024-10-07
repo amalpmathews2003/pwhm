@@ -131,5 +131,7 @@ swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn);
 wld_secDmnGrp_t* wld_secDmn_getGrp(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isGrpMember(wld_secDmn_t* pSecDmn);
 uint32_t wld_secDmn_countGrpMembers(wld_secDmn_t* pSecDmn);
+uint32_t wld_secDmn_countActiveGrpMembers(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_isActiveAlone(wld_secDmn_t* pSecDmn);
 
 #endif /* INCLUDE_WLD_WLD_SECDMN_H_ */

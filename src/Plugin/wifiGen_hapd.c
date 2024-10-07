@@ -262,17 +262,21 @@ static bool s_stopHapdCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pSecDmn);
     bool ret = false;
-    if(wld_wpaCtrlMngr_isReady(pMgr)) {
-        wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
-        if(wld_wpaCtrlInterface_checkConnectionPath(pIface)) {
-            SAH_TRACEZ_WARNING(ME, "terminating hostapd over %s", wld_wpaCtrlInterface_getName(pIface));
-            ret = wld_wpaCtrl_sendCmdCheckResponse(pIface, "TERMINATE", "OK");
-        }
+    char sockName[128] = {0};
+    wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr);
+    if(wld_wpaCtrlInterface_checkConnectionPath(pIface) && wld_secDmn_isActiveAlone(pSecDmn)) {
+        swl_str_copy(sockName, sizeof(sockName), wld_wpaCtrlInterface_getConnectionSockName(pIface));
     }
     wld_wpaCtrlMngr_disconnect(pMgr);
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
         wld_mld_resetLinkId(pAP->pSSID->pMldLink);
+    }
+    if(!swl_str_isEmpty(sockName)) {
+        SAH_TRACEZ_WARNING(ME, "terminating hostapd over %s", wld_wpaCtrlInterface_getName(pIface));
+        char reply[128] = {0};
+        swl_rc_ne rc = wld_wpaCtrl_queryToSock(HOSTAPD_CTRL_IFACE_DIR, sockName, "TERMINATE", reply, sizeof(reply));
+        ret = (swl_rc_isOk(rc) && swl_str_matches(reply, "OK"));
     }
     return ret;
 }
