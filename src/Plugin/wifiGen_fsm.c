@@ -383,6 +383,7 @@ static bool s_doUpdateHostapd(T_Radio* pRad) {
     wifiGen_hapd_restoreMainIface(pRad);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
+    wld_wpaCtrlMngr_connect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
     //delay before restore warm applicable params after reloading conf file with sighup
     pRad->fsmRad.timeout_msec = 500;
     return true;
@@ -462,8 +463,12 @@ static bool s_doStartHostapd(T_Radio* pRad) {
      */
     if((rc == SWL_RC_DONE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
         SAH_TRACEZ_INFO(ME, "%s: need to enable hostapd", pRad->Name);
-        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+        //update hostapd conf to consider changed configs before enabling it
+        //+reconnect wpactrlMgr to update wpactrl connections
+        wld_wpaCtrlMngr_disconnect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
     }
+
     s_registerHadpRadEvtHandlers(pRad->hostapd);
     pRad->fsmRad.timeout_msec = 500;
     return true;
