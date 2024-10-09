@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.6 - 2024-10-09(14:10:02 +0000)
+
+### Other
+
+- : Changed values of the bands on Radio Management are not retained after Firmware Upgrade
+
 ## Release v6.39.5 - 2024-10-07(14:43:10 +0000)
 
 ### Other
