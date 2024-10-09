@@ -121,6 +121,7 @@ void wld_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* 
 void genSelfPIN();
 
 void wld_wps_updateState(T_AccessPoint* pAP);
+bool wld_wps_checkSecModeConditions(T_AccessPoint* pAP);
 
 amxd_status_t _generateSelfPIN(amxd_object_t* object,
                                amxd_function_t* func,

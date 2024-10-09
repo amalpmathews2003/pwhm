@@ -653,6 +653,16 @@ amxd_status_t _setCompatibilityWPS(amxd_object_t* object,
 }
 
 /**
+ * This function verifies whether wps is supported by the currently configured security mode.
+ * (WPS is not supported in WPA3 or WEP)
+ */
+bool wld_wps_checkSecModeConditions(T_AccessPoint* pAP) {
+    return (pAP && pAP->secModeEnabled &&
+            !swl_security_isApModeWEP(pAP->secModeEnabled) &&
+            (pAP->secModeEnabled != SWL_SECURITY_APMODE_WPA3_P));
+}
+
+/**
  * This function will start the WPS session
  * for given AP (vap) (WPS configuration methods already matched)
  */
@@ -670,6 +680,12 @@ static amxd_status_t s_initiateWPS(T_AccessPoint* pAP, amxc_var_t* retval, swl_r
                          pAP->SSIDAdvertisementEnabled,
                          pAP->WPS_Enable);
         *pRc = SWL_RC_ERROR;
+        return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_NOT_READY, amxd_status_unknown_error);
+    }
+
+    if(!wld_wps_checkSecModeConditions(pAP)) {
+        SAH_TRACEZ_WARNING(ME, "%s: unmatching wps secMode conditions", pAP->alias);
+        *pRc = SWL_RC_INVALID_STATE;
         return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_NOT_READY, amxd_status_unknown_error);
     }
 
