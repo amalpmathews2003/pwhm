@@ -198,6 +198,12 @@ static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_chan
     swl_rc_ne rc = wld_chanmgt_reportCurrentChanspec(pRad, *pChanSpec, reason);
     ASSERTS_FALSE(rc < SWL_RC_OK, , ME, "no changes to be reported");
     wld_rad_updateOperatingClass(pRad);
+    swl_chanspec_t savedChSpec = wld_rad_hostapd_getCfgChanspec(pRad);
+    if(!swl_typeChanspecExt_equals(pRad->targetChanspec.chanspec, savedChSpec)) {
+        SAH_TRACEZ_WARNING(ME, "%s: saved chanspec %s different than tgt %s", pRad->Name,
+                           swl_typeChanspecExt_toBuf32(savedChSpec).buf,
+                           swl_typeChanspecExt_toBuf32(pRad->targetChanspec.chanspec).buf);
+    }
 }
 
 static void s_syncCurrentChannel(T_Radio* pRad, wld_channelChangeReason_e reason) {

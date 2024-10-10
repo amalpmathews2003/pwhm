@@ -891,7 +891,8 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
                     return SWL_RC_DONE;
                 }
                 rc = wld_rad_hostapd_switchChannel(pRad);
-                return (rc < SWL_RC_OK) ? SWL_RC_ERROR : SWL_RC_DONE;
+                rc = (rc < SWL_RC_OK) ? SWL_RC_ERROR : SWL_RC_DONE;
+                goto saveConf;
             }
         }
         if(isTgtChspecRunning && (pRad->autoChannelEnable == (wld_rad_hostapd_getCfgChannel(pRad) == 0))) {
@@ -909,12 +910,14 @@ swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct) {
         }
         setBitLongArray(actionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
     }
+    rc = SWL_RC_OK;
+saveConf:
     /* update conf file */
     setBitLongArray(actionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     if(needCommit) {
         wld_rad_doCommitIfUnblocked(pRad);
     }
-    return SWL_RC_OK;
+    return rc;
 }
 
 swl_rc_ne wifiGen_rad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpec) {
