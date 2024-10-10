@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.7 - 2024-10-10(07:11:38 +0000)
+
+### Other
+
+- Hostapd crash upon launching a WPS session
+
 ## Release v6.39.6 - 2024-10-09(14:10:02 +0000)
 
 ### Other
