@@ -687,6 +687,7 @@ typedef struct {
     swl_staCapHt_m htCapabilities;      /* bitmap of HT (11n) SGI, MU and beamforming capabilities */
     swl_staCapVht_m vhtCapabilities;    /* bitmap of VHT (11ac) SGI, MU and beamforming capabilities */
     swl_staCapHe_m heCapabilities;      /* bitmap of HE (11ax) SGI, MU and beamforming capabilities */
+    swl_staCapEht_m ehtCapabilities;    /* bitmap of EHT (11be) SGI, MU and beamforming capabilities*/
     swl_staCapRrm_m rrmCapabilities;    /* bitmap of RRM Enabled Capabilties */
     uint32_t rrmOnChannelMaxDuration;   /* Operating Channel Max Measurement Duration */
     uint32_t rrmOffChannelMaxDuration;  /* NonOperating Channel Max Measurement Duration */

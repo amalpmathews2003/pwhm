@@ -367,6 +367,8 @@ void wld_endpoint_syncCapabilities(amxd_object_t* obj, wld_assocDev_capabilities
     SWLA_OBJECT_SET_PARAM_CSTRING(obj, "VhtCapabilities", buffer);
     swl_conv_maskToChar(buffer, sizeof(buffer), caps->heCapabilities, swl_staCapHe_str, SWL_STACAP_HE_MAX);
     SWLA_OBJECT_SET_PARAM_CSTRING(obj, "HeCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->ehtCapabilities, swl_staCapEht_str, SWL_STACAP_EHT_MAX);
+    SWLA_OBJECT_SET_PARAM_CSTRING(obj, "EhtCapabilities", buffer);
 
     char frequencyCapabilitiesStr[128] = {0};
     swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);

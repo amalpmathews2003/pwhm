@@ -1574,6 +1574,8 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     amxd_trans_set_cstring_t(trans, "VhtCapabilities", buffer);
     swl_conv_maskToChar(buffer, sizeof(buffer), caps->heCapabilities, swl_staCapHe_str, SWL_STACAP_HE_MAX);
     amxd_trans_set_cstring_t(trans, "HeCapabilities", buffer);
+    swl_conv_maskToChar(buffer, sizeof(buffer), caps->ehtCapabilities, swl_staCapEht_str, SWL_STACAP_EHT_MAX);
+    amxd_trans_set_cstring_t(trans, "EhtCapabilities", buffer);
 
     char frequencyCapabilitiesStr[128] = {0};
     swl_conv_maskToChar(frequencyCapabilitiesStr, sizeof(frequencyCapabilitiesStr), caps->freqCapabilities, swl_freqBandExt_unknown_str, SWL_FREQ_BAND_EXT_MAX);
@@ -1893,6 +1895,7 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
     cap->htCapabilities = pWirelessDevIE->htCapabilities;
     cap->vhtCapabilities = pWirelessDevIE->vhtCapabilities;
     cap->heCapabilities = pWirelessDevIE->heCapabilities;
+    cap->ehtCapabilities = pWirelessDevIE->ehtCapabilities;
     cap->rrmCapabilities = pWirelessDevIE->rrmCapabilities;
     cap->rrmOnChannelMaxDuration = pWirelessDevIE->rrmOnChannelMaxDuration;
     cap->rrmOffChannelMaxDuration = pWirelessDevIE->rrmOffChannelMaxDuration;

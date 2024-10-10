@@ -34,6 +34,7 @@
         "AvgSignalStrengthByChain": 0,
         "Rx_RetransmissionsFailed": 3,
         "PowerSave": false,
+        "EhtCapabilities": "",
         "AvgSignalStrength": -18,
         "RrmOnChannelMaxDuration": 0,
         "MaxRxSpatialStreamsSupported": 4,

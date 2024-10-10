@@ -422,7 +422,14 @@
 			 * @version 10.0
 			 */
 			%read-only string HeCapabilities;
-			
+
+			/**
+			 * EHT Capabilities of the associated device
+			 * It can be a single or combination of following values:
+			 * "320MHZ", "SU-BFR", "SU-BFE", "MU-BFR-80", "MU-BFR-160", "MU-BFR-320"
+			 */
+			%read-only string EhtCapabilities;
+
 			/**
 			 * Frequency Capabilities
 			 * Comma-separated list of strings.
