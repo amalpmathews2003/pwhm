@@ -410,3 +410,9 @@ swl_channel_t wld_rad_hostapd_getCfgChannel(T_Radio* pRad) {
     return wld_rad_hostapd_getCfgParamInt32Def(pRad, "channel", SWL_CHANNEL_INVALID);
 }
 
+swl_chanspec_t wld_rad_hostapd_getCfgChanspec(T_Radio* pRad) {
+    swl_channel_t channel = wld_rad_hostapd_getCfgChannel(pRad);
+    uint32_t opClass = wld_rad_hostapd_getCfgParamInt32Def(pRad, "op_class", 0);
+    return swl_chanspec_fromOperClass(opClass, SWL_OP_CLASS_COUNTRY_GLOBAL, channel);
+}
+
