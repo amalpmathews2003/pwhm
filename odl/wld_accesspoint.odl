@@ -617,6 +617,7 @@ define rrm_t{
 			 *   WEP-64 WEP-128 or WEP-128uv.</p>*/
 			%persistent uint32 RekeyingInterval {
 				default 3600;
+				userflags %upc;
 			}
 			/** Transition interface for OWE Transition Mode
 			 *  Link current VAP to the other VAP needed for transition
