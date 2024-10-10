@@ -222,7 +222,8 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     /* force AcsBootChannel when Radio is down to the next up */
     if(!wld_rad_isUpExt(pRad) &&
        (pRad->autoChannelEnable || (pRad->externalAcsMgmt && pRad->autoChannelSetByUser)) &&
-       (pRad->acsBootChannel != -1)) {
+       (pRad->acsBootChannel != -1) &&
+       ((tgtChspec.band != SWL_FREQ_BAND_EXT_5GHZ) || (swl_chanspec_isDfs(tgtChspec)))) {
         tgtChspec.channel = pRad->acsBootChannel ? : wld_chanmgt_getDefaultSupportedChannel(pRad);
         tgtChspec.bandwidth = wld_chanmgt_getDefaultSupportedBandwidth(pRad);
     }
