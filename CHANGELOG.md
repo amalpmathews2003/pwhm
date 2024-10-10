@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.8 - 2024-10-10(13:08:15 +0000)
+
+### Other
+
+- : Group key value under networks not preserved during firmware upgrade
+
 ## Release v6.39.7 - 2024-10-10(07:11:38 +0000)
 
 ### Other
