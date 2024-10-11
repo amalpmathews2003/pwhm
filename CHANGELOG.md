@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.39.9 - 2024-10-11(09:09:05 +0000)
+
+### Other
+
+- fix unit test to match new realTime display
+
 ## Release v6.39.8 - 2024-10-10(13:08:15 +0000)
 
 ### Other
