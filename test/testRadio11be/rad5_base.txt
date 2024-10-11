@@ -25,7 +25,7 @@
     "PacketAggregationEnable": true,
     "AutoChannelRefreshPeriod": 0,
     "RTSThreshold": 2347,
-    "DFSChannelChangeEventTimestamp": "0001-01-01T00:00:00Z",
+    "DFSChannelChangeEventTimestamp": "1970-01-01T00:00:00Z",
     "LastStatusChangeTimeStamp": "2022-01-01T00:00:04Z",
     "PreambleType": "auto",
     "WDS_Mode": true,
