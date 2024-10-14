@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.40.1 - 2024-10-14(11:52:13 +0000)
+
+### Other
+
+- : User config chanspec is applied while in AutoChanneEnable=1
+
 ## Release v6.40.0 - 2024-10-14(10:12:06 +0000)
 
 ### Other
