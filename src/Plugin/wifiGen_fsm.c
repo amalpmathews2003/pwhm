@@ -433,7 +433,7 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
 
     if(!pRad->autoChannelEnable
        && (pRad->userChanspec.channel != 0)
-       && pRad->externalAcsMgmt) {
+       && pRad->externalAcsMgmt && !pRad->autoChannelSetByUser) {
         chanspecInfo_t* userChanspec = calloc(1, sizeof(chanspecInfo_t));
         if(userChanspec != NULL) {
             userChanspec->pRad = pRad;
