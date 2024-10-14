@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.40.0 - 2024-10-14(10:12:06 +0000)
+
+### Other
+
+- : EHT Capabilities of connected stations
+
 ## Release v6.39.11 - 2024-10-11(16:31:38 +0000)
 
 ### Other
