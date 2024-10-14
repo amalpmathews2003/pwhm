@@ -600,12 +600,11 @@ static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setSecParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set secret key", pAP->alias);
     /*
-     * In case the AP is part of an MLDUnit, changing security mode will not work without
-     * hostapd restart
+     * When the curruent AP has a neigbour-AP configured to MLD or SLD, and the security mode has been
+     * changed, then a full hostapd restart will be trigged in order to be taken into account.
      */
 
-    if((rc > SECDMN_ACTION_OK_DONE) &&
-       (wld_mld_countNeighActiveLinks(pAP->pSSID->pMldLink) > 1)) {
+    if((rc > SECDMN_ACTION_OK_DONE) && (wld_rad_hasActiveApMld(pRad, 1))) {
         rc = SECDMN_ACTION_OK_NEED_RESTART;
     }
 
