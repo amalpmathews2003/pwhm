@@ -284,8 +284,8 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
         wifiGen_hapd_enableVapWpaCtrlIface(pAP);
         if(mainIfaceChanged) {
             SAH_TRACEZ_WARNING(ME, "%s: Main iface changed: sched toggle radio %s", pAP->alias, pRad->Name);
-            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         }
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         SAH_TRACEZ_WARNING(ME, "%s: sched reload all radio %s VAPs to update wpaCtrl ifaces", pAP->alias, pRad->Name);
         s_schedNextAction(SECDMN_ACTION_OK_NEED_SIGHUP, pAP, pRad);
         setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
