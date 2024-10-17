@@ -68,6 +68,7 @@
 #include "wld/wld_wpaCtrl_api.h"
 #include "wld/wld_wpaCtrlMngr.h"
 #include "wld/wld_nl80211_api.h"
+#include "wld/wld_rad_hostapd_api.h"
 #include "wld/Utils/wld_autoCommitMgr.h"
 #include "wifiGen_hapd.h"
 
@@ -197,6 +198,9 @@ T_SSID* wifiGen_mld_selectPrimLinkSSID(T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
     T_Radio* pRad = pSSID->RADIO_PARENT;
     ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
+    if(!pSSID->enable) {
+        return pSSID;
+    }
     wld_mldLink_t* pCurPrimLink = wld_mld_getPrimaryLink(pSSID->pMldLink);
     if(pCurPrimLink != NULL) {
         return wld_mld_getLinkSsid(pCurPrimLink);
@@ -218,12 +222,16 @@ swl_rc_ne wifiGen_mld_reconfigureNeighLinkSSIDs(T_SSID* pSSID) {
     wld_mldLink_t* pLink = pSSID->pMldLink;
     wld_mldLink_t* pNgLink = NULL;
     wld_for_eachNeighMldLink(pNgLink, pLink) {
-        if((pNgLink == pLink) || (!wld_mld_isLinkUsable(pNgLink))) {
+        if(pNgLink == pLink) {
             continue;
         }
         T_SSID* pNgSSID = wld_mld_getLinkSsid(pNgLink);
         if(pNgSSID->AP_HOOK != NULL) {
             T_AccessPoint* pNgAP = pNgSSID->AP_HOOK;
+            if((!wld_mld_isLinkUsable(pNgLink)) &&
+               (wld_rad_hostapd_getCfgMainVap(pNgAP->pRadio) != pNgAP)) {
+                continue;
+            }
             SAH_TRACEZ_INFO(ME, "reconfigure Neigh AP mld %s (triggered by change in %s)",
                             wld_mld_getLinkName(pNgLink), pSSID->Name);
             pNgAP->pFA->mfn_wvap_setMldUnit(pNgAP);
