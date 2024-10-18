@@ -83,12 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add FTA handler to control scan iteration by external manager
 - map multi radio instances of same Frequency Band using nl80211 HW wiphyId
 
-## Release v6.40.0 - 2024-10-04(14:20:25 +0000)
-
-### Other
-
-- map multi radio instances of same Frequency Band using nl80211 HW wiphyId
-
 ## Release v6.39.4 - 2024-10-04(11:58:40 +0000)
 
 ### Other
