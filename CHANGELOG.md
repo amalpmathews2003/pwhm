@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.0 - 2024-10-18(08:10:33 +0000)
+
+### Other
+
+- auto fill radio wiphyId from networklayout
+
 ## Release v6.40.2 - 2024-10-14(13:17:55 +0000)
 
 ## Release v6.40.1 - 2024-10-14(11:52:13 +0000)
