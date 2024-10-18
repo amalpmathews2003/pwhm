@@ -10,8 +10,8 @@
                 parameter SSID = "{{Itf.SSID}}";
 {% endif %}
                 parameter Enable = 0;
-{% RadioIndex = BDfn.getRadioIndex(Itf.OperatingFrequency);
-if (RadioIndex >= 0) : %}
+{% RadioIndex = BDfn.getRadioIndexByAlias(Itf.Radio) ; if (RadioIndex < 0) RadioIndex = BDfn.getRadioIndex(Itf.OperatingFrequency) ; %}
+{% if (RadioIndex >= 0) : %}
                 parameter LowerLayers = "Device.WiFi.Radio.{{RadioIndex + 1}}.";
 {% endif %}
             }

@@ -4,8 +4,13 @@
 {% let RadioId = 0 %}
 {% for ( let Radio in BD.Radios ) : %}
 {% RadioId++ %}
+{% let WiPhyId = -1 %}
+{% if (Radio.WiPhyId) : %}
+{% WiPhyId = Radio.WiPhyId  %}
+{% endif %}
 {% if (Radio.OperatingFrequency == "2.4GHz") : %}
             instance add ("{{Radio.Alias}}") {
+                parameter WiPhyId = {{WiPhyId}};
                 parameter OperatingFrequencyBand = "2.4GHz";
                 parameter Enable = 1;
                 parameter RegulatoryDomain = "DE";
@@ -23,6 +28,7 @@
             }
 {% elif (Radio.OperatingFrequency == "5GHz") : %}
             instance add ("{{Radio.Alias}}") {
+                parameter WiPhyId = {{WiPhyId}};
                 parameter OperatingFrequencyBand = "5GHz";
                 parameter Enable = 1;
                 parameter IEEE80211hEnabled = true;
@@ -51,6 +57,7 @@
             }
 {% elif (Radio.OperatingFrequency == "6GHz") : %}
             instance add ("{{Radio.Alias}}") {
+                parameter WiPhyId = {{WiPhyId}};
                 parameter OperatingFrequencyBand = "6GHz";
                 parameter Enable = 1;
                 parameter RegulatoryDomain = "DE";
