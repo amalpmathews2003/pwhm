@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.2 - 2024-10-21(14:15:36 +0000)
+
+### Other
+
+- set default ModesAvailable conf for 6GHz to "WPA3-Personal,OWE"
+
 ## Release v6.41.1 - 2024-10-21(13:19:04 +0000)
 
 ### Other
