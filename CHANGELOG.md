@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.1 - 2024-10-21(13:19:04 +0000)
+
+### Other
+
+- mxl-station-not-able-to-connect-in-wpa2-enterprise-mode
+
 ## Release v6.41.0 - 2024-10-18(08:10:33 +0000)
 
 ### Other
