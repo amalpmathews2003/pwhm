@@ -39,7 +39,7 @@
                 object Security {
                     parameter RekeyingInterval = 3600;
 {% if (Itf.OperatingFrequency == "6GHz") : %}
-                    parameter ModesAvailable = "WPA3-Personal";
+                    parameter ModesAvailable = "WPA3-Personal,OWE";
                     parameter ModeEnabled = "WPA3-Personal";
                     parameter SAEPassphrase = "";
                     parameter SPPAmsdu = 0;
