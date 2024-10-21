@@ -510,7 +510,7 @@ static wld_secDmn_action_rc_ne s_ap_hostapd_setSecretKeyExt(T_AccessPoint* pAP, 
     case SWL_SECURITY_APMODE_WPA3_E:
     case SWL_SECURITY_APMODE_WPA2_WPA3_E:
     {
-        const char* secParams[] = {"auth_server_shared_secret", };
+        const char* secParams[] = {"auth_server_shared_secret", "ieee8021x", };
         //in wpa eap, we need to refresh whole hostapd config from file
         s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                                 secParams, SWL_ARRAY_SIZE(secParams), &action);

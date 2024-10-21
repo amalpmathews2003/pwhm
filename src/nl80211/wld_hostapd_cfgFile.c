@@ -966,6 +966,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
             swl_mapChar_add(vapConfigMap, "radius_request_cui", "1");
         }
         swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", mfp);
+        swl_mapCharFmt_addValInt32(vapConfigMap, "ieee8021x", 1);
         break;
     }
     default:
