@@ -1232,7 +1232,11 @@ static void s_delayDisassocNotifHdlr(amxp_timer_t* timer _UNUSED, void* userdata
     T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
     if(pAP != NULL) {
         s_sendDisassocNotification(pAP, pAD);
+        swl_macBin_t mac;
+        memcpy(mac.bMac, pAD->MACAddress, SWL_MAC_BIN_LEN);
         wld_vap_cleanup_stationlist(pAP);
+        //assocDev info may be no more cached
+        ASSERTI_EQUALS(pAD, wld_vap_get_existing_station(pAP, &mac), , ME, "%s: ad %s deleted", pAP->alias, swl_typeMacBin_toBuf32(mac).buf);
     }
     ASSERTS_NOT_NULL(pAD->staHistory, , ME, "No sta history");
     //cleanup the disconnected stations rssiMon history
