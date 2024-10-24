@@ -126,7 +126,7 @@ static amxd_status_t s_staMon_addDevice(T_Radio* pRad, amxd_object_t* instance_o
     memcpy(pMD->MACAddress, macAddr.bMac, ETHER_ADDR_LEN);
 
     const char* bssidStr = GET_CHAR(params, "RequestedBSSID");
-    if(bssidStr != NULL) {
+    if((bssidStr != NULL) && !swl_str_isEmpty(bssidStr)) {
         ASSERT_TRUE(swl_typeMacBin_fromChar(&pMD->bssid, bssidStr), amxd_status_unknown_error, ME, "bssidStr %s is not accepted! ", bssidStr);
     }
 
