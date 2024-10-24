@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.4 - 2024-10-24(15:04:57 +0000)
+
+### Other
+
+- : NaStaMonitor BSSID issue
+
 ## Release v6.41.3 - 2024-10-24(14:28:23 +0000)
 
 ### Other
