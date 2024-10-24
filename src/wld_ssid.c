@@ -275,6 +275,15 @@ void wld_ssid_cleanAll() {
     }
 }
 
+T_SSID* wld_ssid_validate(T_SSID* pSSID) {
+    amxc_llist_for_each(it, &sSsidList) {
+        if(pSSID == amxc_container_of(it, T_SSID, it)) {
+            return pSSID;
+        }
+    }
+    return NULL;
+}
+
 amxd_status_t _wld_ssid_addInstance_oaf(amxd_object_t* object,
                                         amxd_param_t* param,
                                         amxd_action_t reason,
