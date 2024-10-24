@@ -583,7 +583,7 @@ static void s_deinitEP(T_EndPoint* pEP) {
     //assume disable ep
     pEP->enable = false;
     T_Radio* pR = pEP->pRadio;
-    T_SSID* pSSID = pEP->pSSID;
+    T_SSID* pSSID = wld_ssid_validate(pEP->pSSID);
     if(pR) {
         if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
             pR->pFA->mfn_wendpoint_disconnect(pEP);
@@ -608,8 +608,8 @@ static void s_deinitEP(T_EndPoint* pEP) {
         if(pR) {
             pR->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
-        pEP->pSSID = NULL;
     }
+    pEP->pSSID = NULL;
     wld_tinyRoam_cleanup(pEP);
     amxp_timer_delete(&pEP->reconnectTimer);
     pEP->reconnectTimer = NULL;
