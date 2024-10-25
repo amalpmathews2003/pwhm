@@ -1,4 +1,7 @@
 #!/bin/sh
+
+. /usr/lib/amx/scripts/amx_init_functions.sh
+
 if [ -e "/lib/functions/system.sh" ]; then
 . /lib/functions/system.sh
 fi
@@ -6,7 +9,7 @@ fi
 [ -f /etc/environment ] && source /etc/environment
 ulimit -c ${ULIMIT_CONFIGURATION:-0}
 name="wld"
-MAX_SIGTERM_RETRIES=3
+datamodel_root="WiFi"
 
 prevent_netifd_to_configure_wireless()
 {
@@ -38,29 +41,7 @@ get_base_wan_address()
     fi
 }
 
-kill_process()
-{
-    # kill process with PID == $1
-    # try a SIGTERM for MAX_SIGTERM_RETRIES tries, then SIGKILL
-    # SIGTERM : 15 ; SIGKILL : 9
-
-    exit_condition=false
-    echo "killing PID" $1
-    tries=0
-    max_tries=$MAX_SIGTERM_RETRIES
-    kill -0 $1 2>/dev/null
-    while [[ $? -eq 0 && $((tries++)) -lt $max_tries ]] ; do
-        # try sigterm : 15 first
-        kill -SIGTERM $1 && sleep 1 && kill -0 $1 2>/dev/null
-    done
-    # if still running, try sigkill
-    kill -0 $1 2>/dev/null && kill -SIGKILL $1 && echo "killed with sigkill"
-
-    # kill -0 returns true if PID is running and we can send signals to it
-    # && command linking executes the next if previous command returns true
-}
-
-start()
+init_wld()
 {
     get_base_wan_address
     mkdir -p /var/lib/${name}
@@ -76,36 +57,32 @@ start()
 
     prevent_netifd_to_configure_wireless
 
-    ${name} -D
-}
-
-stop()
-{
-    if [ -f /var/run/${name}.pid ]; then
-        echo "stopping ${name}"
-        kill_process `cat /var/run/${name}.pid`
-    fi
 }
 
 case $1 in
-    start|boot)
-        start
+    boot)
+        init_wld
+        process_boot ${name} -D
         ;;
-    stop|shutdown)
-        stop
+    start)
+        init_wld
+        process_start ${name} -D
+        ;;
+    stop)
+        process_stop ${name}
+        ;;
+    shutdown)
+        process_shutdown ${name}
         ;;
     restart)
         $0 stop
         $0 start
         ;;
     debuginfo)
-        ba-cli "WiFi.?"
+        process_debug_info ${datamodel_root}
         /usr/lib/debuginfo/debug_wifi.sh
         ;;
-    log)
-        echo "log ${name}"
-        ;;
     *)
-        echo "Usage : $0 [start|boot|stop|shutdown|restart|debuginfo|log]"
+        echo "Usage : $0 [start|boot|stop|shutdown|debuginfo|restart]"
         ;;
 esac
