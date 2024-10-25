@@ -471,9 +471,7 @@ void wld_ad_destroy_associatedDevice(T_AccessPoint* pAP, int index) {
         free(pAD->wdsIntf);
     }
 
-    if(pAD->delayDisassocNotif != NULL) {
-        amxp_timer_delete(&pAD->delayDisassocNotif);
-    }
+    wld_ad_clearDelayedDisassocNotifTimer(pAD);
 
     free(pAP->AssociatedDevice[index]);
 
@@ -499,6 +497,8 @@ void wld_ad_init_oui(wld_assocDev_capabilities_t* caps) {
 
 /* create T_AssociatedDevice and populate MACAddress and Name fields */
 T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
+    wld_ad_finalizeDelayedDisassocNotif(macAddress);
+
     T_AssociatedDevice* pAD;
     SAH_TRACEZ_INFO(ME, "%s: create sta " SWL_MAC_FMT, pAP->name, SWL_MAC_ARG(macAddress->bMac));
 
@@ -1227,8 +1227,10 @@ static wld_ad_dcLog_t* s_getOrAddDcEntry(T_AccessPoint* pAP, T_AssociatedDevice*
 }
 
 static void s_delayDisassocNotifHdlr(amxp_timer_t* timer _UNUSED, void* userdata) {
+    amxp_timer_stop(timer);
     T_AssociatedDevice* pAD = (T_AssociatedDevice*) userdata;
     ASSERT_NOT_NULL(pAD, , ME, "pAD NULL");
+    SAH_TRACEZ_INFO(ME, "send assoDev (%s) disconnect notif", pAD->Name);
     T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
     if(pAP != NULL) {
         s_sendDisassocNotification(pAP, pAD);
@@ -1243,18 +1245,48 @@ static void s_delayDisassocNotifHdlr(amxp_timer_t* timer _UNUSED, void* userdata
     wld_apRssiMon_cleanStaHistory(pAD->staHistory, pAD->staHistory->nr_valid_samples);
 }
 
+void wld_ad_finalizeDelayedDisassocNotif(swl_macBin_t* macAddress) {
+    T_Radio* pRad;
+    T_AccessPoint* pAP;
+    T_AssociatedDevice* pAD;
+    wld_for_eachRad(pRad) {
+        wld_rad_forEachAp(pAP, pRad) {
+            pAD = wld_vap_get_existing_station(pAP, macAddress);
+            if((pAD != NULL) && (wld_ad_hasDelayedDisassocNotif(pAD))) {
+                s_delayDisassocNotifHdlr(pAD->delayDisassocNotif, pAD->delayDisassocNotif->priv);
+            }
+        }
+    }
+}
+
+bool wld_ad_hasDelayedDisassocNotif(T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAD, false, ME, "pAD NULL");
+    amxp_timer_state_t timerState;
+    if((pAD->delayDisassocNotif != NULL) &&
+       (((timerState = amxp_timer_get_state(pAD->delayDisassocNotif)) == amxp_timer_running) ||
+        (timerState == amxp_timer_started))) {
+        return true;
+    }
+    return false;
+}
+
 void wld_ad_startDelayDisassocNotifTimer(T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAD, , ME, "pAD NULL");
     if(pAD->delayDisassocNotif == NULL) {
         amxp_timer_new(&pAD->delayDisassocNotif, s_delayDisassocNotifHdlr, pAD);
+        ASSERT_NOT_NULL(pAD->delayDisassocNotif, , ME, "fail to create delayedDisassocNotif timer");
         SAH_TRACEZ_INFO(ME, "New assoDev disconnect timer created %p", pAD->delayDisassocNotif);
     }
+    if(!wld_ad_hasDelayedDisassocNotif(pAD)) {
+        SAH_TRACEZ_INFO(ME, "Start delay assocDev Disconnect timer %p", pAD->delayDisassocNotif);
+        amxp_timer_start(pAD->delayDisassocNotif, 300);
+    }
+}
+
+void wld_ad_clearDelayedDisassocNotifTimer(T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAD, , ME, "pAD NULL");
     if(pAD->delayDisassocNotif != NULL) {
-        amxp_timer_state_t timerState = amxp_timer_get_state(pAD->delayDisassocNotif);
-        if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
-            SAH_TRACEZ_INFO(ME, "Start delay assocDev Disconnect timer %p", pAD->delayDisassocNotif);
-            amxp_timer_start(pAD->delayDisassocNotif, 300);
-        }
+        amxp_timer_delete(&pAD->delayDisassocNotif);
     }
 }
 
@@ -1277,8 +1309,7 @@ static void s_add_dc_sta(T_AccessPoint* pAP, T_AssociatedDevice* pAD, bool failS
     } else if(pAD->AuthenticationState) {
         s_incrementAssocCounter(pAP, "Disconnect");
         pAD->lastDeauthReason = deauthReason;
-        amxp_timer_state_t timerState = amxp_timer_get_state(pAD->delayDisassocNotif);
-        if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
+        if(!wld_ad_hasDelayedDisassocNotif(pAD)) {
             s_sendDisassocNotification(pAP, pAD);
             //cleanup the disconnected sta rssiMon history
             wld_apRssiMon_cleanStaHistory(pAD->staHistory, pAD->staHistory->nr_valid_samples);

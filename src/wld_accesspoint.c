@@ -2269,8 +2269,8 @@ bool wld_vap_cleanup_stationlist(T_AccessPoint* pAP) {
             continue;
         }
 
-        amxp_timer_state_t timerState = amxp_timer_get_state(inactiveSta->delayDisassocNotif);
-        if((timerState == amxp_timer_running) || (timerState == amxp_timer_started)) {
+        if(wld_ad_hasDelayedDisassocNotif(inactiveSta)) {
+            SAH_TRACEZ_INFO(ME, "skip inactive sta(%s) having pending disc notif", inactiveSta->Name);
             continue;
         }
 

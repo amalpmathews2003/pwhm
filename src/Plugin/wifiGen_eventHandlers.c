@@ -731,11 +731,15 @@ static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* m
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
 
-    // The AP-STA-DISCONNECTED event is received before the AP-MGMT-FRAME-RECEIVED event.
+    // The AP-STA-DISCONNECTED event may be received before the AP-MGMT-FRAME-RECEIVED event.
     // Start timer to Delay sending associated device disconnection notification:
     // This delay makes it possible to set the lastDeauthReason from the received deauth mgmt frame.
-    wld_ad_startDelayDisassocNotifTimer(pAD);
-    wld_ad_add_disconnection(pAP, pAD);
+    if(pAD->lastDeauthAssocTime == pAD->associationTime) {
+        wld_ad_deauthWithReason(pAP, pAD, pAD->lastDeauthReason);
+    } else {
+        wld_ad_startDelayDisassocNotifTimer(pAD);
+        wld_ad_add_disconnection(pAP, pAD);
+    }
     wld_sensing_delCsiClientEntry(pAP->pRadio, macAddress);
 }
 
@@ -919,6 +923,7 @@ static void s_disassocCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->transmitter);
     ASSERTS_NOT_NULL(pAD, , ME, "NULL");
     pAD->lastDeauthReason = disassocFrame->reason;
+    pAD->lastDeauthAssocTime = pAD->associationTime;
 }
 
 static void s_deauthCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_deauthFrameBody_t* deauthFrame) {
@@ -931,6 +936,7 @@ static void s_deauthCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_d
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->transmitter);
     ASSERTS_NOT_NULL(pAD, , ME, "NULL");
     pAD->lastDeauthReason = deauthFrame->reason;
+    pAD->lastDeauthAssocTime = pAD->associationTime;
 }
 
 static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameHandlers = {
@@ -987,6 +993,7 @@ static void s_disassocTxFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, sw
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->destination);
     ASSERTS_NOT_NULL(pAD, , ME, "NULL");
     pAD->lastDeauthReason = disassocFrame->reason;
+    pAD->lastDeauthAssocTime = pAD->associationTime;
 }
 
 static void s_deauthTxFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_80211_deauthFrameBody_t* deauthFrame) {
@@ -999,6 +1006,7 @@ static void s_deauthTxFrameCb(void* userData, swl_80211_mgmtFrame_t* frame, swl_
     T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, &frame->destination);
     ASSERTS_NOT_NULL(pAD, , ME, "NULL");
     pAD->lastDeauthReason = deauthFrame->reason;
+    pAD->lastDeauthAssocTime = pAD->associationTime;
 }
 
 static swl_80211_mgmtFrameHandlers_cb s_mgmtFrameTxStatusHandlers = {

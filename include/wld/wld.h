@@ -874,6 +874,7 @@ typedef struct {
     wld_sta_muMimoInfo_t staMuMimoInfo;
     wld_assocDev_history_t* staHistory;
     swl_IEEE80211deauthReason_ne lastDeauthReason; /* last deauth reason for this sta */
+    swl_timeMono_t lastDeauthAssocTime;            /* association timestamp of last de-authenticated connection */
     void* vendor;                                  /* Pointer for wifi chipset vendor data */
     wld_extMod_dataList_t extDataList;             /* list of extention data for non-chipset vendor modules */
     swla_dm_objActionReadCtx_t onActionReadCtx;
