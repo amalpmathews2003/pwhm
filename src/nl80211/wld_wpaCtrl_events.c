@@ -509,9 +509,10 @@ static void s_apIfaceDisabledEvt(wld_wpaCtrlInterface_t* pInterface, char* event
 static void s_ifaceTerminatingEvt(wld_wpaCtrlInterface_t* pInterface, char* event, char* params _UNUSED) {
     // Example: CTRL-EVENT-TERMINATING
     SAH_TRACEZ_WARNING(ME, "%s: %s", pInterface->name, event);
+    bool isMgrTerm = (pInterface->isReady && (wld_wpaCtrlMngr_countReadyInterfaces(pInterface->pMgr) == 1));
     pInterface->isReady = false;
     wld_wpaCtrlInterface_close(pInterface);
-    if(pInterface == wld_wpaCtrlMngr_getInterface(pInterface->pMgr, 0)) {
+    if(isMgrTerm) {
         CALL_MGR_I(pInterface, fMngrReadyCb, false);
     }
 }

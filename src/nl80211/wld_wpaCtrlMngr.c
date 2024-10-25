@@ -269,6 +269,19 @@ uint32_t wld_wpaCtrlMngr_countEnabledInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
     return count;
 }
 
+uint32_t wld_wpaCtrlMngr_countReadyInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
+    uint32_t count = 0;
+    ASSERT_NOT_NULL(pMgr, count, ME, "NULL");
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &pMgr->ifaces) {
+        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(wld_wpaCtrlInterface_isReady(pIface)) {
+            count++;
+        }
+    }
+    return count;
+}
+
 wld_secDmn_t* wld_wpaCtrlMngr_getSecDmn(const wld_wpaCtrlMngr_t* pMgr) {
     ASSERTS_NOT_NULL(pMgr, NULL, ME, "NULL");
     return pMgr->pSecDmn;

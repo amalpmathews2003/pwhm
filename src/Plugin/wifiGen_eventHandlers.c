@@ -227,12 +227,19 @@ static bool s_saveHapdRadDetState(T_Radio* pRad, chanmgt_rad_state radDetState) 
 }
 static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
-    ASSERTS_TRUE(isReady, , ME, "Not ready");
     T_Radio* pRad = (T_Radio*) userData;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     T_AccessPoint* pAP = wld_rad_vap_from_name(pRad, ifName);
     T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
     if(pAP != NULL) {
+        if(!isReady) {
+            wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pRad->hostapd);
+            if((pMgr != NULL) && (!wld_wpaCtrlMngr_isReady(pMgr)) && (wld_secDmn_isEnabled(pRad->hostapd))) {
+                SAH_TRACEZ_WARNING(ME, "%s: hostapd still enabled: restarting wpactrl mgr connection", pRad->Name);
+                wld_wpaCtrlMngr_connect(pMgr);
+            }
+            return;
+        }
         //once we restart hostapd, previous dfs clearing must be reinitialized
         wifiGen_rad_initBands(pRad);
         pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
@@ -255,6 +262,7 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         }
         return;
     }
+    ASSERTS_TRUE(isReady, , ME, "Not ready");
     if(pEP != NULL) {
         wld_epConnectionStatus_e connState = pEP->connectionStatus;
         wifiGen_ep_connStatus(pEP, &connState);
