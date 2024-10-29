@@ -99,8 +99,28 @@ static T_ApNeighbour* s_findNeigh(amxd_object_t* templateObj, const char* bssidS
     return NULL;
 }
 
+static amxd_object_t* s_findNeighObj(amxd_object_t* templateObj, const char* bssidStr, amxd_object_t* optExclObj) {
+    amxd_object_for_each(instance, it, templateObj) {
+        amxd_object_t* neighObj = amxc_container_of(it, amxd_object_t, it);
+        if(optExclObj == neighObj) {
+            continue;
+        }
+        char* entryBssid = amxd_object_get_cstring_t(neighObj, "BSSID", NULL);
+        bool match = (!swl_str_isEmpty(entryBssid) && SWL_MAC_CHAR_MATCHES(entryBssid, bssidStr));
+        free(entryBssid);
+        if(match) {
+            return neighObj;
+        }
+    }
+    return NULL;
+}
+
 T_ApNeighbour* wld_ap_findNeigh(T_AccessPoint* pAP, const char* bssidStr) {
     return s_findNeigh(amxd_object_get(pAP->pBus, "Neighbour"), bssidStr, NULL);
+}
+
+amxd_object_t* wld_ap_findNeighObj(T_AccessPoint* pAP, const char* bssidStr) {
+    return s_findNeighObj(amxd_object_get(pAP->pBus, "Neighbour"), bssidStr, NULL);
 }
 
 static void s_updateNeighbor (T_AccessPoint* pAP, T_ApNeighbour* neigh) {
@@ -194,11 +214,11 @@ amxd_status_t _setNeighbourAP(amxd_object_t* obj,
     ASSERT_TRUE(swl_mac_charToStandard(&cBssidStd, bssid), amxd_status_unknown_error, ME, "BSSID is invalid (%s)", bssid);
 
     amxd_trans_t trans;
-    T_ApNeighbour* neigh = wld_ap_findNeigh(pAP, cBssidStd.cMac);
+    amxd_object_t* neighObj = wld_ap_findNeighObj(pAP, cBssidStd.cMac);
 
-    if(neigh != NULL) {
+    if(neighObj != NULL) {
         SAH_TRACEZ_INFO(ME, "Neighbor with bssid [%s] found in neighbour list", bssid);
-        ASSERT_TRANSACTION_INIT(neigh->obj, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pAP->alias);
+        ASSERT_TRANSACTION_INIT(neighObj, &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pAP->alias);
     } else {
         SAH_TRACEZ_INFO(ME, "Create new Neighbor with bssid [%s]", bssid);
         ASSERT_TRANSACTION_INIT(amxd_object_get(pAP->pBus, "Neighbour"), &trans, amxd_status_unknown_error, ME, "%s : trans init failure", pAP->alias);
