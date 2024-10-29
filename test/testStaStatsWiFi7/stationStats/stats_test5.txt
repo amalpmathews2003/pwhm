@@ -27,7 +27,7 @@
         "MACAddress": "AA:BB:AA:BB:AA:01",
         "AffiliatedSta": [
             {
-                "ErrorsSent": 2,
+                "ErrorsSent": 0,
                 "UplinkRateSpec": "eht_2_80_2_1600",
                 "PacketsSent": 4,
                 "BytesSent": 40,
@@ -46,7 +46,7 @@
                 "Active": false
             },
             {
-                "ErrorsSent": 6,
+                "ErrorsSent": 0,
                 "UplinkRateSpec": "eht_6_80_2_1600",
                 "PacketsSent": 12,
                 "BytesSent": 120,
@@ -65,7 +65,7 @@
                 "Active": false
             },
             {
-                "ErrorsSent": 10,
+                "ErrorsSent": 0,
                 "UplinkRateSpec": "eht_10_80_2_1600",
                 "PacketsSent": 20,
                 "BytesSent": 200,
