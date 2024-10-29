@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.5 - 2024-10-29(08:26:17 +0000)
+
+### Other
+
+- Received error during boot
+
 ## Release v6.41.4 - 2024-10-24(15:04:57 +0000)
 
 ### Other
