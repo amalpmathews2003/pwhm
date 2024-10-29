@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.6 - 2024-10-29(16:00:43 +0000)
+
+### Other
+
+- - AfSta packetsReceived shown as errors.
+
 ## Release v6.41.5 - 2024-10-29(08:26:17 +0000)
 
 ### Other
