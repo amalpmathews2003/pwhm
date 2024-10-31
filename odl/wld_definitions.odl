@@ -344,7 +344,9 @@ include "wld_endpoint.odl";
 
 %populate {
 	on event "app:start" call app_start;
-	on event regexp("dm:object-(added|changed)") call wld_rad_setVendorData_ocf
+	on event "dm:object-changed" call wld_rad_setVendorData_ocf
+		filter 'path matches "WiFi\.Radio\.[0-9]+\.Vendor\.+"';
+	on event "dm:object-added" call wld_rad_setVendorData_ocf
 		filter 'path matches "WiFi\.Radio\.[0-9]+\.Vendor\.+"';
 	on event "dm:object-changed" call wld_rad_setOperatingClass
 		filter 'path matches "WiFi\.Radio\.[0-9]+\." && (contains("parameters.OperatingChannelBandwidth") || contains("parameters.Channel"))';
