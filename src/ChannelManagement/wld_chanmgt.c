@@ -531,7 +531,7 @@ swl_bandwidth_e wld_chanmgt_getAutoBw(T_Radio* pR, swl_chanspec_t tgtChspec) {
  */
 swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bool direct, wld_channelChangeReason_e reason, const char* reasonExt) {
     ASSERT_NOT_NULL(pR, SWL_RC_ERROR, ME, "NULL");
-    ASSERT_TRUE(pR->isReady || reason == CHAN_REASON_INITIAL, SWL_RC_ERROR, ME, "%s: radio is not configured yet", pR->Name)
+    ASSERT_TRUE(pR->isReady || reason == CHAN_REASON_INITIAL, SWL_RC_ERROR, ME, "%s: radio is not configured yet", pR->Name);
 
     swl_rc_ne rc = SWL_RC_OK;
 

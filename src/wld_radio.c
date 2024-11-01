@@ -580,7 +580,7 @@ static void s_setOperatingChannelBandwidth_pwf(void* priv _UNUSED, amxd_object_t
     const char* OCBW = amxc_var_constcast(cstring_t, newValue);
 
     swl_radBw_e radBw = swl_conv_charToEnum(OCBW, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
-    if((radBw == pRad->operatingChannelBandwidth) &&
+    if((radBw == pRad->operatingChannelBandwidth) && (radBw == pRad->runningChannelBandwidth) &&
        (!swl_typeChanspec_equals(wld_chanmgt_getTgtChspec(pRad), (swl_chanspec_t) SWL_CHANSPEC_EMPTY))) {
         SAH_TRACEZ_INFO(ME, "%s: Same bandwidth %s", pRad->Name, swl_radBw_str[radBw]);
         return;
@@ -3907,7 +3907,12 @@ void wld_rad_chan_update_model(T_Radio* pRad, amxd_trans_t* trans) {
     char operatingStandardsText[64] = {};
     swl_radStd_toChar(operatingStandardsText, sizeof(operatingStandardsText), pRad->operatingStandards, pRad->operatingStandardsFormat, pRad->supportedStandards);
     amxd_trans_set_cstring_t(targetTrans, "OperatingStandards", operatingStandardsText);
-    amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", swl_radBw_str[pRad->operatingChannelBandwidth]);
+    /* Do not update OperatingChannelBandwidth dm value when syncing with chanspec read from driver
+     * to not be considered as a user config by the OperatingChannelBandwidth dm writer hanlder
+     */
+    if((pRad->targetChanspec.chanspec.channel != 0) && (pRad->channelBandwidthChangeReason != CHAN_REASON_INITIAL)) {
+        amxd_trans_set_cstring_t(targetTrans, "OperatingChannelBandwidth", swl_radBw_str[pRad->operatingChannelBandwidth]);
+    }
     amxd_trans_set_cstring_t(targetTrans, "CurrentOperatingChannelBandwidth", swl_radBw_str[pRad->runningChannelBandwidth]);
     swl_conv_transParamSetMask(targetTrans, "SupportedOperatingChannelBandwidth", pRad->supportedChannelBandwidth,
                                swl_radBw_str, SWL_RAD_BW_MAX);
