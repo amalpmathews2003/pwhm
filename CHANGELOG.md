@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.7 - 2024-11-04(06:09:22 +0000)
+
+### Other
+
+- getting-wld-segfault-in-stability-test
+
 ## Release v6.41.6 - 2024-10-29(16:00:43 +0000)
 
 ### Other
