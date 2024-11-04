@@ -95,30 +95,30 @@ static void s_printFsmBits(T_Radio* rad) {
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, rad) {
         if(areBitsSetLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW)) {
-            SAH_TRACEZ_WARNING(ME, "FSM VAP %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
-                               pAP->alias,
-                               pAP->enable,
-                               pAP->fsm.FSM_BitActionArray[0], pAP->fsm.FSM_BitActionArray[1],
-                               pAP->fsm.FSM_AC_BitActionArray[0], pAP->fsm.FSM_AC_BitActionArray[1]);
+            SAH_TRACEZ_INFO(ME, "FSM VAP %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
+                            pAP->alias,
+                            pAP->enable,
+                            pAP->fsm.FSM_BitActionArray[0], pAP->fsm.FSM_BitActionArray[1],
+                            pAP->fsm.FSM_AC_BitActionArray[0], pAP->fsm.FSM_AC_BitActionArray[1]);
         }
     }
 
     T_EndPoint* pEP = NULL;
     wld_rad_forEachEp(pEP, rad) {
         if(areBitsSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW)) {
-            SAH_TRACEZ_WARNING(ME, "FSM  EP %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
-                               pEP->alias,
-                               pEP->enable,
-                               pEP->fsm.FSM_BitActionArray[0], pEP->fsm.FSM_BitActionArray[1],
-                               pEP->fsm.FSM_AC_BitActionArray[0], pEP->fsm.FSM_AC_BitActionArray[1]);
+            SAH_TRACEZ_INFO(ME, "FSM  EP %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
+                            pEP->alias,
+                            pEP->enable,
+                            pEP->fsm.FSM_BitActionArray[0], pEP->fsm.FSM_BitActionArray[1],
+                            pEP->fsm.FSM_AC_BitActionArray[0], pEP->fsm.FSM_AC_BitActionArray[1]);
         }
     }
 
-    SAH_TRACEZ_WARNING(ME, "FSM RAD %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
-                       rad->Name,
-                       rad->enable,
-                       rad->fsmRad.FSM_BitActionArray[0], rad->fsmRad.FSM_BitActionArray[1],
-                       rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1]);
+    SAH_TRACEZ_INFO(ME, "FSM RAD %8s: %u 0x%08lx 0x%08lx // 0x%08lx 0x%08lx",
+                    rad->Name,
+                    rad->enable,
+                    rad->fsmRad.FSM_BitActionArray[0], rad->fsmRad.FSM_BitActionArray[1],
+                    rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1]);
 
 }
 
@@ -455,7 +455,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
                 /* We've created our timer - check if we can go to WAIT State? */
                 if((rad->fsm_radio_st == FSM_IDLE) &&
                    (0 == amxp_timer_start(rad->fsmRad.timer, rad->fsmRad.timeout_msec))) {
-                    SAH_TRACEZ_WARNING(ME, "Starting FSM commit %s", rad->Name);
+                    SAH_TRACEZ_INFO(ME, "Starting FSM commit %s", rad->Name);
                     rad->fsm_radio_st = FSM_RUN;              // Lock the RADIO for our FSM
                     rad->fsmStats.nrStarts++;
                     rad->fsmRad.FSM_State = FSM_WAIT;
@@ -671,7 +671,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
         rad->fsmRad.FSM_State = FSM_FINISH;
         // Release lock
         bool last = s_areAnyWaiting();
-        SAH_TRACEZ_WARNING(ME, "%s: check compend FSM %u %p (FsmComPend:%d)", rad->Name, last, s_getMngr(rad)->doFinish, rad->fsmRad.FSM_ComPend);
+        SAH_TRACEZ_INFO(ME, "%s: check compend FSM %u %p (FsmComPend:%d)", rad->Name, last, s_getMngr(rad)->doFinish, rad->fsmRad.FSM_ComPend);
         SWL_CALL(s_getMngr(rad)->doCompendCheck, rad, last);
         s_freeLock(rad);
         break;
@@ -680,7 +680,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_FINISH:
     case FSM_ERROR:
     case FSM_UNKNOWN:
-        SAH_TRACEZ_WARNING(ME, "%s: do finish FSM %p", rad->Name, s_getMngr(rad)->doFinish);
+        SAH_TRACEZ_INFO(ME, "%s: do finish FSM %p", rad->Name, s_getMngr(rad)->doFinish);
         rad->fsmRad.timeout_msec = 10;
 
         rad->fsmRad.FSM_ReqState = FSM_MAX;
