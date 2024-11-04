@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.8 - 2024-11-04(13:10:55 +0000)
+
+### Other
+
+- fix disassoc notif missing reason
+
 ## Release v6.41.7 - 2024-11-04(06:09:22 +0000)
 
 ### Other
