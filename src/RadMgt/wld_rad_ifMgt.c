@@ -117,8 +117,7 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
     amxd_trans_t trans;
     amxd_trans_init(&trans);
     if(ssidObj == NULL) {
-        amxd_object_t* lastSsidInst = amxc_container_of(amxc_llist_get_last(&ssidObjTmpl->instances), amxd_object_t, it);
-        uint32_t newSsidIdx = amxd_object_get_index(lastSsidInst) + 1;
+        uint32_t newSsidIdx = swla_object_getFirstAvailableIndex(ssidObjTmpl);
         amxd_trans_select_object(&trans, ssidObjTmpl);
         amxd_trans_add_inst(&trans, newSsidIdx, apname);
         char* ssidTmplPath = amxd_object_get_path(ssidObjTmpl, AMXD_OBJECT_INDEXED);
@@ -228,8 +227,7 @@ amxd_status_t _addEndPointIntf(amxd_object_t* wifi,
     amxd_trans_t trans;
     amxd_trans_init(&trans);
     if(ssidObj == NULL) {
-        amxd_object_t* lastSsidInst = amxc_container_of(amxc_llist_get_last(&ssidObjTmpl->instances), amxd_object_t, it);
-        uint32_t newSsidIdx = amxd_object_get_index(lastSsidInst) + 1;
+        uint32_t newSsidIdx = swla_object_getFirstAvailableIndex(ssidObjTmpl);
         amxd_trans_select_object(&trans, ssidObjTmpl);
         amxd_trans_add_inst(&trans, newSsidIdx, endpointname);
         char* ssidTmplPath = amxd_object_get_path(ssidObjTmpl, AMXD_OBJECT_INDEXED);
