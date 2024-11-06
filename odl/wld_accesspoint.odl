@@ -1522,7 +1522,12 @@ define rrm_t{
 			 * @version 9.2
 			 */
 			%read-only uint32 MUUserPositionId;
-			
+		
+                        /** Number of packets errors
+                         * @version
+                         */
+                        %volatile %read-only uint32 RxErrors;
+	
 			/**
 			 * Instant count of packets sent as MU to the device. 
 			 * @version 9.2

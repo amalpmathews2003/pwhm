@@ -21,7 +21,7 @@
             "RecentMaxSignalStrength": -18,
             "RxRetransmissions": 13,
             "RecentRxRetransmissionsFailed": 3,
-            "RecentRxError": 13,
+            "RecentRxError": 0,
             "RecentTxBytes": 0,
             "RecentMaxSNR": 73,
             "RxUnicastPacketCount": 2933,

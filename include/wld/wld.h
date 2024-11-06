@@ -760,6 +760,7 @@ typedef struct {
     uint32_t packetsSent;
     uint32_t packetsReceived;
     uint32_t errorsSent;
+    uint32_t errorsReceived;
     int32_t signalStrength;
     int32_t noise;
     uint32_t lastDataDownlinkRate;
@@ -2241,6 +2242,7 @@ typedef struct {
     uint32_t txBbyte;           /*!< tx data Broadcast bytes */
     uint32_t txMbyte;           /*!< tx data Multicast bytes */
     uint32_t txEbyte;           /*!< tx data error bytes */
+    uint32_t rxEbyte;           /*!< rx data error bytes */
     uint32_t rxPackets;         /*!< rx data packets */
     uint32_t rxUbyte;           /*!< rx data Unicast bytes */
     uint32_t rxBbyte;           /*!< rx data Broadcast bytes */

@@ -599,7 +599,7 @@ void wld_apRssiMon_updateStaHistory(T_AccessPoint* pAP, T_AssociatedDevice* pAD)
         sample->txPacketCount = pAD->TxPacketCount;
         sample->rxPacketCount = pAD->RxPacketCount;
         sample->txError = pAD->TxFailures;
-        sample->rxError = 0;
+        sample->rxError = pAD->RxFailures;
         sample->txFrameCount = pAD->TxFrameCount;
         sample->rxFrameCount = pAD->RxFrameCount;
         sample->tx_Retransmissions = pAD->Tx_Retransmissions;

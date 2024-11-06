@@ -21,7 +21,7 @@
             "MACAddress": "18:58:80:C2:FC:A1",
             "Noise": -91,
             "RxLinkBandwidthHistory": "80MHz,80MHz,80MHz",
-            "ErrorsReceivedHistory": "0,0,0",
+            "ErrorsReceivedHistory": "27,27,27",
             "RxFrameCountHistory": "467,467,467",
             "RxRetransCountHistory": "0,0,0",
             "TxSpatialStreamHistory": "0,0,0",

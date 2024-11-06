@@ -1865,6 +1865,7 @@ void wld_ad_syncStats(T_AssociatedDevice* pAD) {
         SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "PacketsSent", affiliatedSta->packetsSent);
         SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "PacketsReceived", affiliatedSta->packetsReceived);
         SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "ErrorsSent", affiliatedSta->errorsSent);
+        SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "ErrorsReceived", affiliatedSta->errorsReceived);
         SWLA_OBJECT_SET_PARAM_INT32(affiliatedSta->object, "SignalStrength", affiliatedSta->signalStrength);
         SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "LastDataDownlinkRate", affiliatedSta->lastDataDownlinkRate);
         SWLA_OBJECT_SET_PARAM_UINT32(affiliatedSta->object, "LastDataUplinkRate", affiliatedSta->lastDataUplinkRate);

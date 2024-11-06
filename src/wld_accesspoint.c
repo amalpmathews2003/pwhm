@@ -2723,6 +2723,7 @@ static void s_updateMloStats(amxd_object_t* const obj, wld_mloStats_t* stats) {
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastBytesSent", stats->txUbyte);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastBytesReceived", stats->rxUbyte);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsSent", stats->txEbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsReceived", stats->rxEbyte);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastBytesSent", stats->txMbyte);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastBytesReceived", stats->rxMbyte);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastBytesSent", stats->txBbyte);
