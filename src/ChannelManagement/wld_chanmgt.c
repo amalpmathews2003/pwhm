@@ -915,6 +915,7 @@ amxd_status_t _wld_chanmgt_validateAcsBootChannel_pvf(amxd_object_t* object,
     ASSERTS_EQUALS(amxd_object_get_type(object), amxd_object_singleton, amxd_status_ok, ME, "obj is not singleton");
     int bootChannel = amxc_var_dyncast(int32_t, args);
     ASSERTI_FALSE((bootChannel < -1) || (bootChannel > 255), amxd_status_invalid_value, ME, "invalid bootChannel %d", bootChannel);
+    ASSERTS_TRUE(bootChannel != -1, amxd_status_ok, ME, "accept AcsBootChannel disabling value");
     T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
     ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No radio mapped");
     ASSERTI_TRUE(pRad->hasDmReady, amxd_status_ok, ME, "%s: radio config not yet fully loaded", pRad->Name);
