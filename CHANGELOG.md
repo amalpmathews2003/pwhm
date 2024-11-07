@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.12 - 2024-11-07(15:26:04 +0000)
+
+### Other
+
+- Reduce regex usage in signal handling
+
 ## Release v6.41.11 - 2024-11-07(13:04:42 +0000)
 
 ### Other
