@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.10 - 2024-11-07(10:46:41 +0000)
+
+### Other
+
+- - [Freedom] addVAPIntf failed with status 13 - duplicate
+
 ## Release v6.41.9 - 2024-11-04(14:35:35 +0000)
 
 ### Other
