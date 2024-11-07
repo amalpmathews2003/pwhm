@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.41.11 - 2024-11-07(13:04:42 +0000)
+
+### Other
+
+- - accept disabling AcsBootChannel
+
 ## Release v6.41.10 - 2024-11-07(10:46:41 +0000)
 
 ### Other
