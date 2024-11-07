@@ -135,7 +135,6 @@ static void s_runScan(scanInfo_t* pScanInfo) {
     if(wld_rad_nl80211_startScanExt(pRad, &pScanInfo->flags) < SWL_RC_OK) {
         SAH_TRACEZ_ERROR(ME, "%s: report scan async failure", pRad->Name);
         wld_scan_done(pRad, false);
-        s_scheduleNextScan(pRad);
     }
 }
 
@@ -191,14 +190,22 @@ static bool s_addScanFreq(T_Radio* pRadio, swl_channel_t chan, swl_unLiList_t* p
 
 swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t* pFlags) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
-    ASSERT_NOT_NULL(pRadio, rc, ME, "NULL");
+    scanInfo_t* pScanInfo = NULL;
+    if(pRadio == NULL) {
+        SAH_TRACEZ_ERROR(ME, "invalid param");
+        goto scan_exit;
+    }
 
     /*
      * start_scan command has to be sent to enabled interface (UP)
      * (even when secondary VAP, while primary is disabled)
      */
     int index = wld_rad_getFirstEnabledIfaceIndex(pRadio);
-    ASSERT_TRUE(index > 0, SWL_RC_INVALID_STATE, ME, "%s: rad has no enabled iface", pRadio->Name);
+    if(index <= 0) {
+        rc = SWL_RC_INVALID_STATE;
+        SAH_TRACEZ_ERROR(ME, "%s: rad has no enabled iface", pRadio->Name);
+        goto scan_exit;
+    }
 
     if(wld_rad_countWiphyRads(pRadio->wiphy) > 1) {
         scanInfo_t* pScanInfo = s_addScan(pRadio, pFlags);
@@ -234,12 +241,14 @@ swl_rc_ne wld_rad_nl80211_startScanExt(T_Radio* pRadio, wld_nl80211_scanFlags_t*
     s_setScanDuration(pRadio, &params);
 
     rc = wld_nl80211_startScan(state, index, &params);
+
 scan_error:
+    swl_unLiList_destroy(&params.ssids);
+    swl_unLiList_destroy(&params.freqs);
+scan_exit:
     if(!swl_rc_isOk(rc)) {
         s_scheduleNextScan(pRadio);
     }
-    swl_unLiList_destroy(&params.ssids);
-    swl_unLiList_destroy(&params.freqs);
     return rc;
 }
 
