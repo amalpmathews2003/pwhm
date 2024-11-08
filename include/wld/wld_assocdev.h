@@ -106,6 +106,7 @@ void wld_ad_clearDelayedDisassocNotifTimer(T_AssociatedDevice* pAD);
 
 wld_affiliatedSta_t* wld_ad_getAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp);
 wld_affiliatedSta_t* wld_ad_getOrAddAffiliatedSta(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp);
+wld_affiliatedSta_t* wld_ad_provideAffiliatedStaWithMac(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp, swl_macBin_t* mac);
 void wld_ad_activateAfSta(T_AssociatedDevice* pAD, wld_affiliatedSta_t* afSta);
 void wld_ad_deactivateAfSta(T_AssociatedDevice* pAD, wld_affiliatedSta_t* afSta);
 uint32_t wld_ad_getNrActiveAffiliatedSta(T_AssociatedDevice* pAD);

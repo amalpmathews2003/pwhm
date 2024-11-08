@@ -1207,7 +1207,6 @@ void wld_ad_add_connection_try(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
 
     s_activate(pAP, pAD);
 
-
     wld_vap_sync_device(pAP, pAD);
     wld_vap_syncNrDev(pAP);
 }
@@ -1445,9 +1444,32 @@ wld_affiliatedSta_t* wld_ad_getOrAddAffiliatedSta(T_AssociatedDevice* pAD, T_Acc
     return afSta;
 }
 
+wld_affiliatedSta_t* wld_ad_provideAffiliatedStaWithMac(T_AssociatedDevice* pAD, T_AccessPoint* affiliatedAp, swl_macBin_t* mac) {
+    wld_affiliatedSta_t* afSta = wld_ad_getOrAddAffiliatedSta(pAD, affiliatedAp);
+    ASSERT_NOT_NULL(afSta, NULL, ME, "NULL");
+    if(!swl_mac_binMatches(&afSta->mac, mac)) {
+        if(!swl_mac_binIsNull(&afSta->mac)) {
+            SAH_TRACEZ_WARNING(ME, "%s: change AfStaMac on %s from %s to %s", pAD->Name,
+                               affiliatedAp->name,
+                               swl_typeMacBin_toBuf32Ref(&afSta->mac).buf,
+                               swl_typeMacBin_toBuf32Ref(mac).buf);
+        }
+        memcpy(&afSta->mac, mac, sizeof(swl_macBin_t));
+    }
+    return afSta;
+}
+
 void wld_ad_activateAfSta(T_AssociatedDevice* pAD _UNUSED, wld_affiliatedSta_t* afSta) {
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
     ASSERT_NOT_NULL(afSta, , ME, "NULL");
+    ASSERTI_FALSE(afSta->active, , ME, "Already active");
+    ASSERT_NOT_NULL(afSta->pAP, , ME, "No AP");
+
+    SAH_TRACEZ_INFO(ME, "%s, activate afSta %s @ %s (%s), AD State %u", pAD->Name,
+                    swl_typeMacBin_toBuf32Ref(&afSta->mac).buf,
+                    afSta->pAP->name,
+                    swl_freqBandExt_str[afSta->pAP->pRadio->operatingFrequencyBand],
+                    pAD->Active);
 
     afSta->active = true;
 }
@@ -1455,7 +1477,14 @@ void wld_ad_activateAfSta(T_AssociatedDevice* pAD _UNUSED, wld_affiliatedSta_t* 
 void wld_ad_deactivateAfSta(T_AssociatedDevice* pAD _UNUSED, wld_affiliatedSta_t* afSta) {
     ASSERT_NOT_NULL(pAD, , ME, "NULL");
     ASSERT_NOT_NULL(afSta, , ME, "NULL");
+    ASSERTI_TRUE(afSta->active, , ME, "Already active");
+    ASSERT_NOT_NULL(afSta->pAP, , ME, "No AP");
 
+    SAH_TRACEZ_INFO(ME, "%s, deactivate afSta %s @ %s (%s), AD State %u", pAD->Name,
+                    swl_typeMacBin_toBuf32Ref(&afSta->mac).buf,
+                    afSta->pAP->name,
+                    swl_freqBandExt_str[afSta->pAP->pRadio->operatingFrequencyBand],
+                    pAD->Active);
     afSta->active = false;
 }
 

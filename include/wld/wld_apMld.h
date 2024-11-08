@@ -73,5 +73,6 @@ typedef struct {
 } wld_apMld_afStaInfo_t;
 
 bool wld_apMld_fetchAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, int32_t mldUnit, swl_macBin_t* mac);
+bool wld_apMld_getActiveApAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, T_AccessPoint* pAP, swl_macBin_t* mac);
 
 #endif /* SRC_INCLUDE_WLD_WLD_APMLD_H_ */

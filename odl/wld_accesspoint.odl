@@ -1682,6 +1682,9 @@ define rrm_t{
 			 * MLO Mode of the associated device.
 			 * The current operating mode of the MLO 
 			 * * Unknown : No MLO available, or mode unknown.
+			 * * NotApplicable : Mlo mode not applicable, i.e. not doing MLO
+			 * * ActiveUnknown: MLO is active, but specific mode currently unknown.
+			 * * SingleLink: Single link MLO, i.e. station does wifi7, but only sets up 1 link.
 			 * * EMLSR : Enhanced Multi LInk Single Radio.
 			 * * NSTR : Non-Simultaneous Transmit and Receive.
 			 * * STR : Simultaneous Transmit and Receive.

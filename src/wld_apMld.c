@@ -97,7 +97,11 @@
 #define ME "mld"
 
 /**
- * Retrieve the affiliatedStaInfo for a given MAC Address associated to a given MLD unit.
+ * Retrieve an affiliatedStaInfo for a given MAC Address associated to a given MLD unit.
+ *
+ * Because inactive affiliated sta is remembered, and affiliatedSta mac addresses may be reused on other band
+ * it is possible there are multiple afSta with the same mac address, although there should never be more than one
+ * of them active at the same time.
  *
  * @param info: the struct in which the affiliated sta info will be written
  * @param mldUnit: the mld unit ID of the ap MLD.
@@ -135,6 +139,55 @@ bool wld_apMld_fetchAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, int32_t mldUn
                 amxc_llist_for_each(it, &pAD->affiliatedStaList) {
                     wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
                     if(swl_mac_binMatches(&afSta->mac, mac)) {
+                        info->afSta = afSta;
+                        info->pAD = pAD;
+                        info->mainAp = tmpAp;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Fetch the active AffiliatedStaInfo for a given MAC afSta connected to a given AP.
+ */
+bool wld_apMld_getActiveApAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, T_AccessPoint* pAP, swl_macBin_t* mac) {
+    ASSERT_NOT_NULL(info, false, ME, "NULL");
+    ASSERT_NOT_NULL(mac, false, ME, "NULL");
+
+    T_Radio* pRad = NULL;
+    wld_for_eachRad(pRad) {
+        T_AccessPoint* tmpAp = NULL;
+        wld_rad_forEachAp(tmpAp, pRad) {
+            if(tmpAp == NULL) {
+                continue;
+            }
+
+            if(tmpAp->pSSID == NULL) {
+                continue;
+            }
+
+            if(tmpAp->pSSID->mldUnit != pAP->pSSID->mldUnit) {
+                continue;
+            }
+
+            for(int i = 0; i < tmpAp->AssociatedDeviceNumberOfEntries; i++) {
+                T_AssociatedDevice* pAD = tmpAp->AssociatedDevice[i];
+                if(!pAD->Active) {
+                    continue;
+                }
+
+                amxc_llist_for_each(it, &pAD->affiliatedStaList) {
+                    wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+                    if(!afSta->active) {
+                        continue;
+                    }
+
+                    if(swl_mac_binMatches(&afSta->mac, mac) && (afSta->pAP == pAP)) {
                         info->afSta = afSta;
                         info->pAD = pAD;
                         info->mainAp = tmpAp;
