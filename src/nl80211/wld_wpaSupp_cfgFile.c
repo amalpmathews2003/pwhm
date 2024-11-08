@@ -116,6 +116,19 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
         (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P))) {
         swl_mapChar_add(global, "sae_pwe", "2");
     }
+
+    char freqListStr[320] = {'\0'};
+    for(int i = 0; i < pRad->nrPossibleChannels; i++) {
+        uint32_t freqMHz = 0;
+        swl_chanspec_t chanspec = SWL_CHANSPEC_NEW(pRad->possibleChannels[i], SWL_BW_20MHZ, pRad->operatingFrequencyBand);
+        if((SWL_RC_OK == swl_chanspec_channelToMHz(&chanspec, &freqMHz))) {
+            swl_strlst_catFormat(freqListStr, sizeof(freqListStr), " ", "%d", freqMHz);
+        }
+    }
+    if(!swl_str_isEmpty(freqListStr)) {
+        swl_mapChar_add(global, "freq_list", freqListStr);
+    }
+
     return SWL_RC_OK;
 }
 
