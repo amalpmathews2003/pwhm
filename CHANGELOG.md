@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.42.2 - 2024-11-08(17:01:51 +0000)
+
+### Other
+
+- fix crash when running successive rad scan with single wiphy
+
 ## Release v6.42.1 - 2024-11-08(16:16:25 +0000)
 
 ### Other
