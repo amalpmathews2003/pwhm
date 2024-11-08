@@ -91,6 +91,15 @@ static scanInfo_t* s_findScan(T_Radio* pRad) {
     return NULL;
 }
 
+static scanInfo_t* s_checkScan(scanInfo_t* pScanInfo) {
+    amxc_llist_for_each(it, &sScanPool) {
+        if(pScanInfo == amxc_container_of(it, scanInfo_t, it)) {
+            return pScanInfo;
+        }
+    }
+    return NULL;
+}
+
 static scanInfo_t* s_addScan(T_Radio* pRad, wld_nl80211_scanFlags_t* pFlags) {
     ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
     scanInfo_t* pScanInfo = s_findScan(pRad);
@@ -119,7 +128,7 @@ static int s_delScan(T_Radio* pRad) {
 static scanInfo_t* s_getNextScan(uint32_t wiphy) {
     amxc_llist_for_each(it, &sScanPool) {
         scanInfo_t* pScanInfo = amxc_container_of(it, scanInfo_t, it);
-        if((pScanInfo->pRad != NULL) && (pScanInfo->pRad->wiphy == wiphy)) {
+        if((debugIsRadPointer(pScanInfo->pRad)) && (pScanInfo->pRad->wiphy == wiphy)) {
             return pScanInfo;
         }
     }
@@ -128,9 +137,9 @@ static scanInfo_t* s_getNextScan(uint32_t wiphy) {
 
 static bool s_scheduleNextScan(T_Radio* pRad);
 static void s_runScan(scanInfo_t* pScanInfo) {
-    ASSERT_NOT_NULL(pScanInfo, , ME, "NULL");
+    ASSERT_NOT_NULL(s_checkScan(pScanInfo), , ME, "Unknown scanInfo ctx %p", pScanInfo);
     T_Radio* pRad = pScanInfo->pRad;
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_TRUE(debugIsRadPointer(pRad), , ME, "Invalid rad ctx");
     SAH_TRACEZ_INFO(ME, "%s: starting next scan", pRad->Name);
     if(wld_rad_nl80211_startScanExt(pRad, &pScanInfo->flags) < SWL_RC_OK) {
         SAH_TRACEZ_ERROR(ME, "%s: report scan async failure", pRad->Name);
