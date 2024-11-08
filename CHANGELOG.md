@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.42.1 - 2024-11-08(16:16:25 +0000)
+
+### Other
+
+- : pwhm crash at boot in ethernet backhaul
+
 ## Release v6.42.0 - 2024-11-08(13:07:33 +0000)
 
 ### Other
