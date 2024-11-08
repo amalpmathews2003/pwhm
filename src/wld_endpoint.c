@@ -594,16 +594,18 @@ static void s_deinitEP(T_EndPoint* pEP) {
     T_Radio* pR = pEP->pRadio;
     T_SSID* pSSID = pEP->pSSID;
     if(pR) {
-        if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
+        if(pEP->index > 0) {
             pR->pFA->mfn_wendpoint_disconnect(pEP);
             pR->pFA->mfn_wendpoint_enable(pEP, false);
             wld_rad_doRadioCommit(pR);
             wld_endpoint_reconfigure(pEP);
-            pR->pFA->mfn_wendpoint_destroy_hook(pEP);
+        }
+        pR->pFA->mfn_wendpoint_destroy_hook(pEP);
+        if(pEP->index > 0) {
             /* Try to delete the requested interface by calling the HW function */
             pR->pFA->mfn_wrad_delendpointif(pR, pEP->Name);
-            s_sendChangeEvent(pEP, WLD_EP_CHANGE_EVENT_DESTROY, NULL);
         }
+        s_sendChangeEvent(pEP, WLD_EP_CHANGE_EVENT_DESTROY, NULL);
         pEP->Name[0] = 0;
         pEP->index = 0;
         /* Take EP also out the Radio */

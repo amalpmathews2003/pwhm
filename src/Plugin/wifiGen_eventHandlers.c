@@ -426,11 +426,15 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
     return SWL_RC_OK;
 }
 
-void s_syncVapInfo(T_AccessPoint* pAP) {
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+void s_syncVapInfo(char* apCtxName) {
+    T_AccessPoint* pAP = wld_ap_getVapByName(apCtxName);
+    free(apCtxName);
+    ASSERTI_NOT_NULL(pAP, , ME, "NULL");
     swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
-    ASSERT_NOT_NULL(pAP->pSSID, , ME, "NULL");
-    swl_typeUInt32_commitObjectParam(pAP->pSSID->pBus, "Index", pAP->index);
+    T_SSID* pSSID = pAP->pSSID;
+    if(pSSID != NULL) {
+        swl_typeUInt32_commitObjectParam(pSSID->pBus, "Index", pAP->index);
+    }
     T_Radio* pRad = pAP->pRadio;
     if(pRad != NULL) {
         swl_typeUInt32_commitObjectParam(pRad->pBus, "Index", pRad->index);
@@ -452,7 +456,7 @@ static void s_newInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         pAP->index = pIfaceInfo->ifIndex;
         pAP->wDevId = pIfaceInfo->wDevId;
         pAP->pFA->mfn_wvap_setEvtHandlers(pAP);
-        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, strdup(pIfaceInfo->name));
         wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);
         if(pMgr != NULL) {
             wifiGen_hapd_enableVapWpaCtrlIface(pAP);
@@ -486,7 +490,7 @@ static void s_delInterfaceCb(void* pRef, void* pData _UNUSED, wld_nl80211_ifaceI
         wld_ap_nl80211_delEvtListener(pAP);
         pAP->index = 0;
         pAP->wDevId = 0;
-        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, pAP);
+        swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapInfo, strdup(pIfaceInfo->name));
     }
     if((uint32_t) pRad->index == pIfaceInfo->ifIndex) {
         pRad->index = pRad->wDevId = 0;
