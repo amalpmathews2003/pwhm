@@ -248,7 +248,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
     //assume disable ap
     pAP->enable = false;
     T_Radio* pR = pAP->pRadio;
-    T_SSID* pSSID = wld_ssid_validate(pAP->pSSID);
+    T_SSID* pSSID = pAP->pSSID;
     SAH_TRACEZ_WARNING(ME, "DELETE %s %p", pAP->name, pR);
     if(pR) {
         if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
@@ -291,8 +291,8 @@ static void s_deinitAP(T_AccessPoint* pAP) {
         if(pR) {
             pR->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);
         }
+        pAP->pSSID = NULL;
     }
-    pAP->pSSID = NULL;
     SAH_TRACEZ_OUT(ME);
 }
 
