@@ -256,6 +256,7 @@ static void s_deinitAP(T_AccessPoint* pAP) {
             SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
             pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
         }
+        s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_DEINIT, NULL);
         SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
         /* Destroy vap*/
         pR->pFA->mfn_wvap_destroy_hook(pAP);
