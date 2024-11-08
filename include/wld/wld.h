@@ -1929,8 +1929,9 @@ typedef struct {
 
 typedef enum {
     WLD_VAP_CHANGE_EVENT_CREATE,       // Initial creation of object, no transaction possible
-    WLD_VAP_CHANGE_EVENT_CREATE_FINAL, // Evented add handler, transaction possible
+    WLD_VAP_CHANGE_EVENT_CREATE_FINAL, // Evented add handler, transaction possible (referencing ssid/radio)
     WLD_VAP_CHANGE_EVENT_DESTROY,
+    WLD_VAP_CHANGE_EVENT_DEINIT,       // VAP de-initialized (ie not referencing to ssid/radio)
     WLD_VAP_CHANGE_EVENT_MAX
 } wld_vap_changeEvent_e;
 

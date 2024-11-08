@@ -92,8 +92,8 @@ typedef struct {
  */
 static const wifiGen_fsmStates_e sApplyActions[] = {
     GEN_FSM_START_HOSTAPD,    // leads to restarting hostapd
-    GEN_FSM_ENABLE_HOSTAPD,   // leads to enabling (usually toggling) hostapd main interface
     GEN_FSM_UPDATE_HOSTAPD,   // leads to refreshing hostpad with SIGHUP (reloads conf file)
+    GEN_FSM_ENABLE_HOSTAPD,   // leads to enabling (usually toggling) hostapd main interface
     GEN_FSM_RELOAD_AP_SECKEY, // leads to reloading AP secret key conf from memory
     GEN_FSM_UPDATE_BEACON,    // leads to refresh AP beacon frame from mem conf
 };
@@ -229,9 +229,8 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
         }
         break;
     case SECDMN_ACTION_OK_NEED_TOGGLE:
-        if(s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD)) {
-            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
-        }
+        s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         break;
     case SECDMN_ACTION_OK_NEED_SIGHUP:
         s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
@@ -959,9 +958,28 @@ static wld_event_callback_t s_onStationChange = {
     .callback = (wld_event_callback_fun) s_stationChange,
 };
 
+static void s_apChange(wld_vap_changeEvent_t* event) {
+    ASSERT_NOT_NULL(event, , ME, "NULL");
+    T_AccessPoint* pAP = event->vap;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
+    SAH_TRACEZ_INFO(ME, "%s: receiving event %d", pAP->alias, event->changeType);
+    if((event->changeType == WLD_VAP_CHANGE_EVENT_DEINIT) &&
+       (wld_wpaCtrlInterface_isEnabled(pAP->wpaCtrlInterface))) {
+        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
+    }
+}
+
+static wld_event_callback_t s_onApChange = {
+    .callback = (wld_event_callback_fun) s_apChange,
+};
+
 void wifiGen_fsm_doInit(vendor_t* vendor) {
     ASSERT_NOT_NULL(vendor, , ME, "NULL");
     wld_fsm_init(vendor, &mngr);
     wld_event_add_callback(gWld_queue_rad_onChangeEvent, &s_onRadioChange);
     wld_event_add_callback(gWld_queue_sta_onChangeEvent, &s_onStationChange);
+    wld_event_add_callback(gWld_queue_vap_onChangeEvent, &s_onApChange);
 }
