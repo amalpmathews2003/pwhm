@@ -1650,6 +1650,7 @@ struct WLD_RADIO {
     wld_nl80211_listener_t* nl80211Listener;            /* nl80211 events listener */
     wld_secDmn_t* hostapd;                              /* hostapd daemon context. */
     uint32_t wiphy;                                     /* nl80211 wireless physical device id */
+    char wiphyName[IFNAMSIZ];                           /* nl80211 wireless physical device name */
     wld_nl80211_channelSurveyInfo_t* pLastSurvey;       /* last active chan survey result (cached) */
     wld_airStats_t* pLastAirStats;                      /* last air stats calculated based on diff with active chan survey result (cached for nl80211) */
     bool csiEnable;                                     /* Enable CSI */
