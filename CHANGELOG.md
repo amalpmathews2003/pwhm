@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.42.3 - 2024-11-08(17:12:49 +0000)
+
+### Other
+
+- PPW-9 improve fix of successive ssid ap objs deletion
+
 ## Release v6.42.2 - 2024-11-08(17:01:51 +0000)
 
 ### Other
