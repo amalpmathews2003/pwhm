@@ -251,17 +251,17 @@ static void s_deinitAP(T_AccessPoint* pAP) {
     T_SSID* pSSID = pAP->pSSID;
     SAH_TRACEZ_WARNING(ME, "DELETE %s %p", pAP->name, pR);
     if(pR) {
-        if((pSSID != NULL) && (!swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress))) {
-            if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
-                /* Deauthentify all stations */
-                SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
-                pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
-            }
-            SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
-            /* Destroy vap*/
-            pR->pFA->mfn_wvap_destroy_hook(pAP);
-            /* Sync Rad */
-            wld_rad_doSync(pR);
+        if(pAP->ActiveAssociatedDeviceNumberOfEntries > 0) {
+            /* Deauthentify all stations */
+            SAH_TRACEZ_INFO(ME, "%s: Deauth all stations", pAP->alias);
+            pAP->pFA->mfn_wvap_kick_sta_reason(pAP, "ff:ff:ff:ff:ff:ff", 17, SWL_IEEE80211_DEAUTH_REASON_UNABLE_TO_HANDLE_STA);
+        }
+        SAH_TRACEZ_WARNING(ME, "DELETE HOOK %s", pAP->name);
+        /* Destroy vap*/
+        pR->pFA->mfn_wvap_destroy_hook(pAP);
+        /* Sync Rad */
+        wld_rad_doSync(pR);
+        if(pAP->index > 0) {
             /* Try to delete the requested interface by calling the HW function */
             pR->pFA->mfn_wrad_delvapif(pR, pAP->alias);
         }
@@ -2363,15 +2363,15 @@ T_AccessPoint* wld_ap_getVapByBssid(swl_macBin_t* bssid) {
 }
 
 void wld_vap_updateState(T_AccessPoint* pAP) {
-
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
 
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     T_SSID* pSSID = (T_SSID*) pAP->pSSID;
 
     wld_intfStatus_e oldVapStatus = pAP->status;
-    wld_status_e oldSsidStatus = pSSID->status;
+    wld_status_e oldSsidStatus = pSSID ? pSSID->status : RST_UNKNOWN;
 
-    wld_status_e newSsidStatus = 0;
+    wld_status_e newSsidStatus;
 
     int status = pAP->pFA->mfn_wvap_status(pAP);
     if(status > 0) {
@@ -2380,7 +2380,7 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
         pAP->status = APSTI_DISABLED;
     }
 
-    if(pRad->status == RST_ERROR) {
+    if((pRad == NULL) || (pRad->status == RST_ERROR)) {
         newSsidStatus = RST_ERROR;
     } else if((pAP->status == APSTI_DISABLED) || (pRad->status == RST_DOWN)) {
         newSsidStatus = RST_DOWN;
@@ -2397,9 +2397,9 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
                 swl_typeCharPtr_commitObjectParam(pAP->pBus, "Status", (char*) cstr_AP_status[pAP->status]), ,
                 ME, "%s: fail to commit status (%s)", pAP->alias, cstr_AP_status[pAP->status]);
 
-    ASSERT_TRUE((pSSID->pBus == NULL) ||
+    ASSERT_TRUE((pSSID == NULL) || (pSSID->pBus == NULL) ||
                 swl_typeCharPtr_commitObjectParam(pSSID->pBus, "Status", (char*) Rad_SupStatus[newSsidStatus]), ,
-                ME, "%s: fail to commit status (%s)", pSSID->Name, Rad_SupStatus[newSsidStatus]);
+                ME, "%s: fail to commit status (%s)", pAP->name, Rad_SupStatus[newSsidStatus]);
 
     ASSERTI_FALSE((oldVapStatus == pAP->status) && (oldSsidStatus == newSsidStatus), ,
                   ME, "%s: status not changed", pAP->alias);

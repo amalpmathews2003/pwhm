@@ -236,19 +236,17 @@ static void s_cleanSSID(T_SSID* pSSID, bool direct) {
     T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
     if((pAP != NULL) && debugIsVapPointer(pAP) && (pAP->pSSID == pSSID)) {
         uint32_t vapInstIdx = amxd_object_get_index(pAP->pBus);
-        if(direct || !vapInstIdx) {
-            //clear SSID Reference of AccessPoint
-            pAP->pSSID = NULL;
-        } else {
+        //clear SSID Reference of AccessPoint
+        pAP->pSSID = NULL;
+        if(!direct && vapInstIdx) {
             void* param = (void*) ((intptr_t) vapInstIdx);
             swla_delayExec_add(s_clearApSSIDRef, param);
         }
     } else if((pEP != NULL) && debugIsEpPointer(pEP) && (pEP->pSSID == pSSID)) {
         uint32_t epInstIdx = amxd_object_get_index(pEP->pBus);
-        if(direct || !epInstIdx) {
-            //clear SSID Reference of EndPoint
-            pEP->pSSID = NULL;
-        } else {
+        //clear SSID Reference of EndPoint
+        pEP->pSSID = NULL;
+        if(!direct && epInstIdx) {
             void* param = (void*) ((intptr_t) epInstIdx);
             swla_delayExec_add(s_clearEpSSIDRef, param);
         }
