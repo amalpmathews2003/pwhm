@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.42.0 - 2024-11-08(13:07:33 +0000)
+
+### Other
+
+- Reduce regex usage in signal handling
+- - add Wiphy name into radio ctx.
+
 ## Release v6.41.12 - 2024-11-07(15:26:04 +0000)
 
 ### Other
