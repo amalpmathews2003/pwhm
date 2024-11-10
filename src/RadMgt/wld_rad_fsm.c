@@ -428,6 +428,28 @@ static void s_fsmRun_thf(amxp_timer_t* timer _UNUSED, void* userdata) {
     SAH_TRACEZ_OUT(ME);
 }
 
+static bool s_checkAcFsmBitsHandling(T_Radio* rad) {
+    unsigned long mask[2] = {0};
+
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, rad) {
+        mask[0] |= pAP->fsm.FSM_AC_BitActionArray[0];
+        mask[1] |= pAP->fsm.FSM_AC_BitActionArray[1];
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, rad) {
+        mask[0] |= pEP->fsm.FSM_AC_BitActionArray[0];
+        mask[1] |= pEP->fsm.FSM_AC_BitActionArray[1];
+    }
+
+    /* A bit set on a Radio must be present on an EndPoint or an AccessPoint */
+    if((rad->fsmRad.FSM_AC_BitActionArray[0] & (~mask[0])) || (rad->fsmRad.FSM_AC_BitActionArray[1] & (~mask[1]))) {
+        return false;
+    }
+
+    return true;
+}
+
 FSM_STATE wld_rad_fsm(T_Radio* rad) {
     T_AccessPoint* pAP;
     T_EndPoint* pEP;
@@ -528,6 +550,10 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
 
         s_printFsmBits(rad);
         s_cleanFsmBits(rad);
+
+        if(!s_checkAcFsmBitsHandling(rad)) {
+            SAH_TRACEZ_ERROR(ME, "%s: Mismatch with EP/AP AC bitmaps !", rad->Name);
+        }
 
         wld_rad_incrementCounterStr(rad, &rad->genericCounters, WLD_RAD_EV_FSM_COMMIT,
                                     "0x%08lx 0x%08lx / 0x%08lx 0x%08lx", rad->fsmRad.FSM_AC_BitActionArray[0], rad->fsmRad.FSM_AC_BitActionArray[1],

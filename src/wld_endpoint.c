@@ -1595,7 +1595,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
  * @param connected Is the profile connected or not
  */
 static void s_setProfileStatus(T_EndPointProfile* profile) {
-    ASSERT_NOT_NULL(profile, , ME, "NULL");
+    ASSERTS_NOT_NULL(profile, , ME, "NULL");
 
     amxd_object_t* object = profile->pBus;
     wld_epProfileStatus_e status;

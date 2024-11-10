@@ -848,6 +848,10 @@ static void s_checkRadDependency(T_Radio* pRad) {
             wld_rad_forEachAp(pAP, pRad) {
                 s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
             }
+            T_EndPoint* pEP = NULL;
+            wld_rad_forEachEp(pEP, pRad) {
+                s_clearDynConfActions(pEP->fsm.FSM_AC_BitActionArray, FSM_BW);
+            }
         }
     }
 }
