@@ -548,7 +548,7 @@ unsigned long conv_ModeBitStr(char** enumStrList, char* str) {
     for(i = 0, val = 0; enumStrList[i]; i++) {
         pCh = strstr(str, enumStrList[i]);
         if(pCh) {
-            val |= (1 << i);
+            val |= (1UL << i);
         }
     }
     return val;
@@ -804,7 +804,7 @@ int areBitsOnlySetLongArray(unsigned long* pval, int elem, int* bitNrArray, int 
         for(j = 0; j < nrBitElem; j++) {
             int bitNr = bitNrArray[j] - (i * 32);
             if((bitNr & ~0x1f) == 0) {
-                mask &= ~(1 << bitNr);
+                mask &= ~(1UL << bitNr);
             }
         }
 
@@ -2120,8 +2120,15 @@ bool wldu_tuple_convMaskToStrByMask(wld_tuplelist_t* pList, uint64_t bitMask, am
     }
     return allMatched;
 }
-
+/*
+ *   // Function to validate if the path is safe
+ */
+static bool s_isValidAbsolutePath(const char* path) {
+    return (swl_str_startsWith(path, "/") && (swl_str_find(path, "../") < 0));
+}
 char* wldu_getLocalFile(char* buffer, size_t bufSize, char* path, char* format, ...) {
+    swl_str_copy(buffer, bufSize, NULL);
+    ASSERT_STR(format, NULL, ME, "empty format");
     va_list args;
     char* basePath = getenv("WLD_DBG_PATH");
 
@@ -2130,14 +2137,22 @@ char* wldu_getLocalFile(char* buffer, size_t bufSize, char* path, char* format, 
     int ret = vsnprintf(fileNameBuffer, sizeof(fileNameBuffer), format, args);
     va_end(args);
     ASSERT_TRUE(ret >= 0, NULL, ME, "Invalid format / args %s", format);
-
-    if(basePath && basePath[0]) {
-        snprintf(buffer, bufSize, "%s/%s", basePath, fileNameBuffer);
-        if(access(buffer, F_OK) != -1) {
+    if(!swl_str_isEmpty(basePath)) {
+        if(!s_isValidAbsolutePath(basePath)) {
+            SAH_TRACEZ_WARNING(ME, "ignore unsafe dbg basepath (%s)", basePath);
+        } else if(!swl_str_catFormat(buffer, bufSize, "%s/%s", basePath, fileNameBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "ignore dbg basepath (%s): tgt buffer(%p) too short (%zu)", basePath, buffer, bufSize);
+        } else if(access(buffer, F_OK) != -1) {
             return buffer;
+        } else {
+            SAH_TRACEZ_NOTICE(ME, "file (%s) not found in dbg basePath (%s): fallback to use arg path(%s)", fileNameBuffer, basePath, path);
         }
+        swl_str_copy(buffer, bufSize, NULL);
     }
-    snprintf(buffer, bufSize, "%s/%s", path, fileNameBuffer);
+    if(!swl_str_isEmpty(path)) {
+        swl_str_catFormat(buffer, bufSize, "%s/", path);
+    }
+    swl_str_cat(buffer, bufSize, fileNameBuffer);
     return buffer;
 }
 

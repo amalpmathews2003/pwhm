@@ -101,9 +101,9 @@ amxd_status_t _addVAPIntf(amxd_object_t* obj _UNUSED,
     const char* radioname = GET_CHAR(args, "radio");
     /* Get our T_Radio pointer of the selected radio */
     T_Radio* pR = wld_getRadioDataHandler(wifi, radioname);
+    ASSERT_NOT_NULL(pR, status, ME, "Radio structure for radio [%s] is missing", radioname);
     uint32_t nrCfgVaps = amxc_llist_size(&pR->llAP);
     ASSERT_FALSE(nrCfgVaps >= pR->maxNrHwBss, amxd_status_not_supported, ME, "Vap Addition Failed");
-    ASSERT_NOT_NULL(pR, status, ME, "Radio structure for radio [%s] is missing", radioname);
     const char* apname = GET_CHAR(args, "vap");
     ASSERT_STR(apname, status, ME, "missing accesspoint instance alias");
     const char* bridgename = GET_CHAR(args, "bridge");

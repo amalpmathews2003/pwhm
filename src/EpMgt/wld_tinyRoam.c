@@ -173,8 +173,11 @@ static void s_stopRoaming(T_EndPoint* ep, bool doReconnect, wld_tinyRoam_roamRes
     ASSERT_TRUE(s_goodEp(ep), , ME, "NULL");
 
     ASSERT_TRUE(wld_tinyRoam_isRoaming(ep), , ME, "Stopping but was not running.");
-
-    *s_targetBssid(ep) = g_swl_macBin_null;
+    // Adjust tgtEpBssid the actual type
+    swl_macBin_t* tgtEpBssid = s_targetBssid(ep);
+    if(tgtEpBssid != NULL) {
+        swl_mac_binClear(tgtEpBssid);
+    }
 
     if(doReconnect) {
         wld_endpoint_performConnectCommit(ep, true);

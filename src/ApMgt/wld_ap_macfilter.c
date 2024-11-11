@@ -409,6 +409,11 @@ static void s_syncAddressList(T_AccessPoint* pAP) {
     pAP->MF_AddressListBlockSync = true;
     char* allowed_str_list = strdup(pAP->MF_AddressList);
     char* allowed_str = allowed_str_list;
+    if(allowed_str == NULL) {
+        pAP->MF_AddressListBlockSync = false;
+        SAH_TRACEZ_ERROR(ME, "allowed_str - M`emory allocation is failure");
+        return; // Handle memory allocation failure gracefully
+    }
     while(allowed_str != NULL) {
         char* macStr = strsep(&allowed_str, ",");
         //skip empty fields
