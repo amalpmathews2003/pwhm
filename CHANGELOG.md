@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.43.0 - 2024-11-12(12:04:53 +0000)
+
+### Other
+
+- use wpa_supp RECONFIGURE cmd isof SIGHUP to reload conf
+
 ## Release v6.42.6 - 2024-11-12(10:40:35 +0000)
 
 ### Other
