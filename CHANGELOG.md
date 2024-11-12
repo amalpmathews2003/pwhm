@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.43.1 - 2024-11-12(16:21:43 +0000)
+
+### Other
+
+- : After toggling EndPoint Enable, wpa_supp is not started
+
 ## Release v6.43.0 - 2024-11-12(12:04:53 +0000)
 
 ### Other
