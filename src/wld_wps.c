@@ -138,9 +138,11 @@ amxd_status_t doCancelPairing(amxd_object_t* object) {
         pAP->WPS_PBC_Delay.timer = NULL;
         pAP->WPS_PBC_Delay.intf.vap = NULL;
     }
-    pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, SWL_ARRAY_SIZE(strbuf), SET);
+    if(pAP->WPS_Enable) {
+        pAP->pFA->mfn_wvap_wps_sync(pAP, strbuf, SWL_ARRAY_SIZE(strbuf), SET);
 
-    SAH_TRACEZ_ERROR(ME, "WPS cancel %s", pAP->alias);
+        SAH_TRACEZ_ERROR(ME, "WPS cancel %s", pAP->alias);
+    }
     return amxd_status_ok;
 }
 
