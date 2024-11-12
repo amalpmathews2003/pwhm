@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.42.6 - 2024-11-12(10:40:35 +0000)
+
+### Other
+
+- add apis for external calling of wpactrl mgr/iface handlers
+
 ## Release v6.42.5 - 2024-11-12(09:00:41 +0000)
 
 ## Release v6.42.4 - 2024-11-08(17:24:05 +0000)
