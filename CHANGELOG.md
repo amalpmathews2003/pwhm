@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.1 - 2024-11-13(14:14:32 +0000)
+
+### Other
+
+- - pWHM with external configation slow to start
+
 ## Release v6.44.0 - 2024-11-13(11:41:25 +0000)
 
 ### Other
