@@ -1155,6 +1155,9 @@ static void s_stationWpsCredReceivedEvt(void* pRef, char* ifName, void* creds, s
 
     SAH_TRACEZ_INFO(ME, "%s: wps credentials received with status (%d)", pEP->Name, status);
     if(swl_rc_isOk(status)) {
+
+        wld_wpaSupp_ep_increaseSecurityModeInCreds(pEP, (T_WPSCredentials*) pCreds);
+
         if(!pEP->wpsSessionInfo.WPS_PairingInProgress) {
             wld_endpoint_sendPairingNotification(pEP, NOTIFY_BACKHAUL_CREDS, "Backhaul", pCreds);
         } else {

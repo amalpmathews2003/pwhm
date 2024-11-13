@@ -65,6 +65,7 @@
 #include "wld_wpaSupp_ep_api.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_endpoint.h"
+#include "wld_radio.h"
 
 #define ME "wpaSupp"
 
@@ -137,6 +138,95 @@ swl_rc_ne wld_wpaSupp_ep_getOneStatusDetail(T_EndPoint* pEP, const char* key, ch
     SAH_TRACEZ_INFO(ME, "%s: %s = (%s)", pEP->Name, key, valStr);
     ASSERT_TRUE(valStrLen < (int) valStrSize, SWL_RC_ERROR,
                 ME, "%s: buffer too short for field %s (l:%d,s:%zu)", pEP->Name, key, valStrLen, valStrSize);
+    return SWL_RC_OK;
+}
+
+/*
+ * @brief Increase the WPS credentials security mode to WPA2-WPA3-Personal
+ * if the connected AP is broadcasting WPA2-WPA3-Personal.
+ *
+ * @param pEP endpoint
+ * @param creds current WPS credentials to modify
+ *
+ * @return SWL_RC_OK on success, error code otherwise
+ */
+swl_rc_ne wld_wpaSupp_ep_increaseSecurityModeInCreds(T_EndPoint* pEP, T_WPSCredentials* creds) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(creds, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    wld_scanResults_t res;
+    amxc_llist_init(&res.ssids);
+
+    swl_rc_ne rc = wld_wpaSupp_ep_getScanResults(pEP, &res);
+    if(rc == SWL_RC_OK) {
+        amxc_llist_for_each(it, &res.ssids) {
+            wld_scanResultSSID_t* pResult = amxc_container_of(it, wld_scanResultSSID_t, it);
+            char ssidStr[SSID_NAME_LEN];
+            memset(ssidStr, 0, sizeof(ssidStr));
+            convSsid2Str(pResult->ssid, pResult->ssidLen, ssidStr, sizeof(ssidStr));
+            if(swl_str_matches(ssidStr, creds->ssid)
+               && (pResult->secModeEnabled == SWL_SECURITY_APMODE_WPA2_WPA3_P)) {
+                SAH_TRACEZ_INFO(ME, "Increase security mode to WPA2-WPA3 from WPS credentials");
+                creds->secMode = SWL_SECURITY_APMODE_WPA2_WPA3_P;
+                break;
+            }
+        }
+    }
+
+    wld_radio_scanresults_cleanup(&res);
+    return rc;
+}
+
+/**
+ * @brief get the scan results from wpa_supplicant
+ * @param pEP endpoint
+ * @param wld_scanResults_t output scan results
+ *
+ * @return SWL_RC_OK on success, error code otherwise
+ */
+swl_rc_ne wld_wpaSupp_ep_getScanResults(T_EndPoint* pEP, wld_scanResults_t* res) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(res, SWL_RC_INVALID_PARAM, ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: get scan results", pEP->Name);
+
+    char reply[1024] = {0};
+    bool ret = wld_wpaCtrl_sendCmdSynced(pEP->wpaCtrlInterface, "SCAN_RESULTS", reply, sizeof(reply));
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: failed to get scan results", pEP->Name);
+
+    char* tmpStr = reply;
+    while(tmpStr != NULL && (*tmpStr != '\0')) {
+        int32_t rssi = 0;
+        int32_t frequency = 0;
+        char security[128] = {0};
+        char ssid[SSID_NAME_LEN] = {0};
+        char bssid[ETHER_ADDR_STR_LEN] = {0};
+        if(sscanf(tmpStr, "%s \t %d \t %d \t %s \t %s", bssid, &frequency, &rssi, security, ssid) == 5) {
+            wld_scanResultSSID_t* result = calloc(1, sizeof(wld_scanResultSSID_t));
+            if(result != NULL) {
+                memcpy(result->ssid, ssid, SSID_NAME_LEN);
+                result->ssidLen = strlen(ssid);
+                SWL_MAC_CHAR_TO_BIN(&result->bssid, bssid);
+                result->rssi = rssi;
+                swl_chanspec_t chanspec;
+                swl_chanspec_channelFromMHz(&chanspec, (uint32_t) frequency);
+                result->channel = chanspec.channel;
+                if(strstr(security, "WPA2-PSK-CCMP")) {
+                    result->secModeEnabled = SWL_SECURITY_APMODE_WPA2_P;
+                } else if(strstr(security, "WPA2-PSK+SAE-CCMP")) {
+                    result->secModeEnabled = SWL_SECURITY_APMODE_WPA2_WPA3_P;
+                } else if(strstr(security, "WPA2-SAE-CCMP")) {
+                    result->secModeEnabled = SWL_SECURITY_APMODE_WPA3_P;
+                }
+                amxc_llist_it_init(&result->it);
+                amxc_llist_append(&res->ssids, &result->it);
+            }
+        }
+        tmpStr = strstr(tmpStr, "\n");
+        if(tmpStr != NULL) {
+            tmpStr++;
+        }
+    }
+
     return SWL_RC_OK;
 }
 

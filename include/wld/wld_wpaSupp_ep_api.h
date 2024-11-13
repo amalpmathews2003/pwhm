@@ -63,8 +63,11 @@
 #ifndef __WLD_WPA_SUPPLICANT_API_H__
 #define __WLD_WPA_SUPPLICANT_API_H__
 
+#include "wld_wps.h"
+
 swl_rc_ne wld_wpaSupp_ep_disconnect(T_EndPoint* pEP);
 swl_rc_ne wld_wpaSupp_ep_getBssid(T_EndPoint* pEP, swl_macChar_t* bssid);
+swl_rc_ne wld_wpaSupp_ep_getScanResults(T_EndPoint* pEP, wld_scanResults_t* res);
 swl_rc_ne wld_wpaSupp_ep_startWpsPbc(T_EndPoint* pEP, swl_macChar_t* bssid);
 swl_rc_ne wld_wpaSupp_ep_startWpsPin(T_EndPoint* pEP, char* pin, swl_macChar_t* bssid);
 swl_rc_ne wld_wpaSupp_ep_cancelWps(T_EndPoint* pEP);
@@ -73,5 +76,6 @@ swl_rc_ne wld_wpaSupp_ep_getOneStatusDetail(T_EndPoint* pEP, const char* key, ch
 swl_rc_ne wld_wpaSupp_ep_getSsid(T_EndPoint* pEP, char* ssid, size_t ssidSize);
 swl_rc_ne wld_wpaSupp_ep_getConnState(T_EndPoint* pEP, wld_epConnectionStatus_e* pEPConnState);
 swl_rc_ne wld_wpaSupp_ep_reconfigure(T_EndPoint* pEP);
+swl_rc_ne wld_wpaSupp_ep_increaseSecurityModeInCreds(T_EndPoint* pEP, T_WPSCredentials* creds);
 
 #endif /* __WLD_WPA_SUPPLICANT_API_H__ */
