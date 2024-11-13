@@ -140,6 +140,11 @@ static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
     SAH_TRACEZ_OUT(ME);
 }
 
+void s_generateDefaultSSID(char* buffer, uint32_t size, uint32_t id) {
+    snprintf(buffer, size, "PWHM_SSID%d", id);
+
+}
+
 T_SSID* s_createSsid(const char* name, uint32_t id) {
     ASSERT_STR(name, NULL, ME, "Empty name");
     SAH_TRACEZ_IN(ME);
@@ -147,7 +152,7 @@ T_SSID* s_createSsid(const char* name, uint32_t id) {
     ASSERT_NOT_NULL(pSSID, NULL, ME, "NULL");
     pSSID->debug = SSID_POINTER;
     swl_str_copy(pSSID->Name, sizeof(pSSID->Name), name);
-    snprintf(pSSID->SSID, SSID_NAME_LEN, "PWHM_SSID%d", id);
+    s_generateDefaultSSID(pSSID->SSID, SSID_NAME_LEN, id);
     amxc_llist_append(&sSsidList, &pSSID->it);
     amxp_timer_new(&pSSID->enableSyncTimer, s_syncEnable, pSSID);
     pSSID->enable = 0;
@@ -437,6 +442,18 @@ void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
     }
 
     amxp_timer_start(pSSID->enableSyncTimer, 1);
+}
+
+/**
+ * Return whether the given SSID is configured with a non default SSID
+ */
+bool wld_ssid_isSSIDConfigured(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pSSID->pBus, false, ME, "NULL");
+    uint32_t id = amxd_object_get_index(pSSID->pBus);
+    char buffer[SWL_80211_SSID_STR_LEN];
+    s_generateDefaultSSID(buffer, sizeof(buffer), id);
+    return !swl_str_matches(buffer, pSSID->SSID);
 }
 
 static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {

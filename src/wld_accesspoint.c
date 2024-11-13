@@ -2513,6 +2513,14 @@ swl_rc_ne wld_vap_unregisterExtModData(T_AccessPoint* pAP, uint32_t extModId) {
     return wld_extMod_unregisterData(&pAP->extDataList, extModId);
 }
 
+/**
+ * Certain vendors need dummy vaps, which are not relevant for configuration.
+ * This is to allow inspection whether a vap is a dummy.
+ *
+ */
+bool wld_vap_isDummyVap(T_AccessPoint* pAP) {
+    return pAP->pBus == NULL;
+}
 
 static amxd_status_t s_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, amxc_var_t* retval) {
     wld_vap_assocTableStruct_t* tuple = NULL;

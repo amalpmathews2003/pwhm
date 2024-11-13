@@ -161,5 +161,6 @@ swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld
 swl_rc_ne wld_vap_registerExtModData(T_AccessPoint* pAP, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler);
 void* wld_vap_getExtModData(T_AccessPoint* pAP, uint32_t extModId);
 swl_rc_ne wld_vap_unregisterExtModData(T_AccessPoint* pAP, uint32_t extModId);
+bool wld_vap_isDummyVap(T_AccessPoint* pAP);
 
 #endif /* __WLD_ACCESSPOINT_H__ */

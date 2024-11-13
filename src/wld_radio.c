@@ -3376,7 +3376,7 @@ bool wld_rad_areAllVapsDone(T_Radio* pRad) {
      * (i.e conf loaded from saved/defaults , internal ctx synced with datamodel)
      */
     wld_rad_forEachAp(pAP, pRad) {
-        if((pAP->pBus != NULL) && (!pAP->initDone)) {
+        if(!wld_vap_isDummyVap(pAP) && !pAP->initDone && !wld_ssid_isSSIDConfigured(pAP->pSSID)) {
             return false;
         }
     }
