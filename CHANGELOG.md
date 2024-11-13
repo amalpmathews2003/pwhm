@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.0 - 2024-11-13(11:41:25 +0000)
+
+### Other
+
+- - Update MLO mode and afSta creation
+
 ## Release v6.43.1 - 2024-11-12(16:21:43 +0000)
 
 ### Other
