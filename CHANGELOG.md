@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.4 - 2024-11-15(13:53:20 +0000)
+
+### Other
+
+- create/delete ep iface when required
+
 ## Release v6.44.3 - 2024-11-14(09:10:50 +0000)
 
 ## Release v6.44.2 - 2024-11-13(15:34:41 +0000)
