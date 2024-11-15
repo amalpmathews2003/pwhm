@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.5 - 2024-11-15(14:02:14 +0000)
+
+### Other
+
+- : Increase security mode after a WPS session
+
 ## Release v6.44.4 - 2024-11-15(13:53:20 +0000)
 
 ### Other
