@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.6 - 2024-11-15(16:34:58 +0000)
+
+### Other
+
+- - [PWHM] Init script restart action unsafe for processmonitor
+
 ## Release v6.44.5 - 2024-11-15(14:02:14 +0000)
 
 ### Other
