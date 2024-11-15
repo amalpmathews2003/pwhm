@@ -1127,7 +1127,8 @@ bool wld_rad_has_assocdev(T_Radio* pRad, const unsigned char macAddress[ETHER_AD
  */
 uint16_t wld_ad_getFarStaCount(T_AccessPoint* pAP, int threshold) {
     int i = 0;
-    int count = 0;
+    uint16_t count = 0;
+    ASSERT_NOT_NULL(pAP, count, ME, "pAP is NULL");
     T_AssociatedDevice* pAD;
     for(i = 0; i < pAP->ActiveAssociatedDeviceNumberOfEntries; i++) {
         pAD = pAP->AssociatedDevice[i];
@@ -1144,8 +1145,8 @@ amxd_status_t _getFarAssociatedDevicesCount(amxd_object_t* object,
                                             amxd_function_t* func _UNUSED,
                                             amxc_var_t* args,
                                             amxc_var_t* retval) {
-    T_AccessPoint* pAP = (T_AccessPoint*) object->priv;
-
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "Invalid AP Ctx");
     int32_t threshold = INT32_MIN;
     threshold = GET_INT32(args, "threshold");
     amxc_var_set_type(retval, AMXC_VAR_ID_UINT32);
