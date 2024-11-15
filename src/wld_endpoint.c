@@ -80,6 +80,7 @@
 #include "wld_eventing.h"
 #include "wld_assocdev.h"
 #include "wld_wpaSupp_cfgFile.h"
+#include "wld_wpaSupp_ep_api.h"
 #include "wld_wpaSupp_cfgManager.h"
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld_epProfile.h"
@@ -243,7 +244,17 @@ static void s_setProfileReference_pwf(void* priv _UNUSED, amxd_object_t* object,
 
     T_EndPointProfile* newProfile = (T_EndPointProfile*) newProfileObj->priv;
     int comparison = wld_endpoint_isProfileIdentical(oldProfile, newProfile);
-    if(comparison < 0) {
+
+    // First creation of a Profile matching the current connected SSID, avoid disconnect
+    bool firstCreation = false;
+    char tmpSsid[128] = {0};
+    if(wld_wpaSupp_ep_getSsid(pEP, tmpSsid, sizeof(tmpSsid)) >= SWL_RC_OK) {
+        if((oldProfile == NULL) && (pEP->connectionStatus == EPCS_CONNECTED) && (newProfile != NULL) && swl_str_matches(tmpSsid, newProfile->SSID)) {
+            firstCreation = true;
+        }
+    }
+
+    if((comparison < 0) && !firstCreation) {
         SAH_TRACEZ_INFO(ME, "Profile is not identical %i", comparison);
         credentialsChanged = true;
     } else {
