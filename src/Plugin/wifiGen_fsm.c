@@ -124,12 +124,13 @@ static int s_fetchHigherAction(unsigned long* bitMapArr, uint32_t bitMapArrSize,
                                const wifiGen_fsmStates_e* actionArr, uint32_t actionArrSize,
                                int32_t minId) {
     ASSERTS_FALSE(minId < 0, -1, ME, "out of order");
+    int selId = -1;
     for(int32_t i = minId; i >= 0 && i < (int32_t) actionArrSize; i--) {
         if(isBitSetLongArray(bitMapArr, bitMapArrSize, actionArr[i])) {
-            return i;
+            selId = i;
         }
     }
-    return -1;
+    return selId;
 }
 /*
  * returns the enum id of the first met scheduled fsm action (among provided actionArray),
@@ -382,6 +383,8 @@ static bool s_doUpdateHostapd(T_Radio* pRad) {
     wifiGen_hapd_restoreMainIface(pRad);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
+    //reconnect wpactrlMgr to refresh wpaCtrl sockets if needed
+    wld_wpaCtrlMngr_disconnect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
     wld_wpaCtrlMngr_connect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
     //delay before restore warm applicable params after reloading conf file with sighup
     pRad->fsmRad.timeout_msec = 500;
@@ -396,16 +399,23 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
     bool needCommit = (pRad->fsmRad.FSM_State != FSM_RUN);
     unsigned long* actionArray = (needCommit ? pRad->fsmRad.FSM_BitActionArray : pRad->fsmRad.FSM_AC_BitActionArray);
 
-    if(!wifiGen_hapd_isStartable(pRad)) {
-        SAH_TRACEZ_WARNING(ME, "%s: disable hostapd iface %s not expected to start", pRad->Name, ifName);
-        setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+    if(state != wifiGen_hapd_isStartable(pRad)) {
+        if(state) {
+            SAH_TRACEZ_WARNING(ME, "%s: disable hostapd iface %s not expected to start", pRad->Name, ifName);
+            setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        } else if(pRad->detailedState != CM_RAD_DOWN) {
+            SAH_TRACEZ_WARNING(ME, "%s: hostapd connected but main iface not yet ready", pRad->Name);
+            return;
+        } else {
+            SAH_TRACEZ_WARNING(ME, "%s: enable hostapd iface %s expected to start", pRad->Name, ifName);
+            setBitLongArray(actionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+        }
         if(needCommit) {
             wld_rad_doCommitIfUnblocked(pRad);
         }
         return;
     }
 
-    ASSERTW_TRUE(state, , ME, "%s: hostapd connected but main iface not yet ready", pRad->Name);
     // check and apply dyn detected cfg params
     if(wld_secDmn_countCfgParamSuppByVal(pRad->hostapd, SWL_TRL_UNKNOWN) > 0) {
         SAH_TRACEZ_INFO(ME, "%s: try to detect and apply dyn cfg params", pRad->Name);
@@ -796,7 +806,13 @@ static void s_checkRadDependency(T_Radio* pRad) {
     }
 
     int applyAction = s_fetchApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    if(applyAction >= 0) {
+        applyAction = sApplyActions[applyAction];
+    }
     int dynConfAction = s_fetchDynConfAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    if(dynConfAction >= 0) {
+        dynConfAction = sDynConfActions[dynConfAction];
+    }
     if((applyAction >= 0) || (dynConfAction >= 0) ||
        (isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_CHANNEL))) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);

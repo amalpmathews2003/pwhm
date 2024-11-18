@@ -251,15 +251,12 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         wifiGen_hapd_getRadState(pRad, &hapdRadDetState);
         s_saveHapdRadDetState(pRad, hapdRadDetState);
         bool isRadReady = (hapdRadDetState == CM_RAD_UP);
-        bool isRadStarting = (hapdRadDetState == CM_RAD_FG_CAC) || (hapdRadDetState == CM_RAD_CONFIGURING);
         if(isRadReady) {
             //we may missed the CAC Done event waiting to finalize wpactrl connection
             //so mark current chanspec as active
             wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
         }
-        if(isRadReady || isRadStarting) {
-            CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, isRadReady);
-        }
+        CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, isRadReady);
         return;
     }
     ASSERTS_TRUE(isReady, , ME, "Not ready");
