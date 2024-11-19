@@ -148,6 +148,13 @@ define probelist_t{
 	*/
 	%persistent object Radio[] {
 		on event "*" call wld_radio_setConf_ocf;
+		event ScanComplete;
+		event ScanChange;
+		event wpaCtrlEvents;
+		event ChannelSwitchComplete;
+		event 'Channel change event';
+		event 'DFS Done';
+		
 		/**
 		 * getSpectrumInfo() returns a list of channels the radio
 		 * supports, along with quality parameters
@@ -2348,6 +2355,7 @@ define probelist_t{
 			%persistent object RssiEventing{
 
 				on event "*" call wld_radStaMon_setRssiEventing_ocf;
+				event RssiUpdate;
 
 				/**
 				 * Enable the rssi eventing

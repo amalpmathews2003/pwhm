@@ -103,6 +103,12 @@ define rrm_t{
 		on action add-inst call wld_ap_addInstance_oaf;
 		on action destroy call wld_ap_delInstance_odf;
 		on event "*" call wld_ap_setConf_ocf;
+		event Disassociation;
+		event MgmtDisassocFrame;
+		event MgmtDeauthFrame;
+		event MgmtActionFrameReceived;
+		event wpaCtrlEvents;
+		event 'BSS-TM-RESP';
 
 		/**
 		 * <b>kickStation</b>
@@ -917,6 +923,10 @@ define rrm_t{
 		 *  Setup [WPSv1.0] for this access point.*/
 		%persistent object WPS{
 			on event "*" call wld_ap_setWpsConf_ocf;
+			event pairingReady;
+			event pairingDone;
+			event pairingError;
+			event pairingNoMessage;
 
 			/** Enables or disables WPS functionality for this access
 			 *  point. Note only one VAP/Radio can enable WPS. For this by
@@ -2491,6 +2501,10 @@ define rrm_t{
 			%persistent object RssiEventing{
 
 				on event "*" call wld_ap_setRssiEventing_ocf;
+				event RssiUpdate;
+				event RssiUpdateShortHistoryAssoc;
+				event RssiUpdateShortHistoryDisassoc;
+				event RssiUpdateShortHistory;
 
 				/**
 				 * Getting the history statistics for a specific station or for all stations connected to the AP.

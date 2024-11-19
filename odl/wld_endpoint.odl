@@ -91,6 +91,7 @@
 		on action add-inst call wld_ep_addInstance_oaf;
 		on action destroy call wld_ep_delInstance_odf;
 		on event "*" call wld_ep_setConf_ocf;
+		event wpaCtrlEvents;
 
 		/** <p>Indicates the status of this end point. Enumeration
 		*   of:</p>
@@ -654,6 +655,11 @@
 		 *  Protected Setup [WPSv1.0] for this end point. */
 		%persistent object WPS{
 			on event "*" call wld_ep_setWpsConf_ocf;
+			event pairingReady;
+			event pairingDone;
+			event pairingError;
+			event pairingNoMessage;
+
 			/** Enables or disables WPS functionality for this endpoint. */
 			%persistent bool Enable;
 
