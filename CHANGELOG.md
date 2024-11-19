@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.8 - 2024-11-19(17:17:03 +0000)
+
+### Other
+
+- PPW-143 fix rad hapd iface remaining down after enabling vap
+
 ## Release v6.44.7 - 2024-11-18(09:27:20 +0000)
 
 ### Other
