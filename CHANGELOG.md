@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.9 - 2024-11-20(07:48:04 +0000)
+
+### Other
+
+- apply WPS_Cancel command to only VAPs with WPS activated
+
 ## Release v6.44.8 - 2024-11-19(17:17:03 +0000)
 
 ### Other
