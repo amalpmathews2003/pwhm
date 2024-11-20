@@ -81,9 +81,9 @@ typedef enum {
     GEN_FSM_RELOAD_AP_SECKEY,     /* reload AP security secret key */
     GEN_FSM_MOD_EP_MACADDR,       /* apply ep mac address */
     GEN_FSM_UPDATE_BEACON,        /* Start/Refresh AP Beacon */
-    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
     GEN_FSM_UPDATE_WPASUPP,       /* Update wpa_supplicant */
     GEN_FSM_ENABLE_HOSTAPD,       /* enable hostapd main interface*/
+    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
     GEN_FSM_ENABLE_RAD,           /* Enable Radio device */
     GEN_FSM_ENABLE_AP,            /* Enable/Disable AP interface */
     GEN_FSM_ENABLE_EP,            /* Enable Endpoint interface */

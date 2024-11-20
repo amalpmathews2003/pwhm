@@ -443,8 +443,9 @@ static bool s_checkAcFsmBitsHandling(T_Radio* rad) {
         mask[1] |= pEP->fsm.FSM_AC_BitActionArray[1];
     }
 
-    /* A bit set on a Radio must be present on an EndPoint or an AccessPoint */
-    if((rad->fsmRad.FSM_AC_BitActionArray[0] & (~mask[0])) || (rad->fsmRad.FSM_AC_BitActionArray[1] & (~mask[1]))) {
+    /* A AC bit set on an EndPoint or an AccessPoint must be set in Radio AC bitmap*/
+    if(((rad->fsmRad.FSM_AC_BitActionArray[0] & mask[0]) != mask[0]) ||
+       ((rad->fsmRad.FSM_AC_BitActionArray[1] & mask[1]) != mask[1])) {
         return false;
     }
 

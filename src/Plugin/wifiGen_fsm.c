@@ -110,6 +110,18 @@ static const wifiGen_fsmStates_e sDynConfActions[] = {
     GEN_FSM_MOD_MF_LIST,
 };
 /*
+ * return lowest equivalent action in order to prevent
+ * implicit skip of equivalent actions
+ * eg: implicit skip of hostapd enabling when reloading config
+ */
+static wifiGen_fsmStates_e s_getLowestEqvAction(wifiGen_fsmStates_e action) {
+    switch(action) {
+    case GEN_FSM_UPDATE_HOSTAPD: return GEN_FSM_ENABLE_HOSTAPD;
+    default: return action;
+    }
+}
+
+/*
  * returns the index of the first met fsm action (among provided actionArray),
  * that is more global than the action argument (i.e: implicitly applying it)
  */
@@ -184,6 +196,7 @@ static int s_fetchHigherApplyAction(unsigned long* bitMapArr, uint32_t bitMapArr
  * clear conf applying fsm actions, that will be implicitly applied with than provided action
  */
 static void s_clearLowerApplyActions(unsigned long* bitMapArr, uint32_t bitMapArrSize, wifiGen_fsmStates_e action) {
+    action = s_getLowestEqvAction(action);
     s_clearLowerActionsExt(bitMapArr, bitMapArrSize, sApplyActions, SWL_ARRAY_SIZE(sApplyActions), action);
 }
 /*
@@ -220,6 +233,42 @@ static void s_clearDynConfActions(unsigned long* bitMapArr, uint32_t bitMapArrSi
     s_clearLowerActions(bitMapArr, bitMapArrSize, sDynConfActions, SWL_ARRAY_SIZE(sDynConfActions), 0);
 }
 /*
+ * clear conf applying fsm actions, that will be implicitly applied with than provided action
+ * in Rad/APs/EPs ACtive fsm bitmaps
+ */
+static void s_clearRadLowerApplyActions(T_Radio* pRad, wifiGen_fsmStates_e action) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: clear apply actions lower than %s",
+                    pRad->Name,
+                    pRad->vendor->fsmMngr->actionList[action].name);
+    s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, action);
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        s_clearLowerApplyActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, action);
+    }
+    T_EndPoint* pEP = NULL;
+    wld_rad_forEachEp(pEP, pRad) {
+        s_clearLowerApplyActions(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, action);
+    }
+}
+/*
+ * clear all dynamically configurable param fsm actions
+ * in Rad/APs/EPs ACtive fsm bitmaps
+ */
+static void s_clearRadDynConfActions(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: clear all dyn conf actions", pRad->Name);
+    s_clearDynConfActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
+    }
+    T_EndPoint* pEP = NULL;
+    wld_rad_forEachEp(pEP, pRad) {
+        s_clearDynConfActions(pEP->fsm.FSM_AC_BitActionArray, FSM_BW);
+    }
+}
+/*
  * schedule next conf applying fsm action after setting a dynamic param
  */
 static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP, T_Radio* pRad) {
@@ -228,6 +277,9 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
     case SECDMN_ACTION_OK_NEED_RESTART:
         if(s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
             setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_HOSTAPD);
+            //clear remaining dyn conf actions, as hostapd is up to be restarted
+            s_clearRadLowerApplyActions(pRad, GEN_FSM_START_HOSTAPD);
+            s_clearRadDynConfActions(pRad);
         }
         break;
     case SECDMN_ACTION_OK_NEED_TOGGLE:
@@ -390,8 +442,6 @@ static bool s_doUpdateHostapd(T_Radio* pRad) {
     wifiGen_hapd_restoreMainIface(pRad);
     SAH_TRACEZ_INFO(ME, "%s: reload hostapd", pRad->Name);
     wifiGen_hapd_reloadDaemon(pRad);
-    //reconnect wpactrlMgr to refresh wpaCtrl sockets if needed
-    wld_wpaCtrlMngr_disconnect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
     wld_wpaCtrlMngr_connect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
     //delay before restore warm applicable params after reloading conf file with sighup
     pRad->fsmRad.timeout_msec = 500;
@@ -500,8 +550,9 @@ static bool s_doStartHostapd(T_Radio* pRad) {
      */
     if((rc == SWL_RC_DONE) && (wifiGen_hapd_countGrpMembers(pRad) > 1)) {
         SAH_TRACEZ_INFO(ME, "%s: need to enable hostapd", pRad->Name);
-        //update hostapd conf to consider changed configs before enabling it
-        //+reconnect wpactrlMgr to update wpactrl connections
+        wld_rad_hostapd_enable(pRad);
+        //update hostapd conf to consider changed configs while it was disabled
+        //+reconnect wpactrlMgr to update wpactrl connections (of added/removed BSSs)
         wld_wpaCtrlMngr_disconnect(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
     }
@@ -826,6 +877,20 @@ static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
     }
 }
 
+void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
+    }
+    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP)) {
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
+    }
+    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP)) {
+        clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
+        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
+    }
+}
+
 static void s_checkRadDependency(T_Radio* pRad) {
 
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
@@ -855,34 +920,10 @@ static void s_checkRadDependency(T_Radio* pRad) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }
     if(applyAction >= 0) {
-        s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, applyAction);
-    }
-    if((applyAction == GEN_FSM_START_HOSTAPD)) {
-        if(dynConfAction >= 0) {
-            s_clearDynConfActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
-            T_AccessPoint* pAP = NULL;
-            wld_rad_forEachAp(pAP, pRad) {
-                s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
-            }
-            T_EndPoint* pEP = NULL;
-            wld_rad_forEachEp(pEP, pRad) {
-                s_clearDynConfActions(pEP->fsm.FSM_AC_BitActionArray, FSM_BW);
-            }
+        s_clearRadLowerApplyActions(pRad, applyAction);
+        if((applyAction == GEN_FSM_START_HOSTAPD) && (dynConfAction >= 0)) {
+            s_clearRadDynConfActions(pRad);
         }
-    }
-}
-
-void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
-    if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_RAD)) {
-        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP);
-    }
-    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_EP)) {
-        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP);
-    }
-    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP)) {
-        clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
-        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
-        setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
     }
 }
 
@@ -904,9 +945,9 @@ wld_fsmMngr_action_t actions[GEN_FSM_MAX] = {
     {FSM_ACTION(GEN_FSM_RELOAD_AP_SECKEY), .doVapFsmAction = s_doReloadApSecKey},
     {FSM_ACTION(GEN_FSM_MOD_EP_MACADDR), .doEpFsmAction = s_doSetEpMAC},
     {FSM_ACTION(GEN_FSM_UPDATE_BEACON), .doVapFsmAction = s_doUpdateBeacon},
-    {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_UPDATE_WPASUPP), .doEpFsmAction = s_doReloadWpaSupp},
     {FSM_ACTION(GEN_FSM_ENABLE_HOSTAPD), .doRadFsmAction = s_doEnableHostapd},
+    {FSM_ACTION(GEN_FSM_UPDATE_HOSTAPD), .doRadFsmAction = s_doUpdateHostapd},
     {FSM_ACTION(GEN_FSM_ENABLE_RAD), .doRadFsmAction = s_doRadEnable},
     {FSM_ACTION(GEN_FSM_ENABLE_AP), .doVapFsmAction = s_doEnableAp},
     {FSM_ACTION(GEN_FSM_ENABLE_EP), .doEpFsmAction = s_doEnableEp},
