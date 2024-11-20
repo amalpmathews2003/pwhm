@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.10 - 2024-11-20(08:13:25 +0000)
+
+### Other
+
+- fix amx events no more sent over amx
+
 ## Release v6.44.9 - 2024-11-20(07:48:04 +0000)
 
 ### Other
