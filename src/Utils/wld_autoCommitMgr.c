@@ -76,6 +76,10 @@ typedef struct {
 static wld_autoCommitMgr_t s_mgr;
 
 void s_startRadioAutoCommit(T_Radio* pRad) {
+    swl_timeSpecMono_t time;
+    swl_timespec_getMono(&time);
+    pRad->autoCommitData.lastCommitCallTime = time;
+
     ASSERTI_TRUE(s_mgr.enable, , ME, "Disabled");
     ASSERT_NOT_NULL(pRad->autoCommitData.timer, , ME, "NULL");
     amxp_timer_state_t state = pRad->autoCommitData.timer->state;
@@ -83,8 +87,7 @@ void s_startRadioAutoCommit(T_Radio* pRad) {
     ASSERTI_TRUE(state != amxp_timer_running && state != amxp_timer_started, , ME, "%s: timer started", pRad->Name);
     ASSERTI_TRUE(pRad->fsmRad.FSM_ComPend == 0, , ME, "%s: FSM commit pending (cnt: %d)", pRad->Name, pRad->fsmRad.FSM_ComPend);
 
-    swl_timeSpecMono_t time;
-    swl_timespec_getMono(&time);
+
     swl_timeSpecMono_t* initTime = wld_getInitTime();
     int64_t msDiff = swl_timespec_diffToNanosec(initTime, &time) / 1000000;
     uint32_t minDelay = 0;

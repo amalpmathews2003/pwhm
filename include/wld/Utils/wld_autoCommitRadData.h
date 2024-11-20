@@ -65,6 +65,7 @@
 
 typedef struct {
     amxp_timer_t* timer;
+    swl_timeSpecMono_t lastCommitCallTime;
 } wld_autoCommitRadData_t;
 
 

@@ -65,6 +65,7 @@
 #include "wld_util.h"
 #include "wld_radio.h"
 #include "debug/sahtrace.h"
+#include "Features/wld_persist.h"
 
 #define ME "wldFsm"
 
@@ -491,10 +492,11 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_WAIT: {
         bool waitForVaps = !wld_rad_areAllVapsDone(rad);
         bool waitForWps = wld_rad_hasWpsActiveEndpoint(rad);
-        if(waitForVaps || waitForWps) {
+        bool isInitConfigPending = wld_persist_isRadInitConfigPending(rad);
+        if(waitForVaps || waitForWps || isInitConfigPending) {
             if(rad->fsmRad.FSM_Retry > 0) {
-                SAH_TRACEZ_WARNING(ME, "Delay commit %s %i / %i ( vap %u / WPS %u)", rad->Name, rad->fsmRad.FSM_Retry, WLD_FSM_MAX_WAIT,
-                                   waitForVaps, waitForWps);
+                SAH_TRACEZ_WARNING(ME, "Delay commit %s %i / %i ( vap %u / WPS %u, radInit %u)", rad->Name, rad->fsmRad.FSM_Retry, WLD_FSM_MAX_WAIT,
+                                   waitForVaps, waitForWps, isInitConfigPending);
                 rad->fsmRad.timeout_msec = WLD_FSM_WAIT_TIME;
                 rad->fsmRad.FSM_Retry--;
                 break;

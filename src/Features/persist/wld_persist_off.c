@@ -74,6 +74,9 @@
 
 #define ME "wldPst"
 
+// The number of milliseconds that to wait after a configure, before to consider initial config steps as done.
+#define WLD_PERSIST_CONFIG_PENDING_TIMEOUT_MS 2000
+
 bool wld_persist_onStart() {
     SAH_TRACEZ_IN(ME);
     // Defaults odl will be loaded here:
@@ -125,4 +128,17 @@ void wld_persist_onRadioCreation(T_Radio* pR) {
 
 bool wld_persist_writeApAtCreation() {
     return false;
+}
+
+
+bool wld_persist_isRadInitConfigPending(T_Radio* rad) {
+    ASSERT_NOT_NULL(rad, false, ME, "NULL");
+    if(rad->fsmStats.nrStarts > 1) {
+        return false;
+    }
+
+    swl_timeSpecMono_t time;
+    swl_timespec_getMono(&time);
+    return swl_timespec_diffToMillisec(&rad->autoCommitData.lastCommitCallTime, &time) < WLD_PERSIST_CONFIG_PENDING_TIMEOUT_MS;
+
 }

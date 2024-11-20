@@ -4248,7 +4248,6 @@ swl_rc_ne wld_rad_unregisterExtModData(T_Radio* pRad, uint32_t extModId) {
 }
 
 
-
 amxd_status_t _Radio_getStatusHistogram(amxd_object_t* object,
                                         amxd_function_t* func _UNUSED,
                                         amxc_var_t* args _UNUSED,

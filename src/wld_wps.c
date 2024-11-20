@@ -384,6 +384,10 @@ static void s_setWpsSelfPIN_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
         swl_str_catFormat(defaultPIN, sizeof(defaultPIN), "%d", SelfPIN);
     }
 
+    if(swl_str_matches(defaultPIN, g_wpsConst.DefaultPin)) {
+        return;
+    }
+
     s_updateSelfPIN(defaultPIN);
     if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
         pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
