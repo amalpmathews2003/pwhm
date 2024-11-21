@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.13 - 2024-11-21(09:03:48 +0000)
+
+### Other
+
+- : SSID Index not reported anymore
+
 ## Release v6.44.12 - 2024-11-20(16:31:24 +0000)
 
 ### Other
