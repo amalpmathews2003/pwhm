@@ -1702,7 +1702,7 @@ struct S_SSID {
     void* vendorData;                         /* Additional vendor specific data */
     amxp_timer_t* enableSyncTimer;            /* Timer to keep the SSID and Intf enable synced */
     bool syncEnableToIntf;                    /* Whether the sync should be SSID to intf (true) or other way (false)*/
-    uint32_t bssIndex;                        /* interface creation order among all radio's interfaces */
+    int32_t bssIndex;                         /* interface creation order among all radio's interfaces */
     int32_t mldUnit;                          /* the index in which "mld unit" this SSID is located */
     wld_autoMacSrc_e autoMacSrc;              /* auto generated mac source: from radio (/or dummy) base mac, or statically learned from driver */
     uint32_t autoMacRefIndex;                 /* mac address offset from source base mac */
@@ -2697,6 +2697,9 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta);
 T_Radio* wld_firstRad();
 T_Radio* wld_lastRad();
 T_Radio* wld_nextRad(T_Radio* pRad);
+T_Radio* wld_prevRad(T_Radio* pRad);
+T_Radio* wld_firstRadFromObjs();
+T_Radio* wld_lastRadFromObjs();
 
 #define wld_for_eachRad(radPtr) \
     for(radPtr = wld_firstRad(); radPtr; radPtr = wld_nextRad(radPtr))
