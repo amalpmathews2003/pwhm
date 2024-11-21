@@ -72,5 +72,6 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad);
 swl_rc_ne wld_rad_macCfg_generateEpMac(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin);
 swl_rc_ne wld_rad_macCfg_generateBssid(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin);
 swl_rc_ne wld_rad_macCfg_generateDummyBssid(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin);
+bool wld_rad_macCfg_hasShiftedMbssBaseMac(T_Radio* pRad);
 
 #endif /* INCLUDE_WLD_WLD_RAD_MACCFG_H_ */

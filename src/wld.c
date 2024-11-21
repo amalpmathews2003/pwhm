@@ -141,8 +141,32 @@ T_Radio* wld_lastRad() {
     amxc_llist_it_t* it = amxc_llist_get_last(&g_radios);
     return wld_rad_fromIt(it);
 }
+
+T_Radio* wld_firstRadFromObjs() {
+    amxd_object_t* pRadObjs = amxd_object_get(get_wld_object(), "Radio");
+    amxc_llist_it_t* it = amxd_object_first_instance(pRadObjs);
+    ASSERTS_NOT_NULL(it, NULL, ME, "none");
+    amxd_object_t* radObj = amxc_container_of(it, amxd_object_t, it);
+    return wld_rad_fromObj(radObj);
+}
+
+T_Radio* wld_lastRadFromObjs() {
+    amxd_object_t* pRadObjs = amxd_object_get(get_wld_object(), "Radio");
+    ASSERTS_NOT_NULL(pRadObjs, NULL, ME, "none");
+    amxc_llist_it_t* it = amxc_llist_get_last(&pRadObjs->instances);
+    ASSERTS_NOT_NULL(it, NULL, ME, "none");
+    amxd_object_t* radObj = amxc_container_of(it, amxd_object_t, it);
+    return wld_rad_fromObj(radObj);
+}
+
 T_Radio* wld_nextRad(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
     amxc_llist_it_t* it = amxc_llist_it_get_next(&pRad->it);
+    return wld_rad_fromIt(it);
+}
+T_Radio* wld_prevRad(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
+    amxc_llist_it_t* it = amxc_llist_it_get_previous(&pRad->it);
     return wld_rad_fromIt(it);
 }
 

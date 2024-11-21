@@ -76,16 +76,18 @@
 
 #define ME "genRadI"
 
+static int s_applyMac(T_SSID* pSSID, int ifIndex, char* ifName) {
+    ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(ifIndex > 0, SWL_RC_INVALID_STATE, ME, "%s: iface not yet created", ifName);
+    SAH_TRACEZ_INFO(ME, "%s: Set mac address "MAC_PRINT_FMT, ifName, MAC_PRINT_ARG(pSSID->MACAddress));
+    int ret = wld_linuxIfUtils_updateMac(wld_rad_getSocket(pSSID->RADIO_PARENT), ifName, (swl_macBin_t*) pSSID->MACAddress);
+    ASSERT_EQUALS(ret, SWL_RC_OK, ret, ME, "%s: fail to apply mac ["SWL_MAC_FMT "]", ifName, SWL_MAC_ARG(pSSID->MACAddress));
+    return ret;
+}
+
 int wifiGen_vap_setBssid(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    T_SSID* pSSID = pAP->pSSID;
-    ASSERT_NOT_NULL(pSSID, SWL_RC_ERROR, ME, "NULL");
-    T_Radio* pRad = pAP->pRadio;
-    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: Set mac address "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(pSSID->BSSID));
-    int ret = wld_linuxIfUtils_updateMac(wld_rad_getSocket(pAP->pRadio), pAP->alias, (swl_macBin_t*) pSSID->BSSID);
-    ASSERT_EQUALS(ret, SWL_RC_OK, ret, ME, "%s: fail to apply mac ["SWL_MAC_FMT "]", pAP->alias, SWL_MAC_ARG(pSSID->BSSID));
-    return ret;
+    return s_applyMac(pAP->pSSID, pAP->index, pAP->alias);
 }
 
 swl_rc_ne wifiGen_rad_generateVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize) {
@@ -194,6 +196,92 @@ static uint32_t s_apMacIndex(T_AccessPoint* pAP) {
     return (pAP->pRadio->isSTASup + pAP->pSSID->autoMacRefIndex);
 }
 
+static void s_updateAllMacs(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    // update eps with new shifted mac
+    T_EndPoint* tmpEp = NULL;
+    wld_rad_forEachEp(tmpEp, pRad) {
+        if(!wld_ssid_hasAutoMacBssIndex(tmpEp->pSSID, NULL)) {
+            continue;
+        }
+        swl_macBin_t macBin = SWL_MAC_BIN_NEW();
+        wld_ssid_generateMac(pRad, tmpEp->pSSID, tmpEp->pSSID->bssIndex, &macBin);
+        wld_ssid_setMac(tmpEp->pSSID, &macBin);
+        tmpEp->pFA->mfn_sync_ssid(tmpEp->pSSID->pBus, tmpEp->pSSID, SET);
+        //sched to reapply via fsm
+        tmpEp->pFA->mfn_wendpoint_set_mac_address(tmpEp);
+    }
+    // update vaps with new shifted mac
+    T_AccessPoint* tmpAp = NULL;
+    wld_rad_forEachAp(tmpAp, pRad) {
+        if(!wld_ssid_hasAutoMacBssIndex(tmpAp->pSSID, NULL)) {
+            continue;
+        }
+        swl_macBin_t macBin = SWL_MAC_BIN_NEW();
+        wld_ssid_generateMac(pRad, tmpAp->pSSID, tmpAp->pSSID->bssIndex, &macBin);
+        wld_ssid_setBssid(tmpAp->pSSID, &macBin);
+        tmpAp->pFA->mfn_sync_ssid(tmpAp->pSSID->pBus, tmpAp->pSSID, SET);
+        //sched to reapply via fsm
+        tmpAp->pFA->mfn_wvap_bssid(pRad, tmpAp, (uint8_t*) swl_typeMacBin_toBuf32Ref(&macBin).buf, SWL_MAC_CHAR_LEN, SET);
+    }
+}
+
+static void s_applyAllMacs(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    //Brcm requires to re-apply the primary config's cur_etheraddr,
+    //in order to clear all previously set secondary config ethernet addresses
+    //and allow setting them again with shifted MACs
+    //1) if the first interface is the primary vap, then the mac restore is implicitly done, when re-writing bssid.
+    //2) otherwise (i.e endpoint is first interface), re-apply mac on radio (as endpoint object may be not yet created on startup)
+    if(pRad->isSTASup) {
+        wld_linuxIfUtils_updateMac(wld_rad_getSocket(pRad), pRad->Name, (swl_macBin_t*) pRad->MACAddr);
+    }
+    // apply new shifted mac to eps
+    T_EndPoint* tmpEp = NULL;
+    wld_rad_forEachEp(tmpEp, pRad) {
+        s_applyMac(tmpEp->pSSID, tmpEp->index, tmpEp->Name);
+    }
+    // apply new shifted mac to vaps
+    // actually: only secondary interfaces are impacted (i.e: the radio base mac addr does not change)
+    T_AccessPoint* tmpAp = NULL;
+    wld_rad_forEachAp(tmpAp, pRad) {
+        s_applyMac(tmpAp->pSSID, tmpAp->index, tmpAp->alias);
+    }
+}
+
+static void s_checkAndProcessMbssBMacChange(T_Radio* pRad, uint32_t apMacIndex) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_TRUE(apMacIndex > 0, , ME, "no mbss baseMac shift for primary bss");
+    swl_macBin_t prevMbssMacAddr = pRad->mbssBaseMACAddr;
+    bool changed = wld_rad_macCfg_updateRadBaseMac(pRad);
+    changed |= (!swl_mac_binMatches(&prevMbssMacAddr, &pRad->mbssBaseMACAddr));
+    ASSERTS_TRUE(changed > 0, , ME, "no mbss baseMac shift");
+    SAH_TRACEZ_WARNING(ME, "%s: Shifting neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
+    s_updateAllMacs(pRad);
+    if((pRad != wld_lastRadFromObjs()) && (!pRad->macCfg.useLocalBitForGuest)) {
+        T_Radio* pLastRad = pRad;
+        T_Radio* pNextRad = NULL;
+        for(pNextRad = wld_rad_nextRadFromObj(pRad->pBus); pNextRad; pNextRad = wld_rad_nextRadFromObj(pNextRad->pBus)) {
+            swl_macBin_t prevBMac = pNextRad->mbssBaseMACAddr;
+            wld_rad_macCfg_updateRadBaseMac(pNextRad);
+            if(swl_mac_binMatches(&pNextRad->mbssBaseMACAddr, &prevBMac)) {
+                break;
+            }
+            SAH_TRACEZ_WARNING(ME, "%s: updating next rad child vap/ep interfaces after mbss mac shift ", pNextRad->Name);
+            s_updateAllMacs(pNextRad);
+            pLastRad = pNextRad;
+        }
+        for(pNextRad = pLastRad; pNextRad && (pNextRad != pRad); pNextRad = wld_rad_prevRadFromObj(pNextRad->pBus)) {
+            SAH_TRACEZ_WARNING(ME, "%s: applying next rad new macs after mbss mac shift ", pNextRad->Name);
+            s_applyAllMacs(pNextRad);
+            pNextRad->fsmRad.FSM_SyncAll = TRUE;
+            wld_rad_doRadioCommit(pNextRad);
+        }
+    }
+    SAH_TRACEZ_WARNING(ME, "%s: applying neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
+    s_applyAllMacs(pRad);
+}
+
 int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -217,32 +305,7 @@ int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
     pRad->pFA->mfn_wrad_enable(pRad, 0, SET | DIRECT);
 
     //check need for updating base mac when adding next interface
-    if(apMacIndex > 0) {
-        bool changed = wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, apMacIndex + 1);
-        if(changed) {
-            SAH_TRACEZ_WARNING(ME, "%s: Shifting previous %u vap interfaces after mbss mac shift ", pRad->Name, apMacRefIndex);
-            //Brcm requires to re-apply the primary config's cur_etheraddr,
-            //in order to clear all previously set secondary config ethernet addresses
-            //and allow setting them again with shifted MACs
-            //1) if the first interface is the primary vap, then the mac restore is implicitly done, when re-writing bssid.
-            //2) otherwise (i.e endpoint is first interface), re-apply mac on radio (as endpoint object may be not yet created on startup)
-            if(pRad->isSTASup) {
-                wld_linuxIfUtils_updateMac(wld_rad_getSocket(pRad), pRad->Name, (swl_macBin_t*) pRad->MACAddr);
-            }
-            // update vaps with new shifted mac
-            // actually: only secondary interfaces are impacted (i.e: the radio base mac addr does not change)
-            T_AccessPoint* tmpAp = NULL;
-            wld_rad_forEachAp(tmpAp, pRad) {
-                swl_macBin_t macBin = SWL_MAC_BIN_NEW();
-                wld_ssid_generateBssid(pRad, tmpAp, s_apMacIndex(tmpAp), &macBin);
-                wld_ssid_setBssid(tmpAp->pSSID, &macBin);
-                tmpAp->pFA->mfn_sync_ssid(tmpAp->pSSID->pBus, tmpAp->pSSID, SET);
-                wifiGen_vap_setBssid(tmpAp);
-                //sched to reapply via fsm
-                tmpAp->pFA->mfn_wvap_bssid(pRad, tmpAp, (uint8_t*) swl_typeMacBin_toBuf32Ref(&macBin).buf, SWL_MAC_CHAR_LEN, SET);
-            }
-        }
-    }
+    s_checkAndProcessMbssBMacChange(pRad, apMacIndex);
 
     // retrieve interface name and update pAP->alias
     s_updateVapIfaceName(pRad, pAP, vapIfname);
@@ -328,7 +391,7 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     wld_nl80211_ifaceInfo_t ifaceInfo;
     memset(&ifaceInfo, 0, sizeof(ifaceInfo));
     swl_macBin_t epMacAddr = SWL_MAC_BIN_NEW();
-    memcpy(epMacAddr.bMac, pRad->MACAddr, SWL_MAC_BIN_LEN);
+    wld_ssid_generateMac(pRad, pEP->pSSID, 0, &epMacAddr);
     wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
     if((pRad->isSTA) && (swl_str_matches(pRad->Name, epIfname))) {
         wld_rad_nl80211_setSta(pRad);

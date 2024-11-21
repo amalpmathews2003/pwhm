@@ -3161,6 +3161,24 @@ T_Radio* wld_rad_prevRadFromList(T_Radio* pRad) {
     return amxc_container_of(it, T_Radio, it);
 }
 
+/*
+ * @brief return radio ctx of next radio object
+ */
+T_Radio* wld_rad_nextRadFromObj(amxd_object_t* radObj) {
+    ASSERTS_TRUE(wld_rad_isRadObj(radObj), NULL, ME, "ref is not radio obj");
+    return wld_rad_fromObj(wld_util_getNextObjInst(radObj));
+}
+
+/*
+ * @brief return radio ctx of next radio list node
+ */
+T_Radio* wld_rad_nextRadFromList(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, NULL, ME, "NULL");
+    amxc_llist_it_t* it = amxc_llist_it_get_next(&pRad->it);
+    ASSERTS_NOT_NULL(it, NULL, ME, "No previous rad ctx");
+    return amxc_container_of(it, T_Radio, it);
+}
+
 bool wld_radio_notify_scanresults(amxd_object_t* obj) {
     const uint32_t type = NOTIFY_SCAN_DONE;
     const char* const name = "ScanComplete";

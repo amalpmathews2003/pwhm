@@ -116,6 +116,33 @@ static int32_t s_getMacOffset(T_Radio* pRad, T_Radio* prevRad) {
     return s_getNrCfgBss(prevRad);
 }
 
+/*
+ * return whether rad mac is reserved/used for main main vap or main endpoint
+ */
+bool wld_rad_macCfg_hasShiftedMbssBaseMac(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+    int32_t bssIndex = -1;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(wld_ssid_hasAutoMacBssIndex(pAP->pSSID, &bssIndex) && (bssIndex == 0)) {
+            return false;
+        }
+    }
+    if(bssIndex > 0) {
+        return true;
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pRad) {
+        if(wld_ssid_hasAutoMacBssIndex(pEP->pSSID, &bssIndex) && (bssIndex == 0)) {
+            return true;
+        }
+    }
+    if(bssIndex > 0) {
+        return false;
+    }
+    return pRad->isSTASup;
+}
+
 static uint32_t s_getNrCfgBssRoundedPow2(T_Radio* pRad) {
     uint32_t nrCfgBss = s_getNrCfgBss(pRad);
     // ensure rounding into pow2 values
@@ -158,7 +185,11 @@ bool wld_rad_macCfg_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss) {
     }
     swl_macBin_t oldBMac;
     memcpy(&oldBMac, mbssBaseMACAddr, sizeof(oldBMac));
-    swl_mac_binAddVal((swl_macBin_t*) mbssBaseMACAddr, bitMask, 18);
+    uint8_t orBitMask = maxHwBss - 1; // MaxHwBss is always multiple of 2
+    mbssBaseMACAddr[5] |= orBitMask;
+    if(!memcmp(&oldBMac, mbssBaseMACAddr, sizeof(oldBMac))) {
+        swl_mac_binAddVal((swl_macBin_t*) mbssBaseMACAddr, 1, 18);
+    }
     SAH_TRACEZ_WARNING(ME, "%s : shifting MBSS BASE MAC from "MAC_PRINT_FMT " to "MAC_PRINT_FMT
                        " because reqBss %u exceeds available %u of max %u => jump %u",
                        pRad->Name, MAC_PRINT_ARG(oldBMac.bMac), MAC_PRINT_ARG(mbssBaseMACAddr),
@@ -168,7 +199,7 @@ bool wld_rad_macCfg_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss) {
      * - main radio iface is primary vap
      * - strict 11ax MultiBSSID match between primary vap and radio
      */
-    if((!pRad->isSTASup) && useMultiBssidMask) {
+    if((!wld_rad_macCfg_hasShiftedMbssBaseMac(pRad)) && useMultiBssidMask) {
         SAH_TRACEZ_WARNING(ME, "%s : Force Update radio MAC with MultiBSSID Base mac "MAC_PRINT_FMT,
                            pRad->Name, MAC_PRINT_ARG(mbssBaseMACAddr));
         memcpy(pRad->MACAddr, pRad->mbssBaseMACAddr.bMac, SWL_MAC_BIN_LEN);
@@ -190,10 +221,18 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
         memcpy(pRad->MACAddr, wld_getWanAddr()->bMac, ETHER_ADDR_LEN);
         swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, pRad->macCfg.baseMacOffset, -1);
     } else if(prevRad != NULL) {
-        memcpy(pRad->MACAddr, prevRad->mbssBaseMACAddr.bMac, SWL_MAC_BIN_LEN);
-        swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, s_getMacOffset(pRad, prevRad), -1);
+        if(prevRad->macCfg.useLocalBitForGuest) {
+            memcpy(pRad->MACAddr, prevRad->MACAddr, SWL_MAC_BIN_LEN);
+            swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, 1, -1);
+        } else {
+            memcpy(pRad->MACAddr, prevRad->mbssBaseMACAddr.bMac, SWL_MAC_BIN_LEN);
+            swl_mac_binAddVal((swl_macBin_t*) pRad->MACAddr, s_getMacOffset(pRad, prevRad), -1);
+        }
     }
     memcpy(pRad->mbssBaseMACAddr.bMac, pRad->MACAddr, SWL_MAC_BIN_LEN);
+    if(wld_rad_macCfg_hasShiftedMbssBaseMac(pRad)) {
+        swl_mac_binAddVal(&pRad->mbssBaseMACAddr, 1, 18);
+    }
 
     wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, s_getNrReqBss(pRad));
     if(memcmp(pRad->MACAddr, prevMacAddr.bMac, SWL_MAC_BIN_LEN)) {
@@ -211,7 +250,7 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
 swl_rc_ne wld_rad_macCfg_generateEpMac(T_Radio* pRad, const char* ifname, uint32_t index, swl_macBin_t* macBin) {
     ASSERT_NOT_NULL(macBin, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "No mapped radio");
-    if(pRad->isSTASup) {
+    if(wld_rad_macCfg_hasShiftedMbssBaseMac(pRad)) {
         if(!index) {
             SAH_TRACEZ_INFO(ME, "%s: use main rad mac as EP rank(%d) mac "SWL_MAC_FMT, pRad->Name, index, SWL_MAC_ARG(pRad->MACAddr));
             memcpy(macBin->bMac, pRad->MACAddr, ETHER_ADDR_LEN);
@@ -245,8 +284,10 @@ swl_rc_ne wld_rad_macCfg_generateBssid(T_Radio* pRad, const char* ifname, uint32
     uint32_t nrMaskBit = swl_bit32_getHighest(nrSuppBss);
 
     unsigned char* baseMacAddr = pRad->MACAddr;
+    uint32_t bssIdx = index;
     if(index > 0) {
         baseMacAddr = pRad->mbssBaseMACAddr.bMac;
+        bssIdx -= wld_rad_macCfg_hasShiftedMbssBaseMac(pRad);
     }
     memcpy(macBin->bMac, baseMacAddr, ETHER_ADDR_LEN);
 
@@ -256,18 +297,12 @@ swl_rc_ne wld_rad_macCfg_generateBssid(T_Radio* pRad, const char* ifname, uint32
     if((bitMask == nrSuppBss - 1) && (!useMultiBssidMask)) {
         //mac bitmask not allowed to overflow with 11ax MultiBSSID rule
         nrMaskBit = 18; //3 bytes LSB of Mac (the deviceId part)
-    } else if(bitMask + index >= nrSuppBss) {
-        SAH_TRACEZ_ERROR(ME, "%s error has not enough iface %s MACs %u + %u >= %u. Cycling BSS",
-                         pRad->Name, ifname, index, bitMask, nrSuppBss);
+    } else if(bitMask + bssIdx >= nrSuppBss) {
+        SAH_TRACEZ_WARNING(ME, "rad %s has not enough MACs in mask, for iface %s : %u + %u >= %u. Cycling BSS",
+                           pRad->Name, ifname, bssIdx, bitMask, nrSuppBss);
     }
 
-    swl_mac_binAddVal(macBin, index, nrMaskBit);
-    //if mac shift occured, then skip generated mac matching the mbss base mac bitmask
-    //as bcrm drv verifies that there isn't a collision with any other bss configs (including primary bss).
-    if(memcmp(baseMacAddr, pRad->MACAddr, ETHER_ADDR_LEN) &&
-       ((macBin->bMac[5] % nrSuppBss) >= (pRad->MACAddr[5] % nrSuppBss))) {
-        swl_mac_binAddVal(macBin, 1, nrMaskBit);
-    }
+    swl_mac_binAddVal(macBin, bssIdx, nrMaskBit);
 
     /* IEEE standardized MAC address assigning on 6GHz:
      * All BSSs must share same base Mac address: only the bitmask of the created BSSs is allowed to change;

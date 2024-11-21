@@ -154,6 +154,7 @@ T_SSID* s_createSsid(const char* name, uint32_t id) {
     swl_timeMono_t now = swl_time_getMonoSec();
     pSSID->changeInfo.lastDisableTime = now;
     pSSID->changeInfo.lastStatusChange = now;
+    pSSID->bssIndex = -1;
     pSSID->mldUnit = -1;
     SAH_TRACEZ_INFO(ME, "created ssid(%s) ctx(%p) id(%d)", name, pSSID, id);
     SAH_TRACEZ_OUT(ME);
@@ -354,6 +355,25 @@ static const char* s_getAutoMacSrcName(uint32_t srcId) {
     return wld_autoMacSrc_str[srcId];
 }
 
+bool wld_ssid_hasAutoMacBssIndex(T_SSID* pSSID, int32_t* pBssIndex) {
+    if(pSSID && (pSSID->autoMacSrc == WLD_AUTOMACSRC_RADIO_BASE) && (pSSID->bssIndex > -1)) {
+        W_SWL_SETPTR(pBssIndex, pSSID->bssIndex);
+        return true;
+    }
+    return false;
+}
+
+void s_setBssIndex(T_Radio* pRad, T_SSID* pSSID, int32_t index) {
+    ASSERT_NOT_NULL(pSSID, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad, , ME, "%s: No mapped radio", pSSID->Name);
+    ASSERTS_NOT_EQUALS(pSSID->bssIndex, index, , ME, "same value");
+    bool prev = wld_rad_macCfg_hasShiftedMbssBaseMac(pRad);
+    pSSID->bssIndex = index;
+    if(prev != wld_rad_macCfg_hasShiftedMbssBaseMac(pRad)) {
+        wld_rad_macCfg_updateRadBaseMac(pRad);
+    }
+}
+
 void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     ASSERT_NOT_NULL(pRad, , ME, "%s: No mapped radio", pSSID->Name);
@@ -365,6 +385,7 @@ void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macB
     const char* macType = (pAP != NULL) ? "AP BSSID" : "EP MAC";
     const char* macSrc = s_getAutoMacSrcName(pSSID->autoMacSrc);
 
+    s_setBssIndex(pRad, pSSID, index);
     switch(pSSID->autoMacSrc) {
     case WLD_AUTOMACSRC_RADIO_BASE: {
         if(pAP != NULL) {
@@ -382,8 +403,12 @@ void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macB
     default:
         break;
     }
-    ASSERT_TRUE(swl_rc_isOk(rc), , ME, "%s: fail to generate %s %s src %s",
-                pSSID->Name, ifname, macType, macSrc);
+    if(!swl_rc_isOk(rc)) {
+        SAH_TRACEZ_ERROR(ME, "%s: fail to generate %s %s src %s (apIdx:%d)",
+                         pSSID->Name, ifname, macType, macSrc, index);
+        s_setBssIndex(pRad, pSSID, -1);
+        return;
+    }
     SAH_TRACEZ_INFO(ME, "%s: gen %s %s src %s rank(%d): "SWL_MAC_FMT,
                     pRad->Name, ifname, macType, macSrc, index, SWL_MAC_ARG(macBin->bMac));
     pSSID->bssIndex = index;

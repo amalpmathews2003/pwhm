@@ -74,6 +74,7 @@ void wld_ssid_generateBssid(T_Radio* pRad, T_AccessPoint* pAP, uint32_t apIndex,
 void wld_ssid_setBssid(T_SSID* pSSID, swl_macBin_t* macBin);
 void wld_ssid_generateMac(T_Radio* pRad, T_SSID* pSSID, uint32_t index, swl_macBin_t* macBin);
 void wld_ssid_setMac(T_SSID* pSSID, swl_macBin_t* macBin);
+bool wld_ssid_hasAutoMacBssIndex(T_SSID* pSSID, int32_t* pBssIndex);
 
 T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
 T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
