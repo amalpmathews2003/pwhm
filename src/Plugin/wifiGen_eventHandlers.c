@@ -432,7 +432,7 @@ static swl_rc_ne s_setWpaCtrlRadEvtHandlers(wld_wpaCtrlMngr_t* wpaCtrlMngr, T_Ra
 }
 
 void s_syncVapInfo(char* apCtxName) {
-    T_AccessPoint* pAP = wld_ap_getVapByName(apCtxName);
+    T_AccessPoint* pAP = wld_vap_get_vap(apCtxName);
     free(apCtxName);
     ASSERTI_NOT_NULL(pAP, , ME, "NULL");
     swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
