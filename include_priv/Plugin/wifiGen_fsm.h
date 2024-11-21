@@ -83,11 +83,11 @@ typedef enum {
     GEN_FSM_UPDATE_BEACON,        /* Start/Refresh AP Beacon */
     GEN_FSM_UPDATE_WPASUPP,       /* Update wpa_supplicant */
     GEN_FSM_ENABLE_HOSTAPD,       /* enable hostapd main interface*/
-    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
     GEN_FSM_ENABLE_RAD,           /* Enable Radio device */
     GEN_FSM_ENABLE_AP,            /* Enable/Disable AP interface */
     GEN_FSM_ENABLE_EP,            /* Enable Endpoint interface */
     GEN_FSM_CONNECTED_EP,         /* Update when Endpoint is connected */
+    GEN_FSM_UPDATE_HOSTAPD,       /* Update hostapd (by sighup): conf in file */
     GEN_FSM_START_HOSTAPD,        /* start and connect with hostapd */
     GEN_FSM_START_WPASUPP,        /* Start wpa_supplicant */
     GEN_FSM_SYNC_STATE,           /* Sync all interfaces state */
