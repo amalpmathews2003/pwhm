@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.15 - 2024-11-22(20:37:16 +0000)
+
+### Other
+
+- fix mac duplication when having 6ghz endpoint and multi vaps
+
 ## Release v6.44.14 - 2024-11-21(14:52:02 +0000)
 
 ### Other
