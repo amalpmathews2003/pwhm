@@ -400,19 +400,41 @@ uint32_t wifiGen_hapd_countGrpMembers(T_Radio* pRad) {
     return 1;
 }
 
+static uint32_t s_getGrpMemberRadObjIdx(const void* e) {
+    wld_secDmn_t* pGmb = e ? *((wld_secDmn_t**) e) : NULL;
+    T_Radio* pR = (pGmb && debugIsRadPointer(pGmb->userData)) ? (T_Radio*) pGmb->userData : NULL;
+    return (pR ? amxd_object_get_index(pR->pBus) : 0);
+}
+static int s_grpMemberRadObjIdxCmp(const void* e1, const void* e2) {
+    uint32_t gmb1oIdx1 = s_getGrpMemberRadObjIdx(e1);
+    uint32_t gmb1oIdx2 = s_getGrpMemberRadObjIdx(e2);
+    if((!gmb1oIdx1) || (!gmb1oIdx2)) {
+        return (gmb1oIdx2 - gmb1oIdx1);
+    }
+    return (gmb1oIdx1 - gmb1oIdx2);
+}
 static char* s_getGlobHapdArgsCb(wld_secDmnGrp_t* pSecDmnGrp, void* userData _UNUSED, const wld_process_t* pProc _UNUSED) {
     char* args = NULL;
     ASSERT_NOT_NULL(pSecDmnGrp, args, ME, "NULL");
     char startArgs[256] = {0};
     //set default start args
     swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
+    wld_secDmn_t* grpMembers[wld_secDmnGrp_getMembersCount(pSecDmnGrp) + 1];
+    uint32_t nGrpMembers = 0;
     for(uint32_t i = 0; i < wld_secDmnGrp_getMembersCount(pSecDmnGrp); i++) {
-        const wld_secDmn_t* pSecDmn = wld_secDmnGrp_getMemberByPos(pSecDmnGrp, i);
-        if((pSecDmn == NULL) || (swl_str_isEmpty(pSecDmn->cfgFile))) {
-            continue;
+        wld_secDmn_t* pSecDmn = (wld_secDmn_t*) wld_secDmnGrp_getMemberByPos(pSecDmnGrp, i);
+        if((pSecDmn != NULL) && (!swl_str_isEmpty(pSecDmn->cfgFile))) {
+            grpMembers[nGrpMembers++] = pSecDmn;
         }
+    }
+    /*
+     * sort grp member with their relative obj instance index
+     * following the datamodel order, which is also the fsm order
+     */
+    qsort(grpMembers, nGrpMembers, sizeof(wld_secDmn_t*), s_grpMemberRadObjIdxCmp);
+    for(uint32_t i = 0; i < nGrpMembers; i++) {
         //concat all radio ifaces conf files
-        swl_strlst_cat(startArgs, sizeof(startArgs), " ", pSecDmn->cfgFile);
+        swl_strlst_cat(startArgs, sizeof(startArgs), " ", grpMembers[i]->cfgFile);
     }
     swl_str_copyMalloc(&args, startArgs);
     return args;
