@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.16 - 2024-11-25(09:59:49 +0000)
+
+### Other
+
+- fix updating next radios Mac and MbssBaseMac when adding vaps
+
 ## Release v6.44.15 - 2024-11-22(20:37:16 +0000)
 
 ### Other
