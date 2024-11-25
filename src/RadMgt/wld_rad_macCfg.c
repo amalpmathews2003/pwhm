@@ -234,7 +234,9 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
         swl_mac_binAddVal(&pRad->mbssBaseMACAddr, 1, 18);
     }
 
-    wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, s_getNrReqBss(pRad));
+    int32_t maxApBssIndex = s_getNrReqBss(pRad);
+    maxApBssIndex = SWL_MAX(maxApBssIndex, wld_rad_getHighestVapAutoMacBssIndex(pRad));
+    wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, maxApBssIndex);
     if(memcmp(pRad->MACAddr, prevMacAddr.bMac, SWL_MAC_BIN_LEN)) {
         swl_typeMacBin_commitObjectParamRef(pRad->pBus, "BaseMACAddress", (swl_macBin_t*) pRad->MACAddr);
         change = true;

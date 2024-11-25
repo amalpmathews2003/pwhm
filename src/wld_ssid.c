@@ -363,6 +363,19 @@ bool wld_ssid_hasAutoMacBssIndex(T_SSID* pSSID, int32_t* pBssIndex) {
     return false;
 }
 
+int32_t wld_rad_getHighestVapAutoMacBssIndex(T_Radio* pR) {
+    int32_t maxBssIndex = -1;
+    ASSERTS_NOT_NULL(pR, maxBssIndex, ME, "NULL");
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pR) {
+        int32_t bssIndex = -1;
+        if(wld_ssid_hasAutoMacBssIndex(pAP->pSSID, &bssIndex) && (bssIndex > maxBssIndex)) {
+            maxBssIndex = bssIndex;
+        }
+    }
+    return maxBssIndex;
+}
+
 void s_setBssIndex(T_Radio* pRad, T_SSID* pSSID, int32_t index) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
     ASSERT_NOT_NULL(pRad, , ME, "%s: No mapped radio", pSSID->Name);

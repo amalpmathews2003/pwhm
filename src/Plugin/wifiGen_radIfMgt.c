@@ -254,10 +254,12 @@ static void s_checkAndProcessMbssBMacChange(T_Radio* pRad, uint32_t apMacIndex) 
     ASSERTS_TRUE(apMacIndex > 0, , ME, "no mbss baseMac shift for primary bss");
     swl_macBin_t prevMbssMacAddr = pRad->mbssBaseMACAddr;
     bool changed = wld_rad_macCfg_updateRadBaseMac(pRad);
+    changed |= wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, apMacIndex);
     changed |= (!swl_mac_binMatches(&prevMbssMacAddr, &pRad->mbssBaseMACAddr));
-    ASSERTS_TRUE(changed > 0, , ME, "no mbss baseMac shift");
-    SAH_TRACEZ_WARNING(ME, "%s: Shifting neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
-    s_updateAllMacs(pRad);
+    if(changed) {
+        SAH_TRACEZ_WARNING(ME, "%s: Shifting neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
+        s_updateAllMacs(pRad);
+    }
     if((pRad != wld_lastRadFromObjs()) && (!pRad->macCfg.useLocalBitForGuest)) {
         T_Radio* pLastRad = pRad;
         T_Radio* pNextRad = NULL;
@@ -278,8 +280,10 @@ static void s_checkAndProcessMbssBMacChange(T_Radio* pRad, uint32_t apMacIndex) 
             wld_rad_doRadioCommit(pNextRad);
         }
     }
-    SAH_TRACEZ_WARNING(ME, "%s: applying neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
-    s_applyAllMacs(pRad);
+    if(changed) {
+        SAH_TRACEZ_WARNING(ME, "%s: applying neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
+        s_applyAllMacs(pRad);
+    }
 }
 
 int wifiGen_rad_addVapExt(T_Radio* pRad, T_AccessPoint* pAP) {
