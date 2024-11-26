@@ -298,6 +298,9 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"wep_key2", SECDMN_ACTION_OK_NEED_RESTART},
               {"wep_key3", SECDMN_ACTION_OK_NEED_RESTART},
               {"wps_state", SECDMN_ACTION_OK_NEED_RESTART},
+              {"interface", SECDMN_ACTION_OK_NEED_RESTART},
+              {"bss", SECDMN_ACTION_OK_NEED_RESTART},
+              {"mld_ap", SECDMN_ACTION_OK_NEED_RESTART},
               //params set and applied with main iface toggle
               {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_TOGGLE},
@@ -700,6 +703,30 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "rrm_neighbor_report", "ieee80211w", "mbo",
         "wmm_enabled", "uapsd_advertisement_enabled", "rnr", "ap_max_inactivity",
         "multi_ap_profile", "multi_ap_vlanid",
+    };
+    s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
+                            params, SWL_ARRAY_SIZE(params), &action);
+    wld_hostapd_deleteConfig(pNewCfg);
+    wld_hostapd_deleteConfig(config);
+    return action;
+}
+
+wld_secDmn_action_rc_ne wld_ap_hostapd_setMldParams(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+    ASSERTS_NOT_NULL(pR->hostapd, SECDMN_ACTION_ERROR, ME, "NULL");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
+    swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
+    wld_hostapd_config_t* pNewCfg = NULL;
+    ret = wld_hostapd_createConfig(&pNewCfg, pR);
+    ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no new config");
+    swl_mapChar_t* pNewVapParams = wld_hostapd_getConfigMapByBssid(pNewCfg, (swl_macBin_t*) pAP->pSSID->BSSID);
+    wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
+    const char* params[] = {
+        "interface", "bss", "mld_ap",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
