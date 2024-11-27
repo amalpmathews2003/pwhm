@@ -687,7 +687,7 @@ static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
         bool needRestart = (nCurLinks > 1) || (nCfgLinks > 1);
         SAH_TRACEZ_INFO(ME, "%s: curSockName(%s) nCurLinks(%d) nCfgLinks(%d) => needHapdRestart:%d",
                         pAP->alias, sockName, nCurLinks, nCfgLinks, needRestart);
-        wld_secDmn_setRestartNeeded(pRad->hostapd, needRestart);
+        wld_secDmn_setRestartNeeded(pRad->hostapd, true);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
         s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
         s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
