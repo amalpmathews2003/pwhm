@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.0 - 2024-11-27(17:15:43 +0000)
+
+### Other
+
+- PPM-2984 add handler for custom reload of sec daemon
+
 ## Release v6.44.17 - 2024-11-27(11:01:05 +0000)
 
 ### Other
