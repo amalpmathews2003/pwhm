@@ -317,6 +317,11 @@ swl_rc_ne wld_rad_macCfg_generateBssid(T_Radio* pRad, const char* ifname, uint32
         swl_mac_binAddVal(macBin, pRad->macCfg.localGuestMacOffset * (1 + pRad->ref_index), -1);
     }
 
+    // changing the MAC address for the Multi-BSSID(6GHz) case
+    if(useMultiBssidMask) {
+        macBin->bMac[4] = macBin->bMac[4] + 1;
+    }
+
     SAH_TRACEZ_INFO(ME, "RADIO %s gen BSS iface %s rank(%d) MAC "SWL_MAC_FMT " Base "SWL_MAC_FMT " maskBit %u, supBss %u",
                     pRad->Name, ifname, index,
                     SWL_MAC_ARG(macBin->bMac), SWL_MAC_ARG(baseMacAddr), nrMaskBit, nrSuppBss);
