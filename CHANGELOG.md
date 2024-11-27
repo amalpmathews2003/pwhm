@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v6.44.17 - 2024-11-27(11:01:05 +0000)
+
+### Other
+
+- deploy WPA2-WPA3-Personal on 2.4GHz and 5GHz
+
 ## Release v6.44.16 - 2024-11-25(09:59:49 +0000)
 
 ### Other
