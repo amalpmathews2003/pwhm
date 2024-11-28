@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.1 - 2024-11-28(09:59:52 +0000)
+
+### Other
+
+- [WiFi]"OperatingChannelBandwidth" No more reboot persistent
+
 ## Release v7.0.0 - 2024-11-27(17:15:43 +0000)
 
 ### Other
