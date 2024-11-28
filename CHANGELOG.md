@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.2 - 2024-11-28(15:09:34 +0000)
+
+### Other
+
+- - EP fails to connect after WPS
+
 ## Release v7.0.1 - 2024-11-28(09:59:52 +0000)
 
 ### Other
