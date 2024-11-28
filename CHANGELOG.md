@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.3 - 2024-11-28(18:12:42 +0000)
+
+### Other
+
+- cherry pick from mainline to stable
+- : 2.4GHz priv cannot be reenabled
+
 ## Release v7.0.2 - 2024-11-28(15:09:34 +0000)
 
 ### Other
