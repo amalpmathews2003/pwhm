@@ -1535,24 +1535,43 @@ uint32_t wld_ad_getNrActiveAffiliatedSta(T_AssociatedDevice* pAD) {
     return count;
 }
 
+/**
+ * Reset all FastReconnectTypes.*.Count of AssociationCount to 0
+ */
+static void s_setResetCountersFRT(amxd_object_t* object, amxd_trans_t* trans) {
+    amxd_object_t* fastReconnectTypesObject = amxd_object_get(object, "FastReconnectTypes");
+    ASSERT_NOT_NULL(fastReconnectTypesObject, , ME, "NULL FastReconnectTypes object");
+
+    amxd_object_for_each(instance, it, fastReconnectTypesObject) {
+        amxd_object_t* instanceObject = amxc_container_of(it, amxd_object_t, it);
+        if(instanceObject == NULL) {
+            continue;
+        }
+        amxd_trans_select_object(trans, instanceObject);
+        amxd_trans_set_value(uint32_t, trans, "Count", 0);
+    }
+}
+
 static void s_setResetCounters_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
     bool flag = amxc_var_dyncast(bool, newValue);
-    if(flag) {
-        amxd_trans_t trans;
-        ASSERT_TRANSACTION_INIT(object, &trans, , ME, "trans init failure");
-        // Reset On Write
-        amxd_trans_set_bool(&trans, "ResetCounters", 0);
-        // Reset Association Counters on 0!
-        amxd_trans_set_uint32_t(&trans, "Success", 0);
-        amxd_trans_set_uint32_t(&trans, "Fail", 0);
-        amxd_trans_set_uint32_t(&trans, "FailSecurity", 0);
-        amxd_trans_set_uint32_t(&trans, "Disconnect", 0);
+    ASSERTI_TRUE(flag, , ME, "Skip reset, ResetCounters = 0");
 
-        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "trans init failure");
+    // Reset On Write
+    amxd_trans_set_bool(&trans, "ResetCounters", 0);
+    // Reset Association Counters to 0
+    amxd_trans_set_uint32_t(&trans, "Success", 0);
+    amxd_trans_set_uint32_t(&trans, "Fail", 0);
+    amxd_trans_set_uint32_t(&trans, "FailSecurity", 0);
+    amxd_trans_set_uint32_t(&trans, "Disconnect", 0);
+    amxd_trans_set_uint32_t(&trans, "FastReconnects", 0);
 
-    }
+    s_setResetCountersFRT(object, &trans);
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
 
     SAH_TRACEZ_OUT(ME);
 }
