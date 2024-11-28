@@ -15,7 +15,7 @@ LIB_OBJ_DIR = $(realpath ../../output/$(MACHINE))
 INCDIRS = $(realpath ../../include_priv ../../include ../../include/wld ../testHelper/)
 INCDIRS += $(realpath $(STAGINGDIR)/usr/include)
 
-LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib:$(LIB_OBJ_DIR):$(LIB_OBJ_DIR)/Plugin
+LD_LIB=LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(STAGINGDIR)/usr/lib:$(STAGINGDIR)/lib:$(LIB_OBJ_DIR):$(LIB_OBJ_DIR)/Plugin
 
 SOURCES += $(wildcard $(TEST_COMMON_SRC_DIR)/*.c)
 SOURCES += $(wildcard ./*.c)

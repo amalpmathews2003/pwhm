@@ -370,11 +370,15 @@ T_AccessPoint* wld_rad_hostapd_getFirstConnectedVap(T_Radio* pRad) {
 
 T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad) {
     T_AccessPoint* pMainAP = NULL;
-    if(wld_rad_hasMbssidAds(pRad) ||
-       ((pMainAP = wld_rad_hostapd_getFirstConnectedVap(pRad)) == NULL)) {
-        if((pMainAP = wld_rad_getFirstEnabledVap(pRad)) == NULL) {
-            pMainAP = wld_rad_getFirstVap(pRad);
+    if(wld_rad_hasMloSupport(pRad) && !wld_rad_hasMbssidAds(pRad)) {
+        if((pMainAP = wld_rad_hostapd_getFirstConnectedVap(pRad)) == NULL) {
+            pMainAP = wld_rad_getFirstEnabledVap(pRad);
         }
+    } else if(wld_rad_hasMbssidAds(pRad)) {
+        pMainAP = wld_rad_getFirstEnabledVap(pRad);
+    }
+    if(pMainAP == NULL) {
+        pMainAP = wld_rad_getFirstVap(pRad);
     }
     return pMainAP;
 }
