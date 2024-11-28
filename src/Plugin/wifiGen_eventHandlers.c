@@ -1275,8 +1275,17 @@ static void s_stationWpsCredReceivedEvt(void* pRef, char* ifName, void* creds, s
 
     SAH_TRACEZ_INFO(ME, "%s: wps credentials received with status (%d)", pEP->Name, status);
     if(swl_rc_isOk(status)) {
-
-        wld_wpaSupp_ep_increaseSecurityModeInCreds(pEP, (T_WPSCredentials*) pCreds);
+        uint32_t pskLen = swl_str_len(pCreds->key);
+        // If key is 64char long, it must be a hex key, and this can not be used to configure WPA3 security.
+        if(pskLen == PSK_KEY_SIZE_LEN - 1) {
+            if(!swl_hex_isHexChar(pCreds->key, pskLen)) {
+                SAH_TRACEZ_ERROR(ME, "%s: Received 64len WPS key, that is not valid hex", pEP->Name);
+                wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_ERROR, WPS_FAILURE_CREDENTIALS, NULL);
+                return;
+            }
+        } else {
+            wld_wpaSupp_ep_increaseSecurityModeInCreds(pEP, (T_WPSCredentials*) pCreds);
+        }
 
         if(!pEP->wpsSessionInfo.WPS_PairingInProgress) {
             wld_endpoint_sendPairingNotification(pEP, NOTIFY_BACKHAUL_CREDS, "Backhaul", pCreds);
