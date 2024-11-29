@@ -8,7 +8,7 @@ printCmd(){
 echo "##### pWHM WiFi Debug #####"
 
 echo "\n\n### Radios Firmware"
-ba-cli 'WiFi.Radio.*.FirmwareVersion?' | sed 1d
+ba-cli -a 'WiFi.Radio.*.FirmwareVersion?' | sed 1d
 
 echo ""
 echo ""
