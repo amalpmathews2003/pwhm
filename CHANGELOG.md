@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.4 - 2024-11-29(08:32:40 +0000)
+
+### Other
+
+- : Index is not updated when interface are disabled at boot
+
 ## Release v7.0.3 - 2024-11-28(18:12:42 +0000)
 
 ### Other
