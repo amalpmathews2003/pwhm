@@ -336,15 +336,7 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     }
     if(!enable) {
         wld_ap_hostapd_deauthAllStations(pAP);
-        if((rc = wld_ap_hostapd_enableVap(pAP, false)) == SECDMN_ACTION_OK_DONE) {
-            /*
-             * in hostapd older than 2.10, disabling one bss leads
-             * to disabling all BSSs of same main interface.
-             * In order to restore right status of other BSSs,
-             * we schedule fsm sync_state.
-             */
-            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
-        }
+        rc = wld_ap_hostapd_enableVap(pAP, false);
     } else {
         int currState = pAP->pFA->mfn_wvap_enable(pAP, enable, GET | DIRECT);
         if(!currState) {
@@ -356,6 +348,7 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
             pAP->pFA->mfn_wvap_enable(pAP, currState, SET | DIRECT);
         }
     }
+    setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
     wld_vap_updateState(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to apply enable %d", pAP->alias, enable);
     s_schedNextAction(rc, pAP, pRad);
