@@ -260,10 +260,13 @@ static void s_checkAndProcessMbssBMacChange(T_Radio* pRad, uint32_t apMacIndex) 
         SAH_TRACEZ_WARNING(ME, "%s: Shifting neigh vap/ep interfaces after mbss mac shift ", pRad->Name);
         s_updateAllMacs(pRad);
     }
-    if((pRad != wld_lastRadFromObjs()) && (!pRad->macCfg.useLocalBitForGuest)) {
+    if((!pRad->macCfg.useBaseMacOffset) && (!pRad->macCfg.useLocalBitForGuest) && (pRad != wld_lastRadFromObjs())) {
         T_Radio* pLastRad = pRad;
         T_Radio* pNextRad = NULL;
         for(pNextRad = wld_rad_nextRadFromObj(pRad->pBus); pNextRad; pNextRad = wld_rad_nextRadFromObj(pNextRad->pBus)) {
+            if(pNextRad->macCfg.useBaseMacOffset) {
+                continue;
+            }
             swl_macBin_t prevBMac = pNextRad->mbssBaseMACAddr;
             wld_rad_macCfg_updateRadBaseMac(pNextRad);
             if(swl_mac_binMatches(&pNextRad->mbssBaseMACAddr, &prevBMac)) {
@@ -274,6 +277,9 @@ static void s_checkAndProcessMbssBMacChange(T_Radio* pRad, uint32_t apMacIndex) 
             pLastRad = pNextRad;
         }
         for(pNextRad = pLastRad; pNextRad && (pNextRad != pRad); pNextRad = wld_rad_prevRadFromObj(pNextRad->pBus)) {
+            if(pNextRad->macCfg.useBaseMacOffset) {
+                continue;
+            }
             SAH_TRACEZ_WARNING(ME, "%s: applying next rad new macs after mbss mac shift ", pNextRad->Name);
             s_applyAllMacs(pNextRad);
             pNextRad->fsmRad.FSM_SyncAll = TRUE;
@@ -395,7 +401,7 @@ int wifiGen_rad_addEndpointIf(T_Radio* pRad, char* buf, int bufsize) {
     wld_nl80211_ifaceInfo_t ifaceInfo;
     memset(&ifaceInfo, 0, sizeof(ifaceInfo));
     swl_macBin_t epMacAddr = SWL_MAC_BIN_NEW();
-    wld_ssid_generateMac(pRad, pEP->pSSID, 0, &epMacAddr);
+    wld_ssid_generateMac(pRad, pSSID, 0, &epMacAddr);
     wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pRad->Name, false);
     if((pRad->isSTA) && (swl_str_matches(pRad->Name, epIfname))) {
         wld_rad_nl80211_setSta(pRad);

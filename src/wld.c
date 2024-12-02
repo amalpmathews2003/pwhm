@@ -349,6 +349,14 @@ uint32_t wld_getMaxNrSSIDs() {
     return (g_MaxNrAPs + g_MaxNrEPs);
 }
 
+swl_rc_ne wld_initRadioBaseMac(T_Radio* pR, int32_t idx) {
+    ASSERT_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_TRUE(idx >= 0, SWL_RC_INVALID_PARAM, ME, "%s: invalid mac indexi %d", pR->Name, idx);
+    memcpy(pR->MACAddr, &wld_getWanAddr()->bMac, SWL_MAC_BIN_LEN);
+    swl_mac_binAddVal((swl_macBin_t*) pR->MACAddr, idx, -1);
+    return SWL_RC_OK;
+}
+
 T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
     ASSERT_NOT_NULL(name, NULL, ME, "NULL");
     ASSERT_NOT_NULL(vendor, NULL, ME, "NULL");
@@ -377,8 +385,11 @@ T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
     pR->wlRadio_SK = -1;
     snprintf(pR->instanceName, IFNAMSIZ, "wifi%d", idx);
 
-    memcpy(pR->MACAddr, &wld_getWanAddr()->bMac, SWL_MAC_BIN_LEN);
-    swl_mac_binAddVal((swl_macBin_t*) pR->MACAddr, idx, -1);
+    /*
+     * init the radio base mac with radio device detection order
+     * until it is mapped to dm object
+     */
+    wld_initRadioBaseMac(pR, idx);
 
     pR->debug = RAD_POINTER;
     pR->pFA = &vendor->fta;                         // Attach our vendor function table on it!

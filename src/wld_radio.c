@@ -228,6 +228,12 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
     pRadioObj->priv = pRad;
     pRad->pBus = pRadioObj;
 
+    /*
+     * init the radio base mac with radio object instance index
+     * instead of radio device detection order
+     */
+    wld_initRadioBaseMac(pRad, amxd_object_get_index(pRadioObj) - 1);
+
     return amxd_status_ok;
 }
 

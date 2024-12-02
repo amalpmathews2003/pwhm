@@ -87,6 +87,16 @@ static bool s_useMultiBssidMask(T_Radio* pRad) {
 
 static uint32_t s_getNrReqBss(T_Radio* pRad) {
     uint32_t radNrBssReq = pRad->macCfg.nrBssRequired;
+    /*
+     * in configured WiFi.Radio.{}.MACConfig.NrBssRequired,
+     * Endpoint is considered a Bss generally.
+     * If main radio iface is assigned to endpoint, then deduce it
+     * to have only count of required AP Bss
+     * (relevant against radio's maxNrHwBss (only APs))
+     */
+    if(radNrBssReq > 0) {
+        radNrBssReq -= wld_rad_macCfg_hasShiftedMbssBaseMac(pRad);
+    }
     if(s_useMultiBssidMask(pRad)) {
         uint32_t radNrBssMapped = wld_rad_countMappedAPs(pRad);
         SAH_TRACEZ_INFO(ME, "%s: max %d req %d mapped %d",
@@ -143,13 +153,27 @@ bool wld_rad_macCfg_hasShiftedMbssBaseMac(T_Radio* pRad) {
     return pRad->isSTASup;
 }
 
-static uint32_t s_getNrCfgBssRoundedPow2(T_Radio* pRad) {
-    uint32_t nrCfgBss = s_getNrCfgBss(pRad);
+static uint32_t s_getRoundedPow2(uint32_t nr) {
     // ensure rounding into pow2 values
-    if((nrCfgBss > 0) && (swl_bit32_getNrSet(nrCfgBss) > 1)) {
-        return (1 << (swl_bit32_getHighest(nrCfgBss) + 1));
+    if((nr > 0) && (swl_bit32_getNrSet(nr) > 1)) {
+        return (1 << (swl_bit32_getHighest(nr) + 1));
     }
-    return nrCfgBss;
+    return nr;
+}
+
+static uint32_t s_getNrCfgBssRoundedPow2(T_Radio* pRad) {
+    return s_getRoundedPow2(s_getNrCfgBss(pRad));
+}
+
+static uint32_t s_getNrSuppBss(T_Radio* pRad) {
+    uint32_t radMaxBss = pRad->maxNrHwBss;
+    if(s_useMultiBssidMask(pRad)) {
+        uint32_t radNrBssMapped = wld_rad_countMappedAPs(pRad);
+        if((radNrBssMapped > 0) && (radNrBssMapped < radMaxBss)) {
+            radMaxBss = s_getRoundedPow2(radNrBssMapped);
+        }
+    }
+    return radMaxBss;
 }
 
 /*
@@ -158,7 +182,7 @@ static uint32_t s_getNrCfgBssRoundedPow2(T_Radio* pRad) {
 bool wld_rad_macCfg_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     // MaxHwBss is always power of 2
-    uint8_t maxHwBss = s_getNrCfgBssRoundedPow2(pRad);
+    uint8_t maxHwBss = s_getNrSuppBss(pRad);
     ASSERT_TRUE(maxHwBss > 0, false, ME, "%s: no supported BSSs", pRad->Name);
 
     SAH_TRACEZ_INFO(ME, "%s: maxHwBss %d reqBss %d useLocalBitForGuest %d",
@@ -176,20 +200,16 @@ bool wld_rad_macCfg_shiftMbssIfNotEnoughVaps(T_Radio* pRad, uint32_t reqBss) {
     uint32_t nrAvailable = maxHwBss - bitMask;
     bool nextToCycle = (bitMask == maxHwBss - 1);
     bool useMultiBssidMask = s_useMultiBssidMask(pRad);
-    if(nextToCycle && useMultiBssidMask) {
-        nextToCycle = false;
-        SAH_TRACEZ_WARNING(ME, "%s: mbss mac not allowed to cycle because Multi-BSSID rule", pRad->Name);
-    }
-    if((nrAvailable >= reqBss) || nextToCycle) {
+    SAH_TRACEZ_INFO(ME, "%s: bitmask:%d maxHwBss:%d nrAvailable:%d reqBss:%d nextToCycle:%d useMbssidMask:%d",
+                    pRad->Name, bitMask, maxHwBss, nrAvailable, reqBss, nextToCycle, useMultiBssidMask);
+    if(nrAvailable >= reqBss) {
         return false;
     }
     swl_macBin_t oldBMac;
     memcpy(&oldBMac, mbssBaseMACAddr, sizeof(oldBMac));
     uint8_t orBitMask = maxHwBss - 1; // MaxHwBss is always multiple of 2
     mbssBaseMACAddr[5] |= orBitMask;
-    if(!memcmp(&oldBMac, mbssBaseMACAddr, sizeof(oldBMac))) {
-        swl_mac_binAddVal((swl_macBin_t*) mbssBaseMACAddr, 1, 18);
-    }
+    swl_mac_binAddVal((swl_macBin_t*) mbssBaseMACAddr, 1, 18);
     SAH_TRACEZ_WARNING(ME, "%s : shifting MBSS BASE MAC from "MAC_PRINT_FMT " to "MAC_PRINT_FMT
                        " because reqBss %u exceeds available %u of max %u => jump %u",
                        pRad->Name, MAC_PRINT_ARG(oldBMac.bMac), MAC_PRINT_ARG(mbssBaseMACAddr),
@@ -235,6 +255,9 @@ bool wld_rad_macCfg_updateRadBaseMac(T_Radio* pRad) {
     }
 
     int32_t maxApBssIndex = s_getNrReqBss(pRad);
+    if(s_useMultiBssidMask(pRad)) {
+        maxApBssIndex = wld_rad_countMappedAPs(pRad);
+    }
     maxApBssIndex = SWL_MAX(maxApBssIndex, wld_rad_getHighestVapAutoMacBssIndex(pRad));
     wld_rad_macCfg_shiftMbssIfNotEnoughVaps(pRad, maxApBssIndex);
     if(memcmp(pRad->MACAddr, prevMacAddr.bMac, SWL_MAC_BIN_LEN)) {

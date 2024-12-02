@@ -2678,6 +2678,7 @@ T_Radio* wld_getRadioByAddress(unsigned char* macAddress);
 T_AccessPoint* wld_getAccesspointByAddress(unsigned char* macAddress);
 swl_freqBandExt_m wld_getAvailableFreqBands(T_Radio* ignoreRad);
 swl_timeSpecMono_t* wld_getInitTime();
+swl_rc_ne wld_initRadioBaseMac(T_Radio* pR, int32_t idx);
 
 void wld_destroy_associatedDevice(T_AccessPoint* pAP, int index);
 
