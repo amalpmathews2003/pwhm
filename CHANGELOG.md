@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.5 - 2024-12-02(14:32:19 +0000)
+
+### Other
+
+- fix invalid mac autogen when BaseMacOffset and NbRequiredBss are configured
+
 ## Release v7.0.4 - 2024-11-29(08:32:40 +0000)
 
 ### Other
