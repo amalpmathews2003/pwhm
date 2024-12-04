@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.9 - 2024-12-04(14:48:06 +0000)
+
+### Other
+
+- - [Wi-Fi] [pwhm] ResetCounters do not reset FastReconnects and FastReconnectTypes. ones
+
 ## Release v7.0.8 - 2024-12-04(12:25:10 +0000)
 
 ### Other
