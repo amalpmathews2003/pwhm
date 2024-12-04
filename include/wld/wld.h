@@ -1844,6 +1844,7 @@ struct S_ACCESSPOINT {
     char keyPassPhrase[PSK_KEY_SIZE_LEN];
     char saePassphrase[SAE_KEY_SIZE_LEN];
     wld_enc_modes_e encryptionModeEnabled;
+    swl_security_configExt_t secCfgExt;
     swl_security_mfpMode_e mfpConfig;
     int sppAmsdu;
     int rekeyingInterval;

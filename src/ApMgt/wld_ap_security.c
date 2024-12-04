@@ -85,7 +85,6 @@ const char* cstr_AP_EncryptionMode[] = {"Default", "AES", "TKIP", "TKIP-AES", 0}
 
 const char* g_str_wld_ap_td[AP_TD_MAX] = {"WPA3-Personal", "SAE-PK", "WPA3-Enterprise", "EnhancedOpen"};
 
-
 void wld_ap_sec_doSync(T_AccessPoint* pAP) {
     pAP->pFA->mfn_wvap_sec_sync(pAP, SET);
     wld_autoCommitMgr_notifyVapEdit(pAP);
@@ -199,6 +198,8 @@ amxd_status_t _wld_ap_validateSecurity_ovf(amxd_object_t* object,
     case SWL_SECURITY_APMODE_WPA2_P:
     case SWL_SECURITY_APMODE_WPA_WPA2_P:
     case SWL_SECURITY_APMODE_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P_TM:
+    case SWL_SECURITY_APMODE_WPA3_P_CM:
         if(swl_str_isEmpty(keyPassPhrase) || !isValidAESKey(keyPassPhrase, PSK_KEY_SIZE_LEN - 1)) {
             SAH_TRACEZ_ERROR(ME, "%s: invalid Key(AES:%s) in WPA2 mode", oname, keyPassPhrase);
             valid = false;
@@ -495,6 +496,8 @@ static void s_setCommonSecurityConf_ocf(void* priv _UNUSED, amxd_object_t* objec
         } else if(swl_str_matches(pname, "OWETransitionInterface")) {
             valStr = amxc_var_dyncast(cstring_t, newValue);
             swl_str_copy(pAP->oweTransModeIntf, sizeof(pAP->oweTransModeIntf), valStr);
+        } else if(swl_str_matches(pname, "WPA3Compatibility")) {
+            pAP->secCfgExt.compatibilityRequested = amxc_var_dyncast(bool, newValue);
         } else if(swl_str_matches(pname, "MFPConfig")) {
             const char* mfpStr = amxc_var_constcast(cstring_t, newValue);
             pAP->mfpConfig = swl_security_mfpModeFromString(mfpStr);

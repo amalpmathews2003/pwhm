@@ -194,10 +194,16 @@ static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName
         pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA3_P;
         if(pAP->secModesSupported & M_SWL_SECURITY_APMODE_WPA2_P) {
             pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA2_WPA3_P;
+            pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA3_P_TM;
         }
     }
+
+    pAP->secCfgExt.mrsnoSupported = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "MRSNO", 0);
+    pAP->secModesSupported |= pAP->secCfgExt.mrsnoSupported ? M_SWL_SECURITY_APMODE_WPA3_P_CM : 0;
+
     pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "OWE", 0)) ?
         (M_SWL_SECURITY_APMODE_OWE) : 0;
+
     if(!pAP->MCEnable) {
         /* Init this interface... */
         T_Radio* pR = (T_Radio*) pAP->pRadio;
@@ -906,6 +912,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_trans_set_cstring_t(&trans, "ModesAvailable", TBuf);
         amxd_trans_set_cstring_t(&trans, "ModeEnabled", swl_security_apModeToString(pAP->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
         amxd_trans_set_cstring_t(&trans, "MFPConfig", swl_security_mfpModeToString(pAP->mfpConfig));
+        amxd_trans_set_bool(&trans, "WPA3Compatibility", pAP->secCfgExt.compatibilityRequested);
         amxd_trans_set_int32_t(&trans, "SPPAmsdu", pAP->sppAmsdu);
 
 
@@ -1046,6 +1053,12 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             }
         }
         free(mode);
+
+        bool wpa3Cmp = amxd_object_get_bool(secObj, "WPA3Compatibility", false);
+        if(wpa3Cmp != pAP->secCfgExt.compatibilityRequested) {
+            pAP->secCfgExt.compatibilityRequested = wpa3Cmp;
+            wld_ap_sec_doSync(pAP);
+        }
 
         char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);
         const char* curMfpMode = swl_security_mfpModeToString(pAP->mfpConfig);

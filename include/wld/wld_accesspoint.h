@@ -159,6 +159,7 @@ typedef struct {
 void wld_apMacFilter_getBanList(T_AccessPoint* pAP, wld_banlist_t* banlist, bool includePf);
 void wld_apMacFilter_setAddressList_pwf(void* priv, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue);
 swl_rc_ne wld_ap_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, wld_vap_assocTableStruct_t** data);
+swl_security_apMode_e wld_apSec_getFinalWpa3ModeEnabled(T_AccessPoint* pAP);
 
 swl_rc_ne wld_vap_registerExtModData(T_AccessPoint* pAP, uint32_t extModId, void* extModData, wld_extMod_deleteData_dcf deleteHandler);
 void* wld_vap_getExtModData(T_AccessPoint* pAP, uint32_t extModId);
