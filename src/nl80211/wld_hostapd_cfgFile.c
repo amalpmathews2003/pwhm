@@ -643,6 +643,7 @@ static void s_setSecKeyCacheConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         break;
     }
     case SWL_SECURITY_APMODE_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P_TM:
     case SWL_SECURITY_APMODE_WPA3_P:
     {
         // Keep PKMSA caching (needed for SAE)
@@ -864,6 +865,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", mfp);
         break;
     }
+    case SWL_SECURITY_APMODE_WPA3_P_TM:
     case SWL_SECURITY_APMODE_WPA2_WPA3_P: {
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s%s",

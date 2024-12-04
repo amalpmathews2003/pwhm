@@ -114,6 +114,7 @@ static swl_rc_ne s_setWpaSuppGlobalConfig(T_EndPoint* pEP, wld_wpaSupp_config_t*
     T_EndPointProfile* epProfile = pEP->currentProfile;
     if((epProfile != NULL) &&
        ((epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA2_WPA3_P) ||
+        (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P_TM) ||
         (epProfile->secModeEnabled == SWL_SECURITY_APMODE_WPA3_P))) {
         swl_mapChar_add(global, "sae_pwe", "2");
     }
@@ -264,6 +265,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
     }
     break;
     case SWL_SECURITY_APMODE_WPA2_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA3_P_TM:
     {
         swl_mapChar_add(network, "proto", "RSN");
         swl_mapCharFmt_addValStr(network, "key_mgmt", "%s%s%s",

@@ -543,6 +543,8 @@ define rrm_t{
 			 *    <li>WPA-WPA2-Personal</li>
 			 *    <li>WPA3-Personal</li>
 			 *    <li>WPA2-WPA3-Personal</li>
+			 *    <li>WPA3-Personal-Transition</li>
+			 *    <li>WPA3-Personal-Compatibility</li>
 			 *    <li>WPA-Enterprise</li>
 			 *    <li>WPA2-Enterprise</li>
 			 *    <li>WPA-WPA2-Enterprise</li>
@@ -564,6 +566,8 @@ define rrm_t{
 			 *    <li>WPA-WPA2-Personal</li>
 			 *    <li>WPA3-Personal</li>
 			 *    <li>WPA2-WPA3-Personal</li>
+			 *    <li>WPA3-Personal-Transition</li>
+			 *    <li>WPA3-Personal-Compatibility</li>
 			 *    <li>WPA-Enterprise</li>
 			 *    <li>WPA2-Enterprise</li>
 			 *    <li>WPA-WPA2-Enterprise</li>
@@ -657,8 +661,8 @@ define rrm_t{
 				default "";
 			}
 
-			/**  A passphrase for WPA3-Personal or WPA2-WPA3-Personal 
-			 *   security modes.
+			/**  A passphrase for security modes supporting WPA3 (eg. WPA3-Personal,
+			 *   WPA2-WPA3-Personal, WPA3-Personal-Transition, WPA3-Personal-Compatibility).
 			 *
 			 *   NOTE: this parameter is for WPA3. WPA2 PreSharedKey is generated
 			 *   from KeyPassphrase.
@@ -747,10 +751,19 @@ define rrm_t{
 				on action validate call check_enum ["None", "OWE",
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
-						"WPA3-Personal","WPA2-WPA3-Personal",
-						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
-						"WPA3-Enterprise","WPA2-WPA3-Enterprise"];
+						"WPA3-Personal","WPA2-WPA3-Personal", "WPA3-Personal-Transition",
+						"WPA3-Personal-Compatibility", "WPA-Enterprise","WPA2-Enterprise",
+						"WPA-WPA2-Enterprise","WPA3-Enterprise","WPA2-WPA3-Enterprise"];
 				userflags %usersetting;
+			}
+
+			/** Enable WPA3 Compatibility when ModeEnabled is set to WPA2-WPA3-Personal (not
+			 *  applicable for the other security modes) if MRSNO is supported. Enumeration of:
+			 *     * true	: set to WPA3-Personal-Compatibility if MRSNO is supported otherwise WPA3-Personal-Transition
+			 *     * false	: set to WPA3-Personal-Transition
+			 */
+			%persistent bool WPA3Compatibility{
+				default false;
 			}
 
 			/** Management Frame Protection configuration applicable when ModeEnabled is set
@@ -1635,7 +1648,7 @@ define rrm_t{
 				on action validate call check_enum ["None", "OWE",
 						"WEP-64","WEP-128","WEP-128iv",
 						"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
-						"WPA3-Personal","WPA2-WPA3-Personal",
+						"WPA3-Personal",
 						"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 						"WPA3-Enterprise","WPA2-WPA3-Enterprise","Unknown"];
 				default "Unknown";
@@ -1846,7 +1859,7 @@ define rrm_t{
 					on action validate call check_enum ["None", "OWE",
 							"WEP-64","WEP-128","WEP-128iv",
 							"WPA-Personal","WPA2-Personal","WPA-WPA2-Personal",
-							"WPA3-Personal","WPA2-WPA3-Personal",
+							"WPA3-Personal",
 							"WPA-Enterprise","WPA2-Enterprise","WPA-WPA2-Enterprise",
 							"WPA3-Enterprise","WPA2-WPA3-Enterprise","Unknown"];
 					default "Unknown";
