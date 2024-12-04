@@ -1395,6 +1395,7 @@ typedef struct {
     wld_channelChangeReason_e reason;
     char reasonExt[128];
     swl_timeMono_t changeTime;
+    swl_trl_e isApplied; //True:applied, False:failed, Unknown:ongoing
 } wld_rad_detailedChanState_t;
 
 typedef enum {

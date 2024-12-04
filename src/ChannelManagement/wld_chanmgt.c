@@ -302,7 +302,9 @@ static const char* s_isTargetChanspecValid(T_Radio* pR, swl_chanspec_t chanspec)
         return "Illegal channel for band";
     }
 
-    if(swl_typeChanspec_equals(pR->targetChanspec.chanspec, chanspec)) {
+    if(swl_typeChanspec_equals(pR->targetChanspec.chanspec, chanspec) &&
+       ((pR->targetChanspec.isApplied == SWL_TRL_UNKNOWN) ||
+        ((pR->targetChanspec.isApplied == SWL_TRL_TRUE) && swl_typeChanspec_equals(pR->currentChanspec.chanspec, chanspec)))) {
         return "same chanspec";
     }
 
@@ -315,6 +317,9 @@ static const char* s_isTargetChanspecValid(T_Radio* pR, swl_chanspec_t chanspec)
 
 static void s_setChanspecDone(T_Radio* pR, amxd_status_t status) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
+    if(pR->targetChanspec.isApplied == SWL_TRL_UNKNOWN) {
+        pR->targetChanspec.isApplied = (status == amxd_status_ok) ? SWL_TRL_TRUE : SWL_TRL_FALSE;
+    }
     if((pR->callIdReqChanspec.status != SWL_FUNCTION_DEFERRED_STATUS_STARTED) &&
        (pR->callIdReqChanspec.status != SWL_FUNCTION_DEFERRED_STATUS_CANCELLED)) {
         return;
@@ -375,6 +380,7 @@ static swl_rc_ne s_refreshCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, 
     pR->currentChanspec.chanspec = chanspec;
     pR->currentChanspec.reason = reason;
     pR->currentChanspec.changeTime = swl_time_getMonoSec();
+    pR->currentChanspec.isApplied = SWL_TRL_TRUE;
     pR->channel = chanspec.channel;
     pR->runningChannelBandwidth = swl_chanspec_toRadBw(&chanspec);
 
@@ -382,6 +388,11 @@ static swl_rc_ne s_refreshCurrentChanspec(T_Radio* pR, swl_chanspec_t chanspec, 
         swl_str_cat(pR->currentChanspec.reasonExt, sizeof(pR->currentChanspec.reasonExt), pR->targetChanspec.reasonExt);
     } else {
         memset(pR->targetChanspec.reasonExt, 0, sizeof(pR->targetChanspec.reasonExt));
+    }
+    if(swl_typeChanspec_equals(pR->targetChanspec.chanspec, pR->currentChanspec.chanspec)) {
+        pR->targetChanspec.isApplied = SWL_TRL_TRUE;
+    } else if(pR->targetChanspec.isApplied == SWL_TRL_UNKNOWN) {
+        pR->targetChanspec.isApplied = SWL_TRL_FALSE;
     }
 
     if(s_isChanspecSync(pR)) {
@@ -576,6 +587,7 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
     pR->targetChanspec.chanspec = tgtChanspec;
     pR->targetChanspec.reason = reason;
     pR->targetChanspec.changeTime = swl_time_getMonoSec();
+    pR->targetChanspec.isApplied = SWL_TRL_UNKNOWN;
     pR->channelChangeReason = reason;
     if(reasonExt != NULL) {
         swl_str_copy(pR->targetChanspec.reasonExt, sizeof(pR->targetChanspec.reasonExt), reasonExt);
@@ -598,6 +610,9 @@ swl_rc_ne wld_chanmgt_setTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, bo
         if(swl_rc_isOk(rc) && !direct) {
             wld_autoCommitMgr_notifyRadEdit(pR);
         }
+    }
+    if(rc == SWL_RC_DONE) {
+        pR->targetChanspec.isApplied = SWL_TRL_TRUE;
     }
 
     if(s_isChanspecSync(pR)) {
