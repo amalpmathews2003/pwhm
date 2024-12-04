@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.0.8 - 2024-12-04(12:25:10 +0000)
+
+### Other
+
+- fix hostapd restart when secondary bss is set as MLD main iface
+
 ## Release v7.0.7 - 2024-12-04(12:04:50 +0000)
 
 ### Other
