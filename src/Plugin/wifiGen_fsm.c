@@ -327,7 +327,7 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     bool mainIfaceChanged = ((pMainAPCur != pMainAPCfg) && ((pAP == pMainAPCur) || (pAP == pMainAPCfg)));
     bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
     if(mainIfaceChanged || wpaCtrlEnaChanged) {
-        if(wld_rad_hasActiveApMldMultiLink(pRad)) {
+        if(wld_rad_hasActiveApMld(pRad, 1) || wld_mld_isLinkUsable(pAP->pSSID->pMldLink)) {
             SAH_TRACEZ_INFO(ME, "%s: has multi-band APMLD: need to restart hostapd", pAP->alias);
             s_schedNextAction(SECDMN_ACTION_OK_NEED_RESTART, pAP, pRad);
             return true;

@@ -68,6 +68,7 @@
 #include "wld_hostapd_ap_api.h"
 #include "wld_wpaCtrl_api.h"
 #include "wld_accesspoint.h"
+#include "wld_ssid.h"
 #include "wld_assocdev.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_common_mac.h"
@@ -1375,5 +1376,16 @@ bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP) {
         return false;
     }
     return true;
+}
+
+const char* wld_hostapd_ap_selectApLinkIface(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, "", ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERTS_NOT_NULL(pRad, "", ME, "NULL");
+    char* linkIface = NULL;
+    CALL_INTF_EXT(pAP->wpaCtrlInterface, fSelectPrimLinkIface, &linkIface);
+    T_SSID* pLinkSSID = (swl_str_isEmpty(linkIface) ? pAP->pSSID : wld_ssid_getSsidByIfName(linkIface));
+    free(linkIface);
+    return wld_ssid_getIfName(pLinkSSID);
 }
 

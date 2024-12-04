@@ -185,9 +185,10 @@ bool wifiGen_hapd_isStarted(T_Radio* pRad) {
     return ((pRad != NULL) && (wld_secDmn_isEnabled(pRad->hostapd)));
 }
 
-void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
-    T_AccessPoint* pMainAP = wld_rad_hostapd_getCfgMainVap(pRad);
+static void s_restoreMainAp(T_AccessPoint* pMainAP) {
     ASSERTI_NOT_NULL(pMainAP, , ME, "No vaps");
+    T_Radio* pRad = pMainAP->pRadio;
+    ASSERTI_NOT_NULL(pRad, , ME, "No rad");
     wifiGen_hapd_enableVapWpaCtrlIface(pMainAP);
     ASSERTI_FALSE(pMainAP->index > 0, , ME, "%s already created", pMainAP->alias);
     SAH_TRACEZ_WARNING(ME, "%s: main iface %s => must be re-created", pRad->Name, pMainAP->alias);
@@ -195,6 +196,16 @@ void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
     if(swl_str_matches(pRad->Name, pMainAP->alias)) {
         pRad->index = pMainAP->index;
         pRad->wDevId = pMainAP->wDevId;
+    }
+}
+
+void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
+    s_restoreMainAp(wld_rad_hostapd_getCfgMainVap(pRad));
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(pAP->pSSID && wld_mld_isLinkUsable(pAP->pSSID->pMldLink)) {
+            s_restoreMainAp(wld_vap_get_vap(wld_hostapd_ap_selectApLinkIface(pAP)));
+        }
     }
 }
 

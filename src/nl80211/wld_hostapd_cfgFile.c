@@ -73,6 +73,7 @@
 #include "wld_hostapd_cfgManager.h"
 #include "wld_hostapd_cfgFile.h"
 #include "wld_rad_hostapd_api.h"
+#include "wld_hostapd_ap_api.h"
 #include "wld_chanmgt.h"
 #include "wld_wpaCtrlMngr.h"
 #include "wld_wpaCtrlInterface.h"
@@ -719,17 +720,6 @@ static void s_setVapMultiApConf(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap,
     }
 }
 
-static const char* s_selectApLinkIface(T_AccessPoint* pAP) {
-    ASSERTS_NOT_NULL(pAP, "", ME, "NULL");
-    T_Radio* pRad = pAP->pRadio;
-    ASSERTS_NOT_NULL(pRad, "", ME, "NULL");
-    char* linkIface = NULL;
-    CALL_INTF_EXT(pAP->wpaCtrlInterface, fSelectPrimLinkIface, &linkIface);
-    T_SSID* pLinkSSID = (swl_str_isEmpty(linkIface) ? pAP->pSSID : wld_ssid_getSsidByIfName(linkIface));
-    free(linkIface);
-    return wld_ssid_getIfName(pLinkSSID);
-}
-
 /**
  * @brief set the common parameters of a vap (ssid, secMode, keyPassphrase, bssid, ...)
  *
@@ -746,13 +736,13 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     ASSERTS_NOT_NULL(vapConfigMap, false, ME, "NULL");
     int tval = 0;
     if(pAP == wld_rad_hostapd_getCfgMainVap(pRad)) {
-        swl_mapChar_add(vapConfigMap, "interface", (char*) s_selectApLinkIface(pAP));
+        swl_mapChar_add(vapConfigMap, "interface", (char*) wld_hostapd_ap_selectApLinkIface(pAP));
     } else {
         if(!wld_hostapd_ap_needWpaCtrlIface(pAP)) {
             SAH_TRACEZ_WARNING(ME, "%s: skip disabled bss", pAP->alias);
             return false;
         }
-        swl_mapChar_add(vapConfigMap, "bss", (char*) s_selectApLinkIface(pAP));
+        swl_mapChar_add(vapConfigMap, "bss", (char*) wld_hostapd_ap_selectApLinkIface(pAP));
     }
     swl_macChar_t bssidStr;
     SWL_MAC_BIN_TO_CHAR(&bssidStr, pSSID->BSSID);
