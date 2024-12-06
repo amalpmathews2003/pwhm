@@ -111,12 +111,21 @@ static swl_rc_ne s_forwardLoadDefaults(amxc_var_t* args _UNUSED, amxc_var_t* ret
     return SWL_RC_OK;
 }
 
+static swl_rc_ne s_getInfo(amxc_var_t* args _UNUSED, amxc_var_t* ret, const wld_vendorModule_handlers_cb* pModCbs) {
+    ASSERT_NOT_NULL(pModCbs, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTW_NOT_NULL(pModCbs->fGetInfoCb, SWL_RC_NOT_IMPLEMENTED, ME, "No getInfo handler");
+    bool retCode = pModCbs->fGetInfoCb(ret);
+    ASSERT_TRUE(retCode, SWL_RC_ERROR, ME, "getInfo failure");
+    return SWL_RC_OK;
+}
+
 SWL_TABLE(sVendorModuleApis,
           ARR(uint32_t apidId; char* apiName; void* apiFwdFunc; ),
           ARR(swl_type_uint32, swl_type_charPtr, swl_type_voidPtr, ),
           ARR({WLD_VENDORMODULE_API_INIT, "init", s_forwardInit},
               {WLD_VENDORMODULE_API_DEINIT, "deinit", s_forwardDeInit},
-              {WLD_VENDORMODULE_API_LOAD_DEFAULTS, "loadDefaults", s_forwardLoadDefaults})
+              {WLD_VENDORMODULE_API_LOAD_DEFAULTS, "loadDefaults", s_forwardLoadDefaults},
+              {WLD_VENDORMODULE_API_GET_INFO, "getInfo", s_getInfo})
           );
 
 const char* wld_vendorModule_nameSpace() {

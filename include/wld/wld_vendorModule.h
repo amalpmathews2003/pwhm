@@ -102,10 +102,22 @@ typedef bool (* wld_vendorModule_deinit_f) ();
  */
 typedef bool (* wld_vendorModule_loadDefaults_f) ();
 
+/**
+ * @brief Prototype of vendor module function to get vendor informations.
+ * @param ret informations data, could contains the following parameters :
+ *  module-name: string: optional module name (mod-whm-sah, ...)
+ *  module-provider: string module provider name (sah, mxl, qcm..)
+ *  module-ver: string: module release version
+ *  hw-agnostic: bool : flag to indicate that module is hardware agnostic or hardware dependent
+ * @return true on success, false on failure
+ */
+typedef bool (* wld_vendorModule_getInfo_f) (amxc_var_t* ret);
+
 typedef struct {
     wld_vendorModule_init_f fInitCb;                 // MANDATORY: handler to initialize vendor module
     wld_vendorModule_deinit_f fDeinitCb;             // MANDATORY: handler to deinitialize vendor module
     wld_vendorModule_loadDefaults_f fLoadDefaultsCb; // OPTIONAL: handler to load default vendor datamodel config (if any)
+    wld_vendorModule_getInfo_f fGetInfoCb;           // OPTIONAL: handler to get information from vendor module
 } wld_vendorModule_handlers_cb;
 
 typedef struct {

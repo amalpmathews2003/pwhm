@@ -83,6 +83,7 @@ typedef struct {
     amxc_llist_it_t it;
     amxm_shared_object_t* so; // shared object from which the module is loaded
     char* name;
+    bool isHwAgnostic;
 } wld_vendorModule_t;
 
 static amxc_llist_t sVendorModulesList = {NULL, NULL};
@@ -197,6 +198,10 @@ static swl_rc_ne s_initVendorModule(wld_vendorModule_t* pVendorModule, wld_vendo
     return rc;
 }
 
+static swl_rc_ne s_getVendorInfo(wld_vendorModule_t* pVendorModule, amxc_var_t* ret) {
+    return s_execVendorModuleApi(pVendorModule, WLD_VENDORMODULE_API_GET_INFO, NULL, ret);
+}
+
 static swl_rc_ne s_deinitVendorModule(wld_vendorModule_t* pVendorModule) {
     return s_execVendorModuleApi(pVendorModule, WLD_VENDORMODULE_API_DEINIT, NULL, NULL);
 }
@@ -285,12 +290,46 @@ int wld_vendorModuleMgr_unloadAll() {
     return SWL_RC_OK;
 }
 
-swl_rc_ne wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo) {
-    wld_vendorModule_t* pVendorModule = NULL;
-    amxc_llist_for_each(it, &sVendorModulesList) {
-        pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
-        s_initVendorModule(pVendorModule, pInfo);
+static void s_updateVendorModuleInfo(wld_vendorModule_t* pVendorModule) {
+    ASSERTS_NOT_NULL(pVendorModule, , ME, NULL);
+    amxc_var_t ret;
+    amxc_var_init(&ret);
+    amxc_var_set_type(&ret, AMXC_VAR_ID_HTABLE);
+    swl_rc_ne rc = s_getVendorInfo(pVendorModule, &ret);
+    if(rc == SWL_RC_OK) {
+        amxc_var_t* hwAgnostic = amxc_var_get_key(&ret, "hw-agnostic", AMXC_VAR_FLAG_DEFAULT);
+        if(hwAgnostic != NULL) {
+            pVendorModule->isHwAgnostic = amxc_var_dyncast(bool, hwAgnostic);
+        }
     }
+    amxc_var_clean(&ret);
+}
+
+static void s_getInfoAll() {
+    amxc_llist_for_each(it, &sVendorModulesList) {
+        s_updateVendorModuleInfo(amxc_llist_it_get_data(it, wld_vendorModule_t, it));
+    }
+}
+
+static void s_initAll(wld_vendorModule_initInfo_t* pInfo) {
+    // Load first all non hardware agnostic vendor module
+    amxc_llist_for_each(it, &sVendorModulesList) {
+        wld_vendorModule_t* pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
+        if(!pVendorModule->isHwAgnostic) {
+            s_initVendorModule(pVendorModule, pInfo);
+        }
+    }
+    amxc_llist_for_each(it, &sVendorModulesList) {
+        wld_vendorModule_t* pVendorModule = amxc_llist_it_get_data(it, wld_vendorModule_t, it);
+        if(pVendorModule->isHwAgnostic) {
+            s_initVendorModule(pVendorModule, pInfo);
+        }
+    }
+}
+
+swl_rc_ne wld_vendorModuleMgr_initAll(wld_vendorModule_initInfo_t* pInfo) {
+    s_getInfoAll();
+    s_initAll(pInfo);
     return SWL_RC_OK;
 }
 
