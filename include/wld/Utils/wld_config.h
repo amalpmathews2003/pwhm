@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,29 +59,15 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#ifndef __WLD_TESTHELPER_EP_H__
-#define __WLD_TESTHELPER_EP_H__
-#include "wld.h"
-#include "wld_types.h"
-#include "wld_th_types.h"
 
-#include <amxc/amxc_macros.h>
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_path.h>
-#include <amxd/amxd_object_event.h>
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-#include <amxb/amxb.h>
+#ifndef SRC_INCLUDE_WLD_UTILS_WLD_CONFIG_H_
+#define SRC_INCLUDE_WLD_UTILS_WLD_CONFIG_H_
 
-T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
-void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name);
-amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name);
-swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP, T_EndPointStats* stats);
 
-void wld_th_ep_doFsmClean(T_EndPoint* pEP);
-void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit);
-void wld_th_ep_setSSIDEnable(T_EndPoint* pEP, bool enable, bool commit);
-#endif
+const char* wld_config_getEnableSyncModeStr();
+bool wld_config_isEnableSyncNeeded(bool toIntf);
+
+
+#endif /* SRC_INCLUDE_WLD_UTILS_WLD_CONFIG_H_ */
+
+

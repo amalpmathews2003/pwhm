@@ -79,6 +79,7 @@
 #include "Utils/wld_autoCommitMgr.h"
 #include "wld/Utils/wld_autoNeighAdd.h"
 #include "wld_linuxIfUtils.h"
+#include "wld/Utils/wld_config.h"
 
 #define ME "ssid"
 
@@ -101,45 +102,70 @@ static void s_setEnable_internal(T_SSID* pSSID, bool enable) {
     }
 }
 
+
+
+bool wld_ssid_getIntfEnable(T_SSID* pSSID) {
+    if(pSSID->AP_HOOK != NULL) {
+        T_AccessPoint* pAP = pSSID->AP_HOOK;
+        return pAP->enable;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        T_EndPoint* pEP = pSSID->ENDP_HOOK;
+        return pEP->enable;
+    }
+    SAH_TRACEZ_ERROR(ME, "%s: getEnable without hook", pSSID->Name);
+    return false;
+}
+
+
+
+amxd_object_t* wld_ssid_getIntfObject(T_SSID* pSSID) {
+    if(pSSID->AP_HOOK != NULL) {
+        T_AccessPoint* pAP = pSSID->AP_HOOK;
+        return pAP->pBus;
+    }
+    if(pSSID->ENDP_HOOK != NULL) {
+        T_EndPoint* pEP = pSSID->ENDP_HOOK;
+        return pEP->pBus;
+    }
+    SAH_TRACEZ_ERROR(ME, "%s: getIntfObj without hook", pSSID->Name);
+    return false;
+}
+
 static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
     SAH_TRACEZ_IN(ME);
     T_SSID* pSSID = (T_SSID*) priv;
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
-    T_AccessPoint* pAP = (T_AccessPoint*) pSSID->AP_HOOK;
-    T_EndPoint* pEP = (T_EndPoint*) pSSID->ENDP_HOOK;
 
-    amxd_object_t* pTgtObj = NULL;
-    bool tgtEnable;
+    bool tgtEnable = wld_ssid_getIntfEnable(pSSID);
+
+    SAH_TRACEZ_INFO(ME, "%s: sync ssidEnable %d, objEnab %d, syncMode %s", pSSID->Name, pSSID->enable, tgtEnable,
+                    wld_config_getEnableSyncModeStr());
+
+    if(tgtEnable == pSSID->enable) {
+        SAH_TRACEZ_OUT(ME);
+        return;
+    }
+
+    if(!wld_config_isEnableSyncNeeded(pSSID->syncEnableToIntf)) {
+        SAH_TRACEZ_OUT(ME);
+        return;
+    }
+
     if(pSSID->syncEnableToIntf) {
-        if(pAP) {
-            /* Sync AP object values */
-            pTgtObj = pAP->pBus;
-            tgtEnable = pSSID->enable;
-        } else if(pEP) {
-            /* Sync Endpoint object values */
-            pTgtObj = pEP->pBus;
-            tgtEnable = pSSID->enable;
-        }
+        amxd_object_t* pTgtObj = wld_ssid_getIntfObject(pSSID);
+        swl_typeUInt8_commitObjectParam(pTgtObj, "Enable", pSSID->enable);
     } else {
-        if(pAP) {
-            /* Sync AP object values */
-            pTgtObj = pSSID->pBus;
-            tgtEnable = pAP->enable;
-        } else if(pEP) {
-            /* Sync Endpoint object values */
-            pTgtObj = pSSID->pBus;
-            tgtEnable = pEP->enable;
-        }
-        if(pTgtObj != NULL) {
-            /* set internal enable, so that writer handler can ignore next
-             * change notification */
-            s_setEnable_internal(pSSID, tgtEnable);
-        }
+        swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", tgtEnable);
     }
-    if(pTgtObj != NULL) {
-        swl_typeUInt8_commitObjectParam(pTgtObj, "Enable", tgtEnable);
-    }
+
     SAH_TRACEZ_OUT(ME);
+}
+
+// Manually trigger the enable sync. This allows for easier direct testing so loops or accidental ping pong does not occur.
+void wld_ssid_dbgTriggerSync(T_SSID* pSSID) {
+    amxp_timer_stop(pSSID->enableSyncTimer);
+    s_syncEnable(NULL, pSSID);
 }
 
 void s_generateDefaultSSID(char* buffer, uint32_t size, uint32_t id) {
@@ -499,7 +525,6 @@ T_SSID* wld_ssid_getSsidByIfName(const char* ifName) {
     }
     return NULL;
 }
-
 wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
     if(pSSID->AP_HOOK != NULL) {
@@ -603,10 +628,26 @@ bool wld_ssid_hasMloSupport(T_SSID* pSSID) {
     return false;
 }
 
-void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
+
+void wld_ssid_syncEnable(T_SSID* pSSID, bool toIntf) {
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
-    SAH_TRACEZ_INFO(ME, "%s: do sync %u", pSSID->Name, syncToIntf);
-    pSSID->syncEnableToIntf = syncToIntf;
+    bool otherEnable = wld_ssid_getIntfEnable(pSSID);
+
+    SAH_TRACEZ_INFO(ME, "%s: check do sync to SSID %u %u - %s",
+                    pSSID->Name, pSSID->enable, otherEnable, wld_config_getEnableSyncModeStr());
+
+    if(otherEnable == pSSID->enable) {
+        amxp_timer_stop(pSSID->enableSyncTimer);
+        return;
+    }
+
+    if(!wld_config_isEnableSyncNeeded(toIntf)) {
+        return;
+    }
+
+    pSSID->syncEnableToIntf = toIntf;
+
+    SAH_TRACEZ_INFO(ME, "%s: do sync to SSID %u", pSSID->Name, otherEnable);
     if((amxp_timer_get_state(pSSID->enableSyncTimer) == amxp_timer_started) ||
        (amxp_timer_get_state(pSSID->enableSyncTimer) == amxp_timer_running)) {
         return;
@@ -614,6 +655,7 @@ void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
 
     amxp_timer_start(pSSID->enableSyncTimer, 1);
 }
+
 
 /**
  * Return whether the given SSID is configured with a non default SSID
@@ -627,14 +669,24 @@ bool wld_ssid_isSSIDConfigured(T_SSID* pSSID) {
     return !swl_str_matches(buffer, pSSID->SSID);
 }
 
-static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue _UNUSED) {
     SAH_TRACEZ_IN(ME);
     T_SSID* pSSID = wld_ssid_fromObj(object);
     ASSERT_NOT_NULL(pSSID, , ME, "INVALID");
-    bool newEnable = amxc_var_get_bool(newValue);
-    if(pSSID->enable == newEnable) {
-        return;
-    }
+
+    amxc_var_t myVar;
+    amxc_var_init(&myVar);
+    amxd_status_t status = amxd_param_get_value(param, &myVar);
+    ASSERT_EQUALS(status, amxd_status_ok, , ME, "%s: fail to receive latest enable value", pSSID->Name);
+    bool newEnable = amxc_var_dyncast(bool, &myVar);
+    amxc_var_clean(&myVar);
+
+    SAH_TRACEZ_INFO(ME, "%s: set enable %d -> %d", pSSID->Name, pSSID->enable, newEnable);
+
+    ASSERTI_NOT_EQUALS(newEnable, pSSID->enable, , ME, "%s: set to same enable %d", pSSID->Name, newEnable);
+
+
+    SAH_TRACEZ_INFO(ME, "%s set SSID Enable %u", pSSID->Name, newEnable);
     s_setEnable_internal(pSSID, newEnable);
     wld_ssid_syncEnable(pSSID, true);
 

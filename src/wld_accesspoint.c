@@ -1882,14 +1882,24 @@ static void s_setDiscoveryMethod_pwf(void* priv _UNUSED, amxd_object_t* object, 
     SAH_TRACEZ_OUT(ME);
 }
 
-static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
     T_AccessPoint* pAP = wld_ap_fromObj(object);
     ASSERT_NOT_NULL(pAP, , ME, "INVALID");
 
-    bool newEnable = amxc_var_dyncast(bool, newValue);
-    SAH_TRACEZ_INFO(ME, "%s: setAccessPointEnable %d", pAP->alias, newEnable);
+
+    amxc_var_t myVar;
+    amxc_var_init(&myVar);
+    amxd_status_t status = amxd_param_get_value(param, &myVar);
+    ASSERT_EQUALS(status, amxd_status_ok, , ME, "%s: fail to receive latest enable value", pAP->name);
+    bool newEnable = amxc_var_dyncast(bool, &myVar);
+    amxc_var_clean(&myVar);
+
+    SAH_TRACEZ_INFO(ME, "%s: set enable %d -> %d", pAP->alias, pAP->enable, newEnable);
+
+    ASSERTI_NOT_EQUALS(newEnable, pAP->enable, , ME, "%s: set to same enable %d", pAP->alias, newEnable);
+
 
     pAP->pFA->mfn_wvap_enable(pAP, newEnable, SET);
     pAP->enable = newEnable;

@@ -1699,7 +1699,8 @@ struct S_SSID {
     char SSID[36];                            /* VAP SSID broadcast name */
     char Name[32];                            /* Contains the datamodel name of this SSID */
     T_Stats stats;
-    bool enable;                              /* Copied state of AccessPoint.enabled */
+    bool enable;                              /* current internal value of SSID.Enable */
+    bool targetEnable;                        /* The actual enable value this interface shall be. */
     amxd_object_t* pBus;                      /* Keep a copy of the amxd_object_t */
     void* vendorData;                         /* Additional vendor specific data */
     amxp_timer_t* enableSyncTimer;            /* Timer to keep the SSID and Intf enable synced */

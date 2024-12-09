@@ -142,6 +142,18 @@ void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit) {
     }
 }
 
+void wld_th_ep_setSSIDEnable(T_EndPoint* pEP, bool enable, bool commit) {
+    assert_non_null(pEP);
+    T_SSID* pSSID = pEP->pSSID;
+    assert_non_null(pSSID);
+    if(commit) {
+        swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", enable);
+        ttb_mockTimer_goToFutureMs(1000);
+    } else {
+        swl_typeUInt8_toObjectParam(pSSID->pBus, "Enable", enable);
+    }
+}
+
 swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP _UNUSED, T_EndPointStats* stats) {
     assert_non_null(pEP);
     stats->txbyte = 12991;

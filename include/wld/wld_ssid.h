@@ -96,4 +96,6 @@ int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID);
 const char* wld_ssid_getLinkIfName(T_SSID* pSSID);
 bool wld_ssid_hasMloSupport(T_SSID* pSSID);
 
+
+void wld_ssid_dbgTriggerSync(T_SSID* pSSID);
 #endif /* __WLD_SSID_H__ */

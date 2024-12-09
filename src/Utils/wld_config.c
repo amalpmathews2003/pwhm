@@ -59,29 +59,68 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#ifndef __WLD_TESTHELPER_EP_H__
-#define __WLD_TESTHELPER_EP_H__
-#include "wld.h"
-#include "wld_types.h"
-#include "wld_th_types.h"
 
-#include <amxc/amxc_macros.h>
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_path.h>
-#include <amxd/amxd_object_event.h>
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-#include <amxb/amxb.h>
+#include "swl/swl_common.h"
+#include "swl/swl_common_conversion.h"
+#include "swla/swla_dm.h"
 
-T_EndPoint* wld_th_ep_createEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor, T_Radio* radio, const char* name);
-void wld_th_ep_deleteEp(amxb_bus_ctx_t* const bus_ctx, wld_th_mockVendor_t* mockVendor _UNUSED, const char* name);
-amxd_object_t* wld_th_ep_createProfile(T_EndPoint* ep, const char* name);
-swl_rc_ne wld_th_ep_getStats(T_EndPoint* pEP, T_EndPointStats* stats);
+#include "Utils/wld_config.h"
 
-void wld_th_ep_doFsmClean(T_EndPoint* pEP);
-void wld_th_ep_setEnable(T_EndPoint* pEP, bool enable, bool commit);
-void wld_th_ep_setSSIDEnable(T_EndPoint* pEP, bool enable, bool commit);
-#endif
+#define ME "wldCfg"
+
+typedef enum {
+    WLD_CONFIG_ENABLE_SYNC_MODE_OFF,
+    WLD_CONFIG_ENABLE_SYNC_MODE_TO_INTF,
+    WLD_CONFIG_ENABLE_SYNC_MODE_FROM_INTF,
+    WLD_CONFIG_ENABLE_SYNC_MODE_MIRRORED,
+    WLD_CONFIG_ENABLE_SYNC_MODE_MAX,
+} wld_config_enableSyncMode_e;
+
+
+const char* wld_config_enableSyncMode_str[] =
+{"Off", "ToIntf", "FromIntf", "Mirrored", NULL};
+
+static wld_config_enableSyncMode_e s_curSyncMode = WLD_CONFIG_ENABLE_SYNC_MODE_MIRRORED;
+
+wld_config_enableSyncMode_e wld_config_getEnableSyncMode() {
+    return s_curSyncMode;
+}
+const char* wld_config_getEnableSyncModeStr() {
+    return wld_config_enableSyncMode_str[s_curSyncMode];
+}
+
+bool wld_config_isEnableSyncNeeded(bool toIntf) {
+    if(s_curSyncMode == WLD_CONFIG_ENABLE_SYNC_MODE_MIRRORED) {
+        return true;
+    }
+    if(toIntf) {
+        return s_curSyncMode == WLD_CONFIG_ENABLE_SYNC_MODE_TO_INTF;
+    } else {
+        return s_curSyncMode == WLD_CONFIG_ENABLE_SYNC_MODE_FROM_INTF;
+    }
+}
+
+
+static void s_setEnableSyncMode_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED,
+                                    amxd_param_t* param _UNUSED,
+                                    const amxc_var_t* const newValue) {
+    char* newEnableSyncModeStr = amxc_var_get_cstring_t(newValue);
+    ASSERTI_NOT_NULL(newEnableSyncModeStr, , ME, "NULL");
+    wld_config_enableSyncMode_e newMode = swl_conv_charToEnum(newEnableSyncModeStr, wld_config_enableSyncMode_str,
+                                                              WLD_CONFIG_ENABLE_SYNC_MODE_MAX, WLD_CONFIG_ENABLE_SYNC_MODE_MIRRORED);
+    free(newEnableSyncModeStr);
+
+    ASSERTI_NOT_EQUALS(newMode, s_curSyncMode, , ME, "EQUAL");
+    SAH_TRACEZ_INFO(ME, "update Enable %u to %u", s_curSyncMode, newMode);
+    s_curSyncMode = newMode;
+}
+
+SWLA_DM_HDLRS(sWldConfigParamChangeHandlers,
+              ARR(SWLA_DM_PARAM_HDLR("EnableSyncMode", s_setEnableSyncMode_pwf)));
+
+void _wld_config_setConf_ocf(const char* const sig_name,
+                             const amxc_var_t* const data,
+                             void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sWldConfigParamChangeHandlers, sig_name, data, priv);
+}
+

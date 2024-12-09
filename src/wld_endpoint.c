@@ -969,27 +969,35 @@ bool wld_endpoint_isReady(T_EndPoint* pEP) {
  *
  * Write handler on the Endpoint "Enable" parameter
  */
-static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param, const amxc_var_t* const newValue _UNUSED) {
     SAH_TRACEZ_IN(ME);
 
     T_EndPoint* pEP = wld_ep_fromObj(object);
     ASSERT_NOT_NULL(pEP, , ME, "Endpoint is not yet set");
 
-    bool enable = amxc_var_dyncast(bool, newValue);
+    amxc_var_t myVar;
+    amxc_var_init(&myVar);
+    amxd_status_t status = amxd_param_get_value(param, &myVar);
+    ASSERT_EQUALS(status, amxd_status_ok, , ME, "%s: fail to receive latest enable value", pEP->alias);
+    bool newEnable = amxc_var_dyncast(bool, &myVar);
+    amxc_var_clean(&myVar);
 
-    SAH_TRACEZ_INFO(ME, "%s: enable %d", pEP->alias, enable);
+    SAH_TRACEZ_INFO(ME, "%s: set enable %d -> %d", pEP->alias, pEP->enable, newEnable);
+
+    ASSERTI_NOT_EQUALS(newEnable, pEP->enable, , ME, "%s: set to same enable %d", pEP->alias, newEnable);
+
 
     T_Radio* pRad = pEP->pRadio;
     ASSERT_NOT_NULL(pRad, , ME, "Failed to get the T_Radio struct from Endpoint [%s]", pEP->alias);
 
     /* Sync datamodel to internal endpoint struct */
-    if(enable) {
+    if(newEnable) {
         syncData_OBJ2EndPoint(object);
     }
-    pEP->enable = enable;
+    pEP->enable = newEnable;
 
     /* set enable flag */
-    pRad->pFA->mfn_wendpoint_enable(pEP, enable);
+    pRad->pFA->mfn_wendpoint_enable(pEP, newEnable);
 
     wld_endpoint_reconfigure(pEP);
 

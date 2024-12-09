@@ -331,6 +331,27 @@
 		}
 	}
 	
+	/**
+	 * Global configuration relevant to pWHM functionality across all radios
+	 */
+	%protected %persistent object Config {
+		on event "*" call wld_config_setConf_ocf;
+	
+	
+		/**
+		 * Configure whether and how the Interface (i.e. AccessPoint or Endpoint) Enable, and the SSID Enable need to be synced.
+		 * Possible values are
+		 * * Off: No syncing is done between the two enables.
+		 * * ToIntf: Only syncing from SSID Enable towards Interface Enable is done.
+		 * * FromIntf: Only syncing from Interface Enable to SSID Enable is done.
+		 * * Mirrored: Syncing is done in both directions 
+		 */
+		%persistent string EnableSyncMode {
+			on action validate call check_enum ["Off","ToIntf","FromIntf","Mirrored"];
+			default "Mirrored";
+		}
+	}
+	
 	%persistent object Vendor {
 	
 	}
