@@ -341,6 +341,9 @@ static void s_setModeEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd
 
     SAH_TRACEZ_INFO(ME, "%s: Security Mode Enable %s %d", pAP->alias, finalModeStr, finalModeId);
     wld_ap_sec_doSync(pAP);
+    if(pAP->pSSID) {
+        wld_mld_setLinkConfigured(pAP->pSSID->pMldLink, false);
+    }
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -403,6 +406,7 @@ static void s_setKeyPassPhrase_pwf(void* priv _UNUSED, amxd_object_t* object, am
     swl_str_copy(pAP->keyPassPhrase, sizeof(pAP->keyPassPhrase), newPassphrase);
     if(passUpdated) {
         wld_ap_sec_doSync(pAP);
+        wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     } else {
         SAH_TRACEZ_INFO(ME, "%s: Same key is used, no need to sync %s", pAP->alias, newPassphrase);
     }
@@ -445,6 +449,7 @@ static void s_setSaePassphrase_pwf(void* priv _UNUSED, amxd_object_t* object, am
     swl_str_copy(pAP->saePassphrase, sizeof(pAP->saePassphrase), newPassphrase);
     if(passUpdated) {
         wld_ap_sec_doSync(pAP);
+        wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     } else {
         SAH_TRACEZ_INFO(ME, "%s: Same key is used, no need to sync %s", pAP->alias, newPassphrase);
     }
@@ -517,6 +522,9 @@ static void s_setCommonSecurityConf_ocf(void* priv _UNUSED, amxd_object_t* objec
 
     if(needSyncSec) {
         wld_ap_sec_doSync(pAP);
+        if(pAP->pSSID) {
+            wld_mld_setLinkConfigured(pAP->pSSID->pMldLink, false);
+        }
     }
 
     SAH_TRACEZ_OUT(ME);
@@ -536,5 +544,97 @@ void _wld_ap_security_setConf_ocf(const char* const sig_name,
                                   const amxc_var_t* const data,
                                   void* const priv) {
     swla_dm_procObjEvtOfLocalDm(&sApSecDmHdlrs, sig_name, data, priv);
+}
+
+struct {
+    swl_security_apMode_e secModeMixed;
+    swl_security_apMode_e secModeShared;
+    swl_security_apMode_e secModeCompl;
+} sMixedSecModesCombs[] = {
+    /* partial match */
+    {SWL_SECURITY_APMODE_WPA_WPA2_P, SWL_SECURITY_APMODE_WPA_P, SWL_SECURITY_APMODE_WPA2_P, },
+    {SWL_SECURITY_APMODE_WPA_WPA2_P, SWL_SECURITY_APMODE_WPA2_P, SWL_SECURITY_APMODE_WPA_P, },
+    {SWL_SECURITY_APMODE_WPA_WPA2_P, SWL_SECURITY_APMODE_WPA_WPA2_P, SWL_SECURITY_APMODE_WPA2_P, },
+    {SWL_SECURITY_APMODE_WPA2_WPA3_P, SWL_SECURITY_APMODE_WPA2_P, SWL_SECURITY_APMODE_WPA3_P, },
+    {SWL_SECURITY_APMODE_WPA2_WPA3_P, SWL_SECURITY_APMODE_WPA3_P, SWL_SECURITY_APMODE_WPA2_P, },
+    {SWL_SECURITY_APMODE_WPA2_WPA3_P, SWL_SECURITY_APMODE_WPA2_WPA3_P, SWL_SECURITY_APMODE_WPA3_P, },
+};
+
+/*
+ * compare the security modes of two APs and identify the shared and the complementary modes
+ */
+static bool s_compareSecModes(T_AccessPoint* pAP1, T_AccessPoint* pAP2, swl_security_apMode_e* pSecModeShared, swl_security_apMode_e* pSecModeCompl) {
+    W_SWL_SETPTR(pSecModeShared, SWL_SECURITY_APMODE_UNSUPPORTED);
+    W_SWL_SETPTR(pSecModeCompl, SWL_SECURITY_APMODE_UNSUPPORTED);
+    if((pAP1 == NULL) || (pAP1->pSSID == NULL) || (pAP2 == NULL) || (pAP1->pSSID == NULL)) {
+        return false;
+    }
+    swl_security_apMode_e secMode1 = pAP1->secModeEnabled;
+    swl_security_apMode_e secMode2 = pAP2->secModeEnabled;
+    for(uint32_t i = 0; i < SWL_ARRAY_SIZE(sMixedSecModesCombs); i++) {
+        if(((secMode1 == sMixedSecModesCombs[i].secModeMixed) && (secMode2 == sMixedSecModesCombs[i].secModeShared)) ||
+           ((secMode2 == sMixedSecModesCombs[i].secModeMixed) && (secMode1 == sMixedSecModesCombs[i].secModeShared))) {
+            W_SWL_SETPTR(pSecModeShared, sMixedSecModesCombs[i].secModeShared);
+            W_SWL_SETPTR(pSecModeCompl, sMixedSecModesCombs[i].secModeCompl);
+            return true;
+        }
+    }
+    if(secMode1 == secMode2) {
+        W_SWL_SETPTR(pSecModeShared, secMode1);
+        W_SWL_SETPTR(pSecModeCompl, SWL_SECURITY_APMODE_UNKNOWN);
+        return true;
+    }
+    return false;
+}
+
+/*
+ * @brief check whether two APs are sharing same security configurations (secMode, keypass)
+ * This can be used to check applicable sec conf over APMLD links
+ */
+bool wld_ap_sec_checkSharedSecConfigs(T_AccessPoint* pAP1, T_AccessPoint* pAP2) {
+    swl_security_apMode_e secModeShared;
+    swl_security_apMode_e secModeCompl;
+    bool modeMatch = s_compareSecModes(pAP1, pAP2, &secModeShared, &secModeCompl);
+    ASSERTI_TRUE(modeMatch, modeMatch, ME, "No shared sec mode");
+    T_AccessPoint* pApRef = (pAP1->secModeEnabled == secModeShared) ? pAP1 : ((pAP2->secModeEnabled == secModeShared) ? pAP2 : NULL);
+    ASSERTI_NOT_NULL(pApRef, false, ME, "No AP (%s/%s) using shared sec Mode %s", pAP1->name, pAP2->name, swl_security_apMode_str[secModeShared]);
+    bool keyMatch = false;
+    switch(secModeShared) {
+    case SWL_SECURITY_APMODE_NONE:
+    case SWL_SECURITY_APMODE_OWE: {
+        keyMatch = true;
+        break;
+    }
+    case SWL_SECURITY_APMODE_WPA_P:
+    case SWL_SECURITY_APMODE_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA_WPA2_P:
+    case SWL_SECURITY_APMODE_WPA3_P:
+    case SWL_SECURITY_APMODE_WPA2_WPA3_P: {
+        if((secModeShared == SWL_SECURITY_APMODE_WPA3_P) ||
+           (secModeCompl == SWL_SECURITY_APMODE_WPA3_P)) {
+            if(!swl_str_isEmpty(pApRef->saePassphrase)) {
+                keyMatch = swl_str_matches(pAP1->saePassphrase, pAP2->saePassphrase);
+            } else if(!swl_str_isEmpty(pApRef->keyPassPhrase)) {
+                keyMatch = swl_str_matches(pAP1->keyPassPhrase, pAP2->keyPassPhrase);
+            }
+        } else {
+            if(!swl_str_isEmpty(pApRef->keyPassPhrase)) {
+                keyMatch = swl_str_matches(pAP1->keyPassPhrase, pAP2->keyPassPhrase);
+            } else if(!swl_str_isEmpty(pApRef->preSharedKey)) {
+                keyMatch = swl_str_matches(pAP1->preSharedKey, pAP2->preSharedKey);
+            }
+        }
+        break;
+    }
+    /* TODO: manage WPA enterprise sec modes */
+    case SWL_SECURITY_APMODE_UNKNOWN:
+    case SWL_SECURITY_APMODE_UNSUPPORTED:
+    default: {
+        modeMatch = false;
+        break;
+    }
+    }
+
+    return (modeMatch && keyMatch);
 }
 

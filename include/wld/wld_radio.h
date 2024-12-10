@@ -213,6 +213,7 @@ bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName);
 bool wld_rad_hasMloSupport(T_Radio* pRad);
 bool wld_rad_hasActiveApMldMultiLink(T_Radio* pRad);
 bool wld_rad_hasActiveApMld(T_Radio* pRad, uint32_t minNLinks);
+void wld_rad_setAllMldLinksUnconfigured(T_Radio* pRad);
 
 uint32_t wld_rad_getFirstEnabledIfaceIndex(T_Radio* pRad);
 uint32_t wld_rad_getFirstActiveIfaceIndex(T_Radio* pRad);

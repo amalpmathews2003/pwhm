@@ -67,6 +67,7 @@
 #include "wld_radioOperatingStandards.h"
 #include "wld_chanmgt.h"
 #include "wld_eventing.h"
+#include "wld_apMld.h"
 
 #define ME "mld"
 
@@ -401,9 +402,9 @@ wld_mldLink_t* wld_mld_getPrimaryLink(wld_mldLink_t* pLink) {
     wld_mld_t* pMld = pLink->pMld;
     ASSERT_NOT_NULL(pMld, NULL, ME, "NULL");
     amxc_llist_for_each(it, &pMld->links) {
-        wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
-        if(wld_mld_isLinkEnabled(pLink) && (pMld->pPrimLink == pLink)) {
-            return pLink;
+        wld_mldLink_t* pTmpLink = amxc_container_of(it, wld_mldLink_t, it);
+        if(pMld->pPrimLink == pTmpLink) {
+            return pTmpLink;
         }
     }
     return NULL;
@@ -488,9 +489,13 @@ swl_rc_ne wld_mld_setLinkId(wld_mldLink_t* pLink, int32_t linkId) {
         linkId = NO_LINK_ID;
     }
     if(linkId >= 0) {
-        wld_mld_setLinkConfigured(pLink, true);
+        wld_mld_saveLinkConfigured(pLink, true);
     }
     ASSERTS_NOT_EQUALS(pLink->linkId, linkId, SWL_RC_OK, ME, "same value");
+    if((linkId == NO_LINK_ID) && (pLink->pMld->pPrimLink == pLink)) {
+        SAH_TRACEZ_WARNING(ME, "reset primary link %s", s_getLinkName(pLink));
+        pLink->pMld->pPrimLink = NULL;
+    }
     SAH_TRACEZ_INFO(ME, "set link %s id: %d => %d", s_getLinkName(pLink), pLink->linkId, linkId);
     /*
      * if linkId is set to -1 when it was primary (ie current linkId value is 0)
@@ -514,7 +519,7 @@ const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink) {
     return wld_ssid_getIfName(pLink->pSSID);
 }
 
-bool wld_mld_isLinkUsable(wld_mldLink_t* pLink) {
+bool wld_mld_checkUsableLinkBasicConditions(wld_mldLink_t* pLink) {
     ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
     if(!wld_mld_isLinkEnabled(pLink)) {
         return false;
@@ -529,10 +534,20 @@ bool wld_mld_isLinkUsable(wld_mldLink_t* pLink) {
     return true;
 }
 
-bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag) {
+bool wld_mld_isLinkUsable(wld_mldLink_t* pLink) {
+    if(!wld_mld_checkUsableLinkBasicConditions(pLink)) {
+        return false;
+    }
+    if(wld_ssid_getType(pLink->pSSID) == WLD_SSID_TYPE_AP) {
+        return wld_apMld_hasSharedConnectionConf(pLink->pSSID->AP_HOOK);
+    }
+    return true;
+}
+
+bool wld_mld_saveLinkConfigured(wld_mldLink_t* pLink, bool flag) {
     ASSERTS_NOT_NULL(pLink, false, ME, "NULL");
     flag &= wld_mld_isLinkEnabled(pLink);
-    ASSERTS_NOT_EQUALS(pLink->configured, flag, true, ME, "same link %s config value %d", s_getLinkName(pLink), flag);
+    ASSERTI_NOT_EQUALS(pLink->configured, flag, true, ME, "same link %s config value %d", s_getLinkName(pLink), flag);
     SAH_TRACEZ_INFO(ME, "%s: set link configured %d", s_getLinkName(pLink), flag);
     pLink->configured = flag;
     wld_mld_t* pMld = pLink->pMld;
@@ -554,6 +569,13 @@ bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag) {
             amxc_llist_prepend(pList, &pLink->it);
         }
     }
+    return true;
+}
+
+bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag) {
+    bool ret = wld_mld_saveLinkConfigured(pLink, flag);
+    ASSERTS_TRUE(ret, false, ME, "fail to save new link config flag %d", flag);
+    wld_mld_t* pMld = pLink->pMld;
     if(pMld->pGroup != NULL) {
         s_sendChangeEvent(WLD_MLD_EVT_UPDATE, pMld->pGroup->type, pMld->unit, pLink->pSSID);
     }

@@ -105,6 +105,7 @@ swl_rc_ne wld_vap_sync_device(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 void wld_vap_syncNrDev(T_AccessPoint* pAP);
 bool wld_vap_sync_assoclist(T_AccessPoint* pAP);
 void wld_ap_sec_doSync(T_AccessPoint* pAP);
+bool wld_ap_sec_checkSharedSecConfigs(T_AccessPoint* pAP1, T_AccessPoint* pAP2);
 
 amxd_status_t kickStation(amxd_object_t* obj_AP,
                           amxd_function_t* func,

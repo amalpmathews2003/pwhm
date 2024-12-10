@@ -237,6 +237,22 @@ static amxd_status_t _linkFirstUinitRadio(amxd_object_t* pRadioObj, swl_freqBand
     return amxd_status_ok;
 }
 
+void wld_rad_setAllMldLinksUnconfigured(T_Radio* pR) {
+    ASSERTS_NOT_NULL(pR, , ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pR) {
+        if(pAP->pSSID != NULL) {
+            wld_mld_setLinkConfigured(pAP->pSSID->pMldLink, false);
+        }
+    }
+    T_EndPoint* pEP;
+    wld_rad_forEachEp(pEP, pR) {
+        if(pEP->pSSID != NULL) {
+            wld_mld_setLinkConfigured(pEP->pSSID->pMldLink, false);
+        }
+    }
+}
+
 static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
@@ -256,18 +272,7 @@ static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_para
         pR->changeInfo.lastDisableTime = swl_time_getMonoSec();
     }
 
-    T_AccessPoint* pAP = NULL;
-    wld_rad_forEachAp(pAP, pR) {
-        if(pAP->pSSID != NULL) {
-            wld_mld_setLinkConfigured(pAP->pSSID->pMldLink, false);
-        }
-    }
-    T_EndPoint* pEP;
-    wld_rad_forEachEp(pEP, pR) {
-        if(pEP->pSSID != NULL) {
-            wld_mld_setLinkConfigured(pEP->pSSID->pMldLink, false);
-        }
-    }
+    wld_rad_setAllMldLinksUnconfigured(pR);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -2817,6 +2822,7 @@ static void rad_delayed_commit_time_handler(amxp_timer_t* timer, void* userdata)
 }
 
 void wld_rad_doSync(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     pRad->pFA->mfn_wrad_sync(pRad, SET);
     wld_autoCommitMgr_notifyRadEdit(pRad);
 }
@@ -4084,7 +4090,7 @@ T_AccessPoint* wld_radio_getVapFromRole(T_Radio* pRad, wld_apRole_e role) {
 }
 
 T_AccessPoint* wld_rad_firstAp(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, NULL, ME, "NULL");
+    ASSERT_TRUE(debugIsRadPointer(pRad), NULL, ME, "NULL");
     amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llAP);
     ASSERTS_NOT_NULL(it, NULL, ME, "Empty");
     T_AccessPoint* pAP = wld_ap_fromIt(it);

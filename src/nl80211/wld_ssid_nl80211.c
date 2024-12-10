@@ -115,10 +115,14 @@ swl_rc_ne wld_ssid_nl80211_getMldIfaceInfo(T_SSID* pSSID, wld_nl80211_ifaceInfo_
 
 swl_rc_ne wld_ssid_nl80211_getInterfaceInfo(T_SSID* pSSID, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_PARAM, ME, "No ssid");
-    if(wld_mld_isLinkEnabled(pSSID->pMldLink)) {
-        return wld_ssid_nl80211_getMldIfaceInfo(pSSID, pIfaceInfo, NULL);
+    swl_rc_ne rc = SWL_RC_NOT_AVAILABLE;
+    if(wld_mld_isLinkEnabled(pSSID->pMldLink) || wld_mld_isLinkActive(pSSID->pMldLink)) {
+        rc = wld_ssid_nl80211_getMldIfaceInfo(pSSID, pIfaceInfo, NULL);
     }
-    return wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), wld_ssid_nl80211_getPrimaryLinkIfIndex(pSSID), pIfaceInfo);
+    if(rc == SWL_RC_NOT_AVAILABLE) {
+        rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), wld_ssid_nl80211_getPrimaryLinkIfIndex(pSSID), pIfaceInfo);
+    }
+    return rc;
 }
 
 uint32_t wld_ssid_nl80211_getPrimaryLinkIfIndex(T_SSID* pSSID) {

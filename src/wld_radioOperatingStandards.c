@@ -124,6 +124,7 @@ static void s_processOperatingStandards(T_Radio* pR, const char* newVal) {
     if(pR->operatingStandards != newStandards) {
         pR->pFA->mfn_wrad_supstd(pR, newStandards);
         wld_autoCommitMgr_notifyRadEdit(pR);
+        wld_rad_setAllMldLinksUnconfigured(pR);
     }
 }
 

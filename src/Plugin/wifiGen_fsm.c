@@ -286,6 +286,11 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
         }
         break;
     case SECDMN_ACTION_OK_NEED_TOGGLE:
+        if(wld_rad_hasMloSupport(pRad)) {
+            SAH_TRACEZ_WARNING(ME, "%s: 11be/mlo enabled => need to restart isof toggle", pRad->Name);
+            s_schedNextAction(SECDMN_ACTION_OK_NEED_RESTART, pAP, pRad);
+            return;
+        }
         s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         break;
@@ -327,18 +332,18 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     bool mainIfaceChanged = ((pMainAPCur != pMainAPCfg) && ((pAP == pMainAPCur) || (pAP == pMainAPCfg)));
     bool wpaCtrlEnaChanged = (wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface) != wld_hostapd_ap_needWpaCtrlIface(pAP));
     if(mainIfaceChanged || wpaCtrlEnaChanged) {
-        if(wld_rad_hasActiveApMld(pRad, 1) || wld_mld_isLinkUsable(pAP->pSSID->pMldLink)) {
+        if(wld_rad_hasMloSupport(pRad)) {
             SAH_TRACEZ_INFO(ME, "%s: has multi-band APMLD: need to restart hostapd", pAP->alias);
             s_schedNextAction(SECDMN_ACTION_OK_NEED_RESTART, pAP, pRad);
             return true;
         }
         wifiGen_hapd_enableVapWpaCtrlIface(pAP);
-        if(mainIfaceChanged) {
-            SAH_TRACEZ_WARNING(ME, "%s: Main iface changed: sched toggle radio %s", pAP->alias, pRad->Name);
-            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
-        }
         SAH_TRACEZ_WARNING(ME, "%s: sched reload all radio %s VAPs to update wpaCtrl ifaces", pAP->alias, pRad->Name);
         s_schedNextAction(SECDMN_ACTION_OK_NEED_SIGHUP, pAP, pRad);
+        if(mainIfaceChanged) {
+            SAH_TRACEZ_WARNING(ME, "%s: Main iface changed: sched toggle radio %s", pAP->alias, pRad->Name);
+            s_schedNextAction(SECDMN_ACTION_OK_NEED_TOGGLE, pAP, pRad);
+        }
         setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_SYNC_STATE);
         return true;
     }
@@ -652,14 +657,6 @@ static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     wld_ap_hostapd_sendCommand(pAP, "PMKSA_FLUSH", "refreshConfig");
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setSecParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set secret key", pAP->alias);
-    /*
-     * When the curruent AP has a neigbour-AP configured to MLD or SLD, and the security mode has been
-     * changed, then a full hostapd restart will be trigged in order to be taken into account.
-     */
-
-    if((rc > SECDMN_ACTION_OK_DONE) && (wld_rad_hasActiveApMld(pRad, 1))) {
-        rc = SECDMN_ACTION_OK_NEED_RESTART;
-    }
 
     s_schedNextAction(rc, pAP, pRad);
     return true;
@@ -673,19 +670,6 @@ static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setMldParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
     s_schedNextAction(rc, pAP, pRad);
-    if(rc == SECDMN_ACTION_OK_NEED_RESTART) {
-        const char* sockName = wld_wpaCtrlInterface_getConnectionSockName(pAP->wpaCtrlInterface);
-        uint32_t nCurLinks = 0;
-        wld_ap_hostapd_getNumMldLinks(pAP, &nCurLinks);
-        uint32_t nCfgLinks = wld_mld_countNeighEnabledLinks(pAP->pSSID->pMldLink);
-        bool needRestart = (nCurLinks > 1) || (nCfgLinks > 1);
-        SAH_TRACEZ_INFO(ME, "%s: curSockName(%s) nCurLinks(%d) nCfgLinks(%d) => needHapdRestart:%d",
-                        pAP->alias, sockName, nCurLinks, nCfgLinks, needRestart);
-        wld_secDmn_setRestartNeeded(pRad->hostapd, true);
-        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
-        s_clearLowerApplyActions(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
-        s_clearDynConfActions(pAP->fsm.FSM_AC_BitActionArray, FSM_BW);
-    }
     return true;
 }
 

@@ -106,6 +106,8 @@ const char* wld_mld_getLinkIfName(wld_mldLink_t* pLink);
 bool wld_mld_isLinkActive(wld_mldLink_t* pLink);
 bool wld_mld_isLinkEnabled(wld_mldLink_t* pLink);
 bool wld_mld_isLinkUsable(wld_mldLink_t* pLink);
+bool wld_mld_checkUsableLinkBasicConditions(wld_mldLink_t* pLink);
+bool wld_mld_saveLinkConfigured(wld_mldLink_t* pLink, bool flag);
 bool wld_mld_setLinkConfigured(wld_mldLink_t* pLink, bool flag);
 bool wld_mld_isLinkConfigured(wld_mldLink_t* pLink);
 bool wld_mld_isLinkActiveInMultiLink(wld_mldLink_t* pLink);
@@ -119,5 +121,12 @@ wld_mldLink_t* wld_mld_nextNeighLink(wld_mldLink_t* pLink);
 
 #define wld_for_eachNeighMldLink(pNeighLink, pRefLink) \
     for(pNeighLink = wld_mld_firstNeighLink(pRefLink); pNeighLink; pNeighLink = wld_mld_nextNeighLink(pNeighLink))
+
+#define wld_for_eachNeighMldLink_safe(pNgLink, pRefLink) \
+    for(wld_mldLink_t* pNgLink = wld_mld_firstNeighLink(pRefLink), \
+        * pNgLink ## _next = wld_mld_nextNeighLink(pNgLink); \
+        pNgLink; \
+        pNgLink = pNgLink ## _next, \
+        pNgLink ## _next = wld_mld_nextNeighLink(pNgLink))
 
 #endif /* SRC_INCLUDE_WLD_WLD_MLD_H_ */

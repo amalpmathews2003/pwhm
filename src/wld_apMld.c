@@ -174,3 +174,47 @@ bool wld_apMld_getActiveApAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, T_Acces
 
     return false;
 }
+
+/*
+ * @brief check whether one APMLD link have applicable and shared
+ * ssid and security configurations (secMode, keypass) values
+ * with the other links
+ */
+bool wld_apMld_hasSharedConnectionConf(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    T_SSID* pSSID = pAP->pSSID;
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    wld_mldLink_t* pLink = pSSID->pMldLink;
+    if(!wld_mld_checkUsableLinkBasicConditions(pLink)) {
+        return false;
+    }
+
+    uint32_t countUsable = 0;
+    uint32_t countSharedConf = 0;
+    wld_mldLink_t* pNgLink = NULL;
+    wld_for_eachNeighMldLink(pNgLink, pLink) {
+        if(!wld_mld_checkUsableLinkBasicConditions(pNgLink)) {
+            continue;
+        }
+        countUsable++;
+        T_SSID* pNgLinkSSID = wld_mld_getLinkSsid(pNgLink);
+        if(swl_str_matches(pNgLinkSSID->SSID, pSSID->SSID) &&
+           wld_ap_sec_checkSharedSecConfigs(pNgLinkSSID->AP_HOOK, pAP)) {
+            countSharedConf++;
+        }
+    }
+    SAH_TRACEZ_INFO(ME, "%s: countUsableLinks:%d countSharedConfLinks:%d",
+                    pAP->alias, countUsable, countSharedConf);
+
+    /*
+     * APMLD links must have same SSID and valid shared security config (mode,psk,saePassPhrase)
+     * in order to be usable.
+     * otherwise, the link configs are misaligned, so the MLD is split into individual links.
+     */
+    if((countUsable > 0) && (countSharedConf > 0) &&
+       (countUsable == countSharedConf)) {
+        return true;
+    }
+    return false;
+}
+

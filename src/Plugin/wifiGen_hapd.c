@@ -200,6 +200,7 @@ static void s_restoreMainAp(T_AccessPoint* pMainAP) {
 }
 
 void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
+    wifiGen_hapd_writeConfig(pRad);
     s_restoreMainAp(wld_rad_hostapd_getCfgMainVap(pRad));
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
@@ -369,8 +370,13 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
     SAH_TRACEZ_WARNING(ME, "%s: Stop hostapd", pRad->Name);
     swl_rc_ne rc = wld_secDmn_stop(pRad->hostapd);
     ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
-    ASSERTI_NOT_EQUALS(rc, SWL_RC_CONTINUE, rc, ME, "%s: hostapd being stopped", pRad->Name);
     T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(pAP->pSSID) {
+            wld_mld_resetLinkId(pAP->pSSID->pMldLink);
+        }
+    }
+    ASSERTI_NOT_EQUALS(rc, SWL_RC_CONTINUE, rc, ME, "%s: hostapd being stopped", pRad->Name);
     wld_rad_forEachAp(pAP, pRad) {
         if(pAP->index > 0) {
             wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, 0);

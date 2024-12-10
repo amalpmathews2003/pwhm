@@ -181,13 +181,16 @@ static wld_mldLink_t* s_selectPrimaryLink(T_SSID* pSSID) {
     wld_mldLink_t* pPrimLink = NULL;
     wld_mldLink_t* pNgLink = NULL;
     wld_for_eachNeighMldLink(pNgLink, pLink) {
+        SAH_TRACEZ_INFO(ME, "link %s, ngLink %s usable:%d configured:%d",
+                        wld_mld_getLinkName(pLink), wld_mld_getLinkName(pNgLink),
+                        wld_mld_isLinkUsable(pNgLink), wld_mld_isLinkConfigured(pNgLink));
         if(wld_mld_isLinkUsable(pNgLink) && wld_mld_isLinkConfigured(pNgLink)) {
             pPrimLink = pNgLink;
             break;
         }
     }
 
-    ASSERTI_NOT_NULL(pPrimLink, NULL, ME, "%s: no primary link can be selected for for mld unit(%d)", pSSID->Name, pSSID->mldUnit);
+    ASSERTI_NOT_NULL(pPrimLink, NULL, ME, "%s: no primary link can be selected for mld unit(%d)", pSSID->Name, pSSID->mldUnit);
     SAH_TRACEZ_INFO(ME, "%s: select primary link (%s) for mld unit(%d)",
                     pSSID->Name, wld_mld_getLinkName(pPrimLink), pSSID->mldUnit);
 
@@ -196,15 +199,19 @@ static wld_mldLink_t* s_selectPrimaryLink(T_SSID* pSSID) {
 
 T_SSID* wifiGen_mld_selectPrimLinkSSID(T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pSSID, NULL, ME, "NULL");
-    if((!wld_ssid_hasMloSupport(pSSID)) || (!pSSID->enable)) {
+    if(!wld_mld_isLinkUsable(pSSID->pMldLink)) {
         return pSSID;
     }
     wld_mldLink_t* pCurPrimLink = wld_mld_getPrimaryLink(pSSID->pMldLink);
-    if(pCurPrimLink != NULL) {
+    if(wld_mld_isLinkConfigured(pCurPrimLink)) {
+        SAH_TRACEZ_INFO(ME, "SSID %s has already a primLink %s",
+                        pSSID->Name, wld_mld_getLinkName(pCurPrimLink));
         return wld_mld_getLinkSsid(pCurPrimLink);
     }
     wld_mldLink_t* pPrimLink = s_selectPrimaryLink(pSSID);
     if(pPrimLink != NULL) {
+        SAH_TRACEZ_INFO(ME, "SSID %s select primLink %s",
+                        pSSID->Name, wld_mld_getLinkName(pPrimLink));
         return wld_mld_getLinkSsid(pPrimLink);
     }
     return pSSID;
@@ -218,17 +225,26 @@ swl_rc_ne wifiGen_mld_reconfigureNeighLinkSSIDs(T_SSID* pSSID) {
     }
 
     wld_mldLink_t* pLink = pSSID->pMldLink;
-    wld_mldLink_t* pNgLink = NULL;
-    wld_for_eachNeighMldLink(pNgLink, pLink) {
+    wld_for_eachNeighMldLink_safe(pNgLink, pLink) {
         if(pNgLink == pLink) {
             continue;
         }
         T_SSID* pNgSSID = wld_mld_getLinkSsid(pNgLink);
         if(pNgSSID->AP_HOOK != NULL) {
             T_AccessPoint* pNgAP = pNgSSID->AP_HOOK;
-            if((!wld_mld_isLinkUsable(pNgLink)) &&
-               (wld_rad_hostapd_getCfgMainVap(pNgAP->pRadio) != pNgAP)) {
+            bool isConfigured = wld_mld_isLinkConfigured(pNgLink);
+            bool isUsable = wld_mld_isLinkUsable(pNgLink);
+            wld_mldLink_t* pPrimLink = wld_mld_getPrimaryLink(pNgLink);
+            bool needUpdateConf = false;
+            if(isConfigured != isUsable) {
+                needUpdateConf = isConfigured;
+            } else if(isConfigured && (pPrimLink == pLink)) {
+                needUpdateConf = true;
+            } else {
                 continue;
+            }
+            if(needUpdateConf) {
+                wld_mld_saveLinkConfigured(pNgLink, false);
             }
             SAH_TRACEZ_INFO(ME, "reconfigure Neigh AP mld %s (triggered by change in %s)",
                             wld_mld_getLinkName(pNgLink), pSSID->Name);

@@ -75,4 +75,11 @@ typedef struct {
 bool wld_apMld_fetchAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, int32_t mldUnit, swl_macBin_t* mac);
 bool wld_apMld_getActiveApAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, T_AccessPoint* pAP, swl_macBin_t* mac);
 
+/*
+ * @brief check whether one APMLD link have applicable and shared
+ * ssid and security configurations (secMode, keypass) values
+ * with the other links
+ */
+bool wld_apMld_hasSharedConnectionConf(T_AccessPoint* pAP);
+
 #endif /* SRC_INCLUDE_WLD_WLD_APMLD_H_ */

@@ -259,6 +259,7 @@ static void s_cleanSSID(T_SSID* pSSID, bool direct) {
             swla_delayExec_add(s_clearEpSSIDRef, param);
         }
     }
+    wld_mld_unregisterLink(pSSID);
     amxc_llist_it_take(&pSSID->it);
     if(pSSID->pBus != NULL) {
         pSSID->pBus->priv = NULL;
@@ -592,7 +593,14 @@ int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID) {
 
 bool wld_ssid_hasMloSupport(T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
-    return wld_rad_hasMloSupport(pSSID->RADIO_PARENT);
+    if(wld_rad_hasMloSupport(pSSID->RADIO_PARENT)) {
+        T_AccessPoint* pAP = pSSID->AP_HOOK;
+        if(pAP != NULL) {
+            return (pAP->WMMCapability && pAP->WMMEnable);
+        }
+        return true;
+    }
+    return false;
 }
 
 void wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf) {
@@ -807,6 +815,7 @@ static void s_setSSID_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_
         pAP->pFA->mfn_wvap_ssid(pAP, (char*) SSID, strlen(SSID), SET);
         wld_autoCommitMgr_notifyVapEdit(pAP);
         wld_autoNeighAdd_vapSetDelNeighbourAP(pAP, true);
+        wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     }
     free(SSID);
     //Setting endpoint ssid should only be done internally => no change necessary here.
