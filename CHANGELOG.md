@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.3 - 2024-12-11(17:47:53 +0000)
+
+### Other
+
+- : new SSID not applied
+
 ## Release v7.1.2 - 2024-12-11(17:39:41 +0000)
 
 ### Other
