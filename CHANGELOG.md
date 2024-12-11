@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.1 - 2024-12-11(10:32:14 +0000)
+
+### Other
+
+- fix hostapd crash when setting specific ssid/secConf on MLD link
+
 ## Release v7.1.0 - 2024-12-09(16:44:14 +0000)
 
 ### Other
