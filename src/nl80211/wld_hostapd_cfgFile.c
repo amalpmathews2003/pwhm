@@ -802,8 +802,10 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
              * 0 = no (no MLO)
              * 1 = yes (MLO) */
             swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 1);
+        } else {
+            /* if no MLO, then no 11BE */
+            swl_mapCharFmt_addValInt32(vapConfigMap, "disable_11be", 1);
         }
-        // TODO: manage 11be exclusion in specific BSSs
     }
 
     swl_security_mfpMode_e mfp = swl_security_getTargetMfpMode(pAP->secModeEnabled, pAP->mfpConfig);

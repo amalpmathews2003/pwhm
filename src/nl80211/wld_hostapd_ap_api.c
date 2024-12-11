@@ -303,6 +303,7 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"interface", SECDMN_ACTION_OK_NEED_RESTART},
               {"bss", SECDMN_ACTION_OK_NEED_RESTART},
               {"mld_ap", SECDMN_ACTION_OK_NEED_RESTART},
+              {"disable_11be", SECDMN_ACTION_OK_NEED_RESTART},
               //params set and applied with main iface toggle
               {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_TOGGLE},
@@ -728,7 +729,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setMldParams(T_AccessPoint* pAP) {
     swl_mapChar_t* pNewVapParams = wld_hostapd_getConfigMapByBssid(pNewCfg, (swl_macBin_t*) pAP->pSSID->BSSID);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     const char* params[] = {
-        "interface", "bss", "mld_ap",
+        "interface", "bss", "mld_ap", "disable_11be",
     };
     s_setChangedMultiParams(pAP, pCurrVapParams, pNewVapParams,
                             params, SWL_ARRAY_SIZE(params), &action);
