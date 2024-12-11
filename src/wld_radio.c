@@ -3062,6 +3062,36 @@ uint32_t wld_rad_countEnabledVaps(T_Radio* pR) {
     return count;
 }
 
+T_AccessPoint* wld_rad_getMbssidTransmitter(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, NULL, ME, "invalid radio pointer");
+    ASSERTS_TRUE(wld_rad_hasMbssidAds(pRad), wld_rad_getFirstEnabledVap(pRad),
+                 ME, "%s: MBSSID not active", pRad->Name);
+    uint8_t bitMask = 0x1;
+    uint32_t nrVaps = amxc_llist_size(&pRad->llAP);
+    ASSERTS_TRUE(nrVaps > 0, NULL, ME, "no vaps");
+
+    W_SWL_BIT_SET_UNTIL(bitMask, SWL_MIN(nrVaps, (uint8_t) 7));
+
+    T_AccessPoint* pRAp = NULL;
+    amxc_llist_for_each(it, &pRad->llAP) {
+        T_AccessPoint* pAp = amxc_llist_it_get_data(it, T_AccessPoint, it);
+        if(!pAp->enable) {
+            continue;
+        }
+        if(pRAp == NULL) {
+            pRAp = pAp;
+            continue;
+        }
+        T_SSID* pSSID1 = pRAp->pSSID;
+        T_SSID* pSSID2 = pAp->pSSID;
+        uint8_t val1 = pSSID1->BSSID[0] & bitMask;
+        uint8_t val2 = pSSID2->BSSID[0] & bitMask;
+        pRAp = val1 > val2 ? pAp : pRAp;
+    }
+
+    return pRAp;
+}
+
 wld_mbssidAdvertisement_mode_e wld_rad_getMbssidAdsMode(T_Radio* pRad) {
     wld_mbssidAdvertisement_mode_e mode = MBSSID_ADVERTISEMENT_MODE_OFF;
     ASSERTS_NOT_NULL(pRad, mode, ME, "NULL");

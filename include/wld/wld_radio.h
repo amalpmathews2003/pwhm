@@ -146,6 +146,7 @@ T_Radio* wld_rad_nextRadFromObj(amxd_object_t* radObj);
 T_Radio* wld_rad_nextRadFromList(T_Radio* pRad);
 T_AccessPoint* wld_rad_getFirstEnabledVap(T_Radio* pR);
 uint32_t wld_rad_countEnabledVaps(T_Radio* pR);
+T_AccessPoint* wld_rad_getMbssidTransmitter(T_Radio* pRad);
 wld_mbssidAdvertisement_mode_e wld_rad_getMbssidAdsMode(T_Radio* pRad);
 bool wld_rad_hasMbssidAds(T_Radio* pRad);
 
