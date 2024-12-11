@@ -4,21 +4,21 @@
         "notification": "dm:object-changed",
         "eobject": "WiFi.AccessPoint.[wlan1].AssociatedDevice.[1].",
         "parameters": {
-            "Active": {
-                "from": false,
-                "to": true
-            },
             "AssociationTime": {
                 "from": "0001-01-01T00:00:00Z",
                 "to": "2022-01-01T00:00:12Z"
             },
-            "LastStateChange": {
-                "from": "0001-01-01T00:00:00Z",
-                "to": "2022-01-01T00:00:12Z"
+            "Active": {
+                "from": false,
+                "to": true
             },
             "MLOMode": {
                 "from": "",
                 "to": "Unknown"
+            },
+            "LastStateChange": {
+                "from": "0001-01-01T00:00:00Z",
+                "to": "2022-01-01T00:00:12Z"
             },
             "MACAddress": {
                 "from": "",

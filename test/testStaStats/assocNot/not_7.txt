@@ -8,8 +8,8 @@
             "Active": false,
             "LinkID": 0,
             "APName": "",
-            "MACAddress": "",
-            "BSSID": ""
+            "BSSID": "",
+            "MACAddress": ""
         },
         "path": "WiFi.AccessPoint.2.AssociatedDevice.2.AffiliatedSta."
     }
