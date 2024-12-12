@@ -264,7 +264,7 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         wld_epConnectionStatus_e connState = pEP->connectionStatus;
         wifiGen_ep_connStatus(pEP, &connState);
         if(connState == EPCS_CONNECTED) {
-            CALL_INTF_EXT(pEP->wpaCtrlInterface, fStationConnectedCb, NULL, 0);
+            CALL_INTF_EXT(pEP->wpaCtrlInterface, fStationConnectedCb, NULL, 0, 0, 0);
         } else {
             wld_endpoint_setConnectionStatus(pEP, connState, EPE_NONE);
         }
@@ -1023,8 +1023,8 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     return SWL_RC_OK;
 }
 
-static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason) {
-    T_EndPoint* pEP = (T_EndPoint*) pRef;
+static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason, uint8_t profile _UNUSED, uint16_t vlan_id _UNUSED) {
+	 T_EndPoint* pEP = (T_EndPoint*) pRef;
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
 
@@ -1035,8 +1035,8 @@ static void s_stationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBs
     }
 }
 
-static void s_stationAssociatedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED) {
-    T_EndPoint* pEP = (T_EndPoint*) pRef;
+static void s_stationAssociatedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED, uint8_t profile _UNUSED, uint16_t vlan_id _UNUSED) {
+	 T_EndPoint* pEP = (T_EndPoint*) pRef;
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
 
@@ -1047,8 +1047,8 @@ static void s_stationAssociatedEvt(void* pRef, char* ifName, swl_macBin_t* bBssi
     }
 }
 
-static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED) {
-    T_EndPoint* pEP = (T_EndPoint*) pRef;
+static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason _UNUSED, uint8_t profile, uint16_t vlan_id) {
+	 T_EndPoint* pEP = (T_EndPoint*) pRef;
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     ASSERT_NOT_NULL(ifName, , ME, "NULL");
     T_Radio* pRad = pEP->pRadio;
@@ -1066,8 +1066,16 @@ static void s_stationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* bBssid
         swl_str_copy(pEP->pSSID->SSID, sizeof(pEP->pSSID->SSID), tmpSsid);
     }
 
+    if(profile != pEP->multiAPProfile) {
+        pEP->multiAPProfile = profile;
+    }
+    if(vlan_id != pEP->multiAPVlanId) {
+        pEP->multiAPVlanId = vlan_id;
+    }
+
     SAH_TRACEZ_INFO(ME, "%s: station connected to ssid(%s) bssid(%s)", pEP->Name, tmpSsid, tmpBssidStr.cMac);
     wld_endpoint_sync_connection(pEP, true, 0);
+	 syncData_EndPoint2OBJ(pEP);
 
     // update radio datamodel
     swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
