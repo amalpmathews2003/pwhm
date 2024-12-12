@@ -332,6 +332,27 @@ swl_rc_ne wld_rad_hostapd_enable(T_Radio* pR) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_rad_hostapd_updateAllVapsConfigId(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, SWL_RC_ERROR, ME, "pRad is NULL");
+    ASSERTS_NOT_NULL(pRad->hostapd, SWL_RC_ERROR, ME, "hostapd is NULL");
+    ASSERTS_STR(pRad->hostapd->cfgFile, SWL_RC_ERROR, ME, "cfgFile is empty");
+    wld_hostapd_config_t* config = NULL;
+    bool ret = wld_hostapd_loadConfig(&config, pRad->hostapd->cfgFile);
+    ASSERTS_TRUE(ret, SWL_RC_ERROR, ME, "Error loading config %s", pRad->Name);
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if((pAP == NULL) || (pAP->pSSID == NULL)) {
+            continue;
+        }
+        const char* configIdStr = wld_hostapd_getConfigParamValStr(config, pAP->alias, "config_id");
+        if(configIdStr != NULL) {
+            wld_ap_hostapd_setParamValue(pAP, "config_id", configIdStr, "refresh");
+        }
+    }
+    wld_hostapd_deleteConfig(config);
+    return SWL_RC_OK;
+}
+
 /**
  * @brief disable main hostapd interface
  *
