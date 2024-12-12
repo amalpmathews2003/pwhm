@@ -1117,8 +1117,8 @@ void syncData_EndPoint2OBJ(T_EndPoint* pEP) {
         free(currSsidRef);
     }
     amxd_trans_set_cstring_t(&trans, "SSIDReference", TBuf);
-
-
+    amxd_trans_set_uint8_t(&trans, "MultiAPProfile", pEP->multiAPProfile);
+    amxd_trans_set_uint16_t(&trans, "MultiAPVlanId", pEP->multiAPVlanId);
 
     amxd_object_t* secObj = amxd_object_findf(object, "Security");
     amxd_trans_select_object(&trans, secObj);
