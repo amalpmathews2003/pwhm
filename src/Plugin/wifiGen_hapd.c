@@ -449,6 +449,8 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad) {
      */
     wifiGen_refreshVapsIfIdx(pRad);
 
+    wld_rad_hostapd_updateAllVapsConfigId(pRad);
+
     chanmgt_rad_state detRadState = CM_RAD_UNKNOWN;
     wifiGen_hapd_getRadState(pRad, &detRadState);
 

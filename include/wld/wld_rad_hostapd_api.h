@@ -83,5 +83,6 @@ swl_rc_ne wld_rad_hostapd_getCfgParamStr(T_Radio* pRad, const char* key, char* v
 int32_t wld_rad_hostapd_getCfgParamInt32Def(T_Radio* pRad, const char* key, int32_t defVal);
 swl_channel_t wld_rad_hostapd_getCfgChannel(T_Radio* pRad);
 swl_chanspec_t wld_rad_hostapd_getCfgChanspec(T_Radio* pRad);
+swl_rc_ne wld_rad_hostapd_updateAllVapsConfigId(T_Radio* pRad);
 
 #endif /* __WLD_RAD_API_H__ */
