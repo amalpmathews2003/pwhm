@@ -261,7 +261,7 @@ static char* s_getHapdArgsCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
     ASSERT_NOT_NULL(pSecDmn, args, ME, "NULL");
     char startArgs[256] = {0};
     //set default start args
-    swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
+    wld_dmnMgt_initStartArgs(startArgs, sizeof(startArgs), HOSTAPD_CMD, HOSTAPD_ARGS_FORMAT);
     if(!swl_str_isEmpty(pSecDmn->cfgFile)) {
         swl_strlst_cat(startArgs, sizeof(startArgs), " ", pSecDmn->cfgFile);
     }
@@ -529,7 +529,7 @@ static char* s_getGlobHapdArgsCb(wld_secDmnGrp_t* pSecDmnGrp, void* userData _UN
     ASSERT_NOT_NULL(pSecDmnGrp, args, ME, "NULL");
     char startArgs[256] = {0};
     //set default start args
-    swl_str_copy(startArgs, sizeof(startArgs), HOSTAPD_ARGS_FORMAT);
+    wld_dmnMgt_initStartArgs(startArgs, sizeof(startArgs), HOSTAPD_CMD, HOSTAPD_ARGS_FORMAT);
     wld_secDmn_t* grpMembers[wld_secDmnGrp_getMembersCount(pSecDmnGrp) + 1];
     uint32_t nGrpMembers = 0;
     for(uint32_t i = 0; i < wld_secDmnGrp_getMembersCount(pSecDmnGrp); i++) {
@@ -606,10 +606,15 @@ static swl_rc_ne s_initGlobalHapdGrp(vendor_t* pVdr, bool forceGlob) {
     return rc;
 }
 
-swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg) {
+/**
+ * Handle the change of UseGlobalInstance field, switching from single or multiple instance
+ * Return true when a restart is needed to apply change
+ */
+static bool s_handleUseGlobalInstance(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg) {
     ASSERT_NOT_NULL(pVdr, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_dmnMgt_dmnExecInfo_t* gHapd = pVdr->globalHostapd;
     ASSERT_NOT_NULL(gHapd, SWL_RC_INVALID_PARAM, ME, "No glob hapd ctx");
+    bool restartNeeded = false;
     bool forceGlob = (pCfg->useGlobalInstance == SWL_TRL_TRUE);
     s_initGlobalHapdGrp(pVdr, forceGlob);
     if(!forceGlob) {
@@ -633,10 +638,59 @@ swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSett
                     SAH_TRACEZ_INFO(ME, "add member %s to gHapd %s", pRad->Name, pVdr->name);
                     wld_secDmn_addToGrp(pRad->hostapd, gHapd->pGlobalDmnGrp, pRad->Name);
                 }
-                setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
-                wld_rad_doCommitIfUnblocked(pRad);
+                SAH_TRACEZ_INFO(ME, "restart needed %s gHapd %s", pRad->Name, pVdr->name);
+                restartNeeded = true;
             }
         }
+    }
+    return restartNeeded;
+}
+
+/**
+ * Handle the change of CustomArguments field, updating arguments of concerned instances
+ * Return true when a restart is needed to apply change
+ */
+static bool s_handleCustomArguments(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg _UNUSED) {
+    ASSERT_NOT_NULL(pVdr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pCfg, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    bool restartNeeded = false;
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        if((pRad->vendor != pVdr) || !(pRad && pRad->hostapd && pRad->hostapd->dmnProcess)) {
+            continue;
+        }
+        wld_process_t* dmnProcess = pRad->hostapd->dmnProcess;
+        char* newArgs = dmnProcess->handlers.getArgsCb(dmnProcess, dmnProcess->userData);
+        if(!swl_str_isEmpty(dmnProcess->args) && !swl_str_matches(dmnProcess->args, newArgs)) {
+            SAH_TRACEZ_INFO(ME, "Args diff: \"%s\" to \"%s\", restart needed %s gHapd %s", dmnProcess->args, newArgs, pRad->Name, pVdr->name);
+            restartNeeded = true;
+        }
+        free(newArgs);
+    }
+    return restartNeeded;
+}
+
+static void s_restartChangeParameter(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg _UNUSED) {
+    T_Radio* pRad;
+    wld_for_eachRad(pRad) {
+        if((pRad == NULL) || (pRad->vendor != pVdr)) {
+            continue;
+        }
+        SAH_TRACEZ_INFO(ME, "restart %s", pRad->Name);
+        wld_secDmn_restart(pRad->hostapd);
+    }
+}
+
+swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg) {
+    ASSERT_NOT_NULL(pVdr, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pCfg, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    bool restartNeeded = false;
+    restartNeeded |= s_handleUseGlobalInstance(pVdr, pCfg);
+    restartNeeded |= s_handleCustomArguments(pVdr, pCfg);
+    if(restartNeeded) {
+        s_restartChangeParameter(pVdr, pCfg);
     }
     return SWL_RC_OK;
 }

@@ -75,6 +75,7 @@ typedef struct {
 
 typedef struct {
     swl_trl_e useGlobalInstance;              //use global daemon: 0:Off, 1:On, 2:auto ie enabled when required
+    char* customArguments;                    //use this argument to override default ones
 } wld_dmnMgt_dmnExecSettings_t;
 
 typedef struct {
@@ -84,6 +85,8 @@ typedef struct {
 } wld_dmnMgt_dmnCtx_t;
 
 const wld_dmnMgt_dmnCtx_t* wld_dmnMgt_getDmnCtx(const char* dmnName);
+void wld_dmnMgt_initStartArgs(char* startArgs, size_t startArgsSize, const char* dmnName, const char* defaultArgs);
+
 swl_rc_ne wld_dmnMgt_initDmnExecInfo(wld_dmnMgt_dmnExecInfo_t** ppDmnExecInfo);
 void wld_dmnMgt_cleanupDmnExecInfo(wld_dmnMgt_dmnExecInfo_t** ppDmnExecInfo);
 

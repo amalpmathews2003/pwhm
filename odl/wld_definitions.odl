@@ -327,6 +327,12 @@
 					on action validate call check_enum ["Off","On","Auto"];
 					default "Off";
 				}
+
+				/*
+				* Argument(s) to run the daemon with
+				* If set override the current default one
+				*/
+				%persistent string CustomArguments;
 			}
 		}
 	}

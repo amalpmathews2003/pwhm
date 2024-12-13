@@ -107,6 +107,7 @@ amxd_status_t _wld_dmnMgt_delDaemonEntry_odf(amxd_object_t* object,
     SAH_TRACEZ_INFO(ME, "%s: destroy instance object(%p)", name, object);
     wld_dmnMgt_dmnCtx_t* pDmnCtx = (wld_dmnMgt_dmnCtx_t*) object->priv;
     if(pDmnCtx != NULL) {
+        W_SWL_FREE(pDmnCtx->exec.customArguments);
         object->priv = NULL;
         pDmnCtx->object = NULL;
         W_SWL_FREE(pDmnCtx->name);
@@ -127,23 +128,25 @@ static void s_setDmnExecSettings_ocf(void* priv _UNUSED, amxd_object_t* object, 
     bool needSync = false;
 
     amxc_var_for_each(newValue, newParamValues) {
-        char* valStr = NULL;
         const char* pname = amxc_var_key(newValue);
         if(swl_str_matches(pname, "UseGlobalInstance")) {
-            valStr = amxc_var_dyncast(cstring_t, newValue);
+            char* valStr = amxc_var_dyncast(cstring_t, newValue);
             swl_trl_e valTrl;
             swl_trl_fromChar(&valTrl, valStr, SWL_TRL_FORMAT_AUTO);
+            free(valStr);
             if(pDmnCtx->exec.useGlobalInstance == valTrl) {
                 continue;
             }
             pDmnCtx->exec.useGlobalInstance = valTrl;
+        } else if(swl_str_matches(pname, "CustomArguments")) {
+            W_SWL_FREE(pDmnCtx->exec.customArguments);
+            pDmnCtx->exec.customArguments = amxc_var_dyncast(cstring_t, newValue);
         } else {
             continue;
         }
         char* pvalue = swl_typeCharPtr_fromVariantDef(newValue, NULL);
         SAH_TRACEZ_INFO(ME, "%s: setting exec settings %s = %s", pDmnCtx->name, pname, pvalue);
         free(pvalue);
-        free(valStr);
         needSync = true;
     }
 
@@ -171,6 +174,15 @@ const wld_dmnMgt_dmnCtx_t* wld_dmnMgt_getDmnCtx(const char* dmnName) {
     amxd_object_t* dmnObj = amxd_object_findf(get_wld_object(), "DaemonMgt.Daemon.[Name == '%s']", dmnName);
     ASSERT_NOT_NULL(dmnObj, NULL, ME, "No dmn with name %s", dmnName);
     return dmnObj->priv;
+}
+
+void wld_dmnMgt_initStartArgs(char* startArgs, size_t startArgsSize, const char* dmnName, const char* defaultArgs) {
+    const wld_dmnMgt_dmnCtx_t* pCfg = wld_dmnMgt_getDmnCtx(dmnName);
+    if(pCfg && !swl_str_isEmpty(pCfg->exec.customArguments)) {
+        swl_str_copy(startArgs, startArgsSize, pCfg->exec.customArguments);
+    } else {
+        swl_str_copy(startArgs, startArgsSize, defaultArgs);
+    }
 }
 
 swl_rc_ne wld_dmnMgt_initDmnExecInfo(wld_dmnMgt_dmnExecInfo_t** ppDmnExecInfo) {
