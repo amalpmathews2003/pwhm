@@ -400,7 +400,6 @@ static amxd_status_t s_startScan(amxd_object_t* object,
 
 error:
     SAH_TRACEZ_ERROR(ME, "%s: error in starting scan", pR->Name);
-    pR->scanState.scanType = SCAN_TYPE_NONE;
     return errorCode;
 }
 
