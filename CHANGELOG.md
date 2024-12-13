@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.5 - 2024-12-13(12:21:02 +0000)
+
+### Other
+
+- : SSID Change on Main VAP Causes Deauthentication on Both Main and Guest VAPs
+
 ## Release v7.1.4 - 2024-12-13(11:36:53 +0000)
 
 ### Other
