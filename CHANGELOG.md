@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.4 - 2024-12-13(11:36:53 +0000)
+
+### Other
+
+- - VAP Enable Toggling
+
 ## Release v7.1.3 - 2024-12-11(17:47:53 +0000)
 
 ### Other
