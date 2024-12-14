@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.6 - 2024-12-14(09:11:47 +0000)
+
+### Other
+
+- : Second scan attempt is cancelling the first one
+
 ## Release v7.1.5 - 2024-12-13(12:21:02 +0000)
 
 ### Other
