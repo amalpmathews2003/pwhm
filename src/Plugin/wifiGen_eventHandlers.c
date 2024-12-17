@@ -958,8 +958,8 @@ static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame,
     ASSERT_NOT_NULL(frame, , ME, "NULL");
     ASSERT_NOT_NULL(pAP->pSSID, , ME, "%s: AP has No SSID", pAP->alias);
     if(!SWL_MAC_BIN_MATCHES(pAP->pSSID->BSSID, &frame->bssid)) {
-        T_SSID* pSSIDPrim = wld_mld_getPrimaryLinkSsid(pAP->pSSID->pMldLink);
-        if((pSSIDPrim == NULL) || (!SWL_MAC_BIN_MATCHES(pSSIDPrim->BSSID, &frame->bssid))) {
+        T_SSID* pTargetSSID = wld_ssid_getSsidByBssid(&frame->bssid);
+        if((pTargetSSID == NULL) || (wld_mld_getPrimaryLink(pAP->pSSID->pMldLink) != wld_mld_getPrimaryLink(pTargetSSID->pMldLink))) {
             SAH_TRACEZ_ERROR(ME, "%s: bssid does not match ap("MAC_PRINT_FMT ") frame("MAC_PRINT_FMT ")",
                              pAP->alias, MAC_PRINT_ARG(pAP->pSSID->BSSID), MAC_PRINT_ARG(frame->bssid.bMac));
             return;
