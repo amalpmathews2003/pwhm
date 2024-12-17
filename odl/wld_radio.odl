@@ -796,7 +796,7 @@ define probelist_t{
 		 * </ul>
 		 */
 		%read-only string SupportedOperatingChannelBandwidth{
-			default "";
+			on action read call wld_rad_getSupportedOperatingChannelBandwidths_prf;
 		}
 
 		/**
