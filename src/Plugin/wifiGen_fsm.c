@@ -164,7 +164,14 @@ static int s_fetchHigherActionExt(unsigned long* bitMapArr, uint32_t bitMapArrSi
     if(pos <= 0) {
         return -1;
     }
-    return s_fetchHigherAction(bitMapArr, bitMapArrSize, actionArr, actionArrSize, pos - 1);
+    do {
+        //take the next higher action
+        if(--pos < 0) {
+            return -1;
+        }
+        //if still equivalent, then continue
+    } while(s_getLowestEqvAction(actionArr[pos]) == minAction);
+    return s_fetchHigherAction(bitMapArr, bitMapArrSize, actionArr, actionArrSize, pos);
 }
 /*
  * clear from fsm actions bitmap, all fsm actions (among action array) implicitly applied
@@ -291,8 +298,9 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
             s_schedNextAction(SECDMN_ACTION_OK_NEED_RESTART, pAP, pRad);
             return;
         }
-        s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
-        setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        if(s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD)) {
+            setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+        }
         break;
     case SECDMN_ACTION_OK_NEED_SIGHUP:
         s_setApplyAction(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_UPDATE_HOSTAPD);
