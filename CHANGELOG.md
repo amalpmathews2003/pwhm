@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.10 - 2024-12-19(15:44:32 +0000)
+
+### Other
+
+- - Fix hostapd toggle when higher action is scheduled
+
 ## Release v7.1.9 - 2024-12-19(15:02:29 +0000)
 
 ### Other
