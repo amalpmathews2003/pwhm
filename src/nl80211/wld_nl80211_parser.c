@@ -65,6 +65,7 @@
 
 #include "wld_nl80211_parser.h"
 #include "wld_nl80211_utils.h"
+#include "wld_util.h"
 #include "swl/swl_genericFrameParser.h"
 
 #define ME "nlParser"
@@ -1425,10 +1426,16 @@ swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanRe
     // get signal strength, signal strength units not specified, scaled to 0-100
     if(bss[NL80211_BSS_SIGNAL_UNSPEC]) {
         //signal strength of the probe response/beacon in unspecified units, scaled to 0..100 <u8>
-        pResult->rssi = (int32_t) nla_get_u8(bss[NL80211_BSS_SIGNAL_UNSPEC]);
+        pResult->rssi = convQuality2Signal((int32_t) nla_get_u8(bss[NL80211_BSS_SIGNAL_UNSPEC]));
     } else if(bss[NL80211_BSS_SIGNAL_MBM]) {
         //signal strength of probe response/beacon in mBm (100 * dBm) <s32>
-        pResult->rssi = ((int32_t) nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM])) / 100;
+        int32_t rssiDbm = (int32_t) nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]);
+        if(rssiDbm >= 0) {
+            // If driver reports a scaled RSSI instead of a dBm RSSI
+            pResult->rssi = convQuality2Signal(rssiDbm);
+        } else {
+            pResult->rssi = rssiDbm / 100;
+        }
     } else {
         SAH_TRACEZ_ERROR(ME, "missing signal strength of "SWL_MAC_FMT, SWL_MAC_ARG(pResult->bssid.bMac));
     }
