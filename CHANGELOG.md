@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.9 - 2024-12-19(15:02:29 +0000)
+
+### Other
+
+- : Invalid RSSI in scanResults
+
 ## Release v7.1.8 - 2024-12-19(13:24:32 +0000)
 
 ## Release v7.1.7 - 2024-12-19(10:38:40 +0000)
