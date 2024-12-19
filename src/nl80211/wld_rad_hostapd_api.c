@@ -392,16 +392,16 @@ T_AccessPoint* wld_rad_hostapd_getFirstConnectedVap(T_Radio* pRad) {
 T_AccessPoint* wld_rad_hostapd_getCfgMainVap(T_Radio* pRad) {
     T_AccessPoint* pMainAP = NULL;
     if(wld_rad_hasMloSupport(pRad) && !wld_rad_hasMbssidAds(pRad)) {
-        if(((pMainAP = wld_rad_hostapd_getFirstConnectedVap(pRad)) != NULL) ||
-           ((pMainAP = wld_rad_getFirstEnabledVap(pRad)) != NULL)) {
-            return pMainAP;
+        if((pMainAP = wld_rad_hostapd_getFirstConnectedVap(pRad)) == NULL) {
+            pMainAP = wld_rad_getFirstEnabledVap(pRad);
         }
+    } else if(wld_rad_hasMbssidAds(pRad)) {
+        pMainAP = wld_rad_getFirstEnabledVap(pRad);
     }
-    if(wld_rad_hasMbssidAds(pRad) &&
-       ((pMainAP = wld_rad_getMbssidTransmitter(pRad)) != NULL)) {
-        return pMainAP;
+    if(pMainAP == NULL) {
+        pMainAP = wld_rad_getFirstVap(pRad);
     }
-    return wld_rad_getFirstVap(pRad);
+    return pMainAP;
 }
 
 T_AccessPoint* wld_rad_hostapd_getRunMainVap(T_Radio* pRad) {
