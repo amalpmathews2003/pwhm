@@ -288,6 +288,7 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapChar_add(network, "multi_ap_backhaul_sta", "1");
     }
     swl_mapChar_add(network, "beacon_int", "100");
+    swl_mapChar_add(network, "multi_ap_profile", "3");
     return SWL_RC_OK;
 }
 
