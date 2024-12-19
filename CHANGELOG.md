@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.7 - 2024-12-19(10:38:40 +0000)
+
+### Other
+
+- - fix unit test
+- - match frame target agains all affiliated APs
+- - introduce getMbssidTransmitter
+
 ## Release v7.1.6 - 2024-12-14(09:11:47 +0000)
 
 ### Other
