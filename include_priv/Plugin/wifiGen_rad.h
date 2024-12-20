@@ -86,6 +86,8 @@ int wifiGen_rad_refresh(T_Radio* pRad, int set);
 int wifiGen_rad_toggle(T_Radio* pRad, int set);
 swl_rc_ne wifiGen_rad_regDomain(T_Radio* pRad, char* val, int bufsize, int set);
 int wifiGen_rad_txpow(T_Radio* pRad, int val, int set);
+swl_rc_ne wifiGen_rad_getTxPowerdBm(T_Radio* rad, int32_t* dbm);
+swl_rc_ne wifiGen_rad_getMaxTxPowerdBm(T_Radio* pRad, uint16_t channel, int32_t* dbm);
 swl_rc_ne wifiGen_rad_setChanspec(T_Radio* pRad, bool direct);
 swl_rc_ne wifiGen_rad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpec);
 int wifiGen_rad_antennactrl(T_Radio* pRad, int val, int set);

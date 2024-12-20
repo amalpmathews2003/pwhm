@@ -426,6 +426,22 @@ static int TRAP_mfn_wrad_latest_power(T_Radio* rad, T_ANTENNA_POWER* stats) {
     return -1;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_getCurrentTxPow_dBm(T_Radio* rad, int32_t* dbm) {
+    _UNUSED_(rad);
+    _UNUSED_(dbm);
+    SAH_TRACEZ_NOTICE(ME, "%p %p", rad, dbm);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wrad_getMaxTxPow_dBm(T_Radio* rad, uint16_t channel, int32_t* dbm) {
+    _UNUSED_(rad);
+    _UNUSED_(channel);
+    _UNUSED_(dbm);
+
+    SAH_TRACEZ_NOTICE(ME, "%p %d %p", rad, channel, dbm);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static int TRAP_mfn_wvap_create_hook(T_AccessPoint* vap) {
     _UNUSED_(vap);
     // Ignore silently. Constructor hooks are optional.
@@ -734,6 +750,8 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_airstats);
     FTA_ASSIGN(mfn_wrad_per_ant_rssi);
     FTA_ASSIGN(mfn_wrad_latest_power);
+    FTA_ASSIGN(mfn_wrad_getCurrentTxPow_dBm);
+    FTA_ASSIGN(mfn_wrad_getMaxTxPow_dBm);
     FTA_ASSIGN(mfn_wrad_sync);
     FTA_ASSIGN(mfn_wrad_secDmn_restart);
     FTA_ASSIGN(mfn_wrad_secDmn_refresh);

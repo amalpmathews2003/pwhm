@@ -137,6 +137,8 @@ bool wifiGen_init() {
     fta.mfn_wrad_scan_results = wifiGen_rad_getScanResults;
     fta.mfn_wrad_airstats = wifiGen_rad_getAirStats;
     fta.mfn_wrad_getspectruminfo = wifiGen_rad_getSpectrumInfo;
+    fta.mfn_wrad_getCurrentTxPow_dBm = wifiGen_rad_getTxPowerdBm;
+    fta.mfn_wrad_getMaxTxPow_dBm = wifiGen_rad_getMaxTxPowerdBm;
 
     /* Wrad BG DFS fta control */
     fta.mfn_wrad_bgdfs_start_ext = wifiGen_rad_bgDfsStartExt;

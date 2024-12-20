@@ -494,6 +494,20 @@ swl_rc_ne wld_nl80211_setTxPowerLimited(wld_nl80211_state_t* state, uint32_t ifI
 swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, int32_t* dbm);
 
 /*
+ * @brief get maximum transmit power level
+ * (Synchronous api)
+ *
+ * @param state nl80211 socket manager context
+ * @param ifIndex wiphy main iface index
+ * @param freq (in MHz) for which the max transmit power is being retrieved.
+ * @param dbm max tx power in dbm
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_nl80211_getMaxTxPowerdBm(wld_nl80211_state_t* state, uint32_t ifIndex, uint32_t freq, int32_t* dbm);
+
+/*
  * @brief initiate a neighbor scan
  * It is possible to indicate scan options:
  * - ssids to fetch

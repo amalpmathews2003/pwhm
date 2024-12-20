@@ -4370,6 +4370,52 @@ amxd_status_t _Radio_getStatusHistogram(amxd_object_t* object,
     return amxd_status_ok;
 }
 
+amxd_status_t _getMaxTransmitPowerdBm(amxd_object_t* object,
+                                      amxd_function_t* func _UNUSED,
+                                      amxc_var_t* args,
+                                      amxc_var_t* retval) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "no radio mapped");
+    uint16_t channel = amxc_var_dyncast(uint16_t, GET_ARG(args, "channel"));
+    ASSERT_TRUE(wld_rad_hasChannel(pR, channel), amxd_status_invalid_arg, ME, "%s : invalid chan %d", pR->Name, channel);
+
+    int32_t dbm;
+    int rc = pR->pFA->mfn_wrad_getMaxTxPow_dBm(pR, channel, &dbm);
+    if(rc != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to get max txpower");
+        return amxd_status_unknown_error;
+    }
+
+    amxc_var_set(int32_t, retval, dbm);
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
+amxd_status_t _getCurrentTransmitPowerdBm(amxd_object_t* object,
+                                          amxd_function_t* func _UNUSED,
+                                          amxc_var_t* args _UNUSED,
+                                          amxc_var_t* retval) {
+
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "no radio mapped");
+    ASSERTI_TRUE(wld_rad_isActive(pR), amxd_status_unknown_error, ME, "%s : not ready", pR->Name);
+
+    int32_t dbm;
+    swl_rc_ne rc = pR->pFA->mfn_wrad_getCurrentTxPow_dBm(pR, &dbm);
+    if(rc != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to get current txpower");
+        return amxd_status_unknown_error;
+    }
+
+    amxc_var_set(int32_t, retval, dbm);
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
 static void s_dumpRadioDebug(T_Radio* pR, amxc_var_t* retval) {
     amxc_var_add_key(bool, retval, "Enable", pR->enable);
     amxc_var_add_key(cstring_t, retval, "Status", wld_status_str[pR->status]);
