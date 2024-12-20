@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.1.11 - 2024-12-20(12:22:29 +0000)
+
+### Other
+
+- [SSH] Make getDebug working with non-root ssh user.
+
 ## Release v7.1.10 - 2024-12-19(15:44:32 +0000)
 
 ### Other
