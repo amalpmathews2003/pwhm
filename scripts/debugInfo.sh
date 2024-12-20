@@ -31,9 +31,9 @@ interfaces=$(iw dev | grep Interface | awk '{print $2}' | sort)
 for INTF in $interfaces; do
   echo ""
   echo "#### hostapd state ${INTF}"
-  printCmd "hostapd_cli -p /var/run/hostapd -i ${INTF} driver_flags"
-  printCmd "hostapd_cli -p /var/run/hostapd -i ${INTF} get_config"
-  printCmd "hostapd_cli -p /var/run/hostapd -i ${INTF} status"
-  printCmd "hostapd_cli -p /var/run/hostapd -i ${INTF} all_sta"
-  printCmd "hostapd_cli -p /var/run/hostapd -i ${INTF} wps_get_status"
+  printCmd "$SUDO hostapd_cli -p /var/run/hostapd -i ${INTF} driver_flags"
+  printCmd "$SUDO hostapd_cli -p /var/run/hostapd -i ${INTF} get_config"
+  printCmd "$SUDO hostapd_cli -p /var/run/hostapd -i ${INTF} status"
+  printCmd "$SUDO hostapd_cli -p /var/run/hostapd -i ${INTF} all_sta"
+  printCmd "$SUDO hostapd_cli -p /var/run/hostapd -i ${INTF} wps_get_status"
 done
