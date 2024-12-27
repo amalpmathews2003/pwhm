@@ -380,6 +380,7 @@ swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNei
 
 swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wifiGen_hapd_isAlive(pAP->pRadio), SWL_RC_INVALID_STATE, ME, "%s: secDmn not ready", pAP->alias);
     bool enaRnr = (pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR));
     swl_rc_ne rc = wld_hostapd_ap_sendCfgParam(pAP, "rnr", (enaRnr ? "1" : "0"));
     ASSERTI_TRUE(swl_rc_isOk(rc), rc, ME, "%s: can not apply rnr ena(%d) to hostapd: seems not supported", pAP->alias, enaRnr);
@@ -554,17 +555,26 @@ swl_rc_ne wifiGen_vap_requestRrmReport(T_AccessPoint* pAP, const swl_macChar_t* 
 
 static swl_rc_ne s_reloadApNeighbors(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    uint32_t nSyncAct = 0;
+
     /*
      * Enable dynamically reduced neighbor reporting (RNR)
-     * to avoid saving in hostapd (older than 2.10) conf file an unsupported param
-     * that prevent proper startup
+     * when it is not yet learned
+     * Otherwise, let the rnr conf be applied from saved hostapd config file
      */
-    pAP->pFA->mfn_wvap_set_discovery_method(pAP);
+    if(wld_secDmn_getCfgParamSupp(pAP->pRadio->hostapd, "rnr") == SWL_TRL_UNKNOWN) {
+        nSyncAct += (pAP->pFA->mfn_wvap_set_discovery_method(pAP) == SWL_RC_OK);
+    }
 
     //now add dynamically the saved ap neigbours to hostapd db
     amxc_llist_for_each(it, &pAP->neighbours) {
         T_ApNeighbour* pApNeighbor = amxc_container_of(it, T_ApNeighbour, it);
-        pAP->pFA->mfn_wvap_updated_neighbour(pAP, pApNeighbor);
+        nSyncAct += (pAP->pFA->mfn_wvap_updated_neighbour(pAP, pApNeighbor) == SWL_RC_OK);
+    }
+
+    if(!nSyncAct) {
+        return SWL_RC_DONE;
     }
 
     //apply list to beacon is RNR is enabled

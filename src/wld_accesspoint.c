@@ -720,6 +720,7 @@ static void s_setMobilityDomain_pwf(void* priv _UNUSED, amxd_object_t* object, a
     T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
     ASSERT_NOT_NULL(pAP, , ME, "INVALID");
     uint16_t mobilityDomain = amxc_var_dyncast(uint16_t, newValue);
+    ASSERTI_NOT_EQUALS(pAP->mobilityDomain, mobilityDomain, , ME, "%s: same value %d", pAP->alias, mobilityDomain);
     SAH_TRACEZ_INFO(ME, "%s: setMobilityDomain %d", pAP->alias, mobilityDomain);
 
     pAP->mobilityDomain = mobilityDomain;
@@ -924,7 +925,11 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_trans_set_cstring_t(&trans, "EncryptionMode", cstr_AP_EncryptionMode[pAP->encryptionModeEnabled]);
         amxd_trans_set_uint32_t(&trans, "RekeyingInterval", pAP->rekeyingInterval);
         amxd_trans_set_cstring_t(&trans, "OWETransitionInterface", pAP->oweTransModeIntf);
-        amxd_trans_set_uint32_t(&trans, "TransitionDisable", pAP->transitionDisable);
+
+        TBuf[0] = 0;
+        swl_conv_maskToChar(TBuf, sizeof(TBuf), pAP->transitionDisable, g_str_wld_ap_td, AP_TD_MAX);
+        amxd_trans_set_cstring_t(&trans, "TransitionDisable", TBuf);
+
         amxd_trans_set_cstring_t(&trans, "RadiusServerIPAddr", pAP->radiusServerIPAddr);
         amxd_trans_set_uint32_t(&trans, "RadiusServerPort", pAP->radiusServerPort);
         amxd_trans_set_cstring_t(&trans, "RadiusSecret", pAP->radiusSecret);
