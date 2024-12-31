@@ -740,6 +740,7 @@ static bool s_doConnectedEp(T_EndPoint* pEP, T_Radio* pRad) {
 }
 
 static bool s_doStopWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    ASSERTS_TRUE(wifiGen_wpaSupp_isRunning(pEP), true, ME, "%s: wpa_supplicant stopped", pEP->Name);
     SAH_TRACEZ_INFO(ME, "%s: stop wpa_supplicant", pEP->Name);
     wifiGen_wpaSupp_stopDaemon(pEP);
     return true;

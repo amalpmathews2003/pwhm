@@ -75,6 +75,7 @@
 #include "swl/swl_assert.h"
 #include "swl/swl_string.h"
 #include "swl/swl_uuid.h"
+#include "Utils/wld_autoCommitMgr.h"
 
 #define ME "wps"
 
@@ -385,6 +386,7 @@ static void s_setWpsSelfPIN_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
         pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
         SAH_TRACEZ_INFO(ME, "%s: set WPS SelfPIN %d", pAP->alias, SelfPIN);
+        wld_autoCommitMgr_notifyVapEdit(pAP);
     }
 
     SAH_TRACEZ_OUT(ME);
