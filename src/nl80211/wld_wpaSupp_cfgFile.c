@@ -290,6 +290,15 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         }
     }
     break;
+    case SWL_SECURITY_APMODE_OWE:
+    {
+        swl_mapChar_add(network, "proto", "RSN");
+        swl_mapChar_add(network, "key_mgmt", "OWE");
+        swl_mapChar_add(network, "pairwise", "CCMP");
+        swl_mapChar_add(network, "group", "CCMP");
+        swl_mapChar_add(network, "auth_alg", "OPEN");
+    }
+    break;
     default:
         SAH_TRACEZ_ERROR(ME, "%s: not supported security mode %d", pEP->Name, epProfile->secModeEnabled);
         break;
