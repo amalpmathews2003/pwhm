@@ -127,7 +127,7 @@ bool wld_dmn_initializeDeamon(wld_process_t* process, char* cmd) {
     }
 
     process->cmd = cmd;
-    process->argList[0] = process->cmd;
+    swl_str_copyMalloc(&process->argList[0], process->cmd);
     process->status = WLD_DAEMON_STATE_DOWN;
     process->enabled = false;
 
@@ -170,14 +170,13 @@ void wld_dmn_cleanupDaemon(wld_process_t* process) {
     }
 
     if(process->argList != NULL) {
-        free(process->argList);
-        process->argList = NULL;
+        for(uint32_t i = 0; i < process->nrArgs + 2; i++) { // +2 because argList[0] = process->cmd, and last is NULL
+            W_SWL_FREE(process->argList[i]);
+        }
+        W_SWL_FREE(process->argList);
     }
 
-    if(process->args != NULL) {
-        free(process->args);
-        process->args = NULL;
-    }
+    W_SWL_FREE(process->args);
     process->status = WLD_DAEMON_STATE_DESTROYED;
 
     amxp_proc_ctrl_delete(&process->process);
@@ -472,28 +471,30 @@ void wld_dmn_setArgList(wld_process_t* process, char* args) {
     }
     ASSERTI_FALSE(swl_str_matches(curArgs, newArgs), , ME, "dmn %s: same args (%s)", process->cmd, newArgs);
 
-    free(process->argList);
-    process->argList = NULL;
-    process->nrArgs = 0;
-    if(process->args != NULL) {
-        free(process->args);
-        process->args = NULL;
+    for(uint32_t i = 0; i < process->nrArgs + 2; i++) { // +2 because argList[0] = process->cmd, and last is NULL
+        W_SWL_FREE(process->argList[i]);
     }
+    W_SWL_FREE(process->argList);
+    process->nrArgs = 0;
+    W_SWL_FREE(process->args);
     process->argLen = 0;
 
     if(newArgs[0]) {
         nrArgs = swl_str_countChar(newArgs, ' ') + 1;
-        process->args = strdup(newArgs);
+        swl_str_copyMalloc(&process->args, newArgs);
         ASSERT_NOT_NULL(process->args, , ME, "fail to duplicate args");
     }
-    process->argLen = strlen(newArgs);
+    process->argLen = swl_str_len(newArgs);
     //argList = cmd + args + null termination
     process->argList = calloc((nrArgs + 2), sizeof(char*));
     ASSERT_NOT_NULL(process->argList, , ME, "fail to alloc argList");
     process->nrArgs = nrArgs;
-    process->argList[0] = process->cmd;
+
+    char bufferTok[swl_str_len(newArgs) + 1];
+    swl_str_copy(bufferTok, sizeof(bufferTok), newArgs);
+    swl_str_copyMalloc(&process->argList[0], process->cmd);
     for(i = 0; i < nrArgs; i++) {
-        process->argList[i + 1] = strtok((i ? NULL : process->args), " ");
+        swl_str_copyMalloc(&process->argList[i + 1], strtok((i ? NULL : bufferTok), " "));
     }
     SAH_TRACEZ_INFO(ME, "init dmn %s args %s : %u", process->cmd, newArgs, nrArgs);
 }
