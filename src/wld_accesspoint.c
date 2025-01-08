@@ -2534,6 +2534,35 @@ bool wld_vap_isDummyVap(T_AccessPoint* pAP) {
     return pAP->pBus == NULL;
 }
 
+static void s_syncVapNetdevIndex(char* apCtxName) {
+    T_AccessPoint* pAP = wld_vap_get_vap(apCtxName);
+    free(apCtxName);
+    ASSERTI_NOT_NULL(pAP, , ME, "NULL");
+    swl_typeUInt32_commitObjectParam(pAP->pBus, "Index", pAP->index);
+
+    T_SSID* pSSID = pAP->pSSID;
+    if(pSSID != NULL) {
+        swl_typeUInt32_commitObjectParam(pSSID->pBus, "Index", pAP->index);
+    }
+
+    T_Radio* pRad = pAP->pRadio;
+    if(pRad != NULL) {
+        swl_typeUInt32_commitObjectParam(pRad->pBus, "Index", pRad->index);
+    }
+    wld_vap_updateState(pAP);
+}
+
+void wld_vap_setNetdevIndex(T_AccessPoint* pAP, int32_t netDevIndex) {
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    SAH_TRACEZ_INFO(ME, "%s: update NetDevIndex from %d to %d", pAP->alias, pAP->index, netDevIndex);
+
+    pAP->index = netDevIndex;
+
+    ASSERT_NOT_NULL(pAP->alias, , ME, "NULL");
+    swla_delayExec_add((swla_delayExecFun_cbf) s_syncVapNetdevIndex, strdup(pAP->alias));
+}
+
+
 static amxd_status_t s_getLastAssocReq(T_AccessPoint* pAP, const char* macStation, amxc_var_t* retval) {
     wld_vap_assocTableStruct_t* tuple = NULL;
     swl_rc_ne ret = wld_ap_getLastAssocReq(pAP, macStation, &tuple);
