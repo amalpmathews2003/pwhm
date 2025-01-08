@@ -435,6 +435,7 @@ swl_rc_ne wld_secDmn_delFromGrp(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pSecDmn->secDmnGroup, SWL_RC_INVALID_STATE, ME, "NULL");
     swl_rc_ne rc = wld_secDmnGrp_delMember(pSecDmn->secDmnGroup, pSecDmn);
+    pSecDmn->secDmnGroup = NULL;
     pSecDmn->dmnProcess = pSecDmn->selfDmnProcess;
     wld_secDmn_setRestartNeeded(pSecDmn, false);
     return rc;
