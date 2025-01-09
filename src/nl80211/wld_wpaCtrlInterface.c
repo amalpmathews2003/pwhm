@@ -356,14 +356,13 @@ bool wld_wpaCtrlInterface_isEnabled(const wld_wpaCtrlInterface_t* pIface) {
     return pIface->enable;
 }
 
-const char* wld_wpaCtrlInterface_getConnectionPath(const wld_wpaCtrlInterface_t* pIface) {
+const char* wld_wpaCtrlInterface_getConnectionDirPath(const wld_wpaCtrlInterface_t* pIface) {
     ASSERTS_NOT_NULL(pIface, "", ME, "NULL");
-    ASSERTS_NOT_NULL(pIface->cmdConn, "", ME, "NULL");
-    return wld_wpaCtrlConnection_getConnSrvPath(pIface->cmdConn);
+    return wld_wpaCtrlConnection_getConnSrvDirPath(pIface->cmdConn);
 }
 
 bool wld_wpaCtrlInterface_checkConnectionPath(const wld_wpaCtrlInterface_t* pIface) {
-    const char* path = wld_wpaCtrlInterface_getConnectionPath(pIface);
+    const char* path = wld_wpaCtrlInterface_getPath(pIface);
     return wld_wpaCtrl_checkSockPath(path);
 }
 
