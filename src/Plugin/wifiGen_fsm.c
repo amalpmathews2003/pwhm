@@ -490,17 +490,15 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
     if(state != wifiGen_hapd_isStartable(pRad)) {
         if(state) {
             SAH_TRACEZ_WARNING(ME, "%s: disable hostapd iface %s not expected to start", pRad->Name, ifName);
-            setBitLongArray(actionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
+            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_DISABLE_HOSTAPD);
         } else if(pRad->detailedState != CM_RAD_DOWN) {
             SAH_TRACEZ_WARNING(ME, "%s: hostapd connected but main iface not yet ready", pRad->Name);
             return;
         } else {
             SAH_TRACEZ_WARNING(ME, "%s: enable hostapd iface %s expected to start", pRad->Name, ifName);
-            setBitLongArray(actionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
+            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_ENABLE_HOSTAPD);
         }
-        if(needCommit) {
-            wld_rad_doCommitIfUnblocked(pRad);
-        }
+        wld_rad_doCommitIfUnblocked(pRad);
         return;
     }
 
