@@ -257,6 +257,8 @@ swl_rc_ne wld_wpaCtrlConnection_sendCmd(wpaCtrlConnection_t* pConn, const char* 
 
 swl_rc_ne wld_wpaCtrlConnection_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, const char* cmd, char* reply, size_t replyLen, uint32_t tmOutMSec) {
     SAH_TRACEZ_IN(ME);
+    ASSERT_NOT_NULL(reply, SWL_RC_INVALID_PARAM, ME, "empty reply buf");
+    ASSERT_TRUE(replyLen > 0, SWL_RC_INVALID_PARAM, ME, "null reply buf len");
     ASSERT_NOT_NULL(pConn, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_STR(cmd, SWL_RC_INVALID_PARAM, ME, "empty cmd");
     const char* sockName = wld_wpaCtrlConnection_getConnSockName(pConn);
@@ -273,7 +275,8 @@ swl_rc_ne wld_wpaCtrlConnection_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, con
     while(recv(fd, dropBuf, replyLen, 0) > 0) {
     }
 
-    ASSERT_TRUE(swl_rc_isOk(wld_wpaCtrlConnection_sendCmd(pConn, cmd)), SWL_RC_ERROR, ME, "%s: fail to send sync cmd(%s)", sockName, cmd);
+    swl_rc_ne rc = wld_wpaCtrlConnection_sendCmd(pConn, cmd);
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to send sync cmd(%s)", sockName, cmd);
 
     do {
         tvMs = SWL_MAX(tvMs, (uint32_t) DFLT_SYNC_CMD_TMOUT_MS);
@@ -286,9 +289,9 @@ swl_rc_ne wld_wpaCtrlConnection_sendCmdSyncedExt(wpaCtrlConnection_t* pConn, con
         if((res < 0) && (errno == EINTR)) {
             continue;
         }
-        ASSERT_FALSE(res < 0, SWL_RC_ERROR, ME, "%s: select err(%d:%s)", sockName, errno, strerror(errno));
-        ASSERT_NOT_EQUALS(res, 0, SWL_RC_ERROR, ME, "%s: cmd(%s) timed out", sockName, cmd);
-        ASSERT_NOT_EQUALS(FD_ISSET(fd, &rfds), 0, SWL_RC_ERROR, ME, "%s: missing reply on fd(%d)", sockName, fd);
+        ASSERT_FALSE(res < 0, SWL_RC_NOT_AVAILABLE, ME, "%s: select err(%d:%s)", sockName, errno, strerror(errno));
+        ASSERT_NOT_EQUALS(res, 0, SWL_RC_NOT_AVAILABLE, ME, "%s: cmd(%s) timed out", sockName, cmd);
+        ASSERT_NOT_EQUALS(FD_ISSET(fd, &rfds), 0, SWL_RC_NOT_AVAILABLE, ME, "%s: missing reply on fd(%d)", sockName, fd);
         ssize_t nr = recv(fd, reply, replyLen, 0);
         ASSERT_FALSE(nr < 0, SWL_RC_ERROR, ME, "%s: recv err(%d:%s)", sockName, errno, strerror(errno));
         /* ignore reply when looking like a wpactrl event */
