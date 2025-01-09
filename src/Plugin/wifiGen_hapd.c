@@ -388,7 +388,12 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
 swl_rc_ne wifiGen_hapd_reloadDaemon(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s : Reload Hostapd", pRad->Name);
-    return wld_secDmn_reload(pRad->hostapd);
+    swl_rc_ne rc;
+    if((wifiGen_hapd_countGrpMembers(pRad) < 2) ||
+       ((rc = wld_rad_hostapd_reconfigure(pRad)) < SWL_RC_OK)) {
+        rc = wld_secDmn_reload(pRad->hostapd);
+    }
+    return rc;
 }
 
 void wifiGen_hapd_writeConfig(T_Radio* pRad) {
