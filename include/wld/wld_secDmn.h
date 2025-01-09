@@ -91,6 +91,7 @@ struct wld_secDmn {
     wld_secDmnEvtHandlers handlers; /* optional handlers of secDmn events*/
     void* userData;                 /* optional user data available in restart handler. */
     swl_mapCharInt32_t cfgParamSup; /* list of dynamically checked config parameters support */
+    swl_mapCharInt32_t cmdSup;      /* list of dynamically checked command support */
 
     /* private: self//group process management */
     wld_process_t* selfDmnProcess;  /* self daemon process context. */
@@ -120,6 +121,8 @@ uint32_t wld_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn);
 uint32_t wld_secDmn_countCfgParamSuppChecked(wld_secDmn_t* pSecDmn);
 uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp);
 const char* wld_secDmn_getCtrlIfaceDirPath(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_setCmdSupp(wld_secDmn_t* pSecDmn, const char* cmd, swl_trl_e supp);
+swl_trl_e wld_secDmn_getCmdSupp(wld_secDmn_t* pSecDmn, const char* cmd);
 
 #define CALL_SECDMN_MGR_EXT(pSecDmn, fName, ifName, ...) \
     if(pSecDmn != NULL) { \
