@@ -317,6 +317,24 @@ wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstNotReadyInterface(const wld_wpaC
     return NULL;
 }
 
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstAvailableInterface(const wld_wpaCtrlMngr_t* pMgr) {
+    ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
+    swl_unLiListIt_t it;
+    swl_unLiList_for_each(it, &pMgr->ifaces) {
+        wld_wpaCtrlInterface_t* pIface = *(swl_unLiList_data(&it, wld_wpaCtrlInterface_t * *));
+        if(wld_wpaCtrlInterface_checkConnectionPath(pIface)) {
+            return pIface;
+        }
+    }
+    return NULL;
+}
+
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getDefaultInterface(const wld_wpaCtrlMngr_t* pMgr) {
+    ASSERT_NOT_NULL(pMgr, NULL, ME, "NULL");
+    wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getFirstReadyInterface(pMgr) ? : wld_wpaCtrlMngr_getFirstAvailableInterface(pMgr);
+    return pIface;
+}
+
 uint32_t wld_wpaCtrlMngr_countInterfaces(const wld_wpaCtrlMngr_t* pMgr) {
     ASSERTS_NOT_NULL(pMgr, 0, ME, "NULL");
     return swl_unLiList_size(&pMgr->ifaces);
