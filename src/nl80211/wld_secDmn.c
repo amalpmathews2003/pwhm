@@ -152,6 +152,7 @@ swl_rc_ne wld_secDmn_init(wld_secDmn_t** ppSecDmn, char* cmd, char* startArgs, c
     swl_str_copyMalloc(&pSecDmn->cfgFile, cfgFile);
     swl_str_copyMalloc(&pSecDmn->ctrlIfaceDir, ctrlIfaceDir);
     swl_mapCharInt32_init(&pSecDmn->cfgParamSup);
+    swl_mapCharInt32_init(&pSecDmn->cmdSup);
     return SWL_RC_OK;
 }
 
@@ -177,6 +178,7 @@ swl_rc_ne wld_secDmn_cleanup(wld_secDmn_t** ppSecDmn) {
     }
     pSecDmn->dmnProcess = NULL;
     swl_mapCharInt32_cleanup(&pSecDmn->cfgParamSup);
+    swl_mapCharInt32_cleanup(&pSecDmn->cmdSup);
     W_SWL_FREE(pSecDmn->cfgFile);
     W_SWL_FREE(pSecDmn->ctrlIfaceDir);
     free(pSecDmn);
@@ -359,6 +361,18 @@ uint32_t wld_secDmn_countCfgParamSuppByVal(wld_secDmn_t* pSecDmn, swl_trl_e supp
         }
     }
     return count;
+}
+
+bool wld_secDmn_setCmdSupp(wld_secDmn_t* pSecDmn, const char* cmd, swl_trl_e supp) {
+    ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
+    return swl_mapCharInt32_addOrSet(&pSecDmn->cmdSup, (char*) cmd, supp);
+}
+
+swl_trl_e wld_secDmn_getCmdSupp(wld_secDmn_t* pSecDmn, const char* cmd) {
+    ASSERTS_NOT_NULL(pSecDmn, SWL_TRL_UNKNOWN, ME, "NULL");
+    int32_t* pVal = swl_map_get(&pSecDmn->cmdSup, (char*) cmd);
+    ASSERTS_NOT_NULL(pVal, SWL_TRL_UNKNOWN, ME, "not found");
+    return *pVal;
 }
 
 const char* wld_secDmn_getCtrlIfaceDirPath(wld_secDmn_t* pSecDmn) {
