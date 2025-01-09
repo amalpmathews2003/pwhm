@@ -190,7 +190,8 @@ bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd,
 }
 
 /**
- * @brief send formatted command to wpa_ctrl server and check the received reply
+ * @brief send formatted command to wpa_ctrl server over established or temporary connection
+ * and check the received reply
  *
  * @param pIface :the wpa_ctrl interface to which the command is sent
  * @param expectedResponse : string expected reply
@@ -202,7 +203,8 @@ bool wld_wpaCtrl_sendCmdCheckResponse(wld_wpaCtrlInterface_t* pIface, char* cmd,
  *         SWL_RC_INVALID_PARAM when the command format is not applicable
  */
 swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, char* expectedResponse, const char* cmdFormat, ...) {
-    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pIface), SWL_RC_INVALID_STATE, ME, "%s: wpactrl link not ready", wld_wpaCtrlInterface_getName(pIface));
+    const char* wpaCtrlIfName = wld_wpaCtrlInterface_getName(pIface);
+    ASSERTS_TRUE(wld_wpaCtrlInterface_checkConnectionPath(pIface), SWL_RC_INVALID_STATE, ME, "%s: wpactrl link not ready", wpaCtrlIfName);
     ASSERTS_STR(cmdFormat, SWL_RC_INVALID_PARAM, ME, "empty cmd");
     char cmdStr[512] = {0};
     int32_t ret = 0;
@@ -211,7 +213,20 @@ swl_rc_ne wld_wpaCtrl_sendCmdFmtCheckResponse(wld_wpaCtrlInterface_t* pIface, ch
     ret = vsnprintf(cmdStr, sizeof(cmdStr), cmdFormat, args);
     va_end(args);
     ASSERT_FALSE(ret < 0, SWL_RC_INVALID_PARAM, ME, "Fail to format cmd string");
-    return wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->cmdConn, cmdStr, expectedResponse);
+    if(wld_wpaCtrlInterface_isReady(pIface)) {
+        return wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->cmdConn, cmdStr, expectedResponse);
+    }
+    size_t maxMsgLen = wld_wpaCtrl_getMaxMsgLen();
+    char reply[maxMsgLen];
+    memset(reply, 0, sizeof(reply));
+    const char* serverPath = wld_wpaCtrlInterface_getConnectionDirPath(pIface);
+    const char* sockName = wld_wpaCtrlInterface_getConnectionSockName(pIface);
+    swl_rc_ne rc = wld_wpaCtrl_queryToSock(serverPath, sockName, cmdStr, reply, sizeof(reply));
+    ASSERTS_TRUE(swl_rc_isOk(rc), rc, ME, "%s: fail to query (%s) to (%s/%s)",
+                 wpaCtrlIfName, cmdStr, serverPath, sockName);
+    ASSERT_TRUE(swl_str_matches(reply, expectedResponse), SWL_RC_ERROR, ME, "%s: query (%s) to (%s/%s) reply(%s): unmatch expect(%s)",
+                wpaCtrlIfName, cmdStr, serverPath, sockName, reply, expectedResponse);
+    return rc;
 }
 
 /**
