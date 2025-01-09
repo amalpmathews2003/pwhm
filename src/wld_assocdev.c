@@ -871,7 +871,7 @@ amxd_status_t _getStationStats(amxd_object_t* obj_AP,
 
 static swl_rc_ne s_getSingleStationStats(amxd_object_t* const object) {
     ASSERT_NOT_NULL(object, SWL_RC_INVALID_PARAM, ME, "NULL");
-    T_AssociatedDevice* pAD = object->priv;
+    T_AssociatedDevice* pAD = wld_ad_fromObj(object);
     ASSERT_NOT_NULL(pAD, SWL_RC_INVALID_PARAM, ME, "pAD is NULL, no device present");
     T_AccessPoint* pAP = wld_ad_getAssociatedAp(pAD);
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -894,7 +894,7 @@ amxd_status_t _wld_assocDev_getStats_orf(amxd_object_t* const object,
                                          amxc_var_t* const action_retval,
                                          void* priv) {
     ASSERT_NOT_NULL(object, amxd_status_ok, ME, "obj is NULL");
-    T_AssociatedDevice* pAD = object->priv;
+    T_AssociatedDevice* pAD = wld_ad_fromObj(object);
     ASSERTI_NOT_NULL(pAD, amxd_status_ok, ME, "pAD is NULL, no device present");
     return swla_dm_procObjActionRead(object, param, reason, args, action_retval, priv, &pAD->onActionReadCtx, s_getSingleStationStats);
 }
