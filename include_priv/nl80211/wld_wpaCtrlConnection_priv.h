@@ -66,7 +66,8 @@
 #include <sys/un.h>
 #include "swl/swl_common.h"
 
-#define CTRL_IFACE_CLIENT "/var/lib/wld/wpactrl-"
+#define CTRL_IFACE_CLIENT_DIR "/var/lib/wld"
+#define CTRL_IFACE_CLIENT CTRL_IFACE_CLIENT_DIR "/wpactrl-"
 #define DFLT_SYNC_CMD_TMOUT_MS 1000
 
 typedef void (* wld_wpaCtrlConnection_readDataCb_f)(void* userData, char* msgData, size_t msgLen);
@@ -81,6 +82,7 @@ typedef struct wpaCtrlConnection {
     int wpaPeer;
     void* userData;
     wld_wpaCtrlConnection_evtHandlers_cb evtHdlrs;
+    char* srvDirPath;
 } wpaCtrlConnection_t;
 
 swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t connId, const char* serverPath, const char* sockName);
@@ -96,5 +98,7 @@ swl_rc_ne wld_wpaCtrlConnection_cleanup(wpaCtrlConnection_t** ppConn);
 const char* wld_wpaCtrlConnection_getConnCliPath(wpaCtrlConnection_t* pConn);
 const char* wld_wpaCtrlConnection_getConnSrvPath(wpaCtrlConnection_t* pConn);
 const char* wld_wpaCtrlConnection_getConnSockName(wpaCtrlConnection_t* pConn);
+const char* wld_wpaCtrlConnection_getConnCliDirPath(wpaCtrlConnection_t* pConn);
+const char* wld_wpaCtrlConnection_getConnSrvDirPath(wpaCtrlConnection_t* pConn);
 
 #endif /* INCLUDE_PRIV_NL80211_WLD_WPACTRLCONNECTION_PRIV_H_ */

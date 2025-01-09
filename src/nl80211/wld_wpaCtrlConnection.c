@@ -106,6 +106,15 @@ const char* wld_wpaCtrlConnection_getConnSrvPath(wpaCtrlConnection_t* pConn) {
     return s_getConnSrvPath(pConn);
 }
 
+const char* wld_wpaCtrlConnection_getConnCliDirPath(wpaCtrlConnection_t* pConn _UNUSED) {
+    return CTRL_IFACE_CLIENT_DIR;
+}
+
+const char* wld_wpaCtrlConnection_getConnSrvDirPath(wpaCtrlConnection_t* pConn) {
+    ASSERTS_NOT_NULL(pConn, "", ME, "NULL");
+    return pConn->srvDirPath;
+}
+
 const char* wld_wpaCtrlConnection_getConnSockName(wpaCtrlConnection_t* pConn) {
     ASSERTS_NOT_NULL(pConn, "", ME, "NULL");
     const char* path = s_getConnSrvPath(pConn);
@@ -134,6 +143,7 @@ swl_rc_ne wld_wpaCtrlConnection_cleanup(wpaCtrlConnection_t** ppConn) {
     SAH_TRACEZ_INFO(ME, "cleanup connection (%s) to (%s)",
                     s_getConnCliPath(pConn),
                     s_getConnSrvPath(pConn));
+    W_SWL_FREE(pConn->srvDirPath);
     W_SWL_FREE(*ppConn);
     return SWL_RC_OK;
 }
@@ -152,6 +162,7 @@ swl_rc_ne wld_wpaCtrlConnection_init(wpaCtrlConnection_t** ppConn, uint32_t conn
         wld_wpaCtrlConnection_close(pConn);
     }
 
+    swl_str_copyMalloc(&pConn->srvDirPath, serverPath);
     pConn->serverAddr.sun_family = AF_UNIX;
     snprintf(pConn->serverAddr.sun_path, sizeof(pConn->serverAddr.sun_path), "%s/%s", serverPath, sockName);
     pConn->clientAddr.sun_family = AF_UNIX;
