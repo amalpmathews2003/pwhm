@@ -105,7 +105,7 @@ swl_rc_ne wld_wpaCtrlMngr_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr) {
         T_SSID* pSSID = s_fetchLinkSSID(pMgr, sockName);
         wld_wpaCtrlInterface_t* pIface = wld_ssid_getWpaCtrlIface(pSSID);
         wld_wpaCtrlMngr_t* pCurrMgr = wld_wpaCtrlInterface_getMgr(pIface);
-        if((pCurrMgr != NULL) && (wld_secDmn_isRunning(pCurrMgr->pSecDmn)) && pSSID->enable) {
+        if((pCurrMgr != NULL) && (wld_secDmn_isRunning(pCurrMgr->pSecDmn))) {
             if(!swl_str_matches(wld_wpaCtrlInterface_getConnectionSockName(pIface), sockName)) {
                 wld_wpaCtrlInterface_setConnectionInfo(pIface, ctrlDirPath, sockName);
             }
