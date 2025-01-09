@@ -83,6 +83,8 @@ wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getInterfaceByName(const wld_wpaCtrlMngr
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstInterface(const wld_wpaCtrlMngr_t* pMgr);
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstReadyInterface(const wld_wpaCtrlMngr_t* pMgr);
 wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstNotReadyInterface(const wld_wpaCtrlMngr_t* pMgr);
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getFirstAvailableInterface(const wld_wpaCtrlMngr_t* pMgr);
+wld_wpaCtrlInterface_t* wld_wpaCtrlMngr_getDefaultInterface(const wld_wpaCtrlMngr_t* pMgr);
 swl_rc_ne wld_wpaCtrlMngr_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr);
 uint32_t wld_wpaCtrlMngr_countInterfaces(const wld_wpaCtrlMngr_t* pMgr);
 struct wld_secDmn* wld_wpaCtrlMngr_getSecDmn(const wld_wpaCtrlMngr_t* pMgr);
