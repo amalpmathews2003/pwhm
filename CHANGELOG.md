@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.2.1 - 2025-01-09(15:16:36 +0000)
+
+### Other
+
+- - fix crash with invalid obj ref.
+
 ## Release v7.2.0 - 2025-01-09(13:12:19 +0000)
 
 ### Other
