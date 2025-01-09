@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.3.0 - 2025-01-09(17:37:57 +0000)
+
+### Other
+
+- add wpactrl Iface/Conn apis to get server sockets directory path
+
 ## Release v7.2.1 - 2025-01-09(15:16:36 +0000)
 
 ### Other
