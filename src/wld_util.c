@@ -2431,3 +2431,26 @@ wld_spectrumChannelInfoEntry_t* wld_util_addorUpdateSpectrumEntry(amxc_llist_t* 
     return pEntry;
 }
 
+swl_rc_ne wld_util_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
+    ASSERTS_NOT_NULL(pResult, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(pWirelessDevIE, SWL_RC_INVALID_PARAM, ME, "NULL");
+    if(pWirelessDevIE->operChanInfo.channel > 0) {
+        pResult->channel = pWirelessDevIE->operChanInfo.channel;
+    }
+    if(pWirelessDevIE->operChanInfo.bandwidth != SWL_BW_AUTO) {
+        pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
+    }
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
+    pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
+    swl_operatingClass_t operClass = swl_chanspec_getOperClass(&chanSpec);
+    if(operClass > 0) {
+        pResult->operClass = operClass;
+    }
+    pResult->ssidLen = SWL_MIN((uint8_t) sizeof(pResult->ssid), pWirelessDevIE->ssidLen);
+    memcpy(pResult->ssid, pWirelessDevIE->ssid, pResult->ssidLen);
+    pResult->operatingStandards = pWirelessDevIE->operatingStandards;
+    pResult->secModeEnabled = pWirelessDevIE->secModeEnabled;
+    pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
+    return SWL_RC_OK;
+}
+

@@ -63,8 +63,8 @@
 #define __WLD_UTIL_H__
 
 #include "wld.h"
-
-
+#include "swl/swl_genericFrameParser.h"
+#include "swl/swl_hex.h"
 
 
 #ifdef __cplusplus
@@ -411,6 +411,15 @@ wld_spectrumChannelInfoEntry_t* wld_util_getSpectrumEntryByChannel(amxc_llist_t*
  * @return wld_spectrumChannelInfoEntry_t* pointer to the entry node in the list, or NULL when not match
  */
 wld_spectrumChannelInfoEntry_t* wld_util_addorUpdateSpectrumEntry(amxc_llist_t* llSpectrumChannelInfo, wld_spectrumChannelInfoEntry_t* pData);
+
+/**
+ * @brief copy Info Elements details into scan results struct
+ *
+ * @param pResult scan result entry
+ * @param pWirelessDevIE wireless frame parsed Info elements
+ * @return SWL_RC_OK if successful error code otherwise
+ */
+swl_rc_ne wld_util_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
 
 #ifdef __cplusplus
 }/* extern "C" */

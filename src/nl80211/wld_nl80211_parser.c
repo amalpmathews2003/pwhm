@@ -1372,26 +1372,6 @@ swl_rc_ne wld_nl80211_parseChanSurveyInfo(struct nlattr* tb[], wld_nl80211_chann
     return rc;
 }
 
-static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE) {
-    if(pWirelessDevIE->operChanInfo.channel > 0) {
-        pResult->channel = pWirelessDevIE->operChanInfo.channel;
-    }
-    if(pWirelessDevIE->operChanInfo.bandwidth != SWL_BW_AUTO) {
-        pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
-    }
-    swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
-    pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
-    swl_operatingClass_t operClass = swl_chanspec_getOperClass(&chanSpec);
-    if(operClass > 0) {
-        pResult->operClass = operClass;
-    }
-    pResult->ssidLen = SWL_MIN((uint8_t) sizeof(pResult->ssid), pWirelessDevIE->ssidLen);
-    memcpy(pResult->ssid, pWirelessDevIE->ssid, pResult->ssidLen);
-    pResult->operatingStandards = pWirelessDevIE->operatingStandards;
-    pResult->secModeEnabled = pWirelessDevIE->secModeEnabled;
-    pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
-}
-
 swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanResultSSID_t* pResult, swl_freqBandExt_e band) {
     swl_rc_ne rc = SWL_RC_INVALID_PARAM;
     ASSERT_NOT_NULL(tb, rc, ME, "NULL");
@@ -1473,7 +1453,7 @@ swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanRe
             SAH_TRACEZ_WARNING(ME, "Error while parsing probe/beacon rcvd IEs");
             return SWL_RC_CONTINUE;
         }
-        s_copyScanInfoFromIEs(pResult, &wirelessDevIE);
+        wld_util_copyScanInfoFromIEs(pResult, &wirelessDevIE);
     }
 
     if(!pResult->channel || (pResult->ssidLen >= SWL_80211_SSID_STR_LEN)) {
