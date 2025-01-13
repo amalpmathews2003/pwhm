@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v7.3.1 - 2025-01-13(15:27:57 +0000)
+
+### Other
+
+- - Fix args parameter being altered in wld deamon struct
+
 ## Release v7.3.0 - 2025-01-09(17:37:57 +0000)
 
 ### Other
