@@ -1390,6 +1390,12 @@ static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDev
     pResult->operatingStandards = pWirelessDevIE->operatingStandards;
     pResult->secModeEnabled = pWirelessDevIE->secModeEnabled;
     pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
+
+    if((pWirelessDevIE->channelUtilization != 0) || (pWirelessDevIE->stationCount != 0)) {
+        //IE has BSSLOAD element
+        pResult->channelUtilization = pWirelessDevIE->channelUtilization;
+        pResult->stationCount = pWirelessDevIE->stationCount;
+    }
 }
 
 swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanResultSSID_t* pResult, swl_freqBandExt_e band) {

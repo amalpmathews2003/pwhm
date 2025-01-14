@@ -1724,6 +1724,17 @@ define probelist_t{
 						 * The bssid identifier.
 						 */
 						%read-only string BSSID;
+
+						/**
+						 * The ChannelUtilization of this ssid
+						 */
+						%read-only uint8 ChannelUtilization;
+
+						/**
+						 * The StationCount of this ssid
+						 */
+						%read-only uint16 StationCount;
+
 					}
 				}
 
