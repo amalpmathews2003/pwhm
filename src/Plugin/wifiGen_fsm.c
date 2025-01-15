@@ -589,6 +589,8 @@ static void s_syncOnEpRadUp(void* userData, char* ifName, bool state _UNUSED) {
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     SAH_TRACEZ_ERROR(ME, "%s: Register for probe Request notifications", pEP->alias);
     wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pEP->index, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0);
+    SAH_TRACEZ_INFO(ME, "%s: Register for action notifications", pEP->alias);
+    wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pEP->index, SWL_80211_MGT_FRAME_TYPE_ACTION, NULL, 0);
 }
 
 static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {
