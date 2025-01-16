@@ -313,6 +313,15 @@ swl_rc_ne wld_wpaSupp_cfgFile_create(T_EndPoint* pEP, char* cfgFileName) {
 
     pEP->pFA->mfn_wendpoint_updateConfigMaps(pEP, config);
 
+    /* multi_ap_profile has been set to the global section of wpaSupplicant configuration
+     * in some vendor modules. It conflicts with generic implementation where multi_ap_profile
+     * is a part of network section. */
+    swl_mapChar_t* network = wld_wpaSupp_getNetworkConfig(config);
+    if(!(swl_map_has(config->global, "multi_ap_profile"))) {
+        /*For now its hardcoded, because this valuse isn't present at dataelemnts*/
+        swl_mapChar_add(network, "multi_ap_profile", "3");
+    }
+
     ret = wld_wpaSupp_writeConfig(config, cfgFileName);
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Write config error");
 
