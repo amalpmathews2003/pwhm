@@ -157,6 +157,7 @@ typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, sw
 typedef void (* wld_wpaCtrl_stationStartConnCb_f)(void* userData, char* ifName, const char* ssid, swl_macBin_t* bBssidMac, swl_chanspec_t* pChansSpec);
 typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* ifName, int error);
 typedef void (* wld_wpaCtrl_apIfaceEventCb_f)(void* userData, char* ifName);
+typedef void (* wld_wpaCtrl_stationMultiApInfoCb_f)(void* userData, char* ifName, uint8_t profileId, uint16_t primVlanId);
 
 /*
  * @brief structure of AP/EP event handlers
@@ -190,6 +191,7 @@ typedef struct {
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
     wld_wpaCtrl_apIfaceEventCb_f fApEnabledCb;
     wld_wpaCtrl_apIfaceEventCb_f fApDisabledCb;
+    wld_wpaCtrl_stationMultiApInfoCb_f fStationMultiApInfoCb;
 } wld_wpaCtrl_evtHandlers_cb;
 
 typedef void (* wld_wpaCtrl_chanSwitchStartedCb_f)(void* userData, char* ifName, swl_chanspec_t* chanSpec);
