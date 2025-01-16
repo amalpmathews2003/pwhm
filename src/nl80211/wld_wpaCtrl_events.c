@@ -642,6 +642,15 @@ static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _
         swl_str_copy(bssid, SWL_MAC_CHAR_LEN, &params[strlen(msgPfx)]);
         SWL_MAC_CHAR_TO_BIN(&bBssidMac, bssid);
     }
+
+    /* multiApProfile is configured and only updated from connection event, when included */
+    int32_t multiApProfile = 0;
+    int32_t multiApPrimaryVlanId = 0;
+
+    if(wld_wpaCtrl_getValueIntExt(params, "multi_ap_profile", &multiApProfile) &&
+       wld_wpaCtrl_getValueIntExt(params, "multi_ap_primary_vlanid", &multiApPrimaryVlanId)) {
+        CALL_INTF(pInterface, fStationMultiApInfoCb, multiApProfile, multiApPrimaryVlanId);
+    }
     CALL_INTF(pInterface, fStationConnectedCb, &bBssidMac, 0);
 }
 

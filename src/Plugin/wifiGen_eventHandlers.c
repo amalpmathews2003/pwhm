@@ -1137,6 +1137,17 @@ static void s_stationWpsFail(void* userData, char* ifName _UNUSED) {
     wld_endpoint_sendPairingNotification(pEP, NOTIFY_PAIRING_DONE, WPS_CAUSE_FAILURE, NULL);
 }
 
+static void s_stationMultiApInfo(void* userData, char* ifName _UNUSED, uint8_t profileId, uint16_t vlanId) {
+    T_EndPoint* pEP = (T_EndPoint*) userData;
+    ASSERTS_NOT_NULL(pEP, , ME, "NULL");
+    if((profileId <= MULTIAP_PROFILE_MAX) && (profileId != pEP->multiAPProfile)) {
+        pEP->multiAPProfile = profileId;
+    }
+    if(vlanId != pEP->multiAPVlanId) {
+        pEP->multiAPVlanId = vlanId;
+    }
+}
+
 swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pEP->wpaSupp, SWL_RC_ERROR, ME, "NULL");
@@ -1157,6 +1168,7 @@ swl_rc_ne wifiGen_setEpEvtHandlers(T_EndPoint* pEP) {
     wpaCtrlEpEvtHandlers.fWpsSuccessMsg = s_stationWpsSuccess;
     wpaCtrlEpEvtHandlers.fWpsOverlapMsg = s_stationWpsOverlap;
     wpaCtrlEpEvtHandlers.fWpsFailMsg = s_stationWpsFail;
+    wpaCtrlEpEvtHandlers.fStationMultiApInfoCb = s_stationMultiApInfo;
 
     wld_wpaCtrlInterface_setEvtHandlers(pEP->wpaCtrlInterface, pEP, &wpaCtrlEpEvtHandlers);
 
