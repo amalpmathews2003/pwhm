@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.4.0 - 2025-01-17(17:27:37 +0000)
+
+### Other
+
+- - Provide custom arguments to hostapd
+
 ## Release sah-next_v7.3.2 - 2025-01-17(13:28:41 +0000)
 
 ### Other
