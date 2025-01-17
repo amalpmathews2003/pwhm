@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.3.2 - 2025-01-17(13:28:41 +0000)
+
+### Other
+
+- - Fix single instance hostapd restart bug
+
 ## Release sah-next_v7.3.1 - 2025-01-13(15:27:57 +0000)
 
 ### Other
