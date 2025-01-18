@@ -1,0 +1,255 @@
+name: pwhm
+short_description: "prplMesh WHM"
+long_description: "A Wireless Hardware Manager for prplMesh BWL Backend"
+
+type: plugin
+category: prplMesh
+
+urls:
+  opensource: "https://gitlab.com/prpl-foundation/prplmesh/pwhm/plugins/pwhm"
+
+licenses:
+  - name: "BSD-2-Clause-Patent"
+
+configs:
+  CONFIG_SAH_SERVICES_PWHM:
+    super: True
+    default: y
+    type: bool
+    description: "Build pwhm itself"
+
+  CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST:
+    default: n
+    type: bool
+    description: "PWHM shall disable doing own persistence"
+
+  CONFIG_SAH_SERVICES_PWHM_DISABLE_NETMODEL:
+    default: n
+    type: bool
+    description: "Disable integrating PWHM with netmodel"
+
+  CONFIG_USE_SAH_WPS_FORCE_EQUAL_WL_UUID:
+    type: bool
+    description: "Create WPS UUID based AP MAC address"
+    default: n
+
+  CONFIG_USE_SAH_WPS_DEVICE_NAME:
+    type: bool
+    description: "Force a WPS custom device name in WPS IE"
+    default: n
+
+  CONFIG_SAH_WPS_DEVICE_NAME:
+    type: string
+    description: "WPS IE device Name string"
+    default: "SAH_WPS_DeviceName"
+    depends_on: [ CONFIG_USE_SAH_WPS_DEVICE_NAME ]
+
+  CONFIG_USE_SAH_WPS_FRIENDLY_NAME:
+    type: bool
+    description: "Force a WPS custom friendly name in WPS IE"
+    default: n
+
+  CONFIG_SAH_WPS_FRIENDLY_NAME:
+    type: string
+    description: "WPS IE Friendly Name string"
+    default: "SAH_WPS_FriendlyName"
+    depends_on: [ CONFIG_USE_SAH_WPS_FRIENDLY_NAME ]
+
+  CONFIG_SAH_WLD_INIT_LEGACY:
+    type: bool
+    description: "Legacy: Init wld from vendor plugin"
+    default: n
+    depends_on: [ CONFIG_SAH_LIB_WLD ]
+
+  CONFIG_SAH_WLD_INIT_SCRIPT:
+    type: string
+    description: "Generic plugin init script name"
+    default: "wld_gen"
+    depends_on:
+      - not: CONFIG_SAH_WLD_INIT_LEGACY
+
+  CONFIG_SAH_WLD_INIT_ORDER:
+    type: int
+    description: "Generic plugin init order"
+    default: 60
+    depends_on:
+      - not: CONFIG_SAH_WLD_INIT_LEGACY
+
+  CONFIG_SAH_WLD_ENABLE_USP_SERVER_SOCKET:
+    type: bool
+    description: "Enable direct USP server socket"
+    default: n
+    depends_on: [ CONFIG_PACKAGE_mod-amxb-usp ]
+
+  CONFIG_SAH_WLD_ENABLE_PCB_SERVER_SOCKET:
+    type: bool
+    description: "Enable direct PCB server socket"
+    default: n
+    depends_on:
+      - or:
+        - CONFIG_PACKAGE_mod-amxb-pcb
+        - CONFIG_SAH_MOD_AMXB_PCB
+
+doc:
+  ## Specifies the parser/generator to use for processing the odl files
+  parser: "amx"
+
+makefiles:
+  compile:
+  - directory: "include"
+  - directory: "src"
+  - directory: "odl"
+  - directory: "src/Plugin"
+    target: "all"
+    except: CONFIG_SAH_WLD_INIT_LEGACY
+  clean:
+  - directory: "src"
+  - directory: "odl"
+  - directory: "doc"
+  - directory: "src/Plugin"
+  doc:
+  - directory: "doc"
+  - directory: "odl"
+    target: "all"
+  test:
+  - directory: "test"
+    target: "run"
+  - directory: "test"
+    target: "coverage"
+
+variables:
+# odl/wld.odl contains a variable "$(WIFIROOT)", so automatic doc
+# generation only works if that variable has a value, so we assign that
+# value here.
+- key: WIFIROOT
+  value: WiFiDRV
+
+artifacts:
+- source: "include/wld/*.h"
+  destination: "$(INCLUDEDIR)/wld/"
+  permissions: "0644"
+- source: "include/wld/Utils/*.h"
+  destination: "$(INCLUDEDIR)/wld/Utils/"
+  permissions: "0644"
+- source: "output/$(MACHINE)/libwld.so.$(VERSION)"
+  destination: "$(LIBDIR)/libwld.so.$(VERSION)"
+  permissions: "0755"
+  version: True
+- source: "scripts/wld.sh"
+  destination: "$(LIBDIR)/wld/wld.sh"
+  permissions: "0755"
+- source: "odl/wld.odl"
+  destination: "/etc/amx/wld/wld.odl"
+  permissions: "0644"
+- source: "odl/wld_definitions.odl"
+  destination: "/etc/amx/wld/wld_definitions.odl"
+  permissions: "0644"
+- source: "odl/wld_radio.odl"
+  destination: "/etc/amx/wld/wld_radio.odl"
+  permissions: "0644"
+- source: "odl/wld_ssid.odl"
+  destination: "/etc/amx/wld/wld_ssid.odl"
+  permissions: "0644"
+- source: "odl/wld_accesspoint.odl"
+  destination: "/etc/amx/wld/wld_accesspoint.odl"
+  permissions: "0644"
+- source: "odl/wld_endpoint.odl"
+  destination: "/etc/amx/wld/wld_endpoint.odl"
+  permissions: "0644"
+- source: "odl/01_device-wifi_pwhm_mapping.odl"
+  destination: "/etc/amx/tr181-device/extensions/01_device-wifi_pwhm_mapping.odl"
+  permissions: "0644"
+- source: "odl/wld_defaults/*"
+  destination: "/etc/amx/wld/wld_defaults/"
+  permissions: "0644"
+  except: CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST
+- source: "odl/wld_defaults_empty/*"
+  destination: "/etc/amx/wld/wld_defaults/"
+  permissions: "0644"
+  only: CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST
+- source: "acl/admin/$(COMPONENT).json"
+  destination: "$(ACLDIR)/admin/$(COMPONENT).json"
+  permissions: "0660"
+- source: "acl/admin/$(COMPONENT)-internal.json"
+  destination: "$(ACLDIR)/admin/$(COMPONENT)-internal.json"
+  permissions: "0660"
+- source: "pkgconfig/pkg-config.pc"
+  destination: "$(PKG_CONFIG_LIBDIR)/wld.pc"
+  permissions: "0644"
+- source: "output/$(MACHINE)/Plugin/wld.so.$(VERSION)"
+  destination: "$(LIBDIR)/amx/wld/wld.so.$(VERSION)"
+  permissions: "0755"
+  version: True
+  except: CONFIG_SAH_WLD_INIT_LEGACY
+- source: "scripts/Plugin/wld_gen.sh"
+  destination: "$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)"
+  permissions: "0755"
+  init:
+    start: $(CONFIG_SAH_WLD_INIT_ORDER)
+  debug:
+    order: $(CONFIG_SAH_WLD_INIT_ORDER)
+  except: CONFIG_SAH_WLD_INIT_LEGACY
+- source: "$(INITDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)"
+  destination: "$(PROCMONDIR)/$(CONFIG_SAH_WLD_INIT_SCRIPT)"
+  symbolic: "True"
+  permissions: "0755"
+  except: CONFIG_SAH_WLD_INIT_LEGACY
+- source: "/usr/bin/amxrt"
+  destination: "$(BINDIR)/wld"
+  symbolic: "True"
+  permissions: "0755"
+- source: "scripts/debug_wifi.sh"
+  destination: "/usr/lib/debuginfo/debug_wifi.sh"
+  permissions: "0755"
+- source: "scripts/debugInfo.sh"
+  destination: "$(LIBDIR)/amx/wld/debugInfo.sh"
+  permissions: "0755"
+
+dependencies:
+  compile:
+  - name: "libsahtrace"
+    min: "*"
+  - name: "libswlc"
+    min: "master_v5.29.9"
+  - name: "libswla"
+    min: "master_v3.12.8"
+  - name: "openssl"
+    min: "master_v3.0.3"
+  - name: "libnl"
+    min: "*"
+  - name: "libamxm"
+    min: "*"
+  - name: "libamxc"
+    min: "*"
+  - name: "libamxp"
+    min: "*"
+  - name: "libamxd"
+    min: "*"
+  - name: "libamxb"
+    min: "*"
+  - name: "libamxo"
+    min: "*"
+  - name: "libamxs"
+    min: "*"
+  runtime:
+  - name: "libsahtrace"
+  - name: "libswlc"
+  - name: "libswla"
+  - name: "openssl"
+  - name: "libnl"
+  - name: "libnl-genl"
+  - name: "libamxm"
+  - name: "libamxc"
+  - name: "libamxp"
+  - name: "libamxd"
+  - name: "libamxb"
+  - name: "libamxo"
+  - name: "libamxs"
+  - name: "amxrt"
+  - name: "libamxj"
+  - name: "mod-netmodel"
+  - name: "odl-generator"
+    min: "master_v1.6.4"
+  native:
+  - name: "openssl"
+
