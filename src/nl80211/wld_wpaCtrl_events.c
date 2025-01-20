@@ -63,6 +63,7 @@
 #include "swl/swl_string.h"
 #include "swl/swl_hex.h"
 #include "swl/swl_genericFrameParser.h"
+#include "wld/wld_radio.h"
 #include "wld_channel.h"
 #include "wld_wps.h"
 #include "wld_wpaCtrlInterface_priv.h"

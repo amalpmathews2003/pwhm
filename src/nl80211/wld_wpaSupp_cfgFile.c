@@ -65,6 +65,7 @@
 #include "wld_endpoint.h"
 #include "swl/map/swl_mapCharFmt.h"
 #include "wld_wpaSupp_cfgManager.h"
+#include "wld_wpaSupp_cfgManager_priv.h"
 #include "wld_wpaSupp_cfgFile.h"
 
 #define ME "wSupCfg"
@@ -317,9 +318,12 @@ swl_rc_ne wld_wpaSupp_cfgFile_create(T_EndPoint* pEP, char* cfgFileName) {
      * in some vendor modules. It conflicts with generic implementation where multi_ap_profile
      * is a part of network section. */
     swl_mapChar_t* network = wld_wpaSupp_getNetworkConfig(config);
-    if(!(swl_map_has(config->global, "multi_ap_profile"))) {
-        /*For now its hardcoded, because this valuse isn't present at dataelemnts*/
-        swl_mapChar_add(network, "multi_ap_profile", "3");
+    swl_mapChar_t* global = wld_wpaSupp_getGlobalConfig(config);
+    if(!(swl_map_has(global, "multi_ap_profile"))) {
+        amxd_object_t* object = amxd_object_get(pEP->pBus, "EndPoint");
+        ASSERT_NOT_NULL(object, SWL_RC_INVALID_PARAM, ME, "object NULL");
+        uint32_t multiApProfile  = amxd_object_get_value(uint32_t, object, "MultiAPProfile", NULL);
+        swl_mapCharFmt_addValInt32(network, "multi_ap_profile", multiApProfile);
     }
 
     ret = wld_wpaSupp_writeConfig(config, cfgFileName);
