@@ -642,6 +642,32 @@ static void s_stationConnected(wld_wpaCtrlInterface_t* pInterface, char* event _
         swl_str_copy(bssid, SWL_MAC_CHAR_LEN, &params[strlen(msgPfx)]);
         SWL_MAC_CHAR_TO_BIN(&bBssidMac, bssid);
     }
+
+    T_EndPoint* pEP = wld_vep_from_name(pInterface->name);
+    ASSERT_NOT_NULL(pEP, , ME, "NULL");
+    uint8_t multi_ap_profile = 0;
+    uint16_t multi_ap_primary_vlanid = 0;
+
+    multi_ap_profile = wld_wpaCtrl_getValueInt(params, "multi_ap_profile");
+    multi_ap_primary_vlanid = wld_wpaCtrl_getValueInt(params, "multi_ap_primary_vlanid");
+
+    amxd_object_t* object = pEP->pBus;
+    if(!object) {
+           SAH_TRACEZ_ERROR(ME, "Endpoint datamodel object pointer is missing");
+           return;
+    }
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "%s: trans init failure", pEP->Name);
+    if (multi_ap_profile != pEP->multiAPProfile) {
+        pEP->multiAPProfile = multi_ap_profile;
+        amxd_trans_set_uint8_t(&trans, "MultiAPProfile", pEP->multiAPProfile);
+    }
+    if (multi_ap_primary_vlanid != pEP->multiAPVlanId) {
+        pEP->multiAPVlanId = multi_ap_primary_vlanid;
+        amxd_trans_set_uint16_t(&trans, "MultiAPVlanId", pEP->multiAPVlanId);
+    }
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", pEP->Name);
     CALL_INTF(pInterface, fStationConnectedCb, &bBssidMac, 0);
 }
 
