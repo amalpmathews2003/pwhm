@@ -2139,6 +2139,20 @@ static void s_setSSIDRef_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_par
     SAH_TRACEZ_OUT(ME);
 }
 
+static void s_setMultiAPProfile_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
+
+    uint8_t multiAPProfile = amxc_var_dyncast(uint8_t, newValue);
+    ASSERTS_NOT_EQUALS(pEP->multiAPProfile, multiAPProfile, , ME, "EQUALS");
+    pEP->multiAPProfile = multiAPProfile;
+    pEP->pFA->mfn_wendpoint_update(pEP, SET);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
 /*
  * @brief finalize endpoint creation, by creation its interface
  * If already set, then interface will be re-created
