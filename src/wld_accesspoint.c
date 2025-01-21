@@ -2612,6 +2612,38 @@ amxd_status_t _AssociatedDevice_getLastAssocReq(amxd_object_t* object,
     return status;
 }
 
+/**
+ * @brief Manually disassociates a station
+ * @param mac The MAC address of the station to disassociate.
+ * @return amxd_status_t
+ *         - amxd_status_ok if the station was successfully disassociated.
+ *         - amxd_status_parameter_not_found if the MAC address is missing.
+ *         - A corresponding amxd status error if a hostapd error occurred.
+ */
+amxd_status_t _AccessPoint_disassocStation(amxd_object_t* object _UNUSED,
+                                           amxd_function_t* func _UNUSED,
+                                           amxc_var_t* args,
+                                           amxc_var_t* retval _UNUSED) {
+
+    T_AccessPoint* pAP = wld_ap_fromObj(object);
+    ASSERT_NOT_NULL(pAP, amxd_status_unknown_error, ME, "Not mapped to AP ctx");
+
+    const char* staMacStr = GET_CHAR(args, "mac");
+    swl_macBin_t staMac;
+
+    uint32_t reason = GET_UINT32(args, "reason");
+    // Convert MAC string to MAC binary
+    ASSERT_NOT_NULL(staMacStr, amxd_status_parameter_not_found, ME, "No MAC given");
+    bool success = SWL_MAC_CHAR_TO_BIN(&staMac, staMacStr);
+    ASSERTS_TRUE(success, amxd_status_invalid_value, ME, "Fail to convert mac");
+
+    swl_rc_ne result = pAP->pFA->mfn_wvap_disassoc_sta_reason(pAP, &staMac, reason);
+
+    ASSERT_EQUALS(result, SWL_RC_OK, amxd_status_unknown_error, ME, "Fail to disassociate station");
+
+    return amxd_status_ok;
+}
+
 amxd_status_t _AccessPoint_debug(amxd_object_t* obj,
                                  amxd_function_t* func _UNUSED,
                                  amxc_var_t* args,

@@ -616,6 +616,13 @@ int wifiGen_vap_kick_sta_reason(T_AccessPoint* pAP, char* buf, int bufsize _UNUS
     return wld_ap_hostapd_kickStation(pAP, &bMac, (swl_IEEE80211deauthReason_ne) reason);
 }
 
+swl_rc_ne wifiGen_vap_disassoc_sta_reason(T_AccessPoint* pAP, swl_macBin_t* staMac, int reason) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(staMac, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    return wld_ap_hostapd_disassocStation(pAP, staMac, reason);
+}
+
 int wifiGen_vap_kick_sta(T_AccessPoint* pAP, char* buf, int bufsize, int set _UNUSED) {
     return wifiGen_vap_kick_sta_reason(pAP, buf, bufsize, SWL_IEEE80211_DEAUTH_REASON_AUTH_NO_LONGER_VALID);
 }

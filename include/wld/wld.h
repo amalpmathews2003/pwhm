@@ -2290,6 +2290,7 @@ typedef int (APIENTRY* PFN_WVAP_MF_SYNC)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_PF_SYNC)(T_AccessPoint* vap, int set);
 typedef int (APIENTRY* PFN_WVAP_KICK_STA)(T_AccessPoint* vap, char* buf, int bufsize, int set);
 typedef int (APIENTRY* PFN_WVAP_KICK_STA_REASON)(T_AccessPoint* vap, char* buf, int bufsize, int reason);
+typedef swl_rc_ne (APIENTRY* PFN_WVAP_DISASSOC_STA_REASON)(T_AccessPoint* vap, swl_macBin_t* sta_mac, int reason);
 
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_RRM_REQUEST)(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t*);
 typedef swl_rc_ne (APIENTRY* PFN_WVAP_CLEAN_STA)(T_AccessPoint* vap, char* buf, int bufsize);
@@ -2502,6 +2503,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WVAP_PF_SYNC mfn_wvap_pf_sync;                           /**< Sync ProbeFiltering parameters */
     PFN_WVAP_KICK_STA mfn_wvap_kick_sta;                         /**< Disconnect a connected Station from the VAP */
     PFN_WVAP_KICK_STA_REASON mfn_wvap_kick_sta_reason;           /**< Disconnect a connected Station from the VAP with reason code */
+    PFN_WVAP_DISASSOC_STA_REASON mfn_wvap_disassoc_sta_reason;   /**< Disassociate a connected Station from the VAP with reason code */
 
     /*
      * @brief FTA handler for sending BTM request (11v)
