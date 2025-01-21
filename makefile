@@ -128,6 +128,8 @@ changelog:
 doc:
 	$(MAKE) -C doc doc
 
+	$(MAKE) -C odl all
+
 	$(eval ODLFILES += odl/wld.odl)
 	$(eval ODLFILES += odl/wld_definitions.odl)
 	$(eval ODLFILES += odl/wld_radio.odl)
