@@ -65,6 +65,7 @@
 #include "wld_endpoint.h"
 #include "swl/map/swl_mapCharFmt.h"
 #include "wld_wpaSupp_cfgManager.h"
+#include "wld_wpaSupp_cfgManager_priv.h"
 #include "wld_wpaSupp_cfgFile.h"
 
 #define ME "wSupCfg"
@@ -312,6 +313,15 @@ swl_rc_ne wld_wpaSupp_cfgFile_create(T_EndPoint* pEP, char* cfgFileName) {
     s_setWpaSuppNetworkConfig(pEP, config);
 
     pEP->pFA->mfn_wendpoint_updateConfigMaps(pEP, config);
+
+    /* multi_ap_profile has been set to the global section of wpaSupplicant configuration
+     * in some vendor modules. It conflicts with generic implementation where multi_ap_profile
+     * is a part of network section. */
+    swl_mapChar_t* network = wld_wpaSupp_getNetworkConfig(config);
+    swl_mapChar_t* global = wld_wpaSupp_getGlobalConfig(config);
+    if((!swl_map_has(global, "multi_ap_profile")) && (swl_map_size(network) > 0)) {
+        swl_mapCharFmt_addValInt32(network, "multi_ap_profile", pEP->multiAPProfile);
+    }
 
     ret = wld_wpaSupp_writeConfig(config, cfgFileName);
     ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "Write config error");
