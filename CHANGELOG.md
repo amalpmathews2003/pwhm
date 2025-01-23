@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.5.1 - 2025-01-23(11:07:58 +0000)
+
+### Other
+
+- fix wld crash when early starting AP wps
+
 ## Release sah-next_v7.5.0 - 2025-01-22(17:05:36 +0000)
 
 ### Other
