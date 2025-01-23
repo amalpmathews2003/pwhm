@@ -158,6 +158,7 @@ typedef void (* wld_wpaCtrl_beaconResponseCb_f)(void* userData, char* ifName, sw
 typedef void (* wld_wpaCtrl_stationStartConnCb_f)(void* userData, char* ifName, const char* ssid, swl_macBin_t* bBssidMac, swl_chanspec_t* pChansSpec);
 typedef void (* wld_wpaCtrl_stationStartConnFailedCb_f)(void* userData, char* ifName, int error);
 typedef void (* wld_wpaCtrl_apIfaceEventCb_f)(void* userData, char* ifName);
+typedef void (* wld_wpaCtrl_stationMultiApInfoCb_f)(void* userData, char* ifName, uint8_t profileId, uint16_t primVlanId);
 
 /*
  * handler to select MLD iface (primary link) name of a provided SSID (AP/STA link) interface
@@ -197,6 +198,7 @@ typedef struct {
     wld_wpaCtrl_beaconResponseCb_f fBeaconResponseCb;
     wld_wpaCtrl_apIfaceEventCb_f fApEnabledCb;
     wld_wpaCtrl_apIfaceEventCb_f fApDisabledCb;
+    wld_wpaCtrl_stationMultiApInfoCb_f fStationMultiApInfoCb;
 
     /*
      * AP/EP sync handlers:
