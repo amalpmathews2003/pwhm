@@ -431,8 +431,22 @@ swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t dbm) {
 
 swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* dbm) {
     ASSERT_NOT_NULL(pRadio, SWL_RC_INVALID_PARAM, ME, "NULL");
-    return wld_nl80211_getTxPower(wld_nl80211_getSharedState(), pRadio->index, dbm);
+    uint32_t ifIndex = wld_rad_getFirstEnabledIfaceIndex(pRadio);
+    if(ifIndex <= 0) {
+        SAH_TRACEZ_ERROR(ME, "%s: rad has no enabled iface", pRadio->Name);
+        return SWL_RC_ERROR;
+    }
+    return wld_nl80211_getTxPower(wld_nl80211_getSharedState(), ifIndex, dbm);
 }
+
+swl_rc_ne wld_rad_nl80211_getMaxTxPowerdBm(T_Radio* pRad, uint16_t channel, int32_t* dbm) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    uint32_t curFreq;
+    swl_chanspec_t spec = SWL_CHANSPEC_NEW(channel, SWL_BW_20MHZ, pRad->operatingFrequencyBand);
+    ASSERT_FALSE(swl_chanspec_channelToMHz(&spec, &curFreq), SWL_RC_INVALID_PARAM, ME, "invalid chan %d", channel);
+    return wld_nl80211_getMaxTxPowerdBm(wld_nl80211_getSharedState(), pRad->index, curFreq, dbm);
+}
+
 
 swl_rc_ne wld_rad_nl80211_getChanSpecFromIfaceInfo(swl_chanspec_t* pChanSpec, wld_nl80211_ifaceInfo_t* pIfaceInfo) {
     return wld_nl80211_getChanSpecFromIfaceInfo(pChanSpec, pIfaceInfo);

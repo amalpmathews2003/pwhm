@@ -339,6 +339,16 @@ define probelist_t{
 		 */
 		void setChanspec(%mandatory uint16 channel, string bandwidth, string reason, bool direct, string reasonExt);
 
+		/**
+		 * Get the maximum TX Power value for the given channel
+		 * @param channel: target channel.
+		 */
+		int32 getMaxTransmitPowerdBm(%mandatory %in uint16 channel);
+
+		/**
+		 * Current transmit power in dBm
+		 */
+		int32 getCurrentTransmitPowerdBm();
 
 		/**
 		* The current operational state of the radio (see [Section 4.2.2/TR-181i2]).

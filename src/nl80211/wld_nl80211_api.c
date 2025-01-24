@@ -801,6 +801,29 @@ swl_rc_ne wld_nl80211_getTxPower(wld_nl80211_state_t* state, uint32_t ifIndex, i
     return rc;
 }
 
+swl_rc_ne wld_nl80211_getMaxTxPowerdBm(wld_nl80211_state_t* state, uint32_t ifIndex, uint32_t freq, int32_t* dbm) {
+    int32_t locDbm = 0;
+    ASSERT_TRUE(freq > 0, SWL_RC_INVALID_PARAM, ME, "invalid freq");
+    wld_nl80211_wiphyInfo_t wiphyInfo;
+    memset(&wiphyInfo, 0, sizeof(wiphyInfo));
+    swl_rc_ne rc = wld_nl80211_getWiphyInfo(state, ifIndex, &wiphyInfo);
+    ASSERT_TRUE(swl_rc_isOk(rc), rc, ME, "fail to get wiphy info");
+    for(uint32_t i = 0; i < SWL_FREQ_BAND_MAX; i++) {
+        if(wiphyInfo.bands[i].nChans == 0) {
+            continue;
+        }
+        for(uint32_t j = 0; j < wiphyInfo.bands[i].nChans; j++) {
+            if(wiphyInfo.bands[i].chans[j].ctrlFreq == freq) {
+                locDbm = (int32_t) wiphyInfo.bands[i].chans[j].maxTxPwr;
+                break;
+            }
+        }
+    }
+    ASSERT_NOT_EQUALS(locDbm, 0, SWL_RC_ERROR, ME, "maxPow unknown for freq %d", freq);
+    W_SWL_SETPTR(dbm, locDbm);
+    return SWL_RC_OK;
+}
+
 static uint32_t s_getScanFlags(wld_nl80211_scanFlags_t* pFlags) {
     uint32_t flags = 0;
     ASSERTS_NOT_NULL(pFlags, flags, ME, "NULL");

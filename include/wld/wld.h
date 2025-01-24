@@ -2439,6 +2439,12 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     swl_rc_ne (* mfn_wrad_updateConfigMap)(T_Radio* pRad, swl_mapChar_t* configMap); /**< Update the current hostapd radio parameters map, to add or delete parameters */
 
+    /**< Get current transmit power in dBm */
+    swl_rc_ne (* mfn_wrad_getCurrentTxPow_dBm)(T_Radio* pRad, int32_t* dbm);
+
+    /**< Get maximum transmit power in dBm */
+    swl_rc_ne (* mfn_wrad_getMaxTxPow_dBm)(T_Radio* pRad, uint16_t channel, int32_t* dbm);
+
     /**< Get Air usage statistics */
     swl_rc_ne (* mfn_wrad_airstats)(T_Radio* pRad, wld_airStats_t* pStats);
 

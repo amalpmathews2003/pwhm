@@ -790,6 +790,15 @@ int32_t s_getMaxPow(T_Radio* pRad) {
 
 }
 
+swl_rc_ne wifiGen_rad_getTxPowerdBm(T_Radio* rad, int32_t* dbm) {
+    ASSERTS_TRUE(wld_rad_hasActiveIface(rad), SWL_RC_ERROR, ME, "%s not ready", rad->Name);
+    return wld_rad_nl80211_getTxPower(rad, dbm);
+}
+
+swl_rc_ne wifiGen_rad_getMaxTxPowerdBm(T_Radio* pRad, uint16_t channel, int32_t* dbm) {
+    return wld_rad_nl80211_getMaxTxPowerdBm(pRad, channel, dbm);
+}
+
 int wifiGen_rad_txpow(T_Radio* pRad, int val, int set) {
     if(set & SET) {
         pRad->transmitPower = val;

@@ -315,6 +315,18 @@ swl_rc_ne wld_rad_nl80211_setTxPowerLimited(T_Radio* pRadio, int32_t dbm);
 swl_rc_ne wld_rad_nl80211_getTxPower(T_Radio* pRadio, int32_t* dbm);
 
 /*
+ * @brief get maximum transmit power level for a spesific channel
+ *
+ * @param pRadio pointer to radio context
+ * @param channel for which the max transmit power is being retrieved
+ * @param dbm max tx power in dbm
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_nl80211_getMaxTxPowerdBm(T_Radio* pRadio, uint16_t channel, int32_t* dbm);
+
+/*
  * @brief get channel specification from nl80211 interface info
  *
  * @param pChanSpec pointer to chanspec info struct to be filled
