@@ -76,6 +76,7 @@
 #include "swl/swl_string.h"
 #include "swl/swl_uuid.h"
 #include "Utils/wld_autoCommitMgr.h"
+#include "wld_hostapd_ap_api.h"
 
 #define ME "wps"
 
@@ -384,12 +385,8 @@ static void s_setWpsSelfPIN_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
         swl_str_catFormat(defaultPIN, sizeof(defaultPIN), "%d", SelfPIN);
     }
 
-    if(swl_str_matches(defaultPIN, g_wpsConst.DefaultPin)) {
-        return;
-    }
-
     s_updateSelfPIN(defaultPIN);
-    if(pAP->WPS_ConfigMethodsEnabled & (M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
+    if(wld_wps_checkWpsConfig(pAP, M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
         pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
         SAH_TRACEZ_INFO(ME, "%s: set WPS SelfPIN %d", pAP->alias, SelfPIN);
         wld_autoCommitMgr_notifyVapEdit(pAP);
@@ -886,3 +883,16 @@ amxd_status_t _WPS_cancelWPSPairing(amxd_object_t* object,
     return doCancelPairing(object);
 }
 
+/**
+ * Check if the WPS configuration for the given Access Point is valid.
+ *
+ * @param pAP The Access Point to check.
+ * @param cfgMthdsMask The mask of WPS configuration methods to check. If 0, all
+ *                     methods are checked.
+ * @return true if the WPS configuration is valid, false otherwise.
+ */
+bool wld_wps_checkWpsConfig(T_AccessPoint* pAP, wld_wps_cfgMethod_m cfgMthdsMask) {
+    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
+    return (pAP->WPS_Enable && wld_wps_checkSecModeConditions(pAP) &&
+            (cfgMthdsMask ? (pAP->WPS_ConfigMethodsEnabled & cfgMthdsMask) : pAP->WPS_ConfigMethodsEnabled));
+}

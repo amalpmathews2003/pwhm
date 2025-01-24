@@ -104,15 +104,17 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
 swl_rc_ne wld_ap_hostapd_startWps(T_AccessPoint* pAP);
 
 /*
- * @brief start a WPS client PIN session, to pair against a remote device.
+ * @brief Start a WPS client PIN session to pair with a remote device.
  *
- * @param pAP accesspoint
- * @param pin numerical string of 4 or 8 digits (Cf. WPS 2.x)
- *            that can even start with sequence of zero digit.
- * @param timeout Time (in seconds) when the PIN will be invalidated; 0 = no timeout
+ * @remark This API does not allow the client to configure the AP.
  *
- * @return SWL_RC_OK in case of success
- *         SWL_RC_ERROR otherwise
+ * @param pAP The access point.
+ * @param pin A numerical string of 4 or 8 digits (as per WPS 2.x)
+ *            that can even start with a sequence of zero digits.
+ * @param timeout The time (in seconds) after which the PIN will be invalidated; 0 = no timeout.
+ *
+ * @return SWL_RC_OK on success,
+ *         SWL_RC_ERROR otherwise.
  */
 swl_rc_ne wld_ap_hostapd_startWpsPin(T_AccessPoint* pAP, const char* pin, uint32_t timeout);
 

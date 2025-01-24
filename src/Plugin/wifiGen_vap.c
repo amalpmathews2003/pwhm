@@ -599,7 +599,11 @@ int wifiGen_vap_wps_labelPin(T_AccessPoint* pAP, int set) {
         T_Radio* pRad = pAP->pRadio;
         ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
         if((set & DIRECT) && (wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface))) {
-            rc = wld_ap_hostapd_setWpsApPin(pAP, pRad->wpsConst->DefaultPin, 0);
+            // open WPS AP_PIN session to allow client wps_reg retrieve auth conf
+            if((rc = wld_ap_hostapd_setWpsApPin(pAP, pRad->wpsConst->DefaultPin, 0)) >= SWL_RC_OK) {
+                //open WPS PIN session to allow client to do normal connect
+                rc = wld_ap_hostapd_startWpsPin(pAP, pRad->wpsConst->DefaultPin, 0);
+            }
         } else {
             setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
         }
@@ -664,6 +668,26 @@ static swl_rc_ne s_reloadApNeighbors(T_AccessPoint* pAP) {
     return SWL_RC_OK;
 }
 
+/**
+ * @brief Restore WPS pin session after hostapd restart
+ * If WPS self PIN is enabled, and the AP is configured to display the PIN,
+ * start a WPS PIN session with the default PIN.
+ *
+ * @param pAP The access point
+ *
+ * @return SWL_RC_OK or error
+ */
+static swl_rc_ne s_restoreWpsPinSession(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    if(wld_wps_checkWpsConfig(pAP, M_WPS_CFG_MTHD_LABEL | M_WPS_CFG_MTHD_DISPLAY_ALL)) {
+        // This command initiates an infinite WPS PIN session for the client to pair.
+        // This allows a client to use the LABEL PIN printed on the box to connect to the Access Point (AP), either to configure it or to just conenct to it.
+        return pAP->pFA->mfn_wvap_wps_label_pin(pAP, SET | DIRECT);
+    }
+    return SWL_RC_OK;
+}
+
+
 swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
 
@@ -676,6 +700,10 @@ swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
     if(!swl_rc_isOk(wifiGen_vap_setMboDisallowReason(pAP))) {
         SAH_TRACEZ_NOTICE(ME, "failed setting mbo_assoc_disallow reason");
     }
+    if(!swl_rc_isOk(s_restoreWpsPinSession(pAP))) {
+        SAH_TRACEZ_NOTICE(ME, "%s: failed restore wps pin session", pAP->alias);
+    }
+
     return SWL_RC_OK;
 }
 
