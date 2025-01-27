@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.6.0 - 2025-01-27(10:01:56 +0000)
+
+### Other
+
+- - add FSM default wait time debug function
+
 ## Release sah-next_v7.5.2 - 2025-01-27(09:49:38 +0000)
 
 ### Other
