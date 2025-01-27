@@ -66,7 +66,7 @@
 
 const char* wld_config_getEnableSyncModeStr();
 bool wld_config_isEnableSyncNeeded(bool toIntf);
-
+uint32_t wld_config_getDefaultFsmStageTime();
 
 #endif /* SRC_INCLUDE_WLD_UTILS_WLD_CONFIG_H_ */
 

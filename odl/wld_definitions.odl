@@ -356,6 +356,14 @@
 			on action validate call check_enum ["Off","ToIntf","FromIntf","Mirrored"];
 			default "Mirrored";
 		}
+		
+		/**
+		 * The default wait time between fsm run stages.
+		 * This allows for easier debugging which state is causing some behaviour or action.
+		 */
+		%protected %persistent uint32 DefaultFSMWaitTime {
+			default 10;
+		}
 	}
 	
 	%persistent object Vendor {

@@ -82,6 +82,8 @@ const char* wld_config_enableSyncMode_str[] =
 
 static wld_config_enableSyncMode_e s_curSyncMode = WLD_CONFIG_ENABLE_SYNC_MODE_MIRRORED;
 
+static uint32_t s_defaultFsmWaitTime = 10;
+
 wld_config_enableSyncMode_e wld_config_getEnableSyncMode() {
     return s_curSyncMode;
 }
@@ -101,6 +103,10 @@ bool wld_config_isEnableSyncNeeded(bool toIntf) {
 }
 
 
+uint32_t wld_config_getDefaultFsmStageTime() {
+    return s_defaultFsmWaitTime;
+}
+
 static void s_setEnableSyncMode_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED,
                                     amxd_param_t* param _UNUSED,
                                     const amxc_var_t* const newValue) {
@@ -115,8 +121,21 @@ static void s_setEnableSyncMode_pwf(void* priv _UNUSED, amxd_object_t* object _U
     s_curSyncMode = newMode;
 }
 
+static void s_setDefaultFSMWaitTime_pwf(void* priv _UNUSED, amxd_object_t* object _UNUSED,
+                                        amxd_param_t* param _UNUSED,
+                                        const amxc_var_t* const newValue) {
+    uint32_t newDefaultFsmWaitTime = amxc_var_get_uint32_t(newValue);
+    ASSERTI_NOT_EQUALS(newDefaultFsmWaitTime, 0, , ME, "Zero");
+
+
+    ASSERTI_NOT_EQUALS(newDefaultFsmWaitTime, s_defaultFsmWaitTime, , ME, "EQUAL");
+    SAH_TRACEZ_INFO(ME, "update defaultFsmSyncType %u to %u", s_defaultFsmWaitTime, newDefaultFsmWaitTime);
+    s_defaultFsmWaitTime = newDefaultFsmWaitTime;
+}
+
 SWLA_DM_HDLRS(sWldConfigParamChangeHandlers,
-              ARR(SWLA_DM_PARAM_HDLR("EnableSyncMode", s_setEnableSyncMode_pwf)));
+              ARR(SWLA_DM_PARAM_HDLR("EnableSyncMode", s_setEnableSyncMode_pwf),
+                  SWLA_DM_PARAM_HDLR("DefaultFSMWaitTime", s_setDefaultFSMWaitTime_pwf)));
 
 void _wld_config_setConf_ocf(const char* const sig_name,
                              const amxc_var_t* const data,

@@ -61,6 +61,7 @@
 ****************************************************************************/
 #include "swl/swl_common.h"
 #include "wld.h"
+#include "Utils/wld_config.h"
 #include "wld_fsm.h"
 #include "wld_util.h"
 #include "wld_radio.h"
@@ -576,7 +577,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     }
     case FSM_RUN:
         delay = 0;
-        rad->fsmRad.timeout_msec = 10;
+        rad->fsmRad.timeout_msec = wld_config_getDefaultFsmStageTime();
         int radFsmBit = getLowestBitLongArray(rad->fsmRad.FSM_AC_BitActionArray, FSM_BW);
         if(radFsmBit < 0) {
             rad->fsmRad.FSM_State = FSM_COMPEND;
@@ -693,6 +694,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
             break;
         }
 
+        rad->fsmRad.timeout_msec = wld_config_getDefaultFsmStageTime();
         rad->fsmRad.FSM_State = FSM_FINISH;
         // Release lock
         bool last = s_areAnyWaiting();
@@ -706,8 +708,7 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_ERROR:
     case FSM_UNKNOWN:
         SAH_TRACEZ_WARNING(ME, "%s: do finish FSM %p", rad->Name, s_getMngr(rad)->doFinish);
-        rad->fsmRad.timeout_msec = 10;
-
+        rad->fsmRad.timeout_msec = wld_config_getDefaultFsmStageTime();
         rad->fsmRad.FSM_ReqState = FSM_MAX;
         SWL_CALL(s_getMngr(rad)->doFinish, rad);
         if(rad->fsmRad.FSM_ReqState != FSM_MAX) {
