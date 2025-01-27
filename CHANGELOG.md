@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.5.2 - 2025-01-27(09:49:38 +0000)
+
+### Other
+
+- Client fails to connect to an AP through WPS using PIN.
+
 ## Release sah-next_v7.5.1 - 2025-01-23(11:07:58 +0000)
 
 ### Other
