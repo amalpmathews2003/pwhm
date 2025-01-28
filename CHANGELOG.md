@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.7.0 - 2025-01-28(08:51:23 +0000)
+
+### Other
+
+- - Add endpoint MLO support
+
 ## Release sah-next_v7.6.1 - 2025-01-27(15:21:13 +0000)
 
 ### Other
