@@ -533,16 +533,6 @@ static void s_syncOnRadUp(void* userData, char* ifName, bool state) {
     if(needCommit) {
         wld_rad_doCommitIfUnblocked(pRad);
     }
-
-    /**
-     * Radio is ready, and Main AP is ready: listening to mgmt frames is possible.
-     * This is done after hostapd/wpa_supplicant bring up because REGISTER_ACTION has a lower priority.
-     */
-    T_AccessPoint* pBctAp = wld_rad_getFirstBroadcastingAp(pRad);
-    if(pBctAp != NULL) {
-        SAH_TRACEZ_INFO(ME, "%s: Register for probe Request notifications", pBctAp->alias);
-        wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pBctAp->index, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0);
-    }
 }
 
 static bool s_checkHapdDown(T_Radio* pRad) {
@@ -587,15 +577,7 @@ static void s_delayRestoreFronthaul(T_Radio* pRad) {
     swla_delayExec_addTimeout((swla_delayExecFun_cbf) s_restoreFronthaul, pRad, 1500);
 }
 
-static void s_syncOnEpRadUp(void* userData, char* ifName, bool state _UNUSED) {
-    T_Radio* pRad = (T_Radio*) userData;
-    ASSERT_NOT_NULL(pRad, , ME, "NULL");
-    T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
-    ASSERT_NOT_NULL(pEP, , ME, "NULL");
-    SAH_TRACEZ_ERROR(ME, "%s: Register for probe Request notifications", pEP->alias);
-    wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pEP->index, SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST, NULL, 0);
-    SAH_TRACEZ_INFO(ME, "%s: Register for action notifications", pEP->alias);
-    wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pEP->index, SWL_80211_MGT_FRAME_TYPE_ACTION, NULL, 0);
+static void s_syncOnEpRadUp(void* userData _UNUSED, char* ifName _UNUSED, bool state _UNUSED) {
 }
 
 static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {

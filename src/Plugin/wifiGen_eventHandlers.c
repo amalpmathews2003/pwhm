@@ -1043,6 +1043,13 @@ static void s_mgtFrameReceivedEvt(void* userData, char* ifName _UNUSED, swl_8021
     swl_80211_handleMgmtFrame(userData, (swl_bit8_t*) mgmtFrame, frameLen, &s_mgmtFrameHandlers);
 }
 
+static void s_apProbeReqReceivedEvt(void* userData, char* ifName _UNUSED, wld_mgmtFrame_t* mgmtFrame, size_t frameLen, char* frameStr _UNUSED) {
+    T_AccessPoint* pAP = (T_AccessPoint*) userData;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    ASSERT_NOT_NULL(mgmtFrame, , ME, "NULL");
+    wld_rad_triggerFrameEvent(pAP->pRadio, (swl_bit8_t*) mgmtFrame->frame, frameLen, mgmtFrame->rssi);
+}
+
 static void s_beaconResponseEvt(void* userData, char* ifName _UNUSED, swl_macBin_t* station, wld_wpaCtrl_rrmBeaconRsp_t* rrmBeaconResponse) {
     T_AccessPoint* pAP = (T_AccessPoint*) userData;
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
@@ -1130,6 +1137,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fApStationAssocFailureCb = s_apStationAssocFailureEvt;
     wpaCtrlVapEvtHandlers.fBtmReplyCb = s_btmReplyEvt;
     wpaCtrlVapEvtHandlers.fMgtFrameReceivedCb = s_mgtFrameReceivedEvt;
+    wpaCtrlVapEvtHandlers.fProbeReqReceivedCb = s_apProbeReqReceivedEvt;
     wpaCtrlVapEvtHandlers.fBeaconResponseCb = s_beaconResponseEvt;
     wpaCtrlVapEvtHandlers.fApEnabledCb = s_apEnabledCb;
     wpaCtrlVapEvtHandlers.fApDisabledCb = s_apDisabledCb;

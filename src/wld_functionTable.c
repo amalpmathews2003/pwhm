@@ -455,6 +455,12 @@ static int TRAP_mfn_wvap_sendManagementFrame(T_AccessPoint* vap, swl_80211_mgmtF
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wvap_monitorManagementFrame(T_AccessPoint* ap, swl_80211_mgtFrameSubtype_e type, bool enable) {
+    _UNUSED_(ap);
+    SAH_TRACEZ_NOTICE(ME, "%p %d %u", ap, type, enable);
+    return SWL_RC_ERROR;
+}
+
 static swl_rc_ne TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t* req _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p %p", vap, sta);
     return SWL_RC_NOT_IMPLEMENTED;
@@ -579,6 +585,12 @@ static swl_rc_ne TRAP_mfn_wendpoint_connect_ap(T_EndPointProfile* endpointProfil
 static int TRAP_mfn_wendpoint_sendManagementFrame(T_EndPoint* pEP, swl_80211_mgmtFrameControl_t* fc, swl_macBin_t* sta, swl_bit8_t* data, size_t dataLen, swl_chanspec_t* chanspec) {
     SAH_TRACEZ_NOTICE(ME, "%p %p %p %d %p %d %p", pEP, sta, fc, chanspec->channel, data, (int) dataLen, chanspec);
     return WLD_ERROR_NOT_IMPLEMENTED;
+}
+
+static swl_rc_ne TRAP_mfn_wendpoint_monitorManagementFrame(T_EndPoint* pEP, swl_80211_mgtFrameSubtype_e type, bool enable) {
+    _UNUSED_(pEP);
+    SAH_TRACEZ_NOTICE(ME, "%p %d %u", pEP, type, enable);
+    return SWL_RC_ERROR;
 }
 
 static int TRAP_mfn_wendpoint_status(T_EndPoint* endpoint _UNUSED) {
@@ -806,7 +818,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_fsm_nodelay);
     FTA_ASSIGN(mfn_wvap_setMldUnit);
     FTA_ASSIGN(mfn_wvap_getMloStats);
-
+    FTA_ASSIGN(mfn_wvap_monitorManagementFrame);
 
     FTA_ASSIGN(mfn_wrad_fsm_state);
     FTA_ASSIGN(mfn_wrad_fsm);
@@ -843,6 +855,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wendpoint_updateConfigMaps);
     FTA_ASSIGN(mfn_wendpoint_update);
     FTA_ASSIGN(mfn_wendpoint_setMldUnit);
+    FTA_ASSIGN(mfn_wendpoint_monitorManagementFrame);
 
     FTA_ASSIGN(mfn_wvap_request_rrm_report);
     FTA_ASSIGN(mfn_wvap_setEvtHandlers);

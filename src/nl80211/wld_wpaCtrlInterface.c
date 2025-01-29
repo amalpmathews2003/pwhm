@@ -391,8 +391,6 @@ const char* wld_wpaCtrlInterface_getConnectionSockName(const wld_wpaCtrlInterfac
  * The first connection is for sending commands and the second one is for receiving unsolicited messages
  *
  * @param wpaCtrlInterface pointer to interface context (to be allocated and established)
- * @param interfaceName interface name
- * @param userdata the data used by the callback
  *
  * @return true on success. Otherwise, error.
  */
@@ -423,4 +421,14 @@ bool wld_wpaCtrlInterface_open(wld_wpaCtrlInterface_t* pIface) {
     pIface->isReady = true;
 
     return true;
+}
+
+bool wld_wpaCtrlInterface_reAttach(wld_wpaCtrlInterface_t* pIface, const char* attachOptions) {
+    ASSERTS_TRUE(wld_wpaCtrlInterface_isReady(pIface), false, ME, "Not ready");
+    if(swl_str_isEmpty(attachOptions)) {
+        wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->eventConn, "DETACH", "OK");
+    }
+    char cmd[128] = {"ATTACH"};
+    swl_strlst_cat(cmd, sizeof(cmd), " ", attachOptions);
+    return wld_wpaCtrlConnection_sendCmdCheckResponse(pIface->eventConn, cmd, "OK");
 }

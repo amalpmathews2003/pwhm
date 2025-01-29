@@ -1939,6 +1939,7 @@ struct S_ACCESSPOINT {
     uint32_t lastDevIndex;
     wld_extMod_dataList_t extDataList;        /* list of extention data for non-chipset vendor modules */
     amxc_llist_t llIntfWds;                   /* list of wds interface related to this VAP (wld_wds_intf_t) */
+    swl_80211_mgtFrameSubtype_m moniMgtFrames;
 };
 
 typedef struct SWL_PACKED {
@@ -2121,6 +2122,7 @@ struct S_EndPoint {
     uint64_t wDevId;                          /* nl80211 wireless device id */
     T_EndPointStats stats;
     swla_dm_objActionReadCtx_t onActionReadCtx;
+    swl_80211_mgtFrameSubtype_m moniMgtFrames;
 };
 
 typedef struct {
@@ -2637,6 +2639,8 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     swl_rc_ne (* mfn_wendpoint_updateConfigMaps)(T_EndPoint* pEP, wld_wpaSupp_config_t* configMap); /**< Update the current wpa_supplicant global/network parameters map, to add or delete parameters */
 
+    swl_rc_ne (* mfn_wendpoint_monitorManagementFrame)(T_EndPoint* pEP, swl_80211_mgtFrameSubtype_e type, bool enable);
+
     PFN_WVAP_UPDATE_STA_INFO mfn_wvap_update_assoc_dev;                                             /** Update settable changed to associated devices */
 
     /**
@@ -2662,6 +2666,9 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     /** get stats counters of requested affiliated accesspoint BSS */
     swl_rc_ne (* mfn_wvap_getMloStats)(T_AccessPoint* vap, wld_mloStats_t* stats);
+
+    swl_rc_ne (* mfn_wvap_monitorManagementFrame)(T_AccessPoint* pAP, swl_80211_mgtFrameSubtype_e type, bool enable);
+
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {

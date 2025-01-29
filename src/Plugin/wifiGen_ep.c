@@ -68,6 +68,7 @@
 #include "wifiGen_wpaSupp.h"
 #include "wld/wld_wpaSupp_ep_api.h"
 #include "wld/wld_util.h"
+#include "wld/wld_ssid.h"
 #include "wld/wld_wps.h"
 #include "wld/wld_endpoint.h"
 #include "wifiGen_events.h"
@@ -225,6 +226,37 @@ int wifiGen_ep_update(T_EndPoint* pEP, int set) {
     setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
     setBitLongArray(pEP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_UPDATE_WPASUPP);
     wld_rad_doCommitIfUnblocked(pEP->pRadio);
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wifiGen_ep_monitorManagementFrame(T_EndPoint* pEP, swl_80211_mgtFrameSubtype_e type, bool enable) {
+    ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    switch(type) {
+    case SWL_80211_MGT_FRAME_SUBTYPE_PROBE_REQUEST: {
+        wld_wpaCtrlInterface_t* pIface = wld_ssid_getWpaCtrlIface(pEP->pSSID);
+        ASSERTS_NOT_NULL(pIface, SWL_RC_ERROR, ME, "NULL");
+        if(enable) {
+            SAH_TRACEZ_INFO(ME, "%s: Register for probe Request notifications", pEP->alias);
+            wld_wpaCtrlInterface_reAttach(pIface, "probe_rx_events=1");
+        } else {
+            wld_wpaCtrlInterface_reAttach(pIface, "");
+        }
+    } break;
+    case SWL_80211_MGT_FRAME_SUBTYPE_ACTION: {
+        if(enable) {
+            wld_nl80211_registerFrame(wld_nl80211_getSharedState(), pEP->index, SWL_80211_MGT_FRAME_TYPE_ACTION, NULL, 0);
+        }
+    } break;
+    default: {
+        SAH_TRACEZ_INFO(ME, " Not supported type %d", type);
+        return SWL_RC_INVALID_PARAM;
+    }
+    }
+    if(enable) {
+        W_SWL_BIT_SET(pEP->moniMgtFrames, type);
+    } else {
+        W_SWL_BIT_CLEAR(pEP->moniMgtFrames, type);
+    }
     return SWL_RC_OK;
 }
 

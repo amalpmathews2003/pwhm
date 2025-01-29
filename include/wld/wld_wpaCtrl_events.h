@@ -69,6 +69,7 @@
 #include "swl/swl_80211.h"
 #include "swl/swl_returnCode.h"
 #include "wld_wpaCtrl_types.h"
+#include "wld_types.h"
 
 #define WPA_MSG_LEVEL_INFO "<3>"
 
@@ -153,6 +154,7 @@ typedef void (* wld_wpaCtrl_wdsIfaceAddedCb_f)(void* userData, char* ifName, cha
 typedef void (* wld_wpaCtrl_wdsIfaceRemovedCb_f)(void* userData, char* ifName, char* wdsName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_btmReplyCb_f)(void* userData, char* ifName, swl_macChar_t* mac, uint8_t status, swl_macChar_t* targetBssid);
 typedef void (* wld_wpaCtrl_mgtFrameReceivedCb_f)(void* userData, char* ifName, swl_80211_mgmtFrame_t* frame, size_t frameLen, char* frameStr);
+typedef void (* wld_wpaCtrl_probeReqReceivedCb_f)(void* userData, char* ifName, wld_mgmtFrame_t* frame, size_t frameLen, char* frameStr);
 typedef void (* wld_wpaCtrl_stationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bBssidMac, swl_IEEE80211deauthReason_ne reason);
 typedef void (* wld_wpaCtrl_stationScanFailedCb_f)(void* userData, char* ifName, int error);
 typedef void (* wld_wpaCtrl_stationScanStartedCb_f)(void* userData, char* ifName);
@@ -191,6 +193,7 @@ typedef struct {
     wld_wpaCtrl_wdsIfaceRemovedCb_f fWdsIfaceRemovedCb;
     wld_wpaCtrl_btmReplyCb_f fBtmReplyCb;
     wld_wpaCtrl_mgtFrameReceivedCb_f fMgtFrameReceivedCb;
+    wld_wpaCtrl_probeReqReceivedCb_f fProbeReqReceivedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationAssociatedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationDisconnectedCb;
     wld_wpaCtrl_stationConnectivityCb_f fStationConnectedCb;

@@ -69,6 +69,7 @@
 #include "wld/wld_util.h"
 #include "wld/wld_linuxIfUtils.h"
 #include "wld/wld_linuxIfStats.h"
+#include "wld/wld_ssid.h"
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
 #include "wld/wld_eventing.h"

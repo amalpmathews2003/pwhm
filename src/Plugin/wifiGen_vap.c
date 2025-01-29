@@ -418,6 +418,32 @@ swl_rc_ne wifiGen_vap_sendManagementFrame(T_AccessPoint* pAP, swl_80211_mgmtFram
     return wld_ap_nl80211_sendManagementFrameCmd(pAP, fc, tgtMac, data, dataLen, chanspec, 0);
 }
 
+swl_rc_ne wifiGen_vap_monitorManagementFrame(T_AccessPoint* pAP, swl_80211_mgtFrameSubtype_e type, bool enable) {
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    switch(type) {
+    case SWL_80211_MGT_FRAME_SUBTYPE_PROBE_REQUEST: {
+        wld_wpaCtrlInterface_t* pIface = wld_ssid_getWpaCtrlIface(pAP->pSSID);
+        ASSERTS_NOT_NULL(pIface, SWL_RC_ERROR, ME, "NULL");
+        if(enable) {
+            SAH_TRACEZ_INFO(ME, "%s: Register for probe Request notifications", pAP->alias);
+            wld_wpaCtrlInterface_reAttach(pIface, "probe_rx_events=1");
+        } else {
+            wld_wpaCtrlInterface_reAttach(pIface, "");
+        }
+    } break;
+    default: {
+        SAH_TRACEZ_INFO(ME, " Not supported type %d", type);
+        return SWL_RC_INVALID_PARAM;
+    }
+    }
+    if(enable) {
+        W_SWL_BIT_SET(pAP->moniMgtFrames, type);
+    } else {
+        W_SWL_BIT_CLEAR(pAP->moniMgtFrames, type);
+    }
+    return SWL_RC_OK;
+}
+
 swl_rc_ne s_addDelNeighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNeighbor, bool add) {
     ASSERTS_NOT_NULL(pApNeighbor, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");

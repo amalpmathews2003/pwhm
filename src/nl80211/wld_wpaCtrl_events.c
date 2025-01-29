@@ -609,6 +609,25 @@ static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     CALL_INTF(pInterface, fMgtFrameReceivedCb, mgmtFrame, binLen, data);
 }
 
+static void s_probeReqEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    // Example: <3>RX_PROBE_REQUEST sa=xx:xx:xx:xx:xx:xx signal=-50 buf=aabbcc
+    char data[swl_str_len(params) + 1];
+    memset(data, 0, sizeof(data));
+    size_t len = wld_wpaCtrl_getValueStr(params, "buf", data, sizeof(data));
+    ASSERTS_TRUE(len > 1, , ME, "%s: frame buf field empty", pInterface->name);
+    size_t binLen = len / 2;
+    swl_bit8_t binData[binLen];
+    bool success = swl_hex_toBytesSep(binData, sizeof(binData), data, len, 0, &binLen);
+    ASSERT_TRUE(success, , ME, "%s: frame HEX CONVERT FAIL", pInterface->name);
+    wld_mgmtFrame_t mgmtFrame;
+    memset(&mgmtFrame, 0, sizeof(wld_mgmtFrame_t));
+    mgmtFrame.frame = swl_80211_getMgmtFrame(binData, binLen);
+    ASSERT_NOT_NULL(mgmtFrame.frame, , ME, "%s: invalid mgmt frame (length:%zu)", pInterface->name, binLen);
+    mgmtFrame.rssi = wld_wpaCtrl_getValueInt(params, "signal");
+    SAH_TRACEZ_INFO(ME, "%s RX_PROBE_REQUEST rssi=%d", pInterface->name, mgmtFrame.rssi);
+    CALL_INTF(pInterface, fProbeReqReceivedCb, &mgmtFrame, binLen, data);
+}
+
 static bool s_skipPfx(const char* pfx, char** msg) {
     if(swl_str_startsWith(*msg, pfx)) {
         *msg += swl_str_len(pfx);
@@ -829,6 +848,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"CTRL-EVENT-NETWORK-NOT-FOUND", &s_stationScanNetworkNotFound},
               {"CTRL-EVENT-AUTH-REJECT", &s_stationAuthRejected},
               {"BEACON-RESP-RX", &s_beaconResponseEvt},
+              {"RX-PROBE-REQUEST", &s_probeReqEvt},
               ));
 
 static evtParser_f s_getEventParser(char* eventName) {

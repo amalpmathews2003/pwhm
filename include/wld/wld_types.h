@@ -67,6 +67,7 @@
 #include "swl/types/swl_arrayType.h"
 #include "swla/swla_namedTupleType.h"
 #include "swla/swla_time.h"
+#include "swl/swl_80211.h"
 
 #define WLD_MAX_POSSIBLE_CHANNELS 64
 
@@ -92,6 +93,11 @@ typedef struct wld_nasta T_NonAssociatedDevice;
 typedef struct wld_nasta T_MonitorDevice;
 typedef struct wld_radExt wld_radExt_t;
 typedef struct wld_apNeighbour T_ApNeighbour;
+
+typedef struct {
+    swl_80211_mgmtFrame_t* frame;
+    int32_t rssi;
+} wld_mgmtFrame_t;
 
 typedef enum {
     COM_DIR_TRANSMIT,
