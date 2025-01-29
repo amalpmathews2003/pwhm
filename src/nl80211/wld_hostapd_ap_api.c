@@ -813,6 +813,35 @@ swl_rc_ne wld_ap_hostapd_deauthAllStations(T_AccessPoint* pAP) {
 }
 
 /**
+ * @brief disassociate a station from an AccessPoint
+ * @param pAP accesspoint
+ * @param mac address
+ * @param reason: the reason to disassociate the station from the AccessPoint
+ * @return - SWL_RC_OK when the command is sent successfully
+ *         - Otherwise SWL_RC_ERROR
+ */
+swl_rc_ne wld_ap_hostapd_disassocStation(T_AccessPoint* pAP, swl_macBin_t* mac, swl_IEEE80211deauthReason_ne reason) {
+    ASSERTS_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_NOT_NULL(mac, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+
+    swl_macChar_t macStr;
+    ASSERT_TRUE(swl_mac_binToChar(&macStr, mac), SWL_RC_INVALID_PARAM, ME, "invalid mac");
+
+    SAH_TRACEZ_INFO(ME, "%s: ap disassoc %s - (%s) reason %d", pR->Name, pAP->alias, macStr.cMac, reason);
+
+    char cmd[256] = {'\0'};
+    snprintf(cmd, sizeof(cmd), "DISASSOCIATE %s reason=%d", macStr.cMac, reason);
+
+
+    bool ret = s_sendHostapdCommand(pAP, cmd, "disassoc station");
+    ASSERT_TRUE(ret, SWL_RC_ERROR, ME, "%s: disassocStation %s - (%s) reason %d failed", pR->Name, pAP->alias, macStr.cMac, reason);
+    return SWL_RC_OK;
+}
+
+/**
  * @brief Transfer a station from a Bss to another
  *
  * @param pAP accesspoint

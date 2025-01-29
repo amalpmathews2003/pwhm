@@ -125,6 +125,14 @@ define rrm_t{
 		bool kickStationReason(%in string macaddress, %in int32 reason);
 
 		/**
+		 * <b>disassocStation</b>
+		 * @param mac (format xx:xx:xx:xx:xx:xx)
+		 * @param reason The reason for disassociating the station
+		 * <p> Manually disassociates a station </p>
+		*/
+		bool disassocStation(%in %mandatory string mac, %in uint32 reason);
+
+		/**
 		 * <b>cleanStation</b>
 		 * @param macaddress (format xx:xx:xx:xx:xx:xx)
 		 * <p> Station will be removed from driver without sending a deauth. </p>

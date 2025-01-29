@@ -471,6 +471,11 @@ static int TRAP_mfn_wvap_sendManagementFrame(T_AccessPoint* vap, swl_80211_mgmtF
     return WLD_ERROR_NOT_IMPLEMENTED;
 }
 
+static int TRAP_mfn_wvap_disassoc_sta_reason(T_AccessPoint* vap, swl_macBin_t* staMac, int reason) {
+    SAH_TRACEZ_NOTICE(ME, "%p %p %s %d", vap, staMac, swl_typeMacBin_toBuf32Ref(staMac).buf, reason);
+    return WLD_ERROR_NOT_IMPLEMENTED;
+}
+
 static swl_rc_ne TRAP_mfn_wvap_request_rrm_report(T_AccessPoint* vap, const swl_macChar_t* sta, wld_rrmReq_t* req _UNUSED) {
     SAH_TRACEZ_NOTICE(ME, "%p %p", vap, sta);
     return SWL_RC_NOT_IMPLEMENTED;
@@ -801,6 +806,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_pf_sync);
     FTA_ASSIGN(mfn_wvap_kick_sta);
     FTA_ASSIGN(mfn_wvap_kick_sta_reason);
+    FTA_ASSIGN(mfn_wvap_disassoc_sta_reason);
     FTA_ASSIGN(mfn_wvap_clean_sta);
     FTA_ASSIGN(mfn_wvap_multiap_update_type);
     FTA_ASSIGN(mfn_wvap_multiap_update_profile);
