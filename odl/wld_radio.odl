@@ -2854,10 +2854,16 @@ define probelist_t{
 
 			/**
 			 * Add one client with specified unicast MAC address to CSIMON client list with the monitor interval setting
-			 * MACAddress : Mac address of the device
+			 * MACAddress : MAC address of the STA transmitting the frame on which CSI data will be gathered (format xx:xx:xx:xx:xx:xx)
 			 * MonitorInterval : Time (ms) interval between CSI captures
+			 * Bandwidth: optional requested bandwidth, in MHz, on which to report (otherwise: highest possible bandwidth)
+			 * NTx : optional requested number of transmit chains to use (otherwise: NTx is 0 indicating maximum number of transmit chains)
+			 * NRx : optional requested number of receive chains to use (otherwise: NRx is 0 indicating maximum number of receive chains)
+			 * ExchangeType: optional one value from the list of SupportedExchangeTypes for the radio to which transmitter is associated (otherwise: empty)
+			 * DataType: optional one value from the list of SupportedExchangeTypes for the radio to which receiver is associated (otherwise: empty)
+			 * Receiver: MAC address of the STA receiving the frame on which CSI data will be gathered (format xx:xx:xx:xx:xx:xx)
 			 */
-			void addClient(%mandatory %in string MACAddress, %mandatory %in uint32 MonitorInterval);
+			void addClient(%mandatory %in string MACAddress, %mandatory %in uint32 MonitorInterval, uint16 Bandwidth, uint16 NTx, uint16 NRx, string ExchangeType, string DataType, string Receiver);
 
 			/**
 			 * Delete one client with specified unicast MAC address to CSIMON client list with the monitor interval setting
@@ -2875,6 +2881,26 @@ define probelist_t{
 			 */
 			void debug();
 		} /* object Sensing */
+
+                /**
+                 * A sensing data type identifies the formatting of the sensing data, e.g. IEEE 802.11bf reporting frame CSI, CFO, or vendor-specific.
+                 * The first three bytes are either 000000, representing standard types, or the CID (Company identifier) assigned and registered by the IEEE Registration Authority to a vendor.
+                 * Vendors include radio or sensing application vendors.
+                 * The last byte identifies the format.
+                 * An empty values indicates that the radio does not support sensing of any type.
+		 * Possible data type values : 00000000, 00137400, 0012F001
+                 */
+                csv_string SupportedSensingDataTypes {
+			on action validate call check_enum [ "00000000", "00137400", "0012F001" ];
+		}
+
+                /**
+                 * A sensing exchange type identifies the different exchanges in sensing measurement.
+		 * Possible exchange type values : qosnull,opportunistic,probe,tb-sr2si,tb-sr2sr,tb-si2sr,cts2self,nontb-si2sr,nontb-sr2si,sbp-si2si,sbp-sr2si,sbp-sr2sr
+                 */
+		csv_string SupportedSensingExchangeTypes {
+			on action validate call check_enum [ "qosnull", "opportunistic", "probe", "tb-sr2si", "tb-sr2sr", "tb-si2sr", "cts2self", "nontb-si2sr", "nontb-sr2si", "sbp-si2si", "sbp-sr2si", "sbp-sr2sr" ];
+		}
 
 		/**
 		 * Object encapsulating IEEE 802.11ax configuration parameters.
