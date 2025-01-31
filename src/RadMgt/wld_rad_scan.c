@@ -606,7 +606,7 @@ static bool s_getScanResults(T_Radio* pR, amxc_var_t* retval, int32_t minRssi) {
     return true;
 }
 
-static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
+static void s_prepareSpectrumOutputWithChanFilter(T_Radio* pR, amxc_var_t* pOutVar, uint8_t* filterChanList, size_t nFilterChans) {
     ASSERT_NOT_NULL(pR, , ME, "NULL");
     ASSERT_NOT_NULL(pOutVar, , ME, "NULL");
 
@@ -614,8 +614,11 @@ static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
 
     amxc_var_set_type(pOutVar, AMXC_VAR_ID_LIST);
     amxc_llist_for_each(it, results) {
-        amxc_var_t* varEntry = amxc_var_add(amxc_htable_t, pOutVar, NULL);
         wld_spectrumChannelInfoEntry_t* llEntry = amxc_llist_it_get_data(it, wld_spectrumChannelInfoEntry_t, it);
+        if((nFilterChans > 0) && (!swl_typeUInt8_arrayContains(filterChanList, nFilterChans, llEntry->channel))) {
+            continue;
+        }
+        amxc_var_t* varEntry = amxc_var_add(amxc_htable_t, pOutVar, NULL);
         amxc_var_add_key(uint32_t, varEntry, "channel", llEntry->channel);
         amxc_var_add_key(cstring_t, varEntry, "bandwidth", swl_bandwidth_str[llEntry->bandwidth]);
         amxc_var_add_key(uint32_t, varEntry, "availability", llEntry->availability);
@@ -623,6 +626,10 @@ static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
         amxc_var_add_key(int32_t, varEntry, "noiselevel", llEntry->noiselevel);
         amxc_var_add_key(uint32_t, varEntry, "accesspoints", llEntry->nrCoChannelAP);
     }
+}
+
+static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
+    return s_prepareSpectrumOutputWithChanFilter(pR, pOutVar, NULL, 0);
 }
 
 static bool s_getLatestSpectrumInfo(T_Radio* pRad, amxc_var_t* map) {
@@ -659,6 +666,31 @@ amxd_status_t _getScanResults(amxd_object_t* object,
     if(!s_getScanResults(pR, retval, minRssi)) {
         return amxd_status_unknown_error;
     }
+
+    return amxd_status_ok;
+}
+
+amxd_status_t _getScanCombinedData(amxd_object_t* object,
+                                   amxd_function_t* func _UNUSED,
+                                   amxc_var_t* args,
+                                   amxc_var_t* retval) {
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "rad NULL");
+
+    int32_t minRssi = INT32_MIN;
+    amxc_var_t* minRssiVar = GET_ARG(args, "minRssi");
+    if(minRssiVar != NULL) {
+        minRssi = amxc_var_dyncast(int32_t, minRssiVar);
+    }
+
+    amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
+    amxc_var_t* varScanResults = amxc_var_add_key(amxc_htable_t, retval, "BSS", NULL);
+    s_getScanResults(pR, varScanResults, minRssi);
+
+    wld_scanArgs_t* pScanArgs = &pR->scanState.cfg.scanArguments;
+    amxc_var_t* varSpectrum = amxc_var_add_key(amxc_htable_t, retval, "Spectrum", NULL);
+    s_prepareSpectrumOutputWithChanFilter(pR, varSpectrum, pScanArgs->chanlist, pScanArgs->chanCount);
 
     return amxd_status_ok;
 }

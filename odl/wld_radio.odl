@@ -282,6 +282,12 @@ define probelist_t{
 		list scanCombinedData(%in string SSID, %in string BSSID, %in string channels, %in int32 minRssi, %in string scanReason);
 
 		/**
+		 * Returns an htable containing scan results and spectrum information from the previous scan,
+		 * @param minRssi: minimal RSSI required to return scanned Access Points.
+		 */
+		htable getScanCombinedData(%in int32 minRssi);
+
+		/**
 		 * Return a list scanresult_t describing the accesspoints discovered
 		 * during the previous scan
 		 * @version 7.0
