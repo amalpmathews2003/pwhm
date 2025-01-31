@@ -586,6 +586,10 @@ static bool s_getScanResults(T_Radio* pR, amxc_var_t* retval, int32_t minRssi) {
         amxc_var_add_key(int32_t, pEntry, "CentreChannel", ssid->centreChannel);
         amxc_var_add_key(int32_t, pEntry, "Bandwidth", ssid->bandwidth);
         amxc_var_add_key(int32_t, pEntry, "SignalStrength", ssid->rssi);
+        if((ssid->channelUtilization != 0) || (ssid->stationCount != 0)) {
+            amxc_var_add_key(uint8_t, pEntry, "ChannelUtilization", ssid->channelUtilization);
+            amxc_var_add_key(uint16_t, pEntry, "StationCount", ssid->stationCount);
+        }
 
         amxc_var_add_key(cstring_t, pEntry, "SecurityModeEnabled", swl_security_apModeToString(ssid->secModeEnabled, SWL_SECURITY_APMODEFMT_LEGACY));
 
@@ -1149,6 +1153,8 @@ static void s_updateOrAddSsidObj(amxd_object_t* chanObj, wld_scanResultSSID_t* s
     amxd_trans_set_value(cstring_t, &trans, "SSID", ssidStr);
     amxd_trans_set_value(cstring_t, &trans, "BSSID", bssidStr.cMac);
     amxd_trans_set_value(uint16_t, &trans, "Bandwidth", ssid->bandwidth);
+    amxd_trans_set_value(uint8_t, &trans, "ChannelUtilization", ssid->channelUtilization);
+    amxd_trans_set_value(uint16_t, &trans, "StationCount", ssid->stationCount);
     free(ssidStr);
     status = swl_object_finalizeTransaction(&trans, swl_lib_getLocalDm());
     ASSERT_EQUALS(status, amxd_status_ok, , ME, "Fail to apply scan SSID trans: %s", amxd_status_string(status));
