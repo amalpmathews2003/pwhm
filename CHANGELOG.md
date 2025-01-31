@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.8.1 - 2025-01-31(09:58:49 +0000)
+
+### Other
+
+- [OSPv2] Security mode configuration change is not working
+
 ## Release sah-next_v7.8.0 - 2025-01-30(14:29:53 +0000)
 
 ### Other
