@@ -526,7 +526,9 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
 
     //set default regdomain to let driver update wiphy band channels
     //before getting wiphy info
-    swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), s_defaultRegDomain);
+    if(!swl_rc_isOk(wifiGen_hapd_getConfiguredCountryCode(pRad, pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain)))) {
+        swl_str_copy(pRad->regulatoryDomain, sizeof(pRad->regulatoryDomain), s_defaultRegDomain);
+    }
     getCountryParam(pRad->regulatoryDomain, 0, &pRad->regulatoryDomainIdx);
     pRad->pFA->mfn_wrad_regdomain(pRad, NULL, 0, SET | DIRECT);
 
