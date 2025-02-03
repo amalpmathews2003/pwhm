@@ -103,7 +103,7 @@ uint32_t wld_wpaCtrlMngr_countReadyInterfaces(const wld_wpaCtrlMngr_t* pMgr);
 
 #define CALL_MGR_I_EXT(pIntf, fName, ...) \
     if(pIntf != NULL) { \
-        CALL_MGR_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, wld_wpaCtrlInterface_getName(pIntf), __VA_ARGS__); \
+        CALL_MGR_EXT(wld_wpaCtrlInterface_getMgr(pIntf), fName, (char*) wld_wpaCtrlInterface_getName(pIntf), __VA_ARGS__); \
     }
 
 #define CALL_MGR_NA_EXT(pMgr, fName, ifName) \
