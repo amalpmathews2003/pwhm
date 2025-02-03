@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.8.3 - 2025-02-03(11:04:40 +0000)
+
+### Other
+
+- : 6GHz backhaul connection with fronthaul enabled is not possible
+
 ## Release sah-next_v7.8.2 - 2025-01-31(10:09:38 +0000)
 
 ### Other
