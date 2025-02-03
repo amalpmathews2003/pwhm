@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.8.5 - 2025-02-03(17:02:44 +0000)
+
+### Other
+
+- - Auto bandwidth selection does not work on channel 6/213
+
 ## Release sah-next_v7.8.4 - 2025-02-03(13:25:21 +0000)
 
 ### Other
