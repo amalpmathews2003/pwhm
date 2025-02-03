@@ -722,3 +722,9 @@ swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad) {
     SAH_TRACEZ_INFO(ME, "%s: glob hapd %s supp:%d, req:%d", pRad->Name, pRad->vendor->name, gHapd->globalDmnSupported, gHapd->globalDmnRequired);
     return SWL_RC_OK;
 }
+
+swl_rc_ne wifiGen_hapd_getConfiguredCountryCode(T_Radio* pRad, char* country, size_t countrySize) {
+    ASSERTS_NOT_NULL(country, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTS_TRUE(countrySize > 0, SWL_RC_INVALID_PARAM, ME, "NULL");
+    return wld_rad_hostapd_getCfgParamStr(pRad, "country_code", country, countrySize);
+}
