@@ -884,7 +884,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", mfp);
         swl_mapCharFmt_addValInt32(vapConfigMap, "sae_pwe", isH2E ? 2 : 0);
-        if (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
             swl_mapChar_add(vapConfigMap, "beacon_prot", "1");
         }
         break;
@@ -910,7 +910,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "2");
         swl_mapCharFmt_addValInt32(vapConfigMap, "sae_pwe", isH2E ? is6g ? 1 : 2 : 0);
-        if (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
             swl_mapChar_add(vapConfigMap, "beacon_prot", "1");
         }
         break;
@@ -927,7 +927,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
            ((transitionAp = wld_ap_getVapByName(pAP->oweTransModeIntf)) != NULL)) {
             swl_mapChar_add(vapConfigMap, "owe_transition_ifname", transitionAp->alias);
         }
-        if (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
             swl_mapChar_add(vapConfigMap, "beacon_prot", "1");
         }
         break;

@@ -60,6 +60,7 @@
 **
 ****************************************************************************/
 #include "wld.h"
+#include "wld_radio.h"
 #include "wld_util.h"
 #include "wld_wps.h"
 #include "wld_endpoint.h"
