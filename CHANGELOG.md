@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.8.6 - 2025-02-04(09:38:53 +0000)
+
+### Other
+
+- - Unexpected interfaces created.
+
 ## Release sah-next_v7.8.5 - 2025-02-03(17:02:44 +0000)
 
 ### Other
