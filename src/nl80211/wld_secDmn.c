@@ -230,7 +230,7 @@ swl_rc_ne wld_secDmn_stop(wld_secDmn_t* pSecDmn) {
     if(wld_secDmn_isGrpMember(pSecDmn)) {
         return wld_secDmnGrp_stopMember(pSecDmn->secDmnGroup, pSecDmn);
     }
-    ASSERTI_TRUE(wld_dmn_isRunning(pSecDmn->dmnProcess), SWL_RC_DONE, ME, "already stopped");
+    ASSERTI_TRUE(wld_dmn_isEnabled(pSecDmn->dmnProcess), SWL_RC_DONE, ME, "already stopped");
     wld_wpaCtrlMngr_disconnect(pSecDmn->wpaCtrlMngr);
     return wld_dmn_stopDeamon(pSecDmn->dmnProcess) ? SWL_RC_OK : SWL_RC_ERROR;
 }
