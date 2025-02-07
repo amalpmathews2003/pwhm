@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.9.0 - 2025-02-07(15:56:25 +0000)
+
+### Other
+
+- : Add action frame listening for EndPoints
+
 ## Release sah-next_v7.8.7 - 2025-02-07(09:24:52 +0000)
 
 ### Other
