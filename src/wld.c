@@ -209,7 +209,7 @@ bool wld_plugin_start() {
 
     // Set BaseMACAddress
     const char* MACStr = getenv("WLAN_ADDR"); /*backw compatible: */
-    if(!swl_mac_charIsValidStaMac((swl_macChar_t*) MACStr)) {
+    if((MACStr == NULL) || !swl_mac_charIsValidStaMac((swl_macChar_t*) MACStr)) {
         MACStr = getenv("WAN_ADDR");
     }
     if(swl_mac_charIsValidStaMac((swl_macChar_t*) MACStr)) {

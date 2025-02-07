@@ -70,6 +70,24 @@
 #define STR_NAME(action) #action
 #define FSM_ACTION(action) .index = action, .name = STR_NAME(action)
 
+// Set macro's to add bits for commit.
+// This only works in the "non active commit". For active commit and dependency, please use setBitLongArray
+
+#define WLD_FSM_ZONE_SET "fsmSet"
+
+#define WLD_FSM_ADD_RAD_BIT(rad, bit) \
+    SAH_TRACEZ_INFO(WLD_FSM_ZONE_SET, "%s: set rad bit %u", rad->Name, bit); \
+    setBitLongArray(rad->fsmRad.FSM_BitActionArray, FSM_BW, bit);
+
+#define WLD_FSM_ADD_VAP_BIT(vap, bit) \
+    SAH_TRACEZ_INFO(WLD_FSM_ZONE_SET, "%s: set vap bit %u", vap->alias, bit); \
+    setBitLongArray(vap->fsm.FSM_BitActionArray, FSM_BW, bit);
+
+#define WLD_FSM_ADD_EP_BIT(ep, bit) \
+    SAH_TRACEZ_INFO(WLD_FSM_ZONE_SET, "%s: set ep bit %u", ep->Name, bit); \
+    setBitLongArray(ep->fsm.FSM_BitActionArray, FSM_BW, bit);
+
+
 typedef struct {
     uint32_t index;
     char* name;
