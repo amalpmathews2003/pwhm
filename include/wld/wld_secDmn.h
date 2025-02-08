@@ -114,6 +114,7 @@ bool wld_secDmn_isRestarting(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isRunning(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isEnabled(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn);
+bool wld_secDmn_hasAvailableCtrlIface(wld_secDmn_t* pSecDmn);
 wld_wpaCtrlMngr_t* wld_secDmn_getWpaCtrlMgr(wld_secDmn_t* pSecDmn);
 bool wld_secDmn_setCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param, swl_trl_e supp);
 swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param);
