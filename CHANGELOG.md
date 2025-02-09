@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.9.2 - 2025-02-09(18:48:11 +0000)
+
+### Other
+
+- Statically defined value (DE) is first set for Regulatory Domain used when PWHM is restarted, without the board reboot.
+
 ## Release sah-next_v7.9.1 - 2025-02-09(18:34:49 +0000)
 
 ### Other
