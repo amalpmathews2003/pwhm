@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.9.1 - 2025-02-09(18:34:49 +0000)
+
+### Other
+
+- fix global hostapd crash when enabling APMLD link on second radio
+
 ## Release sah-next_v7.9.0 - 2025-02-07(15:56:25 +0000)
 
 ### Other
