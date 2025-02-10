@@ -706,6 +706,10 @@ static swl_rc_ne TRAP_mfn_wendpoint_update(T_EndPoint* pEP _UNUSED, int set _UNU
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_get_current_radio_temperature(T_Radio* rad _UNUSED) {
+    return SWL_RC_OK;
+}
+
 void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
 
 #define FTA_ASSIGN(x) \
@@ -783,6 +787,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_notifyWifi7CfgUpdate);
     FTA_ASSIGN(mfn_wrad_generateVapIfName);
     FTA_ASSIGN(mfn_wrad_generateEpIfName);
+    FTA_ASSIGN(mfn_wrad_get_current_radio_temperature);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);

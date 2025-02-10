@@ -738,6 +738,27 @@ swl_rc_ne wld_rad_getCurrentNoise(T_Radio* pRad, int32_t* pNoise) {
     return SWL_RC_OK;
 }
 
+/*
+ * @brief get current radio temperature using whm vendor call
+ *
+ * @param pRadio pointer to radio context
+ * @param pTemperatureDegreesCelsius pointer to result temperature
+ *
+ * @return SWL_RC_OK in case of success
+ *         <= SWL_RC_ERROR otherwise
+ */
+swl_rc_ne wld_rad_getCurrentTemperature(T_Radio* pRad, int32_t* pTemperatureDegreesCelsius) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERT_NOT_NULL(pTemperatureDegreesCelsius, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_rad_isActive(pRad), SWL_RC_INVALID_STATE, ME, "%s : not ready", pRad->Name);
+
+    *pTemperatureDegreesCelsius = 0;
+    swl_rc_ne rc = pRad->pFA->mfn_wrad_get_current_radio_temperature(pRad);
+    ASSERTS_FALSE(rc != SWL_RC_OK, rc, ME, "%s: fail to get Temperature", pRad->Name);
+    *pTemperatureDegreesCelsius = pRad->stats.TemperatureDegreesCelsius;
+    return SWL_RC_OK;
+}
+
 static void s_setGuardInterval_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
     T_Radio* pR = wld_rad_fromObj(object);
@@ -4322,6 +4343,7 @@ static void s_setStats(amxc_var_t* pRetMap, T_Stats* pStats) {
     amxc_var_add_key(uint32_t, pRetMap, "FailedRetransCount", pStats->FailedRetransCount);
     amxc_var_add_key(uint32_t, pRetMap, "RetryCount", pStats->RetryCount);
     amxc_var_add_key(uint32_t, pRetMap, "MultipleRetryCount", pStats->MultipleRetryCount);
+    amxc_var_add_key(uint32_t, pRetMap, "Temperature", pStats->TemperatureDegreesCelsius);
 }
 
 amxd_object_t* wld_rad_getObject(T_Radio* pRad) {
