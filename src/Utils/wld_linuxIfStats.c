@@ -438,6 +438,7 @@ bool wld_linuxIfStats_getRadioStats(T_Radio* pRadio, T_Stats* pRadioStats) {
     result |= wld_linuxIfStats_getAllVapStats(pRadio, pRadioStats);
     result |= wld_linuxIfStats_getAllEpStats(pRadio, pRadioStats);
     result |= wld_rad_getCurrentNoise(pRadio, &pRadioStats->noise);
+    result |= wld_rad_getCurrentTemperature(pRadio, &pRadioStats->TemperatureDegreesCelsius);
     return result;
 }
 

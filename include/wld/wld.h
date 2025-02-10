@@ -2220,6 +2220,7 @@ typedef int (APIENTRY* PFN_WRAD_RXPOWERSAVE)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_INTELLIGENTAIRTIME)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_MULTIUSERMIMO)(T_Radio* rad, int val, int set);
 typedef int (APIENTRY* PFN_WRAD_UPDATE_PROB_REQ)(T_Radio* rad);
+typedef int (APIENTRY* PFN_WRAD_GET_CURRENT_RADIO_TEMP)(T_Radio* rad);
 
 #define DEFAULT_BASE_RSSI -200.0
 
@@ -2645,6 +2646,7 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     /** get stats counters of requested affiliated accesspoint BSS */
     swl_rc_ne (* mfn_wvap_getMloStats)(T_AccessPoint* vap, wld_mloStats_t* stats);
+    PFN_WRAD_GET_CURRENT_RADIO_TEMP mfn_wrad_get_current_radio_temperature; /**< Get Current Radio Temperature! */
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {
