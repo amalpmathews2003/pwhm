@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.9.4 - 2025-02-11(11:02:44 +0000)
+
+### Other
+
+- - Fix simultaneous switch of channel and bandwidth
+
 ## Release sah-next_v7.9.3 - 2025-02-11(09:12:00 +0000)
 
 ### Other
