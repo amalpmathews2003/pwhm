@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.1 - 2025-02-11(11:51:37 +0000)
+
+### Other
+
+- 
+- - Add new RPC to retrieve combined scan results, including access points and spectrum information
+
 ## Release sah-next_v7.10.0 - 2025-02-11(11:19:08 +0000)
 
 ### Other
