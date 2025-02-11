@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.0 - 2025-02-11(11:19:08 +0000)
+
+### Other
+
+- add wifi firmware version to debug info
+
 ## Release sah-next_v7.9.4 - 2025-02-11(11:02:44 +0000)
 
 ### Other
