@@ -104,7 +104,6 @@ static const wifiGen_fsmStates_e sApplyActions[] = {
  * at runtime, without restarting hostapd
  */
 static const wifiGen_fsmStates_e sDynConfActions[] = {
-    GEN_FSM_MOD_MLD,
     GEN_FSM_MOD_SSID,
     GEN_FSM_ENABLE_AP,
     GEN_FSM_MOD_SEC,
@@ -420,7 +419,8 @@ static void s_deauthAllRadSta(T_Radio* pRad, bool noAck) {
 }
 
 static bool s_doStopHostapd(T_Radio* pRad) {
-    ASSERTI_TRUE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hapd stopped", pRad->Name);
+    ASSERTI_TRUE(wld_secDmn_hasAvailableCtrlIface(pRad->hostapd), true, ME, "%s: hapd has no available socket", pRad->Name);
+    ASSERTI_TRUE(wld_dmn_isEnabled(pRad->hostapd->dmnProcess), true, ME, "%s: hapd stopped", pRad->Name);
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD)) {
         /*
          * as we are stopping radio, no need to wait for deauth notif
@@ -431,10 +431,15 @@ static bool s_doStopHostapd(T_Radio* pRad) {
     swl_rc_ne rc;
     if(wld_secDmn_checkRestartNeeded(pRad->hostapd)) {
         SAH_TRACEZ_INFO(ME, "%s: restarting hostapd", pRad->Name);
+        if(!wld_secDmn_isEnabled(pRad->hostapd)) {
+            //force restart of expected group process, by starting member
+            wld_secDmn_start(pRad->hostapd);
+        }
         rc = wld_secDmn_restart(pRad->hostapd);
         SAH_TRACEZ_INFO(ME, "%s: restart hostapd returns rc : %d", pRad->Name, rc);
         return true;
     }
+    ASSERTI_TRUE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hostapd instance not started", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd", pRad->Name);
     rc = wifiGen_hapd_stopDaemon(pRad);
     SAH_TRACEZ_INFO(ME, "%s: stop hostapd returns rc : %d", pRad->Name, rc);
@@ -559,6 +564,7 @@ static void s_registerHadpRadEvtHandlers(wld_secDmn_t* hostapd) {
 }
 
 static bool s_doStartHostapd(T_Radio* pRad) {
+    wld_secDmn_setRestartNeeded(pRad->hostapd, false);
     ASSERTS_TRUE(wifiGen_hapd_isStartable(pRad), true, ME, "%s: missing enabling conds", pRad->Name);
     if(wld_secDmn_isRestarting(pRad->hostapd)) {
         SAH_TRACEZ_INFO(ME, "%s: hostapd already is restarting: no need to force immediate start", pRad->Name);
@@ -671,7 +677,7 @@ static bool s_doSetApSec(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
 static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
-    ASSERTI_TRUE(wifiGen_hapd_isStarted(pRad), true, ME, "%s: hostapd instance not started", pRad->Name);
+    ASSERTI_TRUE(wld_secDmn_hasAvailableCtrlIface(pRad->hostapd), true, ME, "%s: hapd has no available socket", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: checking mld conf changes", pAP->alias);
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setMldParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
@@ -905,7 +911,8 @@ static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
     if(isBitSetLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_BSSID)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
     }
-    if(s_fetchDynConfAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW) >= 0) {
+    if((isBitSetLongArray(pAP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_MLD)) ||
+       (s_fetchDynConfAction(pAP->fsm.FSM_AC_BitActionArray, FSM_BW) >= 0)) {
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
         if(!wifiGen_hapd_isAlive(pRad)) {
             setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);

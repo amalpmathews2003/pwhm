@@ -305,6 +305,11 @@ bool wld_secDmn_isAlive(wld_secDmn_t* pSecDmn) {
              (wld_secDmnGrp_isMemberStarted(pSecDmn->secDmnGroup, pSecDmn))));
 }
 
+bool wld_secDmn_hasAvailableCtrlIface(wld_secDmn_t* pSecDmn) {
+    ASSERTS_NOT_NULL(pSecDmn, false, ME, "NULL");
+    return (wld_wpaCtrlMngr_getFirstAvailableInterface(pSecDmn->wpaCtrlMngr) != NULL);
+}
+
 wld_wpaCtrlMngr_t* wld_secDmn_getWpaCtrlMgr(wld_secDmn_t* pSecDmn) {
     ASSERTS_NOT_NULL(pSecDmn, NULL, ME, "NULL");
     return pSecDmn->wpaCtrlMngr;
