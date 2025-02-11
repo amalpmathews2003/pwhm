@@ -951,7 +951,14 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
 
         amxd_trans_set_int32_t(&trans, "Enable", pAP->WPS_Enable);
         amxd_trans_set_cstring_t(&trans, "Status", cstr_AP_WPS_Status[pAP->WPS_Status]);
-        amxd_trans_set_cstring_t(&trans, "SelfPIN", g_wpsConst.DefaultPin);
+
+        char* oldPin = amxd_object_get_cstring_t(wpsObj, "SelfPIN", NULL);
+        if(swl_str_isEmpty(oldPin)) {
+            amxd_trans_set_cstring_t(&trans, "SelfPIN", g_wpsConst.DefaultPin);
+        }
+        if(oldPin != NULL) {
+            free(oldPin);
+        }
 
         wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsSupported);
 

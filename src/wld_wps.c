@@ -297,7 +297,7 @@ void wld_sendPairingNotification(T_AccessPoint* pAP, uint32_t type, const char* 
 }
 
 /**
- * Sync updatable fields from `g_wpsConst` to `wps_DefParam`.
+ * Sync update-able fields from `g_wpsConst` to `wps_DefParam`.
  *
  * Updatable fields are currently: DefaultPIN, UUID
  */
@@ -327,18 +327,23 @@ static void s_syncWpsConstToObject() {
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
 }
 
+
 /**
  *
- * This does not inform the driver.
+ * Update the self pin in Common WPS struct and data model.
+ * This will not directly update driver, only through interface data models.
  */
 static void s_updateSelfPIN(const char* selfPIN) {
     ASSERT_NOT_NULL(selfPIN, , ME, "NULL");
     ASSERT_TRUE(strlen(selfPIN) < sizeof(g_wpsConst.DefaultPin), , ME, "PIN too long");
+    ASSERTI_FALSE(swl_str_matches(selfPIN, g_wpsConst.DefaultPin), , ME, "same");
+    ASSERT_FALSE(swl_str_matches(selfPIN, g_wpsConst.LastPin), , ME, "setting last pin, ignore");
 
+    swl_str_copy(g_wpsConst.LastPin, sizeof(g_wpsConst.LastPin), g_wpsConst.DefaultPin);
     swl_str_copy(g_wpsConst.DefaultPin, sizeof(g_wpsConst.DefaultPin), selfPIN);
     s_syncWpsConstToObject();
 
-    SAH_TRACEZ_INFO(ME, "SelfPIN updated to %s", g_wpsConst.DefaultPin);
+    SAH_TRACEZ_INFO(ME, "SelfPIN updated to %s from %s", g_wpsConst.DefaultPin, g_wpsConst.LastPin);
 }
 
 void genSelfPIN() {
@@ -413,6 +418,44 @@ amxd_status_t _generateSelfPIN(amxd_object_t* object,
     }
 
     return amxd_status_unknown_error;
+}
+
+/**
+ * Callback for custom constraint of field `WPS.UUID`
+ */
+amxd_status_t _wld_wps_selfPin_pvf(amxd_object_t* object _UNUSED,
+                                   amxd_param_t* param _UNUSED,
+                                   amxd_action_t reason _UNUSED,
+                                   const amxc_var_t* const args,
+                                   amxc_var_t* const retval _UNUSED,
+                                   void* priv _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    SAH_TRACEZ_IN(ME);
+
+    if(swl_str_isEmpty(g_wpsConst.LastPin)) {
+        return amxd_status_ok;
+    }
+
+    char* newPin = amxc_var_dyncast(cstring_t, args);
+
+    amxd_status_t retStatus = amxd_status_ok;
+
+    /**
+     * Due to the fact that SelfPin is doing a 1 - n mirror in delayed fashion through
+     * the datamodel eventing, it is possible to fall into an update loop by updating
+     * the pin twice quickly.
+     * To avoid this scenario, the previous pin should not immediately overwrite the current
+     * PIN.
+     * If this is needed, please reset pin to another default value or 0 first.
+     */
+    if(swl_str_matches(newPin, g_wpsConst.LastPin)) {
+        SAH_TRACEZ_ERROR(ME, "Setting previous pin, invalid, please reset to 0 first");
+        retStatus = amxd_status_invalid_value;
+    }
+
+    free(newPin);
+    SAH_TRACEZ_OUT(ME);
+    return retStatus;
 }
 
 /**

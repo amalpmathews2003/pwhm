@@ -994,7 +994,9 @@ define rrm_t{
 			 * whenever needed so it is not guaranteed to be constant between two consecutive
 			 * generateSelfPIN()-calls.
 			 */
-			string SelfPIN;
+			string SelfPIN{
+				on action validate call wld_wps_selfPin_pvf;
+			}
 
 			/**
 			 * Initiates a Wi-Fi Protected Setup (WPS) Push Button Configuration (PBC)

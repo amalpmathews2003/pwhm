@@ -1093,6 +1093,7 @@ typedef struct {
 /* Local WPS parameters */
 typedef struct {
     char DefaultPin[12];        /* 8-digit format wps pin  */
+    char LastPin[12];           /* previous pin            */
     char DevName[32];           /* Device name             */
     char OUI[16];               /* Device OUI              */
     char FriendlyName[32];      /* Device friendly name    */
