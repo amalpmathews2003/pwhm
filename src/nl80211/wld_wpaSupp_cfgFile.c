@@ -60,6 +60,7 @@
 **
 ****************************************************************************/
 #include "wld.h"
+#include "wld_radio.h"
 #include "wld_util.h"
 #include "wld_wps.h"
 #include "wld_endpoint.h"
@@ -268,8 +269,8 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
         swl_mapCharFmt_addValStr(network, "key_mgmt", "%s%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
                                  ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
-                                 "SAE ");
-        swl_mapChar_add(network, "pairwise", "CCMP");
+                                 (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "SAE SAE-EXT-KEY" : "SAE"));
+        swl_mapChar_add(network, "pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
         swl_mapChar_add(network, "group", "CCMP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
         bool hashKeyPassPhrase = (s_setSaePassword(network, epProfile) == SWL_RC_OK);
@@ -280,8 +281,8 @@ static swl_rc_ne s_setWpaSuppNetworkConfig(T_EndPoint* pEP, wld_wpaSupp_config_t
     case SWL_SECURITY_APMODE_WPA3_P:
     {
         swl_mapChar_add(network, "proto", "RSN");
-        swl_mapChar_add(network, "key_mgmt", "SAE");
-        swl_mapChar_add(network, "pairwise", "CCMP");
+        swl_mapChar_add(network, "key_mgmt", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "SAE SAE-EXT-KEY" : "SAE");
+        swl_mapChar_add(network, "pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
         swl_mapChar_add(network, "group", "CCMP");
         swl_mapChar_add(network, "auth_alg", "OPEN");
         if(s_setSaePassword(network, epProfile) < SWL_RC_OK) {
