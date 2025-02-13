@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.2 - 2025-02-13(09:29:28 +0000)
+
+### Other
+
+- 40MHz HT Capabilities infos are not transmitted on beacon frame
+
 ## Release sah-next_v7.10.1 - 2025-02-11(11:51:37 +0000)
 
 ### Other
