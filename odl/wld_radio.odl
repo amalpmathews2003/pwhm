@@ -3034,35 +3034,6 @@ define probelist_t{
 
 			}
 		}
-
-		/**
-		 * Object encapsulating IEEE 802.11be configuration parameters.
-		 */
-		%persistent object IEEE80211be{
-			on event "*" call wld_rad_config_set80211beConfig_ocf;
-
-			/**
-			 * Configure if the Enhanced Multi-Link Multi-Radio (EMLMR) operation is enabled on this radio.
-			 * Note that this shall only be applied if EMLMRSupport is present.
-			 * 0 disable.
-			 * 1 enable.
-			 * -1 driver default.
-			 */
-			%persistent int8 EMLMREnable {
-				default -1;
-			}
-
-			/**
-			 * Configure if Enhanced Multi-Link Single-Radio (EMLSR) operation is enabled on this radio.
-			 * Note that this shall only be applied if EMLSRSupport is present.
-			 * 0 disable.
-			 * 1 enable.
-			 * -1 driver default.
-			 */
-			%persistent int8 EMLSREnable{
-				default -1;
-			}
-		}
 	} /* object Radio */
 	}
 }
