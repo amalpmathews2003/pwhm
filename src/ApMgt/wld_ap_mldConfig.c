@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2025 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -60,11 +60,10 @@
 **
 ****************************************************************************/
 
-#define ME "radCfg"
+#define ME "mldCfg"
 
 #include <stdlib.h>
 #include <debug/sahtrace.h>
-
 
 
 #include <string.h>
@@ -77,51 +76,51 @@
 
 #include "wld.h"
 #include "wld_util.h"
-#include "wld_radio.h"
+#include "wld_accesspoint.h"
 
 #include <swl/swl_base64.h>
-#include "swla/swla_trans.h"
+#include "swla/swla_dm.h"
 
 
-/**
- * This file shall contain the handling of WiFi Radio data model changes on *Config objects under radio.
- */
+static void s_setApMldConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
 
-
-
-static void s_setEMLMREnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
+    amxc_var_for_each(newValue, newParamValues) {
+        char* valStr = NULL;
+        const char* pname = amxc_var_key(newValue);
+        int8_t newEnable;
+        if(swl_str_matches(pname, "EMLMREnable")) {
+            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+            SAH_TRACEZ_INFO(ME, "%s: EMLMREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.emlmrEnable, newEnable);
+            pAP->mldCfg.emlmrEnable = newEnable;
+        } else if(swl_str_matches(pname, "EMLSREnable")) {
+            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+            SAH_TRACEZ_INFO(ME, "%s: EMLSREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.emlsrEnable, newEnable);
+            pAP->mldCfg.emlsrEnable = newEnable;
+        } else if(swl_str_matches(pname, "STREnable")) {
+            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+            SAH_TRACEZ_INFO(ME, "%s: STREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.strEnable, newEnable);
+            pAP->mldCfg.strEnable = newEnable;
+        } else if(swl_str_matches(pname, "NSTREnable")) {
+            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+            SAH_TRACEZ_INFO(ME, "%s: NSTREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.nstrEnable, newEnable);
+            pAP->mldCfg.nstrEnable = newEnable;
+        }
+    }
 
-    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pR, , ME, "NULL");
-    int8_t newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
-
-    SAH_TRACEZ_INFO(ME, "%s: EMLMREnable oldValue:%d newValue:%d", pR->Name, pR->cfg11be.emlmrEnable, newEnable);
-    pR->cfg11be.emlmrEnable = newEnable;
-
-    pR->pFA->mfn_wrad_notifyWifi7CfgUpdate(pR);
+    pAP->pFA->mfn_wvap_setMldCfg(pAP);
     SAH_TRACEZ_OUT(ME);
 }
 
-static void s_setEMLSREnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
-    SAH_TRACEZ_IN(ME);
 
-    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pR, , ME, "NULL");
-    bool newEnable = amxc_var_dyncast(bool, newValue);
-    SAH_TRACEZ_INFO(ME, "%s: EMLSREnable oldValue:%d newValue:%d", pR->Name, pR->cfg11be.emlsrEnable, newEnable);
-    pR->cfg11be.emlsrEnable = newEnable;
-    pR->pFA->mfn_wrad_notifyWifi7CfgUpdate(pR);
-    SAH_TRACEZ_OUT(ME);
+SWLA_DM_HDLRS(sApMldCfgHdlrs, ARR(), .objChangedCb = s_setApMldConfig_ocf);
+
+
+
+void _wld_ap_setMLDConfig_ocf(const char* const sig_name,
+                              const amxc_var_t* const data,
+                              void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApMldCfgHdlrs, sig_name, data, priv);
 }
-
-SWLA_DM_HDLRS(sRadCfgDmHdlrs,
-              ARR(SWLA_DM_PARAM_HDLR("EMLMREnable", s_setEMLMREnable_pwf),
-                  SWLA_DM_PARAM_HDLR("EMLSREnable", s_setEMLSREnable_pwf)));
-
-void _wld_rad_config_set80211beConfig_ocf(const char* const sig_name,
-                                          const amxc_var_t* const data,
-                                          void* const priv) {
-    swla_dm_procObjEvtOfLocalDm(&sRadCfgDmHdlrs, sig_name, data, priv);
-}
-

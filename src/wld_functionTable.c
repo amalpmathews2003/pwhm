@@ -125,6 +125,12 @@ static swl_rc_ne TRAP_mfn_wvap_setMldUnit(T_AccessPoint* ap) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wvap_setMldCfg(T_AccessPoint* ap) {
+    _UNUSED_(ap);
+    SAH_TRACEZ_NOTICE(ME, "%p", ap);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static swl_rc_ne TRAP_mfn_wvap_getMloStats(T_AccessPoint* ap, wld_mloStats_t* mloStats) {
     _UNUSED_(ap);
     _UNUSED_(mloStats);
@@ -297,12 +303,6 @@ static swl_rc_ne TRAP_mfn_wrad_getChanspec(T_Radio* pRad, swl_chanspec_t* pChSpe
     _UNUSED_(pChSpec);
     SAH_TRACEZ_NOTICE(ME, "%p %p", pRad, pChSpec);
     return SWL_RC_NOT_IMPLEMENTED;
-}
-
-static swl_rc_ne TRAP_mfn_wrad_notifyWifi7CfgUpdate(T_Radio* rad) {
-    _UNUSED_(rad);
-    SAH_TRACEZ_NOTICE(ME, "%p", rad);
-    return SWL_RC_ERROR;
 }
 
 static swl_rc_ne TRAP_mfn_wrad_generateVapIfName(T_Radio* pRad, uint32_t ifaceShift, char* ifName, size_t ifNameSize) {
@@ -780,7 +780,6 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_sensing_delClient);
     FTA_ASSIGN(mfn_wrad_sensing_resetStats);
     FTA_ASSIGN(mfn_wrad_firmwareVersion);
-    FTA_ASSIGN(mfn_wrad_notifyWifi7CfgUpdate);
     FTA_ASSIGN(mfn_wrad_generateVapIfName);
     FTA_ASSIGN(mfn_wrad_generateEpIfName);
 
@@ -824,6 +823,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wvap_fsm);
     FTA_ASSIGN(mfn_wvap_fsm_nodelay);
     FTA_ASSIGN(mfn_wvap_setMldUnit);
+    FTA_ASSIGN(mfn_wvap_setMldCfg);
     FTA_ASSIGN(mfn_wvap_getMloStats);
 
 
