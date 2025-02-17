@@ -494,6 +494,7 @@ static void s_setWPSEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_p
 
     T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
     ASSERTI_NOT_NULL(pAP, , ME, "INVALID");
+    doCancelPairing(object);
     pAP->WPS_Enable = amxc_var_dyncast(bool, newValue);
     wld_ap_doWpsSync(pAP);
 
