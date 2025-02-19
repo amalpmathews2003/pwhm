@@ -439,6 +439,7 @@
 		 * Enables or disables the SSID entry.  */
 		%persistent bool Enable{
 			default false;
+			userflags %usersetting;
 		}
 	} /* object SSID */
     }
