@@ -70,9 +70,8 @@
 
 // maximum request processing time , in seconds.
 // At this limit, all reply msg's fragments shall be received and processed
-// 10 sec for async requests
-// 5 sec for sync requests
-#define REQUEST_SYNC_TIMEOUT  5  //shorter timeout as sync requests are blocking
+// 10 sec for sync and async requests
+#define REQUEST_SYNC_TIMEOUT  10 //shorter timeout as sync requests are blocking
 #define REQUEST_ASYNC_TIMEOUT 10 //longer timeout: shall be enough
 
 /*
