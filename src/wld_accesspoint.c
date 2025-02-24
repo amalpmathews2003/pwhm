@@ -963,9 +963,15 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsSupported);
 
         amxd_trans_set_cstring_t(&trans, "ConfigMethodsSupported", TBufStr.buffer);
-        wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsEnabled);
 
-        amxd_trans_set_cstring_t(&trans, "ConfigMethodsEnabled", TBufStr.buffer);
+        uint32_t cfgMethodsMask = 0;
+        const char* cfgMethods = GET_CHAR(amxd_object_get_param_value(wpsObj, "ConfigMethodsEnabled"), NULL);
+        wld_wps_ConfigMethods_string_to_mask(&cfgMethodsMask, cfgMethods, ',');
+        if(cfgMethodsMask != pAP->WPS_ConfigMethodsEnabled) {
+            wld_wps_ConfigMethods_mask_to_string(&TBufStr, pAP->WPS_ConfigMethodsEnabled);
+            amxd_trans_set_cstring_t(&trans, "ConfigMethodsEnabled", TBufStr.buffer);
+        }
+
         amxd_trans_set_int32_t(&trans, "Configured", pAP->WPS_Configured);
         amxd_trans_set_cstring_t(&trans, "UUID", g_wpsConst.UUID);
 
