@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.7 - 2025-02-24(14:49:39 +0000)
+
+### Other
+
+- : SSID.Enable is not sw update proof
+
 ## Release sah-next_v7.10.6 - 2025-02-23(10:35:56 +0000)
 
 ### Other
