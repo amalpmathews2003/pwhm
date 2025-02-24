@@ -226,8 +226,13 @@ amxd_status_t _sendBssTransferRequest(amxd_object_t* object,
     const char* bssid = GET_CHAR(args, "target");
     ASSERT_TRUE(swl_typeMacChar_fromChar(&params.targetBssid, bssid), amxd_status_invalid_function_argument,
                 ME, "invalid target argument %s", bssid);
-    ASSERT_TRUE(swl_mac_charIsValidStaMac(&params.targetBssid), amxd_status_invalid_function_argument,
-                ME, "invalid target mac %s", bssid);
+
+    /* The target BSSID being broadcast allows the STA to choose its own target */
+    if(!swl_mac_charIsBroadcast(&params.targetBssid)) {
+        ASSERT_TRUE(swl_mac_charIsValidStaMac(&params.targetBssid),
+                    amxd_status_invalid_function_argument, ME, "invalid target mac %s", bssid);
+    }
+
     ASSERT_NOT_EQUALS(params.channel, 0, amxd_status_invalid_function_argument, ME, "invalid channel argument");
     ASSERT_NOT_EQUALS(params.operClass, 0, amxd_status_invalid_function_argument, ME, "invalid operClass argument");
 
