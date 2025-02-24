@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.8 - 2025-02-24(15:43:07 +0000)
+
+### Other
+
+- WPS ConfigMethodsEnabled parameter is wrongly updated
+
 ## Release sah-next_v7.10.7 - 2025-02-24(14:49:39 +0000)
 
 ### Other
