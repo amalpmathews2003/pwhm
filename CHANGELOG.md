@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.10 - 2025-02-25(16:19:34 +0000)
+
+### Other
+
+- - increse sync nl80211 request timout
+
 ## Release sah-next_v7.10.9 - 2025-02-25(10:12:20 +0000)
 
 ### Other
