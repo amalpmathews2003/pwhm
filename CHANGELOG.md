@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.13 - 2025-02-26(13:36:59 +0000)
+
+### Other
+
+- : Fix dependency on kmod-mac80211
+
 ## Release sah-next_v7.10.12 - 2025-02-25(17:19:08 +0000)
 
 ### Other
