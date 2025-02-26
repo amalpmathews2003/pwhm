@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.14 - 2025-02-26(15:06:10 +0000)
+
+### Other
+
+- - fix MultiAP not set for fronthaul.
+
 ## Release sah-next_v7.10.13 - 2025-02-26(13:36:59 +0000)
 
 ### Other
