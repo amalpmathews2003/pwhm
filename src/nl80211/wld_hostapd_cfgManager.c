@@ -164,20 +164,26 @@ bool wld_hostapd_createConfig(wld_hostapd_config_t** pConf, T_Radio* pRad) {
     *pConf = config;
     swl_mapChar_t* radConfigMap = wld_hostapd_getConfigMap(config, NULL);
     wld_hostapd_cfgFile_setRadioConfig(pRad, radConfigMap);
+    swl_mapChar_t* multiAPbhConfig = NULL;
+
     T_AccessPoint* pTmpAp = NULL;
-    swl_mapChar_t* defMultiAPConfig = NULL;
+    wld_rad_forEachAp(pTmpAp, pRad) {
+        if(wld_hostapd_ap_needWpaCtrlIface(pTmpAp)) {
+            swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pTmpAp->pSSID->BSSID);
+            if(SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS) && !SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_FRONTHAUL_BSS)) {
+                multiAPbhConfig = vapConfigMap;
+                wld_hostapd_cfgFile_setVapConfig(pTmpAp, vapConfigMap, multiAPbhConfig);
+            }
+        }
+    }
+
     amxc_llist_for_each(it, &config->vaps) {
         wld_hostapdVapInfo_t* vapInfo = NULL;
         if((vapInfo = amxc_llist_it_get_data(it, wld_hostapdVapInfo_t, it)) != NULL) {
             pTmpAp = wld_getAccesspointByAddress(vapInfo->bssid.bMac);
             if((pTmpAp != NULL) && (wld_hostapd_ap_needWpaCtrlIface(pTmpAp))) {
-                swl_mapChar_t* multiAPConfig = defMultiAPConfig;
                 swl_mapChar_t* vapConfigMap = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pTmpAp->pSSID->BSSID);
-                if(SWL_BIT_IS_ONLY_SET(pTmpAp->multiAPType, MULTIAP_BACKHAUL_BSS)) {
-                    defMultiAPConfig = defMultiAPConfig ? : vapConfigMap;
-                    multiAPConfig = vapConfigMap;
-                }
-                wld_hostapd_cfgFile_setVapConfig(pTmpAp, vapConfigMap, multiAPConfig);
+                wld_hostapd_cfgFile_setVapConfig(pTmpAp, vapConfigMap, multiAPbhConfig);
             }
         }
     }
