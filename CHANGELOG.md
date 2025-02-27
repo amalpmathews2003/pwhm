@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.16 - 2025-02-27(13:41:06 +0000)
+
+### Other
+
+- - WiFi5 AutoChannel selection still enabled when we change the channel from AP WebUI
+
 ## Release sah-next_v7.10.15 - 2025-02-27(09:13:23 +0000)
 
 ### Other
