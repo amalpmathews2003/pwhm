@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.10.15 - 2025-02-27(09:13:23 +0000)
+
+### Other
+
+- - Avoid large stack memory alloc.
+
 ## Release sah-next_v7.10.14 - 2025-02-26(15:06:10 +0000)
 
 ### Other
