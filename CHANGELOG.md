@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.11.0 - 2025-02-27(14:36:45 +0000)
+
+### Other
+
+- Add WPA3 Compatibility Mode
+
 ## Release sah-next_v7.10.16 - 2025-02-27(13:41:06 +0000)
 
 ### Other
