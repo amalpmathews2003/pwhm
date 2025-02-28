@@ -758,16 +758,18 @@ static void s_apStationConnectedEvt(void* pRef, char* ifName, swl_macBin_t* macA
 
     SAH_TRACEZ_INFO(ME, "%s: connecting station "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
 
-    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
-    if(pAD == NULL) {
-        pAD = wld_create_associatedDevice(pAP, macAddress);
-        ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
-        SAH_TRACEZ_INFO(ME, "%s: created device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
-    }
+    T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, macAddress);
+    ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
 
     pAP->pFA->mfn_wvap_get_single_station_stats(pAD);
 
     wld_ad_add_connection_success(pAP, pAD);
+}
+
+static void s_stationEapCompletedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
+    T_AccessPoint* pAP = (T_AccessPoint*) pRef;
+    SAH_TRACEZ_INFO(ME, "%s: EAP completed "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
+    s_apStationConnectedEvt(pRef, ifName, macAddress);
 }
 
 static void s_apStationDisconnectedEvt(void* pRef, char* ifName, swl_macBin_t* macAddress) {
@@ -835,12 +837,8 @@ static void s_wdsCreatedEvt(void* pRef, char* ifName, char* wdsIntfName, swl_mac
     SAH_TRACEZ_INFO(ME, "%s: connecting WDS station " MAC_PRINT_FMT " to intf %s", pAP->alias,
                     MAC_PRINT_ARG(macAddress->bMac), wdsIntfName);
 
-    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(pAP, macAddress);
-    if(pAD == NULL) {
-        pAD = wld_create_associatedDevice(pAP, macAddress);
-        ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
-        SAH_TRACEZ_INFO(ME, "%s: created device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
-    }
+    T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, macAddress);
+    ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to create associated device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
 
     pAD->Active = true;
     /* AssociatedDevice should have only one WDS interface.
@@ -1149,6 +1147,7 @@ swl_rc_ne wifiGen_setVapEvtHandlers(T_AccessPoint* pAP) {
     wpaCtrlVapEvtHandlers.fWpsOverlapMsg = s_wpsOverlap;
     wpaCtrlVapEvtHandlers.fWpsFailMsg = s_wpsFail;
     wpaCtrlVapEvtHandlers.fWpsSetupLockedMsg = s_wpsSetupLocked;
+    wpaCtrlVapEvtHandlers.fApStationEapCompletedCb = s_stationEapCompletedEvt;
     wpaCtrlVapEvtHandlers.fApStationConnectedCb = s_apStationConnectedEvt;
     wpaCtrlVapEvtHandlers.fApStationDisconnectedCb = s_apStationDisconnectedEvt;
     wpaCtrlVapEvtHandlers.fWdsIfaceAddedCb = s_wdsCreatedEvt;
