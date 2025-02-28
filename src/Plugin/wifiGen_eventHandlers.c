@@ -929,6 +929,10 @@ static void s_commonAssocReqCb(T_AccessPoint* pAP, swl_80211_mgmtFrame_t* frame,
     T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, mac);
     ASSERT_NOT_NULL(pAD, , ME, "%s: Failure to retrieve associated device %s", pAP->alias,
                     swl_typeMacBin_toBuf32Ref(mac).buf);
+    if(swl_mac_binIsNull(&wirelessDevIE.ehtMldMacAddress)) {
+        // For non MLO station, update all AssociatedDevice Active state for this MACAddress
+        wld_assocdev_updateAssociatedDeviceActive(pAP, mac);
+    }
     wld_vap_saveAssocReq(pAP, (swl_bit8_t*) frame, frameLen);
     wld_ad_handleAssocMsg(pAP, pAD, iesData, iesLen);
     s_handleAssocMsgAffiliatedSta(pAP, pAD, &frame->transmitter, &wirelessDevIE);

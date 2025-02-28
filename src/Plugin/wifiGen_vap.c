@@ -287,30 +287,25 @@ static uint32_t s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
 
     wld_rad_getCurrentNoise(pAP->pRadio, &pAP->pRadio->stats.noise);
 
-    // Add new devices from driver maclist
-    for(uint32_t id = 0; id < nrStations; id++) {
-        T_AssociatedDevice* pAD = NULL;
-        wld_nl80211_stationInfo_t* pStationInfo = &pAllStaInfo[id];
-        swl_macBin_t* mac = swl_mac_binIsNull(&pStationInfo->macMld) ? &pStationInfo->macAddr : &pStationInfo->macMld;
-        if((pAD = wld_vap_find_asociatedDevice(pAP, mac)) == NULL) {
-            if((!swl_mac_binIsNull(&pStationInfo->macMld)) && (pStationInfo->nrLinks > 1)) {
-                SAH_TRACEZ_INFO(ME, "detect mlo sta %s with %d multi-links: assocDev has to be created on main assoc link",
-                                swl_typeMacBin_toBuf32(pStationInfo->macMld).buf,
-                                pStationInfo->nrLinks);
-                continue;
-            }
-
-            if((pAD = wld_create_associatedDevice(pAP, mac)) == NULL) {
+    /**
+     * MLD AP will report all stations part of this MLD, non-MLO stations included,
+     * which is breaking the station update based on seen.
+     */
+    if(pAP->pSSID->pMldLink == NULL) {
+        // Add new devices from driver maclist
+        for(uint32_t id = 0; id < nrStations; id++) {
+            wld_nl80211_stationInfo_t* pStationInfo = &pAllStaInfo[id];
+            T_AssociatedDevice* pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &pStationInfo->macAddr);
+            if(pAD == NULL) {
                 SAH_TRACEZ_ERROR(ME, "%s: could not create new detected AD %s",
-                                 pAP->name, swl_typeMacBin_toBuf32Ref(mac).buf);
+                                 pAP->name, swl_typeMacBin_toBuf32Ref(&pStationInfo->macAddr).buf);
                 continue;
             }
-            SAH_TRACEZ_WARNING(ME, "%s: created missing AD %s", pAP->name, pAD->Name);
-        }
-        pAD->seen = true;
-        s_fillAssocDevInfo(pAP, pAD, pStationInfo);
-        if(pStationInfo->flags.authenticated == SWL_TRL_TRUE) {
-            wld_ad_add_connection_success(pAP, pAD);
+            pAD->seen = true;
+            s_fillAssocDevInfo(pAP, pAD, pStationInfo);
+            if(pStationInfo->flags.authenticated == SWL_TRL_TRUE) {
+                wld_ad_add_connection_success(pAP, pAD);
+            }
         }
     }
     free(pAllStaInfo);
@@ -321,7 +316,9 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
 
-    wld_vap_mark_all_stations_unseen(pAP);
+    if(pAP->pSSID->pMldLink == NULL) {
+        wld_vap_mark_all_stations_unseen(pAP);
+    }
     if(s_getNetlinkAllStaInfo(pAP) > 0) {
         wld_ap_hostapd_getAllStaInfo(pAP);
     }
@@ -334,12 +331,14 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
             pAP->AssociatedDeviceNumberOfEntries = i;
             break;
         }
-        if(!pAD->seen) {
+        if((pAP->pSSID->pMldLink == NULL) && !pAD->seen) {
             s_resetAssocDevSignalNoise(pAD);
         }
     }
 
-    wld_vap_update_seen(pAP);
+    if(pAP->pSSID->pMldLink == NULL) {
+        wld_vap_update_seen(pAP);
+    }
     return SWL_RC_OK;
 }
 

@@ -89,6 +89,7 @@ int wld_ad_remove_assocdev_from_bridge(T_AccessPoint* pAP, T_AssociatedDevice* p
 T_AssociatedDevice* wld_ad_create_associatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress);
 T_AssociatedDevice* wld_vap_find_asociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress);
 T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress);
+void wld_assocdev_updateAssociatedDeviceActive(T_AccessPoint* assocAp, swl_macBin_t* mac);
 
 int wld_ad_getIndex(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
 bool wld_ad_destroy(T_AccessPoint* pAP, T_AssociatedDevice* pAD);
