@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.11.1 - 2025-02-28(12:45:37 +0000)
+
+### Other
+
+- : AssociatedDevice is not always created after a non-MLO association
+
 ## Release sah-next_v7.11.0 - 2025-02-27(14:36:45 +0000)
 
 ### Other
