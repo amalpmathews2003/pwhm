@@ -311,6 +311,17 @@ static void s_apStationConnected(wld_wpaCtrlInterface_t* pInterface, char* event
     CALL_INTF(pInterface, fApStationConnectedCb, &bStationMac);
 }
 
+static void s_stationEapCompleted(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
+    //Example: EAPOL-4WAY-HS-COMPLETED xx:xx:xx:xx:xx:xx
+    char buf[SWL_MAC_CHAR_LEN] = {0};
+    swl_macBin_t bStationMac;
+
+    memcpy(buf, params, SWL_MAC_CHAR_LEN - 1);
+    bool ret = swl_mac_charToBin(&bStationMac, (swl_macChar_t*) buf);
+    ASSERT_TRUE(ret, , ME, "fail to convert mac address to binary");
+    CALL_INTF(pInterface, fApStationEapCompletedCb, &bStationMac);
+}
+
 static void s_apStationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     //Example: AP-STA-DISCONNECTED xx:xx:xx:xx:xx:xx
     char buf[SWL_MAC_CHAR_LEN] = {0};
@@ -785,6 +796,7 @@ SWL_TABLE(sWpaCtrlEvents,
               {"WPS-AP-SETUP-UNLOCKED", &s_wpsSetupUnlockedEvent},
               {"WPS-AP-SETUP-LOCKED", &s_wpsSetupLockedEvent},
               {"AP-STA-CONNECTED", &s_apStationConnected},
+              {"EAPOL-4WAY-HS-COMPLETED", &s_stationEapCompleted},
               {"AP-STA-DISCONNECTED", &s_apStationDisconnected},
               {"WDS-STA-INTERFACE-ADDED", &s_wdsStationInterfaceAdded},
               {"WDS-STA-INTERFACE-REMOVED", &s_wdsStationInterfaceRemoved},

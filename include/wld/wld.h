@@ -889,7 +889,7 @@ typedef struct {
     swl_staCap_m capabilities;             /* Capabilities of the station */
     swl_staCapVendor_m vendorCapabilities; /* Vendor Capabilities of the station (MS, WFA) */
     uint32_t connectionDuration;           /* duration of connexion (seconds) */
-    swl_timeMono_t associationTime;        /* Timestamp of the last time the sta associate, in real time */
+    swl_timeMono_t associationTime;        /* Timestamp of the last time the sta finalized association, i.e. got authorized */
     swl_timeMono_t disassociationTime;     /* Timestamp of the last time the sta disassociate, in real time */
     bool hadSecFailure;                    /* Number of security failures of this station */
     wld_sta_muMimoInfo_t staMuMimoInfo;

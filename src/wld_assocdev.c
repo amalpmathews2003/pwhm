@@ -608,6 +608,18 @@ swl_macBin_t* wld_ad_getMacBin(T_AssociatedDevice* pAD) {
     return (swl_macBin_t*) pAD->MACAddress;
 }
 
+static bool s_isAffiliatedSta(amxc_llist_t* affiliatedStaList, swl_macBin_t* macAddress) {
+    ASSERT_NOT_NULL(affiliatedStaList, NULL, ME, "NULL");
+    ASSERT_NOT_NULL(macAddress, NULL, ME, "NULL");
+    amxc_llist_for_each(it, affiliatedStaList) {
+        wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
+        if(swl_mac_binMatches(macAddress, &afSta->mac)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static T_AssociatedDevice* s_findAssociatedDevice(T_AccessPoint* pAP, swl_macBin_t* macAddress) {
     ASSERT_NOT_NULL(pAP, NULL, ME, "NULL");
     ASSERT_NOT_NULL(macAddress, NULL, ME, "NULL");
@@ -617,12 +629,6 @@ static T_AssociatedDevice* s_findAssociatedDevice(T_AccessPoint* pAP, swl_macBin
         ASSERT_NOT_NULL(pAD, NULL, ME, "NULL");
         if(swl_mac_binMatches(macAddress, wld_ad_getMacBin(pAD))) {
             return pAD;
-        }
-        amxc_llist_for_each(it, &pAD->affiliatedStaList) {
-            wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
-            if(swl_mac_binMatches(macAddress, &afSta->mac)) {
-                return pAD;
-            }
         }
     }
     return NULL;
@@ -639,8 +645,16 @@ static T_AssociatedDevice* s_findMldAssociatedDevice(T_AccessPoint* pAP, swl_mac
             continue;
         }
         T_AccessPoint* pAfAP = pSSID->AP_HOOK;
+        if(pAfAP == pAP) {
+            continue;
+        }
         T_AssociatedDevice* pAD = s_findAssociatedDevice(pAfAP, macAddress);
-        ASSERTS_NULL(pAD, pAD, ME, "found")
+        if(pAD != NULL) {
+            bool isAfSta = s_isAffiliatedSta(&pAD->affiliatedStaList, macAddress);
+            if(isAfSta) {
+                return pAD;
+            }
+        }
     }
     return NULL;
 }
@@ -659,6 +673,7 @@ T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl
     if(pAD != NULL) {
         return pAD;
     }
+    SAH_TRACEZ_INFO(ME, "%s: created device "MAC_PRINT_FMT, pAP->alias, MAC_PRINT_ARG(macAddress->bMac));
     return wld_ad_create_associatedDevice(pAP, macAddress);
 }
 
@@ -1219,7 +1234,6 @@ static void s_activate(T_AccessPoint* pAP, T_AssociatedDevice* pAD) {
     pAD->Inactive = 0;
     pAD->hadSecFailure = false;
     pAD->latestStateChangeTime = swl_time_getMonoSec();
-    pAD->associationTime = swl_time_getMonoSec();
 
     swl_timespec_reset(&pAD->lastSampleTime);
 
@@ -1388,6 +1402,8 @@ void wld_ad_add_connection_success(T_AccessPoint* pAP, T_AssociatedDevice* pAD) 
     pAD->AuthenticationState = 1;
     pAD->Inactive = 0;
     pAD->latestStateChangeTime = swl_time_getMonoSec();
+    pAD->associationTime = swl_time_getMonoSec();
+
     s_incrementAssocCounter(pAP, "Success");
     if(!swl_security_isApModeValid(pAD->assocCaps.currentSecurity)) {
         pAD->assocCaps.currentSecurity = pAP->secModeEnabled;
