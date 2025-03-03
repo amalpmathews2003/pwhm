@@ -250,6 +250,3 @@ dependencies:
   - name: "mod-netmodel"
   - name: "odl-generator"
     min: "master_v1.6.4"
-  native:
-  - name: "openssl"
-
