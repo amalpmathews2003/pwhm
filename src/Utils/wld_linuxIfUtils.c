@@ -68,6 +68,7 @@
 #include "swl/swl_common.h"
 #include "swla/swla_mac.h"
 #include "swl/swl_string.h"
+#include "swl/fileOps/swl_fileUtils.h"
 
 #define ME "netUtil"
 
@@ -269,4 +270,11 @@ int wld_linuxIfUtils_updateMacExt(char* intfName, swl_macBin_t* macAddress) {
     int ret = wld_linuxIfUtils_updateMac(sock, intfName, macAddress);
     close(sock);
     return ret;
+}
+
+bool wld_linuxIfUtils_inBridge(char* intfName) {
+    ASSERTS_STR(intfName, false, ME, "Empty ifname");
+    char path[128] = {0};
+    snprintf(path, sizeof(path), "/sys/class/net/%s/brport", intfName);
+    return (swl_fileUtils_existsDir(path));
 }
