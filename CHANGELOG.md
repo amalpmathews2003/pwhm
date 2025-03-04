@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.11.2 - 2025-03-04(16:23:20 +0000)
+
+### Other
+
+- - Endpoint connection is failing
+
 ## Release sah-next_v7.11.1 - 2025-02-28(12:45:37 +0000)
 
 ### Other
