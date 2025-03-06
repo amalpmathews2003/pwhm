@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.12.0 - 2025-03-06(16:07:55 +0000)
+
+### Other
+
+- : use hostapd probe_rx_events=1 to catch PROBE_REQ
+
 ## Release sah-next_v7.11.2 - 2025-03-04(16:23:20 +0000)
 
 ### Other
