@@ -677,40 +677,6 @@ T_AssociatedDevice* wld_vap_findOrCreateAssociatedDevice(T_AccessPoint* pAP, swl
     return wld_ad_create_associatedDevice(pAP, macAddress);
 }
 
-
-/**
- * Set Active=0 to all previous associations for non-MLO station on a MLD configured AP.
- */
-void wld_assocdev_updateAssociatedDeviceActive(T_AccessPoint* assocAp, swl_macBin_t* mac) {
-    ASSERTS_NOT_NULL(assocAp, , ME, "NULL");
-    ASSERTS_NOT_NULL(assocAp->pSSID, , ME, "NULL");
-    ASSERTS_NOT_NULL(assocAp->pSSID->pMldLink, , ME, "Update not needed");
-    ASSERTS_NOT_NULL(mac, , ME, "NULL");
-
-    T_AssociatedDevice* pAD = wld_vap_find_asociatedDevice(assocAp, mac);
-    ASSERTS_NOT_NULL(pAD, , ME, "NULL");
-    T_Radio* pRad;
-    wld_for_eachRad(pRad) {
-        T_AccessPoint* pAP;
-        wld_rad_forEachAp(pAP, pRad) {
-            if(pAP == assocAp) {
-                continue;
-            }
-            T_AssociatedDevice* tempAD = NULL;
-            for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
-                tempAD = pAP->AssociatedDevice[i];
-                if(!SWL_MAC_BIN_MATCHES(&tempAD->MACAddress, mac)) {
-                    continue;
-                }
-                if(tempAD->Active) {
-                    wld_ad_add_disconnection(pAP, tempAD);
-                }
-            }
-            wld_vap_cleanup_stationlist(pAP);
-        }
-    }
-}
-
 static void s_updateStationStatsHistory(T_AssociatedDevice* pAD) {
     ASSERTS_NOT_NULL(pAD, , ME, "NULL");
     if(pAD->SignalStrength < pAD->minSignalStrength) {
