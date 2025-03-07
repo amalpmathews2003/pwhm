@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.12.1 - 2025-03-07(08:19:17 +0000)
+
+### Other
+
+- match only connected stations in APMLD station stats
+
 ## Release sah-next_v7.12.0 - 2025-03-06(16:07:55 +0000)
 
 ### Other
