@@ -926,6 +926,7 @@ static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) 
     if((nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL) != 0) ||
        ((rc = wld_nl80211_parseScanResultPerFreqBand(tb, &result, band)) < SWL_RC_OK)) {
         SAH_TRACEZ_ERROR(ME, "Failed to parse nl msg evt(%d)", gnlh->cmd);
+        rc = SWL_RC_ERROR;
         goto scanFinish;
     }
     if(rc == SWL_RC_CONTINUE) {
@@ -934,6 +935,7 @@ static swl_rc_ne s_scanResultCb(swl_rc_ne rc, struct nlmsghdr* nlh, void* priv) 
         pResult = calloc(1, sizeof(wld_scanResultSSID_t));
         if(pResult == NULL) {
             SAH_TRACEZ_ERROR(ME, "fail to alloc scan result element");
+            rc = SWL_RC_ERROR;
             goto scanFinish;
         }
         memcpy(pResult, &result, sizeof(wld_scanResultSSID_t));
@@ -959,6 +961,7 @@ scanFinish:
         free(pResult);
     }
     free(requestData);
+    ASSERT_TRUE((rc <= SWL_RC_ERROR) || (rc == SWL_RC_DONE), rc, ME, "unexpectedly cleaned up scan request while returning %s", swl_rc_toString(rc));
     return rc;
 }
 
