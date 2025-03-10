@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.12.2 - 2025-03-10(11:12:49 +0000)
+
+### Other
+
+- - crash PWHM
+
 ## Release sah-next_v7.12.1 - 2025-03-07(08:19:17 +0000)
 
 ### Other
