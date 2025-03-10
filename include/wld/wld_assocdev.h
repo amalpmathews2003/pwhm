@@ -110,6 +110,7 @@ wld_affiliatedSta_t* wld_ad_provideAffiliatedStaWithMac(T_AssociatedDevice* pAD,
 void wld_ad_activateAfSta(T_AssociatedDevice* pAD, wld_affiliatedSta_t* afSta);
 void wld_ad_deactivateAfSta(T_AssociatedDevice* pAD, wld_affiliatedSta_t* afSta);
 uint32_t wld_ad_getNrActiveAffiliatedSta(T_AssociatedDevice* pAD);
+void wld_ad_deactivateAllAfSta(T_AssociatedDevice* pAD);
 
 void wld_ad_deauthWithReason(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_IEEE80211deauthReason_ne deauthReason);
 void wld_ad_add_sec_failure(T_AccessPoint* pAP, T_AssociatedDevice* pAD);

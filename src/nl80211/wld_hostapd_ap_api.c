@@ -1117,6 +1117,10 @@ SWL_TABLE(sAkmSuiteSelectorMap,
               {"00-0f-ac-6", SWL_SECURITY_APMODE_WPA2_WPA3_P}, // PSK (SHA256)
               {"00-0f-ac-8", SWL_SECURITY_APMODE_WPA3_P},      // SAE (SHA256)
               {"00-0f-ac-9", SWL_SECURITY_APMODE_WPA3_P},      // FT-SAE (SHA256) (11r)
+                                                               /* Ref. WPA3_Specification_v3.4 */
+              {"00-0f-ac-19", SWL_SECURITY_APMODE_WPA2_P},     // FT-PSK (SHA384) (11r)
+              {"00-0f-ac-20", SWL_SECURITY_APMODE_WPA2_P},     // PSK (SHA384)
+              {"00-0f-ac-24", SWL_SECURITY_APMODE_WPA3_P},     // SAE (SAE using group-dependent hash)
               ));
 
 static void s_parseHostapdStaCmdResponse(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* buff) {
@@ -1191,6 +1195,42 @@ swl_rc_ne wld_ap_hostapd_getAllStaInfo(T_AccessPoint* pAP) {
         memcpy(staMacStr.cMac, buff, SWL_MAC_CHAR_LEN - 1);
     }
     return SWL_RC_OK;
+}
+
+static bool s_checkMainStaMldLinkIndic(char* staInfoBuf) {
+    char valStr[WLD_M_BUF] = {0};
+    //Eg: capability=0x1111 (=> mgmt->u.assoc_req.capab_info)
+    //only set saved in sta context upon assoc/reassoc, which is only received over main STA mld link
+    if(wld_wpaCtrl_getValueStr(staInfoBuf, "capability", valStr, sizeof(valStr)) > 0) {
+        uint16_t val = 0;
+        if(swl_rc_isOk(wldu_convStrToNum(valStr, &val, sizeof(val), 16, false)) && (val > 0)) {
+            return true;
+        }
+    }
+    //Eg: vendor_oui=00:50:f2: only set saved in sta context upon assoc/reassoc, which is only received over main STA mld link
+    if(wld_wpaCtrl_getValueStr(staInfoBuf, "vendor_oui", valStr, sizeof(valStr)) > 0) {
+        swl_oui_t oui;
+        memset(&oui, 0, sizeof(oui));
+        if(swl_typeOui_fromChar(&oui, valStr) && (SWL_OUI_GET(oui.ouiBytes) > 0)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool wld_ap_hostapd_isMainStaMldLink(T_AccessPoint* pAP, swl_macBin_t* pMacBin) {
+    ASSERT_NOT_NULL(pAP, false, ME, "NULL");
+    swl_macChar_t macStr = SWL_MAC_CHAR_NEW();
+    SWL_MAC_BIN_TO_CHAR(&macStr, pMacBin);
+    ASSERT_TRUE(swl_mac_charIsValidStaMac(&macStr), false, ME, "invalid mac");
+    char buff[WLD_L_BUF] = {0};
+    snprintf(buff, sizeof(buff), "STA %.17s", macStr.cMac);
+    bool ret = wld_wpaCtrl_sendCmdSynced(pAP->wpaCtrlInterface, buff, buff, sizeof(buff) - 1);
+    ASSERT_TRUE(ret, false, ME, "%s: Fail sta cmd: %s : ret %u", pAP->alias, buff, ret);
+    ASSERTI_TRUE(swl_str_nmatchesIgnoreCase(buff, macStr.cMac, strlen(macStr.cMac)), false,
+                 ME, "%s: wrong sta %s info: received(%s)",
+                 pAP->alias, macStr.cMac, buff);
+    return s_checkMainStaMldLinkIndic(buff);
 }
 
 /**
