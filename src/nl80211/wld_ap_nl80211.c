@@ -257,6 +257,25 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     pAD->downLinkRateSpec = pStationInfo->txRate.mcsInfo;
     pAD->lastSampleTime = swl_timespec_getMonoVal();
 
+    swl_mcsStandard_e mcsStd = SWL_MAX(pStationInfo->txRate.mcsInfo.standard, pStationInfo->rxRate.mcsInfo.standard);
+    swl_radStd_e operStd = swl_mcs_radStdFromMcsStd(mcsStd, pAP->pRadio->operatingFrequencyBand);
+    if(pAD->operatingStandard == SWL_RADSTD_AUTO) {
+        pAD->operatingStandard = operStd;
+    }
+
+    if(mcsStd == SWL_MCS_STANDARD_EHT) {
+        if(pStationInfo->nrLinks == 0) {
+            pAD->mloMode = SWL_MLO_MODE_NA;
+        } else if(pStationInfo->nrLinks == 1) {
+            pAD->mloMode = SWL_MLO_MODE_SINGLE_LINK;
+        }
+    } else if(pStationInfo->nrLinks <= 1) {
+        pAD->mloMode = SWL_MLO_MODE_NA;
+    }
+    if((pStationInfo->nrLinks > 1) && (pAD->mloMode <= SWL_MLO_MODE_SINGLE_LINK)) {
+        pAD->mloMode = SWL_MLO_MODE_ACTIVE_UNKNOWN;
+    }
+
     return SWL_RC_OK;
 }
 
