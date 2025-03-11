@@ -90,7 +90,7 @@
     "Enable": true,
     "CurrentOperatingChannelBandwidth": "80MHz",
     "OfdmaEnable": true,
-    "KickRoamingStation": true,
+    "KickRoamingStation": false,
     "AP_Mode": true,
     "DFSChannelChangeEventCounter": 0,
     "MaxBitRate": 0,
