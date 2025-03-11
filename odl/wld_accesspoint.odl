@@ -259,7 +259,6 @@ define rrm_t{
 		 *  corresponds to IEEE 802.11 parameter
 		 *  dot11ShortRetryLimit. */
 		%persistent uint32 RetryLimit{
-			default 3;
 		}
 		/** Indicates whether this access point supports WiFi
 		 *  Multimedia (WMM) Access Categories (AC).  */

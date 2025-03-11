@@ -177,7 +177,6 @@ static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName
     pAP->radiusCalledStationId[0] = '\0';
     pAP->radiusChargeableUserId = 0;
     pAP->rekeyingInterval = WLD_SEC_PER_H;
-    pAP->retryLimit = 3;
     pAP->SSIDAdvertisementEnabled = 1;
     pAP->status = APSTI_DISABLED;
     pAP->secModesSupported = M_SWL_SECURITY_APMODE_NONE;
@@ -866,7 +865,6 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
             free(path);
         }
         amxd_trans_set_cstring_t(&trans, "RadioReference", TBuf);
-
         amxd_trans_set_int32_t(&trans, "RetryLimit", pAP->retryLimit);
         amxd_trans_set_bool(&trans, "WMMCapability", pAP->WMMCapability);
         amxd_trans_set_bool(&trans, "UAPSDCapability", ((pAP->WMMCapability) ? pAP->UAPSDCapability : false));
@@ -1050,6 +1048,12 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         tmp_int32 = amxd_object_get_int32_t(object, "MaxAssociatedDevices", NULL);
         if((tmp_int32 > 0) && (pAP->MaxStations != tmp_int32)) {
             pAP->MaxStations = tmp_int32;
+            commit = true;
+        }
+
+        tmp_uint32 = amxd_object_get_uint32_t(object, "RetryLimit", NULL);
+        if((uint32_t) pAP->retryLimit != tmp_uint32) {
+            pAP->retryLimit = tmp_uint32;
             commit = true;
         }
 
@@ -2758,7 +2762,6 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("SSIDAdvertisementEnabled", s_setSsidAdvEnabled_pwf),
                   SWLA_DM_PARAM_HDLR("RetryLimit", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("WMMEnable", s_setApCommonParam_pwf),
-                  SWLA_DM_PARAM_HDLR("RetryLimit", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("UAPSDEnable", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("MCEnable", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("APBridgeDisable", s_setApCommonParam_pwf),
