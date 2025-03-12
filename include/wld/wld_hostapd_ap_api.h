@@ -147,5 +147,6 @@ swl_rc_ne wld_hostapd_ap_sendCfgParam(T_AccessPoint* pAP, const char* param, con
 bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP);
 
 const char* wld_hostapd_ap_selectApLinkIface(T_AccessPoint* pAP);
+bool wld_ap_hostapd_isMainStaMldLink(T_AccessPoint* pAP, swl_macBin_t* pMacBin);
 
 #endif /* __WLD_AP_API_H__ */

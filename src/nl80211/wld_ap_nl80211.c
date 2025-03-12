@@ -105,12 +105,32 @@ swl_rc_ne wld_ap_nl80211_delVapInterface(T_AccessPoint* pAP) {
     }
 }
 
+static bool s_matchVapIfSta(T_AccessPoint* pAP, wld_nl80211_stationInfo_t* pStationInfo) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pStationInfo, false, ME, "NULL");
+    ASSERTW_FALSE(swl_mac_binIsNull(&pStationInfo->macAddr), false, ME, "null mac addr");
+    int16_t apLinkId = wld_mld_getLinkId(pAP->pSSID->pMldLink);
+    if((pStationInfo->nrLinks > 0) && (apLinkId >= 0)) {
+        //match stations connected to AP MLD link
+        for(uint32_t i = 0; i < pStationInfo->nrLinks; i++) {
+            if(pStationInfo->linksInfo[i].linkId == apLinkId) {
+                return true;
+            }
+        }
+    } else if((pStationInfo->nrLinks == 0) && (apLinkId < 0)) {
+        //match legacy stations seen on legacy AP (non APMLD)
+        return true;
+    }
+    return false;
+}
+
 swl_rc_ne wld_ap_nl80211_getStationInfo(T_AccessPoint* pAP, const swl_macBin_t* pMac, wld_nl80211_stationInfo_t* pStationInfo) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc;
     amxc_llist_for_each(it, &pAP->llIntfWds) {
         wld_wds_intf_t* wdsIntf = amxc_llist_it_get_data(it, wld_wds_intf_t, entry);
         if(SWL_MAC_BIN_MATCHES(&wdsIntf->bStaMac, pMac)) {
-            swl_rc_ne rc = wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), wdsIntf->index, pMac, pStationInfo);
+            rc = wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), wdsIntf->index, pMac, pStationInfo);
             SAH_TRACEZ_INFO(ME, "%s: wds stats " SWL_MAC_FMT " %s found", pAP->name,
                             SWL_MAC_ARG(pMac->bMac),
                             (rc < SWL_RC_OK) ? "not" : "");
@@ -121,7 +141,14 @@ swl_rc_ne wld_ap_nl80211_getStationInfo(T_AccessPoint* pAP, const swl_macBin_t* 
         }
     }
     uint32_t index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pAP->pSSID);
-    return wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), index, pMac, pStationInfo);
+    wld_nl80211_stationInfo_t stationInfo;
+    rc = wld_nl80211_getStationInfo(wld_nl80211_getSharedState(), index, pMac, &stationInfo);
+    ASSERTS_TRUE(swl_rc_isOk(rc), rc, ME, "fail to get single sta info");
+    if(s_matchVapIfSta(pAP, &stationInfo)) {
+        W_SWL_SETPTR(pStationInfo, stationInfo);
+        return SWL_RC_OK;
+    }
+    return SWL_RC_NOT_AVAILABLE;
 }
 
 swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stationInfo_t** ppStationInfo, uint32_t* pnrStation) {
@@ -131,7 +158,23 @@ swl_rc_ne wld_ap_nl80211_getAllStationsInfo(T_AccessPoint* pAP, wld_nl80211_stat
     wld_nl80211_stationInfo_t* staInfo = NULL;
     uint32_t nrStation = 0;
     uint32_t index = wld_ssid_nl80211_getPrimaryLinkIfIndex(pAP->pSSID);
-    swl_rc_ne rc = wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), index, ppStationInfo, pnrStation);
+    swl_rc_ne rc = wld_nl80211_getAllStationsInfo(wld_nl80211_getSharedState(), index, &staInfo, &nrStation);
+    W_SWL_SETPTR(pnrStation, nrStation);
+    W_SWL_SETPTR(ppStationInfo, staInfo);
+    ASSERTS_TRUE(swl_rc_isOk(rc), rc, ME, "fail to get all sta info");
+    ASSERTS_NOT_NULL(staInfo, rc, ME, "no results");
+    uint32_t nrApSta = 0;
+    wld_nl80211_stationInfo_t* pApStaInfo = calloc(nrStation, sizeof(wld_nl80211_stationInfo_t));
+    ASSERT_NOT_NULL(pApStaInfo, rc, ME, "memory allocation failed");
+    for(uint32_t i = 0; i < nrStation; i++) {
+        if(s_matchVapIfSta(pAP, &staInfo[i])) {
+            pApStaInfo[nrApSta++] = staInfo[i];
+        }
+    }
+    W_SWL_FREE(staInfo);
+    W_SWL_SETPTR(pnrStation, nrApSta);
+    W_SWL_SETPTR(ppStationInfo, pApStaInfo);
+    nrStation = nrApSta;
     if(!amxc_llist_is_empty(&pAP->llIntfWds)) {
         nrStation = *pnrStation;
         staInfo = realloc(*ppStationInfo, (nrStation + amxc_llist_size(&pAP->llIntfWds)) * sizeof(wld_nl80211_stationInfo_t));
@@ -213,6 +256,25 @@ swl_rc_ne wld_ap_nl80211_copyStationInfoToAssocDev(T_AccessPoint* pAP, T_Associa
     pAD->DownlinkShortGuard = swl_mcs_guardIntervalToInt(pStationInfo->txRate.mcsInfo.guardInterval);
     pAD->downLinkRateSpec = pStationInfo->txRate.mcsInfo;
     pAD->lastSampleTime = swl_timespec_getMonoVal();
+
+    swl_mcsStandard_e mcsStd = SWL_MAX(pStationInfo->txRate.mcsInfo.standard, pStationInfo->rxRate.mcsInfo.standard);
+    swl_radStd_e operStd = swl_mcs_radStdFromMcsStd(mcsStd, pAP->pRadio->operatingFrequencyBand);
+    if(pAD->operatingStandard == SWL_RADSTD_AUTO) {
+        pAD->operatingStandard = operStd;
+    }
+
+    if(mcsStd == SWL_MCS_STANDARD_EHT) {
+        if(pStationInfo->nrLinks == 0) {
+            pAD->mloMode = SWL_MLO_MODE_NA;
+        } else if(pStationInfo->nrLinks == 1) {
+            pAD->mloMode = SWL_MLO_MODE_SINGLE_LINK;
+        }
+    } else if(pStationInfo->nrLinks <= 1) {
+        pAD->mloMode = SWL_MLO_MODE_NA;
+    }
+    if((pStationInfo->nrLinks > 1) && (pAD->mloMode <= SWL_MLO_MODE_SINGLE_LINK)) {
+        pAD->mloMode = SWL_MLO_MODE_ACTIVE_UNKNOWN;
+    }
 
     return SWL_RC_OK;
 }

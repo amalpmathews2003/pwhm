@@ -146,6 +146,7 @@ typedef void (* wld_wpaCtrl_wpsOverlapMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsFailMsg_f)(void* userData, char* ifName);
 typedef void (* wld_wpaCtrl_wpsCredReceivedMsg_f)(void* userData, char* ifName, void* creds, swl_rc_ne status);
 typedef void (* wld_wpaCtrl_wpsSetupLockedMsg_f)(void* userData, char* ifName, bool setupLocked);
+typedef void (* wld_wpaCtrl_apStationEapCompletedCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_apStationConnectivityCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_apStationAssocFailureCb_f)(void* userData, char* ifName, swl_macBin_t* bStationMac);
 typedef void (* wld_wpaCtrl_wdsIfaceAddedCb_f)(void* userData, char* ifName, char* wdsName, swl_macBin_t* bStationMac);
@@ -182,6 +183,7 @@ typedef struct {
     wld_wpaCtrl_wpsFailMsg_f fWpsFailMsg;                /** WPS registration failed after M2/M2D */
     wld_wpaCtrl_wpsCredReceivedMsg_f fWpsCredReceivedCb; /** WPS credentials received */
     wld_wpaCtrl_wpsSetupLockedMsg_f fWpsSetupLockedMsg;  /** WPS AP-SETUP-LOCKED/AP-SETUP-UNLOCKED received*/
+    wld_wpaCtrl_apStationEapCompletedCb_f fApStationEapCompletedCb;
     wld_wpaCtrl_apStationConnectivityCb_f fApStationConnectedCb;
     wld_wpaCtrl_apStationConnectivityCb_f fApStationDisconnectedCb;
     wld_wpaCtrl_apStationAssocFailureCb_f fApStationAssocFailureCb;

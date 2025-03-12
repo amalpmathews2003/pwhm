@@ -206,40 +206,22 @@ static void s_fillMldAssocDevInfo(T_AccessPoint* pAP, T_AssociatedDevice* pAD, w
     ASSERT_NOT_NULL(pStationInfo, , ME, "no station info entry!");
     ASSERT_NOT_NULL(pAD, , ME, "no associated device entry!");
     ASSERTS_NOT_NULL(pAP->pSSID, , ME, "%s: no SSID", pAP->name);
-    ASSERTS_NOT_NULL(pAP->pSSID->pMldLink, , ME, "%s: Accesspoint do not have active MLO", pAP->name);
-    ASSERTS_TRUE(pAD->mloMode != SWL_MLO_MODE_UNKNOWN, , ME, "%s: AssociatedDevice do not have active MLO", pAD->Name);
+    ASSERTS_NOT_NULL(pAP->pSSID->pMldLink, , ME, "%s: Accesspoint is not APMLD link", pAP->name);
+    ASSERTS_TRUE(pAD->mloMode > SWL_MLO_MODE_NA, , ME, "%s: AssociatedDevice does not have active MLO", pAD->Name);
     wld_affiliatedSta_t* afSta = NULL;
-    amxc_llist_for_each(it, &pAD->affiliatedStaList) {
-        afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
-        afSta->active = false;
-    }
-    if(!swl_mac_binIsNull(&pStationInfo->macMld)) {
-        T_SSID* pSSID = NULL;
-        if((pSSID = wld_mld_getLinkSsidByLinkId(pAP->pSSID->pMldLink, pStationInfo->linkId)) != NULL) {
-            afSta = wld_ad_getOrAddAffiliatedSta(pAD, pSSID->AP_HOOK);
-            ASSERT_NOT_NULL(afSta, , ME, "%s: create affiliatedSta (linkId:%u,mac:%s) failed for sta(%s)!",
-                            pSSID->AP_HOOK->alias,
-                            pStationInfo->linkId,
-                            swl_typeMacBin_toBuf32Ref(&pStationInfo->macAddr).buf,
-                            pAD->Name);
-            memcpy(&afSta->mac, &pStationInfo->macAddr, sizeof(swl_macBin_t));
-            afSta->linkId = pStationInfo->linkId;
-            afSta->active = true;
-        }
-    }
+    wld_ad_deactivateAllAfSta(pAD);
     for(int i = 0; i < pStationInfo->nrLinks; i++) {
         wld_nl80211_mloLinkInfo_t* pLinkInfo = &pStationInfo->linksInfo[i];
         T_SSID* pSSID = NULL;
         if((pSSID = wld_mld_getLinkSsidByLinkId(pAP->pSSID->pMldLink, pLinkInfo->linkId)) != NULL) {
-            afSta = wld_ad_getOrAddAffiliatedSta(pAD, pSSID->AP_HOOK);
-            ASSERT_NOT_NULL(afSta, , ME, "%s: create affiliatedSta (linkId:%u,mac:%s) failed for sta(%s)!",
+            afSta = wld_ad_provideAffiliatedStaWithMac(pAD, pSSID->AP_HOOK, &pLinkInfo->linkMac);
+            ASSERT_NOT_NULL(afSta, , ME, "%s: fetch affiliatedSta (linkId:%u,mac:%s) failed for sta(%s)!",
                             pSSID->AP_HOOK->alias,
                             pLinkInfo->linkId,
                             swl_typeMacBin_toBuf32Ref(&pLinkInfo->linkMac).buf,
                             pAD->Name);
-            memcpy(&afSta->mac, &pLinkInfo->linkMac, sizeof(swl_macBin_t));
             afSta->linkId = pLinkInfo->linkId;
-            afSta->active = true;
+            wld_ad_activateAfSta(pAD, afSta);
             afSta->bytesSent = pLinkInfo->stats.txBytes;
             afSta->bytesReceived = pLinkInfo->stats.rxBytes;
             afSta->packetsSent = pLinkInfo->stats.txPackets;
@@ -291,21 +273,21 @@ static uint32_t s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
     for(uint32_t id = 0; id < nrStations; id++) {
         T_AssociatedDevice* pAD = NULL;
         wld_nl80211_stationInfo_t* pStationInfo = &pAllStaInfo[id];
-        swl_macBin_t* mac = swl_mac_binIsNull(&pStationInfo->macMld) ? &pStationInfo->macAddr : &pStationInfo->macMld;
-        if((pAD = wld_vap_find_asociatedDevice(pAP, mac)) == NULL) {
-            if((!swl_mac_binIsNull(&pStationInfo->macMld)) && (pStationInfo->nrLinks > 1)) {
-                SAH_TRACEZ_INFO(ME, "detect mlo sta %s with %d multi-links: assocDev has to be created on main assoc link",
-                                swl_typeMacBin_toBuf32(pStationInfo->macMld).buf,
-                                pStationInfo->nrLinks);
-                continue;
-            }
-
-            if((pAD = wld_create_associatedDevice(pAP, mac)) == NULL) {
-                SAH_TRACEZ_ERROR(ME, "%s: could not create new detected AD %s",
-                                 pAP->name, swl_typeMacBin_toBuf32Ref(mac).buf);
-                continue;
-            }
-            SAH_TRACEZ_WARNING(ME, "%s: created missing AD %s", pAP->name, pAD->Name);
+        if((pStationInfo->nrLinks <= 1) ||
+           ((pStationInfo->linkId >= 0) && (wld_mld_getLinkId(pAP->pSSID->pMldLink) == pStationInfo->linkId)) ||
+           ((pStationInfo->linkId < 0) && (wld_ap_hostapd_isMainStaMldLink(pAP, &pStationInfo->macAddr)))) {
+            pAD = wld_vap_findOrCreateAssociatedDevice(pAP, &pStationInfo->macAddr);
+        } else {
+            SAH_TRACEZ_INFO(ME, "%s: skip reporting mlo sta %s (%d links) on auxiliary link",
+                            pAP->alias,
+                            swl_typeMacBin_toBuf32(pStationInfo->macAddr).buf,
+                            pStationInfo->nrLinks);
+            continue;
+        }
+        if(pAD == NULL) {
+            SAH_TRACEZ_ERROR(ME, "%s: could not create new detected AD %s",
+                             pAP->name, swl_typeMacBin_toBuf32Ref(&pStationInfo->macAddr).buf);
+            continue;
         }
         pAD->seen = true;
         s_fillAssocDevInfo(pAP, pAD, pStationInfo);
