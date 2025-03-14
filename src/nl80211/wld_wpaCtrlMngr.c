@@ -110,8 +110,17 @@ swl_rc_ne wld_wpaCtrlMngr_checkAllIfaces(wld_wpaCtrlMngr_t* pMgr) {
                 wld_wpaCtrlInterface_setConnectionInfo(pIface, ctrlDirPath, sockName);
             }
             if((pCurrMgr == pMgr) && (!wld_wpaCtrlInterface_isReady(pIface))) {
+                bool isEnabled = wld_wpaCtrlInterface_isEnabled(pIface);
                 wld_wpaCtrlInterface_setEnable(pIface, true);
-                wld_wpaCtrlInterface_open(pIface);
+                if(!wld_wpaCtrlInterface_open(pIface)) {
+                    /*
+                     * restore previous wpactrl iface enabling state
+                     * when failing to connect, while a first one succeeded
+                     */
+                    if(wld_wpaCtrlMngr_countReadyInterfaces(pMgr) > 0) {
+                        wld_wpaCtrlInterface_setEnable(pIface, isEnabled);
+                    }
+                }
             }
         }
         free(namelist[i]);
@@ -126,8 +135,7 @@ swl_rc_ne s_checkMgrConnectedIfaces(wld_wpaCtrlMngr_t* pMgr) {
     if((!nIfacesReady) || (nIfacesReady < nExpecIfaces)) {
         return SWL_RC_CONTINUE;
     }
-    amxp_timer_state_t timerState = amxp_timer_get_state(pMgr->connectTimer);
-    if((timerState != amxp_timer_running) && (timerState != amxp_timer_started)) {
+    if(!wld_wpaCtrlMngr_isConnecting(pMgr)) {
         return SWL_RC_OK;
     }
     pMgr->wpaCtrlConnectAttempts = 0;
@@ -431,6 +439,24 @@ bool wld_wpaCtrlMngr_connect(wld_wpaCtrlMngr_t* pMgr) {
     ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
     ASSERTI_FALSE(wld_wpaCtrlMngr_isConnected(pMgr), true, ME, "already connected");
     amxp_timer_start(pMgr->connectTimer, FIRST_DELAY_MS);
+    return true;
+}
+
+bool wld_wpaCtrlMngr_isConnecting(wld_wpaCtrlMngr_t* pMgr) {
+    ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
+    amxp_timer_state_t timerState = amxp_timer_get_state(pMgr->connectTimer);
+    if((timerState == amxp_timer_running) || (timerState == amxp_timer_started)) {
+        return true;
+    }
+    return false;
+}
+
+bool wld_wpaCtrlMngr_stopConnecting(wld_wpaCtrlMngr_t* pMgr) {
+    ASSERT_NOT_NULL(pMgr, false, ME, "NULL");
+    if(wld_wpaCtrlMngr_isConnecting(pMgr)) {
+        amxp_timer_stop(pMgr->connectTimer);
+        pMgr->wpaCtrlConnectAttempts = 0;
+    }
     return true;
 }
 
