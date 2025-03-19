@@ -3060,6 +3060,8 @@ define probelist_t{
 
 			}
 		}
+
+		counted with RadioNumberOfEntries;
 	} /* object Radio */
 	}
 }

@@ -2699,7 +2699,7 @@ define rrm_t{
 
 		htable debug(%in string op);
 
-
+		counted with AccessPointNumberOfEntries;
 	} /* object AccessPoint */
     }
 }

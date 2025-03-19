@@ -785,6 +785,8 @@
 		 * Perform debug commands to check internal state.
 		 */
 		htable debug(%in string op);
+
+		counted with EndPointNumberOfEntries;
 	} /* object EndPoint */
     }
 }

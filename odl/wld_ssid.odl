@@ -403,6 +403,8 @@
 		%persistent bool Enable{
 			default false;
 		}
+
+		counted with SSIDNumberOfEntries;
 	} /* object SSID */
     }
 }
