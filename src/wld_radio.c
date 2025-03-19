@@ -1899,6 +1899,7 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
 
         amxd_trans_set_cstring_t(&trans, "VendorPCISig", pR->vendor->name);
         amxd_trans_set_cstring_t(&trans, "Name", pR->Name);
+        amxd_trans_set_cstring_t(&trans, "ChipsetVendor", pR->chipVendorName);
 
         wld_util_initCustomAlias(&trans, object);
 
