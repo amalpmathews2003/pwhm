@@ -244,4 +244,14 @@ int wld_linuxIfUtils_updateMac(int sock, char* intfName, swl_macBin_t* macAddres
  */
 int wld_linuxIfUtils_updateMacExt(char* intfName, swl_macBin_t* macAddress);
 
+/*
+ * @brief get Vendor name
+ *
+ * @param radioName Radio name
+ *
+ * @return Vendor name in case of success
+ *        <empty string in case of error
+ */
+const char* wld_linuxIfUtils_getChipsetVendor(char* radioName);
+
 #endif /* INCLUDE_WLD_WLD_LINUXIFUTILS_H_ */

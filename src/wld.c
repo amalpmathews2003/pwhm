@@ -83,6 +83,7 @@
 #include "wld_nl80211_types.h"
 #include "Features/wld_persist.h"
 #include "wld/wld_vendorModule_mgr.h"
+#include "wld/wld_linuxIfUtils.h"
 
 #define ME "wld"
 
@@ -443,6 +444,10 @@ T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
     /* Get Wifi firmware version */
     pR->pFA->mfn_wrad_firmwareVersion(pR);
 
+    /* Get the wifi chip vendor name in standard way, if not already filled by the vendor module in mfn_wrad_supports */
+    if(swl_str_isEmpty(pR->chipVendorName)) {
+        swl_str_copy(pR->chipVendorName, sizeof(pR->chipVendorName), wld_linuxIfUtils_getChipsetVendor(pR->Name));
+    }
     pR->multiUserMIMOSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "MU_MIMO", 0) == SWL_TRL_TRUE);
     pR->implicitBeamFormingSupported = (pR->pFA->mfn_misc_has_support(pR, NULL, "IMPL_BF", 0) == SWL_TRL_TRUE);
     /* Enabled by default, but not if it's not supported of course. */
