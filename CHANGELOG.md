@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.0 - 2025-03-19(17:31:55 +0000)
+
+### Other
+
+- Add a new parameter as ChipsetVendor to WiFi.Radio
+
 ## Release sah-next_v7.13.0 - 2025-03-19(09:23:50 +0000)
 
 ### Other
