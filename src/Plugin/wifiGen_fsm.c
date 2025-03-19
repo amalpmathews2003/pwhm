@@ -434,6 +434,8 @@ static bool s_doStopHostapd(T_Radio* pRad) {
         if(!wld_secDmn_isEnabled(pRad->hostapd)) {
             //force restart of expected group process, by starting member
             wld_secDmn_start(pRad->hostapd);
+            //no need for wpactrl connection when restarting
+            wld_wpaCtrlMngr_stopConnecting(wld_secDmn_getWpaCtrlMgr(pRad->hostapd));
         }
         rc = wld_secDmn_restart(pRad->hostapd);
         SAH_TRACEZ_INFO(ME, "%s: restart hostapd returns rc : %d", pRad->Name, rc);

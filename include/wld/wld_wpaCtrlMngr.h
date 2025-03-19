@@ -72,6 +72,8 @@ bool wld_wpaCtrlMngr_setEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void* userdata, wld
 bool wld_wpaCtrlMngr_getEvtHandlers(wld_wpaCtrlMngr_t* pMgr, void** userdata, wld_wpaCtrl_radioEvtHandlers_cb* pHandlers);
 bool wld_wpaCtrlMngr_connect(wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_disconnect(wld_wpaCtrlMngr_t* pMgr);
+bool wld_wpaCtrlMngr_stopConnecting(wld_wpaCtrlMngr_t* pMgr);
+bool wld_wpaCtrlMngr_isConnecting(wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_isConnected(wld_wpaCtrlMngr_t* pMgr);
 bool wld_wpaCtrlMngr_isReady(wld_wpaCtrlMngr_t* pMgr);
 void wld_wpaCtrlMngr_cleanup(wld_wpaCtrlMngr_t** ppMgr);
