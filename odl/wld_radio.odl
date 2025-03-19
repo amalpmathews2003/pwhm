@@ -3045,6 +3045,12 @@ define probelist_t{
 				default -1;
 			}
 		}
+               	
+		/**
+		 * Identify the vendor for chip and driver
+		 */
+		%read-only string ChipsetVendor;
+ 
 	} /* object Radio */
 	}
 }

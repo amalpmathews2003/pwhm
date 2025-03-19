@@ -70,6 +70,8 @@
 #include "swl/swl_string.h"
 #include "swl/fileOps/swl_fileUtils.h"
 
+#include "wld.h"
+
 #define ME "netUtil"
 
 int wld_linuxIfUtils_getNetSock() {
@@ -277,4 +279,43 @@ bool wld_linuxIfUtils_inBridge(char* intfName) {
     char path[128] = {0};
     snprintf(path, sizeof(path), "/sys/class/net/%s/brport", intfName);
     return (swl_fileUtils_existsDir(path));
+}
+
+static const wld_rad_chipVendorInfo_t driver2Vendor[] = {
+    {"ath", "Qualcomm"},
+    {"mtlk", "MaxLinear"},
+    {"pcieh", "Broadcom"},
+    {"iwlwifi", "Intel"},
+    {"mt76", "MediaTek"},
+    {"rt2x00", "Ralink"},
+    {NULL, NULL}
+};
+
+const char* wld_linuxIfUtils_getChipsetVendor(char* radioName) {
+    ASSERT_NOT_NULL(radioName, NULL, ME, "Radio Name is NULL");
+    const char* pathPrefix = "/sys/class/net/";
+    const char* pathSuffix = "/device/driver/";
+    char path[512] = {0};
+
+    snprintf(path, sizeof(path), "%s%s%s", pathPrefix, radioName, pathSuffix);
+
+    const char* vendorName = "";
+    char* driver = NULL;
+    char* rp = realpath(path, NULL);
+    ASSERT_NOT_NULL(rp, vendorName, ME, "fail to get realpath of %s", path);
+    driver = strrchr(rp, '/');
+    if(driver != NULL) {
+        driver++;
+    } else {
+        driver = rp;
+    }
+    for(int i = 0; driver2Vendor[i].driver != NULL; i++) {
+        if(swl_str_startsWith(driver, driver2Vendor[i].driver)) {
+            SAH_TRACEZ_INFO(ME, "Driver(%s) to Vendor(%s) mapping found", driver, driver2Vendor[i].vendor);
+            vendorName = driver2Vendor[i].vendor;
+            break;
+        }
+    }
+    free(rp);
+    return vendorName;
 }

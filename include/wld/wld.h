@@ -1679,6 +1679,7 @@ struct WLD_RADIO {
     bool csiEnable;                                     /* Enable CSI */
     amxc_llist_t csiClientList;                         /* CSI client list */
     char firmwareVersion[64];                           /* Radio’s WiFi firmware version */
+    char chipVendorName[64];                            /* Radio’s Hw vendor name */
 
     wld_extMod_dataList_t extDataList;                  /* Non chipset vendor module data list. @type wld_extMod_registration_t */
 
@@ -2163,6 +2164,11 @@ typedef struct wld_spectrumChannelInfoEntry {
     uint32_t nrCoChannelAP;
     swl_bandwidth_e bandwidth;
 } wld_spectrumChannelInfoEntry_t;
+
+typedef struct {
+    char* driver;
+    char* vendor;
+} wld_rad_chipVendorInfo_t;
 
 #ifdef __cplusplus
 extern "C" {
