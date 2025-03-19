@@ -100,6 +100,7 @@ define rrm_t{
 	 *  entry in this table can exist with a given value for
 	 *  SSIDReference.</p>*/
 	%persistent object AccessPoint[]{
+		counted with AccessPointNumberOfEntries;
 		on action add-inst call wld_ap_addInstance_oaf;
 		on action destroy call wld_ap_delInstance_odf;
 		on event "*" call wld_ap_setConf_ocf;
@@ -2699,7 +2700,6 @@ define rrm_t{
 
 		htable debug(%in string op);
 
-		counted with AccessPointNumberOfEntries;
 	} /* object AccessPoint */
     }
 }

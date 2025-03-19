@@ -147,6 +147,7 @@ define probelist_t{
 	   destroy it when the plugin stops.
 	*/
 	%persistent object Radio[] {
+		counted with RadioNumberOfEntries;
 		on event "*" call wld_radio_setConf_ocf;
 		event ScanComplete;
 		event ScanChange;
@@ -3060,8 +3061,6 @@ define probelist_t{
 
 			}
 		}
-
-		counted with RadioNumberOfEntries;
 	} /* object Radio */
 	}
 }
