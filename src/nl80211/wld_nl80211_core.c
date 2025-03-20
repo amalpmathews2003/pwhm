@@ -111,6 +111,7 @@ typedef struct {
     uint32_t timeout;              //max time (in seconds) to finalize request
     void* priv;                    //user data
     wld_nl80211_handler_f handler; //handler to process replies
+    bool handlerRunning;           //flag to note whether the handler is currently running
     swl_rc_ne* pStatus;            //pointer to status, where to save request result before clearing context.
     uint32_t cmd;
 } nlRequest_t;
@@ -392,7 +393,13 @@ static swl_rc_ne s_handleEvent(wld_nl80211_state_t* state, struct nlmsghdr* nlh)
 static swl_rc_ne s_processReply(wld_nl80211_state_t* state, nlRequest_t* pReq, swl_rc_ne* pStatus, wld_nl80211_handler_f handler, void* priv, struct nlmsghdr* nlh, swl_rc_ne rc) {
     if(handler) {
         // call request handler for all msgs
+        if(pReq) {
+            pReq->handlerRunning = true;
+        }
         int hRet = handler(rc, nlh, priv);
+        if(pReq) {
+            pReq->handlerRunning = false;
+        }
         // but save the returned result, only when not yet in error case
         if(rc == SWL_RC_OK) {
             rc = hRet;
@@ -517,7 +524,7 @@ static void s_clearExpiredRequests(wld_nl80211_state_t* state) {
         itNext = amxc_llist_it_get_next(it);
         pReq = amxc_llist_it_get_data(it, nlRequest_t, it);
         uint32_t diff = swl_time_getMonoSec() - pReq->timestamp;
-        if(diff >= pReq->timeout) {
+        if((diff >= pReq->timeout) && !pReq->handlerRunning) {
             SAH_TRACEZ_WARNING(ME, "request %p (seqId:%d) expired (%d >= %d): terminate it",
                                pReq, pReq->seqId, diff, pReq->timeout);
             (state->counters.reqExpired)++;

@@ -256,7 +256,10 @@ static swl_rc_ne s_cmdReplyCb (swl_rc_ne rc, struct nlmsghdr* nlh _UNUSED, void*
     return rc;
 }
 
+static uint32_t gLastSentSeqId = 0;
+
 static int s_sendNothing(struct nl_sock* sock _UNUSED, struct nl_msg* msg) {
+    gLastSentSeqId = nlmsg_hdr(msg)->nlmsg_seq;
     return 0;
 }
 
@@ -1190,6 +1193,48 @@ static void test_wld_nl80211_getChanSurveyInfo(void** mockaState _UNUSED) {
     s_stateMockDeInit(&mockGetChanSurvey.stateMock);
 }
 
+static swl_rc_ne s_getItfCb(swl_rc_ne rc, struct nlmsghdr* nlh _UNUSED, void* priv _UNUSED) {
+    return rc;
+}
+
+static swl_rc_ne s_getScanCb(swl_rc_ne rc, struct nlmsghdr* nlh _UNUSED, void* priv) {
+    if(rc == SWL_RC_OK) {
+        // send sync cmd which will expire while we are still in this callback
+        stateMock_t* mock = (stateMock_t*) priv;
+        mock->state->fNlSendPriv = s_sendNothingAndJumpToSyncTimeout;
+        swl_rc_ne rc = wld_nl80211_sendCmdSync(mock->state, NL80211_CMD_GET_INTERFACE, 0, 456, NULL, s_getItfCb, NULL);
+        assert_int_equal(SWL_RC_NOT_AVAILABLE, rc);
+        return SWL_RC_DONE;
+    }
+    return rc;
+}
+
+static void test_wld_nl80211_request_expires_while_in_callback(void** mockaState _UNUSED) {
+    stateMock_t mock;
+    assert_true(s_stateMockInit(&mock));
+
+    // send GET_SCAN request
+    mock.state->fNlSendPriv = s_sendNothing;
+    swl_rc_ne rc = wld_nl80211_sendCmd(false, mock.state, NL80211_CMD_GET_SCAN, NLM_F_DUMP, 123, NULL, s_getScanCb, &mock, NULL);
+    assert_int_equal(SWL_RC_OK, rc);
+
+    // reply to GET_SCAN with NLMSG_DONE
+    struct nl_msg* msg = nlmsg_alloc();
+    nlmsg_put(msg, 0, gLastSentSeqId, NLMSG_DONE, 0, 0);
+    int n = write(mock.pipeFds[1], (void*) nlmsg_hdr(msg), nlmsg_hdr(msg)->nlmsg_len);
+    assert_int_equal(n, nlmsg_hdr(msg)->nlmsg_len);
+    nlmsg_free(msg);
+
+    //run local event loop, until all requests are processed
+    wld_nl80211_stateCounters_t counters = {};
+    do {
+        s_runEventLoopIter();
+        wld_nl80211_getAllCounters(&counters);
+    } while(counters.reqPending > 0);
+
+    assert_true(s_stateMockDeInit(&mock));
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceOpen(__FILE__, TRACE_TYPE_STDERR);
     if(!sahTraceIsOpen()) {
@@ -1197,6 +1242,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     }
     sahTraceSetLevel(TRACE_LEVEL_WARNING);
     sahTraceAddZone(sahTraceLevel(), "nl80211");
+    sahTraceAddZone(sahTraceLevel(), "nlCore");
     sahTraceSetTimeFormat(TRACE_TIME_APP_SECONDS);
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_wld_nl80211_newState),
@@ -1212,6 +1258,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_wld_nl80211_getAllWiphyInfo),
         cmocka_unit_test_setup_teardown(test_wld_nl80211_getScanResults, s_test_getScanResults_setup, s_test_getScanResults_teardown),
         cmocka_unit_test(test_wld_nl80211_getChanSurveyInfo),
+        cmocka_unit_test(test_wld_nl80211_request_expires_while_in_callback),
     };
     int rc = cmocka_run_group_tests(tests, setup_suite, teardown_suite);
     sahTraceClose();
