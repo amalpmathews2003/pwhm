@@ -83,6 +83,8 @@
 #include "swl/swl_common.h"
 #include "swl/swl_80211.h"
 #include "test-toolbox/ttb_amx.h"
+#include "test-toolbox/ttb_mockClock.h"
+#include "test-toolbox/ttb_mockTimer.h"
 
 static int s_loIfIndex = 0;
 static wld_nl80211_state_t* s_sharedState = NULL;
@@ -93,6 +95,7 @@ static int setup_suite(void** state) {
     *state = ttbAmx;
     wld_plugin_init(&ttbAmx->dm, &ttbAmx->parser);
     s_loIfIndex = if_nametoindex("lo");
+    ttb_mockClock_initDefault();
     return 0;
 }
 
@@ -253,7 +256,12 @@ static swl_rc_ne s_cmdReplyCb (swl_rc_ne rc, struct nlmsghdr* nlh _UNUSED, void*
     return rc;
 }
 
-static int s_TestNlSend(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
+static int s_sendNothing(struct nl_sock* sock _UNUSED, struct nl_msg* msg) {
+    return 0;
+}
+
+static int s_sendNothingAndJumpToSyncTimeout(struct nl_sock* sock _UNUSED, struct nl_msg* msg _UNUSED) {
+    ttb_mockTimer_goToFutureSec(REQUEST_SYNC_TIMEOUT);
     return 0;
 }
 
@@ -262,7 +270,7 @@ static void test_wld_nl80211_sendCmdSync(void** mockaState _UNUSED) {
     wld_nl80211_state_t* state = wld_nl80211_newState();
     assert_non_null(state);
     //tweak: override nl_send API to systematically drop cmd, and make request expire
-    state->fNlSendPriv = s_TestNlSend;
+    state->fNlSendPriv = s_sendNothingAndJumpToSyncTimeout;
 
     swl_rc_ne rc;
     testDesc_t tests[] = {
@@ -326,6 +334,7 @@ static void s_runEventLoopIter() {
         }
     } while(res > 0);
     //if time-outing, check and clear expired requests
+    ttb_mockTimer_goToFutureSec(REQUEST_ASYNC_TIMEOUT);
     wld_nl80211_clearAllExpiredRequests();
 }
 
@@ -334,7 +343,7 @@ static void test_wld_nl80211_sendCmdAsync(void** mockaState _UNUSED) {
     wld_nl80211_state_t* state = wld_nl80211_newState();
     assert_non_null(state);
     //tweak: override nl_send API to systematically drop cmd, and make request expire
-    state->fNlSendPriv = s_TestNlSend;
+    state->fNlSendPriv = s_sendNothing;
 
     swl_rc_ne rc;
     testDesc_t tests[] = {
