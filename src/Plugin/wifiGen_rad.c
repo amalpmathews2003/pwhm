@@ -589,8 +589,6 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
     pRad->setRadio80211hEnable = (pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_5GHZ );
     pRad->m_multiAPTypesSupported = M_MULTIAP_ALL;
 
-    wifiGen_hapd_initGlobDmnCap(pRad);
-
     /* First time force full config */
     pRad->fsmRad.FSM_SyncAll = TRUE;
 
