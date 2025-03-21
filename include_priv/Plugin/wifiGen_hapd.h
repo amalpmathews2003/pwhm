@@ -81,6 +81,7 @@ swl_rc_ne wifiGen_hapd_syncVapStates(T_Radio* pRad);
 uint32_t wifiGen_hapd_countGrpMembers(T_Radio* pRad);
 swl_rc_ne wifiGen_hapd_setGlobDmnSettings(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_t* pCfg);
 swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad);
+void wifiGen_hapd_initDynCfgParamSupp(T_Radio* pRad);
 bool wifiGen_hapd_isStarted(T_Radio* pRad);
 bool wifiGen_hapd_isStartable(T_Radio* pRad);
 void wifiGen_hapd_restoreMainIface(T_Radio* pRad);
