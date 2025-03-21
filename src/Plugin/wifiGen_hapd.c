@@ -200,7 +200,9 @@ static void s_restoreMainAp(T_AccessPoint* pMainAP) {
 }
 
 void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
-    wifiGen_hapd_writeConfig(pRad);
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad->hostapd, , ME, "NULL");
+    SWL_CALL(pRad->hostapd->handlers.writeCfgCb, pRad->hostapd, pRad);
     s_restoreMainAp(wld_rad_hostapd_getCfgMainVap(pRad));
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
@@ -295,7 +297,7 @@ static bool s_stopHapdCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
     return ret;
 }
 
-static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
+void wifiGen_hapd_initDynCfgParamSupp(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad->hostapd, , ME, "NULL");
     /*
@@ -718,7 +720,6 @@ swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad) {
             gHapd->globalDmnSupported = SWL_TRL_TRUE;
         }
     }
-    s_initHapdDynCfgParamSupp(pRad);
     SAH_TRACEZ_INFO(ME, "%s: glob hapd %s supp:%d, req:%d", pRad->Name, pRad->vendor->name, gHapd->globalDmnSupported, gHapd->globalDmnRequired);
     return SWL_RC_OK;
 }

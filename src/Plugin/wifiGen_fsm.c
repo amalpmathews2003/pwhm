@@ -1166,12 +1166,29 @@ static wld_event_callback_t s_vapStatusCbContainer = {
     .callback = (wld_event_callback_fun) s_vapStatusUpdateCb
 };
 
+static void s_writeHapdConfFileCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
+    T_Radio* pRad = (T_Radio*) userdata;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    wifiGen_hapd_writeConfig(pRad);
+}
+
+static void s_updateHapdDmnEvtHandlers(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, , ME, "NULL");
+    ASSERTS_NOT_NULL(pRad->hostapd, , ME, "NULL");
+    if(pRad->hostapd->handlers.writeCfgCb == NULL) {
+        pRad->hostapd->handlers.writeCfgCb = s_writeHapdConfFileCb;
+    }
+}
+
 static void s_radioChange(wld_rad_changeEvent_t* event) {
     ASSERT_NOT_NULL(event, , ME, "NULL");
     T_Radio* pRad = event->pRad;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
     if(event->changeType == WLD_RAD_CHANGE_INIT) {
+        wifiGen_hapd_initGlobDmnCap(pRad);
+        wifiGen_hapd_initDynCfgParamSupp(pRad);
+        s_updateHapdDmnEvtHandlers(pRad);
         wld_event_add_callback(gWld_queue_vap_onStatusChange, &s_vapStatusCbContainer);
         s_registerHadpRadEvtHandlers(pRad->hostapd);
         wifiGen_zwdfs_init(pRad);
