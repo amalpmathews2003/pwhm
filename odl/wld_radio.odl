@@ -2868,11 +2868,9 @@ define probelist_t{
                  * Vendors include radio or sensing application vendors.
                  * The last byte identifies the format.
                  * An empty values indicates that the radio does not support sensing of any type.
-		 * Possible data type values : 00000000, 00137400, 0012F001
+                 * Possible data type values : 00000000, 00137400, 0012F001, AC9A9680
                  */
-                csv_string SupportedSensingDataTypes {
-			on action validate call check_enum [ "00000000", "00137400", "0012F001" ];
-		}
+                csv_string SupportedSensingDataTypes;
 
                 /**
                  * A sensing exchange type identifies the different exchanges in sensing measurement.
