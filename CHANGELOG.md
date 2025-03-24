@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.2 - 2025-03-24(08:44:41 +0000)
+
+### Other
+
+- wds device not seen connected
+
 ## Release sah-next_v7.14.1 - 2025-03-20(15:27:28 +0000)
 
 ### Other
