@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.3 - 2025-03-24(14:48:35 +0000)
+
+### Other
+
+- fix crash custom hostapd when restarted with standard conf
+
 ## Release sah-next_v7.14.2 - 2025-03-24(08:44:41 +0000)
 
 ### Other
