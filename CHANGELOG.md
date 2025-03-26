@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.4 - 2025-03-26(07:55:39 +0000)
+
+### Other
+
+- fix missing init of glob hapd at startup
+
 ## Release sah-next_v7.14.3 - 2025-03-24(14:48:35 +0000)
 
 ### Other
