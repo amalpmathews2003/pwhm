@@ -1803,7 +1803,7 @@ wld_ap_dm_m wld_rad_getDiscoveryMethod(T_Radio* pR) {
 
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pR) {
-        if(!pAP->enable) {
+        if(!wld_ap_isEnabledWithRef(pAP)) {
             continue;
         }
         if(pAP->discoveryMethod != M_AP_DM_DEFAULT) {
@@ -3009,7 +3009,7 @@ T_AccessPoint* wld_rad_getFirstEnabledVap(T_Radio* pR) {
     ASSERT_NOT_NULL(pR, NULL, ME, "NULL");
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pR) {
-        if(pAP->enable && pAP->pSSID && pAP->pSSID->enable) {
+        if(wld_ap_isEnabledWithRef(pAP)) {
             return pAP;
         }
     }
@@ -3021,7 +3021,7 @@ uint32_t wld_rad_countEnabledVaps(T_Radio* pR) {
     ASSERT_NOT_NULL(pR, count, ME, "NULL");
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pR) {
-        if(pAP->enable && pAP->pSSID && pAP->pSSID->enable) {
+        if(wld_ap_isEnabledWithRef(pAP)) {
             count++;
         }
     }
@@ -3083,6 +3083,7 @@ T_AccessPoint* wld_rad_vap_from_wds_name(T_Radio* pR, const char* ifname) {
 
 /* find EP with matching name */
 T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
+    ASSERTS_STR(ifname, NULL, ME, "NULL");
     T_EndPoint* pEP = NULL;
 
     wld_rad_forEachEp(pEP, pR) {
@@ -3094,6 +3095,7 @@ T_EndPoint* wld_rad_ep_from_name(T_Radio* pR, const char* ifname) {
 }
 
 T_Radio* wld_rad_from_name(const char* ifname) {
+    ASSERTS_STR(ifname, NULL, ME, "NULL");
     T_Radio* pR;
 
     wld_for_eachRad(pR) {
@@ -3107,6 +3109,7 @@ T_Radio* wld_rad_from_name(const char* ifname) {
 
 /* find VAP with matching name over all the radios */
 T_AccessPoint* wld_vap_from_name(const char* ifname) {
+    ASSERTS_STR(ifname, NULL, ME, "NULL");
     T_Radio* pR;
     T_AccessPoint* pAP = NULL;
 
@@ -3121,6 +3124,7 @@ T_AccessPoint* wld_vap_from_name(const char* ifname) {
 
 /* find VAP with matching name over all the radios */
 T_EndPoint* wld_vep_from_name(const char* ifname) {
+    ASSERTS_STR(ifname, NULL, ME, "NULL");
     T_Radio* pR;
     T_EndPoint* pEP = NULL;
 
@@ -3346,15 +3350,10 @@ wld_channel_extensionPos_e wld_rad_getExtensionChannel(T_Radio* pRad) {
 
 bool wld_rad_hasEnabledEp(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    T_EndPoint* pEP = NULL;
+    T_EndPoint* pEP = wld_rad_getEnabledEndpoint(pRad);
 
     /* Check if NO EP is enabled */
-    wld_rad_forEachEp(pEP, pRad) {
-        if(pEP->enable) {
-            return true;
-        }
-    }
-    return false;
+    return (pEP != NULL);
 }
 
 bool wld_rad_hasConnectedEp(T_Radio* pRad) {
@@ -3398,16 +3397,7 @@ bool wld_rad_areAllVapsDone(T_Radio* pRad) {
 }
 
 bool wld_rad_hasEnabledVap(T_Radio* pRad) {
-    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
-    T_AccessPoint* pAP = NULL;
-
-    /* Check if NO AP is enabled */
-    wld_rad_forEachAp(pAP, pRad) {
-        if(pAP->enable) {
-            return true;
-        }
-    }
-    return false;
+    return (wld_rad_getFirstEnabledVap(pRad) != NULL);
 }
 
 bool wld_rad_hasActiveVap(T_Radio* pRad) {
@@ -3680,7 +3670,7 @@ bool wld_rad_hasOnlyActiveEP(T_Radio* pRad) {
     amxc_llist_it_t* it = amxc_llist_get_first(&pRad->llEndPoints);
     if(it) {
         pEP = amxc_llist_it_get_data(it, T_EndPoint, it);
-        if(!(pRad->isSTA && pRad->enable && pEP->enable)) {
+        if(!(pRad->isSTA && wld_endpoint_hasStackEnabled(pEP))) {
             return false;
         }
     }
@@ -3806,7 +3796,7 @@ T_EndPoint* wld_rad_getEnabledEndpoint(T_Radio* rad) {
     ASSERT_NOT_NULL(rad, NULL, ME, "NULL");
     T_EndPoint* pEndpoint;
     wld_rad_forEachEp(pEndpoint, rad) {
-        if(pEndpoint && pEndpoint->enable) {
+        if(wld_endpoint_isEnabledWithRef(pEndpoint)) {
             return pEndpoint;
         }
     }

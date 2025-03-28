@@ -333,7 +333,7 @@ static bool s_doEnableAp(T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERTI_TRUE(wifiGen_hapd_isAlive(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     T_AccessPoint* pMainAPCur = wld_rad_hostapd_getRunMainVap(pRad);
     ASSERT_NOT_NULL(pMainAPCur, true, ME, "%s: no main vap iface for rad %s", pAP->alias, pRad->Name);
-    bool enable = pAP->enable;
+    bool enable = wld_ap_isEnabledWithRef(pAP);
     SAH_TRACEZ_INFO(ME, "%s: enable vap %d", pAP->alias, enable);
     wld_secDmn_action_rc_ne rc;
     T_AccessPoint* pMainAPCfg = wld_rad_hostapd_getCfgMainVap(pRad);
@@ -729,8 +729,9 @@ static bool s_doUpdateBeacon(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
     chanmgt_rad_state detRadState = CM_RAD_UNKNOWN;
-    if((!pAP->enable) || (wifiGen_hapd_getRadState(pRad, &detRadState) < SWL_RC_OK) || (detRadState != CM_RAD_UP)) {
-        SAH_TRACEZ_INFO(ME, "%s: missing enable conds apE:%d radDetS:%d", pAP->alias, pAP->enable, detRadState);
+    bool apStackEna = wld_ap_hasStackEnabled(pAP);
+    if((!apStackEna) || (wifiGen_hapd_getRadState(pRad, &detRadState) < SWL_RC_OK) || (detRadState != CM_RAD_UP)) {
+        SAH_TRACEZ_INFO(ME, "%s: missing enable conds apE:%d stackE:%d radDetS:%d", pAP->alias, pAP->enable, apStackEna, detRadState);
         return true;
     }
     SAH_TRACEZ_INFO(ME, "%s: start/update beaconing", pAP->alias);

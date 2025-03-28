@@ -725,8 +725,7 @@ static void wld_update_station_stats(T_AccessPoint* pAP) {
  * It will update staStats values in data model, and return the new values in retval.
  */
 static void s_addStaStatsValues(T_AccessPoint* pAP, swl_rc_ne ret, amxc_var_t* retval) {
-    T_Radio* pRad = pAP->pRadio;
-    if(!pAP->enable || !pRad->enable || !swl_rc_isOk(ret)) {
+    if(!wld_ap_hasStackEnabled(pAP) || !swl_rc_isOk(ret)) {
         //remove all stations if AP or Radio is disabled or station stats returns error
         wld_vap_remove_all(pAP);
     }

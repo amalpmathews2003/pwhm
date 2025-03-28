@@ -447,7 +447,7 @@ T_AccessPoint* wld_rad_hostapd_getFirstConnectedVap(T_Radio* pRad) {
     if(pRad && pRad->enable) {
         T_AccessPoint* pAP = NULL;
         wld_rad_forEachAp(pAP, pRad) {
-            if(pAP->enable &&
+            if(wld_ap_isEnabledWithRef(pAP) &&
                wld_wpaCtrlInterface_checkConnectionPath(pAP->wpaCtrlInterface)) {
                 return pAP;
             }
