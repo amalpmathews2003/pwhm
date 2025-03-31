@@ -252,6 +252,24 @@ static bool s_saveHapdRadDetState(T_Radio* pRad, chanmgt_rad_state radDetState) 
     }
     return (pRad->detailedState == radDetState);
 }
+
+static void s_timeoutWaitingAPUp(void* priv) {
+    T_AccessPoint* pAP = (T_AccessPoint*) priv;
+    ASSERT_NOT_NULL(pAP, , ME, "NULL");
+    //update rad status from hapd main iface state
+    //when radio is not yet UP via EP connection, then update detailed state from hapd
+    chanmgt_rad_state hapdRadDetState = CM_RAD_UNKNOWN;
+    wifiGen_hapd_getRadState(pAP->pRadio, &hapdRadDetState);
+    s_saveHapdRadDetState(pAP->pRadio, hapdRadDetState);
+    bool isRadReady = (hapdRadDetState == CM_RAD_UP);
+    if(isRadReady) {
+        //we may missed the CAC Done event waiting to finalize wpactrl connection
+        //so mark current chanspec as active
+        wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pAP->pRadio));
+    }
+    CALL_SECDMN_MGR_EXT(pAP->pRadio->hostapd, fSyncOnRadioUp, pAP->alias, isRadReady);
+}
+
 static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
     SAH_TRACEZ_WARNING(ME, "%s: wpactrl mngr is %s ready", ifName, (isReady ? "" : "not"));
     T_Radio* pRad = (T_Radio*) userData;
@@ -272,18 +290,8 @@ static void s_mngrReadyCb(void* userData, char* ifName, bool isReady) {
         pRad->pFA->mfn_wrad_poschans(pRad, NULL, 0);
         //when manager is started, radio chanspec is read from secDmn conf file (saved conf)
         s_syncCurrentChannel(pRad, pRad->targetChanspec.reason);
-        //update rad status from hapd main iface state
-        //when radio is not yet UP via EP connection, then update detailed state from hapd
-        chanmgt_rad_state hapdRadDetState = CM_RAD_UNKNOWN;
-        wifiGen_hapd_getRadState(pRad, &hapdRadDetState);
-        s_saveHapdRadDetState(pRad, hapdRadDetState);
-        bool isRadReady = (hapdRadDetState == CM_RAD_UP);
-        if(isRadReady) {
-            //we may missed the CAC Done event waiting to finalize wpactrl connection
-            //so mark current chanspec as active
-            wld_channel_clear_passive_band(wld_rad_getSwlChanspec(pRad));
-        }
-        CALL_SECDMN_MGR_EXT(pRad->hostapd, fSyncOnRadioUp, ifName, isRadReady);
+        /* wait for AP-ANABLED signal, with timeout to get STATUS */
+        swla_delayExec_addTimeout(s_timeoutWaitingAPUp, pAP, 500);
         return;
     }
     ASSERTS_TRUE(isReady, , ME, "Not ready");
