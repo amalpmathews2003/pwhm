@@ -140,6 +140,13 @@ static int s_teardownSuite(void** state _UNUSED) {
 
 static void test_startAndGetScan(void** state _UNUSED) {
     T_Radio* pRad = dm.bandList[SWL_FREQ_BAND_2_4GHZ].rad;
+
+    amxd_object_t* config = amxd_object_findf(pRad->pBus, "ScanConfig");
+    amxd_trans_t trans;
+    assert_int_equal(swl_object_prepareTransaction(&trans, config), SWL_RC_OK);
+    amxd_trans_set_bool(&trans, "EnableScanResultsDm", true);
+    assert_int_equal(swl_object_finalizeTransactionOnLocalDm(&trans), SWL_RC_OK);
+
     ttb_var_t* replyVar;
     ttb_reply_t* reply = ttb_object_callFun(dm.ttbBus, pRad->pBus, "startScan", NULL, &replyVar);
     assert_true(ttb_object_replySuccess(reply));
@@ -170,7 +177,7 @@ static void test_startAndGetScan(void** state _UNUSED) {
         amxd_object_for_each(instance, itAp, ap_template) {
             amxd_object_t* ap_obj = amxc_llist_it_get_data(itAp, amxd_object_t, it);
             amxd_object_t* apSsid_template = amxd_object_get(ap_obj, "SSID");
-            assert_int_equal(amxd_object_get_instance_count(apSsid_template), NB_BSS_PER_DEVICE);
+            assert_int_equal(amxd_object_get_instance_count(apSsid_template), 1);
             amxd_object_for_each(instance, itApSsid, apSsid_template) {
                 amxd_object_t* apSsid_obj = amxc_llist_it_get_data(itApSsid, amxd_object_t, it);
                 char* ssid = amxd_object_get_cstring_t(apSsid_obj, "SSID", NULL);

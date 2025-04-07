@@ -1186,6 +1186,8 @@ typedef struct wld_scanResultSSID {
     swl_80211_vhtCapInfo_m vhtCaps;
     swl_80211_heCapInfo_m heCaps;
     swl_operatingClass_t operClass; // global operating class
+
+    bool dmUpdated;                 // This result has been updated in the DM
 } wld_scanResultSSID_t;
 
 typedef struct wld_scanResults {
