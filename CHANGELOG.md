@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.9 - 2025-04-07(09:17:51 +0000)
+
+### Other
+
+- "WiFi.AccessPoint." cannot be retrieved with MQTT
+
 ## Release sah-next_v7.14.8 - 2025-04-07(07:57:36 +0000)
 
 ### Other
