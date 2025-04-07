@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.8 - 2025-04-07(07:57:36 +0000)
+
+### Other
+
+- : wld is consuming 30 % of CPU
+
 ## Release sah-next_v7.14.7 - 2025-04-06(09:18:02 +0000)
 
 ### Other
