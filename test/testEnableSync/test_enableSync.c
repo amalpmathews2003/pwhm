@@ -110,6 +110,11 @@ static int s_setupSuite(void** state _UNUSED) {
 
     pEPSSID = pEP->pSSID;
     assert_non_null(pEPSSID);
+
+    swl_typeBool_commitObjectParam(pRad->pBus, "STASupported_Mode", true);
+    swl_typeBool_commitObjectParam(pRad->pBus, "STA_Mode", true);
+    ttb_mockTimer_goToFutureMs(10);
+
     return 0;
 }
 
@@ -134,11 +139,22 @@ static void s_setEnableSyncModeAndCheck(char* configMode) {
     free(curMode);
 }
 
+static void s_checkStatus_apSsidRad(wld_intfStatus_e apStatus, wld_status_e ssidStatus, wld_status_e radStatus) {
+    ttb_assert_int_eq(pAP->status, apStatus);
+    ttb_assert_int_eq(pSSID->status, ssidStatus);
+    ttb_assert_int_eq(pAP->pRadio->status, radStatus);
+}
+
+static void s_checkStatus_epSsid(wld_intfStatus_e epStatus, wld_status_e ssidStatus) {
+    ttb_assert_int_eq(pEP->status, epStatus);
+    ttb_assert_int_eq(pEP->pSSID->status, ssidStatus);
+}
 
 // Test that syncing from AP to SSID works. Assumes everything is ON
 static void test_syncApToSSIDWorks() {
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     uint32_t startToggleCount = pSSID->changeInfo.nrEnables;
 
 
@@ -146,11 +162,13 @@ static void test_syncApToSSIDWorks() {
 
     ttb_assert_false(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setApEnable(pAP, true, true);
 
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     ttb_assert_int_eq(startToggleCount + 1, pSSID->changeInfo.nrEnables);
 }
 
@@ -158,6 +176,7 @@ static void test_syncApToSSIDWorks() {
 static void test_syncSSIDToApWorks() {
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     uint32_t startToggleCount = pSSID->changeInfo.nrEnables;
 
 
@@ -165,11 +184,13 @@ static void test_syncSSIDToApWorks() {
 
     ttb_assert_false(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setSSIDEnable(pAP, true, true);
 
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     ttb_assert_int_eq(startToggleCount + 1, pSSID->changeInfo.nrEnables);
 
 }
@@ -179,38 +200,45 @@ static void test_syncSSIDToApWorks() {
 static void test_syncApToSSIDNotWorks() {
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     uint32_t startToggleCount = pSSID->changeInfo.nrEnables;
 
     wld_th_vap_setApEnable(pAP, false, true);
 
     ttb_assert_false(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setApEnable(pAP, true, true);
 
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     ttb_assert_int_eq(startToggleCount, pSSID->changeInfo.nrEnables);
 
     wld_th_vap_setApEnable(pAP, false, true);
 
     ttb_assert_false(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setSSIDEnable(pAP, false, true);
 
     ttb_assert_false(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setApEnable(pAP, true, true);
 
     ttb_assert_true(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setSSIDEnable(pAP, true, true);
 
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
 
 
     ttb_assert_int_eq(startToggleCount + 1, pSSID->changeInfo.nrEnables);
@@ -221,16 +249,19 @@ static void test_syncSSIDToApNotWorks() {
     // Test sync while Ap On
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
     uint32_t startToggleCount = pSSID->changeInfo.nrEnables;
 
     wld_th_vap_setSSIDEnable(pAP, false, true);
 
     ttb_assert_true(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setSSIDEnable(pAP, true, true);
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
 
     ttb_assert_int_eq(startToggleCount + 1, pSSID->changeInfo.nrEnables);
 
@@ -239,20 +270,24 @@ static void test_syncSSIDToApNotWorks() {
     wld_th_vap_setSSIDEnable(pAP, false, true);
     ttb_assert_true(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
     wld_th_vap_setApEnable(pAP, false, true);
     ttb_assert_false(pAP->enable);
     ttb_assert_false(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
 
     wld_th_vap_setSSIDEnable(pAP, true, true);
     ttb_assert_false(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_DISABLED, RST_DOWN, RST_DORMANT);
 
 
     wld_th_vap_setApEnable(pAP, true, true);
     ttb_assert_true(pAP->enable);
     ttb_assert_true(pSSID->enable);
+    s_checkStatus_apSsidRad(APSTI_ENABLED, RST_UP, RST_UP);
 
 
     ttb_assert_int_eq(startToggleCount + 2, pSSID->changeInfo.nrEnables);
@@ -263,6 +298,7 @@ static void test_syncSSIDToApNotWorks() {
 static void test_syncEndpointToSSIDWorks() {
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     uint32_t startToggleCount = pEPSSID->changeInfo.nrEnables;
 
 
@@ -270,11 +306,13 @@ static void test_syncEndpointToSSIDWorks() {
 
     ttb_assert_false(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setEnable(pEP, true, true);
 
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     ttb_assert_int_eq(startToggleCount + 1, pEPSSID->changeInfo.nrEnables);
 }
 
@@ -282,6 +320,7 @@ static void test_syncEndpointToSSIDWorks() {
 static void test_syncSSIDToEndpointWorks() {
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     uint32_t startToggleCount = pEPSSID->changeInfo.nrEnables;
 
 
@@ -289,11 +328,13 @@ static void test_syncSSIDToEndpointWorks() {
 
     ttb_assert_false(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setSSIDEnable(pEP, true, true);
 
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     ttb_assert_int_eq(startToggleCount + 1, pEPSSID->changeInfo.nrEnables);
 
 }
@@ -303,38 +344,45 @@ static void test_syncSSIDToEndpointWorks() {
 static void test_syncEndpointToSSIDNotWorks() {
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     uint32_t startToggleCount = pEPSSID->changeInfo.nrEnables;
 
     wld_th_ep_setEnable(pEP, false, true);
 
     ttb_assert_false(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setEnable(pEP, true, true);
 
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     ttb_assert_int_eq(startToggleCount, pEPSSID->changeInfo.nrEnables);
 
     wld_th_ep_setEnable(pEP, false, true);
 
     ttb_assert_false(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setSSIDEnable(pEP, false, true);
 
     ttb_assert_false(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setEnable(pEP, true, true);
 
     ttb_assert_true(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setSSIDEnable(pEP, true, true);
 
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
 
 
     ttb_assert_int_eq(startToggleCount + 1, pEPSSID->changeInfo.nrEnables);
@@ -347,16 +395,19 @@ static void test_syncSSIDToEndpointNotWorks() {
     // Test sync while Endpoint On
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
     uint32_t startToggleCount = pEPSSID->changeInfo.nrEnables;
 
     wld_th_ep_setSSIDEnable(pEP, false, true);
 
     ttb_assert_true(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setSSIDEnable(pEP, true, true);
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
 
     ttb_assert_int_eq(startToggleCount + 1, pEPSSID->changeInfo.nrEnables);
 
@@ -365,20 +416,24 @@ static void test_syncSSIDToEndpointNotWorks() {
     wld_th_ep_setSSIDEnable(pEP, false, true);
     ttb_assert_true(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
     wld_th_ep_setEnable(pEP, false, true);
     ttb_assert_false(pEP->enable);
     ttb_assert_false(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
 
     wld_th_ep_setSSIDEnable(pEP, true, true);
     ttb_assert_false(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_DISABLED, RST_DOWN);
 
 
     wld_th_ep_setEnable(pEP, true, true);
     ttb_assert_true(pEP->enable);
     ttb_assert_true(pEPSSID->enable);
+    s_checkStatus_epSsid(APSTI_ENABLED, RST_DORMANT);
 
 
     ttb_assert_int_eq(startToggleCount + 2, pEPSSID->changeInfo.nrEnables);
@@ -451,6 +506,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
     sahTraceAddZone(TRACE_LEVEL_INFO, "ssid");
     sahTraceAddZone(TRACE_LEVEL_INFO, "ap");
+    sahTraceAddZone(TRACE_LEVEL_INFO, "ep");
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_quickToggle),
         cmocka_unit_test(test_syncMirror),

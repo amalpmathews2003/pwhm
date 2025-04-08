@@ -697,6 +697,13 @@ bool wld_ssid_isSyncEnablePending(T_SSID* pSSID) {
     return false;
 }
 
+bool wld_ssid_isEnableSyncMissing(T_SSID* pSSID) {
+    return (pSSID && pSSID->pBus &&
+            wld_config_isEnableSyncNeeded(pSSID->syncEnableToIntf) &&
+            (pSSID->AP_HOOK || pSSID->ENDP_HOOK) &&
+            (pSSID->enable != wld_ssid_getIntfEnable(pSSID)));
+}
+
 swl_rc_ne wld_ssid_syncEnable(T_SSID* pSSID, bool toIntf) {
     ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
     bool otherEnable = wld_ssid_getIntfEnable(pSSID);
@@ -704,7 +711,7 @@ swl_rc_ne wld_ssid_syncEnable(T_SSID* pSSID, bool toIntf) {
     SAH_TRACEZ_INFO(ME, "%s: check do sync to SSID %u %u - %s",
                     pSSID->Name, pSSID->enable, otherEnable, wld_config_getEnableSyncModeStr());
 
-    if(otherEnable == pSSID->enable) {
+    if(!(pSSID->AP_HOOK || pSSID->ENDP_HOOK) || (otherEnable == pSSID->enable)) {
         amxp_timer_stop(pSSID->enableSyncTimer);
         return SWL_RC_DONE;
     }

@@ -97,7 +97,11 @@ static int s_getNextIndex() {
 
 /** Implements #PFN_WRAD_ADDENDPOINTIF */
 int wld_th_radio_vendorCb_addEndpointIf(T_Radio* rad _UNUSED, char* endpoint _UNUSED, int bufsize _UNUSED) {
-    return 0;
+    assert_non_null(rad);
+    assert_non_null(endpoint);
+    assert_true(bufsize > 0);
+    int epIdx = ((1 + amxc_llist_it_index_of(&rad->it)) * 10) + wld_rad_countIfaces(rad);
+    return epIdx;
 }
 
 /** Implements #PFN_WRAD_DELENDPOINTIF */

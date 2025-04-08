@@ -3369,6 +3369,31 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
     return false;
 }
 
+bool wld_rad_hasIntfEnableSyncMissing(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, false, ME, "NULL");
+    /*
+     * check ap/ssid enable value sync, to prevent conf mismatch
+     */
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(wld_ssid_isEnableSyncMissing(pAP->pSSID)) {
+            SAH_TRACEZ_WARNING(ME, "%s: vap enable sync is not yet finalized", pAP->alias);
+            return true;
+        }
+    }
+    /*
+     * check ep/ssid enable value sync, to prevent conf mismatch
+     */
+    T_EndPoint* pEP = NULL;
+    wld_rad_forEachEp(pEP, pRad) {
+        if(wld_ssid_isEnableSyncMissing(pEP->pSSID)) {
+            SAH_TRACEZ_WARNING(ME, "%s: ep enable sync is not yet finalized", pEP->Name);
+            return true;
+        }
+    }
+    return false;
+}
+
 bool wld_rad_areAllVapsDone(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     T_AccessPoint* pAP = NULL;

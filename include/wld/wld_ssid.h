@@ -71,6 +71,7 @@ void syncData_SSID2OBJ(amxd_object_t* object, T_SSID* pR, int set);
 void wld_ssid_cleanAll();
 swl_rc_ne wld_ssid_syncEnable(T_SSID* pSSID, bool syncToIntf);
 bool wld_ssid_isSyncEnablePending(T_SSID* pSSID);
+bool wld_ssid_isEnableSyncMissing(T_SSID* pSSID);
 bool wld_ssid_getIntfEnable(T_SSID* pSSID);
 amxd_object_t* wld_ssid_getIntfObject(T_SSID* pSSID);
 bool wld_ssid_isEnabledWithRef(T_SSID* pSSID);

@@ -494,10 +494,11 @@ FSM_STATE wld_rad_fsm(T_Radio* rad) {
     case FSM_WAIT: {
         bool waitForVaps = !wld_rad_areAllVapsDone(rad);
         bool isInitConfigPending = wld_persist_isRadInitConfigPending(rad);
-        if(waitForVaps || isInitConfigPending) {
+        bool waitForEnableSync = wld_rad_hasIntfEnableSyncMissing(rad);
+        if(waitForVaps || isInitConfigPending || waitForEnableSync) {
             if(rad->fsmRad.FSM_Retry > 0) {
-                SAH_TRACEZ_WARNING(ME, "Delay commit %s %i / %i ( vap %u / radInit %u)", rad->Name, rad->fsmRad.FSM_Retry, WLD_FSM_MAX_WAIT,
-                                   waitForVaps, isInitConfigPending);
+                SAH_TRACEZ_WARNING(ME, "Delay commit %s %i / %i ( vap %u / radInit %u / waitSyncEna %u)", rad->Name, rad->fsmRad.FSM_Retry, WLD_FSM_MAX_WAIT,
+                                   waitForVaps, isInitConfigPending, waitForEnableSync);
                 rad->fsmRad.timeout_msec = WLD_FSM_WAIT_TIME;
                 rad->fsmRad.FSM_Retry--;
                 break;

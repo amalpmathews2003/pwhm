@@ -769,8 +769,8 @@ static bool s_doSyncState(T_Radio* pRad) {
     return true;
 }
 
-static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad) {
-    bool enaConds = (pRad->enable && pEP->enable && (pEP->index > 0));
+static bool s_doEnableEp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
+    bool enaConds = (wld_endpoint_hasStackEnabled(pEP) && (pEP->index > 0));
     wld_endpoint_setConnectionStatus(pEP, enaConds ? EPCS_IDLE : EPCS_DISABLED, pEP->error);
     ASSERTS_TRUE(enaConds, true, ME, "%d: ep not ready", pEP->Name);
     wld_endpoint_resetStats(pEP);
@@ -975,7 +975,7 @@ static void s_registerWpaSuppRadEvtHandlers(wld_secDmn_t* wpaSupp) {
 }
 
 static bool s_doStartWpaSupp(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
-    bool enaConds = (pRad->enable && pEP->enable && (pEP->index > 0));
+    bool enaConds = (wld_endpoint_hasStackEnabled(pEP) && (pEP->index > 0));
     ASSERTS_TRUE(enaConds, true, ME, "%d: ep not ready", pEP->Name);
     SAH_TRACEZ_INFO(ME, "%s: start wpa_supplicant", pEP->Name);
     wifiGen_wpaSupp_startDaemon(pEP);

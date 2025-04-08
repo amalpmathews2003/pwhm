@@ -77,6 +77,7 @@
 #include "amxd/amxd_transaction.h"
 
 #include "wld_linuxIfUtils.h"
+#include "wld_ssid.h"
 
 #define ME "util"
 
@@ -1931,7 +1932,7 @@ bool wld_util_areAllVapsDisabled(T_Radio* pRad) {
     T_AccessPoint* pAP;
     amxc_llist_for_each(it, &pRad->llAP) {
         pAP = (T_AccessPoint*) amxc_llist_it_get_data(it, T_AccessPoint, it);
-        if((pAP != NULL) && (pAP->pBus != NULL) && pAP->enable) {
+        if((pAP != NULL) && (pAP->pBus != NULL) && wld_ssid_isEnabledWithRef(pAP->pSSID)) {
             return false;
         }
     }
@@ -1942,7 +1943,7 @@ bool wld_util_areAllEndpointsDisabled(T_Radio* pRad) {
     T_EndPoint* pEP;
     amxc_llist_for_each(it, &pRad->llEndPoints) {
         pEP = (T_EndPoint*) amxc_llist_it_get_data(it, T_EndPoint, it);
-        if(pEP && pEP->enable) {
+        if(pEP && wld_ssid_isEnabledWithRef(pEP->pSSID)) {
             return false;
         }
     }
