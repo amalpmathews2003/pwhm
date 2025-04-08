@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.12 - 2025-04-08(16:20:25 +0000)
+
+### Other
+
+- : Stations are not properly disconnected when hostapd is stopped
+
 ## Release sah-next_v7.14.11 - 2025-04-08(09:31:40 +0000)
 
 ## Release sah-next_v7.14.10 - 2025-04-07(14:17:43 +0000)
