@@ -3596,6 +3596,19 @@ bool wld_rad_hasActiveApMld(T_Radio* pRad, uint32_t minNLinks) {
     return false;
 }
 
+bool wld_rad_hasUsableApMld(T_Radio* pRad, uint32_t minNLinks) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        if((pAP->pSSID != NULL) &&
+           (wld_mld_isLinkUsable(pAP->pSSID->pMldLink)) &&
+           (wld_mld_countNeighUsableLinks(pAP->pSSID->pMldLink) >= minNLinks)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool wld_rad_hasActiveApMldMultiLink(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
     return wld_rad_hasActiveApMld(pRad, 2);
