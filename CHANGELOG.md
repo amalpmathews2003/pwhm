@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.17 - 2025-04-09(15:25:45 +0000)
+
+### Other
+
+- improve hostapd restart conditions when configuring MLO
+
 ## Release sah-next_v7.14.16 - 2025-04-09(15:10:20 +0000)
 
 ### Other
