@@ -384,7 +384,6 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "%s: Stop hostapd", pRad->Name);
     swl_rc_ne rc = wld_secDmn_stop(pRad->hostapd);
-    ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
         if(pAP->pSSID) {
@@ -397,6 +396,7 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
             wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, 0);
         }
     }
+    ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
     return rc;
 }
 
