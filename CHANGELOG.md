@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.16 - 2025-04-09(15:10:20 +0000)
+
+### Other
+
+- - hostap updated security configuration for Wi-Fi 7
+
 ## Release sah-next_v7.14.15 - 2025-04-09(14:58:41 +0000)
 
 ### Other
