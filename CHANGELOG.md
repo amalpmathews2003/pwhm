@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.13 - 2025-04-09(13:45:20 +0000)
+
+### Other
+
+- fsm wait for mirrored ap/ep ssid enable
+
 ## Release sah-next_v7.14.12 - 2025-04-08(16:20:25 +0000)
 
 ### Other
