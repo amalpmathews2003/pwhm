@@ -248,7 +248,14 @@ static bool s_saveHapdRadDetState(T_Radio* pRad, chanmgt_rad_state radDetState) 
        ((radDetState == CM_RAD_UP) ||
         (!wld_rad_isDoingDfsScan(pRad)) ||
         (pRad->detailedState == CM_RAD_FG_CAC))) {
+        SAH_TRACEZ_INFO(ME, "%s: update detailedState %s with hapd %s", pRad->Name,
+                        cstr_chanmgt_rad_state[pRad->detailedState],
+                        cstr_chanmgt_rad_state[radDetState]);
         pRad->detailedState = radDetState;
+    } else {
+        SAH_TRACEZ_WARNING(ME, "%s: keep detailedState %s against hapd %s", pRad->Name,
+                           cstr_chanmgt_rad_state[pRad->detailedState],
+                           cstr_chanmgt_rad_state[radDetState]);
     }
     return (pRad->detailedState == radDetState);
 }
