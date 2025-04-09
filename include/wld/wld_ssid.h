@@ -85,6 +85,7 @@ bool wld_ssid_hasAutoMacBssIndex(T_SSID* pSSID, int32_t* pBssIndex);
 int32_t wld_rad_getHighestVapAutoMacBssIndex(T_Radio* pRad);
 void wld_ssid_setMLDRole(T_SSID* pEP, swl_mlo_role_e mldRole);
 void wld_ssid_setMLDLinkID(T_SSID* pEP, int16_t mldLinkId);
+void wld_ssid_setMLDStatus(T_SSID* pSSID, swl_mlo_intfMldStatus_e mldStatus);
 
 T_SSID* wld_ssid_createApSsid(T_AccessPoint* pAP);
 T_SSID* wld_ssid_fromObj(amxd_object_t* ssidObj);
