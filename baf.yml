@@ -10,6 +10,7 @@ urls:
 
 licenses:
   - name: "BSD-2-Clause-Patent"
+    holder: "SoftAtHome"
 
 configs:
   CONFIG_SAH_SERVICES_PWHM:
