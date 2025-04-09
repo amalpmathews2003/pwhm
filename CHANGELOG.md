@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.14.15 - 2025-04-09(14:58:41 +0000)
+
+### Other
+
+- fix bandwidth changed after chanspec being auto set
+
 ## Release sah-next_v7.14.14 - 2025-04-09(14:01:03 +0000)
 
 ### Other
