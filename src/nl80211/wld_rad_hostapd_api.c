@@ -495,6 +495,19 @@ T_AccessPoint* wld_rad_hostapd_getRunMainVap(T_Radio* pRad) {
     return pAP;
 }
 
+bool wld_rad_hostapd_hasActiveApMld(T_Radio* pRad, uint32_t minNLinks) {
+    T_AccessPoint* pAP;
+    wld_rad_forEachAp(pAP, pRad) {
+        uint32_t nLinks = 0;
+        if(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface) &&
+           (wld_ap_hostapd_getNumMldLinks(pAP, &nLinks) >= SWL_RC_OK) &&
+           (nLinks >= minNLinks)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 swl_rc_ne wld_rad_hostapd_getCmdReplyParamStr(T_Radio* pRad, const char* cmd, const char* key, char* valStr, size_t valStrSize) {
     ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pRad->hostapd);

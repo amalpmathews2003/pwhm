@@ -293,7 +293,11 @@ static void s_schedNextAction(wld_secDmn_action_rc_ne action, T_AccessPoint* pAP
         }
         break;
     case SECDMN_ACTION_OK_NEED_TOGGLE:
-        if(wld_rad_hasMloSupport(pRad)) {
+        /*
+         * convert toggle into restart, when rad has ap member of MultiLink MLO (current or expected):
+         * links from other radios have to rebuilt
+         */
+        if(wld_rad_hostapd_hasActiveApMld(pRad, 2) || wld_rad_hasUsableApMld(pRad, 2)) {
             SAH_TRACEZ_WARNING(ME, "%s: 11be/mlo enabled => need to restart isof toggle", pRad->Name);
             s_schedNextAction(SECDMN_ACTION_OK_NEED_RESTART, pAP, pRad);
             return;
@@ -1079,7 +1083,9 @@ static void s_checkRadDependency(T_Radio* pRad) {
     }
     if(isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_COUNTRYCODE) ||
        isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_SYNC_RAD)) {
-        s_schedNextAction(SECDMN_ACTION_OK_NEED_TOGGLE, NULL, pRad);
+        if(!isBitSetLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD)) {
+            s_schedNextAction(SECDMN_ACTION_OK_NEED_TOGGLE, NULL, pRad);
+        }
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_DISABLE_RAD);
         setBitLongArray(pRad->fsmRad.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_HOSTAPD);
     }

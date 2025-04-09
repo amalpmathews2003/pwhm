@@ -1382,6 +1382,15 @@ swl_rc_ne wld_ap_hostapd_getNumMldLinks(T_AccessPoint* pAP, uint32_t* pNLinks) {
     return rc;
 }
 
+swl_rc_ne wld_ap_hostapd_getMldLinkId(T_AccessPoint* pAP, int32_t* pLinkId) {
+    int32_t val = -1;
+    W_SWL_SETPTR(pLinkId, val);
+    ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_rc_ne rc = wld_wpaCtrl_getSyncCmdParamValInt32Def(pAP->wpaCtrlInterface, "STATUS", "link_id", &val, val);
+    W_SWL_SETPTR(pLinkId, val);
+    return rc;
+}
+
 swl_trl_e wld_hostapd_ap_getCfgParamSupp(T_AccessPoint* pAP, const char* param) {
     ASSERT_NOT_NULL(pAP, SWL_TRL_UNKNOWN, ME, "NULL");
     wld_wpaCtrlMngr_t* pMgr = wld_wpaCtrlInterface_getMgr(pAP->wpaCtrlInterface);

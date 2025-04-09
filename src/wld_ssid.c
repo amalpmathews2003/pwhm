@@ -94,7 +94,6 @@ static void s_setEnable_internal(T_SSID* pSSID, bool enable) {
     ASSERTS_NOT_EQUALS(pSSID->enable, enable, , ME, "same value");
     SAH_TRACEZ_INFO(ME, "%s: SSID Enable %u -> %u", pSSID->Name, pSSID->enable, enable);
     pSSID->enable = enable;
-    wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     if(enable) {
         pSSID->changeInfo.nrEnables++;
         pSSID->changeInfo.lastEnableTime = swl_time_getMonoSec();
@@ -212,6 +211,8 @@ swl_rc_ne wld_ssid_applyEnable(T_SSID* pSSID, bool combEnable, bool enable) {
         rc = wld_ap_applyEnable(pAP, combEnable, pAP->enable);
     } else if(pEP != NULL) {
         rc = wld_endpoint_applyEnable(pEP, combEnable, pEP->enable);
+    } else {
+        wld_mld_setLinkConfigured(pSSID->pMldLink, false);
     }
 
     pSSID->enable = enable;
@@ -627,6 +628,13 @@ int32_t wld_ssid_getIfIndex(T_SSID* pSSID) {
         return pSSID->ENDP_HOOK->index;
     }
     return -1;
+}
+
+bool wld_ssid_isLinkCreated(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    ASSERTS_FALSE(swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress), false, ME, "no mac");
+    return (wld_mld_isLinkActive(pSSID->pMldLink) ||
+            (!wld_mld_isLinkEnabled(pSSID->pMldLink) && (wld_ssid_getIfIndex(pSSID) > 0)));
 }
 
 bool wld_ssid_isLinkEnabled(T_SSID* pSSID) {
