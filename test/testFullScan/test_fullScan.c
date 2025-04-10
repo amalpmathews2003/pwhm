@@ -82,6 +82,7 @@ void fillFullScanResultsList(amxc_var_t* pScanResultList, T_Radio* pRad, wld_sca
 #define NB_BSS_PER_DEVICE 3
 #define NB_SCAN_RESULTS (NB_NEIGH_DEVICES * NB_BSS_PER_DEVICE)
 #define NB_SURROUNDING_CHANNELS 5
+#define NB_SSID_PER_BSSID 1
 swl_channel_t scanResChannels[SWL_FREQ_BAND_MAX][NB_SURROUNDING_CHANNELS] = {{1, 3, 6, 8, 11}, {36, 48, 60, 100, 108}, {1, 33, 49, 65, 81}};
 static int s_setupSuite(void** state _UNUSED) {
     assert_true(wld_th_dm_init(&dm));
@@ -274,7 +275,7 @@ static void test_startAndGetScan(void** state _UNUSED) {
         amxd_object_for_each(instance, itAp, ap_template) {
             amxd_object_t* ap_obj = amxc_llist_it_get_data(itAp, amxd_object_t, it);
             amxd_object_t* apSsid_template = amxd_object_get(ap_obj, "SSID");
-            assert_int_equal(amxd_object_get_instance_count(apSsid_template), 1);
+            assert_int_equal(amxd_object_get_instance_count(apSsid_template), NB_SSID_PER_BSSID);
             amxd_object_for_each(instance, itApSsid, apSsid_template) {
                 amxd_object_t* apSsid_obj = amxc_llist_it_get_data(itApSsid, amxd_object_t, it);
                 char* ssid = amxd_object_get_cstring_t(apSsid_obj, "SSID", NULL);

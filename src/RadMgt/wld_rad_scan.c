@@ -1175,10 +1175,12 @@ static int s_apCallback(amxd_object_t* object _UNUSED, amxd_object_t* mobject, v
         swl_macBin_t bssidBin;
         swl_mac_charToBin(&bssidBin, &bssidStd);
 
+        bool found = false;
         amxc_llist_t* ssids = priv;
         amxc_llist_for_each(it, ssids) {
             wld_scanResultSSID_t* ssid = amxc_container_of(it, wld_scanResultSSID_t, it);
             if(swl_typeMacBin_equals(bssidBin, ssid->bssid)) {
+                found = true;
                 if(channel == ssid->channel) {
                     if(!ssid->dmUpdated) {
                         // Update AP instance object
@@ -1194,6 +1196,11 @@ static int s_apCallback(amxd_object_t* object _UNUSED, amxd_object_t* mobject, v
                     s_removeAPObject(apInst);
                 }
             }
+        }
+
+        if(!found) {
+            // AP is not present in the scan result list
+            s_removeAPObject(apInst);
         }
 
         free(bssidChar);
