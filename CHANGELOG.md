@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.15.2 - 2025-04-11(08:56:40 +0000)
+
+### Other
+
+- unable to set Auto bandwidth after static bw value
+
 ## Release sah-next_v7.15.1 - 2025-04-10(17:53:54 +0000)
 
 ### Other
