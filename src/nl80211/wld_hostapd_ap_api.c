@@ -855,27 +855,36 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
     ASSERTS_NOT_NULL(params, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pR = pAP->pRadio;
     ASSERTS_NOT_NULL(pR, SWL_RC_INVALID_PARAM, ME, "NULL");
+    swl_ieee802_btmReqMode_m mode = params->reqModeMask;
 
-    SAH_TRACEZ_INFO(ME, "%s: Send tranfer from %s to %s of %s", pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac);
+    SAH_TRACEZ_INFO(ME, "%s: Send tranfer from %s to %s of %s (mode 0x%X)",
+                    pR->Name, pAP->alias, params->targetBssid.cMac, params->sta.cMac, mode);
 
     char cmd[256] = {'\0'};
     swl_str_catFormat(cmd, sizeof(cmd), "BSS_TM_REQ"
                       " %s"
-                      " pref=%u abridged=%u"
-                      , params->sta.cMac,
-                      SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL),
-                      SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_ABRIDGED));
+                      " pref=%u"
+                      " abridged=%u"
+                      " disassoc_imminent=%u",
+                      params->sta.cMac,
+                      SWL_BIT_IS_SET(mode, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL),
+                      SWL_BIT_IS_SET(mode, SWL_IEEE802_BTM_REQ_MODE_ABRIDGED),
+                      SWL_BIT_IS_SET(mode, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT));
+
+    /* TODO: handle SWL_IEEE802_BTM_REQ_MODE_BSS_TERM_INCL & bss_term */
+    /* TODO: handle SWL_IEEE802_BTM_REQ_MODE_LINK_REMOVAL_IMMINENT & link_removal_imminent */
+
     if((params->transitionReason >= SWL_80211_WFA_MBO_TRANSITION_REASON_UNSPECIFIED) &&
        (params->transitionReason < SWL_80211_WFA_MBO_TRANSITION_REASON_MAX)) {
         swl_str_catFormat(cmd, sizeof(cmd),
-                          " mbo=%d:%d:%d"  //mbo=<reason>:<reassoc_delay>:<cell_pref>
-                          , params->transitionReason, (params->disassoc > 0) ? 100 : 0, 0);
+                          " mbo=%d:%d:0",  //mbo=<reason>:<reassoc_delay>:<cell_pref>
+                          params->transitionReason,
+                          SWL_BIT_IS_SET(mode, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT) ?
+                          (params->disassoc > 0) ? 100 : 0 : 0);
     }
-    if(params->disassoc > 0) {
+    if(SWL_BIT_IS_SET(mode, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT) && (params->disassoc > 0)) {
         swl_str_catFormat(cmd, sizeof(cmd),
-                          " disassoc_imminent=%u"
-                          " disassoc_timer=%d"
-                          , SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_DISASSOC_IMMINENT),
+                          " disassoc_timer=%d",
                           params->disassoc);
     }
     if(params->validity > 0) {
@@ -892,9 +901,9 @@ swl_rc_ne wld_ap_hostapd_transferStation(T_AccessPoint* pAP, wld_transferStaArgs
                           ",%u,%d,%d,%d"   //<bssidInfo>,<operClass>,<channel>,<phyType>
                           , params->targetBssid.cMac
                           , params->bssidInfo, params->operClass, params->channel, swl_chanspec_operClassToPhyMode(params->operClass));
-        if(SWL_BIT_IS_SET(params->reqModeMask, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL)) {
+        if(SWL_BIT_IS_SET(mode, SWL_IEEE802_BTM_REQ_MODE_PREF_LIST_INCL)) {
             //add highest preference for the bss candidate: Tlv: Len:3,candidate:1,pref:255
-            swl_str_catFormat(cmd, sizeof(cmd), ",0301ff");
+            swl_str_cat(cmd, sizeof(cmd), ",0301ff");
         }
     }
 
