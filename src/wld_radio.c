@@ -3981,7 +3981,7 @@ void _wld_rad_setOperatingClass(const char* const sig_name _UNUSED,
     T_Radio* pRad = (T_Radio*) object->priv;
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad->pBus, , ME, "NULL");
-    SAH_TRACEZ_WARNING(ME, "received event dm:object-changed with OperatingChannelBandwidth or Channel");
+    SAH_TRACEZ_INFO(ME, "received event dm:object-changed with OperatingChannelBandwidth or Channel");
     wld_rad_updateOperatingClass(pRad);
 }
 
