@@ -14,7 +14,7 @@ pwhm_term_timeout=15
 
 prevent_netifd_to_configure_wireless()
 {
-    [ -x /etc/init.d/wpad ] && /etc/init.d/wpad stop
+    [ -x /etc/init.d/wpad ] && /etc/init.d/wpad stop 2> /dev/null
     entries=$(uci -q show wireless 2> /dev/null | grep -e "wifi-iface" -e "wifi-device" | cut -d '=' -f1 | cut -d '.' -f2) && [ -n "$entries" ] || return
     for i in $entries; do
         uci -q del wireless.$i
