@@ -2197,6 +2197,7 @@ typedef int (APIENTRY* PFN_WRAD_GET_WIFI_COUNTERS)(T_Radio* rad, T_epMon_counter
 typedef int (APIENTRY* PFN_WRAD_SUPPORTS)(T_Radio* rad, char* buf, int bufsize);
 typedef int (APIENTRY* PFN_WRAD_AUTOCHANNELENABLE)(T_Radio* rad, int enable, int set);
 typedef int (APIENTRY* PFN_WRAD_STARTACS)(T_Radio* rad, int set);
+typedef int (APIENTRY* PFN_WRAD_STARTPLATFORMACS)(T_Radio* rad, const amxc_var_t* const args);
 typedef int (APIENTRY* PFN_WRAD_BGDFS_ENABLE)(T_Radio* rad, int enable);
 typedef int (APIENTRY* PFN_WRAD_BGDFS_START)(T_Radio* rad, int channel);
 
@@ -2655,6 +2656,7 @@ typedef struct S_CWLD_FUNC_TABLE {
 
     /** get stats counters of requested affiliated accesspoint BSS */
     swl_rc_ne (* mfn_wvap_getMloStats)(T_AccessPoint* vap, wld_mloStats_t* stats);
+    PFN_WRAD_STARTPLATFORMACS mfn_wrad_startPltfACS; /**< Start platform ACS process! */
 } T_CWLD_FUNC_TABLE;
 
 struct vendor {
