@@ -3,7 +3,7 @@ short_description: "prplMesh WHM"
 long_description: "A Wireless Hardware Manager for prplMesh BWL Backend"
 
 type: plugin
-category: prplMesh
+category: prplmesh
 
 urls:
   opensource: "https://gitlab.com/prpl-foundation/prplmesh/pwhm/plugins/pwhm"
@@ -167,6 +167,10 @@ artifacts:
   destination: "/etc/amx/wld/wld_defaults/"
   permissions: "0644"
   only: CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST
+- source: "odl/wld_usp.odl"
+  destination: "/etc/amx/wld/extensions/wld_usp.odl"
+  permissions: "0644"
+  only: CONFIG_SAH_WLD_ENABLE_USP_SERVER_SOCKET
 - source: "acl/admin/$(COMPONENT).json"
   destination: "$(ACLDIR)/admin/$(COMPONENT).json"
   permissions: "0660"

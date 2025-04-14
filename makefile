@@ -55,6 +55,9 @@ ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults_empty/* $(DEST)/etc/amx/wld/wld_defaults/
 endif
+ifeq ($(CONFIG_SAH_WLD_ENABLE_USP_SERVER_SOCKET),y)
+	$(INSTALL) -D -p -m 0644 odl/wld_usp.odl $(DEST)/etc/amx/wld/extensions/wld_usp.odl
+endif
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(DEST)$(ACLDIR)/admin/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT)-internal.json $(DEST)$(ACLDIR)/admin/$(COMPONENT)-internal.json
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKG_CONFIG_LIBDIR)/wld.pc
@@ -99,6 +102,9 @@ ifeq ($(CONFIG_SAH_SERVICES_PWHM_DISABLE_PERSIST),y)
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/wld/wld_defaults
 	$(INSTALL) -D -p -m 0644 odl/wld_defaults_empty/* $(PKGDIR)/etc/amx/wld/wld_defaults/
 endif
+ifeq ($(CONFIG_SAH_WLD_ENABLE_USP_SERVER_SOCKET),y)
+	$(INSTALL) -D -p -m 0644 odl/wld_usp.odl $(PKGDIR)/etc/amx/wld/extensions/wld_usp.odl
+endif
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT)-internal.json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT)-internal.json
 	$(INSTALL) -D -p -m 0644 pkgconfig/pkg-config.pc $(PKGDIR)$(PKG_CONFIG_LIBDIR)/wld.pc
@@ -137,6 +143,9 @@ doc:
 	$(eval ODLFILES += odl/wld_accesspoint.odl)
 	$(eval ODLFILES += odl/wld_endpoint.odl)
 	$(eval ODLFILES += odl/01_device-wifi_pwhm_mapping.odl)
+ifeq ($(CONFIG_SAH_WLD_ENABLE_USP_SERVER_SOCKET),y)
+	$(eval ODLFILES += odl/wld_usp.odl)
+endif
 
 	mkdir -p output/xml
 	mkdir -p output/html
