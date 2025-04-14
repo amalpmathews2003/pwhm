@@ -2997,6 +2997,24 @@ amxd_status_t _startACS(amxd_object_t* obj,
     return _startAutoChannelSelection(obj, func, args, ret);
 }
 
+amxd_status_t _startPlatformACS(amxd_object_t* object,
+                                amxd_function_t* func _UNUSED,
+                                const amxc_var_t* const args,
+                                amxc_var_t* ret _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "%s has no mapped Radio ctx", amxd_object_get_name(object, AMXD_OBJECT_NAMED));
+
+    swl_rc_ne rc = pRad->pFA->mfn_wrad_startPltfACS(pRad, args);
+    if(rc != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to call mfn_wrad_startPltfACS");
+        return amxd_status_unknown_error;
+    }
+
+    return amxd_status_ok;
+}
+
 amxd_status_t _checkWPSPIN(amxd_object_t* obj _UNUSED,
                            amxd_function_t* func _UNUSED,
                            amxc_var_t* args,

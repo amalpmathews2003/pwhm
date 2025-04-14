@@ -196,6 +196,45 @@ define probelist_t{
 		 */
 		bool startACS();
 
+		/*
+		 * This function will start an automatic channel selection sequence.
+		 * The corresponding configuration must be enabled in the agent config file to use this feature.
+		 * There is no default implementation. There will depend on vendor LL APIs.
+		 * It will make a target channel decision by excluding channels in acs_list.
+		 * @param acs_list: the list of excluded channels grouped by operating class.
+		 *
+		 * Example "acs_list" structure:
+		 * {
+		 *   "acs_list": [
+		 *     {
+		 *       "opclass": 81,
+		 *       "exclude_channels_length": 5,
+		 *       "exclude_channels": [
+		 *         1,
+		 *         2,
+		 *         3,
+		 *         4,
+		 *         5
+		 *       ]
+		 *     },
+		 *     {
+		 *       "opclass": 83,
+		 *       "exclude_channels_length": 2,
+		 *       "exclude_channels": [
+		 *         1,
+		 *         2
+		 *       ]
+		 *     }
+		 *   ]
+		 * }
+		 *
+		 * The incoming list is constructed based on the controller's channel preferences, considering rank values of zero.
+		 * If a channel belonging to any operating class has a rank value of zero in the controller's channel preferences,
+		 * it will be added to the "acs_list" according to its operating class.
+		 * @return true on success or false on error
+		*/
+		bool startPlatformACS(%in list acs_list);
+
 		/**
 		 * Start a scan all possible channels of the radio is configured for
 		 * This function returns immediately, the results must be retrieved manually.
