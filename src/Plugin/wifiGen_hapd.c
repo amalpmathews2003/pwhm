@@ -233,7 +233,7 @@ static void s_restartHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     wld_secDmn_restartCb(pSecDmn);
 }
 
-static void s_onStopHapdCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
+static void s_onStopHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     const char* mainIface = s_getMainIface(pRad);
@@ -243,9 +243,22 @@ static void s_onStopHapdCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
        (pExitInfo->exitStatus == HOSTAPD_EXIT_REASON_LOAD_FAIL)) {
         SAH_TRACEZ_ERROR(ME, "%s: invalid hostapd configuration", mainIface);
     }
-    wld_rad_updateState(pRad, true);
+
+    //remove previously used server sockets after hostapd stopped
+    //to prevent any confusion on next startup
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pSecDmn);
+    for(uint32_t i = 0; i < wld_wpaCtrlMngr_countInterfaces(pMgr); i++) {
+        wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getInterface(pMgr, i);
+        const char* pIfacePath = wld_wpaCtrlInterface_getPath(pIface);
+        if(wld_wpaCtrl_checkSockPath(pIfacePath)) {
+            SAH_TRACEZ_INFO(ME, "%s: remove wpactrl srv sock: %s", mainIface, pIfacePath);
+            unlink(pIfacePath);
+        }
+    }
+
     //finalize hapd cleanup
     wifiGen_hapd_stopDaemon(pRad);
+    wld_rad_updateState(pRad, true);
     //restore main iface if removed by hostapd
     wifiGen_hapd_restoreMainIface(pRad);
 }
