@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.15.5 - 2025-04-17(06:51:22 +0000)
+
+### Other
+
+- - update secure daemon group member state
+
 ## Release sah-next_v7.15.4 - 2025-04-14(16:28:50 +0000)
 
 ### Other
