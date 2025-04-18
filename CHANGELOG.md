@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.15.6 - 2025-04-18(08:13:24 +0000)
+
+### Other
+
+- wpactrlMngr fails to connect to all sockets
+
 ## Release sah-next_v7.15.5 - 2025-04-17(06:51:22 +0000)
 
 ### Other
