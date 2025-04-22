@@ -102,7 +102,10 @@ bool wld_ap_hostapd_updateBeacon(T_AccessPoint* pAP, const char* reason) {
     ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
     T_Radio* pRad = pAP->pRadio;
     if(wld_rad_hasMbssidAds(pRad)) {
-        pAP = wld_rad_hostapd_getCfgMainVap(pRad);
+        T_AccessPoint* pAPmain = wld_rad_hostapd_getCfgMainVap(pRad);
+        if(pAPmain && !wld_vap_isDummyVap(pAPmain)) {
+            pAP = pAPmain;
+        }
     }
     return s_sendHostapdCommand(pAP, "UPDATE_BEACON", reason);
 }
