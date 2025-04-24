@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.15.8 - 2025-04-24(11:23:18 +0000)
+
+### Other
+
+- WiFi Sensing phase 2a step2.1 - support vendor data types
+- PPM-3041 WiFi Sensing phase2a step2.1 - HLAPI and DM final state
+
 ## Release sah-next_v7.15.7 - 2025-04-18(13:03:36 +0000)
 
 ### Other
