@@ -1177,6 +1177,16 @@ typedef struct wld_scanResults {
     amxc_llist_t ssids;
 } wld_scanResults_t;
 
+typedef struct wld_chanSurveyReportEntry {
+    amxc_llist_it_t it;
+    uint32_t frequencyMHz;          // Center frequency of channel
+    float interferenceFactor;       // Interference Factor
+} wld_chanSurveyReportEntry_t;
+
+typedef struct wld_surveyReport {
+    amxc_llist_t surveyReport;
+} wld_surveyReport_t;
+
 typedef struct wld_scanArgs {
     char ssid[SSID_NAME_LEN];
     swl_macBin_t bssid;               /*particular BSSID MAC address to scan*/
@@ -1220,6 +1230,7 @@ typedef struct {
     wld_scan_config_t cfg;
     swl_timeMono_t lastScanTime;
     wld_scanResults_t lastScanResults;
+    wld_surveyReport_t lastSurveyReport;
     amxc_llist_t spectrumResults;   /*!< results of the getSpectrum */
 } T_ScanState;
 
@@ -2179,6 +2190,8 @@ typedef int (APIENTRY* PFN_WRAD_DELENDPOINTIF)(T_Radio* rad, char* endpoint);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETSPECTRUMINFO)(T_Radio* rad, bool update, amxc_llist_t* llSpectrumChannelInfo);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SCAN_RESULTS)(T_Radio* rad, wld_scanResults_t* results);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETSCANFILTERINFO)(T_Radio* rad, bool* isFilterActive);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_GETCHANSURVEYREPORT)(T_Radio* rad, wld_surveyReport_t* results);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_UPDATECHANSURVEYREPORT)(T_Radio* rad);
 
 /* Our common function table that all VENDOR WIFI drivers must be able to handle... */
 
@@ -2600,6 +2613,8 @@ typedef struct S_CWLD_FUNC_TABLE {
     swl_rc_ne (* mfn_wrad_continue_external_scan)(T_Radio* pRad);
 
     PFN_WRAD_SCAN_RESULTS mfn_wrad_scan_results;
+    PFN_WRAD_GETCHANSURVEYREPORT mfn_wrad_getchansurveyreport;
+    PFN_WRAD_UPDATECHANSURVEYREPORT mfn_wrad_updatechansurveyreport;
 
     /* <<ADD Functions that do combined task or no HW related >> */
     PFN_HSPOT_ENABLE mfn_hspot_enable;
