@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.16.2 - 2025-04-28(08:55:34 +0000)
+
+### Other
+
+- : Noise is not reported
+
 ## Release sah-next_v7.16.1 - 2025-04-25(15:30:29 +0000)
 
 ### Other
