@@ -376,7 +376,9 @@ static void s_performSync(T_Radio* rad) {
         rad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, GET);
 
         // The first time we pass here when init is not done, we need to write back the AP and SSID
-        if(!pAP->initDone) {
+        // Sync only when SSID context is finalized
+        SAH_TRACEZ_INFO(ME, "%s: pAP->initDone=%d pSSID->initDone=%d", pAP->alias, pAP->initDone, pSSID->initDone);
+        if(!pAP->initDone && pSSID->initDone) {
             pAP->initDone = true;
             rad->pFA->mfn_sync_ap(pAP->pBus, pAP, SET);
             rad->pFA->mfn_sync_ssid(pSSID->pBus, pSSID, SET);

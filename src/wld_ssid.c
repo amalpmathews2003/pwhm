@@ -884,6 +884,11 @@ static void s_setMacAddress_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_
     T_SSID* pSSID = wld_ssid_fromObj(object);
     ASSERT_NOT_NULL(pSSID, , ME, "INVALID");
     const char* pMacStr = amxc_var_constcast(cstring_t, newValue);
+
+    SAH_TRACEZ_INFO(ME, "pMacStr=%s pSSID->MAC=%.2X:%.2X:%.2X:%.2X:%.2X:%.2X", (pMacStr ? pMacStr : "NULL"),
+                    pSSID->MACAddress[0], pSSID->MACAddress[1], pSSID->MACAddress[2],
+                    pSSID->MACAddress[3], pSSID->MACAddress[4], pSSID->MACAddress[5]);
+
     swl_macBin_t mac = SWL_MAC_BIN_NEW();
     if((SWL_MAC_CHAR_TO_BIN(&mac, pMacStr)) &&
        (!SWL_MAC_BIN_MATCHES(pSSID->MACAddress, &mac))) {
