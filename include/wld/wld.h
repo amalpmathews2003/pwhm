@@ -1708,6 +1708,7 @@ struct S_SSID {
     wld_autoMacSrc_e autoMacSrc;              /* auto generated mac source: from radio (/or dummy) base mac, or statically learned from driver */
     uint32_t autoMacRefIndex;                 /* mac address offset from source base mac */
     char customNetDevName[IFNAMSIZ];          /* custom interface name set by dm conf */
+    bool initDone;                            /* Whether this SSID is properly initialized, and ready for configuration */
 
     wld_mldLink_t* pMldLink;
 };
