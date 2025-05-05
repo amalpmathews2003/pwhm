@@ -998,6 +998,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "wmm_enabled", pAP->WMMEnable);
     }
     swl_mapCharFmt_addValInt32(vapConfigMap, "uapsd_advertisement_enabled", pAP->UAPSDCapability && pAP->UAPSDEnable);
+    swl_mapCharFmt_addValInt32(vapConfigMap, "interworking", pAP->cfg11u.interworkingEnable);
     //Temporarily disabled : triggering station disconnection
     swl_mapChar_add(vapConfigMap, "#bss_transition", "1");
     swl_mapChar_add(vapConfigMap, "notify_mgmt_frames", "1");
