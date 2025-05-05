@@ -599,7 +599,7 @@ static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
     memset(data, 0, sizeof(data));
     size_t len = wld_wpaCtrl_getValueStr(params, "buf", data, sizeof(data));
     ASSERT_TRUE(len > 1, , ME, "%s: frame buf field empty", pInterface->name);
-    size_t binLen = len / 2;
+    size_t binLen = (len / 2) + (len % 2);
     swl_bit8_t binData[binLen];
     bool success = swl_hex_toBytesSep(binData, sizeof(binData), data, len, 0, &binLen);
     ASSERT_TRUE(success, , ME, "%s: frame HEX CONVERT FAIL", pInterface->name);
@@ -788,7 +788,7 @@ static void s_beaconResponseEvt(wld_wpaCtrlInterface_t* pInterface, char* event 
     memset(&rrmBeaconResponse, 0, sizeof(wld_wpaCtrl_rrmBeaconRsp_t));
     if(*(++data) != '\0') {
         size_t dataLen = swl_str_len(data);
-        size_t binLen = dataLen / 2;
+        size_t binLen = (dataLen / 2) + (dataLen % 2);
         swl_bit8_t binData[binLen];
         bool success = swl_hex_toBytes(binData, binLen, data, dataLen);
         ASSERT_TRUE(success, , ME, "HEX CONVERT FAIL");

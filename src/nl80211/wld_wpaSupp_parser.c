@@ -265,7 +265,7 @@ swl_rc_ne wpaSup_parseWpsReceiveCredentialsEvt(T_WPSCredentials* creds, char* da
     ASSERT_NOT_NULL(data, SWL_RC_INVALID_PARAM, ME, "NULL");
 
     SAH_TRACEZ_INFO(ME, "Parse cred %zu -%s-", dataLen, data);
-    size_t binLen = dataLen / 2;
+    size_t binLen = (dataLen / 2) + (dataLen % 2);
     swl_bit8_t binData[binLen];
     bool success = swl_hex_toBytes(binData, binLen, data, dataLen);
     ASSERT_TRUE(success, SWL_RC_ERROR, ME, "HEX CONVERT FAIL");

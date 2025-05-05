@@ -2344,7 +2344,7 @@ swl_rc_ne wld_util_getManagementFrameParameters(T_Radio* pRad, wld_util_manageme
     const char* data = GET_CHAR(args, "data");
     ASSERT_NOT_NULL(data, SWL_RC_INVALID_PARAM, ME, "NULL");
     size_t dataLen = swl_str_len(data);
-    mgmtFrame->dataLen = dataLen / 2;
+    mgmtFrame->dataLen = (dataLen / 2) + (dataLen % 2);
     mgmtFrame->data = calloc(1, mgmtFrame->dataLen);
     ASSERT_NOT_NULL(mgmtFrame->data, SWL_RC_INVALID_PARAM, ME, "NULL");
     success = swl_hex_toBytes(mgmtFrame->data, mgmtFrame->dataLen + 1, data, dataLen);
