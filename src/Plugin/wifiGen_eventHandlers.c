@@ -978,7 +978,7 @@ static void s_btmRespCb(void* userData, swl_80211_mgmtFrame_t* frame, size_t fra
     swl_macChar_t targetBssid = g_swl_macChar_null;
     /*The Target BSSID field is the BSSID of the BSS that the non-AP STA transitions to. This field is present if
        the Status code subfield contains 0, and not present otherwise.*/
-    if((replyCode == 0) && (btmRespDataLen >= (offsetof(swl_80211_wnmActionBTMResponseFrameBody_t, data) + SWL_MAC_BIN_LEN))) {
+    if((replyCode == 0) && (btmRespDataLen >= SWL_MAC_BIN_LEN)) {
         SWL_MAC_BIN_TO_CHAR(&targetBssid, &btmResp->data);
         SAH_TRACEZ_INFO(ME, "%s BSS-TM-RESP %s status_code=%d targetBssid= %s", pAP->alias, mac.cMac, replyCode, targetBssid.cMac);
     } else {
