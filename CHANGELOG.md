@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.16.4 - 2025-05-06(11:00:10 +0000)
+
+### Other
+
+- [import] Freedom: WHM: hostapd missing interworking parameter
+
 ## Release sah-next_v7.16.3 - 2025-05-06(08:19:44 +0000)
 
 ### Other
