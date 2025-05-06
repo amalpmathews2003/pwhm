@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.16.3 - 2025-05-06(08:19:44 +0000)
+
+### Other
+
+- [import] Occasional Issue with Sending MgmtActionFrameReceived Notification.
+
 ## Release sah-next_v7.16.2 - 2025-04-28(08:55:34 +0000)
 
 ### Other
