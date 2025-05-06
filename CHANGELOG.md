@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.16.5 - 2025-05-06(12:34:09 +0000)
+
+### Other
+
+- [import] Wildcard BSSID support in BTM request
+
 ## Release sah-next_v7.16.4 - 2025-05-06(11:00:10 +0000)
 
 ### Other
