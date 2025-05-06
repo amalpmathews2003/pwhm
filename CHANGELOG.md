@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.16.6 - 2025-05-06(12:45:19 +0000)
+
+### Other
+
+- [import] Invalid BTM Target BSSID in Client Steering BTM Report message.
+
 ## Release sah-next_v7.16.5 - 2025-05-06(12:34:09 +0000)
 
 ### Other
