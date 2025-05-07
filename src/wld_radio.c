@@ -4425,6 +4425,43 @@ static void s_dumpRadioDebug(T_Radio* pR, amxc_var_t* retval) {
     swl_conv_addMaskToMap(retval, "SupportedStandards", pR->supportedStandards, swl_radStd_str, SWL_RADSTD_MAX);
     swl_conv_addMaskToMap(retval, "OperatingStandards", pR->operatingStandards, swl_radStd_str, SWL_RADSTD_MAX);
     amxc_var_add_key(cstring_t, retval, "OperatingChannelBandwidth", swl_radBw_str[pR->operatingChannelBandwidth]);
+
+    amxc_var_add_key(bool, retval, "hasEnabledEp", wld_rad_hasEnabledEp(pR));
+    amxc_var_add_key(bool, retval, "hasConnectedEp", wld_rad_hasConnectedEp(pR));
+    amxc_var_add_key(bool, retval, "hasOnlyActiveEP", wld_rad_hasOnlyActiveEP(pR));
+    amxc_var_add_key(bool, retval, "hasMainEP", wld_rad_hasMainEP(pR));
+
+    amxc_var_add_key(bool, retval, "areAllVapsDone", wld_rad_areAllVapsDone(pR));
+    amxc_var_add_key(bool, retval, "hasActiveVap", wld_rad_hasActiveVap(pR));
+    amxc_var_add_key(bool, retval, "hasEnabledVap", wld_rad_hasEnabledVap(pR));
+    amxc_var_add_key(bool, retval, "hasActiveEp", wld_rad_hasActiveEp(pR));
+
+
+    amxc_var_add_key(bool, retval, "hasEnabledIface", wld_rad_hasEnabledIface(pR));
+    amxc_var_add_key(bool, retval, "hasActiveIface", wld_rad_hasActiveIface(pR));
+    amxc_var_add_key(uint32_t, retval, "countIfaces", wld_rad_countIfaces(pR));
+    amxc_var_add_key(uint32_t, retval, "countVapIfaces", wld_rad_countVapIfaces(pR));
+    amxc_var_add_key(uint32_t, retval, "countEpIfaces", wld_rad_countEpIfaces(pR));
+    amxc_var_add_key(uint32_t, retval, "countMappedAPs", wld_rad_countMappedAPs(pR));
+    amxc_var_add_key(uint32_t, retval, "getFirstEnabledIfaceIndex", wld_rad_getFirstEnabledIfaceIndex(pR));
+    amxc_var_add_key(uint32_t, retval, "getFirstActiveIfaceIndex", wld_rad_getFirstActiveIfaceIndex(pR));
+
+    T_EndPoint* pEP = wld_rad_getFirstActiveEp(pR);
+    amxc_var_add_key(cstring_t, retval, "firstActiveEP", pEP != NULL ? pEP->Name : "");
+
+    T_AccessPoint* pAP = wld_rad_getFirstActiveAp(pR);
+    amxc_var_add_key(cstring_t, retval, "firstActiveAP", pAP != NULL ? pAP->alias : "");
+    pAP = wld_rad_getFirstBroadcastingAp(pR);
+    amxc_var_add_key(cstring_t, retval, "firstBroadcastingAp", pAP != NULL ? pAP->alias : "");
+
+
+    amxc_var_add_key(bool, retval, "is6ghz", wld_rad_is_6ghz(pR));
+    amxc_var_add_key(bool, retval, "is5ghz", wld_rad_is_5ghz(pR));
+    amxc_var_add_key(bool, retval, "is24ghz", wld_rad_is_24ghz(pR));
+    amxc_var_add_key(bool, retval, "isOndfs", wld_rad_is_on_dfs(pR));
+    amxc_var_add_key(bool, retval, "isDoingDfsScan", wld_rad_isDoingDfsScan(pR));
+    amxc_var_add_key(bool, retval, "isUpAndReady", wld_rad_isUpAndReady(pR));
+    amxc_var_add_key(bool, retval, "isUpExt", wld_rad_isUpExt(pR));
 }
 
 amxd_status_t _Radio_debug(amxd_object_t* object,
