@@ -1147,6 +1147,7 @@ typedef struct wld_scanResultSSID {
     int32_t channel;
     int32_t centreChannel;
     int32_t bandwidth;
+    swl_chanspec_ext_e extensionChannel;
 
     // Not always filled in. In that case it is 0.
     swl_radioStandard_m operatingStandards;

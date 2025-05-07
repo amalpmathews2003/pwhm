@@ -1515,7 +1515,15 @@ static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     char operatingStandardsChar[32] = "";
     swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar), pSsid->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
     amxc_var_add_key(cstring_t, resulMap, "OperatingStandard", operatingStandardsChar);
-    amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", Rad_SupBW[swl_chanspec_intToBw(pSsid->bandwidth)]);
+    if(pSsid->bandwidth == 320) {
+        if(pSsid->extensionChannel == SWL_CHANSPEC_EXT_HIGH) {
+            amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", "320MHz-2");
+        } else {
+            amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", "320MHz-1");
+        }
+    } else {
+        amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", Rad_SupBW[swl_chanspec_intToBw(pSsid->bandwidth)]);
+    }
 
     amxc_var_add_key(int32_t, resulMap, "Noise", pSsid->noise);
 }
