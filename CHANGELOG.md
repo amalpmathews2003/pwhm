@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.17.1 - 2025-05-08(10:00:29 +0000)
+
+### Other
+
+- Mode is back to compatibility after reboot of hgw
+
 ## Release sah-next_v7.17.0 - 2025-05-07(14:48:40 +0000)
 
 ### Other
