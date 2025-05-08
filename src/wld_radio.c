@@ -3420,6 +3420,14 @@ bool wld_rad_areAllVapsDone(T_Radio* pRad) {
         if(!wld_vap_isDummyVap(pAP) && !pAP->initDone && !wld_ssid_isSSIDConfigured(pAP->pSSID)) {
             return false;
         }
+        /*
+         * vaps (new or initial) loaded from datamodel are not usable (available) while creation is not yet finalized:
+         * temporary alias (devName) but no netDevId
+         */
+        if(!swl_str_isEmpty(pAP->alias) && !pAP->index && !pAP->initDone) {
+            SAH_TRACEZ_WARNING(ME, "%s: vap creation is not yet finalized", pAP->alias);
+            return false;
+        }
     }
     return true;
 }
