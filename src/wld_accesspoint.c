@@ -2382,6 +2382,26 @@ T_AccessPoint* wld_ap_getVapByBssid(swl_macBin_t* bssid) {
     return NULL;
 }
 
+uint32_t wld_ap_getMaxNbrSta(T_AccessPoint* pAP) {
+    ASSERT_NOT_NULL(pAP, 0, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, 0, ME, "NULL");
+    /*
+     * Compare how many stations are still allowed on the access point and its radio.
+     * In case the number of remaining allowed stations on the radio is smaller than the
+     * number of remaining allowed stations on the access point, we set the BSS max_num_sta
+     * to honor the radio limit. This is necessary because hostapd does not have a limit per
+     * radio, only per access point.
+     */
+    int32_t curMaxNumSta = (pAP->MaxStations < 0) ? (int32_t) pRad->maxNrHwSta : pAP->MaxStations;
+    SAH_TRACEZ_INFO(ME, "%s: pRad->maxStations = %d pRad->currentStations = %d", pRad->Name, pRad->maxStations, pRad->currentStations);
+    SAH_TRACEZ_INFO(ME, "%s: pAP->MaxStations = %d  pAP->ActiveAssociatedDeviceNumberOfEntries = %d", pAP->alias, curMaxNumSta, pAP->ActiveAssociatedDeviceNumberOfEntries);
+    if((pRad->maxStations > 0) && (pRad->maxStations - pRad->currentStations < curMaxNumSta - pAP->ActiveAssociatedDeviceNumberOfEntries)) {
+        curMaxNumSta = pAP->ActiveAssociatedDeviceNumberOfEntries + pRad->maxStations - pRad->currentStations;
+    }
+    return curMaxNumSta < 0 ? 0 : (uint32_t) curMaxNumSta;
+}
+
 void wld_vap_updateState(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, , ME, "NULL");
 

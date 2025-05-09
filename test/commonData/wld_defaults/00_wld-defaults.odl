@@ -82,6 +82,7 @@
                 parameter ObssCoexistenceEnable = 1;
                 parameter OperatingStandards = "b,g,n,ax";
                 parameter OperatingChannelBandwidth = "20MHz";
+                parameter MaxAssociatedDevices = 32;
                 object MACConfig {
                     parameter UseBaseMacOffset = 1;
                     parameter BaseMacOffset = 1;
@@ -104,6 +105,7 @@
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
+                parameter MaxAssociatedDevices = 32;
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
@@ -126,6 +128,7 @@
                 parameter RxPowerSaveEnabled = 1;
                 parameter RetryLimit = 7;
                 parameter TargetWakeTimeEnable = 1;
+                parameter MaxAssociatedDevices = 32;
                 object RadCaps {
                     parameter Enabled = "DFS_AHEAD DELAY_COMMIT";
                 }
@@ -183,6 +186,7 @@
                 parameter BridgeInterface = "br-lan";
                 parameter WDSEnable = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter MaxAssociatedDevices = 32;
                 object Security {
                     parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "prplMesh";
@@ -204,6 +208,7 @@
                 parameter DefaultDeviceType = "Data";
                 parameter BridgeInterface = "br-lan";
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter MaxAssociatedDevices = 32;
                 object Security {
                     parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "prplMesh";
@@ -224,6 +229,7 @@
                 parameter DefaultDeviceType = "Data";
                 parameter BridgeInterface = "br-lan";
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
+                parameter MaxAssociatedDevices = 32;
                 object Security {
                     parameter ModeEnabled = "WPA2-Personal";
                     parameter KeyPassPhrase = "prplMesh";
