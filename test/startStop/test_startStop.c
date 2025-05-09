@@ -92,6 +92,7 @@
 #include <amxb/amxb_register.h>
 
 #include "wld.h"
+#include "wld/wld_accesspoint.h"
 #include "wld_assocdev.h"
 #include "wld_util.h"
 
@@ -138,7 +139,6 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
 #define NR_TEST_DEV 5
 
     T_AssociatedDevice* devList[NR_TEST_DEV];
-
     for(int i = 0; i < NR_TEST_DEV; i++) {
         char devName[18];
         snprintf(devName, sizeof(devName), "AA:BB:CC:DD:EE:%02x", i);
@@ -158,6 +158,9 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
         s_checkDevEntries(vap, i + 1, i + 1);
 
         wld_ad_add_connection_success(vap, devList[i]);
+
+        /* VAP Max Station do not change */
+        assert_int_equal(wld_ap_getMaxNbrSta(vap), vap->MaxStations);
     }
 
     amxc_var_t ret;
@@ -215,6 +218,9 @@ static void test_startStop_checkAssoc(_UNUSED void** state) {
         s_checkDevEntries(vap, SWL_MIN(i + 2, NR_TEST_DEV), i + 1);
 
         wld_ad_add_connection_success(vap, devList[i]);
+
+        /* VAP Max Station do not change */
+        assert_int_equal(wld_ap_getMaxNbrSta(vap), vap->MaxStations);
     }
     wld_th_vap_getVendorData(vap)->errorOnStaStats = true;
 

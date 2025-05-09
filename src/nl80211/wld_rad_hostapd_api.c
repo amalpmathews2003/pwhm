@@ -421,6 +421,17 @@ swl_rc_ne wld_rad_hostapd_updateAllVapsConfigId(T_Radio* pRad) {
     return SWL_RC_OK;
 }
 
+swl_rc_ne wld_rad_hostapd_updateMaxNumStations(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface)) {
+            wld_ap_hostapd_updateMaxNbrSta(pAP);
+        }
+    }
+    return SWL_RC_OK;
+}
+
 /**
  * @brief disable main hostapd interface
  *

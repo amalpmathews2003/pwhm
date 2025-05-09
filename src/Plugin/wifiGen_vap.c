@@ -671,6 +671,9 @@ swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
     if(!swl_rc_isOk(wifiGen_vap_setMboDisallowReason(pAP))) {
         SAH_TRACEZ_NOTICE(ME, "failed setting mbo_assoc_disallow reason");
     }
+
+    wld_ap_hostapd_updateMaxNbrSta(pAP);
+
     return SWL_RC_OK;
 }
 

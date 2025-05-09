@@ -235,6 +235,10 @@ static void test_deactivate(void** state _UNUSED) {
     wld_ad_add_connection_try(vap5, pAD);
     wld_ad_add_connection_success(vap5, pAD);
 
+    /* VAPs Max Station on each Radio do not change */
+    ttb_assert_int_eq(wld_ap_getMaxNbrSta(vap2), vap2->MaxStations);
+    ttb_assert_int_eq(wld_ap_getMaxNbrSta(vap5), vap5->MaxStations);
+    ttb_assert_int_eq(wld_ap_getMaxNbrSta(vap6), vap6->MaxStations);
 
     ttb_assert_int_eq(wld_ad_get_nb_active_stations(vap5), 1);
     ttb_assert_int_eq(wld_ad_getNrActiveAffiliatedSta(pAD), 0);
@@ -287,6 +291,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceAddZone(500, "apRssi");
     sahTraceAddZone(500, "utilMon");
     sahTraceAddZone(500, "pcb_timer");
+    sahTraceAddZone(500, "ap");
 
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_getStats),
