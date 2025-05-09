@@ -1695,6 +1695,7 @@ struct WLD_RADIO {
 
     wld_mbssidAdvertisement_mode_m suppMbssidAdsModes;  /* supported MBSSID Advertisement modes */
     wld_mbssidAdvertisement_mode_e mbssidAdsMode;       /* operating MBSSID Advertisement mode. */
+    amxp_timer_t* setMaxNumStaTimer;                    /* Timer used to delay the setMaxNumStation task */
 };
 
 typedef struct {

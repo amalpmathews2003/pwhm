@@ -145,6 +145,7 @@ void wifiGen_rad_destroyHook(T_Radio* pRad) {
         close(pRad->wlRadio_SK);
         pRad->wlRadio_SK = -1;
     }
+    amxp_timer_delete(&pRad->setMaxNumStaTimer);
 }
 
 static void s_updateNrAntenna(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWiphyInfo) {

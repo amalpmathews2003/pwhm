@@ -735,6 +735,8 @@ swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
         SAH_TRACEZ_NOTICE(ME, "%s: failed restore wps pin session", pAP->alias);
     }
 
+    wld_ap_hostapd_updateMaxNbrSta(pAP);
+
     return SWL_RC_OK;
 }
 

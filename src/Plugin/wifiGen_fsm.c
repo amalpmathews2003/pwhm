@@ -719,6 +719,7 @@ static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
 static bool s_doSyncAp(T_AccessPoint* pAP, T_Radio* pRad _UNUSED) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), true, ME, "%s: wpaCtrl disconnected", pAP->alias);
+    wld_ap_hostapd_updateMaxNbrSta(pAP);
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setNoSecParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
     s_schedNextAction(rc, pAP, pRad);
@@ -1211,6 +1212,22 @@ static wld_event_callback_t s_onRadioChange = {
     .callback = (wld_event_callback_fun) s_radioChange,
 };
 
+static void s_updateMaxStations(amxp_timer_t* timer, void* priv) {
+    T_Radio* pRad = (T_Radio*) priv;
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    wld_rad_hostapd_updateMaxNumStations(pRad);
+    amxp_timer_delete(&timer);
+    pRad->setMaxNumStaTimer = NULL;
+}
+
+static void s_delayedSetMaxStationsTask(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    if(pRad->setMaxNumStaTimer == NULL) {
+        amxp_timer_new(&pRad->setMaxNumStaTimer, s_updateMaxStations, pRad);
+    }
+    amxp_timer_start(pRad->setMaxNumStaTimer, 1000);
+}
+
 static void s_stationChange(wld_ad_changeEvent_t* event) {
     ASSERT_NOT_NULL(event, , ME, "NULL");
     T_AccessPoint* pAP = event->vap;
@@ -1219,8 +1236,7 @@ static void s_stationChange(wld_ad_changeEvent_t* event) {
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_EQUALS(pRad->vendor->fsmMngr, &mngr, , ME, "%s: radio managed by vendor specific FSM", pRad->Name);
     if((event->changeType == WLD_AD_CHANGE_EVENT_ASSOC) || (event->changeType == WLD_AD_CHANGE_EVENT_DISASSOC)) {
-        setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_AP);
-        wld_rad_doCommitIfUnblocked(pRad);
+        s_delayedSetMaxStationsTask(pRad);
     }
 }
 
