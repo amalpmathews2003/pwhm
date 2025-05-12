@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.17.2 - 2025-05-12(14:06:21 +0000)
+
+### Other
+
+- : WiFi process is hanging when ZWDFS is launched
+
 ## Release sah-next_v7.17.1 - 2025-05-08(10:00:29 +0000)
 
 ### Other
