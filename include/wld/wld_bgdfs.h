@@ -64,6 +64,7 @@
 #define _WLD_BGDFS_H_
 
 #include "wld_types.h"
+#include "wld/Utils/wld_util_blockOper.h"
 
 typedef struct {
     swl_channel_t channel;
@@ -141,6 +142,10 @@ typedef struct wld_rad_bgdfs_config {
      * Estimated time clear would take
      */
     uint32_t estimatedClearTime;
+    /**
+     * Operation used to track blocking sources
+     */
+    wld_util_blockOper_t blockOper;
 } wld_rad_bgdfs_config_t;
 
 typedef struct {
@@ -185,5 +190,10 @@ bool wld_bgdfs_isRunning(T_Radio* pRad);
 
 /* Sync datamodel object with local values */
 void wld_bgdfs_update(T_Radio* pRad, amxd_trans_t* trans);
+
+/**
+ * Returns whether background DFS is currently disabled on this radio
+ */
+bool wld_bgdfs_isDisabled(T_Radio* pRad);
 
 #endif /* _WLD_BGDFS_H_ */

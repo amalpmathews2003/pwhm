@@ -2182,6 +2182,30 @@ define probelist_t{
 				 * Stop any active BgDFS clearing. This can be both due to manual trigger, as automatic trigger.
 				 */
 				void stopBgDfsClear();
+
+				/**
+				 * Indicates whether background DFS is currently blocked.
+				 */
+				%read-only bool BgDfsBlocked {
+					default false;
+				}
+
+				/**
+				 * Comma-separated list of components that have blocked background DFS.
+				 */
+				%read-only string BgDfsBlockedBy {
+					default "";
+				}
+
+				/**
+				 * Block background DFS based on the specified component name.
+				 */
+				void block(%mandatory string name);
+
+				/**
+				 * Unblock background DFS based on the specified component name.
+				 */
+				void unblock(%mandatory string name);
 			}
 
 		}

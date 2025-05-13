@@ -66,6 +66,19 @@
 #include <cmocka.h>
 #include "wld.h"
 #include "wld_bgdfs.h"
+#include "../testHelper/wld_th_dm.h"
+
+static wld_th_dm_t dm;
+
+static int setup_suite(void** state _UNUSED) {
+    assert_true(wld_th_dm_init(&dm));
+    return 0;
+}
+
+static int teardown_suite(void** state _UNUSED) {
+    wld_th_dm_destroy(&dm);
+    return 0;
+}
 
 T_Radio pRad;
 wld_startBgdfsArgs_t args;
@@ -420,6 +433,103 @@ static void test_setAvailableSucceeds(void** state _UNUSED) {
     assert_true(pRad.bgdfs_config.available);
 }
 
+static void test_blockOperBlockUnblock(void** state _UNUSED) {
+    T_Radio* pRad = dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].rad;
+    assert_non_null(pRad);
+    assert_non_null(pRad->pFA);
+
+    memcpy(&functionTable, pRad->pFA, sizeof(struct S_CWLD_FUNC_TABLE));
+    functionTable.mfn_wrad_bgdfs_stop = mfn_wrad_bgdfs_stop_returnsOK;
+    pRad->pFA = &functionTable;
+
+    pRad->bgdfs_config.enable = true;
+    pRad->bgdfs_config.available = true;
+    pRad->bgdfs_config.channel = 20;
+
+    ttb_object_t* bgDfsObj = ttb_object_getChildObject(dm.bandList[SWL_FREQ_BAND_EXT_5GHZ].radObj, "ChannelMgt.BgDfs");
+    assert_non_null(bgDfsObj);
+
+    // Valid block operations
+    const char* blockServices[] = { "svc1", "svc2", "svc3", "svc2" };
+    const char* blockExpected[] = { "svc1", "svc1,svc2", "svc1,svc2,svc3", "svc1,svc2,svc3" };
+    const uint8_t blockCounts[] = { 1, 2, 3, 3 };
+
+    for(size_t i = 0; i < 4; i++) {
+        ttb_var_t* args = ttb_object_createArgs();
+        assert_non_null(args);
+        amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
+        amxc_var_add_key(cstring_t, args, "name", blockServices[i]);
+
+        ttb_var_t* replyVar = NULL;
+        ttb_reply_t* reply = ttb_object_callFun(NULL, bgDfsObj, "block", &args, &replyVar);
+        assert_non_null(reply);
+        assert_true(ttb_object_replySuccess(reply));
+        ttb_object_cleanReply(&reply, &replyVar);
+
+        char* blockedBy = swl_typeCharPtr_fromObjectParamDef(bgDfsObj, "BgDfsBlockedBy", NULL);
+        assert_non_null(blockedBy);
+        assert_string_equal(blockedBy, blockExpected[i]);
+        assert_true(wld_util_blockOper_hasBlocker(&pRad->bgdfs_config.blockOper, blockServices[i]));
+        assert_int_equal(pRad->bgdfs_config.blockOper.blockerCount, blockCounts[i]);
+        free(blockedBy);
+    }
+
+    // Invalid block operations
+    const char* invalidBlockers[] = { "", "inv,alid" };
+    const char* lastExpectedBlockedBy = "svc1,svc2,svc3";
+    const uint8_t lastExpectedCount = 3;
+
+    for(size_t i = 0; i < 2; i++) {
+        ttb_var_t* args = ttb_object_createArgs();
+        assert_non_null(args);
+        amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
+        amxc_var_add_key(cstring_t, args, "name", invalidBlockers[i]);
+
+        ttb_var_t* replyVar = NULL;
+        ttb_reply_t* reply = ttb_object_callFun(NULL, bgDfsObj, "block", &args, &replyVar);
+        assert_non_null(reply);
+        assert_false(ttb_object_replySuccess(reply));
+        ttb_object_cleanReply(&reply, &replyVar);
+
+        char* blockedBy = swl_typeCharPtr_fromObjectParamDef(bgDfsObj, "BgDfsBlockedBy", NULL);
+        assert_non_null(blockedBy);
+        assert_string_equal(blockedBy, lastExpectedBlockedBy);
+        assert_false(wld_util_blockOper_hasBlocker(&pRad->bgdfs_config.blockOper, invalidBlockers[i]));
+        assert_int_equal(pRad->bgdfs_config.blockOper.blockerCount, lastExpectedCount);
+        free(blockedBy);
+    }
+
+    bool blocked = swl_typeBool_fromObjectParamDef(bgDfsObj, "BgDfsBlocked", NULL);
+    assert_true(blocked);
+
+    // Unblock operations
+    const char* unblockServices[] = { "svc2", "svc1", "svc3" };
+    const char* unblockExpected[] = { "svc1,svc3", "svc3", "" };
+    const uint8_t unblockCounts[] = { 2, 1, 0 };
+
+    for(size_t i = 0; i < 3; i++) {
+        ttb_var_t* args = ttb_object_createArgs();
+        assert_non_null(args);
+        amxc_var_set_type(args, AMXC_VAR_ID_HTABLE);
+        amxc_var_add_key(cstring_t, args, "name", unblockServices[i]);
+
+        ttb_var_t* replyVar = NULL;
+        ttb_reply_t* reply = ttb_object_callFun(NULL, bgDfsObj, "unblock", &args, &replyVar);
+        assert_non_null(reply);
+        assert_true(ttb_object_replySuccess(reply));
+        ttb_object_cleanReply(&reply, &replyVar);
+
+        char* blockedBy = swl_typeCharPtr_fromObjectParamDef(bgDfsObj, "BgDfsBlockedBy", NULL);
+        assert_non_null(blockedBy);
+        assert_string_equal(blockedBy, unblockExpected[i]);
+        assert_false(wld_util_blockOper_hasBlocker(&pRad->bgdfs_config.blockOper, unblockServices[i]));
+        assert_int_equal(pRad->bgdfs_config.blockOper.blockerCount, unblockCounts[i]);
+        free(blockedBy);
+    }
+
+    blocked = swl_typeBool_fromObjectParamDef(bgDfsObj, "BgDfsBlocked", NULL);
+    assert_false(blocked);
+}
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceOpen(__FILE__, TRACE_TYPE_STDERR);
@@ -455,8 +565,9 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_StopClearFailsIfExtFnFails),
         cmocka_unit_test(test_setAvailableFailsIfBgDfsIsRunningAndAvailableFalse),
         cmocka_unit_test(test_setAvailableSucceeds),
+        cmocka_unit_test(test_blockOperBlockUnblock),
     };
-    int rc = cmocka_run_group_tests(tests, NULL, NULL);
+    int rc = cmocka_run_group_tests(tests, setup_suite, teardown_suite);
     sahTraceClose();
     return rc;
 }

@@ -341,6 +341,12 @@ swl_rc_ne wld_bgdfs_startExt(T_Radio* pRad, wld_startBgdfsArgs_t* args) {
     return ret;
 }
 
+bool wld_bgdfs_isDisabled(T_Radio* pRad) {
+    ASSERTS_NOT_NULL(pRad, true, ME, "NULL");
+
+    return (pRad->bgdfs_config.status == BGDFS_STATUS_OFF) ||
+           wld_util_blockOper_hasAnyBlocker(&pRad->bgdfs_config.blockOper);
+}
 
 static void s_setEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
@@ -493,5 +499,68 @@ amxd_status_t _stopBgDfsClear(amxd_object_t* object,
 
     SAH_TRACEZ_OUT(ME);
 
+    return status;
+}
+
+static void s_commitBgDfsBlockState(T_Radio* pRad, amxd_object_t* object) {
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(object, , ME, "NULL");
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(object, &trans, , ME, "Transaction init failure");
+
+    amxd_trans_set_bool(&trans, "BgDfsBlocked", wld_util_blockOper_hasAnyBlocker(&pRad->bgdfs_config.blockOper));
+    amxd_trans_set_cstring_t(&trans, "BgDfsBlockedBy", wld_util_blockOper_getBlockers(&pRad->bgdfs_config.blockOper));
+
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "Transaction apply failure");
+}
+
+amxd_status_t _BgDfs_block(amxd_object_t* object,
+                           amxd_function_t* func _UNUSED,
+                           amxc_var_t* args,
+                           amxc_var_t* retval _UNUSED) {
+
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
+    const char* name = GET_CHAR(args, "name");
+
+    swl_rc_ne rc = wld_util_blockOper_addBlocker(&pR->bgdfs_config.blockOper, name);
+    ASSERT_EQUALS(rc, SWL_RC_OK, amxd_status_unknown_error, ME, "'%s' invalid blocker name", name);
+
+    if(wld_bgdfs_isRunning(pR)) {
+        if(bgdfs_stopClear(pR) != amxd_status_ok) {
+            SAH_TRACEZ_WARNING(ME, "Fail to stop running BgDFS");
+        }
+    }
+
+    s_commitBgDfsBlockState(pR, object);
+
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
+amxd_status_t _BgDfs_unblock(amxd_object_t* object,
+                             amxd_function_t* func _UNUSED,
+                             amxc_var_t* args,
+                             amxc_var_t* retval _UNUSED) {
+
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = amxd_status_ok;
+
+    T_Radio* pR = wld_rad_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
+    const char* name = GET_CHAR(args, "name");
+    ASSERT_FALSE(swl_str_isEmpty(name), amxd_status_unknown_error, ME, "Empty name");
+
+    swl_rc_ne rc = wld_util_blockOper_blockRemove(&pR->bgdfs_config.blockOper, name);
+    ASSERT_EQUALS(rc, SWL_RC_OK, amxd_status_unknown_error, ME, "'%s' was not in blocker list", name);
+
+    s_commitBgDfsBlockState(pR, object);
+
+    SAH_TRACEZ_OUT(ME);
     return status;
 }

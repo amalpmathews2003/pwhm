@@ -73,6 +73,7 @@
 #include "wld/wld_rad_nl80211.h"
 #include "wld/wld_rad_hostapd_api.h"
 #include "wld/wld_eventing.h"
+#include "wld/wld_bgdfs.h"
 #include "wifiGen_rad.h"
 #include "wifiGen_hapd.h"
 #include "wifiGen_events.h"
@@ -852,7 +853,7 @@ static swl_rc_ne s_checkAndStartZwDfs(T_Radio* pRad, bool direct) {
        !wld_rad_isUpExt(pRad) ||
        wld_rad_hasRunningEndpoint(pRad) ||
        (wld_chanmgt_getCurBw(pRad) > pRad->maxChannelBandwidth) ||
-       (pRad->bgdfs_config.status == BGDFS_STATUS_OFF)) {
+       wld_bgdfs_isDisabled(pRad)) {
         return SWL_RC_DONE;
     }
     if(wld_channel_is_band_passive(pRad->targetChanspec.chanspec)) {
