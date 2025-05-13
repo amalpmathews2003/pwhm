@@ -432,6 +432,8 @@ static bool s_finalizeApCreation(T_AccessPoint* pAP) {
     wld_mld_registerLink(pSSID, pSSID->mldUnit);
     s_sendChangeEvent(pAP, WLD_VAP_CHANGE_EVENT_CREATE_FINAL, NULL);
 
+    pSSID->initDone = true;
+
     //delay sync AP and SSID Dm after all conf has been loaded
     swla_delayExec_add((swla_delayExecFun_cbf) s_syncApSSIDDm, pAP);
 
