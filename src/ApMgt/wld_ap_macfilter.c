@@ -183,10 +183,10 @@ static void s_syncMACFiltering(amxd_object_t* object) {
     swl_mask_m flag = SET;
     if((pAP->MF_Mode != APMFM_OFF) || pAP->MF_TempBlacklistEnable) {
         int prev_WPS_Enable = pAP->WPS_Enable;
-        if(!pAP->WPS_CertMode && (pAP->MF_Mode == APMFM_WHITELIST)) {
-            /* We can't have WPS enabled if MAC filtering is set on white list. Disable it. */
+        if(!pAP->WPS_CertMode && ((pAP->MF_Mode == APMFM_WHITELIST) || (pAP->MF_Mode == APMFM_BLACKLIST))) {
+            /* We can't have WPS enabled if MAC filtering is set on white/black list. Disable it. */
             /* For Certification we keep WPS active */
-            SAH_TRACEZ_WARNING(ME, "%s: Force disabling WPS because of enabled MF mode WhiteList", pAP->alias);
+            SAH_TRACEZ_WARNING(ME, "%s: Force disabling WPS because of enabled MF mode WhiteList/BlackList", pAP->alias);
             pAP->WPS_Enable = 0;
             wld_ap_doWpsSync(pAP);
         }
