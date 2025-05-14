@@ -611,18 +611,38 @@ static void s_mgtFrameEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
 
 static void s_probeReqEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     // Example: <3>RX_PROBE_REQUEST sa=xx:xx:xx:xx:xx:xx signal=-50 buf=aabbcc
-    char data[swl_str_len(params) + 1];
-    memset(data, 0, sizeof(data));
-    size_t len = wld_wpaCtrl_getValueStr(params, "buf", data, sizeof(data));
-    ASSERTS_TRUE(len > 1, , ME, "%s: frame buf field empty", pInterface->name);
-    size_t binLen = len / 2;
-    swl_bit8_t binData[binLen];
-    bool success = swl_hex_toBytesSep(binData, sizeof(binData), data, len, 0, &binLen);
-    ASSERT_TRUE(success, , ME, "%s: frame HEX CONVERT FAIL", pInterface->name);
     wld_mgmtFrame_t mgmtFrame;
     memset(&mgmtFrame, 0, sizeof(wld_mgmtFrame_t));
-    mgmtFrame.frame = swl_80211_getMgmtFrame(binData, binLen);
-    ASSERT_NOT_NULL(mgmtFrame.frame, , ME, "%s: invalid mgmt frame (length:%zu)", pInterface->name, binLen);
+
+    // First add the station MACAddress
+    swl_macChar_t staAddr;
+    memset(&staAddr, 0, sizeof(swl_macChar_t));
+    size_t len = wld_wpaCtrl_getValueStr(params, "sa", staAddr.cMac, sizeof(staAddr.cMac));
+    ASSERT_TRUE(len > 1, , ME, "Invalid sa");
+
+    // Decode buf if present
+    char data[swl_str_len(params) + 1];
+    memset(data, 0, sizeof(data));
+    len = wld_wpaCtrl_getValueStr(params, "buf", data, sizeof(data));
+    size_t binLen = (len / 2) + (len % 2);
+    swl_bit8_t binData[binLen + 1];
+    memset(binData, 0, sizeof(binData));
+    if(len > 1) {
+        bool success = swl_hex_toBytesSep(binData, sizeof(binData), data, len, 0, &binLen);
+        ASSERT_TRUE(success, , ME, "%s: frame HEX CONVERT FAIL", pInterface->name);
+        mgmtFrame.frame = swl_80211_getMgmtFrame(binData, binLen);
+        ASSERT_NOT_NULL(mgmtFrame.frame, , ME, "%s: invalid mgmt frame (length:%zu)", pInterface->name, binLen);
+    }
+
+    swl_80211_mgmtFrame_t frame;
+    memset(&frame, 0, sizeof(frame));
+    // If buf is not present, create an fake probeReq frame hdr, with only the transmitter mac
+    if(mgmtFrame.frame == NULL) {
+        frame.fc.subType = (SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST >> 4);
+        swl_typeMacBin_fromChar(&frame.transmitter, staAddr.cMac);
+        mgmtFrame.frame = &frame;
+    }
+
     mgmtFrame.rssi = wld_wpaCtrl_getValueInt(params, "signal");
     SAH_TRACEZ_INFO(ME, "%s RX_PROBE_REQUEST rssi=%d", pInterface->name, mgmtFrame.rssi);
     CALL_INTF(pInterface, fProbeReqReceivedCb, &mgmtFrame, binLen, data);
