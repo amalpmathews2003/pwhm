@@ -641,6 +641,7 @@ static void s_probeReqEvt(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSE
         frame.fc.subType = (SWL_80211_MGT_FRAME_TYPE_PROBE_REQUEST >> 4);
         swl_typeMacBin_fromChar(&frame.transmitter, staAddr.cMac);
         mgmtFrame.frame = &frame;
+        binLen = SWL_80211_MGMT_FRAME_HEADER_LEN;
     }
 
     mgmtFrame.rssi = wld_wpaCtrl_getValueInt(params, "signal");
