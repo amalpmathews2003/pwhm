@@ -404,20 +404,37 @@ swl_rc_ne wld_secDmnGrp_setEvtHandlers(wld_secDmnGrp_t* pSecDmnGrp, wld_secDmnGr
     return SWL_RC_OK;
 }
 
+static void s_refreshStartableMembers(wld_secDmnGrp_t* pSecDmnGrp) {
+    ASSERTS_NOT_NULL(pSecDmnGrp, , ME, "NULL");
+    ASSERTS_NOT_NULL(pSecDmnGrp->handlers.isMemberStartableCb, , ME, "No handler");
+    amxc_llist_for_each(it, &pSecDmnGrp->members) {
+        wld_secDmnGrp_member_t* member = amxc_container_of(it, wld_secDmnGrp_member_t, it);
+        member->isStartable = pSecDmnGrp->handlers.isMemberStartableCb(pSecDmnGrp, pSecDmnGrp->userData, member->pSecDmn);
+    }
+}
+
 static swl_rc_ne s_startGrp(wld_secDmnGrp_t* pSecDmnGrp) {
     ASSERT_NOT_NULL(pSecDmnGrp, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pSecDmnGrp->dmnProcess, SWL_RC_INVALID_PARAM, ME, "NULL");
     SAH_TRACEZ_INFO(ME, "check group %s start conditions", pSecDmnGrp->name);
+    s_refreshStartableMembers(pSecDmnGrp);
+    uint32_t nbMStartable = s_countGrpMembersStartable(pSecDmnGrp);
+    uint32_t nbMStarted = s_countGrpMembersInState(pSecDmnGrp, WLD_SECDMN_STATE_START);
     if(wld_dmn_isRunning(pSecDmnGrp->dmnProcess)) {
+        if(!nbMStartable) {
+            SAH_TRACEZ_WARNING(ME, "group %s proc running while it must not: members (started:%d/startable:%d) => force stop",
+                               pSecDmnGrp->name, nbMStarted, nbMStartable);
+            s_stopGrp(pSecDmnGrp, true);
+            return SWL_RC_INVALID_STATE;
+        }
         SAH_TRACEZ_INFO(ME, "group %s already started", pSecDmnGrp->name);
         if(!pSecDmnGrp->isRunning) {
             s_onStartProcCb(pSecDmnGrp->dmnProcess, pSecDmnGrp);
         }
         return SWL_RC_DONE;
     }
-    uint32_t nbMStarted = s_countGrpMembersInState(pSecDmnGrp, WLD_SECDMN_STATE_START);
+    ASSERTW_TRUE(nbMStartable > 0, SWL_RC_INVALID_STATE, ME, "group %s has no startable members", pSecDmnGrp->name);
     ASSERTI_TRUE(nbMStarted > 0, SWL_RC_ERROR, ME, "group %s has no started members", pSecDmnGrp->name);
-    uint32_t nbMStartable = s_countGrpMembersStartable(pSecDmnGrp);
     if(nbMStarted >= nbMStartable) {
         SAH_TRACEZ_INFO(ME, "all %d startable members of group %s are started, go ahead", nbMStarted, pSecDmnGrp->name);
         bool ret = wld_dmn_startDeamon(pSecDmnGrp->dmnProcess);
@@ -553,15 +570,6 @@ static void s_processGrpAction(amxp_timer_t* timer _UNUSED, void* userdata) {
     SAH_TRACEZ_INFO(ME, "process group %s actions", pSecDmnGrp->name);
     if(s_startGrp(pSecDmnGrp) == SWL_RC_DONE) {
         s_tryGrpRtmAction(pSecDmnGrp, WLD_SECDMN_RTM_ACTION_RESTART);
-    }
-}
-
-static void s_refreshStartableMembers(wld_secDmnGrp_t* pSecDmnGrp) {
-    ASSERTS_NOT_NULL(pSecDmnGrp, , ME, "NULL");
-    ASSERTS_NOT_NULL(pSecDmnGrp->handlers.isMemberStartableCb, , ME, "No handler");
-    amxc_llist_for_each(it, &pSecDmnGrp->members) {
-        wld_secDmnGrp_member_t* member = amxc_container_of(it, wld_secDmnGrp_member_t, it);
-        member->isStartable = pSecDmnGrp->handlers.isMemberStartableCb(pSecDmnGrp, pSecDmnGrp->userData, member->pSecDmn);
     }
 }
 

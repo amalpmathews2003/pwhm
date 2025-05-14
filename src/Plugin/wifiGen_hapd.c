@@ -200,7 +200,9 @@ static void s_restoreMainAp(T_AccessPoint* pMainAP) {
 }
 
 void wifiGen_hapd_restoreMainIface(T_Radio* pRad) {
-    wifiGen_hapd_writeConfig(pRad);
+    ASSERT_NOT_NULL(pRad, , ME, "NULL");
+    ASSERT_NOT_NULL(pRad->hostapd, , ME, "NULL");
+    SWL_CALL(pRad->hostapd->handlers.writeCfgCb, pRad->hostapd, pRad);
     s_restoreMainAp(wld_rad_hostapd_getCfgMainVap(pRad));
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
@@ -231,7 +233,7 @@ static void s_restartHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     wld_secDmn_restartCb(pSecDmn);
 }
 
-static void s_onStopHapdCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
+static void s_onStopHapdCb(wld_secDmn_t* pSecDmn, void* userdata) {
     T_Radio* pRad = (T_Radio*) userdata;
     ASSERT_NOT_NULL(pRad, , ME, "NULL");
     const char* mainIface = s_getMainIface(pRad);
@@ -241,9 +243,22 @@ static void s_onStopHapdCb(wld_secDmn_t* pSecDmn _UNUSED, void* userdata) {
        (pExitInfo->exitStatus == HOSTAPD_EXIT_REASON_LOAD_FAIL)) {
         SAH_TRACEZ_ERROR(ME, "%s: invalid hostapd configuration", mainIface);
     }
-    wld_rad_updateState(pRad, true);
+
+    //remove previously used server sockets after hostapd stopped
+    //to prevent any confusion on next startup
+    wld_wpaCtrlMngr_t* pMgr = wld_secDmn_getWpaCtrlMgr(pSecDmn);
+    for(uint32_t i = 0; i < wld_wpaCtrlMngr_countInterfaces(pMgr); i++) {
+        wld_wpaCtrlInterface_t* pIface = wld_wpaCtrlMngr_getInterface(pMgr, i);
+        const char* pIfacePath = wld_wpaCtrlInterface_getPath(pIface);
+        if(wld_wpaCtrl_checkSockPath(pIfacePath)) {
+            SAH_TRACEZ_INFO(ME, "%s: remove wpactrl srv sock: %s", mainIface, pIfacePath);
+            unlink(pIfacePath);
+        }
+    }
+
     //finalize hapd cleanup
     wifiGen_hapd_stopDaemon(pRad);
+    wld_rad_updateState(pRad, true);
     //restore main iface if removed by hostapd
     wifiGen_hapd_restoreMainIface(pRad);
 }
@@ -295,7 +310,7 @@ static bool s_stopHapdCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
     return ret;
 }
 
-static void s_initHapdDynCfgParamSupp(T_Radio* pRad) {
+void wifiGen_hapd_initDynCfgParamSupp(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, , ME, "NULL");
     ASSERTS_NOT_NULL(pRad->hostapd, , ME, "NULL");
     /*
@@ -369,7 +384,6 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
     SAH_TRACEZ_WARNING(ME, "%s: Stop hostapd", pRad->Name);
     swl_rc_ne rc = wld_secDmn_stop(pRad->hostapd);
-    ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
     T_AccessPoint* pAP = NULL;
     wld_rad_forEachAp(pAP, pRad) {
         if(pAP->pSSID) {
@@ -382,6 +396,7 @@ swl_rc_ne wifiGen_hapd_stopDaemon(T_Radio* pRad) {
             wld_linuxIfUtils_setState(wld_rad_getSocket(pRad), pAP->alias, 0);
         }
     }
+    ASSERTI_FALSE(rc < SWL_RC_OK, rc, ME, "%s: hostapd not running", pRad->Name);
     return rc;
 }
 
@@ -664,7 +679,6 @@ swl_rc_ne wifiGen_hapd_initGlobDmnCap(T_Radio* pRad) {
             gHapd->globalDmnSupported = SWL_TRL_TRUE;
         }
     }
-    s_initHapdDynCfgParamSupp(pRad);
     SAH_TRACEZ_INFO(ME, "%s: glob hapd %s supp:%d, req:%d", pRad->Name, pRad->vendor->name, gHapd->globalDmnSupported, gHapd->globalDmnRequired);
     return SWL_RC_OK;
 }

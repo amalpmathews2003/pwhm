@@ -318,16 +318,19 @@ bool wld_dmn_stopDeamon(wld_process_t* dmn_process) {
 
     ASSERT_NOT_NULL(p, false, ME, "NULL");
     ASSERT_NOT_NULL(name, false, ME, "NULL");
-    ASSERTI_TRUE(amxp_subproc_is_running(p->proc), true, ME, "Stopped %s", name);
+    if(amxp_subproc_is_running(p->proc)) {
+        SAH_TRACEZ_INFO(ME, "stopping up %s", dmn_process->cmd);
 
-    SAH_TRACEZ_INFO(ME, "stopping up %s", dmn_process->cmd);
+        amxp_slot_disconnect_with_priv(amxp_subproc_get_sigmngr(dmn_process->process->proc),
+                                       s_stopHandler, dmn_process);
+        amxp_proc_ctrl_stop(p);
+    } else {
+        SAH_TRACEZ_INFO(ME, "stop crashed daemon %s", dmn_process->cmd);
+    }
 
     amxp_timer_stop(dmn_process->restart_timer);
 
-    amxp_slot_disconnect_with_priv(amxp_subproc_get_sigmngr(dmn_process->process->proc),
-                                   s_stopHandler, dmn_process);
 
-    amxp_proc_ctrl_stop(p);
 
     dmn_process->status = WLD_DAEMON_STATE_DOWN;
     dmn_process->enabled = false;
