@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.17.6 - 2025-05-15(13:24:59 +0000)
+
+### Other
+
+- Add ProbeRequest event with RSSI only
+
 ## Release sah-next_v7.17.5 - 2025-05-15(10:24:28 +0000)
 
 ### Other
