@@ -93,6 +93,7 @@ static void s_setEndpointStatus(T_EndPoint* pEP,
                                 wld_epConnectionStatus_e connectionStatus,
                                 wld_epError_e error);
 static void s_setProfileStatus(T_EndPointProfile* profile);
+static void s_setMultiApInfo(T_EndPoint* pEP);
 static void endpoint_wps_pbc_delayed_time_handler(amxp_timer_t* timer, void* userdata);
 static swl_rc_ne endpoint_wps_start(T_EndPoint* pEP, uint64_t call_id, amxc_var_t* args);
 static void endpoint_reconnect_handler(amxp_timer_t* timer, void* userdata);
@@ -206,6 +207,20 @@ static void s_setMultiAPEnable_pwf(void* priv _UNUSED, amxd_object_t* object, am
     pEP->multiAPEnable = multiAPEnable;
     pEP->pFA->mfn_wendpoint_multiap_enable(pEP);
     wld_autoCommitMgr_notifyEpEdit(pEP);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+static void s_setMultiAPProfile_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+    SAH_TRACEZ_IN(ME);
+
+    T_EndPoint* pEP = wld_ep_fromObj(object);
+    ASSERT_NOT_NULL(pEP, , ME, "INVALID");
+
+    uint8_t multiAPProfile = amxc_var_dyncast(uint8_t, newValue);
+    ASSERTS_NOT_EQUALS(pEP->multiAPProfile, multiAPProfile, , ME, "EQUALS");
+    pEP->multiAPProfile = multiAPProfile;
+    pEP->pFA->mfn_wendpoint_update(pEP, SET);
 
     SAH_TRACEZ_OUT(ME);
 }
@@ -1303,6 +1318,7 @@ void wld_endpoint_setConnectionStatus(T_EndPoint* pEP, wld_epConnectionStatus_e 
     int previousStatus = pEP->connectionStatus;
     s_setEndpointStatus(pEP, status, connectionStatus, error);
     s_setProfileStatus(pEP->currentProfile);
+    s_setMultiApInfo(pEP);
 
     if(!connected && wld_endpoint_isReady(pEP) && (mldRole != SWL_MLO_ROLE_AUXILIARY) && (connectionStatus != EPCS_PASSIVE)) {
         //We are not connected, but we should be. Start the reconnection timer.
@@ -1755,6 +1771,24 @@ static void s_setProfileStatus(T_EndPointProfile* profile) {
                                  cstr_EndPointProfile_status[profile->status]);
         ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "%s : trans apply failure", profile->alias);
     }
+}
+
+/**
+ * @brief s_setMultiApInfo
+ *
+ * Sets the MultiAPProfile and MultiAPVlanId fields of the endpoint in the datamodel.
+ *
+ * @param pEP The endpoint
+ */
+static void s_setMultiApInfo(T_EndPoint* pEP) {
+    ASSERTS_NOT_NULL(pEP, , ME, "NULL");
+    swl_typeUInt8_commitObjectParam(pEP->pBus, "MultiAPProfile", pEP->multiAPProfile);
+
+    /* on disconnection, vlan is no more relevant */
+    if(pEP->connectionStatus != EPCS_CONNECTED) {
+        pEP->multiAPVlanId = 0;
+    }
+    swl_typeUInt16_commitObjectParam(pEP->pBus, "MultiAPVlanId", pEP->multiAPVlanId);
 }
 
 /**
@@ -2473,6 +2507,7 @@ SWLA_DM_HDLRS(sEpDmHdlrs,
                   SWLA_DM_PARAM_HDLR("ReconnectDelay", s_setReconnectDelay_pwf),
                   SWLA_DM_PARAM_HDLR("ReconnectInterval", s_setReconnectInterval_pwf),
                   SWLA_DM_PARAM_HDLR("MultiAPEnable", s_setMultiAPEnable_pwf),
+                  SWLA_DM_PARAM_HDLR("MultiAPProfile", s_setMultiAPProfile_pwf),
                   SWLA_DM_PARAM_HDLR("ReconnectRadioToggleThreshold", s_setRadToggleThreshold_pwf),
                   SWLA_DM_PARAM_HDLR("ProfileReference", s_setProfileReference_pwf),
                   SWLA_DM_PARAM_HDLR("BridgeInterface", s_setBridgeInterface_pwf),
