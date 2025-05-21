@@ -31,6 +31,10 @@
         "Order": 2,
         "Param": "rw-n"
     },
+    "Device.WiFi.SSID.*.Enable": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
     "Device.WiFi.Radio.*.Channel": {
         "Order": 2,
         "Param": "rw-n"
