@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.17.8 - 2025-05-22(16:51:07 +0000)
+
+### Other
+
+- fix testRadio11be unit test
+- - do not sync all AP for each connect/disconnect
+
 ## Release sah-next_v7.17.7 - 2025-05-16(14:35:51 +0000)
 
 ### Other
