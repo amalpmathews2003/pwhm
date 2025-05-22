@@ -995,9 +995,6 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         bool tmp_bool = false;
         bool commit = false;
 
-        // For enable just update the state.
-        pAP->enable = amxd_object_get_bool(object, "Enable", NULL);
-
         tmp_bool = amxd_object_get_bool(object, "SSIDAdvertisementEnabled", NULL);
         if(pAP->SSIDAdvertisementEnabled != tmp_bool) {
             pAP->SSIDAdvertisementEnabled = tmp_bool;
