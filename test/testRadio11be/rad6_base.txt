@@ -59,7 +59,7 @@
     "DTIMPeriod": 3,
     "LowerLayers": "",
     "OperationalDataTransmitRates": "",
-    "ImplicitBeamFormingSupported": false,
+    "ImplicitBeamFormingSupported": true,
     "ActiveAntennaCtrl": -1,
     "AutoChannelSupported": false,
     "Index": 2,

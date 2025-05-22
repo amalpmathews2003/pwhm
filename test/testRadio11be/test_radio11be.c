@@ -187,6 +187,9 @@ static void test_radioStatus(void** state _UNUSED) {
     T_Radio* pRad2 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi0");
     T_Radio* pRad5 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi1");
     T_Radio* pRad6 = wld_th_radio_create(dm.ttbBus->bus_ctx, dm.mockVendor, "wifi2");
+    pRad2->implicitBeamFormingSupported = true;
+    pRad5->implicitBeamFormingSupported = true;
+    pRad6->implicitBeamFormingSupported = true;
 
     amxp_sigmngr_trigger_signal(&dm.ttbBus->dm.sigmngr, "app:start", NULL);
     ttb_mockTimer_goToFutureMs(10000);
@@ -217,7 +220,7 @@ static void test_radioStatus(void** state _UNUSED) {
 
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceSetLevel(TRACE_LEVEL_INFO);
-    sahTraceAddZone(TRACE_LEVEL_APP_INFO, "ssid");
+    sahTraceAddZone(sahTraceLevel(), "rad");
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_radioStatus),
     };
