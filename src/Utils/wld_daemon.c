@@ -274,6 +274,11 @@ bool wld_dmn_startDeamon(wld_process_t* dmn_process) {
         SAH_TRACEZ_ERROR(ME, "Failed to start %s dmn_process", dmn_process->cmd);
         return false;
     }
+
+    // Ensure previous stop handler registrations are removed before re-registering.
+    amxp_slot_disconnect_with_priv(amxp_subproc_get_sigmngr(dmn_process->process->proc),
+                                   s_stopHandler, dmn_process);
+    // Register the stop handler for the stop signal.
     amxp_slot_connect(amxp_subproc_get_sigmngr(dmn_process->process->proc),
                       "stop", NULL, s_stopHandler, dmn_process);
 
