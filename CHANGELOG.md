@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.0 - 2025-05-23(16:27:40 +0000)
+
+### Other
+
+- Add support for ZW_DFS block mechanism by components
+
 ## Release sah-next_v7.17.9 - 2025-05-23(08:54:16 +0000)
 
 ### Other
