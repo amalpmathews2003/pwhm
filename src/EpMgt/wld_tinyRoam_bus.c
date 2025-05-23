@@ -70,6 +70,10 @@
 #include "wld.h"
 #define ME "tyRoam"
 
+
+#define WLD_TINY_ROAM_DEFAULT_NR_TRIES 1
+#define WLD_TINY_ROAM_DEFAULT_TIMEOUT_SEC 60
+
 static void s_writeReply(amxc_var_t* retval, wld_tinyRoam_roamResult_e roamResult) {
     uint64_t call_id = amxc_var_dyncast(uint64_t, retval);
 
@@ -116,11 +120,18 @@ amxd_status_t _EndPoint_roamTo(amxd_object_t* objEp,
         SAH_TRACEZ_ERROR(ME, "%s bssid parameter missing or unparseable", ep->Name);
         return amxd_status_unknown_error;
     }
-    // parse parameter "tries"
-    int32_t maxNumberOfAttempts = GET_INT32(args, "tries");
 
-    // parse parameter "timeoutInSec"
-    int32_t timeoutInSec = GET_INT32(args, "timeoutInSec");
+    amxc_var_t* triesVar = amxc_var_get_key(args, "tries", AMXC_VAR_FLAG_DEFAULT);
+    int32_t maxNumberOfAttempts = WLD_TINY_ROAM_DEFAULT_NR_TRIES;
+    if(triesVar != NULL) {
+        maxNumberOfAttempts = amxc_var_get_int32_t(triesVar);
+    }
+
+    amxc_var_t* timeoutInSecVar = amxc_var_get_key(args, "timeoutInSec", AMXC_VAR_FLAG_DEFAULT);
+    int32_t timeoutInSec = WLD_TINY_ROAM_DEFAULT_TIMEOUT_SEC;
+    if(triesVar != NULL) {
+        timeoutInSec = amxc_var_get_int32_t(timeoutInSecVar);
+    }
 
     // call C API
     ok = wld_tinyRoam_roamTo(ep, &bssid, maxNumberOfAttempts, timeoutInSec, s_roamEndedCb, retval);
