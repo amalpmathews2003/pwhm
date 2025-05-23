@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.17.9 - 2025-05-23(08:54:16 +0000)
+
+### Other
+
+- - Avoid desync between AP enable and SSID enable
+
 ## Release sah-next_v7.17.8 - 2025-05-22(16:51:07 +0000)
 
 ### Other
