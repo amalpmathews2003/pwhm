@@ -81,6 +81,7 @@
 	value for SSID, or with a given value for BSSID. </p>
 	*/
 	%persistent object SSID[]{
+		counted with SSIDNumberOfEntries;
 		on action add-inst call wld_ssid_addInstance_oaf;
 		on action destroy call wld_ssid_delInstance_odf;
 		on event "*" call wld_ssid_setConf_ocf;	

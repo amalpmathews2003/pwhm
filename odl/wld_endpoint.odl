@@ -88,6 +88,7 @@
 		entry in this table can exist with a given value for
 		SSIDReference.</p>*/
 	%persistent object EndPoint[]{
+		counted with EndPointNumberOfEntries;
 		on action add-inst call wld_ep_addInstance_oaf;
 		on action destroy call wld_ep_delInstance_odf;
 		on event "*" call wld_ep_setConf_ocf;
