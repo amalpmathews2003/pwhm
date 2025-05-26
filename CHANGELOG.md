@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.3 - 2025-05-26(08:44:08 +0000)
+
+### Other
+
+- [import] Set multi_ap_profile to the wpa_supplicant config
+
 ## Release sah-next_v7.18.2 - 2025-05-26(08:05:55 +0000)
 
 ### Other
