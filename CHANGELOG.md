@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.2 - 2025-05-26(08:05:55 +0000)
+
+### Other
+
+- [import] PWHM: wld_dmn_startDeamon: Prevent stacking of stop signal handlers during daemon restarts
+
 ## Release sah-next_v7.18.1 - 2025-05-26(07:48:27 +0000)
 
 ### Other
