@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.1 - 2025-05-26(07:48:27 +0000)
+
+### Other
+
+- - AP Roaming does not work
+
 ## Release sah-next_v7.18.0 - 2025-05-23(16:27:40 +0000)
 
 ### Other
