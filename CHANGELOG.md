@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.4 - 2025-05-27(12:13:02 +0000)
+
+### Other
+
+- - The disassociation management frame is always reported as being transmitted over the primary link
+
 ## Release sah-next_v7.18.3 - 2025-05-26(08:44:08 +0000)
 
 ### Other
