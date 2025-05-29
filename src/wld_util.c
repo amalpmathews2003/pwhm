@@ -359,7 +359,7 @@ bool __WLD_BUG_ON(bool bug, const char* condition _UNUSED, const char* function 
         return false;
     }
 
-    SAH_TRACEZ_ERROR(ME, "WLD_BUG_ON(\"%s\") in function %s() (%s:%d)\n",
+    SAH_TRACEZ_ERROR(ME, "WLD_BUG_ON(\"%s\") in function %s() (%s:%d)",
                      condition, function, file, line);
     return true;
 }
