@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.5 - 2025-06-05(15:23:41 +0000)
+
+### Other
+
+- repeater's endpoint not reconnecting when toggling the gwy AP radio
+
 ## Release sah-next_v7.18.4 - 2025-05-27(12:13:02 +0000)
 
 ### Other
