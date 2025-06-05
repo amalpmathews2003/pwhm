@@ -1526,9 +1526,7 @@ void wld_ad_deactivateAfSta(T_AssociatedDevice* pAD _UNUSED, wld_affiliatedSta_t
 
 uint32_t wld_ad_getNrActiveAffiliatedSta(T_AssociatedDevice* pAD) {
     ASSERT_NOT_NULL(pAD, 0, ME, "NULL");
-    if(!pAD->Active) {
-        return 0;
-    }
+    ASSERTS_TRUE(pAD->Active, 0, ME, "Inactive");
     uint32_t count = 0;
     amxc_llist_for_each(it, &pAD->affiliatedStaList) {
         wld_affiliatedSta_t* afSta = amxc_llist_it_get_data(it, wld_affiliatedSta_t, it);
@@ -1652,6 +1650,18 @@ static void s_getOUIValue(amxc_string_t* output, swl_oui_list_t* vendorOui) {
     amxc_string_set(output, buffer);
 }
 
+static void s_getRsnSuite(amxc_string_t* output, uint32_t rsnSuite) {
+    char buf[SWL_OUI_STR_LEN] = {0};
+    char suite[SWL_OUI_STR_LEN] = {};
+    swl_oui_t oui;
+    memset(&oui, 0, sizeof(swl_oui_t));
+    swl_oui_toBytes(&oui, SWL_OUI_80211);
+    bool result = swl_hex_fromBytes(buf, SWL_OUI_STR_LEN, &oui.ouiBytes[0], SWL_OUI_BYTE_LEN, true);
+    swl_str_catFormat(suite, sizeof(suite), "%s%02X", buf, rsnSuite);
+
+    amxc_string_set(output, suite);
+}
+
 void wld_ad_syncdetailedMcsCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
     ASSERT_NOT_NULL(trans, , ME, "NULL");
     ASSERT_NOT_NULL(caps, , ME, "NULL");
@@ -1692,6 +1702,10 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     s_getOUIValue(&TBufStr, &caps->vendorOUI);
     amxd_trans_set_cstring_t(trans, "VendorOUI", amxc_string_get(&TBufStr, 0));
     amxd_trans_set_cstring_t(trans, "SecurityModeEnabled", swl_security_apModeToString(caps->currentSecurity, SWL_SECURITY_APMODEFMT_LEGACY));
+    s_getRsnSuite(&TBufStr, caps->akmSuite);
+    amxd_trans_set_cstring_t(trans, "PairwiseAKM", amxc_string_get(&TBufStr, 0));
+    s_getRsnSuite(&TBufStr, caps->cipherSuite);
+    amxd_trans_set_cstring_t(trans, "PairwiseCipher", amxc_string_get(&TBufStr, 0));
     amxd_trans_set_cstring_t(trans, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
 
     amxd_trans_set_cstring_t(trans, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
@@ -2068,6 +2082,8 @@ void wld_assocDev_copyAssocDevInfoFromIEs(T_Radio* pRad, T_AssociatedDevice* pDe
     if(!cap->linkBandwidthSetByDriver) {
         cap->linkBandwidth = SWL_MIN(wld_util_getMaxBwCap(cap), swl_radBw_toBw[pRad->runningChannelBandwidth]);
     }
+    cap->akmSuite = swl_bit32_getLowest(pWirelessDevIE->akmSuite);
+    cap->cipherSuite = swl_bit32_getLowest(pWirelessDevIE->pairCipherSuite);
 }
 
 void wld_ad_handleAssocMsg(T_AccessPoint* pAP, T_AssociatedDevice* pAD, swl_bit8_t* iesData, size_t iesLen) {

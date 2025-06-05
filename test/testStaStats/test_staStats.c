@@ -267,6 +267,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceAddZone(500, "apRssi");
     sahTraceAddZone(500, "utilMon");
     sahTraceAddZone(500, "pcb_timer");
+    sahTraceAddZone(500, "ad");
 
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_getStats),

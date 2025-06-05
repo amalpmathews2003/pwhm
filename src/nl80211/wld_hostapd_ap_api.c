@@ -1172,20 +1172,36 @@ swl_rc_ne wld_ap_hostapd_delMacFilteringEntry(T_AccessPoint* pAP, char* macStr) 
 
 /* Ref. WPA3_Specification_v3.0 */
 SWL_TABLE(sAkmSuiteSelectorMap,
-          ARR(char* akmSuiteSelectorStr; swl_security_apMode_e secMode; ),
+          ARR(char* akmSuiteSelectorStr; swl_security_apMode_e secMode; swl_80211_AKMSuite_ne akmSuite; ),
+          ARR(swl_type_charPtr, swl_type_uint32, swl_type_uint32, ),
+          ARR({"00-0f-ac-1", SWL_SECURITY_APMODE_WPA2_E, SWL_80211_AKM_SUITES_IEEE_802_1X},         // EAP (SHA-1)
+              {"00-0f-ac-2", SWL_SECURITY_APMODE_WPA2_P, SWL_80211_AKM_SUITES_PSK},                 // PSK (SHA1)
+              {"00-0f-ac-3", SWL_SECURITY_APMODE_WPA2_P, SWL_80211_AKM_SUITES_FT_IEEE_802_1X},      // FT-EAP (SHA256)
+              {"00-0f-ac-4", SWL_SECURITY_APMODE_WPA2_P, SWL_80211_AKM_SUITES_FT_PSK},              // FT-PSK (SHA1) (11r)
+              {"00-0f-ac-5", SWL_SECURITY_APMODE_WPA3_E, SWL_80211_AKM_SUITES_IEEE_802_1X_SHA_256}, // EAP (SHA-256)
+              {"00-0f-ac-6", SWL_SECURITY_APMODE_WPA2_WPA3_P, SWL_80211_AKM_SUITES_PSK_SHA_256},    // PSK (SHA256)
+              {"00-0f-ac-8", SWL_SECURITY_APMODE_WPA3_P, SWL_80211_AKM_SUITES_SAE},                 // SAE (SHA256)
+              {"00-0f-ac-9", SWL_SECURITY_APMODE_WPA3_P, SWL_80211_AKM_SUITES_FT_SAE},              // FT-SAE (SHA256) (11r)
+                                                                                                    /* Ref. WPA3_Specification_v3.4 */
+              {"00-0f-ac-19", SWL_SECURITY_APMODE_WPA2_P, SWL_80211_AKM_SUITES_FT_PSK_SHA_384},     // FT-PSK (SHA384) (11r)
+              {"00-0f-ac-20", SWL_SECURITY_APMODE_WPA2_P, SWL_80211_AKM_SUITES_PSK_SHA_384},        // PSK (SHA384)
+              {"00-0f-ac-24", SWL_SECURITY_APMODE_WPA3_P, SWL_80211_AKM_SUITES_SAE_EXT},            // SAE (SAE using group-dependent hash)
+              ));
+
+SWL_TABLE(sCipherSuiteSelectorMap,
+          ARR(char* cipherSuiteSelectorStr; swl_80211_cipherSuite_ne cipherSuite; ),
           ARR(swl_type_charPtr, swl_type_uint32, ),
-          ARR({"00-0f-ac-1", SWL_SECURITY_APMODE_WPA2_E},      // EAP (SHA-1)
-              {"00-0f-ac-2", SWL_SECURITY_APMODE_WPA2_P},      // PSK (SHA1)
-              {"00-0f-ac-3", SWL_SECURITY_APMODE_WPA2_P},      // FT-EAP (SHA256)
-              {"00-0f-ac-4", SWL_SECURITY_APMODE_WPA2_P},      // FT-PSK (SHA1) (11r)
-              {"00-0f-ac-5", SWL_SECURITY_APMODE_WPA3_E},      // EAP (SHA-256)
-              {"00-0f-ac-6", SWL_SECURITY_APMODE_WPA2_WPA3_P}, // PSK (SHA256)
-              {"00-0f-ac-8", SWL_SECURITY_APMODE_WPA3_P},      // SAE (SHA256)
-              {"00-0f-ac-9", SWL_SECURITY_APMODE_WPA3_P},      // FT-SAE (SHA256) (11r)
-                                                               /* Ref. WPA3_Specification_v3.4 */
-              {"00-0f-ac-19", SWL_SECURITY_APMODE_WPA2_P},     // FT-PSK (SHA384) (11r)
-              {"00-0f-ac-20", SWL_SECURITY_APMODE_WPA2_P},     // PSK (SHA384)
-              {"00-0f-ac-24", SWL_SECURITY_APMODE_WPA3_P},     // SAE (SAE using group-dependent hash)
+          ARR({"00-0f-ac-1", SWL_80211_CIPHER_SUITE_WEP_40},
+              {"00-0f-ac-2", SWL_80211_CIPHER_SUITE_TKIP},
+              {"00-0f-ac-4", SWL_80211_CIPHER_SUITE_CCMP_128},
+              {"00-0f-ac-5", SWL_80211_CIPHER_SUITE_WEP_104},
+              {"00-0f-ac-6", SWL_80211_CIPHER_SUITE_BIP_CMAC_128},
+              {"00-0f-ac-8", SWL_80211_CIPHER_SUITE_GCMP_128},
+              {"00-0f-ac-9", SWL_80211_CIPHER_SUITE_GCMP_256},
+              {"00-0f-ac-10", SWL_80211_CIPHER_SUITE_CCMP_256},
+              {"00-0f-ac-11", SWL_80211_CIPHER_SUITE_BIP_GMAC_128},
+              {"00-0f-ac-12", SWL_80211_CIPHER_SUITE_BIP_GMAC_256},
+              {"00-0f-ac-13", SWL_80211_CIPHER_SUITE_BIP_CMAC_256},
               ));
 
 static void s_parseHostapdStaCmdResponse(T_AccessPoint* pAP, T_AssociatedDevice* pAD, char* buff) {
@@ -1218,6 +1234,16 @@ static void s_parseHostapdStaCmdResponse(T_AccessPoint* pAP, T_AssociatedDevice*
         swl_security_apMode_e* pCurrSec = (swl_security_apMode_e*) swl_table_getMatchingValue(&sAkmSuiteSelectorMap, 1, 0, valStr);
         if(pCurrSec) {
             pAD->assocCaps.currentSecurity = *pCurrSec;
+        }
+        swl_80211_AKMSuite_ne* pAkmSuite = (swl_80211_AKMSuite_ne*) swl_table_getMatchingValue(&sAkmSuiteSelectorMap, 2, 0, valStr);
+        if(pAkmSuite != NULL) {
+            pAD->assocCaps.akmSuite = *pAkmSuite;
+        }
+    }
+    if(wld_wpaCtrl_getValueStr(buff, "dot11RSNAStatsSelectedPairwiseCipher", valStr, sizeof(valStr)) > 0) {
+        swl_80211_cipherSuite_ne* pCipherSuite = (swl_80211_cipherSuite_ne*) swl_table_getMatchingValue(&sCipherSuiteSelectorMap, 1, 0, valStr);
+        if(pCipherSuite != NULL) {
+            pAD->assocCaps.cipherSuite = *pCipherSuite;
         }
     }
 }

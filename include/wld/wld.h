@@ -684,6 +684,8 @@ typedef struct {
     swl_oui_list_t vendorOUI;
 
     swl_security_apMode_e currentSecurity;
+    swl_80211_AKMSuite_ne akmSuite;
+    swl_80211_cipherSuite_ne cipherSuite;
     wld_enc_modes_e encryptMode;
     swl_bandwidth_e linkBandwidth;
     bool linkBandwidthSetByDriver;
