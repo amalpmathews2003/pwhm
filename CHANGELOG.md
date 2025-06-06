@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.6 - 2025-06-06(13:58:50 +0000)
+
+### Other
+
+- [syslog] Problematic Log Entry for Parsing
+- [import] [tr181-device] [import] NumberOfEntries are missing in Device.WiFi.
+- fix ep connection bssid always saved in currentProfile
+
 ## Release sah-next_v7.18.5 - 2025-06-05(15:23:41 +0000)
 
 ### Other
