@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.7 - 2025-06-06(14:09:36 +0000)
+
+### Other
+
+- fix reconnect triggered while connection is ongoing
+
 ## Release sah-next_v7.18.6 - 2025-06-06(13:58:50 +0000)
 
 ### Other
