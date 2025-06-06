@@ -2158,6 +2158,9 @@ char* wldu_getLocalFile(char* buffer, size_t bufSize, char* path, char* format, 
 }
 
 swl_bandwidth_e wld_util_getMaxBwCap(wld_assocDev_capabilities_t* caps) {
+    if(caps->ehtCapabilities & M_SWL_STACAP_EHT_320MHZ_6GHZ) {
+        return SWL_BW_320MHZ;
+    }
     if(caps->vhtCapabilities & M_SWL_STACAP_VHT_SGI160) {
         return SWL_BW_160MHZ;
     }
@@ -2442,6 +2445,7 @@ swl_rc_ne wld_util_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirele
         pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
     }
     swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
+    chanSpec.extensionHigh = pWirelessDevIE->operChanInfo.extensionHigh;
     pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
     swl_operatingClass_t operClass = swl_chanspec_getOperClass(&chanSpec);
     if(operClass > 0) {
