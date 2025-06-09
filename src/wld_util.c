@@ -1326,6 +1326,22 @@ void wpsPinGen(char pwd[WPS_PIN_LEN + 1]) {
 }
 #endif
 
+/**
+ * @brief Validates an 8-digit WPS PIN string
+ */
+int wpsPinValidStr(const char* pinStr) {
+    if(swl_str_len(pinStr) != 8) {
+        return FALSE;
+    }
+
+    unsigned int accum = 0;
+    for(int i = 0; i < 8; ++i) {
+        int digit = pinStr[i] - '0';
+        accum += (i % 2 == 0) ? (3 * digit) : digit;
+    }
+    return (accum % 10 == 0);
+}
+
 int wpsPinValid(unsigned long PIN) {
     unsigned long int accum = 0;
 
@@ -1357,13 +1373,38 @@ int wpsPinValid(unsigned long PIN) {
  */
 bool wldu_checkWpsPinStr(const char* pinStr) {
     ASSERT_STR(pinStr, false, ME, "pin empty");
-    uint32_t pinNum = 0;
-    swl_rc_ne ret = wldu_convStrToNum(pinStr, &pinNum, sizeof(pinNum), 0, false);
-    ASSERTI_EQUALS(ret, SWL_RC_OK, false, ME, "%s is not a number", pinStr);
+
     if((swl_str_len(pinStr) != 4) && (swl_str_len(pinStr) != 8)) {
         SAH_TRACEZ_ERROR(ME, "%s has not required pin length (4 or 8 digits)", pinStr);
         return false;
     }
+
+    /**
+       Special handling for PINs starting with '0':
+       Numeric conversion functions like strtoul interpret strings starting with '0' as octal number (if base=0) [Example : "01234565" --> 342389]
+       or strtoul will remove leading '0' from Client PIN (if base=10) [Example : "01234565" --> 1234565]
+       To avoid this, for PINs starting with '0', we validate the string as-is by ensuring all characters are digits,
+       and performing string-based checksum validation (for 8-digit PINs).
+       4-digit PINs starting with '0' are accepted directly as no checksum is requied.
+     */
+    if(pinStr[0] == '0') {
+        for(size_t i = 0; i < swl_str_len(pinStr); ++i) {
+            if(!isdigit((unsigned char) pinStr[i])) {
+                SAH_TRACEZ_ERROR(ME, "%s contains non-digit characters", pinStr);
+                return false;
+            }
+        }
+        if(swl_str_len(pinStr) == 8) {
+            ASSERT_TRUE(wpsPinValidStr(pinStr), false, ME, "%s has invalid pin value", pinStr);
+            return true;
+        } else if(swl_str_len(pinStr) == 4) {
+            return true;
+        }
+    }
+    
+    uint32_t pinNum = 0;
+    swl_rc_ne ret = wldu_convStrToNum(pinStr, &pinNum, sizeof(pinNum), 0, false);
+    ASSERTI_EQUALS(ret, SWL_RC_OK, false, ME, "%s is not a number", pinStr);
     ASSERT_TRUE(wpsPinValid(pinNum), false, ME, "%s has invalid pin value", pinStr);
     return true;
 }
