@@ -1401,7 +1401,7 @@ bool wldu_checkWpsPinStr(const char* pinStr) {
             return true;
         }
     }
-    
+
     uint32_t pinNum = 0;
     swl_rc_ne ret = wldu_convStrToNum(pinStr, &pinNum, sizeof(pinNum), 0, false);
     ASSERTI_EQUALS(ret, SWL_RC_OK, false, ME, "%s is not a number", pinStr);
