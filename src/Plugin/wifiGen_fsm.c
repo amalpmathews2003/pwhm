@@ -668,6 +668,7 @@ static bool s_doSetApMld(T_AccessPoint* pAP, T_Radio* pRad) {
     ASSERTS_NOT_NULL(pAP, true, ME, "NULL");
     ASSERTI_TRUE(wifiGen_hapd_isRunning(pRad), true, ME, "%s: hostapd stopped", pRad->Name);
     ASSERTI_TRUE(wld_secDmn_hasAvailableCtrlIface(pRad->hostapd), true, ME, "%s: hapd has no available socket", pRad->Name);
+    ASSERTI_TRUE(wld_rad_isMloCapable(pRad), true, ME, "%s: not mlo capable", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: checking mld conf changes", pAP->alias);
     wld_secDmn_action_rc_ne rc = wld_ap_hostapd_setMldParams(pAP);
     ASSERT_FALSE(rc < SECDMN_ACTION_OK_DONE, true, ME, "%s: fail to set common params", pAP->alias);
