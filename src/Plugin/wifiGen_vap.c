@@ -437,6 +437,9 @@ swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNei
 swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTI_TRUE(wifiGen_hapd_isAlive(pAP->pRadio), SWL_RC_INVALID_STATE, ME, "%s: secDmn not ready", pAP->alias);
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), SWL_RC_INVALID_STATE, ME, "%s: secDmn iface not ready", pAP->alias);
+    swl_trl_e rnrSupp = wld_secDmn_getCfgParamSupp(pAP->pRadio->hostapd, "rnr");
+    ASSERTI_NOT_EQUALS(rnrSupp, SWL_TRL_FALSE, SWL_RC_OK, ME, "%s: rnr not configurable", pAP->alias);
     bool enaRnr = (pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR));
     swl_rc_ne rc = wld_hostapd_ap_sendCfgParam(pAP, "rnr", (enaRnr ? "1" : "0"));
     ASSERTI_TRUE(swl_rc_isOk(rc), rc, ME, "%s: can not apply rnr ena(%d) to hostapd: seems not supported", pAP->alias, enaRnr);

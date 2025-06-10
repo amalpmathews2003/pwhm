@@ -1153,7 +1153,20 @@ void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConf
     s_setVapWpsConfig(pAP, vapConfigMap);
     s_setVapMultiApConf(pAP, vapConfigMap, multiAPConfig);
 
+    // rnr standard config
+    bool isIEEE80211k = pAP->IEEE80211kEnable && pAP->pRadio->IEEE80211kSupported;
+    bool rnrCfgStd = isIEEE80211k && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR);
+
     pAP->pFA->mfn_wvap_updateConfigMap(pAP, vapConfigMap);
+
+    // if rnr conf has been changed by vdr, then prevent further overwriting by removing standard rnr conf setting
+    if(wld_secDmn_getCfgParamSupp(pAP->pRadio->hostapd, "rnr") != SWL_TRL_FALSE) {
+        // get final rnr config (may be customized by vdr module)
+        bool rnrCfgFinal = swl_str_matches(swl_mapChar_get(vapConfigMap, "rnr"), "1");
+        if(rnrCfgStd != rnrCfgFinal) {
+            wld_secDmn_setCfgParamSupp(pAP->pRadio->hostapd, "rnr", SWL_TRL_FALSE);
+        }
+    }
 
     s_saveVapConfigId(pAP, vapConfigMap);
 }
