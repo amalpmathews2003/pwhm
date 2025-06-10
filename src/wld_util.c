@@ -1386,7 +1386,7 @@ bool wldu_checkWpsPinStr(const char* pinStr) {
        - All 4-digit PINs between 0000 & 9999 are directly becuase no checksum is needed as per Wi-Fi Protected Setup Specification v1.0h section 6.4.1
      */
     for(size_t i = 0; i < swl_str_len(pinStr); ++i) {
-        if (!isdigit((unsigned char) pinStr[i])) {
+        if(!isdigit((unsigned char) pinStr[i])) {
             SAH_TRACEZ_ERROR(ME, "%s contains non-digit characters", pinStr);
             return false;
         }

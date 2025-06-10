@@ -848,7 +848,7 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
             SAH_TRACEZ_ERROR(ME, "Client PIN must be passed as a quoted string");
             return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
         }
-        const char *clientPINStr = amxc_var_constcast(cstring_t, clientPINVar);
+        const char* clientPINStr = amxc_var_constcast(cstring_t, clientPINVar);
         swl_str_copy(clientPIN, sizeof(clientPIN), clientPINStr);
     }
 
