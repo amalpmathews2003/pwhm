@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.10 - 2025-06-10(09:36:51 +0000)
+
+### Other
+
+- Add a check if pairingTimer is running
+- refresh bw on connected bSTAMLD link
+
 ## Release sah-next_v7.18.9 - 2025-06-10(07:10:45 +0000)
 
 ### Other
