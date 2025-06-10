@@ -193,8 +193,10 @@ static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_chan
                 pRad->currentChanspec.chanspec.channel = 0;
             }
             // reset saved tgtChannel to force sync with chanspec read from driver
-            pRad->targetChanspec.chanspec.channel = 0;
-            reason = CHAN_REASON_INITIAL;
+            if(reason != CHAN_REASON_DFS) {
+                pRad->targetChanspec.chanspec.channel = 0;
+                reason = CHAN_REASON_INITIAL;
+				}
         }
     }
     swl_rc_ne rc = wld_chanmgt_reportCurrentChanspec(pRad, *pChanSpec, reason);
@@ -225,6 +227,10 @@ static void s_chanSwitchCb(void* userData, char* ifName _UNUSED, swl_chanspec_t*
        (wld_chanmgt_getCurBw(pRad) == SWL_BW_40MHZ) && (chanSpec->bandwidth == SWL_BW_20MHZ) && (pRad->currentChanspec.chanspec.channel == chanSpec->channel)) {
         pRad->targetChanspec.reason = CHAN_REASON_OBSS_COEX;
         pRad->obssCoexistenceActive = true;
+    }
+
+    if(wld_channel_is_radar_detected(pRad->currentChanspec.chanspec)) {
+        pRad->targetChanspec.reason = CHAN_REASON_DFS;
     }
 
     s_saveChanChanged(pRad, chanSpec, pRad->targetChanspec.reason);
