@@ -840,9 +840,18 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
     amxc_var_set_type(retval, AMXC_VAR_ID_HTABLE);
     char clientPIN[16] = {0};
     amxc_var_t* clientPINVar = GET_ARG(args, "clientPIN");
-    char* clientPINStr = amxc_var_dyncast(cstring_t, clientPINVar);
-    swl_str_copy(clientPIN, sizeof(clientPIN), clientPINStr);
-    free(clientPINStr);
+
+    /* Mandate the Client PIN to be passed always as quoted string for the client PIN to be interpreted correctly */
+    if(clientPINVar != NULL)
+    {
+        if(clientPINVar->type_id != AMXC_VAR_ID_CSTRING) {
+            SAH_TRACEZ_ERROR(ME, "Client PIN must be passed as a quoted string");
+            return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
+        }
+        const char *clientPINStr = amxc_var_constcast(cstring_t, clientPINVar);
+        swl_str_copy(clientPIN, sizeof(clientPIN), clientPINStr);
+    }
+
     swl_rc_ne rc = SWL_RC_OK;
     amxd_status_t status = amxd_status_ok;
     if((pAP == NULL) || (pAP->pRadio == NULL)) {
