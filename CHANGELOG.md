@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.9 - 2025-06-10(07:10:45 +0000)
+
+### Other
+
+- - check the BSSID validity
+
 ## Release sah-next_v7.18.8 - 2025-06-06(14:23:51 +0000)
 
 ### Other
