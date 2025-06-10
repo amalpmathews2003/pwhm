@@ -3545,10 +3545,20 @@ bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName) {
     return (wld_rad_from_name(ifName) == pRad);
 }
 
-bool wld_rad_hasMloSupport(T_Radio* pRad) {
+/*
+ * returns whether radio has MLO phy (hw) capability
+ */
+bool wld_rad_isMloCapable(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
-    return ((wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) &&
+    return (SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE) &&
             (pRad->pFA->mfn_misc_has_support(pRad, NULL, "MLO", 0) == true));
+}
+
+/*
+ * returns whether radio has MLO capability AND 11be operating standard supported and enabled
+ */
+bool wld_rad_hasMloSupport(T_Radio* pRad) {
+    return (wld_rad_isMloCapable(pRad) && wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE));
 }
 
 bool wld_rad_hasActiveApMld(T_Radio* pRad, uint32_t minNLinks) {
