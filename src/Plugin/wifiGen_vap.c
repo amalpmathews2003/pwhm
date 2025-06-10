@@ -447,6 +447,9 @@ swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
 
 swl_rc_ne wifiGen_vap_setMldUnit(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_rad_isMloCapable(pRad), SWL_RC_OK, ME, "%s: not mlo capable", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: applying MLDUnit %d", pAP->alias, pAP->pSSID->mldUnit);
     setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_MLD);
     return SWL_RC_OK;
