@@ -1064,7 +1064,7 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     swl_mapChar_add(vapConfigMap, "model_name", pRad->wpsConst->ModelName);
     swl_mapChar_add(vapConfigMap, "model_number", pRad->wpsConst->ModelNumber);
     swl_mapChar_add(vapConfigMap, "serial_number", pRad->wpsConst->SerialNumber);
-    int tmpver[4];
+    int tmpver[4] = {0};
     sscanf(pRad->wpsConst->OsVersion, "%i.%i.%i.%i", &tmpver[0], &tmpver[1], &tmpver[2], &tmpver[3]);
     swl_mapCharFmt_addValStr(vapConfigMap, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
