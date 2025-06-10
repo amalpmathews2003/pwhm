@@ -842,8 +842,7 @@ amxd_status_t _WPS_InitiateWPSPIN(amxd_object_t* object,
     amxc_var_t* clientPINVar = GET_ARG(args, "clientPIN");
 
     /* Mandate the Client PIN to be passed always as quoted string for the client PIN to be interpreted correctly */
-    if(clientPINVar != NULL)
-    {
+    if(clientPINVar != NULL) {
         if(clientPINVar->type_id != AMXC_VAR_ID_CSTRING) {
             SAH_TRACEZ_ERROR(ME, "Client PIN must be passed as a quoted string");
             return s_setCommandReply(retval, SWL_USP_CMD_STATUS_ERROR_OTHER, amxd_status_unknown_error);
