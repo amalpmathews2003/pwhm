@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.11 - 2025-06-10(13:32:54 +0000)
+
+### Other
+
+- add api to get radio's MLO hw capability
+
 ## Release sah-next_v7.18.10 - 2025-06-10(09:36:51 +0000)
 
 ### Other
