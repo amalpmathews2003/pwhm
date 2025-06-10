@@ -334,7 +334,24 @@ swl_trl_e wld_secDmn_getCfgParamSupp(wld_secDmn_t* pSecDmn, const char* param) {
     ASSERTS_NOT_NULL(pSecDmn, SWL_TRL_UNKNOWN, ME, "NULL");
     int32_t* pVal = swl_map_get(&pSecDmn->cfgParamSup, (char*) param);
     ASSERTS_NOT_NULL(pVal, SWL_TRL_UNKNOWN, ME, "not found");
-    return *pVal;
+    uint32_t nMbr = wld_secDmnGrp_getMembersCount(pSecDmn->secDmnGroup);
+    if(nMbr <= 1) {
+        return *pVal;
+    }
+    swl_trl_e supp = SWL_TRL_UNKNOWN;
+    for(uint32_t i = 0; i < nMbr; i++) {
+        wld_secDmn_t* pTmpSecDmn = (wld_secDmn_t*) wld_secDmnGrp_getMemberByPos(pSecDmn->secDmnGroup, i);
+        pVal = swl_map_get(&pTmpSecDmn->cfgParamSup, (char*) param);
+        if(pVal) {
+            if(*pVal == SWL_TRL_FALSE) {
+                return SWL_TRL_FALSE;
+            }
+            if(*pVal == SWL_TRL_TRUE) {
+                supp = SWL_TRL_TRUE;
+            }
+        }
+    }
+    return supp;
 }
 
 uint32_t wld_secDmn_countCfgParamSuppAll(wld_secDmn_t* pSecDmn) {
@@ -377,7 +394,24 @@ swl_trl_e wld_secDmn_getCmdSupp(wld_secDmn_t* pSecDmn, const char* cmd) {
     ASSERTS_NOT_NULL(pSecDmn, SWL_TRL_UNKNOWN, ME, "NULL");
     int32_t* pVal = swl_map_get(&pSecDmn->cmdSup, (char*) cmd);
     ASSERTS_NOT_NULL(pVal, SWL_TRL_UNKNOWN, ME, "not found");
-    return *pVal;
+    uint32_t nMbr = wld_secDmnGrp_getMembersCount(pSecDmn->secDmnGroup);
+    if(nMbr <= 1) {
+        return *pVal;
+    }
+    swl_trl_e supp = SWL_TRL_UNKNOWN;
+    for(uint32_t i = 0; i < nMbr; i++) {
+        wld_secDmn_t* pTmpSecDmn = (wld_secDmn_t*) wld_secDmnGrp_getMemberByPos(pSecDmn->secDmnGroup, i);
+        pVal = swl_map_get(&pTmpSecDmn->cmdSup, (char*) cmd);
+        if(pVal) {
+            if(*pVal == SWL_TRL_FALSE) {
+                return SWL_TRL_FALSE;
+            }
+            if(*pVal == SWL_TRL_TRUE) {
+                supp = SWL_TRL_TRUE;
+            }
+        }
+    }
+    return supp;
 }
 
 const char* wld_secDmn_getCtrlIfaceDirPath(wld_secDmn_t* pSecDmn) {
