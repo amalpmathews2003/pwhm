@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.13 - 2025-06-11(15:05:26 +0000)
+
+### Other
+
+- : Expose MRSNO capability, AKM and cipher info for STA
+
 ## Release sah-next_v7.18.12 - 2025-06-11(08:52:28 +0000)
 
 ### Other
