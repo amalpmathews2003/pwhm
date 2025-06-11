@@ -274,6 +274,7 @@ swl_rc_ne wld_nl80211_dumpStationInfo(wld_nl80211_stationInfo_t* pStationInfo, a
     amxc_var_add_key(uint32_t, pMap, "txPackets", pStationInfo->txPackets);
     amxc_var_add_key(uint32_t, pMap, "txRetries", pStationInfo->txRetries);
     amxc_var_add_key(uint32_t, pMap, "txFailed", pStationInfo->txFailed);
+    amxc_var_add_key(uint64_t, pMap, "rxFailed", pStationInfo->rxFailed);
     amxc_var_add_key(int8_t, pMap, "rssiDbm", pStationInfo->rssiDbm);
     amxc_var_add_key(int8_t, pMap, "rssiAvgDbm", pStationInfo->rssiAvgDbm);
     amxc_var_t* rxRate = amxc_var_add_key(amxc_htable_t, pMap, "rxRate", NULL);
