@@ -706,7 +706,7 @@ typedef struct {
     X(Y, gtSwl_type_uint32, txPacketCount) \
     X(Y, gtSwl_type_uint32, rxPacketCount) \
     X(Y, gtSwl_type_uint32, txError) \
-    X(Y, gtSwl_type_uint32, rxError) \
+    X(Y, gtSwl_type_uint64, rxError) \
     X(Y, gtSwl_type_uint32, txFrameCount) \
     X(Y, gtSwl_type_uint32, rxFrameCount) \
     X(Y, gtSwl_type_uint32, tx_Retransmissions) \
@@ -831,7 +831,7 @@ typedef struct {
     uint32_t RxMulticastPacketCount;
     uint32_t TxMulticastPacketCount;
     uint32_t TxFailures;
-    uint32_t RxFailures;
+    uint64_t RxFailures;
 
     uint32_t TxFrameCount;     /* total of user frames sent successfully */
                                /* the difference is that a packet is a unit of transmission as requested by upper
@@ -920,7 +920,7 @@ SWL_ARRAY_TYPE_H(gtWld_signalStatArray, gtSwl_type_double, MAX_NR_ANTENNA);
     X(Y, gtSwl_type_uint32, RxMulticastPacketCount, "RxMulticastPacketCount") \
     X(Y, gtSwl_type_uint32, TxMulticastPacketCount, "TxMulticastPacketCount") \
     X(Y, gtSwl_type_uint32, TxFailures, "TxErrors") \
-    X(Y, gtSwl_type_uint32, RxFailures, "RxErrors") \
+    X(Y, gtSwl_type_uint64, RxFailures, "RxErrors") \
     X(Y, gtSwl_type_uint32, TxFrameCount, "TxFrameCount") \
     X(Y, gtSwl_type_uint32, RxFrameCount, "RxFrameCount") \
     X(Y, gtSwl_type_uint32, UplinkMCS, "UplinkMCS") \
