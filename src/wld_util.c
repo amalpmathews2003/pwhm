@@ -1326,18 +1326,6 @@ void wpsPinGen(char pwd[WPS_PIN_LEN + 1]) {
 }
 #endif
 
-/**
- * @brief Validates an 8-digit WPS PIN string
- */
-int wldu_wpsEightDigitPinValidStr(const char* pinStr) {
-    unsigned int accum = 0;
-    for(int i = 0; i < 8; ++i) {
-        int digit = pinStr[i] - '0';
-        accum += (i % 2 == 0) ? (3 * digit) : digit;
-    }
-    return (accum % 10 == 0);
-}
-
 int wpsPinValid(unsigned long PIN) {
     unsigned long int accum = 0;
 
@@ -1370,34 +1358,29 @@ int wpsPinValid(unsigned long PIN) {
 bool wldu_checkWpsPinStr(const char* pinStr) {
     ASSERT_STR(pinStr, false, ME, "pin empty");
 
+    size_t pinStrLen = swl_str_len(pinStr);
+
     /* PIN length should be either 4 digit or 8 digit only*/
-    if((swl_str_len(pinStr) != 4) && (swl_str_len(pinStr) != 8)) {
+    if((pinStrLen != 4) && (pinStrLen != 8)) {
         SAH_TRACEZ_ERROR(ME, "%s has not required pin length (4 or 8 digits)", pinStr);
         return false;
     }
 
-    /**
-       - Numeric conversion functions like strtoul interpret strings starting with '0' as octal number (if base=0) [Example : "01234565" --> 342389]
-         or strtoul will remove leading '0' from Client PIN (if base=10) [Example : "01234565" --> 1234565]
+    uint32_t pinNum = 0;
+    swl_rc_ne ret = wldu_convStrToNum(pinStr, &pinNum, sizeof(pinNum), 10, false);
+    ASSERTI_EQUALS(ret, SWL_RC_OK, false, ME, "%s is not a number", pinStr);
 
-       - To avoid this, we first validate the string as-is by ensuring all characters are digits,
-         and performing string-based checksum validation (for 8-digit PINs) as per Wi-Fi Protected Setup Specification v1.0h section 6.4.1
-
-       - All 4-digit PINs between 0000 & 9999 are directly becuase no checksum is needed as per Wi-Fi Protected Setup Specification v1.0h section 6.4.1
-     */
-    for(size_t i = 0; i < swl_str_len(pinStr); ++i) {
-        if(!isdigit((unsigned char) pinStr[i])) {
-            SAH_TRACEZ_ERROR(ME, "%s contains non-digit characters", pinStr);
-            return false;
-        }
+    if(pinStrLen == 4) {
+        return true; /* Accept all 4 digit PINs */
     }
 
-    if(swl_str_len(pinStr) == 8) {
-        ASSERT_TRUE(wldu_wpsEightDigitPinValidStr(pinStr), false, ME, "%s has invalid pin value", pinStr);
-        return true;
-    } else {
-        return true; /*Accept all 4 digit PINs*/
+    /* 8 digit PIN checksum validation */
+    unsigned int accum = 0;
+    for(int i = 0; i < 8; ++i) {
+        int digit = pinStr[i] - '0';
+        accum += (i % 2 == 0) ? (3 * digit) : digit;
     }
+    return (accum % 10 == 0);
 }
 
 /**
