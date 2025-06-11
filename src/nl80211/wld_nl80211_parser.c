@@ -1218,6 +1218,7 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
         [NL80211_STA_INFO_TX_PACKETS] = { .type = NLA_U32 },
         [NL80211_STA_INFO_TX_RETRIES] = { .type = NLA_U32 },
         [NL80211_STA_INFO_TX_FAILED] = { .type = NLA_U32 },
+        [NL80211_STA_INFO_RX_DROP_MISC] = { .type = NLA_U64 },
         [NL80211_STA_INFO_SIGNAL] = { .type = NLA_U8  },
         [NL80211_STA_INFO_SIGNAL_AVG] = { .type = NLA_U8 },
         [NL80211_STA_INFO_TX_BITRATE] = { .type = NLA_NESTED },
@@ -1287,6 +1288,9 @@ swl_rc_ne wld_nl80211_parseStationInfo(struct nlattr* tb[], wld_nl80211_stationI
     }
     if(pSinfo[NL80211_STA_INFO_TX_FAILED]) {
         pStation->txFailed = nla_get_u32(pSinfo[NL80211_STA_INFO_TX_FAILED]);
+    }
+    if(pSinfo[NL80211_STA_INFO_RX_DROP_MISC]) {
+        pStation->rxFailed = nla_get_u64(pSinfo[NL80211_STA_INFO_RX_DROP_MISC]);
     }
     if(pSinfo[NL80211_STA_INFO_SIGNAL]) {
         pStation->rssiDbm = nla_get_u8(pSinfo[NL80211_STA_INFO_SIGNAL]);
