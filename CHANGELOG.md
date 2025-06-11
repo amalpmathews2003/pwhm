@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.12 - 2025-06-11(08:52:28 +0000)
+
+### Other
+
+- - The client PIN doesn't work if the PIN starts with 0
+
 ## Release sah-next_v7.18.11 - 2025-06-10(13:32:54 +0000)
 
 ### Other
