@@ -2131,6 +2131,7 @@ struct S_EndPoint {
     T_EndPointStats stats;
     swla_dm_objActionReadCtx_t onActionReadCtx;
     swl_80211_mgtFrameSubtype_m moniMgtFrames;
+    amxp_timer_t* refreshChspecTimer;         /* Timer used to refresh connected backhaul chanspec */
 };
 
 typedef struct {
