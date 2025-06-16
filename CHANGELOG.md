@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.15 - 2025-06-16(08:43:42 +0000)
+
+### Other
+
+- ep 6g connects with bw 160Mhz isof 320MHz
+
 ## Release sah-next_v7.18.14 - 2025-06-13(16:45:21 +0000)
 
 ### Other
