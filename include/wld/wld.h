@@ -1147,10 +1147,15 @@ typedef struct wld_scanResultSSID {
     int32_t channel;
     int32_t centreChannel;
     int32_t bandwidth;
+    uint16_t beaconInterval;
+    uint8_t dtimPeriod;
     swl_chanspec_ext_e extensionChannel;
 
     // Not always filled in. In that case it is 0.
+    uint16_t basicDataTransferRates;
+    uint16_t supportedDataTransferRates;
     swl_radioStandard_m operatingStandards;
+    swl_radioStandard_m supportedStandards;
 
     swl_security_apMode_e secModeEnabled;
     swl_security_mfpMode_e mfpMode;
