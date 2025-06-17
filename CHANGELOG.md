@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.16 - 2025-06-17(13:05:52 +0000)
+
+### Other
+
+- fix wifi reset letting AP/EP/SSID enabling unsynced
+
 ## Release sah-next_v7.18.15 - 2025-06-16(08:43:42 +0000)
 
 ### Other
