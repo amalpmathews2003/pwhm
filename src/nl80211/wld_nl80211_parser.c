@@ -69,6 +69,8 @@
 #include "swl/swl_genericFrameParser.h"
 
 #define ME "nlParser"
+#define WLAN_CAPABILITY_ESS BIT(0)
+#define WLAN_CAPABILITY_IBSS BIT(1)
 
 /*
  * @brief fetch Wiphy ID from nl80211 attributes
@@ -1388,8 +1390,12 @@ static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDev
     pResult->ssidLen = SWL_MIN((uint8_t) sizeof(pResult->ssid), pWirelessDevIE->ssidLen);
     memcpy(pResult->ssid, pWirelessDevIE->ssid, pResult->ssidLen);
     pResult->operatingStandards = pWirelessDevIE->operatingStandards;
+    pResult->supportedStandards = pWirelessDevIE->supportedStandards;
     pResult->secModeEnabled = pWirelessDevIE->secModeEnabled;
     pResult->WPS_ConfigMethodsEnabled = pWirelessDevIE->WPS_ConfigMethodsEnabled;
+    pResult->dtimPeriod = pWirelessDevIE->dtimPeriod;
+    pResult->basicDataTransferRates = pWirelessDevIE->basicDataTransferRates;
+    pResult->supportedDataTransferRates = pWirelessDevIE->supportedDataTransferRates;
 
     if((pWirelessDevIE->channelUtilization != 0) || (pWirelessDevIE->stationCount != 0)) {
         //IE has BSSLOAD element
@@ -1449,6 +1455,7 @@ swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanRe
     ASSERT_NOT_NULL(bss[NL80211_BSS_FREQUENCY], rc, ME, "missing frequency in scan result");
 
     uint32_t freq = 0;
+    uint16_t caps = 0;
     NLA_GET_VAL(freq, nla_get_u32, bss[NL80211_BSS_FREQUENCY]);
     swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
     if(swl_chanspec_channelFromMHz(&chanSpec, freq) == SWL_RC_OK) {
@@ -1464,6 +1471,23 @@ swl_rc_ne wld_nl80211_parseScanResultPerFreqBand(struct nlattr* tb[], wld_scanRe
 
     //get information elements from probe_resp or from beacon
     pResult->ssidLen = SWL_80211_SSID_STR_LEN; // border-sized to detect ssid missing (even when empty (hidden))
+    if(bss[NL80211_BSS_BEACON_INTERVAL]) {
+        pResult->beaconInterval = nla_get_u16(bss[NL80211_BSS_BEACON_INTERVAL]);
+        SAH_TRACEZ_INFO(ME, "Beacon interval %u", pResult->beaconInterval);
+    }
+
+    if(bss[NL80211_BSS_CAPABILITY]) {
+        caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
+        if(caps & WLAN_CAPABILITY_ESS) {
+            SAH_TRACEZ_ERROR(ME, "ESS capability set");
+            pResult->adhoc = false;
+        }
+        if(caps & WLAN_CAPABILITY_IBSS) {
+            SAH_TRACEZ_ERROR(ME, "IBSS capability set");
+            pResult->adhoc = true;
+        }
+    }
+
     if(bss[NL80211_BSS_BEACON_IES] || bss[NL80211_BSS_INFORMATION_ELEMENTS]) {
         uint32_t iesAttr = (bss[NL80211_BSS_INFORMATION_ELEMENTS])
             ? NL80211_BSS_INFORMATION_ELEMENTS
