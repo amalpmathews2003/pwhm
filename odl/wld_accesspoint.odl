@@ -1668,7 +1668,7 @@ define rrm_t{
 			 * The Pairwise AKM suite selector (OUI and type) is encoded as a 4-octet hex-encoded value without
 			 * internal delimiters, e.g. 506F9A02 [Table 9-151/802.11-2020].
 			 */
-			 %read-only string PairwiseCipher;
+			%read-only string PairwiseCipher;
 
 			/**
 			 * The link bandwidth of the associated device.
@@ -1961,20 +1961,6 @@ define rrm_t{
 				 * @version 10.0
 				 */
 				%read-only string FrequencyCapabilities;
-
-				/**
-				 * Pairwise AKM suite selector selected by the associated device (STA).
-				 * The Pairwise AKM suite selector (OUI and type) is encoded as a 4-octet hex-encoded value without
-				 * internal delimiters, e.g. 506F9A02 [Table 9-151/802.11-2020].
-				 */
-				%read-only string PairwiseAKM;
-
-				/**
-				 * Pairwise AKM cipher selector selected by the associated device (STA).
-				 * The Pairwise AKM suite selector (OUI and type) is encoded as a 4-octet hex-encoded value without
-				 * internal delimiters, e.g. 506F9A02 [Table 9-151/802.11-2020].
-				 */
-				 %read-only string PairwiseCipher;
 			}
 
 			/**

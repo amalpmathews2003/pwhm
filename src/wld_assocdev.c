@@ -1688,7 +1688,7 @@ void wld_ad_syncdetailedMcsCapabilities(amxd_trans_t* trans, wld_assocDev_capabi
     amxd_trans_set_cstring_t(trans, "TxSupportedHe80x80MCS", mcsList);
 }
 
-void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps) {
+void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps, amxd_object_t* tgtObj) {
     ASSERT_NOT_NULL(trans, , ME, "NULL");
     ASSERT_NOT_NULL(caps, , ME, "NULL");
 
@@ -1702,10 +1702,14 @@ void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* c
     s_getOUIValue(&TBufStr, &caps->vendorOUI);
     amxd_trans_set_cstring_t(trans, "VendorOUI", amxc_string_get(&TBufStr, 0));
     amxd_trans_set_cstring_t(trans, "SecurityModeEnabled", swl_security_apModeToString(caps->currentSecurity, SWL_SECURITY_APMODEFMT_LEGACY));
-    s_getRsnSuite(&TBufStr, caps->akmSuite);
-    amxd_trans_set_cstring_t(trans, "PairwiseAKM", amxc_string_get(&TBufStr, 0));
-    s_getRsnSuite(&TBufStr, caps->cipherSuite);
-    amxd_trans_set_cstring_t(trans, "PairwiseCipher", amxc_string_get(&TBufStr, 0));
+    if(amxd_object_get_param_def(tgtObj, "PairwiseAKM") != NULL) {
+        s_getRsnSuite(&TBufStr, caps->akmSuite);
+        amxd_trans_set_cstring_t(trans, "PairwiseAKM", amxc_string_get(&TBufStr, 0));
+    }
+    if(amxd_object_get_param_def(tgtObj, "PairwiseCipher") != NULL) {
+        s_getRsnSuite(&TBufStr, caps->cipherSuite);
+        amxd_trans_set_cstring_t(trans, "PairwiseCipher", amxc_string_get(&TBufStr, 0));
+    }
     amxd_trans_set_cstring_t(trans, "EncryptionMode", cstr_AP_EncryptionMode[caps->encryptMode]);
 
     amxd_trans_set_cstring_t(trans, "LinkBandwidth", swl_bandwidth_unknown_str[caps->linkBandwidth]);
@@ -1818,7 +1822,7 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
         } else {
             amxd_trans_set_value(cstring_t, &trans, "WdsInterfaceName", "");
         }
-        wld_ad_syncCapabilities(&trans, &pAD->assocCaps);
+        wld_ad_syncCapabilities(&trans, &pAD->assocCaps, object);
         wld_ad_syncdetailedMcsCapabilities(&trans, &pAD->assocCaps);
         wld_ad_syncRrmCapabilities(&trans, &pAD->assocCaps);
 
@@ -1878,7 +1882,7 @@ swl_rc_ne wld_ad_syncInfo(T_AssociatedDevice* pAD) {
         hasData = true;
         SAH_TRACEZ_INFO(ME, "setting probe caps of sta mac %s", pAD->Name);
         amxd_trans_select_pathf(&trans, ".ProbeReqCaps");
-        wld_ad_syncCapabilities(&trans, &pAD->probeReqCaps);
+        wld_ad_syncCapabilities(&trans, &pAD->probeReqCaps, amxd_object_get(object, "ProbeReqCaps"));
         wld_ad_syncdetailedMcsCapabilities(&trans, &pAD->probeReqCaps);
         wld_ad_syncRrmCapabilities(&trans, &pAD->probeReqCaps);
     }

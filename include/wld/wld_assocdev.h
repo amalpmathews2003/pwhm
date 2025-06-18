@@ -121,7 +121,7 @@ int wld_rad_get_nb_active_stations(T_Radio* pRad);
 int wld_rad_get_nb_active_video_stations(T_Radio* pRad);
 bool wld_ad_has_active_stations(T_AccessPoint* pAP);
 bool wld_ad_hasAuthenticatedStations(T_AccessPoint* pAP);
-void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps);
+void wld_ad_syncCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps, amxd_object_t* tgtObj);
 void wld_ad_syncRrmCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps);
 void wld_ad_syncdetailedMcsCapabilities(amxd_trans_t* trans, wld_assocDev_capabilities_t* caps);
 amxd_object_t* wld_ad_getOrCreateObject(T_AccessPoint* pAP, T_AssociatedDevice* pAD);

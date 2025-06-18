@@ -12,14 +12,6 @@
                 "from": "",
                 "to": "40MHz,SGI20"
             },
-            "PairwiseCipher": {
-                "from": "",
-                "to": "000FAC00"
-            },
-            "PairwiseAKM": {
-                "from": "",
-                "to": "000FAC00"
-            },
             "SecurityModeEnabled": {
                 "from": "Unknown",
                 "to": "WPA2-Personal"

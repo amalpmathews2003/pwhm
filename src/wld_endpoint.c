@@ -1539,7 +1539,7 @@ bool wld_endpoint_updateStats(amxd_object_t* obj, T_EndPointStats* stats) {
     amxd_trans_set_cstring_t(&trans, "OperatingStandard", swl_radStd_unknown_str[stats->operatingStandard]);
     amxd_trans_set_uint32_t(&trans, "MaxRxSpatialStreamsSupported", stats->maxRxStream);
     amxd_trans_set_uint32_t(&trans, "MaxTxSpatialStreamsSupported", stats->maxTxStream);
-    wld_ad_syncCapabilities(&trans, &stats->assocCaps);
+    wld_ad_syncCapabilities(&trans, &stats->assocCaps, obj);
 
     ASSERT_TRANSACTION_LOCAL_DM_END(&trans, false, ME, "trans apply failure");
 
