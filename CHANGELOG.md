@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.19 - 2025-06-19(10:38:22 +0000)
+
+### Other
+
+- EndPoint 2g is connecting and disconnected in loop
+
 ## Release sah-next_v7.18.18 - 2025-06-18(09:33:49 +0000)
 
 ### Other
