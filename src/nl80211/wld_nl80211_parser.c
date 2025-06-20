@@ -1378,8 +1378,9 @@ static void s_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDev
     }
     if(pWirelessDevIE->operChanInfo.bandwidth != SWL_BW_AUTO) {
         pResult->bandwidth = swl_chanspec_bwToInt(pWirelessDevIE->operChanInfo.bandwidth);
+        pResult->extensionChannel = pWirelessDevIE->operChanInfo.extensionHigh;
     }
-    swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band);
+    swl_chanspec_t chanSpec = SWL_CHANSPEC_NEW_EXT(pResult->channel, pWirelessDevIE->operChanInfo.bandwidth, pWirelessDevIE->operChanInfo.band, pResult->extensionChannel, 0);
     pResult->centreChannel = swl_chanspec_getCentreChannel(&chanSpec);
     swl_operatingClass_t operClass = swl_chanspec_getOperClass(&chanSpec);
     if(operClass > 0) {
