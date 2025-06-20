@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.20 - 2025-06-20(14:15:20 +0000)
+
+### Other
+
+- hostapd not started although vap is enabled
+
 ## Release sah-next_v7.18.19 - 2025-06-19(10:38:22 +0000)
 
 ### Other
