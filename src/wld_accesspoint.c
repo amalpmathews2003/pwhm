@@ -1084,6 +1084,12 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         }
         free(mfp);
 
+        bool bcnProt = amxd_object_get_bool(secObj, "BeaconProtection", false);
+        if(bcnProt != pAP->beaconProtection) {
+            pAP->beaconProtection = bcnProt;
+            wld_ap_sec_doSync(pAP);
+        }
+
         tmp_int32 = amxd_object_get_int32_t(secObj, "SPPAmsdu", NULL);
         if(pAP->sppAmsdu != tmp_int32) {
             pAP->sppAmsdu = tmp_int32;

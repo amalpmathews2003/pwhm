@@ -1860,6 +1860,7 @@ struct S_ACCESSPOINT {
     wld_enc_modes_e encryptionModeEnabled;
     swl_security_configExt_t secCfgExt;
     swl_security_mfpMode_e mfpConfig;
+    bool beaconProtection;
     int sppAmsdu;
     int rekeyingInterval;
     int SHA256Enable;              /* (NEW) If supported add extra key protection */

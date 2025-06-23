@@ -501,6 +501,8 @@ static void s_setCommonSecurityConf_ocf(void* priv _UNUSED, amxd_object_t* objec
         } else if(swl_str_matches(pname, "MFPConfig")) {
             const char* mfpStr = amxc_var_constcast(cstring_t, newValue);
             pAP->mfpConfig = swl_security_mfpModeFromString(mfpStr);
+        } else if(swl_str_matches(pname, "BeaconProtection")) {
+            pAP->beaconProtection = amxc_var_dyncast(bool, newValue);
         } else if(swl_str_matches(pname, "SHA256Enable")) {
             pAP->SHA256Enable = amxc_var_dyncast(bool, newValue);
         } else if(swl_str_matches(pname, "TransitionDisable")) {

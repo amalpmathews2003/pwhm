@@ -775,11 +775,18 @@ define rrm_t{
 			 *     * Required
 			 * MBO: PMF needs to be enabled whenever using WPA2 with MBO (set to Optional)
 			 */
-
 			string MFPConfig = "Disabled" {
 				on action validate call check_enum ["Disabled",
 						"Optional",
 						"Required"];
+			}
+
+			/**
+			 * Beacon protection configuration.
+			 * Only apply for Wi-Fi 7 capable and more recent access point
+			 */
+			%persistent bool BeaconProtection {
+				default true;
 			}
 
 			/**
