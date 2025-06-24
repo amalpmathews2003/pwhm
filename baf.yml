@@ -255,3 +255,7 @@ dependencies:
   - name: "mod-netmodel"
   - name: "odl-generator"
     min: "master_v1.6.4"
+  - name: "kmod-iwlwav-driver-uci-debug"
+    only: CONFIG_TARGET_intel_x86&&PACKAGE_mod-whm-debug
+  - name: "kmod-iwlwav-driver-uci"
+    only: CONFIG_TARGET_intel_x86&&PACKAGE_mod-whm
