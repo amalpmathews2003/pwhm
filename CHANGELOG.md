@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.22 - 2025-06-26(10:18:37 +0000)
+
+### Other
+
+- - clean autocreated hostapd interfaces
+
 ## Release sah-next_v7.18.21 - 2025-06-26(08:15:39 +0000)
 
 ### Other
