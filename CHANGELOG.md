@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.23 - 2025-06-26(11:40:45 +0000)
+
+### Other
+
+- - Missing target chanspec  update after EP connection
+
 ## Release sah-next_v7.18.22 - 2025-06-26(10:18:37 +0000)
 
 ### Other
