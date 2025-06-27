@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.18.24 - 2025-06-27(08:00:57 +0000)
+
+### Other
+
+- Fix UT local run
+
 ## Release sah-next_v7.18.23 - 2025-06-26(11:40:45 +0000)
 
 ### Other
