@@ -1027,7 +1027,10 @@ swl_rc_ne wld_nl80211_parseWiphyInfo(struct nlattr* tb[], wld_nl80211_wiphyInfo_
     }
     NLA_GET_VAL(pWiphy->nStaMax, nla_get_u32, tb[NL80211_ATTR_MAX_AP_ASSOC_STA]);
     /* check MLO support */
-    pWiphy->suppMlo = (tb[NL80211_ATTR_MLO_SUPPORT] != NULL);
+    if(tb[NL80211_ATTR_MLO_SUPPORT]) {
+        pWiphy->suppMlo = true;
+    }
+
     s_parseIfTypes(tb, pWiphy);
     s_parseIfCombi(tb, pWiphy);
     s_parseWiphyBands(tb, pWiphy);
