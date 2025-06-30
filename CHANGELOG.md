@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.20.2 - 2025-06-30(09:32:54 +0000)
+
+### Other
+
+- [import]  Unable to Enable SSIDs via Wi-Fi/SSIDs WebUI page.
+
 ## Release sah-next_v7.20.1 - 2025-06-30(09:15:36 +0000)
 
 ### Other
