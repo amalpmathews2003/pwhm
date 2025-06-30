@@ -67,39 +67,43 @@
 #define ME "genWsup"
 #define WPASUPP_CONF_FILE_PATH_FORMAT "/tmp/%s_wpa_supplicant.conf"
 #define WPASUPP_CMD "wpa_supplicant"
-#define WPASUPP_ARGS_FORMAT_EXT "-ddK -b%s -i%s -Dnl80211 -c%s"
-#define WPASUPP_ARGS_FORMAT "-ddK -i%s -Dnl80211 -c%s"
+#define WPASUPP_ARGS_FORMAT "-ddtK"
 #define WPASUPP_CTRL_IFACE_DIR "/var/run/wpa_supplicant"
 
-swl_rc_ne s_writeWpaSupArgsToBuf(char* args, size_t argsSize, char* confFilePath, size_t confFilePathSize, T_EndPoint* pEP) {
-    ASSERT_NOT_NULL(pEP, SWL_RC_ERROR, ME, "NULL");
-    bool ret;
-    char cfgPath[128] = {0};
-    ret = swl_str_catFormat(cfgPath, sizeof(cfgPath), WPASUPP_CONF_FILE_PATH_FORMAT, pEP->Name);
-    ASSERTI_TRUE(ret, SWL_RC_ERROR, ME, "%s: writing wpaSupplicantConfigPath error", pEP->Name);
+static char* s_getWpaSupArgsCb(wld_secDmn_t* pSecDmn, void* userdata _UNUSED) {
+    char* args = NULL;
+    ASSERT_NOT_NULL(pSecDmn, args, ME, "NULL");
+    T_EndPoint* pEP = (T_EndPoint*) userdata;
+    ASSERT_NOT_NULL(pEP, args, ME, "NULL");
 
-    if(confFilePath != NULL) {
-        ret = swl_str_copy(confFilePath, confFilePathSize, cfgPath);
-        ASSERTI_TRUE(ret, SWL_RC_ERROR, ME, "%s: writing wpaSupplicantConfigPath error", pEP->Name);
-    }
+    char startArgs[256] = {0};
+    //common arguments
+    wld_dmnMgt_initStartArgs(startArgs, sizeof(startArgs), WPASUPP_CMD, WPASUPP_ARGS_FORMAT);
 
-    swl_str_copy(args, argsSize, "\0");
+    //per interface arguments
+    swl_strlst_catFormat(startArgs, sizeof(startArgs), " ", "-i %s", pEP->Name);
+    swl_strlst_catFormat(startArgs, sizeof(startArgs), " ", "-Dnl80211");
     if(!swl_str_isEmpty(pEP->bridgeName)) {
-        ret = swl_str_catFormat(args, argsSize, WPASUPP_ARGS_FORMAT_EXT, pEP->bridgeName, pEP->Name, cfgPath);
-    } else {
-        ret = swl_str_catFormat(args, argsSize, WPASUPP_ARGS_FORMAT, pEP->Name, cfgPath);
+        swl_strlst_catFormat(startArgs, sizeof(startArgs), " ", "-b %s", pEP->bridgeName);
     }
-    ASSERTI_TRUE(ret, SWL_RC_ERROR, ME, "%s: writing wpaArgs error", pEP->Name);
-    return SWL_RC_OK;
+    if(!swl_str_isEmpty(pSecDmn->cfgFile)) {
+        swl_strlst_catFormat(startArgs, sizeof(startArgs), " ", "-c %s", pSecDmn->cfgFile);
+    }
+
+    swl_str_copyMalloc(&args, startArgs);
+    return args;
 }
+
 swl_rc_ne wifiGen_wpaSupp_init(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
-    char startArgs[128] = {0};
     char confFilePath[128] = {0};
-    swl_rc_ne rc = s_writeWpaSupArgsToBuf(startArgs, sizeof(startArgs), confFilePath, sizeof(confFilePath), pEP);
-    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to set wpa_supplicant args", pEP->Name);
-    rc = wld_secDmn_init(&pEP->wpaSupp, WPASUPP_CMD, startArgs, confFilePath, WPASUPP_CTRL_IFACE_DIR);
+    swl_str_catFormat(confFilePath, sizeof(confFilePath), WPASUPP_CONF_FILE_PATH_FORMAT, pEP->Name);
+    swl_rc_ne rc = wld_secDmn_init(&pEP->wpaSupp, WPASUPP_CMD, NULL, confFilePath, WPASUPP_CTRL_IFACE_DIR);
     ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to init wpa_supplicant", pEP->Name);
+    wld_secDmnEvtHandlers handlers;
+    memset(&handlers, 0, sizeof(handlers));
+    handlers.getArgs = s_getWpaSupArgsCb;
+    wld_secDmn_setEvtHandlers(pEP->wpaSupp, &handlers, pEP);
     ASSERT_TRUE(wld_wpaCtrlInterface_init(&pEP->wpaCtrlInterface, pEP->Name, pEP->wpaSupp->ctrlIfaceDir),
                 SWL_RC_ERROR, ME, "%s: Fail to init EP interface", pEP->Name);
     ASSERT_TRUE(wld_wpaCtrlMngr_registerInterface(pEP->wpaSupp->wpaCtrlMngr, pEP->wpaCtrlInterface),
@@ -117,10 +121,6 @@ swl_rc_ne wifiGen_wpaSupp_startDaemon(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_NOT_NULL(pEP->wpaSupp, SWL_RC_INVALID_STATE, ME, "%s: wpaSupp not initialized", pEP->Name);
     SAH_TRACEZ_WARNING(ME, "%s: Start wpa_supplicant", pEP->Name);
-    char startArgs[128] = {0};
-    swl_rc_ne rc = s_writeWpaSupArgsToBuf(startArgs, sizeof(startArgs), NULL, 0, pEP);
-    ASSERT_FALSE(rc < SWL_RC_OK, rc, ME, "%s: Fail to set wpa_supplicant args", pEP->Name);
-    wld_dmn_setArgList(pEP->wpaSupp->dmnProcess, startArgs);
     wld_wpaCtrlInterface_setEnable(pEP->wpaCtrlInterface, pEP->enable);
     return wld_secDmn_start(pEP->wpaSupp);
 }
