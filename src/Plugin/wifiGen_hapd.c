@@ -716,7 +716,12 @@ static void s_restartChangeParameter(vendor_t* pVdr, wld_dmnMgt_dmnExecSettings_
             continue;
         }
         SAH_TRACEZ_INFO(ME, "restart %s", pRad->Name);
-        wld_secDmn_restart(pRad->hostapd);
+        if(wld_secDmn_isRunning(pRad->hostapd)) {
+            wld_secDmn_restart(pRad->hostapd);
+        } else if(wifiGen_hapd_isStartable(pRad)) {
+            setBitLongArray(pRad->fsmRad.FSM_BitActionArray, FSM_BW, GEN_FSM_START_HOSTAPD);
+            wld_rad_doCommitIfUnblocked(pRad);
+        }
     }
 }
 
