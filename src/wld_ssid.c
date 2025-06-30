@@ -826,6 +826,10 @@ static void s_setSSIDConf_ocf(void* priv _UNUSED, amxd_object_t* object, const a
  * Shall only be relevant if endpoint is enabled
  */
 void wld_ssid_setMLDRole(T_SSID* pSSID, swl_mlo_role_e mldRole) {
+    ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
+    if(mldRole == SWL_MLO_ROLE_PRIMARY) {
+        wld_mld_setPrimaryLink(pSSID->pMldLink);
+    }
     ASSERTI_NOT_EQUALS(pSSID->mldRole, mldRole, , ME, "%s: same role %s", pSSID->Name, swl_mlo_role_str[mldRole]);
     pSSID->mldRole = mldRole;
     if(pSSID->ENDP_HOOK != NULL) {
@@ -839,6 +843,8 @@ void wld_ssid_setMLDRole(T_SSID* pSSID, swl_mlo_role_e mldRole) {
 }
 
 void wld_ssid_setMLDLinkID(T_SSID* pSSID, int16_t mldLinkId) {
+    ASSERTS_NOT_NULL(pSSID, , ME, "NULL");
+    wld_mld_setLinkId(pSSID->pMldLink, mldLinkId);
     ASSERTI_NOT_EQUALS(pSSID->mldLinkId, mldLinkId, , ME, "%s: same id %d", pSSID->Name, mldLinkId);
     pSSID->mldLinkId = mldLinkId;
 

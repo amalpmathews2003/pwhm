@@ -939,6 +939,27 @@ static void s_syncOnEpConnected(void* userData, char* ifName, bool state) {
                 }
             }
         }
+
+        int32_t linkId = NO_LINK_ID;
+        swl_mlo_role_e mldRole = SWL_MLO_ROLE_NONE;
+        if(epIfInfo.nMloLinks > 0) {
+            swl_freqBandExt_e band = pRad->operatingFrequencyBand;
+            if(band >= SWL_FREQ_BAND_EXT_NONE) {
+                band = wld_chanmgt_getCurChspec(pRad).band;
+            }
+            const wld_nl80211_ifaceMloLinkInfo_t* pLinkInfo =
+                wld_nl80211_fetchIfaceMloLinkByFreqBand(&epIfInfo, band);
+            if(pLinkInfo) {
+                if(pLinkInfo->linkPos == 0) {
+                    mldRole = SWL_MLO_ROLE_PRIMARY;
+                } else {
+                    mldRole = SWL_MLO_ROLE_AUXILIARY;
+                }
+                linkId = pLinkInfo->link.linkId;
+            }
+        }
+        wld_ssid_setMLDLinkID(pEP->pSSID, linkId);
+        wld_ssid_setMLDRole(pEP->pSSID, mldRole);
     }
     s_delayRestoreFronthaul(pRad);
     s_startRefreshEpChspec(pEP);
@@ -950,6 +971,8 @@ static void s_syncOnEpDisconnected(void* userData, char* ifName, bool state) {
     T_EndPoint* pEP = wld_rad_ep_from_name(pRad, ifName);
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     SAH_TRACEZ_INFO(ME, "%s: disconnected endpoint", pEP->Name);
+    wld_ssid_setMLDLinkID(pEP->pSSID, NO_LINK_ID);
+    wld_ssid_setMLDRole(pEP->pSSID, SWL_MLO_ROLE_NONE);
     ASSERTS_TRUE(wifiGen_hapd_isAlive(pRad), , ME, "%s: hapd not running", pRad->Name);
     chanmgt_rad_state detRadState = CM_RAD_UNKNOWN;
     if((wifiGen_hapd_getRadState(pRad, &detRadState) == SWL_RC_OK) &&
@@ -1153,6 +1176,7 @@ static void s_checkApDependency(T_AccessPoint* pAP, T_Radio* pRad) {
         T_SSID* pSSID = pAP->pSSID;
         ASSERTS_NOT_NULL(pSSID, , ME, "%s: no ssid ctx", pAP->alias);
         wld_mld_setLinkConfigured(pSSID->pMldLink, wld_mld_isLinkUsable(pSSID->pMldLink));
+        wld_ssid_setMLDStatus(pSSID, wld_mld_checkMLDStatus(pSSID));
     }
 }
 
@@ -1176,6 +1200,10 @@ void s_checkEpDependency(T_EndPoint* pEP, T_Radio* pRad _UNUSED) {
         clearBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_CONNECT_EP);
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_STOP_WPASUPP);
         setBitLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_MOD_WPASUPP);
+    }
+    if(isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_START_WPASUPP) ||
+       isBitSetLongArray(pEP->fsm.FSM_AC_BitActionArray, FSM_BW, GEN_FSM_CONNECT_EP)) {
+        wld_ssid_setMLDStatus(pEP->pSSID, wld_mld_checkMLDStatus(pEP->pSSID));
     }
 }
 
