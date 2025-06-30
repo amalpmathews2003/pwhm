@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.20.4 - 2025-06-30(13:47:54 +0000)
+
+### Other
+
+- PPW-525 [import] avoid too frequent refresh of assoc dev info
+
 ## Release sah-next_v7.20.3 - 2025-06-30(13:20:08 +0000)
 
 ### Other
