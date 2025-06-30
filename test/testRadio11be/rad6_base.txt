@@ -14,6 +14,7 @@
     "dbgRADEnable": 0,
     "Upstream": false,
     "RetryLimit": 7,
+    "HeMacCapabilities": "AAAAAA==",
     "RxPowerSaveRepeaterEnable": false,
     "LastChange": 7,
     "STA_Mode": false,
@@ -26,6 +27,7 @@
     "AutoChannelRefreshPeriod": 0,
     "RTSThreshold": 2347,
     "DFSChannelChangeEventTimestamp": "0001-01-01T00:00:00Z",
+    "RadCapabilitiesHeMacStr": "",
     "LastStatusChangeTimeStamp": "2022-01-01T00:00:04Z",
     "PreambleType": "auto",
     "WDS_Mode": true,
@@ -86,7 +88,7 @@
     "SupportedSensingExchangeTypes": "",
     "TxBeamformingCapsAvailable": "",
     "ActiveVideoAssociatedDevices": 0,
-    "HECapabilities": "AAAAAAAAAAAAAAA=",
+    "HePhyCapabilities": "AAAAAAAAAAAAAAA=",
     "WET_Mode": false,
     "Status": "Up",
     "Enable": true,
@@ -106,4 +108,5 @@
     "HTCapabilities": "AAA=",
     "Alias": "wifi2",
     "TargetWakeTimeEnable": true
+    "SupportedHeMcsNssSet": "AAAAAAAAAAAAAAA=",
 }
