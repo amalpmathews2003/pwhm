@@ -467,12 +467,24 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
 
 typedef struct {
     uint8_t b_0 : 1;
+    uint8_t twt_requester_support : 1;
+    uint8_t twt_responder_support : 1;
+    uint8_t b_3_7 : 5;
+    uint16_t b_8_23;
+    uint16_t b_24_39;
+    uint8_t b_40_47;
+} SWL_PACKED heMacCapInfo_t;
+
+typedef struct {
+    uint8_t b_0 : 1;
     uint8_t supp_40mhz_in_2_4ghz : 1;
     uint8_t supp_40_80mhz_in_5ghz : 1;
     uint8_t supp_160mhz_in_5ghz : 1;
     uint8_t supp_160_80p80mhz_in_5ghz : 1;
     uint8_t b_5_7 : 3;
-    uint16_t b_8_23;
+    uint16_t b_8_21 : 14;
+    uint16_t full_bw_ul_mumimo : 1;
+    uint16_t partial_bw_ul_mumimo : 1;
     uint16_t b_24_30 : 7;
     uint16_t su_beamformer : 1;
     uint16_t su_beamformee : 1;
@@ -483,6 +495,15 @@ typedef struct {
     uint16_t b_56_71;
     uint16_t b_72_87;
 } SWL_PACKED hePhyCapInfo_t;
+
+typedef struct {
+    uint16_t rxHeMcsMap80;
+    uint16_t txHeMcsMap80;
+    uint16_t rxHeMcsMap160;
+    uint16_t txHeMcsMap160;
+    uint16_t rxHeMcsMap8080;
+    uint16_t txHeMcsMap8080;
+} SWL_PACKED supportedHeMcsNssSet_t;
 
 static bool s_isSupportedNlIfType(struct nlattr* tbIfType) {
     struct nlattr* ift = NULL;
@@ -511,19 +532,27 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         if(!s_isSupportedNlIfType(tbIfType[NL80211_BAND_IFTYPE_ATTR_IFTYPES])) {
             continue;
         }
+        struct nlattr* heCapMacAttr = tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_CAP_MAC];
         struct nlattr* heCapPhyAttr = tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_CAP_PHY];
         struct nlattr* heCapMcsSetAttr = tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET];
-        if(!heCapPhyAttr || !heCapMcsSetAttr) {
+        if(!heCapMacAttr || !heCapPhyAttr || !heCapMcsSetAttr) {
             continue;
         }
+
+        /* 9.4.2.248.2 HE MAC Capabilities Information field: B0..B47 */
+        heMacCapInfo_t heMacCapInfo = {0};
+        NLA_GET_DATA(&heMacCapInfo, heCapMacAttr, sizeof(heMacCapInfo));
+        /* since structures are the same, it is safe to do a memcpy() */
+        memcpy(&pBand->heMacCapabilities, &heMacCapInfo, sizeof(pBand->heMacCapabilities));
+
         /*
          * As defined in 9.4.2.248.3 HE PHY Capabilities Information field: B0..B87
          */
         swl_mcs_t* pMcsStd = &pBand->mcsStds[SWL_MCS_STANDARD_HE];
         hePhyCapInfo_t hePhyCapInfo = {0};
         NLA_GET_DATA(&hePhyCapInfo, heCapPhyAttr, sizeof(hePhyCapInfo));
-        uint64_t phyCap[2] = { 0 };
-        NLA_GET_DATA(phyCap, heCapPhyAttr, 11);
+        memcpy(&pBand->hePhyCapabilities, &hePhyCapInfo, sizeof(pBand->hePhyCapabilities));
+
         pMcsStd->standard = SWL_MCS_STANDARD_HE;
         pMcsStd->bandwidth = SWL_BW_20MHZ;
         if(pBand->freqBand == SWL_FREQ_BAND_2_4GHZ) {
@@ -564,18 +593,19 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
         if(hePhyCapInfo.beamformee_sts_le_80mhz || hePhyCapInfo.beamformee_sts_gt_80mhz) {
             pBand->bfCapsSupported[COM_DIR_RECEIVE] |= M_RAD_BF_CAP_HE_MU;
         }
+
         /*
          * As defined in 9.4.2.248.4 Supported HE-MCS And NSS Set field:
          * RX/TX MCS Maps, per supported chan width group
-         * tweak: only parse "permanent" first Rx HE-MCS Map ≤ 80 MHz
-         * (same values are commonly applied for next maps (TX, and other bw groups)
          */
-        uint16_t mcsMapRxLe80;
-        NLA_GET_DATA(&mcsMapRxLe80, heCapMcsSetAttr, sizeof(mcsMapRxLe80));
+        supportedHeMcsNssSet_t supportedHeMcsNssSet = {0};
+        NLA_GET_DATA(&supportedHeMcsNssSet, heCapMcsSetAttr, sizeof(supportedHeMcsNssSet));
+        memcpy(&pBand->heMcsCaps, &supportedHeMcsNssSet, sizeof(pBand->heMcsCaps));
+
         pMcsStd->numberOfSpatialStream = 1;
         pMcsStd->mcsIndex = 0;
         for(uint8_t ssId = 0; ssId < 8; ssId++) {  // up to 8ss
-            uint8_t mcsMapPerSS = (mcsMapRxLe80 >> (2 * ssId)) & 0x03;
+            uint8_t mcsMapPerSS = (supportedHeMcsNssSet.rxHeMcsMap80 >> (2 * ssId)) & 0x03;
             if(mcsMapPerSS < 3) {
                 pMcsStd->numberOfSpatialStream = SWL_MAX((int32_t) pMcsStd->numberOfSpatialStream, (ssId + 1));
                 pMcsStd->mcsIndex = SWL_MAX((int32_t) pMcsStd->mcsIndex, (7 + (mcsMapPerSS * 2)));
@@ -584,8 +614,6 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
 
         pBand->nSSMax = SWL_MAX(pBand->nSSMax, pMcsStd->numberOfSpatialStream);
         pBand->radStdsMask |= M_SWL_RADSTD_AX;
-        /* since structures are the same, it is safe to do a memcpy() */
-        memcpy(&pBand->hePhyCapabilities, &hePhyCapInfo, sizeof(pBand->hePhyCapabilities));
 
         if(tbIfType[NL80211_BAND_IFTYPE_ATTR_HE_6GHZ_CAPA] != NULL) {
             /* TODO */

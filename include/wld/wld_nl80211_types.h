@@ -175,19 +175,21 @@ typedef struct {
 } wld_nl80211_chanDesc_t;
 
 typedef struct {
-    swl_freqBand_e freqBand;                                 //frequency band
-    swl_radioStandard_m radStdsMask;                         //supported radio standards mask
-    swl_bandwidth_m chanWidthMask;                           //supported channel bandwidths
-    uint32_t nSSMax;                                         //max number of spatial streams
-    uint32_t nChans;                                         //number of available channels
-    wld_nl80211_chanDesc_t chans[WLD_MAX_POSSIBLE_CHANNELS]; //array of available channels
-    wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];           //which beamforming capabilities are available
-    swl_80211_htCapInfo_m htCapabilities;                    /* HT(High Throughput) 802.11n physical capabilities*/
-    swl_80211_vhtCapInfo_m vhtCapabilities;                  /* VHT(very High Throughput) 802.11n capabilities*/
-    swl_80211_hecap_phyCapInfo_t hePhyCapabilities;          /* HE(High Efficiency) 802.11ax capabilities*/
-    swl_80211_ehtcap_phyCapInfo_t ehtPhyCapabilities;        /* EHT(Extremely High Throughput) 802.11be capabilities*/
-    swl_mcs_t mcsStds[SWL_MCS_STANDARD_MAX];                 //support mcs standards (each indexed on its relative enum)
-    swl_mcs_legacyIndex_m supportedDataTransmitRates;        //supported data transmit rates
+    swl_freqBand_e freqBand;                                                //frequency band
+    swl_radioStandard_m radStdsMask;                                        //supported radio standards mask
+    swl_bandwidth_m chanWidthMask;                                          //supported channel bandwidths
+    uint32_t nSSMax;                                                        //max number of spatial streams
+    uint32_t nChans;                                                        //number of available channels
+    wld_nl80211_chanDesc_t chans[WLD_MAX_POSSIBLE_CHANNELS];                //array of available channels
+    wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];                          //which beamforming capabilities are available
+    swl_80211_htCapInfo_m htCapabilities;                                   /* HT(High Throughput) 802.11n physical capabilities*/
+    swl_80211_vhtCapInfo_m vhtCapabilities;                                 /* VHT(very High Throughput) 802.11n capabilities*/
+    swl_80211_hecap_macCapInfo_t heMacCapabilities;                         /* HE(High Efficiency) 802.11ax mac capabilities */
+    swl_80211_hecap_phyCapInfo_t hePhyCapabilities;                         /* HE(High Efficiency) 802.11ax phy capabilities */
+    swl_80211_hecap_MCSCap_t heMcsCaps[SWL_80211_HECAP_MCS_CAP_ARRAY_SIZE]; /* The Supported HE-MCS and NSS Set */
+    swl_80211_ehtcap_phyCapInfo_t ehtPhyCapabilities;                       /* EHT(Extremely High Throughput) 802.11be capabilities*/
+    swl_mcs_t mcsStds[SWL_MCS_STANDARD_MAX];                                //support mcs standards (each indexed on its relative enum)
+    swl_mcs_legacyIndex_m supportedDataTransmitRates;                       //supported data transmit rates
 } wld_nl80211_bandDef_t;
 
 typedef struct {
