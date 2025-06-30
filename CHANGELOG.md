@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.20.3 - 2025-06-30(13:20:08 +0000)
+
+### Other
+
+- fail to switch between single and multi hostapd
+
 ## Release sah-next_v7.20.2 - 2025-06-30(09:32:54 +0000)
 
 ### Other
