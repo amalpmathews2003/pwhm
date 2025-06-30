@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.20.1 - 2025-06-30(09:15:36 +0000)
+
+### Other
+
+- fail to set fronthaul chanspec with target backhaul chanspec
+
 ## Release sah-next_v7.20.0 - 2025-06-27(13:51:08 +0000)
 
 ### Other
