@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.21.0 - 2025-06-30(14:32:55 +0000)
+
+### Other
+
+- support custom start args for wpa_supplicant
+
 ## Release sah-next_v7.20.5 - 2025-06-30(14:05:29 +0000)
 
 ### Other
