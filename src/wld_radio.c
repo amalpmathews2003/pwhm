@@ -1950,12 +1950,27 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
         amxd_trans_set_cstring_t(&trans, "RadCapabilitiesVHTStr", capBuffer);
 
+        //HE MAC Capabilities
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->heMacCapabilities, sizeof(pR->heMacCapabilities));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "HeMacCapabilities", capBuffer);
+        }
+        swl_80211_heMacCapInfo_m heMacCap = 0;
+        memcpy(&heMacCap, pR->heMacCapabilities.cap, sizeof(swl_80211_heMacCapInfo_m));
+        outputSize = swl_80211_heMacCapMaskToChar(capBuffer, sizeof(capBuffer), heMacCap);
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        }
+        amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHeMacStr", capBuffer);
+
         //HE Physical Capabilities
         outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->hePhyCapabilities, sizeof(pR->hePhyCapabilities));
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         } else {
-            amxd_trans_set_cstring_t(&trans, "HECapabilities", capBuffer);
+            amxd_trans_set_cstring_t(&trans, "HePhyCapabilities", capBuffer);
         }
         // pR->hePhyCapabilities.cap is 10 bytes, the last 2 bytes are empty, thus we can just read the first 8 bytes
         swl_80211_hePhyCapInfo_m heCap = 0;
@@ -1966,6 +1981,13 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
         amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHePhysStr", capBuffer);
 
+        //Supported HE-MCS and NSS Set
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->heMcsCaps, sizeof(pR->heMcsCaps));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "SupportedHeMcsNssSet", capBuffer);
+        }
 
         amxd_trans_set_cstring_t(&trans, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));
 

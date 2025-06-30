@@ -1548,53 +1548,55 @@ struct WLD_RADIO {
     bool implicitBeamFormingEnabled;
     bool explicitBeamFormingSupported;
     bool explicitBeamFormingEnabled;
-    swl_80211_htCapInfo_m htCapabilities;           /* HT(High Throughput) 802.11n capabilities*/
-    swl_80211_vhtCapInfo_m vhtCapabilities;         /* VHT(very High Throughput) 802.11ac capabilities*/
-    swl_80211_hecap_phyCapInfo_t hePhyCapabilities; /* HE(High Efficiency) 802.11ax physical capabilities*/
+    swl_80211_htCapInfo_m htCapabilities;                                   /* HT(High Throughput) 802.11n capabilities*/
+    swl_80211_vhtCapInfo_m vhtCapabilities;                                 /* VHT(very High Throughput) 802.11ac capabilities*/
+    swl_80211_hecap_macCapInfo_t heMacCapabilities;                         /* HE(High Efficiency) 802.11ax mac capabilities */
+    swl_80211_hecap_phyCapInfo_t hePhyCapabilities;                         /* HE(High Efficiency) 802.11ax phy capabilities */
+    swl_80211_hecap_MCSCap_t heMcsCaps[SWL_80211_HECAP_MCS_CAP_ARRAY_SIZE]; /* The Supported HE-MCS and NSS Set */
     wld_rifs_mode_e RIFSEnabled;
-    bool airtimeFairnessEnabled;                    /* Enable airtime fairness feature */
-    bool intAirtimeSchedEnabled;                    /* Enable intelligent airtime scheduling*/
-    bool rxPowerSaveEnabled;                        /* Enable receive chain power save*/
-    bool rxPowerSaveEnabledWhenRepeater;            /* Enable receive chain power save when repeater*/
-    bool multiUserMIMOSupported;                    /* Whether MU MIMO is supported */
-    bool multiUserMIMOEnabled;                      /* Whether MU MIMO is enabled */
-    bool kickRoamStaEnabled;                        /* Enable kicking of roaming stations in this rad */
-    bool ofdmaEnable;                               /* Whether OFDMA is enabled */
-    wld_he_cap_m heCapsSupported;                   /* Which 11ax he caps are supported */
-    wld_he_cap_m heCapsEnabled;                     /* Which 11ax he caps are enabled */
-    wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];  /* Which beamforming capabilities are available */
-    wld_rad_bf_cap_m bfCapsEnabled[COM_DIR_MAX];    /* Which beamforming capabilities are enabled */
-    int32_t nrAntenna[COM_DIR_MAX];                 /* Number of antennas available. -1 means undefined */
-    int32_t nrActiveAntenna[COM_DIR_MAX];           /* Number of antennas active. -1 means undefined */
-    uint16_t rtsThreshold;                          /* Number of octets in an MPDU below which an RTS/CTS handshake is not performed */
-    uint32_t beaconPeriod;                          /* Beaconing period in ms */
-    uint32_t dtimPeriod;                            /* Delivery Traffic Information Map period, in nrBeacons*/
-    wld_preamble_type_e preambleType;               /* Longer preamble are needed by 802.11g to coexist with legacy systems 802.11 and 802.11b */
-    bool packetAggregationEnable;                   /* Enable packet Aggregation (commonly called "frame aggregation") */
-    unsigned int DFSChannelChangeEventCounter;      /* Number of DFS channel change events */
-    swl_timeReal_t DFSChannelChangeEventTimestamp;  /* Last DFS channel change event realTime value */
-    uint8_t dfsFileLogLimit;                        /* MAX number of DFS events to be saved into dfsEvent log file */
-    uint8_t dfsEventLogLimit;                       /* MAX number of DFS events to be saved into datamodel */
-    uint8_t dfsEventNbr;                            /* Number of DFS events currently in datamodel */
-    uint8_t dfsFileEventNbr;                        /* Number of DFS events currently in dfsEvent log file */
+    bool airtimeFairnessEnabled;                                            /* Enable airtime fairness feature */
+    bool intAirtimeSchedEnabled;                                            /* Enable intelligent airtime scheduling*/
+    bool rxPowerSaveEnabled;                                                /* Enable receive chain power save*/
+    bool rxPowerSaveEnabledWhenRepeater;                                    /* Enable receive chain power save when repeater*/
+    bool multiUserMIMOSupported;                                            /* Whether MU MIMO is supported */
+    bool multiUserMIMOEnabled;                                              /* Whether MU MIMO is enabled */
+    bool kickRoamStaEnabled;                                                /* Enable kicking of roaming stations in this rad */
+    bool ofdmaEnable;                                                       /* Whether OFDMA is enabled */
+    wld_he_cap_m heCapsSupported;                                           /* Which 11ax he caps are supported */
+    wld_he_cap_m heCapsEnabled;                                             /* Which 11ax he caps are enabled */
+    wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];                          /* Which beamforming capabilities are available */
+    wld_rad_bf_cap_m bfCapsEnabled[COM_DIR_MAX];                            /* Which beamforming capabilities are enabled */
+    int32_t nrAntenna[COM_DIR_MAX];                                         /* Number of antennas available. -1 means undefined */
+    int32_t nrActiveAntenna[COM_DIR_MAX];                                   /* Number of antennas active. -1 means undefined */
+    uint16_t rtsThreshold;                                                  /* Number of octets in an MPDU below which an RTS/CTS handshake is not performed */
+    uint32_t beaconPeriod;                                                  /* Beaconing period in ms */
+    uint32_t dtimPeriod;                                                    /* Delivery Traffic Information Map period, in nrBeacons*/
+    wld_preamble_type_e preambleType;                                       /* Longer preamble are needed by 802.11g to coexist with legacy systems 802.11 and 802.11b */
+    bool packetAggregationEnable;                                           /* Enable packet Aggregation (commonly called "frame aggregation") */
+    unsigned int DFSChannelChangeEventCounter;                              /* Number of DFS channel change events */
+    swl_timeReal_t DFSChannelChangeEventTimestamp;                          /* Last DFS channel change event realTime value */
+    uint8_t dfsFileLogLimit;                                                /* MAX number of DFS events to be saved into dfsEvent log file */
+    uint8_t dfsEventLogLimit;                                               /* MAX number of DFS events to be saved into datamodel */
+    uint8_t dfsEventNbr;                                                    /* Number of DFS events currently in datamodel */
+    uint8_t dfsFileEventNbr;                                                /* Number of DFS events currently in dfsEvent log file */
 
-    unsigned long drv_caps;                         /* Driver capablities for this Radio */
+    unsigned long drv_caps;                                                 /* Driver capablities for this Radio */
 
-    T_Stats stats;                                  /* Radio statistics */
-    swla_dm_objActionReadCtx_t onReadStatsCtx;      /* Radio.Stats object read handler ctx */
-    T_CONST_WPS* wpsConst;                          /* WPS constant strings (Build defined) */
-    int currentStations;                            /* Stat the current # of stations connected to this radio */
-    uint32_t currentVideoStations;                  /* Stat the current # of video endpoints connected to to this radio */
-    int maxStations;                                /* config the MAX # of stations this radio can handle */
-    uint32_t maxNrHwBss;                            /* The max nr of Bss that radio can create (determined by hardware) */
-    uint32_t maxNrHwSta;                            /* The max nr of stations that radio can create (determined by hardware) */
+    T_Stats stats;                                                          /* Radio statistics */
+    swla_dm_objActionReadCtx_t onReadStatsCtx;                              /* Radio.Stats object read handler ctx */
+    T_CONST_WPS* wpsConst;                                                  /* WPS constant strings (Build defined) */
+    int currentStations;                                                    /* Stat the current # of stations connected to this radio */
+    uint32_t currentVideoStations;                                          /* Stat the current # of video endpoints connected to to this radio */
+    int maxStations;                                                        /* config the MAX # of stations this radio can handle */
+    uint32_t maxNrHwBss;                                                    /* The max nr of Bss that radio can create (determined by hardware) */
+    uint32_t maxNrHwSta;                                                    /* The max nr of stations that radio can create (determined by hardware) */
 
-    amxc_llist_t llAP;                              /* VAP linked list on this radio (used when commit is used)! */
-    amxc_llist_t llEndPoints;                       /* Endpoints linked list on this radio (used when commit is used)! */
+    amxc_llist_t llAP;                                                      /* VAP linked list on this radio (used when commit is used)! */
+    amxc_llist_t llEndPoints;                                               /* Endpoints linked list on this radio (used when commit is used)! */
 
-    FSM_STATE fsm_radio_st;                         /* Radio FSM state? */
-    T_FSM fsmRad;                                   /* Global Radio FSM state */
-    wld_fsmStats_t fsmStats;                        /* Statistics on FSM usage */
+    FSM_STATE fsm_radio_st;                                                 /* Radio FSM state? */
+    T_FSM fsmRad;                                                           /* Global Radio FSM state */
+    wld_fsmStats_t fsmStats;                                                /* Statistics on FSM usage */
     int fsmTO;
 
     bool stationMonitorEnabled;

@@ -1292,10 +1292,24 @@ define probelist_t{
 		%read-only string RadCapabilitiesVHTStr;
 
 		/**
+		 * Radio 802.11ax HE(High Efficiency) mac capabilities, raw values, in base64 as per the Tr181 Spec.
+		 * See standard section "9.4.2.248.2 HE MAC Capabilities Information field" for bits details.
+		 */
+		%read-only string HeMacCapabilities;
+
+		/**
+		 * Radio 802.11ax HE(High Efficiency) mac capabilities. List of strings  with these
+		 * possible values:
+		 * * TWT_REQ
+		 * * TWT_RESP
+		 */
+		%read-only string RadCapabilitiesHeMacStr;
+
+		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities, raw values, in base64 as per the Tr181 Spec.
 		 * See standard section "9.4.2.248.3 HE PHY Capabilities Information field" for bits details.
 		*/
-		%read-only string HECapabilities;
+		%read-only string HePhyCapabilities;
 
 		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities. List of strings  with these
@@ -1305,13 +1319,21 @@ define probelist_t{
 		 * * 40_80MHZ_5GHZ
 		 * * 160MHZ_5GHZ
 		 * * 160_80_80_MHZ_5GHZ
+		 * * FULL_UL_MU_MIMO
+		 * * PARTIAL_UL_MU_MIMO
 		 * * SU_BEAMFORMER
 		 * * SU_BEAMFORMEE
-		 * * MU_BEAMFORMEE
+		 * * MU_BEAMFORMER
 		 * * BEAMFORMEE_STS_LE_80MHZ
 		 * * BEAMFORMEE_STD_GT_80MHZ
 		*/
 		%read-only string RadCapabilitiesHePhysStr;
+
+		/**
+		 * Radio 802.11ax Supported HE-MCS and NSS Set, raw values, in base64 as per the Tr181 Spec.
+		 * See standard section "9.4.2.248.4 Supported HE-MCS And NSS Set field" for bits details.
+		 */
+		%read-only string SupportedHeMcsNssSet;
 
 		/** <p> Indicates if Reduced Interframe Space is enabled.</p>
 		 * Default = keep the current mode
