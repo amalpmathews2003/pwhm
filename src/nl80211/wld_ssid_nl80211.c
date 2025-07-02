@@ -125,7 +125,9 @@ swl_rc_ne wld_ssid_nl80211_getInterfaceInfo(T_SSID* pSSID, wld_nl80211_ifaceInfo
     if(rc == SWL_RC_NOT_AVAILABLE) {
         wld_nl80211_ifaceInfo_t ifaceInfo;
         memset(&ifaceInfo, 0, sizeof(ifaceInfo));
-        rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), wld_ssid_nl80211_getPrimaryLinkIfIndex(pSSID), &ifaceInfo);
+        int32_t tgtIfIndex = wld_ssid_nl80211_getPrimaryLinkIfIndex(pSSID);
+        ASSERTS_TRUE(tgtIfIndex > 0, rc, ME, "%s: no tgt ifIndex", pSSID->Name);
+        rc = wld_nl80211_getInterfaceInfo(wld_nl80211_getSharedState(), tgtIfIndex, &ifaceInfo);
         ASSERTS_TRUE(swl_rc_isOk(rc), rc, ME, "fail to get iface info");
         if(ifaceInfo.nMloLinks > 0) {
             swl_freqBandExt_e band = pRad->operatingFrequencyBand;
