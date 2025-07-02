@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.21.4 - 2025-07-02(16:47:42 +0000)
+
+### Other
+
+- ep stats transaction failing in loop
+
 ## Release sah-next_v7.21.3 - 2025-07-02(16:36:07 +0000)
 
 ### Other
