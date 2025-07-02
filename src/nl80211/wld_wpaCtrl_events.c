@@ -335,6 +335,7 @@ static void s_apStationDisconnected(wld_wpaCtrlInterface_t* pInterface, char* ev
 
 static void s_apStationAssocFailure(wld_wpaCtrlInterface_t* pInterface, char* event _UNUSED, char* params) {
     //Example: AP-STA-POSSIBLE-PSK-MISMATCH xx:xx:xx:xx:xx:xx
+    //Example: AP-STA-POSSIBLE-PSK-MISMATCH xx:xx:xx:xx:xx:xx status=x reason=x
     //Example: CTRL-EVENT-SAE-UNKNOWN-PASSWORD-IDENTIFIER xx:xx:xx:xx:xx:xx
     char buf[SWL_MAC_CHAR_LEN] = {0};
     swl_macBin_t bStationMac;
