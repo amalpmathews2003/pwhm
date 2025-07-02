@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.21.3 - 2025-07-02(16:36:07 +0000)
+
+### Other
+
+- fix error logs flooding when refreshing disabled vaps status
+
 ## Release sah-next_v7.21.2 - 2025-07-02(16:25:19 +0000)
 
 ### Fixes
