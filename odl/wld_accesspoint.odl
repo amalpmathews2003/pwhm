@@ -1547,7 +1547,7 @@ define rrm_t{
                         /** Number of packets errors
                          * @version
                          */
-                        %volatile %read-only uint32 RxErrors;
+                        %volatile %read-only uint64 RxErrors;
 	
 			/**
 			 * Instant count of packets sent as MU to the device. 

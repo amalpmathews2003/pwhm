@@ -278,6 +278,7 @@ typedef struct {
     uint32_t txPackets;                       // total transmitted packets (MSDUs and MMPDUs)
     uint32_t txRetries;                       // total retries (MPDUs)
     uint32_t txFailed;                        // total failed packets
+    uint64_t rxFailed;                        // rx packets dropped for unspecified reasons
     int8_t rssiDbm;                           // signal strength of last received PPDU (dBm)
     int8_t rssiAvgDbm;                        // signal strength average (dBm)
     wld_nl80211_rateInfo_t txRate;            // tx rate (kbps), nested attributes
