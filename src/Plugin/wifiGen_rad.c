@@ -93,6 +93,13 @@ SWL_TABLE(sPowerTable,
               {-1, 0},
               ));
 
+static const char* tidToLinkMapCapStrings[] = {
+    "TTLM Not Supported",
+    "TTLM: All-to-Same Link",
+    "Reserved",
+    "TTLM: Per-TID Link"
+};
+
 static const char* s_defaultRegDomain = "DE";
 
 static void s_radScanStatusUpdateCb(wld_scanEvent_t* event);
@@ -623,6 +630,13 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
          */
         pRad->cap.apCap7.strSupported = pRad->cap.apCap7.nstrSupported = pRad->cap.apCap7.emlsrSupported;
         pRad->cap.staCap7.strSupported = pRad->cap.staCap7.nstrSupported = pRad->cap.staCap7.emlsrSupported;
+
+        uint8_t idx = wiphyInfo.extCapas.tidLinkMapCapability;
+        const char* capStr = (idx < sizeof(tidToLinkMapCapStrings)/sizeof(tidToLinkMapCapStrings[0]))
+                                ? tidToLinkMapCapStrings[idx] : "Unknown";
+
+        strncpy(pRad->cap.tidLinkMapCapability, capStr, sizeof(pRad->cap.tidLinkMapCapability));
+        pRad->cap.tidLinkMapCapability[sizeof(pRad->cap.tidLinkMapCapability)-1] = '\0';
     }
 
     SAH_TRACEZ_OUT(ME);

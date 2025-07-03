@@ -3067,6 +3067,11 @@ define probelist_t{
 		 * This object represents the capabilities of the radio.
 		 */
 		%read-only object Capabilities{
+            
+            /**
+             * Indicates the TID to Link Mapping Capabilities supported.
+             */
+            %read-only string TIDLinkMapCapability;
 
 			/**
 			 *This object describes the Wi-Fi 7 capabilities for the AP role.

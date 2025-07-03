@@ -962,6 +962,10 @@ static swl_rc_ne s_parseIfTypeExtCapa(struct nlattr* tb[], wld_nl80211_wiphyInfo
             pWiphy->extCapas.emlsrSupport[*ifType] = emlCapInfo.emlsr_support;
             pWiphy->extCapas.emlmrSupport[*ifType] = emlCapInfo.emlmr_support;
         }
+        if (*ifType == WLD_WIPHY_IFTYPE_AP && tbCapa[NL80211_ATTR_MLD_CAPA_AND_OPS] != NULL) {
+            uint16_t mldCapaOps = nla_get_u16(tbCapa[NL80211_ATTR_MLD_CAPA_AND_OPS]);
+            pWiphy->extCapas.tidLinkMapCapability = (mldCapaOps >> 5) & 0x03;  // Extract bits 5-6 for TID to Link Mapping Capability
+        }
     }
     return SWL_RC_OK;
 }

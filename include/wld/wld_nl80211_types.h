@@ -209,6 +209,7 @@ typedef struct {
 typedef struct {
     bool emlsrSupport[WLD_WIPHY_IFTYPE_MAX];
     bool emlmrSupport[WLD_WIPHY_IFTYPE_MAX];
+    uint8_t tidLinkMapCapability;
 } wld_nl80211_wiphyExtCapas;
 
 #define WLD_NL80211_CIPHERS_MAX 14                  //(Cf: IEEE80211 Table 9-180—Cipher suite selectors: defined suite types 0..14)
