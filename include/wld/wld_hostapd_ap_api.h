@@ -93,6 +93,8 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSecParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setClientIsolation(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, bool enable);
+wld_secDmn_action_rc_ne wld_ap_hostapd_setMaxNbrSta(T_AccessPoint* pAP, uint32_t num);
+wld_secDmn_action_rc_ne wld_ap_hostapd_updateMaxNbrSta(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setMldParams(T_AccessPoint* pAP);
 wld_secDmn_action_rc_ne wld_ap_hostapd_setEnableVap(T_AccessPoint* pAP, bool enable);
