@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.22.1 - 2025-07-04(08:24:51 +0000)
+
+### Other
+
+- prevent crash hapd UPDATE when enabling MLD link
+
 ## Release sah-next_v7.22.0 - 2025-07-03(08:13:34 +0000)
 
 ### Other
