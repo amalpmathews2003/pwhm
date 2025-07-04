@@ -149,6 +149,7 @@ define probelist_t{
 	%persistent object Radio[] {
 		counted with RadioNumberOfEntries;
 		on event "*" call wld_radio_setConf_ocf;
+                on action validate call wld_rad_validateOperatingChannelBandwidth_ocf;
 		event 'ScanComplete!';
 		event 'ScanChange!';
 		event 'wpaCtrlEvents!';
