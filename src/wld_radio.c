@@ -554,6 +554,64 @@ static void s_setAutoChannelEnable_pwf(void* priv _UNUSED, amxd_object_t* object
     SAH_TRACEZ_OUT(ME);
 }
 
+void wld_rad_buildSupportedOperatingBWs(T_Radio* pR, char* outStr, size_t len, bool includeAuto) {
+    char* p = outStr;
+    size_t remaining = len;
+    bool is11be = wld_rad_checkEnabledRadStd(pR, SWL_RADSTD_BE);
+    bool is11ax = wld_rad_checkEnabledRadStd(pR, SWL_RADSTD_AX);
+    bool is11ac = wld_rad_checkEnabledRadStd(pR, SWL_RADSTD_AC);
+
+    if(includeAuto) {
+        p += snprintf(p, remaining, "Auto");
+        remaining = len - (p - outStr);
+        if(remaining > 0) {
+            *p++ = ',';
+        }
+    }
+
+    const char* list = NULL;
+    if(wld_rad_is_6ghz(pR)) {
+        list = is11be ? "20MHz,40MHz,80MHz,160MHz,320MHz-1,320MHz-2" :
+            is11ax ? "20MHz,40MHz,80MHz,160MHz" :
+            "20MHz,40MHz";
+    } else if(wld_rad_is_5ghz(pR)) {
+        list = (is11ax || is11ac) ? "20MHz,40MHz,80MHz,160MHz" : "20MHz,40MHz";
+    } else if(wld_rad_is_24ghz(pR)) {
+        list = "20MHz,40MHz";
+    } else {
+        list = "20MHz";
+    }
+
+    snprintf(p, remaining, "%s", list);
+}
+
+amxd_status_t _wld_rad_getSupportedOperatingChannelBandwidths_prf(amxd_object_t* object,
+                                                                  amxd_param_t* param,
+                                                                  amxd_action_t reason,
+                                                                  const amxc_var_t* const args _UNUSED,
+                                                                  amxc_var_t* const retval,
+                                                                  void* priv _UNUSED) {
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL param");
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "invalid reason");
+
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "no radio mapped");
+
+    SAH_TRACEZ_IN(ME);
+
+    // Dynamically build list of supported BWs
+    char bwList[128] = {0};
+    wld_rad_buildSupportedOperatingBWs(pR, bwList, sizeof(bwList), true);
+
+    // Optionally allow vendor override
+    char* pVal = wld_getVendorParam(pR, "SupportedOperatingChannelBandwidths", bwList);
+    amxc_var_set(cstring_t, retval, pVal);
+    free(pVal);
+
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
 amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* object,
                                                              amxd_param_t* param,
                                                              amxd_action_t reason _UNUSED,
@@ -571,14 +629,36 @@ amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* obje
     ASSERT_NOT_NULL(newValue, status, ME, "NULL");
     swl_radBw_e radBw = swl_conv_charToEnum(newValue, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_MAX);
 
-    if((swl_str_matches(currentValue, newValue)) ||
-       ((radBw < SWL_RAD_BW_MAX) &&
-        ((radBw == SWL_RAD_BW_AUTO) || (swl_chanspec_radBwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
-        status = amxd_status_ok;
-    } else {
-        SAH_TRACEZ_ERROR(ME, "%s: unsupported operating channel bandwidth(%s / %u / %u)", pRad->Name, newValue,
-                         swl_chanspec_radBwToInt(radBw), swl_chanspec_bwToInt(pRad->maxChannelBandwidth));
+    char supportedBWs[128] = {0};
+    wld_rad_buildSupportedOperatingBWs(pRad, supportedBWs, sizeof(supportedBWs), false);
+
+    bool isSupported = false;
+    char* save_ptr = NULL;
+    char* token = strtok_r(supportedBWs, ",", &save_ptr);
+    while(token != NULL) {
+        while(*token == ' ') {
+            token++;
+        }
+        if(swl_str_matches(token, newValue)) {
+            isSupported = true;
+            break;
+        }
+        token = strtok_r(NULL, ",", &save_ptr);
     }
+
+    if(isSupported) {
+        if((swl_str_matches(currentValue, newValue)) ||
+           ((radBw < SWL_RAD_BW_MAX) &&
+            ((radBw == SWL_RAD_BW_AUTO) || (swl_chanspec_radBwToInt(radBw) <= swl_chanspec_bwToInt(pRad->maxChannelBandwidth))))) {
+            status = amxd_status_ok;
+        } else {
+            SAH_TRACEZ_ERROR(ME, "%s: unsupported operating channel bandwidth(%s / %u / %u)", pRad->Name, newValue,
+                             swl_chanspec_radBwToInt(radBw), swl_chanspec_bwToInt(pRad->maxChannelBandwidth));
+        }
+    } else {
+        SAH_TRACEZ_ERROR(ME, "%s: %s is not listed in supported BWs", pRad->Name, newValue);
+    }
+
     free(newValue);
     return status;
 }
