@@ -105,10 +105,10 @@ static const char* const s_tidLinkMapCapabilityStrings[] = {
 
 #define WIFI_RAD_NUM_TID_LINK_MAP_CAPABILITY_STRINGS \
     (sizeof(s_tidLinkMapCapabilityStrings) / \
-    sizeof(s_tidLinkMapCapabilityStrings[0]))
+     sizeof(s_tidLinkMapCapabilityStrings[0]))
 
 static const char* s_getTidLinkMapCapabilityString(uint8_t capabilityIndex) {
-    if (capabilityIndex < WIFI_RAD_NUM_TID_LINK_MAP_CAPABILITY_STRINGS) {
+    if(capabilityIndex < WIFI_RAD_NUM_TID_LINK_MAP_CAPABILITY_STRINGS) {
         return s_tidLinkMapCapabilityStrings[capabilityIndex];
     }
     return "Unknown";
