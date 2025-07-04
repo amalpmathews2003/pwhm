@@ -93,12 +93,26 @@ SWL_TABLE(sPowerTable,
               {-1, 0},
               ));
 
-static const char* tidToLinkMapCapStrings[] = {
-    "TTLM Not Supported",
-    "TTLM: All-to-Same Link",
-    "Reserved",
-    "TTLM: Per-TID Link"
+/** Bit 5 and Bit 6 of NL80211_ATTR_MLD_CAPA_AND_OPS output indicates the TID-To-Link Mapping Negotiation Support (TTLM)
+ *  Reference: IEEE 802.11be (Wi-Fi 7) - Figure 9-1072k—MLD Capabilities And Operations subfield format
+ */
+static const char* const s_tidLinkMapCapabilityStrings[] = {
+    "TTLM Not Supported",     /* 0: dot11TIDtoLinkMappingActivated is false and TTLM negotiation is not supported*/
+    "TTLM: All-to-Same Link", /* 1: dot11TIDtoLinkMappingActivated is true and all TIDs map to same link set*/
+    "Reserved",               /* 2: Reserved value*/
+    "TTLM: Per-TID Link"      /* 3: dot11TIDtoLinkMappingActivated is true and each TID maps to same or different link set*/
 };
+
+#define WIFI_RAD_NUM_TID_LINK_MAP_CAPABILITY_STRINGS \
+    (sizeof(s_tidLinkMapCapabilityStrings) / \
+    sizeof(s_tidLinkMapCapabilityStrings[0]))
+
+static const char* s_getTidLinkMapCapabilityString(uint8_t capabilityIndex) {
+    if (capabilityIndex < WIFI_RAD_NUM_TID_LINK_MAP_CAPABILITY_STRINGS) {
+        return s_tidLinkMapCapabilityStrings[capabilityIndex];
+    }
+    return "Unknown";
+}
 
 static const char* s_defaultRegDomain = "DE";
 
@@ -631,12 +645,9 @@ int wifiGen_rad_supports(T_Radio* pRad, char* buf _UNUSED, int bufsize _UNUSED) 
         pRad->cap.apCap7.strSupported = pRad->cap.apCap7.nstrSupported = pRad->cap.apCap7.emlsrSupported;
         pRad->cap.staCap7.strSupported = pRad->cap.staCap7.nstrSupported = pRad->cap.staCap7.emlsrSupported;
 
-        uint8_t idx = wiphyInfo.extCapas.tidLinkMapCapability;
-        const char* capStr = (idx < sizeof(tidToLinkMapCapStrings)/sizeof(tidToLinkMapCapStrings[0]))
-                                ? tidToLinkMapCapStrings[idx] : "Unknown";
-
-        strncpy(pRad->cap.tidLinkMapCapability, capStr, sizeof(pRad->cap.tidLinkMapCapability));
-        pRad->cap.tidLinkMapCapability[sizeof(pRad->cap.tidLinkMapCapability)-1] = '\0';
+        uint8_t tidLinkMapCapabilityValue = wiphyInfo.extCapas.tidLinkMapCapability;
+        const char* currentCapabilityString = s_getTidLinkMapCapabilityString(tidLinkMapCapabilityValue);
+        snprintf(pRad->cap.tidLinkMapCapability, sizeof(pRad->cap.tidLinkMapCapability), "%s", currentCapabilityString);
     }
 
     SAH_TRACEZ_OUT(ME);
