@@ -301,6 +301,9 @@ swl_rc_ne wld_rad_unregisterExtModData(T_Radio* pRad, uint32_t extModId);
 #define wld_rad_forEachEp(epPtr, radPtr) \
     for(epPtr = wld_rad_firstEp(radPtr); epPtr; epPtr = wld_rad_nextEp(radPtr, epPtr))
 
+#define DISABLED_SUBCHANNELS_LIST_SIZE 16
+#define SUPPORTED_SUBCHANNEL_BITMAP 0xFFFF
+
 amxd_object_t* wld_rad_getObject(T_Radio* pRad);
 bool wld_rad_firstCommitFinished(T_Radio* pRad);
 #endif /* __WLD_RADIO_H__ */

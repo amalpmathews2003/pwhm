@@ -3137,6 +3137,27 @@ define probelist_t{
 		 * Identify the vendor for chip and driver
 		 */
 		%read-only string ChipsetVendor;
+
+		/**
+		 * Static puncturing feature
+		 */
+		object StaticPuncturing{
+			on event "*" call wld_rad_setStaticPuncturing_ocf;
+
+			/**
+			 * Enable or disable the feature without cleaning the disabled sub channels list
+			 */
+			bool Enable{
+				default false;
+			}
+
+			/**
+			 * Comma-separated list of channels to disable
+			 */
+			string DisabledSubChannels{
+				on action validate call wld_rad_validateDisabledSubChannels_pvf;
+			}
+		}
  
 	} /* object Radio */
 	}

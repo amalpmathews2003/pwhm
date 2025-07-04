@@ -4944,3 +4944,98 @@ void _wld_rad_11ax_setConf_ocf(const char* const sig_name,
     swla_dm_procObjEvtOfLocalDm(&sRadio11axDmHdlrs, sig_name, data, priv);
 }
 
+amxd_status_t _wld_rad_validateDisabledSubChannels_pvf(amxd_object_t* object _UNUSED,
+                                                       amxd_param_t* param _UNUSED,
+                                                       amxd_action_t reason _UNUSED,
+                                                       const amxc_var_t* const args,
+                                                       amxc_var_t* const retval _UNUSED,
+                                                       void* priv _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pRad, amxd_status_ok, ME, "No Radio mapped");
+
+    amxd_status_t status = amxd_status_invalid_value;
+    char* newValue = amxc_var_dyncast(cstring_t, args);
+    if(!newValue) {
+        free(newValue);
+        return status;
+    }
+
+    SAH_TRACEZ_INFO(ME, "Current channels in use for Radio %s is : %s", pRad->Name, pRad->channelsInUse);
+
+    size_t len = 0;
+    const char* channelsInUse[DISABLED_SUBCHANNELS_LIST_SIZE];
+    len = swl_type_arrayFromChar(swl_type_charPtr, channelsInUse, DISABLED_SUBCHANNELS_LIST_SIZE, pRad->channelsInUse);
+
+    SAH_TRACEZ_INFO(ME, "Number of channels in use is %zd", len);
+
+    bool entireStringUsed;
+    uint16_t disabledSubchannelBitmap = swl_conv_charToMaskSep(newValue, channelsInUse, DISABLED_SUBCHANNELS_LIST_SIZE, ',', &entireStringUsed);
+
+    for(size_t i = 0; i < len; i++) {
+        free((void*) channelsInUse[i]);
+    }
+    SAH_TRACEZ_INFO(ME, "Bitmap : %X, entireStringUsed : %d", disabledSubchannelBitmap, entireStringUsed);
+
+    if((disabledSubchannelBitmap == 0) && (entireStringUsed == false) && (!swl_str_isEmpty(newValue))) {
+        SAH_TRACEZ_ERROR(ME, "Invalid value");
+        free(newValue);
+        return status;
+    }
+
+    free(newValue);
+    bool validNewSubChannels = ((disabledSubchannelBitmap == 0) ||
+                                (entireStringUsed && ((disabledSubchannelBitmap & SUPPORTED_SUBCHANNEL_BITMAP) == disabledSubchannelBitmap)));
+    ASSERT_TRUE(validNewSubChannels, status, ME, "%s: One or more of the configured subchannels are not supported", pRad->Name);
+
+    SAH_TRACEZ_OUT(ME);
+    return amxd_status_ok;
+}
+
+static void s_setStaticPuncturingConf_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+    SAH_TRACEZ_IN(ME);
+
+    T_Radio* pRad = wld_rad_fromObj(amxd_object_get_parent(object));
+    ASSERTI_NOT_NULL(pRad, , ME, "INVALID");
+
+    amxc_var_for_each(newValue, newParamValues) {
+        const char* valStr = NULL;
+        const char* pname = amxc_var_key(newValue);
+        if(swl_str_matches(pname, "Enable")) {
+            pRad->staticPuncturingEnable = amxc_var_dyncast(bool, newValue);
+            SAH_TRACEZ_INFO(ME, "set Static Puncturing Enable to %d", pRad->staticPuncturingEnable);
+        } else if(swl_str_matches(pname, "DisabledSubChannels")) {
+            valStr = amxc_var_constcast(cstring_t, newValue);
+            SAH_TRACEZ_INFO(ME, "set Static Puncturing DisabledSubChannels to %s", valStr);
+            size_t len = 0;
+            const char* channelsInUse[DISABLED_SUBCHANNELS_LIST_SIZE];
+            len = swl_type_arrayFromChar(swl_type_charPtr, channelsInUse, DISABLED_SUBCHANNELS_LIST_SIZE, pRad->channelsInUse);
+
+            SAH_TRACEZ_INFO(ME, "Number of channels in use : %zd", len);
+            bool entireStringUsed;
+            pRad->disabledSubchannelBitmap = 0;
+            pRad->disabledSubchannelBitmap = swl_conv_charToMaskSep(valStr, channelsInUse, DISABLED_SUBCHANNELS_LIST_SIZE, ',', &entireStringUsed);
+
+            for(size_t i = 0; i < len; i++) {
+                free((void*) channelsInUse[i]);
+            }
+            SAH_TRACEZ_INFO(ME, "set DisabledSubChannels bitmap to %X", pRad->disabledSubchannelBitmap);
+        }
+    }
+
+    SAH_TRACEZ_INFO(ME, "%s: Static Puncturing Enable = %d", pRad->Name, pRad->staticPuncturingEnable);
+
+    wld_rad_doSync(pRad);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sStaticPuncturingDmHdlrs, ARR(), .objChangedCb = s_setStaticPuncturingConf_ocf);
+
+void _wld_rad_setStaticPuncturing_ocf(const char* const sig_name,
+                                      const amxc_var_t* const data,
+                                      void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sStaticPuncturingDmHdlrs, sig_name, data, priv);
+}
+
