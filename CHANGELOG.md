@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.22.2 - 2025-07-11(17:06:32 +0000)
+
+### Other
+
+- [STB] bad behavior for TV live stream
+
 ## Release sah-next_v7.22.1 - 2025-07-04(08:24:51 +0000)
 
 ### Other
