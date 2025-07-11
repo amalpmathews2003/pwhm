@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.22.3 - 2025-07-11(17:23:45 +0000)
+
+### Other
+
+- - Ensure 4addr is enabled on managed interface
+
 ## Release sah-next_v7.22.2 - 2025-07-11(17:06:32 +0000)
 
 ### Other
