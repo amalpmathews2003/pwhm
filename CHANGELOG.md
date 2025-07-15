@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.22.4 - 2025-07-15(10:47:48 +0000)
+
+### Other
+
+- Per-link station signal strength value is not available
+
 ## Release sah-next_v7.22.3 - 2025-07-11(17:23:45 +0000)
 
 ### Other
