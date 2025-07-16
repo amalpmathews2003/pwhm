@@ -27,10 +27,10 @@
             instance add ("{{Itf.Alias}}") {
                 parameter SSIDReference = "Device.WiFi.SSID.{{apindex + 1}}.";
                 parameter Enable = 0;
+                parameter IEEE80211kEnabled = 1;
 {% if (BDfn.isInterfaceGuest(Itf.Name)) : %}
                 parameter DefaultDeviceType = "Guest";
 {% elif (BDfn.isInterfaceLan(Itf.Name)) : %}
-                parameter IEEE80211kEnabled = 1;
                 parameter MultiAPType = "FronthaulBSS,BackhaulBSS";
 {% if ((Itf.OperatingFrequency == "5GHz") || (Itf.OperatingFrequency == "6GHz")) : %}
                 parameter WDSEnable = 1;
