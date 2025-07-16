@@ -308,7 +308,6 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"mld_ap", SECDMN_ACTION_OK_NEED_RESTART},
               {"disable_11be", SECDMN_ACTION_OK_NEED_RESTART},
               //params set and applied with main iface toggle
-              {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wpa", SECDMN_ACTION_OK_NEED_TOGGLE},
               //params set and applied with global saved hostapd conf reloading
@@ -337,6 +336,8 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"multi_ap_backhaul_wpa_psk", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap_backhaul_wpa_passphrase", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"ap_max_inactivity", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"rrm_beacon_report", SECDMN_ACTION_OK_NEED_SIGHUP},
               //params set and applied on bss with reload_wpa_psk and update_beacon
               {"ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
@@ -725,7 +726,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
         "ap_isolate", "ignore_broadcast_ssid",
         "ft_over_ds", "multi_ap", "qos_map_set",
         "wps_state", "config_methods", "uuid", "ap_pin",
-        "rrm_neighbor_report", "ieee80211w", "mbo",
+        "rrm_neighbor_report", "rrm_beacon_report", "ieee80211w", "mbo",
         "wmm_enabled", "uapsd_advertisement_enabled", "rnr", "ap_max_inactivity",
         "multi_ap_profile", "multi_ap_vlanid",
     };
