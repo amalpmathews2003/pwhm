@@ -1515,7 +1515,10 @@ static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     char operatingStandardsChar[32] = "";
     swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar), pSsid->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
     amxc_var_add_key(cstring_t, resulMap, "OperatingStandard", operatingStandardsChar);
-    amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", Rad_SupBW[swl_chanspec_intToBw(pSsid->bandwidth)]);
+
+    swl_chanspec_t chSpec = SWL_CHANSPEC_EMPTY;
+    swl_chanspec_fromFreqCtrlCentre(&chSpec, pRad->operatingFrequencyBand, pSsid->channel, pSsid->centreChannel);
+    amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", swl_radBw_str[swl_chanspec_toRadBw(&chSpec)]);
 
     amxc_var_add_key(int32_t, resulMap, "Noise", pSsid->noise);
 }

@@ -1950,12 +1950,27 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
         amxd_trans_set_cstring_t(&trans, "RadCapabilitiesVHTStr", capBuffer);
 
+        //HE MAC Capabilities
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->heMacCapabilities, sizeof(pR->heMacCapabilities));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "HeMacCapabilities", capBuffer);
+        }
+        swl_80211_heMacCapInfo_m heMacCap = 0;
+        memcpy(&heMacCap, pR->heMacCapabilities.cap, sizeof(swl_80211_heMacCapInfo_m));
+        outputSize = swl_80211_heMacCapMaskToChar(capBuffer, sizeof(capBuffer), heMacCap);
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        }
+        amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHeMacStr", capBuffer);
+
         //HE Physical Capabilities
         outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->hePhyCapabilities, sizeof(pR->hePhyCapabilities));
         if(outputSize >= (int) sizeof(capBuffer)) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         } else {
-            amxd_trans_set_cstring_t(&trans, "HECapabilities", capBuffer);
+            amxd_trans_set_cstring_t(&trans, "HePhyCapabilities", capBuffer);
         }
         // pR->hePhyCapabilities.cap is 10 bytes, the last 2 bytes are empty, thus we can just read the first 8 bytes
         swl_80211_hePhyCapInfo_m heCap = 0;
@@ -1966,6 +1981,13 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
         amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHePhysStr", capBuffer);
 
+        //Supported HE-MCS and NSS Set
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->heMcsCaps, sizeof(pR->heMcsCaps));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "SupportedHeMcsNssSet", capBuffer);
+        }
 
         amxd_trans_set_cstring_t(&trans, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));
 
@@ -2997,6 +3019,24 @@ amxd_status_t _startACS(amxd_object_t* obj,
     return _startAutoChannelSelection(obj, func, args, ret);
 }
 
+amxd_status_t _startPlatformACS(amxd_object_t* object,
+                                amxd_function_t* func _UNUSED,
+                                const amxc_var_t* const args,
+                                amxc_var_t* ret _UNUSED) {
+    ASSERTS_FALSE(amxc_var_is_null(args), amxd_status_invalid_value, ME, "invalid");
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pRad, amxd_status_unknown_error, ME, "%s has no mapped Radio ctx", amxd_object_get_name(object, AMXD_OBJECT_NAMED));
+
+    swl_rc_ne rc = pRad->pFA->mfn_wrad_startPltfACS(pRad, args);
+    if(rc != SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to call mfn_wrad_startPltfACS");
+        return amxd_status_unknown_error;
+    }
+
+    return amxd_status_ok;
+}
+
 amxd_status_t _checkWPSPIN(amxd_object_t* obj _UNUSED,
                            amxd_function_t* func _UNUSED,
                            amxc_var_t* args,
@@ -3527,10 +3567,20 @@ bool wld_rad_hasLinkIfName(T_Radio* pRad, const char* ifName) {
     return (wld_rad_from_name(ifName) == pRad);
 }
 
-bool wld_rad_hasMloSupport(T_Radio* pRad) {
+/*
+ * returns whether radio has MLO phy (hw) capability
+ */
+bool wld_rad_isMloCapable(T_Radio* pRad) {
     ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
-    return ((wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) &&
+    return (SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE) &&
             (pRad->pFA->mfn_misc_has_support(pRad, NULL, "MLO", 0) == true));
+}
+
+/*
+ * returns whether radio has MLO capability AND 11be operating standard supported and enabled
+ */
+bool wld_rad_hasMloSupport(T_Radio* pRad) {
+    return (wld_rad_isMloCapable(pRad) && wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE));
 }
 
 bool wld_rad_hasActiveApMld(T_Radio* pRad, uint32_t minNLinks) {

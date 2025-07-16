@@ -299,9 +299,38 @@ static uint32_t s_getNetlinkAllStaInfo(T_AccessPoint* pAP) {
     return nrStations;
 }
 
+/*
+ * lowest period since last refresh of assoc dev info in ms
+ * to avoid too frequent low level requests
+ */
+#define MIN_AD_INFO_REFRESH_PERIOD_MS 100
+static bool s_isStationInfoOld(T_AssociatedDevice* pAD) {
+    ASSERTS_NOT_NULL(pAD, false, ME, "NULL");
+    swl_timeSpecMono_t now = swl_timespec_getMonoVal();
+    if(swl_timespec_isZero(&pAD->lastSampleTime)
+       || (swl_timespec_diffToMillisec(&pAD->lastSampleTime, &now) > MIN_AD_INFO_REFRESH_PERIOD_MS)
+       || (pAD->latestStateChangeTime >= pAD->lastSampleTime.tv_sec)) {
+        return true;
+    }
+    return false;
+}
+
+static bool s_isAnyStationInfoOld(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, false, ME, "NULL");
+    ASSERTS_NOT_NULL(pAP->AssociatedDevice, false, ME, "NULL");
+    for(int i = 0; i < pAP->AssociatedDeviceNumberOfEntries; i++) {
+        if(s_isStationInfoOld(pAP->AssociatedDevice[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
+    ASSERTI_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
+    ASSERTI_TRUE(s_isAnyStationInfoOld(pAP), SWL_RC_DONE, ME, "%s: station stats are too recent", pAP->alias);
 
     wld_vap_mark_all_stations_unseen(pAP);
     if(s_getNetlinkAllStaInfo(pAP) > 0) {
@@ -331,6 +360,8 @@ swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
     ASSERTI_TRUE(pAD->Active, SWL_RC_OK, ME, "assocdev no more active");
+    ASSERTI_TRUE(s_isStationInfoOld(pAD), SWL_RC_DONE, ME, "station %s stats are too recent",
+                 swl_typeMacBin_toBuf32Ref((swl_macBin_t*) pAD->MACAddress).buf);
 
     SAH_TRACEZ_INFO(ME, "pAP->alias = %s", pAP->alias);
     SAH_TRACEZ_INFO(ME, "pAD->Name = %s", pAD->Name);
@@ -437,6 +468,9 @@ swl_rc_ne wifiGen_vap_updated_neighbor(T_AccessPoint* pAP, T_ApNeighbour* pApNei
 swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTI_TRUE(wifiGen_hapd_isAlive(pAP->pRadio), SWL_RC_INVALID_STATE, ME, "%s: secDmn not ready", pAP->alias);
+    ASSERTI_TRUE(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface), SWL_RC_INVALID_STATE, ME, "%s: secDmn iface not ready", pAP->alias);
+    swl_trl_e rnrSupp = wld_secDmn_getCfgParamSupp(pAP->pRadio->hostapd, "rnr");
+    ASSERTI_NOT_EQUALS(rnrSupp, SWL_TRL_FALSE, SWL_RC_OK, ME, "%s: rnr not configurable", pAP->alias);
     bool enaRnr = (pAP->IEEE80211kEnable && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR));
     swl_rc_ne rc = wld_hostapd_ap_sendCfgParam(pAP, "rnr", (enaRnr ? "1" : "0"));
     ASSERTI_TRUE(swl_rc_isOk(rc), rc, ME, "%s: can not apply rnr ena(%d) to hostapd: seems not supported", pAP->alias, enaRnr);
@@ -447,6 +481,9 @@ swl_rc_ne wifiGen_vap_setDiscoveryMethod(T_AccessPoint* pAP) {
 
 swl_rc_ne wifiGen_vap_setMldUnit(T_AccessPoint* pAP) {
     ASSERT_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
+    T_Radio* pRad = pAP->pRadio;
+    ASSERT_NOT_NULL(pRad, SWL_RC_INVALID_PARAM, ME, "NULL");
+    ASSERTI_TRUE(wld_rad_isMloCapable(pRad), SWL_RC_OK, ME, "%s: not mlo capable", pRad->Name);
     SAH_TRACEZ_INFO(ME, "%s: applying MLDUnit %d", pAP->alias, pAP->pSSID->mldUnit);
     setBitLongArray(pAP->fsm.FSM_BitActionArray, FSM_BW, GEN_FSM_MOD_MLD);
     return SWL_RC_OK;
@@ -665,6 +702,9 @@ swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
     if(!swl_rc_isOk(wifiGen_vap_setMboDisallowReason(pAP))) {
         SAH_TRACEZ_NOTICE(ME, "failed setting mbo_assoc_disallow reason");
     }
+
+    wld_ap_hostapd_updateMaxNbrSta(pAP);
+
     return SWL_RC_OK;
 }
 

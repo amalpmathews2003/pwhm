@@ -222,7 +222,7 @@ static void s_dcEntryConnected(T_AccessPoint* pAP, wld_ad_dcLog_t* entry) {
     X(Y, gtSwl_type_uint32, txMulticastPacketCount, "TxMulticastPacketCount") \
     X(Y, gtSwl_type_uint64, rxBytes, "RxBytes") \
     X(Y, gtSwl_type_uint64, txBytes, "TxBytes") \
-    X(Y, gtSwl_type_uint32, rxErrors, "RxErrors") \
+    X(Y, gtSwl_type_uint64, rxErrors, "RxErrors") \
     X(Y, gtSwl_type_uint32, txErrors, "TxErrors") \
     X(Y, gtSwl_type_uint32, inactive, "Inactive") \
     X(Y, gtSwl_type_timeSpecMono, recentSampleTime, "RecentSampleTime") \
@@ -237,7 +237,7 @@ static void s_dcEntryConnected(T_AccessPoint* pAP, wld_ad_dcLog_t* entry) {
     X(Y, gtSwl_type_uint32, recentTxPacketCount, "RecentTxPacketCount") \
     X(Y, gtSwl_type_uint32, recentRxPacketCount, "RecentRxPacketCount") \
     X(Y, gtSwl_type_uint32, recentTxError, "RecentTxError") \
-    X(Y, gtSwl_type_uint32, recentRxError, "RecentRxError") \
+    X(Y, gtSwl_type_uint64, recentRxError, "RecentRxError") \
     X(Y, gtSwl_type_uint32, recentTxFrameCount, "RecentTxFrameCount") \
     X(Y, gtSwl_type_uint32, recentRxFrameCount, "RecentRxFrameCount") \
     X(Y, gtSwl_type_uint32, recentTxRetransmissions, "RecentTxRetransmissions") \
@@ -329,7 +329,7 @@ static void s_sendDisassocNotification(T_AccessPoint* pAP, T_AssociatedDevice* p
         disassocEvent.recentTxBytes = DELTA64(pAD->TxBytes, hist->txBytes);
         disassocEvent.recentRxBytes = DELTA64(pAD->RxBytes, hist->rxBytes);
         disassocEvent.recentTxError = DELTA32(pAD->TxFailures, hist->txError);
-        disassocEvent.recentRxError = DELTA32(pAD->RxFailures, hist->rxError);
+        disassocEvent.recentRxError = DELTA64(pAD->RxFailures, hist->rxError);
         disassocEvent.recentTxFrameCount = DELTA32(pAD->TxFrameCount, hist->txFrameCount);
         disassocEvent.recentRxFrameCount = DELTA32(pAD->RxFrameCount, hist->rxFrameCount);
         disassocEvent.recentTxRetransmissions = DELTA32(pAD->Tx_Retransmissions, hist->tx_Retransmissions);
@@ -1944,6 +1944,7 @@ void wld_ad_syncStats(T_AssociatedDevice* pAD) {
     SWLA_OBJECT_SET_PARAM_UINT64(object, "TxBytes", pAD->TxBytes);
     SWLA_OBJECT_SET_PARAM_UINT64(object, "RxBytes", pAD->RxBytes);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "TxErrors", pAD->TxFailures);
+    SWLA_OBJECT_SET_PARAM_UINT64(object, "RxErrors", pAD->RxFailures);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsCount", pAD->staMuMimoInfo.txAsMuPktsCnt);
     SWLA_OBJECT_SET_PARAM_UINT32(object, "MUMimoTxPktsPercentage", pAD->staMuMimoInfo.txAsMuPktsPrc);
 

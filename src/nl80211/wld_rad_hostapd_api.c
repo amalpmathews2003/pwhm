@@ -371,7 +371,7 @@ wld_secDmn_action_rc_ne wld_rad_hostapd_setMiscParams(T_Radio* pRad) {
     swl_mapChar_init(&vapParams);
     wld_hostapd_cfgFile_setVapConfig(primaryVap, &vapParams, (swl_mapChar_t*) NULL);
     const char* miscVapParams[] = {
-        "beacon_int", "dtim_period",
+        "beacon_int", "dtim_period", "wpa_key_mgmt"
     };
     amxc_llist_for_each(it, &pRad->llAP) {
         T_AccessPoint* pAP = amxc_llist_it_get_data(it, T_AccessPoint, it);
@@ -418,6 +418,17 @@ swl_rc_ne wld_rad_hostapd_updateAllVapsConfigId(T_Radio* pRad) {
         }
     }
     wld_hostapd_deleteConfig(config);
+    return SWL_RC_OK;
+}
+
+swl_rc_ne wld_rad_hostapd_updateMaxNumStations(T_Radio* pRad) {
+    ASSERT_NOT_NULL(pRad, SWL_RC_ERROR, ME, "NULL");
+    T_AccessPoint* pAP = NULL;
+    wld_rad_forEachAp(pAP, pRad) {
+        if(wld_wpaCtrlInterface_isReady(pAP->wpaCtrlInterface)) {
+            wld_ap_hostapd_updateMaxNbrSta(pAP);
+        }
+    }
     return SWL_RC_OK;
 }
 

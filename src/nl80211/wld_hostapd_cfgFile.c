@@ -769,24 +769,6 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     if(!pAP->enable || !pRad->enable) {
         swl_mapChar_add(vapConfigMap, "start_disabled", "1");
     }
-    /*
-     * Compare how many stations are still allowed on the access point and its radio.
-     * In case the number of remaining allowed stations on the radio is smaller than the
-     * number of remaining allowed stations on the access point, we set the BSS max_num_sta
-     * to honor the radio limit. This is necessary because hostapd does not have a limit per
-     * radio, only per access point.
-     */
-    int32_t curMaxNumSta = (pAP->MaxStations < 0) ? (int32_t) pRad->maxNrHwSta : pAP->MaxStations;
-    SAH_TRACEZ_INFO(ME, "%s: pRad->maxStations = %d pRad->currentStations = %d", pRad->Name, pRad->maxStations, pRad->currentStations);
-    SAH_TRACEZ_INFO(ME, "%s: pAP->MaxStations = %d  pAP->ActiveAssociatedDeviceNumberOfEntries = %d", pAP->alias, curMaxNumSta, pAP->ActiveAssociatedDeviceNumberOfEntries);
-    if((pRad->maxStations > 0) && (pRad->maxStations - pRad->currentStations < curMaxNumSta - pAP->ActiveAssociatedDeviceNumberOfEntries)) {
-        curMaxNumSta = pAP->ActiveAssociatedDeviceNumberOfEntries + pRad->maxStations - pRad->currentStations;
-        if(curMaxNumSta < 0) { // race condition where multiple stations associated simultaneously
-            curMaxNumSta = 0;
-        }
-    }
-    SAH_TRACEZ_INFO(ME, "%s: curMaxNumSta = %d", pAP->alias, curMaxNumSta);
-    swl_mapCharFmt_addValInt32(vapConfigMap, "max_num_sta", curMaxNumSta);
 
     s_setVapIeee80211rConfig(pAP, vapConfigMap);
 
@@ -1073,7 +1055,7 @@ static void s_setVapWpsConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap) {
     swl_mapChar_add(vapConfigMap, "model_name", pRad->wpsConst->ModelName);
     swl_mapChar_add(vapConfigMap, "model_number", pRad->wpsConst->ModelNumber);
     swl_mapChar_add(vapConfigMap, "serial_number", pRad->wpsConst->SerialNumber);
-    int tmpver[4];
+    int tmpver[4] = {0};
     sscanf(pRad->wpsConst->OsVersion, "%i.%i.%i.%i", &tmpver[0], &tmpver[1], &tmpver[2], &tmpver[3]);
     swl_mapCharFmt_addValStr(vapConfigMap, "os_version", "%.8x", ((unsigned int) (tmpver[0] << 24 | tmpver[1] << 16 | tmpver[2] << 8 | tmpver[3])));
     swl_mapChar_add(vapConfigMap, "device_type", "6-0050F204-1");
@@ -1153,7 +1135,20 @@ void wld_hostapd_cfgFile_setVapConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConf
     s_setVapWpsConfig(pAP, vapConfigMap);
     s_setVapMultiApConf(pAP, vapConfigMap, multiAPConfig);
 
+    // rnr standard config
+    bool isIEEE80211k = pAP->IEEE80211kEnable && pAP->pRadio->IEEE80211kSupported;
+    bool rnrCfgStd = isIEEE80211k && (wld_ap_getDiscoveryMethod(pAP) == M_AP_DM_RNR);
+
     pAP->pFA->mfn_wvap_updateConfigMap(pAP, vapConfigMap);
+
+    // if rnr conf has been changed by vdr, then prevent further overwriting by removing standard rnr conf setting
+    if(wld_secDmn_getCfgParamSupp(pAP->pRadio->hostapd, "rnr") != SWL_TRL_FALSE) {
+        // get final rnr config (may be customized by vdr module)
+        bool rnrCfgFinal = swl_str_matches(swl_mapChar_get(vapConfigMap, "rnr"), "1");
+        if(rnrCfgStd != rnrCfgFinal) {
+            wld_secDmn_setCfgParamSupp(pAP->pRadio->hostapd, "rnr", SWL_TRL_FALSE);
+        }
+    }
 
     s_saveVapConfigId(pAP, vapConfigMap);
 }

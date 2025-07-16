@@ -171,7 +171,6 @@ artifacts:
 - source: "odl/wld_usp.odl"
   destination: "/etc/amx/wld/extensions/wld_usp.odl"
   permissions: "0644"
-  only: CONFIG_SAH_WLD_ENABLE_USP_SERVER_SOCKET
 - source: "acl/admin/$(COMPONENT).json"
   destination: "$(ACLDIR)/admin/$(COMPONENT).json"
   permissions: "0660"
@@ -255,3 +254,7 @@ dependencies:
   - name: "mod-netmodel"
   - name: "odl-generator"
     min: "master_v1.6.4"
+  - name: "kmod-iwlwav-driver-uci-debug"
+    only: CONFIG_TARGET_intel_x86&&PACKAGE_mod-whm-debug
+  - name: "kmod-iwlwav-driver-uci"
+    only: CONFIG_TARGET_intel_x86&&PACKAGE_mod-whm

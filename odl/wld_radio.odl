@@ -196,6 +196,45 @@ define probelist_t{
 		 */
 		bool startACS();
 
+		/*
+		 * This function will start an automatic channel selection sequence.
+		 * The corresponding configuration must be enabled in the agent config file to use this feature.
+		 * There is no default implementation. There will depend on vendor LL APIs.
+		 * It will make a target channel decision by excluding channels in acs_list.
+		 * @param acs_list: the list of excluded channels grouped by operating class.
+		 *
+		 * Example "acs_list" structure:
+		 * {
+		 *   "acs_list": [
+		 *     {
+		 *       "opclass": 81,
+		 *       "exclude_channels_length": 5,
+		 *       "exclude_channels": [
+		 *         1,
+		 *         2,
+		 *         3,
+		 *         4,
+		 *         5
+		 *       ]
+		 *     },
+		 *     {
+		 *       "opclass": 83,
+		 *       "exclude_channels_length": 2,
+		 *       "exclude_channels": [
+		 *         1,
+		 *         2
+		 *       ]
+		 *     }
+		 *   ]
+		 * }
+		 *
+		 * The incoming list is constructed based on the controller's channel preferences, considering rank values of zero.
+		 * If a channel belonging to any operating class has a rank value of zero in the controller's channel preferences,
+		 * it will be added to the "acs_list" according to its operating class.
+		 * @return true on success or false on error
+		*/
+		bool startPlatformACS(%in list acs_list);
+
 		/**
 		 * Start a scan all possible channels of the radio is configured for
 		 * This function returns immediately, the results must be retrieved manually.
@@ -1253,10 +1292,24 @@ define probelist_t{
 		%read-only string RadCapabilitiesVHTStr;
 
 		/**
+		 * Radio 802.11ax HE(High Efficiency) mac capabilities, raw values, in base64 as per the Tr181 Spec.
+		 * See standard section "9.4.2.248.2 HE MAC Capabilities Information field" for bits details.
+		 */
+		%read-only string HeMacCapabilities;
+
+		/**
+		 * Radio 802.11ax HE(High Efficiency) mac capabilities. List of strings  with these
+		 * possible values:
+		 * * TWT_REQ
+		 * * TWT_RESP
+		 */
+		%read-only string RadCapabilitiesHeMacStr;
+
+		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities, raw values, in base64 as per the Tr181 Spec.
 		 * See standard section "9.4.2.248.3 HE PHY Capabilities Information field" for bits details.
 		*/
-		%read-only string HECapabilities;
+		%read-only string HePhyCapabilities;
 
 		/**
 		 * Radio 802.11ax HE(High Efficiency) physical capabilities. List of strings  with these
@@ -1266,13 +1319,21 @@ define probelist_t{
 		 * * 40_80MHZ_5GHZ
 		 * * 160MHZ_5GHZ
 		 * * 160_80_80_MHZ_5GHZ
+		 * * FULL_UL_MU_MIMO
+		 * * PARTIAL_UL_MU_MIMO
 		 * * SU_BEAMFORMER
 		 * * SU_BEAMFORMEE
-		 * * MU_BEAMFORMEE
+		 * * MU_BEAMFORMER
 		 * * BEAMFORMEE_STS_LE_80MHZ
 		 * * BEAMFORMEE_STD_GT_80MHZ
 		*/
 		%read-only string RadCapabilitiesHePhysStr;
+
+		/**
+		 * Radio 802.11ax Supported HE-MCS and NSS Set, raw values, in base64 as per the Tr181 Spec.
+		 * See standard section "9.4.2.248.4 Supported HE-MCS And NSS Set field" for bits details.
+		 */
+		%read-only string SupportedHeMcsNssSet;
 
 		/** <p> Indicates if Reduced Interframe Space is enabled.</p>
 		 * Default = keep the current mode

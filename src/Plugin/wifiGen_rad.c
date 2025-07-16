@@ -144,6 +144,7 @@ void wifiGen_rad_destroyHook(T_Radio* pRad) {
         close(pRad->wlRadio_SK);
         pRad->wlRadio_SK = -1;
     }
+    amxp_timer_delete(&pRad->setMaxNumStaTimer);
 }
 
 static void s_updateNrAntenna(T_Radio* pRad, wld_nl80211_wiphyInfo_t* pWiphyInfo) {
@@ -411,11 +412,25 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     pRad->IEEE80211rSupported = true;
     if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_AX)) {
         pRad->heCapsSupported = M_HE_CAP_DL_OFDMA | M_HE_CAP_UL_OFDMA | M_HE_CAP_DL_MUMIMO;
+
+        /*
+         * Since 802.11ax supports both DL and UL MU-MIMO, we could theoretically set the
+         * UL MU-MIMO flag directly. However, to verify whether the hardware truly supports
+         * UL MU-MIMO, we rely on the HE Phy capabilities. If the hardware has full or partial
+         * UL MU-MIMO support, the UL MU-MIMO flag will be set.
+         */
+        swl_80211_hePhyCapInfo_m hePhyCap = 0;
+        memcpy(&hePhyCap, pOperBand->hePhyCapabilities.cap, sizeof(swl_80211_hePhyCapInfo_m));
+        if(hePhyCap & (M_SWL_80211_HE_PHY_FULL_UL_MU_MIMO | M_SWL_80211_HE_PHY_PARTIAL_UL_MU_MIMO)) {
+            pRad->heCapsSupported |= M_HE_CAP_UL_MUMIMO;
+        }
     }
     //updating capabilities
     pRad->htCapabilities = pOperBand->htCapabilities;
     pRad->vhtCapabilities = pOperBand->vhtCapabilities;
+    pRad->heMacCapabilities = pOperBand->heMacCapabilities;
     pRad->hePhyCapabilities = pOperBand->hePhyCapabilities;
+    memcpy(pRad->heMcsCaps, pOperBand->heMcsCaps, sizeof(pRad->heMcsCaps));
     pRad->supportedDataTransmitRates = pOperBand->supportedDataTransmitRates;
 }
 

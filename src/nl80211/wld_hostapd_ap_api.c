@@ -307,7 +307,6 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"mld_ap", SECDMN_ACTION_OK_NEED_RESTART},
               {"disable_11be", SECDMN_ACTION_OK_NEED_RESTART},
               //params set and applied with main iface toggle
-              {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wpa_group_rekey", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wpa", SECDMN_ACTION_OK_NEED_TOGGLE},
               {"wps_state", SECDMN_ACTION_OK_NEED_TOGGLE},
@@ -337,6 +336,8 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"multi_ap_backhaul_wpa_psk", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"multi_ap_backhaul_wpa_passphrase", SECDMN_ACTION_OK_NEED_SIGHUP},
               {"ap_max_inactivity", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"rrm_neighbor_report", SECDMN_ACTION_OK_NEED_SIGHUP},
+              {"rrm_beacon_report", SECDMN_ACTION_OK_NEED_SIGHUP},
               //params set and applied on bss with reload_wpa_psk and update_beacon
               {"ssid", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
               {"wpa_psk", SECDMN_ACTION_OK_NEED_RELOAD_SECKEY},
@@ -351,7 +352,6 @@ SWL_TABLE(sHapdCfgParamsActionMap,
               {"multi_ap_profile", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               {"multi_ap_vlanid", SECDMN_ACTION_OK_NEED_UPDATE_BEACON},
               //params set and applied without any action
-              {"max_num_sta", SECDMN_ACTION_OK_DONE},
               ));
 
 /**
@@ -541,8 +541,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecretKey(T_AccessPoint* pAP) {
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
     swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
-    swl_mapChar_t newVapParams;
-    swl_mapChar_t* pNewVapParams = &newVapParams;
+    swl_mapChar_t pNewVapParams[1];
     swl_mapChar_init(pNewVapParams);
     wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
     wld_secDmn_action_rc_ne action = s_ap_hostapd_setSecretKeyExt(pAP, pCurrVapParams, pNewVapParams);
@@ -578,8 +577,7 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSecurityMode(T_AccessPoint* pAP) {
     bool ret = wld_hostapd_loadConfig(&config, pR->hostapd->cfgFile);
     ASSERTI_TRUE(ret, SECDMN_ACTION_ERROR, ME, "no saved config");
     swl_mapChar_t* pCurrVapParams = wld_hostapd_getConfigMapByBssid(config, (swl_macBin_t*) pAP->pSSID->BSSID);
-    swl_mapChar_t newVapParams;
-    swl_mapChar_t* pNewVapParams = &newVapParams;
+    swl_mapChar_t pNewVapParams[1];
     swl_mapChar_init(pNewVapParams);
     wld_hostapd_cfgFile_setVapConfig(pAP, pNewVapParams, (swl_mapChar_t*) NULL);
     wld_secDmn_action_rc_ne action = s_ap_hostapd_setSecurityModeExt(pAP, pCurrVapParams, pNewVapParams);
@@ -656,6 +654,35 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setSSIDAdvertisement(T_AccessPoint* pAP, 
 }
 
 /**
+ * @brief set the max sta in the hostapd
+ *
+ * @param pAP accesspoint
+ * @param num Max number of station
+ * @return - > SECDMN_ACTION_OK_DONE when the ssid advertisement is set and can be applied
+ *         - Otherwise SECDMN_ACTION_ERROR
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_setMaxNbrSta(T_AccessPoint* pAP, uint32_t num) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    char strVal[16] = {0};
+    snprintf(strVal, sizeof(strVal), "%u", num);
+    bool ret = wld_ap_hostapd_setParamValue(pAP, "max_num_sta", strVal, "maxStation");
+    ASSERTS_TRUE(ret, SECDMN_ACTION_ERROR, ME, "Error setting hostapd enable vap");
+    return SECDMN_ACTION_OK_DONE;
+}
+
+/**
+ * @brief update the max sta in the hostapd
+ *
+ * @param pAP accesspoint
+ * @return - > SECDMN_ACTION_OK_DONE when the ssid advertisement is set and can be applied
+ *         - Otherwise SECDMN_ACTION_ERROR
+ */
+wld_secDmn_action_rc_ne wld_ap_hostapd_updateMaxNbrSta(T_AccessPoint* pAP) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    return wld_ap_hostapd_setMaxNbrSta(pAP, wld_ap_getMaxNbrSta(pAP));
+}
+
+/**
  * @brief prevent exchange of frames between associated stations in the same VAP
  * @param pAP accesspoint
  */
@@ -696,10 +723,10 @@ wld_secDmn_action_rc_ne wld_ap_hostapd_setNoSecParams(T_AccessPoint* pAP) {
     swl_mapChar_t* pNewVapParams = wld_hostapd_getConfigMapByBssid(pNewCfg, (swl_macBin_t*) pAP->pSSID->BSSID);
     wld_secDmn_action_rc_ne action = SECDMN_ACTION_OK_DONE;
     const char* params[] = {
-        "max_num_sta", "ap_isolate", "ignore_broadcast_ssid",
+        "ap_isolate", "ignore_broadcast_ssid",
         "ft_over_ds", "multi_ap", "qos_map_set",
         "wps_state", "config_methods", "uuid", "ap_pin",
-        "rrm_neighbor_report", "ieee80211w", "mbo",
+        "rrm_neighbor_report", "rrm_beacon_report", "ieee80211w", "mbo",
         "wmm_enabled", "uapsd_advertisement_enabled", "rnr", "ap_max_inactivity",
         "multi_ap_profile", "multi_ap_vlanid",
     };
