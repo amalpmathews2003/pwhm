@@ -1509,20 +1509,33 @@ static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     amxc_var_add_key(uint32_t, resulMap, "Channel", pSsid->channel);
     amxc_var_add_key(int32_t, resulMap, "SignalStrength", pSsid->rssi);
     amxc_var_add_key(cstring_t, resulMap, "SecurityModeEnabled", swl_security_apModeToString(pSsid->secModeEnabled, SWL_SECURITY_APMODEFMT_ALTERNATE));
-    amxc_var_add_key(cstring_t, resulMap, "EncryptionMode", swl_security_encMode_str[pSsid->encryptionMode]);
+    amxc_var_add_key(cstring_t, resulMap, "EncryptionMode", swl_security_encMode_str[swl_security_encModeEnumFromSecModeEnum(pSsid->secModeEnabled)]);
     amxc_var_add_key(cstring_t, resulMap, "OperatingFrequencyBand", Rad_SupFreqBands[pRad->operatingFrequencyBand]);
 
     char operatingStandardsChar[32] = "";
+    char supportedStandardsChar[32] = "";
     swl_radStd_toChar(operatingStandardsChar, sizeof(operatingStandardsChar), pSsid->operatingStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
-    amxc_var_add_key(cstring_t, resulMap, "OperatingStandard", operatingStandardsChar);
+    swl_radStd_toChar(supportedStandardsChar, sizeof(supportedStandardsChar), pSsid->supportedStandards, SWL_RADSTD_FORMAT_STANDARD, 0);
+    amxc_var_add_key(cstring_t, resulMap, "OperatingStandards", operatingStandardsChar);
+    amxc_var_add_key(cstring_t, resulMap, "SupportedStandards", supportedStandardsChar);
 
     swl_chanspec_t chSpec = SWL_CHANSPEC_EMPTY;
     swl_chanspec_fromFreqCtrlCentre(&chSpec, pRad->operatingFrequencyBand, pSsid->channel, pSsid->centreChannel);
     amxc_var_add_key(cstring_t, resulMap, "OperatingChannelBandwidth", swl_radBw_str[swl_chanspec_toRadBw(&chSpec)]);
 
     amxc_var_add_key(int32_t, resulMap, "Noise", pSsid->noise);
-}
+    amxc_var_add_key(uint32_t, resulMap, "BeaconPeriod", pSsid->beaconInterval);
+    amxc_var_add_key(uint32_t, resulMap, "DTIMPeriod", pSsid->dtimPeriod);
+    amxc_var_add_key(cstring_t, resulMap, "Mode", pSsid->adhoc ? "AdHoc" : "Infrastructure");
 
+    char basicRatesChar[64] = "";
+    swl_conv_maskToCharSep(basicRatesChar, sizeof(basicRatesChar), pSsid->basicDataTransferRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',');
+    amxc_var_add_key(cstring_t, resulMap, "BasicDataTransferRates", basicRatesChar);
+
+    char supportedRatesChar[64] = "";
+    swl_conv_maskToCharSep(supportedRatesChar, sizeof(supportedRatesChar), pSsid->supportedDataTransferRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',');
+    amxc_var_add_key(cstring_t, resulMap, "SupportedDataTransferRates", supportedRatesChar);
+}
 
 static void s_addDiagRadioResultsToMap(amxc_var_t* pResultListMap, T_Radio* pRad, wld_scanResults_t* pScanResults) {
     ASSERTS_NOT_NULL(pResultListMap, , ME, "NULL");
