@@ -229,6 +229,8 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         tgtChspec.bandwidth = wld_chanmgt_getDefaultSupportedBandwidth(pRad);
     }
 
+    bool enableRad11be = wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) && wld_rad_hasUsableApMld(pRad, 1);
+
     swl_channel_t tgtChan = tgtChspec.channel;
     swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);
     swl_mapCharFmt_addValInt32(radConfigMap, "op_class", swl_chanspec_getOperClass(&tgtChspec));
@@ -457,9 +459,9 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         }
     }
     if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE)) {
-        swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211be", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE));
+        swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211be", enableRad11be);
     }
-    if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+    if(enableRad11be) {
         /* ieee80211be: Whether IEEE 802.11be (EHT) is enabled
          * 0 = disabled (default)
          * 1 = enabled
@@ -786,12 +788,14 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "qos_map_set", pAP->cfg11u.qosMapSet);
     }
 
+    bool enableVap11be = false;
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
         if(wld_mld_isLinkUsable(pSSID->pMldLink)) {
             /* AP MLD - Whether this AP is a part of an AP MLD
              * 0 = no (no MLO)
              * 1 = yes (MLO) */
             swl_mapCharFmt_addValInt32(vapConfigMap, "mld_ap", 1);
+            enableVap11be = true;
         } else {
             /* if no MLO, then no 11BE */
             swl_mapCharFmt_addValInt32(vapConfigMap, "disable_11be", 1);
@@ -857,9 +861,9 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s%s",
                                  ((mfp != SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK " : ""),
                                  ((mfp == SWL_SECURITY_MFPMODE_REQUIRED) ? "WPA-PSK-SHA256 " : ""),
-                                 (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "SAE SAE-EXT-KEY" : "SAE"));
-        swl_mapChar_add(vapConfigMap, "wpa_pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
-        swl_mapChar_add(vapConfigMap, "rsn_pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
+                                 (enableVap11be ? "SAE SAE-EXT-KEY" : "SAE"));
+        swl_mapChar_add(vapConfigMap, "wpa_pairwise", enableVap11be ? "CCMP GCMP-256" : "CCMP");
+        swl_mapChar_add(vapConfigMap, "rsn_pairwise", enableVap11be ? "CCMP GCMP-256" : "CCMP");
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
         swl_mapChar_add(vapConfigMap, wpa_key_str, pAP->keyPassPhrase);
@@ -875,7 +879,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapCharFmt_addValInt32(vapConfigMap, "ieee80211w", mfp);
         swl_mapCharFmt_addValInt32(vapConfigMap, "sae_pwe", isH2E ? 2 : 0);
-        if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        if(enableVap11be) {
             swl_mapChar_add(vapConfigMap, "beacon_prot", "1");
         }
         break;
@@ -883,10 +887,10 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     case SWL_SECURITY_APMODE_WPA3_P: {
         swl_mapChar_add(vapConfigMap, "wpa", "2");
         swl_mapCharFmt_addValStr(vapConfigMap, "wpa_key_mgmt", "%s%s",
-                                 (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "SAE SAE-EXT-KEY" : "SAE"),
-                                 (pAP->IEEE80211rEnable ? (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? " FT-SAE FT-SAE-EXT-KEY" : " FT-SAE") : ""));
-        swl_mapChar_add(vapConfigMap, "wpa_pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
-        swl_mapChar_add(vapConfigMap, "rsn_pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
+                                 (enableVap11be ? "SAE SAE-EXT-KEY" : "SAE"),
+                                 (pAP->IEEE80211rEnable ? (enableVap11be ? " FT-SAE FT-SAE-EXT-KEY" : " FT-SAE") : ""));
+        swl_mapChar_add(vapConfigMap, "wpa_pairwise", enableVap11be ? "CCMP GCMP-256" : "CCMP");
+        swl_mapChar_add(vapConfigMap, "rsn_pairwise", enableVap11be ? "CCMP GCMP-256" : "CCMP");
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_rekey", pAP->rekeyingInterval);
         swl_mapChar_add(vapConfigMap, "wpa_ptk_rekey", "0");
         // If sae_password is set, wpa_passphrase is ignored by hostapd
@@ -901,7 +905,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapChar_add(vapConfigMap, "sae_groups", "19 20 21");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "2");
         swl_mapCharFmt_addValInt32(vapConfigMap, "sae_pwe", isH2E ? is6g ? 1 : 2 : 0);
-        if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        if(enableVap11be) {
             swl_mapChar_add(vapConfigMap, "beacon_prot", "1");
         }
         break;
@@ -909,8 +913,8 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     case SWL_SECURITY_APMODE_OWE:
     {
         swl_mapChar_add(vapConfigMap, "wpa", "2");
-        swl_mapChar_add(vapConfigMap, "wpa_pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
-        swl_mapChar_add(vapConfigMap, "rsn_pairwise", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) ? "CCMP GCMP-256" : "CCMP");
+        swl_mapChar_add(vapConfigMap, "wpa_pairwise", enableVap11be ? "CCMP GCMP-256" : "CCMP");
+        swl_mapChar_add(vapConfigMap, "rsn_pairwise", enableVap11be ? "CCMP GCMP-256" : "CCMP");
         swl_mapChar_add(vapConfigMap, "wpa_key_mgmt", "OWE");
         swl_mapChar_add(vapConfigMap, "ieee80211w", "2");
         T_AccessPoint* transitionAp;
@@ -918,7 +922,7 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
            ((transitionAp = wld_ap_getVapByName(pAP->oweTransModeIntf)) != NULL)) {
             swl_mapChar_add(vapConfigMap, "owe_transition_ifname", transitionAp->alias);
         }
-        if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        if(enableVap11be) {
             swl_mapChar_add(vapConfigMap, "beacon_prot", "1");
         }
         break;

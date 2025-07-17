@@ -14,6 +14,7 @@
                 parameter OperatingFrequencyBand = "2.4GHz";
                 parameter Enable = 1;
                 parameter RegulatoryDomain = "DE";
+                parameter OperatingStandardsFormat = "Standard";
                 parameter AP_Mode = 1;
                 parameter AirtimeFairnessEnabled = 1;
                 parameter IntelligentAirtimeSchedulingEnable = 1;
@@ -33,6 +34,7 @@
                 parameter Enable = 1;
                 parameter IEEE80211hEnabled = true;
                 parameter RegulatoryDomain = "DE";
+                parameter OperatingStandardsFormat = "Standard";
                 parameter AP_Mode = 1;
                 parameter WDS_Mode = 1;
                 parameter AirtimeFairnessEnabled = 1;
@@ -61,6 +63,7 @@
                 parameter OperatingFrequencyBand = "6GHz";
                 parameter Enable = 1;
                 parameter RegulatoryDomain = "DE";
+                parameter OperatingStandardsFormat = "Standard";
                 parameter AP_Mode = 1;
                 parameter WDS_Mode = 1;
                 parameter AirtimeFairnessEnabled = 1;
