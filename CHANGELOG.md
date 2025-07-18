@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.0 - 2025-07-18(11:23:10 +0000)
+
+### Other
+
+- get vendor wiphy info using wiphy id
+
 ## Release sah-next_v7.22.9 - 2025-07-18(09:20:12 +0000)
 
 ### Other
