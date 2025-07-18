@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.22.8 - 2025-07-18(06:47:40 +0000)
+
+### Other
+
+- [import] remove wifi7 cipher/akm algo when MLO is disabled
+
 ## Release sah-next_v7.22.7 - 2025-07-17(15:21:24 +0000)
 
 ### Other
