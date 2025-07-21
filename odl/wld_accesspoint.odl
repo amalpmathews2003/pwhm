@@ -793,6 +793,14 @@ define rrm_t{
                                on action validate call check_range { min = -1, max = 2 };
 				default -1;
 			}
+
+			%persistent object DPP {
+				on event "*" call wld_ap_dpp_setConf_ocf;
+				%persistent bool Enable {
+					default false;
+					userflags %usersetting;
+				}
+			}
 		}
 
 		/** This object contains parameters related to MAC-address based filtering for this access point.  */

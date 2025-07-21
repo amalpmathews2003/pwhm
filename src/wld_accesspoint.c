@@ -2853,3 +2853,26 @@ amxd_status_t _wld_ap_getMloStats_orf(amxd_object_t* const object,
     return amxd_action_object_read(object, param, reason, args, action_retval, priv);
 }
 
+static void s_setDppEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
+
+    SAH_TRACEZ_IN(ME);
+
+    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
+    ASSERT_NOT_NULL(pAP, , ME, "pAP is NULL");
+
+    bool new_value = amxc_var_dyncast(bool, newValue);
+    SAH_TRACEZ_INFO(ME, "pAP:%s - newValue:%d", pAP->alias, new_value);
+
+    wld_ap_hostapd_setDppConfiguratorConnectivity(pAP, new_value);
+
+    SAH_TRACEZ_OUT(ME);
+}
+
+SWLA_DM_HDLRS(sApDppDmHdlrs,
+              ARR(SWLA_DM_PARAM_HDLR("Enable", s_setDppEnable_pwf)));
+
+void _wld_ap_dpp_setConf_ocf(const char* const sig_name,
+                             const amxc_var_t* const data,
+                             void* const priv) {
+    swla_dm_procObjEvtOfLocalDm(&sApDppDmHdlrs, sig_name, data, priv);
+}

@@ -1016,6 +1016,15 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_group_update_count", 8);
         swl_mapCharFmt_addValInt32(vapConfigMap, "wpa_pairwise_update_count", 8);
     }
+
+    if(pAP->DPPEnable) {
+        swl_mapChar_add(vapConfigMap, "dpp_configurator_connectivity", "1");
+        SAH_TRACEZ_INFO(ME, "DPP CCE IE is enabled for vap: %s", pAP->alias);
+    } else {
+        swl_mapChar_delete(vapConfigMap, "dpp_configurator_connectivity");
+        SAH_TRACEZ_INFO(ME, "DPP CCE IE is disabled for vap: %s", pAP->alias);
+    }
+
     return true;
 }
 

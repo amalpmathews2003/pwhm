@@ -1491,3 +1491,22 @@ const char* wld_hostapd_ap_selectApLinkIface(T_AccessPoint* pAP) {
     return wld_ssid_getIfName(pLinkSSID);
 }
 
+wld_secDmn_action_rc_ne wld_ap_hostapd_setDppConfiguratorConnectivity(T_AccessPoint* pAP, bool enable) {
+    ASSERTS_NOT_NULL(pAP, SECDMN_ACTION_ERROR, ME, "NULL");
+    T_Radio* pR = pAP->pRadio;
+    ASSERTS_NOT_NULL(pR, SECDMN_ACTION_ERROR, ME, "NULL");
+
+
+    if(enable) {
+        SAH_TRACEZ_INFO(ME, "%s: Enable DPP configurator connectivity", pAP->alias);
+        pAP->DPPEnable = true;
+    } else {
+        SAH_TRACEZ_INFO(ME, "%s: Disable DPP configurator connectivity", pAP->alias);
+        pAP->DPPEnable = false;
+    }
+
+    wld_ap_hostapd_setParamValue(pAP, "dpp_configurator_connectivity", (enable ? "1" : "0"), "dpp_configurator_connectivity");
+    wld_ap_hostapd_updateBeacon(pAP, "DPP configurator connectivity changed");
+
+    return SECDMN_ACTION_OK_NEED_TOGGLE;
+}
