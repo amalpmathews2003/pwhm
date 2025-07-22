@@ -76,7 +76,6 @@ bool wld_apMld_fetchAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, int32_t mldUn
 bool wld_apMld_getActiveApAffiliatedStaInfo(wld_apMld_afStaInfo_t* info, T_AccessPoint* pAP, swl_macBin_t* mac);
 void wld_ap_mld_notifyChange(wld_mld_t* pMld, wld_mldChangeEvent_e event, const char* reason);
 amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e mld_type, wld_mld_t* pMld_internal);
-amxd_status_t wld_ap_mld_deleteMld(wld_mld_t* pMld_internal);
 
 /*
  * @brief check whether one APMLD link have applicable and shared

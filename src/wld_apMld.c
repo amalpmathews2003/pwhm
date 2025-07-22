@@ -231,16 +231,6 @@ void wld_ap_mld_notifyChange(wld_mld_t* pMld, wld_mldChangeEvent_e event, const 
         }
         break;
 
-    case WLD_MLD_EVT_DEL:
-        if(pMld->object != NULL) {
-            if(wld_ap_mld_deleteMld(pMld) != amxd_status_ok) {
-                SAH_TRACEZ_ERROR(ME, "Failed to delete DM object for MLD unit %d", pMld->unit);
-            }
-        } else {
-            SAH_TRACEZ_INFO(ME, "No DM object associated with MLDUnit %d for deletion.", pMld->unit);
-        }
-        break;
-
     default:
         SAH_TRACEZ_INFO(ME, "Unhandled MLD event: %d", event);
         break;
@@ -279,27 +269,4 @@ amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e 
     pMld_internal->object = object;
     object->priv = pMld_internal;
     return object;
-}
-
-amxd_status_t wld_ap_mld_deleteMld(wld_mld_t* pMld_internal) {
-    if(pMld_internal->object != NULL) {
-        amxd_object_t* ObjTempl = amxd_object_get(get_wld_object(), "APMLD");
-        if(ObjTempl == NULL) {
-            SAH_TRACEZ_ERROR(ME, "Failed to get APMLD template object from get_wld_object()");
-            return amxd_status_unknown_error;
-        }
-        uint32_t instance_id = amxd_object_get_index(pMld_internal->object);
-        SAH_TRACEZ_WARNING(ME, "Deleting DM instance %u", instance_id);
-        amxd_trans_t trans;
-        ASSERT_TRANSACTION_INIT(ObjTempl, &trans, false, ME, "%s: Failed to init transaction for deleting APMLD instance %u", ME, instance_id);
-        amxd_trans_del_inst(&trans, instance_id, NULL);
-        pMld_internal->object->priv = NULL;
-        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, false, ME, "%s: Failed to apply transaction for deleting APMLD instance %u", ME, instance_id);
-        pMld_internal->object = NULL;
-        SAH_TRACEZ_INFO(ME, "DM instance deleted successfully.");
-    } else {
-        SAH_TRACEZ_WARNING(ME, "MLD unit %d: No DM object associated Nothing to delete from DM.", pMld_internal->unit);
-        return amxd_status_ok;
-    }
-    return amxd_status_ok;
 }
