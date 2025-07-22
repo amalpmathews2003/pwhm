@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.1 - 2025-07-22(15:07:16 +0000)
+
+### Other
+
+- avoid ep reconnection using misconfigured referenced profile
+
 ## Release sah-next_v7.23.0 - 2025-07-18(11:23:10 +0000)
 
 ### Other
