@@ -183,7 +183,9 @@ typedef struct {
     wld_nl80211_chanDesc_t chans[WLD_MAX_POSSIBLE_CHANNELS];                //array of available channels
     wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];                          //which beamforming capabilities are available
     swl_80211_htCapInfo_m htCapabilities;                                   /* HT(High Throughput) 802.11n physical capabilities*/
+    uint8_t htMcsSet[SWL_80211_MCS_SET_LEN];                                /* The Supported HT-MCS Set */
     swl_80211_vhtCapInfo_m vhtCapabilities;                                 /* VHT(very High Throughput) 802.11n capabilities*/
+    uint8_t vhtMcsNssSet[SWL_80211_VHT_MCS_NSS_SIZE];                       /* The Supported VHT-MCS and NSS Set */
     swl_80211_hecap_macCapInfo_t heMacCapabilities;                         /* HE(High Efficiency) 802.11ax mac capabilities */
     swl_80211_hecap_phyCapInfo_t hePhyCapabilities;                         /* HE(High Efficiency) 802.11ax phy capabilities */
     swl_80211_hecap_MCSCap_t heMcsCaps[SWL_80211_HECAP_MCS_CAP_ARRAY_SIZE]; /* The Supported HE-MCS and NSS Set */
