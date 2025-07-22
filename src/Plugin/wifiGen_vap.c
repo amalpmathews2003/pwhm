@@ -705,6 +705,8 @@ swl_rc_ne wifiGen_vap_postUpActions(T_AccessPoint* pAP) {
 
     wld_ap_hostapd_updateMaxNbrSta(pAP);
 
+    wld_ap_hostapd_sendCommand(pAP, "RELOAD_BSS", "refreshConfig");
+
     return SWL_RC_OK;
 }
 

@@ -481,6 +481,17 @@ uint32_t wld_mld_countNeighEnabledLinks(wld_mldLink_t* pLink) {
     return count;
 }
 
+uint32_t wld_mld_countNeighUsableLinks(wld_mldLink_t* pLink) {
+    uint32_t count = 0;
+    ASSERTS_NOT_NULL(pLink, count, ME, "NULL");
+    ASSERTS_TRUE(amxc_llist_it_is_in_list(&pLink->it), count, ME, "Not a list item");
+    amxc_llist_for_each(it, pLink->it.llist) {
+        wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
+        count += wld_mld_isLinkUsable(pLink);
+    }
+    return count;
+}
+
 swl_rc_ne wld_mld_setLinkId(wld_mldLink_t* pLink, int32_t linkId) {
     ASSERTS_NOT_NULL(pLink, SWL_RC_INVALID_PARAM, ME, "NULL");
     if((!s_isTypedLink(pLink)) && (linkId != NO_LINK_ID)) {

@@ -90,6 +90,7 @@ int32_t wld_ssid_getIfIndex(T_SSID* pSSID);
 T_SSID* wld_ssid_getSsidByIfName(const char* ifName);
 wld_wpaCtrlInterface_t* wld_ssid_getWpaCtrlIface(T_SSID* pSSID);
 
+bool wld_ssid_isLinkCreated(T_SSID* pSSID);
 bool wld_ssid_isLinkEnabled(T_SSID* pSSID);
 bool wld_ssid_isLinkActive(T_SSID* pSSID);
 int32_t wld_ssid_getLinkIfIndex(T_SSID* pSSID);

@@ -466,8 +466,8 @@ static uint32_t s_checkEnabledIfacesCreatedReady(wld_wpaCtrlMngr_t* pMgr, T_Radi
         T_AccessPoint* pAP = NULL;
         T_EndPoint* pEP = NULL;
 
-        if((((pAP = wld_rad_vap_from_name(pRad, ifname)) != NULL) && (pAP->index > 0)) ||
-           (((pEP = wld_rad_ep_from_name(pRad, ifname)) != NULL) && (pEP->index > 0))) {
+        if((((pAP = wld_rad_vap_from_name(pRad, ifname)) != NULL) && wld_ssid_isLinkCreated(pAP->pSSID)) ||
+           (((pEP = wld_rad_ep_from_name(pRad, ifname)) != NULL) && wld_ssid_isLinkCreated(pEP->pSSID))) {
             countReady++;
         }
     }

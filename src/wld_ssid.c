@@ -569,6 +569,13 @@ int32_t wld_ssid_getIfIndex(T_SSID* pSSID) {
     return -1;
 }
 
+bool wld_ssid_isLinkCreated(T_SSID* pSSID) {
+    ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
+    ASSERTS_FALSE(swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress), false, ME, "no mac");
+    return (wld_mld_isLinkActive(pSSID->pMldLink) ||
+            (!wld_mld_isLinkEnabled(pSSID->pMldLink) && (wld_ssid_getIfIndex(pSSID) > 0)));
+}
+
 bool wld_ssid_isLinkEnabled(T_SSID* pSSID) {
     ASSERTS_NOT_NULL(pSSID, false, ME, "NULL");
     ASSERTS_FALSE(swl_mac_binIsNull((swl_macBin_t*) pSSID->MACAddress), false, ME, "no mac");
