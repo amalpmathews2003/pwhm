@@ -427,7 +427,9 @@ static void s_updateBandAndStandard(T_Radio* pRad, wld_nl80211_bandDef_t bands[]
     }
     //updating capabilities
     pRad->htCapabilities = pOperBand->htCapabilities;
+    memcpy(pRad->htMcsSet, pOperBand->htMcsSet, sizeof(pRad->htMcsSet));
     pRad->vhtCapabilities = pOperBand->vhtCapabilities;
+    memcpy(pRad->vhtMcsNssSet, pOperBand->vhtMcsNssSet, sizeof(pRad->vhtMcsNssSet));
     pRad->heMacCapabilities = pOperBand->heMacCapabilities;
     pRad->hePhyCapabilities = pOperBand->hePhyCapabilities;
     memcpy(pRad->heMcsCaps, pOperBand->heMcsCaps, sizeof(pRad->heMcsCaps));
