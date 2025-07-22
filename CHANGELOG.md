@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.2 - 2025-07-22(15:53:53 +0000)
+
+### Other
+
+- - Avoid connecting EP to a bss on the wrong band
+
 ## Release sah-next_v7.23.1 - 2025-07-22(15:07:16 +0000)
 
 ### Other
