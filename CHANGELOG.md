@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.3 - 2025-07-23(15:40:08 +0000)
+
+### Other
+
+- Steered devices to wifi 5ghz still appear associated with the 2.4 GHz
+
 ## Release sah-next_v7.23.2 - 2025-07-22(15:53:53 +0000)
 
 ### Other
