@@ -777,6 +777,10 @@ define rrm_t{
 				default false;
 			}
 
+			%persistent bool ForceMRSNOSupport{
+				default false;
+			}
+
 			/** Management Frame Protection configuration applicable when ModeEnabled is set
 			 * to WPA2-Personal or WPA2-Enterprise. Enumeration of:
 			 *     * Disabled

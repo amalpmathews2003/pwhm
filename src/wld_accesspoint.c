@@ -198,8 +198,15 @@ static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName
         }
     }
 
-    pAP->secCfgExt.mrsnoSupported = pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "MRSNO", 0);
+    pAP->secCfgExt.mrsnoSupported |= pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "MRSNO", 0);
+
     pAP->secModesSupported |= pAP->secCfgExt.mrsnoSupported ? M_SWL_SECURITY_APMODE_WPA3_P_CM : 0;
+
+    if(pAP->secCfgExt.mrsnoSupported){
+        SAH_TRACEZ_ERROR("apSec", "SecModesAvailable MRSNO supported");
+    } else {
+        SAH_TRACEZ_ERROR("apSec", "SecModesAvailable no MRSNO support");
+    }
 
     pAP->secModesSupported |= (pAP->pFA->mfn_misc_has_support(pAP->pRadio, pAP, "OWE", 0)) ?
         (M_SWL_SECURITY_APMODE_OWE) : 0;
@@ -217,6 +224,8 @@ static void s_setDefaults(T_AccessPoint* pAP, T_Radio* pRad, const char* vapName
         pAP->secModeEnabled = SWL_SECURITY_APMODE_WPA2_P;
     }
     pAP->secModesAvailable = pAP->secModesSupported;
+    SAH_TRACEZ_INFO("apSec", "SecModesAvailable setDefaults copy supported(0x%x) to available(0x%x)", pAP->secModesSupported, pAP->secModesAvailable);
+
     pAP->mfpConfig = SWL_SECURITY_MFPMODE_DISABLED;
     pAP->MF_AddressList = NULL;
     pAP->MF_AddressListBlockSync = false;
@@ -1058,6 +1067,17 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         if(wpa3Cmp != pAP->secCfgExt.compatibilityRequested) {
             pAP->secCfgExt.compatibilityRequested = wpa3Cmp;
             wld_ap_sec_doSync(pAP);
+        }
+
+        wpa3Cmp = amxd_object_get_bool(secObj, "ForceMRSNOSupport", false);
+        if(wpa3Cmp != pAP->secCfgExt.mrsnoSupported) {
+            pAP->secCfgExt.mrsnoSupported = wpa3Cmp;
+            wld_ap_sec_doSync(pAP);
+        }
+        if(wpa3Cmp){
+            SAH_TRACEZ_INFO(ME, "%s : force MRSNO AP", pAP->alias);
+        } else {
+            SAH_TRACEZ_INFO(ME, "%s : no MRSNO AP", pAP->alias);
         }
 
         char* mfp = amxd_object_get_cstring_t(secObj, "MFPConfig", NULL);

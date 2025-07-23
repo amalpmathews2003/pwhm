@@ -498,6 +498,12 @@ static void s_setCommonSecurityConf_ocf(void* priv _UNUSED, amxd_object_t* objec
             swl_str_copy(pAP->oweTransModeIntf, sizeof(pAP->oweTransModeIntf), valStr);
         } else if(swl_str_matches(pname, "WPA3Compatibility")) {
             pAP->secCfgExt.compatibilityRequested = amxc_var_dyncast(bool, newValue);
+        } else if(swl_str_matches(pname, "ForceMRSNOSupport")) {
+            pAP->secCfgExt.mrsnoSupported = amxc_var_dyncast(bool, newValue);
+            if(pAP->secCfgExt.mrsnoSupported){
+                pAP->secModesSupported |= M_SWL_SECURITY_APMODE_WPA3_P_CM;
+                pAP->secModesAvailable |= M_SWL_SECURITY_APMODE_WPA3_P_CM;
+            }
         } else if(swl_str_matches(pname, "MFPConfig")) {
             const char* mfpStr = amxc_var_constcast(cstring_t, newValue);
             pAP->mfpConfig = swl_security_mfpModeFromString(mfpStr);
