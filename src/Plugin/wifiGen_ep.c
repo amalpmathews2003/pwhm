@@ -71,6 +71,7 @@
 #include "wld/wld_ssid.h"
 #include "wld/wld_wps.h"
 #include "wld/wld_endpoint.h"
+#include "wifiGen_ep.h"
 #include "wifiGen_events.h"
 #include "wifiGen_fsm.h"
 
@@ -139,7 +140,11 @@ swl_rc_ne wifiGen_ep_enable(T_EndPoint* pEP, bool enable) {
 swl_rc_ne wifiGen_ep_disconnect(T_EndPoint* pEP) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTI_TRUE(wld_secDmn_isRunning(pEP->wpaSupp), SWL_RC_OK, ME, "%s: wpaSupp not started", pEP->Name);
-    return wld_wpaSupp_ep_disconnect(pEP);
+    swl_rc_ne rc = wld_wpaSupp_ep_disconnect(pEP);
+    if(pEP->currentProfile == NULL) {
+        wifiGen_ep_update(pEP, SET);
+    }
+    return rc;
 }
 
 /**
@@ -220,7 +225,7 @@ swl_rc_ne wifiGen_ep_status(T_EndPoint* pEP) {
  * @param pEP The current endpoint
  * @return -  SWL_RC_OK
  */
-int wifiGen_ep_update(T_EndPoint* pEP, int set) {
+swl_rc_ne wifiGen_ep_update(T_EndPoint* pEP, int set) {
     ASSERT_NOT_NULL(pEP, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERT_TRUE(set & SET, SWL_RC_INVALID_PARAM, ME, "Set Only");
     SAH_TRACEZ_INFO(ME, "%s : set wendpoint_update", pEP->Name);

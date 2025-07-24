@@ -252,8 +252,6 @@ static void s_setProfileReference_pwf(void* priv _UNUSED, amxd_object_t* object,
     T_EndPoint* pEP = wld_ep_fromObj(object);
     ASSERT_NOT_NULL(pEP, , ME, "INVALID");
 
-    ASSERTS_FALSE(pEP->internalChange, , ME, "ignore internal change");
-
     const char* newProfileRef = amxc_var_constcast(cstring_t, newValue) ? : "";
 
     SAH_TRACEZ_INFO(ME, "%s: setProfileReference - %s", pEP->alias, newProfileRef);
@@ -869,7 +867,6 @@ void wld_endpoint_setProfile_ocf(void* priv _UNUSED, amxd_object_t* object, cons
     T_EndPoint* pEP = wld_ep_fromObj(amxd_object_get_parent(amxd_object_get_parent(object)));
     ASSERT_NOT_NULL(pEP, , ME, "NULL");
     ASSERT_EQUALS(pProfile->endpoint, pEP, , ME, "Failed to find Endpoint structure");
-    ASSERTS_FALSE(pEP->internalChange, , ME, "ignore internal change");
 
     bool profileChanged = syncData_Object2EndPointProfile(object);
 
