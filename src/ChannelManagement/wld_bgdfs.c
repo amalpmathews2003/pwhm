@@ -415,6 +415,11 @@ amxd_status_t bgdfs_startClear(T_Radio* pR,
                                swl_channel_t channel,
                                wld_startBgdfsArgs_t* dfsArgs) {
     ASSERTI_NOT_NULL(pR, amxd_status_unknown_error, ME, "INVALID");
+    if(wld_util_blockOper_hasAnyBlocker(&pR->bgdfs_config.blockOper)) {
+        SAH_TRACEZ_WARNING(ME, "%s: bgdfs_startClear blocked by: %s",
+                           pR->Name, wld_util_blockOper_getBlockers(&pR->bgdfs_config.blockOper));
+        return amxd_status_invalid_action;
+    }
 
     if(!pR->bgdfs_config.enable || !pR->bgdfs_config.available || (pR->bgdfs_config.channel != 0)) {
         SAH_TRACEZ_ERROR(ME, "%s config error %d %d %d", pR->Name,
