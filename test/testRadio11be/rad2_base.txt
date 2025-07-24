@@ -108,5 +108,7 @@
     "HTCapabilities": "AAA=",
     "Alias": "wifi0",
     "TargetWakeTimeEnable": true
+    "SupportedHtMcsSet": "AAAAAAAAAAAAAAAAAAAAAA==",
+    "SupportedVhtMcsNssSet": "AAAAAAAAAAA=",
     "SupportedHeMcsNssSet": "AAAAAAAAAAAAAAA=",
 }
