@@ -116,6 +116,8 @@
 const char* Rad_SupStatus[] = {"Error", "LowerLayerDown", "NotPresent", "Dormant", "Unknown", "Down", "Up", 0};
 const char* wld_status_str[] = {"Error", "LowerLayerDown", "NotPresent", "Dormant", "Unknown", "Down", "Up", 0};
 
+static const char* g_radio_power_capabilities = "On,Off,LowPower"; /*Static PowerCapabilities*/
+
 const char** Rad_SupFreqBands = swl_freqBandExt_str;
 
 const char** Rad_SupBW = swl_bandwidth_str;
@@ -334,6 +336,52 @@ amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
     }
     SAH_TRACEZ_ERROR(ME, "%s: invalid channel %d", pRad->Name, newValue);
     return amxd_status_invalid_value;
+}
+
+amxd_status_t _wld_rad_powerCapabilities_prf(amxd_object_t* object,
+                                             amxd_param_t* param,
+                                             amxd_action_t reason,
+                                             const amxc_var_t* const args _UNUSED,
+                                             amxc_var_t* const retval,
+                                             void* priv _UNUSED) {
+    ASSERTS_NOT_NULL(param, amxd_status_unknown_error, ME, "NULL");
+    ASSERTS_EQUALS(reason, action_param_read, amxd_status_function_not_implemented, ME, "not impl");
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERTS_NOT_NULL(pR, amxd_status_ok, ME, "no radio mapped");
+    amxc_var_set(cstring_t, retval, g_radio_power_capabilities);
+    return amxd_status_ok;
+}
+
+amxd_status_t s_validatePowerState(const char* powerCapability, const char* targetState) {
+    if(!swl_strlst_contains(powerCapability, ",", targetState)) {
+        SAH_TRACEZ_ERROR(ME, "Invalid PowerState: %s", targetState);
+        return amxd_status_invalid_value;
+    }
+    return amxd_status_ok;
+}
+
+amxd_status_t _ChangePowerMode(amxd_object_t* obj,
+                               amxd_function_t* func _UNUSED,
+                               amxc_var_t* args,
+                               amxc_var_t* ret _UNUSED) {
+    const char* powerCapability = amxd_object_get_cstring_t(obj, "PowerCapability", NULL);
+    const char* targetPowerState = GET_CHAR(args, "PowerState");
+    amxd_status_t status = s_validatePowerState(powerCapability, targetPowerState);
+    if(status != amxd_status_ok) {
+        return status;
+    }
+    const char* currentPowerStatus = amxd_object_get_cstring_t(obj, "PowerStatus", NULL);
+    if(swl_str_matches(targetPowerState, currentPowerStatus)) {
+        SAH_TRACEZ_INFO(ME, "No change needed, PowerState is already %s", targetPowerState);
+        return amxd_status_ok;
+    }
+
+    SAH_TRACEZ_INFO(ME, "Changing PowerState to %s", targetPowerState);
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(obj, &trans, , ME, "trans init failure");
+    amxd_trans_set_cstring_t(&trans, "PowerStatus", targetPowerState);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, , ME, "trans apply failure");
+    return amxd_status_ok;
 }
 
 static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
