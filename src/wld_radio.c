@@ -154,6 +154,12 @@ const char* g_str_wld_he_cap[HE_CAP_MAX] = {
     "HE_ER_SU_PPDU_RX"
 };
 
+const char* g_str_wld_rad_powerMode[RAD_POW_MODE_MAX] = {
+    "On",
+    "Off",
+    "LowPower"
+};
+
 const char* g_str_wld_rad_bf_cap[RAD_BF_CAP_MAX] = {
     "DEFAULT",
     "VHT_SU_BF",
@@ -334,6 +340,73 @@ amxd_status_t _wld_rad_validateChannel_pvf(amxd_object_t* object _UNUSED,
     }
     SAH_TRACEZ_ERROR(ME, "%s: invalid channel %d", pRad->Name, newValue);
     return amxd_status_invalid_value;
+}
+
+amxd_status_t s_validatePowerState(const char* powerCapability, const char* targetState) {
+    if(!swl_strlst_contains(powerCapability, ",", targetState)) {
+        SAH_TRACEZ_ERROR(ME, "Invalid PowerState: %s", targetState);
+        return amxd_status_invalid_value;
+    }
+    return amxd_status_ok;
+}
+
+swl_rc_ne wld_rad_updatePowerStatusDm(T_Radio* pR, wld_rad_powerMode_e mode) {
+
+    ASSERTS_NOT_NULL(pR, SWL_RC_ERROR, ME, "Radio pointer is NULL");
+    ASSERTS_NOT_NULL(pR->pBus, SWL_RC_ERROR, ME, "DM object pointer is NULL");
+
+    amxd_trans_t trans;
+    ASSERT_TRANSACTION_INIT(pR->pBus, &trans, SWL_RC_ERROR, ME, "PowerStatus DM update: trans init failure");
+    swl_conv_transParamSetEnum(&trans, "PowerStatus", mode, g_str_wld_rad_powerMode, RAD_POW_MODE_MAX);
+    ASSERT_TRANSACTION_LOCAL_DM_END(&trans, SWL_RC_ERROR, ME, "PowerStatus DM update: trans apply failure");
+
+    return SWL_RC_OK;
+}
+
+amxd_status_t _ChangePowerMode(amxd_object_t* obj,
+                               amxd_function_t* func _UNUSED,
+                               amxc_var_t* args,
+                               amxc_var_t* ret _UNUSED) {
+
+    T_Radio* pR = wld_rad_fromObj(obj);
+    ASSERTS_NOT_NULL(pR, amxd_status_unknown_error, ME, "no radio mapped");
+
+    const char* targetPowerState = GET_CHAR(args, "PowerState");
+
+    char TBuf[128] = {0};
+    swl_conv_maskToChar(TBuf, sizeof(TBuf), pR->powerCapability, g_str_wld_rad_powerMode, RAD_POW_MODE_MAX);
+
+    amxd_status_t status = s_validatePowerState(TBuf, targetPowerState);
+    if(status != amxd_status_ok) {
+        return status;
+    }
+    wld_rad_powerMode_e targetPowerMode = swl_conv_charToEnum(targetPowerState, g_str_wld_rad_powerMode, RAD_POW_MODE_MAX, pR->currentPowerMode);
+    pR->confPowerMode = targetPowerMode;
+    if(pR->currentPowerMode == targetPowerMode) {
+        SAH_TRACEZ_WARNING(ME, "currentPowerMode and targetPowerMode are same");
+        return amxd_status_ok;
+    }
+
+    /**
+     * set the desired power mode to be applied.
+     * If the vendor-specific handler is not implemented, the fallback TRAP function
+     * will return SWL_RC_NOT_IMPLEMENTED and the power mode remains "On" by design.
+     */
+    swl_rc_ne rc = pR->pFA->mfn_wrad_setPowerMode(pR, targetPowerMode);
+    if(rc < SWL_RC_OK) {
+        SAH_TRACEZ_ERROR(ME, "Failed to apply power mode: %s", targetPowerState);
+        return amxd_status_unknown_error;
+    }
+
+    if(rc != SWL_RC_CONTINUE) {
+        pR->currentPowerMode = targetPowerMode;
+    }
+
+    rc = wld_rad_updatePowerStatusDm(pR, pR->currentPowerMode);
+    if(rc != SWL_RC_OK) {
+        SAH_TRACEZ_WARNING(ME, "PowerStatus DM update failed");
+    }
+    return amxd_status_ok;
 }
 
 static void s_setChannel_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
@@ -1917,6 +1990,10 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         amxd_trans_set_cstring_t(&trans, "SupportedStandards", TBuf);
 
         swl_conv_transParamSetMask(&trans, "HeCapsSupported", pR->heCapsSupported, g_str_wld_he_cap, HE_CAP_MAX);
+
+        swl_conv_transParamSetMask(&trans, "PowerCapability", pR->powerCapability, g_str_wld_rad_powerMode, RAD_POW_MODE_MAX);
+
+        swl_conv_transParamSetEnum(&trans, "PowerStatus", pR->currentPowerMode, g_str_wld_rad_powerMode, RAD_POW_MODE_MAX);
 
         swl_conv_transParamSetMask(&trans, "TxBeamformingCapsAvailable", pR->bfCapsSupported[COM_DIR_TRANSMIT], g_str_wld_rad_bf_cap, RAD_BF_CAP_MAX);
 
