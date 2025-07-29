@@ -245,6 +245,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
     if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_N)) {
         swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211n", wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N));
     }
+    if (wld_rad_is_24ghz(pRad) && pRad->obssCoexistenceEnabled == 0) {
+        swl_mapChar_add(radConfigMap, "ht_coex", "0");
+        swl_mapChar_add(radConfigMap, "noscan", "1");
+    }
     if(wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
         char htCaps[256] = {0};
         if(wld_channel_hasChannelWidthCovered(tgtChspec, SWL_BW_40MHZ)) {
