@@ -554,6 +554,59 @@ static void s_setAutoChannelEnable_pwf(void* priv _UNUSED, amxd_object_t* object
     SAH_TRACEZ_OUT(ME);
 }
 
+/*
+ * returns bitmask of applicable channel bandwidths (dm bw)
+ * among the supported ones, based on the enabled operating standards
+ */
+swl_radBw_m wld_rad_getApplicableRadBwMask(T_Radio* pRad) {
+    swl_radBw_m appRadBws = pRad->supportedChannelBandwidth;
+    if(!wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE)) {
+        W_SWL_BIT_CLEAR(appRadBws, SWL_RAD_BW_320MHZ1);
+        W_SWL_BIT_CLEAR(appRadBws, SWL_RAD_BW_320MHZ2);
+        if(!wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AX)) {
+            if(!wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_AC)) {
+                W_SWL_BIT_CLEAR(appRadBws, SWL_RAD_BW_160MHZ);
+                W_SWL_BIT_CLEAR(appRadBws, SWL_RAD_BW_80MHZ);
+                if(!wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_N)) {
+                    W_SWL_BIT_CLEAR(appRadBws, SWL_RAD_BW_40MHZ);
+                }
+            }
+        }
+    }
+    return appRadBws;
+}
+
+amxd_status_t _wld_rad_validateOperatingChannelBandwidth_ocf(amxd_object_t* object,
+                                                             amxd_action_t reason _UNUSED,
+                                                             const amxc_var_t* const args _UNUSED,
+                                                             amxc_var_t* const retval _UNUSED,
+                                                             void* priv _UNUSED) {
+
+    const amxc_var_t* bw_val = amxd_object_get_param_value(object, "OperatingChannelBandwidth");
+    const char* bw_str = (bw_val != NULL) ? amxc_var_constcast(cstring_t, bw_val) : NULL;
+
+    if(bw_str == NULL) {
+        return amxd_status_ok;
+    }
+
+    T_Radio* pRad = wld_rad_fromObj(object);
+    if(pRad == NULL) {
+        SAH_TRACEZ_WARNING(ME, "Validation failed: radio context not found");
+        return amxd_status_ok;
+    }
+
+    swl_radBw_e selected_bw = swl_conv_charToEnum(bw_str, swl_radBw_str, SWL_RAD_BW_MAX, SWL_RAD_BW_AUTO);
+    swl_radBw_m applicable_bws = wld_rad_getApplicableRadBwMask(pRad);
+
+    if(!SWL_BIT_IS_SET(applicable_bws, selected_bw)) {
+        SAH_TRACEZ_ERROR(ME, "Rejecting bandwidth %s for %s: not allowed (applicable=0x%x)",
+                         bw_str, pRad->Name, applicable_bws);
+        return amxd_status_invalid_value;
+    }
+
+    return amxd_status_ok;
+}
+
 amxd_status_t _wld_rad_validateOperatingChannelBandwidth_pvf(amxd_object_t* object,
                                                              amxd_param_t* param,
                                                              amxd_action_t reason _UNUSED,
