@@ -448,6 +448,7 @@ static void test_quickToggle(void** state _UNUSED) {
     swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", 0);
     amxp_signal_read();
     wld_ssid_dbgTriggerSync(pSSID);
+    amxp_signal_read();
     swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", 1);
 
     amxp_signal_read();
@@ -500,6 +501,29 @@ static void test_syncFromIntf(void** state _UNUSED) {
     test_syncSSIDToEndpointNotWorks();
 }
 
+static void test_quickToggleAp(void** state _UNUSED) {
+    s_setEnableSyncModeAndCheck("Mirrored");
+    ttb_assert_true(pAP->enable);
+    ttb_assert_true(pSSID->enable);
+    swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", 0);
+    amxp_signal_read();
+    wld_ssid_dbgTriggerSync(pSSID);
+    amxp_signal_read();
+    swl_typeUInt8_commitObjectParam(pAP->pBus, "Enable", 1);
+    amxp_signal_read();
+    wld_ssid_dbgTriggerSync(pSSID);
+    amxp_signal_read();
+    swl_typeUInt8_commitObjectParam(pAP->pBus, "Enable", 0);
+
+    amxp_signal_read();
+    wld_ssid_dbgTriggerSync(pSSID);
+
+    ttb_mockTimer_goToFutureSec(1);
+
+    ttb_assert_false(pAP->enable);
+    ttb_assert_false(pSSID->enable);
+}
+
 int main(int argc _UNUSED, char* argv[] _UNUSED) {
     sahTraceOpen("testApp", TRACE_TYPE_STDERR);
 
@@ -513,6 +537,7 @@ int main(int argc _UNUSED, char* argv[] _UNUSED) {
         cmocka_unit_test(test_syncOff),
         cmocka_unit_test(test_syncToIntf),
         cmocka_unit_test(test_syncFromIntf),
+        cmocka_unit_test(test_quickToggleAp),
     };
     int rc = cmocka_run_group_tests(tests, s_setupSuite, s_teardownSuite);
     sahTraceClose();

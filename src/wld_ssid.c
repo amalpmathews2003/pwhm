@@ -134,31 +134,38 @@ amxd_object_t* wld_ssid_getIntfObject(T_SSID* pSSID) {
     return false;
 }
 
-static void s_syncEnable (amxp_timer_t* timer _UNUSED, void* priv) {
+static void s_syncEnable(amxp_timer_t* timer _UNUSED, void* priv) {
     SAH_TRACEZ_IN(ME);
     T_SSID* pSSID = (T_SSID*) priv;
     ASSERT_NOT_NULL(pSSID, , ME, "NULL");
 
-    bool tgtEnable = wld_ssid_getIntfEnable(pSSID);
+    bool toIntf = pSSID->syncEnableToIntf;
+    bool otherEnable = wld_ssid_getIntfEnable(pSSID);
+    amxd_object_t* intfObj = wld_ssid_getIntfObject(pSSID);
+    bool ssidEnableDm = amxd_object_get_bool(pSSID->pBus, "Enable", NULL);
+    bool otherEnableDm = amxd_object_get_bool(intfObj, "Enable", NULL);
 
-    SAH_TRACEZ_INFO(ME, "%s: sync ssidEnable %d, objEnab %d, syncMode %s", pSSID->Name, pSSID->enable, tgtEnable,
+    SAH_TRACEZ_INFO(ME, "%s: sync toIntf %u ssidEnable %d/%d (dm %d/%d), syncMode %s",
+                    pSSID->Name, toIntf, pSSID->enable, otherEnable,
+                    ssidEnableDm, otherEnableDm,
                     wld_config_getEnableSyncModeStr());
 
-    if(tgtEnable == pSSID->enable) {
+    if((otherEnable == pSSID->enable) &&
+       ((!toIntf && (pSSID->enable == ssidEnableDm)) ||
+        (toIntf && (otherEnable == otherEnableDm)))) {
+        SAH_TRACEZ_INFO(ME, "%s: sync already done", pSSID->Name);
+        return;
+    }
+
+    if(!wld_config_isEnableSyncNeeded(toIntf)) {
         SAH_TRACEZ_OUT(ME);
         return;
     }
 
-    if(!wld_config_isEnableSyncNeeded(pSSID->syncEnableToIntf)) {
-        SAH_TRACEZ_OUT(ME);
-        return;
-    }
-
-    if(pSSID->syncEnableToIntf) {
-        amxd_object_t* pTgtObj = wld_ssid_getIntfObject(pSSID);
-        swl_typeUInt8_commitObjectParam(pTgtObj, "Enable", pSSID->enable);
+    if(toIntf) {
+        swl_typeUInt8_commitObjectParam(intfObj, "Enable", pSSID->enable);
     } else {
-        swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", tgtEnable);
+        swl_typeUInt8_commitObjectParam(pSSID->pBus, "Enable", otherEnable);
     }
 
     SAH_TRACEZ_OUT(ME);
@@ -715,11 +722,20 @@ bool wld_ssid_isEnableSyncMissing(T_SSID* pSSID) {
 swl_rc_ne wld_ssid_syncEnable(T_SSID* pSSID, bool toIntf) {
     ASSERT_NOT_NULL(pSSID, SWL_RC_INVALID_PARAM, ME, "NULL");
     bool otherEnable = wld_ssid_getIntfEnable(pSSID);
+    amxd_object_t* intfObj = wld_ssid_getIntfObject(pSSID);
+    bool ssidEnableDm = amxd_object_get_bool(pSSID->pBus, "Enable", NULL);
+    bool otherEnableDm = amxd_object_get_bool(intfObj, "Enable", NULL);
 
-    SAH_TRACEZ_INFO(ME, "%s: check do sync to SSID %u %u - %s",
-                    pSSID->Name, pSSID->enable, otherEnable, wld_config_getEnableSyncModeStr());
+    SAH_TRACEZ_INFO(ME, "%s: check do sync toIntf %u SSID %u %u (dm SSID %u %u) - %s",
+                    pSSID->Name, toIntf, pSSID->enable, otherEnable,
+                    ssidEnableDm, otherEnableDm,
+                    wld_config_getEnableSyncModeStr());
 
-    if(!(pSSID->AP_HOOK || pSSID->ENDP_HOOK) || (otherEnable == pSSID->enable)) {
+    if(!(pSSID->AP_HOOK || pSSID->ENDP_HOOK) ||
+       ((otherEnable == pSSID->enable) &&
+        ((!toIntf && (pSSID->enable == ssidEnableDm)) ||
+         (toIntf && (otherEnable == otherEnableDm))))) {
+        SAH_TRACEZ_INFO(ME, "%s: sync already done", pSSID->Name);
         amxp_timer_stop(pSSID->enableSyncTimer);
         return SWL_RC_DONE;
     }
