@@ -342,6 +342,12 @@ typedef struct {
     uint16_t b_7_15 : 9;
 } __attribute__((packed)) htCapabilityInfo_t;
 
+/*
+ * As defined in 7.3.2.57.4 Supported MCS Set field:
+ * BitMask: B0..B76 + 3 reserved bits => 10 Bytes
+ */
+#define HT_MCS_BITMASK_LEN 10
+
 swl_rc_ne s_parseHtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) {
     ASSERTS_NOT_NULL(tbBand, SWL_RC_INVALID_PARAM, ME, "NULL");
     ASSERTS_NOT_NULL(pBand, SWL_RC_INVALID_PARAM, ME, "NULL");
@@ -365,12 +371,10 @@ swl_rc_ne s_parseHtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
     if(htCapInfo.short_gi20mhz || htCapInfo.short_gi40mhz) {
         pMcsStd->guardInterval = SWL_SGI_400;
     }
-    /*
-     * As defined in 7.3.2.57.4 Supported MCS Set field:
-     * BitMask: B0..B76 + 3 reserved bits => 10 Bytes
-     */
+
+    NLA_GET_DATA(&pBand->htMcsSet, tbBand[NL80211_BAND_ATTR_HT_MCS_SET], sizeof(pBand->htMcsSet));
     uint32_t htRxMcsBitMask[3] = {0};
-    NLA_GET_DATA(htRxMcsBitMask, tbBand[NL80211_BAND_ATTR_HT_MCS_SET], 10);
+    memcpy(htRxMcsBitMask, pBand->htMcsSet, HT_MCS_BITMASK_LEN);
     int32_t highestIdx = swl_bitArr32_getHighest(htRxMcsBitMask, SWL_ARRAY_SIZE(htRxMcsBitMask));
     pMcsStd->mcsIndex = SWL_MAX(0, highestIdx);
     pMcsStd->numberOfSpatialStream = (pMcsStd->mcsIndex / 8) + 1;
@@ -447,11 +451,11 @@ swl_rc_ne s_parseVhtAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand)
     /*
      * As defined in 9.4.2.157.3 Supported VHT-MCS and NSS Set field: B0..B63
      * Rx VHT-MCS Map: Figure 9-611—Rx VHT-MCS Map: B0..B16
-     * tweak: only parse first Rx VHT-MCS Map
-     * (same values are commonly applied for TX maps)
      */
+    NLA_GET_DATA(&pBand->vhtMcsNssSet, tbBand[NL80211_BAND_ATTR_VHT_MCS_SET], sizeof(pBand->vhtMcsNssSet));
     uint16_t mcsMapRx = 0xffff;
-    NLA_GET_DATA(&mcsMapRx, tbBand[NL80211_BAND_ATTR_VHT_MCS_SET], sizeof(mcsMapRx));
+    memcpy(&mcsMapRx, pBand->vhtMcsNssSet, sizeof(mcsMapRx));
+
     pMcsStd->numberOfSpatialStream = 1;
     pMcsStd->mcsIndex = 0;
     for(uint8_t ssId = 0; ssId < 8; ssId++) {  // up to 8ss
@@ -497,15 +501,6 @@ typedef struct {
     uint16_t b_56_71;
     uint16_t b_72_87;
 } SWL_PACKED hePhyCapInfo_t;
-
-typedef struct {
-    uint16_t rxHeMcsMap80;
-    uint16_t txHeMcsMap80;
-    uint16_t rxHeMcsMap160;
-    uint16_t txHeMcsMap160;
-    uint16_t rxHeMcsMap8080;
-    uint16_t txHeMcsMap8080;
-} SWL_PACKED supportedHeMcsNssSet_t;
 
 static bool s_isSupportedNlIfType(struct nlattr* tbIfType) {
     struct nlattr* ift = NULL;
@@ -600,14 +595,12 @@ swl_rc_ne s_parseHeAttrs(struct nlattr* tbBand[], wld_nl80211_bandDef_t* pBand) 
          * As defined in 9.4.2.248.4 Supported HE-MCS And NSS Set field:
          * RX/TX MCS Maps, per supported chan width group
          */
-        supportedHeMcsNssSet_t supportedHeMcsNssSet = {0};
-        NLA_GET_DATA(&supportedHeMcsNssSet, heCapMcsSetAttr, sizeof(supportedHeMcsNssSet));
-        memcpy(&pBand->heMcsCaps, &supportedHeMcsNssSet, sizeof(pBand->heMcsCaps));
+        NLA_GET_DATA(&pBand->heMcsCaps, heCapMcsSetAttr, sizeof(pBand->heMcsCaps));
 
         pMcsStd->numberOfSpatialStream = 1;
         pMcsStd->mcsIndex = 0;
         for(uint8_t ssId = 0; ssId < 8; ssId++) {  // up to 8ss
-            uint8_t mcsMapPerSS = (supportedHeMcsNssSet.rxHeMcsMap80 >> (2 * ssId)) & 0x03;
+            uint8_t mcsMapPerSS = (pBand->heMcsCaps[0].rxMcsMap >> (2 * ssId)) & 0x03;
             if(mcsMapPerSS < 3) {
                 pMcsStd->numberOfSpatialStream = SWL_MAX((int32_t) pMcsStd->numberOfSpatialStream, (ssId + 1));
                 pMcsStd->mcsIndex = SWL_MAX((int32_t) pMcsStd->mcsIndex, (7 + (mcsMapPerSS * 2)));

@@ -1937,6 +1937,14 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         }
         amxd_trans_set_cstring_t(&trans, "RadCapabilitiesHTStr", capBuffer);
 
+        //Supported HT-MCS Set
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->htMcsSet, sizeof(pR->htMcsSet));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "SupportedHtMcsSet", capBuffer);
+        }
+
         //VHT capabilities
         outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->vhtCapabilities, sizeof(pR->vhtCapabilities));
         if(outputSize >= (int) sizeof(capBuffer)) {
@@ -1949,6 +1957,14 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
         }
         amxd_trans_set_cstring_t(&trans, "RadCapabilitiesVHTStr", capBuffer);
+
+        //Supported VHT-MCS and NSS Set
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->vhtMcsNssSet, sizeof(pR->vhtMcsNssSet));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "SupportedVhtMcsNssSet", capBuffer);
+        }
 
         //HE MAC Capabilities
         outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->heMacCapabilities, sizeof(pR->heMacCapabilities));
