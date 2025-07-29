@@ -2964,15 +2964,21 @@ define probelist_t{
                  * An empty values indicates that the radio does not support sensing of any type.
                  * Possible data type values : 00000000, 00137400, 0012F001, AC9A9680
                  */
-                csv_string SupportedSensingDataTypes;
+                %read-only csv_string SupportedSensingDataTypes;
 
                 /**
                  * A sensing exchange type identifies the different exchanges in sensing measurement.
 		 * Possible exchange type values : qosnull,opportunistic,probe,tb-sr2si,tb-sr2sr,tb-si2sr,cts2self,nontb-si2sr,nontb-sr2si,sbp-si2si,sbp-sr2si,sbp-sr2sr
                  */
-		csv_string SupportedSensingExchangeTypes {
+		%read-only csv_string SupportedSensingExchangeTypes {
 			on action validate call check_enum [ "qosnull", "opportunistic", "probe", "tb-sr2si", "tb-sr2sr", "tb-si2sr", "cts2self", "nontb-si2sr", "nontb-sr2si", "sbp-si2si", "sbp-sr2si", "sbp-sr2sr" ];
 		}
+
+		%persistent %protected csv_string StaticSupportedSensingDataTypes;
+
+		%persistent %protected csv_string StaticSupportedSensingExchangeTypes {
+                        on action validate call check_enum [ "qosnull", "opportunistic", "probe", "tb-sr2si", "tb-sr2sr", "tb-si2sr", "cts2self", "nontb-si2sr", "nontb-sr2si", "sbp-si2si", "sbp-sr2si", "sbp-sr2sr" ];
+                }
 
 		/**
 		 * Object encapsulating IEEE 802.11ax configuration parameters.
