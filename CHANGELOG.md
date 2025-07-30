@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.9 - 2025-07-30(17:25:46 +0000)
+
+### Other
+
+- - set sta interface and 4addr mode per default
+
 ## Release sah-next_v7.23.8 - 2025-07-30(15:58:47 +0000)
 
 ### Other
