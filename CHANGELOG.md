@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.6 - 2025-07-30(07:21:29 +0000)
+
+### Other
+
+- – ZWDFS should not run during ZTP
+
 ## Release sah-next_v7.23.5 - 2025-07-29(16:03:15 +0000)
 
 ### Other
