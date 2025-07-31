@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.12 - 2025-07-31(10:20:15 +0000)
+
+### Other
+
+- [import] Changing security mode from WPA2-WP3-Personal to WPA3-Personal triggers Hostapd restart
+
 ## Release sah-next_v7.23.11 - 2025-07-31(09:55:33 +0000)
 
 ## Release sah-next_v7.23.10 - 2025-07-31(09:20:00 +0000)
