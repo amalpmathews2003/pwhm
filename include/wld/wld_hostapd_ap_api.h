@@ -152,4 +152,6 @@ bool wld_hostapd_ap_needWpaCtrlIface(T_AccessPoint* pAP);
 const char* wld_hostapd_ap_selectApLinkIface(T_AccessPoint* pAP);
 bool wld_ap_hostapd_isMainStaMldLink(T_AccessPoint* pAP, swl_macBin_t* pMacBin);
 
+wld_secDmn_action_rc_ne wld_ap_hostapd_setDppConfiguratorConnectivity(T_AccessPoint* pAP, bool enable);
+
 #endif /* __WLD_AP_API_H__ */
