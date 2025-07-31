@@ -187,6 +187,10 @@
 #define HE_SPR_SRG_PARTIAL_BSSID_MAX_LEN 128
 #endif
 
+#ifndef TID_LINK_MAP_CAPABILITY_STRING_MAX_LEN
+#define TID_LINK_MAP_CAPABILITY_STRING_MAX_LEN 32
+#endif
+
 #ifndef WLD_TMP_DEBUG_DIR
 #define WLD_TMP_DEBUG_DIR "/tmp/wifiDbg"
 #endif
@@ -1253,6 +1257,7 @@ typedef struct wld_radioWiFi7Cap {
 typedef struct wld_radioCap {
     wld_radioWiFi7Cap_t apCap7;
     wld_radioWiFi7Cap_t staCap7;
+    char tidLinkMapCapability[TID_LINK_MAP_CAPABILITY_STRING_MAX_LEN];
 } wld_radioCap_t;
 
 typedef struct {

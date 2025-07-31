@@ -1759,7 +1759,7 @@ static void s_writeCapabilities(T_Radio* pR) {
     amxd_trans_t trans;
     ASSERT_TRANSACTION_INIT(capObj, &trans, , ME, "%s : trans init failure", pR->Name);
 
-
+    amxd_trans_set_cstring_t(&trans, "TIDLinkMapCapability", pR->cap.tidLinkMapCapability);
     s_writeWiFi7Cap(&trans, amxd_object_findf(capObj, "WiFi7APRole"), &pR->cap.apCap7);
     s_writeWiFi7Cap(&trans, amxd_object_findf(capObj, "WiFi7STARole"), &pR->cap.staCap7);
 
