@@ -192,9 +192,14 @@ static void s_saveChanChanged(T_Radio* pRad, swl_chanspec_t* pChanSpec, wld_chan
                 // reset saved CurrChannel to force considering chanspec read from driver
                 pRad->currentChanspec.chanspec.channel = 0;
             }
-            // reset saved tgtChannel to force sync with chanspec read from driver
-            pRad->targetChanspec.chanspec.channel = 0;
-            reason = CHAN_REASON_INITIAL;
+
+            if(wld_channel_is_radar_detected(pRad->currentChanspec.chanspec)) {
+                reason = CHAN_REASON_DFS;
+            } else {
+                // reset saved tgtChannel to force sync with chanspec read from driver
+                pRad->targetChanspec.chanspec.channel = 0;
+                reason = CHAN_REASON_INITIAL;
+            }
         }
     }
     swl_rc_ne rc = wld_chanmgt_reportCurrentChanspec(pRad, *pChanSpec, reason);

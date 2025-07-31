@@ -459,6 +459,10 @@ static swl_rc_ne s_checkTargetChanspec(T_Radio* pR, swl_chanspec_t chanspec, wld
         return wld_chanmgt_setTargetChanspec(pR, chanspec, true, reason, "force EP chanspec");
     }
 
+    if((reason == CHAN_REASON_DFS) && !swl_typeChanspec_equals(pR->targetChanspec.chanspec, chanspec)) {
+        return wld_chanmgt_setTargetChanspec(pR, chanspec, false, reason, "DFS radar detected");
+    }
+
     if((reason == CHAN_REASON_INITIAL) && (pR->targetChanspec.chanspec.channel == 0)) {
         return wld_chanmgt_setTargetChanspec(pR, chanspec, false, CHAN_REASON_INITIAL, NULL);
     }
