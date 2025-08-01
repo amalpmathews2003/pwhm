@@ -436,6 +436,9 @@ T_Radio* wld_createRadio(const char* name, vendor_t* vendor, int idx) {
     pR->bgdfs_config.enable = false;
     pR->bgdfs_config.channel = 0;
     pR->autoBwSelectMode = BW_SELECT_MODE_DEFAULT;
+    pR->powerCapability = M_RAD_POW_MODE_ON;
+    pR->currentPowerMode = RAD_POW_MODE_ON;
+    pR->confPowerMode = RAD_POW_MODE_ON;
 
     /* Update our RO driver parameters in this T_Radio structure */
     pR->pFA->mfn_wrad_supports(pR, NULL, 0);
