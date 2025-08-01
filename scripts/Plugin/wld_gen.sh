@@ -10,6 +10,7 @@ fi
 ulimit -c ${ULIMIT_CONFIGURATION:-0}
 name="wld"
 datamodel_root="WiFi"
+pwhm_term_timeout=15
 
 prevent_netifd_to_configure_wireless()
 {
@@ -69,10 +70,10 @@ case $1 in
         process_start ${name} -D
         ;;
     stop)
-        process_stop ${name}
+        process_stop ${name} ${pwhm_term_timeout}
         ;;
     shutdown)
-        process_shutdown ${name}
+        process_shutdown ${name} ${pwhm_term_timeout}
         ;;
     restart)
         $0 stop
