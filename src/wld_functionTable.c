@@ -104,6 +104,13 @@ static swl_rc_ne TRAP_mfn_wrad_continue_external_scan(T_Radio* rad) {
     return SWL_RC_NOT_IMPLEMENTED;
 }
 
+static swl_rc_ne TRAP_mfn_wrad_setPowerMode(T_Radio* rad, wld_rad_powerMode_e powerMode) {
+    _UNUSED_(rad);
+    _UNUSED_(powerMode);
+    SAH_TRACEZ_NOTICE(ME, "%p", rad);
+    return SWL_RC_NOT_IMPLEMENTED;
+}
+
 static int TRAP_mfn_wrad_addVapExt(T_Radio* rad, T_AccessPoint* ap) {
     _UNUSED_(rad);
     _UNUSED_(ap);
@@ -777,6 +784,7 @@ void wld_functionTable_init(vendor_t* vendor, T_CWLD_FUNC_TABLE* fta) {
     FTA_ASSIGN(mfn_wrad_notifyWifi7CfgUpdate);
     FTA_ASSIGN(mfn_wrad_generateVapIfName);
     FTA_ASSIGN(mfn_wrad_generateEpIfName);
+    FTA_ASSIGN(mfn_wrad_setPowerMode);
 
     // wvap functions
     FTA_ASSIGN(mfn_wvap_create_hook);

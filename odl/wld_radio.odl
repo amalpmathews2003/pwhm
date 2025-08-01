@@ -384,6 +384,33 @@ define probelist_t{
 		}
 
 		/**
+		 * Comma-separated list of strings. Describes the possible power states
+		 * of the Radio regardless of its current administrative state.
+		 * Each list item is an enumeration of:
+		 * On (Indicates that the Radio is powered on)
+		 * Off (Indicates that the Radio is powered off, using no power)
+		 * LowPower (Indicates that the Radio is in a low-power state, using minimal power, OPTIONAL)
+		 */
+		%read-only csv_string PowerCapability;
+
+		/**
+		 * Reports the current power status of the Radio.
+		 * The value MUST be a member of the list reported by the PowerCapability
+		 * parameter, or else be Error.
+		 */
+		%read-only string PowerStatus{
+			on action validate call check_enum ["On","Off","LowPower"];
+			default "On";
+		}
+
+		/**
+		 * ChangePowerMode() - Sets the power state of the Radio asynchronously.
+		 * PowerState - [MANDATORY] The value MUST be a member of the list
+		 * reported by the PowerCapability parameter. Targeted power state.
+		 */
+		void ChangePowerMode(%in %mandatory string PowerState);
+
+		/**
 		 * nl80211 Wireless Physical Id
 		 * hw identifier allowing to match specific radio device
 		 * in addition to frequency band

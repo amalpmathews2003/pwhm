@@ -1002,6 +1002,18 @@ typedef enum {
 typedef uint32_t wld_he_cap_m;
 extern const char* g_str_wld_he_cap[];
 
+typedef enum {
+    RAD_POW_MODE_ON,
+    RAD_POW_MODE_OFF,
+    RAD_POW_MODE_LOWPOWER,
+    RAD_POW_MODE_MAX
+} wld_rad_powerMode_e;
+
+#define M_RAD_POW_MODE_ON (1 << RAD_POW_MODE_ON)
+#define M_RAD_POW_MODE_OFF (1 << RAD_POW_MODE_OFF)
+#define M_RAD_POW_MODE_LOWPOWER (1 << RAD_POW_MODE_LOWPOWER)
+typedef uint32_t wld_rad_powerMode_m;
+extern const char* g_str_wld_rad_powerMode[];
 
 typedef enum {
     RAD_BF_CAP_DEFAULT,
@@ -1588,6 +1600,9 @@ struct WLD_RADIO {
     bool ofdmaEnable;                               /* Whether OFDMA is enabled */
     wld_he_cap_m heCapsSupported;                   /* Which 11ax he caps are supported */
     wld_he_cap_m heCapsEnabled;                     /* Which 11ax he caps are enabled */
+    wld_rad_powerMode_m powerCapability;            /* Which Power Capabilities are available */
+    wld_rad_powerMode_e currentPowerMode;           /* Which is the current Power Mode */
+    wld_rad_powerMode_e confPowerMode;              /* Placeholder for configured Power Mode */
     wld_rad_bf_cap_m bfCapsSupported[COM_DIR_MAX];  /* Which beamforming capabilities are available */
     wld_rad_bf_cap_m bfCapsEnabled[COM_DIR_MAX];    /* Which beamforming capabilities are enabled */
     int32_t nrAntenna[COM_DIR_MAX];                 /* Number of antennas available. -1 means undefined */
@@ -2310,6 +2325,7 @@ typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_CSI_STATS)(T_Radio* rad, wld_csiSt
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_ADD_CLIENT)(T_Radio* rad, wld_csiClient_t* client);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_DEL_CLIENT)(T_Radio* rad, swl_macChar_t macAddr);
 typedef swl_rc_ne (APIENTRY* PFN_WRAD_SENSING_RESET_STATS)(T_Radio* rad);
+typedef swl_rc_ne (APIENTRY* PFN_WRAD_SET_POWERMODE)(T_Radio* rad, wld_rad_powerMode_e powerMode);
 
 /*********** Vendor VAP driver settings *********************/
 typedef int (APIENTRY* PFN_WVAP_CREATE_HOOK)(T_AccessPoint* vap);
@@ -2505,6 +2521,7 @@ typedef struct S_CWLD_FUNC_TABLE {
     PFN_WRAD_DEL_STAMON mfn_wrad_del_stamon;                  /**< Del the non associated station */
     PFN_WRAD_DELAY_AP_UP_DONE mfn_wrad_delayApUpDone;         /**< Warn driver delay AP up period is over*/
     PFN_WRAD_RADIO_STATS mfn_wrad_stats;                      /**< get radio statistics */
+    PFN_WRAD_SET_POWERMODE mfn_wrad_setPowerMode;             /**< Apply the configured power mode to the radio */
     swl_rc_ne (* mfn_wrad_firmwareVersion)(T_Radio* rad);     /**< get the radio's firmware version */
 
     PFN_WVAP_CREATE_HOOK mfn_wvap_create_hook;                /**< VAP constructor hook */
