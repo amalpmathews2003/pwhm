@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.0 - 2025-08-04(10:38:34 +0000)
+
+### Other
+
+- TR-181: WiFi - power management
+
 ## Release sah-next_v7.23.13 - 2025-08-04(08:01:43 +0000)
 
 ### Other
