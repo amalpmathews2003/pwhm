@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.23.13 - 2025-08-04(08:01:43 +0000)
+
+### Other
+
+- Extender is not pairing with router in WPS
+
 ## Release sah-next_v7.23.12 - 2025-07-31(10:20:15 +0000)
 
 ### Other
