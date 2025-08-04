@@ -1,7 +1,13 @@
 {
     "WiFi.": {
         "Order": 1,
-        "Param": "r--n"
+        "Param": "r--n",
+        "Obj": "r--n"
+    },
+    "WiFi.AccessPoint.*.MACFiltering.": {
+        "Order": 2,
+        "Param": "rw-n",
+        "Obj": "rw-n"
     },
     "WiFi.AccessPoint.*.MACFiltering.Mode": {
         "Order": 2,
