@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.1 - 2025-08-06(08:52:45 +0000)
+
+### Other
+
+- – Hostapd repeater repeatedly restarts after reboot when only vap6g0guest is enabled on the 6GHz band.
+
 ## Release sah-next_v7.24.0 - 2025-08-04(10:38:34 +0000)
 
 ### Other
