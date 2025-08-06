@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.2 - 2025-08-06(13:59:07 +0000)
+
+### Other
+
+- [ACL][Mainline] Admin cannot access WiFi.AccessPoint.*.MACFiltering
+
 ## Release sah-next_v7.24.1 - 2025-08-06(08:52:45 +0000)
 
 ### Other
