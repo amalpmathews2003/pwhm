@@ -229,7 +229,7 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         tgtChspec.bandwidth = wld_chanmgt_getDefaultSupportedBandwidth(pRad);
     }
 
-    bool enableRad11be = wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) && wld_rad_hasUsableApMld(pRad, 1);
+    bool enableRad11be = wld_rad_hasConnectedEpWithRadStd(pRad, SWL_RADSTD_BE) || (wld_rad_checkEnabledRadStd(pRad, SWL_RADSTD_BE) && wld_rad_hasUsableApMld(pRad, 1));
 
     swl_channel_t tgtChan = tgtChspec.channel;
     swl_mapCharFmt_addValInt32(radConfigMap, "channel", tgtChan);

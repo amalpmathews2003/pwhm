@@ -3460,6 +3460,22 @@ bool wld_rad_hasConnectedEp(T_Radio* pRad) {
     return false;
 }
 
+bool wld_rad_hasConnectedEpWithRadStd(T_Radio* pRad, swl_radStd_e radStd) {
+    ASSERTS_NOT_NULL(pRad, false, ME, "NULL");
+    T_EndPoint* pEP = NULL;
+    /*
+     * Check if any connected EP with a specific radStd operatingStandard
+     */
+    wld_rad_forEachEp(pEP, pRad) {
+        if(pEP->connectionStatus == EPCS_CONNECTED) {
+            if(pEP->stats.operatingStandard == radStd) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool wld_rad_hasIntfEnableSyncMissing(T_Radio* pRad) {
     ASSERT_NOT_NULL(pRad, false, ME, "NULL");
     /*
