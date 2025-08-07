@@ -1347,6 +1347,12 @@ define probelist_t{
 		 */
 		%read-only string SupportedHeMcsNssSet;
 
+		/**
+		 * Radio 802.11be EHT(Extremely High Throughput) physical capabilities, raw values, in base64 as per the Tr181 Spec.
+		 * See standard section "9.4.2.322.3 EHT PHY Capabilities Information field" for bits details.
+		*/
+		%read-only string EhtPhyCapabilities;
+
 		/** <p> Indicates if Reduced Interframe Space is enabled.</p>
 		 * Default = keep the current mode
 		 * Auto = let the driver to manage the RIFS
