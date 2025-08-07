@@ -2005,6 +2005,14 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
             amxd_trans_set_cstring_t(&trans, "SupportedHeMcsNssSet", capBuffer);
         }
 
+        //EHT Physical Capabilities
+        outputSize = swl_base64_encode(capBuffer, sizeof(capBuffer), (swl_bit8_t*) &pR->ehtPhyCapabilities, sizeof(pR->ehtPhyCapabilities));
+        if(outputSize >= (int) sizeof(capBuffer)) {
+            SAH_TRACEZ_WARNING(ME, "too small buffer %zi, Needed size is %zd", sizeof(capBuffer), outputSize);
+        } else {
+            amxd_trans_set_cstring_t(&trans, "EhtPhyCapabilities", capBuffer);
+        }
+
         amxd_trans_set_cstring_t(&trans, "OperatingStandardsFormat", swl_radStd_formatToChar(pR->operatingStandardsFormat));
 
         swl_radStd_toChar(TBuf, sizeof(TBuf), pR->operatingStandards, pR->operatingStandardsFormat, pR->supportedStandards);
