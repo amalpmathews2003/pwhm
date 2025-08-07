@@ -135,6 +135,8 @@ bool wifiGen_init() {
     fta.mfn_wrad_start_scan = wld_rad_nl80211_startScan;
     fta.mfn_wrad_stop_scan = wld_rad_nl80211_abortScan;
     fta.mfn_wrad_scan_results = wifiGen_rad_getScanResults;
+    fta.mfn_wrad_updatechansurveyreport = wifiGen_rad_updateChanSurveyReport;
+    fta.mfn_wrad_getchansurveyreport = wifiGen_rad_getChanSurveyReport;
     fta.mfn_wrad_airstats = wifiGen_rad_getAirStats;
     fta.mfn_wrad_getspectruminfo = wifiGen_rad_getSpectrumInfo;
     fta.mfn_wrad_getCurrentTxPow_dBm = wifiGen_rad_getTxPowerdBm;
