@@ -218,3 +218,55 @@ bool wld_apMld_hasSharedConnectionConf(T_AccessPoint* pAP) {
     return false;
 }
 
+void wld_ap_mld_notifyChange(wld_mld_t* pMld, wld_mldChangeEvent_e event, const char* reason) {
+
+    SAH_TRACEZ_INFO(ME, "MLD Event %d for unit %d - Reason: %s",
+                    event, pMld->unit, reason);
+
+    switch(event) {
+    case WLD_MLD_EVT_ADD:
+        if(wld_ap_mld_getOrCreateDmObject(pMld->unit, pMld->pGroup->type, pMld) != NULL) {
+        } else {
+            SAH_TRACEZ_ERROR(ME, "Failed to create/get DM object for MLD unit %d", pMld->unit);
+        }
+        break;
+
+    default:
+        SAH_TRACEZ_INFO(ME, "Unhandled MLD event: %d", event);
+        break;
+    }
+}
+
+amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e mld_type, wld_mld_t* pMld_internal) {
+    if(mld_type != WLD_SSID_TYPE_AP) {
+        SAH_TRACEZ_ERROR(ME, "Expected AP SSID type for APMLD");
+        return NULL;
+    }
+
+    amxd_object_t* object = NULL;
+    char path[128];
+    uint32_t dm_instance_id = 0;
+    dm_instance_id = mld_unit + 1;
+    snprintf(path, sizeof(path), "WiFi.APMLD.%u", dm_instance_id);
+    object = amxd_dm_findf(NULL, "%s", path);
+
+    if(object == NULL) {
+        SAH_TRACEZ_INFO(ME, "APMLD instance %s not found. Proceeding with creation", path);
+        amxd_object_t* parent_obj = get_wld_object();
+        ASSERT_NOT_NULL(parent_obj, NULL, ME, "WiFi object not found in DM Cannot create APMLD instance for MLDUnit %u.", mld_unit);
+        amxd_object_t* templateObject = amxd_object_get(parent_obj, "APMLD");
+        ASSERT_NOT_NULL(templateObject, NULL, ME, "APMLD template object not found, cannot create instance for MLDUnit %u.", mld_unit);
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(templateObject, &trans, NULL, ME, "%s: Failed to init transaction for APMLD %u creation", ME, mld_unit);
+        amxd_trans_add_inst(&trans, dm_instance_id, NULL);
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, NULL, ME, "%s: Failed to apply transaction for APMLD %u creation", ME, mld_unit);
+        object = amxd_object_get_instance(templateObject, NULL, dm_instance_id);
+        ASSERT_NOT_NULL(object, NULL, ME, "%s: Failed to retrieve newly created APMLD instance %u after transaction.", ME, mld_unit);
+        SAH_TRACEZ_INFO(ME, "New APMLD instance %s created for MLDUnit %u", path, mld_unit);
+    } else {
+        SAH_TRACEZ_INFO(ME, "Found existing APMLD instance: %s (MLD Unit %u). Linking.", path, mld_unit);
+    }
+    pMld_internal->object = object;
+    object->priv = pMld_internal;
+    return object;
+}
