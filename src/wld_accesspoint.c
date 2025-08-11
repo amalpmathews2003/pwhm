@@ -872,6 +872,7 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         amxd_trans_set_bool(&trans, "APBridgeDisable", pAP->APBridgeDisable);
 
         amxd_trans_set_bool(&trans, "IsolationEnable", pAP->clientIsolationEnable);
+        amxd_trans_set_bool(&trans, "CCEAdvertisementEnabled", pAP->CCEAdvertisementEnabled);
 
         amxd_trans_set_bool(&trans, "IEEE80211kEnabled", pAP->IEEE80211kEnable);
 
@@ -1021,6 +1022,12 @@ void SyncData_AP2OBJ(amxd_object_t* object, T_AccessPoint* pAP, int set) {
         if(pAP->clientIsolationEnable != tmp_bool) {
             pAP->clientIsolationEnable = tmp_bool;
             pAP->pFA->mfn_wvap_sync(pAP, SET);
+        }
+
+        tmp_bool = amxd_object_get_bool(object, "CCEAdvertisementEnabled", NULL);
+        if(pAP->CCEAdvertisementEnabled != tmp_bool) {
+            pAP->CCEAdvertisementEnabled = tmp_bool;
+            commit = true;
         }
 
         tmp_bool = amxd_object_get_bool(object, "IEEE80211kEnabled", NULL);
@@ -2791,6 +2798,7 @@ SWLA_DM_HDLRS(sApDmHdlrs,
                   SWLA_DM_PARAM_HDLR("MCEnable", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("APBridgeDisable", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("IsolationEnable", s_setApCommonParam_pwf),
+                  SWLA_DM_PARAM_HDLR("CCEAdvertisementEnabled", s_setApCommonParam_pwf),
                   SWLA_DM_PARAM_HDLR("BridgeInterface", s_setBridgeInterface_pwf),
                   SWLA_DM_PARAM_HDLR("DefaultDeviceType", s_setDefaultDeviceType_pwf),
                   SWLA_DM_PARAM_HDLR("IEEE80211kEnabled", s_set80211kEnabled_pwf),
