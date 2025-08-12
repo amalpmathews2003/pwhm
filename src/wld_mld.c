@@ -217,6 +217,7 @@ static wld_mldLink_t* s_takeLink(wld_mldLink_t* pLink) {
         if(amxc_llist_is_empty(&pMld->links)) {
             wld_mldGroup_t* pGroup = pMld->pGroup;
             uint8_t unit = pMld->unit;
+	    wld_ap_mld_clearMld(pMld);
             s_deinitMld(pMld);
             if(pGroup != NULL) {
                 s_sendChangeEvent(WLD_MLD_EVT_DEL, pGroup->type, unit, pLink->pSSID);

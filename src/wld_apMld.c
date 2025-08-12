@@ -273,6 +273,36 @@ amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e 
 }
 
 
+amxd_status_t wld_ap_mld_clearMld(wld_mld_t* pMld_internal) {
+
+        if(pMld_internal->object != NULL) {
+                uint32_t instance_id = amxd_object_get_index(pMld_internal->object);
+                wld_mld_t* pMld = pMld_internal;
+                amxd_object_t* obj = pMld->object;
+                const char* mldMacStr = "00:00:00:00:00:00";
+                uint32_t numLinks = amxc_llist_size(&pMld->links);
+                SAH_TRACEZ_INFO(ME, "Clearing DMs inside APMLD instance %u", instance_id);
+
+                if (amxd_object_set_cstring_t(obj, "MLDMACAddress", mldMacStr) != amxd_status_ok) {
+                        SAH_TRACEZ_ERROR(ME, "Failed to clear MLDMACAddress in DM for unit %u", pMld->unit);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "Cleared MLDMACAddress=%s for APMLD unit %u", mldMacStr, pMld->unit);
+                }
+                if (amxd_object_set_uint32_t(obj, "AffiliatedAPNumberOfEntries", numLinks) != amxd_status_ok) {
+                        SAH_TRACEZ_ERROR(ME, "Failed to set AffiliatedAPNumberOfEntries=%u", numLinks);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "Updated AffiliatedAPNumberOfEntries=%u for APMLD unit %u", numLinks, pMld->unit);
+                }
+
+
+                SAH_TRACEZ_INFO(ME, "Cleared DMs inside APMLD instance %u", instance_id);
+        } else {
+                SAH_TRACEZ_INFO(ME, "MLD unit %d: No DM object associated Nothing to clear from DM.", pMld_internal->unit);
+                return amxd_status_ok;
+        }
+        return amxd_status_ok;
+}
+
 amxd_object_t* wld_ap_createAffiliatedAPObjects(wld_mldLink_t* pLink, uint32_t dm_instance) {
 
         uint32_t dm_instance_id = 0;
