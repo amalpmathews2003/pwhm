@@ -244,11 +244,12 @@ amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e 
     }
 
     amxd_object_t* object = NULL;
+    amxd_object_t* rootObj = get_wld_object();
     char path[128];
     uint32_t dm_instance_id = 0;
     dm_instance_id = mld_unit + 1;
-    snprintf(path, sizeof(path), "WiFi.APMLD.%u", dm_instance_id);
-    object = amxd_dm_findf(NULL, "%s", path);
+    snprintf(path, sizeof(path), "APMLD.%u", dm_instance_id);
+    object = amxd_object_findf(rootObj, "%s", path);
 
     if(object == NULL) {
         SAH_TRACEZ_INFO(ME, "APMLD instance %s not found. Proceeding with creation", path);
@@ -269,4 +270,135 @@ amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e 
     pMld_internal->object = object;
     object->priv = pMld_internal;
     return object;
+}
+
+amxd_status_t wld_ap_mld_clearMld(wld_mld_t* pMld_internal) {
+
+        if(pMld_internal->object != NULL) {
+                uint32_t instance_id = amxd_object_get_index(pMld_internal->object);
+                wld_mld_t* pMld = pMld_internal;
+                amxd_object_t* obj = pMld->object;
+                const char* mldMacStr = "00:00:00:00:00:00";
+                uint32_t numLinks = amxc_llist_size(&pMld->links);
+                SAH_TRACEZ_INFO(ME, "Clearing DMs inside APMLD instance %u", instance_id);
+
+                if (amxd_object_set_cstring_t(obj, "MLDMACAddress", mldMacStr) != amxd_status_ok) {
+                        SAH_TRACEZ_ERROR(ME, "Failed to clear MLDMACAddress in DM for unit %u", pMld->unit);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "Cleared MLDMACAddress=%s for APMLD unit %u", mldMacStr, pMld->unit);
+                }
+                if (amxd_object_set_uint32_t(obj, "AffiliatedAPNumberOfEntries", numLinks) != amxd_status_ok) {
+                        SAH_TRACEZ_ERROR(ME, "Failed to set AffiliatedAPNumberOfEntries=%u", numLinks);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "Updated AffiliatedAPNumberOfEntries=%u for APMLD unit %u", numLinks, pMld->unit);
+                }
+
+
+                SAH_TRACEZ_INFO(ME, "Cleared DMs inside APMLD instance %u", instance_id);
+        } else {
+                SAH_TRACEZ_INFO(ME, "MLD unit %d: No DM object associated Nothing to clear from DM.", pMld_internal->unit);
+                return amxd_status_ok;
+        }
+        return amxd_status_ok;
+}
+
+
+amxd_object_t* wld_ap_createAffiliatedAPObjects(wld_mldLink_t* pLink, uint32_t dm_instance) {
+
+        uint32_t dm_instance_id = 0;
+        dm_instance_id = dm_instance + 1;
+        wld_mldLink_t* pTempLink = pLink;
+        amxd_object_t* CurrObj = pLink->AffObj;
+        if(CurrObj){
+                SAH_TRACEZ_INFO(ME, "linkId (%d): current object exists so deleting all the instances below", dm_instance);
+                wld_ap_deleteAffiliatedAPObjects(pTempLink);
+                pLink->linkId = -1;
+        }
+        else {
+                SAH_TRACEZ_INFO(ME, "linkId (%d): current object don't exists", dm_instance);
+        }
+        SAH_TRACEZ_INFO(ME, "linkId (%d): calling create affiliated ap %u", dm_instance, pLink->configured);
+
+        amxd_object_t* parent_obj = pLink->pMld->object;  // Changed from dm_find
+        if (parent_obj == NULL) {
+                SAH_TRACEZ_ERROR(ME, "pMld->object is NULL, cannot create AffiliatedAP instances");
+                return NULL;
+        }
+
+        amxd_object_t* templateObject = amxd_object_get(parent_obj, "AffiliatedAP");
+        ASSERT_NOT_NULL(templateObject, NULL, ME, "%s: Could not get template", pLink->pSSID->Name);
+        SAH_TRACEZ_INFO(ME, "%s: Creating template object for ssid", pLink->pSSID->Name);
+        amxd_trans_t trans;
+        ASSERT_TRANSACTION_INIT(templateObject, &trans, NULL, ME, "%s : trans init failure", pLink->pSSID->Name);
+
+        amxd_trans_add_inst(&trans, dm_instance_id, NULL);
+
+        ASSERT_TRANSACTION_LOCAL_DM_END(&trans, NULL, ME, "%s : trans apply failure", pLink->pSSID->Name);
+
+        pLink->AffObj = amxd_object_get_instance(templateObject, NULL, dm_instance_id);
+        ASSERT_NOT_NULL(pLink->AffObj, NULL, ME, "%s: failure to create object", pLink->pSSID->Name);
+        pLink->AffObj->priv = pLink;
+        pTempLink = NULL;
+        return pLink->AffObj;
+
+}
+
+
+amxd_status_t wld_ap_deleteAffiliatedAPObjects(wld_mldLink_t* pStartLink) {
+        if (pStartLink == NULL || pStartLink->pMld == NULL) {
+                SAH_TRACEZ_ERROR(ME, "Invalid start link or parent MLD");
+                return amxd_status_unknown_error;
+        }
+
+        amxd_status_t status = amxd_status_ok;
+        amxc_llist_it_t* it = &pStartLink->it;  // starting point in the list
+        amxc_llist_it_t* next_it = NULL;
+
+        // Get template once from the parent MLD
+        amxd_object_t* parent_obj = pStartLink->pMld->object;
+        if (parent_obj == NULL) {
+                SAH_TRACEZ_ERROR(ME, "pMld->object is NULL, cannot retrieve AffiliatedAP instances");
+                return amxd_status_unknown_error;
+        }
+
+        amxd_object_t* ObjTempl = amxd_object_get(parent_obj, "AffiliatedAP");
+        if (ObjTempl == NULL) {
+                SAH_TRACEZ_ERROR(ME, "Failed to get AffiliatedAP template from parent object");
+                return amxd_status_unknown_error;
+        }
+
+        // Loop from current link till end of list
+        while (it != NULL) {
+                wld_mldLink_t* pLink = amxc_container_of(it, wld_mldLink_t, it);
+                next_it = amxc_llist_it_get_next(it);  // store next iterator in advance
+
+                if (pLink->AffObj != NULL) {
+                        uint32_t instance_id = amxd_object_get_index(pLink->AffObj);
+                        SAH_TRACEZ_INFO(ME, "Deleting DM instance %u for %s", instance_id, pLink->pSSID->Name);
+
+                        amxd_trans_t trans;
+                        ASSERT_TRUE(instance_id > 0, false, ME, "wrong instance index");
+                        ASSERT_TRANSACTION_INIT(ObjTempl, &trans, false, ME, "%s: Failed to init transaction for deleting AffiliatedAP instance %u for %s", ME, instance_id, pLink->pSSID->Name)
+
+                        amxd_trans_del_inst(&trans, instance_id, NULL);
+                        // Clear private pointer before applying
+                        pLink->AffObj->priv = NULL;
+                        if(swl_object_finalizeTransactionOnLocalDm(&trans) != amxd_status_ok) {
+                                SAH_TRACEZ_ERROR(ME, "%s : trans apply failure", pLink->pSSID->Name);
+                                pLink->AffObj->priv = pLink;
+                                return amxd_status_unknown_error;
+                        }
+
+                        pLink->AffObj = NULL;
+                        pLink->linkId = -1;
+                        SAH_TRACEZ_INFO(ME, "DM instance AffiliatedAP.%u deleted successfully", instance_id);
+
+                } else {
+                        SAH_TRACEZ_INFO(ME, "MLD unit %d: Link ID %d: No DM object found to delete", pLink->pMld->unit, pLink->linkId);
+                }
+
+                it = next_it;  // move to next link
+        }
+
+        return status;
 }

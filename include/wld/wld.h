@@ -1745,6 +1745,7 @@ typedef struct {
 
 struct wld_mldLink {
     amxc_llist_it_t it;
+    amxd_object_t* AffObj;
     T_SSID* pSSID;
     int16_t linkId;
     wld_mld_t* pMld;

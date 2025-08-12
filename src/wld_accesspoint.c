@@ -93,6 +93,10 @@
 #include "Features/wld_persist.h"
 #include "wld_extMod.h"
 
+#include "wld_nl80211.h"
+#include "wld_ssid_nl80211_priv.h"
+#include "wld_nl80211_types.h"
+
 #define ME "ap"
 
 /* FIX ME. Strings must be const STATIC? */
@@ -1911,6 +1915,73 @@ static void s_setApEnable_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_pa
     SAH_TRACEZ_OUT(ME);
 }
 
+void wld_ap_updateMld(T_SSID* pSSID) {
+        if (pSSID == NULL || pSSID->pMldLink == NULL || pSSID->pMldLink->pMld == NULL) {
+                SAH_TRACEZ_WARNING(ME, "Cannot update MLDMACAddress: no MLD info for SSID %s", pSSID ? pSSID->Name : "NULL");
+                return;
+        }
+
+        wld_mld_t* pMld = pSSID->pMldLink->pMld;
+        wld_mldLink_t* pLink = pSSID->pMldLink;
+        amxd_object_t* obj = pMld->object;
+        amxd_object_t* affObj = pSSID->pMldLink->AffObj;
+
+        if (obj == NULL) {
+                SAH_TRACEZ_WARNING(ME, "No DM object associated with MLD unit %u", pMld->unit);
+                return;
+        }
+
+        wld_nl80211_ifaceInfo_t mldIfaceInfo;
+        int32_t linkId = -1;
+        memset(&mldIfaceInfo, 0, sizeof(mldIfaceInfo));
+
+        swl_rc_ne rc = wld_ssid_nl80211_getMldIfaceInfo(pSSID, &mldIfaceInfo, &linkId);
+        if (rc == SWL_RC_OK && mldIfaceInfo.nMloLinks > 0) {
+                swl_macBin_t* pMldMac = &mldIfaceInfo.mloLinks[0].link.mldMac;
+
+                const char* mldMacStr = swl_typeMacBin_toBuf32Ref(pMldMac).buf;
+
+                if (amxd_object_set_cstring_t(obj, "MLDMACAddress", mldMacStr) != amxd_status_ok) {
+                        SAH_TRACEZ_ERROR(ME, "Failed to set MLDMACAddress in DM for unit %u", pMld->unit);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "Updated MLDMACAddress=%s for APMLD unit %u", mldMacStr, pMld->unit);
+                }
+        } else {
+                SAH_TRACEZ_WARNING(ME, "Failed to get MLD iface info or no MLO links for SSID %s", pSSID->Name);
+        }
+
+        // --- new: set AffiliatedAPNumberOfEntries ---
+        uint32_t numLinks = amxc_llist_size(&pMld->links);
+
+        if (amxd_object_set_uint32_t(obj, "AffiliatedAPNumberOfEntries", numLinks) != amxd_status_ok) {
+                SAH_TRACEZ_ERROR(ME, "Failed to set AffiliatedAPNumberOfEntries=%u", numLinks);
+        } else {
+                SAH_TRACEZ_INFO(ME, "Updated AffiliatedAPNumberOfEntries=%u for APMLD unit %u", numLinks, pMld->unit);
+        }
+        // --- MLDUnit ---
+        if (amxd_object_set_uint32_t(obj, "MLDID", pMld->unit) != amxd_status_ok) {
+                SAH_TRACEZ_ERROR(ME, "Failed to set MLDID=%u", pMld->unit);
+        } else {
+                SAH_TRACEZ_INFO(ME, "Updated MLDID=%u", pMld->unit);
+        }
+
+        // --- create AffiliatedAP objects if needed ---
+        if (numLinks > 0) {
+
+                // --- fill values into AffiliatedAP.{i} ---
+                if (affObj != NULL) {
+                        const char* bssidStr = swl_typeMacBin_toBuf32Ref((swl_macBin_t*) pLink->pSSID->MACAddress).buf;
+                        if (amxd_object_set_cstring_t(affObj, "BSSID", bssidStr) != amxd_status_ok) {
+                                SAH_TRACEZ_ERROR(ME, "Failed to set BSSID=%s", bssidStr);
+                        }
+                        if (amxd_object_set_uint32_t(affObj, "LinkID", pLink->linkId) != amxd_status_ok) {
+                                SAH_TRACEZ_ERROR(ME, "Failed to set LinkID=%d", pLink->linkId);
+                        }
+                        SAH_TRACEZ_INFO(ME, "Updated fields for AffiliatedAP");
+                }
+}
+}
+
 static void s_setMACAddressControlEnabled_pwf(void* priv _UNUSED, amxd_object_t* object, amxd_param_t* param _UNUSED, const amxc_var_t* const newValue) {
     SAH_TRACEZ_IN(ME);
 
@@ -2454,6 +2525,8 @@ void wld_vap_updateState(T_AccessPoint* pAP) {
 
     wld_wps_updateState(pAP);
     wld_apRssiMon_updateEnable(pAP);
+
+    wld_ap_updateMld(pSSID);
 }
 
 /**
