@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.3 - 2025-08-12(10:53:12 +0000)
+
+### Other
+
+- Guest WiFi disabled but still shows traffic in WebUI
+
 ## Release sah-next_v7.24.2 - 2025-08-06(13:59:07 +0000)
 
 ### Other
