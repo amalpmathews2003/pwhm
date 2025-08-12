@@ -61,6 +61,7 @@
 ****************************************************************************/
 
 #include "wld_common.h"
+#include <string.h>
 
 #define ME "wldScan"
 
@@ -73,12 +74,14 @@ typedef struct {
     amxc_llist_t completedRads; /* list of radios reporting scan results. */
     amxc_llist_t canceledRads;  /* list of radios having cancelled scan. */
     amxc_llist_t failedRads;    /* list of radios having failed to scan (busy, not ready...). */
+    amxc_var_t output_args;
 } neighboringWiFiDiagnosticInfo_t;
 
 /**
  * global neighboringWiFiDiagnostic context.
  */
 neighboringWiFiDiagnosticInfo_t g_neighWiFiDiag;
+int g_index = 0;
 
 static amxd_object_t* s_scanStatsInitialize(T_Radio* pRad, const char* scanReason) {
     amxd_object_t* scanStatsTemp = amxd_object_findf(pRad->pBus, "ScanStats.ScanReason");
@@ -1504,7 +1507,6 @@ static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     free(path);
     char* ssidStr = wld_ssid_to_string(pSsid->ssid, pSsid->ssidLen);
     amxc_var_add_key(cstring_t, resulMap, "SSID", ssidStr);
-    free(ssidStr);
     amxc_var_add_key(cstring_t, resulMap, "BSSID", bssidStr.cMac);
     amxc_var_add_key(uint32_t, resulMap, "Channel", pSsid->channel);
     amxc_var_add_key(int32_t, resulMap, "SignalStrength", pSsid->rssi);
@@ -1535,6 +1537,68 @@ static void s_addDiagSingleResultToMap(amxc_var_t* pResultListMap, T_Radio* pRad
     char supportedRatesChar[64] = "";
     swl_conv_maskToCharSep(supportedRatesChar, sizeof(supportedRatesChar), pSsid->supportedDataTransferRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',');
     amxc_var_add_key(cstring_t, resulMap, "SupportedDataTransferRates", supportedRatesChar);
+
+    // Add ScanResult into WiFi.Result.{i}.
+    g_index++;
+    char key[64];
+    char TBuf[64];
+    swl_radStd_supportedStandardsToChar(TBuf, sizeof(TBuf), pRad->supportedStandards, pRad->operatingStandardsFormat);
+    const char* params[] = {"Radio", "SSID", "BSSID", "SecurityModeEnabled", "EncryptionMode", "OperatingFrequencyBand", "OperatingStandards", "OperatingChannelBandwidth", "BasicDataTransferRates", "SupportedDataTransferRates", "SupportedStandards", "Mode", "DTIMPeriod", "BeaconPeriod", "SignalStrength", "Noise", "Channel"};
+    size_t params_count = sizeof(params) / sizeof(params[0]);
+
+    char basicDataTransmitRatesChar[64] = "";
+    swl_conv_maskToCharSep(basicDataTransmitRatesChar, sizeof(basicDataTransmitRatesChar), pRad->basicDataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ' ');
+    char supportedDataTransmitRatesChar[64] = "";
+    swl_conv_maskToCharSep(supportedDataTransmitRatesChar, sizeof(supportedDataTransmitRatesChar), pRad->supportedDataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',');
+
+    for(size_t i = 0; i < params_count; i++) {
+        snprintf(key, sizeof(key), "%s.%d.%s", "Result", g_index, params[i]);
+
+        if(!strcmp(params[i], "Radio")) {
+            if(!strcmp(Rad_SupFreqBands[pRad->operatingFrequencyBand], "2.4GHz")) {
+                amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, "2");
+            } else if(!strcmp(Rad_SupFreqBands[pRad->operatingFrequencyBand], "5GHz")) {
+                amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, "5");
+            } else if(!strcmp(Rad_SupFreqBands[pRad->operatingFrequencyBand], "6GHz")) {
+                amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, "6");
+            } else {
+                amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, "0");
+            }
+        } else if(!strcmp(params[i], "SSID")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, ssidStr);
+        } else if(!strcmp(params[i], "BSSID")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, bssidStr.cMac);
+        } else if(!strcmp(params[i], "SecurityModeEnabled")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, swl_security_apModeToString(pSsid->secModeEnabled, SWL_SECURITY_APMODEFMT_ALTERNATE));
+        } else if(!strcmp(params[i], "EncryptionMode")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, swl_security_encMode_str[pSsid->encryptionMode]);
+        } else if(!strcmp(params[i], "OperatingFrequencyBand")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, Rad_SupFreqBands[pRad->operatingFrequencyBand]);
+        } else if(!strcmp(params[i], "OperatingStandards")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, operatingStandardsChar);
+        } else if(!strcmp(params[i], "OperatingChannelBandwidth")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, Rad_SupBW[swl_chanspec_intToBw(pSsid->bandwidth)]);
+        } else if(!strcmp(params[i], "BasicDataTransferRates")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, basicDataTransmitRatesChar);
+        } else if(!strcmp(params[i], "SupportedDataTransferRates")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, supportedDataTransmitRatesChar);
+        } else if(!strcmp(params[i], "SupportedStandards")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, TBuf);
+        } else if(!strcmp(params[i], "Mode")) {
+            amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, key, (pSsid->adhoc) ? "AdHoc" : "Infrastructure");
+        } else if(!strcmp(params[i], "DTIMPeriod")) {
+            amxc_var_add_key(int32_t, &g_neighWiFiDiag.output_args, key, pRad->dtimPeriod);
+        } else if(!strcmp(params[i], "BeaconPeriod")) {
+            amxc_var_add_key(int32_t, &g_neighWiFiDiag.output_args, key, pRad->beaconPeriod);
+        } else if(!strcmp(params[i], "SignalStrength")) {
+            amxc_var_add_key(int32_t, &g_neighWiFiDiag.output_args, key, pSsid->rssi);
+        } else if(!strcmp(params[i], "Noise")) {
+            amxc_var_add_key(int32_t, &g_neighWiFiDiag.output_args, key, pSsid->noise);
+        } else if(!strcmp(params[i], "Channel")) {
+            amxc_var_add_key(uint32_t, &g_neighWiFiDiag.output_args, key, pSsid->channel);
+        }
+    }
+    free(ssidStr);
 }
 
 static void s_addDiagRadioResultsToMap(amxc_var_t* pResultListMap, T_Radio* pRad, wld_scanResults_t* pScanResults) {
@@ -1595,6 +1659,10 @@ static void s_sendNeighboringWifiDiagnosticResult() {
     wld_scanResults_t scanRes;
     amxc_llist_init(&scanRes.ssids);
 
+    amxc_var_init(&g_neighWiFiDiag.output_args);
+    amxc_var_set_type(&g_neighWiFiDiag.output_args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &g_neighWiFiDiag.output_args, "Status", "Complete");
+
     T_Radio* pRadio = NULL;
     amxc_llist_for_each(it, &g_neighWiFiDiag.completedRads) {
         amxc_string_t* radName = amxc_string_from_llist_it(it);
@@ -1615,7 +1683,9 @@ static void s_sendNeighboringWifiDiagnosticResult() {
         wld_scan_cleanupScanResults(&scanRes);
     }
 
-    swl_function_deferDone(&g_neighWiFiDiag.callInfo, amxd_status_ok, NULL, &retMap);
+    swl_function_deferDone(&g_neighWiFiDiag.callInfo, amxd_status_ok, &g_neighWiFiDiag.output_args, NULL);
+    amxc_var_clean(&g_neighWiFiDiag.output_args);
+    g_index = 0;
     amxc_var_clean(&retMap);
 
     wld_event_remove_callback(gWld_queue_rad_onScan_change, &s_radScanStatusCbContainer);
