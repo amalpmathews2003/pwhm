@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.5 - 2025-08-12(16:49:48 +0000)
+
+### Other
+
+- - Set 6GHz regulatory power type to Indoor (0)
+
 ## Release sah-next_v7.24.4 - 2025-08-12(13:56:35 +0000)
 
 ### Other
