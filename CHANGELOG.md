@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.4 - 2025-08-12(13:56:35 +0000)
+
+### Other
+
+- - Repeater is not deauthenticated properly
+
 ## Release sah-next_v7.24.3 - 2025-08-12(10:53:12 +0000)
 
 ### Other
