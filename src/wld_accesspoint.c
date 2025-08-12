@@ -1964,6 +1964,42 @@ void wld_ap_updateMld(T_SSID* pSSID) {
 	} else {
 		SAH_TRACEZ_INFO(ME, "Updated MLDID=%u", pMld->unit);
 	}
+	//------APMLD Config-----------
+        bool cfg_changed = false;
+        if (pMld->Cfg.emlmrEnable != pAP->mldCfg.emlmrEnable) {
+                pAP->mldCfg.emlmrEnable = pMld->Cfg.emlmrEnable;
+                cfg_changed=true;
+                SAH_TRACEZ_INFO(ME, "Updated : %s emlmr_enable: new value %d", pSSID->Name, pAP->mldCfg.emlmrEnable);
+        } else {
+                SAH_TRACEZ_INFO(ME, "%s emlmr_enable value : %d same as parent mld", pSSID->Name, pAP->mldCfg.emlmrEnable);
+        }
+        if (pMld->Cfg.emlsrEnable != pAP->mldCfg.emlsrEnable) {
+                pAP->mldCfg.emlsrEnable = pMld->Cfg.emlsrEnable;
+                cfg_changed=true;
+                SAH_TRACEZ_INFO(ME, "Updated : %s emlsr_enable: new value %d",pSSID->Name, pAP->mldCfg.emlsrEnable);
+        } else {
+                SAH_TRACEZ_INFO(ME, "%s emlsr_enable value : %d same as parent mld",pSSID->Name, pAP->mldCfg.emlsrEnable);
+        }
+        if (pMld->Cfg.strEnable != pAP->mldCfg.strEnable) {
+                pAP->mldCfg.strEnable = pMld->Cfg.strEnable;
+                cfg_changed=true;
+                SAH_TRACEZ_INFO(ME, "Updated : %s str_enable: new value %d",pSSID->Name, pAP->mldCfg.strEnable);
+        } else {
+                SAH_TRACEZ_INFO(ME, "%s str_enable value : %d same as parent mld",pSSID->Name, pAP->mldCfg.strEnable);
+        }
+        if (pMld->Cfg.nstrEnable != pAP->mldCfg.nstrEnable) {
+                pAP->mldCfg.nstrEnable = pMld->Cfg.nstrEnable;
+                cfg_changed=true;
+                SAH_TRACEZ_INFO(ME, "Updated : %s nstr_enable: new value %d",pSSID->Name, pAP->mldCfg.nstrEnable);
+        } else {
+                SAH_TRACEZ_INFO(ME, "%s nstr_enable value : %d same as parent mld",pSSID->Name, pAP->mldCfg.nstrEnable);
+        }
+
+        if(cfg_changed) {
+                pAP->pFA->mfn_wvap_setMldCfg(pAP);
+                SAH_TRACEZ_INFO(ME, "LinkID: %d, SSID Name: %s Updated Config", pLink->linkId, pSSID->Name);
+        }
+
 
 	// --- create AffiliatedAP objects if needed ---
 	if (numLinks > 0) {

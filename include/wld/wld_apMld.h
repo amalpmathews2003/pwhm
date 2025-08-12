@@ -80,6 +80,7 @@ amxd_object_t* wld_ap_mld_getOrCreateDmObject(uint32_t mld_unit, wld_ssidType_e 
 amxd_object_t* wld_ap_createAffiliatedAPObjects(wld_mldLink_t* pLink, uint32_t dm_instance);
 amxd_status_t wld_ap_deleteAffiliatedAPObjects(wld_mldLink_t* pStartLink);
 amxd_status_t wld_ap_mld_clearMld(wld_mld_t* pMld_internal);
+wld_mld_t* wld_mld_fromObj(amxd_object_t* mldObj);
 /*
  * @brief check whether one APMLD link have applicable and shared
  * ssid and security configurations (secMode, keypass) values

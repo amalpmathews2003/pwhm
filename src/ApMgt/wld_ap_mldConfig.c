@@ -78,42 +78,99 @@
 #include "wld_util.h"
 #include "wld_accesspoint.h"
 
+#include "amxc/amxc_llist.h"
+#include "wld_mld.h"
+#include "wld_apMld.h"
+
 #include <swl/swl_base64.h>
 #include "swla/swla_dm.h"
 
 
-static void s_setApMldConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
-    T_AccessPoint* pAP = wld_ap_fromObj(amxd_object_get_parent(object));
-    ASSERT_NOT_NULL(pAP, , ME, "NULL");
 
-    SAH_TRACEZ_IN(ME);
-    amxc_var_for_each(newValue, newParamValues) {
-        char* valStr = NULL;
-        const char* pname = amxc_var_key(newValue);
-        int8_t newEnable;
-        if(swl_str_matches(pname, "EMLMREnable")) {
-            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
-            SAH_TRACEZ_INFO(ME, "%s: EMLMREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.emlmrEnable, newEnable);
-            pAP->mldCfg.emlmrEnable = newEnable;
-        } else if(swl_str_matches(pname, "EMLSREnable")) {
-            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
-            SAH_TRACEZ_INFO(ME, "%s: EMLSREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.emlsrEnable, newEnable);
-            pAP->mldCfg.emlsrEnable = newEnable;
-        } else if(swl_str_matches(pname, "STREnable")) {
-            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
-            SAH_TRACEZ_INFO(ME, "%s: STREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.strEnable, newEnable);
-            pAP->mldCfg.strEnable = newEnable;
-        } else if(swl_str_matches(pname, "NSTREnable")) {
-            newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
-            SAH_TRACEZ_INFO(ME, "%s: NSTREnable oldValue:%d newValue:%d", pAP->alias, pAP->mldCfg.nstrEnable, newEnable);
-            pAP->mldCfg.nstrEnable = newEnable;
+void set_ap_mldConfig(wld_mld_t* pMld) {
+        SAH_TRACEZ_IN(ME);
+        ASSERT_NOT_NULL(pMld, , ME, "pMld is NULL");
+
+        amxc_llist_it_t* it = NULL;
+        wld_mldLink_t* pLink = NULL;
+
+        amxc_llist_for_each(it, &pMld->links) {
+                pLink = amxc_llist_it_get_data(it, wld_mldLink_t, it);
+                if (pLink == NULL || pLink->pSSID == NULL) {
+                        continue;
+                }
+
+                T_SSID* pSSID = pLink->pSSID;
+                T_AccessPoint* pAP = pSSID->AP_HOOK;
+
+                if (pMld->Cfg.emlmrEnable != pAP->mldCfg.emlmrEnable) {
+                        pAP->mldCfg.emlmrEnable = pMld->Cfg.emlmrEnable;
+                        SAH_TRACEZ_INFO(ME, "Updated : %s emlmr_enable: new value %d", pSSID->Name, pAP->mldCfg.emlmrEnable);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "%s emlmr_enable value : %d same as parent mld", pSSID->Name, pAP->mldCfg.emlmrEnable);
+                }
+                if (pMld->Cfg.emlsrEnable != pAP->mldCfg.emlsrEnable) {
+                        pAP->mldCfg.emlsrEnable = pMld->Cfg.emlsrEnable;
+                        SAH_TRACEZ_INFO(ME, "Updated : %s emlsr_enable: new value %d",pSSID->Name, pAP->mldCfg.emlsrEnable);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "%s emlsr_enable value : %d same as parent mld",pSSID->Name, pAP->mldCfg.emlsrEnable);
+                }
+                if (pMld->Cfg.strEnable != pAP->mldCfg.strEnable) {
+                        pAP->mldCfg.strEnable = pMld->Cfg.strEnable;
+                        SAH_TRACEZ_INFO(ME, "Updated : %s str_enable: new value %d",pSSID->Name, pAP->mldCfg.strEnable);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "%s str_enable value : %d same as parent mld",pSSID->Name, pAP->mldCfg.strEnable);
+                }
+                if (pMld->Cfg.nstrEnable != pAP->mldCfg.nstrEnable) {
+                        pAP->mldCfg.nstrEnable = pMld->Cfg.nstrEnable;
+                        SAH_TRACEZ_INFO(ME, "Updated : %s nstr_enable: new value %d",pSSID->Name, pAP->mldCfg.nstrEnable);
+                } else {
+                        SAH_TRACEZ_INFO(ME, "%s nstr_enable value : %d same as parent mld",pSSID->Name, pAP->mldCfg.nstrEnable);
+                }
+
+                pAP->pFA->mfn_wvap_setMldCfg(pAP);
+
+                SAH_TRACEZ_INFO(ME, "LinkID: %d, SSID Name: %s Updated Config", pLink->linkId, pSSID->Name);
         }
-    }
 
-    pAP->pFA->mfn_wvap_setMldCfg(pAP);
-    SAH_TRACEZ_OUT(ME);
+        SAH_TRACEZ_OUT(ME);
 }
 
+
+static void s_setApMldConfig_ocf(void* priv _UNUSED, amxd_object_t* object, const amxc_var_t* const newParamValues _UNUSED) {
+        wld_mld_t* pMld = wld_mld_fromObj(amxd_object_get_parent(object));
+        ASSERT_NOT_NULL(pMld, , ME, "NULL");
+        SAH_TRACEZ_IN(ME);
+        amxc_var_for_each(newValue, newParamValues) {
+                char* valStr = NULL;
+                const char* pname = amxc_var_key(newValue);
+                int8_t newEnable;
+                if(swl_str_matches(pname, "EMLMREnabled")) {
+                        newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+                        SAH_TRACEZ_INFO(ME, "%d: EMLMREnable oldValue:%d newValue:%d", pMld->unit, pMld->Cfg.emlmrEnable, newEnable);
+                        pMld->Cfg.emlmrEnable = newEnable;
+                } else if(swl_str_matches(pname, "EMLSREnabled")) {
+                        newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+                        SAH_TRACEZ_INFO(ME, "%d: EMLSREnable oldValue:%d newValue:%d", pMld->unit, pMld->Cfg.emlsrEnable, newEnable);
+                        pMld->Cfg.emlsrEnable = newEnable;
+                } else if(swl_str_matches(pname, "STREnabled")) {
+                        newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+                        SAH_TRACEZ_INFO(ME, "%d: STREnable oldValue:%d newValue:%d", pMld->unit, pMld->Cfg.strEnable, newEnable);
+                        pMld->Cfg.strEnable = newEnable;
+                } else if(swl_str_matches(pname, "NSTREnabled")) {
+                        newEnable = swl_trl_fromInt(amxc_var_get_const_int8_t(newValue));
+                        SAH_TRACEZ_INFO(ME, "%d: NSTREnable oldValue:%d newValue:%d", pMld->unit, pMld->Cfg.nstrEnable, newEnable);
+                        pMld->Cfg.nstrEnable = newEnable;
+                }
+        }
+        uint32_t numLinks = amxc_llist_size(&pMld->links);
+        if (numLinks>0) {
+                SAH_TRACEZ_INFO(ME, "%d: Calling set ap mld config", pMld->unit);
+                set_ap_mldConfig(pMld);
+        }
+
+        SAH_TRACEZ_OUT(ME);
+}
 
 SWLA_DM_HDLRS(sApMldCfgHdlrs, ARR(), .objChangedCb = s_setApMldConfig_ocf);
 

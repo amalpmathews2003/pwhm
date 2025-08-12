@@ -1725,6 +1725,13 @@ struct S_SSID {
 };
 
 typedef struct {
+    swl_trl_e emlmrEnable;
+    swl_trl_e emlsrEnable;
+    swl_trl_e strEnable;
+    swl_trl_e nstrEnable;
+} wld_apMldCfg_t;
+
+typedef struct {
     wld_ssidType_e type;
     amxc_llist_t mlds;
 } wld_mldGroup_t;
@@ -1741,6 +1748,7 @@ typedef struct {
     amxc_llist_t links;
     wld_mldGroup_t* pGroup;
     wld_mldLink_t* pPrimLink;
+    wld_apMldCfg_t Cfg;
 } wld_mld_t;
 
 struct wld_mldLink {
@@ -1823,12 +1831,6 @@ typedef struct {
     char qosMapSet[QOS_MAP_SET_MAX_LEN];
 } wld_cfg11u_t;
 
-typedef struct {
-    swl_trl_e emlmrEnable;
-    swl_trl_e emlsrEnable;
-    swl_trl_e strEnable;
-    swl_trl_e nstrEnable;
-} wld_apMldCfg_t;
 
 struct S_ACCESSPOINT {
     int debug;                       /* FIX ME */

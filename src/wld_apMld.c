@@ -403,6 +403,17 @@ amxd_status_t wld_ap_deleteAffiliatedAPObjects(wld_mldLink_t* pStartLink) {
         return status;
 }
 
+wld_mld_t* wld_mld_fromObj(amxd_object_t* mldObj) {
+    ASSERTS_EQUALS(amxd_object_get_type(mldObj), amxd_object_instance, NULL, ME, "Not instance");
+    amxd_object_t* parentObj = amxd_object_get_parent(mldObj);
+    ASSERT_EQUALS(get_wld_object(), amxd_object_get_parent(parentObj), NULL, ME, "wrong location");
+    const char* parentName = amxd_object_get_name(parentObj, AMXD_OBJECT_NAMED);
+    ASSERT_TRUE(swl_str_matches(parentName, "APMLD"), NULL, ME, "invalid parent obj(%s)", parentName);
+    wld_mld_t* pMld = (wld_mld_t*) mldObj->priv;
+    ASSERTS_TRUE(pMld, NULL, ME, "NULL");
+    return pMld;
+}
+
 static void s_update_affAP_MloStats(amxd_object_t* const obj, wld_mloStats_t* stats) {
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "PacketsSent", stats->txPackets);
     SWLA_OBJECT_SET_PARAM_UINT32(obj, "PacketsReceived", stats->rxPackets);
