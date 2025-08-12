@@ -402,3 +402,37 @@ amxd_status_t wld_ap_deleteAffiliatedAPObjects(wld_mldLink_t* pStartLink) {
 
         return status;
 }
+
+static void s_update_affAP_MloStats(amxd_object_t* const obj, wld_mloStats_t* stats) {
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "PacketsSent", stats->txPackets);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "PacketsReceived", stats->rxPackets);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastBytesSent", stats->txUbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "UnicastBytesReceived", stats->rxUbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "ErrorsSent", stats->txEbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastBytesSent", stats->txMbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "MulticastBytesReceived", stats->rxMbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastBytesSent", stats->txBbyte);
+    SWLA_OBJECT_SET_PARAM_UINT32(obj, "BroadcastBytesReceived", stats->rxBbyte);
+}
+
+amxd_status_t _wld_affAP_getMloStats_orf(amxd_object_t* const object,
+                                      amxd_param_t* const param,
+                                      amxd_action_t reason,
+                                      const amxc_var_t* const args,
+                                      amxc_var_t* const action_retval,
+                                      void* priv) {
+    SAH_TRACEZ_IN(ME);
+    if(reason != action_object_read) {
+        return amxd_status_function_not_implemented;
+    }
+    wld_mldLink_t* pLink = (wld_mldLink_t*) amxd_object_get_parent(object)->priv;
+    ASSERT_NOT_NULL(pLink, amxd_status_object_not_found, ME, "AffiliatedAP object not found!");
+    wld_mloStats_t mloStats;
+    T_SSID* pSSID = pLink->pSSID;
+    T_AccessPoint* pAP = pSSID->AP_HOOK;
+    memset(&mloStats, 0, sizeof(wld_mloStats_t));
+    if(pAP->pFA->mfn_wvap_getMloStats(pAP, &mloStats) >= SWL_RC_OK) {
+        s_update_affAP_MloStats(object, &mloStats);
+    }
+    return amxd_action_object_read(object, param, reason, args, action_retval, priv);
+}
