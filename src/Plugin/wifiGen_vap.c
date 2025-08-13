@@ -330,7 +330,7 @@ swl_rc_ne wifiGen_get_station_stats(T_AccessPoint* pAP) {
     ASSERTI_NOT_NULL(pAP, SWL_RC_INVALID_PARAM, ME, "NULL");
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
-    ASSERTI_TRUE(s_isAnyStationInfoOld(pAP), SWL_RC_DONE, ME, "%s: station stats are too recent", pAP->alias);
+    ASSERTS_TRUE(s_isAnyStationInfoOld(pAP), SWL_RC_DONE, ME, "%s: station stats are too recent", pAP->alias);
 
     wld_vap_mark_all_stations_unseen(pAP);
     if(s_getNetlinkAllStaInfo(pAP) > 0) {
@@ -360,7 +360,7 @@ swl_rc_ne wifiGen_get_single_station_stats(T_AssociatedDevice* pAD) {
     T_Radio* pRad = (T_Radio*) pAP->pRadio;
     ASSERTI_NOT_EQUALS(pRad->status, RST_ERROR, SWL_RC_INVALID_STATE, ME, "NULL");
     ASSERTI_TRUE(pAD->Active, SWL_RC_OK, ME, "assocdev no more active");
-    ASSERTI_TRUE(s_isStationInfoOld(pAD), SWL_RC_DONE, ME, "station %s stats are too recent",
+    ASSERTS_TRUE(s_isStationInfoOld(pAD), SWL_RC_DONE, ME, "station %s stats are too recent",
                  swl_typeMacBin_toBuf32Ref((swl_macBin_t*) pAD->MACAddress).buf);
 
     SAH_TRACEZ_INFO(ME, "pAP->alias = %s", pAP->alias);

@@ -420,6 +420,8 @@ wld_spectrumChannelInfoEntry_t* wld_util_addorUpdateSpectrumEntry(amxc_llist_t* 
  */
 swl_rc_ne wld_util_copyScanInfoFromIEs(wld_scanResultSSID_t* pResult, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
 
+swl_rc_ne wld_util_copyStaCapsInfoFromIEs(wld_assocDev_capabilities_t* cap, swl_wirelessDevice_infoElements_t* pWirelessDevIE);
+
 #ifdef __cplusplus
 }/* extern "C" */
 #endif
