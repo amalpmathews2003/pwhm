@@ -454,6 +454,13 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
                 swl_mapChar_add(radConfigMap, "he_spr_srg_partial_bssid", srgPartialBSSIDBitmap);
             }
         }
+        if(pRad->operatingFrequencyBand == SWL_FREQ_BAND_EXT_6GHZ) {
+            /*
+             *  Set default 6GHz power type to 0 - Indoor AP (required for FCC)
+             */
+            SAH_TRACEZ_INFO(ME, "%s: Adding 6GHz regulatory power type to 0", pRad->Name);
+            swl_mapCharFmt_addValInt32(radConfigMap, "he_6ghz_reg_pwr_type", 0);
+        }
     }
     if(SWL_BIT_IS_SET(pRad->supportedStandards, SWL_RADSTD_BE)) {
         swl_mapCharFmt_addValInt32(radConfigMap, "ieee80211be", enableRad11be);
