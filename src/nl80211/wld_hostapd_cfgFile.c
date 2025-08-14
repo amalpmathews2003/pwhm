@@ -775,6 +775,11 @@ static bool s_setVapCommonConfig(T_AccessPoint* pAP, swl_mapChar_t* vapConfigMap
     }
     swl_mapCharFmt_addValInt32(vapConfigMap, "ap_isolate", pAP->clientIsolationEnable);
     swl_mapChar_add(vapConfigMap, "ignore_broadcast_ssid", pAP->SSIDAdvertisementEnabled ? "0" : "2");
+
+    if(pAP->CCEAdvertisementEnabled) {
+        swl_mapChar_add(vapConfigMap, "dpp_configurator_connectivity", "1");
+    }
+
     if(!pAP->enable || !pRad->enable) {
         swl_mapChar_add(vapConfigMap, "start_disabled", "1");
     }
