@@ -535,6 +535,10 @@ define rrm_t{
 			default false;
 		}
 
+		%persistent bool CCEAdvertisementEnabled{
+			default false;
+		}
+
 		/** This object contains security related parameters that apply
 		 * to a CPE acting as an Access Point */
 		%persistent object Security{
