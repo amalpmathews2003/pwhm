@@ -611,7 +611,7 @@ static bool s_hasHapdSchedRestart(wld_secDmnGrp_t* pSecDmnGrp _UNUSED, void* use
     T_Radio* pRad = (T_Radio*) pSecDmn->userData;
     ASSERT_TRUE(debugIsRadPointer(pRad), false, ME, "INVALID");
     ASSERTI_TRUE(wld_secDmn_isRunning(pSecDmn), false, ME, "%s: secDmn not running", pRad->Name);
-    return s_hasRtmSchedState(pRad, GEN_FSM_START_HOSTAPD);
+    return s_hasRtmSchedState(pRad, GEN_FSM_START_HOSTAPD) || s_hasRtmSchedState(pRad, GEN_FSM_MOD_HOSTAPD);
 }
 
 static wld_secDmnGrp_EvtHandlers_t sGHapdEvtCbs = {
