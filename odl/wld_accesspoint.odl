@@ -192,7 +192,7 @@ define rrm_t{
 		 * @param bssid : optional bssid arguement. Default wildcard ff:ff:ff:ff:ff:ff.
 		 * @param class : optional class to scan. Default 0.
 		 * @param channel : optional channel to scan. Default 0.
-		 * @param timeout : optional time to wait in milliseconds. Default 1000.
+		 * @param timeout : optional time to wait in milliseconds. Default 0.
 		 * @param ssid : optional ssid. Default empty.
 		 * @param token : optional token of the request.
 		 * @param modeMask : optional beacon request mode mask.
