@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release sah-next_v7.24.7 - 2025-08-14(13:39:46 +0000)
+
+### Other
+
+- fix extender early ep connect and regDom mismatch
+
 ## Release sah-next_v7.24.6 - 2025-08-13(12:29:26 +0000)
 
 ### Other
