@@ -126,7 +126,6 @@ void wld_ap_rrm_item(T_AccessPoint* ap, const swl_macChar_t* mac, amxc_var_t* re
 }
 
 #define BEACON_MEASURE_DEFAULT_MEAS_MODE SWL_IEEE802_RRM_BEACON_REQ_MODE_PASSIVE
-#define BEACON_MEASURE_DEFAULT_TIMEOUT 1000
 static const uint16_t s_defaultMeasDurationByMode[SWL_IEEE802_RRM_BEACON_REQ_MODE_MAX] = {50, 120, 120};
 SWL_TABLE(sRrmBeaconCapModeMap,
           ARR(uint32_t swlRrmBeaconCap; uint32_t swlRrmBeaconMode; ),
@@ -168,7 +167,7 @@ amxd_status_t _sendRemoteMeasumentRequest(amxd_object_t* object,
     reqCall.channel = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint8_t, tpVar);
 
     tpVar = amxc_var_get_key(args, "timeout", AMXC_VAR_FLAG_DEFAULT);
-    uint32_t timeout = (tpVar == NULL) ? BEACON_MEASURE_DEFAULT_TIMEOUT : amxc_var_dyncast(uint32_t, tpVar);
+    uint32_t timeout = (tpVar == NULL) ? 0 : amxc_var_dyncast(uint32_t, tpVar);
 
     tpVar = amxc_var_get_key(args, "mode", AMXC_VAR_FLAG_DEFAULT);
     if((tpVar == NULL) || ((reqCall.mode = amxc_var_dyncast(uint8_t, tpVar)) >= SWL_IEEE802_RRM_BEACON_REQ_MODE_MAX)) {
