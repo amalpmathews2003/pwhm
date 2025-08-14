@@ -1,0 +1,305 @@
+\hypertarget{wld__vendorModule_8h}{}\doxysection{include/wld/wld\+\_\+vendor\+Module.h File Reference}
+\label{wld__vendorModule_8h}\index{include/wld/wld\_vendorModule.h@{include/wld/wld\_vendorModule.h}}
+{\ttfamily \#include $<$amxc/amxc\+\_\+variant.\+h$>$}\newline
+{\ttfamily \#include $<$amxm/amxm.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+return\+Code.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+vendor\+Module.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__vendorModule__initInfo__t}{wld\+\_\+vendor\+Module\+\_\+init\+Info\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em data struct to share init info between wld and vendor module \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structwld__vendorModule__handlers__cb}{wld\+\_\+vendor\+Module\+\_\+handlers\+\_\+cb}}
+\item 
+struct \mbox{\hyperlink{structwld__vendorModule__config__t}{wld\+\_\+vendor\+Module\+\_\+config\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__vendorModule_8h_a9b91799cc1c65ce6391e50a716fbb42f}{WLD\+\_\+\+VENDOR\+\_\+\+MODULE\+\_\+\+PREFIX}}~\char`\"{}mod-\/\char`\"{}
+\begin{DoxyCompactList}\small\item\em required string prefix in the vendor module shared object file \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef bool($\ast$ \mbox{\hyperlink{wld__vendorModule_8h_abadbdece18f00bbcfe17d65f5467314b}{wld\+\_\+vendor\+Module\+\_\+init\+\_\+f}}) (\mbox{\hyperlink{structwld__vendorModule__initInfo__t}{wld\+\_\+vendor\+Module\+\_\+init\+Info\+\_\+t}} $\ast$p\+Init\+Info)
+\begin{DoxyCompactList}\small\item\em Prototype of vendor module initialization function. This handler is called after wld initialization. \end{DoxyCompactList}\item 
+typedef bool($\ast$ \mbox{\hyperlink{wld__vendorModule_8h_ae1f87ba60ed959f63e62984548b7e8c8}{wld\+\_\+vendor\+Module\+\_\+deinit\+\_\+f}}) ()
+\begin{DoxyCompactList}\small\item\em Prototype of vendor module de-\/initialization function. \end{DoxyCompactList}\item 
+typedef bool($\ast$ \mbox{\hyperlink{wld__vendorModule_8h_a876e134ec2c8374e73ac04aef8ae803c}{wld\+\_\+vendor\+Module\+\_\+load\+Defaults\+\_\+f}}) ()
+\begin{DoxyCompactList}\small\item\em Prototype of vendor module function to load default vendor configuration. \end{DoxyCompactList}\item 
+typedef bool($\ast$ \mbox{\hyperlink{wld__vendorModule_8h_a71bf15d2da1eb15d25241d58937e1b49}{wld\+\_\+vendor\+Module\+\_\+get\+Info\+\_\+f}}) (amxc\+\_\+var\+\_\+t $\ast$ret)
+\begin{DoxyCompactList}\small\item\em Prototype of vendor module function to get vendor informations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule_8h_aad07b0878efdcd2d8d6b51d043873d92}{wld\+\_\+vendor\+Module\+\_\+register}} (const char $\ast$mod\+Name, const \mbox{\hyperlink{structwld__vendorModule__config__t}{wld\+\_\+vendor\+Module\+\_\+config\+\_\+t}} $\ast$const p\+Config)
+\begin{DoxyCompactList}\small\item\em Register vendor module to the wld plugin side. Once done, the module handlers may be called when the wld is initialized. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule_8h_a225984f0354e7615d436b03583045558}{wld\+\_\+vendor\+Module\+\_\+unregister}} (const char $\ast$mod\+Name)
+\begin{DoxyCompactList}\small\item\em Unregister vendor module from the wld plugin side. Once done, the module handlers are no more called. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule_8h_a73057e1ed48833bbebd3e5f690ec2a1f}{wld\+\_\+vendor\+Module\+\_\+forward\+Call}} (const char $\ast$const func\+Name, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret, const \mbox{\hyperlink{structwld__vendorModule__handlers__cb}{wld\+\_\+vendor\+Module\+\_\+handlers\+\_\+cb}} $\ast$const handlers)
+\begin{DoxyCompactList}\small\item\em Forward function calls to vendor module handlers\+: \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule_8h_a29fe3624532d6ad884d1df22f789ed93}{wld\+\_\+vendor\+Module\+\_\+load\+Odls}} (const char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}})
+\begin{DoxyCompactList}\small\item\em Load vendor module odl file path into the main datamodel using the global wld parser. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule_8h_a7614412a4536fab017b013a87bac72e4}{wld\+\_\+vendor\+Module\+\_\+parse\+Odl}} (const char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}})
+\begin{DoxyCompactList}\small\item\em Parse vendor module odl file and load into the main datamodel using the global wld parser. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule_8h_af16c302801d4fbca554f3bc47db3248e}{wld\+\_\+vendor\+Module\+\_\+load\+Priv\+Trace\+Zones}} (amxc\+\_\+var\+\_\+t $\ast$trace\+Zones\+Var\+Map)
+\begin{DoxyCompactList}\small\item\em Load additional trace zones (with name and log level) to main wld logging config. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__vendorModule_8h_a9b91799cc1c65ce6391e50a716fbb42f}\label{wld__vendorModule_8h_a9b91799cc1c65ce6391e50a716fbb42f}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!WLD\_VENDOR\_MODULE\_PREFIX@{WLD\_VENDOR\_MODULE\_PREFIX}}
+\index{WLD\_VENDOR\_MODULE\_PREFIX@{WLD\_VENDOR\_MODULE\_PREFIX}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{WLD\_VENDOR\_MODULE\_PREFIX}{WLD\_VENDOR\_MODULE\_PREFIX}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+VENDOR\+\_\+\+MODULE\+\_\+\+PREFIX~\char`\"{}mod-\/\char`\"{}}
+
+
+
+required string prefix in the vendor module shared object file 
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__vendorModule_8h_ae1f87ba60ed959f63e62984548b7e8c8}\label{wld__vendorModule_8h_ae1f87ba60ed959f63e62984548b7e8c8}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_deinit\_f@{wld\_vendorModule\_deinit\_f}}
+\index{wld\_vendorModule\_deinit\_f@{wld\_vendorModule\_deinit\_f}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_deinit\_f}{wld\_vendorModule\_deinit\_f}}
+{\footnotesize\ttfamily typedef bool($\ast$ wld\+\_\+vendor\+Module\+\_\+deinit\+\_\+f) ()}
+
+
+
+Prototype of vendor module de-\/initialization function. 
+
+\begin{DoxyReturn}{Returns}
+true on success, false on failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule_8h_a71bf15d2da1eb15d25241d58937e1b49}\label{wld__vendorModule_8h_a71bf15d2da1eb15d25241d58937e1b49}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_getInfo\_f@{wld\_vendorModule\_getInfo\_f}}
+\index{wld\_vendorModule\_getInfo\_f@{wld\_vendorModule\_getInfo\_f}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_getInfo\_f}{wld\_vendorModule\_getInfo\_f}}
+{\footnotesize\ttfamily typedef bool($\ast$ wld\+\_\+vendor\+Module\+\_\+get\+Info\+\_\+f) (amxc\+\_\+var\+\_\+t $\ast$ret)}
+
+
+
+Prototype of vendor module function to get vendor informations. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ret} & informations data, could contains the following parameters \+: module-\/name\+: string\+: optional module name (mod-\/whm-\/sah, ...) module-\/provider\+: string module provider name (sah, mxl, qcm..) module-\/ver\+: string\+: module release version hw-\/agnostic\+: bool \+: flag to indicate that module is hardware agnostic or hardware dependent \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success, false on failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule_8h_abadbdece18f00bbcfe17d65f5467314b}\label{wld__vendorModule_8h_abadbdece18f00bbcfe17d65f5467314b}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_init\_f@{wld\_vendorModule\_init\_f}}
+\index{wld\_vendorModule\_init\_f@{wld\_vendorModule\_init\_f}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_init\_f}{wld\_vendorModule\_init\_f}}
+{\footnotesize\ttfamily typedef bool($\ast$ wld\+\_\+vendor\+Module\+\_\+init\+\_\+f) (\mbox{\hyperlink{structwld__vendorModule__initInfo__t}{wld\+\_\+vendor\+Module\+\_\+init\+Info\+\_\+t}} $\ast$p\+Init\+Info)}
+
+
+
+Prototype of vendor module initialization function. This handler is called after wld initialization. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Init\+Info} & pointer for shared initialization info\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success, false on failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule_8h_a876e134ec2c8374e73ac04aef8ae803c}\label{wld__vendorModule_8h_a876e134ec2c8374e73ac04aef8ae803c}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_loadDefaults\_f@{wld\_vendorModule\_loadDefaults\_f}}
+\index{wld\_vendorModule\_loadDefaults\_f@{wld\_vendorModule\_loadDefaults\_f}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_loadDefaults\_f}{wld\_vendorModule\_loadDefaults\_f}}
+{\footnotesize\ttfamily typedef bool($\ast$ wld\+\_\+vendor\+Module\+\_\+load\+Defaults\+\_\+f) ()}
+
+
+
+Prototype of vendor module function to load default vendor configuration. 
+
+\begin{DoxyReturn}{Returns}
+true on success, false on failure 
+\end{DoxyReturn}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__vendorModule_8h_a73057e1ed48833bbebd3e5f690ec2a1f}\label{wld__vendorModule_8h_a73057e1ed48833bbebd3e5f690ec2a1f}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_forwardCall@{wld\_vendorModule\_forwardCall}}
+\index{wld\_vendorModule\_forwardCall@{wld\_vendorModule\_forwardCall}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_forwardCall()}{wld\_vendorModule\_forwardCall()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+\_\+forward\+Call (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{func\+Name,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret,  }\item[{const \mbox{\hyperlink{structwld__vendorModule__handlers__cb}{wld\+\_\+vendor\+Module\+\_\+handlers\+\_\+cb}} $\ast$const}]{handlers }\end{DoxyParamCaption})}
+
+
+
+Forward function calls to vendor module handlers\+: 
+
+
+\begin{DoxyItemize}
+\item convert arguments from amxm format
+\item execute the real vendor module handler mapped to function name, but with the expected argument types
+\item convert results back to amxm format
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em function\+\_\+name} & amxm function name called by wld \\
+\hline
+{\em args} & arguments in amx variant type \\
+\hline
+{\em ret} & Returned result in in amx variant type \\
+\hline
+{\em handlers} & Module\textquotesingle{}s internal callbacks\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK on success, or one of swl error codes on failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule_8h_a29fe3624532d6ad884d1df22f789ed93}\label{wld__vendorModule_8h_a29fe3624532d6ad884d1df22f789ed93}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_loadOdls@{wld\_vendorModule\_loadOdls}}
+\index{wld\_vendorModule\_loadOdls@{wld\_vendorModule\_loadOdls}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_loadOdls()}{wld\_vendorModule\_loadOdls()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+\_\+load\+Odls (\begin{DoxyParamCaption}\item[{const char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+Load vendor module odl file path into the main datamodel using the global wld parser. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & vendor module odl(s) path (od file or directory of odl files) May be absolute or relative (regarding inc-\/dirs of pwhm plugin)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK on success, or one of swl error codes on failure 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h_a29fe3624532d6ad884d1df22f789ed93_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__vendorModule_8h_af16c302801d4fbca554f3bc47db3248e}\label{wld__vendorModule_8h_af16c302801d4fbca554f3bc47db3248e}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_loadPrivTraceZones@{wld\_vendorModule\_loadPrivTraceZones}}
+\index{wld\_vendorModule\_loadPrivTraceZones@{wld\_vendorModule\_loadPrivTraceZones}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_loadPrivTraceZones()}{wld\_vendorModule\_loadPrivTraceZones()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+\_\+load\+Priv\+Trace\+Zones (\begin{DoxyParamCaption}\item[{amxc\+\_\+var\+\_\+t $\ast$}]{trace\+Zones\+Var\+Map }\end{DoxyParamCaption})}
+
+
+
+Load additional trace zones (with name and log level) to main wld logging config. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em trace\+Zones\+Var\+Map} & pointer to htable variant including vendor module tracing zones and levels\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK on success, or one of swl error codes on failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule_8h_a7614412a4536fab017b013a87bac72e4}\label{wld__vendorModule_8h_a7614412a4536fab017b013a87bac72e4}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_parseOdl@{wld\_vendorModule\_parseOdl}}
+\index{wld\_vendorModule\_parseOdl@{wld\_vendorModule\_parseOdl}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_parseOdl()}{wld\_vendorModule\_parseOdl()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+\_\+parse\+Odl (\begin{DoxyParamCaption}\item[{const char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+Parse vendor module odl file and load into the main datamodel using the global wld parser. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & absolute vendor module odl path (or relative to directory \$cfg-\/dir\}/\$\{name\}/)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK on success, or one of swl error codes on failure 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h_a7614412a4536fab017b013a87bac72e4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__vendorModule_8h_aad07b0878efdcd2d8d6b51d043873d92}\label{wld__vendorModule_8h_aad07b0878efdcd2d8d6b51d043873d92}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_register@{wld\_vendorModule\_register}}
+\index{wld\_vendorModule\_register@{wld\_vendorModule\_register}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_register()}{wld\_vendorModule\_register()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+\_\+register (\begin{DoxyParamCaption}\item[{const char $\ast$}]{mod\+Name,  }\item[{const \mbox{\hyperlink{structwld__vendorModule__config__t}{wld\+\_\+vendor\+Module\+\_\+config\+\_\+t}} $\ast$const}]{p\+Config }\end{DoxyParamCaption})}
+
+
+
+Register vendor module to the wld plugin side. Once done, the module handlers may be called when the wld is initialized. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mod\+Name} & Vendor module name (unique per vendor) \\
+\hline
+{\em p\+Config} & Pointer to vendor module configuration including the handlers to be called by wld plugin side\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int SWL\+\_\+\+RC\+\_\+\+OK on success, or one of swl error codes on failure 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h_aad07b0878efdcd2d8d6b51d043873d92_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__vendorModule_8h_a225984f0354e7615d436b03583045558}\label{wld__vendorModule_8h_a225984f0354e7615d436b03583045558}} 
+\index{wld\_vendorModule.h@{wld\_vendorModule.h}!wld\_vendorModule\_unregister@{wld\_vendorModule\_unregister}}
+\index{wld\_vendorModule\_unregister@{wld\_vendorModule\_unregister}!wld\_vendorModule.h@{wld\_vendorModule.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModule\_unregister()}{wld\_vendorModule\_unregister()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+\_\+unregister (\begin{DoxyParamCaption}\item[{const char $\ast$}]{mod\+Name }\end{DoxyParamCaption})}
+
+
+
+Unregister vendor module from the wld plugin side. Once done, the module handlers are no more called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mod\+Name} & Vendor module name (unique per vendor)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int SWL\+\_\+\+RC\+\_\+\+OK on success, or one of wld error codes on failure 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h_a225984f0354e7615d436b03583045558_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule_8h_a225984f0354e7615d436b03583045558_icgraph}
+\end{center}
+\end{figure}

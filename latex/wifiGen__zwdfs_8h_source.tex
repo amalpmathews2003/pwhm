@@ -1,0 +1,117 @@
+\hypertarget{wifiGen__zwdfs_8h_source}{}\doxysection{wifi\+Gen\+\_\+zwdfs.\+h}
+\label{wifiGen__zwdfs_8h_source}\index{include\_priv/Plugin/wifiGen\_zwdfs.h@{include\_priv/Plugin/wifiGen\_zwdfs.h}}
+\mbox{\hyperlink{wifiGen__zwdfs_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2024 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 }
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_WHM\_SAH\_ZWDFS\_H\_}}
+\DoxyCodeLine{65 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_WHM\_SAH\_ZWDFS\_H\_}}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include <swl/swl\_returnCode.h>}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include <\mbox{\hyperlink{wld_8h}{wld/wld.h}}>}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include <\mbox{\hyperlink{wld__radio_8h}{wld/wld\_radio.h}}>}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{comment}{/*}}
+\DoxyCodeLine{73 \textcolor{comment}{ * @brief initialize the ZW DFS FSM for the given radio}}
+\DoxyCodeLine{74 \textcolor{comment}{ *}}
+\DoxyCodeLine{75 \textcolor{comment}{ * @param pRad radio context}}
+\DoxyCodeLine{76 \textcolor{comment}{ *}}
+\DoxyCodeLine{77 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{78 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{79 \textcolor{comment}{ */}}
+\DoxyCodeLine{80 swl\_rc\_ne \mbox{\hyperlink{wifiGen__zwdfs_8h_a63bf34559f7ca2090d04e07e33623b22}{wifiGen\_zwdfs\_init}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82 \textcolor{comment}{/*}}
+\DoxyCodeLine{83 \textcolor{comment}{ * @brief stop and free all about ZW\_DFS FSM of the radio}}
+\DoxyCodeLine{84 \textcolor{comment}{ *}}
+\DoxyCodeLine{85 \textcolor{comment}{ * @param pRad radio context}}
+\DoxyCodeLine{86 \textcolor{comment}{ *}}
+\DoxyCodeLine{87 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{88 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{89 \textcolor{comment}{ */}}
+\DoxyCodeLine{90 swl\_rc\_ne \mbox{\hyperlink{wifiGen__zwdfs_8h_a99d222da31fe11a8a1f5c6d2e12f2376}{wifiGen\_zwdfs\_deinit}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92 \textcolor{comment}{/*}}
+\DoxyCodeLine{93 \textcolor{comment}{ * @brief start the ZW DFS clearing for the given radio}}
+\DoxyCodeLine{94 \textcolor{comment}{ *}}
+\DoxyCodeLine{95 \textcolor{comment}{ * @param pRad radio context}}
+\DoxyCodeLine{96 \textcolor{comment}{ * @param direct whether direct set chanspec after clearing}}
+\DoxyCodeLine{97 \textcolor{comment}{ *}}
+\DoxyCodeLine{98 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success, error otherwise}}
+\DoxyCodeLine{99 \textcolor{comment}{ */}}
+\DoxyCodeLine{100 swl\_rc\_ne \mbox{\hyperlink{wifiGen__zwdfs_8h_a2c8cf373841d7acfb62afad69ffa4b19}{wifiGen\_zwdfs\_start}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{bool} direct);}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{102 \textcolor{comment}{/*}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @brief stop the ZW DFS clearing for the given radio}}
+\DoxyCodeLine{104 \textcolor{comment}{ *}}
+\DoxyCodeLine{105 \textcolor{comment}{ * @param pRad radio context}}
+\DoxyCodeLine{106 \textcolor{comment}{ *}}
+\DoxyCodeLine{107 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success, error otherwise}}
+\DoxyCodeLine{108 \textcolor{comment}{ */}}
+\DoxyCodeLine{109 swl\_rc\_ne \mbox{\hyperlink{wifiGen__zwdfs_8h_ab14de22879fbe105bf8dc33a68b40e2b}{wifiGen\_zwdfs\_stop}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_WHM\_SAH\_ZWDFS\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

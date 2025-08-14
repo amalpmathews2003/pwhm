@@ -1,0 +1,114 @@
+\hypertarget{wifiGen__rad_8h_source}{}\doxysection{wifi\+Gen\+\_\+rad.\+h}
+\label{wifiGen__rad_8h_source}\index{include\_priv/Plugin/wifiGen\_rad.h@{include\_priv/Plugin/wifiGen\_rad.h}}
+\mbox{\hyperlink{wifiGen__rad_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_RAD\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_RAD\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld/wld.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{comment}{/* FTA APIs */}}
+\DoxyCodeLine{69 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a22779d44a0417c824f5a4d4024a0a0c0}{wifiGen\_rad\_createHook}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{70 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__rad_8h_a282d705f76d982294bd85df4c5ff19e5}{wifiGen\_rad\_destroyHook}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{71 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a3b42bf215b941ff673f5b6fe0f0efbfe}{wifiGen\_rad\_poschans}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint8\_t* buf, \textcolor{keywordtype}{int} bufsize);}
+\DoxyCodeLine{72 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a7d44d581d9fb77993de22364f8f2d106}{wifiGen\_rad\_supports}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{int} bufsize);}
+\DoxyCodeLine{73 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a3d704e9747cac2ed6b327de22fd1f35c}{wifiGen\_rad\_miscHasSupport}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* vap, \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{int} bufsize);}
+\DoxyCodeLine{74 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_ab1ed0d1cc1fcd2944b7781322411131c}{wifiGen\_rad\_addVapExt}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{75 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a2408beb574b0d3bb9b0a03576f3859b7}{wifiGen\_rad\_delvapif}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* vapName);}
+\DoxyCodeLine{76 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a000b9c476dda7f1d5b762d28381d0ca6}{wifiGen\_rad\_addvapif}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* ifname, \textcolor{keywordtype}{int} ifnameSize);}
+\DoxyCodeLine{77 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a440bfd1980e0c0d5ba24cef7aa26cc14}{wifiGen\_rad\_addEndpointIf}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{int} bufsize);}
+\DoxyCodeLine{78 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a4b73fc1312dbd4495a3978b78f99edb6}{wifiGen\_rad\_delendpointif}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* endpoint);}
+\DoxyCodeLine{79 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a4e503eb830478e667af44247af9a3c7a}{wifiGen\_rad\_generateVapIfName}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t ifaceShift, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{size\_t} ifNameSize);}
+\DoxyCodeLine{80 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a10995cfaa619d6e0d3774cdacce885df}{wifiGen\_rad\_generateEpIfName}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t ifaceShift, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{size\_t} ifNameSize);}
+\DoxyCodeLine{81 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_afac25ba3d1cac3746971c9fd591c2d1b}{wifiGen\_rad\_status}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{82 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a862a73e59db9d46b2a2bc58bdf2d55db}{wifiGen\_rad\_enable}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \textcolor{keywordtype}{int} val, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{83 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a442a052367a2022b7f0b610e067f37e5}{wifiGen\_rad\_sync}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{84 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_ab788015af16689843e1db5b7c36450e8}{wifiGen\_rad\_restart}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{85 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a3a0bd37359b3dbcef4e8d870f6431aaa}{wifiGen\_rad\_refresh}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{86 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a7fb03b9b6d6e545ca73ca0b6e06b4051}{wifiGen\_rad\_toggle}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{87 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_aa2e0292b4ea755002c53ad76b381543e}{wifiGen\_rad\_regDomain}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* val, \textcolor{keywordtype}{int} bufsize, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{88 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a65e1e8b585dc92e66407f6c90bff7db2}{wifiGen\_rad\_txpow}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} val, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{89 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_afcba2a85022aa299811538d597d695de}{wifiGen\_rad\_getTxPowerdBm}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, int32\_t* dbm);}
+\DoxyCodeLine{90 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a3c9963e5436ba92831dfea8173c958c7}{wifiGen\_rad\_getMaxTxPowerdBm}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint16\_t channel, int32\_t* dbm);}
+\DoxyCodeLine{91 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a960b3594bbc2d82d2d8f5e16d0b0b2ad}{wifiGen\_rad\_setChanspec}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{bool} direct);}
+\DoxyCodeLine{92 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a586eca10b434d32d76c98b8bdf6bed86}{wifiGen\_rad\_getChanspec}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_chanspec\_t* pChSpec);}
+\DoxyCodeLine{93 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a03f13e54ea1106ef9a4b97bd081ccab4}{wifiGen\_rad\_antennactrl}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} val, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{94 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_abf43f664e682a5d088823ec0d44e0e76}{wifiGen\_rad\_staMode}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} val, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{95 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a5401af3684d345b67a55a013eaf4cb0b}{wifiGen\_rad\_supstd}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_radioStandard\_m radioStandards);}
+\DoxyCodeLine{96 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a02bfb61b77db36ed1b4ef5c3fca2028d}{wifiGen\_rad\_stats}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{97 \textcolor{keywordtype}{int} \mbox{\hyperlink{wifiGen__rad_8h_a0c40e12d7d78f9e69f6b42402be3eed7}{wifiGen\_rad\_delayedCommitUpdate}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{98 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a449f52ee82e88765ac25a7003d30ea99}{wifiGen\_rad\_getScanResults}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \mbox{\hyperlink{structwld__scanResults}{wld\_scanResults\_t}}* results);}
+\DoxyCodeLine{99 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a04fa8e5a56b65287842c1484c0804faf}{wifiGen\_rad\_getAirStats}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structwld__airStats}{wld\_airStats\_t}}* pStats);}
+\DoxyCodeLine{100 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a5ae80257f4e17c63aa8ac30572b115d0}{wifiGen\_rad\_getSpectrumInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \textcolor{keywordtype}{bool} update \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_llist\_t* llSpectrumChannelInfo);}
+\DoxyCodeLine{101 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a9233592c6fba03287d70436e4532b9c5}{wifiGen\_rad\_bgDfsStartExt}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\_startBgdfsArgs\_t}}* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}});}
+\DoxyCodeLine{102 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_a4648b18985ef392da90c2a0c8273fc69}{wifiGen\_rad\_bgDfsStop}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{104 \textcolor{comment}{/* Internal APIs */}}
+\DoxyCodeLine{105 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__rad_8h_ac88a96957c62fdd53002d3125f9ecdef}{wifiGen\_rad\_initBands}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{106 swl\_rc\_ne \mbox{\hyperlink{wifiGen__rad_8h_ad6798c5e625a2a8e1f413236033f5d8c}{wifiGen\_rad\_addVap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{108 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_RAD\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

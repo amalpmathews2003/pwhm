@@ -1,0 +1,50 @@
+\hypertarget{wld__definitions_8odl}{}\doxysection{odl/wld\+\_\+definitions.odl File Reference}
+\label{wld__definitions_8odl}\index{odl/wld\_definitions.odl@{odl/wld\_definitions.odl}}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}}
+\item 
+include wld\+\_\+ssid \mbox{\hyperlink{wld__definitions_8odl_a3a379aab9c8645a5a38599fd6e471748}{odl}}
+\item 
+\mbox{\hyperlink{wld__definitions_8odl_a042cbcb523766f6b79e36c22a7942a13}{populate}}
+\item 
+on event \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}\label{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}} 
+\index{wld\_definitions.odl@{wld\_definitions.odl}!define@{define}}
+\index{define@{define}!wld\_definitions.odl@{wld\_definitions.odl}}
+\doxysubsubsection{\texorpdfstring{define}{define}}
+{\footnotesize\ttfamily define}
+
+WIFI object is generated plugin based to tr181-\/\+Issue2 spec. On some places we\textquotesingle{}ve add extra config parameters (extra data fields for driver or GUI). This WIFI object provides global access to the Wi\+Fi driver and is split in 4 separate objects. ~\newline
+{\bfseries{RADIO}} ~\newline
+{\bfseries{Access\+Point}} ~\newline
+{\bfseries{SSID}} ~\newline
+{\bfseries{End\+Point}} \mbox{\Hypertarget{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}\label{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}} 
+\index{wld\_definitions.odl@{wld\_definitions.odl}!dm@{dm}}
+\index{dm@{dm}!wld\_definitions.odl@{wld\_definitions.odl}}
+\doxysubsubsection{\texorpdfstring{dm}{dm}}
+{\footnotesize\ttfamily on event dm}
+
+\mbox{\Hypertarget{wld__definitions_8odl_a3a379aab9c8645a5a38599fd6e471748}\label{wld__definitions_8odl_a3a379aab9c8645a5a38599fd6e471748}} 
+\index{wld\_definitions.odl@{wld\_definitions.odl}!odl@{odl}}
+\index{odl@{odl}!wld\_definitions.odl@{wld\_definitions.odl}}
+\doxysubsubsection{\texorpdfstring{odl}{odl}}
+{\footnotesize\ttfamily include wld\+\_\+endpoint odl}
+
+\mbox{\Hypertarget{wld__definitions_8odl_a042cbcb523766f6b79e36c22a7942a13}\label{wld__definitions_8odl_a042cbcb523766f6b79e36c22a7942a13}} 
+\index{wld\_definitions.odl@{wld\_definitions.odl}!populate@{populate}}
+\index{populate@{populate}!wld\_definitions.odl@{wld\_definitions.odl}}
+\doxysubsubsection{\texorpdfstring{populate}{populate}}
+{\footnotesize\ttfamily populate}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{    on \textcolor{keyword}{event} \textcolor{stringliteral}{"{}app:start"{}} call app\_start}
+
+\end{DoxyCode}

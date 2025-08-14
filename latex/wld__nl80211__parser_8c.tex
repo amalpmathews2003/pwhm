@@ -1,0 +1,406 @@
+\hypertarget{wld__nl80211__parser_8c}{}\doxysection{src/nl80211/wld\+\_\+nl80211\+\_\+parser.c File Reference}
+\label{wld__nl80211__parser_8c}\index{src/nl80211/wld\_nl80211\_parser.c@{src/nl80211/wld\_nl80211\_parser.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+parser.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+generic\+Frame\+Parser.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+parser.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct____attribute____}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\item 
+struct \mbox{\hyperlink{structSWL__PACKED}{SWL\+\_\+\+PACKED}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__parser_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}nl\+Parser\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__parser_8c_a373fb05679ed932300369fd1dd2c5b02}{WLAN\+\_\+\+CAPABILITY\+\_\+\+ESS}}~\mbox{\hyperlink{wld__nl80211_8h_a0516b617ff71641806a58031238ea5f4}{BIT}}(0)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__parser_8c_a2ce4508030e63487023f3899770fa0de}{WLAN\+\_\+\+CAPABILITY\+\_\+\+IBSS}}~\mbox{\hyperlink{wld__nl80211_8h_a0516b617ff71641806a58031238ea5f4}{BIT}}(1)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__parser_8c_a9e9cc7bade40950f2753a20bfb5f770f}{HT\+\_\+\+MCS\+\_\+\+BITMASK\+\_\+\+LEN}}~10
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__nl80211__parser_8c_a0cfad32b24aef976907f99d6ef81861f}{wld\+\_\+nl80211\+\_\+get\+Wiphy}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]})
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__nl80211__parser_8c_ac36d656f1365144c247c09fea89d7a55}{wld\+\_\+nl80211\+\_\+get\+If\+Index}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]})
+\item 
+size\+\_\+t \mbox{\hyperlink{wld__nl80211__parser_8c_a61b9aa02c2155d0fe6f15bdebf342dc7}{wld\+\_\+nl80211\+\_\+get\+If\+Name}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, char $\ast$tgt\+Buf, size\+\_\+t tgt\+Buf\+Size)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_af4c0a612e07be1da43f5005dde164f94}{wld\+\_\+nl80211\+\_\+parse\+Chan\+Spec}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\+\_\+nl80211\+\_\+chan\+Spec\+\_\+t}} $\ast$p\+Chan\+Spec)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a93c2783be6bf9692f837103792dd238f}{wld\+\_\+nl80211\+\_\+format\+Chan\+Spec}} (\mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\+\_\+nl80211\+\_\+chan\+Spec\+\_\+t}} $\ast$p\+Chan\+Spec, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$p\+Attr\+List)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a6b0b5de56c3509f4186f668aa023026e}{wld\+\_\+nl80211\+\_\+parse\+Mgmt\+Frame}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__mgmtFrame__t}{wld\+\_\+nl80211\+\_\+mgmt\+Frame\+\_\+t}} $\ast$mgmt\+Frame)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_aadda1582f7e16b13aa1f7cc658989606}{wld\+\_\+nl80211\+\_\+parse\+Mgmt\+Frame\+Tx\+Status}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__mgmtFrameTxStatus__t}{wld\+\_\+nl80211\+\_\+mgmt\+Frame\+Tx\+Status\+\_\+t}} $\ast$mgmt\+Frame\+Tx\+Status)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a6258a68b7b0e3f8faa0a18c359f18718}{wld\+\_\+nl80211\+\_\+parse\+Interface\+Info}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$p\+Wl\+Iface)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_ab013d2057fee20020d34bde69781168e}{s\+\_\+parse\+If\+Types}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$p\+Wiphy)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_abb33b75b8a57595aa72c0bd01afb5902}{s\+\_\+parse\+If\+Combi}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$p\+Wiphy)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_acf65d2af4453ad55bd109905f0b67fba}{s\+\_\+parse\+Ht\+Attrs}} (struct nlattr $\ast$tb\+Band\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$p\+Band)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a5902d3bd5213fe4aa7726668b39f3b1b}{s\+\_\+parse\+Vht\+Attrs}} (struct nlattr $\ast$tb\+Band\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$p\+Band)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_ae74abf6ca5f53354cccf821e35e6891a}{s\+\_\+parse\+He\+Attrs}} (struct nlattr $\ast$tb\+Band\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$p\+Band)
+\item 
+\mbox{\hyperlink{wld__nl80211__parser_8c_a8178026c455c199f1138126261356467}{SWL\+\_\+\+TABLE}} (\mbox{\hyperlink{test__wld__nl80211_8c_a482841d64d70c6069ed86c8266fc9dd2}{s\+Chan\+Dfs\+Status\+Map}}, ARR(uint32\+\_\+t nl80211\+Chan\+Status;\mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37b}{wld\+\_\+nl80211\+\_\+chan\+Status\+\_\+e}} chan\+Status;), ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32,), ARR(\{\mbox{\hyperlink{wld__nl80211__compat_8h_a26fd430e04addadd61663121ae8f0233}{NL80211\+\_\+\+DFS\+\_\+\+USABLE}}, \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba52c13c0188a842a945a2b98b1c8c886e}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+USABLE}}\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_aaa17ff1ee6252be870149d482831655b}{NL80211\+\_\+\+DFS\+\_\+\+UNAVAILABLE}}, \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba2f66242de2695b429442c44087db2544}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+UNAVAILABLE}}\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_aa80d84e2e812b766d38bd5cc72a03b6c}{NL80211\+\_\+\+DFS\+\_\+\+AVAILABLE}}, \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba83db688214ba97b67a6aa1da9bb480be}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+AVAILABLE}}\},))
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a7ede1dc5fb1a505bcf47e546a8e051cb}{s\+\_\+parse\+Chans}} (struct nlattr $\ast$tb\+Band\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$p\+Band)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a35283559deb0987db0e3e53eaad8a877}{s\+\_\+parse\+Data\+Transmit\+Rates}} (struct nlattr $\ast$tb\+Band\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$p\+Band)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a4e0f0d9043f78ad9e0f6d1eb406e9cd5}{s\+\_\+parse\+Wiphy\+Bands}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$p\+Wiphy)
+\item 
+\mbox{\hyperlink{wld__nl80211__parser_8c_aa620c2ce0d9a663c077186409cdcafa5}{SWL\+\_\+\+TABLE}} (s\+Nl\+If\+Type\+Maps, ARR(uint32\+\_\+t nl\+Val;\mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426a}{wld\+\_\+iftype\+\_\+e}} wld\+Val;), ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint16,), ARR(\{NL80211\+\_\+\+IFTYPE\+\_\+\+AP, \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aa6ba74747188dfdd1468ad35ad004143e}{WLD\+\_\+\+WIPHY\+\_\+\+IFTYPE\+\_\+\+AP}}\}, \{NL80211\+\_\+\+IFTYPE\+\_\+\+STATION, \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aa68ff28ae240b58cfe49ccdd1f4c1c6da}{WLD\+\_\+\+WIPHY\+\_\+\+IFTYPE\+\_\+\+STATION}}\},))
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a491336306743b88b27d68af55e9e2e94}{wld\+\_\+nl80211\+\_\+parse\+Wiphy\+Info}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$p\+Wiphy)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_acbfb77a5dd268aac4b7d0d53fd046e81}{wld\+\_\+nl80211\+\_\+parse\+Station\+Info}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$p\+Station)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a0b81b84a923275dc83bd6d05adc7a4d1}{wld\+\_\+nl80211\+\_\+parse\+Chan\+Survey\+Info}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info\+\_\+t}} $\ast$p\+Chan\+Survey\+Info)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_af58c86541bf9ddf1ff67fb92b738b9d2}{wld\+\_\+nl80211\+\_\+parse\+Scan\+Result\+Per\+Freq\+Band}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{wld_8h_a1b65a834c940ff9a6b0a78dc4bcc8941}{wld\+\_\+scan\+Result\+SSID\+\_\+t}} $\ast$p\+Result, swl\+\_\+freq\+Band\+Ext\+\_\+e band)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_a316af38fac37025f40db309879fe3f72}{wld\+\_\+nl80211\+\_\+parse\+Scan\+Result}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{wld_8h_a1b65a834c940ff9a6b0a78dc4bcc8941}{wld\+\_\+scan\+Result\+SSID\+\_\+t}} $\ast$p\+Result)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__parser_8c_ab7d2a06b216ad0ba4383a99e21cda1c7}{wld\+\_\+nl80211\+\_\+parse\+Radar\+Info}} (struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t}{wld\+\_\+nl80211\+\_\+radar\+Evt\+Info\+\_\+t}} $\ast$p\+Radar\+Evt\+Info)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__nl80211__parser_8c_ad57a25f54ee7de8389aaf9c9600be973}{g\+\_\+str\+\_\+wld\+\_\+nl80211\+\_\+chan\+\_\+status\+\_\+bf\+\_\+cap}} \mbox{[}\mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba02c3d633e06de9cb08b1cdfb641c82f7}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+STATUS\+\_\+\+MAX}}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a9e9cc7bade40950f2753a20bfb5f770f}\label{wld__nl80211__parser_8c_a9e9cc7bade40950f2753a20bfb5f770f}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!HT\_MCS\_BITMASK\_LEN@{HT\_MCS\_BITMASK\_LEN}}
+\index{HT\_MCS\_BITMASK\_LEN@{HT\_MCS\_BITMASK\_LEN}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{HT\_MCS\_BITMASK\_LEN}{HT\_MCS\_BITMASK\_LEN}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HT\+\_\+\+MCS\+\_\+\+BITMASK\+\_\+\+LEN~10}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__nl80211__parser_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!ME@{ME}}
+\index{ME@{ME}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}nl\+Parser\char`\"{}}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a373fb05679ed932300369fd1dd2c5b02}\label{wld__nl80211__parser_8c_a373fb05679ed932300369fd1dd2c5b02}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!WLAN\_CAPABILITY\_ESS@{WLAN\_CAPABILITY\_ESS}}
+\index{WLAN\_CAPABILITY\_ESS@{WLAN\_CAPABILITY\_ESS}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{WLAN\_CAPABILITY\_ESS}{WLAN\_CAPABILITY\_ESS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLAN\+\_\+\+CAPABILITY\+\_\+\+ESS~\mbox{\hyperlink{wld__nl80211_8h_a0516b617ff71641806a58031238ea5f4}{BIT}}(0)}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a2ce4508030e63487023f3899770fa0de}\label{wld__nl80211__parser_8c_a2ce4508030e63487023f3899770fa0de}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!WLAN\_CAPABILITY\_IBSS@{WLAN\_CAPABILITY\_IBSS}}
+\index{WLAN\_CAPABILITY\_IBSS@{WLAN\_CAPABILITY\_IBSS}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{WLAN\_CAPABILITY\_IBSS}{WLAN\_CAPABILITY\_IBSS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLAN\+\_\+\+CAPABILITY\+\_\+\+IBSS~\mbox{\hyperlink{wld__nl80211_8h_a0516b617ff71641806a58031238ea5f4}{BIT}}(1)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a7ede1dc5fb1a505bcf47e546a8e051cb}\label{wld__nl80211__parser_8c_a7ede1dc5fb1a505bcf47e546a8e051cb}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseChans@{s\_parseChans}}
+\index{s\_parseChans@{s\_parseChans}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseChans()}{s\_parseChans()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+Chans (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\+Band\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$}]{p\+Band }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a35283559deb0987db0e3e53eaad8a877}\label{wld__nl80211__parser_8c_a35283559deb0987db0e3e53eaad8a877}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseDataTransmitRates@{s\_parseDataTransmitRates}}
+\index{s\_parseDataTransmitRates@{s\_parseDataTransmitRates}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseDataTransmitRates()}{s\_parseDataTransmitRates()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+Data\+Transmit\+Rates (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\+Band\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$}]{p\+Band }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_ae74abf6ca5f53354cccf821e35e6891a}\label{wld__nl80211__parser_8c_ae74abf6ca5f53354cccf821e35e6891a}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseHeAttrs@{s\_parseHeAttrs}}
+\index{s\_parseHeAttrs@{s\_parseHeAttrs}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseHeAttrs()}{s\_parseHeAttrs()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+He\+Attrs (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\+Band\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$}]{p\+Band }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=322pt]{wld__nl80211__parser_8c_ae74abf6ca5f53354cccf821e35e6891a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_acf65d2af4453ad55bd109905f0b67fba}\label{wld__nl80211__parser_8c_acf65d2af4453ad55bd109905f0b67fba}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseHtAttrs@{s\_parseHtAttrs}}
+\index{s\_parseHtAttrs@{s\_parseHtAttrs}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseHtAttrs()}{s\_parseHtAttrs()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+Ht\+Attrs (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\+Band\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$}]{p\+Band }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=320pt]{wld__nl80211__parser_8c_acf65d2af4453ad55bd109905f0b67fba_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_abb33b75b8a57595aa72c0bd01afb5902}\label{wld__nl80211__parser_8c_abb33b75b8a57595aa72c0bd01afb5902}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseIfCombi@{s\_parseIfCombi}}
+\index{s\_parseIfCombi@{s\_parseIfCombi}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseIfCombi()}{s\_parseIfCombi()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+If\+Combi (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$}]{p\+Wiphy }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_ab013d2057fee20020d34bde69781168e}\label{wld__nl80211__parser_8c_ab013d2057fee20020d34bde69781168e}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseIfTypes@{s\_parseIfTypes}}
+\index{s\_parseIfTypes@{s\_parseIfTypes}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseIfTypes()}{s\_parseIfTypes()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+If\+Types (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$}]{p\+Wiphy }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a5902d3bd5213fe4aa7726668b39f3b1b}\label{wld__nl80211__parser_8c_a5902d3bd5213fe4aa7726668b39f3b1b}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseVhtAttrs@{s\_parseVhtAttrs}}
+\index{s\_parseVhtAttrs@{s\_parseVhtAttrs}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseVhtAttrs()}{s\_parseVhtAttrs()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+Vht\+Attrs (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\+Band\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} $\ast$}]{p\+Band }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=325pt]{wld__nl80211__parser_8c_a5902d3bd5213fe4aa7726668b39f3b1b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a4e0f0d9043f78ad9e0f6d1eb406e9cd5}\label{wld__nl80211__parser_8c_a4e0f0d9043f78ad9e0f6d1eb406e9cd5}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!s\_parseWiphyBands@{s\_parseWiphyBands}}
+\index{s\_parseWiphyBands@{s\_parseWiphyBands}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{s\_parseWiphyBands()}{s\_parseWiphyBands()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+parse\+Wiphy\+Bands (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$}]{p\+Wiphy }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a4e0f0d9043f78ad9e0f6d1eb406e9cd5_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a8178026c455c199f1138126261356467}\label{wld__nl80211__parser_8c_a8178026c455c199f1138126261356467}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{test__wld__nl80211_8c_a482841d64d70c6069ed86c8266fc9dd2}{s\+Chan\+Dfs\+Status\+Map}}}]{,  }\item[{ARR(uint32\+\_\+t nl80211\+Chan\+Status;\mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37b}{wld\+\_\+nl80211\+\_\+chan\+Status\+\_\+e}} chan\+Status;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{\mbox{\hyperlink{wld__nl80211__compat_8h_a26fd430e04addadd61663121ae8f0233}{NL80211\+\_\+\+DFS\+\_\+\+USABLE}}, \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba52c13c0188a842a945a2b98b1c8c886e}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+USABLE}}\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_aaa17ff1ee6252be870149d482831655b}{NL80211\+\_\+\+DFS\+\_\+\+UNAVAILABLE}}, \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba2f66242de2695b429442c44087db2544}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+UNAVAILABLE}}\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_aa80d84e2e812b766d38bd5cc72a03b6c}{NL80211\+\_\+\+DFS\+\_\+\+AVAILABLE}}, \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba83db688214ba97b67a6aa1da9bb480be}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+AVAILABLE}}\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_aa620c2ce0d9a663c077186409cdcafa5}\label{wld__nl80211__parser_8c_aa620c2ce0d9a663c077186409cdcafa5}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Nl\+If\+Type\+Maps}]{,  }\item[{ARR(uint32\+\_\+t nl\+Val;\mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426a}{wld\+\_\+iftype\+\_\+e}} wld\+Val;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint16,)}]{,  }\item[{ARR(\{NL80211\+\_\+\+IFTYPE\+\_\+\+AP, \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aa6ba74747188dfdd1468ad35ad004143e}{WLD\+\_\+\+WIPHY\+\_\+\+IFTYPE\+\_\+\+AP}}\}, \{NL80211\+\_\+\+IFTYPE\+\_\+\+STATION, \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aa68ff28ae240b58cfe49ccdd1f4c1c6da}{WLD\+\_\+\+WIPHY\+\_\+\+IFTYPE\+\_\+\+STATION}}\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a93c2783be6bf9692f837103792dd238f}\label{wld__nl80211__parser_8c_a93c2783be6bf9692f837103792dd238f}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_formatChanSpec@{wld\_nl80211\_formatChanSpec}}
+\index{wld\_nl80211\_formatChanSpec@{wld\_nl80211\_formatChanSpec}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_formatChanSpec()}{wld\_nl80211\_formatChanSpec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+format\+Chan\+Spec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\+\_\+nl80211\+\_\+chan\+Spec\+\_\+t}} $\ast$}]{p\+Chan\+Spec,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$}]{p\+Attr\+List }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a93c2783be6bf9692f837103792dd238f_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_ac36d656f1365144c247c09fea89d7a55}\label{wld__nl80211__parser_8c_ac36d656f1365144c247c09fea89d7a55}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_getIfIndex@{wld\_nl80211\_getIfIndex}}
+\index{wld\_nl80211\_getIfIndex@{wld\_nl80211\_getIfIndex}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getIfIndex()}{wld\_nl80211\_getIfIndex()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+get\+If\+Index (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_ac36d656f1365144c247c09fea89d7a55_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a61b9aa02c2155d0fe6f15bdebf342dc7}\label{wld__nl80211__parser_8c_a61b9aa02c2155d0fe6f15bdebf342dc7}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_getIfName@{wld\_nl80211\_getIfName}}
+\index{wld\_nl80211\_getIfName@{wld\_nl80211\_getIfName}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getIfName()}{wld\_nl80211\_getIfName()}}
+{\footnotesize\ttfamily size\+\_\+t wld\+\_\+nl80211\+\_\+get\+If\+Name (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{char $\ast$}]{tgt\+Buf,  }\item[{size\+\_\+t}]{tgt\+Buf\+Size }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a61b9aa02c2155d0fe6f15bdebf342dc7_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a0cfad32b24aef976907f99d6ef81861f}\label{wld__nl80211__parser_8c_a0cfad32b24aef976907f99d6ef81861f}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_getWiphy@{wld\_nl80211\_getWiphy}}
+\index{wld\_nl80211\_getWiphy@{wld\_nl80211\_getWiphy}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getWiphy()}{wld\_nl80211\_getWiphy()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+get\+Wiphy (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a0cfad32b24aef976907f99d6ef81861f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_af4c0a612e07be1da43f5005dde164f94}\label{wld__nl80211__parser_8c_af4c0a612e07be1da43f5005dde164f94}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseChanSpec@{wld\_nl80211\_parseChanSpec}}
+\index{wld\_nl80211\_parseChanSpec@{wld\_nl80211\_parseChanSpec}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseChanSpec()}{wld\_nl80211\_parseChanSpec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Chan\+Spec (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\+\_\+nl80211\+\_\+chan\+Spec\+\_\+t}} $\ast$}]{p\+Chan\+Spec }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_af4c0a612e07be1da43f5005dde164f94_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_af4c0a612e07be1da43f5005dde164f94_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a0b81b84a923275dc83bd6d05adc7a4d1}\label{wld__nl80211__parser_8c_a0b81b84a923275dc83bd6d05adc7a4d1}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseChanSurveyInfo@{wld\_nl80211\_parseChanSurveyInfo}}
+\index{wld\_nl80211\_parseChanSurveyInfo@{wld\_nl80211\_parseChanSurveyInfo}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseChanSurveyInfo()}{wld\_nl80211\_parseChanSurveyInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Chan\+Survey\+Info (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info\+\_\+t}} $\ast$}]{p\+Chan\+Survey\+Info }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a6258a68b7b0e3f8faa0a18c359f18718}\label{wld__nl80211__parser_8c_a6258a68b7b0e3f8faa0a18c359f18718}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseInterfaceInfo@{wld\_nl80211\_parseInterfaceInfo}}
+\index{wld\_nl80211\_parseInterfaceInfo@{wld\_nl80211\_parseInterfaceInfo}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseInterfaceInfo()}{wld\_nl80211\_parseInterfaceInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Interface\+Info (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$}]{p\+Wl\+Iface }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a6258a68b7b0e3f8faa0a18c359f18718_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a6b0b5de56c3509f4186f668aa023026e}\label{wld__nl80211__parser_8c_a6b0b5de56c3509f4186f668aa023026e}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseMgmtFrame@{wld\_nl80211\_parseMgmtFrame}}
+\index{wld\_nl80211\_parseMgmtFrame@{wld\_nl80211\_parseMgmtFrame}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseMgmtFrame()}{wld\_nl80211\_parseMgmtFrame()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Mgmt\+Frame (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__mgmtFrame__t}{wld\+\_\+nl80211\+\_\+mgmt\+Frame\+\_\+t}} $\ast$}]{mgmt\+Frame }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_aadda1582f7e16b13aa1f7cc658989606}\label{wld__nl80211__parser_8c_aadda1582f7e16b13aa1f7cc658989606}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseMgmtFrameTxStatus@{wld\_nl80211\_parseMgmtFrameTxStatus}}
+\index{wld\_nl80211\_parseMgmtFrameTxStatus@{wld\_nl80211\_parseMgmtFrameTxStatus}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseMgmtFrameTxStatus()}{wld\_nl80211\_parseMgmtFrameTxStatus()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Mgmt\+Frame\+Tx\+Status (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__mgmtFrameTxStatus__t}{wld\+\_\+nl80211\+\_\+mgmt\+Frame\+Tx\+Status\+\_\+t}} $\ast$}]{mgmt\+Frame\+Tx\+Status }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_ab7d2a06b216ad0ba4383a99e21cda1c7}\label{wld__nl80211__parser_8c_ab7d2a06b216ad0ba4383a99e21cda1c7}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseRadarInfo@{wld\_nl80211\_parseRadarInfo}}
+\index{wld\_nl80211\_parseRadarInfo@{wld\_nl80211\_parseRadarInfo}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseRadarInfo()}{wld\_nl80211\_parseRadarInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Radar\+Info (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t}{wld\+\_\+nl80211\+\_\+radar\+Evt\+Info\+\_\+t}} $\ast$}]{p\+Radar\+Evt\+Info }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_ab7d2a06b216ad0ba4383a99e21cda1c7_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a316af38fac37025f40db309879fe3f72}\label{wld__nl80211__parser_8c_a316af38fac37025f40db309879fe3f72}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseScanResult@{wld\_nl80211\_parseScanResult}}
+\index{wld\_nl80211\_parseScanResult@{wld\_nl80211\_parseScanResult}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseScanResult()}{wld\_nl80211\_parseScanResult()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Scan\+Result (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{wld_8h_a1b65a834c940ff9a6b0a78dc4bcc8941}{wld\+\_\+scan\+Result\+SSID\+\_\+t}} $\ast$}]{p\+Result }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a316af38fac37025f40db309879fe3f72_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_af58c86541bf9ddf1ff67fb92b738b9d2}\label{wld__nl80211__parser_8c_af58c86541bf9ddf1ff67fb92b738b9d2}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseScanResultPerFreqBand@{wld\_nl80211\_parseScanResultPerFreqBand}}
+\index{wld\_nl80211\_parseScanResultPerFreqBand@{wld\_nl80211\_parseScanResultPerFreqBand}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseScanResultPerFreqBand()}{wld\_nl80211\_parseScanResultPerFreqBand()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Scan\+Result\+Per\+Freq\+Band (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{wld_8h_a1b65a834c940ff9a6b0a78dc4bcc8941}{wld\+\_\+scan\+Result\+SSID\+\_\+t}} $\ast$}]{p\+Result,  }\item[{swl\+\_\+freq\+Band\+Ext\+\_\+e}]{band }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_af58c86541bf9ddf1ff67fb92b738b9d2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_af58c86541bf9ddf1ff67fb92b738b9d2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_acbfb77a5dd268aac4b7d0d53fd046e81}\label{wld__nl80211__parser_8c_acbfb77a5dd268aac4b7d0d53fd046e81}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseStationInfo@{wld\_nl80211\_parseStationInfo}}
+\index{wld\_nl80211\_parseStationInfo@{wld\_nl80211\_parseStationInfo}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseStationInfo()}{wld\_nl80211\_parseStationInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Station\+Info (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$}]{p\+Station }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__parser_8c_a491336306743b88b27d68af55e9e2e94}\label{wld__nl80211__parser_8c_a491336306743b88b27d68af55e9e2e94}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!wld\_nl80211\_parseWiphyInfo@{wld\_nl80211\_parseWiphyInfo}}
+\index{wld\_nl80211\_parseWiphyInfo@{wld\_nl80211\_parseWiphyInfo}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_parseWiphyInfo()}{wld\_nl80211\_parseWiphyInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+parse\+Wiphy\+Info (\begin{DoxyParamCaption}\item[{struct nlattr $\ast$}]{tb\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t}} $\ast$}]{p\+Wiphy }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__parser_8c_a491336306743b88b27d68af55e9e2e94_cgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__nl80211__parser_8c_ad57a25f54ee7de8389aaf9c9600be973}\label{wld__nl80211__parser_8c_ad57a25f54ee7de8389aaf9c9600be973}} 
+\index{wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}!g\_str\_wld\_nl80211\_chan\_status\_bf\_cap@{g\_str\_wld\_nl80211\_chan\_status\_bf\_cap}}
+\index{g\_str\_wld\_nl80211\_chan\_status\_bf\_cap@{g\_str\_wld\_nl80211\_chan\_status\_bf\_cap}!wld\_nl80211\_parser.c@{wld\_nl80211\_parser.c}}
+\doxysubsubsection{\texorpdfstring{g\_str\_wld\_nl80211\_chan\_status\_bf\_cap}{g\_str\_wld\_nl80211\_chan\_status\_bf\_cap}}
+{\footnotesize\ttfamily const char$\ast$ g\+\_\+str\+\_\+wld\+\_\+nl80211\+\_\+chan\+\_\+status\+\_\+bf\+\_\+cap\mbox{[}\mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba02c3d633e06de9cb08b1cdfb641c82f7}{WLD\+\_\+\+NL80211\+\_\+\+CHAN\+\_\+\+STATUS\+\_\+\+MAX}}\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Unknown"{}}, \textcolor{stringliteral}{"{}Disabled"{}}, \textcolor{stringliteral}{"{}Usable"{}}, \textcolor{stringliteral}{"{}Unavailable"{}}, \textcolor{stringliteral}{"{}Available"{}},}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

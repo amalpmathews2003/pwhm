@@ -1,0 +1,411 @@
+\hypertarget{structS__EndPoint}{}\doxysection{S\+\_\+\+End\+Point Struct Reference}
+\label{structS__EndPoint}\index{S\_EndPoint@{S\_EndPoint}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+
+
+Collaboration diagram for S\+\_\+\+End\+Point\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structS__EndPoint__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{structS__EndPoint_a925d7b54e4de99a79af4494e8157591a}{debug}}
+\item 
+\mbox{\hyperlink{wld_8h_a6f071c90b200e5b86aca49acaf62e1ff}{wld\+\_\+intf\+Status\+\_\+e}} \mbox{\hyperlink{structS__EndPoint_ae9b5a43032c6ec2928de67ae3e0e29b6}{status}}
+\item 
+char \mbox{\hyperlink{structS__EndPoint_a9c3441106651d15dbc693cfa76e3eb1c}{bridge\+Name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} \mbox{\hyperlink{structS__EndPoint_a2e4de4c0b7ddf1b8ff3033f70164581e}{connection\+Status}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structS__EndPoint_aca03e0ba35fd9fbd4214f4afccf254ad}{last\+Conn\+Status\+Change}}
+\item 
+\mbox{\hyperlink{structwld__ep__assocStats__t}{wld\+\_\+ep\+\_\+assoc\+Stats\+\_\+t}} \mbox{\hyperlink{structS__EndPoint_a8227c196c0bc87de41585c3f94689708}{assoc\+Stats}}
+\item 
+\mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\+\_\+ep\+Error\+\_\+e}} \mbox{\hyperlink{structS__EndPoint_a834be0454147765fc1ce696f4d2f6a35}{error}}
+\item 
+char \mbox{\hyperlink{structS__EndPoint_a041e5a82b91562d0c178156cbbfa9ba7}{Name}} \mbox{[}16\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__EndPoint_a504d5c2b971e826305ab3531bfa5a50b}{alias}} \mbox{[}32\mbox{]}
+\item 
+int \mbox{\hyperlink{structS__EndPoint_a31aa226299515fd5d70eab6d2056c7bb}{index}}
+\item 
+int \mbox{\hyperlink{structS__EndPoint_a4c033b2d9f2179b68421e59491df10a6}{ref\+\_\+index}}
+\item 
+int \mbox{\hyperlink{structS__EndPoint_aa1f7efd164e03a3e8d3d0099845bdd08}{SSIDReference}}
+\item 
+\mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$ \mbox{\hyperlink{structS__EndPoint_a0f4962a1673fe5c9848811b627ec7ca9}{current\+Profile}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structS__EndPoint_a1c70e4d075e727425f284bf87bc50f78}{ll\+Profiles}}
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{structS__EndPoint_aa1d23d3db66cd4d5075708e648787f59}{p\+SSID}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$ \mbox{\hyperlink{structS__EndPoint_ac8bf19d89d9f575fc8dd4ae0aef14852}{p\+Radio}}
+\item 
+swl\+\_\+security\+\_\+ap\+Mode\+\_\+m \mbox{\hyperlink{structS__EndPoint_a5687a0549682227a46d0c5342521a37f}{sec\+Modes\+Supported}}
+\item 
+bool \mbox{\hyperlink{structS__EndPoint_afd914cefd889c60034abcd0f8fe0196f}{WPS\+\_\+\+Enable}}
+\item 
+int \mbox{\hyperlink{structS__EndPoint_ac942920e4e6bfd1865ea5d93c54e20ca}{WPS\+\_\+\+Configured}}
+\item 
+\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} \mbox{\hyperlink{structS__EndPoint_aab013d26c7450a95a9e3507ee319c9ac}{WPS\+\_\+\+Config\+Methods\+Supported}}
+\item 
+\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} \mbox{\hyperlink{structS__EndPoint_a646469709379f16dc43cd3152d31ac7f}{WPS\+\_\+\+Config\+Methods\+Enabled}}
+\item 
+char \mbox{\hyperlink{structS__EndPoint_a2cc389adca3a2982a7b8c4292a1f4704}{WPS\+\_\+\+Client\+PIN}} \mbox{[}16\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_a5fa2ed00177e458df87aeb5ccf4d90fb}{T\+\_\+\+WPS\+\_\+push\+Button\+\_\+\+Delay}} \mbox{\hyperlink{structS__EndPoint_aa22429e565ce827dbe635b15524ca713}{WPS\+\_\+\+PBC\+\_\+\+Delay}}
+\item 
+\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} \mbox{\hyperlink{structS__EndPoint_a3cc547bed7d812328b550ffbc0bd8a31}{wps\+Session\+Info}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structS__EndPoint_a093426dcc3ca901fc200b307e60aff61}{reconnect\+\_\+count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structS__EndPoint_a309e2a2b8f39429c596d8c60fa7b1ec0}{reconnect\+\_\+rad\+\_\+trigger}}
+\item 
+int \mbox{\hyperlink{structS__EndPoint_afb81a7a4cdb32493d8c92694ef1bfd1c}{enable}}
+\item 
+\mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} \mbox{\hyperlink{structS__EndPoint_ae4d240965cbb41c61be11b54edb2884a}{fsm}}
+\item 
+struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}} $\ast$ \mbox{\hyperlink{structS__EndPoint_a27f8722bdeb1590e67dc1501d8055f3d}{p\+FA}}
+\item 
+amxc\+\_\+llist\+\_\+it\+\_\+t \mbox{\hyperlink{structS__EndPoint_aa34dd8ce574c13395e21c38457f31fb3}{it}}
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{structS__EndPoint_a9760db9516b8b939284bb554f31e3235}{p\+Bus}}
+\item 
+void $\ast$ \mbox{\hyperlink{structS__EndPoint_a014a9cf313e0d887dcdc19619193c0cf}{vendor\+Data}}
+\item 
+bool \mbox{\hyperlink{structS__EndPoint_aa64f55db320f5cd4c4dfeb4be7cd5f34}{internal\+Change}}
+\item 
+amxp\+\_\+timer\+\_\+t $\ast$ \mbox{\hyperlink{structS__EndPoint_a6709a7ffe41f3524364f59d77db6b897}{reconnect\+Timer}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structS__EndPoint_a6186ee9c3071b4dee30674b16d76a0b1}{reconnect\+Delay}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structS__EndPoint_ab2873e2a4a1148f3cfb9110d68d074e1}{reconnect\+Interval}}
+\item 
+bool \mbox{\hyperlink{structS__EndPoint_a3a8be728944579b7490718f4a4afa666}{multi\+APEnable}}
+\item 
+bool \mbox{\hyperlink{structS__EndPoint_ae5ec32c6d84994b397ba7981b6658a3e}{toggle\+Bss\+On\+Reconnect}}
+\item 
+\mbox{\hyperlink{wld_8h_a443545a4d116631706acabeb1e3b05a5}{wld\+\_\+multiap\+\_\+profile\+\_\+e}} \mbox{\hyperlink{structS__EndPoint_aa606c174103debc95b4863f4fa4a3c23}{multi\+APProfile}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structS__EndPoint_a1f023aa5916dbf9e57c1d3e30d39dd5e}{multi\+APVlan\+Id}}
+\item 
+\mbox{\hyperlink{wld__types_8h_ad1c5a4221bceaeef5118b1d4c6b1a345}{wld\+\_\+tiny\+Roam\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__EndPoint_a7dc4977c23aadd57203b9ebd235f9066}{tiny\+Roam}}
+\item 
+\mbox{\hyperlink{structwld__fcallState__t}{wld\+\_\+fcall\+State\+\_\+t}} \mbox{\hyperlink{structS__EndPoint_a24ec76f81ebc66fe840c6e5f0c4cb1b1}{stats\+Call}}
+\item 
+\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__EndPoint_a008455810b205558622979b308087fb5}{nl80211\+Listener}}
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__EndPoint_a996a976ee0a7e1c86135512d5852d3dd}{wpa\+Ctrl\+Interface}}
+\item 
+\mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__EndPoint_a878b8b30682224925c6418283ec0e3ab}{wpa\+Supp}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structS__EndPoint_a40c3ab5fadfd0742539cb4b10e1149a6}{w\+Dev\+Id}}
+\item 
+\mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} \mbox{\hyperlink{structS__EndPoint_a78793c5239b7e5efedb6d5c35961fd2c}{stats}}
+\item 
+swla\+\_\+dm\+\_\+obj\+Action\+Read\+Ctx\+\_\+t \mbox{\hyperlink{structS__EndPoint_ab84b969801f43411ee194387d71fea87}{on\+Action\+Read\+Ctx}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structS__EndPoint_a504d5c2b971e826305ab3531bfa5a50b}\label{structS__EndPoint_a504d5c2b971e826305ab3531bfa5a50b}} 
+\index{S\_EndPoint@{S\_EndPoint}!alias@{alias}}
+\index{alias@{alias}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{alias}{alias}}
+{\footnotesize\ttfamily char S\+\_\+\+End\+Point\+::alias\mbox{[}32\mbox{]}}
+
+\mbox{\Hypertarget{structS__EndPoint_a8227c196c0bc87de41585c3f94689708}\label{structS__EndPoint_a8227c196c0bc87de41585c3f94689708}} 
+\index{S\_EndPoint@{S\_EndPoint}!assocStats@{assocStats}}
+\index{assocStats@{assocStats}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{assocStats}{assocStats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__ep__assocStats__t}{wld\+\_\+ep\+\_\+assoc\+Stats\+\_\+t}} S\+\_\+\+End\+Point\+::assoc\+Stats}
+
+\mbox{\Hypertarget{structS__EndPoint_a9c3441106651d15dbc693cfa76e3eb1c}\label{structS__EndPoint_a9c3441106651d15dbc693cfa76e3eb1c}} 
+\index{S\_EndPoint@{S\_EndPoint}!bridgeName@{bridgeName}}
+\index{bridgeName@{bridgeName}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{bridgeName}{bridgeName}}
+{\footnotesize\ttfamily char S\+\_\+\+End\+Point\+::bridge\+Name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__EndPoint_a2e4de4c0b7ddf1b8ff3033f70164581e}\label{structS__EndPoint_a2e4de4c0b7ddf1b8ff3033f70164581e}} 
+\index{S\_EndPoint@{S\_EndPoint}!connectionStatus@{connectionStatus}}
+\index{connectionStatus@{connectionStatus}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{connectionStatus}{connectionStatus}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} S\+\_\+\+End\+Point\+::connection\+Status}
+
+\mbox{\Hypertarget{structS__EndPoint_a0f4962a1673fe5c9848811b627ec7ca9}\label{structS__EndPoint_a0f4962a1673fe5c9848811b627ec7ca9}} 
+\index{S\_EndPoint@{S\_EndPoint}!currentProfile@{currentProfile}}
+\index{currentProfile@{currentProfile}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{currentProfile}{currentProfile}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}}$\ast$ S\+\_\+\+End\+Point\+::current\+Profile}
+
+\mbox{\Hypertarget{structS__EndPoint_a925d7b54e4de99a79af4494e8157591a}\label{structS__EndPoint_a925d7b54e4de99a79af4494e8157591a}} 
+\index{S\_EndPoint@{S\_EndPoint}!debug@{debug}}
+\index{debug@{debug}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{debug}{debug}}
+{\footnotesize\ttfamily int S\+\_\+\+End\+Point\+::debug}
+
+\mbox{\Hypertarget{structS__EndPoint_afb81a7a4cdb32493d8c92694ef1bfd1c}\label{structS__EndPoint_afb81a7a4cdb32493d8c92694ef1bfd1c}} 
+\index{S\_EndPoint@{S\_EndPoint}!enable@{enable}}
+\index{enable@{enable}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{enable}{enable}}
+{\footnotesize\ttfamily int S\+\_\+\+End\+Point\+::enable}
+
+\mbox{\Hypertarget{structS__EndPoint_a834be0454147765fc1ce696f4d2f6a35}\label{structS__EndPoint_a834be0454147765fc1ce696f4d2f6a35}} 
+\index{S\_EndPoint@{S\_EndPoint}!error@{error}}
+\index{error@{error}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{error}{error}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\+\_\+ep\+Error\+\_\+e}} S\+\_\+\+End\+Point\+::error}
+
+\mbox{\Hypertarget{structS__EndPoint_ae4d240965cbb41c61be11b54edb2884a}\label{structS__EndPoint_ae4d240965cbb41c61be11b54edb2884a}} 
+\index{S\_EndPoint@{S\_EndPoint}!fsm@{fsm}}
+\index{fsm@{fsm}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{fsm}{fsm}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} S\+\_\+\+End\+Point\+::fsm}
+
+\mbox{\Hypertarget{structS__EndPoint_a31aa226299515fd5d70eab6d2056c7bb}\label{structS__EndPoint_a31aa226299515fd5d70eab6d2056c7bb}} 
+\index{S\_EndPoint@{S\_EndPoint}!index@{index}}
+\index{index@{index}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{index}{index}}
+{\footnotesize\ttfamily int S\+\_\+\+End\+Point\+::index}
+
+\mbox{\Hypertarget{structS__EndPoint_aa64f55db320f5cd4c4dfeb4be7cd5f34}\label{structS__EndPoint_aa64f55db320f5cd4c4dfeb4be7cd5f34}} 
+\index{S\_EndPoint@{S\_EndPoint}!internalChange@{internalChange}}
+\index{internalChange@{internalChange}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{internalChange}{internalChange}}
+{\footnotesize\ttfamily bool S\+\_\+\+End\+Point\+::internal\+Change}
+
+\mbox{\Hypertarget{structS__EndPoint_aa34dd8ce574c13395e21c38457f31fb3}\label{structS__EndPoint_aa34dd8ce574c13395e21c38457f31fb3}} 
+\index{S\_EndPoint@{S\_EndPoint}!it@{it}}
+\index{it@{it}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{it}{it}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+it\+\_\+t S\+\_\+\+End\+Point\+::it}
+
+\mbox{\Hypertarget{structS__EndPoint_aca03e0ba35fd9fbd4214f4afccf254ad}\label{structS__EndPoint_aca03e0ba35fd9fbd4214f4afccf254ad}} 
+\index{S\_EndPoint@{S\_EndPoint}!lastConnStatusChange@{lastConnStatusChange}}
+\index{lastConnStatusChange@{lastConnStatusChange}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{lastConnStatusChange}{lastConnStatusChange}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t S\+\_\+\+End\+Point\+::last\+Conn\+Status\+Change}
+
+\mbox{\Hypertarget{structS__EndPoint_a1c70e4d075e727425f284bf87bc50f78}\label{structS__EndPoint_a1c70e4d075e727425f284bf87bc50f78}} 
+\index{S\_EndPoint@{S\_EndPoint}!llProfiles@{llProfiles}}
+\index{llProfiles@{llProfiles}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{llProfiles}{llProfiles}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t S\+\_\+\+End\+Point\+::ll\+Profiles}
+
+\mbox{\Hypertarget{structS__EndPoint_a3a8be728944579b7490718f4a4afa666}\label{structS__EndPoint_a3a8be728944579b7490718f4a4afa666}} 
+\index{S\_EndPoint@{S\_EndPoint}!multiAPEnable@{multiAPEnable}}
+\index{multiAPEnable@{multiAPEnable}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{multiAPEnable}{multiAPEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+End\+Point\+::multi\+APEnable}
+
+\mbox{\Hypertarget{structS__EndPoint_aa606c174103debc95b4863f4fa4a3c23}\label{structS__EndPoint_aa606c174103debc95b4863f4fa4a3c23}} 
+\index{S\_EndPoint@{S\_EndPoint}!multiAPProfile@{multiAPProfile}}
+\index{multiAPProfile@{multiAPProfile}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{multiAPProfile}{multiAPProfile}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a443545a4d116631706acabeb1e3b05a5}{wld\+\_\+multiap\+\_\+profile\+\_\+e}} S\+\_\+\+End\+Point\+::multi\+APProfile}
+
+\mbox{\Hypertarget{structS__EndPoint_a1f023aa5916dbf9e57c1d3e30d39dd5e}\label{structS__EndPoint_a1f023aa5916dbf9e57c1d3e30d39dd5e}} 
+\index{S\_EndPoint@{S\_EndPoint}!multiAPVlanId@{multiAPVlanId}}
+\index{multiAPVlanId@{multiAPVlanId}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{multiAPVlanId}{multiAPVlanId}}
+{\footnotesize\ttfamily uint16\+\_\+t S\+\_\+\+End\+Point\+::multi\+APVlan\+Id}
+
+\mbox{\Hypertarget{structS__EndPoint_a041e5a82b91562d0c178156cbbfa9ba7}\label{structS__EndPoint_a041e5a82b91562d0c178156cbbfa9ba7}} 
+\index{S\_EndPoint@{S\_EndPoint}!Name@{Name}}
+\index{Name@{Name}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily char S\+\_\+\+End\+Point\+::\+Name\mbox{[}16\mbox{]}}
+
+\mbox{\Hypertarget{structS__EndPoint_a008455810b205558622979b308087fb5}\label{structS__EndPoint_a008455810b205558622979b308087fb5}} 
+\index{S\_EndPoint@{S\_EndPoint}!nl80211Listener@{nl80211Listener}}
+\index{nl80211Listener@{nl80211Listener}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{nl80211Listener}{nl80211Listener}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}}$\ast$ S\+\_\+\+End\+Point\+::nl80211\+Listener}
+
+\mbox{\Hypertarget{structS__EndPoint_ab84b969801f43411ee194387d71fea87}\label{structS__EndPoint_ab84b969801f43411ee194387d71fea87}} 
+\index{S\_EndPoint@{S\_EndPoint}!onActionReadCtx@{onActionReadCtx}}
+\index{onActionReadCtx@{onActionReadCtx}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{onActionReadCtx}{onActionReadCtx}}
+{\footnotesize\ttfamily swla\+\_\+dm\+\_\+obj\+Action\+Read\+Ctx\+\_\+t S\+\_\+\+End\+Point\+::on\+Action\+Read\+Ctx}
+
+\mbox{\Hypertarget{structS__EndPoint_a9760db9516b8b939284bb554f31e3235}\label{structS__EndPoint_a9760db9516b8b939284bb554f31e3235}} 
+\index{S\_EndPoint@{S\_EndPoint}!pBus@{pBus}}
+\index{pBus@{pBus}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{pBus}{pBus}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t$\ast$ S\+\_\+\+End\+Point\+::p\+Bus}
+
+\mbox{\Hypertarget{structS__EndPoint_a27f8722bdeb1590e67dc1501d8055f3d}\label{structS__EndPoint_a27f8722bdeb1590e67dc1501d8055f3d}} 
+\index{S\_EndPoint@{S\_EndPoint}!pFA@{pFA}}
+\index{pFA@{pFA}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{pFA}{pFA}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}}$\ast$ S\+\_\+\+End\+Point\+::p\+FA}
+
+\mbox{\Hypertarget{structS__EndPoint_ac8bf19d89d9f575fc8dd4ae0aef14852}\label{structS__EndPoint_ac8bf19d89d9f575fc8dd4ae0aef14852}} 
+\index{S\_EndPoint@{S\_EndPoint}!pRadio@{pRadio}}
+\index{pRadio@{pRadio}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{pRadio}{pRadio}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}}$\ast$ S\+\_\+\+End\+Point\+::p\+Radio}
+
+\mbox{\Hypertarget{structS__EndPoint_aa1d23d3db66cd4d5075708e648787f59}\label{structS__EndPoint_aa1d23d3db66cd4d5075708e648787f59}} 
+\index{S\_EndPoint@{S\_EndPoint}!pSSID@{pSSID}}
+\index{pSSID@{pSSID}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{pSSID}{pSSID}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}}$\ast$ S\+\_\+\+End\+Point\+::p\+SSID}
+
+\mbox{\Hypertarget{structS__EndPoint_a093426dcc3ca901fc200b307e60aff61}\label{structS__EndPoint_a093426dcc3ca901fc200b307e60aff61}} 
+\index{S\_EndPoint@{S\_EndPoint}!reconnect\_count@{reconnect\_count}}
+\index{reconnect\_count@{reconnect\_count}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{reconnect\_count}{reconnect\_count}}
+{\footnotesize\ttfamily uint32\+\_\+t S\+\_\+\+End\+Point\+::reconnect\+\_\+count}
+
+\mbox{\Hypertarget{structS__EndPoint_a309e2a2b8f39429c596d8c60fa7b1ec0}\label{structS__EndPoint_a309e2a2b8f39429c596d8c60fa7b1ec0}} 
+\index{S\_EndPoint@{S\_EndPoint}!reconnect\_rad\_trigger@{reconnect\_rad\_trigger}}
+\index{reconnect\_rad\_trigger@{reconnect\_rad\_trigger}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{reconnect\_rad\_trigger}{reconnect\_rad\_trigger}}
+{\footnotesize\ttfamily uint32\+\_\+t S\+\_\+\+End\+Point\+::reconnect\+\_\+rad\+\_\+trigger}
+
+\mbox{\Hypertarget{structS__EndPoint_a6186ee9c3071b4dee30674b16d76a0b1}\label{structS__EndPoint_a6186ee9c3071b4dee30674b16d76a0b1}} 
+\index{S\_EndPoint@{S\_EndPoint}!reconnectDelay@{reconnectDelay}}
+\index{reconnectDelay@{reconnectDelay}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{reconnectDelay}{reconnectDelay}}
+{\footnotesize\ttfamily uint32\+\_\+t S\+\_\+\+End\+Point\+::reconnect\+Delay}
+
+\mbox{\Hypertarget{structS__EndPoint_ab2873e2a4a1148f3cfb9110d68d074e1}\label{structS__EndPoint_ab2873e2a4a1148f3cfb9110d68d074e1}} 
+\index{S\_EndPoint@{S\_EndPoint}!reconnectInterval@{reconnectInterval}}
+\index{reconnectInterval@{reconnectInterval}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{reconnectInterval}{reconnectInterval}}
+{\footnotesize\ttfamily uint32\+\_\+t S\+\_\+\+End\+Point\+::reconnect\+Interval}
+
+\mbox{\Hypertarget{structS__EndPoint_a6709a7ffe41f3524364f59d77db6b897}\label{structS__EndPoint_a6709a7ffe41f3524364f59d77db6b897}} 
+\index{S\_EndPoint@{S\_EndPoint}!reconnectTimer@{reconnectTimer}}
+\index{reconnectTimer@{reconnectTimer}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{reconnectTimer}{reconnectTimer}}
+{\footnotesize\ttfamily amxp\+\_\+timer\+\_\+t$\ast$ S\+\_\+\+End\+Point\+::reconnect\+Timer}
+
+\mbox{\Hypertarget{structS__EndPoint_a4c033b2d9f2179b68421e59491df10a6}\label{structS__EndPoint_a4c033b2d9f2179b68421e59491df10a6}} 
+\index{S\_EndPoint@{S\_EndPoint}!ref\_index@{ref\_index}}
+\index{ref\_index@{ref\_index}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{ref\_index}{ref\_index}}
+{\footnotesize\ttfamily int S\+\_\+\+End\+Point\+::ref\+\_\+index}
+
+\mbox{\Hypertarget{structS__EndPoint_a5687a0549682227a46d0c5342521a37f}\label{structS__EndPoint_a5687a0549682227a46d0c5342521a37f}} 
+\index{S\_EndPoint@{S\_EndPoint}!secModesSupported@{secModesSupported}}
+\index{secModesSupported@{secModesSupported}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{secModesSupported}{secModesSupported}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+m S\+\_\+\+End\+Point\+::sec\+Modes\+Supported}
+
+\mbox{\Hypertarget{structS__EndPoint_aa1f7efd164e03a3e8d3d0099845bdd08}\label{structS__EndPoint_aa1f7efd164e03a3e8d3d0099845bdd08}} 
+\index{S\_EndPoint@{S\_EndPoint}!SSIDReference@{SSIDReference}}
+\index{SSIDReference@{SSIDReference}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{SSIDReference}{SSIDReference}}
+{\footnotesize\ttfamily int S\+\_\+\+End\+Point\+::\+SSIDReference}
+
+\mbox{\Hypertarget{structS__EndPoint_a78793c5239b7e5efedb6d5c35961fd2c}\label{structS__EndPoint_a78793c5239b7e5efedb6d5c35961fd2c}} 
+\index{S\_EndPoint@{S\_EndPoint}!stats@{stats}}
+\index{stats@{stats}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{stats}{stats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} S\+\_\+\+End\+Point\+::stats}
+
+\mbox{\Hypertarget{structS__EndPoint_a24ec76f81ebc66fe840c6e5f0c4cb1b1}\label{structS__EndPoint_a24ec76f81ebc66fe840c6e5f0c4cb1b1}} 
+\index{S\_EndPoint@{S\_EndPoint}!statsCall@{statsCall}}
+\index{statsCall@{statsCall}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{statsCall}{statsCall}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__fcallState__t}{wld\+\_\+fcall\+State\+\_\+t}} S\+\_\+\+End\+Point\+::stats\+Call}
+
+\mbox{\Hypertarget{structS__EndPoint_ae9b5a43032c6ec2928de67ae3e0e29b6}\label{structS__EndPoint_ae9b5a43032c6ec2928de67ae3e0e29b6}} 
+\index{S\_EndPoint@{S\_EndPoint}!status@{status}}
+\index{status@{status}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a6f071c90b200e5b86aca49acaf62e1ff}{wld\+\_\+intf\+Status\+\_\+e}} S\+\_\+\+End\+Point\+::status}
+
+\mbox{\Hypertarget{structS__EndPoint_a7dc4977c23aadd57203b9ebd235f9066}\label{structS__EndPoint_a7dc4977c23aadd57203b9ebd235f9066}} 
+\index{S\_EndPoint@{S\_EndPoint}!tinyRoam@{tinyRoam}}
+\index{tinyRoam@{tinyRoam}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{tinyRoam}{tinyRoam}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ad1c5a4221bceaeef5118b1d4c6b1a345}{wld\+\_\+tiny\+Roam\+\_\+t}}$\ast$ S\+\_\+\+End\+Point\+::tiny\+Roam}
+
+\mbox{\Hypertarget{structS__EndPoint_ae5ec32c6d84994b397ba7981b6658a3e}\label{structS__EndPoint_ae5ec32c6d84994b397ba7981b6658a3e}} 
+\index{S\_EndPoint@{S\_EndPoint}!toggleBssOnReconnect@{toggleBssOnReconnect}}
+\index{toggleBssOnReconnect@{toggleBssOnReconnect}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{toggleBssOnReconnect}{toggleBssOnReconnect}}
+{\footnotesize\ttfamily bool S\+\_\+\+End\+Point\+::toggle\+Bss\+On\+Reconnect}
+
+\mbox{\Hypertarget{structS__EndPoint_a014a9cf313e0d887dcdc19619193c0cf}\label{structS__EndPoint_a014a9cf313e0d887dcdc19619193c0cf}} 
+\index{S\_EndPoint@{S\_EndPoint}!vendorData@{vendorData}}
+\index{vendorData@{vendorData}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{vendorData}{vendorData}}
+{\footnotesize\ttfamily void$\ast$ S\+\_\+\+End\+Point\+::vendor\+Data}
+
+\mbox{\Hypertarget{structS__EndPoint_a40c3ab5fadfd0742539cb4b10e1149a6}\label{structS__EndPoint_a40c3ab5fadfd0742539cb4b10e1149a6}} 
+\index{S\_EndPoint@{S\_EndPoint}!wDevId@{wDevId}}
+\index{wDevId@{wDevId}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{wDevId}{wDevId}}
+{\footnotesize\ttfamily uint64\+\_\+t S\+\_\+\+End\+Point\+::w\+Dev\+Id}
+
+\mbox{\Hypertarget{structS__EndPoint_a996a976ee0a7e1c86135512d5852d3dd}\label{structS__EndPoint_a996a976ee0a7e1c86135512d5852d3dd}} 
+\index{S\_EndPoint@{S\_EndPoint}!wpaCtrlInterface@{wpaCtrlInterface}}
+\index{wpaCtrlInterface@{wpaCtrlInterface}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{wpaCtrlInterface}{wpaCtrlInterface}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}}$\ast$ S\+\_\+\+End\+Point\+::wpa\+Ctrl\+Interface}
+
+\mbox{\Hypertarget{structS__EndPoint_a878b8b30682224925c6418283ec0e3ab}\label{structS__EndPoint_a878b8b30682224925c6418283ec0e3ab}} 
+\index{S\_EndPoint@{S\_EndPoint}!wpaSupp@{wpaSupp}}
+\index{wpaSupp@{wpaSupp}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{wpaSupp}{wpaSupp}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}}$\ast$ S\+\_\+\+End\+Point\+::wpa\+Supp}
+
+\mbox{\Hypertarget{structS__EndPoint_a2cc389adca3a2982a7b8c4292a1f4704}\label{structS__EndPoint_a2cc389adca3a2982a7b8c4292a1f4704}} 
+\index{S\_EndPoint@{S\_EndPoint}!WPS\_ClientPIN@{WPS\_ClientPIN}}
+\index{WPS\_ClientPIN@{WPS\_ClientPIN}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{WPS\_ClientPIN}{WPS\_ClientPIN}}
+{\footnotesize\ttfamily char S\+\_\+\+End\+Point\+::\+WPS\+\_\+\+Client\+PIN\mbox{[}16\mbox{]}}
+
+\mbox{\Hypertarget{structS__EndPoint_a646469709379f16dc43cd3152d31ac7f}\label{structS__EndPoint_a646469709379f16dc43cd3152d31ac7f}} 
+\index{S\_EndPoint@{S\_EndPoint}!WPS\_ConfigMethodsEnabled@{WPS\_ConfigMethodsEnabled}}
+\index{WPS\_ConfigMethodsEnabled@{WPS\_ConfigMethodsEnabled}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{WPS\_ConfigMethodsEnabled}{WPS\_ConfigMethodsEnabled}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} S\+\_\+\+End\+Point\+::\+WPS\+\_\+\+Config\+Methods\+Enabled}
+
+\mbox{\Hypertarget{structS__EndPoint_aab013d26c7450a95a9e3507ee319c9ac}\label{structS__EndPoint_aab013d26c7450a95a9e3507ee319c9ac}} 
+\index{S\_EndPoint@{S\_EndPoint}!WPS\_ConfigMethodsSupported@{WPS\_ConfigMethodsSupported}}
+\index{WPS\_ConfigMethodsSupported@{WPS\_ConfigMethodsSupported}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{WPS\_ConfigMethodsSupported}{WPS\_ConfigMethodsSupported}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} S\+\_\+\+End\+Point\+::\+WPS\+\_\+\+Config\+Methods\+Supported}
+
+\mbox{\Hypertarget{structS__EndPoint_ac942920e4e6bfd1865ea5d93c54e20ca}\label{structS__EndPoint_ac942920e4e6bfd1865ea5d93c54e20ca}} 
+\index{S\_EndPoint@{S\_EndPoint}!WPS\_Configured@{WPS\_Configured}}
+\index{WPS\_Configured@{WPS\_Configured}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{WPS\_Configured}{WPS\_Configured}}
+{\footnotesize\ttfamily int S\+\_\+\+End\+Point\+::\+WPS\+\_\+\+Configured}
+
+\mbox{\Hypertarget{structS__EndPoint_afd914cefd889c60034abcd0f8fe0196f}\label{structS__EndPoint_afd914cefd889c60034abcd0f8fe0196f}} 
+\index{S\_EndPoint@{S\_EndPoint}!WPS\_Enable@{WPS\_Enable}}
+\index{WPS\_Enable@{WPS\_Enable}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{WPS\_Enable}{WPS\_Enable}}
+{\footnotesize\ttfamily bool S\+\_\+\+End\+Point\+::\+WPS\+\_\+\+Enable}
+
+\mbox{\Hypertarget{structS__EndPoint_aa22429e565ce827dbe635b15524ca713}\label{structS__EndPoint_aa22429e565ce827dbe635b15524ca713}} 
+\index{S\_EndPoint@{S\_EndPoint}!WPS\_PBC\_Delay@{WPS\_PBC\_Delay}}
+\index{WPS\_PBC\_Delay@{WPS\_PBC\_Delay}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{WPS\_PBC\_Delay}{WPS\_PBC\_Delay}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a5fa2ed00177e458df87aeb5ccf4d90fb}{T\+\_\+\+WPS\+\_\+push\+Button\+\_\+\+Delay}} S\+\_\+\+End\+Point\+::\+WPS\+\_\+\+PBC\+\_\+\+Delay}
+
+\mbox{\Hypertarget{structS__EndPoint_a3cc547bed7d812328b550ffbc0bd8a31}\label{structS__EndPoint_a3cc547bed7d812328b550ffbc0bd8a31}} 
+\index{S\_EndPoint@{S\_EndPoint}!wpsSessionInfo@{wpsSessionInfo}}
+\index{wpsSessionInfo@{wpsSessionInfo}!S\_EndPoint@{S\_EndPoint}}
+\doxysubsubsection{\texorpdfstring{wpsSessionInfo}{wpsSessionInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} S\+\_\+\+End\+Point\+::wps\+Session\+Info}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

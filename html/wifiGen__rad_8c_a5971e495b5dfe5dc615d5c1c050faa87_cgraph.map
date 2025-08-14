@@ -1,0 +1,21 @@
+<map id="wifiGen_rad_poschans" name="wifiGen_rad_poschans">
+<area shape="rect" id="node1" title=" " alt="" coords="5,424,172,451"/>
+<area shape="rect" id="node2" href="$wifiGen__rad_8c.html#a5b1310e3851978593b4f264cd3e0fd07" title=" " alt="" coords="265,329,406,356"/>
+<area shape="rect" id="node12" href="$wld__chanmgt_8c.html#a0c7314c11d52fa514321c6db833ad997" title=" " alt="" coords="220,399,451,425"/>
+<area shape="rect" id="node13" href="$wld__rad__nl80211_8c.html#aa95d2bdc9f9087faf376b9cc24ada5a8" title=" " alt="" coords="222,449,449,476"/>
+<area shape="rect" id="node19" href="$wld__radio_8c.html#a8310acda9a24c2c280cb255e209b7e66" title=" " alt="" coords="248,501,423,542"/>
+<area shape="rect" id="node3" href="$wifiGen__rad_8c.html#af2a37c704747cf32e599b77115c41774" title=" " alt="" coords="543,228,665,255"/>
+<area shape="rect" id="node11" href="$wld__channel_8c.html#a1a9a035bd946d1c31c8f715f91e9c8b4" title=" " alt="" coords="506,329,702,356"/>
+<area shape="rect" id="node4" href="$wld__channel_8c.html#a1daca3ccba000e743674c98ce51bd86e" title=" " alt="" coords="773,5,953,32"/>
+<area shape="rect" id="node5" href="$wld__channel_8c.html#a03aa2fd7136694da03048717e913ba77" title=" " alt="" coords="763,57,962,98"/>
+<area shape="rect" id="node6" href="$wld__channel_8c.html#a8f4ac82176127ff11de7585347815ecc" title=" " alt="" coords="757,122,968,163"/>
+<area shape="rect" id="node7" href="$wld__channel_8c.html#a274243f69f10bbc51cf7631622860889" title=" " alt="" coords="762,187,963,229"/>
+<area shape="rect" id="node8" href="$wld__channel_8c.html#a2fcd4f372b30ebbdbdab4763c2cddde7" title=" " alt="" coords="770,253,955,294"/>
+<area shape="rect" id="node9" href="$wld__channel_8c.html#af280c210df36690e3e3f2feca13c4ad8" title=" " alt="" coords="770,318,955,359"/>
+<area shape="rect" id="node10" href="$wld__channel_8c.html#a21233297a99a47a47bdd513f4bd1bc19" title=" " alt="" coords="769,383,957,425"/>
+<area shape="rect" id="node14" href="$wld__nl80211__core_8c.html#ab89990c364e3256f803e95aee1684407" title=" " alt="" coords="499,449,709,476"/>
+<area shape="rect" id="node16" href="$wld__nl80211__api_8c.html#af9a489d0e99a230994b5a268ce672db8" title=" " alt="" coords="505,500,703,527"/>
+<area shape="rect" id="node15" href="$wld__nl80211__core_8c.html#ac64e98962155641a465909b3c8fc0779" title=" " alt="" coords="806,449,919,476"/>
+<area shape="rect" id="node17" href="$wld__nl80211__core_8c.html#a51795ba7297b263584b02e6dd2d8ddb6" title=" " alt="" coords="761,500,964,527"/>
+<area shape="rect" id="node18" href="$wld__nl80211__core_8c.html#a3c5a525596463f925b95bbc76036d07e" title=" " alt="" coords="1016,500,1188,527"/>
+</map>

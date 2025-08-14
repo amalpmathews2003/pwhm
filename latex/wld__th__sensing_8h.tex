@@ -1,0 +1,123 @@
+\hypertarget{wld__th__sensing_8h}{}\doxysection{test/test\+Helper/wld\+\_\+th\+\_\+sensing.h File Reference}
+\label{wld__th__sensing_8h}\index{test/testHelper/wld\_th\_sensing.h@{test/testHelper/wld\_th\_sensing.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+radio.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+th\+\_\+sensing.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structwld__th__rad__sensing__vendorData__t}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+vendor\+Data\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__th__sensing_8h_a414fdbcb9d295daf6cb7491c1d19cb8e}{sensing\+Get\+Vendor\+Data}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__sensing_8h_a24e180593133a2edc976b40810798a0a}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+cmd}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__sensing_8h_a7dce6fc00d7f517eeaf9ed3bff5b6a19}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+add\+Client}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}} $\ast$client)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__sensing_8h_a37ac5944e437f13cff891161d09af822}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+del\+Client}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+mac\+Char\+\_\+t mac\+Addr)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__sensing_8h_a3d35914a2e0f2c117dad25f33fccb866}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+csi\+Stats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{structwld__csiState__t}{wld\+\_\+csi\+State\+\_\+t}} $\ast$csimon\+State)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__sensing_8h_a20e7730fa4dbcb4bfe55fe47a76bd20d}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+reset\+Stats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__th__sensing_8h_a414fdbcb9d295daf6cb7491c1d19cb8e}\label{wld__th__sensing_8h_a414fdbcb9d295daf6cb7491c1d19cb8e}} 
+\index{wld\_th\_sensing.h@{wld\_th\_sensing.h}!sensingGetVendorData@{sensingGetVendorData}}
+\index{sensingGetVendorData@{sensingGetVendorData}!wld\_th\_sensing.h@{wld\_th\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{sensingGetVendorData()}{sensingGetVendorData()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__th__rad__sensing__vendorData__t}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+vendor\+Data\+\_\+t}} $\ast$ sensing\+Get\+Vendor\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h_a414fdbcb9d295daf6cb7491c1d19cb8e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h_a414fdbcb9d295daf6cb7491c1d19cb8e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__sensing_8h_a7dce6fc00d7f517eeaf9ed3bff5b6a19}\label{wld__th__sensing_8h_a7dce6fc00d7f517eeaf9ed3bff5b6a19}} 
+\index{wld\_th\_sensing.h@{wld\_th\_sensing.h}!wld\_th\_rad\_sensing\_addClient@{wld\_th\_rad\_sensing\_addClient}}
+\index{wld\_th\_rad\_sensing\_addClient@{wld\_th\_rad\_sensing\_addClient}!wld\_th\_sensing.h@{wld\_th\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_sensing\_addClient()}{wld\_th\_rad\_sensing\_addClient()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+add\+Client (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}} $\ast$}]{client }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h_a7dce6fc00d7f517eeaf9ed3bff5b6a19_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__sensing_8h_a24e180593133a2edc976b40810798a0a}\label{wld__th__sensing_8h_a24e180593133a2edc976b40810798a0a}} 
+\index{wld\_th\_sensing.h@{wld\_th\_sensing.h}!wld\_th\_rad\_sensing\_cmd@{wld\_th\_rad\_sensing\_cmd}}
+\index{wld\_th\_rad\_sensing\_cmd@{wld\_th\_rad\_sensing\_cmd}!wld\_th\_sensing.h@{wld\_th\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_sensing\_cmd()}{wld\_th\_rad\_sensing\_cmd()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+cmd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h_a24e180593133a2edc976b40810798a0a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__sensing_8h_a3d35914a2e0f2c117dad25f33fccb866}\label{wld__th__sensing_8h_a3d35914a2e0f2c117dad25f33fccb866}} 
+\index{wld\_th\_sensing.h@{wld\_th\_sensing.h}!wld\_th\_rad\_sensing\_csiStats@{wld\_th\_rad\_sensing\_csiStats}}
+\index{wld\_th\_rad\_sensing\_csiStats@{wld\_th\_rad\_sensing\_csiStats}!wld\_th\_sensing.h@{wld\_th\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_sensing\_csiStats()}{wld\_th\_rad\_sensing\_csiStats()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+csi\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{structwld__csiState__t}{wld\+\_\+csi\+State\+\_\+t}} $\ast$}]{csimon\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__sensing_8h_a37ac5944e437f13cff891161d09af822}\label{wld__th__sensing_8h_a37ac5944e437f13cff891161d09af822}} 
+\index{wld\_th\_sensing.h@{wld\_th\_sensing.h}!wld\_th\_rad\_sensing\_delClient@{wld\_th\_rad\_sensing\_delClient}}
+\index{wld\_th\_rad\_sensing\_delClient@{wld\_th\_rad\_sensing\_delClient}!wld\_th\_sensing.h@{wld\_th\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_sensing\_delClient()}{wld\_th\_rad\_sensing\_delClient()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+del\+Client (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+mac\+Char\+\_\+t}]{mac\+Addr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h_a37ac5944e437f13cff891161d09af822_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__sensing_8h_a20e7730fa4dbcb4bfe55fe47a76bd20d}\label{wld__th__sensing_8h_a20e7730fa4dbcb4bfe55fe47a76bd20d}} 
+\index{wld\_th\_sensing.h@{wld\_th\_sensing.h}!wld\_th\_rad\_sensing\_resetStats@{wld\_th\_rad\_sensing\_resetStats}}
+\index{wld\_th\_rad\_sensing\_resetStats@{wld\_th\_rad\_sensing\_resetStats}!wld\_th\_sensing.h@{wld\_th\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_sensing\_resetStats()}{wld\_th\_rad\_sensing\_resetStats()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+reset\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__sensing_8h_a20e7730fa4dbcb4bfe55fe47a76bd20d_cgraph}
+\end{center}
+\end{figure}

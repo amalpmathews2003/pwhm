@@ -1,0 +1,163 @@
+\hypertarget{structwld__nl80211__bandDef__t}{}\doxysection{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t Struct Reference}
+\label{structwld__nl80211__bandDef__t}\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+
+
+{\ttfamily \#include $<$wld\+\_\+nl80211\+\_\+types.\+h$>$}
+
+
+
+Collaboration diagram for wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=220pt]{structwld__nl80211__bandDef__t__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+freq\+Band\+\_\+e \mbox{\hyperlink{structwld__nl80211__bandDef__t_a1a24f7f13e6dd9c534d51dfe8373e734}{freq\+Band}}
+\item 
+swl\+\_\+radio\+Standard\+\_\+m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a56508ad511029c68764ca2be287aa4f9}{rad\+Stds\+Mask}}
+\item 
+swl\+\_\+bandwidth\+\_\+m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a6c14747fc4943b6d73278b42aa62581d}{chan\+Width\+Mask}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a5b151c6bee12b7edf3403e3a2b5c12b0}{n\+SSMax}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a25d1ed70fe01ad7799209ff5b8dbdba4}{n\+Chans}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__chanDesc__t}{wld\+\_\+nl80211\+\_\+chan\+Desc\+\_\+t}} \mbox{\hyperlink{structwld__nl80211__bandDef__t_abd523e0abe5fbcfdc7def867fc27c1c2}{chans}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\+\_\+\+MAX\+\_\+\+POSSIBLE\+\_\+\+CHANNELS}}\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\+\_\+rad\+\_\+bf\+\_\+cap\+\_\+m}} \mbox{\hyperlink{structwld__nl80211__bandDef__t_a102df092e157689aac384ea6b2e40ac1}{bf\+Caps\+Supported}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+swl\+\_\+80211\+\_\+ht\+Cap\+Info\+\_\+m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a24eea7b26809f976f5f52a0d4c946661}{ht\+Capabilities}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_ad2d018f8f766919dd49cdae1791dfc99}{ht\+Mcs\+Set}} \mbox{[}SWL\+\_\+80211\+\_\+\+MCS\+\_\+\+SET\+\_\+\+LEN\mbox{]}
+\item 
+swl\+\_\+80211\+\_\+vht\+Cap\+Info\+\_\+m \mbox{\hyperlink{structwld__nl80211__bandDef__t_ae476d20016398550a0db5da3027f7867}{vht\+Capabilities}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a7c596c7144de9057fea2d7f0e19f7db3}{vht\+Mcs\+Nss\+Set}} \mbox{[}SWL\+\_\+80211\+\_\+\+VHT\+\_\+\+MCS\+\_\+\+NSS\+\_\+\+SIZE\mbox{]}
+\item 
+swl\+\_\+80211\+\_\+hecap\+\_\+mac\+Cap\+Info\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a2963c51b1f61e1989be4229a7450cd32}{he\+Mac\+Capabilities}}
+\item 
+swl\+\_\+80211\+\_\+hecap\+\_\+phy\+Cap\+Info\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_ab096d3de9f564970058fcbc4ae2c4ca4}{he\+Phy\+Capabilities}}
+\item 
+swl\+\_\+80211\+\_\+hecap\+\_\+\+MCSCap\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_ab30725e57e6ee0a9c077f82416751ef9}{he\+Mcs\+Caps}} \mbox{[}SWL\+\_\+80211\+\_\+\+HECAP\+\_\+\+MCS\+\_\+\+CAP\+\_\+\+ARRAY\+\_\+\+SIZE\mbox{]}
+\item 
+swl\+\_\+80211\+\_\+ehtcap\+\_\+phy\+Cap\+Info\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a4773951a469f50b52b4d632f77581d80}{eht\+Phy\+Capabilities}}
+\item 
+swl\+\_\+mcs\+\_\+t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a231a5ed67ae94b913d4db0d0484de1ce}{mcs\+Stds}} \mbox{[}SWL\+\_\+\+MCS\+\_\+\+STANDARD\+\_\+\+MAX\mbox{]}
+\item 
+swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a0716dee8e9cc93b1e109a1e64fc22012}{supported\+Data\+Transmit\+Rates}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a102df092e157689aac384ea6b2e40ac1}\label{structwld__nl80211__bandDef__t_a102df092e157689aac384ea6b2e40ac1}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!bfCapsSupported@{bfCapsSupported}}
+\index{bfCapsSupported@{bfCapsSupported}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{bfCapsSupported}{bfCapsSupported}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\+\_\+rad\+\_\+bf\+\_\+cap\+\_\+m}} wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::bf\+Caps\+Supported\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_abd523e0abe5fbcfdc7def867fc27c1c2}\label{structwld__nl80211__bandDef__t_abd523e0abe5fbcfdc7def867fc27c1c2}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!chans@{chans}}
+\index{chans@{chans}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{chans}{chans}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__chanDesc__t}{wld\+\_\+nl80211\+\_\+chan\+Desc\+\_\+t}} wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::chans\mbox{[}\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\+\_\+\+MAX\+\_\+\+POSSIBLE\+\_\+\+CHANNELS}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a6c14747fc4943b6d73278b42aa62581d}\label{structwld__nl80211__bandDef__t_a6c14747fc4943b6d73278b42aa62581d}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!chanWidthMask@{chanWidthMask}}
+\index{chanWidthMask@{chanWidthMask}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{chanWidthMask}{chanWidthMask}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+m wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::chan\+Width\+Mask}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a4773951a469f50b52b4d632f77581d80}\label{structwld__nl80211__bandDef__t_a4773951a469f50b52b4d632f77581d80}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!ehtPhyCapabilities@{ehtPhyCapabilities}}
+\index{ehtPhyCapabilities@{ehtPhyCapabilities}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{ehtPhyCapabilities}{ehtPhyCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+ehtcap\+\_\+phy\+Cap\+Info\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::eht\+Phy\+Capabilities}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a1a24f7f13e6dd9c534d51dfe8373e734}\label{structwld__nl80211__bandDef__t_a1a24f7f13e6dd9c534d51dfe8373e734}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!freqBand@{freqBand}}
+\index{freqBand@{freqBand}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{freqBand}{freqBand}}
+{\footnotesize\ttfamily swl\+\_\+freq\+Band\+\_\+e wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::freq\+Band}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a2963c51b1f61e1989be4229a7450cd32}\label{structwld__nl80211__bandDef__t_a2963c51b1f61e1989be4229a7450cd32}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!heMacCapabilities@{heMacCapabilities}}
+\index{heMacCapabilities@{heMacCapabilities}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{heMacCapabilities}{heMacCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+hecap\+\_\+mac\+Cap\+Info\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::he\+Mac\+Capabilities}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_ab30725e57e6ee0a9c077f82416751ef9}\label{structwld__nl80211__bandDef__t_ab30725e57e6ee0a9c077f82416751ef9}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!heMcsCaps@{heMcsCaps}}
+\index{heMcsCaps@{heMcsCaps}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{heMcsCaps}{heMcsCaps}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+hecap\+\_\+\+MCSCap\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::he\+Mcs\+Caps\mbox{[}SWL\+\_\+80211\+\_\+\+HECAP\+\_\+\+MCS\+\_\+\+CAP\+\_\+\+ARRAY\+\_\+\+SIZE\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_ab096d3de9f564970058fcbc4ae2c4ca4}\label{structwld__nl80211__bandDef__t_ab096d3de9f564970058fcbc4ae2c4ca4}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!hePhyCapabilities@{hePhyCapabilities}}
+\index{hePhyCapabilities@{hePhyCapabilities}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{hePhyCapabilities}{hePhyCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+hecap\+\_\+phy\+Cap\+Info\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::he\+Phy\+Capabilities}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a24eea7b26809f976f5f52a0d4c946661}\label{structwld__nl80211__bandDef__t_a24eea7b26809f976f5f52a0d4c946661}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!htCapabilities@{htCapabilities}}
+\index{htCapabilities@{htCapabilities}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{htCapabilities}{htCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+ht\+Cap\+Info\+\_\+m wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::ht\+Capabilities}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_ad2d018f8f766919dd49cdae1791dfc99}\label{structwld__nl80211__bandDef__t_ad2d018f8f766919dd49cdae1791dfc99}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!htMcsSet@{htMcsSet}}
+\index{htMcsSet@{htMcsSet}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{htMcsSet}{htMcsSet}}
+{\footnotesize\ttfamily uint8\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::ht\+Mcs\+Set\mbox{[}SWL\+\_\+80211\+\_\+\+MCS\+\_\+\+SET\+\_\+\+LEN\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a231a5ed67ae94b913d4db0d0484de1ce}\label{structwld__nl80211__bandDef__t_a231a5ed67ae94b913d4db0d0484de1ce}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!mcsStds@{mcsStds}}
+\index{mcsStds@{mcsStds}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{mcsStds}{mcsStds}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::mcs\+Stds\mbox{[}SWL\+\_\+\+MCS\+\_\+\+STANDARD\+\_\+\+MAX\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a25d1ed70fe01ad7799209ff5b8dbdba4}\label{structwld__nl80211__bandDef__t_a25d1ed70fe01ad7799209ff5b8dbdba4}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!nChans@{nChans}}
+\index{nChans@{nChans}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{nChans}{nChans}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::n\+Chans}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a5b151c6bee12b7edf3403e3a2b5c12b0}\label{structwld__nl80211__bandDef__t_a5b151c6bee12b7edf3403e3a2b5c12b0}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!nSSMax@{nSSMax}}
+\index{nSSMax@{nSSMax}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{nSSMax}{nSSMax}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::n\+SSMax}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a56508ad511029c68764ca2be287aa4f9}\label{structwld__nl80211__bandDef__t_a56508ad511029c68764ca2be287aa4f9}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!radStdsMask@{radStdsMask}}
+\index{radStdsMask@{radStdsMask}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{radStdsMask}{radStdsMask}}
+{\footnotesize\ttfamily swl\+\_\+radio\+Standard\+\_\+m wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::rad\+Stds\+Mask}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a0716dee8e9cc93b1e109a1e64fc22012}\label{structwld__nl80211__bandDef__t_a0716dee8e9cc93b1e109a1e64fc22012}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!supportedDataTransmitRates@{supportedDataTransmitRates}}
+\index{supportedDataTransmitRates@{supportedDataTransmitRates}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{supportedDataTransmitRates}{supportedDataTransmitRates}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::supported\+Data\+Transmit\+Rates}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_ae476d20016398550a0db5da3027f7867}\label{structwld__nl80211__bandDef__t_ae476d20016398550a0db5da3027f7867}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!vhtCapabilities@{vhtCapabilities}}
+\index{vhtCapabilities@{vhtCapabilities}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{vhtCapabilities}{vhtCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+vht\+Cap\+Info\+\_\+m wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::vht\+Capabilities}
+
+\mbox{\Hypertarget{structwld__nl80211__bandDef__t_a7c596c7144de9057fea2d7f0e19f7db3}\label{structwld__nl80211__bandDef__t_a7c596c7144de9057fea2d7f0e19f7db3}} 
+\index{wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}!vhtMcsNssSet@{vhtMcsNssSet}}
+\index{vhtMcsNssSet@{vhtMcsNssSet}!wld\_nl80211\_bandDef\_t@{wld\_nl80211\_bandDef\_t}}
+\doxysubsubsection{\texorpdfstring{vhtMcsNssSet}{vhtMcsNssSet}}
+{\footnotesize\ttfamily uint8\+\_\+t wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t\+::vht\+Mcs\+Nss\+Set\mbox{[}SWL\+\_\+80211\+\_\+\+VHT\+\_\+\+MCS\+\_\+\+NSS\+\_\+\+SIZE\mbox{]}}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld__nl80211__types_8h}{wld\+\_\+nl80211\+\_\+types.\+h}}\end{DoxyCompactItemize}

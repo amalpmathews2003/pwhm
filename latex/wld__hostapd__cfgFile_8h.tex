@@ -1,0 +1,218 @@
+\hypertarget{wld__hostapd__cfgFile_8h}{}\doxysection{include/wld/wld\+\_\+hostapd\+\_\+cfg\+File.h File Reference}
+\label{wld__hostapd__cfgFile_8h}\index{include/wld/wld\_hostapd\_cfgFile.h@{include/wld/wld\_hostapd\_cfgFile.h}}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__hostapd__cfgFile_8h_a73995493c2f44d252a72e42282d2176d}{HOSTAPD\+\_\+\+CTRL\+\_\+\+IFACE\+\_\+\+DIR}}~\char`\"{}/var/run/hostapd\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__hostapd__cfgFile_8h_ac14947168cc3ee47fd9e0ef512ee8f2a}{wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+create}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, char $\ast$cfg\+File\+Name)
+\begin{DoxyCompactList}\small\item\em create a configuration file for the hostapd \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__hostapd__cfgFile_8h_a0b0eb1c9360a3ff6e88bb54ada391a80}{wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+create\+Ext}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgFile_8h_a4f4abeb19c059ae9b067b51a9d5a9200}{wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+update}} (char $\ast$config\+Path, const char $\ast$interface, const char $\ast$key, const char $\ast$value)
+\begin{DoxyCompactList}\small\item\em update a configuration file for the hostapd \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__hostapd__cfgFile_8h_aa4ef0964a05f5b4f72d9c4b2f9046aa4}{wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+set\+Radio\+Config}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+map\+Char\+\_\+t $\ast$rad\+Config\+Map)
+\begin{DoxyCompactList}\small\item\em set the radio parameters \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__hostapd__cfgFile_8h_a9d7ead3332d567f3c0ab96742907491c}{wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+set\+Vap\+Config}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+map\+Char\+\_\+t $\ast$vap\+Config\+Map, swl\+\_\+map\+Char\+\_\+t $\ast$multi\+APConfig)
+\begin{DoxyCompactList}\small\item\em set a vap parameters. A vap configuration could be either an interface or a bss \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__cfgFile_8h_acd9d44110b5b4eab59ed8adb6688e9fc}{wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+gen\+Config\+Hash}} (char $\ast$$\ast$p\+Hash\+Str, swl\+\_\+map\+Char\+\_\+t $\ast$config\+Map)
+\begin{DoxyCompactList}\small\item\em generate md5 hash for a config map \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_a73995493c2f44d252a72e42282d2176d}\label{wld__hostapd__cfgFile_8h_a73995493c2f44d252a72e42282d2176d}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!HOSTAPD\_CTRL\_IFACE\_DIR@{HOSTAPD\_CTRL\_IFACE\_DIR}}
+\index{HOSTAPD\_CTRL\_IFACE\_DIR@{HOSTAPD\_CTRL\_IFACE\_DIR}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_CTRL\_IFACE\_DIR}{HOSTAPD\_CTRL\_IFACE\_DIR}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+CTRL\+\_\+\+IFACE\+\_\+\+DIR~\char`\"{}/var/run/hostapd\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_ac14947168cc3ee47fd9e0ef512ee8f2a}\label{wld__hostapd__cfgFile_8h_ac14947168cc3ee47fd9e0ef512ee8f2a}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!wld\_hostapd\_cfgFile\_create@{wld\_hostapd\_cfgFile\_create}}
+\index{wld\_hostapd\_cfgFile\_create@{wld\_hostapd\_cfgFile\_create}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_cfgFile\_create()}{wld\_hostapd\_cfgFile\_create()}}
+{\footnotesize\ttfamily void wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{char $\ast$}]{cfg\+File\+Name }\end{DoxyParamCaption})}
+
+
+
+create a configuration file for the hostapd 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Rad} & the radio \\
+\hline
+{\em cfg\+File\+Name} & the hostapd configuration file name\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_ac14947168cc3ee47fd9e0ef512ee8f2a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_ac14947168cc3ee47fd9e0ef512ee8f2a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_a0b0eb1c9360a3ff6e88bb54ada391a80}\label{wld__hostapd__cfgFile_8h_a0b0eb1c9360a3ff6e88bb54ada391a80}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!wld\_hostapd\_cfgFile\_createExt@{wld\_hostapd\_cfgFile\_createExt}}
+\index{wld\_hostapd\_cfgFile\_createExt@{wld\_hostapd\_cfgFile\_createExt}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_cfgFile\_createExt()}{wld\_hostapd\_cfgFile\_createExt()}}
+{\footnotesize\ttfamily void wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+create\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_a0b0eb1c9360a3ff6e88bb54ada391a80_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_a0b0eb1c9360a3ff6e88bb54ada391a80_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_acd9d44110b5b4eab59ed8adb6688e9fc}\label{wld__hostapd__cfgFile_8h_acd9d44110b5b4eab59ed8adb6688e9fc}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!wld\_hostapd\_cfgFile\_genConfigHash@{wld\_hostapd\_cfgFile\_genConfigHash}}
+\index{wld\_hostapd\_cfgFile\_genConfigHash@{wld\_hostapd\_cfgFile\_genConfigHash}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_cfgFile\_genConfigHash()}{wld\_hostapd\_cfgFile\_genConfigHash()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+gen\+Config\+Hash (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{p\+Hash\+Str,  }\item[{swl\+\_\+map\+Char\+\_\+t $\ast$}]{config\+Map }\end{DoxyParamCaption})}
+
+
+
+generate md5 hash for a config map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Hash\+Str} & Pointer output string (to be freed by caller) \\
+\hline
+{\em config\+Map} & map char of config param/values\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK on success, error code otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_aa4ef0964a05f5b4f72d9c4b2f9046aa4}\label{wld__hostapd__cfgFile_8h_aa4ef0964a05f5b4f72d9c4b2f9046aa4}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!wld\_hostapd\_cfgFile\_setRadioConfig@{wld\_hostapd\_cfgFile\_setRadioConfig}}
+\index{wld\_hostapd\_cfgFile\_setRadioConfig@{wld\_hostapd\_cfgFile\_setRadioConfig}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_cfgFile\_setRadioConfig()}{wld\_hostapd\_cfgFile\_setRadioConfig()}}
+{\footnotesize\ttfamily void wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+set\+Radio\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+map\+Char\+\_\+t $\ast$}]{rad\+Config\+Map }\end{DoxyParamCaption})}
+
+
+
+set the radio parameters 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Rad} & a radio 2.\+4/5/6\+GHz \\
+\hline
+{\em cfgF} & a pointer to the configuration file of the hostapd\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_aa4ef0964a05f5b4f72d9c4b2f9046aa4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_aa4ef0964a05f5b4f72d9c4b2f9046aa4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_a9d7ead3332d567f3c0ab96742907491c}\label{wld__hostapd__cfgFile_8h_a9d7ead3332d567f3c0ab96742907491c}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!wld\_hostapd\_cfgFile\_setVapConfig@{wld\_hostapd\_cfgFile\_setVapConfig}}
+\index{wld\_hostapd\_cfgFile\_setVapConfig@{wld\_hostapd\_cfgFile\_setVapConfig}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_cfgFile\_setVapConfig()}{wld\_hostapd\_cfgFile\_setVapConfig()}}
+{\footnotesize\ttfamily void wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+set\+Vap\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+map\+Char\+\_\+t $\ast$}]{vap\+Config\+Map,  }\item[{swl\+\_\+map\+Char\+\_\+t $\ast$}]{multi\+APConfig }\end{DoxyParamCaption})}
+
+
+
+set a vap parameters. A vap configuration could be either an interface or a bss 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & a vap \\
+\hline
+{\em cfgF} & a pointer to the the configuration file of the hostapd; map refers to data type not multi-\/\+AP \\
+\hline
+{\em multi\+APCfg} & a pointer for backhaul config (ssid/passphrase)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_a9d7ead3332d567f3c0ab96742907491c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgFile_8h_a4f4abeb19c059ae9b067b51a9d5a9200}\label{wld__hostapd__cfgFile_8h_a4f4abeb19c059ae9b067b51a9d5a9200}} 
+\index{wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}!wld\_hostapd\_cfgFile\_update@{wld\_hostapd\_cfgFile\_update}}
+\index{wld\_hostapd\_cfgFile\_update@{wld\_hostapd\_cfgFile\_update}!wld\_hostapd\_cfgFile.h@{wld\_hostapd\_cfgFile.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_cfgFile\_update()}{wld\_hostapd\_cfgFile\_update()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+cfg\+File\+\_\+update (\begin{DoxyParamCaption}\item[{char $\ast$}]{config\+Path,  }\item[{const char $\ast$}]{interface,  }\item[{const char $\ast$}]{key,  }\item[{const char $\ast$}]{value }\end{DoxyParamCaption})}
+
+
+
+update a configuration file for the hostapd 
+
+
+\begin{DoxyParams}{Parameters}
+{\em config\+Path} & the path of the config file \\
+\hline
+{\em interface} & bss name \\
+\hline
+{\em key} & the param to update \\
+\hline
+{\em value} & the key value to set \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgFile_8h_a4f4abeb19c059ae9b067b51a9d5a9200_cgraph}
+\end{center}
+\end{figure}

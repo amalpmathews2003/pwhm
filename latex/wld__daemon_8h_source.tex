@@ -1,0 +1,221 @@
+\hypertarget{wld__daemon_8h_source}{}\doxysection{wld\+\_\+daemon.\+h}
+\label{wld__daemon_8h_source}\index{include/wld/wld\_daemon.h@{include/wld/wld\_daemon.h}}
+\mbox{\hyperlink{wld__daemon_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_DAEMON\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_DAEMON\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include <stdbool.h>}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include <time.h>}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include <signal.h>}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{comment}{/* Daemon running state. */}}
+\DoxyCodeLine{72 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{73     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfa4bbb3d366b1669dd98f55125b4fd561f}{WLD\_DAEMON\_STATE\_INIT}},}
+\DoxyCodeLine{74     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfa03941788e9cc44a9613fe1fdf7b7e392}{WLD\_DAEMON\_STATE\_UP}},}
+\DoxyCodeLine{75     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfabef0c8a09b74e34ed2f991497668d17f}{WLD\_DAEMON\_STATE\_DOWN}},}
+\DoxyCodeLine{76     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfaae6db2a68d72f4b7fc7e43f3f75ac2b8}{WLD\_DAEMON\_STATE\_ERROR}},}
+\DoxyCodeLine{77     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfa6ba184f20ceebd59ea599ad813a90c26}{WLD\_DAEMON\_STATE\_DESTROYED}},}
+\DoxyCodeLine{78     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfafeeef73a5c6bdbd7abb687142292f9f6}{WLD\_DAEMON\_STATE\_RESTARTING}},}
+\DoxyCodeLine{79     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdfadd443fa9c9ba4dadc24115999ba3bf33}{WLD\_DAEMON\_STATE\_MAX}},}
+\DoxyCodeLine{80 \} \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdf}{wld\_deamonState\_e}};}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82 \textcolor{keyword}{extern} \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__daemon_8h_a823ba9052239ed6542af5ff4fa9ad20b}{g\_str\_wld\_dmn\_state}}[];}
+\DoxyCodeLine{83 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__process}{wld\_process}} \mbox{\hyperlink{structwld__process}{wld\_process\_t}};}
+\DoxyCodeLine{84 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__daemon_8h_afeddeaf8805eb4c6bbffdab9fd640311}{wld\_dmn\_restartHandler}})(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* pProc, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{86 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{87     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__deamonExitInfo__t_ad47cb397af6a94ae6aa169b867ce6e2a}{isStopped}};     \textcolor{comment}{// process stopped by user}}
+\DoxyCodeLine{88     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__deamonExitInfo__t_a74bb4d0c26af45f4ef0e0ab252b3aaeb}{isExited}};      \textcolor{comment}{// process exited unexpectedly}}
+\DoxyCodeLine{89     int32\_t \mbox{\hyperlink{structwld__deamonExitInfo__t_adf44509e76307c3f1084e23beef45bb5}{exitStatus}}; \textcolor{comment}{// exit code}}
+\DoxyCodeLine{90     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__deamonExitInfo__t_ae81e1838ead58026ef3ce3dff3b50a76}{isSignaled}};    \textcolor{comment}{// process ended with signal}}
+\DoxyCodeLine{91     int32\_t \mbox{\hyperlink{structwld__deamonExitInfo__t_a8e90a9af94655578bcf1a19310d56fca}{termSignal}}; \textcolor{comment}{// received signa}}
+\DoxyCodeLine{92 \} \mbox{\hyperlink{structwld__deamonExitInfo__t}{wld\_deamonExitInfo\_t}};}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94 \textcolor{comment}{/*}}
+\DoxyCodeLine{95 \textcolor{comment}{ * @brief handler notifying child process's end of execution}}
+\DoxyCodeLine{96 \textcolor{comment}{ *}}
+\DoxyCodeLine{97 \textcolor{comment}{ * @param pProc process context}}
+\DoxyCodeLine{98 \textcolor{comment}{ * @param userdata private data context pointer registered when starting the process}}
+\DoxyCodeLine{99 \textcolor{comment}{ */}}
+\DoxyCodeLine{100 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__daemon_8h_ac101e0fdf0aa51d6c7c8d1ecbf0aaf83}{wld\_dmn\_onStopHandler}})(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* pProc, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{102 \textcolor{comment}{/*}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @brief handler notifying child process's started}}
+\DoxyCodeLine{104 \textcolor{comment}{ *}}
+\DoxyCodeLine{105 \textcolor{comment}{ * @param pProc process context}}
+\DoxyCodeLine{106 \textcolor{comment}{ * @param userdata private data context pointer registered when starting the process}}
+\DoxyCodeLine{107 \textcolor{comment}{ */}}
+\DoxyCodeLine{108 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__daemon_8h_aef91c62f6666ca7846d1a6b2812ec138}{wld\_dmn\_onStartHandler}})(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* pProc, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110 \textcolor{comment}{/*}}
+\DoxyCodeLine{111 \textcolor{comment}{ * @brief handler called to build dynamically start arguments, just before starting process}}
+\DoxyCodeLine{112 \textcolor{comment}{ *}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @param pProc process context}}
+\DoxyCodeLine{114 \textcolor{comment}{ * @param userdata private data context pointer registered at initialization call}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @param newStartArgs string to be allocated and filled with new start args}}
+\DoxyCodeLine{116 \textcolor{comment}{ *                     If returned NULL, then previous start args will be using}}
+\DoxyCodeLine{117 \textcolor{comment}{ * @return newly allocate string filled with new start args (freed by the API)}}
+\DoxyCodeLine{118 \textcolor{comment}{ * If returned NULL, then previous start args will be using}}
+\DoxyCodeLine{119 \textcolor{comment}{ */}}
+\DoxyCodeLine{120 \textcolor{keyword}{typedef} \textcolor{keywordtype}{char}* (* wld\_dmn\_getArgsHandler)(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* pProc, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122 \textcolor{comment}{/*}}
+\DoxyCodeLine{123 \textcolor{comment}{ * @brief handler to reload child process in custom way (default SIGHUP)}}
+\DoxyCodeLine{124 \textcolor{comment}{ *}}
+\DoxyCodeLine{125 \textcolor{comment}{ * @param pProc process context}}
+\DoxyCodeLine{126 \textcolor{comment}{ * @param userdata private data context pointer registered when starting the process}}
+\DoxyCodeLine{127 \textcolor{comment}{ */}}
+\DoxyCodeLine{128 \textcolor{keyword}{typedef} bool (* \mbox{\hyperlink{wld__daemon_8h_ae6099048df7a73c2019c10130847e0ff}{wld\_dmn\_reloadHandler}})(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* pProc, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{comment}{/*}}
+\DoxyCodeLine{131 \textcolor{comment}{ * @brief handler to terminate child process in custom way (default SIGTERM/SIGKILL)}}
+\DoxyCodeLine{132 \textcolor{comment}{ *}}
+\DoxyCodeLine{133 \textcolor{comment}{ * @param pProc process context}}
+\DoxyCodeLine{134 \textcolor{comment}{ * @param userdata private data context pointer registered when starting the process}}
+\DoxyCodeLine{135 \textcolor{comment}{ */}}
+\DoxyCodeLine{136 \textcolor{keyword}{typedef} bool (* \mbox{\hyperlink{wld__daemon_8h_a0cb57f9e667adb36ed07d429335fe68a}{wld\_dmn\_stopHandler}})(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* pProc, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{137 }
+\DoxyCodeLine{138 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{139     \mbox{\hyperlink{wld__daemon_8h_afeddeaf8805eb4c6bbffdab9fd640311}{wld\_dmn\_restartHandler}} \mbox{\hyperlink{structwld__deamonEvtHandlers_a36aee7a5869e5ac51cafa04d9e3a81a8}{restartCb}}; \textcolor{comment}{// optional handler to manage child process restarting}}
+\DoxyCodeLine{140     \mbox{\hyperlink{wld__daemon_8h_ac101e0fdf0aa51d6c7c8d1ecbf0aaf83}{wld\_dmn\_onStopHandler}} \mbox{\hyperlink{structwld__deamonEvtHandlers_a04817027e0794b56ba5e9bf2cf112f53}{stopCb}};     \textcolor{comment}{// optional handler called after child process end}}
+\DoxyCodeLine{141     \mbox{\hyperlink{wld__daemon_8h_aef91c62f6666ca7846d1a6b2812ec138}{wld\_dmn\_onStartHandler}} \mbox{\hyperlink{structwld__deamonEvtHandlers_a7868be4600a40158be2a2171ead436e5}{startCb}};   \textcolor{comment}{// optional handler called after child process start}}
+\DoxyCodeLine{142     \mbox{\hyperlink{wld__daemon_8h_a3203a79c6462d9b5166d59a3ff9e9686}{wld\_dmn\_getArgsHandler}} \mbox{\hyperlink{structwld__deamonEvtHandlers_ab8c4098cbb00ebd2f67072ab73faead6}{getArgsCb}}; \textcolor{comment}{// optional handler to build process args dynamically just before starting it}}
+\DoxyCodeLine{143     \mbox{\hyperlink{wld__daemon_8h_ae6099048df7a73c2019c10130847e0ff}{wld\_dmn\_reloadHandler}} \mbox{\hyperlink{structwld__deamonEvtHandlers_abea4a242b47173a3f6f44a6b34d271b4}{reload}};     \textcolor{comment}{// optional handler to reload process configuration}}
+\DoxyCodeLine{144     \mbox{\hyperlink{wld__daemon_8h_a0cb57f9e667adb36ed07d429335fe68a}{wld\_dmn\_stopHandler}} \mbox{\hyperlink{structwld__deamonEvtHandlers_a6accafaf74bbcf1a83a4f536bebf97ed}{stop}};         \textcolor{comment}{// optional handler to terminate process}}
+\DoxyCodeLine{145 \} \mbox{\hyperlink{structwld__deamonEvtHandlers}{wld\_deamonEvtHandlers}};}
+\DoxyCodeLine{146 }
+\DoxyCodeLine{147 \textcolor{comment}{/* wld daemon context. */}}
+\DoxyCodeLine{148 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__process}{wld\_process}} \{}
+\DoxyCodeLine{149     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__process_ae18640a6dd21020c7e9d772f775d21fb}{cmd}};                         \textcolor{comment}{/* Command to run */}}
+\DoxyCodeLine{150     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__process_ab3b5b5c4c5cbf3023fba598bd5a334f4}{args}};                        \textcolor{comment}{/* arguments as provided by user */}}
+\DoxyCodeLine{151     uint32\_t \mbox{\hyperlink{structwld__process_ab0b263fcdf9590936594d5ac31329d58}{argLen}};                   \textcolor{comment}{/* length of args */}}
+\DoxyCodeLine{152     \textcolor{keywordtype}{char}** \mbox{\hyperlink{structwld__process_a15b2505fb1685b05e400ba8f337c626b}{argList}};                    \textcolor{comment}{/* argument list to be provided to start API */}}
+\DoxyCodeLine{153     uint32\_t \mbox{\hyperlink{structwld__process_a47351c5063bfe9f919add2654bd5d603}{nrArgs}};                   \textcolor{comment}{/* number of arguments */}}
+\DoxyCodeLine{154     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__process_a6ea051842d2d1f68ac1bae54c4edfbaf}{enabled}};                      \textcolor{comment}{/* Indicates if daemon is enabled(true) or disabled(false) */}}
+\DoxyCodeLine{155     \mbox{\hyperlink{wld__daemon_8h_a137aee32dec2ba8ffb792c2fa51b9fdf}{wld\_deamonState\_e}} \mbox{\hyperlink{structwld__process_a5fac0f4e8fdcf3a71a862eed996da366}{status}};          \textcolor{comment}{/* Indicates daemon's current state */}}
+\DoxyCodeLine{156     uint32\_t \mbox{\hyperlink{structwld__process_a3bdfbf89e8315c656a999b08fd4b0ab5}{fails}};                    \textcolor{comment}{/* Amount of fails since last time daemon is set to enabled */}}
+\DoxyCodeLine{157     uint32\_t \mbox{\hyperlink{structwld__process_aa68c7aae6406c81ecf8c307d8264e54f}{totalFails}};               \textcolor{comment}{/* Total amount of fails since first time daemon is set to enabled */}}
+\DoxyCodeLine{158     uint32\_t \mbox{\hyperlink{structwld__process_a30e1cb3ed97dd3624ba28dcbdb3523f7}{restarts}};                 \textcolor{comment}{/* Amount of restarts since last time daemon is set to enabled */}}
+\DoxyCodeLine{159     uint32\_t \mbox{\hyperlink{structwld__process_a026064364372e698f040e9b1012a3383}{totalRestarts}};            \textcolor{comment}{/* Total amount of restarts since first time daemon is set to enabled */}}
+\DoxyCodeLine{160     time\_t \mbox{\hyperlink{structwld__process_a365d75d78543c5bbea52c3fb6d0ed52a}{failDate}};                   \textcolor{comment}{/* Indicates the last time daemon has been started */}}
+\DoxyCodeLine{161     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__process_a747af6a286b023e3eb79cf6c9644d433}{forceKill}};                    \textcolor{comment}{/* Force -\/9 option when terminating, as done by some ref software */}}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163     amxp\_proc\_ctrl\_t* \mbox{\hyperlink{structwld__process_af5cb38fcea5c8cb8820f60f178872bc3}{process}};         \textcolor{comment}{/* Process information struct */}}
+\DoxyCodeLine{164     amxp\_timer\_t* \mbox{\hyperlink{structwld__process_a5d5838f00c987ed5f06266f80c062dff}{restart\_timer}};       \textcolor{comment}{/* used when a daemon need to be restarted */}}
+\DoxyCodeLine{165     \textcolor{keywordtype}{int} \mbox{\hyperlink{structwld__process_a4aa56eadf3069bef61230e1f6eec0d5f}{stdInPeer}};                     \textcolor{comment}{/* peer for stdIn reading */}}
+\DoxyCodeLine{166     \textcolor{keywordtype}{int} \mbox{\hyperlink{structwld__process_a3d887331d616607a704fae22cb37164c}{stdErrPeer}};                    \textcolor{comment}{/* peer for stdErr reading */}}
+\DoxyCodeLine{167 }
+\DoxyCodeLine{168     \mbox{\hyperlink{structwld__deamonExitInfo__t}{wld\_deamonExitInfo\_t}} \mbox{\hyperlink{structwld__process_a580ae88e3d2400b2ea1394329cb51424}{lastExitInfo}}; \textcolor{comment}{/* Last process termination details. */}}
+\DoxyCodeLine{169     \mbox{\hyperlink{structwld__deamonEvtHandlers}{wld\_deamonEvtHandlers}} \mbox{\hyperlink{structwld__process_a5a21b4fb52ba49813f312b7a72c8b78a}{handlers}};    \textcolor{comment}{/* Optional handlers of daemon process events. */}}
+\DoxyCodeLine{170     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwld__process_a8d32c182a07219ac0f0c4efb972be1eb}{userData}};                    \textcolor{comment}{/* Optional userdata for process */}}
+\DoxyCodeLine{171 \};}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{173 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{174     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__daemonMonitorConf__t_a2f2153e4a8efaf623206bdad2fe9bcfa}{enableParam}};}
+\DoxyCodeLine{175     int32\_t \mbox{\hyperlink{structwld__daemonMonitorConf__t_a000746f03b4f146cd87d09e2fc3f00e3}{instantRestartLimit}};}
+\DoxyCodeLine{176     uint32\_t \mbox{\hyperlink{structwld__daemonMonitorConf__t_a1bf0be3af61c380477d27f3701cdca2f}{minRestartInterval}};}
+\DoxyCodeLine{177 \} \mbox{\hyperlink{structwld__daemonMonitorConf__t}{wld\_daemonMonitorConf\_t}};}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{179 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__daemon_8h_aa940e40c81f9fa6f2cf5d8e8d35ea195}{wld\_dmn\_setMonitorConf}}(\mbox{\hyperlink{structwld__daemonMonitorConf__t}{wld\_daemonMonitorConf\_t}}* pDmnMoniConf);}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{186 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_add988f9aace86d75ad2250d7ea28ed17}{wld\_dmn\_initializeDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process, \textcolor{keywordtype}{char}* cmd);}
+\DoxyCodeLine{187 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_a50e230b7cf9c56d9b4ef6e5038576c17}{wld\_dmn\_setDeamonEvtHandlers}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process, \mbox{\hyperlink{structwld__deamonEvtHandlers}{wld\_deamonEvtHandlers}}* pHandlers, \textcolor{keywordtype}{void}* userData);}
+\DoxyCodeLine{188 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__daemon_8h_a4075ee8de9e9daa8039d0f758d20d655}{wld\_dmn\_cleanupDaemon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process);}
+\DoxyCodeLine{189 }
+\DoxyCodeLine{190 \textcolor{comment}{/*}}
+\DoxyCodeLine{191 \textcolor{comment}{ * @brief allocate and initialize a daemon process context}}
+\DoxyCodeLine{192 \textcolor{comment}{ */}}
+\DoxyCodeLine{193 swl\_rc\_ne \mbox{\hyperlink{wld__daemon_8h_adc1404b6fec8fdf62a05025d82440f64}{wld\_dmn\_createDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}** pDmnProcess, \textcolor{keywordtype}{char}* cmd, \textcolor{keywordtype}{char}* startArgs, \mbox{\hyperlink{structwld__deamonEvtHandlers}{wld\_deamonEvtHandlers}}* pEvtHdlrs, \textcolor{keywordtype}{void}* pEvtData);}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{195 \textcolor{comment}{/*}}
+\DoxyCodeLine{196 \textcolor{comment}{ * @brief cleanup and free a daemon process context}}
+\DoxyCodeLine{197 \textcolor{comment}{ */}}
+\DoxyCodeLine{198 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__daemon_8h_a17603235fe716db48dd549fbb8ddf8c0}{wld\_dmn\_destroyDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}** pDmnProcess);}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{200 \textcolor{comment}{/* Start daemon. */}}
+\DoxyCodeLine{201 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_a1bd821d850da9242b2ed5342c613f327}{wld\_dmn\_startDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* dmn\_process);}
+\DoxyCodeLine{202 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_aeede913dad29716c41471b5a05ac0697}{wld\_dmn\_restartDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* dmn\_process);}
+\DoxyCodeLine{203 \textcolor{comment}{/* Stop daemon. */}}
+\DoxyCodeLine{204 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_adc439fdc85e1c992a5ba6e79b4ebd3a3}{wld\_dmn\_stopDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* dmn\_process);}
+\DoxyCodeLine{205 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_a462bc068a1fcb2eeade9816c7574f826}{wld\_dmn\_stopCb}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* p);}
+\DoxyCodeLine{206 \textcolor{comment}{/* Reload daemon */}}
+\DoxyCodeLine{207 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_afcc0b1ac1876a3ff912e868edbc713a1}{wld\_dmn\_reloadDeamon}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* dmn\_process);}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_a6ba98a859d038541e1c2ee48d8566547}{wld\_dmn\_isRunning}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process);}
+\DoxyCodeLine{210 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_ab5b83dfbd0686247be8426a033dd575d}{wld\_dmn\_isEnabled}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process);}
+\DoxyCodeLine{211 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__daemon_8h_a6d6aff6c8951085c899aeee69ff795c8}{wld\_dmn\_isRestarting}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process);}
+\DoxyCodeLine{212 }
+\DoxyCodeLine{213 \textcolor{comment}{/* init or reinit the daemon arg list , before starting/restarting it. */}}
+\DoxyCodeLine{214 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__daemon_8h_a335dc3e12939144d97137cf59cfe7951}{wld\_dmn\_setArgList}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process, \textcolor{keywordtype}{char}* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}});}
+\DoxyCodeLine{215 }
+\DoxyCodeLine{216 \textcolor{comment}{/* Always force kill the deamon. Broadcom sometimes requires this to prevent deamon from doing too much side actions */}}
+\DoxyCodeLine{217 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__daemon_8h_a2c44de33ad51de29988a5ca156319102}{wld\_dmn\_setForceKill}}(\mbox{\hyperlink{structwld__process}{wld\_process\_t}}* process, \textcolor{keywordtype}{bool} forceKill);}
+\DoxyCodeLine{218 }
+\DoxyCodeLine{219 }
+\DoxyCodeLine{220 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_DAEMON\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

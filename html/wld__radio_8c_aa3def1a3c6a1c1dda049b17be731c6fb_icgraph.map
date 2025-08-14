@@ -1,0 +1,8 @@
+<map id="wld_rad_isUpExt" name="wld_rad_isUpExt">
+<area shape="rect" id="node1" title=" " alt="" coords="535,56,665,83"/>
+<area shape="rect" id="node2" href="$wifiGen__rad_8c.html#a9233592c6fba03287d70436e4532b9c5" title=" " alt="" coords="291,5,487,32"/>
+<area shape="rect" id="node3" href="$wld__accesspoint_8c.html#afce1e4726856a8b3bec33a125230f48b" title=" " alt="" coords="299,56,479,83"/>
+<area shape="rect" id="node4" href="$wld__hostapd__cfgFile_8c.html#aa4ef0964a05f5b4f72d9c4b2f9046aa4" title="set the radio parameters" alt="" coords="311,107,466,149"/>
+<area shape="rect" id="node5" href="$wld__rad__hostapd__api_8c.html#aea42b1d7acee5d51484de01cac65c983" title="set main interface channel parameters" alt="" coords="18,89,230,116"/>
+<area shape="rect" id="node6" href="$wld__rad__hostapd__api_8c.html#a5411827e8b4ab433c4f62efe4dee6b5e" title=" " alt="" coords="5,140,243,167"/>
+</map>

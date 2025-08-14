@@ -1,0 +1,247 @@
+\hypertarget{wld__channel__info_8c}{}\doxysection{src/\+Channel\+Management/wld\+\_\+channel\+\_\+info.c File Reference}
+\label{wld__channel__info_8c}\index{src/ChannelManagement/wld\_channel\_info.c@{src/ChannelManagement/wld\_channel\_info.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+channel.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include $<$swl/swl\+\_\+common.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel\+\_\+lib.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+Include dependency graph for wld\+\_\+channel\+\_\+info.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structchanwidthData__t}{chanwidth\+Data\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structoperating__class__table}{operating\+\_\+class\+\_\+table}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel__info_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}chan\+Inf\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__channel__info_8c_ace42a40d21f771e14e547ad30b76f0e7}{SWL\+\_\+\+ASSERT\+\_\+\+STATIC}} (SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__channel__info_8c_acdeee67fdafa9f0df79154ee6f475993}{nr\+\_\+channels\+\_\+ahead}})==SWL\+\_\+\+BW\+\_\+\+RAD\+\_\+\+MAX, \char`\"{}nr\+\_\+channels\+\_\+ahead not correctly defined\char`\"{})
+\item 
+bool \mbox{\hyperlink{wld__channel__info_8c_aeee934e1c006f64dcd852ee43fe71b53}{wld\+\_\+channel\+\_\+is\+\_\+dfs\+\_\+band}} (int channel, swl\+\_\+bandwidth\+\_\+e bandwidth)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__channel__info_8c_a2444255ee2a1863b9a58ff66c4d73017}{wld\+\_\+channel\+\_\+get\+Dfs\+Percentage}} (int channel, swl\+\_\+bandwidth\+\_\+e bandwidth)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__channel__info_8c_ac86c8feefb03b2d2622b706281516cc9}{wld\+\_\+channel\+\_\+get\+Frequency\+Of\+Channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+int \mbox{\hyperlink{wld__channel__info_8c_acbef2868fb577a4d97ee5df84c150190}{wld\+\_\+channel\+\_\+get\+\_\+center\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+int \mbox{\hyperlink{wld__channel__info_8c_a80ce41ebc78d227445a1c09d322ce1a3}{wld\+\_\+channel\+\_\+get\+\_\+band\+\_\+clear\+\_\+time}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel__info_8c_a772b88f7eb8d2446640335ad86ef22a9}{wld\+\_\+channel\+\_\+is\+\_\+long\+\_\+wait}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel__info_8c_a8de0e83d0d1da8531913a6c7df27989f}{wld\+\_\+channel\+\_\+is\+\_\+long\+\_\+wait\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel__info_8c_ad83e1f3f6c120a13e79bb9e7ae19399c}{wld\+\_\+channel\+\_\+is\+\_\+long\+\_\+wait\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel__info_8c_adcdae052ec03f723adb10c05b144b90c}{wld\+\_\+channel\+\_\+is\+\_\+chan\+\_\+in\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec, int test\+Channel)
+\item 
+bool \mbox{\hyperlink{wld__channel__info_8c_abc6b1c0df2f1f618afdabd1195f6a98a}{wld\+\_\+channel\+\_\+has\+Channel\+Width\+Covered}} (swl\+\_\+chanspec\+\_\+t chspec, swl\+\_\+bandwidth\+\_\+e chW)
+\item 
+\mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\+\_\+channel\+\_\+extension\+Pos\+\_\+e}} \mbox{\hyperlink{wld__channel__info_8c_a30dbfefee66f7473e59a233b5b95b1ad}{wld\+\_\+channel\+\_\+get\+Extension\+Channel}} (swl\+\_\+chanspec\+\_\+t chspec, \mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\+\_\+channel\+\_\+extension\+Pos\+\_\+e}} curr\+Ext\+Chan\+Pos)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \mbox{\hyperlink{structchanwidthData__t}{chanwidth\+Data\+\_\+t}} \mbox{\hyperlink{wld__channel__info_8c_acdeee67fdafa9f0df79154ee6f475993}{nr\+\_\+channels\+\_\+ahead}} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__channel__info_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__channel__info_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!ME@{ME}}
+\index{ME@{ME}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}chan\+Inf\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__channel__info_8c_ace42a40d21f771e14e547ad30b76f0e7}\label{wld__channel__info_8c_ace42a40d21f771e14e547ad30b76f0e7}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}}
+\index{SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_ASSERT\_STATIC()}{SWL\_ASSERT\_STATIC()}}
+{\footnotesize\ttfamily SWL\+\_\+\+ASSERT\+\_\+\+STATIC (\begin{DoxyParamCaption}\item[{SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__channel__info_8c_acdeee67fdafa9f0df79154ee6f475993}{nr\+\_\+channels\+\_\+ahead}})}]{ = {\ttfamily =SWL\+\_\+BW\+\_\+RAD\+\_\+MAX},  }\item[{\char`\"{}nr\+\_\+channels\+\_\+ahead not correctly defined\char`\"{}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__channel__info_8c_a80ce41ebc78d227445a1c09d322ce1a3}\label{wld__channel__info_8c_a80ce41ebc78d227445a1c09d322ce1a3}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_get\_band\_clear\_time@{wld\_channel\_get\_band\_clear\_time}}
+\index{wld\_channel\_get\_band\_clear\_time@{wld\_channel\_get\_band\_clear\_time}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_get\_band\_clear\_time()}{wld\_channel\_get\_band\_clear\_time()}}
+{\footnotesize\ttfamily int wld\+\_\+channel\+\_\+get\+\_\+band\+\_\+clear\+\_\+time (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns the time in milliseconds that it takes to clear this band. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_a80ce41ebc78d227445a1c09d322ce1a3_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_acbef2868fb577a4d97ee5df84c150190}\label{wld__channel__info_8c_acbef2868fb577a4d97ee5df84c150190}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_get\_center\_channel@{wld\_channel\_get\_center\_channel}}
+\index{wld\_channel\_get\_center\_channel@{wld\_channel\_get\_center\_channel}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_get\_center\_channel()}{wld\_channel\_get\_center\_channel()}}
+{\footnotesize\ttfamily int wld\+\_\+channel\+\_\+get\+\_\+center\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Get the center channel of a band OBSOLETE\+: please use swl\+\_\+chanspec\+\_\+get\+Centre\+Channel \mbox{\Hypertarget{wld__channel__info_8c_a2444255ee2a1863b9a58ff66c4d73017}\label{wld__channel__info_8c_a2444255ee2a1863b9a58ff66c4d73017}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_getDfsPercentage@{wld\_channel\_getDfsPercentage}}
+\index{wld\_channel\_getDfsPercentage@{wld\_channel\_getDfsPercentage}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_getDfsPercentage()}{wld\_channel\_getDfsPercentage()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+channel\+\_\+get\+Dfs\+Percentage (\begin{DoxyParamCaption}\item[{int}]{channel,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{bandwidth }\end{DoxyParamCaption})}
+
+Return by which percentage a band is dfs. \mbox{\Hypertarget{wld__channel__info_8c_a30dbfefee66f7473e59a233b5b95b1ad}\label{wld__channel__info_8c_a30dbfefee66f7473e59a233b5b95b1ad}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_getExtensionChannel@{wld\_channel\_getExtensionChannel}}
+\index{wld\_channel\_getExtensionChannel@{wld\_channel\_getExtensionChannel}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_getExtensionChannel()}{wld\_channel\_getExtensionChannel()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\+\_\+channel\+\_\+extension\+Pos\+\_\+e}} wld\+\_\+channel\+\_\+get\+Extension\+Channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chspec,  }\item[{\mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\+\_\+channel\+\_\+extension\+Pos\+\_\+e}}}]{curr\+Ext\+Chan\+Pos }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_a30dbfefee66f7473e59a233b5b95b1ad_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_a30dbfefee66f7473e59a233b5b95b1ad_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_ac86c8feefb03b2d2622b706281516cc9}\label{wld__channel__info_8c_ac86c8feefb03b2d2622b706281516cc9}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_getFrequencyOfChannel@{wld\_channel\_getFrequencyOfChannel}}
+\index{wld\_channel\_getFrequencyOfChannel@{wld\_channel\_getFrequencyOfChannel}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_getFrequencyOfChannel()}{wld\_channel\_getFrequencyOfChannel()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+channel\+\_\+get\+Frequency\+Of\+Channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Get the frequency from a channel (in Hertz). \mbox{\Hypertarget{wld__channel__info_8c_abc6b1c0df2f1f618afdabd1195f6a98a}\label{wld__channel__info_8c_abc6b1c0df2f1f618afdabd1195f6a98a}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_hasChannelWidthCovered@{wld\_channel\_hasChannelWidthCovered}}
+\index{wld\_channel\_hasChannelWidthCovered@{wld\_channel\_hasChannelWidthCovered}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_hasChannelWidthCovered()}{wld\_channel\_hasChannelWidthCovered()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+has\+Channel\+Width\+Covered (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chspec,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{chW }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_abc6b1c0df2f1f618afdabd1195f6a98a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_adcdae052ec03f723adb10c05b144b90c}\label{wld__channel__info_8c_adcdae052ec03f723adb10c05b144b90c}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_is\_chan\_in\_band@{wld\_channel\_is\_chan\_in\_band}}
+\index{wld\_channel\_is\_chan\_in\_band@{wld\_channel\_is\_chan\_in\_band}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_chan\_in\_band()}{wld\_channel\_is\_chan\_in\_band()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+chan\+\_\+in\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec,  }\item[{int}]{test\+Channel }\end{DoxyParamCaption})}
+
+Returns true if the test\+Channel is in the band determing by the input channel and bandwidth. Returns false otherwise. OBSOLETE\+: please use swl\+\_\+channel\+\_\+is\+In\+Chanspec Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_adcdae052ec03f723adb10c05b144b90c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_aeee934e1c006f64dcd852ee43fe71b53}\label{wld__channel__info_8c_aeee934e1c006f64dcd852ee43fe71b53}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_is\_dfs\_band@{wld\_channel\_is\_dfs\_band}}
+\index{wld\_channel\_is\_dfs\_band@{wld\_channel\_is\_dfs\_band}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_dfs\_band()}{wld\_channel\_is\_dfs\_band()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+dfs\+\_\+band (\begin{DoxyParamCaption}\item[{int}]{channel,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{bandwidth }\end{DoxyParamCaption})}
+
+Returns whether a given band contains DFS channels. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_aeee934e1c006f64dcd852ee43fe71b53_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_a772b88f7eb8d2446640335ad86ef22a9}\label{wld__channel__info_8c_a772b88f7eb8d2446640335ad86ef22a9}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_is\_long\_wait@{wld\_channel\_is\_long\_wait}}
+\index{wld\_channel\_is\_long\_wait@{wld\_channel\_is\_long\_wait}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_long\_wait()}{wld\_channel\_is\_long\_wait()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+long\+\_\+wait (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_a772b88f7eb8d2446640335ad86ef22a9_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_a8de0e83d0d1da8531913a6c7df27989f}\label{wld__channel__info_8c_a8de0e83d0d1da8531913a6c7df27989f}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_is\_long\_wait\_band@{wld\_channel\_is\_long\_wait\_band}}
+\index{wld\_channel\_is\_long\_wait\_band@{wld\_channel\_is\_long\_wait\_band}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_long\_wait\_band()}{wld\_channel\_is\_long\_wait\_band()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+long\+\_\+wait\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns true if a band is a long wait channel. A band is a long wait band if any channel is the band is in the extend cleartime band. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_a8de0e83d0d1da8531913a6c7df27989f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_a8de0e83d0d1da8531913a6c7df27989f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel__info_8c_ad83e1f3f6c120a13e79bb9e7ae19399c}\label{wld__channel__info_8c_ad83e1f3f6c120a13e79bb9e7ae19399c}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!wld\_channel\_is\_long\_wait\_channel@{wld\_channel\_is\_long\_wait\_channel}}
+\index{wld\_channel\_is\_long\_wait\_channel@{wld\_channel\_is\_long\_wait\_channel}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_long\_wait\_channel()}{wld\_channel\_is\_long\_wait\_channel()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+long\+\_\+wait\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel__info_8c_ad83e1f3f6c120a13e79bb9e7ae19399c_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__channel__info_8c_acdeee67fdafa9f0df79154ee6f475993}\label{wld__channel__info_8c_acdeee67fdafa9f0df79154ee6f475993}} 
+\index{wld\_channel\_info.c@{wld\_channel\_info.c}!nr\_channels\_ahead@{nr\_channels\_ahead}}
+\index{nr\_channels\_ahead@{nr\_channels\_ahead}!wld\_channel\_info.c@{wld\_channel\_info.c}}
+\doxysubsubsection{\texorpdfstring{nr\_channels\_ahead}{nr\_channels\_ahead}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structchanwidthData__t}{chanwidth\+Data\+\_\+t}} nr\+\_\+channels\+\_\+ahead\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    \{SWL\_BW\_AUTO, 1\},}
+\DoxyCodeLine{    \{SWL\_BW\_20MHZ, 1\},}
+\DoxyCodeLine{    \{SWL\_BW\_40MHZ, 2\},}
+\DoxyCodeLine{    \{SWL\_BW\_80MHZ, 4\},}
+\DoxyCodeLine{    \{SWL\_BW\_160MHZ, 8\},}
+\DoxyCodeLine{    \{SWL\_BW\_320MHZ, 16\}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

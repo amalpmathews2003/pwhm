@@ -1,0 +1,203 @@
+\hypertarget{structwld__nl80211__stationInfo__t}{}\doxysection{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t Struct Reference}
+\label{structwld__nl80211__stationInfo__t}\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+
+
+{\ttfamily \#include $<$wld\+\_\+nl80211\+\_\+types.\+h$>$}
+
+
+
+Collaboration diagram for wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structwld__nl80211__stationInfo__t__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+mac\+Bin\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a7ecdbd78e89628e0c54febce3509c5c8}{mac\+Addr}}
+\item 
+swl\+\_\+mac\+Bin\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a16c0815ece075405c748701b9c037758}{mac\+Mld}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a120f0891385c20df88343d0b80f379e1}{link\+Id}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a770ec8cfbb7f9be23f6ad12bee158521}{inactive\+Time}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_af2458dad64ebfc3997a2f80e38c4b840}{rx\+Bytes}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_ab78071f75dd9a8fe87d42c94162a2137}{tx\+Bytes}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_add5a72a7b1c7b0cd80a45ccab1876959}{rx\+Packets}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_ae193a459bd1670e4f0e21ac4f9b6593c}{tx\+Packets}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a7b2c83cb3b420794653eaadadac0ef33}{tx\+Retries}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_aadcd8e20606f0e6c7e2bd71f326816d9}{tx\+Failed}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a6a8457c606f119a23295da7c87939ab7}{rx\+Failed}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a51440dc144cef2a404290433886a88be}{rssi\+Dbm}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a257b48c7e8930b4e3e79b746bd6b404b}{rssi\+Avg\+Dbm}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\+\_\+nl80211\+\_\+rate\+Info\+\_\+t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a7d969da86454ce87b12c207956c6df94}{tx\+Rate}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\+\_\+nl80211\+\_\+rate\+Info\+\_\+t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a843ecaa7ed664bf15a476747b1e6928d}{rx\+Rate}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_af22575f791940a933bbb2d8c7f73ca05}{connected\+Time}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__stationFlags__t}{wld\+\_\+nl80211\+\_\+station\+Flags\+\_\+t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a5cd79783ac100b961537ad21f90cf932}{flags}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a950fbc290529ab31fa8e56bfaa7f3588}{nr\+Signal\+Chains}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a460933886c90e2e436c3a495ac46dbd3}{rssi\+Dbm\+By\+Chain}} \mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}
+\item 
+int8\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_ab8009dea5d8ddc8846b1722722bedaa0}{rssi\+Avg\+Dbm\+By\+Chain}} \mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a74e83da163f5dc94295a91199b2810d2}{nr\+Links}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t}{wld\+\_\+nl80211\+\_\+mlo\+Link\+Info\+\_\+t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a1fbcf6e08def20b2e74aa131c358372f}{links\+Info}} \mbox{[}\mbox{\hyperlink{wld__nl80211__types_8h_a172e4a35f00645d1c2b60a717a96eb92}{WLD\+\_\+\+NL80211\+\_\+\+MAX\+\_\+\+MLO\+\_\+\+LINKS}}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_af22575f791940a933bbb2d8c7f73ca05}\label{structwld__nl80211__stationInfo__t_af22575f791940a933bbb2d8c7f73ca05}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!connectedTime@{connectedTime}}
+\index{connectedTime@{connectedTime}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{connectedTime}{connectedTime}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::connected\+Time}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a5cd79783ac100b961537ad21f90cf932}\label{structwld__nl80211__stationInfo__t_a5cd79783ac100b961537ad21f90cf932}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!flags@{flags}}
+\index{flags@{flags}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{flags}{flags}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__stationFlags__t}{wld\+\_\+nl80211\+\_\+station\+Flags\+\_\+t}} wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::flags}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a770ec8cfbb7f9be23f6ad12bee158521}\label{structwld__nl80211__stationInfo__t_a770ec8cfbb7f9be23f6ad12bee158521}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!inactiveTime@{inactiveTime}}
+\index{inactiveTime@{inactiveTime}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{inactiveTime}{inactiveTime}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::inactive\+Time}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a120f0891385c20df88343d0b80f379e1}\label{structwld__nl80211__stationInfo__t_a120f0891385c20df88343d0b80f379e1}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!linkId@{linkId}}
+\index{linkId@{linkId}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{linkId}{linkId}}
+{\footnotesize\ttfamily int8\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::link\+Id}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a1fbcf6e08def20b2e74aa131c358372f}\label{structwld__nl80211__stationInfo__t_a1fbcf6e08def20b2e74aa131c358372f}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!linksInfo@{linksInfo}}
+\index{linksInfo@{linksInfo}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{linksInfo}{linksInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t}{wld\+\_\+nl80211\+\_\+mlo\+Link\+Info\+\_\+t}} wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::links\+Info\mbox{[}\mbox{\hyperlink{wld__nl80211__types_8h_a172e4a35f00645d1c2b60a717a96eb92}{WLD\+\_\+\+NL80211\+\_\+\+MAX\+\_\+\+MLO\+\_\+\+LINKS}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a7ecdbd78e89628e0c54febce3509c5c8}\label{structwld__nl80211__stationInfo__t_a7ecdbd78e89628e0c54febce3509c5c8}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!macAddr@{macAddr}}
+\index{macAddr@{macAddr}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{macAddr}{macAddr}}
+{\footnotesize\ttfamily swl\+\_\+mac\+Bin\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::mac\+Addr}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a16c0815ece075405c748701b9c037758}\label{structwld__nl80211__stationInfo__t_a16c0815ece075405c748701b9c037758}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!macMld@{macMld}}
+\index{macMld@{macMld}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{macMld}{macMld}}
+{\footnotesize\ttfamily swl\+\_\+mac\+Bin\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::mac\+Mld}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a74e83da163f5dc94295a91199b2810d2}\label{structwld__nl80211__stationInfo__t_a74e83da163f5dc94295a91199b2810d2}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!nrLinks@{nrLinks}}
+\index{nrLinks@{nrLinks}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nrLinks}{nrLinks}}
+{\footnotesize\ttfamily uint8\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::nr\+Links}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a950fbc290529ab31fa8e56bfaa7f3588}\label{structwld__nl80211__stationInfo__t_a950fbc290529ab31fa8e56bfaa7f3588}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!nrSignalChains@{nrSignalChains}}
+\index{nrSignalChains@{nrSignalChains}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nrSignalChains}{nrSignalChains}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::nr\+Signal\+Chains}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a257b48c7e8930b4e3e79b746bd6b404b}\label{structwld__nl80211__stationInfo__t_a257b48c7e8930b4e3e79b746bd6b404b}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rssiAvgDbm@{rssiAvgDbm}}
+\index{rssiAvgDbm@{rssiAvgDbm}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rssiAvgDbm}{rssiAvgDbm}}
+{\footnotesize\ttfamily int8\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rssi\+Avg\+Dbm}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_ab8009dea5d8ddc8846b1722722bedaa0}\label{structwld__nl80211__stationInfo__t_ab8009dea5d8ddc8846b1722722bedaa0}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rssiAvgDbmByChain@{rssiAvgDbmByChain}}
+\index{rssiAvgDbmByChain@{rssiAvgDbmByChain}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rssiAvgDbmByChain}{rssiAvgDbmByChain}}
+{\footnotesize\ttfamily int8\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rssi\+Avg\+Dbm\+By\+Chain\mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a51440dc144cef2a404290433886a88be}\label{structwld__nl80211__stationInfo__t_a51440dc144cef2a404290433886a88be}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rssiDbm@{rssiDbm}}
+\index{rssiDbm@{rssiDbm}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rssiDbm}{rssiDbm}}
+{\footnotesize\ttfamily int8\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rssi\+Dbm}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a460933886c90e2e436c3a495ac46dbd3}\label{structwld__nl80211__stationInfo__t_a460933886c90e2e436c3a495ac46dbd3}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rssiDbmByChain@{rssiDbmByChain}}
+\index{rssiDbmByChain@{rssiDbmByChain}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rssiDbmByChain}{rssiDbmByChain}}
+{\footnotesize\ttfamily int8\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rssi\+Dbm\+By\+Chain\mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_af2458dad64ebfc3997a2f80e38c4b840}\label{structwld__nl80211__stationInfo__t_af2458dad64ebfc3997a2f80e38c4b840}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rxBytes@{rxBytes}}
+\index{rxBytes@{rxBytes}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rxBytes}{rxBytes}}
+{\footnotesize\ttfamily uint64\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rx\+Bytes}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a6a8457c606f119a23295da7c87939ab7}\label{structwld__nl80211__stationInfo__t_a6a8457c606f119a23295da7c87939ab7}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rxFailed@{rxFailed}}
+\index{rxFailed@{rxFailed}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rxFailed}{rxFailed}}
+{\footnotesize\ttfamily uint64\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rx\+Failed}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_add5a72a7b1c7b0cd80a45ccab1876959}\label{structwld__nl80211__stationInfo__t_add5a72a7b1c7b0cd80a45ccab1876959}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rxPackets@{rxPackets}}
+\index{rxPackets@{rxPackets}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rxPackets}{rxPackets}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rx\+Packets}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a843ecaa7ed664bf15a476747b1e6928d}\label{structwld__nl80211__stationInfo__t_a843ecaa7ed664bf15a476747b1e6928d}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!rxRate@{rxRate}}
+\index{rxRate@{rxRate}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{rxRate}{rxRate}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\+\_\+nl80211\+\_\+rate\+Info\+\_\+t}} wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::rx\+Rate}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_ab78071f75dd9a8fe87d42c94162a2137}\label{structwld__nl80211__stationInfo__t_ab78071f75dd9a8fe87d42c94162a2137}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!txBytes@{txBytes}}
+\index{txBytes@{txBytes}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{txBytes}{txBytes}}
+{\footnotesize\ttfamily uint64\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::tx\+Bytes}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_aadcd8e20606f0e6c7e2bd71f326816d9}\label{structwld__nl80211__stationInfo__t_aadcd8e20606f0e6c7e2bd71f326816d9}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!txFailed@{txFailed}}
+\index{txFailed@{txFailed}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{txFailed}{txFailed}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::tx\+Failed}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_ae193a459bd1670e4f0e21ac4f9b6593c}\label{structwld__nl80211__stationInfo__t_ae193a459bd1670e4f0e21ac4f9b6593c}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!txPackets@{txPackets}}
+\index{txPackets@{txPackets}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{txPackets}{txPackets}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::tx\+Packets}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a7d969da86454ce87b12c207956c6df94}\label{structwld__nl80211__stationInfo__t_a7d969da86454ce87b12c207956c6df94}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!txRate@{txRate}}
+\index{txRate@{txRate}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{txRate}{txRate}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\+\_\+nl80211\+\_\+rate\+Info\+\_\+t}} wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::tx\+Rate}
+
+\mbox{\Hypertarget{structwld__nl80211__stationInfo__t_a7b2c83cb3b420794653eaadadac0ef33}\label{structwld__nl80211__stationInfo__t_a7b2c83cb3b420794653eaadadac0ef33}} 
+\index{wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}!txRetries@{txRetries}}
+\index{txRetries@{txRetries}!wld\_nl80211\_stationInfo\_t@{wld\_nl80211\_stationInfo\_t}}
+\doxysubsubsection{\texorpdfstring{txRetries}{txRetries}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t\+::tx\+Retries}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld__nl80211__types_8h}{wld\+\_\+nl80211\+\_\+types.\+h}}\end{DoxyCompactItemize}

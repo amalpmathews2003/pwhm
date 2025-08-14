@@ -1,0 +1,59 @@
+\hypertarget{wld__apMgmt_8c}{}\doxysection{src/\+Ap\+Mgt/wld\+\_\+ap\+Mgmt.c File Reference}
+\label{wld__apMgmt_8c}\index{src/ApMgt/wld\_apMgmt.c@{src/ApMgt/wld\_apMgmt.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+hex.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+oui.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+Mgmt.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__apMgmt_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__apMgmt_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__apMgmt_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap\+Mgmt\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__apMgmt_8c_a81cac5326345ca26c6b0f8c5edb5a7fa}{\+\_\+\+Access\+Point\+\_\+send\+Management\+Frame}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__apMgmt_8c_a369266c24eacffb87046522897a570d5}\label{wld__apMgmt_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_apMgmt.c@{wld\_apMgmt.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_apMgmt.c@{wld\_apMgmt.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__apMgmt_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__apMgmt_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_apMgmt.c@{wld\_apMgmt.c}!ME@{ME}}
+\index{ME@{ME}!wld\_apMgmt.c@{wld\_apMgmt.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap\+Mgmt\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__apMgmt_8c_a81cac5326345ca26c6b0f8c5edb5a7fa}\label{wld__apMgmt_8c_a81cac5326345ca26c6b0f8c5edb5a7fa}} 
+\index{wld\_apMgmt.c@{wld\_apMgmt.c}!\_AccessPoint\_sendManagementFrame@{\_AccessPoint\_sendManagementFrame}}
+\index{\_AccessPoint\_sendManagementFrame@{\_AccessPoint\_sendManagementFrame}!wld\_apMgmt.c@{wld\_apMgmt.c}}
+\doxysubsubsection{\texorpdfstring{\_AccessPoint\_sendManagementFrame()}{\_AccessPoint\_sendManagementFrame()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Access\+Point\+\_\+send\+Management\+Frame (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+

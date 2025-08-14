@@ -1,0 +1,7 @@
+<map id="wld_hostapd_cfgFile_createExt" name="wld_hostapd_cfgFile_createExt">
+<area shape="rect" id="node1" title=" " alt="" coords="5,49,160,90"/>
+<area shape="rect" id="node2" href="$wld__hostapd__cfgFile_8c.html#ac14947168cc3ee47fd9e0ef512ee8f2a" title="create a configuration file for the hostapd" alt="" coords="208,49,363,90"/>
+<area shape="rect" id="node3" href="$wld__hostapd__cfgManager_8c.html#a230de7631aaa80ccf994572e40d95b70" title="create wld_hostapd_config_t structure from Radio and Vaps configuration" alt="" coords="411,5,604,32"/>
+<area shape="rect" id="node4" href="$wld__hostapd__cfgManager_8c.html#abcd4b96a1191c1c593ab53f9d419e740" title="delete a wld_hostapd_config_t map already loaded from hostapd file" alt="" coords="411,56,604,83"/>
+<area shape="rect" id="node5" href="$wld__hostapd__cfgManager_8c.html#aab797f94a64ba5206cdc5e379ba8d3e2" title="write the content of hostapd_config into a file" alt="" coords="415,107,600,133"/>
+</map>

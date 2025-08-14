@@ -1,0 +1,13 @@
+<map id="wld_hostapd_loadConfig" name="wld_hostapd_loadConfig">
+<area shape="rect" id="node1" title="load the hostapd configuration from hostpad config file into wld_hostapd_config_t structure" alt="" coords="1141,97,1321,124"/>
+<area shape="rect" id="node2" href="$wld__hostapd__cfgFile_8c.html#a4f4abeb19c059ae9b067b51a9d5a9200" title="update a configuration file for the hostapd" alt="" coords="895,31,1050,73"/>
+<area shape="rect" id="node3" href="$wld__rad__hostapd__api_8c.html#afde544a6926aebb05ea1f9c934778480" title=" " alt="" coords="852,97,1093,124"/>
+<area shape="rect" id="node9" href="$wld__rad__hostapd__api_8c.html#a2ff2a647a5a9edfbf73b677bb42101ae" title=" " alt="" coords="872,149,1073,190"/>
+<area shape="rect" id="node4" href="$wifiGen__hapd_8c.html#a4d80996081b27edb93e16942da18919a" title=" " alt="" coords="589,7,797,49"/>
+<area shape="rect" id="node6" href="$wld__rad__hostapd__api_8c.html#abe1746524f390e3a6393472a5ee570d6" title=" " alt="" coords="581,90,804,131"/>
+<area shape="rect" id="node5" href="$wifiGen__rad_8c.html#a24f261e38f0ad308c80b5c1a7902f537" title=" " alt="" coords="335,5,497,32"/>
+<area shape="rect" id="node7" href="$wld__rad__hostapd__api_8c.html#a3d62d80913bbb59fd6fe19d9d76b829a" title=" " alt="" coords="299,56,533,83"/>
+<area shape="rect" id="node8" href="$wld__rad__hostapd__api_8c.html#afca07501bc566df4c7bb67367721bc8e" title=" " alt="" coords="5,81,251,108"/>
+<area shape="rect" id="node10" href="$wifiGen__hapd_8c.html#a390fcf6faed4a6312a55bab71c11440f" title=" " alt="" coords="587,156,799,183"/>
+<area shape="rect" id="node11" href="$wifiGen__rad_8c.html#a0c40e12d7d78f9e69f6b42402be3eed7" title=" " alt="" coords="311,158,521,199"/>
+</map>

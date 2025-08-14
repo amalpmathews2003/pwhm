@@ -1,0 +1,4 @@
+<map id="wld_vendorModule_unregister" name="wld_vendorModule_unregister">
+<area shape="rect" id="node1" title="Unregister vendor module from the wld plugin side. Once done, the module handlers are no more called." alt="" coords="5,5,224,32"/>
+<area shape="rect" id="node2" href="$wld__vendorModule_8c.html#a07989b69317011d6540d7d3c737a32d8" title=" " alt="" coords="272,5,500,32"/>
+</map>

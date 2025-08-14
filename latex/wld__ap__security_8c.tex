@@ -1,0 +1,217 @@
+\hypertarget{wld__ap__security_8c}{}\doxysection{src/\+Ap\+Mgt/wld\+\_\+ap\+\_\+security.c File Reference}
+\label{wld__ap__security_8c}\index{src/ApMgt/wld\_ap\_security.c@{src/ApMgt/wld\_ap\_security.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ap\+\_\+rssi\+Monitor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+\_\+security.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__security_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__security_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__security_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap\+Sec\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__ap__security_8c_aabc0318d3d3e751d75740b622de1120a}{wld\+\_\+ap\+\_\+sec\+\_\+do\+Sync}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__security_8c_af0e671d214cb9f203cb5d7baad009172}{\+\_\+wld\+\_\+ap\+\_\+validate\+Security\+\_\+ovf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__security_8c_a1aa4e5a082b6d96f484a3cebd9bd03b9}{\+\_\+wld\+\_\+ap\+\_\+validate\+WEPKey\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__security_8c_abc5e50b0ef47d3c4e60ba7c1954be5ed}{\+\_\+wld\+\_\+ap\+\_\+validate\+Pre\+Shared\+Key\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__security_8c_afb73e8a5a28995c0c444a9c43ca02b1a}{\+\_\+wld\+\_\+ap\+\_\+validate\+Key\+Pass\+Phrase\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__security_8c_ab1025ffd152672e780783435c9ff0451}{\+\_\+wld\+\_\+ap\+\_\+validate\+Sae\+Passphrase\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__ap__security_8c_a115546a6a7798b6163e8aa61453ba4ef}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Sec\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Modes\+Available\char`\"{}, s\+\_\+set\+Modes\+Available\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}WEPKey\char`\"{}, s\+\_\+set\+WEPKey\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Key\+Pass\+Phrase\char`\"{}, s\+\_\+set\+Key\+Pass\+Phrase\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SAEPassphrase\char`\"{}, s\+\_\+set\+Sae\+Passphrase\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Mode\+Enabled\char`\"{}, s\+\_\+set\+Mode\+Enabled\+\_\+pwf),),.obj\+Changed\+Cb=s\+\_\+set\+Common\+Security\+Conf\+\_\+ocf,)
+\item 
+void \mbox{\hyperlink{wld__ap__security_8c_a259f403b7125244f6aaf271d2835ff56}{\+\_\+wld\+\_\+ap\+\_\+security\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+bool \mbox{\hyperlink{wld__ap__security_8c_a849b6e298979e8ae94a15513bff132f3}{wld\+\_\+ap\+\_\+sec\+\_\+check\+Shared\+Sec\+Configs}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP1, \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP2)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__ap__security_8c_a27ce0f3f20ed4a1c964478604fc680a0}{cstr\+\_\+\+AP\+\_\+\+Encryption\+Mode}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Default\char`\"{}, \char`\"{}AES\char`\"{}, \char`\"{}TKIP\char`\"{}, \char`\"{}TKIP-\/AES\char`\"{}, 0\}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__ap__security_8c_ac94fac994a9402a5d9ecf99a08e446e5}{g\+\_\+str\+\_\+wld\+\_\+ap\+\_\+td}} \mbox{[}\mbox{\hyperlink{wld_8h_a31bf0a971876a8aa6dc434efb0a9b842a9c7923e813968d4887eecce7d7a87bfd}{AP\+\_\+\+TD\+\_\+\+MAX}}\mbox{]} = \{\char`\"{}WPA3-\/Personal\char`\"{}, \char`\"{}SAE-\/PK\char`\"{}, \char`\"{}WPA3-\/Enterprise\char`\"{}, \char`\"{}Enhanced\+Open\char`\"{}\}
+\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\>swl\_security\_apMode\_e \mbox{\hyperlink{wld__ap__security_8c_a4cdff66647ce552950b844e860a5a059}{secModeMixed}}\\
+\>swl\_security\_apMode\_e \mbox{\hyperlink{wld__ap__security_8c_ad8fe7b3d3ce9e9376fd0c8a8b7adc099}{secModeShared}}\\
+\>swl\_security\_apMode\_e \mbox{\hyperlink{wld__ap__security_8c_a2e7c5cddb1bcfa671d4a2fff2ec4861c}{secModeCompl}}\\
+\} \mbox{\hyperlink{wld__ap__security_8c_aa0a66bb094c2b5d523ec51082b9dbd97}{sMixedSecModesCombs}} \mbox{[}$\,$\mbox{]}\\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ap__security_8c_a369266c24eacffb87046522897a570d5}\label{wld__ap__security_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__ap__security_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ap__security_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap\+Sec\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ap__security_8c_a259f403b7125244f6aaf271d2835ff56}\label{wld__ap__security_8c_a259f403b7125244f6aaf271d2835ff56}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_wld\_ap\_security\_setConf\_ocf@{\_wld\_ap\_security\_setConf\_ocf}}
+\index{\_wld\_ap\_security\_setConf\_ocf@{\_wld\_ap\_security\_setConf\_ocf}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_security\_setConf\_ocf()}{\_wld\_ap\_security\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+security\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__security_8c_afb73e8a5a28995c0c444a9c43ca02b1a}\label{wld__ap__security_8c_afb73e8a5a28995c0c444a9c43ca02b1a}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_wld\_ap\_validateKeyPassPhrase\_pvf@{\_wld\_ap\_validateKeyPassPhrase\_pvf}}
+\index{\_wld\_ap\_validateKeyPassPhrase\_pvf@{\_wld\_ap\_validateKeyPassPhrase\_pvf}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateKeyPassPhrase\_pvf()}{\_wld\_ap\_validateKeyPassPhrase\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Key\+Pass\+Phrase\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__security_8c_afb73e8a5a28995c0c444a9c43ca02b1a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ap__security_8c_abc5e50b0ef47d3c4e60ba7c1954be5ed}\label{wld__ap__security_8c_abc5e50b0ef47d3c4e60ba7c1954be5ed}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_wld\_ap\_validatePreSharedKey\_pvf@{\_wld\_ap\_validatePreSharedKey\_pvf}}
+\index{\_wld\_ap\_validatePreSharedKey\_pvf@{\_wld\_ap\_validatePreSharedKey\_pvf}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validatePreSharedKey\_pvf()}{\_wld\_ap\_validatePreSharedKey\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Pre\+Shared\+Key\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__security_8c_abc5e50b0ef47d3c4e60ba7c1954be5ed_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ap__security_8c_ab1025ffd152672e780783435c9ff0451}\label{wld__ap__security_8c_ab1025ffd152672e780783435c9ff0451}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_wld\_ap\_validateSaePassphrase\_pvf@{\_wld\_ap\_validateSaePassphrase\_pvf}}
+\index{\_wld\_ap\_validateSaePassphrase\_pvf@{\_wld\_ap\_validateSaePassphrase\_pvf}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateSaePassphrase\_pvf()}{\_wld\_ap\_validateSaePassphrase\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Sae\+Passphrase\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__security_8c_ab1025ffd152672e780783435c9ff0451_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ap__security_8c_af0e671d214cb9f203cb5d7baad009172}\label{wld__ap__security_8c_af0e671d214cb9f203cb5d7baad009172}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_wld\_ap\_validateSecurity\_ovf@{\_wld\_ap\_validateSecurity\_ovf}}
+\index{\_wld\_ap\_validateSecurity\_ovf@{\_wld\_ap\_validateSecurity\_ovf}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateSecurity\_ovf()}{\_wld\_ap\_validateSecurity\_ovf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Security\+\_\+ovf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__security_8c_a1aa4e5a082b6d96f484a3cebd9bd03b9}\label{wld__ap__security_8c_a1aa4e5a082b6d96f484a3cebd9bd03b9}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!\_wld\_ap\_validateWEPKey\_pvf@{\_wld\_ap\_validateWEPKey\_pvf}}
+\index{\_wld\_ap\_validateWEPKey\_pvf@{\_wld\_ap\_validateWEPKey\_pvf}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateWEPKey\_pvf()}{\_wld\_ap\_validateWEPKey\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+WEPKey\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__security_8c_a115546a6a7798b6163e8aa61453ba4ef}\label{wld__ap__security_8c_a115546a6a7798b6163e8aa61453ba4ef}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Sec\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Modes\+Available\char`\"{}, s\+\_\+set\+Modes\+Available\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}WEPKey\char`\"{}, s\+\_\+set\+WEPKey\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Key\+Pass\+Phrase\char`\"{}, s\+\_\+set\+Key\+Pass\+Phrase\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SAEPassphrase\char`\"{}, s\+\_\+set\+Sae\+Passphrase\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Mode\+Enabled\char`\"{}, s\+\_\+set\+Mode\+Enabled\+\_\+pwf),)}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setCommonSecurityConf\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__security_8c_a849b6e298979e8ae94a15513bff132f3}\label{wld__ap__security_8c_a849b6e298979e8ae94a15513bff132f3}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!wld\_ap\_sec\_checkSharedSecConfigs@{wld\_ap\_sec\_checkSharedSecConfigs}}
+\index{wld\_ap\_sec\_checkSharedSecConfigs@{wld\_ap\_sec\_checkSharedSecConfigs}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_sec\_checkSharedSecConfigs()}{wld\_ap\_sec\_checkSharedSecConfigs()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+sec\+\_\+check\+Shared\+Sec\+Configs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP1,  }\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__security_8c_aabc0318d3d3e751d75740b622de1120a}\label{wld__ap__security_8c_aabc0318d3d3e751d75740b622de1120a}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!wld\_ap\_sec\_doSync@{wld\_ap\_sec\_doSync}}
+\index{wld\_ap\_sec\_doSync@{wld\_ap\_sec\_doSync}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_sec\_doSync()}{wld\_ap\_sec\_doSync()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+sec\+\_\+do\+Sync (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__ap__security_8c_a27ce0f3f20ed4a1c964478604fc680a0}\label{wld__ap__security_8c_a27ce0f3f20ed4a1c964478604fc680a0}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!cstr\_AP\_EncryptionMode@{cstr\_AP\_EncryptionMode}}
+\index{cstr\_AP\_EncryptionMode@{cstr\_AP\_EncryptionMode}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_AP\_EncryptionMode}{cstr\_AP\_EncryptionMode}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+AP\+\_\+\+Encryption\+Mode\mbox{[}$\,$\mbox{]} = \{\char`\"{}Default\char`\"{}, \char`\"{}AES\char`\"{}, \char`\"{}TKIP\char`\"{}, \char`\"{}TKIP-\/AES\char`\"{}, 0\}}
+
+\mbox{\Hypertarget{wld__ap__security_8c_ac94fac994a9402a5d9ecf99a08e446e5}\label{wld__ap__security_8c_ac94fac994a9402a5d9ecf99a08e446e5}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!g\_str\_wld\_ap\_td@{g\_str\_wld\_ap\_td}}
+\index{g\_str\_wld\_ap\_td@{g\_str\_wld\_ap\_td}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{g\_str\_wld\_ap\_td}{g\_str\_wld\_ap\_td}}
+{\footnotesize\ttfamily const char$\ast$ g\+\_\+str\+\_\+wld\+\_\+ap\+\_\+td\mbox{[}\mbox{\hyperlink{wld_8h_a31bf0a971876a8aa6dc434efb0a9b842a9c7923e813968d4887eecce7d7a87bfd}{AP\+\_\+\+TD\+\_\+\+MAX}}\mbox{]} = \{\char`\"{}WPA3-\/Personal\char`\"{}, \char`\"{}SAE-\/PK\char`\"{}, \char`\"{}WPA3-\/Enterprise\char`\"{}, \char`\"{}Enhanced\+Open\char`\"{}\}}
+
+\mbox{\Hypertarget{wld__ap__security_8c_a2e7c5cddb1bcfa671d4a2fff2ec4861c}\label{wld__ap__security_8c_a2e7c5cddb1bcfa671d4a2fff2ec4861c}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!secModeCompl@{secModeCompl}}
+\index{secModeCompl@{secModeCompl}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{secModeCompl}{secModeCompl}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+e sec\+Mode\+Compl}
+
+\mbox{\Hypertarget{wld__ap__security_8c_a4cdff66647ce552950b844e860a5a059}\label{wld__ap__security_8c_a4cdff66647ce552950b844e860a5a059}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!secModeMixed@{secModeMixed}}
+\index{secModeMixed@{secModeMixed}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{secModeMixed}{secModeMixed}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+e sec\+Mode\+Mixed}
+
+\mbox{\Hypertarget{wld__ap__security_8c_ad8fe7b3d3ce9e9376fd0c8a8b7adc099}\label{wld__ap__security_8c_ad8fe7b3d3ce9e9376fd0c8a8b7adc099}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!secModeShared@{secModeShared}}
+\index{secModeShared@{secModeShared}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{secModeShared}{secModeShared}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+e sec\+Mode\+Shared}
+
+\mbox{\Hypertarget{wld__ap__security_8c_aa0a66bb094c2b5d523ec51082b9dbd97}\label{wld__ap__security_8c_aa0a66bb094c2b5d523ec51082b9dbd97}} 
+\index{wld\_ap\_security.c@{wld\_ap\_security.c}!sMixedSecModesCombs@{sMixedSecModesCombs}}
+\index{sMixedSecModesCombs@{sMixedSecModesCombs}!wld\_ap\_security.c@{wld\_ap\_security.c}}
+\doxysubsubsection{\texorpdfstring{}{}}
+{\footnotesize\ttfamily struct  \{ ... \}  s\+Mixed\+Sec\+Modes\+Combs\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    }
+\DoxyCodeLine{    \{SWL\_SECURITY\_APMODE\_WPA\_WPA2\_P, SWL\_SECURITY\_APMODE\_WPA\_P, SWL\_SECURITY\_APMODE\_WPA2\_P, \},}
+\DoxyCodeLine{    \{SWL\_SECURITY\_APMODE\_WPA\_WPA2\_P, SWL\_SECURITY\_APMODE\_WPA2\_P, SWL\_SECURITY\_APMODE\_WPA\_P, \},}
+\DoxyCodeLine{    \{SWL\_SECURITY\_APMODE\_WPA\_WPA2\_P, SWL\_SECURITY\_APMODE\_WPA\_WPA2\_P, SWL\_SECURITY\_APMODE\_WPA2\_P, \},}
+\DoxyCodeLine{    \{SWL\_SECURITY\_APMODE\_WPA2\_WPA3\_P, SWL\_SECURITY\_APMODE\_WPA2\_P, SWL\_SECURITY\_APMODE\_WPA3\_P, \},}
+\DoxyCodeLine{    \{SWL\_SECURITY\_APMODE\_WPA2\_WPA3\_P, SWL\_SECURITY\_APMODE\_WPA3\_P, SWL\_SECURITY\_APMODE\_WPA2\_P, \},}
+\DoxyCodeLine{    \{SWL\_SECURITY\_APMODE\_WPA2\_WPA3\_P, SWL\_SECURITY\_APMODE\_WPA2\_WPA3\_P, SWL\_SECURITY\_APMODE\_WPA3\_P, \},}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

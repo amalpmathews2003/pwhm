@@ -1,0 +1,88 @@
+\hypertarget{structwld__tinyRoam}{}\doxysection{wld\+\_\+tiny\+Roam Struct Reference}
+\label{structwld__tinyRoam}\index{wld\_tinyRoam@{wld\_tinyRoam}}
+
+
+Collaboration diagram for wld\+\_\+tiny\+Roam\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structwld__tinyRoam__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structwld__tinyRoam_a9942b5144a46d09a3d91bdf429756d41}{max\+Number\+Of\+Attempts}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structwld__tinyRoam_a12ca4d39eb7c8dba9cec23bcdb8fe642}{number\+Of\+Attempts\+Started}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structwld__tinyRoam_a97ef44a6183cefa4eeeb300c6b0dbf0c}{attempt\+Timeout\+In\+Sec}}
+\item 
+amxp\+\_\+timer\+\_\+t $\ast$ \mbox{\hyperlink{structwld__tinyRoam_a5e6104568151501a1506e1a161197e13}{roam\+Attempt\+Timer}}
+\item 
+swl\+\_\+mac\+Bin\+\_\+t \mbox{\hyperlink{structwld__tinyRoam_adef0c32ed0f0e35f7ad513d6dfe52592}{target\+Bssid}}
+\item 
+\mbox{\hyperlink{wld__tinyRoam_8h_a212f3254689d7192ec7b64584e0400c3}{wld\+\_\+tiny\+Roam\+\_\+roam\+Ended\+Cb\+\_\+t}} \mbox{\hyperlink{structwld__tinyRoam_abea287eb55f6acb9f824b6f2ac74449a}{ended\+Cb}}
+\item 
+void $\ast$ \mbox{\hyperlink{structwld__tinyRoam_a773db6d4e350c0a78375378c6f46b653}{ended\+Cb\+User\+Data}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Tiny Roam allows other components to orchestrate AP roaming.
+
+AP roaming is (re)connecting an endpoint to another accesspoint, based on whether this is estimated to yield a better path in the meshnetwork from the repeater to the homegateway.
+
+Tiny Roam provides the functionality to do the actual roam while keeping the responsibility of choosing where to roam to to the caller, but still providing the robustness of reconnecting to the network if the roam fails. The latter is important in case the decision to roam is communicated over the network.
+
+Note\+: Counters like \#\+T\+\_\+roaming\+\_\+data.\+nr\+Roam\+Fail are kept there and updated. 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structwld__tinyRoam_a97ef44a6183cefa4eeeb300c6b0dbf0c}\label{structwld__tinyRoam_a97ef44a6183cefa4eeeb300c6b0dbf0c}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!attemptTimeoutInSec@{attemptTimeoutInSec}}
+\index{attemptTimeoutInSec@{attemptTimeoutInSec}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{attemptTimeoutInSec}{attemptTimeoutInSec}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+tiny\+Roam\+::attempt\+Timeout\+In\+Sec}
+
+Number of seconds after an attempt has started but not succeeded yet, to try again or give up. Invariant\+: at least 1. \mbox{\Hypertarget{structwld__tinyRoam_abea287eb55f6acb9f824b6f2ac74449a}\label{structwld__tinyRoam_abea287eb55f6acb9f824b6f2ac74449a}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!endedCb@{endedCb}}
+\index{endedCb@{endedCb}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{endedCb}{endedCb}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__tinyRoam_8h_a212f3254689d7192ec7b64584e0400c3}{wld\+\_\+tiny\+Roam\+\_\+roam\+Ended\+Cb\+\_\+t}} wld\+\_\+tiny\+Roam\+::ended\+Cb}
+
+Callback called when a started roaming stops. Can be NULL. Invariant\+: if non-\/null, then target\+Bssid is not the null-\/mac. \mbox{\Hypertarget{structwld__tinyRoam_a773db6d4e350c0a78375378c6f46b653}\label{structwld__tinyRoam_a773db6d4e350c0a78375378c6f46b653}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!endedCbUserData@{endedCbUserData}}
+\index{endedCbUserData@{endedCbUserData}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{endedCbUserData}{endedCbUserData}}
+{\footnotesize\ttfamily void$\ast$ wld\+\_\+tiny\+Roam\+::ended\+Cb\+User\+Data}
+
+userdata to pass to \mbox{\hyperlink{structwld__tinyRoam_abea287eb55f6acb9f824b6f2ac74449a}{ended\+Cb}}. Can be NULL. \mbox{\Hypertarget{structwld__tinyRoam_a9942b5144a46d09a3d91bdf429756d41}\label{structwld__tinyRoam_a9942b5144a46d09a3d91bdf429756d41}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!maxNumberOfAttempts@{maxNumberOfAttempts}}
+\index{maxNumberOfAttempts@{maxNumberOfAttempts}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{maxNumberOfAttempts}{maxNumberOfAttempts}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+tiny\+Roam\+::max\+Number\+Of\+Attempts}
+
+How many times to try to roam until it is considered failed. Invariant\+: at least 1. \mbox{\Hypertarget{structwld__tinyRoam_a12ca4d39eb7c8dba9cec23bcdb8fe642}\label{structwld__tinyRoam_a12ca4d39eb7c8dba9cec23bcdb8fe642}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!numberOfAttemptsStarted@{numberOfAttemptsStarted}}
+\index{numberOfAttemptsStarted@{numberOfAttemptsStarted}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{numberOfAttemptsStarted}{numberOfAttemptsStarted}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+tiny\+Roam\+::number\+Of\+Attempts\+Started}
+
+How many times an attempt to roam has started. Invariant\+: at least 0. \mbox{\Hypertarget{structwld__tinyRoam_a5e6104568151501a1506e1a161197e13}\label{structwld__tinyRoam_a5e6104568151501a1506e1a161197e13}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!roamAttemptTimer@{roamAttemptTimer}}
+\index{roamAttemptTimer@{roamAttemptTimer}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{roamAttemptTimer}{roamAttemptTimer}}
+{\footnotesize\ttfamily amxp\+\_\+timer\+\_\+t$\ast$ wld\+\_\+tiny\+Roam\+::roam\+Attempt\+Timer}
+
+Timer to start first/next roam attempt and check result of previous (if any) attempt. Can be NULL. \mbox{\Hypertarget{structwld__tinyRoam_adef0c32ed0f0e35f7ad513d6dfe52592}\label{structwld__tinyRoam_adef0c32ed0f0e35f7ad513d6dfe52592}} 
+\index{wld\_tinyRoam@{wld\_tinyRoam}!targetBssid@{targetBssid}}
+\index{targetBssid@{targetBssid}!wld\_tinyRoam@{wld\_tinyRoam}}
+\doxysubsubsection{\texorpdfstring{targetBssid}{targetBssid}}
+{\footnotesize\ttfamily swl\+\_\+mac\+Bin\+\_\+t wld\+\_\+tiny\+Roam\+::target\+Bssid}
+
+BSSID to roam to, or the null-\/mac if not roaming or if reconnecting after roam failure 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Ep\+Mgt/\mbox{\hyperlink{wld__tinyRoam_8c}{wld\+\_\+tiny\+Roam.\+c}}\end{DoxyCompactItemize}

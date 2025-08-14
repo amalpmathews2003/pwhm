@@ -1,0 +1,164 @@
+\hypertarget{test__radio11be_8c}{}\doxysection{test/test\+Radio11be/test\+\_\+radio11be.c File Reference}
+\label{test__radio11be_8c}\index{test/testRadio11be/test\_radio11be.c@{test/testRadio11be/test\_radio11be.c}}
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$setjmp.\+h$>$}\newline
+{\ttfamily \#include $<$cmocka.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+chanmgt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+intf.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}test-\/toolbox/ttb\+\_\+mock\+Clock.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}test-\/toolbox/ttb\+\_\+object.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+mock\+Vendor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+ep.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+vap.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+dm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/ttb/swl\+\_\+ttb.\+h\char`\"{}}\newline
+Include dependency graph for test\+\_\+radio11be.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{test__radio11be_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{test__radio11be_8c_a9faaf5129925f9c6165b85f04e4916f7}{main}} (int argc \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, char $\ast$argv\mbox{[}$\,$\mbox{]} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} \mbox{\hyperlink{test__radio11be_8c_ae931f4efb497c777b3da3bc5c3c12b55}{test\+Cap2}}
+\item 
+\mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} \mbox{\hyperlink{test__radio11be_8c_abf8fc36a3c433a1ca1a18ba0192161b8}{test\+Cap5}}
+\item 
+\mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} \mbox{\hyperlink{test__radio11be_8c_a6fe483671274055ed203051948dc6ca1}{test\+Cap6}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{test__radio11be_8c_a9faaf5129925f9c6165b85f04e4916f7}\label{test__radio11be_8c_a9faaf5129925f9c6165b85f04e4916f7}} 
+\index{test\_radio11be.c@{test\_radio11be.c}!main@{main}}
+\index{main@{main}!test\_radio11be.c@{test\_radio11be.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int argc}]{\+\_\+\+UNUSED,  }\item[{char $\ast$argv\mbox{[}$\,$\mbox{]}}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{test__radio11be_8c_ae931f4efb497c777b3da3bc5c3c12b55}\label{test__radio11be_8c_ae931f4efb497c777b3da3bc5c3c12b55}} 
+\index{test\_radio11be.c@{test\_radio11be.c}!testCap2@{testCap2}}
+\index{testCap2@{testCap2}!test\_radio11be.c@{test\_radio11be.c}}
+\doxysubsubsection{\texorpdfstring{testCap2}{testCap2}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} test\+Cap2}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    .name = \textcolor{stringliteral}{"{}wifi0"{}},}
+\DoxyCodeLine{    .operatingFrequencyBand = SWL\_FREQ\_BAND\_EXT\_2\_4GHZ,}
+\DoxyCodeLine{    .supportedFrequencyBands = M\_SWL\_FREQ\_BAND\_2\_4GHZ,}
+\DoxyCodeLine{    .possibleChannels = \{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13\},}
+\DoxyCodeLine{    .nrPossibleChannels = 13,}
+\DoxyCodeLine{    .maxChannelBandwidth = SWL\_BW\_40MHZ,}
+\DoxyCodeLine{    .operatingChannelBandwidth = SWL\_RAD\_BW\_20MHZ,}
+\DoxyCodeLine{    .channel = 1,}
+\DoxyCodeLine{    .supportedStandards = M\_SWL\_RADSTD\_B | M\_SWL\_RADSTD\_G | M\_SWL\_RADSTD\_N | M\_SWL\_RADSTD\_AX | M\_SWL\_RADSTD\_BE,}
+\DoxyCodeLine{    .supportedChannelBandwidth = ( 1 << (SWL\_BW\_40MHZ + 1)) -\/ 1,}
+\DoxyCodeLine{    .cap = \{}
+\DoxyCodeLine{        .apCap7 = \{}
+\DoxyCodeLine{            .emlmrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .emlsrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .strSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .nstrSupported = \textcolor{keyword}{true}}
+\DoxyCodeLine{        \},}
+\DoxyCodeLine{        .staCap7 = \{}
+\DoxyCodeLine{            .emlmrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .emlsrSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .strSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .nstrSupported = \textcolor{keyword}{false}}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{test__radio11be_8c_abf8fc36a3c433a1ca1a18ba0192161b8}\label{test__radio11be_8c_abf8fc36a3c433a1ca1a18ba0192161b8}} 
+\index{test\_radio11be.c@{test\_radio11be.c}!testCap5@{testCap5}}
+\index{testCap5@{testCap5}!test\_radio11be.c@{test\_radio11be.c}}
+\doxysubsubsection{\texorpdfstring{testCap5}{testCap5}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} test\+Cap5}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    .name = \textcolor{stringliteral}{"{}wifi1"{}},}
+\DoxyCodeLine{    .operatingFrequencyBand = SWL\_FREQ\_BAND\_EXT\_5GHZ,}
+\DoxyCodeLine{    .supportedFrequencyBands = M\_SWL\_FREQ\_BAND\_5GHZ,}
+\DoxyCodeLine{    .possibleChannels = \{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140\},}
+\DoxyCodeLine{    .nrPossibleChannels = 19,}
+\DoxyCodeLine{    .maxChannelBandwidth = SWL\_BW\_160MHZ,}
+\DoxyCodeLine{    .operatingChannelBandwidth = SWL\_RAD\_BW\_160MHZ,}
+\DoxyCodeLine{    .channel = 36,}
+\DoxyCodeLine{    .supportedStandards = M\_SWL\_RADSTD\_A | M\_SWL\_RADSTD\_N | M\_SWL\_RADSTD\_AC | M\_SWL\_RADSTD\_AX | M\_SWL\_RADSTD\_BE,}
+\DoxyCodeLine{    .supportedChannelBandwidth = ( 1 << (SWL\_BW\_160MHZ + 1)) -\/ 1,}
+\DoxyCodeLine{    .cap = \{}
+\DoxyCodeLine{        .apCap7 = \{}
+\DoxyCodeLine{            .emlmrSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .emlsrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .strSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .nstrSupported = \textcolor{keyword}{false}}
+\DoxyCodeLine{        \},}
+\DoxyCodeLine{        .staCap7 = \{}
+\DoxyCodeLine{            .emlmrSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .emlsrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .strSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .nstrSupported = \textcolor{keyword}{true}}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{test__radio11be_8c_a6fe483671274055ed203051948dc6ca1}\label{test__radio11be_8c_a6fe483671274055ed203051948dc6ca1}} 
+\index{test\_radio11be.c@{test\_radio11be.c}!testCap6@{testCap6}}
+\index{testCap6@{testCap6}!test\_radio11be.c@{test\_radio11be.c}}
+\doxysubsubsection{\texorpdfstring{testCap6}{testCap6}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} test\+Cap6}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    .name = \textcolor{stringliteral}{"{}wifi2"{}},}
+\DoxyCodeLine{    .operatingFrequencyBand = SWL\_FREQ\_BAND\_EXT\_6GHZ,}
+\DoxyCodeLine{    .supportedFrequencyBands = M\_SWL\_FREQ\_BAND\_6GHZ,}
+\DoxyCodeLine{    .possibleChannels = \{1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85,}
+\DoxyCodeLine{        89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205, 209, 213, 217, 221, 225, 229, 233\},}
+\DoxyCodeLine{    .nrPossibleChannels = 59,}
+\DoxyCodeLine{    .maxChannelBandwidth = SWL\_BW\_320MHZ,}
+\DoxyCodeLine{    .operatingChannelBandwidth = SWL\_RAD\_BW\_320MHZ1,}
+\DoxyCodeLine{    .supportedChannelBandwidth = M\_SWL\_RAD\_BW\_ALL,}
+\DoxyCodeLine{    .channel = 61,}
+\DoxyCodeLine{    .supportedStandards = M\_SWL\_RADSTD\_AX | M\_SWL\_RADSTD\_BE,}
+\DoxyCodeLine{    .cap = \{}
+\DoxyCodeLine{        .apCap7 = \{}
+\DoxyCodeLine{            .emlmrSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .emlsrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .strSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .nstrSupported = \textcolor{keyword}{false}}
+\DoxyCodeLine{        \},}
+\DoxyCodeLine{        .staCap7 = \{}
+\DoxyCodeLine{            .emlmrSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .emlsrSupported = \textcolor{keyword}{true},}
+\DoxyCodeLine{            .strSupported = \textcolor{keyword}{false},}
+\DoxyCodeLine{            .nstrSupported = \textcolor{keyword}{true}}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

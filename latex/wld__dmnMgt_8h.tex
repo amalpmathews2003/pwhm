@@ -1,0 +1,84 @@
+\hypertarget{wld__dmnMgt_8h}{}\doxysection{include/wld/\+Utils/wld\+\_\+dmn\+Mgt.h File Reference}
+\label{wld__dmnMgt_8h}\index{include/wld/Utils/wld\_dmnMgt.h@{include/wld/Utils/wld\_dmnMgt.h}}
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+sec\+Dmn\+\_\+types.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+dmn\+Mgt.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__dmnMgt__dmnExecSettings__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Settings\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__dmnMgt__dmnCtx__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Ctx\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const \mbox{\hyperlink{structwld__dmnMgt__dmnCtx__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Ctx\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__dmnMgt_8h_a115e2c85916561f253910fb66063fa7e}{wld\+\_\+dmn\+Mgt\+\_\+get\+Dmn\+Ctx}} (const char $\ast$dmn\+Name)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__dmnMgt_8h_a42d6513077e9211559b38ddc0741160f}{wld\+\_\+dmn\+Mgt\+\_\+init\+Dmn\+Exec\+Info}} (\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$pp\+Dmn\+Exec\+Info)
+\item 
+void \mbox{\hyperlink{wld__dmnMgt_8h_ac0bd9034c98470602fc7305821765009}{wld\+\_\+dmn\+Mgt\+\_\+cleanup\+Dmn\+Exec\+Info}} (\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$pp\+Dmn\+Exec\+Info)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__dmnMgt_8h_ac0bd9034c98470602fc7305821765009}\label{wld__dmnMgt_8h_ac0bd9034c98470602fc7305821765009}} 
+\index{wld\_dmnMgt.h@{wld\_dmnMgt.h}!wld\_dmnMgt\_cleanupDmnExecInfo@{wld\_dmnMgt\_cleanupDmnExecInfo}}
+\index{wld\_dmnMgt\_cleanupDmnExecInfo@{wld\_dmnMgt\_cleanupDmnExecInfo}!wld\_dmnMgt.h@{wld\_dmnMgt.h}}
+\doxysubsubsection{\texorpdfstring{wld\_dmnMgt\_cleanupDmnExecInfo()}{wld\_dmnMgt\_cleanupDmnExecInfo()}}
+{\footnotesize\ttfamily void wld\+\_\+dmn\+Mgt\+\_\+cleanup\+Dmn\+Exec\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$}]{pp\+Dmn\+Exec\+Info }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8h_ac0bd9034c98470602fc7305821765009_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__dmnMgt_8h_a115e2c85916561f253910fb66063fa7e}\label{wld__dmnMgt_8h_a115e2c85916561f253910fb66063fa7e}} 
+\index{wld\_dmnMgt.h@{wld\_dmnMgt.h}!wld\_dmnMgt\_getDmnCtx@{wld\_dmnMgt\_getDmnCtx}}
+\index{wld\_dmnMgt\_getDmnCtx@{wld\_dmnMgt\_getDmnCtx}!wld\_dmnMgt.h@{wld\_dmnMgt.h}}
+\doxysubsubsection{\texorpdfstring{wld\_dmnMgt\_getDmnCtx()}{wld\_dmnMgt\_getDmnCtx()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structwld__dmnMgt__dmnCtx__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Ctx\+\_\+t}} $\ast$ wld\+\_\+dmn\+Mgt\+\_\+get\+Dmn\+Ctx (\begin{DoxyParamCaption}\item[{const char $\ast$}]{dmn\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{wld__dmnMgt_8h_a115e2c85916561f253910fb66063fa7e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__dmnMgt_8h_a42d6513077e9211559b38ddc0741160f}\label{wld__dmnMgt_8h_a42d6513077e9211559b38ddc0741160f}} 
+\index{wld\_dmnMgt.h@{wld\_dmnMgt.h}!wld\_dmnMgt\_initDmnExecInfo@{wld\_dmnMgt\_initDmnExecInfo}}
+\index{wld\_dmnMgt\_initDmnExecInfo@{wld\_dmnMgt\_initDmnExecInfo}!wld\_dmnMgt.h@{wld\_dmnMgt.h}}
+\doxysubsubsection{\texorpdfstring{wld\_dmnMgt\_initDmnExecInfo()}{wld\_dmnMgt\_initDmnExecInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+dmn\+Mgt\+\_\+init\+Dmn\+Exec\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$}]{pp\+Dmn\+Exec\+Info }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8h_a42d6513077e9211559b38ddc0741160f_icgraph}
+\end{center}
+\end{figure}

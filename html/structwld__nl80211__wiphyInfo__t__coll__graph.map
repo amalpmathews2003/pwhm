@@ -1,0 +1,8 @@
+<map id="wld_nl80211_wiphyInfo_t" name="wld_nl80211_wiphyInfo_t">
+<area shape="rect" id="node1" title=" " alt="" coords="661,83,848,109"/>
+<area shape="rect" id="node2" href="$structwld__nl80211__bandDef__t.html" title=" " alt="" coords="313,7,491,33"/>
+<area shape="rect" id="node3" href="$structwld__nl80211__chanDesc__t.html" title=" " alt="" coords="5,7,192,33"/>
+<area shape="rect" id="node4" href="$structwld__nl80211__wiphySuppFeatures.html" title=" " alt="" coords="283,57,521,84"/>
+<area shape="rect" id="node5" href="$structwld__nl80211__wiphySuppCmds.html" title=" " alt="" coords="293,108,511,135"/>
+<area shape="rect" id="node6" href="$structwld__nl80211__wiphyExtCapas.html" title=" " alt="" coords="297,159,507,185"/>
+</map>

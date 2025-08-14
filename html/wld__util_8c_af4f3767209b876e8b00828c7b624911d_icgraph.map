@@ -1,0 +1,4 @@
+<map id="convStrToHex" name="convStrToHex">
+<area shape="rect" id="node1" title="Convert string notation to hex int." alt="" coords="195,5,305,32"/>
+<area shape="rect" id="node2" href="$wld__util_8c.html#a27279683e6fcce2dcfde57e00f413559" title="get_pattern_string" alt="" coords="5,5,147,32"/>
+</map>

@@ -1,0 +1,88 @@
+\hypertarget{wld__sensing_8h}{}\doxysection{include/wld/wld\+\_\+sensing.h File Reference}
+\label{wld__sensing_8h}\index{include/wld/wld\_sensing.h@{include/wld/wld\_sensing.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+sensing.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__csiState__t}{wld\+\_\+csi\+State\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__sensing_8h_a0a8eb1374c20be8bb235ae857577491c}{wld\+\_\+sensing\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__sensing_8h_a21f4d2b4c0975b6cd4389ac842326231}{wld\+\_\+sensing\+\_\+cleanup}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__sensing_8h_aeb33cfc0b4ad5fe24ad503b8d79ec387}{wld\+\_\+sensing\+\_\+del\+Csi\+Client\+Entry}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Addr)
+\item 
+\mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__sensing_8h_a92f7b8702dd75a0468a9f1265159ef47}{wld\+\_\+sensing\+\_\+find\+Client\+By\+Mac}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+mac\+Char\+\_\+t mac\+Addr)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__sensing_8h_a21f4d2b4c0975b6cd4389ac842326231}\label{wld__sensing_8h_a21f4d2b4c0975b6cd4389ac842326231}} 
+\index{wld\_sensing.h@{wld\_sensing.h}!wld\_sensing\_cleanup@{wld\_sensing\_cleanup}}
+\index{wld\_sensing\_cleanup@{wld\_sensing\_cleanup}!wld\_sensing.h@{wld\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_cleanup()}{wld\_sensing\_cleanup()}}
+{\footnotesize\ttfamily void wld\+\_\+sensing\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8h_a21f4d2b4c0975b6cd4389ac842326231_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8h_aeb33cfc0b4ad5fe24ad503b8d79ec387}\label{wld__sensing_8h_aeb33cfc0b4ad5fe24ad503b8d79ec387}} 
+\index{wld\_sensing.h@{wld\_sensing.h}!wld\_sensing\_delCsiClientEntry@{wld\_sensing\_delCsiClientEntry}}
+\index{wld\_sensing\_delCsiClientEntry@{wld\_sensing\_delCsiClientEntry}!wld\_sensing.h@{wld\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_delCsiClientEntry()}{wld\_sensing\_delCsiClientEntry()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sensing\+\_\+del\+Csi\+Client\+Entry (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Addr }\end{DoxyParamCaption})}
+
+Called to delete CSI client datamodel entry Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8h_aeb33cfc0b4ad5fe24ad503b8d79ec387_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8h_a92f7b8702dd75a0468a9f1265159ef47}\label{wld__sensing_8h_a92f7b8702dd75a0468a9f1265159ef47}} 
+\index{wld\_sensing.h@{wld\_sensing.h}!wld\_sensing\_findClientByMac@{wld\_sensing\_findClientByMac}}
+\index{wld\_sensing\_findClientByMac@{wld\_sensing\_findClientByMac}!wld\_sensing.h@{wld\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_findClientByMac()}{wld\_sensing\_findClientByMac()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}} $\ast$ wld\+\_\+sensing\+\_\+find\+Client\+By\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+mac\+Char\+\_\+t}]{mac\+Addr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__sensing_8h_a0a8eb1374c20be8bb235ae857577491c}\label{wld__sensing_8h_a0a8eb1374c20be8bb235ae857577491c}} 
+\index{wld\_sensing.h@{wld\_sensing.h}!wld\_sensing\_init@{wld\_sensing\_init}}
+\index{wld\_sensing\_init@{wld\_sensing\_init}!wld\_sensing.h@{wld\_sensing.h}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_init()}{wld\_sensing\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+sensing\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8h_a0a8eb1374c20be8bb235ae857577491c_icgraph}
+\end{center}
+\end{figure}

@@ -1,0 +1,114 @@
+\hypertarget{wld__th__dm_8h_source}{}\doxysection{wld\+\_\+th\+\_\+dm.\+h}
+\label{wld__th__dm_8h_source}\index{test/testHelper/wld\_th\_dm.h@{test/testHelper/wld\_th\_dm.h}}
+\mbox{\hyperlink{wld__th__dm_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef SRC\_TEST\_TESTHELPER\_WLD\_TH\_DM\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define SRC\_TEST\_TESTHELPER\_WLD\_TH\_DM\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}test-\/toolbox/ttb\_amx.h"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}test-\/toolbox/ttb\_object.h"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__types_8h}{wld\_th\_types.h}}"{}}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}swla/swla\_chanspec.h"{}}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include "{}swl/swl\_common.h"{}}}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__radio_8h}{wld\_th\_radio.h}}"{}}}
+\DoxyCodeLine{75 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__vap_8h}{wld\_th\_vap.h}}"{}}}
+\DoxyCodeLine{76 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__types_8h}{wld\_th\_types.h}}"{}}}
+\DoxyCodeLine{77 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__mockVendor_8h}{wld\_th\_mockVendor.h}}"{}}}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 }
+\DoxyCodeLine{80 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{81     \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{structwld__th__dmBand__t_aa0cc1d42c591df2942ccad6ac8e564c4}{rad}};}
+\DoxyCodeLine{82     swl\_timeMono\_t \mbox{\hyperlink{structwld__th__dmBand__t_a3002493bdfc5c5409dbda8a58a115d0b}{radCreateTime}};}
+\DoxyCodeLine{83     ttb\_object\_t* \mbox{\hyperlink{structwld__th__dmBand__t_ab5eba2d72315e038cc1a8cc536d2bee1}{radObj}};}
+\DoxyCodeLine{84     \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{structwld__th__dmBand__t_a11f98ef129d19d1aec3636e88eb099b7}{vapPriv}};}
+\DoxyCodeLine{85     \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{structwld__th__dmBand__t_a29af9bb55a4f453b93a3e5f1b0f67aaf}{vapPrivSSID}};}
+\DoxyCodeLine{86     swl\_timeMono\_t \mbox{\hyperlink{structwld__th__dmBand__t_a34cda24ea9d52b1ce4482cf4c15a00f2}{vapCreateTime}};}
+\DoxyCodeLine{87     ttb\_object\_t* \mbox{\hyperlink{structwld__th__dmBand__t_a70eb97ea33b50742cca44e06696a5f17}{vapPrivObj}};}
+\DoxyCodeLine{88     ttb\_object\_t* \mbox{\hyperlink{structwld__th__dmBand__t_a39487c056d0013f187bf3948e6a7367a}{vapPrivSSIDObj}};}
+\DoxyCodeLine{89     \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{structwld__th__dmBand__t_a4efec3e424c9038b78be884dda3feaa1}{ep}};}
+\DoxyCodeLine{90     swl\_timeMono\_t \mbox{\hyperlink{structwld__th__dmBand__t_a1ca4bf9cd5ef0f71871bfa17557fe98c}{epCreateTime}};}
+\DoxyCodeLine{91     ttb\_object\_t* \mbox{\hyperlink{structwld__th__dmBand__t_adc349301a54dc4617711da525aabc1c3}{epObj}};}
+\DoxyCodeLine{92 \} \mbox{\hyperlink{structwld__th__dmBand__t}{wld\_th\_dmBand\_t}};}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{95     \mbox{\hyperlink{structwld__th__dmBand__t}{wld\_th\_dmBand\_t}} bandList[SWL\_FREQ\_BAND\_MAX];}
+\DoxyCodeLine{96     ttb\_amx\_t* \mbox{\hyperlink{structwld__th__dm__t_a526ba3f72322645af3baa12b7aeade3f}{ttbBus}};}
+\DoxyCodeLine{97     \mbox{\hyperlink{structwld__th__mockVendor}{wld\_th\_mockVendor\_t}}* \mbox{\hyperlink{structwld__th__dm__t_ac11d0133398acaf496ee3aaca4b99308}{mockVendor}};}
+\DoxyCodeLine{98 \} \mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}};}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__th__dm_8h_ae54a60fdd0ee623cf489690e020a1e89}{wld\_th\_dmEnv\_init}}(\mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}}* \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}});}
+\DoxyCodeLine{101 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__th__dm_8h_ab6fac1ee07c4779d3f52c6fe518489ce}{wld\_th\_dm\_init}}(\mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}}* \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}});}
+\DoxyCodeLine{102 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__th__dm_8h_a5c546375ae07198164c4a30ea849cd80}{wld\_th\_dm\_initFreq}}(\mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}}* \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}}, swl\_freqBand\_m initMask);}
+\DoxyCodeLine{103 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__dm_8h_ae4270a39f4fb1ec9c72dafe1ac277810}{wld\_th\_dm\_destroy}}(\mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}}* \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}});}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__dm_8h_a14af221499b23ea928614536187df970}{wld\_th\_dm\_handleEvents}}(\mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}}* \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}});}
+\DoxyCodeLine{106 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__dm_8h_a2a474e74d6a2c718423c0a5c2cc38197}{wld\_th\_dm\_clearFsm}}(\mbox{\hyperlink{structwld__th__dm__t}{wld\_th\_dm\_t}}* \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}});}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{108 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* SRC\_TEST\_TESTHELPER\_WLD\_TH\_DM\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

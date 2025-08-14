@@ -1,0 +1,67 @@
+\hypertarget{wld__ep__nl80211_8c}{}\doxysection{src/nl80211/wld\+\_\+ep\+\_\+nl80211.c File Reference}
+\label{wld__ep__nl80211_8c}\index{src/nl80211/wld\_ep\_nl80211.c@{src/nl80211/wld\_ep\_nl80211.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid\+\_\+nl80211\+\_\+priv.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+time.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ep\+\_\+nl80211.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ep__nl80211_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ep__nl80211_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}nl\+Ep\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ep__nl80211_8c_a8b5e72927f7581a7fb4c12df1c0bdefe}{wld\+\_\+ep\+\_\+nl80211\+\_\+send\+Management\+Frame\+Cmd}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+80211\+\_\+mgmt\+Frame\+Control\+\_\+t $\ast$fc, swl\+\_\+mac\+Bin\+\_\+t $\ast$tgt\+Mac, swl\+\_\+bit8\+\_\+t $\ast$data\+Bytes, size\+\_\+t data\+Bytes\+Len, swl\+\_\+chanspec\+\_\+t $\ast$chanspec, uint32\+\_\+t flags)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ep__nl80211_8c_aa53ce1c49994e6c372ec41aec60c62a7}{wld\+\_\+ep\+\_\+nl80211\+\_\+set\+Sta}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ep__nl80211_8c_a96b2fdfad5ec70c10f3ad8e720e540c7}{wld\+\_\+ep\+\_\+nl80211\+\_\+set4\+Mac}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, bool use4\+Mac)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ep__nl80211_8c_a35c4d65b148c214e1a38c5525e353bc8}{wld\+\_\+ep\+\_\+nl80211\+\_\+get\+Interface\+Info}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$p\+Iface\+Info)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ep__nl80211_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ep__nl80211_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}nl\+Ep\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ep__nl80211_8c_a35c4d65b148c214e1a38c5525e353bc8}\label{wld__ep__nl80211_8c_a35c4d65b148c214e1a38c5525e353bc8}} 
+\index{wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}!wld\_ep\_nl80211\_getInterfaceInfo@{wld\_ep\_nl80211\_getInterfaceInfo}}
+\index{wld\_ep\_nl80211\_getInterfaceInfo@{wld\_ep\_nl80211\_getInterfaceInfo}!wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ep\_nl80211\_getInterfaceInfo()}{wld\_ep\_nl80211\_getInterfaceInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ep\+\_\+nl80211\+\_\+get\+Interface\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$}]{p\+Iface\+Info }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ep__nl80211_8c_a8b5e72927f7581a7fb4c12df1c0bdefe}\label{wld__ep__nl80211_8c_a8b5e72927f7581a7fb4c12df1c0bdefe}} 
+\index{wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}!wld\_ep\_nl80211\_sendManagementFrameCmd@{wld\_ep\_nl80211\_sendManagementFrameCmd}}
+\index{wld\_ep\_nl80211\_sendManagementFrameCmd@{wld\_ep\_nl80211\_sendManagementFrameCmd}!wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ep\_nl80211\_sendManagementFrameCmd()}{wld\_ep\_nl80211\_sendManagementFrameCmd()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ep\+\_\+nl80211\+\_\+send\+Management\+Frame\+Cmd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+80211\+\_\+mgmt\+Frame\+Control\+\_\+t $\ast$}]{fc,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{tgt\+Mac,  }\item[{swl\+\_\+bit8\+\_\+t $\ast$}]{data\+Bytes,  }\item[{size\+\_\+t}]{data\+Bytes\+Len,  }\item[{swl\+\_\+chanspec\+\_\+t $\ast$}]{chanspec,  }\item[{uint32\+\_\+t}]{flags }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ep__nl80211_8c_a96b2fdfad5ec70c10f3ad8e720e540c7}\label{wld__ep__nl80211_8c_a96b2fdfad5ec70c10f3ad8e720e540c7}} 
+\index{wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}!wld\_ep\_nl80211\_set4Mac@{wld\_ep\_nl80211\_set4Mac}}
+\index{wld\_ep\_nl80211\_set4Mac@{wld\_ep\_nl80211\_set4Mac}!wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ep\_nl80211\_set4Mac()}{wld\_ep\_nl80211\_set4Mac()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ep\+\_\+nl80211\+\_\+set4\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{bool}]{use4\+Mac }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ep__nl80211_8c_aa53ce1c49994e6c372ec41aec60c62a7}\label{wld__ep__nl80211_8c_aa53ce1c49994e6c372ec41aec60c62a7}} 
+\index{wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}!wld\_ep\_nl80211\_setSta@{wld\_ep\_nl80211\_setSta}}
+\index{wld\_ep\_nl80211\_setSta@{wld\_ep\_nl80211\_setSta}!wld\_ep\_nl80211.c@{wld\_ep\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ep\_nl80211\_setSta()}{wld\_ep\_nl80211\_setSta()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ep\+\_\+nl80211\+\_\+set\+Sta (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+

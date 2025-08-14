@@ -1,0 +1,4 @@
+<map id="wld_util_countScanResultEntriesPerChannel" name="wld_util_countScanResultEntriesPerChannel">
+<area shape="rect" id="node1" title="count number of neighbor BSS scan entries detected on a provided primary channel" alt="" coords="268,5,456,47"/>
+<area shape="rect" id="node2" href="$wifiGen__rad_8c.html#a63ca0312efb1460f235020f8d8fbf442" title=" " alt="" coords="5,13,220,39"/>
+</map>

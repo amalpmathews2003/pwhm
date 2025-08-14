@@ -1,0 +1,143 @@
+\hypertarget{wld__zwdfs_8c}{}\doxysection{src/\+Channel\+Management/wld\+\_\+zwdfs.c File Reference}
+\label{wld__zwdfs_8c}\index{src/ChannelManagement/wld\_zwdfs.c@{src/ChannelManagement/wld\_zwdfs.c}}
+{\ttfamily \#include $<$swl/swl\+\_\+assert.\+h$>$}\newline
+{\ttfamily \#include $<$swl/swl\+\_\+return\+Code.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+chanmgt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+zwdfs.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+zwdfs.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__zwdfs_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__zwdfs_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+Zwd\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__zwdfs_8c_a83da375dc84c5cdcd759585ed2267ba2}{s\+\_\+exec\+Fsm}} (\mbox{\hyperlink{structwld__zwdfs__fsm__t}{wld\+\_\+zwdfs\+\_\+fsm\+\_\+t}} $\ast$fsm, \mbox{\hyperlink{wld__zwdfs_8h_a0cc2089cff3a72f95f40fcdcb8629284}{wld\+\_\+zwsdf\+\_\+fsm\+Event\+\_\+e}} event, const \mbox{\hyperlink{structwld__zwdfs__fsmCtx__t}{wld\+\_\+zwdfs\+\_\+fsm\+Ctx\+\_\+t}} $\ast$p\+Ctx)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__zwdfs_8c_a5bab7c2028bf9432a7a5e922d32ee81b}{wld\+\_\+zwdfs\+\_\+start}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, bool direct)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__zwdfs_8c_ac184418f27196fa617788e19df6a9e81}{wld\+\_\+zwdfs\+\_\+stop}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__zwdfs_8c_abd700db224a9106dc558a88ca608028f}{wld\+\_\+zwdfs\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__zwdfs_8c_ad6a66791a95bcbd7047eb671a562d4a5}{wld\+\_\+zwdfs\+\_\+deinit}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__zwdfs_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__zwdfs_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_zwdfs.c@{wld\_zwdfs.c}!ME@{ME}}
+\index{ME@{ME}!wld\_zwdfs.c@{wld\_zwdfs.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+Zwd\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__zwdfs_8c_a83da375dc84c5cdcd759585ed2267ba2}\label{wld__zwdfs_8c_a83da375dc84c5cdcd759585ed2267ba2}} 
+\index{wld\_zwdfs.c@{wld\_zwdfs.c}!s\_execFsm@{s\_execFsm}}
+\index{s\_execFsm@{s\_execFsm}!wld\_zwdfs.c@{wld\_zwdfs.c}}
+\doxysubsubsection{\texorpdfstring{s\_execFsm()}{s\_execFsm()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+exec\+Fsm (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__zwdfs__fsm__t}{wld\+\_\+zwdfs\+\_\+fsm\+\_\+t}} $\ast$}]{fsm,  }\item[{\mbox{\hyperlink{wld__zwdfs_8h_a0cc2089cff3a72f95f40fcdcb8629284}{wld\+\_\+zwsdf\+\_\+fsm\+Event\+\_\+e}}}]{event,  }\item[{const \mbox{\hyperlink{structwld__zwdfs__fsmCtx__t}{wld\+\_\+zwdfs\+\_\+fsm\+Ctx\+\_\+t}} $\ast$}]{p\+Ctx }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__zwdfs_8c_a83da375dc84c5cdcd759585ed2267ba2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__zwdfs_8c_ad6a66791a95bcbd7047eb671a562d4a5}\label{wld__zwdfs_8c_ad6a66791a95bcbd7047eb671a562d4a5}} 
+\index{wld\_zwdfs.c@{wld\_zwdfs.c}!wld\_zwdfs\_deinit@{wld\_zwdfs\_deinit}}
+\index{wld\_zwdfs\_deinit@{wld\_zwdfs\_deinit}!wld\_zwdfs.c@{wld\_zwdfs.c}}
+\doxysubsubsection{\texorpdfstring{wld\_zwdfs\_deinit()}{wld\_zwdfs\_deinit()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+zwdfs\+\_\+deinit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__zwdfs_8c_ad6a66791a95bcbd7047eb671a562d4a5_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=337pt]{wld__zwdfs_8c_ad6a66791a95bcbd7047eb671a562d4a5_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__zwdfs_8c_abd700db224a9106dc558a88ca608028f}\label{wld__zwdfs_8c_abd700db224a9106dc558a88ca608028f}} 
+\index{wld\_zwdfs.c@{wld\_zwdfs.c}!wld\_zwdfs\_init@{wld\_zwdfs\_init}}
+\index{wld\_zwdfs\_init@{wld\_zwdfs\_init}!wld\_zwdfs.c@{wld\_zwdfs.c}}
+\doxysubsubsection{\texorpdfstring{wld\_zwdfs\_init()}{wld\_zwdfs\_init()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+zwdfs\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=341pt]{wld__zwdfs_8c_abd700db224a9106dc558a88ca608028f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=313pt]{wld__zwdfs_8c_abd700db224a9106dc558a88ca608028f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__zwdfs_8c_a5bab7c2028bf9432a7a5e922d32ee81b}\label{wld__zwdfs_8c_a5bab7c2028bf9432a7a5e922d32ee81b}} 
+\index{wld\_zwdfs.c@{wld\_zwdfs.c}!wld\_zwdfs\_start@{wld\_zwdfs\_start}}
+\index{wld\_zwdfs\_start@{wld\_zwdfs\_start}!wld\_zwdfs.c@{wld\_zwdfs.c}}
+\doxysubsubsection{\texorpdfstring{wld\_zwdfs\_start()}{wld\_zwdfs\_start()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+zwdfs\+\_\+start (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{bool}]{direct }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=326pt]{wld__zwdfs_8c_a5bab7c2028bf9432a7a5e922d32ee81b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__zwdfs_8c_ac184418f27196fa617788e19df6a9e81}\label{wld__zwdfs_8c_ac184418f27196fa617788e19df6a9e81}} 
+\index{wld\_zwdfs.c@{wld\_zwdfs.c}!wld\_zwdfs\_stop@{wld\_zwdfs\_stop}}
+\index{wld\_zwdfs\_stop@{wld\_zwdfs\_stop}!wld\_zwdfs.c@{wld\_zwdfs.c}}
+\doxysubsubsection{\texorpdfstring{wld\_zwdfs\_stop()}{wld\_zwdfs\_stop()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+zwdfs\+\_\+stop (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=281pt]{wld__zwdfs_8c_ac184418f27196fa617788e19df6a9e81_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{wld__zwdfs_8c_ac184418f27196fa617788e19df6a9e81_icgraph}
+\end{center}
+\end{figure}

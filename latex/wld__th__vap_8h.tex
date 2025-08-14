@@ -1,0 +1,186 @@
+\hypertarget{wld__th__vap_8h}{}\doxysection{test/test\+Helper/wld\+\_\+th\+\_\+vap.h File Reference}
+\label{wld__th__vap_8h}\index{test/testHelper/wld\_th\_vap.h@{test/testHelper/wld\_th\_vap.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$amxc/amxc\+\_\+macros.\+h$>$}\newline
+{\ttfamily \#include $<$amxc/amxc.\+h$>$}\newline
+{\ttfamily \#include $<$amxp/amxp.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+dm.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+path.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object\+\_\+event.\+h$>$}\newline
+{\ttfamily \#include $<$amxo/amxo.\+h$>$}\newline
+{\ttfamily \#include $<$amxo/amxo\+\_\+save.\+h$>$}\newline
+{\ttfamily \#include $<$amxb/amxb.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+fsm.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+th\+\_\+vap.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__vap_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__vap_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__th__vap__vendorData__t}{wld\+\_\+th\+\_\+vap\+\_\+vendor\+Data\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__th__vap_8h_acdf76b5eb4ab35fb1be6da6ccb6b204a}{wld\+\_\+th\+\_\+vap\+\_\+do\+Vap\+Fsm\+Action}}) (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld__th__fsm_8h_a229a161ea59ac20b5e9de019bfa6d30c}{wld\+\_\+th\+\_\+fsm\+States\+\_\+e}} state)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__th__vap_8h_a3c2a38e593417f2faba4f0cf0496b144}{wld\+\_\+th\+\_\+vap\+\_\+create\+Vap}} (amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const bus\+\_\+ctx, \mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$mock\+Vendor, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$radio, const char $\ast$name)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__vap_8h_a63e1e22c7f6bc30b88a4517c75633bf8}{wld\+\_\+th\+\_\+vap\+\_\+create\+Hook}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a059626675caffa8d5c5c02289d995474}{wld\+\_\+th\+\_\+vap\+\_\+destroy\+Hook}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+int \mbox{\hyperlink{wld__th__vap_8h_a1c5f0feaf7185007baebeff85a3c00f7}{wld\+\_\+th\+\_\+vap\+\_\+vendor\+Cb\+\_\+add\+Vap\+If}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, char $\ast$vap, int bufsize)
+\item 
+int \mbox{\hyperlink{wld__th__vap_8h_aebc1f04619e9a680605783fe2f4dc472}{wld\+\_\+th\+\_\+vap\+\_\+status}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__vap_8h_a92490a3f3090f883563b195dcedf4a20}{wld\+\_\+th\+\_\+vap\+\_\+get\+Station\+Stats}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+int \mbox{\hyperlink{wld__th__vap_8h_a3a94d721ae362c439d3b2d01adf51071}{wld\+\_\+th\+\_\+vap\+\_\+enable}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, int enable, int set)
+\item 
+int \mbox{\hyperlink{wld__th__vap_8h_a84d964a65e88d3c9a8b91b9d05ecbfd1}{wld\+\_\+th\+\_\+vap\+\_\+ssid}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, char $\ast$buf, int bufsize, int set)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a3af7ec350a0bfe116f1ac5f00656a8fd}{wld\+\_\+th\+\_\+vap\+\_\+do\+Fsm\+Clean}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{structwld__th__vap__vendorData__t}{wld\+\_\+th\+\_\+vap\+\_\+vendor\+Data\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__th__vap_8h_a2daad05ee8254ce645060e6449541019}{wld\+\_\+th\+\_\+vap\+\_\+get\+Vendor\+Data}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a1f84e903315fa9255ad47dd3aa1bc1f1}{wld\+\_\+th\+\_\+vap\+\_\+set\+SSIDEnable}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, bool enable, bool commit)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a146360bbbf095c43e5b75da266ed9bc5}{wld\+\_\+th\+\_\+vap\+\_\+set\+Ap\+Enable}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, bool enable, bool commit)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a9fdee997ca2a5cd85b3c77434f97af60}{wld\+\_\+th\+\_\+vap\+\_\+clear\+Commits}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a14833a314ff637a8e0955aefc2839b06}{wld\+\_\+th\+\_\+vap\+\_\+check\+Commit\+All}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__th__vap_8h_a4554805b63688b1f84c8f38b09ec64e1}{wld\+\_\+th\+\_\+vap\+\_\+check\+Committed}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mask\+\_\+m commit\+Mask)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__th__vap_8h_acdf76b5eb4ab35fb1be6da6ccb6b204a}\label{wld__th__vap_8h_acdf76b5eb4ab35fb1be6da6ccb6b204a}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_doVapFsmAction@{wld\_th\_vap\_doVapFsmAction}}
+\index{wld\_th\_vap\_doVapFsmAction@{wld\_th\_vap\_doVapFsmAction}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_doVapFsmAction}{wld\_th\_vap\_doVapFsmAction}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+th\+\_\+vap\+\_\+do\+Vap\+Fsm\+Action) (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld__th__fsm_8h_a229a161ea59ac20b5e9de019bfa6d30c}{wld\+\_\+th\+\_\+fsm\+States\+\_\+e}} state)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__th__vap_8h_a14833a314ff637a8e0955aefc2839b06}\label{wld__th__vap_8h_a14833a314ff637a8e0955aefc2839b06}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_checkCommitAll@{wld\_th\_vap\_checkCommitAll}}
+\index{wld\_th\_vap\_checkCommitAll@{wld\_th\_vap\_checkCommitAll}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_checkCommitAll()}{wld\_th\_vap\_checkCommitAll()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+check\+Commit\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a4554805b63688b1f84c8f38b09ec64e1}\label{wld__th__vap_8h_a4554805b63688b1f84c8f38b09ec64e1}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_checkCommitted@{wld\_th\_vap\_checkCommitted}}
+\index{wld\_th\_vap\_checkCommitted@{wld\_th\_vap\_checkCommitted}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_checkCommitted()}{wld\_th\_vap\_checkCommitted()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+check\+Committed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mask\+\_\+m}]{commit\+Mask }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a9fdee997ca2a5cd85b3c77434f97af60}\label{wld__th__vap_8h_a9fdee997ca2a5cd85b3c77434f97af60}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_clearCommits@{wld\_th\_vap\_clearCommits}}
+\index{wld\_th\_vap\_clearCommits@{wld\_th\_vap\_clearCommits}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_clearCommits()}{wld\_th\_vap\_clearCommits()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+clear\+Commits (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__vap_8h_a9fdee997ca2a5cd85b3c77434f97af60_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__vap_8h_a63e1e22c7f6bc30b88a4517c75633bf8}\label{wld__th__vap_8h_a63e1e22c7f6bc30b88a4517c75633bf8}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_createHook@{wld\_th\_vap\_createHook}}
+\index{wld\_th\_vap\_createHook@{wld\_th\_vap\_createHook}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_createHook()}{wld\_th\_vap\_createHook()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+vap\+\_\+create\+Hook (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a3c2a38e593417f2faba4f0cf0496b144}\label{wld__th__vap_8h_a3c2a38e593417f2faba4f0cf0496b144}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_createVap@{wld\_th\_vap\_createVap}}
+\index{wld\_th\_vap\_createVap@{wld\_th\_vap\_createVap}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_createVap()}{wld\_th\_vap\_createVap()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+th\+\_\+vap\+\_\+create\+Vap (\begin{DoxyParamCaption}\item[{amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const}]{bus\+\_\+ctx,  }\item[{\mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$}]{mock\+Vendor,  }\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{radio,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a059626675caffa8d5c5c02289d995474}\label{wld__th__vap_8h_a059626675caffa8d5c5c02289d995474}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_destroyHook@{wld\_th\_vap\_destroyHook}}
+\index{wld\_th\_vap\_destroyHook@{wld\_th\_vap\_destroyHook}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_destroyHook()}{wld\_th\_vap\_destroyHook()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+destroy\+Hook (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a3af7ec350a0bfe116f1ac5f00656a8fd}\label{wld__th__vap_8h_a3af7ec350a0bfe116f1ac5f00656a8fd}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_doFsmClean@{wld\_th\_vap\_doFsmClean}}
+\index{wld\_th\_vap\_doFsmClean@{wld\_th\_vap\_doFsmClean}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_doFsmClean()}{wld\_th\_vap\_doFsmClean()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+do\+Fsm\+Clean (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a3a94d721ae362c439d3b2d01adf51071}\label{wld__th__vap_8h_a3a94d721ae362c439d3b2d01adf51071}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_enable@{wld\_th\_vap\_enable}}
+\index{wld\_th\_vap\_enable@{wld\_th\_vap\_enable}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_enable()}{wld\_th\_vap\_enable()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+vap\+\_\+enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{int}]{enable,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a92490a3f3090f883563b195dcedf4a20}\label{wld__th__vap_8h_a92490a3f3090f883563b195dcedf4a20}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_getStationStats@{wld\_th\_vap\_getStationStats}}
+\index{wld\_th\_vap\_getStationStats@{wld\_th\_vap\_getStationStats}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_getStationStats()}{wld\_th\_vap\_getStationStats()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+vap\+\_\+get\+Station\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a2daad05ee8254ce645060e6449541019}\label{wld__th__vap_8h_a2daad05ee8254ce645060e6449541019}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_getVendorData@{wld\_th\_vap\_getVendorData}}
+\index{wld\_th\_vap\_getVendorData@{wld\_th\_vap\_getVendorData}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_getVendorData()}{wld\_th\_vap\_getVendorData()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__th__vap__vendorData__t}{wld\+\_\+th\+\_\+vap\+\_\+vendor\+Data\+\_\+t}} $\ast$ wld\+\_\+th\+\_\+vap\+\_\+get\+Vendor\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a146360bbbf095c43e5b75da266ed9bc5}\label{wld__th__vap_8h_a146360bbbf095c43e5b75da266ed9bc5}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_setApEnable@{wld\_th\_vap\_setApEnable}}
+\index{wld\_th\_vap\_setApEnable@{wld\_th\_vap\_setApEnable}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_setApEnable()}{wld\_th\_vap\_setApEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+set\+Ap\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{bool}]{enable,  }\item[{bool}]{commit }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a1f84e903315fa9255ad47dd3aa1bc1f1}\label{wld__th__vap_8h_a1f84e903315fa9255ad47dd3aa1bc1f1}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_setSSIDEnable@{wld\_th\_vap\_setSSIDEnable}}
+\index{wld\_th\_vap\_setSSIDEnable@{wld\_th\_vap\_setSSIDEnable}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_setSSIDEnable()}{wld\_th\_vap\_setSSIDEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+vap\+\_\+set\+SSIDEnable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{bool}]{enable,  }\item[{bool}]{commit }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a84d964a65e88d3c9a8b91b9d05ecbfd1}\label{wld__th__vap_8h_a84d964a65e88d3c9a8b91b9d05ecbfd1}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_ssid@{wld\_th\_vap\_ssid}}
+\index{wld\_th\_vap\_ssid@{wld\_th\_vap\_ssid}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_ssid()}{wld\_th\_vap\_ssid()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+vap\+\_\+ssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{char $\ast$}]{buf,  }\item[{int}]{bufsize,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_aebc1f04619e9a680605783fe2f4dc472}\label{wld__th__vap_8h_aebc1f04619e9a680605783fe2f4dc472}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_status@{wld\_th\_vap\_status}}
+\index{wld\_th\_vap\_status@{wld\_th\_vap\_status}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_status()}{wld\_th\_vap\_status()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+vap\+\_\+status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__vap_8h_a1c5f0feaf7185007baebeff85a3c00f7}\label{wld__th__vap_8h_a1c5f0feaf7185007baebeff85a3c00f7}} 
+\index{wld\_th\_vap.h@{wld\_th\_vap.h}!wld\_th\_vap\_vendorCb\_addVapIf@{wld\_th\_vap\_vendorCb\_addVapIf}}
+\index{wld\_th\_vap\_vendorCb\_addVapIf@{wld\_th\_vap\_vendorCb\_addVapIf}!wld\_th\_vap.h@{wld\_th\_vap.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_vap\_vendorCb\_addVapIf()}{wld\_th\_vap\_vendorCb\_addVapIf()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+vap\+\_\+vendor\+Cb\+\_\+add\+Vap\+If (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{char $\ast$}]{vap,  }\item[{int}]{bufsize }\end{DoxyParamCaption})}
+

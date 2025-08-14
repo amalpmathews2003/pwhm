@@ -1,0 +1,110 @@
+\hypertarget{wld__wpaCtrlConnection__priv_8h_source}{}\doxysection{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+priv.\+h}
+\label{wld__wpaCtrlConnection__priv_8h_source}\index{include\_priv/nl80211/wld\_wpaCtrlConnection\_priv.h@{include\_priv/nl80211/wld\_wpaCtrlConnection\_priv.h}}
+\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2024 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_NL80211\_WLD\_WPACTRLCONNECTION\_PRIV\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_NL80211\_WLD\_WPACTRLCONNECTION\_PRIV\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include <sys/un.h>}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}swl/swl\_common.h"{}}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#define CTRL\_IFACE\_CLIENT\_DIR "{}/var/lib/wld"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#define CTRL\_IFACE\_CLIENT CTRL\_IFACE\_CLIENT\_DIR "{}/wpactrl-\/"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#define DFLT\_SYNC\_CMD\_TMOUT\_MS 1000}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a9fb27f71b5db3dc1a8008a3bd0c2c096}{wld\_wpaCtrlConnection\_readDataCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* msgData, \textcolor{keywordtype}{size\_t} msgLen);}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{76     \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a9fb27f71b5db3dc1a8008a3bd0c2c096}{wld\_wpaCtrlConnection\_readDataCb\_f}} \mbox{\hyperlink{structwld__wpaCtrlConnection__evtHandlers__cb_ac547ef4b44a1871a033f5f287efc65cf}{fReadDataCb}};}
+\DoxyCodeLine{77 \} \mbox{\hyperlink{structwld__wpaCtrlConnection__evtHandlers__cb}{wld\_wpaCtrlConnection\_evtHandlers\_cb}};}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection}} \{}
+\DoxyCodeLine{80     \textcolor{keyword}{struct }sockaddr\_un \mbox{\hyperlink{structwpaCtrlConnection_a907240d3a41f066b989abd61e1418084}{clientAddr}};}
+\DoxyCodeLine{81     \textcolor{keyword}{struct }sockaddr\_un \mbox{\hyperlink{structwpaCtrlConnection_abd3f70fc49e31223723085fda12bda01}{serverAddr}};}
+\DoxyCodeLine{82     \textcolor{keywordtype}{int} \mbox{\hyperlink{structwpaCtrlConnection_a9d716af96b68b74f2520ed43030e46c8}{wpaPeer}};}
+\DoxyCodeLine{83     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwpaCtrlConnection_abe07f7d903345b9acd68a20dda3bde30}{userData}};}
+\DoxyCodeLine{84     \mbox{\hyperlink{structwld__wpaCtrlConnection__evtHandlers__cb}{wld\_wpaCtrlConnection\_evtHandlers\_cb}} \mbox{\hyperlink{structwpaCtrlConnection_afe8ebd69eb4c4b91e2078201531e34cc}{evtHdlrs}};}
+\DoxyCodeLine{85     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwpaCtrlConnection_a1f7de777c304418549e956709bf4754a}{srvDirPath}};}
+\DoxyCodeLine{86 \} \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpaCtrlConnection\_t}};}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a6b8f3eb022f9117e30b5ae1ce5cd3310}{wld\_wpaCtrlConnection\_init}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}** ppConn, uint32\_t connId, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* serverPath, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* sockName);}
+\DoxyCodeLine{89 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_af6ed20a15db7c130a39b05c6db570aab}{wld\_wpaCtrlConnection\_setEvtHandlers}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn, \textcolor{keywordtype}{void}* userData, \mbox{\hyperlink{structwld__wpaCtrlConnection__evtHandlers__cb}{wld\_wpaCtrlConnection\_evtHandlers\_cb}}* pEvtHdlrs);}
+\DoxyCodeLine{90 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a3821c825cc2a8803e75e6e0776b8ee96}{wld\_wpaCtrlConnection\_open}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{91 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_aa82226c76dbbf306e509b7c6d3088277}{wld\_wpaCtrlConnection\_sendCmd}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* cmd);}
+\DoxyCodeLine{92 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_ae8867992d243efdfa13e360b50730f88}{wld\_wpaCtrlConnection\_sendCmdSyncedExt}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* cmd, \textcolor{keywordtype}{char}* reply, \textcolor{keywordtype}{size\_t} replyLen, uint32\_t tmOutMSec);}
+\DoxyCodeLine{93 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a4ffecc829a17c67728b8ced8b0cccc92}{wld\_wpaCtrlConnection\_sendCmdSynced}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* cmd, \textcolor{keywordtype}{char}* reply, \textcolor{keywordtype}{size\_t} replyLen);}
+\DoxyCodeLine{94 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a5ddba0537d0917bc518e9ef71b539f75}{wld\_wpaCtrlConnection\_sendCmdCheckResponseExt}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn, \textcolor{keywordtype}{char}* cmd, \textcolor{keywordtype}{char}* expectedResponse, uint32\_t tmOutMSec);}
+\DoxyCodeLine{95 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_af7414d719a14459bfbf836e77f643aff}{wld\_wpaCtrlConnection\_sendCmdCheckResponse}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn, \textcolor{keywordtype}{char}* cmd, \textcolor{keywordtype}{char}* expectedResponse);}
+\DoxyCodeLine{96 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_ac77a8013582067279ce3a0ccda177ed8}{wld\_wpaCtrlConnection\_close}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{97 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a4f4cfde4f1cd7c2913047631191bb625}{wld\_wpaCtrlConnection\_cleanup}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}** ppConn);}
+\DoxyCodeLine{98 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a423ea65753f7756c0c819747edf6437b}{wld\_wpaCtrlConnection\_getConnCliPath}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{99 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a47a34d899bc01dfe767b26ee4f7b87db}{wld\_wpaCtrlConnection\_getConnSrvPath}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{100 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_abfe3f8b17cf527b1e6fe85a564c8604b}{wld\_wpaCtrlConnection\_getConnSockName}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{101 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_a730ec8bfc5dc708d2ed0c9ca609fd342}{wld\_wpaCtrlConnection\_getConnCliDirPath}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{102 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_adb889abb93a76c73955378ad147941aa}{wld\_wpaCtrlConnection\_getConnSrvDirPath}}(\mbox{\hyperlink{structwpaCtrlConnection}{wpaCtrlConnection\_t}}* pConn);}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{104 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_NL80211\_WLD\_WPACTRLCONNECTION\_PRIV\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

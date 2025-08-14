@@ -1,0 +1,480 @@
+\hypertarget{wld__ssid_8c}{}\doxysection{src/wld\+\_\+ssid.c File Reference}
+\label{wld__ssid_8c}\index{src/wld\_ssid.c@{src/wld\_ssid.c}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$malloc.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+statsmon.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+dm\+\_\+trans.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+string.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/\+Utils/wld\+\_\+auto\+Neigh\+Add.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/\+Utils/wld\+\_\+config.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ssid.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ssid_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ssid\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_a322b58a231dc51a86d7f2c148baa4444}{wld\+\_\+ssid\+\_\+get\+Intf\+Enable}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{wld__ssid_8c_a646ad9eec726d78cd6664e4f882e29e1}{wld\+\_\+ssid\+\_\+get\+Intf\+Object}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a7dfcede6465a3dfa9144a3abf665dace}{wld\+\_\+ssid\+\_\+dbg\+Trigger\+Sync}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_ab1529a79dc6d994f866e63c91694d512}{s\+\_\+generate\+Default\+SSID}} (char $\ast$buffer, uint32\+\_\+t size, uint32\+\_\+t id)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_a0d1667fece398b32b56ea8f01e7d9421}{s\+\_\+create\+Ssid}} (const char $\ast$name, uint32\+\_\+t id)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_a752334fabfb8b4cc4b5ee834f66fe201}{s\+\_\+create\+Ssid\+From\+Obj}} (amxd\+\_\+object\+\_\+t $\ast$obj)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_ac40440626a0cae3d68a9e6331df04fe1}{wld\+\_\+ssid\+\_\+create\+Ap\+Ssid}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_a3b3e2dc82a1b23c34f153c4169d2068a}{wld\+\_\+ssid\+\_\+from\+Obj}} (amxd\+\_\+object\+\_\+t $\ast$ssid\+Obj)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_acebf637933c1ab1be1a64fa56d9f43fa}{wld\+\_\+ssid\+\_\+clean\+All}} ()
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_a0e9bfa52977a388bc4985bb5529e9811}{\+\_\+wld\+\_\+ssid\+\_\+add\+Instance\+\_\+oaf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_ae082b035fd0d8e45777d2ffd11bdd393}{\+\_\+wld\+\_\+ssid\+\_\+del\+Instance\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_a96f0d748fbf871cdb2d463f6e5200374}{\+\_\+wld\+\_\+ssid\+\_\+set\+Lower\+Layers\+\_\+pwf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$parameter, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_ae0a646059bc43b690b54367ec69b460a}{wld\+\_\+ssid\+\_\+has\+Auto\+Mac\+Bss\+Index}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, int32\+\_\+t $\ast$p\+Bss\+Index)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__ssid_8c_aa7285272f42b45edeed1f1bd898ebecc}{wld\+\_\+rad\+\_\+get\+Highest\+Vap\+Auto\+Mac\+Bss\+Index}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a4a47a343634b892d99c8f8317e894ff7}{s\+\_\+set\+Bss\+Index}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, int32\+\_\+t index)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a4ff852c30394e31a39a1dc693f572b44}{wld\+\_\+ssid\+\_\+generate\+Mac}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, uint32\+\_\+t index, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a3d138959533dc5c24ccbad1820f3e31d}{wld\+\_\+ssid\+\_\+generate\+Bssid}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t ap\+Index, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a37a193d9265b91c7d314b71bdb0e1c39}{wld\+\_\+ssid\+\_\+set\+Mac}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_aea97beb20a1eda496bf89065782bfabf}{wld\+\_\+ssid\+\_\+set\+Bssid}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_a89ba4e42a146b26e57c72ff5a27d2099}{wld\+\_\+ssid\+\_\+get\+Ssid\+By\+Bssid}} (swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_a1515f85828040cc1465d67ec07896fe0}{wld\+\_\+ssid\+\_\+get\+Ssid\+By\+If\+Index}} (int32\+\_\+t if\+Index)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_a82479ab935cc20abf86057e2437c5cf9}{wld\+\_\+ssid\+\_\+get\+Ssid\+By\+Mac\+Address}} (swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_adc0fb169e2e946403dd24d299b69638f}{wld\+\_\+ssid\+\_\+get\+Ssid\+By\+If\+Name}} (const char $\ast$if\+Name)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__ssid_8c_aeed9b197819ac60f28edd5936fa29b96}{wld\+\_\+ssid\+\_\+get\+Wpa\+Ctrl\+Iface}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+\mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406f}{wld\+\_\+ssid\+Type\+\_\+e}} \mbox{\hyperlink{wld__ssid_8c_a7f8933b636a696953a13e5f9154fc921}{wld\+\_\+ssid\+\_\+get\+Type}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__ssid_8c_ae8903c170f2876d18c081584527da5cd}{wld\+\_\+ssid\+\_\+get\+If\+Name}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__ssid_8c_aaedbb28f45035c1d8e3cb7eb23ed2e79}{wld\+\_\+ssid\+\_\+get\+If\+Index}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_aee91236b73f35044b9d1ae280099deb6}{wld\+\_\+ssid\+\_\+is\+Link\+Created}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_a6e8df4a58cea922ad1ee3b7a17bb1c20}{wld\+\_\+ssid\+\_\+is\+Link\+Enabled}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_a010a00ab2e636fdeedcddc302e01bbe6}{wld\+\_\+ssid\+\_\+is\+Link\+Active}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__ssid_8c_a196f130da985ca720a94b0634e642a52}{wld\+\_\+ssid\+\_\+get\+Link\+If\+Name}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__ssid_8c_ae2d3b6a104e262406859320da64b7884}{wld\+\_\+ssid\+\_\+get\+Link\+If\+Index}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_a9fb702f717c3fdbdef1511a5c7b26eea}{wld\+\_\+ssid\+\_\+has\+Mlo\+Support}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a5b8f03b583d4816885a01d1b29eb479f}{wld\+\_\+ssid\+\_\+sync\+Enable}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, bool to\+Intf)
+\item 
+bool \mbox{\hyperlink{wld__ssid_8c_a594389c3c96068513e03b6c53ba3c342}{wld\+\_\+ssid\+\_\+is\+SSIDConfigured}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_ac844154543b2cdaeb049fbf4ef84ac92}{\+\_\+\+SSID\+\_\+get\+SSIDStats}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_a54a200292ef179548d00b170bbccba2e}{\+\_\+wld\+\_\+ssid\+\_\+get\+Stats\+\_\+orf}} (amxd\+\_\+object\+\_\+t $\ast$const object, amxd\+\_\+param\+\_\+t $\ast$const param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const action\+\_\+retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_a36601d41fe154addb35074f956f70a2e}{\+\_\+wld\+\_\+ssid\+\_\+validate\+SSID\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__ssid_8c_aee3f99689842d3b81a6e09289ceee84a}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ssid\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SSID\char`\"{}, s\+\_\+set\+SSID\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Custom\+Net\+Dev\+Name\char`\"{}, s\+\_\+set\+Custom\+Net\+Dev\+Name\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MACAddress\char`\"{}, s\+\_\+set\+Mac\+Address\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Enable\+\_\+pwf)),.obj\+Changed\+Cb=s\+\_\+set\+SSIDConf\+\_\+ocf)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_ae2311c139cfa1be6b458f376f799741d}{\+\_\+wld\+\_\+ssid\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_ad65dba758152bf9b95840ae1335a3545}{sync\+Data\+\_\+\+SSID2\+OBJ}} (amxd\+\_\+object\+\_\+t $\ast$object, \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$pS, int set)
+\item 
+void \mbox{\hyperlink{wld__ssid_8c_a388ab33ecac0a16ab058b3dcb3be3cc9}{wld\+\_\+ssid\+\_\+set\+Status}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID, \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}} status, bool commit)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_a39ca7910adbde42ce7ce3d6e3df787cb}{\+\_\+\+SSID\+\_\+get\+Status\+Histogram}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ssid_8c_a0b37be644e37dfa18ee03de91ca9ddb0}{\+\_\+wld\+\_\+ssid\+\_\+get\+Last\+Change\+\_\+prf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ssid_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ssid_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ssid\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ssid_8c_ac844154543b2cdaeb049fbf4ef84ac92}\label{wld__ssid_8c_ac844154543b2cdaeb049fbf4ef84ac92}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_SSID\_getSSIDStats@{\_SSID\_getSSIDStats}}
+\index{\_SSID\_getSSIDStats@{\_SSID\_getSSIDStats}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_SSID\_getSSIDStats()}{\_SSID\_getSSIDStats()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+SSID\+\_\+get\+SSIDStats (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a39ca7910adbde42ce7ce3d6e3df787cb}\label{wld__ssid_8c_a39ca7910adbde42ce7ce3d6e3df787cb}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_SSID\_getStatusHistogram@{\_SSID\_getStatusHistogram}}
+\index{\_SSID\_getStatusHistogram@{\_SSID\_getStatusHistogram}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_SSID\_getStatusHistogram()}{\_SSID\_getStatusHistogram()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+SSID\+\_\+get\+Status\+Histogram (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a0e9bfa52977a388bc4985bb5529e9811}\label{wld__ssid_8c_a0e9bfa52977a388bc4985bb5529e9811}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_addInstance\_oaf@{\_wld\_ssid\_addInstance\_oaf}}
+\index{\_wld\_ssid\_addInstance\_oaf@{\_wld\_ssid\_addInstance\_oaf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_addInstance\_oaf()}{\_wld\_ssid\_addInstance\_oaf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ssid\+\_\+add\+Instance\+\_\+oaf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c_a0e9bfa52977a388bc4985bb5529e9811_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_ae082b035fd0d8e45777d2ffd11bdd393}\label{wld__ssid_8c_ae082b035fd0d8e45777d2ffd11bdd393}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_delInstance\_odf@{\_wld\_ssid\_delInstance\_odf}}
+\index{\_wld\_ssid\_delInstance\_odf@{\_wld\_ssid\_delInstance\_odf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_delInstance\_odf()}{\_wld\_ssid\_delInstance\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ssid\+\_\+del\+Instance\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a0b37be644e37dfa18ee03de91ca9ddb0}\label{wld__ssid_8c_a0b37be644e37dfa18ee03de91ca9ddb0}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_getLastChange\_prf@{\_wld\_ssid\_getLastChange\_prf}}
+\index{\_wld\_ssid\_getLastChange\_prf@{\_wld\_ssid\_getLastChange\_prf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_getLastChange\_prf()}{\_wld\_ssid\_getLastChange\_prf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ssid\+\_\+get\+Last\+Change\+\_\+prf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a54a200292ef179548d00b170bbccba2e}\label{wld__ssid_8c_a54a200292ef179548d00b170bbccba2e}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_getStats\_orf@{\_wld\_ssid\_getStats\_orf}}
+\index{\_wld\_ssid\_getStats\_orf@{\_wld\_ssid\_getStats\_orf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_getStats\_orf()}{\_wld\_ssid\_getStats\_orf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ssid\+\_\+get\+Stats\+\_\+orf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$const}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$const}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{action\+\_\+retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_ae2311c139cfa1be6b458f376f799741d}\label{wld__ssid_8c_ae2311c139cfa1be6b458f376f799741d}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_setConf\_ocf@{\_wld\_ssid\_setConf\_ocf}}
+\index{\_wld\_ssid\_setConf\_ocf@{\_wld\_ssid\_setConf\_ocf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_setConf\_ocf()}{\_wld\_ssid\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ssid\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a96f0d748fbf871cdb2d463f6e5200374}\label{wld__ssid_8c_a96f0d748fbf871cdb2d463f6e5200374}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_setLowerLayers\_pwf@{\_wld\_ssid\_setLowerLayers\_pwf}}
+\index{\_wld\_ssid\_setLowerLayers\_pwf@{\_wld\_ssid\_setLowerLayers\_pwf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_setLowerLayers\_pwf()}{\_wld\_ssid\_setLowerLayers\_pwf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ssid\+\_\+set\+Lower\+Layers\+\_\+pwf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{parameter,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a36601d41fe154addb35074f956f70a2e}\label{wld__ssid_8c_a36601d41fe154addb35074f956f70a2e}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!\_wld\_ssid\_validateSSID\_pvf@{\_wld\_ssid\_validateSSID\_pvf}}
+\index{\_wld\_ssid\_validateSSID\_pvf@{\_wld\_ssid\_validateSSID\_pvf}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ssid\_validateSSID\_pvf()}{\_wld\_ssid\_validateSSID\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ssid\+\_\+validate\+SSID\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+check the SSID object block on wrong input. Currently only SSID is checked. (All other are accept by default). Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=339pt]{wld__ssid_8c_a36601d41fe154addb35074f956f70a2e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_a0d1667fece398b32b56ea8f01e7d9421}\label{wld__ssid_8c_a0d1667fece398b32b56ea8f01e7d9421}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!s\_createSsid@{s\_createSsid}}
+\index{s\_createSsid@{s\_createSsid}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{s\_createSsid()}{s\_createSsid()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ s\+\_\+create\+Ssid (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{uint32\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a752334fabfb8b4cc4b5ee834f66fe201}\label{wld__ssid_8c_a752334fabfb8b4cc4b5ee834f66fe201}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!s\_createSsidFromObj@{s\_createSsidFromObj}}
+\index{s\_createSsidFromObj@{s\_createSsidFromObj}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{s\_createSsidFromObj()}{s\_createSsidFromObj()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ s\+\_\+create\+Ssid\+From\+Obj (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c_a752334fabfb8b4cc4b5ee834f66fe201_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_ab1529a79dc6d994f866e63c91694d512}\label{wld__ssid_8c_ab1529a79dc6d994f866e63c91694d512}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!s\_generateDefaultSSID@{s\_generateDefaultSSID}}
+\index{s\_generateDefaultSSID@{s\_generateDefaultSSID}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{s\_generateDefaultSSID()}{s\_generateDefaultSSID()}}
+{\footnotesize\ttfamily void s\+\_\+generate\+Default\+SSID (\begin{DoxyParamCaption}\item[{char $\ast$}]{buffer,  }\item[{uint32\+\_\+t}]{size,  }\item[{uint32\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a4a47a343634b892d99c8f8317e894ff7}\label{wld__ssid_8c_a4a47a343634b892d99c8f8317e894ff7}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!s\_setBssIndex@{s\_setBssIndex}}
+\index{s\_setBssIndex@{s\_setBssIndex}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{s\_setBssIndex()}{s\_setBssIndex()}}
+{\footnotesize\ttfamily void s\+\_\+set\+Bss\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{int32\+\_\+t}]{index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_aee3f99689842d3b81a6e09289ceee84a}\label{wld__ssid_8c_aee3f99689842d3b81a6e09289ceee84a}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ssid\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SSID\char`\"{}, s\+\_\+set\+SSID\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Custom\+Net\+Dev\+Name\char`\"{}, s\+\_\+set\+Custom\+Net\+Dev\+Name\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MACAddress\char`\"{}, s\+\_\+set\+Mac\+Address\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Enable\+\_\+pwf))}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setSSIDConf\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_ad65dba758152bf9b95840ae1335a3545}\label{wld__ssid_8c_ad65dba758152bf9b95840ae1335a3545}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!syncData\_SSID2OBJ@{syncData\_SSID2OBJ}}
+\index{syncData\_SSID2OBJ@{syncData\_SSID2OBJ}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{syncData\_SSID2OBJ()}{syncData\_SSID2OBJ()}}
+{\footnotesize\ttfamily void sync\+Data\+\_\+\+SSID2\+OBJ (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{pS,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+\textquotesingle{}Status\textquotesingle{} The current operational state of the SSID entry.
+
+\textquotesingle{}SSID\textquotesingle{} The current service set identifier in use by the connection. The SSID is an identifier that is attached to packets sent over the wireless LAN that functions as an ID for joining a particular radio network (BSS).
+
+\textquotesingle{}MACAddress\textquotesingle{} The MAC address of this interface. ~\newline
+
+
+\textquotesingle{}BSSID\textquotesingle{} The Basic Service Set ID. This is the MAC address of the access point, which can either be local (when this instance models an access point SSID) or remote (when this instance models an end point SSID). In multiple VAP setup it differs\mbox{\Hypertarget{wld__ssid_8c_aa7285272f42b45edeed1f1bd898ebecc}\label{wld__ssid_8c_aa7285272f42b45edeed1f1bd898ebecc}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_rad\_getHighestVapAutoMacBssIndex@{wld\_rad\_getHighestVapAutoMacBssIndex}}
+\index{wld\_rad\_getHighestVapAutoMacBssIndex@{wld\_rad\_getHighestVapAutoMacBssIndex}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_getHighestVapAutoMacBssIndex()}{wld\_rad\_getHighestVapAutoMacBssIndex()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+rad\+\_\+get\+Highest\+Vap\+Auto\+Mac\+Bss\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_acebf637933c1ab1be1a64fa56d9f43fa}\label{wld__ssid_8c_acebf637933c1ab1be1a64fa56d9f43fa}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_cleanAll@{wld\_ssid\_cleanAll}}
+\index{wld\_ssid\_cleanAll@{wld\_ssid\_cleanAll}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_cleanAll()}{wld\_ssid\_cleanAll()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+clean\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=296pt]{wld__ssid_8c_acebf637933c1ab1be1a64fa56d9f43fa_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_ac40440626a0cae3d68a9e6331df04fe1}\label{wld__ssid_8c_ac40440626a0cae3d68a9e6331df04fe1}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_createApSsid@{wld\_ssid\_createApSsid}}
+\index{wld\_ssid\_createApSsid@{wld\_ssid\_createApSsid}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_createApSsid()}{wld\_ssid\_createApSsid()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wld\+\_\+ssid\+\_\+create\+Ap\+Ssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a7dfcede6465a3dfa9144a3abf665dace}\label{wld__ssid_8c_a7dfcede6465a3dfa9144a3abf665dace}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_dbgTriggerSync@{wld\_ssid\_dbgTriggerSync}}
+\index{wld\_ssid\_dbgTriggerSync@{wld\_ssid\_dbgTriggerSync}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_dbgTriggerSync()}{wld\_ssid\_dbgTriggerSync()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+dbg\+Trigger\+Sync (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a3b3e2dc82a1b23c34f153c4169d2068a}\label{wld__ssid_8c_a3b3e2dc82a1b23c34f153c4169d2068a}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_fromObj@{wld\_ssid\_fromObj}}
+\index{wld\_ssid\_fromObj@{wld\_ssid\_fromObj}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_fromObj()}{wld\_ssid\_fromObj()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wld\+\_\+ssid\+\_\+from\+Obj (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{ssid\+Obj }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{wld__ssid_8c_a3b3e2dc82a1b23c34f153c4169d2068a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_a3d138959533dc5c24ccbad1820f3e31d}\label{wld__ssid_8c_a3d138959533dc5c24ccbad1820f3e31d}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_generateBssid@{wld\_ssid\_generateBssid}}
+\index{wld\_ssid\_generateBssid@{wld\_ssid\_generateBssid}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_generateBssid()}{wld\_ssid\_generateBssid()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+generate\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{ap\+Index,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a4ff852c30394e31a39a1dc693f572b44}\label{wld__ssid_8c_a4ff852c30394e31a39a1dc693f572b44}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_generateMac@{wld\_ssid\_generateMac}}
+\index{wld\_ssid\_generateMac@{wld\_ssid\_generateMac}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_generateMac()}{wld\_ssid\_generateMac()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+generate\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{uint32\+\_\+t}]{index,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_aaedbb28f45035c1d8e3cb7eb23ed2e79}\label{wld__ssid_8c_aaedbb28f45035c1d8e3cb7eb23ed2e79}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getIfIndex@{wld\_ssid\_getIfIndex}}
+\index{wld\_ssid\_getIfIndex@{wld\_ssid\_getIfIndex}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getIfIndex()}{wld\_ssid\_getIfIndex()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+ssid\+\_\+get\+If\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c_aaedbb28f45035c1d8e3cb7eb23ed2e79_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_ae8903c170f2876d18c081584527da5cd}\label{wld__ssid_8c_ae8903c170f2876d18c081584527da5cd}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getIfName@{wld\_ssid\_getIfName}}
+\index{wld\_ssid\_getIfName@{wld\_ssid\_getIfName}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getIfName()}{wld\_ssid\_getIfName()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+ssid\+\_\+get\+If\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c_ae8903c170f2876d18c081584527da5cd_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_a322b58a231dc51a86d7f2c148baa4444}\label{wld__ssid_8c_a322b58a231dc51a86d7f2c148baa4444}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getIntfEnable@{wld\_ssid\_getIntfEnable}}
+\index{wld\_ssid\_getIntfEnable@{wld\_ssid\_getIntfEnable}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getIntfEnable()}{wld\_ssid\_getIntfEnable()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+get\+Intf\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a646ad9eec726d78cd6664e4f882e29e1}\label{wld__ssid_8c_a646ad9eec726d78cd6664e4f882e29e1}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getIntfObject@{wld\_ssid\_getIntfObject}}
+\index{wld\_ssid\_getIntfObject@{wld\_ssid\_getIntfObject}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getIntfObject()}{wld\_ssid\_getIntfObject()}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t $\ast$ wld\+\_\+ssid\+\_\+get\+Intf\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_ae2d3b6a104e262406859320da64b7884}\label{wld__ssid_8c_ae2d3b6a104e262406859320da64b7884}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getLinkIfIndex@{wld\_ssid\_getLinkIfIndex}}
+\index{wld\_ssid\_getLinkIfIndex@{wld\_ssid\_getLinkIfIndex}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getLinkIfIndex()}{wld\_ssid\_getLinkIfIndex()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+ssid\+\_\+get\+Link\+If\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a196f130da985ca720a94b0634e642a52}\label{wld__ssid_8c_a196f130da985ca720a94b0634e642a52}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getLinkIfName@{wld\_ssid\_getLinkIfName}}
+\index{wld\_ssid\_getLinkIfName@{wld\_ssid\_getLinkIfName}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getLinkIfName()}{wld\_ssid\_getLinkIfName()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+ssid\+\_\+get\+Link\+If\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a89ba4e42a146b26e57c72ff5a27d2099}\label{wld__ssid_8c_a89ba4e42a146b26e57c72ff5a27d2099}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getSsidByBssid@{wld\_ssid\_getSsidByBssid}}
+\index{wld\_ssid\_getSsidByBssid@{wld\_ssid\_getSsidByBssid}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getSsidByBssid()}{wld\_ssid\_getSsidByBssid()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wld\+\_\+ssid\+\_\+get\+Ssid\+By\+Bssid (\begin{DoxyParamCaption}\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a1515f85828040cc1465d67ec07896fe0}\label{wld__ssid_8c_a1515f85828040cc1465d67ec07896fe0}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getSsidByIfIndex@{wld\_ssid\_getSsidByIfIndex}}
+\index{wld\_ssid\_getSsidByIfIndex@{wld\_ssid\_getSsidByIfIndex}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getSsidByIfIndex()}{wld\_ssid\_getSsidByIfIndex()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wld\+\_\+ssid\+\_\+get\+Ssid\+By\+If\+Index (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{if\+Index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_adc0fb169e2e946403dd24d299b69638f}\label{wld__ssid_8c_adc0fb169e2e946403dd24d299b69638f}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getSsidByIfName@{wld\_ssid\_getSsidByIfName}}
+\index{wld\_ssid\_getSsidByIfName@{wld\_ssid\_getSsidByIfName}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getSsidByIfName()}{wld\_ssid\_getSsidByIfName()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wld\+\_\+ssid\+\_\+get\+Ssid\+By\+If\+Name (\begin{DoxyParamCaption}\item[{const char $\ast$}]{if\+Name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a82479ab935cc20abf86057e2437c5cf9}\label{wld__ssid_8c_a82479ab935cc20abf86057e2437c5cf9}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getSsidByMacAddress@{wld\_ssid\_getSsidByMacAddress}}
+\index{wld\_ssid\_getSsidByMacAddress@{wld\_ssid\_getSsidByMacAddress}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getSsidByMacAddress()}{wld\_ssid\_getSsidByMacAddress()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wld\+\_\+ssid\+\_\+get\+Ssid\+By\+Mac\+Address (\begin{DoxyParamCaption}\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c_a82479ab935cc20abf86057e2437c5cf9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_a7f8933b636a696953a13e5f9154fc921}\label{wld__ssid_8c_a7f8933b636a696953a13e5f9154fc921}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getType@{wld\_ssid\_getType}}
+\index{wld\_ssid\_getType@{wld\_ssid\_getType}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getType()}{wld\_ssid\_getType()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406f}{wld\+\_\+ssid\+Type\+\_\+e}} wld\+\_\+ssid\+\_\+get\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ssid_8c_a7f8933b636a696953a13e5f9154fc921_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ssid_8c_aeed9b197819ac60f28edd5936fa29b96}\label{wld__ssid_8c_aeed9b197819ac60f28edd5936fa29b96}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_getWpaCtrlIface@{wld\_ssid\_getWpaCtrlIface}}
+\index{wld\_ssid\_getWpaCtrlIface@{wld\_ssid\_getWpaCtrlIface}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_getWpaCtrlIface()}{wld\_ssid\_getWpaCtrlIface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+ssid\+\_\+get\+Wpa\+Ctrl\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_ae0a646059bc43b690b54367ec69b460a}\label{wld__ssid_8c_ae0a646059bc43b690b54367ec69b460a}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_hasAutoMacBssIndex@{wld\_ssid\_hasAutoMacBssIndex}}
+\index{wld\_ssid\_hasAutoMacBssIndex@{wld\_ssid\_hasAutoMacBssIndex}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_hasAutoMacBssIndex()}{wld\_ssid\_hasAutoMacBssIndex()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+has\+Auto\+Mac\+Bss\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{int32\+\_\+t $\ast$}]{p\+Bss\+Index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a9fb702f717c3fdbdef1511a5c7b26eea}\label{wld__ssid_8c_a9fb702f717c3fdbdef1511a5c7b26eea}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_hasMloSupport@{wld\_ssid\_hasMloSupport}}
+\index{wld\_ssid\_hasMloSupport@{wld\_ssid\_hasMloSupport}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_hasMloSupport()}{wld\_ssid\_hasMloSupport()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+has\+Mlo\+Support (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a010a00ab2e636fdeedcddc302e01bbe6}\label{wld__ssid_8c_a010a00ab2e636fdeedcddc302e01bbe6}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_isLinkActive@{wld\_ssid\_isLinkActive}}
+\index{wld\_ssid\_isLinkActive@{wld\_ssid\_isLinkActive}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_isLinkActive()}{wld\_ssid\_isLinkActive()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+is\+Link\+Active (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_aee91236b73f35044b9d1ae280099deb6}\label{wld__ssid_8c_aee91236b73f35044b9d1ae280099deb6}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_isLinkCreated@{wld\_ssid\_isLinkCreated}}
+\index{wld\_ssid\_isLinkCreated@{wld\_ssid\_isLinkCreated}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_isLinkCreated()}{wld\_ssid\_isLinkCreated()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+is\+Link\+Created (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a6e8df4a58cea922ad1ee3b7a17bb1c20}\label{wld__ssid_8c_a6e8df4a58cea922ad1ee3b7a17bb1c20}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_isLinkEnabled@{wld\_ssid\_isLinkEnabled}}
+\index{wld\_ssid\_isLinkEnabled@{wld\_ssid\_isLinkEnabled}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_isLinkEnabled()}{wld\_ssid\_isLinkEnabled()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+is\+Link\+Enabled (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a594389c3c96068513e03b6c53ba3c342}\label{wld__ssid_8c_a594389c3c96068513e03b6c53ba3c342}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_isSSIDConfigured@{wld\_ssid\_isSSIDConfigured}}
+\index{wld\_ssid\_isSSIDConfigured@{wld\_ssid\_isSSIDConfigured}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_isSSIDConfigured()}{wld\_ssid\_isSSIDConfigured()}}
+{\footnotesize\ttfamily bool wld\+\_\+ssid\+\_\+is\+SSIDConfigured (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+Return whether the given SSID is configured with a non default SSID \mbox{\Hypertarget{wld__ssid_8c_aea97beb20a1eda496bf89065782bfabf}\label{wld__ssid_8c_aea97beb20a1eda496bf89065782bfabf}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_setBssid@{wld\_ssid\_setBssid}}
+\index{wld\_ssid\_setBssid@{wld\_ssid\_setBssid}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_setBssid()}{wld\_ssid\_setBssid()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+set\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a37a193d9265b91c7d314b71bdb0e1c39}\label{wld__ssid_8c_a37a193d9265b91c7d314b71bdb0e1c39}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_setMac@{wld\_ssid\_setMac}}
+\index{wld\_ssid\_setMac@{wld\_ssid\_setMac}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_setMac()}{wld\_ssid\_setMac()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+set\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a388ab33ecac0a16ab058b3dcb3be3cc9}\label{wld__ssid_8c_a388ab33ecac0a16ab058b3dcb3be3cc9}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_setStatus@{wld\_ssid\_setStatus}}
+\index{wld\_ssid\_setStatus@{wld\_ssid\_setStatus}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_setStatus()}{wld\_ssid\_setStatus()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+set\+Status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{\mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}}}]{status,  }\item[{bool}]{commit }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ssid_8c_a5b8f03b583d4816885a01d1b29eb479f}\label{wld__ssid_8c_a5b8f03b583d4816885a01d1b29eb479f}} 
+\index{wld\_ssid.c@{wld\_ssid.c}!wld\_ssid\_syncEnable@{wld\_ssid\_syncEnable}}
+\index{wld\_ssid\_syncEnable@{wld\_ssid\_syncEnable}!wld\_ssid.c@{wld\_ssid.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_syncEnable()}{wld\_ssid\_syncEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+ssid\+\_\+sync\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID,  }\item[{bool}]{to\+Intf }\end{DoxyParamCaption})}
+

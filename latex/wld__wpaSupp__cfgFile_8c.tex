@@ -1,0 +1,141 @@
+\hypertarget{wld__wpaSupp__cfgFile_8c}{}\doxysection{src/nl80211/wld\+\_\+wpa\+Supp\+\_\+cfg\+File.c File Reference}
+\label{wld__wpaSupp__cfgFile_8c}\index{src/nl80211/wld\_wpaSupp\_cfgFile.c@{src/nl80211/wld\_wpaSupp\_cfgFile.c}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/map/swl\+\_\+map\+Char\+Fmt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+cfg\+Manager.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+cfg\+Manager\+\_\+priv.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+cfg\+File.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Supp\+\_\+cfg\+File.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgFile_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaSupp__cfgFile_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}w\+Sup\+Cfg\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__cfgFile_8c_af406ad1f9374da6c61040ab167b09db7}{wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+create}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, char $\ast$cfg\+File\+Name)
+\begin{DoxyCompactList}\small\item\em create a configuration file for the wpa\+Supplicant \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__cfgFile_8c_aea06bf7bb478e96fd69220d7d124c2e0}{wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+create\+Ext}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__cfgFile_8c_aa63265cf88dd4de114291ae924942393}{s\+\_\+cfg\+File\+\_\+update}} (char $\ast$config\+Path, const char $\ast$key, const char $\ast$value, bool is\+Global)
+\begin{DoxyCompactList}\small\item\em update a configuration file for the wpa\+\_\+supplicant \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__cfgFile_8c_addc888bc4793bcfd16b04bd506c73c29}{wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+global\+Config\+Update}} (char $\ast$config\+Path, const char $\ast$key, const char $\ast$value)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__cfgFile_8c_a1c35b421504283cf192fd09154c73290}{wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+network\+Config\+Update}} (char $\ast$config\+Path, const char $\ast$key, const char $\ast$value)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaSupp__cfgFile_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__wpaSupp__cfgFile_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}!ME@{ME}}
+\index{ME@{ME}!wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}w\+Sup\+Cfg\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaSupp__cfgFile_8c_aa63265cf88dd4de114291ae924942393}\label{wld__wpaSupp__cfgFile_8c_aa63265cf88dd4de114291ae924942393}} 
+\index{wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}!s\_cfgFile\_update@{s\_cfgFile\_update}}
+\index{s\_cfgFile\_update@{s\_cfgFile\_update}!wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}}
+\doxysubsubsection{\texorpdfstring{s\_cfgFile\_update()}{s\_cfgFile\_update()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+cfg\+File\+\_\+update (\begin{DoxyParamCaption}\item[{char $\ast$}]{config\+Path,  }\item[{const char $\ast$}]{key,  }\item[{const char $\ast$}]{value,  }\item[{bool}]{is\+Global }\end{DoxyParamCaption})}
+
+
+
+update a configuration file for the wpa\+\_\+supplicant 
+
+
+\begin{DoxyParams}{Parameters}
+{\em config\+Path} & the path of the config file \\
+\hline
+{\em key} & the param to update \\
+\hline
+{\em value} & the key value to set \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgFile_8c_aa63265cf88dd4de114291ae924942393_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{wld__wpaSupp__cfgFile_8c_aa63265cf88dd4de114291ae924942393_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaSupp__cfgFile_8c_af406ad1f9374da6c61040ab167b09db7}\label{wld__wpaSupp__cfgFile_8c_af406ad1f9374da6c61040ab167b09db7}} 
+\index{wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}!wld\_wpaSupp\_cfgFile\_create@{wld\_wpaSupp\_cfgFile\_create}}
+\index{wld\_wpaSupp\_cfgFile\_create@{wld\_wpaSupp\_cfgFile\_create}!wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_cfgFile\_create()}{wld\_wpaSupp\_cfgFile\_create()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{char $\ast$}]{cfg\+File\+Name }\end{DoxyParamCaption})}
+
+
+
+create a configuration file for the wpa\+Supplicant 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & the endpoint \\
+\hline
+{\em cfg\+File\+Name} & the wpa\+Supplicant configuration file name\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__cfgFile_8c_aea06bf7bb478e96fd69220d7d124c2e0}\label{wld__wpaSupp__cfgFile_8c_aea06bf7bb478e96fd69220d7d124c2e0}} 
+\index{wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}!wld\_wpaSupp\_cfgFile\_createExt@{wld\_wpaSupp\_cfgFile\_createExt}}
+\index{wld\_wpaSupp\_cfgFile\_createExt@{wld\_wpaSupp\_cfgFile\_createExt}!wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_cfgFile\_createExt()}{wld\_wpaSupp\_cfgFile\_createExt()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+create\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaSupp__cfgFile_8c_addc888bc4793bcfd16b04bd506c73c29}\label{wld__wpaSupp__cfgFile_8c_addc888bc4793bcfd16b04bd506c73c29}} 
+\index{wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}!wld\_wpaSupp\_cfgFile\_globalConfigUpdate@{wld\_wpaSupp\_cfgFile\_globalConfigUpdate}}
+\index{wld\_wpaSupp\_cfgFile\_globalConfigUpdate@{wld\_wpaSupp\_cfgFile\_globalConfigUpdate}!wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_cfgFile\_globalConfigUpdate()}{wld\_wpaSupp\_cfgFile\_globalConfigUpdate()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+global\+Config\+Update (\begin{DoxyParamCaption}\item[{char $\ast$}]{config\+Path,  }\item[{const char $\ast$}]{key,  }\item[{const char $\ast$}]{value }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgFile_8c_addc888bc4793bcfd16b04bd506c73c29_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaSupp__cfgFile_8c_a1c35b421504283cf192fd09154c73290}\label{wld__wpaSupp__cfgFile_8c_a1c35b421504283cf192fd09154c73290}} 
+\index{wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}!wld\_wpaSupp\_cfgFile\_networkConfigUpdate@{wld\_wpaSupp\_cfgFile\_networkConfigUpdate}}
+\index{wld\_wpaSupp\_cfgFile\_networkConfigUpdate@{wld\_wpaSupp\_cfgFile\_networkConfigUpdate}!wld\_wpaSupp\_cfgFile.c@{wld\_wpaSupp\_cfgFile.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_cfgFile\_networkConfigUpdate()}{wld\_wpaSupp\_cfgFile\_networkConfigUpdate()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+cfg\+File\+\_\+network\+Config\+Update (\begin{DoxyParamCaption}\item[{char $\ast$}]{config\+Path,  }\item[{const char $\ast$}]{key,  }\item[{const char $\ast$}]{value }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgFile_8c_a1c35b421504283cf192fd09154c73290_cgraph}
+\end{center}
+\end{figure}

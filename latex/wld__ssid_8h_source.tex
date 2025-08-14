@@ -1,0 +1,108 @@
+\hypertarget{wld__ssid_8h_source}{}\doxysection{wld\+\_\+ssid.\+h}
+\label{wld__ssid_8h_source}\index{include/wld/wld\_ssid.h@{include/wld/wld\_ssid.h}}
+\mbox{\hyperlink{wld__ssid_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_SSID\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_SSID\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_a388ab33ecac0a16ab058b3dcb3be3cc9}{wld\_ssid\_setStatus}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\_status\_e}} status, \textcolor{keywordtype}{bool} commit);}
+\DoxyCodeLine{69 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_aa07dbd4a57dc17b063be50e1a589532b}{syncData\_SSID2OBJ}}(amxd\_object\_t* \textcolor{keywordtype}{object}, \mbox{\hyperlink{structS__SSID}{T\_SSID}}* pR, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_acebf637933c1ab1be1a64fa56d9f43fa}{wld\_ssid\_cleanAll}}();}
+\DoxyCodeLine{72 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_a62bd398db57c1a955c479d18f1f2d94a}{wld\_ssid\_syncEnable}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, \textcolor{keywordtype}{bool} syncToIntf);}
+\DoxyCodeLine{73 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ssid_8h_a594389c3c96068513e03b6c53ba3c342}{wld\_ssid\_isSSIDConfigured}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{74 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_a3d138959533dc5c24ccbad1820f3e31d}{wld\_ssid\_generateBssid}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t apIndex, swl\_macBin\_t* macBin);}
+\DoxyCodeLine{75 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_aea97beb20a1eda496bf89065782bfabf}{wld\_ssid\_setBssid}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, swl\_macBin\_t* macBin);}
+\DoxyCodeLine{76 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_a4ff852c30394e31a39a1dc693f572b44}{wld\_ssid\_generateMac}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, uint32\_t index, swl\_macBin\_t* macBin);}
+\DoxyCodeLine{77 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_a37a193d9265b91c7d314b71bdb0e1c39}{wld\_ssid\_setMac}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, swl\_macBin\_t* macBin);}
+\DoxyCodeLine{78 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ssid_8h_ae0a646059bc43b690b54367ec69b460a}{wld\_ssid\_hasAutoMacBssIndex}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, int32\_t* pBssIndex);}
+\DoxyCodeLine{79 int32\_t \mbox{\hyperlink{wld__ssid_8h_a906c7f9d5f88db7a6b1ac35f7bed9b75}{wld\_rad\_getHighestVapAutoMacBssIndex}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__ssid_8h_ac40440626a0cae3d68a9e6331df04fe1}{wld\_ssid\_createApSsid}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{82 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__ssid_8h_a3b3e2dc82a1b23c34f153c4169d2068a}{wld\_ssid\_fromObj}}(amxd\_object\_t* ssidObj);}
+\DoxyCodeLine{83 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__ssid_8h_a89ba4e42a146b26e57c72ff5a27d2099}{wld\_ssid\_getSsidByBssid}}(swl\_macBin\_t* macBin);}
+\DoxyCodeLine{84 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__ssid_8h_a82479ab935cc20abf86057e2437c5cf9}{wld\_ssid\_getSsidByMacAddress}}(swl\_macBin\_t* macBin);}
+\DoxyCodeLine{85 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__ssid_8h_a1515f85828040cc1465d67ec07896fe0}{wld\_ssid\_getSsidByIfIndex}}(int32\_t ifIndex);}
+\DoxyCodeLine{86 \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406f}{wld\_ssidType\_e}} \mbox{\hyperlink{wld__ssid_8h_a7f8933b636a696953a13e5f9154fc921}{wld\_ssid\_getType}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{87 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__ssid_8h_ae8903c170f2876d18c081584527da5cd}{wld\_ssid\_getIfName}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{88 int32\_t \mbox{\hyperlink{wld__ssid_8h_aaedbb28f45035c1d8e3cb7eb23ed2e79}{wld\_ssid\_getIfIndex}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__ssid_8h_adc0fb169e2e946403dd24d299b69638f}{wld\_ssid\_getSsidByIfName}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{91 \mbox{\hyperlink{structwld__wpaCtrlInterface}{wld\_wpaCtrlInterface\_t}}* \mbox{\hyperlink{wld__ssid_8h_aeed9b197819ac60f28edd5936fa29b96}{wld\_ssid\_getWpaCtrlIface}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{93 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ssid_8h_aee91236b73f35044b9d1ae280099deb6}{wld\_ssid\_isLinkCreated}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{94 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ssid_8h_a6e8df4a58cea922ad1ee3b7a17bb1c20}{wld\_ssid\_isLinkEnabled}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{95 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ssid_8h_a010a00ab2e636fdeedcddc302e01bbe6}{wld\_ssid\_isLinkActive}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{96 int32\_t \mbox{\hyperlink{wld__ssid_8h_ae2d3b6a104e262406859320da64b7884}{wld\_ssid\_getLinkIfIndex}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{97 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__ssid_8h_a196f130da985ca720a94b0634e642a52}{wld\_ssid\_getLinkIfName}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{98 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ssid_8h_a9fb702f717c3fdbdef1511a5c7b26eea}{wld\_ssid\_hasMloSupport}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ssid_8h_a7dfcede6465a3dfa9144a3abf665dace}{wld\_ssid\_dbgTriggerSync}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{102 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_SSID\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

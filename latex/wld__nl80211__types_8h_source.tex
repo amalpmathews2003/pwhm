@@ -1,0 +1,379 @@
+\hypertarget{wld__nl80211__types_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+types.\+h}
+\label{wld__nl80211__types_8h_source}\index{include/wld/wld\_nl80211\_types.h@{include/wld/wld\_nl80211\_types.h}}
+\mbox{\hyperlink{wld__nl80211__types_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{comment}{/*}}
+\DoxyCodeLine{63 \textcolor{comment}{ * This file includes nl80211 type definitions used in api and event callbacks}}
+\DoxyCodeLine{64 \textcolor{comment}{ */}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_NL80211\_TYPES\_H\_}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_NL80211\_TYPES\_H\_}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{comment}{/*}}
+\DoxyCodeLine{72 \textcolor{comment}{ * @brief value for undefined nl80211 wiphy/iface ID}}
+\DoxyCodeLine{73 \textcolor{comment}{ * (eg. when not included in msg, or when unknown)}}
+\DoxyCodeLine{74 \textcolor{comment}{ * (iface net id is greater than 0)}}
+\DoxyCodeLine{75 \textcolor{comment}{ * (wiphy id is positive)}}
+\DoxyCodeLine{76 \textcolor{comment}{ */}}
+\DoxyCodeLine{77 \textcolor{preprocessor}{\#define WLD\_NL80211\_ID\_UNDEF ((uint32\_t) -\/1)}}
+\DoxyCodeLine{78 \textcolor{comment}{/*}}
+\DoxyCodeLine{79 \textcolor{comment}{ * @brief value for any nl80211 wiphy/iface ID}}
+\DoxyCodeLine{80 \textcolor{comment}{ * (eg. when need to match any received wiphy/iface id)}}
+\DoxyCodeLine{81 \textcolor{comment}{ */}}
+\DoxyCodeLine{82 \textcolor{preprocessor}{\#define WLD\_NL80211\_ID\_ANY ((uint32\_t) -\/2)}}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{85 \textcolor{preprocessor}{\#include <swl/swl\_common\_trilean.h>}}
+\DoxyCodeLine{86 \textcolor{preprocessor}{\#include <swl/swl\_common\_mcs.h>}}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{89     \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aa6ba74747188dfdd1468ad35ad004143e}{WLD\_WIPHY\_IFTYPE\_AP}},}
+\DoxyCodeLine{90     \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aa68ff28ae240b58cfe49ccdd1f4c1c6da}{WLD\_WIPHY\_IFTYPE\_STATION}},}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92     \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aadf831c8da5a34b68d0ac52dc6d6cf334}{WLD\_WIPHY\_IFTYPE\_MAX}},}
+\DoxyCodeLine{93 \} \mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426a}{wld\_iftype\_e}};}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{95 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{96     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanSpec__t_a4f55b74db3e22d0d117b0a351c8889a9}{chanWidth}};       \textcolor{comment}{//channel width in MHz}}
+\DoxyCodeLine{97     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanSpec__t_a90392f30a58fb013d6fbf04340f3b542}{ctrlFreq}};        \textcolor{comment}{//frequency of the control channel in MHz}}
+\DoxyCodeLine{98     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanSpec__t_a42ec13f3b84dcb71d93af25f567d130d}{centerFreq1}};     \textcolor{comment}{//Center frequency of the first part of the channel for bw > 20}}
+\DoxyCodeLine{99     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanSpec__t_ac3ea5c63e94403857d8d2ef07f48cefc}{centerFreq2}};     \textcolor{comment}{//Center frequency of the second part of the channel, bw 80+80}}
+\DoxyCodeLine{100 \} \mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\_nl80211\_chanSpec\_t}};}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{102 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{103     uint64\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a019ae68240b7a3e28a2060f601349c8e}{txBytes}};}
+\DoxyCodeLine{104     uint64\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a1437141a3eaf0bc700cbecd04545065b}{rxBytes}};}
+\DoxyCodeLine{105     uint32\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a248591f79c80b00da4d7b5b07933a149}{txPackets}};}
+\DoxyCodeLine{106     uint32\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a05d32b44f26900f2a489174d4ff6e0b5}{rxPackets}};}
+\DoxyCodeLine{107     uint32\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_adefa68f349b4a5e3ea9c9d14e0ae2741}{txRetries}};}
+\DoxyCodeLine{108     uint32\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_ad54a681404b7084534cea935172de187}{rxRetries}};}
+\DoxyCodeLine{109     uint32\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a5bbf5691e6af82bb14e459d18a0b9720}{txErrors}};}
+\DoxyCodeLine{110     uint64\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_abc15a35ca2e66c9ecc8d451ba1fde970}{rxErrors}};}
+\DoxyCodeLine{111     int8\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a4766036a087fb284f1ebd4832fdfc505}{rssiDbm}};}
+\DoxyCodeLine{112     int8\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t_a14307bf5f2015bd20d99d23c9c753963}{rssiAvgDbm}};}
+\DoxyCodeLine{113 \} \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t}{wld\_nl80211\_mloLinkInfoStats\_t}};}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{116     int32\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t_a154188bc44dd324202628b18a1897d76}{linkId}};                  \textcolor{comment}{//MLO link Id (>= 0)}}
+\DoxyCodeLine{117     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t_a297cc1c61940d6911f77183d6ab13fda}{linkMac}};            \textcolor{comment}{//MLO link mac}}
+\DoxyCodeLine{118     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t_a1d3e38d9ed1eed04006c6a6b39a3e23c}{mldMac}};             \textcolor{comment}{//MLD mac}}
+\DoxyCodeLine{119     \mbox{\hyperlink{structwld__nl80211__mloLinkInfoStats__t}{wld\_nl80211\_mloLinkInfoStats\_t}} \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t_ac653353d95bded09346f7d80c1911326}{stats}};}
+\DoxyCodeLine{120 \} \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t}{wld\_nl80211\_mloLinkInfo\_t}};}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{123     \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t}{wld\_nl80211\_mloLinkInfo\_t}} \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t_a7732339585431df89add14525077cd1b}{link}};  \textcolor{comment}{//MLO link info}}
+\DoxyCodeLine{124     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t_a4388dc852f228ccecefcaa85f7f7eb56}{linkPos}};                \textcolor{comment}{//MLO link position in mlo links list}}
+\DoxyCodeLine{125     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t_ad52e8d3206bbb285988bbaf41753cafd}{mldIfIndex}};             \textcolor{comment}{//MLD iface net dev index}}
+\DoxyCodeLine{126     \mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\_nl80211\_chanSpec\_t}} \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t_a759d46afad73b91c1127708a50fe8fc4}{chanSpec}}; \textcolor{comment}{//channel info}}
+\DoxyCodeLine{127     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t_a7a40be7f2bb5315e1b64d5c6daba88ef}{txPower}};                \textcolor{comment}{//current tx power in dbm}}
+\DoxyCodeLine{128 \} \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t}{wld\_nl80211\_ifaceMloLinkInfo\_t}};}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{comment}{/*}}
+\DoxyCodeLine{131 \textcolor{comment}{ * define max num of MLO links: to avoid dyn allocation of links list}}
+\DoxyCodeLine{132 \textcolor{comment}{ * But it is usually equal to max distinct radio links}}
+\DoxyCodeLine{133 \textcolor{comment}{ */}}
+\DoxyCodeLine{134 \textcolor{preprocessor}{\#define WLD\_NL80211\_MAX\_MLO\_LINKS 4}}
+\DoxyCodeLine{135 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{136     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a08afa4768e94e56d5fddf2d979a6de39}{wiphy}};                                                     \textcolor{comment}{//wiphy id}}
+\DoxyCodeLine{137     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a399fe45e8cec3e7bd31e70ac4b77adfd}{ifIndex}};                                                   \textcolor{comment}{//net dev index}}
+\DoxyCodeLine{138     uint64\_t \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a9390761019b8f87b1cd5cbabdf24f576}{wDevId}};                                                    \textcolor{comment}{//nl80211 wireless device id}}
+\DoxyCodeLine{139     \textcolor{keywordtype}{char} name[\mbox{\hyperlink{wld_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}];                                                \textcolor{comment}{//net dev name}}
+\DoxyCodeLine{140     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a136fcd75e527037b791af8c443f94f93}{mac}};                                                   \textcolor{comment}{//interface mac}}
+\DoxyCodeLine{141     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_aab440adf2466e8880e8dda00f91df882}{isMain}};                                                        \textcolor{comment}{//flag when interface is main (primVap, mainEP)}}
+\DoxyCodeLine{142     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a6560a105ac90577d61e610b12d415437}{isAp}};                                                          \textcolor{comment}{//flag when interface is accesspoint}}
+\DoxyCodeLine{143     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a7752665f1156da8c18324247e1509237}{isSta}};                                                         \textcolor{comment}{//flag when interface is endpoint}}
+\DoxyCodeLine{144     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_abf36a0c47be3acf07c5efda20bbbbc9f}{use4Mac}};                                                       \textcolor{comment}{//enabled 4mac mode}}
+\DoxyCodeLine{145     \mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\_nl80211\_chanSpec\_t}} \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a230ddcbb8e0573b84f982eba0635383a}{chanSpec}};                                    \textcolor{comment}{//channel info}}
+\DoxyCodeLine{146     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a5b235e776c0cd1010d01900e4a1cb656}{txPower}};                                                   \textcolor{comment}{//current tx power in dbm}}
+\DoxyCodeLine{147     \textcolor{keywordtype}{char} ssid[\mbox{\hyperlink{wld_8h_ad462effa237999b0b9bc23fdb738492d}{SSID\_NAME\_LEN}}];                                           \textcolor{comment}{//bss/ess ssid}}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{149     uint32\_t \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t_a69a608defb9ed57a6362ffc7f7db8156}{nMloLinks}};                                                 \textcolor{comment}{//number of valid MLO links in this interface}}
+\DoxyCodeLine{150     \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t}{wld\_nl80211\_ifaceMloLinkInfo\_t}} mloLinks[\mbox{\hyperlink{wld__nl80211__types_8h_a172e4a35f00645d1c2b60a717a96eb92}{WLD\_NL80211\_MAX\_MLO\_LINKS}}]; \textcolor{comment}{//array of iface MLO links info}}
+\DoxyCodeLine{151 \} \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}};}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{154     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__newIfaceConf__t_a594a2b7e2893889d05a4b284568ba30f}{mac}};                \textcolor{comment}{//interface mac address}}
+\DoxyCodeLine{155     uint32\_t \mbox{\hyperlink{structwld__nl80211__newIfaceConf__t_a05e8b048aa8c922b2b746ab5a9005a65}{type}};                   \textcolor{comment}{//nl80211 interface type: from enum nl80211\_iftype"{}}}
+\DoxyCodeLine{156 \} \mbox{\hyperlink{structwld__nl80211__newIfaceConf__t}{wld\_nl80211\_newIfaceConf\_t}};}
+\DoxyCodeLine{157 }
+\DoxyCodeLine{158 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{159     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba5790b8fa6822d80fef0b9b28eb43ef12}{WLD\_NL80211\_CHAN\_STATUS\_UNKNOWN}}, \textcolor{comment}{//unknown status}}
+\DoxyCodeLine{160     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba7292bcecb00acf8c47b38f28fe479724}{WLD\_NL80211\_CHAN\_DISABLED}},       \textcolor{comment}{//channel disabled for this regulatory domain}}
+\DoxyCodeLine{161     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba52c13c0188a842a945a2b98b1c8c886e}{WLD\_NL80211\_CHAN\_USABLE}},         \textcolor{comment}{//channel might be used but requires to be cleared (CAC)}}
+\DoxyCodeLine{162     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba2f66242de2695b429442c44087db2544}{WLD\_NL80211\_CHAN\_UNAVAILABLE}},    \textcolor{comment}{//channel marked as not available because a radar has been detected on it.}}
+\DoxyCodeLine{163     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba83db688214ba97b67a6aa1da9bb480be}{WLD\_NL80211\_CHAN\_AVAILABLE}},      \textcolor{comment}{//channel is available for transmission (also means dfs cleared)}}
+\DoxyCodeLine{164     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37ba02c3d633e06de9cb08b1cdfb641c82f7}{WLD\_NL80211\_CHAN\_STATUS\_MAX}},}
+\DoxyCodeLine{165 \} \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37b}{wld\_nl80211\_chanStatus\_e}};}
+\DoxyCodeLine{166 \textcolor{keyword}{extern} \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__nl80211__types_8h_ace850333ac3ff41012a4a1b5009c6b46}{g\_str\_wld\_nl80211\_chan\_status\_bf\_cap}}[];}
+\DoxyCodeLine{167 }
+\DoxyCodeLine{168 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{169     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanDesc__t_a7de9fbe46de40e10fa86b84c243c6a40}{ctrlFreq}};               \textcolor{comment}{//control channel frequency in MHz}}
+\DoxyCodeLine{170     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__chanDesc__t_a1824cc42912cf1545881dffe94f00ef6}{isDfs}};                      \textcolor{comment}{//flag set when channel is DFS}}
+\DoxyCodeLine{171     \mbox{\hyperlink{wld__nl80211__types_8h_ac3fd9c17288d8406462433d4b757f37b}{wld\_nl80211\_chanStatus\_e}} \mbox{\hyperlink{structwld__nl80211__chanDesc__t_aad23104818a2da698b3ff5de1b5e1d7b}{status}}; \textcolor{comment}{//channel status (including DFS)}}
+\DoxyCodeLine{172     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanDesc__t_a1bac0ffed506ed902757d55b44fe7fc4}{dfsTime}};                \textcolor{comment}{//time in miliseconds for how long this channel is in this DFS state.}}
+\DoxyCodeLine{173     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanDesc__t_a8ceb0df4c575d028084db55f50e431e3}{dfsCacTime}};             \textcolor{comment}{//DFS CAC time in milliseconds}}
+\DoxyCodeLine{174     uint32\_t \mbox{\hyperlink{structwld__nl80211__chanDesc__t_a98674a2ecb125b3e302547ac85d4f261}{maxTxPwr}};               \textcolor{comment}{//Maximum transmission power in dBm.}}
+\DoxyCodeLine{175 \} \mbox{\hyperlink{structwld__nl80211__chanDesc__t}{wld\_nl80211\_chanDesc\_t}};}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{177 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{178     swl\_freqBand\_e \mbox{\hyperlink{structwld__nl80211__bandDef__t_a1a24f7f13e6dd9c534d51dfe8373e734}{freqBand}};                                                \textcolor{comment}{//frequency band}}
+\DoxyCodeLine{179     swl\_radioStandard\_m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a56508ad511029c68764ca2be287aa4f9}{radStdsMask}};                                        \textcolor{comment}{//supported radio standards mask}}
+\DoxyCodeLine{180     swl\_bandwidth\_m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a6c14747fc4943b6d73278b42aa62581d}{chanWidthMask}};                                          \textcolor{comment}{//supported channel bandwidths}}
+\DoxyCodeLine{181     uint32\_t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a5b151c6bee12b7edf3403e3a2b5c12b0}{nSSMax}};                                                        \textcolor{comment}{//max number of spatial streams}}
+\DoxyCodeLine{182     uint32\_t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a25d1ed70fe01ad7799209ff5b8dbdba4}{nChans}};                                                        \textcolor{comment}{//number of available channels}}
+\DoxyCodeLine{183     \mbox{\hyperlink{structwld__nl80211__chanDesc__t}{wld\_nl80211\_chanDesc\_t}} chans[\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\_MAX\_POSSIBLE\_CHANNELS}}];                \textcolor{comment}{//array of available channels}}
+\DoxyCodeLine{184     \mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\_rad\_bf\_cap\_m}} bfCapsSupported[\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\_DIR\_MAX}}];                          \textcolor{comment}{//which beamforming capabilities are available}}
+\DoxyCodeLine{185     swl\_80211\_htCapInfo\_m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a24eea7b26809f976f5f52a0d4c946661}{htCapabilities}};                                   \textcolor{comment}{/* HT(High Throughput) 802.11n physical capabilities*/}}
+\DoxyCodeLine{186     uint8\_t htMcsSet[SWL\_80211\_MCS\_SET\_LEN];                                \textcolor{comment}{/* The Supported HT-\/MCS Set */}}
+\DoxyCodeLine{187     swl\_80211\_vhtCapInfo\_m \mbox{\hyperlink{structwld__nl80211__bandDef__t_ae476d20016398550a0db5da3027f7867}{vhtCapabilities}};                                 \textcolor{comment}{/* VHT(very High Throughput) 802.11n capabilities*/}}
+\DoxyCodeLine{188     uint8\_t vhtMcsNssSet[SWL\_80211\_VHT\_MCS\_NSS\_SIZE];                       \textcolor{comment}{/* The Supported VHT-\/MCS and NSS Set */}}
+\DoxyCodeLine{189     swl\_80211\_hecap\_macCapInfo\_t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a2963c51b1f61e1989be4229a7450cd32}{heMacCapabilities}};                         \textcolor{comment}{/* HE(High Efficiency) 802.11ax mac capabilities */}}
+\DoxyCodeLine{190     swl\_80211\_hecap\_phyCapInfo\_t \mbox{\hyperlink{structwld__nl80211__bandDef__t_ab096d3de9f564970058fcbc4ae2c4ca4}{hePhyCapabilities}};                         \textcolor{comment}{/* HE(High Efficiency) 802.11ax phy capabilities */}}
+\DoxyCodeLine{191     swl\_80211\_hecap\_MCSCap\_t heMcsCaps[SWL\_80211\_HECAP\_MCS\_CAP\_ARRAY\_SIZE]; \textcolor{comment}{/* The Supported HE-\/MCS and NSS Set */}}
+\DoxyCodeLine{192     swl\_80211\_ehtcap\_phyCapInfo\_t \mbox{\hyperlink{structwld__nl80211__bandDef__t_a4773951a469f50b52b4d632f77581d80}{ehtPhyCapabilities}};                       \textcolor{comment}{/* EHT(Extremely High Throughput) 802.11be capabilities*/}}
+\DoxyCodeLine{193     swl\_mcs\_t mcsStds[SWL\_MCS\_STANDARD\_MAX];                                \textcolor{comment}{//support mcs standards (each indexed on its relative enum)}}
+\DoxyCodeLine{194     swl\_mcs\_legacyIndex\_m \mbox{\hyperlink{structwld__nl80211__bandDef__t_a0716dee8e9cc93b1e109a1e64fc22012}{supportedDataTransmitRates}};                       \textcolor{comment}{//supported data transmit rates}}
+\DoxyCodeLine{195 \} \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\_nl80211\_bandDef\_t}};}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{198     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppCmds_a392de4c639bb4cac7189e83f80b72222}{channelSwitch}}; \textcolor{comment}{// support Channel Switch Announcement}}
+\DoxyCodeLine{199     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppCmds_aba356bd2680d53a628ca6b1d331283c9}{survey}};        \textcolor{comment}{// support Survey API}}
+\DoxyCodeLine{200     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppCmds_ae1d6eacf577cf07114e3e11bed397225}{WMMCapability}}; \textcolor{comment}{// support WME}}
+\DoxyCodeLine{201 \} \mbox{\hyperlink{structwld__nl80211__wiphySuppCmds}{wld\_nl80211\_wiphySuppCmds}};}
+\DoxyCodeLine{202 }
+\DoxyCodeLine{203 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{204     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures_ad61f21a60c979f62af9080f5675f4c30}{dfsOffload}};      \textcolor{comment}{// driver will do all DFS-\/related actions by itself.}}
+\DoxyCodeLine{205     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures_a9fd977359c4346022a40a295542e26e1}{sae}};             \textcolor{comment}{// driver supports Simultaneous Authentication of Equals (SAE) with user space SME}}
+\DoxyCodeLine{206     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures_a66b87280c762a68b3848fa08316b95b1}{sae\_pwe}};         \textcolor{comment}{// driver supports SAE PWE derivation in WPA3-\/Personal networks which are using SAE authentication.}}
+\DoxyCodeLine{207     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures_ae71f251b0c53363eceef0e9b53fd1685}{scanDwell}};       \textcolor{comment}{// driver supports setting scan dwell time}}
+\DoxyCodeLine{208     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures_a505c333c8860d53b0e54d89fe623c533}{backgroundRadar}}; \textcolor{comment}{// driver supports background CAC/Radar}}
+\DoxyCodeLine{209 \} \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures}{wld\_nl80211\_wiphySuppFeatures}};}
+\DoxyCodeLine{210 }
+\DoxyCodeLine{211 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{212     \textcolor{keywordtype}{bool} emlsrSupport[\mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aadf831c8da5a34b68d0ac52dc6d6cf334}{WLD\_WIPHY\_IFTYPE\_MAX}}];}
+\DoxyCodeLine{213     \textcolor{keywordtype}{bool} emlmrSupport[\mbox{\hyperlink{wld__nl80211__types_8h_ad970b77bf44d8bef0ddd9a2a9251426aadf831c8da5a34b68d0ac52dc6d6cf334}{WLD\_WIPHY\_IFTYPE\_MAX}}];}
+\DoxyCodeLine{214 \} \mbox{\hyperlink{structwld__nl80211__wiphyExtCapas}{wld\_nl80211\_wiphyExtCapas}};}
+\DoxyCodeLine{215 }
+\DoxyCodeLine{216 \textcolor{preprocessor}{\#define WLD\_NL80211\_CIPHERS\_MAX 14                  }\textcolor{comment}{//(Cf: IEEE80211 Table 9-\/180—Cipher suite selectors: defined suite types 0..14)}}
+\DoxyCodeLine{217 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{218     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ad954f88d4d90f0897b11cf9639355afa}{genId}};                                 \textcolor{comment}{//info generation id (unique for all wiphy info received chunks)}}
+\DoxyCodeLine{219     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_afaa01c23ea53d2fe2961a3029fca9f3a}{wiphy}};                                 \textcolor{comment}{//wiphy id}}
+\DoxyCodeLine{220     \textcolor{keywordtype}{char} name[\mbox{\hyperlink{wld_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}];                            \textcolor{comment}{//wiphy name}}
+\DoxyCodeLine{221     uint16\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a4261a33cc854df89cb2d0183da748ec8}{maxScanSsids}};                          \textcolor{comment}{//max number of scan ssid filters}}
+\DoxyCodeLine{222     uint16\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a7136c3bb7067c3c7b78846c4be74dfff}{maxScanIeLen}};                          \textcolor{comment}{//max length of extra IE used in scan}}
+\DoxyCodeLine{223     int32\_t nrAntenna[\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\_DIR\_MAX}}];                 \textcolor{comment}{//number of antennas available. -\/1 means undefined}}
+\DoxyCodeLine{224     int32\_t nrActiveAntenna[\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\_DIR\_MAX}}];           \textcolor{comment}{//number of antennas active. -\/1 means undefined}}
+\DoxyCodeLine{225     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_af24c63af0ce3af1df544f9f2ab59dcdd}{suppUAPSD}};                                 \textcolor{comment}{//flag set when the device supports uapsd when working as AP. */}}
+\DoxyCodeLine{226     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a6cea35188250cd44d671120abb8f2393}{suppAp}};                                    \textcolor{comment}{//flag set when device supports AP mode}}
+\DoxyCodeLine{227     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ac1ac4e8e46319bf95b2e9886d23dbe00}{suppEp}};                                    \textcolor{comment}{//flag set when device supports Endpoint mode (aka. managed)}}
+\DoxyCodeLine{228     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a381b36eb8799b2f5b47a658f1059792f}{suppMlo}};                                   \textcolor{comment}{//support MLO}}
+\DoxyCodeLine{229     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a4730589155c8d4b5a5142fa0a3be18e2}{nApMax}};                                \textcolor{comment}{//max number of BSS (AP) that can be created}}
+\DoxyCodeLine{230     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a43071b79e75bd04faa8efd5c1b865347}{nEpMax}};                                \textcolor{comment}{//max number of EP (managed) that can be created}}
+\DoxyCodeLine{231     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ad6cc9d51d795e96c83b08655ffb54b5b}{nStaMax}};                               \textcolor{comment}{//max number of clients that can be associated (<=0 if unknown)}}
+\DoxyCodeLine{232     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a6a728fede046e7931c4df863b697f0a6}{nSSMax}};                                \textcolor{comment}{//max number of spatial streams of all supported bands}}
+\DoxyCodeLine{233     swl\_freqBand\_m \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_af87e52284b2f287bb1b7f5d4e0391a27}{freqBandsMask}};                   \textcolor{comment}{//available freq band mask}}
+\DoxyCodeLine{234     \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\_nl80211\_bandDef\_t}} bands[SWL\_FREQ\_BAND\_MAX]; \textcolor{comment}{//available freq bands (each indexed on its relative enum)}}
+\DoxyCodeLine{235     uint32\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a05fb82e37ffb55082a8ddcf0c048d39b}{nCipherSuites}};                         \textcolor{comment}{//number of supported cipher suites}}
+\DoxyCodeLine{236     uint32\_t cipherSuites[\mbox{\hyperlink{wld__nl80211__types_8h_a160072eadc13e0a0d53b230611c51858}{WLD\_NL80211\_CIPHERS\_MAX}}]; \textcolor{comment}{//supported cipher suites (Cf: IEEE80211 Table 9-\/180—Cipher suite selectors)}}
+\DoxyCodeLine{237     \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures}{wld\_nl80211\_wiphySuppFeatures}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ad84507f9f784a74854090a7320896b13}{suppFeatures}};     \textcolor{comment}{//supported optional nl80211 features by the driver}}
+\DoxyCodeLine{238     \mbox{\hyperlink{structwld__nl80211__wiphySuppCmds}{wld\_nl80211\_wiphySuppCmds}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a0df479bec4fd0e0159921073e0b87621}{suppCmds}};             \textcolor{comment}{//supported optional nl80211 commands by the driver}}
+\DoxyCodeLine{239     \mbox{\hyperlink{structwld__nl80211__wiphyExtCapas}{wld\_nl80211\_wiphyExtCapas}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_aa8321d602631b42cde9e2f6036a8064e}{extCapas}};}
+\DoxyCodeLine{240     uint8\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_aca615df5755585a824e1ac70c469f05b}{maxMbssidAdsIfaces}};                     \textcolor{comment}{//max number of advertised MBSSID interfaces supported by the driver. (MBSSID support when max >= 2)}}
+\DoxyCodeLine{241     uint8\_t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a78e95e82016a0a7b517cf56a11f64d6a}{maxMbssidEmaPeriod}};                     \textcolor{comment}{//maximum profile periodicity of Enhanced Multi-\/BSSID Advertisement (EMA support when max > 0)}}
+\DoxyCodeLine{242 \} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\_nl80211\_wiphyInfo\_t}};}
+\DoxyCodeLine{243 }
+\DoxyCodeLine{244 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{245     swl\_80211\_mgmtFrame\_t* \mbox{\hyperlink{structwld__nl80211__mgmtFrame__t_aaefb84c1a1e396efac1730432ed84ed8}{frame}};}
+\DoxyCodeLine{246     \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{structwld__nl80211__mgmtFrame__t_aa4eb78f8a81b5132e1d1d1d758c55586}{frameLen}};}
+\DoxyCodeLine{247     int32\_t \mbox{\hyperlink{structwld__nl80211__mgmtFrame__t_a6a84b163d183d110187e77b5433cfcb5}{rssi}};}
+\DoxyCodeLine{248 \} \mbox{\hyperlink{structwld__nl80211__mgmtFrame__t}{wld\_nl80211\_mgmtFrame\_t}};}
+\DoxyCodeLine{249 }
+\DoxyCodeLine{250 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{251     swl\_80211\_mgmtFrame\_t* \mbox{\hyperlink{structwld__nl80211__mgmtFrameTxStatus__t_a496b31421dcc5ffe63f4e33e1841d65e}{frame}};}
+\DoxyCodeLine{252     \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{structwld__nl80211__mgmtFrameTxStatus__t_a6d5267255dd1fb157e3b719f5e00334b}{frameLen}};}
+\DoxyCodeLine{253     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__mgmtFrameTxStatus__t_ae3e320503e2189297c8d11842151ceb0}{ack}};}
+\DoxyCodeLine{254 \} \mbox{\hyperlink{structwld__nl80211__mgmtFrameTxStatus__t}{wld\_nl80211\_mgmtFrameTxStatus\_t}};}
+\DoxyCodeLine{255 }
+\DoxyCodeLine{256 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{257     uint32\_t \mbox{\hyperlink{structwld__nl80211__rateInfo__t_aaddd18c601be316e37be7dea9c253008}{bitrate}};  \textcolor{comment}{// total bitrate (kbps) (u16/u32)}}
+\DoxyCodeLine{258     swl\_mcs\_t \mbox{\hyperlink{structwld__nl80211__rateInfo__t_a06dfb224a8ddfa83f03aa274e24d7284}{mcsInfo}}; \textcolor{comment}{// mcs info}}
+\DoxyCodeLine{259     uint8\_t \mbox{\hyperlink{structwld__nl80211__rateInfo__t_a2b9eda74604fec434774fa8cf5c93761}{heDcm}};     \textcolor{comment}{// HE DCM value (u8, 0/1)}}
+\DoxyCodeLine{260     uint8\_t \mbox{\hyperlink{structwld__nl80211__rateInfo__t_a4ef5cdaa5a1efcf1408316377e9ef5b7}{ofdma}};}
+\DoxyCodeLine{261 \} \mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\_nl80211\_rateInfo\_t}};}
+\DoxyCodeLine{262 }
+\DoxyCodeLine{263 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{264     swl\_trl\_e \mbox{\hyperlink{structwld__nl80211__stationFlags__t_a8a344310c621252ab474f61bb0f8c2cd}{authorized}};    \textcolor{comment}{// station is authorized (802.1X)}}
+\DoxyCodeLine{265     swl\_trl\_e \mbox{\hyperlink{structwld__nl80211__stationFlags__t_a8db037727b0d96cca9b0aecfb74b52df}{authenticated}}; \textcolor{comment}{// station is authenticated}}
+\DoxyCodeLine{266     swl\_trl\_e \mbox{\hyperlink{structwld__nl80211__stationFlags__t_a7293c485bfcc12ac69ec27a994d349e3}{associated}};    \textcolor{comment}{// station is associated:}}
+\DoxyCodeLine{267                              \textcolor{comment}{// used to transition a previously added station into associated state}}
+\DoxyCodeLine{268     swl\_trl\_e \mbox{\hyperlink{structwld__nl80211__stationFlags__t_a3c70b28072419323abbb29989694003f}{wme}};           \textcolor{comment}{// station is WME/QoS capable}}
+\DoxyCodeLine{269     swl\_trl\_e \mbox{\hyperlink{structwld__nl80211__stationFlags__t_a03fb172a2ea5b94d5715cb79e409a6f8}{mfp}};           \textcolor{comment}{// station uses management frame protection}}
+\DoxyCodeLine{270 \} \mbox{\hyperlink{structwld__nl80211__stationFlags__t}{wld\_nl80211\_stationFlags\_t}};}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{273     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a7ecdbd78e89628e0c54febce3509c5c8}{macAddr}};                     \textcolor{comment}{// legacy station's address MAC or affiliated non-\/AP STA MAC}}
+\DoxyCodeLine{274     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a16c0815ece075405c748701b9c037758}{macMld}};                      \textcolor{comment}{// non-\/AP MLD's address MAC (zero for legacy)}}
+\DoxyCodeLine{275     int8\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a120f0891385c20df88343d0b80f379e1}{linkId}};                            \textcolor{comment}{// AP MLD's linkId used by the non-\/AP STA affiliated to the non-\/AP MLD (-\/1 for legacy)}}
+\DoxyCodeLine{276     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a770ec8cfbb7f9be23f6ad12bee158521}{inactiveTime}};                    \textcolor{comment}{// time since last activity (u32, milliseconds)}}
+\DoxyCodeLine{277     uint64\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_af2458dad64ebfc3997a2f80e38c4b840}{rxBytes}};                         \textcolor{comment}{// total received bytes}}
+\DoxyCodeLine{278     uint64\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_ab78071f75dd9a8fe87d42c94162a2137}{txBytes}};                         \textcolor{comment}{// total transmitted bytes}}
+\DoxyCodeLine{279     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_add5a72a7b1c7b0cd80a45ccab1876959}{rxPackets}};                       \textcolor{comment}{// total received packet (MSDUs and MMPDUs)}}
+\DoxyCodeLine{280     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_ae193a459bd1670e4f0e21ac4f9b6593c}{txPackets}};                       \textcolor{comment}{// total transmitted packets (MSDUs and MMPDUs)}}
+\DoxyCodeLine{281     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a7b2c83cb3b420794653eaadadac0ef33}{txRetries}};                       \textcolor{comment}{// total retries (MPDUs)}}
+\DoxyCodeLine{282     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_aadcd8e20606f0e6c7e2bd71f326816d9}{txFailed}};                        \textcolor{comment}{// total failed packets}}
+\DoxyCodeLine{283     uint64\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a6a8457c606f119a23295da7c87939ab7}{rxFailed}};                        \textcolor{comment}{// rx packets dropped for unspecified reasons}}
+\DoxyCodeLine{284     int8\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a51440dc144cef2a404290433886a88be}{rssiDbm}};                           \textcolor{comment}{// signal strength of last received PPDU (dBm)}}
+\DoxyCodeLine{285     int8\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a257b48c7e8930b4e3e79b746bd6b404b}{rssiAvgDbm}};                        \textcolor{comment}{// signal strength average (dBm)}}
+\DoxyCodeLine{286     \mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\_nl80211\_rateInfo\_t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a7d969da86454ce87b12c207956c6df94}{txRate}};            \textcolor{comment}{// tx rate (kbps), nested attributes}}
+\DoxyCodeLine{287     \mbox{\hyperlink{structwld__nl80211__rateInfo__t}{wld\_nl80211\_rateInfo\_t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a843ecaa7ed664bf15a476747b1e6928d}{rxRate}};            \textcolor{comment}{// rx rate (kbps), nested attributes}}
+\DoxyCodeLine{288 }
+\DoxyCodeLine{289     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_af22575f791940a933bbb2d8c7f73ca05}{connectedTime}};                   \textcolor{comment}{// time since the station is last connected (u32, seconds)}}
+\DoxyCodeLine{290     \mbox{\hyperlink{structwld__nl80211__stationFlags__t}{wld\_nl80211\_stationFlags\_t}} \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a5cd79783ac100b961537ad21f90cf932}{flags}};         \textcolor{comment}{// retrieved optional station flags}}
+\DoxyCodeLine{291     uint32\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a950fbc290529ab31fa8e56bfaa7f3588}{nrSignalChains}};                  \textcolor{comment}{// nb chains on which signal is detected}}
+\DoxyCodeLine{292     int8\_t rssiDbmByChain[\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\_NR\_ANTENNA}}];    \textcolor{comment}{// per-\/chain signal strength of last PPDU (dBm)}}
+\DoxyCodeLine{293     int8\_t rssiAvgDbmByChain[\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\_NR\_ANTENNA}}]; \textcolor{comment}{// per-\/chain signal strength average (dBm)}}
+\DoxyCodeLine{294     uint8\_t \mbox{\hyperlink{structwld__nl80211__stationInfo__t_a74e83da163f5dc94295a91199b2810d2}{nrLinks}};                          \textcolor{comment}{// QCA push all links of the non-\/AP MLD}}
+\DoxyCodeLine{295     \mbox{\hyperlink{structwld__nl80211__mloLinkInfo__t}{wld\_nl80211\_mloLinkInfo\_t}} linksInfo[\mbox{\hyperlink{wld__nl80211__types_8h_a172e4a35f00645d1c2b60a717a96eb92}{WLD\_NL80211\_MAX\_MLO\_LINKS}}];}
+\DoxyCodeLine{296 }
+\DoxyCodeLine{297 \} \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\_nl80211\_stationInfo\_t}};}
+\DoxyCodeLine{298 }
+\DoxyCodeLine{299 \textcolor{preprocessor}{\#define SCAN\_PASSIVE\_DWELL\_MIN      20}}
+\DoxyCodeLine{300 \textcolor{preprocessor}{\#define SCAN\_PASSIVE\_DWELL\_MAX      1000}}
+\DoxyCodeLine{301 \textcolor{comment}{/*}}
+\DoxyCodeLine{302 \textcolor{comment}{ * Passive time should be about 100ms, to see all probe request in 1 beacon interval}}
+\DoxyCodeLine{303 \textcolor{comment}{ * Less time risks not seeing all beacons.}}
+\DoxyCodeLine{304 \textcolor{comment}{ */}}
+\DoxyCodeLine{305 \textcolor{preprocessor}{\#define SCAN\_PASSIVE\_DWELL\_DEFAULT  80}}
+\DoxyCodeLine{306 }
+\DoxyCodeLine{307 \textcolor{preprocessor}{\#define SCAN\_ACTIVE\_DWELL\_MIN       5}}
+\DoxyCodeLine{308 \textcolor{preprocessor}{\#define SCAN\_ACTIVE\_DWELL\_MAX       1000}}
+\DoxyCodeLine{312 \textcolor{preprocessor}{\#define SCAN\_ACTIVE\_DWELL\_DEFAULT   50}}
+\DoxyCodeLine{313 }
+\DoxyCodeLine{314 \textcolor{comment}{/*}}
+\DoxyCodeLine{315 \textcolor{comment}{ * nl80211\_scan\_flags -\/  scan request control flags}}
+\DoxyCodeLine{316 \textcolor{comment}{ */}}
+\DoxyCodeLine{317 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structSWL__PACKED}{SWL\_PACKED}} \{}
+\DoxyCodeLine{318     uint32\_t \mbox{\hyperlink{structSWL__PACKED_a724891d5dd28c545f46d81dcf89e30b2}{flush}} : 1; \textcolor{comment}{// flush cache before scanning}}
+\DoxyCodeLine{319     uint32\_t \mbox{\hyperlink{structSWL__PACKED_ac21650468fc3be98f57c2f5544566bec}{force}} : 1; \textcolor{comment}{// force a scan even if the interface is configured}}
+\DoxyCodeLine{320                         \textcolor{comment}{// as AP and the beaconing has already been configured}}
+\DoxyCodeLine{321     \textcolor{comment}{// Can be extended with additional nl80211 flags}}
+\DoxyCodeLine{322 \} \mbox{\hyperlink{wld__nl80211__types_8h_ad73dea2a4c069cad6bfb3d093b30add7}{wld\_nl80211\_scanFlags\_t}};}
+\DoxyCodeLine{323 }
+\DoxyCodeLine{324 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{325     swl\_unLiList\_t \mbox{\hyperlink{structwld__nl80211__scanParams__t_a670019e003792d0284014321bffb10d9}{ssids}};          \textcolor{comment}{//list of ssids (char*) to scan for them}}
+\DoxyCodeLine{326     swl\_macBin\_t \mbox{\hyperlink{structwld__nl80211__scanParams__t_ab17bbb7aa9beb1d6dc7d9aa2f01918e7}{bssid}};            \textcolor{comment}{//bssid of the AP to scan for.}}
+\DoxyCodeLine{327     swl\_unLiList\_t \mbox{\hyperlink{structwld__nl80211__scanParams__t_a210f93cf3e3486d1f5e24498bfff5560}{freqs}};          \textcolor{comment}{//list of frequencies (uint32\_t) to use}}
+\DoxyCodeLine{328     uint32\_t \mbox{\hyperlink{structwld__nl80211__scanParams__t_a562e9ac1d2946cdc0c8e212e15334d58}{iesLen}};               \textcolor{comment}{//length of extra Information Elements to add in probeReq}}
+\DoxyCodeLine{329     \textcolor{keyword}{const} uint8\_t* \mbox{\hyperlink{structwld__nl80211__scanParams__t_ae557099f36adb0ac55de21d33ef46118}{ies}};            \textcolor{comment}{//extra Information Elements to add in probeReq}}
+\DoxyCodeLine{330     \mbox{\hyperlink{structSWL__PACKED}{wld\_nl80211\_scanFlags\_t}} \mbox{\hyperlink{structwld__nl80211__scanParams__t_ace5c68861da4d86ade9044e3e4bdff6b}{flags}}; \textcolor{comment}{//nl80211 scan flags}}
+\DoxyCodeLine{331     uint16\_t \mbox{\hyperlink{structwld__nl80211__scanParams__t_abab652e2849a196271e7b0c1df0810c1}{measDuration}};         \textcolor{comment}{//duration(ms) spent on channel in scan mode}}
+\DoxyCodeLine{332     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__scanParams__t_a6c45a7332e35e2fad2cb5fe1f399bb50}{measDurationMandatory}};    \textcolor{comment}{//flag to force considering the provided measurement duration for the scan}}
+\DoxyCodeLine{333 \} \mbox{\hyperlink{structwld__nl80211__scanParams__t}{wld\_nl80211\_scanParams\_t}};}
+\DoxyCodeLine{334 }
+\DoxyCodeLine{335 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo}} \{}
+\DoxyCodeLine{336     uint32\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_af00745c8adb2811dfebdf28f16ac97d5}{frequencyMHz}}; \textcolor{comment}{// Center frequency of channel}}
+\DoxyCodeLine{337     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_a0ae2b635d92807c25d6d9101d4a8a5ca}{timeOn}};       \textcolor{comment}{// Amount of time (in ms) that the radio was turned on (on channel or globally)}}
+\DoxyCodeLine{338     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_a9a0cef7d7368aadc00e59c5ccc949592}{timeBusy}};     \textcolor{comment}{// Amount of the time (in ms) the primary channel was sensed busy}}
+\DoxyCodeLine{339                            \textcolor{comment}{// (either due to activity or energy detect).}}
+\DoxyCodeLine{340     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_aef19b5d68db9f06ccd96ff399d224e26}{timeExtBusy}};  \textcolor{comment}{// Amount of time (in ms) the extension channel was sensed busy.}}
+\DoxyCodeLine{341     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_ab76edb35a2cc6a5b9bd01f966330aa94}{timeRx}};       \textcolor{comment}{// Amount of time (in ms) the radio spent receiving data (on channel or globally)}}
+\DoxyCodeLine{342     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_a069f2cf0b5dc76c9adc6ac47915f6a98}{timeTx}};       \textcolor{comment}{// Amount of time (in ms) the radio spent transmitting data (on channel or globally).}}
+\DoxyCodeLine{343     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_a756de02acb43863fcccbee04c557c6d1}{timeScan}};     \textcolor{comment}{// Time (in ms) the radio spent for scan (on this channel or globally).}}
+\DoxyCodeLine{344     uint64\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_a20dc003100a70c4ce1bda3cd1c94e813}{timeRxInBss}};  \textcolor{comment}{// time the radio spent receiving frames destined to the local BSS}}
+\DoxyCodeLine{345     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_a06a088fe4d3b167841cf95c2660afd23}{inUse}};            \textcolor{comment}{// Channel is currently being used.}}
+\DoxyCodeLine{346     int8\_t \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo_ae8c4f67696ea368f1ac003abe817029b}{noiseDbm}};       \textcolor{comment}{// Noise level of channel (u8, dBm).}}
+\DoxyCodeLine{347 \};}
+\DoxyCodeLine{348 }
+\DoxyCodeLine{349 \textcolor{comment}{/*}}
+\DoxyCodeLine{350 \textcolor{comment}{ * config params for survey dump request}}
+\DoxyCodeLine{351 \textcolor{comment}{ */}}
+\DoxyCodeLine{352 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__channelSurveyParam}{wld\_nl80211\_channelSurveyParam}} \{}
+\DoxyCodeLine{353     swl\_freqBandExt\_e \mbox{\hyperlink{structwld__nl80211__channelSurveyParam_afcfbddad9db11ad080909fe0c5fdcda5}{selectFreqBand}}; \textcolor{comment}{// selected frequency band in results}}
+\DoxyCodeLine{354 \};}
+\DoxyCodeLine{355 }
+\DoxyCodeLine{356 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{357     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a9606bd332bc8f2e21742a801af94619d}{WLD\_NL80211\_RADAR\_DETECTED}},        \textcolor{comment}{// radar detected}}
+\DoxyCodeLine{358     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a4e0b00a02040fbebe88167fc4b5d0c7f}{WLD\_NL80211\_RADAR\_CAC\_FINISHED}},    \textcolor{comment}{// CAC finished}}
+\DoxyCodeLine{359     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a9158d7f4b1564258683ee1471547013a}{WLD\_NL80211\_RADAR\_CAC\_ABORTED}},     \textcolor{comment}{// CAC canceled}}
+\DoxyCodeLine{360     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550adb4df7a54d663091793cb47196e6aedb}{WLD\_NL80211\_RADAR\_NOP\_FINISHED}},    \textcolor{comment}{// Radar NonOperatingPeriod finished}}
+\DoxyCodeLine{361     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a46444d4a1eaa9d09bb91d9ba258a5a63}{WLD\_NL80211\_RADAR\_PRE\_CAC\_EXPIRED}}, \textcolor{comment}{// previous CAC expired}}
+\DoxyCodeLine{362     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a2320f9c1f6c259e91b8372a42520f8fd}{WLD\_NL80211\_RADAR\_CAC\_STARTED}},     \textcolor{comment}{// CAC started}}
+\DoxyCodeLine{363     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a967430415c43d651b9181f978164a6af}{WLD\_NL80211\_RADAR\_EVT\_UNKNOWN}},     \textcolor{comment}{// unknown event (shall not happen)}}
+\DoxyCodeLine{364     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550a50d9c2dda777bb4521c7648c468b8ec1}{WLD\_NL80211\_RADAR\_EVT\_MAX}},}
+\DoxyCodeLine{365 \} \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550}{wld\_nl80211\_radarEvent\_e}};}
+\DoxyCodeLine{366 }
+\DoxyCodeLine{367 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{368     uint32\_t \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t_a97f5494652aa2a37ad2b18e98642304f}{wiphy}};                  \textcolor{comment}{//wiphy id}}
+\DoxyCodeLine{369     uint32\_t \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t_a9868b5d22636e7bee9f99a50b41004a7}{ifIndex}};                \textcolor{comment}{//net dev index}}
+\DoxyCodeLine{370     uint64\_t \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t_a5aa0ec40ecf7898e66cb154af1c83320}{wDevId}};                 \textcolor{comment}{//nl80211 wireless device id}}
+\DoxyCodeLine{371     \mbox{\hyperlink{wld__nl80211__types_8h_a8bf1d537e430e77fd0a1a34b06782550}{wld\_nl80211\_radarEvent\_e}} \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t_ab00d255c926dcff5456fb34c7197689a}{event}};  \textcolor{comment}{//radar event}}
+\DoxyCodeLine{372     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t_a77816dff7a778e32c0d4215728ffae15}{isBackground}};               \textcolor{comment}{//flag for background clearing}}
+\DoxyCodeLine{373     \mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\_nl80211\_chanSpec\_t}} \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t_ac9f72230940cd2ad80b8dc6c06921ff2}{chanSpec}}; \textcolor{comment}{//channel info}}
+\DoxyCodeLine{374 \} \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t}{wld\_nl80211\_radarEvtInfo\_t}};}
+\DoxyCodeLine{375 }
+\DoxyCodeLine{376 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_NL80211\_TYPES\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

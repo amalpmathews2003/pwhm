@@ -1,0 +1,89 @@
+\hypertarget{wld__rad__delayMgr_8h_source}{}\doxysection{wld\+\_\+rad\+\_\+delay\+Mgr.\+h}
+\label{wld__rad__delayMgr_8h_source}\index{include/wld/wld\_rad\_delayMgr.h@{include/wld/wld\_rad\_delayMgr.h}}
+\mbox{\hyperlink{wld__rad__delayMgr_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_DELAY\_MGR\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_DELAY\_MGR\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{72     amxp\_timer\_t* \mbox{\hyperlink{structwld__rad__delayMgr__t_a2a2c2755fb3affea057ef8af1183652b}{timer}};}
+\DoxyCodeLine{73     uint32\_t \mbox{\hyperlink{structwld__rad__delayMgr__t_aa37b728dce9c1c19e32bef64e7462d26}{delay}};}
+\DoxyCodeLine{74 \} \mbox{\hyperlink{structwld__rad__delayMgr__t}{wld\_rad\_delayMgr\_t}};}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__delayMgr_8h_a2617947b90f933be8fcc4538270ce7f8}{wld\_rad\_delayMgr\_init}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{77 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__delayMgr_8h_ae8e459ffea6afeda5a4d6d24f03c3179}{wld\_rad\_delayMgr\_destroy}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{78 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__delayMgr_8h_aa30e2dc0bd2d16ed5aad62e5c2312f4c}{wld\_rad\_delayMgr\_startApDelayUp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{79 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__delayMgr_8h_acf3f8c74c512962ad26b191346be6499}{wld\_rad\_delayMgr\_apDelayUpDone}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{80 amxd\_status\_t \mbox{\hyperlink{wld__rad__delayMgr_8h_a72decb99f8219726f995d58e4befe64a}{\_Radio\_apDelayDone}}(amxd\_object\_t* \textcolor{keywordtype}{object}, amxd\_function\_t* func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_var\_t* ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}});}
+\DoxyCodeLine{81 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__delayMgr_8h_a8dbe586c91d5a74ef4ea597aa5184e5a}{wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf}}(\textcolor{keywordtype}{void}* priv, amxd\_object\_t* \textcolor{keywordtype}{object}, amxd\_param\_t* param, \textcolor{keyword}{const} amxc\_var\_t* \textcolor{keyword}{const} newValue);}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_DELAY\_MGR\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

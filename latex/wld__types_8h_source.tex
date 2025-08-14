@@ -1,0 +1,238 @@
+\hypertarget{wld__types_8h_source}{}\doxysection{wld\+\_\+types.\+h}
+\label{wld__types_8h_source}\index{include/wld/wld\_types.h@{include/wld/wld\_types.h}}
+\mbox{\hyperlink{wld__types_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef SRC\_INCLUDE\_WLD\_WLD\_TYPES\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define SRC\_INCLUDE\_WLD\_WLD\_TYPES\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}swl/types/swl\_arrayType.h"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}swla/swla\_namedTupleType.h"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}swla/swla\_time.h"{}}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#define WLD\_MAX\_POSSIBLE\_CHANNELS 64}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structWLD__RADIO}{WLD\_RADIO}} \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}};}
+\DoxyCodeLine{74 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structS__ACCESSPOINT}{S\_ACCESSPOINT}} \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}};}
+\DoxyCodeLine{75 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structS__SSID}{S\_SSID}} \mbox{\hyperlink{structS__SSID}{T\_SSID}};}
+\DoxyCodeLine{76 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structS__EndPoint}{S\_EndPoint}} \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}};}
+\DoxyCodeLine{77 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structvendor}{vendor}} \mbox{\hyperlink{structvendor}{vendor\_t}};}
+\DoxyCodeLine{78 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__tinyRoam}{wld\_tinyRoam}} \mbox{\hyperlink{structwld__tinyRoam}{wld\_tinyRoam\_t}};}
+\DoxyCodeLine{79 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__mldMgr}{wld\_mldMgr}} \mbox{\hyperlink{structwld__mldMgr}{wld\_mldMgr\_t}};}
+\DoxyCodeLine{80 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink}} \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}};}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82 \textcolor{comment}{/*}}
+\DoxyCodeLine{83 \textcolor{comment}{ * Deprecated types with old syntax T\_xxx , only defined for backward compatibility with legacy code}}
+\DoxyCodeLine{84 \textcolor{comment}{ * Please use wld\_xxx\_t types for new development.}}
+\DoxyCodeLine{85 \textcolor{comment}{ */}}
+\DoxyCodeLine{86 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__spectrumChannelInfoEntry}{wld\_spectrumChannelInfoEntry}} \mbox{\hyperlink{structwld__spectrumChannelInfoEntry}{spectrumChannelInfoEntry\_t}};}
+\DoxyCodeLine{87 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__scanArgs}{wld\_scanArgs}} \mbox{\hyperlink{structwld__scanArgs}{T\_ScanArgs}};}
+\DoxyCodeLine{88 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__scanResultSSID}{wld\_scanResultSSID}} \mbox{\hyperlink{structwld__scanResultSSID}{T\_ScanResult\_SSID}};}
+\DoxyCodeLine{89 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__scanResults}{wld\_scanResults}} \mbox{\hyperlink{structwld__scanResults}{T\_ScanResults}};}
+\DoxyCodeLine{90 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__airStats}{wld\_airStats}} \mbox{\hyperlink{structwld__airStats}{T\_Airstats}};}
+\DoxyCodeLine{91 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nasta}{wld\_nasta}} \mbox{\hyperlink{structwld__nasta}{T\_NonAssociatedDevice}};}
+\DoxyCodeLine{92 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nasta}{wld\_nasta}} \mbox{\hyperlink{structwld__nasta}{T\_MonitorDevice}};}
+\DoxyCodeLine{93 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }wld\_radExt \mbox{\hyperlink{wld__types_8h_ab794ec4abe02a4814902f00f1f3a19c5}{wld\_radExt\_t}};}
+\DoxyCodeLine{94 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__apNeighbour}{wld\_apNeighbour}} \mbox{\hyperlink{structwld__apNeighbour}{T\_ApNeighbour}};}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{96 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{97     \mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3ba5e27b9310fe685f0dfaaa99846ea1701}{COM\_DIR\_TRANSMIT}},}
+\DoxyCodeLine{98     \mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3badec4a3428b03448930eb9fca76846721}{COM\_DIR\_RECEIVE}},}
+\DoxyCodeLine{99     \mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\_DIR\_MAX}}}
+\DoxyCodeLine{100 \} \mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3b}{com\_dir\_e}};}
+\DoxyCodeLine{101 \textcolor{keyword}{extern} \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__types_8h_a1bd953af3fd70c280df653a74f9da82e}{com\_dir\_char}}[];}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{104     \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215a1b79338aaff26fd7fa33c6a0b9eb5e8a}{WLD\_AC\_BE}},}
+\DoxyCodeLine{105     \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215abbcb570689857914d53c3e438c556ac6}{WLD\_AC\_BK}},}
+\DoxyCodeLine{106     \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215abf6e458a7c0556d4bdd3a901e363436a}{WLD\_AC\_VI}},}
+\DoxyCodeLine{107     \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215a5a9b3efe21cb02c3be6b33f36d7b4e8d}{WLD\_AC\_VO}},}
+\DoxyCodeLine{108     \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}}
+\DoxyCodeLine{109 \} \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215}{wld\_ac\_e}};}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{keyword}{extern} \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__types_8h_a113ccc04c1d18f1f7c3d211ebc05a96d}{wld\_status\_str}}[];}
+\DoxyCodeLine{112 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{113     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075edadd586f12d38983e610188755edf767ad}{RST\_ERROR}},}
+\DoxyCodeLine{114     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda1f0d4133cdc0f2631f070ebf55a49435}{RST\_LLDOWN}},}
+\DoxyCodeLine{115     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075edae940c656073f0d669bb1b2558f9e17b7}{RST\_NOTPRESENT}},}
+\DoxyCodeLine{116     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda0d173ac95a6b460bf9dc3d94cb37c89b}{RST\_DORMANT}},}
+\DoxyCodeLine{117     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda643fa3335654ea7bbd8002f41d411a1d}{RST\_UNKNOWN}},}
+\DoxyCodeLine{118     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda0abc04115620aa97948af2619de1a8ac}{RST\_DOWN}},}
+\DoxyCodeLine{119     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda80a8637645f8defa60252e1472ec33b7}{RST\_UP}},}
+\DoxyCodeLine{120     \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda631c6f083a8cd3de46f3515b412b330b}{RST\_MAX}}}
+\DoxyCodeLine{121 \} \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\_status\_e}};}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{124     \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406fa12239612b00082cc3364ff5257bb6f35}{WLD\_SSID\_TYPE\_UNKNOWN}},}
+\DoxyCodeLine{125     \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406fa97a975225f11a650eb96e7b6b15a76f1}{WLD\_SSID\_TYPE\_AP}},}
+\DoxyCodeLine{126     \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406fa76cbfcf8239cc560793823d6121dfb91}{WLD\_SSID\_TYPE\_EP}},}
+\DoxyCodeLine{127     \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406fa0925dec0e31de755eb8b583576d09c33}{WLD\_SSID\_TYPE\_MAX}},}
+\DoxyCodeLine{128 \} \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406f}{wld\_ssidType\_e}};}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{131     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa23d949020b54fabd3f52a71428172b0d}{FSM\_IDLE}},        \textcolor{comment}{/* Task not yet created */}}
+\DoxyCodeLine{132     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa2c9f348e736e27d86c947974ed63981e}{FSM\_WAIT}},        \textcolor{comment}{/* Task is active, but waits for extra input -\/> only proceed if has lock*/}}
+\DoxyCodeLine{133     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa96efc4f1fdbe109d7cd06f66941b1be5}{FSM\_RESTART}},     \textcolor{comment}{/* Do some extra state checks on VAP \& Radio */}}
+\DoxyCodeLine{134     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa31a5ccc7e8a456cf06e2abe0fe6921e5}{FSM\_SYNC\_RAD}},    \textcolor{comment}{/* Sync the Radio states -\/-\/> T\_Radio */}}
+\DoxyCodeLine{135     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa266a0d89eafa4be280546dd913a1643a}{FSM\_SYNC\_VAP}},    \textcolor{comment}{/* Sync VAP interfaces -\/-\/> T\_AccessPoint \& T\_SSID */}}
+\DoxyCodeLine{136     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192faf5deb8985e3112c0e6e8505c475ade0a}{FSM\_DEPENDENCY}},  \textcolor{comment}{/* Task checks dependency on the to-\/do list */}}
+\DoxyCodeLine{137     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa98ac2c4c81bfe786a96640c7381e1dfb}{FSM\_SYNC\_GLOBAL}}, \textcolor{comment}{/* do global sync of dependencies. Calling global function that will wait if returned true*/}}
+\DoxyCodeLine{138     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa486438504de399b046c7b3a74605fb4f}{FSM\_RUN}},         \textcolor{comment}{/* Run through the to-\/do list */}}
+\DoxyCodeLine{139     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa996e149374bbc984a07e92a8e7adaf25}{FSM\_COMPEND}},     \textcolor{comment}{/* Check if a new commit is pending? */}}
+\DoxyCodeLine{140     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa39050443d7cbfc879bed763aceab2f08}{FSM\_WAIT\_RAD}},    \textcolor{comment}{/* Wait for other radio's to finish config */}}
+\DoxyCodeLine{141     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fac1a4e1b31206af67084cac0433da8986}{FSM\_FINISH}},      \textcolor{comment}{/* To-\/do list is empty, all went fine */}}
+\DoxyCodeLine{142     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa3a0343339ba04410c25c8c27be7bf160}{FSM\_ERROR}},       \textcolor{comment}{/* We've failed to execute the to-\/do list */}}
+\DoxyCodeLine{143     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa1aeca4c4cd9f6ffa7812027916eedd84}{FSM\_UNKNOWN}},     \textcolor{comment}{/* ? A state we don't like and don't know how to get rid of it.*/}}
+\DoxyCodeLine{144     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192fa52e91965c783b490bd598e2db9ffd126}{FSM\_FATAL}},       \textcolor{comment}{/* Really hard issue... we can only fix this by restarting the system or driver */}}
+\DoxyCodeLine{145     \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192faeb59deb3fe325bbce77dfa3da3f85403}{FSM\_MAX}}          \textcolor{comment}{/* Max value, not actually handled in FSM */}}
+\DoxyCodeLine{146 \} \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192f}{FSM\_STATE}};}
+\DoxyCodeLine{147 }
+\DoxyCodeLine{148 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__stats}{wld\_stats}} \mbox{\hyperlink{structwld__stats}{T\_Stats}};}
+\DoxyCodeLine{149 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__stats}{wld\_stats}} \{}
+\DoxyCodeLine{150     uint64\_t \mbox{\hyperlink{structwld__stats_a4a9820dc21662aff6c6ebdc95cf1f7a7}{BytesSent}};}
+\DoxyCodeLine{151     uint64\_t \mbox{\hyperlink{structwld__stats_aa4585ae3ed42eba210aef68b09665159}{BytesReceived}};}
+\DoxyCodeLine{152     uint64\_t \mbox{\hyperlink{structwld__stats_a46cc7839ef853d09ab2e63b91eda8c57}{PacketsSent}};}
+\DoxyCodeLine{153     uint64\_t \mbox{\hyperlink{structwld__stats_ab0a74e0ae9d97a28e8760be719ce410b}{PacketsReceived}};}
+\DoxyCodeLine{154     uint32\_t \mbox{\hyperlink{structwld__stats_a504c6d828e52f93dc5fa2478279a1a06}{ErrorsSent}};}
+\DoxyCodeLine{155     uint32\_t \mbox{\hyperlink{structwld__stats_a42219d66ce6a30489b04062c90efbf83}{RetransCount}};}
+\DoxyCodeLine{156     uint32\_t \mbox{\hyperlink{structwld__stats_a9d7d0a162211b7eb236ab43ce9c8503c}{ErrorsReceived}};}
+\DoxyCodeLine{157     uint32\_t \mbox{\hyperlink{structwld__stats_addfcc793fc6eec6d4d0fee9931deca69}{DiscardPacketsSent}};}
+\DoxyCodeLine{158     uint32\_t \mbox{\hyperlink{structwld__stats_a1a5c7541ccfbc75479b9f91a3f053014}{DiscardPacketsReceived}};}
+\DoxyCodeLine{159     uint32\_t \mbox{\hyperlink{structwld__stats_a4e4f0ea197771c55c9d2d4b2e4c435cc}{UnicastPacketsSent}};}
+\DoxyCodeLine{160     uint32\_t \mbox{\hyperlink{structwld__stats_a14a8beb81f674d9242e4ff4e1469d4d5}{UnicastPacketsReceived}};}
+\DoxyCodeLine{161     uint32\_t \mbox{\hyperlink{structwld__stats_a72f0d99b49af200e8d0303cf34c12346}{MulticastPacketsSent}};}
+\DoxyCodeLine{162     uint32\_t \mbox{\hyperlink{structwld__stats_a401d46f93047af4a6fc9af483a1c4e75}{MulticastPacketsReceived}};}
+\DoxyCodeLine{163     uint32\_t \mbox{\hyperlink{structwld__stats_aed69fb225f327d8b68a5f40409de47e2}{BroadcastPacketsSent}};}
+\DoxyCodeLine{164     uint32\_t \mbox{\hyperlink{structwld__stats_afc5789f06dd34ed886c4b33823fb8d82}{BroadcastPacketsReceived}};}
+\DoxyCodeLine{165     uint32\_t \mbox{\hyperlink{structwld__stats_a33c31bb2a14503342da4b0773b62d5bc}{UnknownProtoPacketsReceived}};}
+\DoxyCodeLine{166     uint32\_t \mbox{\hyperlink{structwld__stats_ab3a943ffc3cd4a6a8709a31eb4d7889a}{FailedRetransCount}};}
+\DoxyCodeLine{167     uint32\_t \mbox{\hyperlink{structwld__stats_ab03d099173bce478eacd910bb1b615bd}{RetryCount}};}
+\DoxyCodeLine{168     uint32\_t \mbox{\hyperlink{structwld__stats_a5b854827717e335ba5e5d9f8eef8c7ed}{MultipleRetryCount}};}
+\DoxyCodeLine{169     uint32\_t \mbox{\hyperlink{structwld__stats_aef5c7eb770472f85c2d45680cf65ad18}{WmmPacketsSent}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{170     uint32\_t \mbox{\hyperlink{structwld__stats_a1a1775a91468cdf7a2b0a20520139306}{WmmPacketsReceived}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{171     uint32\_t \mbox{\hyperlink{structwld__stats_afdb8a29551d2a1da60e03d4004c014fa}{WmmFailedSent}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{172     uint32\_t \mbox{\hyperlink{structwld__stats_a1df8f2b98f6b180270aedd4d858397d0}{WmmFailedReceived}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{173     uint32\_t \mbox{\hyperlink{structwld__stats_a02d427d75d598af73af9bcac0e48bf5b}{WmmBytesSent}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{174     uint32\_t \mbox{\hyperlink{structwld__stats_aa62344858667ecc17c75b4e0860f1612}{WmmBytesReceived}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{175     uint32\_t \mbox{\hyperlink{structwld__stats_a58df57e9d5506eaf82333ad9a506d8ac}{WmmFailedBytesSent}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{176     uint32\_t \mbox{\hyperlink{structwld__stats_a8800ad61f3bbc97c82fab3fc2e0adc16}{WmmFailedBytesReceived}}[\mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}}];}
+\DoxyCodeLine{177     int32\_t \mbox{\hyperlink{structwld__stats_a143866b83c5b8309a1f31a06604b8c26}{TemperatureDegreesCelsius}}; \textcolor{comment}{//Chipset Temperature in degrees Celsius}}
+\DoxyCodeLine{178     int32\_t \mbox{\hyperlink{structwld__stats_af812a77c92687b47ba872461e18f5a0f}{noise}};}
+\DoxyCodeLine{179     swl\_timeMono\_t \mbox{\hyperlink{structwld__stats_a2a878165567a75f46f7b3e324c1c7daf}{latestStatsUpdateTime}};}
+\DoxyCodeLine{180 \} \mbox{\hyperlink{wld__types_8h_abf6f10a50f768e93071cf68534047e3e}{wld\_stats\_t}};}
+\DoxyCodeLine{181 }
+\DoxyCodeLine{182 }
+\DoxyCodeLine{183 \mbox{\hyperlink{wld__types_8h_a7e5d4120537e41040f2e3b8597ac3ce8}{SWL\_ARRAY\_TYPE\_H}}(gtWld\_acTrafficArray, gtSwl\_type\_uint32, \mbox{\hyperlink{wld__types_8h_a6f575f7d9b03c5c3b762f1f31564d215ae1ee5a49b7c3eeb7370b4da07b968e00}{WLD\_AC\_MAX}});}
+\DoxyCodeLine{184 }
+\DoxyCodeLine{185 \textcolor{preprocessor}{\#define X\_WLD\_STATS(X, Y) \(\backslash\)}}
+\DoxyCodeLine{186 \textcolor{preprocessor}{    X(Y, gtSwl\_type\_uint64, BytesSent, "{}BytesSent"{}}) \(\backslash\)}
+\DoxyCodeLine{187     X(Y, gtSwl\_type\_uint64, BytesReceived, "{}BytesReceived"{}) \(\backslash\)}
+\DoxyCodeLine{188     X(Y, gtSwl\_type\_uint64, PacketsSent, "{}PacketsSent"{}) \(\backslash\)}
+\DoxyCodeLine{189     X(Y, gtSwl\_type\_uint64, PacketsReceived, "{}PacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{190     X(Y, gtSwl\_type\_uint32, ErrorsSent, "{}ErrorsSent"{}) \(\backslash\)}
+\DoxyCodeLine{191     X(Y, gtSwl\_type\_uint32, ErrorsReceived, "{}ErrorsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{192     X(Y, gtSwl\_type\_uint32, RetransCount, "{}RetransCount"{}) \(\backslash\)}
+\DoxyCodeLine{193     X(Y, gtSwl\_type\_uint32, DiscardPacketsSent, "{}DiscardPacketsSent"{}) \(\backslash\)}
+\DoxyCodeLine{194     X(Y, gtSwl\_type\_uint32, DiscardPacketsReceived, "{}DiscardPacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{195     X(Y, gtSwl\_type\_uint32, UnicastPacketsSent, "{}UnicastPacketsSent"{}) \(\backslash\)}
+\DoxyCodeLine{196     X(Y, gtSwl\_type\_uint32, UnicastPacketsReceived, "{}UnicastPacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{197     X(Y, gtSwl\_type\_uint32, MulticastPacketsSent, "{}MulticastPacketsSent"{}) \(\backslash\)}
+\DoxyCodeLine{198     X(Y, gtSwl\_type\_uint32, MulticastPacketsReceived, "{}MulticastPacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{199     X(Y, gtSwl\_type\_uint32, BroadcastPacketsSent, "{}BroadcastPacketsSent"{}) \(\backslash\)}
+\DoxyCodeLine{200     X(Y, gtSwl\_type\_uint32, BroadcastPacketsReceived, "{}BroadcastPacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{201     X(Y, gtSwl\_type\_uint32, UnknownProtoPacketsReceived, "{}UnknownProtoPacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{202     X(Y, gtSwl\_type\_uint32, FailedRetransCount, "{}FailedRetransCount"{}) \(\backslash\)}
+\DoxyCodeLine{203     X(Y, gtSwl\_type\_uint32, RetryCount, "{}RetryCount"{}) \(\backslash\)}
+\DoxyCodeLine{204     X(Y, gtWld\_acTrafficArray, WmmPacketsSent, "{}WmmPacketsSent"{}) \(\backslash\)}
+\DoxyCodeLine{205     X(Y, gtWld\_acTrafficArray, WmmPacketsReceived, "{}WmmPacketsReceived"{}) \(\backslash\)}
+\DoxyCodeLine{206     X(Y, gtWld\_acTrafficArray, WmmFailedSent, "{}WmmFailedSent"{}) \(\backslash\)}
+\DoxyCodeLine{207     X(Y, gtWld\_acTrafficArray, WmmFailedReceived, "{}WmmFailedReceived"{}) \(\backslash\)}
+\DoxyCodeLine{208     X(Y, gtWld\_acTrafficArray, WmmBytesSent, "{}WmmBytesSent"{}) \(\backslash\)}
+\DoxyCodeLine{209     X(Y, gtWld\_acTrafficArray, WmmBytesReceived, "{}WmmBytesReceived"{}) \(\backslash\)}
+\DoxyCodeLine{210     X(Y, gtWld\_acTrafficArray, WmmFailedBytesSent, "{}WmmFailedBytesSent"{}) \(\backslash\)}
+\DoxyCodeLine{211     X(Y, gtWld\_acTrafficArray, WmmFailedBytesReceived, "{}WmmFailedBytesReceived"{}) \(\backslash\)}
+\DoxyCodeLine{212     X(Y, gtSwl\_type\_int32, TemperatureDegreesCelsius, "{}TemperatureDegreesCelsius"{}) \(\backslash\)}
+\DoxyCodeLine{213     X(Y, gtSwl\_type\_timeMono, latestStatsUpdateTime, "{}LatestStatsUpdateTime"{})}
+\DoxyCodeLine{214 }
+\DoxyCodeLine{215 \mbox{\hyperlink{wld__types_8h_a134ba601343a5909059a10337a2806e1}{SWL\_NTT\_H\_ANNOTATE}}(gtWld\_stats, \mbox{\hyperlink{structwld__stats}{wld\_stats\_t}}, \mbox{\hyperlink{wld__types_8h_ae0193ea28a9b84cddd81b795b5e5c1e7}{X\_WLD\_STATS}});}
+\DoxyCodeLine{216 }
+\DoxyCodeLine{217 }
+\DoxyCodeLine{218 }
+\DoxyCodeLine{219 \mbox{\hyperlink{wld__types_8h_a7e5d4120537e41040f2e3b8597ac3ce8}{SWL\_ARRAY\_TYPE\_H}}(gtWld\_type\_statusArray, gtSwl\_type\_uint32, \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075eda631c6f083a8cd3de46f3515b412b330b}{RST\_MAX}});}
+\DoxyCodeLine{220 }
+\DoxyCodeLine{221 \textcolor{preprocessor}{\#define X\_WLD\_STATUS\_CHANGE\_INFO(X, Y) \(\backslash\)}}
+\DoxyCodeLine{222 \textcolor{preprocessor}{    X(Y, gtSwl\_type\_timeMono, lastStatusChange, "{}LastStatusChange"{}}) \(\backslash\)}
+\DoxyCodeLine{223     X(Y, gtSwl\_type\_uint32, nrStatusChanges, "{}NrStatusChanges"{}) \(\backslash\)}
+\DoxyCodeLine{224     X(Y, gtWld\_type\_statusArray, statusHistogram, "{}StatusHistogram"{}) \(\backslash\)}
+\DoxyCodeLine{225     X(Y, gtSwl\_type\_timeMono, lastStatusHistogramUpdate, "{}LastStatusHistogramUpdate"{}) \(\backslash\)}
+\DoxyCodeLine{226     X(Y, gtSwl\_type\_timeMono, lastEnableTime, "{}LastEnableTime"{}) \(\backslash\)}
+\DoxyCodeLine{227     X(Y, gtSwl\_type\_timeMono, lastDisableTime, "{}LastDisableTime"{}) \(\backslash\)}
+\DoxyCodeLine{228     X(Y, gtSwl\_type\_uint32, nrEnables, "{}NrEnables"{})}
+\DoxyCodeLine{229 }
+\DoxyCodeLine{230 \mbox{\hyperlink{wld__types_8h_ab8ffc346d61c30c2e6d1d216c9920245}{SWL\_NTT\_H}}(gtWld\_status\_changeInfo, wld\_status\_changeInfo\_t, \mbox{\hyperlink{wld__types_8h_aa0270774ce477d691fd66874e2303b62}{X\_WLD\_STATUS\_CHANGE\_INFO}}, );}
+\DoxyCodeLine{231 }
+\DoxyCodeLine{232 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* SRC\_INCLUDE\_WLD\_WLD\_TYPES\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,5 @@
+<map id="wld_wpaCtrl_sendCmdCheckResponseExt" name="wld_wpaCtrl_sendCmdCheckResponseExt">
+<area shape="rect" id="node1" title="send synchronous command to wpa_ctrl server and check the received reply within a defined delay" alt="" coords="240,23,451,65"/>
+<area shape="rect" id="node2" href="$wld__rad__hostapd__api_8c.html#abe6c566b0fbeb786e5862f4496c7a2a1" title="disable main hostapd interface" alt="" coords="5,5,192,32"/>
+<area shape="rect" id="node3" href="$wld__rad__hostapd__api_8c.html#afb2b0bb8a38b6030246e283bfddd6811" title="enable main hostapd interface" alt="" coords="7,56,190,83"/>
+</map>

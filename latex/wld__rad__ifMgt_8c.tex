@@ -1,0 +1,164 @@
+\hypertarget{wld__rad__ifMgt_8c}{}\doxysection{src/\+Rad\+Mgt/wld\+\_\+rad\+\_\+if\+Mgt.c File Reference}
+\label{wld__rad__ifMgt_8c}\index{src/RadMgt/wld\_rad\_ifMgt.c@{src/RadMgt/wld\_rad\_ifMgt.c}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$swla/swla\+\_\+common\+Lib.\+h$>$}\newline
+{\ttfamily \#include $<$swla/swla\+\_\+conversion.\+h$>$}\newline
+{\ttfamily \#include $<$swl/swl\+\_\+string.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+statsmon.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ap\+\_\+rssi\+Monitor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+stamon.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+tiny\+Roam.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+rad\+\_\+if\+Mgt.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__ifMgt_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__rad__ifMgt_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}rad\+IfM\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__ifMgt_8c_a8b3b14e34e80a874bd962e88a930449f}{\+\_\+add\+VAPIntf}} (amxd\+\_\+object\+\_\+t $\ast$obj \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__ifMgt_8c_a7847d6109ffc1672aa2f44db564a5076}{\+\_\+del\+VAPIntf}} (amxd\+\_\+object\+\_\+t $\ast$\mbox{\hyperlink{wld_8c_a02ad6ddc9029bcb22572a461d97e4341}{wifi}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__ifMgt_8c_a38b500509419100012dbfbc2d78eae94}{\+\_\+add\+End\+Point\+Intf}} (amxd\+\_\+object\+\_\+t $\ast$\mbox{\hyperlink{wld_8c_a02ad6ddc9029bcb22572a461d97e4341}{wifi}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\begin{DoxyCompactList}\small\item\em \+\_\+add\+End\+Point\+Intf \end{DoxyCompactList}\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__ifMgt_8c_a72ebdb0d666c8cf46016601632787e3a}{\+\_\+del\+End\+Point\+Intf}} (amxd\+\_\+object\+\_\+t $\ast$\mbox{\hyperlink{wld_8c_a02ad6ddc9029bcb22572a461d97e4341}{wifi}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\begin{DoxyCompactList}\small\item\em \+\_\+del\+End\+Point\+Intf \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__rad__ifMgt_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__rad__ifMgt_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}!ME@{ME}}
+\index{ME@{ME}!wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}rad\+IfM\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__rad__ifMgt_8c_a38b500509419100012dbfbc2d78eae94}\label{wld__rad__ifMgt_8c_a38b500509419100012dbfbc2d78eae94}} 
+\index{wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}!\_addEndPointIntf@{\_addEndPointIntf}}
+\index{\_addEndPointIntf@{\_addEndPointIntf}!wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_addEndPointIntf()}{\_addEndPointIntf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+add\+End\+Point\+Intf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{wifi,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+
+
+\+\_\+add\+End\+Point\+Intf 
+
+Creates an End\+Point interface on the RADIO and updates the End\+Point and SSID object fields
+
+
+\begin{DoxyParams}{Parameters}
+{\em args} & argument list
+\begin{DoxyItemize}
+\item radio \+: Name of the RADIO interface that derrives the endpoint interface. (wifi0, wifi1,...)
+\item endpoint \+: Name of the End\+Point interface that will be created. (wln0, wln1, ...) 
+\end{DoxyItemize}\\
+\hline
+{\em retval} & variant that must contain the return value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item function execution state 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__ifMgt_8c_a38b500509419100012dbfbc2d78eae94_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__ifMgt_8c_a8b3b14e34e80a874bd962e88a930449f}\label{wld__rad__ifMgt_8c_a8b3b14e34e80a874bd962e88a930449f}} 
+\index{wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}!\_addVAPIntf@{\_addVAPIntf}}
+\index{\_addVAPIntf@{\_addVAPIntf}!wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_addVAPIntf()}{\_addVAPIntf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+add\+VAPIntf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$obj}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__ifMgt_8c_a8b3b14e34e80a874bd962e88a930449f_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__ifMgt_8c_a72ebdb0d666c8cf46016601632787e3a}\label{wld__rad__ifMgt_8c_a72ebdb0d666c8cf46016601632787e3a}} 
+\index{wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}!\_delEndPointIntf@{\_delEndPointIntf}}
+\index{\_delEndPointIntf@{\_delEndPointIntf}!wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_delEndPointIntf()}{\_delEndPointIntf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+del\+End\+Point\+Intf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{wifi,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+
+
+\+\_\+del\+End\+Point\+Intf 
+
+Deletes an End\+Point interface on the RADIO and its associated structures
+
+
+\begin{DoxyParams}{Parameters}
+{\em fcall} & function call context \\
+\hline
+{\em args} & argument list
+\begin{DoxyItemize}
+\item endpoint \+: Name of the End\+Point interface that will be created (wln0, wln1, ...) 
+\end{DoxyItemize}\\
+\hline
+{\em retval} & \+: variant that must contain the return value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item function execution state 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{wld__rad__ifMgt_8c_a72ebdb0d666c8cf46016601632787e3a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__ifMgt_8c_a7847d6109ffc1672aa2f44db564a5076}\label{wld__rad__ifMgt_8c_a7847d6109ffc1672aa2f44db564a5076}} 
+\index{wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}!\_delVAPIntf@{\_delVAPIntf}}
+\index{\_delVAPIntf@{\_delVAPIntf}!wld\_rad\_ifMgt.c@{wld\_rad\_ifMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_delVAPIntf()}{\_delVAPIntf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+del\+VAPIntf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{wifi,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=299pt]{wld__rad__ifMgt_8c_a7847d6109ffc1672aa2f44db564a5076_cgraph}
+\end{center}
+\end{figure}

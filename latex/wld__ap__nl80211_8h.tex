@@ -1,0 +1,124 @@
+\hypertarget{wld__ap__nl80211_8h}{}\doxysection{include/wld/wld\+\_\+ap\+\_\+nl80211.h File Reference}
+\label{wld__ap__nl80211_8h}\index{include/wld/wld\_ap\_nl80211.h@{include/wld/wld\_ap\_nl80211.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+debug.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+\_\+nl80211.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__nl80211_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__nl80211_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_ad44af6108724bf9466042468f0d916a8}{wld\+\_\+ap\+\_\+nl80211\+\_\+set\+Evt\+Listener}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, void $\ast$p\+Data, const \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\+\_\+nl80211\+\_\+evt\+Handlers\+\_\+cb}} $\ast$const handlers)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a605483ac5f8b0cb3d4c3099ce04ca2ee}{wld\+\_\+ap\+\_\+nl80211\+\_\+del\+Evt\+Listener}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_ac9a359b039f9489d4dd9086082492056}{wld\+\_\+ap\+\_\+nl80211\+\_\+get\+Interface\+Info}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$p\+Iface\+Info)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_ad4f26cc38e14bc4a4420f769966297f1}{wld\+\_\+ap\+\_\+nl80211\+\_\+del\+Vap\+Interface}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a3adf22ce5facd017ee0b09ee9629b9bb}{wld\+\_\+ap\+\_\+nl80211\+\_\+get\+Station\+Info}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const swl\+\_\+mac\+Bin\+\_\+t $\ast$p\+Mac, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$p\+Station\+Info)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a5b33c2904a536291ac32ef2abf57f22a}{wld\+\_\+ap\+\_\+nl80211\+\_\+get\+All\+Stations\+Info}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$$\ast$pp\+Station\+Info, uint32\+\_\+t $\ast$pnr\+Station)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a810d3dc564b94d82366a0b7684c5634a}{wld\+\_\+ap\+\_\+nl80211\+\_\+copy\+Station\+Info\+To\+Assoc\+Dev}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$p\+Station\+Info)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a468414db5b2e1a399b2dcab737746525}{wld\+\_\+ap\+\_\+nl80211\+\_\+send\+Vendor\+Sub\+Cmd}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t oui, int subcmd, void $\ast$data, int data\+Len, bool is\+Sync, bool with\+Ack, uint32\+\_\+t flags, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}} handler, void $\ast$priv)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_abc5ed67f98ca3364435b89b54c60c16a}{wld\+\_\+ap\+\_\+nl80211\+\_\+send\+Vendor\+Sub\+Cmd\+Attr}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t oui, int subcmd, \mbox{\hyperlink{structwld__nl80211__nlAttr__t}{wld\+\_\+nl80211\+\_\+nl\+Attr\+\_\+t}} $\ast$vendor\+Attr, bool is\+Sync, bool with\+Ack, uint32\+\_\+t flags, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}} handler, void $\ast$priv)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a8aadfec2c8ffa372c025b5de3772793e}{wld\+\_\+ap\+\_\+nl80211\+\_\+send\+Management\+Frame\+Cmd}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+80211\+\_\+mgmt\+Frame\+Control\+\_\+t $\ast$fc, swl\+\_\+mac\+Bin\+\_\+t $\ast$tgt\+Mac, swl\+\_\+bit8\+\_\+t $\ast$data\+Bytes, size\+\_\+t data\+Bytes\+Len, swl\+\_\+chanspec\+\_\+t $\ast$chanspec, uint32\+\_\+t flags)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a67263e2774d50936e270749733b6d934}{wld\+\_\+ap\+\_\+nl80211\+\_\+register\+Frame}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint16\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$pattern, size\+\_\+t pattern\+Len)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__ap__nl80211_8h_a31a1dc8a9c7ae906aca4f54b3fbf7d34}{wld\+\_\+ap\+\_\+nl80211\+\_\+find\+Mld\+Iface\+Info}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$p\+Mld\+Iface\+Info)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a810d3dc564b94d82366a0b7684c5634a}\label{wld__ap__nl80211_8h_a810d3dc564b94d82366a0b7684c5634a}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_copyStationInfoToAssocDev@{wld\_ap\_nl80211\_copyStationInfoToAssocDev}}
+\index{wld\_ap\_nl80211\_copyStationInfoToAssocDev@{wld\_ap\_nl80211\_copyStationInfoToAssocDev}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_copyStationInfoToAssocDev()}{wld\_ap\_nl80211\_copyStationInfoToAssocDev()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+copy\+Station\+Info\+To\+Assoc\+Dev (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD,  }\item[{\mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$}]{p\+Station\+Info }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a605483ac5f8b0cb3d4c3099ce04ca2ee}\label{wld__ap__nl80211_8h_a605483ac5f8b0cb3d4c3099ce04ca2ee}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_delEvtListener@{wld\_ap\_nl80211\_delEvtListener}}
+\index{wld\_ap\_nl80211\_delEvtListener@{wld\_ap\_nl80211\_delEvtListener}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_delEvtListener()}{wld\_ap\_nl80211\_delEvtListener()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+del\+Evt\+Listener (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_ad4f26cc38e14bc4a4420f769966297f1}\label{wld__ap__nl80211_8h_ad4f26cc38e14bc4a4420f769966297f1}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_delVapInterface@{wld\_ap\_nl80211\_delVapInterface}}
+\index{wld\_ap\_nl80211\_delVapInterface@{wld\_ap\_nl80211\_delVapInterface}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_delVapInterface()}{wld\_ap\_nl80211\_delVapInterface()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+del\+Vap\+Interface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a31a1dc8a9c7ae906aca4f54b3fbf7d34}\label{wld__ap__nl80211_8h_a31a1dc8a9c7ae906aca4f54b3fbf7d34}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_findMldIfaceInfo@{wld\_ap\_nl80211\_findMldIfaceInfo}}
+\index{wld\_ap\_nl80211\_findMldIfaceInfo@{wld\_ap\_nl80211\_findMldIfaceInfo}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_findMldIfaceInfo()}{wld\_ap\_nl80211\_findMldIfaceInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+find\+Mld\+Iface\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$}]{p\+Mld\+Iface\+Info }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a5b33c2904a536291ac32ef2abf57f22a}\label{wld__ap__nl80211_8h_a5b33c2904a536291ac32ef2abf57f22a}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_getAllStationsInfo@{wld\_ap\_nl80211\_getAllStationsInfo}}
+\index{wld\_ap\_nl80211\_getAllStationsInfo@{wld\_ap\_nl80211\_getAllStationsInfo}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_getAllStationsInfo()}{wld\_ap\_nl80211\_getAllStationsInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+get\+All\+Stations\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$$\ast$}]{pp\+Station\+Info,  }\item[{uint32\+\_\+t $\ast$}]{pnr\+Station }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_ac9a359b039f9489d4dd9086082492056}\label{wld__ap__nl80211_8h_ac9a359b039f9489d4dd9086082492056}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_getInterfaceInfo@{wld\_ap\_nl80211\_getInterfaceInfo}}
+\index{wld\_ap\_nl80211\_getInterfaceInfo@{wld\_ap\_nl80211\_getInterfaceInfo}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_getInterfaceInfo()}{wld\_ap\_nl80211\_getInterfaceInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+get\+Interface\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\+\_\+nl80211\+\_\+iface\+Info\+\_\+t}} $\ast$}]{p\+Iface\+Info }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a3adf22ce5facd017ee0b09ee9629b9bb}\label{wld__ap__nl80211_8h_a3adf22ce5facd017ee0b09ee9629b9bb}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_getStationInfo@{wld\_ap\_nl80211\_getStationInfo}}
+\index{wld\_ap\_nl80211\_getStationInfo@{wld\_ap\_nl80211\_getStationInfo}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_getStationInfo()}{wld\_ap\_nl80211\_getStationInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+get\+Station\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{p\+Mac,  }\item[{\mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\+\_\+nl80211\+\_\+station\+Info\+\_\+t}} $\ast$}]{p\+Station\+Info }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a67263e2774d50936e270749733b6d934}\label{wld__ap__nl80211_8h_a67263e2774d50936e270749733b6d934}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_registerFrame@{wld\_ap\_nl80211\_registerFrame}}
+\index{wld\_ap\_nl80211\_registerFrame@{wld\_ap\_nl80211\_registerFrame}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_registerFrame()}{wld\_ap\_nl80211\_registerFrame()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+register\+Frame (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint16\+\_\+t}]{type,  }\item[{const char $\ast$}]{pattern,  }\item[{size\+\_\+t}]{pattern\+Len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a8aadfec2c8ffa372c025b5de3772793e}\label{wld__ap__nl80211_8h_a8aadfec2c8ffa372c025b5de3772793e}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_sendManagementFrameCmd@{wld\_ap\_nl80211\_sendManagementFrameCmd}}
+\index{wld\_ap\_nl80211\_sendManagementFrameCmd@{wld\_ap\_nl80211\_sendManagementFrameCmd}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_sendManagementFrameCmd()}{wld\_ap\_nl80211\_sendManagementFrameCmd()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+send\+Management\+Frame\+Cmd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+80211\+\_\+mgmt\+Frame\+Control\+\_\+t $\ast$}]{fc,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{tgt\+Mac,  }\item[{swl\+\_\+bit8\+\_\+t $\ast$}]{data\+Bytes,  }\item[{size\+\_\+t}]{data\+Bytes\+Len,  }\item[{swl\+\_\+chanspec\+\_\+t $\ast$}]{chanspec,  }\item[{uint32\+\_\+t}]{flags }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_a468414db5b2e1a399b2dcab737746525}\label{wld__ap__nl80211_8h_a468414db5b2e1a399b2dcab737746525}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_sendVendorSubCmd@{wld\_ap\_nl80211\_sendVendorSubCmd}}
+\index{wld\_ap\_nl80211\_sendVendorSubCmd@{wld\_ap\_nl80211\_sendVendorSubCmd}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_sendVendorSubCmd()}{wld\_ap\_nl80211\_sendVendorSubCmd()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+send\+Vendor\+Sub\+Cmd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{oui,  }\item[{int}]{subcmd,  }\item[{void $\ast$}]{data,  }\item[{int}]{data\+Len,  }\item[{bool}]{is\+Sync,  }\item[{bool}]{with\+Ack,  }\item[{uint32\+\_\+t}]{flags,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}}}]{handler,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_abc5ed67f98ca3364435b89b54c60c16a}\label{wld__ap__nl80211_8h_abc5ed67f98ca3364435b89b54c60c16a}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_sendVendorSubCmdAttr@{wld\_ap\_nl80211\_sendVendorSubCmdAttr}}
+\index{wld\_ap\_nl80211\_sendVendorSubCmdAttr@{wld\_ap\_nl80211\_sendVendorSubCmdAttr}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_sendVendorSubCmdAttr()}{wld\_ap\_nl80211\_sendVendorSubCmdAttr()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+send\+Vendor\+Sub\+Cmd\+Attr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{oui,  }\item[{int}]{subcmd,  }\item[{\mbox{\hyperlink{structwld__nl80211__nlAttr__t}{wld\+\_\+nl80211\+\_\+nl\+Attr\+\_\+t}} $\ast$}]{vendor\+Attr,  }\item[{bool}]{is\+Sync,  }\item[{bool}]{with\+Ack,  }\item[{uint32\+\_\+t}]{flags,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}}}]{handler,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__nl80211_8h_ad44af6108724bf9466042468f0d916a8}\label{wld__ap__nl80211_8h_ad44af6108724bf9466042468f0d916a8}} 
+\index{wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}!wld\_ap\_nl80211\_setEvtListener@{wld\_ap\_nl80211\_setEvtListener}}
+\index{wld\_ap\_nl80211\_setEvtListener@{wld\_ap\_nl80211\_setEvtListener}!wld\_ap\_nl80211.h@{wld\_ap\_nl80211.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_nl80211\_setEvtListener()}{wld\_ap\_nl80211\_setEvtListener()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+nl80211\+\_\+set\+Evt\+Listener (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{void $\ast$}]{p\+Data,  }\item[{const \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\+\_\+nl80211\+\_\+evt\+Handlers\+\_\+cb}} $\ast$const}]{handlers }\end{DoxyParamCaption})}
+

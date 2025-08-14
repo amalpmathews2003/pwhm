@@ -1,0 +1,128 @@
+\hypertarget{wld__wpaCtrlMngr__priv_8h}{}\doxysection{include\+\_\+priv/nl80211/wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+priv.h File Reference}
+\label{wld__wpaCtrlMngr__priv_8h}\index{include\_priv/nl80211/wld\_wpaCtrlMngr\_priv.h@{include\_priv/nl80211/wld\_wpaCtrlMngr\_priv.h}}
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+un\+Li\+List.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+sec\+Dmn.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+priv.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr__priv_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr__priv_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__wpaCtrlMngr}{wld\+\_\+wpa\+Ctrl\+Mngr}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_a6a949a7dc945c6bd07f5fc45923b8926}{MAX\+\_\+\+CONNECTION\+\_\+\+ATTEMPTS}}~20
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_acde86bfa472a76ace46d2d79b3510d88}{FIRST\+\_\+\+DELAY\+\_\+\+MS}}~500
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_ab5aa8e705170d968a0b82a8e498b0afa}{RETRY\+\_\+\+DELAY\+\_\+\+MS}}~500
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_a03f76a9049d56127d662d5732b03a8af}{CALL\+\_\+\+MGR}}(p\+Mgr,  if\+Name,  f\+Name, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_a8138145cff00b5ddb2f686ae78fd525f}{CALL\+\_\+\+MGR\+\_\+\+NA}}(p\+Mgr,  if\+Name,  f\+Name)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_aa46fe8d0499bd2f2742d46508c5fff8b}{CALL\+\_\+\+MGR\+\_\+\+RET}}(p\+Mgr,  if\+Name,  ret,  f\+Name, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr__priv_8h_a0e4269daee14b65a494799d3cbc67d99}{CALL\+\_\+\+MGR\+\_\+\+RET\+\_\+\+NA}}(p\+Mgr,  if\+Name,  ret,  f\+Name, ...)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_a03f76a9049d56127d662d5732b03a8af}\label{wld__wpaCtrlMngr__priv_8h_a03f76a9049d56127d662d5732b03a8af}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!CALL\_MGR@{CALL\_MGR}}
+\index{CALL\_MGR@{CALL\_MGR}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR}{CALL\_MGR}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR(\begin{DoxyParamCaption}\item[{}]{p\+Mgr,  }\item[{}]{if\+Name,  }\item[{}]{f\+Name,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}(pMgr != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{        SWL\_CALL(pMgr-\/>handlers.fName, pMgr-\/>userData, ifName, \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_a8138145cff00b5ddb2f686ae78fd525f}\label{wld__wpaCtrlMngr__priv_8h_a8138145cff00b5ddb2f686ae78fd525f}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!CALL\_MGR\_NA@{CALL\_MGR\_NA}}
+\index{CALL\_MGR\_NA@{CALL\_MGR\_NA}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_NA}{CALL\_MGR\_NA}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+NA(\begin{DoxyParamCaption}\item[{}]{p\+Mgr,  }\item[{}]{if\+Name,  }\item[{}]{f\+Name }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}(pMgr != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{        SWL\_CALL(pMgr-\/>handlers.fName, pMgr-\/>userData, ifName); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_aa46fe8d0499bd2f2742d46508c5fff8b}\label{wld__wpaCtrlMngr__priv_8h_aa46fe8d0499bd2f2742d46508c5fff8b}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!CALL\_MGR\_RET@{CALL\_MGR\_RET}}
+\index{CALL\_MGR\_RET@{CALL\_MGR\_RET}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_RET}{CALL\_MGR\_RET}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+RET(\begin{DoxyParamCaption}\item[{}]{p\+Mgr,  }\item[{}]{if\+Name,  }\item[{}]{ret,  }\item[{}]{f\+Name,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \{ \(\backslash\)}
+\DoxyCodeLine{        ret = SWL\_RC\_INVALID\_PARAM; \(\backslash\)}
+\DoxyCodeLine{        if(pMgr != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{            ret = SWL\_RC\_NOT\_IMPLEMENTED; \(\backslash\)}
+\DoxyCodeLine{            if(pMgr-\/>handlers.fName != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{                ret = pMgr-\/>handlers.fName(pMgr-\/>userData, ifName, \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{            \} \(\backslash\)}
+\DoxyCodeLine{        \} \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_a0e4269daee14b65a494799d3cbc67d99}\label{wld__wpaCtrlMngr__priv_8h_a0e4269daee14b65a494799d3cbc67d99}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!CALL\_MGR\_RET\_NA@{CALL\_MGR\_RET\_NA}}
+\index{CALL\_MGR\_RET\_NA@{CALL\_MGR\_RET\_NA}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_RET\_NA}{CALL\_MGR\_RET\_NA}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+RET\+\_\+\+NA(\begin{DoxyParamCaption}\item[{}]{p\+Mgr,  }\item[{}]{if\+Name,  }\item[{}]{ret,  }\item[{}]{f\+Name,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \{ \(\backslash\)}
+\DoxyCodeLine{        ret = SWL\_RC\_INVALID\_PARAM; \(\backslash\)}
+\DoxyCodeLine{        if(pMgr != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{            ret = SWL\_RC\_NOT\_IMPLEMENTED; \(\backslash\)}
+\DoxyCodeLine{            if(pMgr-\/>handlers.fName != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{                ret = pMgr-\/>handlers.fName(pMgr-\/>userData, ifName); \(\backslash\)}
+\DoxyCodeLine{            \} \(\backslash\)}
+\DoxyCodeLine{        \} \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_acde86bfa472a76ace46d2d79b3510d88}\label{wld__wpaCtrlMngr__priv_8h_acde86bfa472a76ace46d2d79b3510d88}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!FIRST\_DELAY\_MS@{FIRST\_DELAY\_MS}}
+\index{FIRST\_DELAY\_MS@{FIRST\_DELAY\_MS}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{FIRST\_DELAY\_MS}{FIRST\_DELAY\_MS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} FIRST\+\_\+\+DELAY\+\_\+\+MS~500}
+
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_a6a949a7dc945c6bd07f5fc45923b8926}\label{wld__wpaCtrlMngr__priv_8h_a6a949a7dc945c6bd07f5fc45923b8926}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!MAX\_CONNECTION\_ATTEMPTS@{MAX\_CONNECTION\_ATTEMPTS}}
+\index{MAX\_CONNECTION\_ATTEMPTS@{MAX\_CONNECTION\_ATTEMPTS}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{MAX\_CONNECTION\_ATTEMPTS}{MAX\_CONNECTION\_ATTEMPTS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} MAX\+\_\+\+CONNECTION\+\_\+\+ATTEMPTS~20}
+
+\mbox{\Hypertarget{wld__wpaCtrlMngr__priv_8h_ab5aa8e705170d968a0b82a8e498b0afa}\label{wld__wpaCtrlMngr__priv_8h_ab5aa8e705170d968a0b82a8e498b0afa}} 
+\index{wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}!RETRY\_DELAY\_MS@{RETRY\_DELAY\_MS}}
+\index{RETRY\_DELAY\_MS@{RETRY\_DELAY\_MS}!wld\_wpaCtrlMngr\_priv.h@{wld\_wpaCtrlMngr\_priv.h}}
+\doxysubsubsection{\texorpdfstring{RETRY\_DELAY\_MS}{RETRY\_DELAY\_MS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} RETRY\+\_\+\+DELAY\+\_\+\+MS~500}
+

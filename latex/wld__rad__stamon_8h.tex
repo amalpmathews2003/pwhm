@@ -1,0 +1,185 @@
+\hypertarget{wld__rad__stamon_8h}{}\doxysection{include/wld/wld\+\_\+rad\+\_\+stamon.h File Reference}
+\label{wld__rad__stamon_8h}\index{include/wld/wld\_rad\_stamon.h@{include/wld/wld\_rad\_stamon.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+rad\+\_\+stamon.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__rad__stamon_8h_af12333738c63c7b9a1e21f908bb8cc52}{wld\+\_\+rad\+Sta\+Mon\+\_\+update\+Active}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__rad__stamon_8h_a31877d00e4fb79c863f393ddeba7ffff}{wld\+\_\+rad\+Sta\+Mon\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__rad__stamon_8h_afa47a1bb2714393a6b2f7a831911a98b}{wld\+\_\+rad\+Sta\+Mon\+\_\+destroy}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__rad__stamon_8h_ae05da0f20ccbd1874c710d3ea8315719}{wld\+\_\+rad\+Sta\+Mon\+\_\+debug}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, amxc\+\_\+var\+\_\+t $\ast$ret\+Map)
+\item 
+\mbox{\hyperlink{wld__types_8h_a50b575e47122ef75a2cb65cefc3b50dc}{T\+\_\+\+Non\+Associated\+Device}} $\ast$ \mbox{\hyperlink{wld__rad__stamon_8h_af15b14fdb2c9e390697e399b396432e6}{wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Non\+Associated\+Device}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$mac\+Addr\+Str)
+\item 
+\mbox{\hyperlink{wld__types_8h_a636666f6a0d977400ba3f062eaafd40e}{T\+\_\+\+Monitor\+Device}} $\ast$ \mbox{\hyperlink{wld__rad__stamon_8h_a6878f522e5fc125c1312abbc0b3d929b}{wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Monitor\+Device}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$mac\+Addr\+Str)
+\item 
+\mbox{\hyperlink{wld_8h_aaec2f4adb046aa7682fb58e69f2d65fe}{wld\+\_\+nasta\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__rad__stamon_8h_a0880c50617982aa08ae4b397a0c991ee}{wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Device}} (const char $\ast$mac\+Addr\+Str, amxc\+\_\+llist\+\_\+t $\ast$dev\+List)
+\item 
+\mbox{\hyperlink{wld_8h_aaec2f4adb046aa7682fb58e69f2d65fe}{wld\+\_\+nasta\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__rad__stamon_8h_af36b40de59009e8e854698b638653c37}{wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Device\+Ext}} (const swl\+\_\+mac\+Bin\+\_\+t $\ast$p\+Mac\+Bin, amxc\+\_\+llist\+\_\+t $\ast$dev\+List)
+\item 
+void \mbox{\hyperlink{wld__rad__stamon_8h_a0d1ca5703032094ed50bd0e391fee4c6}{wld\+\_\+radio\+\_\+update\+Na\+Sta\+Monitor}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, amxd\+\_\+trans\+\_\+t $\ast$trans)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__rad__stamon_8h_a0880c50617982aa08ae4b397a0c991ee}\label{wld__rad__stamon_8h_a0880c50617982aa08ae4b397a0c991ee}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_rad\_staMon\_getDevice@{wld\_rad\_staMon\_getDevice}}
+\index{wld\_rad\_staMon\_getDevice@{wld\_rad\_staMon\_getDevice}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_staMon\_getDevice()}{wld\_rad\_staMon\_getDevice()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_aaec2f4adb046aa7682fb58e69f2d65fe}{wld\+\_\+nasta\+\_\+t}} $\ast$ wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Device (\begin{DoxyParamCaption}\item[{const char $\ast$}]{mac\+Addr\+Str,  }\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{dev\+List }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_a0880c50617982aa08ae4b397a0c991ee_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_a0880c50617982aa08ae4b397a0c991ee_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_af36b40de59009e8e854698b638653c37}\label{wld__rad__stamon_8h_af36b40de59009e8e854698b638653c37}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_rad\_staMon\_getDeviceExt@{wld\_rad\_staMon\_getDeviceExt}}
+\index{wld\_rad\_staMon\_getDeviceExt@{wld\_rad\_staMon\_getDeviceExt}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_staMon\_getDeviceExt()}{wld\_rad\_staMon\_getDeviceExt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_aaec2f4adb046aa7682fb58e69f2d65fe}{wld\+\_\+nasta\+\_\+t}} $\ast$ wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Device\+Ext (\begin{DoxyParamCaption}\item[{const swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{p\+Mac\+Bin,  }\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{dev\+List }\end{DoxyParamCaption})}
+
+Retrieve a Device based on its string MACAddress in a given list. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_af36b40de59009e8e854698b638653c37_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_a6878f522e5fc125c1312abbc0b3d929b}\label{wld__rad__stamon_8h_a6878f522e5fc125c1312abbc0b3d929b}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_rad\_staMon\_getMonitorDevice@{wld\_rad\_staMon\_getMonitorDevice}}
+\index{wld\_rad\_staMon\_getMonitorDevice@{wld\_rad\_staMon\_getMonitorDevice}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_staMon\_getMonitorDevice()}{wld\_rad\_staMon\_getMonitorDevice()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a636666f6a0d977400ba3f062eaafd40e}{T\+\_\+\+Monitor\+Device}} $\ast$ wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Monitor\+Device (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{mac\+Addr\+Str }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_a6878f522e5fc125c1312abbc0b3d929b_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_af15b14fdb2c9e390697e399b396432e6}\label{wld__rad__stamon_8h_af15b14fdb2c9e390697e399b396432e6}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_rad\_staMon\_getNonAssociatedDevice@{wld\_rad\_staMon\_getNonAssociatedDevice}}
+\index{wld\_rad\_staMon\_getNonAssociatedDevice@{wld\_rad\_staMon\_getNonAssociatedDevice}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_staMon\_getNonAssociatedDevice()}{wld\_rad\_staMon\_getNonAssociatedDevice()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a50b575e47122ef75a2cb65cefc3b50dc}{T\+\_\+\+Non\+Associated\+Device}} $\ast$ wld\+\_\+rad\+\_\+sta\+Mon\+\_\+get\+Non\+Associated\+Device (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{mac\+Addr\+Str }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_af15b14fdb2c9e390697e399b396432e6_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_a0d1ca5703032094ed50bd0e391fee4c6}\label{wld__rad__stamon_8h_a0d1ca5703032094ed50bd0e391fee4c6}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_radio\_updateNaStaMonitor@{wld\_radio\_updateNaStaMonitor}}
+\index{wld\_radio\_updateNaStaMonitor@{wld\_radio\_updateNaStaMonitor}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_radio\_updateNaStaMonitor()}{wld\_radio\_updateNaStaMonitor()}}
+{\footnotesize\ttfamily void wld\+\_\+radio\+\_\+update\+Na\+Sta\+Monitor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{amxd\+\_\+trans\+\_\+t $\ast$}]{trans }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__stamon_8h_ae05da0f20ccbd1874c710d3ea8315719}\label{wld__rad__stamon_8h_ae05da0f20ccbd1874c710d3ea8315719}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_radStaMon\_debug@{wld\_radStaMon\_debug}}
+\index{wld\_radStaMon\_debug@{wld\_radStaMon\_debug}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_radStaMon\_debug()}{wld\_radStaMon\_debug()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+Sta\+Mon\+\_\+debug (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret\+Map }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=339pt]{wld__rad__stamon_8h_ae05da0f20ccbd1874c710d3ea8315719_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{wld__rad__stamon_8h_ae05da0f20ccbd1874c710d3ea8315719_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_afa47a1bb2714393a6b2f7a831911a98b}\label{wld__rad__stamon_8h_afa47a1bb2714393a6b2f7a831911a98b}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_radStaMon\_destroy@{wld\_radStaMon\_destroy}}
+\index{wld\_radStaMon\_destroy@{wld\_radStaMon\_destroy}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_radStaMon\_destroy()}{wld\_radStaMon\_destroy()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+Sta\+Mon\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_afa47a1bb2714393a6b2f7a831911a98b_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_afa47a1bb2714393a6b2f7a831911a98b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_a31877d00e4fb79c863f393ddeba7ffff}\label{wld__rad__stamon_8h_a31877d00e4fb79c863f393ddeba7ffff}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_radStaMon\_init@{wld\_radStaMon\_init}}
+\index{wld\_radStaMon\_init@{wld\_radStaMon\_init}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_radStaMon\_init()}{wld\_radStaMon\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+Sta\+Mon\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=332pt]{wld__rad__stamon_8h_a31877d00e4fb79c863f393ddeba7ffff_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__stamon_8h_af12333738c63c7b9a1e21f908bb8cc52}\label{wld__rad__stamon_8h_af12333738c63c7b9a1e21f908bb8cc52}} 
+\index{wld\_rad\_stamon.h@{wld\_rad\_stamon.h}!wld\_radStaMon\_updateActive@{wld\_radStaMon\_updateActive}}
+\index{wld\_radStaMon\_updateActive@{wld\_radStaMon\_updateActive}!wld\_rad\_stamon.h@{wld\_rad\_stamon.h}}
+\doxysubsubsection{\texorpdfstring{wld\_radStaMon\_updateActive()}{wld\_radStaMon\_updateActive()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+Sta\+Mon\+\_\+update\+Active (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__stamon_8h_af12333738c63c7b9a1e21f908bb8cc52_cgraph}
+\end{center}
+\end{figure}

@@ -1,0 +1,367 @@
+\hypertarget{wld__wps_8c}{}\doxysection{src/wld\+\_\+wps.c File Reference}
+\label{wld__wps_8c}\index{src/wld\_wps.c@{src/wld\_wps.c}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+string.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+uuid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wps.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wps\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__wps_8c_ab2ea67a6d2b7ef655014e107a52000fa}{SWL\+\_\+\+ASSERT\+\_\+\+STATIC}} (SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__wps_8c_aba9ce462fcf5da65ca1f13b8122f1c0b}{cstr\+\_\+\+WPS\+\_\+\+CM\+\_\+\+Supported}})==(\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963a08323968ed5e970f674db573ec0c2218}{WPS\+\_\+\+CFG\+\_\+\+MTHD\+\_\+\+MAX}}+1), \char`\"{}cstr\+\_\+\+WPS\+\_\+\+CM\+\_\+\+Supported not correctly defined\char`\"{})
+\item 
+\mbox{\hyperlink{wld__wps_8c_a801c74697da1a58b97e5da25659c5d83}{SWL\+\_\+\+ASSERT\+\_\+\+STATIC}} (SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__wps_8c_ab70f21129baf0a60503fe6c3ccf10faf}{cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+Status}})==(\mbox{\hyperlink{wld_8h_ad290e2da9eb2cda2357c0b7c66d38b9fab9a6cbf628f12b7d64bc9bc8abc30112}{APWPS\+\_\+\+STATUS\+\_\+\+MAX}}+1), \char`\"{}cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+Status not correctly defined\char`\"{})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_aad748157ee49ba6ce21d189c505e0d86}{do\+Cancel\+Pairing}} (amxd\+\_\+object\+\_\+t $\ast$object)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wps_8c_a31ae6351408d79634021541d128c9a56}{wld\+\_\+wps\+\_\+\+Config\+Method\+\_\+to\+\_\+string}} (\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+e}} value)
+\item 
+bool \mbox{\hyperlink{wld__wps_8c_a865b82f934428c2576dde9014c10bf8b}{wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+mask\+\_\+to\+\_\+string}} (amxc\+\_\+string\+\_\+t $\ast$output, const \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} config\+Methods)
+\item 
+bool \mbox{\hyperlink{wld__wps_8c_a2d928e5e3d0d04685b52dcace1ed06a5}{wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+string\+\_\+to\+\_\+mask}} (\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} $\ast$output, const char $\ast$input, const char separator)
+\item 
+void \mbox{\hyperlink{wld__wps_8c_a04891fe5976c3bff4fb3dfb20cdcffe2}{wld\+\_\+wps\+\_\+push\+Button\+\_\+reply}} (uint64\+\_\+t call\+\_\+id, swl\+\_\+usp\+\_\+cmd\+Status\+\_\+ne cmd\+Status)
+\item 
+void \mbox{\hyperlink{wld__wps_8c_a5dceb4d8f6e321022124f251f59e9d7b}{wld\+\_\+wps\+\_\+clear\+Pairing\+Timer}} (\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} $\ast$p\+Ctx)
+\item 
+void \mbox{\hyperlink{wld__wps_8c_ab88e265a279fdb32599eea81735fc2dc}{s\+\_\+start\+Pairing\+Timer}} (\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} $\ast$p\+Ctx)
+\item 
+void \mbox{\hyperlink{wld__wps_8c_a084c7f94222405fdc1897be02cf127e4}{wld\+\_\+wps\+\_\+send\+Pairing\+Notification}} (amxd\+\_\+object\+\_\+t $\ast$object, uint32\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$reason, const char $\ast$mac\+Address, \mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$credentials)
+\item 
+void \mbox{\hyperlink{wld__wps_8c_a3f8bd4e953d9bd9007bcb8a75dbb8480}{wld\+\_\+send\+Pairing\+Notification}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$reason, const char $\ast$mac\+Address)
+\item 
+void \mbox{\hyperlink{wld__wps_8c_a5e60853e5a5b1a60a5a5b631d340fa36}{gen\+Self\+PIN}} ()
+\item 
+void \mbox{\hyperlink{wld__wps_8c_a62042df461142c1187368d869540c0a2}{wld\+\_\+wps\+\_\+update\+State}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_a454466e9a56154bc13cd4bbc9f687a76}{\+\_\+generate\+Self\+PIN}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_a907ba15fd10b88cb35ac11d49d1d9f4d}{\+\_\+wld\+\_\+wps\+\_\+validate\+UUID\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__wps_8c_a5b55a873ab6a133ec488fd391a536dca}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Wps\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Config\+Methods\+Enabled\char`\"{}, s\+\_\+set\+Wps\+Config\+Methods\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Cert\+Mode\+Enable\char`\"{}, s\+\_\+set\+Wps\+Cert\+Mode\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Configured\char`\"{}, s\+\_\+set\+Wps\+Configured\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Self\+PIN\char`\"{}, s\+\_\+set\+Wps\+Self\+PIN\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}UUID\char`\"{}, s\+\_\+set\+UUID\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Relay\+Credentials\+Enable\char`\"{}, s\+\_\+set\+Wps\+Relay\+Credentials\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Restart\+On\+Request\char`\"{}, s\+\_\+set\+Wps\+Restart\+On\+Request\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+WPSEnable\+\_\+pwf),))
+\item 
+void \mbox{\hyperlink{wld__wps_8c_adbe7c7d262073fe4303bbe59c3ae7ae3}{\+\_\+wld\+\_\+ap\+\_\+set\+Wps\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_a672077cb556f0a990959814f25fdc77d}{\+\_\+set\+Compatibility\+WPS}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+bool \mbox{\hyperlink{wld__wps_8c_a8f08b858d6bcc85c5a9932517b08c083}{wld\+\_\+wps\+\_\+check\+Sec\+Mode\+Conditions}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_a9c4aaf98cb9e94c02274ba28073b729e}{\+\_\+\+WPS\+\_\+\+Initiate\+WPSPBC}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_aa990742c1e4750cec99c24802f7158e7}{\+\_\+\+WPS\+\_\+\+Initiate\+WPSPIN}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_aa6c10cbe0bc45ea57d20e58a0a40cc81}{\+\_\+\+WPS\+\_\+use\+Relay\+Credentials}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8c_acd6f2b316d6d7ac350c9dfe9ee59b470}{\+\_\+\+WPS\+\_\+cancel\+WPSPairing}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wps_8c_aba9ce462fcf5da65ca1f13b8122f1c0b}{cstr\+\_\+\+WPS\+\_\+\+CM\+\_\+\+Supported}} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wps_8c_a29977622195fd67bfdfe363678e51f25}{cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+VERSUPPORTED}} \mbox{[}$\,$\mbox{]}
+\item 
+const int \mbox{\hyperlink{wld__wps_8c_a220b83585a36bf3f9bfe0a698d35b07b}{ci\+\_\+\+AP\+\_\+\+WPS\+\_\+\+VERSUPPORTED}} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wps_8c_ab70f21129baf0a60503fe6c3ccf10faf}{cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+Status}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Disabled\char`\"{}, \char`\"{}Error\char`\"{}, \char`\"{}Configured\char`\"{}, \char`\"{}Unconfigured\char`\"{}, \char`\"{}Setup\+Locked\char`\"{}, 0\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wps_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__wps_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_wps.c@{wld\_wps.c}!ME@{ME}}
+\index{ME@{ME}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wps\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wps_8c_a454466e9a56154bc13cd4bbc9f687a76}\label{wld__wps_8c_a454466e9a56154bc13cd4bbc9f687a76}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_generateSelfPIN@{\_generateSelfPIN}}
+\index{\_generateSelfPIN@{\_generateSelfPIN}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_generateSelfPIN()}{\_generateSelfPIN()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+generate\+Self\+PIN (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a672077cb556f0a990959814f25fdc77d}\label{wld__wps_8c_a672077cb556f0a990959814f25fdc77d}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_setCompatibilityWPS@{\_setCompatibilityWPS}}
+\index{\_setCompatibilityWPS@{\_setCompatibilityWPS}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_setCompatibilityWPS()}{\_setCompatibilityWPS()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+set\+Compatibility\+WPS (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+This function will configure the WPS module in different supported modes. The reason why we add this is for old devices that can\textquotesingle{}t connect anymore due compatibility changes between WPS 2.\+0 and WPS 1.\+0. Note this action will take some time it\textquotesingle{}s starting a commit session to set it all up! \mbox{\Hypertarget{wld__wps_8c_adbe7c7d262073fe4303bbe59c3ae7ae3}\label{wld__wps_8c_adbe7c7d262073fe4303bbe59c3ae7ae3}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_wld\_ap\_setWpsConf\_ocf@{\_wld\_ap\_setWpsConf\_ocf}}
+\index{\_wld\_ap\_setWpsConf\_ocf@{\_wld\_ap\_setWpsConf\_ocf}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setWpsConf\_ocf()}{\_wld\_ap\_setWpsConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Wps\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a907ba15fd10b88cb35ac11d49d1d9f4d}\label{wld__wps_8c_a907ba15fd10b88cb35ac11d49d1d9f4d}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_wld\_wps\_validateUUID\_pvf@{\_wld\_wps\_validateUUID\_pvf}}
+\index{\_wld\_wps\_validateUUID\_pvf@{\_wld\_wps\_validateUUID\_pvf}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_wps\_validateUUID\_pvf()}{\_wld\_wps\_validateUUID\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+wps\+\_\+validate\+UUID\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Callback for custom constraint of field {\ttfamily WPS.\+UUID} \mbox{\Hypertarget{wld__wps_8c_acd6f2b316d6d7ac350c9dfe9ee59b470}\label{wld__wps_8c_acd6f2b316d6d7ac350c9dfe9ee59b470}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_WPS\_cancelWPSPairing@{\_WPS\_cancelWPSPairing}}
+\index{\_WPS\_cancelWPSPairing@{\_WPS\_cancelWPSPairing}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_WPS\_cancelWPSPairing()}{\_WPS\_cancelWPSPairing()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+WPS\+\_\+cancel\+WPSPairing (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_acd6f2b316d6d7ac350c9dfe9ee59b470_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8c_a9c4aaf98cb9e94c02274ba28073b729e}\label{wld__wps_8c_a9c4aaf98cb9e94c02274ba28073b729e}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_WPS\_InitiateWPSPBC@{\_WPS\_InitiateWPSPBC}}
+\index{\_WPS\_InitiateWPSPBC@{\_WPS\_InitiateWPSPBC}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_WPS\_InitiateWPSPBC()}{\_WPS\_InitiateWPSPBC()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+WPS\+\_\+\+Initiate\+WPSPBC (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_aa990742c1e4750cec99c24802f7158e7}\label{wld__wps_8c_aa990742c1e4750cec99c24802f7158e7}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_WPS\_InitiateWPSPIN@{\_WPS\_InitiateWPSPIN}}
+\index{\_WPS\_InitiateWPSPIN@{\_WPS\_InitiateWPSPIN}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_WPS\_InitiateWPSPIN()}{\_WPS\_InitiateWPSPIN()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+WPS\+\_\+\+Initiate\+WPSPIN (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_aa6c10cbe0bc45ea57d20e58a0a40cc81}\label{wld__wps_8c_aa6c10cbe0bc45ea57d20e58a0a40cc81}} 
+\index{wld\_wps.c@{wld\_wps.c}!\_WPS\_useRelayCredentials@{\_WPS\_useRelayCredentials}}
+\index{\_WPS\_useRelayCredentials@{\_WPS\_useRelayCredentials}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{\_WPS\_useRelayCredentials()}{\_WPS\_useRelayCredentials()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+WPS\+\_\+use\+Relay\+Credentials (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_aad748157ee49ba6ce21d189c505e0d86}\label{wld__wps_8c_aad748157ee49ba6ce21d189c505e0d86}} 
+\index{wld\_wps.c@{wld\_wps.c}!doCancelPairing@{doCancelPairing}}
+\index{doCancelPairing@{doCancelPairing}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{doCancelPairing()}{doCancelPairing()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t do\+Cancel\+Pairing (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_aad748157ee49ba6ce21d189c505e0d86_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{wld__wps_8c_aad748157ee49ba6ce21d189c505e0d86_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8c_a5e60853e5a5b1a60a5a5b631d340fa36}\label{wld__wps_8c_a5e60853e5a5b1a60a5a5b631d340fa36}} 
+\index{wld\_wps.c@{wld\_wps.c}!genSelfPIN@{genSelfPIN}}
+\index{genSelfPIN@{genSelfPIN}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{genSelfPIN()}{genSelfPIN()}}
+{\footnotesize\ttfamily void gen\+Self\+PIN (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_a5e60853e5a5b1a60a5a5b631d340fa36_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_a5e60853e5a5b1a60a5a5b631d340fa36_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8c_ab88e265a279fdb32599eea81735fc2dc}\label{wld__wps_8c_ab88e265a279fdb32599eea81735fc2dc}} 
+\index{wld\_wps.c@{wld\_wps.c}!s\_startPairingTimer@{s\_startPairingTimer}}
+\index{s\_startPairingTimer@{s\_startPairingTimer}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{s\_startPairingTimer()}{s\_startPairingTimer()}}
+{\footnotesize\ttfamily void s\+\_\+start\+Pairing\+Timer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} $\ast$}]{p\+Ctx }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_ab88e265a279fdb32599eea81735fc2dc_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8c_a801c74697da1a58b97e5da25659c5d83}\label{wld__wps_8c_a801c74697da1a58b97e5da25659c5d83}} 
+\index{wld\_wps.c@{wld\_wps.c}!SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}}
+\index{SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_ASSERT\_STATIC()}{SWL\_ASSERT\_STATIC()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+ASSERT\+\_\+\+STATIC (\begin{DoxyParamCaption}\item[{SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__wps_8c_ab70f21129baf0a60503fe6c3ccf10faf}{cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+Status}})}]{ = {\ttfamily =(\mbox{\hyperlink{wld_8h_ad290e2da9eb2cda2357c0b7c66d38b9fab9a6cbf628f12b7d64bc9bc8abc30112}{APWPS\+\_\+\+STATUS\+\_\+\+MAX}}+1)},  }\item[{\char`\"{}cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+Status not correctly defined\char`\"{}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_ab2ea67a6d2b7ef655014e107a52000fa}\label{wld__wps_8c_ab2ea67a6d2b7ef655014e107a52000fa}} 
+\index{wld\_wps.c@{wld\_wps.c}!SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}}
+\index{SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_ASSERT\_STATIC()}{SWL\_ASSERT\_STATIC()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+ASSERT\+\_\+\+STATIC (\begin{DoxyParamCaption}\item[{SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__wps_8c_aba9ce462fcf5da65ca1f13b8122f1c0b}{cstr\+\_\+\+WPS\+\_\+\+CM\+\_\+\+Supported}})}]{ = {\ttfamily =(\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963a08323968ed5e970f674db573ec0c2218}{WPS\+\_\+\+CFG\+\_\+\+MTHD\+\_\+\+MAX}}+1)},  }\item[{\char`\"{}cstr\+\_\+\+WPS\+\_\+\+CM\+\_\+\+Supported not correctly defined\char`\"{}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a5b55a873ab6a133ec488fd391a536dca}\label{wld__wps_8c_a5b55a873ab6a133ec488fd391a536dca}} 
+\index{wld\_wps.c@{wld\_wps.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Wps\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Config\+Methods\+Enabled\char`\"{}, s\+\_\+set\+Wps\+Config\+Methods\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Cert\+Mode\+Enable\char`\"{}, s\+\_\+set\+Wps\+Cert\+Mode\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Configured\char`\"{}, s\+\_\+set\+Wps\+Configured\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Self\+PIN\char`\"{}, s\+\_\+set\+Wps\+Self\+PIN\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}UUID\char`\"{}, s\+\_\+set\+UUID\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Relay\+Credentials\+Enable\char`\"{}, s\+\_\+set\+Wps\+Relay\+Credentials\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Restart\+On\+Request\char`\"{}, s\+\_\+set\+Wps\+Restart\+On\+Request\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+WPSEnable\+\_\+pwf),)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a3f8bd4e953d9bd9007bcb8a75dbb8480}\label{wld__wps_8c_a3f8bd4e953d9bd9007bcb8a75dbb8480}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_sendPairingNotification@{wld\_sendPairingNotification}}
+\index{wld\_sendPairingNotification@{wld\_sendPairingNotification}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_sendPairingNotification()}{wld\_sendPairingNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+send\+Pairing\+Notification (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{type,  }\item[{const char $\ast$}]{reason,  }\item[{const char $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a8f08b858d6bcc85c5a9932517b08c083}\label{wld__wps_8c_a8f08b858d6bcc85c5a9932517b08c083}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_checkSecModeConditions@{wld\_wps\_checkSecModeConditions}}
+\index{wld\_wps\_checkSecModeConditions@{wld\_wps\_checkSecModeConditions}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_checkSecModeConditions()}{wld\_wps\_checkSecModeConditions()}}
+{\footnotesize\ttfamily bool wld\+\_\+wps\+\_\+check\+Sec\+Mode\+Conditions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+This function verifies whether wps is supported by the currently configured security mode. (WPS is not supported in WPA3 or WEP) \mbox{\Hypertarget{wld__wps_8c_a5dceb4d8f6e321022124f251f59e9d7b}\label{wld__wps_8c_a5dceb4d8f6e321022124f251f59e9d7b}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_clearPairingTimer@{wld\_wps\_clearPairingTimer}}
+\index{wld\_wps\_clearPairingTimer@{wld\_wps\_clearPairingTimer}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_clearPairingTimer()}{wld\_wps\_clearPairingTimer()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+clear\+Pairing\+Timer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} $\ast$}]{p\+Ctx }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_a5dceb4d8f6e321022124f251f59e9d7b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8c_a31ae6351408d79634021541d128c9a56}\label{wld__wps_8c_a31ae6351408d79634021541d128c9a56}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_ConfigMethod\_to\_string@{wld\_wps\_ConfigMethod\_to\_string}}
+\index{wld\_wps\_ConfigMethod\_to\_string@{wld\_wps\_ConfigMethod\_to\_string}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_ConfigMethod\_to\_string()}{wld\_wps\_ConfigMethod\_to\_string()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wps\+\_\+\+Config\+Method\+\_\+to\+\_\+string (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+e}}}]{value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a865b82f934428c2576dde9014c10bf8b}\label{wld__wps_8c_a865b82f934428c2576dde9014c10bf8b}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_ConfigMethods\_mask\_to\_string@{wld\_wps\_ConfigMethods\_mask\_to\_string}}
+\index{wld\_wps\_ConfigMethods\_mask\_to\_string@{wld\_wps\_ConfigMethods\_mask\_to\_string}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_ConfigMethods\_mask\_to\_string()}{wld\_wps\_ConfigMethods\_mask\_to\_string()}}
+{\footnotesize\ttfamily bool wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+mask\+\_\+to\+\_\+string (\begin{DoxyParamCaption}\item[{amxc\+\_\+string\+\_\+t $\ast$}]{output,  }\item[{const \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}}}]{config\+Methods }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a2d928e5e3d0d04685b52dcace1ed06a5}\label{wld__wps_8c_a2d928e5e3d0d04685b52dcace1ed06a5}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_ConfigMethods\_string\_to\_mask@{wld\_wps\_ConfigMethods\_string\_to\_mask}}
+\index{wld\_wps\_ConfigMethods\_string\_to\_mask@{wld\_wps\_ConfigMethods\_string\_to\_mask}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_ConfigMethods\_string\_to\_mask()}{wld\_wps\_ConfigMethods\_string\_to\_mask()}}
+{\footnotesize\ttfamily bool wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+string\+\_\+to\+\_\+mask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} $\ast$}]{output,  }\item[{const char $\ast$}]{input,  }\item[{const char}]{separator }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a04891fe5976c3bff4fb3dfb20cdcffe2}\label{wld__wps_8c_a04891fe5976c3bff4fb3dfb20cdcffe2}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_pushButton\_reply@{wld\_wps\_pushButton\_reply}}
+\index{wld\_wps\_pushButton\_reply@{wld\_wps\_pushButton\_reply}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_pushButton\_reply()}{wld\_wps\_pushButton\_reply()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+push\+Button\+\_\+reply (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{call\+\_\+id,  }\item[{swl\+\_\+usp\+\_\+cmd\+Status\+\_\+ne}]{cmd\+Status }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8c_a084c7f94222405fdc1897be02cf127e4}\label{wld__wps_8c_a084c7f94222405fdc1897be02cf127e4}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_sendPairingNotification@{wld\_wps\_sendPairingNotification}}
+\index{wld\_wps\_sendPairingNotification@{wld\_wps\_sendPairingNotification}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_sendPairingNotification()}{wld\_wps\_sendPairingNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+send\+Pairing\+Notification (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{uint32\+\_\+t}]{type,  }\item[{const char $\ast$}]{reason,  }\item[{const char $\ast$}]{mac\+Address,  }\item[{\mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$}]{credentials }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8c_a084c7f94222405fdc1897be02cf127e4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8c_a62042df461142c1187368d869540c0a2}\label{wld__wps_8c_a62042df461142c1187368d869540c0a2}} 
+\index{wld\_wps.c@{wld\_wps.c}!wld\_wps\_updateState@{wld\_wps\_updateState}}
+\index{wld\_wps\_updateState@{wld\_wps\_updateState}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_updateState()}{wld\_wps\_updateState()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+update\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__wps_8c_a220b83585a36bf3f9bfe0a698d35b07b}\label{wld__wps_8c_a220b83585a36bf3f9bfe0a698d35b07b}} 
+\index{wld\_wps.c@{wld\_wps.c}!ci\_AP\_WPS\_VERSUPPORTED@{ci\_AP\_WPS\_VERSUPPORTED}}
+\index{ci\_AP\_WPS\_VERSUPPORTED@{ci\_AP\_WPS\_VERSUPPORTED}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{ci\_AP\_WPS\_VERSUPPORTED}{ci\_AP\_WPS\_VERSUPPORTED}}
+{\footnotesize\ttfamily const int ci\+\_\+\+AP\+\_\+\+WPS\+\_\+\+VERSUPPORTED\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5ac813804e498ab6d57b6ec2d19ccefd06}{APWPSVERSI\_AUTO}}, \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5ac813804e498ab6d57b6ec2d19ccefd06}{APWPSVERSI\_AUTO}}, \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5ac813804e498ab6d57b6ec2d19ccefd06}{APWPSVERSI\_AUTO}},}
+\DoxyCodeLine{    \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5aaa985698427d6c5dc64e2fb89baf9b85}{APWPSVERSI\_10}}, \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5aaa985698427d6c5dc64e2fb89baf9b85}{APWPSVERSI\_10}},}
+\DoxyCodeLine{    \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5a9b9008cb3ede02144f6c29dba851f3bb}{APWPSVERSI\_20}}, \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5a9b9008cb3ede02144f6c29dba851f3bb}{APWPSVERSI\_20}},}
+\DoxyCodeLine{    \mbox{\hyperlink{wld_8h_a99fb83031ce9923c84392b4e92f956b5a55526313891ebd4c4fcfb9c5d5c3cb09}{APWPSVERSI\_UNKNOWN}},}
+\DoxyCodeLine{    0}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wps_8c_ab70f21129baf0a60503fe6c3ccf10faf}\label{wld__wps_8c_ab70f21129baf0a60503fe6c3ccf10faf}} 
+\index{wld\_wps.c@{wld\_wps.c}!cstr\_AP\_WPS\_Status@{cstr\_AP\_WPS\_Status}}
+\index{cstr\_AP\_WPS\_Status@{cstr\_AP\_WPS\_Status}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_AP\_WPS\_Status}{cstr\_AP\_WPS\_Status}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+Status\mbox{[}$\,$\mbox{]} = \{\char`\"{}Disabled\char`\"{}, \char`\"{}Error\char`\"{}, \char`\"{}Configured\char`\"{}, \char`\"{}Unconfigured\char`\"{}, \char`\"{}Setup\+Locked\char`\"{}, 0\}}
+
+\mbox{\Hypertarget{wld__wps_8c_a29977622195fd67bfdfe363678e51f25}\label{wld__wps_8c_a29977622195fd67bfdfe363678e51f25}} 
+\index{wld\_wps.c@{wld\_wps.c}!cstr\_AP\_WPS\_VERSUPPORTED@{cstr\_AP\_WPS\_VERSUPPORTED}}
+\index{cstr\_AP\_WPS\_VERSUPPORTED@{cstr\_AP\_WPS\_VERSUPPORTED}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_AP\_WPS\_VERSUPPORTED}{cstr\_AP\_WPS\_VERSUPPORTED}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+AP\+\_\+\+WPS\+\_\+\+VERSUPPORTED\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{\textcolor{stringliteral}{"{}AUTO"{}}, \textcolor{stringliteral}{"{}Auto"{}}, \textcolor{stringliteral}{"{}auto"{}}, \textcolor{stringliteral}{"{}1.0"{}}, \textcolor{stringliteral}{"{}1"{}}, \textcolor{stringliteral}{"{}2.0"{}}, \textcolor{stringliteral}{"{}2"{}},}
+\DoxyCodeLine{    0\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wps_8c_aba9ce462fcf5da65ca1f13b8122f1c0b}\label{wld__wps_8c_aba9ce462fcf5da65ca1f13b8122f1c0b}} 
+\index{wld\_wps.c@{wld\_wps.c}!cstr\_WPS\_CM\_Supported@{cstr\_WPS\_CM\_Supported}}
+\index{cstr\_WPS\_CM\_Supported@{cstr\_WPS\_CM\_Supported}!wld\_wps.c@{wld\_wps.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_WPS\_CM\_Supported}{cstr\_WPS\_CM\_Supported}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+WPS\+\_\+\+CM\+\_\+\+Supported\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}USBFlashDrive"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Ethernet"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Label"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Display"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}ExternalNFCToken"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}IntegratedNFCToken"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}NFCInterface"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}PushButton"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}PIN"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}PhysicalPushButton"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}PhysicalDisplay"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}VirtualPushButton"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}VirtualDisplay"{}},}
+\DoxyCodeLine{    0,}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

@@ -1,0 +1,61 @@
+\hypertarget{wld__linuxWExtUtils_8c}{}\doxysection{src/\+Utils/wld\+\_\+linux\+WExt\+Utils.c File Reference}
+\label{wld__linuxWExtUtils_8c}\index{src/Utils/wld\_linuxWExtUtils.c@{src/Utils/wld\_linuxWExtUtils.c}}
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include $<$sys/ioctl.\+h$>$}\newline
+{\ttfamily \#include $<$net/if.\+h$>$}\newline
+{\ttfamily \#include $<$linux/wireless.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+string.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+linux\+WExt\+Utils.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+linux\+WExt\+Utils.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxWExtUtils_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwlIfaceInfo}{wl\+Iface\+Info}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__linuxWExtUtils_8c_a2f3cf9f39a0079e3830d921cf3106227}{\+\_\+\+\_\+\+USE\+\_\+\+MISC}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__linuxWExtUtils_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}net\+Util\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__linuxWExtUtils_8c_a0fd17ef0fece2dedb3f1ddd9c1e87489}{wld\+\_\+linux\+WExt\+Utils\+\_\+get\+Wireless\+Ifaces}} (const uint32\+\_\+t max\+Rad, const uint32\+\_\+t max\+Vap, \mbox{\hyperlink{structwld__linuxIface__t}{wld\+\_\+linux\+Iface\+\_\+t}} grp\+Wl\+Ifaces\mbox{[}max\+Rad\mbox{]}\mbox{[}max\+Vap\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__linuxWExtUtils_8c_a2f3cf9f39a0079e3830d921cf3106227}\label{wld__linuxWExtUtils_8c_a2f3cf9f39a0079e3830d921cf3106227}} 
+\index{wld\_linuxWExtUtils.c@{wld\_linuxWExtUtils.c}!\_\_USE\_MISC@{\_\_USE\_MISC}}
+\index{\_\_USE\_MISC@{\_\_USE\_MISC}!wld\_linuxWExtUtils.c@{wld\_linuxWExtUtils.c}}
+\doxysubsubsection{\texorpdfstring{\_\_USE\_MISC}{\_\_USE\_MISC}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+\_\+\+USE\+\_\+\+MISC}
+
+\mbox{\Hypertarget{wld__linuxWExtUtils_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__linuxWExtUtils_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_linuxWExtUtils.c@{wld\_linuxWExtUtils.c}!ME@{ME}}
+\index{ME@{ME}!wld\_linuxWExtUtils.c@{wld\_linuxWExtUtils.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}net\+Util\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__linuxWExtUtils_8c_a0fd17ef0fece2dedb3f1ddd9c1e87489}\label{wld__linuxWExtUtils_8c_a0fd17ef0fece2dedb3f1ddd9c1e87489}} 
+\index{wld\_linuxWExtUtils.c@{wld\_linuxWExtUtils.c}!wld\_linuxWExtUtils\_getWirelessIfaces@{wld\_linuxWExtUtils\_getWirelessIfaces}}
+\index{wld\_linuxWExtUtils\_getWirelessIfaces@{wld\_linuxWExtUtils\_getWirelessIfaces}!wld\_linuxWExtUtils.c@{wld\_linuxWExtUtils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxWExtUtils\_getWirelessIfaces()}{wld\_linuxWExtUtils\_getWirelessIfaces()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+linux\+WExt\+Utils\+\_\+get\+Wireless\+Ifaces (\begin{DoxyParamCaption}\item[{const uint32\+\_\+t}]{max\+Rad,  }\item[{const uint32\+\_\+t}]{max\+Vap,  }\item[{\mbox{\hyperlink{structwld__linuxIface__t}{wld\+\_\+linux\+Iface\+\_\+t}}}]{grp\+Wl\+Ifaces\mbox{[}max\+Rad\mbox{]}\mbox{[}max\+Vap\mbox{]} }\end{DoxyParamCaption})}
+

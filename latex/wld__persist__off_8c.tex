@@ -1,0 +1,96 @@
+\hypertarget{wld__persist__off_8c}{}\doxysection{src/\+Features/persist/wld\+\_\+persist\+\_\+off.c File Reference}
+\label{wld__persist__off_8c}\index{src/Features/persist/wld\_persist\_off.c@{src/Features/persist/wld\_persist\_off.c}}
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+vendor\+Module\+\_\+mgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+return\+Code.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+dm\+\_\+trans.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+persist\+\_\+off.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__persist__off_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__persist__off_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+Pst\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__persist__off_8c_a506168bb672f1f8f8b9c5d2d85222350}{WLD\+\_\+\+PERSIST\+\_\+\+CONFIG\+\_\+\+PENDING\+\_\+\+TIMEOUT\+\_\+\+MS}}~2000
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__persist__off_8c_a160eb581a1515929021f380548f3ef3d}{wld\+\_\+persist\+\_\+on\+Start}} ()
+\item 
+void \mbox{\hyperlink{wld__persist__off_8c_afafb93ba6c17c22f425e0c3942f17dd4}{wld\+\_\+persist\+\_\+on\+Radio\+Creation}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+bool \mbox{\hyperlink{wld__persist__off_8c_a93d4e1f619575f50ef6e9add425f6bdd}{wld\+\_\+persist\+\_\+write\+Ap\+At\+Creation}} ()
+\item 
+bool \mbox{\hyperlink{wld__persist__off_8c_acf65276a2be4d083398a63b9ff5847db}{wld\+\_\+persist\+\_\+is\+Rad\+Init\+Config\+Pending}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__persist__off_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__persist__off_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_persist\_off.c@{wld\_persist\_off.c}!ME@{ME}}
+\index{ME@{ME}!wld\_persist\_off.c@{wld\_persist\_off.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+Pst\char`\"{}}
+
+\mbox{\Hypertarget{wld__persist__off_8c_a506168bb672f1f8f8b9c5d2d85222350}\label{wld__persist__off_8c_a506168bb672f1f8f8b9c5d2d85222350}} 
+\index{wld\_persist\_off.c@{wld\_persist\_off.c}!WLD\_PERSIST\_CONFIG\_PENDING\_TIMEOUT\_MS@{WLD\_PERSIST\_CONFIG\_PENDING\_TIMEOUT\_MS}}
+\index{WLD\_PERSIST\_CONFIG\_PENDING\_TIMEOUT\_MS@{WLD\_PERSIST\_CONFIG\_PENDING\_TIMEOUT\_MS}!wld\_persist\_off.c@{wld\_persist\_off.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_PERSIST\_CONFIG\_PENDING\_TIMEOUT\_MS}{WLD\_PERSIST\_CONFIG\_PENDING\_TIMEOUT\_MS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+PERSIST\+\_\+\+CONFIG\+\_\+\+PENDING\+\_\+\+TIMEOUT\+\_\+\+MS~2000}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__persist__off_8c_acf65276a2be4d083398a63b9ff5847db}\label{wld__persist__off_8c_acf65276a2be4d083398a63b9ff5847db}} 
+\index{wld\_persist\_off.c@{wld\_persist\_off.c}!wld\_persist\_isRadInitConfigPending@{wld\_persist\_isRadInitConfigPending}}
+\index{wld\_persist\_isRadInitConfigPending@{wld\_persist\_isRadInitConfigPending}!wld\_persist\_off.c@{wld\_persist\_off.c}}
+\doxysubsubsection{\texorpdfstring{wld\_persist\_isRadInitConfigPending()}{wld\_persist\_isRadInitConfigPending()}}
+{\footnotesize\ttfamily bool wld\+\_\+persist\+\_\+is\+Rad\+Init\+Config\+Pending (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__persist__off_8c_afafb93ba6c17c22f425e0c3942f17dd4}\label{wld__persist__off_8c_afafb93ba6c17c22f425e0c3942f17dd4}} 
+\index{wld\_persist\_off.c@{wld\_persist\_off.c}!wld\_persist\_onRadioCreation@{wld\_persist\_onRadioCreation}}
+\index{wld\_persist\_onRadioCreation@{wld\_persist\_onRadioCreation}!wld\_persist\_off.c@{wld\_persist\_off.c}}
+\doxysubsubsection{\texorpdfstring{wld\_persist\_onRadioCreation()}{wld\_persist\_onRadioCreation()}}
+{\footnotesize\ttfamily void wld\+\_\+persist\+\_\+on\+Radio\+Creation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__persist__off_8c_afafb93ba6c17c22f425e0c3942f17dd4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__persist__off_8c_afafb93ba6c17c22f425e0c3942f17dd4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__persist__off_8c_a160eb581a1515929021f380548f3ef3d}\label{wld__persist__off_8c_a160eb581a1515929021f380548f3ef3d}} 
+\index{wld\_persist\_off.c@{wld\_persist\_off.c}!wld\_persist\_onStart@{wld\_persist\_onStart}}
+\index{wld\_persist\_onStart@{wld\_persist\_onStart}!wld\_persist\_off.c@{wld\_persist\_off.c}}
+\doxysubsubsection{\texorpdfstring{wld\_persist\_onStart()}{wld\_persist\_onStart()}}
+{\footnotesize\ttfamily bool wld\+\_\+persist\+\_\+on\+Start (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__persist__off_8c_a93d4e1f619575f50ef6e9add425f6bdd}\label{wld__persist__off_8c_a93d4e1f619575f50ef6e9add425f6bdd}} 
+\index{wld\_persist\_off.c@{wld\_persist\_off.c}!wld\_persist\_writeApAtCreation@{wld\_persist\_writeApAtCreation}}
+\index{wld\_persist\_writeApAtCreation@{wld\_persist\_writeApAtCreation}!wld\_persist\_off.c@{wld\_persist\_off.c}}
+\doxysubsubsection{\texorpdfstring{wld\_persist\_writeApAtCreation()}{wld\_persist\_writeApAtCreation()}}
+{\footnotesize\ttfamily bool wld\+\_\+persist\+\_\+write\+Ap\+At\+Creation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+

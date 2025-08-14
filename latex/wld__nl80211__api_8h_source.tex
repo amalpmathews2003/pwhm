@@ -1,0 +1,777 @@
+\hypertarget{wld__nl80211__api_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+api.\+h}
+\label{wld__nl80211__api_8h_source}\index{include/wld/wld\_nl80211\_api.h@{include/wld/wld\_nl80211\_api.h}}
+\mbox{\hyperlink{wld__nl80211__api_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{comment}{/*}}
+\DoxyCodeLine{63 \textcolor{comment}{ * This file includes nl80211 api (requests) definitions}}
+\DoxyCodeLine{64 \textcolor{comment}{ */}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_NL80211\_API\_H\_}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_NL80211\_API\_H\_}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__core_8h}{wld\_nl80211\_core.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__attr_8h}{wld\_nl80211\_attr.h}}"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__types_8h}{wld\_nl80211\_types.h}}"{}}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#define MLO\_LINK\_ID\_UNKNOWN -\/1}}
+\DoxyCodeLine{74 \textcolor{preprocessor}{\#define NL80211\_DFLT\_IFNAME\_PFX "{}wlan"{}}}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76 \textcolor{comment}{/*}}
+\DoxyCodeLine{77 \textcolor{comment}{ * @brief return registered handlers table, defining wld implementation for nl80211}}
+\DoxyCodeLine{78 \textcolor{comment}{ *}}
+\DoxyCodeLine{79 \textcolor{comment}{ * @return pointer to function table}}
+\DoxyCodeLine{80 \textcolor{comment}{ *         or NULL if nl80211 implementation was not registered}}
+\DoxyCodeLine{81 \textcolor{comment}{ */}}
+\DoxyCodeLine{82 \textcolor{keyword}{const} \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{T\_CWLD\_FUNC\_TABLE}}* \mbox{\hyperlink{wld__nl80211__api_8h_ab0f22d6f8a69576f593dad37e00a83c8}{wld\_nl80211\_getVendorTable}}();}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84 \textcolor{preprocessor}{\#define CALL\_NL80211\_FTA(fun, arg, ...) \(\backslash\)}}
+\DoxyCodeLine{85 \textcolor{preprocessor}{    \{ \(\backslash\)}}
+\DoxyCodeLine{86 \textcolor{preprocessor}{        const T\_CWLD\_FUNC\_TABLE* ftaTab = wld\_nl80211\_getVendorTable(); \(\backslash\)}}
+\DoxyCodeLine{87 \textcolor{preprocessor}{        if((ftaTab != NULL) \&\& (ftaTab-\/>fun != NULL)) \{ \(\backslash\)}}
+\DoxyCodeLine{88 \textcolor{preprocessor}{            ftaTab-\/>fun(arg, \#\# \_\_VA\_ARGS\_\_); \(\backslash\)}}
+\DoxyCodeLine{89 \textcolor{preprocessor}{        \} \(\backslash\)}}
+\DoxyCodeLine{90 \textcolor{preprocessor}{    \}}}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92 \textcolor{preprocessor}{\#define CALL\_NL80211\_FTA\_RET(ret, fun, arg, ...) \(\backslash\)}}
+\DoxyCodeLine{93 \textcolor{preprocessor}{    \{ \(\backslash\)}}
+\DoxyCodeLine{94 \textcolor{preprocessor}{        ret = SWL\_RC\_NOT\_IMPLEMENTED; \(\backslash\)}}
+\DoxyCodeLine{95 \textcolor{preprocessor}{        const T\_CWLD\_FUNC\_TABLE* ftaTab = wld\_nl80211\_getVendorTable(); \(\backslash\)}}
+\DoxyCodeLine{96 \textcolor{preprocessor}{        if((ftaTab != NULL) \&\& (ftaTab-\/>fun != NULL)) \{ \(\backslash\)}}
+\DoxyCodeLine{97 \textcolor{preprocessor}{            ret = ftaTab-\/>fun(arg, \#\# \_\_VA\_ARGS\_\_); \(\backslash\)}}
+\DoxyCodeLine{98 \textcolor{preprocessor}{        \} \(\backslash\)}}
+\DoxyCodeLine{99 \textcolor{preprocessor}{    \}}}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101 \textcolor{comment}{/*}}
+\DoxyCodeLine{102 \textcolor{comment}{ * @brief convert time unit into mseconds: 100 TU (102.4ms).}}
+\DoxyCodeLine{103 \textcolor{comment}{ * Ref: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/nl80211.h\#n648}}
+\DoxyCodeLine{104 \textcolor{comment}{ */}}
+\DoxyCodeLine{105 \textcolor{keyword}{static} \textcolor{keyword}{inline} uint64\_t wld\_nl80211\_tu2ms(uint64\_t tu) \{}
+\DoxyCodeLine{106     \textcolor{keywordflow}{return} ((tu * 1024) / 1000);}
+\DoxyCodeLine{107 \}}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{109 \textcolor{comment}{/*}}
+\DoxyCodeLine{110 \textcolor{comment}{ * @brief convert time unit into mseconds: 100 TU (102.4ms).}}
+\DoxyCodeLine{111 \textcolor{comment}{ * Ref: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/nl80211.h\#n648}}
+\DoxyCodeLine{112 \textcolor{comment}{ */}}
+\DoxyCodeLine{113 \textcolor{keyword}{static} \textcolor{keyword}{inline} uint64\_t wld\_nl80211\_ms2tu(uint64\_t ms) \{}
+\DoxyCodeLine{114     \textcolor{keywordflow}{return} ((ms * 1000) / 1024);}
+\DoxyCodeLine{115 \}}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{117 \textcolor{comment}{/*}}
+\DoxyCodeLine{118 \textcolor{comment}{ * @brief return registered FSM manager, defining action sequences and state transitions}}
+\DoxyCodeLine{119 \textcolor{comment}{ * of wld implementation for nl80211.}}
+\DoxyCodeLine{120 \textcolor{comment}{ * The FSM manager defines the way the scheduled action bitmaps are applied,}}
+\DoxyCodeLine{121 \textcolor{comment}{ * and also the dependencies between the scheduled actions for Radio, AccessPoint or Endpoint.}}
+\DoxyCodeLine{122 \textcolor{comment}{ *}}
+\DoxyCodeLine{123 \textcolor{comment}{ * Technically, every vendor module may (and shall):}}
+\DoxyCodeLine{124 \textcolor{comment}{ * -\/ define its own STATIC fsm manager, with defining its own action bitmaps}}
+\DoxyCodeLine{125 \textcolor{comment}{ * to be scheduled when the function table handlers are called.}}
+\DoxyCodeLine{126 \textcolor{comment}{ * The FSM manager relies on generic wld FSM implementation}}
+\DoxyCodeLine{127 \textcolor{comment}{ * -\/ share the same FSM manager as nl80211 default implementation}}
+\DoxyCodeLine{128 \textcolor{comment}{ * when calling wld\_fsm\_init, while registering the new vendor to wld.}}
+\DoxyCodeLine{129 \textcolor{comment}{ *}}
+\DoxyCodeLine{130 \textcolor{comment}{ * @return pointer to FSM manager}}
+\DoxyCodeLine{131 \textcolor{comment}{ *         or NULL if nl80211 implementation was not registered}}
+\DoxyCodeLine{132 \textcolor{comment}{ */}}
+\DoxyCodeLine{133 \textcolor{keyword}{const} \mbox{\hyperlink{structwld__fsmMngr__t}{wld\_fsmMngr\_t}}* \mbox{\hyperlink{wld__nl80211__api_8h_af65c627c2db04381a6c729185ee803d5}{wld\_nl80211\_getFsmMngr}}();}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135 \textcolor{comment}{/*}}
+\DoxyCodeLine{136 \textcolor{comment}{ * @brief create wld implementation for nl80211, with provided function table}}
+\DoxyCodeLine{137 \textcolor{comment}{ *}}
+\DoxyCodeLine{138 \textcolor{comment}{ * @return pointer to nl80211 vendor context}}
+\DoxyCodeLine{139 \textcolor{comment}{ */}}
+\DoxyCodeLine{140 \mbox{\hyperlink{structvendor}{vendor\_t}}* \mbox{\hyperlink{wld__nl80211__api_8h_ae80beca3dcb871009fd9b4e08f2e0a4c}{wld\_nl80211\_registerVendor}}(\mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{T\_CWLD\_FUNC\_TABLE}}* fta);}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{142 \textcolor{comment}{/*}}
+\DoxyCodeLine{143 \textcolor{comment}{ * @brief get all available nl80211 interfaces in row,}}
+\DoxyCodeLine{144 \textcolor{comment}{ * sorted per wiphy, and by increasing net dev index}}
+\DoxyCodeLine{145 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{146 \textcolor{comment}{ *}}
+\DoxyCodeLine{147 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{148 \textcolor{comment}{ * @param pWlIfaces (output) pointer to wl ifaces array, to be freed by the caller}}
+\DoxyCodeLine{149 \textcolor{comment}{ * @param maxWlIfaces max number of interfaces to retrieve}}
+\DoxyCodeLine{150 \textcolor{comment}{ * @param pNrWlIfaces (output) pointer to resulting count of wl interfaces}}
+\DoxyCodeLine{151 \textcolor{comment}{ *}}
+\DoxyCodeLine{152 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{153 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{154 \textcolor{comment}{ */}}
+\DoxyCodeLine{155 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a780977706b9f5767d9dfb6946edee0cd}{wld\_nl80211\_getInterfacesList}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}** pWlIfaces, uint32\_t maxWlIfaces, uint32\_t* pNrWlIfaces);}
+\DoxyCodeLine{156 }
+\DoxyCodeLine{157 \textcolor{comment}{/*}}
+\DoxyCodeLine{158 \textcolor{comment}{ * @brief get all available nl80211 interfaces sorted per wiphy, and by increasing net dev index, in 2D array per wiphy}}
+\DoxyCodeLine{159 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{160 \textcolor{comment}{ *}}
+\DoxyCodeLine{161 \textcolor{comment}{ * @param nrWiphyMax max wiphy value to fetch (i.e max radios)}}
+\DoxyCodeLine{162 \textcolor{comment}{ * @param nrWifaceMax max number of interfaces per wiphy (i.e max AP/EP per radio)}}
+\DoxyCodeLine{163 \textcolor{comment}{ * @param wlIfaces (output) 2D array of interfaces, sorted per wiphy/ifIndex}}
+\DoxyCodeLine{164 \textcolor{comment}{ *}}
+\DoxyCodeLine{165 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{166 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{167 \textcolor{comment}{ */}}
+\DoxyCodeLine{168 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a56a013e70058b1711c7eab120bc75a18}{wld\_nl80211\_getInterfaces}}(\textcolor{keyword}{const} uint32\_t nrWiphyMax, \textcolor{keyword}{const} uint32\_t nrWifaceMax,}
+\DoxyCodeLine{169                                     \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}} wlIfaces[nrWiphyMax][nrWifaceMax]);}
+\DoxyCodeLine{170 }
+\DoxyCodeLine{171 \textcolor{comment}{/*}}
+\DoxyCodeLine{172 \textcolor{comment}{ * @brief get current nl80211 interface info}}
+\DoxyCodeLine{173 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{174 \textcolor{comment}{ *}}
+\DoxyCodeLine{175 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{176 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{177 \textcolor{comment}{ * @param ifName optional interface name, used when ifIndex is null or invalid}}
+\DoxyCodeLine{178 \textcolor{comment}{ * @param pIfaceInfo (output) interface info}}
+\DoxyCodeLine{179 \textcolor{comment}{ *}}
+\DoxyCodeLine{180 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{181 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{182 \textcolor{comment}{ */}}
+\DoxyCodeLine{183 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a590a1e83f26c3461f2d36c7f238d83ce}{wld\_nl80211\_getInterfaceInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{184 }
+\DoxyCodeLine{185 \textcolor{comment}{/*}}
+\DoxyCodeLine{186 \textcolor{comment}{ * @brief create a new virtual interface (AP or EP) on top of wiphy (radio)}}
+\DoxyCodeLine{187 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{188 \textcolor{comment}{ *}}
+\DoxyCodeLine{189 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{190 \textcolor{comment}{ * @param ifIndex physical interface net dev index (i.e wiphy / radio iface)}}
+\DoxyCodeLine{191 \textcolor{comment}{ * @param ifName new virtual interface name}}
+\DoxyCodeLine{192 \textcolor{comment}{ * @param pMac pointer to bin mac of the new interface}}
+\DoxyCodeLine{193 \textcolor{comment}{ *        If null pointer, or null address or broadcast address, then mac is assigned by the driver.}}
+\DoxyCodeLine{194 \textcolor{comment}{ * @param isAp flag to set AccessPoint type for the new interface}}
+\DoxyCodeLine{195 \textcolor{comment}{ * @param isSta flag to set Station type for the new interface}}
+\DoxyCodeLine{196 \textcolor{comment}{ *        One at least of isAp or isSta must be true.}}
+\DoxyCodeLine{197 \textcolor{comment}{ * @param pIfaceInfo (output)(optional) resulting info of the newly created interface.}}
+\DoxyCodeLine{198 \textcolor{comment}{ *        It will indicate the assigned ifIndex for the new interface, and the used mac address}}
+\DoxyCodeLine{199 \textcolor{comment}{ *        (shall be the one provided as argument, if mac can be set on interface creation)}}
+\DoxyCodeLine{200 \textcolor{comment}{ *}}
+\DoxyCodeLine{201 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{202 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{203 \textcolor{comment}{ */}}
+\DoxyCodeLine{204 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_ac94ac91861323c5265562cdd601b59a9}{wld\_nl80211\_newInterface}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t IfIndex, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName,}
+\DoxyCodeLine{205                                    \textcolor{keyword}{const} swl\_macBin\_t* pMac, \textcolor{keywordtype}{bool} isAp, \textcolor{keywordtype}{bool} isSta,}
+\DoxyCodeLine{206                                    \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{207 }
+\DoxyCodeLine{208 \textcolor{comment}{/*}}
+\DoxyCodeLine{209 \textcolor{comment}{ * @brief create a new virtual interface on top of wiphy (radio)}}
+\DoxyCodeLine{210 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{211 \textcolor{comment}{ *}}
+\DoxyCodeLine{212 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{213 \textcolor{comment}{ * @param ifIndex physical interface net dev index (i.e wiphy / radio iface)}}
+\DoxyCodeLine{214 \textcolor{comment}{ * @param ifName new virtual interface name}}
+\DoxyCodeLine{215 \textcolor{comment}{ * @param pIfaceConf new virtual interface conf (type: (AP, EP or monitor), mac address)}}
+\DoxyCodeLine{216 \textcolor{comment}{ * @param pIfaceInfo (output)(optional) resulting info of the newly created interface.}}
+\DoxyCodeLine{217 \textcolor{comment}{ *        It will indicate the assigned ifIndex for the new interface, and the used mac address}}
+\DoxyCodeLine{218 \textcolor{comment}{ *        (shall be the one provided as argument, if mac can be set on interface creation)}}
+\DoxyCodeLine{219 \textcolor{comment}{ *}}
+\DoxyCodeLine{220 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{221 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{222 \textcolor{comment}{ */}}
+\DoxyCodeLine{223 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a7d34299f9c36d5007864f22fbd5e018d}{wld\_nl80211\_newInterfaceExt}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName,}
+\DoxyCodeLine{224                                       \mbox{\hyperlink{structwld__nl80211__newIfaceConf__t}{wld\_nl80211\_newIfaceConf\_t}}* pIfaceConf,}
+\DoxyCodeLine{225                                       \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{226 }
+\DoxyCodeLine{227 \textcolor{comment}{/*}}
+\DoxyCodeLine{228 \textcolor{comment}{ * @brief create a new virtual interface on top of wiphy (radio)}}
+\DoxyCodeLine{229 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{230 \textcolor{comment}{ *}}
+\DoxyCodeLine{231 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{232 \textcolor{comment}{ * @param wiphyId physical device index}}
+\DoxyCodeLine{233 \textcolor{comment}{ * @param ifName new virtual interface name}}
+\DoxyCodeLine{234 \textcolor{comment}{ * @param pIfaceConf new virtual interface conf (type: (AP, EP or monitor), mac address)}}
+\DoxyCodeLine{235 \textcolor{comment}{ * @param pIfaceInfo (output)(optional) resulting info of the newly created interface.}}
+\DoxyCodeLine{236 \textcolor{comment}{ *        It will indicate the assigned ifIndex for the new interface, and the used mac address}}
+\DoxyCodeLine{237 \textcolor{comment}{ *        (shall be the one provided as argument, if mac can be set on interface creation)}}
+\DoxyCodeLine{238 \textcolor{comment}{ *}}
+\DoxyCodeLine{239 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{240 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{241 \textcolor{comment}{ */}}
+\DoxyCodeLine{242 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_ab20d86aa57ec770652ca736bb0e91745}{wld\_nl80211\_newWiphyInterface}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t wiphyId, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName,}
+\DoxyCodeLine{243                                         \mbox{\hyperlink{structwld__nl80211__newIfaceConf__t}{wld\_nl80211\_newIfaceConf\_t}}* pIfaceConf,}
+\DoxyCodeLine{244                                         \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{245 }
+\DoxyCodeLine{246 \textcolor{comment}{/*}}
+\DoxyCodeLine{247 \textcolor{comment}{ * @brief add default wl AP ifaces for all bands of available wiphy devices}}
+\DoxyCodeLine{248 \textcolor{comment}{ * (input: all available nl80211 interfaces sorted per wiphy, and by increasing net dev index, in 2D array per wiphy)}}
+\DoxyCodeLine{249 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{250 \textcolor{comment}{ *}}
+\DoxyCodeLine{251 \textcolor{comment}{ * @param custIfNamePfx custom wl interface name prefix (if empty, default prefix "{}wlan"{} is used)}}
+\DoxyCodeLine{252 \textcolor{comment}{ * @param maxWiphys max wiphy value to fetch (i.e max wiphy devices)}}
+\DoxyCodeLine{253 \textcolor{comment}{ * @param maxWlIfaces max number of interfaces per wiphy (i.e max AP/EP per radio)}}
+\DoxyCodeLine{254 \textcolor{comment}{ * @param wlIfacesInfo (In/out) 2D array of interfaces, used as input for existing wiphy/ifIndex}}
+\DoxyCodeLine{255 \textcolor{comment}{ *                              and filled with potential added wl AP ifaces info struct}}
+\DoxyCodeLine{256 \textcolor{comment}{ *}}
+\DoxyCodeLine{257 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{258 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{259 \textcolor{comment}{ */}}
+\DoxyCodeLine{260 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_ad48ebd641a9725b0e39fa7b8d6dfb3a7}{wld\_nl80211\_addDefaultWiphyInterfacesExt}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* custIfNamePfx,}
+\DoxyCodeLine{261                                                    \textcolor{keyword}{const} uint32\_t maxWiphys, \textcolor{keyword}{const} uint32\_t maxWlIfaces,}
+\DoxyCodeLine{262                                                    \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}} wlIfacesInfo[maxWiphys][maxWlIfaces]);}
+\DoxyCodeLine{263 }
+\DoxyCodeLine{264 \textcolor{comment}{/*}}
+\DoxyCodeLine{265 \textcolor{comment}{ * @brief delete a virtual interface (AP or EP)}}
+\DoxyCodeLine{266 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{267 \textcolor{comment}{ *}}
+\DoxyCodeLine{268 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{269 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{270 \textcolor{comment}{ *}}
+\DoxyCodeLine{271 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{272 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{273 \textcolor{comment}{ */}}
+\DoxyCodeLine{274 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a13e5b3c1c1cb6b0903ded6297c4741ab}{wld\_nl80211\_delInterface}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex);}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{276 \textcolor{comment}{/*}}
+\DoxyCodeLine{277 \textcolor{comment}{ * @brief register to frames}}
+\DoxyCodeLine{278 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{279 \textcolor{comment}{ *}}
+\DoxyCodeLine{280 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{281 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{282 \textcolor{comment}{ * @param type packet type to be received}}
+\DoxyCodeLine{283 \textcolor{comment}{ * @param pattern first bytes of the packet (optional)}}
+\DoxyCodeLine{284 \textcolor{comment}{ * @param patternLen pattern's length (optional)}}
+\DoxyCodeLine{285 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{286 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{287 \textcolor{comment}{ */}}
+\DoxyCodeLine{288 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a64c3ec3884b5ea756ec0f8529a804dd5}{wld\_nl80211\_registerFrame}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, uint16\_t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pattern, \textcolor{keywordtype}{size\_t} patternLen);}
+\DoxyCodeLine{289 }
+\DoxyCodeLine{290 \textcolor{comment}{/*}}
+\DoxyCodeLine{291 \textcolor{comment}{ * @brief configure interface as AccessPoint or Station}}
+\DoxyCodeLine{292 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{293 \textcolor{comment}{ *}}
+\DoxyCodeLine{294 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{295 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{296 \textcolor{comment}{ * @param isAP flag for AP mode}}
+\DoxyCodeLine{297 \textcolor{comment}{ * @param isSta flag for STA mode}}
+\DoxyCodeLine{298 \textcolor{comment}{ *}}
+\DoxyCodeLine{299 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{300 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{301 \textcolor{comment}{ */}}
+\DoxyCodeLine{302 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_af75242af240f2d0a582e316bfe1f9392}{wld\_nl80211\_setInterfaceType}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \textcolor{keywordtype}{bool} isAp, \textcolor{keywordtype}{bool} isSta);}
+\DoxyCodeLine{303 }
+\DoxyCodeLine{304 \textcolor{comment}{/*}}
+\DoxyCodeLine{305 \textcolor{comment}{ * @brief configure interface to user 4MAC mode}}
+\DoxyCodeLine{306 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{307 \textcolor{comment}{ *}}
+\DoxyCodeLine{308 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{309 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{310 \textcolor{comment}{ * @param use4Mac flag to use 4MAC mode}}
+\DoxyCodeLine{311 \textcolor{comment}{ *}}
+\DoxyCodeLine{312 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{313 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{314 \textcolor{comment}{ */}}
+\DoxyCodeLine{315 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_af4704087fc79db050a424f3e812eae65}{wld\_nl80211\_setInterfaceUse4Mac}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \textcolor{keywordtype}{bool} use4Mac);}
+\DoxyCodeLine{316 }
+\DoxyCodeLine{317 }
+\DoxyCodeLine{318 \textcolor{comment}{/*}}
+\DoxyCodeLine{319 \textcolor{comment}{ * @brief count current number of registered nl80211 wiphy devices}}
+\DoxyCodeLine{320 \textcolor{comment}{ * in sysfs /sys/class/ieee80211/}}
+\DoxyCodeLine{321 \textcolor{comment}{ *}}
+\DoxyCodeLine{322 \textcolor{comment}{ *}}
+\DoxyCodeLine{323 \textcolor{comment}{ * @return >= 0 in case of success}}
+\DoxyCodeLine{324 \textcolor{comment}{ *         -\/1 otherwise}}
+\DoxyCodeLine{325 \textcolor{comment}{ */}}
+\DoxyCodeLine{326 int32\_t \mbox{\hyperlink{wld__nl80211__api_8h_af096c4aac36f7254d513818bfd634c19}{wld\_nl80211\_countWiphyFromFS}}();}
+\DoxyCodeLine{327 }
+\DoxyCodeLine{328 \textcolor{comment}{/*}}
+\DoxyCodeLine{329 \textcolor{comment}{ * @brief get wiphy (radio) info: radio caps, supported bands/chans, dfs status, operStds, ...)}}
+\DoxyCodeLine{330 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{331 \textcolor{comment}{ *}}
+\DoxyCodeLine{332 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{333 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{334 \textcolor{comment}{ * @param pWiphyInfo (output) wiphy info}}
+\DoxyCodeLine{335 \textcolor{comment}{ *}}
+\DoxyCodeLine{336 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{337 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{338 \textcolor{comment}{ */}}
+\DoxyCodeLine{339 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_af9a489d0e99a230994b5a268ce672db8}{wld\_nl80211\_getWiphyInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\_nl80211\_wiphyInfo\_t}}* pWiphyInfo);}
+\DoxyCodeLine{340 }
+\DoxyCodeLine{341 \textcolor{comment}{/*}}
+\DoxyCodeLine{342 \textcolor{comment}{ * @brief get all wiphy interfaces}}
+\DoxyCodeLine{343 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{344 \textcolor{comment}{ *}}
+\DoxyCodeLine{345 \textcolor{comment}{ * @param nrWiphyMax max wiphy value to fetch (i.e max radios)}}
+\DoxyCodeLine{346 \textcolor{comment}{ * @param pWiphyIfs (output) array of wiphy interfaces}}
+\DoxyCodeLine{347 \textcolor{comment}{ * @param pNrWiphy (output) number of detected wiphy interfaces}}
+\DoxyCodeLine{348 \textcolor{comment}{ *}}
+\DoxyCodeLine{349 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{350 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{351 \textcolor{comment}{ */}}
+\DoxyCodeLine{352 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a7bcdffd87e24c71c464fe00bf4c7fc97}{wld\_nl80211\_getAllWiphyInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, \textcolor{keyword}{const} uint32\_t nrWiphyMax, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\_nl80211\_wiphyInfo\_t}} pWiphyIfs[nrWiphyMax], uint32\_t* pNrWiphy);}
+\DoxyCodeLine{353 }
+\DoxyCodeLine{354 \textcolor{comment}{/*}}
+\DoxyCodeLine{355 \textcolor{comment}{ * @brief get vendor wiphy (radio) info: radio caps, supported bands/chans, dfs status, operStds, ...)}}
+\DoxyCodeLine{356 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{357 \textcolor{comment}{ *}}
+\DoxyCodeLine{358 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{359 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{360 \textcolor{comment}{ * @param vendorHandler callback invoked when a reply is available}}
+\DoxyCodeLine{361 \textcolor{comment}{ * @param vendorData private data to pass in to the handler}}
+\DoxyCodeLine{362 \textcolor{comment}{ *}}
+\DoxyCodeLine{363 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{364 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{365 \textcolor{comment}{ */}}
+\DoxyCodeLine{366 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a93824e9719fe028eb11db9f7892bd00b}{wld\_nl80211\_getVendorWiphyInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} vendorHandler, \textcolor{keywordtype}{void}* vendorData);}
+\DoxyCodeLine{367 }
+\DoxyCodeLine{368 \textcolor{comment}{/*}}
+\DoxyCodeLine{369 \textcolor{comment}{ * @brief get station info: rx/tx bytes, rx/tx packets, rssi, ...}}
+\DoxyCodeLine{370 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{371 \textcolor{comment}{ *}}
+\DoxyCodeLine{372 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{373 \textcolor{comment}{ * @param ifIndex parent interface index}}
+\DoxyCodeLine{374 \textcolor{comment}{ * @param pMac pointer to station mac address}}
+\DoxyCodeLine{375 \textcolor{comment}{ * @param pSationInfo (output) station info}}
+\DoxyCodeLine{376 \textcolor{comment}{ *}}
+\DoxyCodeLine{377 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{378 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{379 \textcolor{comment}{ */}}
+\DoxyCodeLine{380 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a2997581ef36c2e073143298bc93370d3}{wld\_nl80211\_getStationInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \textcolor{keyword}{const} swl\_macBin\_t* pMac, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\_nl80211\_stationInfo\_t}}* pSationInfo);}
+\DoxyCodeLine{381 }
+\DoxyCodeLine{382 \textcolor{comment}{/*}}
+\DoxyCodeLine{383 \textcolor{comment}{ * @brief get all paired stations info on a specific interface}}
+\DoxyCodeLine{384 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{385 \textcolor{comment}{ *}}
+\DoxyCodeLine{386 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{387 \textcolor{comment}{ * @param ifIndex parent interface index}}
+\DoxyCodeLine{388 \textcolor{comment}{ * @param ppStationInfo (output) array of station info, dynamically allocated}}
+\DoxyCodeLine{389 \textcolor{comment}{ * (need to be freed by user)}}
+\DoxyCodeLine{390 \textcolor{comment}{ * @param pnrStation (output) number of available stations}}
+\DoxyCodeLine{391 \textcolor{comment}{ *}}
+\DoxyCodeLine{392 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{393 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{394 \textcolor{comment}{ * @}}
+\DoxyCodeLine{395 \textcolor{comment}{ */}}
+\DoxyCodeLine{396 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a5814adfe4bd9e22ef5dda4580a8be00f}{wld\_nl80211\_getAllStationsInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\_nl80211\_stationInfo\_t}}** ppStationInfo, uint32\_t* pnrStation);}
+\DoxyCodeLine{397 }
+\DoxyCodeLine{398 \textcolor{comment}{/*}}
+\DoxyCodeLine{399 \textcolor{comment}{ * @brief get survey info of all radio channels}}
+\DoxyCodeLine{400 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{401 \textcolor{comment}{ *}}
+\DoxyCodeLine{402 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{403 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{404 \textcolor{comment}{ * @param ppChanSurveyInfo (output) array of channel survey info, dynamically allocated}}
+\DoxyCodeLine{405 \textcolor{comment}{ * (need to be freed by user)}}
+\DoxyCodeLine{406 \textcolor{comment}{ * @param pnChanSurveyInfo (output) number of available survey info}}
+\DoxyCodeLine{407 \textcolor{comment}{ *}}
+\DoxyCodeLine{408 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{409 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{410 \textcolor{comment}{ */}}
+\DoxyCodeLine{411 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a1dc4224cc8abbd498c2ac50c53d34645}{wld\_nl80211\_getSurveyInfo}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo\_t}}** ppChanSurveyInfo, uint32\_t* pnChanSurveyInfo);}
+\DoxyCodeLine{412 }
+\DoxyCodeLine{413 \textcolor{comment}{/*}}
+\DoxyCodeLine{414 \textcolor{comment}{ * @brief get survey info of all radio channels}}
+\DoxyCodeLine{415 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{416 \textcolor{comment}{ * This is extended version with survey dump params to filter results}}
+\DoxyCodeLine{417 \textcolor{comment}{ *}}
+\DoxyCodeLine{418 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{419 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{420 \textcolor{comment}{ * @param pConfig survey dump config params, ignored is null}}
+\DoxyCodeLine{421 \textcolor{comment}{ * @param ppChanSurveyInfo (output) array of channel survey info, dynamically allocated}}
+\DoxyCodeLine{422 \textcolor{comment}{ * (need to be freed by user)}}
+\DoxyCodeLine{423 \textcolor{comment}{ * @param pnChanSurveyInfo (output) number of available survey info}}
+\DoxyCodeLine{424 \textcolor{comment}{ *}}
+\DoxyCodeLine{425 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{426 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{427 \textcolor{comment}{ */}}
+\DoxyCodeLine{428 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a3df4504743b60e3300e02a781c4eec4d}{wld\_nl80211\_getSurveyInfoExt}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{structwld__nl80211__channelSurveyParam}{wld\_nl80211\_channelSurveyParam\_t}}* pConfig,}
+\DoxyCodeLine{429                                        \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo\_t}}** ppChanSurveyInfo, uint32\_t* pnChanSurveyInfo);}
+\DoxyCodeLine{430 }
+\DoxyCodeLine{431 \textcolor{comment}{/*}}
+\DoxyCodeLine{432 \textcolor{comment}{ * @brief configure tx/rx antennas}}
+\DoxyCodeLine{433 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{434 \textcolor{comment}{ *}}
+\DoxyCodeLine{435 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{436 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{437 \textcolor{comment}{ * @param txMapAnt Bitmap of allowed antennas for transmitting}}
+\DoxyCodeLine{438 \textcolor{comment}{ * @param rxMapAnt Bitmap of allowed antennas for receiving}}
+\DoxyCodeLine{439 \textcolor{comment}{ *}}
+\DoxyCodeLine{440 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{441 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{442 \textcolor{comment}{ */}}
+\DoxyCodeLine{443 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_ac08879bb26f97a242a0c631fc55d1cfd}{wld\_nl80211\_setWiphyAntennas}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, uint32\_t txMapAnt, uint32\_t rxMapAnt);}
+\DoxyCodeLine{444 }
+\DoxyCodeLine{445 \textcolor{comment}{/*}}
+\DoxyCodeLine{446 \textcolor{comment}{ * @brief configure automatic transmit power level}}
+\DoxyCodeLine{447 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{448 \textcolor{comment}{ *}}
+\DoxyCodeLine{449 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{450 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{451 \textcolor{comment}{ *}}
+\DoxyCodeLine{452 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{453 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{454 \textcolor{comment}{ */}}
+\DoxyCodeLine{455 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a137631543ee82b0c9d4ee2152d902c8b}{wld\_nl80211\_setTxPowerAuto}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex);}
+\DoxyCodeLine{456 }
+\DoxyCodeLine{457 \textcolor{comment}{/*}}
+\DoxyCodeLine{458 \textcolor{comment}{ * @brief configure fixed transmit power level}}
+\DoxyCodeLine{459 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{460 \textcolor{comment}{ *}}
+\DoxyCodeLine{461 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{462 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{463 \textcolor{comment}{ * @param mbm transmit power level in dbm}}
+\DoxyCodeLine{464 \textcolor{comment}{ *}}
+\DoxyCodeLine{465 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{466 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{467 \textcolor{comment}{ */}}
+\DoxyCodeLine{468 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a1acc971fb429d1c867c0ab43494ed8ab}{wld\_nl80211\_setTxPowerFixed}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, int32\_t dbm);}
+\DoxyCodeLine{469 }
+\DoxyCodeLine{470 \textcolor{comment}{/*}}
+\DoxyCodeLine{471 \textcolor{comment}{ * @brief configure limited transmit power level}}
+\DoxyCodeLine{472 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{473 \textcolor{comment}{ *}}
+\DoxyCodeLine{474 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{475 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{476 \textcolor{comment}{ * @param mbm transmit power level in dbm}}
+\DoxyCodeLine{477 \textcolor{comment}{ *}}
+\DoxyCodeLine{478 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{479 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{480 \textcolor{comment}{ */}}
+\DoxyCodeLine{481 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a82cc18befb7fa920805b59403b6075e9}{wld\_nl80211\_setTxPowerLimited}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, int32\_t dbm);}
+\DoxyCodeLine{482 }
+\DoxyCodeLine{483 \textcolor{comment}{/*}}
+\DoxyCodeLine{484 \textcolor{comment}{ * @brief get transmit power level}}
+\DoxyCodeLine{485 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{486 \textcolor{comment}{ *}}
+\DoxyCodeLine{487 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{488 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{489 \textcolor{comment}{ * @param dbm current tx power in dbm}}
+\DoxyCodeLine{490 \textcolor{comment}{ *}}
+\DoxyCodeLine{491 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{492 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{493 \textcolor{comment}{ */}}
+\DoxyCodeLine{494 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a631f7f8ec3a7cf2a85ad4ac15ffe4b2f}{wld\_nl80211\_getTxPower}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, int32\_t* dbm);}
+\DoxyCodeLine{495 }
+\DoxyCodeLine{496 \textcolor{comment}{/*}}
+\DoxyCodeLine{497 \textcolor{comment}{ * @brief get maximum transmit power level}}
+\DoxyCodeLine{498 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{499 \textcolor{comment}{ *}}
+\DoxyCodeLine{500 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{501 \textcolor{comment}{ * @param ifIndex wiphy main iface index}}
+\DoxyCodeLine{502 \textcolor{comment}{ * @param freq (in MHz) for which the max transmit power is being retrieved.}}
+\DoxyCodeLine{503 \textcolor{comment}{ * @param dbm max tx power in dbm}}
+\DoxyCodeLine{504 \textcolor{comment}{ *}}
+\DoxyCodeLine{505 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{506 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{507 \textcolor{comment}{ */}}
+\DoxyCodeLine{508 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a5c34a7f305da83b45a675ca70f943298}{wld\_nl80211\_getMaxTxPowerdBm}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, uint32\_t freq, int32\_t* dbm);}
+\DoxyCodeLine{509 }
+\DoxyCodeLine{510 \textcolor{comment}{/*}}
+\DoxyCodeLine{511 \textcolor{comment}{ * @brief initiate a neighbor scan}}
+\DoxyCodeLine{512 \textcolor{comment}{ * It is possible to indicate scan options:}}
+\DoxyCodeLine{513 \textcolor{comment}{ * -\/ ssids to fetch}}
+\DoxyCodeLine{514 \textcolor{comment}{ * -\/ frequencies to use}}
+\DoxyCodeLine{515 \textcolor{comment}{ * -\/ extra InfoElements to add to scan probe request frames}}
+\DoxyCodeLine{516 \textcolor{comment}{ *}}
+\DoxyCodeLine{517 \textcolor{comment}{ * @param state nl80211 socket manager}}
+\DoxyCodeLine{518 \textcolor{comment}{ * @param ifIndex network interface index indicating relative radio device}}
+\DoxyCodeLine{519 \textcolor{comment}{ * @param params scan options (ssids, frequencies, IEs)}}
+\DoxyCodeLine{520 \textcolor{comment}{ *}}
+\DoxyCodeLine{521 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success (scan trigger acknowledged)}}
+\DoxyCodeLine{522 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{523 \textcolor{comment}{ */}}
+\DoxyCodeLine{524 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a0a08dfb41b409c117559ea231c7729f7}{wld\_nl80211\_startScan}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \mbox{\hyperlink{structwld__nl80211__scanParams__t}{wld\_nl80211\_scanParams\_t}}* params);}
+\DoxyCodeLine{525 }
+\DoxyCodeLine{526 \textcolor{comment}{/*}}
+\DoxyCodeLine{527 \textcolor{comment}{ * @brief abort a running neighbor scan}}
+\DoxyCodeLine{528 \textcolor{comment}{ *}}
+\DoxyCodeLine{529 \textcolor{comment}{ * @param state nl80211 socket manager}}
+\DoxyCodeLine{530 \textcolor{comment}{ * @param ifIndex network interface index indicating relative radio device}}
+\DoxyCodeLine{531 \textcolor{comment}{ *}}
+\DoxyCodeLine{532 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success (scan abort acknowledged)}}
+\DoxyCodeLine{533 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{534 \textcolor{comment}{ */}}
+\DoxyCodeLine{535 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a2f4aebd7b76c2f3fedc0a004380763f9}{wld\_nl80211\_abortScan}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex);}
+\DoxyCodeLine{536 }
+\DoxyCodeLine{537 \textcolor{comment}{/*}}
+\DoxyCodeLine{538 \textcolor{comment}{ * @brief handler prototype to get asynchronous scan results}}
+\DoxyCodeLine{539 \textcolor{comment}{ *}}
+\DoxyCodeLine{540 \textcolor{comment}{ * @param priv Private user data}}
+\DoxyCodeLine{541 \textcolor{comment}{ * @param results pointer to scan results structure}}
+\DoxyCodeLine{542 \textcolor{comment}{ */}}
+\DoxyCodeLine{543 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__api_8h_a9efa20505e38003c4854203456d90377}{scanResultsCb\_f}}) (\textcolor{keywordtype}{void}* priv, swl\_rc\_ne rc, \mbox{\hyperlink{structwld__scanResults}{wld\_scanResults\_t}}* results);}
+\DoxyCodeLine{544 }
+\DoxyCodeLine{545 \textcolor{comment}{/*}}
+\DoxyCodeLine{546 \textcolor{comment}{ * @brief subscribe to get asynchronous scan results}}
+\DoxyCodeLine{547 \textcolor{comment}{ *}}
+\DoxyCodeLine{548 \textcolor{comment}{ * @param state nl80211 socket manager}}
+\DoxyCodeLine{549 \textcolor{comment}{ * @param ifIndex network interface index indicating relative radio device}}
+\DoxyCodeLine{550 \textcolor{comment}{ * @param priv user data that will returned in the result handler}}
+\DoxyCodeLine{551 \textcolor{comment}{ * @param fScanResultsCb handler that will be called when results are ready}}
+\DoxyCodeLine{552 \textcolor{comment}{ *}}
+\DoxyCodeLine{553 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{554 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{555 \textcolor{comment}{ */}}
+\DoxyCodeLine{556 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a8cd37de8e50f13b774537672ed5e1b41}{wld\_nl80211\_getScanResults}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \textcolor{keywordtype}{void}* priv, \mbox{\hyperlink{wld__nl80211__api_8h_a9efa20505e38003c4854203456d90377}{scanResultsCb\_f}} fScanResultsCb);}
+\DoxyCodeLine{557 }
+\DoxyCodeLine{558 \textcolor{comment}{/*}}
+\DoxyCodeLine{559 \textcolor{comment}{ * @brief subscribe to get asynchronous scan results, filtered by freq band}}
+\DoxyCodeLine{560 \textcolor{comment}{ *}}
+\DoxyCodeLine{561 \textcolor{comment}{ * @param state nl80211 socket manager}}
+\DoxyCodeLine{562 \textcolor{comment}{ * @param ifIndex network interface index indicating relative radio device}}
+\DoxyCodeLine{563 \textcolor{comment}{ * @param priv user data that will returned in the result handler}}
+\DoxyCodeLine{564 \textcolor{comment}{ * @param fScanResultsCb handler that will be called when results are ready}}
+\DoxyCodeLine{565 \textcolor{comment}{ * @param band frequency band to be matched (AUTO means any freqBand)}}
+\DoxyCodeLine{566 \textcolor{comment}{ *}}
+\DoxyCodeLine{567 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{568 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{569 \textcolor{comment}{ */}}
+\DoxyCodeLine{570 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a477f8ac238e9f3c510b2b49eff8719c7}{wld\_nl80211\_getScanResultsPerFreqBand}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, \textcolor{keywordtype}{void}* priv, \mbox{\hyperlink{wld__nl80211__api_8h_a9efa20505e38003c4854203456d90377}{scanResultsCb\_f}} fScanResultsCb,}
+\DoxyCodeLine{571                                                 swl\_freqBandExt\_e band);}
+\DoxyCodeLine{572 }
+\DoxyCodeLine{573 \textcolor{comment}{/*}}
+\DoxyCodeLine{574 \textcolor{comment}{ * @brief set regulatory ISO/IEC 3166-\/1 alpha2 country code}}
+\DoxyCodeLine{575 \textcolor{comment}{ * (applicable as global or on phy device)}}
+\DoxyCodeLine{576 \textcolor{comment}{ *}}
+\DoxyCodeLine{577 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{578 \textcolor{comment}{ * @param wiphy phy device index (use WLD\_NL80211\_ID\_ANY to set global reg domain)}}
+\DoxyCodeLine{579 \textcolor{comment}{ * @param alpha2 ISO/IEC 3166-\/1 alpha2 country code}}
+\DoxyCodeLine{580 \textcolor{comment}{ *}}
+\DoxyCodeLine{581 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{582 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{583 \textcolor{comment}{ */}}
+\DoxyCodeLine{584 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_afea112af9c64dd8dd1d7005cee898355}{wld\_nl80211\_setRegDomain}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t wiphy, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* alpha2);}
+\DoxyCodeLine{585 }
+\DoxyCodeLine{586 \textcolor{comment}{/*}}
+\DoxyCodeLine{587 \textcolor{comment}{ * @brief start a background DFS}}
+\DoxyCodeLine{588 \textcolor{comment}{ *}}
+\DoxyCodeLine{589 \textcolor{comment}{ * @param state nl80211 socket manager}}
+\DoxyCodeLine{590 \textcolor{comment}{ * @param ifIndex network interface index indicating relative device}}
+\DoxyCodeLine{591 \textcolor{comment}{ * @param ifMloLinkId network interface MLO Link ID, otherwise MLO\_LINK\_ID\_UNKNOWN for non-\/MLD}}
+\DoxyCodeLine{592 \textcolor{comment}{ * @param bgDfsChanspec background DFS chanspec}}
+\DoxyCodeLine{593 \textcolor{comment}{ *}}
+\DoxyCodeLine{594 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{595 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{596 \textcolor{comment}{ */}}
+\DoxyCodeLine{597 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a6daf0ff702d48036740aea1225b7ccd7}{wld\_nl80211\_bgDfsStart}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, int8\_t ifMloLinkId, swl\_chanspec\_t bgDfsChanspec);}
+\DoxyCodeLine{598 }
+\DoxyCodeLine{599 \textcolor{comment}{/*}}
+\DoxyCodeLine{600 \textcolor{comment}{ * @brief stop a background DFS}}
+\DoxyCodeLine{601 \textcolor{comment}{ *}}
+\DoxyCodeLine{602 \textcolor{comment}{ * @param state nl80211 socket manager}}
+\DoxyCodeLine{603 \textcolor{comment}{ * @param ifIndex network interface index indicating relative device}}
+\DoxyCodeLine{604 \textcolor{comment}{ * @param ifMloLinkId network interface MLO Link ID, otherwise MLO\_LINK\_ID\_UNKNOWN for non-\/MLD}}
+\DoxyCodeLine{605 \textcolor{comment}{ *}}
+\DoxyCodeLine{606 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{607 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{608 \textcolor{comment}{ */}}
+\DoxyCodeLine{609 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_aa8dd2626e3aac6906d9f1f604134ff4b}{wld\_nl80211\_bgDfsStop}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, int8\_t ifMloLinkId);}
+\DoxyCodeLine{610 }
+\DoxyCodeLine{611 \textcolor{comment}{/*}}
+\DoxyCodeLine{612 \textcolor{comment}{ * @brief common function to send vendor sub command}}
+\DoxyCodeLine{613 \textcolor{comment}{ *}}
+\DoxyCodeLine{614 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{615 \textcolor{comment}{ * @param oui vendor driver identifier}}
+\DoxyCodeLine{616 \textcolor{comment}{ * @param subcmd vendor sub command to be sent}}
+\DoxyCodeLine{617 \textcolor{comment}{ * @param data optional depending on sent sub command}}
+\DoxyCodeLine{618 \textcolor{comment}{ * @param dataLen length of sent data}}
+\DoxyCodeLine{619 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{620 \textcolor{comment}{ * @param withAck flag to wait for acknowledgment request}}
+\DoxyCodeLine{621 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{622 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{623 \textcolor{comment}{ * @param wDevId interface wdev index}}
+\DoxyCodeLine{624 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{625 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{626 \textcolor{comment}{ *}}
+\DoxyCodeLine{627 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{628 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{629 \textcolor{comment}{ */}}
+\DoxyCodeLine{630 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a6b3cf23329afffa8df5d146fc9f0def6}{wld\_nl80211\_sendVendorSubCmd}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t oui, \textcolor{keywordtype}{int} subcmd, \textcolor{keywordtype}{void}* data, \textcolor{keywordtype}{int} dataLen,}
+\DoxyCodeLine{631                                        \textcolor{keywordtype}{bool} isSync, \textcolor{keywordtype}{bool} withAck, uint32\_t flags, uint32\_t ifIndex, uint64\_t wDevId,}
+\DoxyCodeLine{632                                        \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{633 }
+\DoxyCodeLine{634 \textcolor{comment}{/*}}
+\DoxyCodeLine{635 \textcolor{comment}{ * @brief common function to send vendor sub command with attributes inside vendor data}}
+\DoxyCodeLine{636 \textcolor{comment}{ *}}
+\DoxyCodeLine{637 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{638 \textcolor{comment}{ * @param oui vendor driver identifier}}
+\DoxyCodeLine{639 \textcolor{comment}{ * @param subcmd vendor sub command to be sent}}
+\DoxyCodeLine{640 \textcolor{comment}{ * @param vendorAttr list of attributes to be added inside the vendor data attributes.}}
+\DoxyCodeLine{641 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{642 \textcolor{comment}{ * @param withAck flag to wait for acknowledgment request}}
+\DoxyCodeLine{643 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{644 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{645 \textcolor{comment}{ * @param wDevId interface wdev index}}
+\DoxyCodeLine{646 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{647 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{648 \textcolor{comment}{ *}}
+\DoxyCodeLine{649 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{650 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{651 \textcolor{comment}{ */}}
+\DoxyCodeLine{652 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a13c8f3d48b70f13d45380d27a5db608c}{wld\_nl80211\_sendVendorSubCmdAttr}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t oui, \textcolor{keywordtype}{int} subcmd, \mbox{\hyperlink{structwld__nl80211__nlAttr__t}{wld\_nl80211\_nlAttr\_t}}* vendorAttr,}
+\DoxyCodeLine{653                                            \textcolor{keywordtype}{bool} isSync, \textcolor{keywordtype}{bool} withAck, uint32\_t flags, uint32\_t ifIndex, uint64\_t wDevId,}
+\DoxyCodeLine{654                                            \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{655 }
+\DoxyCodeLine{656 \textcolor{comment}{/*}}
+\DoxyCodeLine{657 \textcolor{comment}{ * @brief common function to send a management frame cmd}}
+\DoxyCodeLine{658 \textcolor{comment}{ *}}
+\DoxyCodeLine{659 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{660 \textcolor{comment}{ * @param fc frame control content}}
+\DoxyCodeLine{661 \textcolor{comment}{ * @param data data to be sent}}
+\DoxyCodeLine{662 \textcolor{comment}{ * @param chanspec destination channel to send the frame}}
+\DoxyCodeLine{663 \textcolor{comment}{ * @param src source MACAddress to be written in header}}
+\DoxyCodeLine{664 \textcolor{comment}{ * @param dst destination MACAddress to be written in header}}
+\DoxyCodeLine{665 \textcolor{comment}{ * @param bssid BSSID MACAddress to be written in header}}
+\DoxyCodeLine{666 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{667 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{668 \textcolor{comment}{ * @param ifMloLinkId network interface MLO Link ID, otherwise MLO\_LINK\_ID\_UNKNOWN for non-\/MLD}}
+\DoxyCodeLine{669 \textcolor{comment}{ *}}
+\DoxyCodeLine{670 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{671 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{672 \textcolor{comment}{ */}}
+\DoxyCodeLine{673 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a5efa7e8d66bb2b1570d17a3b5934726d}{wld\_nl80211\_sendManagementFrameCmd}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, swl\_80211\_mgmtFrameControl\_t* fc, swl\_bit8\_t* data, \textcolor{keywordtype}{size\_t} dataLen,}
+\DoxyCodeLine{674                                              swl\_chanspec\_t* chanspec, swl\_macBin\_t* src, swl\_macBin\_t* dst, swl\_macBin\_t* bssid, uint32\_t flags,}
+\DoxyCodeLine{675                                              uint32\_t ifIndex, int8\_t ifMloLinkId);}
+\DoxyCodeLine{676 }
+\DoxyCodeLine{677 }
+\DoxyCodeLine{678 \textcolor{comment}{/*}}
+\DoxyCodeLine{679 \textcolor{comment}{ * @brief common function to verify callback status and return data}}
+\DoxyCodeLine{680 \textcolor{comment}{ *}}
+\DoxyCodeLine{681 \textcolor{comment}{ * @param rc result of initial checks of the reply}}
+\DoxyCodeLine{682 \textcolor{comment}{ * @param nlh netlink header of received msg, to be parsed}}
+\DoxyCodeLine{683 \textcolor{comment}{ * @param data (output) parameter to forward provided data on request success}}
+\DoxyCodeLine{684 \textcolor{comment}{ * @param dataLen (output) parameter to forward provided data length on request success}}
+\DoxyCodeLine{685 \textcolor{comment}{ *}}
+\DoxyCodeLine{686 \textcolor{comment}{ * @return SWL\_RC\_OK when message is valid, handled, but waiting for next parts}}
+\DoxyCodeLine{687 \textcolor{comment}{ *         SWL\_RC\_CONTINUE when message is valid, but ignored}}
+\DoxyCodeLine{688 \textcolor{comment}{ *         SWL\_RC\_DONE when message is processed and all reply parts are received:}}
+\DoxyCodeLine{689 \textcolor{comment}{ *                     request is terminated and can be cleared}}
+\DoxyCodeLine{690 \textcolor{comment}{ *         SWL\_RC\_ERROR in case of error: request will be cancelled}}
+\DoxyCodeLine{691 \textcolor{comment}{ */}}
+\DoxyCodeLine{692 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a8638e2b700ac937854361ebf42d4c64f}{wld\_nl80211\_getVendorDataFromVendorMsg}}(swl\_rc\_ne rc, \textcolor{keyword}{struct} nlmsghdr* nlh, \textcolor{keywordtype}{void}** data, \textcolor{keywordtype}{size\_t}* dataLen);}
+\DoxyCodeLine{693 }
+\DoxyCodeLine{694 \textcolor{comment}{/*}}
+\DoxyCodeLine{695 \textcolor{comment}{ * @brief convert nl80211 channel desc into swl format}}
+\DoxyCodeLine{696 \textcolor{comment}{ *}}
+\DoxyCodeLine{697 \textcolor{comment}{ * @param pSwlChanSpec pointer to swl chanspec info struct to be filled}}
+\DoxyCodeLine{698 \textcolor{comment}{ * @param pNlChanSpec source pointer to nl80211 chspec info}}
+\DoxyCodeLine{699 \textcolor{comment}{ *}}
+\DoxyCodeLine{700 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{701 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{702 \textcolor{comment}{ */}}
+\DoxyCodeLine{703 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a7ca7d7254d4b3343f69dfc01949f8425}{wld\_nl80211\_chanSpecNlToSwl}}(swl\_chanspec\_t* pSwlChanSpec, \mbox{\hyperlink{structwld__nl80211__chanSpec__t}{wld\_nl80211\_chanSpec\_t}}* pNlChanSpec);}
+\DoxyCodeLine{704 }
+\DoxyCodeLine{705 \textcolor{comment}{/*}}
+\DoxyCodeLine{706 \textcolor{comment}{ * @brief get channel specification from nl80211 interface info}}
+\DoxyCodeLine{707 \textcolor{comment}{ *}}
+\DoxyCodeLine{708 \textcolor{comment}{ * @param pChanSpec pointer to chanspec info struct to be filled}}
+\DoxyCodeLine{709 \textcolor{comment}{ * @param pIfaceInfo source pointer to interface info}}
+\DoxyCodeLine{710 \textcolor{comment}{ *}}
+\DoxyCodeLine{711 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{712 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{713 \textcolor{comment}{ */}}
+\DoxyCodeLine{714 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a3a92bd8a4138d817be98fc65b3d3e785}{wld\_nl80211\_getChanSpecFromIfaceInfo}}(swl\_chanspec\_t* pChanSpec, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{715 }
+\DoxyCodeLine{716 \textcolor{comment}{/*}}
+\DoxyCodeLine{717 \textcolor{comment}{ * @brief get current channel info}}
+\DoxyCodeLine{718 \textcolor{comment}{ *}}
+\DoxyCodeLine{719 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{720 \textcolor{comment}{ * @param ifIndex interface net dev index}}
+\DoxyCodeLine{721 \textcolor{comment}{ * @param pChanSpec pointer to chanspec info struct to be filled}}
+\DoxyCodeLine{722 \textcolor{comment}{ *}}
+\DoxyCodeLine{723 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{724 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{725 \textcolor{comment}{ */}}
+\DoxyCodeLine{726 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a912b5e4cbc5e51be024fd8929c4bb5b3}{wld\_nl80211\_getChanSpec}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t ifIndex, swl\_chanspec\_t* pChanSpec);}
+\DoxyCodeLine{727 }
+\DoxyCodeLine{728 \textcolor{comment}{/*}}
+\DoxyCodeLine{729 \textcolor{comment}{ * @brief seeking by mac for interface MLO link info into included interface MLO links}}
+\DoxyCodeLine{730 \textcolor{comment}{ *}}
+\DoxyCodeLine{731 \textcolor{comment}{ * @param pIface pointer to input mld interface info}}
+\DoxyCodeLine{732 \textcolor{comment}{ * @param pLinkMac link mac address}}
+\DoxyCodeLine{733 \textcolor{comment}{ *}}
+\DoxyCodeLine{734 \textcolor{comment}{ * @return pointer to found interface MLO link info, NULL otherwise}}
+\DoxyCodeLine{735 \textcolor{comment}{ */}}
+\DoxyCodeLine{736 \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t}{wld\_nl80211\_ifaceMloLinkInfo\_t}}* \mbox{\hyperlink{wld__nl80211__api_8h_a06d156e96a21b5399dedb1a1b7cec632}{wld\_nl80211\_fetchIfaceMloLinkByMac}}(\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIface, swl\_macBin\_t* pLinkMac);}
+\DoxyCodeLine{737 }
+\DoxyCodeLine{738 \textcolor{comment}{/*}}
+\DoxyCodeLine{739 \textcolor{comment}{ * @brief seeking by linkId for interface MLO link info into included interface MLO links}}
+\DoxyCodeLine{740 \textcolor{comment}{ *}}
+\DoxyCodeLine{741 \textcolor{comment}{ * @param pIface pointer to input mld interface info}}
+\DoxyCodeLine{742 \textcolor{comment}{ * @param linkId MLO link id to look for}}
+\DoxyCodeLine{743 \textcolor{comment}{ *}}
+\DoxyCodeLine{744 \textcolor{comment}{ * @return pointer to found interface MLO link info, NULL otherwise}}
+\DoxyCodeLine{745 \textcolor{comment}{ */}}
+\DoxyCodeLine{746 \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t}{wld\_nl80211\_ifaceMloLinkInfo\_t}}* \mbox{\hyperlink{wld__nl80211__api_8h_a08735705eb4a34b96b22b9467060174b}{wld\_nl80211\_fetchIfaceMloLinkById}}(\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIface, int32\_t linkId);}
+\DoxyCodeLine{747 }
+\DoxyCodeLine{748 \textcolor{comment}{/*}}
+\DoxyCodeLine{749 \textcolor{comment}{ * @brief get by position the interface MLO link info}}
+\DoxyCodeLine{750 \textcolor{comment}{ *}}
+\DoxyCodeLine{751 \textcolor{comment}{ * @param pIface pointer to input mld interface info}}
+\DoxyCodeLine{752 \textcolor{comment}{ * @param linkPos link position (0: primary, 1..X: secondaryX..)}}
+\DoxyCodeLine{753 \textcolor{comment}{ *}}
+\DoxyCodeLine{754 \textcolor{comment}{ * @return pointer to found interface MLO link info, NULL otherwise}}
+\DoxyCodeLine{755 \textcolor{comment}{ */}}
+\DoxyCodeLine{756 \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__ifaceMloLinkInfo__t}{wld\_nl80211\_ifaceMloLinkInfo\_t}}* \mbox{\hyperlink{wld__nl80211__api_8h_aa9f72c307855bf33ade2158c79446a92}{wld\_nl80211\_getIfaceMloLinkAtPos}}(\mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIface, uint32\_t linkPos);}
+\DoxyCodeLine{757 }
+\DoxyCodeLine{758 \textcolor{comment}{/*}}
+\DoxyCodeLine{759 \textcolor{comment}{ * @brief find mld interface hosting specific mlo link mac}}
+\DoxyCodeLine{760 \textcolor{comment}{ *}}
+\DoxyCodeLine{761 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{762 \textcolor{comment}{ * @param pLinkMac link mac address}}
+\DoxyCodeLine{763 \textcolor{comment}{ * @param pIface (output) pointer to resulting mld interface info}}
+\DoxyCodeLine{764 \textcolor{comment}{ * @param pLinkId (output) pointer filled with mld link id}}
+\DoxyCodeLine{765 \textcolor{comment}{ *}}
+\DoxyCodeLine{766 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{767 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{768 \textcolor{comment}{ */}}
+\DoxyCodeLine{769 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api_8h_a9a971f8364508d0502fcbca256b5b92d}{wld\_nl80211\_findMldIfaceByLinkMac}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, swl\_macBin\_t* pLinkMac, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIface, int32\_t* pLinkId);}
+\DoxyCodeLine{770 }
+\DoxyCodeLine{771 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_NL80211\_API\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

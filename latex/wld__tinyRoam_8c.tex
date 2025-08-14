@@ -1,0 +1,223 @@
+\hypertarget{wld__tinyRoam_8c}{}\doxysection{src/\+Ep\+Mgt/wld\+\_\+tiny\+Roam.c File Reference}
+\label{wld__tinyRoam_8c}\index{src/EpMgt/wld\_tinyRoam.c@{src/EpMgt/wld\_tinyRoam.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+tiny\+Roam.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+tiny\+Roam.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__tinyRoam_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__tinyRoam}{wld\+\_\+tiny\+Roam}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__tinyRoam_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ty\+Roam\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3}{roam\+Attempt\+Result\+\_\+e}} \{ \newline
+\mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a81db99810f87370a6bef8633589c8d04}{ROAMATTEMPTRESULT\+\_\+\+NOTROAMING}}
+, \mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3ae606358db2d65442f3197c3b9e06b8a4}{ROAMATTEMPTRESULT\+\_\+\+SUCCESS}}
+, \mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a00fed9352c8f3906ae52e10ec0df334c}{ROAMATTEMPTRESULT\+\_\+\+WRONGBSSID}}
+, \mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a1e310817f191474f841bc233202a35e9}{ROAMATTEMPTRESULT\+\_\+\+NOTCONNECTED}}
+, \newline
+\mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a776cc0ce36be15d1fe23377b6a8c386c}{ROAMATTEMPTRESULT\+\_\+\+MAX}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__tinyRoam_8c_a64f56ca7793a6d01881bae547e6d0ae3}{SWL\+\_\+\+ASSERT\+\_\+\+STATIC}} (SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__tinyRoam_8c_a9451aa28492488504847c2bef69ee47d}{wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+Char}})==\mbox{\hyperlink{wld__tinyRoam_8h_ab8943c78541b38ecf28d24b0251f663ea0c11e14f2e7c1367bb3115266ddc20d6}{WLD\+\_\+\+TINYROAM\+\_\+\+ROAMRESULT\+\_\+\+MAX}}, \char`\"{}wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+Char not correctly defined\char`\"{})
+\item 
+const swl\+\_\+mac\+Bin\+\_\+t $\ast$ \mbox{\hyperlink{wld__tinyRoam_8c_ae8e40f47ca6b566a03e6ec3cd32ba74d}{wld\+\_\+tiny\+Roam\+\_\+target\+Bssid}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep)
+\item 
+bool \mbox{\hyperlink{wld__tinyRoam_8c_a728785046c2a3095f04f35cf2e0f9973}{wld\+\_\+tiny\+Roam\+\_\+is\+Roaming}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep)
+\item 
+\mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3}{roam\+Attempt\+Result\+\_\+e}} \mbox{\hyperlink{wld__tinyRoam_8c_a9374cf42d72664c570a63d164155239c}{s\+\_\+retrieve\+Roam\+Attempt\+Result}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep)
+\item 
+bool \mbox{\hyperlink{wld__tinyRoam_8c_aaaf784fc4c96d6d483ac8cb5a552778d}{wld\+\_\+tiny\+Roam\+\_\+roam\+To}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep, const swl\+\_\+mac\+Bin\+\_\+t $\ast$new\+Bssid, int32\+\_\+t max\+Number\+Of\+Attempts, int32\+\_\+t timeout\+In\+Sec, \mbox{\hyperlink{wld__tinyRoam_8h_a212f3254689d7192ec7b64584e0400c3}{wld\+\_\+tiny\+Roam\+\_\+roam\+Ended\+Cb\+\_\+t}} roam\+Ended\+Cb, void $\ast$user\+Data)
+\item 
+void \mbox{\hyperlink{wld__tinyRoam_8c_ad01f212a98921398d7c103937e2ef93f}{wld\+\_\+tiny\+Roam\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep)
+\item 
+void \mbox{\hyperlink{wld__tinyRoam_8c_a1e5262ecc674d9db2f6e5de82c464930}{wld\+\_\+tiny\+Roam\+\_\+cleanup}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$const \mbox{\hyperlink{wld__tinyRoam_8c_a9451aa28492488504847c2bef69ee47d}{wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+Char}} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__tinyRoam_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__tinyRoam_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!ME@{ME}}
+\index{ME@{ME}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ty\+Roam\char`\"{}}
+
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3}\label{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!roamAttemptResult\_e@{roamAttemptResult\_e}}
+\index{roamAttemptResult\_e@{roamAttemptResult\_e}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{roamAttemptResult\_e}{roamAttemptResult\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3}{roam\+Attempt\+Result\+\_\+e}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ROAMATTEMPTRESULT\_NOTROAMING@{ROAMATTEMPTRESULT\_NOTROAMING}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!ROAMATTEMPTRESULT\_NOTROAMING@{ROAMATTEMPTRESULT\_NOTROAMING}}}\mbox{\Hypertarget{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a81db99810f87370a6bef8633589c8d04}\label{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a81db99810f87370a6bef8633589c8d04}} 
+ROAMATTEMPTRESULT\+\_\+\+NOTROAMING&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ROAMATTEMPTRESULT\_SUCCESS@{ROAMATTEMPTRESULT\_SUCCESS}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!ROAMATTEMPTRESULT\_SUCCESS@{ROAMATTEMPTRESULT\_SUCCESS}}}\mbox{\Hypertarget{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3ae606358db2d65442f3197c3b9e06b8a4}\label{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3ae606358db2d65442f3197c3b9e06b8a4}} 
+ROAMATTEMPTRESULT\+\_\+\+SUCCESS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ROAMATTEMPTRESULT\_WRONGBSSID@{ROAMATTEMPTRESULT\_WRONGBSSID}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!ROAMATTEMPTRESULT\_WRONGBSSID@{ROAMATTEMPTRESULT\_WRONGBSSID}}}\mbox{\Hypertarget{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a00fed9352c8f3906ae52e10ec0df334c}\label{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a00fed9352c8f3906ae52e10ec0df334c}} 
+ROAMATTEMPTRESULT\+\_\+\+WRONGBSSID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ROAMATTEMPTRESULT\_NOTCONNECTED@{ROAMATTEMPTRESULT\_NOTCONNECTED}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!ROAMATTEMPTRESULT\_NOTCONNECTED@{ROAMATTEMPTRESULT\_NOTCONNECTED}}}\mbox{\Hypertarget{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a1e310817f191474f841bc233202a35e9}\label{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a1e310817f191474f841bc233202a35e9}} 
+ROAMATTEMPTRESULT\+\_\+\+NOTCONNECTED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ROAMATTEMPTRESULT\_MAX@{ROAMATTEMPTRESULT\_MAX}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!ROAMATTEMPTRESULT\_MAX@{ROAMATTEMPTRESULT\_MAX}}}\mbox{\Hypertarget{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a776cc0ce36be15d1fe23377b6a8c386c}\label{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3a776cc0ce36be15d1fe23377b6a8c386c}} 
+ROAMATTEMPTRESULT\+\_\+\+MAX&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__tinyRoam_8c_a9374cf42d72664c570a63d164155239c}\label{wld__tinyRoam_8c_a9374cf42d72664c570a63d164155239c}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!s\_retrieveRoamAttemptResult@{s\_retrieveRoamAttemptResult}}
+\index{s\_retrieveRoamAttemptResult@{s\_retrieveRoamAttemptResult}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{s\_retrieveRoamAttemptResult()}{s\_retrieveRoamAttemptResult()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__tinyRoam_8c_ad5e23df490738bb54fca74da03ba03f3}{roam\+Attempt\+Result\+\_\+e}} s\+\_\+retrieve\+Roam\+Attempt\+Result (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__tinyRoam_8c_a64f56ca7793a6d01881bae547e6d0ae3}\label{wld__tinyRoam_8c_a64f56ca7793a6d01881bae547e6d0ae3}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}}
+\index{SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_ASSERT\_STATIC()}{SWL\_ASSERT\_STATIC()}}
+{\footnotesize\ttfamily SWL\+\_\+\+ASSERT\+\_\+\+STATIC (\begin{DoxyParamCaption}\item[{SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__tinyRoam_8c_a9451aa28492488504847c2bef69ee47d}{wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+Char}})}]{ = {\ttfamily =\mbox{\hyperlink{wld__tinyRoam_8h_ab8943c78541b38ecf28d24b0251f663ea0c11e14f2e7c1367bb3115266ddc20d6}{WLD\+\_\+\+TINYROAM\+\_\+\+ROAMRESULT\+\_\+\+MAX}}},  }\item[{\char`\"{}wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+Char not correctly defined\char`\"{}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__tinyRoam_8c_a1e5262ecc674d9db2f6e5de82c464930}\label{wld__tinyRoam_8c_a1e5262ecc674d9db2f6e5de82c464930}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!wld\_tinyRoam\_cleanup@{wld\_tinyRoam\_cleanup}}
+\index{wld\_tinyRoam\_cleanup@{wld\_tinyRoam\_cleanup}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{wld\_tinyRoam\_cleanup()}{wld\_tinyRoam\_cleanup()}}
+{\footnotesize\ttfamily void wld\+\_\+tiny\+Roam\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__tinyRoam_8c_a1e5262ecc674d9db2f6e5de82c464930_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__tinyRoam_8c_ad01f212a98921398d7c103937e2ef93f}\label{wld__tinyRoam_8c_ad01f212a98921398d7c103937e2ef93f}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!wld\_tinyRoam\_init@{wld\_tinyRoam\_init}}
+\index{wld\_tinyRoam\_init@{wld\_tinyRoam\_init}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{wld\_tinyRoam\_init()}{wld\_tinyRoam\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+tiny\+Roam\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__tinyRoam_8c_ad01f212a98921398d7c103937e2ef93f_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__tinyRoam_8c_a728785046c2a3095f04f35cf2e0f9973}\label{wld__tinyRoam_8c_a728785046c2a3095f04f35cf2e0f9973}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!wld\_tinyRoam\_isRoaming@{wld\_tinyRoam\_isRoaming}}
+\index{wld\_tinyRoam\_isRoaming@{wld\_tinyRoam\_isRoaming}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{wld\_tinyRoam\_isRoaming()}{wld\_tinyRoam\_isRoaming()}}
+{\footnotesize\ttfamily bool wld\+\_\+tiny\+Roam\+\_\+is\+Roaming (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__tinyRoam_8c_a728785046c2a3095f04f35cf2e0f9973_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__tinyRoam_8c_aaaf784fc4c96d6d483ac8cb5a552778d}\label{wld__tinyRoam_8c_aaaf784fc4c96d6d483ac8cb5a552778d}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!wld\_tinyRoam\_roamTo@{wld\_tinyRoam\_roamTo}}
+\index{wld\_tinyRoam\_roamTo@{wld\_tinyRoam\_roamTo}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{wld\_tinyRoam\_roamTo()}{wld\_tinyRoam\_roamTo()}}
+{\footnotesize\ttfamily bool wld\+\_\+tiny\+Roam\+\_\+roam\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep,  }\item[{const swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{new\+Bssid,  }\item[{int32\+\_\+t}]{max\+Number\+Of\+Attempts,  }\item[{int32\+\_\+t}]{timeout\+In\+Sec,  }\item[{\mbox{\hyperlink{wld__tinyRoam_8h_a212f3254689d7192ec7b64584e0400c3}{wld\+\_\+tiny\+Roam\+\_\+roam\+Ended\+Cb\+\_\+t}}}]{roam\+Ended\+Cb,  }\item[{void $\ast$}]{user\+Data }\end{DoxyParamCaption})}
+
+Start up roaming attempts to roam to given bssid.
+
+Safe to run in bus callback.
+
+
+\begin{DoxyParams}{Parameters}
+{\em roam\+Ended\+Cb} & if arguments are valid, guaranteed to be called when roaming ends (both on success and failure). if arguments are not valid, guaranteed to not be called (for this invocation). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true on valid arguments, false on invalid arguments. 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__tinyRoam_8c_aaaf784fc4c96d6d483ac8cb5a552778d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__tinyRoam_8c_ae8e40f47ca6b566a03e6ec3cd32ba74d}\label{wld__tinyRoam_8c_ae8e40f47ca6b566a03e6ec3cd32ba74d}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!wld\_tinyRoam\_targetBssid@{wld\_tinyRoam\_targetBssid}}
+\index{wld\_tinyRoam\_targetBssid@{wld\_tinyRoam\_targetBssid}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{wld\_tinyRoam\_targetBssid()}{wld\_tinyRoam\_targetBssid()}}
+{\footnotesize\ttfamily const swl\+\_\+mac\+Bin\+\_\+t $\ast$ wld\+\_\+tiny\+Roam\+\_\+target\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep }\end{DoxyParamCaption})}
+
+Where tiny\+Roam is trying to roam to.
+
+Returns null-\/mac if not roaming. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__tinyRoam_8c_ae8e40f47ca6b566a03e6ec3cd32ba74d_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__tinyRoam_8c_a9451aa28492488504847c2bef69ee47d}\label{wld__tinyRoam_8c_a9451aa28492488504847c2bef69ee47d}} 
+\index{wld\_tinyRoam.c@{wld\_tinyRoam.c}!wld\_tinyRoam\_roamResultChar@{wld\_tinyRoam\_roamResultChar}}
+\index{wld\_tinyRoam\_roamResultChar@{wld\_tinyRoam\_roamResultChar}!wld\_tinyRoam.c@{wld\_tinyRoam.c}}
+\doxysubsubsection{\texorpdfstring{wld\_tinyRoam\_roamResultChar}{wld\_tinyRoam\_roamResultChar}}
+{\footnotesize\ttfamily const char$\ast$ const wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+Char\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Success"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Bug encountered. See logs for details."{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Already connected to the bssid we want to roam to"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Cannot perform tiny roam while (big)roam is enabled"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Invalid argument"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Cannot roam to myself"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}Roaming was cancelled because another roam was started"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}All attempts failed"{}},}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+Human-\/readable version of \mbox{\hyperlink{wld__tinyRoam_8h_ab8943c78541b38ecf28d24b0251f663e}{wld\+\_\+tiny\+Roam\+\_\+roam\+Result\+\_\+e}} 

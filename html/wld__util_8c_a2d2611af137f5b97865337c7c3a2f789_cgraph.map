@@ -1,0 +1,4 @@
+<map id="wld_util_addorUpdateSpectrumEntry" name="wld_util_addorUpdateSpectrumEntry">
+<area shape="rect" id="node1" title="add or update a spectrum result entry in provided list, based on the channel of the provided data str..." alt="" coords="5,5,232,47"/>
+<area shape="rect" id="node2" href="$wld__util_8c.html#afc923d0ae8df35793889b4473f08faf9" title="fetch, by channel, a spectrum result entry in provided list" alt="" coords="280,5,477,47"/>
+</map>

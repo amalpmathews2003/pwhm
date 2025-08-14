@@ -1,0 +1,1711 @@
+\hypertarget{wld__util_8c}{}\doxysection{src/wld\+\_\+util.c File Reference}
+\label{wld__util_8c}\index{src/wld\_util.c@{src/wld\_util.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$openssl/evp.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+conversion.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+object.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+string.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+hex.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+chanspec.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}amxd/amxd\+\_\+transaction.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+util.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structconvStrToNum__info__t}{conv\+Str\+To\+Num\+\_\+info\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__util_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__util_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}util\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a1281a4cbf0710b6982e0535d180fb89d}{\+\_\+\+\_\+\+WLD\+\_\+\+BUG\+\_\+\+ON}} (bool bug, const char $\ast$condition \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const char $\ast$function \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const char $\ast$file \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, int line \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+int \mbox{\hyperlink{wld__util_8c_ae4602638615aba7c6b4ede92d19af77a}{debug\+Is\+Vap\+Pointer}} (void $\ast$p)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a4ff888db1d83ee89b0e248aed4d79c40}{debug\+Is\+Ep\+Pointer}} (void $\ast$p)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a18c61fa964e131e3008ec440b72b61c8}{debug\+Is\+Rad\+Pointer}} (void $\ast$p)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a3ed4a094b2cb61af2083800ab12edfb1}{debug\+Is\+Ssid\+Pointer}} (void $\ast$p)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a3a81a647940842ed240f51b469268f4d}{find\+Str\+In\+Array}} (const char $\ast$str, const char $\ast$$\ast$strarray, int $\ast$index)
+\item 
+int \mbox{\hyperlink{wld__util_8c_aaf7fa2c320638727109b191c25a0dbc8}{find\+Str\+In\+ArrayN}} (const char $\ast$str, const char $\ast$$\ast$strarray, int size, int default\+\_\+index)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a0b5f6975bc2f350dea58fafb5544a750}{conv\+Int\+Arr\+To\+String}} (char $\ast$str, int str\+\_\+size, const int $\ast$int\+\_\+list, int list\+\_\+size)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a539eb97819c9fe590e22ce060a02e8bd}{conv\+Str\+To\+Int\+Array}} (int $\ast$int\+\_\+list, size\+\_\+t list\+\_\+size, const char $\ast$str, int $\ast$out\+Size)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a9ee9838274765e0e23e14a8f93e548c8}{conv\+Str\+Arr\+To\+Str}} (char $\ast$str, int str\+\_\+size, const char $\ast$$\ast$str\+List, int list\+\_\+size)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a48b09bbc75efdd395ae9488d48972651}{wldu\+\_\+llist\+\_\+free\+Data\+Internal}} (amxc\+\_\+llist\+\_\+t $\ast$list, size\+\_\+t offset)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a735c192834e51c2120dce55fa2ef2963}{wldu\+\_\+llist\+\_\+free\+Data\+Fun\+Internal}} (amxc\+\_\+llist\+\_\+t $\ast$list, size\+\_\+t offset, void($\ast$destroy)(void $\ast$val))
+\item 
+void \mbox{\hyperlink{wld__util_8c_adfb5ad3e5c2774f13d68a3eb51b13099}{wldu\+\_\+llist\+\_\+map\+Internal}} (amxc\+\_\+llist\+\_\+t $\ast$list, size\+\_\+t offset, void($\ast$map)(void $\ast$val, void $\ast$data), void $\ast$data)
+\item 
+unsigned long \mbox{\hyperlink{wld__util_8c_af8a42744693859b9bfd7c2606320ea9f}{conv\+\_\+\+Mode\+Bit\+Str}} (char $\ast$$\ast$enum\+Str\+List, char $\ast$str)
+\item 
+long \mbox{\hyperlink{wld__util_8c_a7eada571856b113a0be650579c0f43ea}{conv\+\_\+\+Mode\+Index\+Str}} (const char $\ast$$\ast$enum\+Str\+List, const char $\ast$str)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a07f423a4e0e817fa9d37ac492182e972}{conv\+\_\+mask\+To\+Str\+Sep}} (uint32\+\_\+t mask, const char $\ast$$\ast$enum\+Str\+List, uint32\+\_\+t max\+Val, char $\ast$str, uint32\+\_\+t str\+Size, char separator)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a2bfefc3ab7c60eaeef488b7eda2088e4}{conv\+\_\+mask\+To\+Str}} (uint32\+\_\+t mask, const char $\ast$$\ast$enum\+Str\+List, uint32\+\_\+t max\+Val, char $\ast$str, uint32\+\_\+t str\+Size)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__util_8c_a93e9777865de6d1ea877df2574de1056}{conv\+\_\+str\+To\+Enum}} (const char $\ast$$\ast$enum\+Str\+List, const char $\ast$str, uint32\+\_\+t max\+Val, uint32\+\_\+t default\+Val)
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ conv\+\_\+\+Mode\+Index\+Str\+Ex}\par
+{\em Function looks for a given string in a string array buffer. The number of items is limited by the string array or the min-\/max\+Index range.
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & NULL terminated text string \\
+\hline
+{\em strarray} & List of strings, the list must end with a NULL pointer. \\
+\hline
+{\em min\+Index} & Starting index number \\
+\hline
+{\em max\+Index} & Ending index number\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int index value that contains the matching string in the strarray ELSE -\/1! 
+\end{DoxyReturn}
+}\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__util_8c_a8dfb6b013ec0d9a49ee3782fe967c66f}{conv\+\_\+\+Mode\+Index\+Str\+Ex}} (const char $\ast$$\ast$enum\+Str\+List, const char $\ast$str, int min\+Idx, int max\+Idx)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_ac56fb454e1a6707f628153812218dbf2}{itoa}} (int value, char $\ast$result, int base)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a3e769799809c95d095b5fbfd96966da2}{get\+Lowest\+Bit\+Long\+Array}} (unsigned long $\ast$pval, int elem)
+\begin{DoxyCompactList}\small\item\em find the lowest bit in an array of longs. (used in our FSM) \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wld__util_8c_a06bae4bfa511990492bbfaca3b54ccb4}{get\+Highest\+Bit\+Long\+Array}} (unsigned long $\ast$pval, int elem)
+\begin{DoxyCompactList}\small\item\em find the highest bit in an array of longs. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wld__util_8c_a661cdf0ccc273192d3c1ff05be929a74}{are\+Bits\+Set\+Long\+Array}} (unsigned long $\ast$pval, int elem)
+\item 
+int \mbox{\hyperlink{wld__util_8c_ac49215e8923e0aa3581c1e92ec5d97f5}{clear\+All\+Bits\+Long\+Array}} (unsigned long $\ast$pval, int elem)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a4569e191d4d2b11bd76c2648c66ce3b1}{is\+Bit\+Only\+Set\+Long\+Array}} (unsigned long $\ast$pval, int elem, int bit\+Nr)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a4ee8b0fe293b561299b9d3b3e0dc07d0}{are\+Bits\+Only\+Set\+Long\+Array}} (unsigned long $\ast$pval, int elem, int $\ast$bit\+Nr\+Array, int nr\+Bit\+Elem)
+\item 
+int \mbox{\hyperlink{wld__util_8c_abd75e9e26c8823d100708594839fab47}{is\+Bit\+Set\+Long\+Array}} (unsigned long $\ast$pval, int elem, int bit\+Nr)
+\item 
+int \mbox{\hyperlink{wld__util_8c_af5db082125e72df08522688706e692a3}{set\+Bit\+Long\+Array}} (unsigned long $\ast$pval, int elem, int bit\+Nr)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a1ac111dcf675653ff55b37fef6cdd7e6}{clear\+Bit\+Long\+Array}} (unsigned long $\ast$pval, int elem, int bit\+Nr)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a2d504caed8120e90d571773f2f6a520a}{mark\+All\+Bits\+Long\+Array}} (unsigned long $\ast$pval, int elem, int bit\+Nr)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a2874d5dec36a709fc7ac2831e7426cac}{move\+FSM\+\_\+\+VAPBit2\+ACFSM}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a79d9a1521a59b849a84afcd84f303977}{move\+FSM\+\_\+\+RADBit2\+ACFSM}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a84fb08aa2564f6b10843b95198ca0ac5}{move\+FSM2\+ACFSM}} (\mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} $\ast$fsm)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a64b55a0afb7a5a6d0b40351ceae7bb74}{long\+Array\+Copy}} (unsigned long $\ast$to, unsigned long $\ast$from, int len)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a86a1e441a269b7d86df7282951e055c6}{long\+Array\+Bit\+Or}} (unsigned long $\ast$to, unsigned long $\ast$from, int len)
+\item 
+void \mbox{\hyperlink{wld__util_8c_adb0065f2a65a34c9c82173ce192fd0a6}{long\+Array\+Clean}} (unsigned long $\ast$array, int len)
+\item 
+swl\+\_\+security\+\_\+ap\+Mode\+\_\+e \mbox{\hyperlink{wld__util_8c_a7305b881548a80f65506291b6ef6afb3}{is\+Valid\+WEPKey}} (const char $\ast$key)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_ae13a8b2817e966a1dfe9ebe43b0e83be}{conv\+ASCII\+\_\+\+WEPKey}} (const char $\ast$key, char $\ast$out, int sizeout)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_a7a8aeb8638ba64266791eb00fec984c9}{conv\+Hex\+\_\+\+WEPKey}} (const char $\ast$key, char $\ast$out, int sizeout)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a4f13d57f6243ec98cbc4d391f3cd335e}{is\+Valid\+PSKKey}} (const char $\ast$key)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a2d5b061595a121996db8996ad85a9d50}{is\+Sanitized}} (const char $\ast$pname)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_ab1c3bc5bfee662b50fee6f27eb33f636}{is\+Valid\+AESKey}} (const char $\ast$key, int max\+Len)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_ab9656b09d5ad0f2582f9434d7be45b7f}{is\+Valid\+SSID}} (const char $\ast$ssid)
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ is\+List\+Of\+Channels\+\_\+\+US}\par
+{\em This function returns TRUE when US channels are covered for the selected band.
+
+
+\begin{DoxyParams}{Parameters}
+{\em possible\+Channels,array} & of channels must terminated by a 0 channel \\
+\hline
+{\em len,number} & of elements in possible\+Channels \\
+\hline
+{\em band,which} & band must be checked for US mode?\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+}\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__util_8c_aac4270b2a53e3153ea765ba13c61856b}{is\+List\+Of\+Channels\+\_\+\+US}} (unsigned char $\ast$possible\+Channels, int len, int band)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a3d8afede3294f6b3aaf0e30862167fbb}{get\+\_\+random}} (unsigned char $\ast$buf, size\+\_\+t len)
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ get\+\_\+randomstr}\par
+{\em Generates a random NULL terminated string in the buffer!
+
+
+\begin{DoxyParams}{Parameters}
+{\em buf} & Destination pointer of string, must at least cover len+1 size! (NULL char) \\
+\hline
+{\em len} & Length of generated key!\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int returns length of string. 
+\end{DoxyReturn}
+}\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__util_8c_a5fb3816c289f66dbe93c02d7d32089f2}{get\+\_\+randomstr}} (unsigned char $\ast$buf, size\+\_\+t len)
+\end{DoxyCompactItemize}
+\end{Indent}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__util_8c_ab598c7bbce70e33495965502011942fb}{com\+\_\+dir\+\_\+char}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]} = \{\char`\"{}Tx\char`\"{}, \char`\"{}Rx\char`\"{}\}
+\item 
+const \mbox{\hyperlink{structT__COUNTRYCODE}{T\+\_\+\+COUNTRYCODE}} \mbox{\hyperlink{wld__util_8c_a7c17a0a6a1383bb9d1b64002d45e1f4b}{Rad\+\_\+\+Country\+Code}} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+\doxysubsection*{get\+\_\+randomhexstr}
+Generates a random hexadecimal NULL terminated string in the buffer!
+
+
+\begin{DoxyParams}{Parameters}
+{\em buf} & Destination pointer of string, must at least cover len+1 size! (NULL char) \\
+\hline
+{\em len} & Length of generated key!\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int returns length of string. 
+\end{DoxyReturn}
+\begin{DoxyCompactItemize}
+\item 
+typedef int($\ast$ \mbox{\hyperlink{wld__util_8c_aa55d13a05ca9cc4b51fd7c291fb94d95}{func\+\_\+conv\+Str\+To\+Num\+\_\+t}}) (const char $\ast$num\+Src\+Str, void $\ast$num\+Dst\+Buf, uint8\+\_\+t base)
+\item 
+int \mbox{\hyperlink{wld__util_8c_ae9a84639d5e5ad83baf1624f9129be48}{get\+\_\+randomhexstr}} (unsigned char $\ast$buf, size\+\_\+t len)
+\item 
+unsigned long \mbox{\hyperlink{wld__util_8c_afdf5168abd83a0b9d0f64ccf80e155b2}{wps\+Init\+Pin}} ()
+\item 
+void \mbox{\hyperlink{wld__util_8c_a50e3c6ec470085fdd36cae1a0e9c8f7e}{wps\+Pin\+Gen}} (char pwd\mbox{[}\mbox{\hyperlink{wld__util_8h_a8d71426ba3ae7ed04ed97cc4871fcfe2}{WPS\+\_\+\+PIN\+\_\+\+LEN}}+1\mbox{]})
+\item 
+int \mbox{\hyperlink{wld__util_8c_a484ad36a27282cb8ba60d80e1485d858}{wps\+Pin\+Valid}} (unsigned long PIN)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_ab6ee78a11c7bcd9bc0019cd2c30aef17}{wldu\+\_\+check\+Wps\+Pin\+Str}} (const char $\ast$pin\+Str)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__util_8c_abaaf26cbbc108665b359ecc71618c7de}{wldu\+\_\+conv\+Str\+To\+UInt8\+Arr}} (uint8\+\_\+t $\ast$tgt\+List, uint tgt\+List\+Size, char $\ast$src\+Str\+List)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__util_8c_a73a3285127e369356d71578c60a65d35}{wldu\+\_\+conv\+Str2\+Mac}} (unsigned char $\ast$mac, uint32\+\_\+t sizeofmac, const char $\ast$str, uint32\+\_\+t sizeofstr)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a0953dd215be634e34dbf31955ab78850}{wldu\+\_\+conv\+Mac2\+Str}} (unsigned char $\ast$mac, uint32\+\_\+t sizeofmac, char $\ast$str, uint32\+\_\+t sizeofstr)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a1885348d15676dcae318538076904ed3}{wldu\+\_\+conv\+Str\+To\+Num}} (const char $\ast$num\+Src\+Str, void $\ast$num\+Dst\+Buf, uint8\+\_\+t num\+Dst\+Byte\+Size, uint8\+\_\+t base, bool is\+Signed)
+\item 
+int \mbox{\hyperlink{wld__util_8c_ac9ccc661ceb11a3633de742b3d71b49c}{mac2str}} (char $\ast$str, const unsigned char $\ast$mac, size\+\_\+t maxstrlen)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_a83ed6e217179e65fc76b9b0595706de9}{wld\+\_\+ssid\+\_\+to\+\_\+string}} (const uint8\+\_\+t $\ast$ssid, uint8\+\_\+t len)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a25b56d0420fd97e5bc5d96b0cf1b2a6e}{conv\+Ssid2\+Str}} (const uint8\+\_\+t $\ast$ssid, uint8\+\_\+t ssid\+Len, char $\ast$str, size\+\_\+t max\+Str\+Size)
+\begin{DoxyCompactList}\small\item\em Convert the numeric SSID to a readable string. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wld__util_8c_af5240beaa1193383a4fa1908b3b66b41}{conv\+Quality2\+Signal}} (int quality)
+\item 
+int \mbox{\hyperlink{wld__util_8c_aca501336841df2f8d38d1da5134c8674}{conv\+Signal2\+Quality}} (int d\+Bm)
+\item 
+void \mbox{\hyperlink{wld__util_8c_a300a77338077396f0f2aba72a32c110c}{fsm\+\_\+delay\+\_\+reply}} (uint64\+\_\+t call\+\_\+id, amxd\+\_\+status\+\_\+t state, int $\ast$errval)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a8ded40ebe4d51919699b1b4b7678dd62}{get\+Country\+Param}} (const char $\ast$instr, int CC, int $\ast$idx)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_adaf405a81396e3e13eb83d04d4047a98}{get\+Full\+Country\+Name}} (int idx)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_ab5c3fd785999d8b9a9d5d6c538348f9b}{get\+Short\+Country\+Name}} (int idx)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a6866e3c6fdc899df0a40203d5be0a738}{get\+Country\+Code}} (int idx)
+\item 
+swl\+\_\+op\+Class\+Country\+\_\+e \mbox{\hyperlink{wld__util_8c_ab702f8b9102748a4dc45fb1bae6e9b0e}{get\+Country\+Zone}} (int idx)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_acaa32afc3880f0fa2909341fc6c18660}{strip\+Out\+Token}} (char $\ast$pD, const char $\ast$pT)
+\item 
+char $\ast$$\ast$ \mbox{\hyperlink{wld__util_8c_a9fee1b9cfcd2af34645249502f9015bf}{strip\+String}} (char $\ast$$\ast$p\+TL, int nr\+TL, char $\ast$pD, const char $\ast$pT)
+\item 
+void \mbox{\hyperlink{wld__util_8c_af4f3767209b876e8b00828c7b624911d}{conv\+Str\+To\+Hex}} (uint8\+\_\+t $\ast$pb\+Dest, int dest\+Size, const char $\ast$pb\+Src, int src\+Size)
+\begin{DoxyCompactList}\small\item\em Convert string notation to hex int. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wld__util_8c_a27279683e6fcce2dcfde57e00f413559}{get\+\_\+pattern\+\_\+string}} (const char $\ast$arg, uint8\+\_\+t $\ast$pattern)
+\begin{DoxyCompactList}\small\item\em get\+\_\+pattern\+\_\+string \end{DoxyCompactList}\item 
+int32\+\_\+t \mbox{\hyperlink{wld__util_8c_a077222c20b0d72832db1d040fcfcfe2a}{wld\+\_\+util\+\_\+perform\+Factor\+Step}} (int32\+\_\+t accum, int32\+\_\+t new\+Val, int32\+\_\+t factor)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a0d24c165677161f86ceb7af2f31fe5e7}{wld\+\_\+write\+Caps\+To\+String}} (char $\ast$buffer, uint32\+\_\+t size, const char $\ast$const $\ast$str\+Array, uint32\+\_\+t caps, uint32\+\_\+t max\+Caps)
+\item 
+void \mbox{\hyperlink{wld__util_8c_ae86400c3a5ef67fcb34ae80a6f2ac1ca}{wld\+\_\+bitmask\+To\+CSValues}} (char $\ast$string, size\+\_\+t stringsize, const int bitmask, const char $\ast$strings\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em wld\+\_\+bitmask\+To\+CSValues \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__util_8c_adc7b6d02e17d5dadfe3caa517eff88d9}{wld\+\_\+util\+\_\+are\+All\+Vaps\+Disabled}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a7aaa0a274fb1a414bae0af12b211da98}{wld\+\_\+util\+\_\+are\+All\+Endpoints\+Disabled}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wld__util_8c_aa9da6762c8aa347f3f9cf7a047d90484}{wld\+\_\+util\+\_\+is\+Power\+Of}} (int32\+\_\+t value, int32\+\_\+t power)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a913e9ba94059441da2161af2be98c03a}{wld\+\_\+util\+\_\+is\+Power\+Of2}} (int32\+\_\+t value)
+\item 
+int \mbox{\hyperlink{wld__util_8c_ad9cb15ae28e8e123fbc0c2d371b61944}{wld\+\_\+util\+\_\+get\+Linux\+Intf\+State}} (int socket, char $\ast$ifname)
+\item 
+int \mbox{\hyperlink{wld__util_8c_a2ed315a964727b8d299fd4f16d3509fc}{wld\+\_\+util\+\_\+set\+Linux\+Intf\+State}} (int socket, char $\ast$ifname, int state)
+\item 
+\mbox{\hyperlink{structwld__tuple__t}{wld\+\_\+tuple\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__util_8c_a108e2a9d3c4533cb8db73da05f2827af}{wldu\+\_\+get\+Tuple\+By\+Id}} (\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$list, int64\+\_\+t id)
+\item 
+\mbox{\hyperlink{structwld__tupleId__t}{wld\+\_\+tuple\+Id\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__util_8c_ae2bf58c9d0f2d6efea28d70f9c5ccc61}{wldu\+\_\+get\+Tuple\+Id\+By\+Id}} (\mbox{\hyperlink{structwld__tupleIdlist__t}{wld\+\_\+tuple\+Idlist\+\_\+t}} $\ast$list, int64\+\_\+t id)
+\item 
+\mbox{\hyperlink{structwld__tupleVoid__t}{wld\+\_\+tuple\+Void\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__util_8c_a178708433b311860269553a8fdfa402d}{wldu\+\_\+get\+Tuple\+Void\+By\+Id}} (\mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\+\_\+tuple\+Voidlist\+\_\+t}} $\ast$list, int64\+\_\+t id)
+\item 
+\mbox{\hyperlink{structwld__tuple__t}{wld\+\_\+tuple\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__util_8c_a7f7d88fe2c8e15898d33624e5e64089a}{wldu\+\_\+get\+Tuple\+By\+Str}} (\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$list, char $\ast$str)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__util_8c_a343afb6f51cd7bb612f99b00f073da04}{wldu\+\_\+tuple\+\_\+id2str}} (\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$list, int64\+\_\+t id, const char $\ast$def\+Str)
+\item 
+const void $\ast$ \mbox{\hyperlink{wld__util_8c_a158727447ebd4d71c8eefadb17fa6853}{wldu\+\_\+tuple\+\_\+id2void}} (\mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\+\_\+tuple\+Voidlist\+\_\+t}} $\ast$list, int64\+\_\+t id)
+\item 
+int64\+\_\+t \mbox{\hyperlink{wld__util_8c_a4a3acb4776d5ea5160d83057959e67b4}{wldu\+\_\+tuple\+\_\+str2id}} (\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$list, char $\ast$str, int64\+\_\+t def\+Id)
+\item 
+int64\+\_\+t \mbox{\hyperlink{wld__util_8c_a7387c692ce0bad5f95e3e7b759293efc}{wldu\+\_\+tuple\+\_\+id2index}} (\mbox{\hyperlink{structwld__tupleIdlist__t}{wld\+\_\+tuple\+Idlist\+\_\+t}} $\ast$list, int64\+\_\+t id)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_a68916126317dab6acbf7fffb9da47c97}{wldu\+\_\+tuple\+\_\+conv\+Str\+To\+Mask\+By\+Mask}} (\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$p\+List, const amxc\+\_\+string\+\_\+t $\ast$p\+Names, uint64\+\_\+t $\ast$p\+Bit\+Mask)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_aab66ca12fccc0e210afdb6a9d7cdfa79}{wldu\+\_\+tuple\+\_\+conv\+Mask\+To\+Str\+By\+Mask}} (\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$p\+List, uint64\+\_\+t bit\+Mask, amxc\+\_\+string\+\_\+t $\ast$p\+Names)
+\item 
+char $\ast$ \mbox{\hyperlink{wld__util_8c_aeaa95a7cdd680e96cc92eb70199effb3}{wldu\+\_\+get\+Local\+File}} (char $\ast$buffer, size\+\_\+t buf\+Size, char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}}, char $\ast$format,...)
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__util_8c_ab4e2a60e8daca057b1a575a2c43b8b06}{wld\+\_\+util\+\_\+get\+Max\+Bw\+Cap}} (\mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\+\_\+assoc\+Dev\+\_\+capabilities\+\_\+t}} $\ast$caps)
+\item 
+void \mbox{\hyperlink{wld__util_8c_aa8b0c64282449da38794745986262fc7}{wldu\+\_\+conv\+Creds2\+MD5}} (const char $\ast$ssid, const char $\ast$key, char $\ast$md5, size\+\_\+t md5\+\_\+size)
+\item 
+bool \mbox{\hyperlink{wld__util_8c_abf6bca0d886187464a562daa8d5d5d74}{wldu\+\_\+key\+\_\+matches}} (const char $\ast$ssid, const char $\ast$old\+Key\+Pass\+Phrase, const char $\ast$key\+Pass\+Phrase)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__util_8c_a08255c8e3d33ccfefd321d313abfcdb0}{wld\+\_\+util\+\_\+stats2\+Obj}} (amxd\+\_\+object\+\_\+t $\ast$obj, \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$stats)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+util\+\_\+update\+Stats convert the internal stats context to object map, this object is the actual datamodel representation of the internal context stats \end{DoxyCompactList}\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__util_8c_aae0807925f37d353c78e93dbcc376eed}{wld\+\_\+util\+\_\+stats\+Obj2\+Var}} (amxc\+\_\+var\+\_\+t $\ast$map, amxd\+\_\+object\+\_\+t $\ast$stats\+Obj)
+\begin{DoxyCompactList}\small\item\em dump the stats object tree into variant map, then the variant map can be the return of any amxd callback \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__util_8c_a9bd2e6c3b5a5ecbc64b7e43486a073b3}{wld\+\_\+util\+\_\+update\+Status\+Change\+Info}} (wld\+\_\+status\+\_\+change\+Info\+\_\+t $\ast$info, \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}} status)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__util_8c_a4b4c28f52ac6ac0a79226c177bcb255f}{wld\+\_\+util\+\_\+get\+Real\+Reference\+Path}} (char $\ast$out\+Ref\+Path, size\+\_\+t out\+Ref\+Path\+Size, const char $\ast$curr\+Ref\+Path, amxd\+\_\+object\+\_\+t $\ast$curr\+Ref\+Obj)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__util_8c_a01c82ce65d3693d59da54dcbd5002c13}{wld\+\_\+util\+\_\+get\+Management\+Frame\+Parameters}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{structwld__util__managementFrame__t}{wld\+\_\+util\+\_\+management\+Frame\+\_\+t}} $\ast$mgmt\+Frame, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}})
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__util_8c_a19a1023724a3791dc548bd62a88dc513}{wld\+\_\+util\+\_\+count\+Scan\+Result\+Entries\+Per\+Channel}} (\mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} $\ast$results, swl\+\_\+channel\+\_\+t channel)
+\begin{DoxyCompactList}\small\item\em count number of neighbor BSS scan entries detected on a provided primary channel \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__util_8c_a9b0174aad292a5bbcf513dca21d8123d}{wld\+\_\+util\+\_\+init\+Custom\+Alias}} (amxd\+\_\+trans\+\_\+t $\ast$trans, amxd\+\_\+object\+\_\+t $\ast$object)
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{wld__util_8c_a2906b11b48bfaf8bf08b9de0d1d2596b}{wld\+\_\+util\+\_\+get\+Prev\+Obj\+Inst}} (amxd\+\_\+object\+\_\+t $\ast$instance)
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{wld__util_8c_a39d7735aef4f46efcaf311f4d839765e}{wld\+\_\+util\+\_\+get\+Next\+Obj\+Inst}} (amxd\+\_\+object\+\_\+t $\ast$instance)
+\item 
+\mbox{\hyperlink{wld_8h_a0448ba16230d9f7d44014a8f27d6024e}{wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__util_8c_afc923d0ae8df35793889b4473f08faf9}{wld\+\_\+util\+\_\+get\+Spectrum\+Entry\+By\+Channel}} (amxc\+\_\+llist\+\_\+t $\ast$p\+Spectrum\+Info\+List, swl\+\_\+channel\+\_\+t channel)
+\begin{DoxyCompactList}\small\item\em fetch, by channel, a spectrum result entry in provided list \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld_8h_a0448ba16230d9f7d44014a8f27d6024e}{wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__util_8c_a2d2611af137f5b97865337c7c3a2f789}{wld\+\_\+util\+\_\+addor\+Update\+Spectrum\+Entry}} (amxc\+\_\+llist\+\_\+t $\ast$ll\+Spectrum\+Channel\+Info, \mbox{\hyperlink{wld_8h_a0448ba16230d9f7d44014a8f27d6024e}{wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t}} $\ast$p\+Data)
+\begin{DoxyCompactList}\small\item\em add or update a spectrum result entry in provided list, based on the channel of the provided data struct \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__util_8c_a369266c24eacffb87046522897a570d5}\label{wld__util_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_util.c@{wld\_util.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__util_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__util_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_util.c@{wld\_util.c}!ME@{ME}}
+\index{ME@{ME}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}util\char`\"{}}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__util_8c_aa55d13a05ca9cc4b51fd7c291fb94d95}\label{wld__util_8c_aa55d13a05ca9cc4b51fd7c291fb94d95}} 
+\index{wld\_util.c@{wld\_util.c}!func\_convStrToNum\_t@{func\_convStrToNum\_t}}
+\index{func\_convStrToNum\_t@{func\_convStrToNum\_t}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{func\_convStrToNum\_t}{func\_convStrToNum\_t}}
+{\footnotesize\ttfamily typedef int($\ast$ func\+\_\+conv\+Str\+To\+Num\+\_\+t) (const char $\ast$num\+Src\+Str, void $\ast$num\+Dst\+Buf, uint8\+\_\+t base)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__util_8c_a1281a4cbf0710b6982e0535d180fb89d}\label{wld__util_8c_a1281a4cbf0710b6982e0535d180fb89d}} 
+\index{wld\_util.c@{wld\_util.c}!\_\_WLD\_BUG\_ON@{\_\_WLD\_BUG\_ON}}
+\index{\_\_WLD\_BUG\_ON@{\_\_WLD\_BUG\_ON}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{\_\_WLD\_BUG\_ON()}{\_\_WLD\_BUG\_ON()}}
+{\footnotesize\ttfamily bool \+\_\+\+\_\+\+WLD\+\_\+\+BUG\+\_\+\+ON (\begin{DoxyParamCaption}\item[{bool}]{bug,  }\item[{const char $\ast$condition}]{\+\_\+\+UNUSED,  }\item[{const char $\ast$function}]{\+\_\+\+UNUSED,  }\item[{const char $\ast$file}]{\+\_\+\+UNUSED,  }\item[{int line}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a4ee8b0fe293b561299b9d3b3e0dc07d0}\label{wld__util_8c_a4ee8b0fe293b561299b9d3b3e0dc07d0}} 
+\index{wld\_util.c@{wld\_util.c}!areBitsOnlySetLongArray@{areBitsOnlySetLongArray}}
+\index{areBitsOnlySetLongArray@{areBitsOnlySetLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{areBitsOnlySetLongArray()}{areBitsOnlySetLongArray()}}
+{\footnotesize\ttfamily int are\+Bits\+Only\+Set\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem,  }\item[{int $\ast$}]{bit\+Nr\+Array,  }\item[{int}]{nr\+Bit\+Elem }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a661cdf0ccc273192d3c1ff05be929a74}\label{wld__util_8c_a661cdf0ccc273192d3c1ff05be929a74}} 
+\index{wld\_util.c@{wld\_util.c}!areBitsSetLongArray@{areBitsSetLongArray}}
+\index{areBitsSetLongArray@{areBitsSetLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{areBitsSetLongArray()}{areBitsSetLongArray()}}
+{\footnotesize\ttfamily int are\+Bits\+Set\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a661cdf0ccc273192d3c1ff05be929a74_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ac49215e8923e0aa3581c1e92ec5d97f5}\label{wld__util_8c_ac49215e8923e0aa3581c1e92ec5d97f5}} 
+\index{wld\_util.c@{wld\_util.c}!clearAllBitsLongArray@{clearAllBitsLongArray}}
+\index{clearAllBitsLongArray@{clearAllBitsLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{clearAllBitsLongArray()}{clearAllBitsLongArray()}}
+{\footnotesize\ttfamily int clear\+All\+Bits\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{wld__util_8c_ac49215e8923e0aa3581c1e92ec5d97f5_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a1ac111dcf675653ff55b37fef6cdd7e6}\label{wld__util_8c_a1ac111dcf675653ff55b37fef6cdd7e6}} 
+\index{wld\_util.c@{wld\_util.c}!clearBitLongArray@{clearBitLongArray}}
+\index{clearBitLongArray@{clearBitLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{clearBitLongArray()}{clearBitLongArray()}}
+{\footnotesize\ttfamily int clear\+Bit\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem,  }\item[{int}]{bit\+Nr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a2bfefc3ab7c60eaeef488b7eda2088e4}\label{wld__util_8c_a2bfefc3ab7c60eaeef488b7eda2088e4}} 
+\index{wld\_util.c@{wld\_util.c}!conv\_maskToStr@{conv\_maskToStr}}
+\index{conv\_maskToStr@{conv\_maskToStr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{conv\_maskToStr()}{conv\_maskToStr()}}
+{\footnotesize\ttfamily bool conv\+\_\+mask\+To\+Str (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{mask,  }\item[{const char $\ast$$\ast$}]{enum\+Str\+List,  }\item[{uint32\+\_\+t}]{max\+Val,  }\item[{char $\ast$}]{str,  }\item[{uint32\+\_\+t}]{str\+Size }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=326pt]{wld__util_8c_a2bfefc3ab7c60eaeef488b7eda2088e4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a07f423a4e0e817fa9d37ac492182e972}\label{wld__util_8c_a07f423a4e0e817fa9d37ac492182e972}} 
+\index{wld\_util.c@{wld\_util.c}!conv\_maskToStrSep@{conv\_maskToStrSep}}
+\index{conv\_maskToStrSep@{conv\_maskToStrSep}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{conv\_maskToStrSep()}{conv\_maskToStrSep()}}
+{\footnotesize\ttfamily bool conv\+\_\+mask\+To\+Str\+Sep (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{mask,  }\item[{const char $\ast$$\ast$}]{enum\+Str\+List,  }\item[{uint32\+\_\+t}]{max\+Val,  }\item[{char $\ast$}]{str,  }\item[{uint32\+\_\+t}]{str\+Size,  }\item[{char}]{separator }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=326pt]{wld__util_8c_a07f423a4e0e817fa9d37ac492182e972_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_af8a42744693859b9bfd7c2606320ea9f}\label{wld__util_8c_af8a42744693859b9bfd7c2606320ea9f}} 
+\index{wld\_util.c@{wld\_util.c}!conv\_ModeBitStr@{conv\_ModeBitStr}}
+\index{conv\_ModeBitStr@{conv\_ModeBitStr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{conv\_ModeBitStr()}{conv\_ModeBitStr()}}
+{\footnotesize\ttfamily unsigned long conv\+\_\+\+Mode\+Bit\+Str (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{enum\+Str\+List,  }\item[{char $\ast$}]{str }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a7eada571856b113a0be650579c0f43ea}\label{wld__util_8c_a7eada571856b113a0be650579c0f43ea}} 
+\index{wld\_util.c@{wld\_util.c}!conv\_ModeIndexStr@{conv\_ModeIndexStr}}
+\index{conv\_ModeIndexStr@{conv\_ModeIndexStr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{conv\_ModeIndexStr()}{conv\_ModeIndexStr()}}
+{\footnotesize\ttfamily long conv\+\_\+\+Mode\+Index\+Str (\begin{DoxyParamCaption}\item[{const char $\ast$$\ast$}]{enum\+Str\+List,  }\item[{const char $\ast$}]{str }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a8dfb6b013ec0d9a49ee3782fe967c66f}\label{wld__util_8c_a8dfb6b013ec0d9a49ee3782fe967c66f}} 
+\index{wld\_util.c@{wld\_util.c}!conv\_ModeIndexStrEx@{conv\_ModeIndexStrEx}}
+\index{conv\_ModeIndexStrEx@{conv\_ModeIndexStrEx}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{conv\_ModeIndexStrEx()}{conv\_ModeIndexStrEx()}}
+{\footnotesize\ttfamily int conv\+\_\+\+Mode\+Index\+Str\+Ex (\begin{DoxyParamCaption}\item[{const char $\ast$$\ast$}]{enum\+Str\+List,  }\item[{const char $\ast$}]{str,  }\item[{int}]{min\+Idx,  }\item[{int}]{max\+Idx }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a93e9777865de6d1ea877df2574de1056}\label{wld__util_8c_a93e9777865de6d1ea877df2574de1056}} 
+\index{wld\_util.c@{wld\_util.c}!conv\_strToEnum@{conv\_strToEnum}}
+\index{conv\_strToEnum@{conv\_strToEnum}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{conv\_strToEnum()}{conv\_strToEnum()}}
+{\footnotesize\ttfamily uint32\+\_\+t conv\+\_\+str\+To\+Enum (\begin{DoxyParamCaption}\item[{const char $\ast$$\ast$}]{enum\+Str\+List,  }\item[{const char $\ast$}]{str,  }\item[{uint32\+\_\+t}]{max\+Val,  }\item[{uint32\+\_\+t}]{default\+Val }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_ae13a8b2817e966a1dfe9ebe43b0e83be}\label{wld__util_8c_ae13a8b2817e966a1dfe9ebe43b0e83be}} 
+\index{wld\_util.c@{wld\_util.c}!convASCII\_WEPKey@{convASCII\_WEPKey}}
+\index{convASCII\_WEPKey@{convASCII\_WEPKey}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convASCII\_WEPKey()}{convASCII\_WEPKey()}}
+{\footnotesize\ttfamily char $\ast$ conv\+ASCII\+\_\+\+WEPKey (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{char $\ast$}]{out,  }\item[{int}]{sizeout }\end{DoxyParamCaption})}
+
+Function converts the binary WEP key to an readable ASCII string. \mbox{\Hypertarget{wld__util_8c_a7a8aeb8638ba64266791eb00fec984c9}\label{wld__util_8c_a7a8aeb8638ba64266791eb00fec984c9}} 
+\index{wld\_util.c@{wld\_util.c}!convHex\_WEPKey@{convHex\_WEPKey}}
+\index{convHex\_WEPKey@{convHex\_WEPKey}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convHex\_WEPKey()}{convHex\_WEPKey()}}
+{\footnotesize\ttfamily char $\ast$ conv\+Hex\+\_\+\+WEPKey (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{char $\ast$}]{out,  }\item[{int}]{sizeout }\end{DoxyParamCaption})}
+
+Convets the readable ASCII string to a binary WEP key \mbox{\Hypertarget{wld__util_8c_a0b5f6975bc2f350dea58fafb5544a750}\label{wld__util_8c_a0b5f6975bc2f350dea58fafb5544a750}} 
+\index{wld\_util.c@{wld\_util.c}!convIntArrToString@{convIntArrToString}}
+\index{convIntArrToString@{convIntArrToString}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convIntArrToString()}{convIntArrToString()}}
+{\footnotesize\ttfamily bool conv\+Int\+Arr\+To\+String (\begin{DoxyParamCaption}\item[{char $\ast$}]{str,  }\item[{int}]{str\+\_\+size,  }\item[{const int $\ast$}]{int\+\_\+list,  }\item[{int}]{list\+\_\+size }\end{DoxyParamCaption})}
+
+Convert a list of integers into a comma separated list. The comma separated list will go into str. \mbox{\Hypertarget{wld__util_8c_af5240beaa1193383a4fa1908b3b66b41}\label{wld__util_8c_af5240beaa1193383a4fa1908b3b66b41}} 
+\index{wld\_util.c@{wld\_util.c}!convQuality2Signal@{convQuality2Signal}}
+\index{convQuality2Signal@{convQuality2Signal}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convQuality2Signal()}{convQuality2Signal()}}
+{\footnotesize\ttfamily int conv\+Quality2\+Signal (\begin{DoxyParamCaption}\item[{int}]{quality }\end{DoxyParamCaption})}
+
+This function converts the Quality value to a Signal Strength value \begin{DoxyDate}{Date}
+(30/06/2016)
+\end{DoxyDate}
+
+\begin{DoxyParams}{Parameters}
+{\em quality} & the quality value represented in \% \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int the RSSI value represented in d\+Bm 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_af5240beaa1193383a4fa1908b3b66b41_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_aca501336841df2f8d38d1da5134c8674}\label{wld__util_8c_aca501336841df2f8d38d1da5134c8674}} 
+\index{wld\_util.c@{wld\_util.c}!convSignal2Quality@{convSignal2Quality}}
+\index{convSignal2Quality@{convSignal2Quality}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convSignal2Quality()}{convSignal2Quality()}}
+{\footnotesize\ttfamily int conv\+Signal2\+Quality (\begin{DoxyParamCaption}\item[{int}]{d\+Bm }\end{DoxyParamCaption})}
+
+This function converts the Signal Strength value to a Quality value \begin{DoxyDate}{Date}
+(25/06/2016)
+\end{DoxyDate}
+
+\begin{DoxyParams}{Parameters}
+{\em d\+Bm} & the RSSI value represented in d\+Bm \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int the quality value represented in \% 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_a25b56d0420fd97e5bc5d96b0cf1b2a6e}\label{wld__util_8c_a25b56d0420fd97e5bc5d96b0cf1b2a6e}} 
+\index{wld\_util.c@{wld\_util.c}!convSsid2Str@{convSsid2Str}}
+\index{convSsid2Str@{convSsid2Str}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convSsid2Str()}{convSsid2Str()}}
+{\footnotesize\ttfamily int conv\+Ssid2\+Str (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t $\ast$}]{ssid,  }\item[{uint8\+\_\+t}]{ssid\+Len,  }\item[{char $\ast$}]{str,  }\item[{size\+\_\+t}]{max\+Str\+Size }\end{DoxyParamCaption})}
+
+
+
+Convert the numeric SSID to a readable string. 
+
+This is a direct access function \+: nothing is allocated
+
+
+\begin{DoxyParams}{Parameters}
+{\em ssid} & numeric representation of the ssid \\
+\hline
+{\em ssid\+Len} & length of the ssid \\
+\hline
+{\em str} & string formatted output of the ssid \\
+\hline
+{\em max\+Str\+Size} & target string buffer size \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success; -\/1 on failure 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=344pt]{wld__util_8c_a25b56d0420fd97e5bc5d96b0cf1b2a6e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a9ee9838274765e0e23e14a8f93e548c8}\label{wld__util_8c_a9ee9838274765e0e23e14a8f93e548c8}} 
+\index{wld\_util.c@{wld\_util.c}!convStrArrToStr@{convStrArrToStr}}
+\index{convStrArrToStr@{convStrArrToStr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convStrArrToStr()}{convStrArrToStr()}}
+{\footnotesize\ttfamily bool conv\+Str\+Arr\+To\+Str (\begin{DoxyParamCaption}\item[{char $\ast$}]{str,  }\item[{int}]{str\+\_\+size,  }\item[{const char $\ast$$\ast$}]{str\+List,  }\item[{int}]{list\+\_\+size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_af4f3767209b876e8b00828c7b624911d}\label{wld__util_8c_af4f3767209b876e8b00828c7b624911d}} 
+\index{wld\_util.c@{wld\_util.c}!convStrToHex@{convStrToHex}}
+\index{convStrToHex@{convStrToHex}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convStrToHex()}{convStrToHex()}}
+{\footnotesize\ttfamily void conv\+Str\+To\+Hex (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{pb\+Dest,  }\item[{int}]{dest\+Size,  }\item[{const char $\ast$}]{pb\+Src,  }\item[{int}]{src\+Size }\end{DoxyParamCaption})}
+
+
+
+Convert string notation to hex int. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pb\+Dest} & the hex int array pointer \\
+\hline
+{\em dest\+Size} & number of hexadicimal values within the int array \\
+\hline
+{\em pb\+Src} & the string to convert \\
+\hline
+{\em src\+Size} & number of characters within the string \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=305pt]{wld__util_8c_af4f3767209b876e8b00828c7b624911d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a539eb97819c9fe590e22ce060a02e8bd}\label{wld__util_8c_a539eb97819c9fe590e22ce060a02e8bd}} 
+\index{wld\_util.c@{wld\_util.c}!convStrToIntArray@{convStrToIntArray}}
+\index{convStrToIntArray@{convStrToIntArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{convStrToIntArray()}{convStrToIntArray()}}
+{\footnotesize\ttfamily bool conv\+Str\+To\+Int\+Array (\begin{DoxyParamCaption}\item[{int $\ast$}]{int\+\_\+list,  }\item[{size\+\_\+t}]{list\+\_\+size,  }\item[{const char $\ast$}]{str,  }\item[{int $\ast$}]{out\+Size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a4ff888db1d83ee89b0e248aed4d79c40}\label{wld__util_8c_a4ff888db1d83ee89b0e248aed4d79c40}} 
+\index{wld\_util.c@{wld\_util.c}!debugIsEpPointer@{debugIsEpPointer}}
+\index{debugIsEpPointer@{debugIsEpPointer}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{debugIsEpPointer()}{debugIsEpPointer()}}
+{\footnotesize\ttfamily int debug\+Is\+Ep\+Pointer (\begin{DoxyParamCaption}\item[{void $\ast$}]{p }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a18c61fa964e131e3008ec440b72b61c8}\label{wld__util_8c_a18c61fa964e131e3008ec440b72b61c8}} 
+\index{wld\_util.c@{wld\_util.c}!debugIsRadPointer@{debugIsRadPointer}}
+\index{debugIsRadPointer@{debugIsRadPointer}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{debugIsRadPointer()}{debugIsRadPointer()}}
+{\footnotesize\ttfamily int debug\+Is\+Rad\+Pointer (\begin{DoxyParamCaption}\item[{void $\ast$}]{p }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{wld__util_8c_a18c61fa964e131e3008ec440b72b61c8_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a3ed4a094b2cb61af2083800ab12edfb1}\label{wld__util_8c_a3ed4a094b2cb61af2083800ab12edfb1}} 
+\index{wld\_util.c@{wld\_util.c}!debugIsSsidPointer@{debugIsSsidPointer}}
+\index{debugIsSsidPointer@{debugIsSsidPointer}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{debugIsSsidPointer()}{debugIsSsidPointer()}}
+{\footnotesize\ttfamily int debug\+Is\+Ssid\+Pointer (\begin{DoxyParamCaption}\item[{void $\ast$}]{p }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_ae4602638615aba7c6b4ede92d19af77a}\label{wld__util_8c_ae4602638615aba7c6b4ede92d19af77a}} 
+\index{wld\_util.c@{wld\_util.c}!debugIsVapPointer@{debugIsVapPointer}}
+\index{debugIsVapPointer@{debugIsVapPointer}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{debugIsVapPointer()}{debugIsVapPointer()}}
+{\footnotesize\ttfamily int debug\+Is\+Vap\+Pointer (\begin{DoxyParamCaption}\item[{void $\ast$}]{p }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a3a81a647940842ed240f51b469268f4d}\label{wld__util_8c_a3a81a647940842ed240f51b469268f4d}} 
+\index{wld\_util.c@{wld\_util.c}!findStrInArray@{findStrInArray}}
+\index{findStrInArray@{findStrInArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{findStrInArray()}{findStrInArray()}}
+{\footnotesize\ttfamily bool find\+Str\+In\+Array (\begin{DoxyParamCaption}\item[{const char $\ast$}]{str,  }\item[{const char $\ast$$\ast$}]{strarray,  }\item[{int $\ast$}]{index }\end{DoxyParamCaption})}
+
+Function returns true when the string (str) can be found in the string array list (strarray).
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & NULL terminated text string \\
+\hline
+{\em strarray} & List of strings, the list must end with a NULL pointer.. \\
+\hline
+{\em index} & If given we return here the index value of the hitted string.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool true when str is found in strarray else false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_aaf7fa2c320638727109b191c25a0dbc8}\label{wld__util_8c_aaf7fa2c320638727109b191c25a0dbc8}} 
+\index{wld\_util.c@{wld\_util.c}!findStrInArrayN@{findStrInArrayN}}
+\index{findStrInArrayN@{findStrInArrayN}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{findStrInArrayN()}{findStrInArrayN()}}
+{\footnotesize\ttfamily int find\+Str\+In\+ArrayN (\begin{DoxyParamCaption}\item[{const char $\ast$}]{str,  }\item[{const char $\ast$$\ast$}]{strarray,  }\item[{int}]{size,  }\item[{int}]{default\+\_\+index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a300a77338077396f0f2aba72a32c110c}\label{wld__util_8c_a300a77338077396f0f2aba72a32c110c}} 
+\index{wld\_util.c@{wld\_util.c}!fsm\_delay\_reply@{fsm\_delay\_reply}}
+\index{fsm\_delay\_reply@{fsm\_delay\_reply}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{fsm\_delay\_reply()}{fsm\_delay\_reply()}}
+{\footnotesize\ttfamily void fsm\+\_\+delay\+\_\+reply (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{call\+\_\+id,  }\item[{amxd\+\_\+status\+\_\+t}]{state,  }\item[{int $\ast$}]{errval }\end{DoxyParamCaption})}
+
+This function replies on a delayed function callback. \mbox{\Hypertarget{wld__util_8c_a27279683e6fcce2dcfde57e00f413559}\label{wld__util_8c_a27279683e6fcce2dcfde57e00f413559}} 
+\index{wld\_util.c@{wld\_util.c}!get\_pattern\_string@{get\_pattern\_string}}
+\index{get\_pattern\_string@{get\_pattern\_string}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{get\_pattern\_string()}{get\_pattern\_string()}}
+{\footnotesize\ttfamily int get\+\_\+pattern\+\_\+string (\begin{DoxyParamCaption}\item[{const char $\ast$}]{arg,  }\item[{uint8\+\_\+t $\ast$}]{pattern }\end{DoxyParamCaption})}
+
+
+
+get\+\_\+pattern\+\_\+string 
+
+convert a given hexdigit string based magic pattern to a hex based pattern
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & hexdigit string based magic pattern \\
+\hline
+{\em pattern} & hex based pattern \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pattern string lenght 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=305pt]{wld__util_8c_a27279683e6fcce2dcfde57e00f413559_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a3d8afede3294f6b3aaf0e30862167fbb}\label{wld__util_8c_a3d8afede3294f6b3aaf0e30862167fbb}} 
+\index{wld\_util.c@{wld\_util.c}!get\_random@{get\_random}}
+\index{get\_random@{get\_random}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{get\_random()}{get\_random()}}
+{\footnotesize\ttfamily int get\+\_\+random (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{buf,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a3d8afede3294f6b3aaf0e30862167fbb_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ae9a84639d5e5ad83baf1624f9129be48}\label{wld__util_8c_ae9a84639d5e5ad83baf1624f9129be48}} 
+\index{wld\_util.c@{wld\_util.c}!get\_randomhexstr@{get\_randomhexstr}}
+\index{get\_randomhexstr@{get\_randomhexstr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{get\_randomhexstr()}{get\_randomhexstr()}}
+{\footnotesize\ttfamily int get\+\_\+randomhexstr (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{buf,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=297pt]{wld__util_8c_ae9a84639d5e5ad83baf1624f9129be48_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a5fb3816c289f66dbe93c02d7d32089f2}\label{wld__util_8c_a5fb3816c289f66dbe93c02d7d32089f2}} 
+\index{wld\_util.c@{wld\_util.c}!get\_randomstr@{get\_randomstr}}
+\index{get\_randomstr@{get\_randomstr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{get\_randomstr()}{get\_randomstr()}}
+{\footnotesize\ttfamily int get\+\_\+randomstr (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{buf,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=279pt]{wld__util_8c_a5fb3816c289f66dbe93c02d7d32089f2_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a6866e3c6fdc899df0a40203d5be0a738}\label{wld__util_8c_a6866e3c6fdc899df0a40203d5be0a738}} 
+\index{wld\_util.c@{wld\_util.c}!getCountryCode@{getCountryCode}}
+\index{getCountryCode@{getCountryCode}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getCountryCode()}{getCountryCode()}}
+{\footnotesize\ttfamily int get\+Country\+Code (\begin{DoxyParamCaption}\item[{int}]{idx }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a8ded40ebe4d51919699b1b4b7678dd62}\label{wld__util_8c_a8ded40ebe4d51919699b1b4b7678dd62}} 
+\index{wld\_util.c@{wld\_util.c}!getCountryParam@{getCountryParam}}
+\index{getCountryParam@{getCountryParam}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getCountryParam()}{getCountryParam()}}
+{\footnotesize\ttfamily int get\+Country\+Param (\begin{DoxyParamCaption}\item[{const char $\ast$}]{instr,  }\item[{int}]{CC,  }\item[{int $\ast$}]{idx }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_ab702f8b9102748a4dc45fb1bae6e9b0e}\label{wld__util_8c_ab702f8b9102748a4dc45fb1bae6e9b0e}} 
+\index{wld\_util.c@{wld\_util.c}!getCountryZone@{getCountryZone}}
+\index{getCountryZone@{getCountryZone}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getCountryZone()}{getCountryZone()}}
+{\footnotesize\ttfamily swl\+\_\+op\+Class\+Country\+\_\+e get\+Country\+Zone (\begin{DoxyParamCaption}\item[{int}]{idx }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ab702f8b9102748a4dc45fb1bae6e9b0e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_adaf405a81396e3e13eb83d04d4047a98}\label{wld__util_8c_adaf405a81396e3e13eb83d04d4047a98}} 
+\index{wld\_util.c@{wld\_util.c}!getFullCountryName@{getFullCountryName}}
+\index{getFullCountryName@{getFullCountryName}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getFullCountryName()}{getFullCountryName()}}
+{\footnotesize\ttfamily char $\ast$ get\+Full\+Country\+Name (\begin{DoxyParamCaption}\item[{int}]{idx }\end{DoxyParamCaption})}
+
+The logic is a bit contra... but we must be able to use it for all supported vendor wifi cards (ATH, BCM,...). The common part for all is the Rad\+\_\+\+Country\+Code table index value! \mbox{\Hypertarget{wld__util_8c_a06bae4bfa511990492bbfaca3b54ccb4}\label{wld__util_8c_a06bae4bfa511990492bbfaca3b54ccb4}} 
+\index{wld\_util.c@{wld\_util.c}!getHighestBitLongArray@{getHighestBitLongArray}}
+\index{getHighestBitLongArray@{getHighestBitLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getHighestBitLongArray()}{getHighestBitLongArray()}}
+{\footnotesize\ttfamily int get\+Highest\+Bit\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem }\end{DoxyParamCaption})}
+
+
+
+find the highest bit in an array of longs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pval} & pointer to an unsigned long array \\
+\hline
+{\em elem} & The amount of longs stored int the array\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int The highest bit that\textquotesingle{}s set. In case no bit is set the return is \texorpdfstring{$<$}{<} 0. (-\/1) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_a3e769799809c95d095b5fbfd96966da2}\label{wld__util_8c_a3e769799809c95d095b5fbfd96966da2}} 
+\index{wld\_util.c@{wld\_util.c}!getLowestBitLongArray@{getLowestBitLongArray}}
+\index{getLowestBitLongArray@{getLowestBitLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getLowestBitLongArray()}{getLowestBitLongArray()}}
+{\footnotesize\ttfamily int get\+Lowest\+Bit\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem }\end{DoxyParamCaption})}
+
+
+
+find the lowest bit in an array of longs. (used in our FSM) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pval} & pointer to an unsigned long array \\
+\hline
+{\em elem} & The amount of longs stored int the array\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int The lowest bit that\textquotesingle{}s set. In case no bit is set the return is \texorpdfstring{$<$}{<} 0. (-\/1) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_ab5c3fd785999d8b9a9d5d6c538348f9b}\label{wld__util_8c_ab5c3fd785999d8b9a9d5d6c538348f9b}} 
+\index{wld\_util.c@{wld\_util.c}!getShortCountryName@{getShortCountryName}}
+\index{getShortCountryName@{getShortCountryName}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{getShortCountryName()}{getShortCountryName()}}
+{\footnotesize\ttfamily char $\ast$ get\+Short\+Country\+Name (\begin{DoxyParamCaption}\item[{int}]{idx }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ab5c3fd785999d8b9a9d5d6c538348f9b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a4569e191d4d2b11bd76c2648c66ce3b1}\label{wld__util_8c_a4569e191d4d2b11bd76c2648c66ce3b1}} 
+\index{wld\_util.c@{wld\_util.c}!isBitOnlySetLongArray@{isBitOnlySetLongArray}}
+\index{isBitOnlySetLongArray@{isBitOnlySetLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isBitOnlySetLongArray()}{isBitOnlySetLongArray()}}
+{\footnotesize\ttfamily int is\+Bit\+Only\+Set\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem,  }\item[{int}]{bit\+Nr }\end{DoxyParamCaption})}
+
+Returns 1 if the given bit number, and only the given bitnr is set in the long array. Returns 0 otherwise. \mbox{\Hypertarget{wld__util_8c_abd75e9e26c8823d100708594839fab47}\label{wld__util_8c_abd75e9e26c8823d100708594839fab47}} 
+\index{wld\_util.c@{wld\_util.c}!isBitSetLongArray@{isBitSetLongArray}}
+\index{isBitSetLongArray@{isBitSetLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isBitSetLongArray()}{isBitSetLongArray()}}
+{\footnotesize\ttfamily int is\+Bit\+Set\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem,  }\item[{int}]{bit\+Nr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_aac4270b2a53e3153ea765ba13c61856b}\label{wld__util_8c_aac4270b2a53e3153ea765ba13c61856b}} 
+\index{wld\_util.c@{wld\_util.c}!isListOfChannels\_US@{isListOfChannels\_US}}
+\index{isListOfChannels\_US@{isListOfChannels\_US}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isListOfChannels\_US()}{isListOfChannels\_US()}}
+{\footnotesize\ttfamily int is\+List\+Of\+Channels\+\_\+\+US (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{possible\+Channels,  }\item[{int}]{len,  }\item[{int}]{band }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a2d5b061595a121996db8996ad85a9d50}\label{wld__util_8c_a2d5b061595a121996db8996ad85a9d50}} 
+\index{wld\_util.c@{wld\_util.c}!isSanitized@{isSanitized}}
+\index{isSanitized@{isSanitized}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isSanitized()}{isSanitized()}}
+{\footnotesize\ttfamily bool is\+Sanitized (\begin{DoxyParamCaption}\item[{const char $\ast$}]{pname }\end{DoxyParamCaption})}
+
+Check for ~\newline
+ and \textbackslash{}r in Key\+Pass\+Phrase. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a2d5b061595a121996db8996ad85a9d50_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ab1c3bc5bfee662b50fee6f27eb33f636}\label{wld__util_8c_ab1c3bc5bfee662b50fee6f27eb33f636}} 
+\index{wld\_util.c@{wld\_util.c}!isValidAESKey@{isValidAESKey}}
+\index{isValidAESKey@{isValidAESKey}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isValidAESKey()}{isValidAESKey()}}
+{\footnotesize\ttfamily bool is\+Valid\+AESKey (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{int}]{max\+Len }\end{DoxyParamCaption})}
+
+Check for a correct AES key. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=272pt]{wld__util_8c_ab1c3bc5bfee662b50fee6f27eb33f636_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ab1c3bc5bfee662b50fee6f27eb33f636_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a4f13d57f6243ec98cbc4d391f3cd335e}\label{wld__util_8c_a4f13d57f6243ec98cbc4d391f3cd335e}} 
+\index{wld\_util.c@{wld\_util.c}!isValidPSKKey@{isValidPSKKey}}
+\index{isValidPSKKey@{isValidPSKKey}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isValidPSKKey()}{isValidPSKKey()}}
+{\footnotesize\ttfamily bool is\+Valid\+PSKKey (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key }\end{DoxyParamCaption})}
+
+Check for a correct PSK key. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a4f13d57f6243ec98cbc4d391f3cd335e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ab9656b09d5ad0f2582f9434d7be45b7f}\label{wld__util_8c_ab9656b09d5ad0f2582f9434d7be45b7f}} 
+\index{wld\_util.c@{wld\_util.c}!isValidSSID@{isValidSSID}}
+\index{isValidSSID@{isValidSSID}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isValidSSID()}{isValidSSID()}}
+{\footnotesize\ttfamily bool is\+Valid\+SSID (\begin{DoxyParamCaption}\item[{const char $\ast$}]{ssid }\end{DoxyParamCaption})}
+
+Check for a correct SSID name. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=339pt]{wld__util_8c_ab9656b09d5ad0f2582f9434d7be45b7f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a7305b881548a80f65506291b6ef6afb3}\label{wld__util_8c_a7305b881548a80f65506291b6ef6afb3}} 
+\index{wld\_util.c@{wld\_util.c}!isValidWEPKey@{isValidWEPKey}}
+\index{isValidWEPKey@{isValidWEPKey}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{isValidWEPKey()}{isValidWEPKey()}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+e is\+Valid\+WEPKey (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key }\end{DoxyParamCaption})}
+
+is\+Valid\+WEPKey check if given string is a valid WEP key. We support 5/13/16 ASCII WEP key or 10/26/32 Hex WEP key
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & NULL terminated WEP key string.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+due to legacy reasons, this returns the WEP standard for which this key is suited. Possible return values are
+\begin{DoxyItemize}
+\item SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WEP64
+\item SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WEP128
+\item SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WEP128\+IV 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=332pt]{wld__util_8c_a7305b881548a80f65506291b6ef6afb3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ac56fb454e1a6707f628153812218dbf2}\label{wld__util_8c_ac56fb454e1a6707f628153812218dbf2}} 
+\index{wld\_util.c@{wld\_util.c}!itoa@{itoa}}
+\index{itoa@{itoa}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{itoa()}{itoa()}}
+{\footnotesize\ttfamily char $\ast$ itoa (\begin{DoxyParamCaption}\item[{int}]{value,  }\item[{char $\ast$}]{result,  }\item[{int}]{base }\end{DoxyParamCaption})}
+
+Try to reduce the use of this function, \% and / are slowing down the process a bit. \mbox{\Hypertarget{wld__util_8c_a86a1e441a269b7d86df7282951e055c6}\label{wld__util_8c_a86a1e441a269b7d86df7282951e055c6}} 
+\index{wld\_util.c@{wld\_util.c}!longArrayBitOr@{longArrayBitOr}}
+\index{longArrayBitOr@{longArrayBitOr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{longArrayBitOr()}{longArrayBitOr()}}
+{\footnotesize\ttfamily void long\+Array\+Bit\+Or (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{to,  }\item[{unsigned long $\ast$}]{from,  }\item[{int}]{len }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a86a1e441a269b7d86df7282951e055c6_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_adb0065f2a65a34c9c82173ce192fd0a6}\label{wld__util_8c_adb0065f2a65a34c9c82173ce192fd0a6}} 
+\index{wld\_util.c@{wld\_util.c}!longArrayClean@{longArrayClean}}
+\index{longArrayClean@{longArrayClean}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{longArrayClean()}{longArrayClean()}}
+{\footnotesize\ttfamily void long\+Array\+Clean (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{array,  }\item[{int}]{len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a64b55a0afb7a5a6d0b40351ceae7bb74}\label{wld__util_8c_a64b55a0afb7a5a6d0b40351ceae7bb74}} 
+\index{wld\_util.c@{wld\_util.c}!longArrayCopy@{longArrayCopy}}
+\index{longArrayCopy@{longArrayCopy}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{longArrayCopy()}{longArrayCopy()}}
+{\footnotesize\ttfamily void long\+Array\+Copy (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{to,  }\item[{unsigned long $\ast$}]{from,  }\item[{int}]{len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_ac9ccc661ceb11a3633de742b3d71b49c}\label{wld__util_8c_ac9ccc661ceb11a3633de742b3d71b49c}} 
+\index{wld\_util.c@{wld\_util.c}!mac2str@{mac2str}}
+\index{mac2str@{mac2str}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{mac2str()}{mac2str()}}
+{\footnotesize\ttfamily int mac2str (\begin{DoxyParamCaption}\item[{char $\ast$}]{str,  }\item[{const unsigned char $\ast$}]{mac,  }\item[{size\+\_\+t}]{maxstrlen }\end{DoxyParamCaption})}
+
+This function converts a mac address to UPPER case ascii \mbox{\Hypertarget{wld__util_8c_a2d504caed8120e90d571773f2f6a520a}\label{wld__util_8c_a2d504caed8120e90d571773f2f6a520a}} 
+\index{wld\_util.c@{wld\_util.c}!markAllBitsLongArray@{markAllBitsLongArray}}
+\index{markAllBitsLongArray@{markAllBitsLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{markAllBitsLongArray()}{markAllBitsLongArray()}}
+{\footnotesize\ttfamily int mark\+All\+Bits\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem,  }\item[{int}]{bit\+Nr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a84fb08aa2564f6b10843b95198ca0ac5}\label{wld__util_8c_a84fb08aa2564f6b10843b95198ca0ac5}} 
+\index{wld\_util.c@{wld\_util.c}!moveFSM2ACFSM@{moveFSM2ACFSM}}
+\index{moveFSM2ACFSM@{moveFSM2ACFSM}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{moveFSM2ACFSM()}{moveFSM2ACFSM()}}
+{\footnotesize\ttfamily void move\+FSM2\+ACFSM (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} $\ast$}]{fsm }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a79d9a1521a59b849a84afcd84f303977}\label{wld__util_8c_a79d9a1521a59b849a84afcd84f303977}} 
+\index{wld\_util.c@{wld\_util.c}!moveFSM\_RADBit2ACFSM@{moveFSM\_RADBit2ACFSM}}
+\index{moveFSM\_RADBit2ACFSM@{moveFSM\_RADBit2ACFSM}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{moveFSM\_RADBit2ACFSM()}{moveFSM\_RADBit2ACFSM()}}
+{\footnotesize\ttfamily void move\+FSM\+\_\+\+RADBit2\+ACFSM (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a2874d5dec36a709fc7ac2831e7426cac}\label{wld__util_8c_a2874d5dec36a709fc7ac2831e7426cac}} 
+\index{wld\_util.c@{wld\_util.c}!moveFSM\_VAPBit2ACFSM@{moveFSM\_VAPBit2ACFSM}}
+\index{moveFSM\_VAPBit2ACFSM@{moveFSM\_VAPBit2ACFSM}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{moveFSM\_VAPBit2ACFSM()}{moveFSM\_VAPBit2ACFSM()}}
+{\footnotesize\ttfamily void move\+FSM\+\_\+\+VAPBit2\+ACFSM (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_af5db082125e72df08522688706e692a3}\label{wld__util_8c_af5db082125e72df08522688706e692a3}} 
+\index{wld\_util.c@{wld\_util.c}!setBitLongArray@{setBitLongArray}}
+\index{setBitLongArray@{setBitLongArray}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{setBitLongArray()}{setBitLongArray()}}
+{\footnotesize\ttfamily int set\+Bit\+Long\+Array (\begin{DoxyParamCaption}\item[{unsigned long $\ast$}]{pval,  }\item[{int}]{elem,  }\item[{int}]{bit\+Nr }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=345pt]{wld__util_8c_af5db082125e72df08522688706e692a3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_acaa32afc3880f0fa2909341fc6c18660}\label{wld__util_8c_acaa32afc3880f0fa2909341fc6c18660}} 
+\index{wld\_util.c@{wld\_util.c}!stripOutToken@{stripOutToken}}
+\index{stripOutToken@{stripOutToken}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{stripOutToken()}{stripOutToken()}}
+{\footnotesize\ttfamily char $\ast$ strip\+Out\+Token (\begin{DoxyParamCaption}\item[{char $\ast$}]{pD,  }\item[{const char $\ast$}]{pT }\end{DoxyParamCaption})}
+
+strip\+Out\+Token
+
+\begin{DoxyDate}{Date}
+(6/28/2012)
+\end{DoxyDate}
+
+\begin{DoxyParams}{Parameters}
+{\em pD} & Data buffer \\
+\hline
+{\em pT} & Token that must be cut out...\\
+\hline
+\end{DoxyParams}
+return pD pointer! Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=288pt]{wld__util_8c_acaa32afc3880f0fa2909341fc6c18660_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a9fee1b9cfcd2af34645249502f9015bf}\label{wld__util_8c_a9fee1b9cfcd2af34645249502f9015bf}} 
+\index{wld\_util.c@{wld\_util.c}!stripString@{stripString}}
+\index{stripString@{stripString}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{stripString()}{stripString()}}
+{\footnotesize\ttfamily char $\ast$$\ast$ strip\+String (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{p\+TL,  }\item[{int}]{nr\+TL,  }\item[{char $\ast$}]{pD,  }\item[{const char $\ast$}]{pT }\end{DoxyParamCaption})}
+
+strip\+String
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+TL} & Buffer for String Token List \\
+\hline
+{\em nr\+TL} & Max nr of Token List \\
+\hline
+{\em pD} & Data buffer \\
+\hline
+{\em pT} & Token that is used as deliminator\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_ae86400c3a5ef67fcb34ae80a6f2ac1ca}\label{wld__util_8c_ae86400c3a5ef67fcb34ae80a6f2ac1ca}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_bitmaskToCSValues@{wld\_bitmaskToCSValues}}
+\index{wld\_bitmaskToCSValues@{wld\_bitmaskToCSValues}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_bitmaskToCSValues()}{wld\_bitmaskToCSValues()}}
+{\footnotesize\ttfamily void wld\+\_\+bitmask\+To\+CSValues (\begin{DoxyParamCaption}\item[{char $\ast$}]{string,  }\item[{size\+\_\+t}]{stringsize,  }\item[{const int}]{bitmask,  }\item[{const char $\ast$}]{strings\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+bitmask\+To\+CSValues 
+
+Convert string table with bitmask to a comma seperated string list
+
+
+\begin{DoxyParams}{Parameters}
+{\em string} & \mbox{[}OUT\mbox{]} comma seperated string list \\
+\hline
+{\em stringsize} & \mbox{[}IN\mbox{]} buffer size of string \\
+\hline
+{\em bitmask} & \mbox{[}IN\mbox{]} bits pattern that represent the supported string values \\
+\hline
+{\em strings} & \mbox{[}IN\mbox{]} string table \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__util_8c_a83ed6e217179e65fc76b9b0595706de9}\label{wld__util_8c_a83ed6e217179e65fc76b9b0595706de9}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_ssid\_to\_string@{wld\_ssid\_to\_string}}
+\index{wld\_ssid\_to\_string@{wld\_ssid\_to\_string}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ssid\_to\_string()}{wld\_ssid\_to\_string()}}
+{\footnotesize\ttfamily char $\ast$ wld\+\_\+ssid\+\_\+to\+\_\+string (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t $\ast$}]{ssid,  }\item[{uint8\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a2d2611af137f5b97865337c7c3a2f789}\label{wld__util_8c_a2d2611af137f5b97865337c7c3a2f789}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_addorUpdateSpectrumEntry@{wld\_util\_addorUpdateSpectrumEntry}}
+\index{wld\_util\_addorUpdateSpectrumEntry@{wld\_util\_addorUpdateSpectrumEntry}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_addorUpdateSpectrumEntry()}{wld\_util\_addorUpdateSpectrumEntry()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a0448ba16230d9f7d44014a8f27d6024e}{wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t}} $\ast$ wld\+\_\+util\+\_\+addor\+Update\+Spectrum\+Entry (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{ll\+Spectrum\+Channel\+Info,  }\item[{\mbox{\hyperlink{wld_8h_a0448ba16230d9f7d44014a8f27d6024e}{wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t}} $\ast$}]{p\+Data }\end{DoxyParamCaption})}
+
+
+
+add or update a spectrum result entry in provided list, based on the channel of the provided data struct 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Spectrum\+Info\+List} & the spectrum info list \\
+\hline
+{\em channel} & the host channel \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t$\ast$ pointer to the entry node in the list, or NULL when not match 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a2d2611af137f5b97865337c7c3a2f789_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a2d2611af137f5b97865337c7c3a2f789_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a7aaa0a274fb1a414bae0af12b211da98}\label{wld__util_8c_a7aaa0a274fb1a414bae0af12b211da98}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_areAllEndpointsDisabled@{wld\_util\_areAllEndpointsDisabled}}
+\index{wld\_util\_areAllEndpointsDisabled@{wld\_util\_areAllEndpointsDisabled}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_areAllEndpointsDisabled()}{wld\_util\_areAllEndpointsDisabled()}}
+{\footnotesize\ttfamily bool wld\+\_\+util\+\_\+are\+All\+Endpoints\+Disabled (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a7aaa0a274fb1a414bae0af12b211da98_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_adc7b6d02e17d5dadfe3caa517eff88d9}\label{wld__util_8c_adc7b6d02e17d5dadfe3caa517eff88d9}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_areAllVapsDisabled@{wld\_util\_areAllVapsDisabled}}
+\index{wld\_util\_areAllVapsDisabled@{wld\_util\_areAllVapsDisabled}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_areAllVapsDisabled()}{wld\_util\_areAllVapsDisabled()}}
+{\footnotesize\ttfamily bool wld\+\_\+util\+\_\+are\+All\+Vaps\+Disabled (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_adc7b6d02e17d5dadfe3caa517eff88d9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a19a1023724a3791dc548bd62a88dc513}\label{wld__util_8c_a19a1023724a3791dc548bd62a88dc513}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_countScanResultEntriesPerChannel@{wld\_util\_countScanResultEntriesPerChannel}}
+\index{wld\_util\_countScanResultEntriesPerChannel@{wld\_util\_countScanResultEntriesPerChannel}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_countScanResultEntriesPerChannel()}{wld\_util\_countScanResultEntriesPerChannel()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+util\+\_\+count\+Scan\+Result\+Entries\+Per\+Channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} $\ast$}]{results,  }\item[{swl\+\_\+channel\+\_\+t}]{channel }\end{DoxyParamCaption})}
+
+
+
+count number of neighbor BSS scan entries detected on a provided primary channel 
+
+
+\begin{DoxyParams}{Parameters}
+{\em results} & the scan results list \\
+\hline
+{\em channel} & the host channel \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint32\+\_\+t count of BSSs detected on the channel 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a19a1023724a3791dc548bd62a88dc513_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ad9cb15ae28e8e123fbc0c2d371b61944}\label{wld__util_8c_ad9cb15ae28e8e123fbc0c2d371b61944}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getLinuxIntfState@{wld\_util\_getLinuxIntfState}}
+\index{wld\_util\_getLinuxIntfState@{wld\_util\_getLinuxIntfState}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getLinuxIntfState()}{wld\_util\_getLinuxIntfState()}}
+{\footnotesize\ttfamily int wld\+\_\+util\+\_\+get\+Linux\+Intf\+State (\begin{DoxyParamCaption}\item[{int}]{socket,  }\item[{char $\ast$}]{ifname }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ad9cb15ae28e8e123fbc0c2d371b61944_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a01c82ce65d3693d59da54dcbd5002c13}\label{wld__util_8c_a01c82ce65d3693d59da54dcbd5002c13}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getManagementFrameParameters@{wld\_util\_getManagementFrameParameters}}
+\index{wld\_util\_getManagementFrameParameters@{wld\_util\_getManagementFrameParameters}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getManagementFrameParameters()}{wld\_util\_getManagementFrameParameters()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+util\+\_\+get\+Management\+Frame\+Parameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{structwld__util__managementFrame__t}{wld\+\_\+util\+\_\+management\+Frame\+\_\+t}} $\ast$}]{mgmt\+Frame,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_ab4e2a60e8daca057b1a575a2c43b8b06}\label{wld__util_8c_ab4e2a60e8daca057b1a575a2c43b8b06}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getMaxBwCap@{wld\_util\_getMaxBwCap}}
+\index{wld\_util\_getMaxBwCap@{wld\_util\_getMaxBwCap}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getMaxBwCap()}{wld\_util\_getMaxBwCap()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+util\+\_\+get\+Max\+Bw\+Cap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\+\_\+assoc\+Dev\+\_\+capabilities\+\_\+t}} $\ast$}]{caps }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ab4e2a60e8daca057b1a575a2c43b8b06_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a39d7735aef4f46efcaf311f4d839765e}\label{wld__util_8c_a39d7735aef4f46efcaf311f4d839765e}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getNextObjInst@{wld\_util\_getNextObjInst}}
+\index{wld\_util\_getNextObjInst@{wld\_util\_getNextObjInst}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getNextObjInst()}{wld\_util\_getNextObjInst()}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t $\ast$ wld\+\_\+util\+\_\+get\+Next\+Obj\+Inst (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{instance }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a39d7735aef4f46efcaf311f4d839765e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a2906b11b48bfaf8bf08b9de0d1d2596b}\label{wld__util_8c_a2906b11b48bfaf8bf08b9de0d1d2596b}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getPrevObjInst@{wld\_util\_getPrevObjInst}}
+\index{wld\_util\_getPrevObjInst@{wld\_util\_getPrevObjInst}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getPrevObjInst()}{wld\_util\_getPrevObjInst()}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t $\ast$ wld\+\_\+util\+\_\+get\+Prev\+Obj\+Inst (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{instance }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a2906b11b48bfaf8bf08b9de0d1d2596b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a4b4c28f52ac6ac0a79226c177bcb255f}\label{wld__util_8c_a4b4c28f52ac6ac0a79226c177bcb255f}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getRealReferencePath@{wld\_util\_getRealReferencePath}}
+\index{wld\_util\_getRealReferencePath@{wld\_util\_getRealReferencePath}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getRealReferencePath()}{wld\_util\_getRealReferencePath()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+util\+\_\+get\+Real\+Reference\+Path (\begin{DoxyParamCaption}\item[{char $\ast$}]{out\+Ref\+Path,  }\item[{size\+\_\+t}]{out\+Ref\+Path\+Size,  }\item[{const char $\ast$}]{curr\+Ref\+Path,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{curr\+Ref\+Obj }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a4b4c28f52ac6ac0a79226c177bcb255f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a4b4c28f52ac6ac0a79226c177bcb255f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_afc923d0ae8df35793889b4473f08faf9}\label{wld__util_8c_afc923d0ae8df35793889b4473f08faf9}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_getSpectrumEntryByChannel@{wld\_util\_getSpectrumEntryByChannel}}
+\index{wld\_util\_getSpectrumEntryByChannel@{wld\_util\_getSpectrumEntryByChannel}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_getSpectrumEntryByChannel()}{wld\_util\_getSpectrumEntryByChannel()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a0448ba16230d9f7d44014a8f27d6024e}{wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t}} $\ast$ wld\+\_\+util\+\_\+get\+Spectrum\+Entry\+By\+Channel (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{p\+Spectrum\+Info\+List,  }\item[{swl\+\_\+channel\+\_\+t}]{channel }\end{DoxyParamCaption})}
+
+
+
+fetch, by channel, a spectrum result entry in provided list 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Spectrum\+Info\+List} & the spectrum info list \\
+\hline
+{\em channel} & the host channel \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+wld\+\_\+spectrum\+Channel\+Info\+Entry\+\_\+t$\ast$ pointer to the entry node in the list, or NULL when not match 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_afc923d0ae8df35793889b4473f08faf9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a9b0174aad292a5bbcf513dca21d8123d}\label{wld__util_8c_a9b0174aad292a5bbcf513dca21d8123d}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_initCustomAlias@{wld\_util\_initCustomAlias}}
+\index{wld\_util\_initCustomAlias@{wld\_util\_initCustomAlias}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_initCustomAlias()}{wld\_util\_initCustomAlias()}}
+{\footnotesize\ttfamily void wld\+\_\+util\+\_\+init\+Custom\+Alias (\begin{DoxyParamCaption}\item[{amxd\+\_\+trans\+\_\+t $\ast$}]{trans,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a9b0174aad292a5bbcf513dca21d8123d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_aa9da6762c8aa347f3f9cf7a047d90484}\label{wld__util_8c_aa9da6762c8aa347f3f9cf7a047d90484}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_isPowerOf@{wld\_util\_isPowerOf}}
+\index{wld\_util\_isPowerOf@{wld\_util\_isPowerOf}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_isPowerOf()}{wld\_util\_isPowerOf()}}
+{\footnotesize\ttfamily bool wld\+\_\+util\+\_\+is\+Power\+Of (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{value,  }\item[{int32\+\_\+t}]{power }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a913e9ba94059441da2161af2be98c03a}\label{wld__util_8c_a913e9ba94059441da2161af2be98c03a}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_isPowerOf2@{wld\_util\_isPowerOf2}}
+\index{wld\_util\_isPowerOf2@{wld\_util\_isPowerOf2}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_isPowerOf2()}{wld\_util\_isPowerOf2()}}
+{\footnotesize\ttfamily bool wld\+\_\+util\+\_\+is\+Power\+Of2 (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a077222c20b0d72832db1d040fcfcfe2a}\label{wld__util_8c_a077222c20b0d72832db1d040fcfcfe2a}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_performFactorStep@{wld\_util\_performFactorStep}}
+\index{wld\_util\_performFactorStep@{wld\_util\_performFactorStep}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_performFactorStep()}{wld\_util\_performFactorStep()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+util\+\_\+perform\+Factor\+Step (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{accum,  }\item[{int32\+\_\+t}]{new\+Val,  }\item[{int32\+\_\+t}]{factor }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a2ed315a964727b8d299fd4f16d3509fc}\label{wld__util_8c_a2ed315a964727b8d299fd4f16d3509fc}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_setLinuxIntfState@{wld\_util\_setLinuxIntfState}}
+\index{wld\_util\_setLinuxIntfState@{wld\_util\_setLinuxIntfState}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_setLinuxIntfState()}{wld\_util\_setLinuxIntfState()}}
+{\footnotesize\ttfamily int wld\+\_\+util\+\_\+set\+Linux\+Intf\+State (\begin{DoxyParamCaption}\item[{int}]{socket,  }\item[{char $\ast$}]{ifname,  }\item[{int}]{state }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a2ed315a964727b8d299fd4f16d3509fc_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a08255c8e3d33ccfefd321d313abfcdb0}\label{wld__util_8c_a08255c8e3d33ccfefd321d313abfcdb0}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_stats2Obj@{wld\_util\_stats2Obj}}
+\index{wld\_util\_stats2Obj@{wld\_util\_stats2Obj}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_stats2Obj()}{wld\_util\_stats2Obj()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t wld\+\_\+util\+\_\+stats2\+Obj (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$}]{stats }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+util\+\_\+update\+Stats convert the internal stats context to object map, this object is the actual datamodel representation of the internal context stats 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & the dict output \\
+\hline
+{\em stats} & stats the internal stats (input) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+amxd\+\_\+status\+\_\+t return code 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_aae0807925f37d353c78e93dbcc376eed}\label{wld__util_8c_aae0807925f37d353c78e93dbcc376eed}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_statsObj2Var@{wld\_util\_statsObj2Var}}
+\index{wld\_util\_statsObj2Var@{wld\_util\_statsObj2Var}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_statsObj2Var()}{wld\_util\_statsObj2Var()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t wld\+\_\+util\+\_\+stats\+Obj2\+Var (\begin{DoxyParamCaption}\item[{amxc\+\_\+var\+\_\+t $\ast$}]{map,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{stats\+Obj }\end{DoxyParamCaption})}
+
+
+
+dump the stats object tree into variant map, then the variant map can be the return of any amxd callback 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & the dict output \\
+\hline
+{\em stats\+Obj} & the stats object (input) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+amxd\+\_\+status\+\_\+t return code 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__util_8c_a9bd2e6c3b5a5ecbc64b7e43486a073b3}\label{wld__util_8c_a9bd2e6c3b5a5ecbc64b7e43486a073b3}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_util\_updateStatusChangeInfo@{wld\_util\_updateStatusChangeInfo}}
+\index{wld\_util\_updateStatusChangeInfo@{wld\_util\_updateStatusChangeInfo}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_util\_updateStatusChangeInfo()}{wld\_util\_updateStatusChangeInfo()}}
+{\footnotesize\ttfamily void wld\+\_\+util\+\_\+update\+Status\+Change\+Info (\begin{DoxyParamCaption}\item[{wld\+\_\+status\+\_\+change\+Info\+\_\+t $\ast$}]{info,  }\item[{\mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}}}]{status }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a9bd2e6c3b5a5ecbc64b7e43486a073b3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a0d24c165677161f86ceb7af2f31fe5e7}\label{wld__util_8c_a0d24c165677161f86ceb7af2f31fe5e7}} 
+\index{wld\_util.c@{wld\_util.c}!wld\_writeCapsToString@{wld\_writeCapsToString}}
+\index{wld\_writeCapsToString@{wld\_writeCapsToString}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wld\_writeCapsToString()}{wld\_writeCapsToString()}}
+{\footnotesize\ttfamily int wld\+\_\+write\+Caps\+To\+String (\begin{DoxyParamCaption}\item[{char $\ast$}]{buffer,  }\item[{uint32\+\_\+t}]{size,  }\item[{const char $\ast$const $\ast$}]{str\+Array,  }\item[{uint32\+\_\+t}]{caps,  }\item[{uint32\+\_\+t}]{max\+Caps }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=341pt]{wld__util_8c_a0d24c165677161f86ceb7af2f31fe5e7_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ab6ee78a11c7bcd9bc0019cd2c30aef17}\label{wld__util_8c_ab6ee78a11c7bcd9bc0019cd2c30aef17}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_checkWpsPinStr@{wldu\_checkWpsPinStr}}
+\index{wldu\_checkWpsPinStr@{wldu\_checkWpsPinStr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_checkWpsPinStr()}{wldu\_checkWpsPinStr()}}
+{\footnotesize\ttfamily bool wldu\+\_\+check\+Wps\+Pin\+Str (\begin{DoxyParamCaption}\item[{const char $\ast$}]{pin\+Str }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ab6ee78a11c7bcd9bc0019cd2c30aef17_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{wld__util_8c_ab6ee78a11c7bcd9bc0019cd2c30aef17_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_aa8b0c64282449da38794745986262fc7}\label{wld__util_8c_aa8b0c64282449da38794745986262fc7}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_convCreds2MD5@{wldu\_convCreds2MD5}}
+\index{wldu\_convCreds2MD5@{wldu\_convCreds2MD5}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_convCreds2MD5()}{wldu\_convCreds2MD5()}}
+{\footnotesize\ttfamily void wldu\+\_\+conv\+Creds2\+MD5 (\begin{DoxyParamCaption}\item[{const char $\ast$}]{ssid,  }\item[{const char $\ast$}]{key,  }\item[{char $\ast$}]{md5,  }\item[{size\+\_\+t}]{md5\+\_\+size }\end{DoxyParamCaption})}
+
+Create a new MD5 hash string based on ssid and key string. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_aa8b0c64282449da38794745986262fc7_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a0953dd215be634e34dbf31955ab78850}\label{wld__util_8c_a0953dd215be634e34dbf31955ab78850}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_convMac2Str@{wldu\_convMac2Str}}
+\index{wldu\_convMac2Str@{wldu\_convMac2Str}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_convMac2Str()}{wldu\_convMac2Str()}}
+{\footnotesize\ttfamily bool wldu\+\_\+conv\+Mac2\+Str (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{mac,  }\item[{uint32\+\_\+t}]{sizeofmac,  }\item[{char $\ast$}]{str,  }\item[{uint32\+\_\+t}]{sizeofstr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a73a3285127e369356d71578c60a65d35}\label{wld__util_8c_a73a3285127e369356d71578c60a65d35}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_convStr2Mac@{wldu\_convStr2Mac}}
+\index{wldu\_convStr2Mac@{wldu\_convStr2Mac}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_convStr2Mac()}{wldu\_convStr2Mac()}}
+{\footnotesize\ttfamily int32\+\_\+t wldu\+\_\+conv\+Str2\+Mac (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{mac,  }\item[{uint32\+\_\+t}]{sizeofmac,  }\item[{const char $\ast$}]{str,  }\item[{uint32\+\_\+t}]{sizeofstr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a1885348d15676dcae318538076904ed3}\label{wld__util_8c_a1885348d15676dcae318538076904ed3}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_convStrToNum@{wldu\_convStrToNum}}
+\index{wldu\_convStrToNum@{wldu\_convStrToNum}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_convStrToNum()}{wldu\_convStrToNum()}}
+{\footnotesize\ttfamily int wldu\+\_\+conv\+Str\+To\+Num (\begin{DoxyParamCaption}\item[{const char $\ast$}]{num\+Src\+Str,  }\item[{void $\ast$}]{num\+Dst\+Buf,  }\item[{uint8\+\_\+t}]{num\+Dst\+Byte\+Size,  }\item[{uint8\+\_\+t}]{base,  }\item[{bool}]{is\+Signed }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a1885348d15676dcae318538076904ed3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_abaaf26cbbc108665b359ecc71618c7de}\label{wld__util_8c_abaaf26cbbc108665b359ecc71618c7de}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_convStrToUInt8Arr@{wldu\_convStrToUInt8Arr}}
+\index{wldu\_convStrToUInt8Arr@{wldu\_convStrToUInt8Arr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_convStrToUInt8Arr()}{wldu\_convStrToUInt8Arr()}}
+{\footnotesize\ttfamily int32\+\_\+t wldu\+\_\+conv\+Str\+To\+UInt8\+Arr (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{tgt\+List,  }\item[{uint}]{tgt\+List\+Size,  }\item[{char $\ast$}]{src\+Str\+List }\end{DoxyParamCaption})}
+
+Get the uint8 list from a comma separated string list. \begin{DoxyItemize}
+\item src\+Str\+List\+: comma separated list of channels returns number of elements obtained from the list \end{DoxyItemize}
+\mbox{\Hypertarget{wld__util_8c_aeaa95a7cdd680e96cc92eb70199effb3}\label{wld__util_8c_aeaa95a7cdd680e96cc92eb70199effb3}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_getLocalFile@{wldu\_getLocalFile}}
+\index{wldu\_getLocalFile@{wldu\_getLocalFile}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_getLocalFile()}{wldu\_getLocalFile()}}
+{\footnotesize\ttfamily char $\ast$ wldu\+\_\+get\+Local\+File (\begin{DoxyParamCaption}\item[{char $\ast$}]{buffer,  }\item[{size\+\_\+t}]{buf\+Size,  }\item[{char $\ast$}]{path,  }\item[{char $\ast$}]{format,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__util_8c_a108e2a9d3c4533cb8db73da05f2827af}\label{wld__util_8c_a108e2a9d3c4533cb8db73da05f2827af}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_getTupleById@{wldu\_getTupleById}}
+\index{wldu\_getTupleById@{wldu\_getTupleById}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_getTupleById()}{wldu\_getTupleById()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__tuple__t}{wld\+\_\+tuple\+\_\+t}} $\ast$ wldu\+\_\+get\+Tuple\+By\+Id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$}]{list,  }\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a108e2a9d3c4533cb8db73da05f2827af_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a7f7d88fe2c8e15898d33624e5e64089a}\label{wld__util_8c_a7f7d88fe2c8e15898d33624e5e64089a}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_getTupleByStr@{wldu\_getTupleByStr}}
+\index{wldu\_getTupleByStr@{wldu\_getTupleByStr}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_getTupleByStr()}{wldu\_getTupleByStr()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__tuple__t}{wld\+\_\+tuple\+\_\+t}} $\ast$ wldu\+\_\+get\+Tuple\+By\+Str (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$}]{list,  }\item[{char $\ast$}]{str }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a7f7d88fe2c8e15898d33624e5e64089a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_ae2bf58c9d0f2d6efea28d70f9c5ccc61}\label{wld__util_8c_ae2bf58c9d0f2d6efea28d70f9c5ccc61}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_getTupleIdById@{wldu\_getTupleIdById}}
+\index{wldu\_getTupleIdById@{wldu\_getTupleIdById}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_getTupleIdById()}{wldu\_getTupleIdById()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__tupleId__t}{wld\+\_\+tuple\+Id\+\_\+t}} $\ast$ wldu\+\_\+get\+Tuple\+Id\+By\+Id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tupleIdlist__t}{wld\+\_\+tuple\+Idlist\+\_\+t}} $\ast$}]{list,  }\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_ae2bf58c9d0f2d6efea28d70f9c5ccc61_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a178708433b311860269553a8fdfa402d}\label{wld__util_8c_a178708433b311860269553a8fdfa402d}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_getTupleVoidById@{wldu\_getTupleVoidById}}
+\index{wldu\_getTupleVoidById@{wldu\_getTupleVoidById}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_getTupleVoidById()}{wldu\_getTupleVoidById()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__tupleVoid__t}{wld\+\_\+tuple\+Void\+\_\+t}} $\ast$ wldu\+\_\+get\+Tuple\+Void\+By\+Id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\+\_\+tuple\+Voidlist\+\_\+t}} $\ast$}]{list,  }\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a178708433b311860269553a8fdfa402d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_abf6bca0d886187464a562daa8d5d5d74}\label{wld__util_8c_abf6bca0d886187464a562daa8d5d5d74}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_key\_matches@{wldu\_key\_matches}}
+\index{wldu\_key\_matches@{wldu\_key\_matches}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_key\_matches()}{wldu\_key\_matches()}}
+{\footnotesize\ttfamily bool wldu\+\_\+key\+\_\+matches (\begin{DoxyParamCaption}\item[{const char $\ast$}]{ssid,  }\item[{const char $\ast$}]{old\+Key\+Pass\+Phrase,  }\item[{const char $\ast$}]{key\+Pass\+Phrase }\end{DoxyParamCaption})}
+
+Compare current key with new key. If one key is a hash, a new hash is created and compared. return false if different, true if equals. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_abf6bca0d886187464a562daa8d5d5d74_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a735c192834e51c2120dce55fa2ef2963}\label{wld__util_8c_a735c192834e51c2120dce55fa2ef2963}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_llist\_freeDataFunInternal@{wldu\_llist\_freeDataFunInternal}}
+\index{wldu\_llist\_freeDataFunInternal@{wldu\_llist\_freeDataFunInternal}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_llist\_freeDataFunInternal()}{wldu\_llist\_freeDataFunInternal()}}
+{\footnotesize\ttfamily void wldu\+\_\+llist\+\_\+free\+Data\+Fun\+Internal (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{list,  }\item[{size\+\_\+t}]{offset,  }\item[{void($\ast$)(void $\ast$val)}]{destroy }\end{DoxyParamCaption})}
+
+Internal function to destroy all elements in a linked listed, i.\+e. free them by calling the destroy function Preferably to be called with the macro llist\+\_\+free\+Data. Offset needs to be the offset of iterator in the list object structure \mbox{\Hypertarget{wld__util_8c_a48b09bbc75efdd395ae9488d48972651}\label{wld__util_8c_a48b09bbc75efdd395ae9488d48972651}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_llist\_freeDataInternal@{wldu\_llist\_freeDataInternal}}
+\index{wldu\_llist\_freeDataInternal@{wldu\_llist\_freeDataInternal}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_llist\_freeDataInternal()}{wldu\_llist\_freeDataInternal()}}
+{\footnotesize\ttfamily void wldu\+\_\+llist\+\_\+free\+Data\+Internal (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{list,  }\item[{size\+\_\+t}]{offset }\end{DoxyParamCaption})}
+
+Internal function to free all elements in a linked listed. Preferably to be called with the macro llist\+\_\+free\+Data Offset needs to be the offset of iterator in the list object structure \mbox{\Hypertarget{wld__util_8c_adfb5ad3e5c2774f13d68a3eb51b13099}\label{wld__util_8c_adfb5ad3e5c2774f13d68a3eb51b13099}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_llist\_mapInternal@{wldu\_llist\_mapInternal}}
+\index{wldu\_llist\_mapInternal@{wldu\_llist\_mapInternal}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_llist\_mapInternal()}{wldu\_llist\_mapInternal()}}
+{\footnotesize\ttfamily void wldu\+\_\+llist\+\_\+map\+Internal (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+t $\ast$}]{list,  }\item[{size\+\_\+t}]{offset,  }\item[{void($\ast$)(void $\ast$val, void $\ast$data)}]{map,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+
+Internal function to map a function all elements in a linked listed. Preferably to be called with the macro llist\+\_\+map. Offset needs to be the offset of iterator in the list object structure \mbox{\Hypertarget{wld__util_8c_aab66ca12fccc0e210afdb6a9d7cdfa79}\label{wld__util_8c_aab66ca12fccc0e210afdb6a9d7cdfa79}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_tuple\_convMaskToStrByMask@{wldu\_tuple\_convMaskToStrByMask}}
+\index{wldu\_tuple\_convMaskToStrByMask@{wldu\_tuple\_convMaskToStrByMask}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_tuple\_convMaskToStrByMask()}{wldu\_tuple\_convMaskToStrByMask()}}
+{\footnotesize\ttfamily bool wldu\+\_\+tuple\+\_\+conv\+Mask\+To\+Str\+By\+Mask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$}]{p\+List,  }\item[{uint64\+\_\+t}]{bit\+Mask,  }\item[{amxc\+\_\+string\+\_\+t $\ast$}]{p\+Names }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_aab66ca12fccc0e210afdb6a9d7cdfa79_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a68916126317dab6acbf7fffb9da47c97}\label{wld__util_8c_a68916126317dab6acbf7fffb9da47c97}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_tuple\_convStrToMaskByMask@{wldu\_tuple\_convStrToMaskByMask}}
+\index{wldu\_tuple\_convStrToMaskByMask@{wldu\_tuple\_convStrToMaskByMask}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_tuple\_convStrToMaskByMask()}{wldu\_tuple\_convStrToMaskByMask()}}
+{\footnotesize\ttfamily bool wldu\+\_\+tuple\+\_\+conv\+Str\+To\+Mask\+By\+Mask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$}]{p\+List,  }\item[{const amxc\+\_\+string\+\_\+t $\ast$}]{p\+Names,  }\item[{uint64\+\_\+t $\ast$}]{p\+Bit\+Mask }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a68916126317dab6acbf7fffb9da47c97_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a7387c692ce0bad5f95e3e7b759293efc}\label{wld__util_8c_a7387c692ce0bad5f95e3e7b759293efc}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_tuple\_id2index@{wldu\_tuple\_id2index}}
+\index{wldu\_tuple\_id2index@{wldu\_tuple\_id2index}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_tuple\_id2index()}{wldu\_tuple\_id2index()}}
+{\footnotesize\ttfamily int64\+\_\+t wldu\+\_\+tuple\+\_\+id2index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tupleIdlist__t}{wld\+\_\+tuple\+Idlist\+\_\+t}} $\ast$}]{list,  }\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a7387c692ce0bad5f95e3e7b759293efc_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a343afb6f51cd7bb612f99b00f073da04}\label{wld__util_8c_a343afb6f51cd7bb612f99b00f073da04}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_tuple\_id2str@{wldu\_tuple\_id2str}}
+\index{wldu\_tuple\_id2str@{wldu\_tuple\_id2str}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_tuple\_id2str()}{wldu\_tuple\_id2str()}}
+{\footnotesize\ttfamily const char $\ast$ wldu\+\_\+tuple\+\_\+id2str (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$}]{list,  }\item[{int64\+\_\+t}]{id,  }\item[{const char $\ast$}]{def\+Str }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=327pt]{wld__util_8c_a343afb6f51cd7bb612f99b00f073da04_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a158727447ebd4d71c8eefadb17fa6853}\label{wld__util_8c_a158727447ebd4d71c8eefadb17fa6853}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_tuple\_id2void@{wldu\_tuple\_id2void}}
+\index{wldu\_tuple\_id2void@{wldu\_tuple\_id2void}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_tuple\_id2void()}{wldu\_tuple\_id2void()}}
+{\footnotesize\ttfamily const void $\ast$ wldu\+\_\+tuple\+\_\+id2void (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\+\_\+tuple\+Voidlist\+\_\+t}} $\ast$}]{list,  }\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a158727447ebd4d71c8eefadb17fa6853_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a4a3acb4776d5ea5160d83057959e67b4}\label{wld__util_8c_a4a3acb4776d5ea5160d83057959e67b4}} 
+\index{wld\_util.c@{wld\_util.c}!wldu\_tuple\_str2id@{wldu\_tuple\_str2id}}
+\index{wldu\_tuple\_str2id@{wldu\_tuple\_str2id}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wldu\_tuple\_str2id()}{wldu\_tuple\_str2id()}}
+{\footnotesize\ttfamily int64\+\_\+t wldu\+\_\+tuple\+\_\+str2id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__tuplelist__t}{wld\+\_\+tuplelist\+\_\+t}} $\ast$}]{list,  }\item[{char $\ast$}]{str,  }\item[{int64\+\_\+t}]{def\+Id }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=332pt]{wld__util_8c_a4a3acb4776d5ea5160d83057959e67b4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_afdf5168abd83a0b9d0f64ccf80e155b2}\label{wld__util_8c_afdf5168abd83a0b9d0f64ccf80e155b2}} 
+\index{wld\_util.c@{wld\_util.c}!wpsInitPin@{wpsInitPin}}
+\index{wpsInitPin@{wpsInitPin}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wpsInitPin()}{wpsInitPin()}}
+{\footnotesize\ttfamily unsigned long wps\+Init\+Pin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{wld__util_8c_afdf5168abd83a0b9d0f64ccf80e155b2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_afdf5168abd83a0b9d0f64ccf80e155b2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a50e3c6ec470085fdd36cae1a0e9c8f7e}\label{wld__util_8c_a50e3c6ec470085fdd36cae1a0e9c8f7e}} 
+\index{wld\_util.c@{wld\_util.c}!wpsPinGen@{wpsPinGen}}
+\index{wpsPinGen@{wpsPinGen}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wpsPinGen()}{wpsPinGen()}}
+{\footnotesize\ttfamily void wps\+Pin\+Gen (\begin{DoxyParamCaption}\item[{char}]{pwd\mbox{[}\+WPS\+\_\+\+PIN\+\_\+\+LEN+1\mbox{]} }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a50e3c6ec470085fdd36cae1a0e9c8f7e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a50e3c6ec470085fdd36cae1a0e9c8f7e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__util_8c_a484ad36a27282cb8ba60d80e1485d858}\label{wld__util_8c_a484ad36a27282cb8ba60d80e1485d858}} 
+\index{wld\_util.c@{wld\_util.c}!wpsPinValid@{wpsPinValid}}
+\index{wpsPinValid@{wpsPinValid}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{wpsPinValid()}{wpsPinValid()}}
+{\footnotesize\ttfamily int wps\+Pin\+Valid (\begin{DoxyParamCaption}\item[{unsigned long}]{PIN }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__util_8c_a484ad36a27282cb8ba60d80e1485d858_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__util_8c_ab598c7bbce70e33495965502011942fb}\label{wld__util_8c_ab598c7bbce70e33495965502011942fb}} 
+\index{wld\_util.c@{wld\_util.c}!com\_dir\_char@{com\_dir\_char}}
+\index{com\_dir\_char@{com\_dir\_char}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{com\_dir\_char}{com\_dir\_char}}
+{\footnotesize\ttfamily const char$\ast$ com\+\_\+dir\+\_\+char\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]} = \{\char`\"{}Tx\char`\"{}, \char`\"{}Rx\char`\"{}\}}
+
+\mbox{\Hypertarget{wld__util_8c_a7c17a0a6a1383bb9d1b64002d45e1f4b}\label{wld__util_8c_a7c17a0a6a1383bb9d1b64002d45e1f4b}} 
+\index{wld\_util.c@{wld\_util.c}!Rad\_CountryCode@{Rad\_CountryCode}}
+\index{Rad\_CountryCode@{Rad\_CountryCode}!wld\_util.c@{wld\_util.c}}
+\doxysubsubsection{\texorpdfstring{Rad\_CountryCode}{Rad\_CountryCode}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structT__COUNTRYCODE}{T\+\_\+\+COUNTRYCODE}} Rad\+\_\+\+Country\+Code\mbox{[}$\,$\mbox{]}}
+

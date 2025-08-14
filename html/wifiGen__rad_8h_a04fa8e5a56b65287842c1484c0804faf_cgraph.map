@@ -1,0 +1,12 @@
+<map id="wifiGen_rad_getAirStats" name="wifiGen_rad_getAirStats">
+<area shape="rect" id="node1" title=" " alt="" coords="5,42,184,69"/>
+<area shape="rect" id="node2" href="$wld__rad__nl80211_8c.html#a6fe347344e38456f156665255d93b4a0" title=" " alt="" coords="232,42,443,69"/>
+<area shape="rect" id="node3" href="$wld__rad__nl80211_8c.html#abe0caea840f01d16672102574ebdceca" title=" " alt="" coords="501,5,711,47"/>
+<area shape="rect" id="node4" href="$wld__rad__nl80211_8c.html#a7d0b85b6f05fd1c5379f8f5b07e648ef" title=" " alt="" coords="491,71,721,98"/>
+<area shape="rect" id="node5" href="$wld__nl80211__core_8c.html#ab89990c364e3256f803e95aee1684407" title=" " alt="" coords="775,21,986,47"/>
+<area shape="rect" id="node7" href="$wld__nl80211__api_8c.html#a3df4504743b60e3300e02a781c4eec4d" title=" " alt="" coords="769,71,992,98"/>
+<area shape="rect" id="node10" href="$wld__radio_8c.html#ae211359fd0e7548777cf5bd312ffb8c3" title=" " alt="" coords="774,123,987,164"/>
+<area shape="rect" id="node6" href="$wld__nl80211__core_8c.html#ac64e98962155641a465909b3c8fc0779" title=" " alt="" coords="1085,21,1198,47"/>
+<area shape="rect" id="node8" href="$wld__nl80211__core_8c.html#a51795ba7297b263584b02e6dd2d8ddb6" title=" " alt="" coords="1040,71,1243,98"/>
+<area shape="rect" id="node9" href="$wld__nl80211__core_8c.html#a3c5a525596463f925b95bbc76036d07e" title=" " alt="" coords="1291,71,1463,98"/>
+</map>

@@ -1,0 +1,287 @@
+\hypertarget{wld__nl80211__events_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+events.\+h}
+\label{wld__nl80211__events_8h_source}\index{include/wld/wld\_nl80211\_events.h@{include/wld/wld\_nl80211\_events.h}}
+\mbox{\hyperlink{wld__nl80211__events_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{comment}{/*}}
+\DoxyCodeLine{63 \textcolor{comment}{ * This file includes nl80211 event callbacks definitions}}
+\DoxyCodeLine{64 \textcolor{comment}{ */}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_NL80211\_EVENTS\_H\_}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_NL80211\_EVENTS\_H\_}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__core_8h}{wld\_nl80211\_core.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__types_8h}{wld\_nl80211\_types.h}}"{}}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{comment}{/*}}
+\DoxyCodeLine{73 \textcolor{comment}{ * @brief dynamic checker of nl80211 event target listener}}
+\DoxyCodeLine{74 \textcolor{comment}{ *}}
+\DoxyCodeLine{75 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{76 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{77 \textcolor{comment}{ * @param wiphy: wiphy id read from received event (WLD\_NL80211\_ID\_UNDEF if not found)}}
+\DoxyCodeLine{78 \textcolor{comment}{ * @param ifIndex: iface net dev index read from received event (WLD\_NL80211\_ID\_UNDEF if not found)}}
+\DoxyCodeLine{79 \textcolor{comment}{ *}}
+\DoxyCodeLine{80 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{81 \textcolor{comment}{ *}}
+\DoxyCodeLine{82 \textcolor{comment}{ */}}
+\DoxyCodeLine{83 \textcolor{keyword}{typedef} bool (* \mbox{\hyperlink{wld__nl80211__events_8h_a5dfb227cf3e6b6b1a4eb1f7caa46d128}{wld\_nl80211\_checkTgtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, int32\_t wiphy, int32\_t ifIndex, uint32\_t ctrlFreq, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85 \textcolor{comment}{/*}}
+\DoxyCodeLine{86 \textcolor{comment}{ * @brief generic callback for nl80211 event}}
+\DoxyCodeLine{87 \textcolor{comment}{ *}}
+\DoxyCodeLine{88 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{89 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{90 \textcolor{comment}{ * @param wiphy: wiphy id read from received event (WLD\_NL80211\_ID\_UNDEF if not found)}}
+\DoxyCodeLine{91 \textcolor{comment}{ * @param ifIndex: iface net dev index read from received event (WLD\_NL80211\_ID\_UNDEF if not found)}}
+\DoxyCodeLine{92 \textcolor{comment}{ *}}
+\DoxyCodeLine{93 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{94 \textcolor{comment}{ *}}
+\DoxyCodeLine{95 \textcolor{comment}{ */}}
+\DoxyCodeLine{96 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_ab76091cbcbd50d69acf70f79eb476c52}{wld\_nl80211\_genIfaceEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, uint32\_t wiphy, uint32\_t ifIndex);}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98 \textcolor{comment}{/*}}
+\DoxyCodeLine{99 \textcolor{comment}{ * @brief callback for created/deleted wiphy device}}
+\DoxyCodeLine{100 \textcolor{comment}{ *}}
+\DoxyCodeLine{101 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{102 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @param pWiphyInfo: pointer to wiphy device info structure}}
+\DoxyCodeLine{104 \textcolor{comment}{ *}}
+\DoxyCodeLine{105 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{106 \textcolor{comment}{ *}}
+\DoxyCodeLine{107 \textcolor{comment}{ */}}
+\DoxyCodeLine{108 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_a34bf8d53380ec585de04626ba2e83ad3}{wld\_nl80211\_wiphyInfoEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\_nl80211\_wiphyInfo\_t}}* pWiphyInfo);}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110 \textcolor{comment}{/*}}
+\DoxyCodeLine{111 \textcolor{comment}{ * @brief callback for created/deleted virtual interface notif}}
+\DoxyCodeLine{112 \textcolor{comment}{ *}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{114 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @param pIfaceInfo: pointer to interface info structure}}
+\DoxyCodeLine{116 \textcolor{comment}{ *}}
+\DoxyCodeLine{117 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{118 \textcolor{comment}{ *}}
+\DoxyCodeLine{119 \textcolor{comment}{ */}}
+\DoxyCodeLine{120 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_a93afa585588dc88d2791d01e2a9d3a10}{wld\_nl80211\_ifaceInfoEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123 \textcolor{comment}{/*}}
+\DoxyCodeLine{124 \textcolor{comment}{ * @brief generic callback for nl80211 event}}
+\DoxyCodeLine{125 \textcolor{comment}{ *}}
+\DoxyCodeLine{126 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{127 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{128 \textcolor{comment}{ * @param nlh pointer to netlink msg header}}
+\DoxyCodeLine{129 \textcolor{comment}{ * @param tb pointer to the entire data bloc}}
+\DoxyCodeLine{130 \textcolor{comment}{ *}}
+\DoxyCodeLine{131 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{132 \textcolor{comment}{ *}}
+\DoxyCodeLine{133 \textcolor{comment}{ */}}
+\DoxyCodeLine{134 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_a16703b41c3744632a259c4a85aeedead}{wld\_nl80211\_vendorEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, \textcolor{keyword}{struct }nlmsghdr* nlh, \textcolor{keyword}{struct }nlattr* tb[]);}
+\DoxyCodeLine{135 }
+\DoxyCodeLine{136 \textcolor{comment}{/*}}
+\DoxyCodeLine{137 \textcolor{comment}{ * @brief generic mgmt frame callback}}
+\DoxyCodeLine{138 \textcolor{comment}{ *}}
+\DoxyCodeLine{139 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{140 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{141 \textcolor{comment}{ * @param frameLen the size of the mgmt frame}}
+\DoxyCodeLine{142 \textcolor{comment}{ * @param frame pointer to a mgmt frame}}
+\DoxyCodeLine{143 \textcolor{comment}{ * @param frameRssi the RSSI of the mgmt frame}}
+\DoxyCodeLine{144 \textcolor{comment}{ *}}
+\DoxyCodeLine{145 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{146 \textcolor{comment}{ *}}
+\DoxyCodeLine{147 \textcolor{comment}{ */}}
+\DoxyCodeLine{148 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_ab04867641fc44a2ced1a85b5e8ed27a1}{wld\_nl80211\_mgmtFrameEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, \textcolor{keywordtype}{size\_t} frameLen, swl\_80211\_mgmtFrame\_t* frame, int32\_t frameRssi);}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150 \textcolor{comment}{/*}}
+\DoxyCodeLine{151 \textcolor{comment}{ * @brief generic transmitted mgmt frame status callback}}
+\DoxyCodeLine{152 \textcolor{comment}{ *}}
+\DoxyCodeLine{153 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{154 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{155 \textcolor{comment}{ * @param frameLen the size of the transmitted mgmt frame}}
+\DoxyCodeLine{156 \textcolor{comment}{ * @param frame pointer to the transmitted mgmt frame}}
+\DoxyCodeLine{157 \textcolor{comment}{ * @param ack indicating whether the transmitted frame was acknowledged by the recipient}}
+\DoxyCodeLine{158 \textcolor{comment}{ *}}
+\DoxyCodeLine{159 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{160 \textcolor{comment}{ *}}
+\DoxyCodeLine{161 \textcolor{comment}{ */}}
+\DoxyCodeLine{162 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_a02e46ac4a9f3cc9407d632b5c36c7b14}{wld\_nl80211\_mgmtFrameTxStatusEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, \textcolor{keywordtype}{size\_t} frameLen, swl\_80211\_mgmtFrame\_t* frame, \textcolor{keywordtype}{bool} isAck);}
+\DoxyCodeLine{163 }
+\DoxyCodeLine{164 \textcolor{comment}{/*}}
+\DoxyCodeLine{165 \textcolor{comment}{ * @brief generic dfs/radar event callback}}
+\DoxyCodeLine{166 \textcolor{comment}{ *}}
+\DoxyCodeLine{167 \textcolor{comment}{ * @param pRef user private reference provided when registering handlers}}
+\DoxyCodeLine{168 \textcolor{comment}{ * @param pData user private data provided when registering handlers}}
+\DoxyCodeLine{169 \textcolor{comment}{ * @param dfsEvtInfo the pointer to the radar event info}}
+\DoxyCodeLine{170 \textcolor{comment}{ *}}
+\DoxyCodeLine{171 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{172 \textcolor{comment}{ *}}
+\DoxyCodeLine{173 \textcolor{comment}{ */}}
+\DoxyCodeLine{174 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__nl80211__events_8h_ac7b4729d6e2bcb13e8cd7fa6a70d68ee}{wld\_nl80211\_radarEvtCb\_f}})(\textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData, \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t}{wld\_nl80211\_radarEvtInfo\_t}}* dfsEvtInfo);}
+\DoxyCodeLine{175 }
+\DoxyCodeLine{176 \textcolor{comment}{/*}}
+\DoxyCodeLine{177 \textcolor{comment}{ * @brief structure of event handlers}}
+\DoxyCodeLine{178 \textcolor{comment}{ */}}
+\DoxyCodeLine{179 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{180     \mbox{\hyperlink{wld__nl80211__events_8h_ab76091cbcbd50d69acf70f79eb476c52}{wld\_nl80211\_genIfaceEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a3e8f27ecd46127d1f660ad8bfa3362fe}{fUnspecEvtCb}};                     \textcolor{comment}{// unspecified event is never sent by kernel: only defined for test purpose}}
+\DoxyCodeLine{181     \mbox{\hyperlink{wld__nl80211__events_8h_a93afa585588dc88d2791d01e2a9d3a10}{wld\_nl80211\_ifaceInfoEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_af25587de0197dee0b64bdb62aa2548a8}{fNewInterfaceCb}};                 \textcolor{comment}{// created virtual interface}}
+\DoxyCodeLine{182     \mbox{\hyperlink{wld__nl80211__events_8h_a93afa585588dc88d2791d01e2a9d3a10}{wld\_nl80211\_ifaceInfoEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a0470071eb3e99797837c89a960ab39cd}{fDelInterfaceCb}};                 \textcolor{comment}{// deleted virtual interface}}
+\DoxyCodeLine{183     \mbox{\hyperlink{wld__nl80211__events_8h_ab76091cbcbd50d69acf70f79eb476c52}{wld\_nl80211\_genIfaceEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a1f1c72c35991436d73d97ab850abf9c9}{fScanStartedCb}};                   \textcolor{comment}{// scan is started successfully and running}}
+\DoxyCodeLine{184     \mbox{\hyperlink{wld__nl80211__events_8h_ab76091cbcbd50d69acf70f79eb476c52}{wld\_nl80211\_genIfaceEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a69ddf4e080281c6e8cde96f831b4e1ac}{fScanAbortedCb}};                   \textcolor{comment}{// running scan was aborted}}
+\DoxyCodeLine{185     \mbox{\hyperlink{wld__nl80211__events_8h_ab76091cbcbd50d69acf70f79eb476c52}{wld\_nl80211\_genIfaceEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a20d2cbd85ca224448d5aefdfb4fd0e74}{fScanDoneCb}};                      \textcolor{comment}{// scan is terminated and results can be retrieved}}
+\DoxyCodeLine{186     \mbox{\hyperlink{wld__nl80211__events_8h_a16703b41c3744632a259c4a85aeedead}{wld\_nl80211\_vendorEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_ac2e2b0041a427f23cd58d8a5241f6246}{fVendorEvtCb}};                       \textcolor{comment}{// vendor event is reported}}
+\DoxyCodeLine{187     \mbox{\hyperlink{wld__nl80211__events_8h_ab04867641fc44a2ced1a85b5e8ed27a1}{wld\_nl80211\_mgmtFrameEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_ad1e787455404d19744d8fe4d93ceda00}{fMgtFrameEvtCb}};                  \textcolor{comment}{// a management frame is reported}}
+\DoxyCodeLine{188     \mbox{\hyperlink{wld__nl80211__events_8h_a02e46ac4a9f3cc9407d632b5c36c7b14}{wld\_nl80211\_mgmtFrameTxStatusEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a60deb76eac60ddf1333b19ba061ec5f7}{fMgtFrameTxStatusEvtCb}};  \textcolor{comment}{// status of transmitted management frame is reported}}
+\DoxyCodeLine{189     \mbox{\hyperlink{wld__nl80211__events_8h_ac7b4729d6e2bcb13e8cd7fa6a70d68ee}{wld\_nl80211\_radarEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a40ac8ccc33b8e0c4ee427452749ff4b2}{fRadarEventCb}};                       \textcolor{comment}{// DFS/radar event is reported}}
+\DoxyCodeLine{190     \mbox{\hyperlink{wld__nl80211__events_8h_a5dfb227cf3e6b6b1a4eb1f7caa46d128}{wld\_nl80211\_checkTgtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a0bb92309864d0446cf48cc95181b4601}{fCheckTgtCb}};                         \textcolor{comment}{// handler to check target listener}}
+\DoxyCodeLine{191     \mbox{\hyperlink{wld__nl80211__events_8h_a34bf8d53380ec585de04626ba2e83ad3}{wld\_nl80211\_wiphyInfoEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_aa30fc39d206e5e7e0ec671f29853fb75}{fNewWiphyCb}};                     \textcolor{comment}{// created wiphy device}}
+\DoxyCodeLine{192     \mbox{\hyperlink{wld__nl80211__events_8h_a34bf8d53380ec585de04626ba2e83ad3}{wld\_nl80211\_wiphyInfoEvtCb\_f}} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb_a2d40f066cfa30120b3d65119cfa79d69}{fDelWiphyCb}};                     \textcolor{comment}{// deleted wiphy device}}
+\DoxyCodeLine{193 \} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}};}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{195 \textcolor{comment}{/*}}
+\DoxyCodeLine{196 \textcolor{comment}{ * @brief create a listener for a set of nl80211 events, received from a selection of wiphy/iface.}}
+\DoxyCodeLine{197 \textcolor{comment}{ * Received events are notified to the listener when:}}
+\DoxyCodeLine{198 \textcolor{comment}{ * -\/ listener has a dedicated valid handler function (i.e not null)}}
+\DoxyCodeLine{199 \textcolor{comment}{ * -\/ source wiphy/ifIndex match with the listener filter}}
+\DoxyCodeLine{200 \textcolor{comment}{ * Wildcards (WLD\_NL80211\_ID\_ANY) can be used to create a default wiphy or a global event listener.}}
+\DoxyCodeLine{201 \textcolor{comment}{ * Exclusion (WLD\_NL80211\_ID\_UNDEF) can be used to ignore events where expected source (wiphy or iface) is unknown.}}
+\DoxyCodeLine{202 \textcolor{comment}{ * When multiple listeners are matching a received event+wiphy/ifIndex, they are invoked in this defined order:}}
+\DoxyCodeLine{203 \textcolor{comment}{ * 1) first, the specific iface listeners}}
+\DoxyCodeLine{204 \textcolor{comment}{ * 2) then, the default wiphy listeners (any iface)}}
+\DoxyCodeLine{205 \textcolor{comment}{ * 3) last, the global listeners (any wiphy)}}
+\DoxyCodeLine{206 \textcolor{comment}{ *}}
+\DoxyCodeLine{207 \textcolor{comment}{ * @param state pointer to nl80211 socket manager, on which socket the event would be received}}
+\DoxyCodeLine{208 \textcolor{comment}{ * @param wiphy Index of wiphy to listen for it (>=0):}}
+\DoxyCodeLine{209 \textcolor{comment}{ *              WLD\_NL80211\_ID\_ANY for any wiphy}}
+\DoxyCodeLine{210 \textcolor{comment}{ *              WLD\_NL80211\_ID\_UNDEF to exclude events where wiphy is included}}
+\DoxyCodeLine{211 \textcolor{comment}{ * @param ifIndex Net dev index to listen for it (>0)}}
+\DoxyCodeLine{212 \textcolor{comment}{ *                WLD\_NL80211\_ID\_ANY for any nl80211 interface}}
+\DoxyCodeLine{213 \textcolor{comment}{ *                WLD\_NL80211\_ID\_UNDEF to exclude events where ifIndex is included}}
+\DoxyCodeLine{214 \textcolor{comment}{ * @param pRef user private reference to provide when invoking handlers}}
+\DoxyCodeLine{215 \textcolor{comment}{ * @param pData user private data to provide when invoking handlers}}
+\DoxyCodeLine{216 \textcolor{comment}{ * @param handlers Pointer to structure of callback functions, handling the received events}}
+\DoxyCodeLine{217 \textcolor{comment}{ *                 Callbacks of unmanaged events shall remain null.}}
+\DoxyCodeLine{218 \textcolor{comment}{ *}}
+\DoxyCodeLine{219 \textcolor{comment}{ * @return pointer to created listener}}
+\DoxyCodeLine{220 \textcolor{comment}{ *         It can be deleted by caller or implicitly when state is cleaned up.}}
+\DoxyCodeLine{221 \textcolor{comment}{ */}}
+\DoxyCodeLine{222 \mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* \mbox{\hyperlink{wld__nl80211__events_8h_a249a20382baa963bf7ac7e4886d81ab2}{wld\_nl80211\_addEvtListener}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state,}
+\DoxyCodeLine{223                                                    uint32\_t wiphy, uint32\_t ifIndex,}
+\DoxyCodeLine{224                                                    \textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData,}
+\DoxyCodeLine{225                                                    \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}}* \textcolor{keyword}{const} handlers);}
+\DoxyCodeLine{226 }
+\DoxyCodeLine{227 \textcolor{comment}{/*}}
+\DoxyCodeLine{228 \textcolor{comment}{ * @brief create a global listener for all received nl80211 events from any wiphy/iface.}}
+\DoxyCodeLine{229 \textcolor{comment}{ *}}
+\DoxyCodeLine{230 \textcolor{comment}{ * @param state pointer to nl80211 socket manager, on which socket the event would be received}}
+\DoxyCodeLine{231 \textcolor{comment}{ * @param pRef user private reference to provide when invoking handlers}}
+\DoxyCodeLine{232 \textcolor{comment}{ * @param pData user private data to provide when invoking handlers}}
+\DoxyCodeLine{233 \textcolor{comment}{ * @param handlers Pointer to structure of callback functions, handling the received events}}
+\DoxyCodeLine{234 \textcolor{comment}{ *                 Callbacks of unmanaged events shall remain null.}}
+\DoxyCodeLine{235 \textcolor{comment}{ *}}
+\DoxyCodeLine{236 \textcolor{comment}{ * @return pointer to created listener}}
+\DoxyCodeLine{237 \textcolor{comment}{ *         It can be deleted by caller or implicitly when state is cleaned up.}}
+\DoxyCodeLine{238 \textcolor{comment}{ */}}
+\DoxyCodeLine{239 \mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* \mbox{\hyperlink{wld__nl80211__events_8h_a7f9439127997f696745b2c2f0bfae442}{wld\_nl80211\_addGlobalEvtListener}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state,}
+\DoxyCodeLine{240                                                          \textcolor{keywordtype}{void}* pRef, \textcolor{keywordtype}{void}* pData,}
+\DoxyCodeLine{241                                                          \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}}* \textcolor{keyword}{const} handlers);}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{243 \textcolor{comment}{/*}}
+\DoxyCodeLine{244 \textcolor{comment}{ * @brief delete an existing listener}}
+\DoxyCodeLine{245 \textcolor{comment}{ *}}
+\DoxyCodeLine{246 \textcolor{comment}{ * @param ppListener listener to be fetched and freed}}
+\DoxyCodeLine{247 \textcolor{comment}{ *}}
+\DoxyCodeLine{248 \textcolor{comment}{ * @return SWL\_RC\_OK on success (ppListener is reset to null)}}
+\DoxyCodeLine{249 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{250 \textcolor{comment}{ */}}
+\DoxyCodeLine{251 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__events_8h_af308e87dd0c4c0220958e2964c8d18c6}{wld\_nl80211\_delEvtListener}}(\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}** ppListener);}
+\DoxyCodeLine{252 }
+\DoxyCodeLine{253 \textcolor{comment}{/*}}
+\DoxyCodeLine{254 \textcolor{comment}{ * @brief get internal data from listener}}
+\DoxyCodeLine{255 \textcolor{comment}{ *}}
+\DoxyCodeLine{256 \textcolor{comment}{ * @param pListener current listener use to get internal data}}
+\DoxyCodeLine{257 \textcolor{comment}{ * @param pData the user data saved inside pListener.}}
+\DoxyCodeLine{258 \textcolor{comment}{ * @param pHandlers the evt handler saved inside pListener.}}
+\DoxyCodeLine{259 \textcolor{comment}{}}
+\DoxyCodeLine{260 \textcolor{comment}{ * @return true on success}}
+\DoxyCodeLine{261 \textcolor{comment}{ *         false otherwise}}
+\DoxyCodeLine{262 \textcolor{comment}{ */}}
+\DoxyCodeLine{263 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__nl80211__events_8h_a72a0904475cc0560e9cb53a8d94b06fa}{wld\_nl80211\_getEvtListenerHandlers}}(\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* pListener, \textcolor{keywordtype}{void}** pData, \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}}* pHandlers);}
+\DoxyCodeLine{264 }
+\DoxyCodeLine{265 \textcolor{comment}{/*}}
+\DoxyCodeLine{266 \textcolor{comment}{ * @brief create a listener for vendor reported events, received from a selection of wiphy/iface.}}
+\DoxyCodeLine{267 \textcolor{comment}{ * Received events are notified to the listener when:}}
+\DoxyCodeLine{268 \textcolor{comment}{ * -\/ listener has a dedicated valid handler function (i.e not null)}}
+\DoxyCodeLine{269 \textcolor{comment}{ * -\/ source wiphy/ifIndex match with the listener filter}}
+\DoxyCodeLine{270 \textcolor{comment}{ *}}
+\DoxyCodeLine{271 \textcolor{comment}{ * @param state pointer to nl80211 socket manager, on which socket the event would be received}}
+\DoxyCodeLine{272 \textcolor{comment}{ * @param pListener pointer to listener context}}
+\DoxyCodeLine{273 \textcolor{comment}{ * @param handler Pointer to vendor events callback function, handling the received events}}
+\DoxyCodeLine{274 \textcolor{comment}{ *}}
+\DoxyCodeLine{275 \textcolor{comment}{ * @return pointer to updated listener}}
+\DoxyCodeLine{276 \textcolor{comment}{ */}}
+\DoxyCodeLine{277 \mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* \mbox{\hyperlink{wld__nl80211__events_8h_a63182c877efb0f33b4f368b3c2a4280e}{wld\_nl80211\_addVendorEvtListener}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state,}
+\DoxyCodeLine{278                                                          \mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* pListener,}
+\DoxyCodeLine{279                                                          \mbox{\hyperlink{wld__nl80211__events_8h_a16703b41c3744632a259c4a85aeedead}{wld\_nl80211\_vendorEvtCb\_f}} handler);}
+\DoxyCodeLine{280 }
+\DoxyCodeLine{281 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_NL80211\_EVENTS\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

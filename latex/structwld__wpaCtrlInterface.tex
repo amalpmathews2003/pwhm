@@ -1,0 +1,91 @@
+\hypertarget{structwld__wpaCtrlInterface}{}\doxysection{wld\+\_\+wpa\+Ctrl\+Interface Struct Reference}
+\label{structwld__wpaCtrlInterface}\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+
+
+{\ttfamily \#include $<$wld\+\_\+wpa\+Ctrl\+Interface\+\_\+priv.\+h$>$}
+
+
+
+Collaboration diagram for wld\+\_\+wpa\+Ctrl\+Interface\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structwld__wpaCtrlInterface__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+char $\ast$ \mbox{\hyperlink{structwld__wpaCtrlInterface_ae89d154b449e1e0759f7b7c5d46072c7}{name}}
+\item 
+bool \mbox{\hyperlink{structwld__wpaCtrlInterface_ac65d78d380ea06cc5e64869c9948e2af}{enable}}
+\item 
+\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__wpaCtrlInterface_aeea9d5ade0f57ad654197d53730f65f7}{cmd\+Conn}}
+\item 
+\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__wpaCtrlInterface_afe0a50b818390afe9b760af742cc45e8}{event\+Conn}}
+\item 
+bool \mbox{\hyperlink{structwld__wpaCtrlInterface_af91bf5b1a6a1eb2b481d374e9542665a}{is\+Ready}}
+\item 
+void $\ast$ \mbox{\hyperlink{structwld__wpaCtrlInterface_a50d1025869ff6843277f3d49e86d9fe2}{user\+Data}}
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__wpaCtrlInterface_aeadb848a8c386283f76ddc620cc3cc1e}{p\+Mgr}}
+\item 
+\mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+evt\+Handlers\+\_\+cb}} \mbox{\hyperlink{structwld__wpaCtrlInterface_a300dfab97d69e24842471aabfeb71437}{handlers}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_aeea9d5ade0f57ad654197d53730f65f7}\label{structwld__wpaCtrlInterface_aeea9d5ade0f57ad654197d53730f65f7}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!cmdConn@{cmdConn}}
+\index{cmdConn@{cmdConn}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{cmdConn}{cmdConn}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}}$\ast$ wld\+\_\+wpa\+Ctrl\+Interface\+::cmd\+Conn}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_ac65d78d380ea06cc5e64869c9948e2af}\label{structwld__wpaCtrlInterface_ac65d78d380ea06cc5e64869c9948e2af}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!enable@{enable}}
+\index{enable@{enable}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{enable}{enable}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Interface\+::enable}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_afe0a50b818390afe9b760af742cc45e8}\label{structwld__wpaCtrlInterface_afe0a50b818390afe9b760af742cc45e8}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!eventConn@{eventConn}}
+\index{eventConn@{eventConn}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{eventConn}{eventConn}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}}$\ast$ wld\+\_\+wpa\+Ctrl\+Interface\+::event\+Conn}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_a300dfab97d69e24842471aabfeb71437}\label{structwld__wpaCtrlInterface_a300dfab97d69e24842471aabfeb71437}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!handlers@{handlers}}
+\index{handlers@{handlers}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{handlers}{handlers}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+evt\+Handlers\+\_\+cb}} wld\+\_\+wpa\+Ctrl\+Interface\+::handlers}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_af91bf5b1a6a1eb2b481d374e9542665a}\label{structwld__wpaCtrlInterface_af91bf5b1a6a1eb2b481d374e9542665a}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!isReady@{isReady}}
+\index{isReady@{isReady}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{isReady}{isReady}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Interface\+::is\+Ready}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_ae89d154b449e1e0759f7b7c5d46072c7}\label{structwld__wpaCtrlInterface_ae89d154b449e1e0759f7b7c5d46072c7}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!name@{name}}
+\index{name@{name}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily char$\ast$ wld\+\_\+wpa\+Ctrl\+Interface\+::name}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_aeadb848a8c386283f76ddc620cc3cc1e}\label{structwld__wpaCtrlInterface_aeadb848a8c386283f76ddc620cc3cc1e}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!pMgr@{pMgr}}
+\index{pMgr@{pMgr}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{pMgr}{pMgr}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}}$\ast$ wld\+\_\+wpa\+Ctrl\+Interface\+::p\+Mgr}
+
+\mbox{\Hypertarget{structwld__wpaCtrlInterface_a50d1025869ff6843277f3d49e86d9fe2}\label{structwld__wpaCtrlInterface_a50d1025869ff6843277f3d49e86d9fe2}} 
+\index{wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}!userData@{userData}}
+\index{userData@{userData}!wld\_wpaCtrlInterface@{wld\_wpaCtrlInterface}}
+\doxysubsubsection{\texorpdfstring{userData}{userData}}
+{\footnotesize\ttfamily void$\ast$ wld\+\_\+wpa\+Ctrl\+Interface\+::user\+Data}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include\+\_\+priv/nl80211/\mbox{\hyperlink{wld__wpaCtrlInterface__priv_8h}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+priv.\+h}}\end{DoxyCompactItemize}

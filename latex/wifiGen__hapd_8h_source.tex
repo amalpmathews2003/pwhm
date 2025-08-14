@@ -1,0 +1,99 @@
+\hypertarget{wifiGen__hapd_8h_source}{}\doxysection{wifi\+Gen\+\_\+hapd.\+h}
+\label{wifiGen__hapd_8h_source}\index{include\_priv/Plugin/wifiGen\_hapd.h@{include\_priv/Plugin/wifiGen\_hapd.h}}
+\mbox{\hyperlink{wifiGen__hapd_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_HAPD\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_HAPD\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld/wld.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#define HOSTAPD\_CMD "{}hostapd"{}}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_a3e280a7de79155551d8dcf12b517bdc3}{wifiGen\_hapd\_init}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{71 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_ac2f60b71be7105e795413612f43f026b}{wifiGen\_hapd\_initVAP}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{72 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__hapd_8h_af643558a6f2cae8f916cc925a5654667}{wifiGen\_hapd\_cleanup}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{73 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_adb1b0b8dcc7ba8dd972757483436e85c}{wifiGen\_hapd\_startDaemon}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{74 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_a75688dec0e4ad675142a71010b2b536a}{wifiGen\_hapd\_stopDaemon}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{75 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_a3316988b243476f9ae97626a068d4d04}{wifiGen\_hapd\_reloadDaemon}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{76 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__hapd_8h_a560b5744b5e1dd9945d76be42f18882e}{wifiGen\_hapd\_writeConfig}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{77 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wifiGen__hapd_8h_a3ba402dd55c4b0f7cd42f0f781504cbd}{wifiGen\_hapd\_isRunning}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{78 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wifiGen__hapd_8h_a34f0f7ab3fbb907b8468f24eab479a29}{wifiGen\_hapd\_isAlive}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{79 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_ac643c2614f8d47384fd1793f2f25bb3c}{wifiGen\_hapd\_getRadState}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\_rad\_state}}* pDetailedState);}
+\DoxyCodeLine{80 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_a390fcf6faed4a6312a55bab71c11440f}{wifiGen\_hapd\_syncVapStates}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{81 uint32\_t \mbox{\hyperlink{wifiGen__hapd_8h_a2671410f51adadb1692d7eccb1edc89c}{wifiGen\_hapd\_countGrpMembers}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{82 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_a97669a9f034b853f3ba448e29bae5a14}{wifiGen\_hapd\_setGlobDmnSettings}}(\mbox{\hyperlink{structvendor}{vendor\_t}}* pVdr, \mbox{\hyperlink{structwld__dmnMgt__dmnExecSettings__t}{wld\_dmnMgt\_dmnExecSettings\_t}}* pCfg);}
+\DoxyCodeLine{83 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_ae671e4e79404fef8370784e22ada1e6f}{wifiGen\_hapd\_initGlobDmnCap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{84 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__hapd_8h_af087ba544ea7dcfc11f751cf757afc7e}{wifiGen\_hapd\_initDynCfgParamSupp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{85 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wifiGen__hapd_8h_aeb15293eb2e3cfacdeaaa5021490afc8}{wifiGen\_hapd\_isStarted}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{86 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wifiGen__hapd_8h_a7b3bf86662816661b91d39f1eedabac7}{wifiGen\_hapd\_isStartable}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{87 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__hapd_8h_a0df57d80f00090a653caeb277ffcff47}{wifiGen\_hapd\_restoreMainIface}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{88 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__hapd_8h_a1753195bb30100c7a0a7e1c973daad76}{wifiGen\_hapd\_enableVapWpaCtrlIface}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{89 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wifiGen__hapd_8h_aea341ad5c8697b145aeb5a64938453b9}{wifiGen\_hapd\_parseSockName}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* sockName, \textcolor{keywordtype}{char}* linkName, \textcolor{keywordtype}{size\_t} linkNameSize, int32\_t* pLinkId);}
+\DoxyCodeLine{90 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wifiGen__hapd_8h_a7d3e7497d8ba632b42864b29eeb4cd70}{wifiGen\_hapd\_fetchSockApLink}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAPMld, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* sockName);}
+\DoxyCodeLine{91 swl\_rc\_ne \mbox{\hyperlink{wifiGen__hapd_8h_a4d80996081b27edb93e16942da18919a}{wifiGen\_hapd\_getConfiguredCountryCode}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{char}* country, \textcolor{keywordtype}{size\_t} countrySize);}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{93 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_HAPD\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

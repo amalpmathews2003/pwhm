@@ -1,0 +1,388 @@
+\hypertarget{wld__util_8h_source}{}\doxysection{wld\+\_\+util.\+h}
+\label{wld__util_8h_source}\index{include/wld/wld\_util.h@{include/wld/wld\_util.h}}
+\mbox{\hyperlink{wld__util_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{preprocessor}{\#ifndef \_\_WLD\_UTIL\_H\_\_}}
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#define \_\_WLD\_UTIL\_H\_\_}}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#ifdef \_\_cplusplus}}
+\DoxyCodeLine{71 \textcolor{keyword}{extern} \textcolor{stringliteral}{"{}C"{}} \{}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{comment}{// Fix compiler warnings}}
+\DoxyCodeLine{75 \textcolor{preprocessor}{\#define \_UNUSED\_(x) (void) x}}
+\DoxyCodeLine{76 \textcolor{preprocessor}{\#define \_UNUSED \_\_attribute\_\_((unused))}}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78 \textcolor{comment}{// Generic utilities}}
+\DoxyCodeLine{79 \textcolor{comment}{/* Taken from NeMo, used in attribute flags */}}
+\DoxyCodeLine{80 \textcolor{preprocessor}{\#define ARG\_BYNAME request\_function\_args\_by\_name}}
+\DoxyCodeLine{81 \textcolor{preprocessor}{\#define ARG\_MANDATORY   (0x80000000)}}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83 \textcolor{preprocessor}{\#define TRACEZ\_IO\_IN "{}ioIn"{}}}
+\DoxyCodeLine{84 \textcolor{preprocessor}{\#define TRACEZ\_IO\_OUT "{}ioOut"{}}}
+\DoxyCodeLine{85 \textcolor{preprocessor}{\#define TRACEZ\_IO\_PROBE "{}ioProbe"{}} \textcolor{comment}{//Special trace zone for probe updates.}}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{87 \textcolor{comment}{/* For our helper function */}}
+\DoxyCodeLine{88 \textcolor{preprocessor}{\#define TPH\_STR       (0x01)}}
+\DoxyCodeLine{89 \textcolor{preprocessor}{\#define TPH\_INT8      (0x02)}}
+\DoxyCodeLine{90 \textcolor{preprocessor}{\#define TPH\_INT16     (0x03)}}
+\DoxyCodeLine{91 \textcolor{preprocessor}{\#define TPH\_INT32     (0x04)}}
+\DoxyCodeLine{92 \textcolor{preprocessor}{\#define TPH\_UINT8     (0x05)}}
+\DoxyCodeLine{93 \textcolor{preprocessor}{\#define TPH\_UINT16    (0x06)}}
+\DoxyCodeLine{94 \textcolor{preprocessor}{\#define TPH\_UINT32    (0x07)}}
+\DoxyCodeLine{95 \textcolor{preprocessor}{\#define TPH\_BOOL      (0x08)}}
+\DoxyCodeLine{96 \textcolor{preprocessor}{\#define TPH\_DOUBLE    (0x09)}}
+\DoxyCodeLine{97 \textcolor{preprocessor}{\#define TPH\_BSTR      (0x0A)}}
+\DoxyCodeLine{98 \textcolor{preprocessor}{\#define TPH\_SECSTR    (0x0B)}}
+\DoxyCodeLine{99 \textcolor{preprocessor}{\#define TPH\_WPS\_CM    (0x0C)}}
+\DoxyCodeLine{100 \textcolor{preprocessor}{\#define TPH\_SEL\_SSID  (0x0D)}}
+\DoxyCodeLine{101 \textcolor{preprocessor}{\#define TPH\_PSTR      (0x0E)}}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 \textcolor{preprocessor}{\#define MAX\_USER\_DEFINED\_MAGIC  256}}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105 \textcolor{preprocessor}{\#define WLD\_S\_BUF 32}}
+\DoxyCodeLine{106 \textcolor{preprocessor}{\#define WLD\_M\_BUF 128}}
+\DoxyCodeLine{107 \textcolor{preprocessor}{\#define WLD\_L\_BUF 1024}}
+\DoxyCodeLine{108 \textcolor{preprocessor}{\#define WLD\_XL\_BUF 8192}}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110 \textcolor{preprocessor}{\#define WLD\_SEC\_PER\_H 3600}}
+\DoxyCodeLine{111 \textcolor{preprocessor}{\#define WLD\_SEC\_PER\_DAY 86400}}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{114     swl\_80211\_mgmtFrameControl\_t \mbox{\hyperlink{structwld__util__managementFrame__t_a529433c65fec7e9ed22323168ac4b585}{fc}};}
+\DoxyCodeLine{115     swl\_chanspec\_t \mbox{\hyperlink{structwld__util__managementFrame__t_a605a26f31d3178097810ca7d3337b510}{chanspec}};}
+\DoxyCodeLine{116     swl\_macBin\_t \mbox{\hyperlink{structwld__util__managementFrame__t_aa9c5683d2bb1d9004cd2c42ca7240c23}{mac}};}
+\DoxyCodeLine{117     swl\_bit8\_t* \mbox{\hyperlink{structwld__util__managementFrame__t_a8a42edb151de75408d8dcab67709d996}{data}};}
+\DoxyCodeLine{118     \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{structwld__util__managementFrame__t_aed7b2c93b99e1b2239c0c95c3d64a8c4}{dataLen}};}
+\DoxyCodeLine{119 \} \mbox{\hyperlink{structwld__util__managementFrame__t}{wld\_util\_managementFrame\_t}};}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{121 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{122     \textcolor{keywordtype}{char} buf[\mbox{\hyperlink{wld__util_8h_aef38a0f5c905b85308ad577f82f3c9ac}{WLD\_S\_BUF}}];}
+\DoxyCodeLine{123 \} \mbox{\hyperlink{structwld__sbuf__t}{wld\_sbuf\_t}};}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{126     \textcolor{keywordtype}{char} buf[\mbox{\hyperlink{wld__util_8h_ada818c148b5a13d8e31d90838031a0f3}{WLD\_M\_BUF}}];}
+\DoxyCodeLine{127 \} \mbox{\hyperlink{structwld__mbuf__t}{wld\_mbuf\_t}};}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{129 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{130     \textcolor{keywordtype}{char} buf[\mbox{\hyperlink{wld__util_8h_a4e4dc6a6186521f8a11c3db6cee5e327}{WLD\_L\_BUF}}];}
+\DoxyCodeLine{131 \} \mbox{\hyperlink{structwld__lbuf__t}{wld\_lbuf\_t}};}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{133 \textcolor{preprocessor}{\#define isxDigit(c)  ((c >= '0' \&\& c <= '9') || (c >= 'a' \&\& c <= 'f') || (c >= 'A' \&\& c <= 'F'))}}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135 \textcolor{preprocessor}{\#define WLD\_MIN(a, b) \(\backslash\)}}
+\DoxyCodeLine{136 \textcolor{preprocessor}{    (\{ \_\_typeof\_\_ (a) \_a = (a); \(\backslash\)}}
+\DoxyCodeLine{137 \textcolor{preprocessor}{         \_\_typeof\_\_ (b) \_b = (b); \(\backslash\)}}
+\DoxyCodeLine{138 \textcolor{preprocessor}{         \_a < \_b ? \_a : \_b; \})}}
+\DoxyCodeLine{139 \textcolor{preprocessor}{\#define WLD\_MAX(a, b) \(\backslash\)}}
+\DoxyCodeLine{140 \textcolor{preprocessor}{    (\{ \_\_typeof\_\_ (a) \_a = (a); \(\backslash\)}}
+\DoxyCodeLine{141 \textcolor{preprocessor}{         \_\_typeof\_\_ (b) \_b = (b); \(\backslash\)}}
+\DoxyCodeLine{142 \textcolor{preprocessor}{         \_a > \_b ? \_a : \_b; \})}}
+\DoxyCodeLine{143 }
+\DoxyCodeLine{144 \textcolor{preprocessor}{\#define WLD\_ARRAY\_SIZE(X) (((X) == NULL) ? 0 : (sizeof((X)) / sizeof((X)[0])))}}
+\DoxyCodeLine{145 \textcolor{preprocessor}{\#define WLD\_BYTE\_SIZE(X) (sizeof(typeof(X)))}}
+\DoxyCodeLine{146 \textcolor{preprocessor}{\#define WLD\_HEXSTR\_SIZE(X) (WLD\_BYTE\_SIZE(X) * 2)}}
+\DoxyCodeLine{147 \textcolor{preprocessor}{\#define WLD\_BIT\_SIZE(X) (WLD\_BYTE\_SIZE(X) * 8)}}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{149 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a9ddcb6b60571de33a88c706c26064a5f}{\_\_WLD\_BUG\_ON}}(\textcolor{keywordtype}{bool} bug, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* condition, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* function,}
+\DoxyCodeLine{150                   \textcolor{keyword}{const} \textcolor{keywordtype}{char}* file, \textcolor{keywordtype}{int} line);}
+\DoxyCodeLine{151 }
+\DoxyCodeLine{152 \textcolor{preprocessor}{\#define WLD\_BUG\_ON(x) \(\backslash\)}}
+\DoxyCodeLine{153 \textcolor{preprocessor}{    \_\_WLD\_BUG\_ON(!!(x), \#x, \_\_FUNCTION\_\_, \_\_FILE\_\_, \_\_LINE\_\_)}}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155 \textcolor{keyword}{typedef} int32\_t \mbox{\hyperlink{wld__util_8h_a0176fc078c7088c247e565141292135c}{lbool\_t}};}
+\DoxyCodeLine{156 \textcolor{preprocessor}{\#define LTRUE \_\_LINE\_\_}}
+\DoxyCodeLine{157 \textcolor{preprocessor}{\#define LFALSE -\/\_\_LINE\_\_}}
+\DoxyCodeLine{158 \textcolor{preprocessor}{\#define LBOOL(x) ((x) ? LTRUE : LFALSE)}}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a48b09bbc75efdd395ae9488d48972651}{wldu\_llist\_freeDataInternal}}(amxc\_llist\_t* list, \textcolor{keywordtype}{size\_t} offset);}
+\DoxyCodeLine{161 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a735c192834e51c2120dce55fa2ef2963}{wldu\_llist\_freeDataFunInternal}}(amxc\_llist\_t* list, \textcolor{keywordtype}{size\_t} offset, \textcolor{keywordtype}{void} (* destroy)(\textcolor{keywordtype}{void}* val));}
+\DoxyCodeLine{162 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_adfb5ad3e5c2774f13d68a3eb51b13099}{wldu\_llist\_mapInternal}}(amxc\_llist\_t* list, \textcolor{keywordtype}{size\_t} offset, \textcolor{keywordtype}{void} (* map)(\textcolor{keywordtype}{void}* val, \textcolor{keywordtype}{void}* data), \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{163 }
+\DoxyCodeLine{164 }
+\DoxyCodeLine{165 \textcolor{preprocessor}{\#define llist\_freeData(list, type, it) wldu\_llist\_freeDataInternal(list, offsetof(type, it))}}
+\DoxyCodeLine{166 \textcolor{preprocessor}{\#define llist\_destroyData(list, destroyFun, type, it) wldu\_llist\_freeDataInternal(list, offsetof(type, it), destroyFun)}}
+\DoxyCodeLine{167 \textcolor{preprocessor}{\#define llist\_map(list, mapFun, type, it) wldu\_llist\_freeDataInternal(list, offsetof(type, it), mapFun, data)}}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{169 \textcolor{comment}{/* Helper macro's for MAC debugging */}}
+\DoxyCodeLine{170 \textcolor{preprocessor}{\#define MAC\_PRINT\_FMT   "{}\%02x:\%02x:\%02x:\%02x:\%02x:\%02x"{}}}
+\DoxyCodeLine{171 \textcolor{preprocessor}{\#define MAC\_PRINT\_ARG(mac) (mac)[0], (mac)[1], (mac)[2], (mac)[3], (mac)[4], (mac)[5]}}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{173 \textcolor{comment}{/* MAC address define */}}
+\DoxyCodeLine{174 \textcolor{preprocessor}{\#define WLD\_EMPTY\_MAC\_ADDRESS "{}00:00:00:00:00:00"{}}}
+\DoxyCodeLine{175 \textcolor{preprocessor}{\#define WLD\_BROADCAST\_MAC\_ADDRES "{}FF:FF:FF:FF:FF:FF"{}}}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{177 \textcolor{comment}{/* Helper macros for deltas on unsigned types */}}
+\DoxyCodeLine{178 \textcolor{preprocessor}{\#define DELTA64(inNew, inOld) ((inNew >= inOld) ? (inNew -\/ inOld) : (ULLONG\_MAX -\/ ((uint64\_t) inOld) + ((uint64\_t) inNew)))}}
+\DoxyCodeLine{179 \textcolor{preprocessor}{\#define DELTA32(inNew, inOld) ((inNew >= inOld) ? (inNew -\/ inOld) : (UINT32\_MAX -\/ ((uint32\_t) inOld) + ((uint32\_t) inNew)))}}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{181 \textcolor{keyword}{static} \textcolor{keyword}{const} uint8\_t wld\_ether\_bcast[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}] = \{255, 255, 255, 255, 255, 255\};}
+\DoxyCodeLine{182 \textcolor{keyword}{static} \textcolor{keyword}{const} uint8\_t wld\_ether\_null[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}] = \{0, 0, 0, 0, 0, 0\};}
+\DoxyCodeLine{183 }
+\DoxyCodeLine{184 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a3a81a647940842ed240f51b469268f4d}{findStrInArray}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** strarray, \textcolor{keywordtype}{int}* index);}
+\DoxyCodeLine{185 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_aaf7fa2c320638727109b191c25a0dbc8}{findStrInArrayN}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** strarray, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} default\_index);}
+\DoxyCodeLine{186 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a0b5f6975bc2f350dea58fafb5544a750}{convIntArrToString}}(\textcolor{keywordtype}{char}* str, \textcolor{keywordtype}{int} str\_size, \textcolor{keyword}{const} \textcolor{keywordtype}{int}* int\_list, \textcolor{keywordtype}{int} list\_size);}
+\DoxyCodeLine{187 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a9ee9838274765e0e23e14a8f93e548c8}{convStrArrToStr}}(\textcolor{keywordtype}{char}* str, \textcolor{keywordtype}{int} str\_size, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** strList, \textcolor{keywordtype}{int} list\_size);}
+\DoxyCodeLine{188 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a539eb97819c9fe590e22ce060a02e8bd}{convStrToIntArray}}(\textcolor{keywordtype}{int}* int\_list, \textcolor{keywordtype}{size\_t} list\_size, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, \textcolor{keywordtype}{int}* outSize);}
+\DoxyCodeLine{189 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_ac953bd74ee3a9ad63e7299c38e6f5f62}{set\_OBJ\_ParameterHelper}}(\textcolor{keywordtype}{int} \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, amxd\_object\_t* obj, \textcolor{keywordtype}{char}* rpath, \textcolor{keyword}{const} \textcolor{keywordtype}{void}* pdata);}
+\DoxyCodeLine{190 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a88484e81b6c372d8d58d9597f0fdb232}{get\_OBJ\_ParameterHelper}}(\textcolor{keywordtype}{int} \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, amxd\_object\_t* obj, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* crpath, \textcolor{keywordtype}{void}* pdata);}
+\DoxyCodeLine{191 \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{wld__util_8h_af8a42744693859b9bfd7c2606320ea9f}{conv\_ModeBitStr}}(\textcolor{keywordtype}{char}** enumStrList, \textcolor{keywordtype}{char}* str);}
+\DoxyCodeLine{192 \textcolor{keywordtype}{long} \mbox{\hyperlink{wld__util_8h_a7eada571856b113a0be650579c0f43ea}{conv\_ModeIndexStr}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}** enumStrList, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* str);}
+\DoxyCodeLine{193 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a07f423a4e0e817fa9d37ac492182e972}{conv\_maskToStrSep}}(uint32\_t mask, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** enumStrList, uint32\_t maxVal, \textcolor{keywordtype}{char}* str, uint32\_t strSize, \textcolor{keywordtype}{char} separator);}
+\DoxyCodeLine{194 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a2bfefc3ab7c60eaeef488b7eda2088e4}{conv\_maskToStr}}(uint32\_t mask, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** enumStrList, uint32\_t maxVal, \textcolor{keywordtype}{char}* str, uint32\_t strSize);}
+\DoxyCodeLine{195 uint32\_t \mbox{\hyperlink{wld__util_8h_a93e9777865de6d1ea877df2574de1056}{conv\_strToEnum}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}** enumStrList, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, uint32\_t maxVal, uint32\_t defaultVal);}
+\DoxyCodeLine{196 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a8dfb6b013ec0d9a49ee3782fe967c66f}{conv\_ModeIndexStrEx}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}** enumStrList, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, \textcolor{keywordtype}{int} minIdx, \textcolor{keywordtype}{int} maxIdx);}
+\DoxyCodeLine{197 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_ac56fb454e1a6707f628153812218dbf2}{itoa}}(\textcolor{keywordtype}{int} value, \textcolor{keywordtype}{char}* result, \textcolor{keywordtype}{int} base);}
+\DoxyCodeLine{198 }
+\DoxyCodeLine{199 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_aa09356c65320bac53815b61ead0e1508}{wldu\_convStrToUInt8Arr}}(uint8\_t* tgtList, uint tgtListSize, \textcolor{keywordtype}{char}* srcStrList);}
+\DoxyCodeLine{200 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a3e769799809c95d095b5fbfd96966da2}{getLowestBitLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem);}
+\DoxyCodeLine{201 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a661cdf0ccc273192d3c1ff05be929a74}{areBitsSetLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem);}
+\DoxyCodeLine{202 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_ac49215e8923e0aa3581c1e92ec5d97f5}{clearAllBitsLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem);}
+\DoxyCodeLine{203 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_abd75e9e26c8823d100708594839fab47}{isBitSetLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem, \textcolor{keywordtype}{int} bitNr);}
+\DoxyCodeLine{204 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_af5db082125e72df08522688706e692a3}{setBitLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem, \textcolor{keywordtype}{int} bitNr);}
+\DoxyCodeLine{205 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a1ac111dcf675653ff55b37fef6cdd7e6}{clearBitLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem, \textcolor{keywordtype}{int} bitNr);}
+\DoxyCodeLine{206 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a2d504caed8120e90d571773f2f6a520a}{markAllBitsLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem, \textcolor{keywordtype}{int} bitNr);}
+\DoxyCodeLine{207 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a4569e191d4d2b11bd76c2648c66ce3b1}{isBitOnlySetLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem, \textcolor{keywordtype}{int} bitNr);}
+\DoxyCodeLine{208 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a4ee8b0fe293b561299b9d3b3e0dc07d0}{areBitsOnlySetLongArray}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* pval, \textcolor{keywordtype}{int} elem, \textcolor{keywordtype}{int}* bitNrArray, \textcolor{keywordtype}{int} nrBitElem);}
+\DoxyCodeLine{209 }
+\DoxyCodeLine{210 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a2874d5dec36a709fc7ac2831e7426cac}{moveFSM\_VAPBit2ACFSM}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{211 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a79d9a1521a59b849a84afcd84f303977}{moveFSM\_RADBit2ACFSM}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{212 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a84fb08aa2564f6b10843b95198ca0ac5}{moveFSM2ACFSM}}(\mbox{\hyperlink{structT__FSM}{T\_FSM}}* fsm);}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{214 }
+\DoxyCodeLine{215 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a64b55a0afb7a5a6d0b40351ceae7bb74}{longArrayCopy}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* to, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* from, \textcolor{keywordtype}{int} len);}
+\DoxyCodeLine{216 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a86a1e441a269b7d86df7282951e055c6}{longArrayBitOr}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* to, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* from, \textcolor{keywordtype}{int} len);}
+\DoxyCodeLine{217 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_adb0065f2a65a34c9c82173ce192fd0a6}{longArrayClean}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}* array, \textcolor{keywordtype}{int} len);}
+\DoxyCodeLine{218 }
+\DoxyCodeLine{219 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_acf639b9ea9fc754bad8a2c1f7ad9a0b8}{convASCII\_WEPKey}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* Key, \textcolor{keywordtype}{char}* out, \textcolor{keywordtype}{int} sizeout);}
+\DoxyCodeLine{220 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_a7a8aeb8638ba64266791eb00fec984c9}{convHex\_WEPKey}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, \textcolor{keywordtype}{char}* out, \textcolor{keywordtype}{int} sizeout);}
+\DoxyCodeLine{221 }
+\DoxyCodeLine{222 swl\_security\_apMode\_e \mbox{\hyperlink{wld__util_8h_a7305b881548a80f65506291b6ef6afb3}{isValidWEPKey}} (\textcolor{keyword}{const} \textcolor{keywordtype}{char}* key);}
+\DoxyCodeLine{223 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a4f13d57f6243ec98cbc4d391f3cd335e}{isValidPSKKey}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* key);}
+\DoxyCodeLine{224 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_ab1c3bc5bfee662b50fee6f27eb33f636}{isValidAESKey}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, \textcolor{keywordtype}{int} maxLen);}
+\DoxyCodeLine{225 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_ab9656b09d5ad0f2582f9434d7be45b7f}{isValidSSID}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ssid);}
+\DoxyCodeLine{226 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a2d5b061595a121996db8996ad85a9d50}{isSanitized}} (\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pname);}
+\DoxyCodeLine{227 }
+\DoxyCodeLine{228 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_aac4270b2a53e3153ea765ba13c61856b}{isListOfChannels\_US}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* possibleChannels, \textcolor{keywordtype}{int} len, \textcolor{keywordtype}{int} band);}
+\DoxyCodeLine{229 }
+\DoxyCodeLine{230 \textcolor{preprocessor}{\#define WPS\_PIN\_LEN 8}}
+\DoxyCodeLine{231 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a50e3c6ec470085fdd36cae1a0e9c8f7e}{wpsPinGen}}(\textcolor{keywordtype}{char} pwd[\mbox{\hyperlink{wld__util_8h_a8d71426ba3ae7ed04ed97cc4871fcfe2}{WPS\_PIN\_LEN}} + 1]);}
+\DoxyCodeLine{232 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a484ad36a27282cb8ba60d80e1485d858}{wpsPinValid}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} PIN);}
+\DoxyCodeLine{233 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_ab6ee78a11c7bcd9bc0019cd2c30aef17}{wldu\_checkWpsPinStr}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pinStr);}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a1885348d15676dcae318538076904ed3}{wldu\_convStrToNum}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* numSrcStr, \textcolor{keywordtype}{void}* numDstBuf, uint8\_t numDstByteSize, uint8\_t base, \textcolor{keywordtype}{bool} isSigned);}
+\DoxyCodeLine{236 int32\_t \mbox{\hyperlink{wld__util_8h_a73a3285127e369356d71578c60a65d35}{wldu\_convStr2Mac}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* mac, uint32\_t sizeofmac, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, uint32\_t sizeofstr);}
+\DoxyCodeLine{237 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a0953dd215be634e34dbf31955ab78850}{wldu\_convMac2Str}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* mac, uint32\_t sizeofmac, \textcolor{keywordtype}{char}* str, uint32\_t sizeofstr);}
+\DoxyCodeLine{238 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_ac9ccc661ceb11a3633de742b3d71b49c}{mac2str}}(\textcolor{keywordtype}{char}* str, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* mac, \textcolor{keywordtype}{size\_t} maxstrlen);}
+\DoxyCodeLine{239 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_af5240beaa1193383a4fa1908b3b66b41}{convQuality2Signal}}(\textcolor{keywordtype}{int} quality);}
+\DoxyCodeLine{240 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_aca501336841df2f8d38d1da5134c8674}{convSignal2Quality}}(\textcolor{keywordtype}{int} dBm);}
+\DoxyCodeLine{241 }
+\DoxyCodeLine{242 \textcolor{comment}{/* SSID manipulation */}}
+\DoxyCodeLine{243 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_a83ed6e217179e65fc76b9b0595706de9}{wld\_ssid\_to\_string}}(\textcolor{keyword}{const} uint8\_t* ssid, uint8\_t len);}
+\DoxyCodeLine{244 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a25b56d0420fd97e5bc5d96b0cf1b2a6e}{convSsid2Str}}(\textcolor{keyword}{const} uint8\_t* ssid, uint8\_t ssidLen, \textcolor{keywordtype}{char}* str, \textcolor{keywordtype}{size\_t} maxStrSize);}
+\DoxyCodeLine{245 }
+\DoxyCodeLine{246 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a300a77338077396f0f2aba72a32c110c}{fsm\_delay\_reply}}(uint64\_t call\_id, amxd\_status\_t state, \textcolor{keywordtype}{int}* errval);}
+\DoxyCodeLine{247 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a8ded40ebe4d51919699b1b4b7678dd62}{getCountryParam}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* instr, \textcolor{keywordtype}{int} CC, \textcolor{keywordtype}{int}* idx);}
+\DoxyCodeLine{248 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_adaf405a81396e3e13eb83d04d4047a98}{getFullCountryName}}(\textcolor{keywordtype}{int} idx);}
+\DoxyCodeLine{249 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_ab5c3fd785999d8b9a9d5d6c538348f9b}{getShortCountryName}}(\textcolor{keywordtype}{int} idx);}
+\DoxyCodeLine{250 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a6866e3c6fdc899df0a40203d5be0a738}{getCountryCode}}(\textcolor{keywordtype}{int} idx);}
+\DoxyCodeLine{251 swl\_opClassCountry\_e \mbox{\hyperlink{wld__util_8h_ab702f8b9102748a4dc45fb1bae6e9b0e}{getCountryZone}}(\textcolor{keywordtype}{int} idx);}
+\DoxyCodeLine{252 }
+\DoxyCodeLine{253 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_ae4602638615aba7c6b4ede92d19af77a}{debugIsVapPointer}}(\textcolor{keywordtype}{void}* p);}
+\DoxyCodeLine{254 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a4ff888db1d83ee89b0e248aed4d79c40}{debugIsEpPointer}}(\textcolor{keywordtype}{void}* p);}
+\DoxyCodeLine{255 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a18c61fa964e131e3008ec440b72b61c8}{debugIsRadPointer}}(\textcolor{keywordtype}{void}* p);}
+\DoxyCodeLine{256 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a3ed4a094b2cb61af2083800ab12edfb1}{debugIsSsidPointer}}(\textcolor{keywordtype}{void}* p);}
+\DoxyCodeLine{257 }
+\DoxyCodeLine{258 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a3d8afede3294f6b3aaf0e30862167fbb}{get\_random}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{size\_t} len);}
+\DoxyCodeLine{259 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a5fb3816c289f66dbe93c02d7d32089f2}{get\_randomstr}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{size\_t} len);}
+\DoxyCodeLine{260 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_ae9a84639d5e5ad83baf1624f9129be48}{get\_randomhexstr}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{size\_t} len);}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{262 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_acaa32afc3880f0fa2909341fc6c18660}{stripOutToken}}(\textcolor{keywordtype}{char}* pD, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pT);}
+\DoxyCodeLine{263 \textcolor{keywordtype}{char}** \mbox{\hyperlink{wld__util_8h_a9fee1b9cfcd2af34645249502f9015bf}{stripString}}(\textcolor{keywordtype}{char}** pTL, \textcolor{keywordtype}{int} nrTL, \textcolor{keywordtype}{char}* pD, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pT);}
+\DoxyCodeLine{264 }
+\DoxyCodeLine{265 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_af4f3767209b876e8b00828c7b624911d}{convStrToHex}}(uint8\_t* pbDest, \textcolor{keywordtype}{int} destSize, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pbSrc, \textcolor{keywordtype}{int} srcSize);}
+\DoxyCodeLine{266 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a27279683e6fcce2dcfde57e00f413559}{get\_pattern\_string}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* arg, uint8\_t* pattern);}
+\DoxyCodeLine{267 }
+\DoxyCodeLine{268 \textcolor{comment}{/* libc5 combatability just declare them */}}
+\DoxyCodeLine{269 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_a8a1fd769927a2014f7d085e5b0677f0d}{if\_indextoname}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \_\_ifindex, \textcolor{keywordtype}{char}* \_\_ifname);}
+\DoxyCodeLine{270 \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a519d08ae48404e6142031973c45f07b9}{if\_nametoindex}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* \_\_ifname);}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272 }
+\DoxyCodeLine{273 \textcolor{comment}{//how to go from accumulator to actual value. add + or -\/ 499 to ensure proper rounding}}
+\DoxyCodeLine{274 \textcolor{preprocessor}{\#define WLD\_ACC\_TO\_VAL(val) (val >= 0 ? ((val + 500) / 1000) : ((val -\/ 500) / 1000))}}
+\DoxyCodeLine{275 int32\_t \mbox{\hyperlink{wld__util_8h_a077222c20b0d72832db1d040fcfcfe2a}{wld\_util\_performFactorStep}}(int32\_t accum, int32\_t newVal, int32\_t factor);}
+\DoxyCodeLine{276 }
+\DoxyCodeLine{277 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a0d24c165677161f86ceb7af2f31fe5e7}{wld\_writeCapsToString}}(\textcolor{keywordtype}{char}* buffer, uint32\_t size, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \textcolor{keyword}{const}* strArray, uint32\_t caps, uint32\_t maxCaps);}
+\DoxyCodeLine{278 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_ae86400c3a5ef67fcb34ae80a6f2ac1ca}{wld\_bitmaskToCSValues}}(\textcolor{keywordtype}{char}* \textcolor{keywordtype}{string}, \textcolor{keywordtype}{size\_t} stringsize, \textcolor{keyword}{const} \textcolor{keywordtype}{int} bitmask, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* strings[]);}
+\DoxyCodeLine{279 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_adc7b6d02e17d5dadfe3caa517eff88d9}{wld\_util\_areAllVapsDisabled}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{280 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a7aaa0a274fb1a414bae0af12b211da98}{wld\_util\_areAllEndpointsDisabled}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{281 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_aa9da6762c8aa347f3f9cf7a047d90484}{wld\_util\_isPowerOf}}(int32\_t value, int32\_t power);}
+\DoxyCodeLine{282 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a913e9ba94059441da2161af2be98c03a}{wld\_util\_isPowerOf2}}(int32\_t value);}
+\DoxyCodeLine{283 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_ad9cb15ae28e8e123fbc0c2d371b61944}{wld\_util\_getLinuxIntfState}}(\textcolor{keywordtype}{int} socket, \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{284 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__util_8h_a2ed315a964727b8d299fd4f16d3509fc}{wld\_util\_setLinuxIntfState}}(\textcolor{keywordtype}{int} socket, \textcolor{keywordtype}{char}* ifname, \textcolor{keywordtype}{int} state);}
+\DoxyCodeLine{285 }
+\DoxyCodeLine{286 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{287     int64\_t \mbox{\hyperlink{structwld__tupleId__t_a9f0c40ca2e085616d7537f1dd7b8b2a5}{id}};}
+\DoxyCodeLine{288     int64\_t \mbox{\hyperlink{structwld__tupleId__t_a0d55d840bbfc1bde55db545f9247ae10}{index}};}
+\DoxyCodeLine{289 \} \mbox{\hyperlink{structwld__tupleId__t}{wld\_tupleId\_t}};}
+\DoxyCodeLine{290 }
+\DoxyCodeLine{291 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{292     \mbox{\hyperlink{structwld__tupleId__t}{wld\_tupleId\_t}}* \mbox{\hyperlink{structwld__tupleIdlist__t_aded677333ee4ce49c53bd91117dc8b5d}{tuples}};}
+\DoxyCodeLine{293     uint32\_t \mbox{\hyperlink{structwld__tupleIdlist__t_aa1429a5819e5f3accef48cc8cf960648}{size}};}
+\DoxyCodeLine{294 \} \mbox{\hyperlink{structwld__tupleIdlist__t}{wld\_tupleIdlist\_t}};}
+\DoxyCodeLine{295 }
+\DoxyCodeLine{296 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{297     int64\_t \mbox{\hyperlink{structwld__tuple__t_aa33cc21d2a94bf7729aaf4441b4eb7e6}{id}};}
+\DoxyCodeLine{298     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__tuple__t_a5e60e4e3ae61570e789a057b0196f762}{str}};}
+\DoxyCodeLine{299 \} \mbox{\hyperlink{structwld__tuple__t}{wld\_tuple\_t}};}
+\DoxyCodeLine{300 }
+\DoxyCodeLine{301 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{302     \mbox{\hyperlink{structwld__tuple__t}{wld\_tuple\_t}}* \mbox{\hyperlink{structwld__tuplelist__t_aa1f6a4901c9ea9ea6c40c570c62006cf}{tuples}};}
+\DoxyCodeLine{303     uint32\_t \mbox{\hyperlink{structwld__tuplelist__t_ab6ed4688bba1d16e1a955d9ca1e5dbb1}{size}};}
+\DoxyCodeLine{304 \} \mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}};}
+\DoxyCodeLine{305 }
+\DoxyCodeLine{306 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{307     int64\_t \mbox{\hyperlink{structwld__tupleVoid__t_a1b29e4cfc2e386d036af3fdd83b9f360}{id}};}
+\DoxyCodeLine{308     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwld__tupleVoid__t_a238bf6ca5a68779cac06cc3f765337b5}{ptr}};}
+\DoxyCodeLine{309 \} \mbox{\hyperlink{structwld__tupleVoid__t}{wld\_tupleVoid\_t}};}
+\DoxyCodeLine{310 }
+\DoxyCodeLine{311 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{312     \mbox{\hyperlink{structwld__tupleVoid__t}{wld\_tupleVoid\_t}}* \mbox{\hyperlink{structwld__tupleVoidlist__t_a23e89d5cfeeb69deb263c2ce780eb7e6}{tuples}};}
+\DoxyCodeLine{313     uint32\_t \mbox{\hyperlink{structwld__tupleVoidlist__t_ae8ebc61395b0d2464f69e45eb27dd1f2}{size}};}
+\DoxyCodeLine{314 \} \mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\_tupleVoidlist\_t}};}
+\DoxyCodeLine{315 }
+\DoxyCodeLine{316 \mbox{\hyperlink{structwld__tupleVoid__t}{wld\_tupleVoid\_t}}* \mbox{\hyperlink{wld__util_8h_a178708433b311860269553a8fdfa402d}{wldu\_getTupleVoidById}}(\mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\_tupleVoidlist\_t}}* list, int64\_t \textcolor{keywordtype}{id});}
+\DoxyCodeLine{317 \mbox{\hyperlink{structwld__tupleId__t}{wld\_tupleId\_t}}* \mbox{\hyperlink{wld__util_8h_ae2bf58c9d0f2d6efea28d70f9c5ccc61}{wldu\_getTupleIdById}}(\mbox{\hyperlink{structwld__tupleIdlist__t}{wld\_tupleIdlist\_t}}* list, int64\_t \textcolor{keywordtype}{id});}
+\DoxyCodeLine{318 \mbox{\hyperlink{structwld__tuple__t}{wld\_tuple\_t}}* \mbox{\hyperlink{wld__util_8h_a108e2a9d3c4533cb8db73da05f2827af}{wldu\_getTupleById}}(\mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}}* list, int64\_t \textcolor{keywordtype}{id});}
+\DoxyCodeLine{319 \mbox{\hyperlink{structwld__tuple__t}{wld\_tuple\_t}}* \mbox{\hyperlink{wld__util_8h_a7f7d88fe2c8e15898d33624e5e64089a}{wldu\_getTupleByStr}}(\mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}}* list, \textcolor{keywordtype}{char}* str);}
+\DoxyCodeLine{320 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_a343afb6f51cd7bb612f99b00f073da04}{wldu\_tuple\_id2str}}(\mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}}* list, int64\_t \textcolor{keywordtype}{id}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* defStr);}
+\DoxyCodeLine{321 \textcolor{keyword}{const} \textcolor{keywordtype}{void}* \mbox{\hyperlink{wld__util_8h_a158727447ebd4d71c8eefadb17fa6853}{wldu\_tuple\_id2void}}(\mbox{\hyperlink{structwld__tupleVoidlist__t}{wld\_tupleVoidlist\_t}}* list, int64\_t \textcolor{keywordtype}{id});}
+\DoxyCodeLine{322 int64\_t \mbox{\hyperlink{wld__util_8h_a4a3acb4776d5ea5160d83057959e67b4}{wldu\_tuple\_str2id}}(\mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}}* list, \textcolor{keywordtype}{char}* str, int64\_t defId);}
+\DoxyCodeLine{323 int64\_t \mbox{\hyperlink{wld__util_8h_a7387c692ce0bad5f95e3e7b759293efc}{wldu\_tuple\_id2index}}(\mbox{\hyperlink{structwld__tupleIdlist__t}{wld\_tupleIdlist\_t}}* list, int64\_t \textcolor{keywordtype}{id});}
+\DoxyCodeLine{324 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_a68916126317dab6acbf7fffb9da47c97}{wldu\_tuple\_convStrToMaskByMask}}(\mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}}* pList, \textcolor{keyword}{const} amxc\_string\_t* pNames, uint64\_t* pBitMask);}
+\DoxyCodeLine{325 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_aab66ca12fccc0e210afdb6a9d7cdfa79}{wldu\_tuple\_convMaskToStrByMask}}(\mbox{\hyperlink{structwld__tuplelist__t}{wld\_tuplelist\_t}}* pList, uint64\_t bitMask, amxc\_string\_t* pNames);}
+\DoxyCodeLine{326 \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__util_8h_aeaa95a7cdd680e96cc92eb70199effb3}{wldu\_getLocalFile}}(\textcolor{keywordtype}{char}* buffer, \textcolor{keywordtype}{size\_t} bufSize, \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}}, \textcolor{keywordtype}{char}* format, ...);}
+\DoxyCodeLine{327 }
+\DoxyCodeLine{328 swl\_bandwidth\_e \mbox{\hyperlink{wld__util_8h_ab4e2a60e8daca057b1a575a2c43b8b06}{wld\_util\_getMaxBwCap}}(\mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\_assocDev\_capabilities\_t}}* caps);}
+\DoxyCodeLine{329 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__util_8h_abf6bca0d886187464a562daa8d5d5d74}{wldu\_key\_matches}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ssid, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* oldKeyPassPhrase, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* keyPassPhrase);}
+\DoxyCodeLine{330 \textcolor{preprocessor}{\#define WLD\_TUPLE(ID, STR) \{ID, STR\}}}
+\DoxyCodeLine{331 \textcolor{preprocessor}{\#define WLD\_TUPLE\_GEN(ID) \{ID,\#ID\}}}
+\DoxyCodeLine{332 \textcolor{preprocessor}{\#define WLD\_TUPLE\_DEF\_STR "{}"{}}}
+\DoxyCodeLine{333 }
+\DoxyCodeLine{334 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_aa8b0c64282449da38794745986262fc7}{wldu\_convCreds2MD5}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ssid, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, \textcolor{keywordtype}{char}* md5, \textcolor{keywordtype}{size\_t} md5\_size);}
+\DoxyCodeLine{335 }
+\DoxyCodeLine{336 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a9bd2e6c3b5a5ecbc64b7e43486a073b3}{wld\_util\_updateStatusChangeInfo}}(wld\_status\_changeInfo\_t* info, \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\_status\_e}} status);}
+\DoxyCodeLine{337 }
+\DoxyCodeLine{346 amxd\_status\_t \mbox{\hyperlink{wld__util_8h_a08255c8e3d33ccfefd321d313abfcdb0}{wld\_util\_stats2Obj}}(amxd\_object\_t* obj, \mbox{\hyperlink{structwld__stats}{T\_Stats}}* stats);}
+\DoxyCodeLine{347 }
+\DoxyCodeLine{356 amxd\_status\_t \mbox{\hyperlink{wld__util_8h_aae0807925f37d353c78e93dbcc376eed}{wld\_util\_statsObj2Var}}(amxc\_var\_t* map, amxd\_object\_t* statsObj);}
+\DoxyCodeLine{357 }
+\DoxyCodeLine{358 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__util_8h_a9b0174aad292a5bbcf513dca21d8123d}{wld\_util\_initCustomAlias}}(amxd\_trans\_t* trans, amxd\_object\_t* \textcolor{keywordtype}{object});}
+\DoxyCodeLine{359 }
+\DoxyCodeLine{360 \textcolor{comment}{/*}}
+\DoxyCodeLine{361 \textcolor{comment}{ * @brief return previous object instance}}
+\DoxyCodeLine{362 \textcolor{comment}{ */}}
+\DoxyCodeLine{363 amxd\_object\_t* \mbox{\hyperlink{wld__util_8h_a2906b11b48bfaf8bf08b9de0d1d2596b}{wld\_util\_getPrevObjInst}}(amxd\_object\_t* instance);}
+\DoxyCodeLine{364 }
+\DoxyCodeLine{365 \textcolor{comment}{/*}}
+\DoxyCodeLine{366 \textcolor{comment}{ * @brief return next object instance}}
+\DoxyCodeLine{367 \textcolor{comment}{ */}}
+\DoxyCodeLine{368 amxd\_object\_t* \mbox{\hyperlink{wld__util_8h_a39d7735aef4f46efcaf311f4d839765e}{wld\_util\_getNextObjInst}}(amxd\_object\_t* instance);}
+\DoxyCodeLine{369 }
+\DoxyCodeLine{370 \textcolor{comment}{/*}}
+\DoxyCodeLine{371 \textcolor{comment}{ * @brief get real reference path:}}
+\DoxyCodeLine{372 \textcolor{comment}{ * when input Reference path (from upper layer instance) is available}}
+\DoxyCodeLine{373 \textcolor{comment}{ * then check it against currently referenced object path (regardless referencePath has indexed/named formats).}}
+\DoxyCodeLine{374 \textcolor{comment}{ * If different (empty, or pointing somewhere else), then set the output reference Path with the indexed format path}}
+\DoxyCodeLine{375 \textcolor{comment}{ * of the pointed referenced object.}}
+\DoxyCodeLine{376 \textcolor{comment}{ *}}
+\DoxyCodeLine{377 \textcolor{comment}{ * @param outRefPath (out) target buffer for referenced object path (dot terminated (as per tr181-\/usp standard))}}
+\DoxyCodeLine{378 \textcolor{comment}{ * @param outRefPathSize (out) target buffer size}}
+\DoxyCodeLine{379 \textcolor{comment}{ * @param currRefPath (in) currently saved reference path from datamodel}}
+\DoxyCodeLine{380 \textcolor{comment}{ * @param currRefObj (in) currently referenced object pointed by the upper layer (AP/EP => SSID or SSID => Radio)}}
+\DoxyCodeLine{381 \textcolor{comment}{ *}}
+\DoxyCodeLine{382 \textcolor{comment}{ * @return SWL\_RC\_OK if successful (target path set), error code otherwise}}
+\DoxyCodeLine{383 \textcolor{comment}{ */}}
+\DoxyCodeLine{384 swl\_rc\_ne \mbox{\hyperlink{wld__util_8h_a4b4c28f52ac6ac0a79226c177bcb255f}{wld\_util\_getRealReferencePath}}(\textcolor{keywordtype}{char}* outRefPath, \textcolor{keywordtype}{size\_t} outRefPathSize, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* currRefPath, amxd\_object\_t* currRefObj);}
+\DoxyCodeLine{385 }
+\DoxyCodeLine{386 swl\_rc\_ne \mbox{\hyperlink{wld__util_8h_a01c82ce65d3693d59da54dcbd5002c13}{wld\_util\_getManagementFrameParameters}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structwld__util__managementFrame__t}{wld\_util\_managementFrame\_t}}* mgmtFrame, amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}});}
+\DoxyCodeLine{387 }
+\DoxyCodeLine{395 uint32\_t \mbox{\hyperlink{wld__util_8h_a19a1023724a3791dc548bd62a88dc513}{wld\_util\_countScanResultEntriesPerChannel}}(\mbox{\hyperlink{structwld__scanResults}{wld\_scanResults\_t}}* results, swl\_channel\_t channel);}
+\DoxyCodeLine{396 }
+\DoxyCodeLine{404 \mbox{\hyperlink{structwld__spectrumChannelInfoEntry}{wld\_spectrumChannelInfoEntry\_t}}* \mbox{\hyperlink{wld__util_8h_afc923d0ae8df35793889b4473f08faf9}{wld\_util\_getSpectrumEntryByChannel}}(amxc\_llist\_t* pSpectrumInfoList, swl\_channel\_t channel);}
+\DoxyCodeLine{405 }
+\DoxyCodeLine{413 \mbox{\hyperlink{structwld__spectrumChannelInfoEntry}{wld\_spectrumChannelInfoEntry\_t}}* \mbox{\hyperlink{wld__util_8h_a2d2611af137f5b97865337c7c3a2f789}{wld\_util\_addorUpdateSpectrumEntry}}(amxc\_llist\_t* llSpectrumChannelInfo, \mbox{\hyperlink{structwld__spectrumChannelInfoEntry}{wld\_spectrumChannelInfoEntry\_t}}* pData);}
+\DoxyCodeLine{414 }
+\DoxyCodeLine{415 \textcolor{preprocessor}{\#ifdef \_\_cplusplus}}
+\DoxyCodeLine{416 \}\textcolor{comment}{/* extern "{}C"{} */}}
+\DoxyCodeLine{417 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{418 }
+\DoxyCodeLine{419 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

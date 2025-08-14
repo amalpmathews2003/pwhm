@@ -1,0 +1,119 @@
+\hypertarget{wld__rad__evtHandler_8h_source}{}\doxysection{wld\+\_\+rad\+\_\+evt\+Handler.\+h}
+\label{wld__rad__evtHandler_8h_source}\index{include/wld/wld\_rad\_evtHandler.h@{include/wld/wld\_rad\_evtHandler.h}}
+\mbox{\hyperlink{wld__rad__evtHandler_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{preprocessor}{\#ifndef SRC\_INCLUDE\_WLD\_WLD\_RAD\_EVTHANDLER\_H\_}}
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#define SRC\_INCLUDE\_WLD\_WLD\_RAD\_EVTHANDLER\_H\_}}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65 \textcolor{preprocessor}{\#include <stdbool.h>}}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__rad__evtHandler_8h_a943b6aeb59bfd143427519afc819c9ed}{wld\_radEvtHandler\_rad}})(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, uint32\_t eventId, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{68 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__rad__evtHandler_8h_ab99afe51f39325ff8d7e7bf486ab8d55}{wld\_radEvtHandler\_vap}})(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t eventId, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{69 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__rad__evtHandler_8h_abf5be82894eaec38a5dc713aabbbeed4}{wld\_radEvtHandler\_ep}})(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, uint32\_t eventId, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{72     uint32\_t \mbox{\hyperlink{structwld__radEvtHandler__rad__t_a2c057b4d52367ce6e0f2e89775c8f435}{eventId}};}
+\DoxyCodeLine{73     \mbox{\hyperlink{wld__rad__evtHandler_8h_a943b6aeb59bfd143427519afc819c9ed}{wld\_radEvtHandler\_rad}} \mbox{\hyperlink{structwld__radEvtHandler__rad__t_a6407b4cd12e50c0cc989f9e86b6e47b3}{handleEvent}};}
+\DoxyCodeLine{74 \} \mbox{\hyperlink{structwld__radEvtHandler__rad__t}{wld\_radEvtHandler\_rad\_t}};}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{77     uint32\_t \mbox{\hyperlink{structwld__radEvtHandler__vap__t_aa777c73aba1ba083d1201da0b8ad63a6}{eventId}};}
+\DoxyCodeLine{78     \mbox{\hyperlink{wld__rad__evtHandler_8h_ab99afe51f39325ff8d7e7bf486ab8d55}{wld\_radEvtHandler\_vap}} \mbox{\hyperlink{structwld__radEvtHandler__vap__t_ad4ff59f86d15bf43a4c0f1d2e91b9730}{handleEvent}};}
+\DoxyCodeLine{79 \} \mbox{\hyperlink{structwld__radEvtHandler__vap__t}{wld\_radEvtHandler\_vap\_t}};}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{82     uint32\_t \mbox{\hyperlink{structwld__radEvtHandler__ep__t_a91bef8aec94f226268702b3a71c16c8d}{eventId}};}
+\DoxyCodeLine{83     \mbox{\hyperlink{wld__rad__evtHandler_8h_abf5be82894eaec38a5dc713aabbbeed4}{wld\_radEvtHandler\_ep}} \mbox{\hyperlink{structwld__radEvtHandler__ep__t_ab5114caf7f0db7149719bf8d967d1f39}{handleEvent}};}
+\DoxyCodeLine{84 \} \mbox{\hyperlink{structwld__radEvtHandler__ep__t}{wld\_radEvtHandler\_ep\_t}};}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{86 \textcolor{preprocessor}{\#define WLD\_RAD\_EV\_HANDLER\_RAD\_ENTRY(ev, fun) \{ .eventId = ev, .handleEvent = (wld\_radEvtHandler\_rad) fun \}}}
+\DoxyCodeLine{87 \textcolor{preprocessor}{\#define WLD\_RAD\_EV\_HANDLER\_VAP\_ENTRY(ev, fun) \{ .eventId = ev, .handleEvent = (wld\_radEvtHandler\_vap) fun \}}}
+\DoxyCodeLine{88 \textcolor{preprocessor}{\#define WLD\_RAD\_EV\_HANDLER\_EP\_ENTRY(ev, fun) \{ .eventId = ev, .handleEvent = (wld\_radEvtHandler\_ep) fun \}}}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{91     \mbox{\hyperlink{structwld__radEvtHandler__vap__t}{wld\_radEvtHandler\_vap\_t}}* \mbox{\hyperlink{structwld__radEvtHandler__t_a9e29c1d2b97115b8b58a6b832f287fd4}{vapHandlers}};}
+\DoxyCodeLine{92     uint32\_t \mbox{\hyperlink{structwld__radEvtHandler__t_a25eec70e8572a49ccb08a7d7dacdb6c6}{nrVapHandlers}};}
+\DoxyCodeLine{93     \mbox{\hyperlink{structwld__radEvtHandler__ep__t}{wld\_radEvtHandler\_ep\_t}}* \mbox{\hyperlink{structwld__radEvtHandler__t_a99a658ee6427d2ff5e9d45a065af516b}{epHandlers}};}
+\DoxyCodeLine{94     uint32\_t \mbox{\hyperlink{structwld__radEvtHandler__t_a76b9ffdbe6f113bf1b9fb250d1fc167d}{nrEpHandlers}};}
+\DoxyCodeLine{95     \mbox{\hyperlink{structwld__radEvtHandler__rad__t}{wld\_radEvtHandler\_rad\_t}}* \mbox{\hyperlink{structwld__radEvtHandler__t_a78d84cfb43d28f3dc885d03d817e811e}{radHanders}};}
+\DoxyCodeLine{96     uint32\_t \mbox{\hyperlink{structwld__radEvtHandler__t_a484cc8b6cf964f790894a8e1ee835e4e}{nrRadHandlers}};}
+\DoxyCodeLine{97     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__radEvtHandler__t_a8e382db114052a7ac395341bb44cc13e}{cascade}};}
+\DoxyCodeLine{98 \} \mbox{\hyperlink{structwld__radEvtHandler__t}{wld\_radEvtHandler\_t}};}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__evtHandler_8h_a885a3311e91921e5c2a72c5b9a5958eb}{wld\_radEvtHandler\_handleEventByName}}(\mbox{\hyperlink{structwld__radEvtHandler__t}{wld\_radEvtHandler\_t}}* handlers, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t event, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{101 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__rad__evtHandler_8h_a27b46e217c32b26188f614554e7c94b7}{wld\_radEvtHandler\_handleEventByIndex}}(\mbox{\hyperlink{structwld__radEvtHandler__t}{wld\_radEvtHandler\_t}}* handlers, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t event, uint32\_t ifindex, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 \textcolor{preprocessor}{\#define WLD\_RAD\_EVT\_HANDLER\_INIT(\_handlerName, \_vapHandlerName, \_epHandlerName, \_radHandlerName) \(\backslash\)}}
+\DoxyCodeLine{104 \textcolor{preprocessor}{    wld\_radEvtHandler\_t \_handlerName = \{ \(\backslash\)}}
+\DoxyCodeLine{105 \textcolor{preprocessor}{        .vapHandlers = \_vapHandlerName, \(\backslash\)}}
+\DoxyCodeLine{106 \textcolor{preprocessor}{        .nrVapHandlers = SWL\_ARRAY\_SIZE(\_vapHandlerName), \(\backslash\)}}
+\DoxyCodeLine{107 \textcolor{preprocessor}{        .epHandlers = \_epHandlerName, \(\backslash\)}}
+\DoxyCodeLine{108 \textcolor{preprocessor}{        .nrEpHandlers = SWL\_ARRAY\_SIZE(\_epHandlerName), \(\backslash\)}}
+\DoxyCodeLine{109 \textcolor{preprocessor}{        .radHanders = \_radHandlerName, \(\backslash\)}}
+\DoxyCodeLine{110 \textcolor{preprocessor}{        .nrRadHandlers = SWL\_ARRAY\_SIZE(\_radHandlerName), \(\backslash\)}}
+\DoxyCodeLine{111 \textcolor{preprocessor}{    \}}}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* SRC\_INCLUDE\_WLD\_WLD\_RAD\_EVTHANDLER\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

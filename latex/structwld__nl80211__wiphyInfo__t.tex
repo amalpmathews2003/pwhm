@@ -1,0 +1,219 @@
+\hypertarget{structwld__nl80211__wiphyInfo__t}{}\doxysection{wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t Struct Reference}
+\label{structwld__nl80211__wiphyInfo__t}\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+
+
+{\ttfamily \#include $<$wld\+\_\+nl80211\+\_\+types.\+h$>$}
+
+
+
+Collaboration diagram for wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structwld__nl80211__wiphyInfo__t__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ad954f88d4d90f0897b11cf9639355afa}{gen\+Id}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_afaa01c23ea53d2fe2961a3029fca9f3a}{wiphy}}
+\item 
+char \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a1df867199439b7430ce30cf17ebeed8c}{name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a4261a33cc854df89cb2d0183da748ec8}{max\+Scan\+Ssids}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a7136c3bb7067c3c7b78846c4be74dfff}{max\+Scan\+Ie\+Len}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a9d9bf5213c09ee2bde44253742721340}{nr\+Antenna}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a3636c1f5584aa24b51500f878e21706a}{nr\+Active\+Antenna}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+bool \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_af24c63af0ce3af1df544f9f2ab59dcdd}{supp\+UAPSD}}
+\item 
+bool \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a6cea35188250cd44d671120abb8f2393}{supp\+Ap}}
+\item 
+bool \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ac1ac4e8e46319bf95b2e9886d23dbe00}{supp\+Ep}}
+\item 
+bool \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a381b36eb8799b2f5b47a658f1059792f}{supp\+Mlo}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a4730589155c8d4b5a5142fa0a3be18e2}{n\+Ap\+Max}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a43071b79e75bd04faa8efd5c1b865347}{n\+Ep\+Max}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ad6cc9d51d795e96c83b08655ffb54b5b}{n\+Sta\+Max}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a6a728fede046e7931c4df863b697f0a6}{n\+SSMax}}
+\item 
+swl\+\_\+freq\+Band\+\_\+m \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_af87e52284b2f287bb1b7f5d4e0391a27}{freq\+Bands\+Mask}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a45789cac70d8df81448b5aa678d8002a}{bands}} \mbox{[}SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+\+MAX\mbox{]}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a05fb82e37ffb55082a8ddcf0c048d39b}{n\+Cipher\+Suites}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_aa7047341130ad1a83d7ffdeae39e981c}{cipher\+Suites}} \mbox{[}\mbox{\hyperlink{wld__nl80211__types_8h_a160072eadc13e0a0d53b230611c51858}{WLD\+\_\+\+NL80211\+\_\+\+CIPHERS\+\_\+\+MAX}}\mbox{]}
+\item 
+\mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures}{wld\+\_\+nl80211\+\_\+wiphy\+Supp\+Features}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_ad84507f9f784a74854090a7320896b13}{supp\+Features}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__wiphySuppCmds}{wld\+\_\+nl80211\+\_\+wiphy\+Supp\+Cmds}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a0df479bec4fd0e0159921073e0b87621}{supp\+Cmds}}
+\item 
+\mbox{\hyperlink{structwld__nl80211__wiphyExtCapas}{wld\+\_\+nl80211\+\_\+wiphy\+Ext\+Capas}} \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_aa8321d602631b42cde9e2f6036a8064e}{ext\+Capas}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_aca615df5755585a824e1ac70c469f05b}{max\+Mbssid\+Ads\+Ifaces}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t_a78e95e82016a0a7b517cf56a11f64d6a}{max\+Mbssid\+Ema\+Period}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a45789cac70d8df81448b5aa678d8002a}\label{structwld__nl80211__wiphyInfo__t_a45789cac70d8df81448b5aa678d8002a}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!bands@{bands}}
+\index{bands@{bands}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{bands}{bands}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__bandDef__t}{wld\+\_\+nl80211\+\_\+band\+Def\+\_\+t}} wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::bands\mbox{[}SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+\+MAX\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_aa7047341130ad1a83d7ffdeae39e981c}\label{structwld__nl80211__wiphyInfo__t_aa7047341130ad1a83d7ffdeae39e981c}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!cipherSuites@{cipherSuites}}
+\index{cipherSuites@{cipherSuites}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{cipherSuites}{cipherSuites}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::cipher\+Suites\mbox{[}\mbox{\hyperlink{wld__nl80211__types_8h_a160072eadc13e0a0d53b230611c51858}{WLD\+\_\+\+NL80211\+\_\+\+CIPHERS\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_aa8321d602631b42cde9e2f6036a8064e}\label{structwld__nl80211__wiphyInfo__t_aa8321d602631b42cde9e2f6036a8064e}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!extCapas@{extCapas}}
+\index{extCapas@{extCapas}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{extCapas}{extCapas}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__wiphyExtCapas}{wld\+\_\+nl80211\+\_\+wiphy\+Ext\+Capas}} wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::ext\+Capas}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_af87e52284b2f287bb1b7f5d4e0391a27}\label{structwld__nl80211__wiphyInfo__t_af87e52284b2f287bb1b7f5d4e0391a27}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!freqBandsMask@{freqBandsMask}}
+\index{freqBandsMask@{freqBandsMask}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{freqBandsMask}{freqBandsMask}}
+{\footnotesize\ttfamily swl\+\_\+freq\+Band\+\_\+m wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::freq\+Bands\+Mask}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_ad954f88d4d90f0897b11cf9639355afa}\label{structwld__nl80211__wiphyInfo__t_ad954f88d4d90f0897b11cf9639355afa}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!genId@{genId}}
+\index{genId@{genId}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{genId}{genId}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::gen\+Id}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_aca615df5755585a824e1ac70c469f05b}\label{structwld__nl80211__wiphyInfo__t_aca615df5755585a824e1ac70c469f05b}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!maxMbssidAdsIfaces@{maxMbssidAdsIfaces}}
+\index{maxMbssidAdsIfaces@{maxMbssidAdsIfaces}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{maxMbssidAdsIfaces}{maxMbssidAdsIfaces}}
+{\footnotesize\ttfamily uint8\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::max\+Mbssid\+Ads\+Ifaces}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a78e95e82016a0a7b517cf56a11f64d6a}\label{structwld__nl80211__wiphyInfo__t_a78e95e82016a0a7b517cf56a11f64d6a}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!maxMbssidEmaPeriod@{maxMbssidEmaPeriod}}
+\index{maxMbssidEmaPeriod@{maxMbssidEmaPeriod}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{maxMbssidEmaPeriod}{maxMbssidEmaPeriod}}
+{\footnotesize\ttfamily uint8\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::max\+Mbssid\+Ema\+Period}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a7136c3bb7067c3c7b78846c4be74dfff}\label{structwld__nl80211__wiphyInfo__t_a7136c3bb7067c3c7b78846c4be74dfff}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!maxScanIeLen@{maxScanIeLen}}
+\index{maxScanIeLen@{maxScanIeLen}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{maxScanIeLen}{maxScanIeLen}}
+{\footnotesize\ttfamily uint16\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::max\+Scan\+Ie\+Len}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a4261a33cc854df89cb2d0183da748ec8}\label{structwld__nl80211__wiphyInfo__t_a4261a33cc854df89cb2d0183da748ec8}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!maxScanSsids@{maxScanSsids}}
+\index{maxScanSsids@{maxScanSsids}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{maxScanSsids}{maxScanSsids}}
+{\footnotesize\ttfamily uint16\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::max\+Scan\+Ssids}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a1df867199439b7430ce30cf17ebeed8c}\label{structwld__nl80211__wiphyInfo__t_a1df867199439b7430ce30cf17ebeed8c}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!name@{name}}
+\index{name@{name}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily char wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a4730589155c8d4b5a5142fa0a3be18e2}\label{structwld__nl80211__wiphyInfo__t_a4730589155c8d4b5a5142fa0a3be18e2}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nApMax@{nApMax}}
+\index{nApMax@{nApMax}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nApMax}{nApMax}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::n\+Ap\+Max}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a05fb82e37ffb55082a8ddcf0c048d39b}\label{structwld__nl80211__wiphyInfo__t_a05fb82e37ffb55082a8ddcf0c048d39b}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nCipherSuites@{nCipherSuites}}
+\index{nCipherSuites@{nCipherSuites}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nCipherSuites}{nCipherSuites}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::n\+Cipher\+Suites}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a43071b79e75bd04faa8efd5c1b865347}\label{structwld__nl80211__wiphyInfo__t_a43071b79e75bd04faa8efd5c1b865347}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nEpMax@{nEpMax}}
+\index{nEpMax@{nEpMax}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nEpMax}{nEpMax}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::n\+Ep\+Max}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a3636c1f5584aa24b51500f878e21706a}\label{structwld__nl80211__wiphyInfo__t_a3636c1f5584aa24b51500f878e21706a}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nrActiveAntenna@{nrActiveAntenna}}
+\index{nrActiveAntenna@{nrActiveAntenna}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nrActiveAntenna}{nrActiveAntenna}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::nr\+Active\+Antenna\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a9d9bf5213c09ee2bde44253742721340}\label{structwld__nl80211__wiphyInfo__t_a9d9bf5213c09ee2bde44253742721340}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nrAntenna@{nrAntenna}}
+\index{nrAntenna@{nrAntenna}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nrAntenna}{nrAntenna}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::nr\+Antenna\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a6a728fede046e7931c4df863b697f0a6}\label{structwld__nl80211__wiphyInfo__t_a6a728fede046e7931c4df863b697f0a6}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nSSMax@{nSSMax}}
+\index{nSSMax@{nSSMax}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nSSMax}{nSSMax}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::n\+SSMax}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_ad6cc9d51d795e96c83b08655ffb54b5b}\label{structwld__nl80211__wiphyInfo__t_ad6cc9d51d795e96c83b08655ffb54b5b}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!nStaMax@{nStaMax}}
+\index{nStaMax@{nStaMax}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{nStaMax}{nStaMax}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::n\+Sta\+Max}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a6cea35188250cd44d671120abb8f2393}\label{structwld__nl80211__wiphyInfo__t_a6cea35188250cd44d671120abb8f2393}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!suppAp@{suppAp}}
+\index{suppAp@{suppAp}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{suppAp}{suppAp}}
+{\footnotesize\ttfamily bool wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::supp\+Ap}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a0df479bec4fd0e0159921073e0b87621}\label{structwld__nl80211__wiphyInfo__t_a0df479bec4fd0e0159921073e0b87621}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!suppCmds@{suppCmds}}
+\index{suppCmds@{suppCmds}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{suppCmds}{suppCmds}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__wiphySuppCmds}{wld\+\_\+nl80211\+\_\+wiphy\+Supp\+Cmds}} wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::supp\+Cmds}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_ac1ac4e8e46319bf95b2e9886d23dbe00}\label{structwld__nl80211__wiphyInfo__t_ac1ac4e8e46319bf95b2e9886d23dbe00}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!suppEp@{suppEp}}
+\index{suppEp@{suppEp}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{suppEp}{suppEp}}
+{\footnotesize\ttfamily bool wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::supp\+Ep}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_ad84507f9f784a74854090a7320896b13}\label{structwld__nl80211__wiphyInfo__t_ad84507f9f784a74854090a7320896b13}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!suppFeatures@{suppFeatures}}
+\index{suppFeatures@{suppFeatures}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{suppFeatures}{suppFeatures}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__wiphySuppFeatures}{wld\+\_\+nl80211\+\_\+wiphy\+Supp\+Features}} wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::supp\+Features}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_a381b36eb8799b2f5b47a658f1059792f}\label{structwld__nl80211__wiphyInfo__t_a381b36eb8799b2f5b47a658f1059792f}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!suppMlo@{suppMlo}}
+\index{suppMlo@{suppMlo}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{suppMlo}{suppMlo}}
+{\footnotesize\ttfamily bool wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::supp\+Mlo}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_af24c63af0ce3af1df544f9f2ab59dcdd}\label{structwld__nl80211__wiphyInfo__t_af24c63af0ce3af1df544f9f2ab59dcdd}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!suppUAPSD@{suppUAPSD}}
+\index{suppUAPSD@{suppUAPSD}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{suppUAPSD}{suppUAPSD}}
+{\footnotesize\ttfamily bool wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::supp\+UAPSD}
+
+\mbox{\Hypertarget{structwld__nl80211__wiphyInfo__t_afaa01c23ea53d2fe2961a3029fca9f3a}\label{structwld__nl80211__wiphyInfo__t_afaa01c23ea53d2fe2961a3029fca9f3a}} 
+\index{wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}!wiphy@{wiphy}}
+\index{wiphy@{wiphy}!wld\_nl80211\_wiphyInfo\_t@{wld\_nl80211\_wiphyInfo\_t}}
+\doxysubsubsection{\texorpdfstring{wiphy}{wiphy}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+wiphy\+Info\+\_\+t\+::wiphy}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld__nl80211__types_8h}{wld\+\_\+nl80211\+\_\+types.\+h}}\end{DoxyCompactItemize}

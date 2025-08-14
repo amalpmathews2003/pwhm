@@ -1,0 +1,343 @@
+\hypertarget{wld__wps_8h}{}\doxysection{include/wld/wld\+\_\+wps.h File Reference}
+\label{wld__wps_8h}\index{include/wld/wld\_wps.h@{include/wld/wld\_wps.h}}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wps.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__wps__changeEvent__t}{wld\+\_\+wps\+\_\+change\+Event\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a114705552550dee182b46bbe2f268acf}{WPS\+\_\+\+PAIRING\+\_\+\+READY}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+PAIRING\+\_\+\+STARTED
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a671ba271134a87fa8fd629ad4401922f}{WPS\+\_\+\+PAIRING\+\_\+\+ERROR}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+PAIRING\+\_\+\+STARTERROR
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a29935efaa6aacab152c8102fbca9da71}{WPS\+\_\+\+PAIRING\+\_\+\+DONE}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+PAIRING\+\_\+\+ENDED
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_aab07f7806343b802dbc60ecfa5a1f409}{WPS\+\_\+\+PAIRING\+\_\+\+NO\+\_\+\+MESSAGE}}~\char`\"{}pairing\+No\+Message\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a79700fb7a376f002168d1e99f8927497}{WPS\+\_\+\+CAUSE\+\_\+\+TIMEOUT}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+TIMEOUT
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_ab916ba1addac030f7a8c39b2dcd9b880}{WPS\+\_\+\+CAUSE\+\_\+\+SUCCESS}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+SUCCESS
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a1fd6bf12ef9a4ebdaf9e9ac38fdaec02}{WPS\+\_\+\+CAUSE\+\_\+\+FAILURE}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+FAILURE
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a11e93b623b66ad1a2e0f2d50d026633b}{WPS\+\_\+\+CAUSE\+\_\+\+CANCELLED}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+CANCELLED
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a3f5768ccdaa469e9810d375970c92630}{WPS\+\_\+\+CAUSE\+\_\+\+LOCKED}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+LOCKED
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a181ba7130e4e24b6829a2f0c354c95e7}{WPS\+\_\+\+CAUSE\+\_\+\+UNLOCKED}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+UNLOCKED
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_adaefb9c4d6397767ed1d6ea7458adf71}{WPS\+\_\+\+CAUSE\+\_\+\+START\+\_\+\+WPS\+\_\+\+PBC}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTED\+\_\+\+REASON\+\_\+\+START\+\_\+\+WPS\+\_\+\+PBC
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_ab67b4e74437eede2b7b676dc835be193}{WPS\+\_\+\+CAUSE\+\_\+\+START\+\_\+\+WPS\+\_\+\+PIN}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTED\+\_\+\+REASON\+\_\+\+START\+\_\+\+WPS\+\_\+\+PIN
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a1982ca408f1fd275b5a0b49fc8960344}{WPS\+\_\+\+CAUSE\+\_\+\+CONFIGURING}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+CONFIGURING
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a1f5611163bdf9008a3bef97bdbdae1e9}{WPS\+\_\+\+CAUSE\+\_\+\+CONFIG}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+BAD\+\_\+\+CONFIG
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_ac1b311b8b06af94d046989dad8730ce5}{WPS\+\_\+\+CAUSE\+\_\+\+OVERLAP}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+OVERLAP
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_af1cb407d59f03812bea6f012e27b42f1}{WPS\+\_\+\+FAILURE\+\_\+\+START\+\_\+\+PBC}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+START\+\_\+\+PBC
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_abbfbdfb6cde4315eae040b7614a6d6c6}{WPS\+\_\+\+FAILURE\+\_\+\+START\+\_\+\+PIN}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+START\+\_\+\+PIN
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a5ccd9f5ad9e3d499a75e532abeefbb24}{WPS\+\_\+\+FAILURE\+\_\+\+NO\+\_\+\+SELF\+\_\+\+PIN}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+NO\+\_\+\+SELF\+\_\+\+PIN
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a6954214022f395d721419df061e715ca}{WPS\+\_\+\+FAILURE\+\_\+\+INVALID\+\_\+\+PIN}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+INVALID\+\_\+\+PIN
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_ae5945500c5e9323218e67cad7b618c90}{WPS\+\_\+\+FAILURE\+\_\+\+CREDENTIALS}}~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+CREDENTIALS
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a36592d522c167e77af455b22b1c73e66}{WPS\+\_\+\+WALK\+\_\+\+TIME\+\_\+\+DEFAULT}}~120
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wps_8h_a4c979794b585c8f252efb4c1affaeeb5}{WPS\+\_\+\+SESSION\+\_\+\+TIMEOUT}}~(\mbox{\hyperlink{wld__wps_8h_a36592d522c167e77af455b22b1c73e66}{WPS\+\_\+\+WALK\+\_\+\+TIME\+\_\+\+DEFAULT}} + 10)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wps_8h_a31ae6351408d79634021541d128c9a56}{wld\+\_\+wps\+\_\+\+Config\+Method\+\_\+to\+\_\+string}} (\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+e}} value)
+\item 
+bool \mbox{\hyperlink{wld__wps_8h_a865b82f934428c2576dde9014c10bf8b}{wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+mask\+\_\+to\+\_\+string}} (amxc\+\_\+string\+\_\+t $\ast$output, const \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} config\+Methods)
+\item 
+bool \mbox{\hyperlink{wld__wps_8h_a2d928e5e3d0d04685b52dcace1ed06a5}{wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+string\+\_\+to\+\_\+mask}} (\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} $\ast$output, const char $\ast$input, const char separator)
+\item 
+void \mbox{\hyperlink{wld__wps_8h_a04891fe5976c3bff4fb3dfb20cdcffe2}{wld\+\_\+wps\+\_\+push\+Button\+\_\+reply}} (uint64\+\_\+t call\+\_\+id, swl\+\_\+usp\+\_\+cmd\+Status\+\_\+ne cmd\+Status)
+\item 
+void \mbox{\hyperlink{wld__wps_8h_a084c7f94222405fdc1897be02cf127e4}{wld\+\_\+wps\+\_\+send\+Pairing\+Notification}} (amxd\+\_\+object\+\_\+t $\ast$object, uint32\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$reason, const char $\ast$mac\+Address, \mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$credentials)
+\item 
+void \mbox{\hyperlink{wld__wps_8h_a5dceb4d8f6e321022124f251f59e9d7b}{wld\+\_\+wps\+\_\+clear\+Pairing\+Timer}} (\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} $\ast$p\+Ctx)
+\item 
+void \mbox{\hyperlink{wld__wps_8h_a3f8bd4e953d9bd9007bcb8a75dbb8480}{wld\+\_\+send\+Pairing\+Notification}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$reason, const char $\ast$mac\+Address)
+\item 
+void \mbox{\hyperlink{wld__wps_8h_a5e60853e5a5b1a60a5a5b631d340fa36}{gen\+Self\+PIN}} ()
+\item 
+void \mbox{\hyperlink{wld__wps_8h_a62042df461142c1187368d869540c0a2}{wld\+\_\+wps\+\_\+update\+State}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__wps_8h_a8f08b858d6bcc85c5a9932517b08c083}{wld\+\_\+wps\+\_\+check\+Sec\+Mode\+Conditions}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8h_a26fd8bbcb9623de90e2d1bd9d35afa8c}{\+\_\+generate\+Self\+PIN}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__wps_8h_a1edebc02c29eacf1dab1e5cb0257a73c}{\+\_\+push\+Button}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wps_8h_a11e93b623b66ad1a2e0f2d50d026633b}\label{wld__wps_8h_a11e93b623b66ad1a2e0f2d50d026633b}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_CANCELLED@{WPS\_CAUSE\_CANCELLED}}
+\index{WPS\_CAUSE\_CANCELLED@{WPS\_CAUSE\_CANCELLED}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_CANCELLED}{WPS\_CAUSE\_CANCELLED}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+CANCELLED~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+CANCELLED}
+
+\mbox{\Hypertarget{wld__wps_8h_a1f5611163bdf9008a3bef97bdbdae1e9}\label{wld__wps_8h_a1f5611163bdf9008a3bef97bdbdae1e9}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_CONFIG@{WPS\_CAUSE\_CONFIG}}
+\index{WPS\_CAUSE\_CONFIG@{WPS\_CAUSE\_CONFIG}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_CONFIG}{WPS\_CAUSE\_CONFIG}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+CONFIG~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+BAD\+\_\+\+CONFIG}
+
+\mbox{\Hypertarget{wld__wps_8h_a1982ca408f1fd275b5a0b49fc8960344}\label{wld__wps_8h_a1982ca408f1fd275b5a0b49fc8960344}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_CONFIGURING@{WPS\_CAUSE\_CONFIGURING}}
+\index{WPS\_CAUSE\_CONFIGURING@{WPS\_CAUSE\_CONFIGURING}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_CONFIGURING}{WPS\_CAUSE\_CONFIGURING}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+CONFIGURING~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+CONFIGURING}
+
+\mbox{\Hypertarget{wld__wps_8h_a1fd6bf12ef9a4ebdaf9e9ac38fdaec02}\label{wld__wps_8h_a1fd6bf12ef9a4ebdaf9e9ac38fdaec02}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_FAILURE@{WPS\_CAUSE\_FAILURE}}
+\index{WPS\_CAUSE\_FAILURE@{WPS\_CAUSE\_FAILURE}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_FAILURE}{WPS\_CAUSE\_FAILURE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+FAILURE~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+FAILURE}
+
+\mbox{\Hypertarget{wld__wps_8h_a3f5768ccdaa469e9810d375970c92630}\label{wld__wps_8h_a3f5768ccdaa469e9810d375970c92630}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_LOCKED@{WPS\_CAUSE\_LOCKED}}
+\index{WPS\_CAUSE\_LOCKED@{WPS\_CAUSE\_LOCKED}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_LOCKED}{WPS\_CAUSE\_LOCKED}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+LOCKED~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+LOCKED}
+
+\mbox{\Hypertarget{wld__wps_8h_ac1b311b8b06af94d046989dad8730ce5}\label{wld__wps_8h_ac1b311b8b06af94d046989dad8730ce5}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_OVERLAP@{WPS\_CAUSE\_OVERLAP}}
+\index{WPS\_CAUSE\_OVERLAP@{WPS\_CAUSE\_OVERLAP}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_OVERLAP}{WPS\_CAUSE\_OVERLAP}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+OVERLAP~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+OVERLAP}
+
+\mbox{\Hypertarget{wld__wps_8h_adaefb9c4d6397767ed1d6ea7458adf71}\label{wld__wps_8h_adaefb9c4d6397767ed1d6ea7458adf71}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_START\_WPS\_PBC@{WPS\_CAUSE\_START\_WPS\_PBC}}
+\index{WPS\_CAUSE\_START\_WPS\_PBC@{WPS\_CAUSE\_START\_WPS\_PBC}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_START\_WPS\_PBC}{WPS\_CAUSE\_START\_WPS\_PBC}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+START\+\_\+\+WPS\+\_\+\+PBC~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTED\+\_\+\+REASON\+\_\+\+START\+\_\+\+WPS\+\_\+\+PBC}
+
+\mbox{\Hypertarget{wld__wps_8h_ab67b4e74437eede2b7b676dc835be193}\label{wld__wps_8h_ab67b4e74437eede2b7b676dc835be193}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_START\_WPS\_PIN@{WPS\_CAUSE\_START\_WPS\_PIN}}
+\index{WPS\_CAUSE\_START\_WPS\_PIN@{WPS\_CAUSE\_START\_WPS\_PIN}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_START\_WPS\_PIN}{WPS\_CAUSE\_START\_WPS\_PIN}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+START\+\_\+\+WPS\+\_\+\+PIN~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTED\+\_\+\+REASON\+\_\+\+START\+\_\+\+WPS\+\_\+\+PIN}
+
+\mbox{\Hypertarget{wld__wps_8h_ab916ba1addac030f7a8c39b2dcd9b880}\label{wld__wps_8h_ab916ba1addac030f7a8c39b2dcd9b880}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_SUCCESS@{WPS\_CAUSE\_SUCCESS}}
+\index{WPS\_CAUSE\_SUCCESS@{WPS\_CAUSE\_SUCCESS}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_SUCCESS}{WPS\_CAUSE\_SUCCESS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+SUCCESS~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+SUCCESS}
+
+\mbox{\Hypertarget{wld__wps_8h_a79700fb7a376f002168d1e99f8927497}\label{wld__wps_8h_a79700fb7a376f002168d1e99f8927497}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_TIMEOUT@{WPS\_CAUSE\_TIMEOUT}}
+\index{WPS\_CAUSE\_TIMEOUT@{WPS\_CAUSE\_TIMEOUT}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_TIMEOUT}{WPS\_CAUSE\_TIMEOUT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+TIMEOUT~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+TIMEOUT}
+
+\mbox{\Hypertarget{wld__wps_8h_a181ba7130e4e24b6829a2f0c354c95e7}\label{wld__wps_8h_a181ba7130e4e24b6829a2f0c354c95e7}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_CAUSE\_UNLOCKED@{WPS\_CAUSE\_UNLOCKED}}
+\index{WPS\_CAUSE\_UNLOCKED@{WPS\_CAUSE\_UNLOCKED}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_CAUSE\_UNLOCKED}{WPS\_CAUSE\_UNLOCKED}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CAUSE\+\_\+\+UNLOCKED~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+ENDED\+\_\+\+REASON\+\_\+\+UNLOCKED}
+
+\mbox{\Hypertarget{wld__wps_8h_ae5945500c5e9323218e67cad7b618c90}\label{wld__wps_8h_ae5945500c5e9323218e67cad7b618c90}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_FAILURE\_CREDENTIALS@{WPS\_FAILURE\_CREDENTIALS}}
+\index{WPS\_FAILURE\_CREDENTIALS@{WPS\_FAILURE\_CREDENTIALS}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_FAILURE\_CREDENTIALS}{WPS\_FAILURE\_CREDENTIALS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+FAILURE\+\_\+\+CREDENTIALS~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+CREDENTIALS}
+
+\mbox{\Hypertarget{wld__wps_8h_a6954214022f395d721419df061e715ca}\label{wld__wps_8h_a6954214022f395d721419df061e715ca}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_FAILURE\_INVALID\_PIN@{WPS\_FAILURE\_INVALID\_PIN}}
+\index{WPS\_FAILURE\_INVALID\_PIN@{WPS\_FAILURE\_INVALID\_PIN}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_FAILURE\_INVALID\_PIN}{WPS\_FAILURE\_INVALID\_PIN}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+FAILURE\+\_\+\+INVALID\+\_\+\+PIN~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+INVALID\+\_\+\+PIN}
+
+\mbox{\Hypertarget{wld__wps_8h_a5ccd9f5ad9e3d499a75e532abeefbb24}\label{wld__wps_8h_a5ccd9f5ad9e3d499a75e532abeefbb24}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_FAILURE\_NO\_SELF\_PIN@{WPS\_FAILURE\_NO\_SELF\_PIN}}
+\index{WPS\_FAILURE\_NO\_SELF\_PIN@{WPS\_FAILURE\_NO\_SELF\_PIN}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_FAILURE\_NO\_SELF\_PIN}{WPS\_FAILURE\_NO\_SELF\_PIN}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+FAILURE\+\_\+\+NO\+\_\+\+SELF\+\_\+\+PIN~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+NO\+\_\+\+SELF\+\_\+\+PIN}
+
+\mbox{\Hypertarget{wld__wps_8h_af1cb407d59f03812bea6f012e27b42f1}\label{wld__wps_8h_af1cb407d59f03812bea6f012e27b42f1}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_FAILURE\_START\_PBC@{WPS\_FAILURE\_START\_PBC}}
+\index{WPS\_FAILURE\_START\_PBC@{WPS\_FAILURE\_START\_PBC}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_FAILURE\_START\_PBC}{WPS\_FAILURE\_START\_PBC}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+FAILURE\+\_\+\+START\+\_\+\+PBC~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+START\+\_\+\+PBC}
+
+\mbox{\Hypertarget{wld__wps_8h_abbfbdfb6cde4315eae040b7614a6d6c6}\label{wld__wps_8h_abbfbdfb6cde4315eae040b7614a6d6c6}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_FAILURE\_START\_PIN@{WPS\_FAILURE\_START\_PIN}}
+\index{WPS\_FAILURE\_START\_PIN@{WPS\_FAILURE\_START\_PIN}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_FAILURE\_START\_PIN}{WPS\_FAILURE\_START\_PIN}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+FAILURE\+\_\+\+START\+\_\+\+PIN~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+STARTERROR\+\_\+\+REASON\+\_\+\+START\+\_\+\+PIN}
+
+\mbox{\Hypertarget{wld__wps_8h_a29935efaa6aacab152c8102fbca9da71}\label{wld__wps_8h_a29935efaa6aacab152c8102fbca9da71}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_PAIRING\_DONE@{WPS\_PAIRING\_DONE}}
+\index{WPS\_PAIRING\_DONE@{WPS\_PAIRING\_DONE}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_PAIRING\_DONE}{WPS\_PAIRING\_DONE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+PAIRING\+\_\+\+DONE~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+PAIRING\+\_\+\+ENDED}
+
+\mbox{\Hypertarget{wld__wps_8h_a671ba271134a87fa8fd629ad4401922f}\label{wld__wps_8h_a671ba271134a87fa8fd629ad4401922f}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_PAIRING\_ERROR@{WPS\_PAIRING\_ERROR}}
+\index{WPS\_PAIRING\_ERROR@{WPS\_PAIRING\_ERROR}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_PAIRING\_ERROR}{WPS\_PAIRING\_ERROR}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+PAIRING\+\_\+\+ERROR~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+PAIRING\+\_\+\+STARTERROR}
+
+\mbox{\Hypertarget{wld__wps_8h_aab07f7806343b802dbc60ecfa5a1f409}\label{wld__wps_8h_aab07f7806343b802dbc60ecfa5a1f409}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_PAIRING\_NO\_MESSAGE@{WPS\_PAIRING\_NO\_MESSAGE}}
+\index{WPS\_PAIRING\_NO\_MESSAGE@{WPS\_PAIRING\_NO\_MESSAGE}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_PAIRING\_NO\_MESSAGE}{WPS\_PAIRING\_NO\_MESSAGE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+PAIRING\+\_\+\+NO\+\_\+\+MESSAGE~\char`\"{}pairing\+No\+Message\char`\"{}}
+
+\mbox{\Hypertarget{wld__wps_8h_a114705552550dee182b46bbe2f268acf}\label{wld__wps_8h_a114705552550dee182b46bbe2f268acf}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_PAIRING\_READY@{WPS\_PAIRING\_READY}}
+\index{WPS\_PAIRING\_READY@{WPS\_PAIRING\_READY}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_PAIRING\_READY}{WPS\_PAIRING\_READY}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+PAIRING\+\_\+\+READY~SWL\+\_\+\+WPS\+\_\+\+NOTIF\+\_\+\+PAIRING\+\_\+\+STARTED}
+
+\mbox{\Hypertarget{wld__wps_8h_a4c979794b585c8f252efb4c1affaeeb5}\label{wld__wps_8h_a4c979794b585c8f252efb4c1affaeeb5}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_SESSION\_TIMEOUT@{WPS\_SESSION\_TIMEOUT}}
+\index{WPS\_SESSION\_TIMEOUT@{WPS\_SESSION\_TIMEOUT}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_SESSION\_TIMEOUT}{WPS\_SESSION\_TIMEOUT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+SESSION\+\_\+\+TIMEOUT~(\mbox{\hyperlink{wld__wps_8h_a36592d522c167e77af455b22b1c73e66}{WPS\+\_\+\+WALK\+\_\+\+TIME\+\_\+\+DEFAULT}} + 10)}
+
+\mbox{\Hypertarget{wld__wps_8h_a36592d522c167e77af455b22b1c73e66}\label{wld__wps_8h_a36592d522c167e77af455b22b1c73e66}} 
+\index{wld\_wps.h@{wld\_wps.h}!WPS\_WALK\_TIME\_DEFAULT@{WPS\_WALK\_TIME\_DEFAULT}}
+\index{WPS\_WALK\_TIME\_DEFAULT@{WPS\_WALK\_TIME\_DEFAULT}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{WPS\_WALK\_TIME\_DEFAULT}{WPS\_WALK\_TIME\_DEFAULT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+WALK\+\_\+\+TIME\+\_\+\+DEFAULT~120}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wps_8h_a26fd8bbcb9623de90e2d1bd9d35afa8c}\label{wld__wps_8h_a26fd8bbcb9623de90e2d1bd9d35afa8c}} 
+\index{wld\_wps.h@{wld\_wps.h}!\_generateSelfPIN@{\_generateSelfPIN}}
+\index{\_generateSelfPIN@{\_generateSelfPIN}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{\_generateSelfPIN()}{\_generateSelfPIN()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+generate\+Self\+PIN (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$}]{func,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a1edebc02c29eacf1dab1e5cb0257a73c}\label{wld__wps_8h_a1edebc02c29eacf1dab1e5cb0257a73c}} 
+\index{wld\_wps.h@{wld\_wps.h}!\_pushButton@{\_pushButton}}
+\index{\_pushButton@{\_pushButton}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{\_pushButton()}{\_pushButton()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+push\+Button (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$}]{func,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a5e60853e5a5b1a60a5a5b631d340fa36}\label{wld__wps_8h_a5e60853e5a5b1a60a5a5b631d340fa36}} 
+\index{wld\_wps.h@{wld\_wps.h}!genSelfPIN@{genSelfPIN}}
+\index{genSelfPIN@{genSelfPIN}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{genSelfPIN()}{genSelfPIN()}}
+{\footnotesize\ttfamily void gen\+Self\+PIN (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8h_a5e60853e5a5b1a60a5a5b631d340fa36_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8h_a5e60853e5a5b1a60a5a5b631d340fa36_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8h_a3f8bd4e953d9bd9007bcb8a75dbb8480}\label{wld__wps_8h_a3f8bd4e953d9bd9007bcb8a75dbb8480}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_sendPairingNotification@{wld\_sendPairingNotification}}
+\index{wld\_sendPairingNotification@{wld\_sendPairingNotification}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_sendPairingNotification()}{wld\_sendPairingNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+send\+Pairing\+Notification (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{type,  }\item[{const char $\ast$}]{reason,  }\item[{const char $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a8f08b858d6bcc85c5a9932517b08c083}\label{wld__wps_8h_a8f08b858d6bcc85c5a9932517b08c083}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_checkSecModeConditions@{wld\_wps\_checkSecModeConditions}}
+\index{wld\_wps\_checkSecModeConditions@{wld\_wps\_checkSecModeConditions}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_checkSecModeConditions()}{wld\_wps\_checkSecModeConditions()}}
+{\footnotesize\ttfamily bool wld\+\_\+wps\+\_\+check\+Sec\+Mode\+Conditions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+This function verifies whether wps is supported by the currently configured security mode. (WPS is not supported in WPA3 or WEP) \mbox{\Hypertarget{wld__wps_8h_a5dceb4d8f6e321022124f251f59e9d7b}\label{wld__wps_8h_a5dceb4d8f6e321022124f251f59e9d7b}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_clearPairingTimer@{wld\_wps\_clearPairingTimer}}
+\index{wld\_wps\_clearPairingTimer@{wld\_wps\_clearPairingTimer}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_clearPairingTimer()}{wld\_wps\_clearPairingTimer()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+clear\+Pairing\+Timer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} $\ast$}]{p\+Ctx }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8h_a5dceb4d8f6e321022124f251f59e9d7b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8h_a31ae6351408d79634021541d128c9a56}\label{wld__wps_8h_a31ae6351408d79634021541d128c9a56}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_ConfigMethod\_to\_string@{wld\_wps\_ConfigMethod\_to\_string}}
+\index{wld\_wps\_ConfigMethod\_to\_string@{wld\_wps\_ConfigMethod\_to\_string}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_ConfigMethod\_to\_string()}{wld\_wps\_ConfigMethod\_to\_string()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wps\+\_\+\+Config\+Method\+\_\+to\+\_\+string (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+e}}}]{value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a865b82f934428c2576dde9014c10bf8b}\label{wld__wps_8h_a865b82f934428c2576dde9014c10bf8b}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_ConfigMethods\_mask\_to\_string@{wld\_wps\_ConfigMethods\_mask\_to\_string}}
+\index{wld\_wps\_ConfigMethods\_mask\_to\_string@{wld\_wps\_ConfigMethods\_mask\_to\_string}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_ConfigMethods\_mask\_to\_string()}{wld\_wps\_ConfigMethods\_mask\_to\_string()}}
+{\footnotesize\ttfamily bool wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+mask\+\_\+to\+\_\+string (\begin{DoxyParamCaption}\item[{amxc\+\_\+string\+\_\+t $\ast$}]{output,  }\item[{const \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}}}]{config\+Methods }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a2d928e5e3d0d04685b52dcace1ed06a5}\label{wld__wps_8h_a2d928e5e3d0d04685b52dcace1ed06a5}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_ConfigMethods\_string\_to\_mask@{wld\_wps\_ConfigMethods\_string\_to\_mask}}
+\index{wld\_wps\_ConfigMethods\_string\_to\_mask@{wld\_wps\_ConfigMethods\_string\_to\_mask}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_ConfigMethods\_string\_to\_mask()}{wld\_wps\_ConfigMethods\_string\_to\_mask()}}
+{\footnotesize\ttfamily bool wld\+\_\+wps\+\_\+\+Config\+Methods\+\_\+string\+\_\+to\+\_\+mask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} $\ast$}]{output,  }\item[{const char $\ast$}]{input,  }\item[{const char}]{separator }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a04891fe5976c3bff4fb3dfb20cdcffe2}\label{wld__wps_8h_a04891fe5976c3bff4fb3dfb20cdcffe2}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_pushButton\_reply@{wld\_wps\_pushButton\_reply}}
+\index{wld\_wps\_pushButton\_reply@{wld\_wps\_pushButton\_reply}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_pushButton\_reply()}{wld\_wps\_pushButton\_reply()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+push\+Button\+\_\+reply (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{call\+\_\+id,  }\item[{swl\+\_\+usp\+\_\+cmd\+Status\+\_\+ne}]{cmd\+Status }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wps_8h_a084c7f94222405fdc1897be02cf127e4}\label{wld__wps_8h_a084c7f94222405fdc1897be02cf127e4}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_sendPairingNotification@{wld\_wps\_sendPairingNotification}}
+\index{wld\_wps\_sendPairingNotification@{wld\_wps\_sendPairingNotification}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_sendPairingNotification()}{wld\_wps\_sendPairingNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+send\+Pairing\+Notification (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{uint32\+\_\+t}]{type,  }\item[{const char $\ast$}]{reason,  }\item[{const char $\ast$}]{mac\+Address,  }\item[{\mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$}]{credentials }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wps_8h_a084c7f94222405fdc1897be02cf127e4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wps_8h_a62042df461142c1187368d869540c0a2}\label{wld__wps_8h_a62042df461142c1187368d869540c0a2}} 
+\index{wld\_wps.h@{wld\_wps.h}!wld\_wps\_updateState@{wld\_wps\_updateState}}
+\index{wld\_wps\_updateState@{wld\_wps\_updateState}!wld\_wps.h@{wld\_wps.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wps\_updateState()}{wld\_wps\_updateState()}}
+{\footnotesize\ttfamily void wld\+\_\+wps\+\_\+update\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+

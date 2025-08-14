@@ -1,0 +1,509 @@
+\hypertarget{wld__channel_8c}{}\doxysection{src/\+Channel\+Management/wld\+\_\+channel.c File Reference}
+\label{wld__channel_8c}\index{src/ChannelManagement/wld\_channel.c@{src/ChannelManagement/wld\_channel.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+channel.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include $<$swl/swl\+\_\+common.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel\+\_\+lib.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+channel.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__channel__data}{wld\+\_\+channel\+\_\+data}}
+\item 
+struct \mbox{\hyperlink{structwld__band__data}{wld\+\_\+band\+\_\+data}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}chan\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel_8c_a0806891523917b245cfae00a22df427a}{WLD\+\_\+\+CHAN\+\_\+\+INIT}}~0x00
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel_8c_ad18e49149427fb37273a6539f1453248}{WLD\+\_\+\+CHAN\+\_\+\+AVAILABLE\+\_\+\+FLAG}}~0x01
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel_8c_ac2b70154d3e5f78c33028c3412dfd6b1}{WLD\+\_\+\+CHAN\+\_\+\+RADAR\+\_\+\+REQUIRED}}~0x02
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel_8c_a758b484779cc48388c5743d6cb91dfa5}{WLD\+\_\+\+CHAN\+\_\+\+PASSIVE}}~0x04
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__channel_8c_a66005408a5e0f402a92ded9d0044554d}{WLD\+\_\+\+CHAN\+\_\+\+RADAR\+\_\+\+DETECTED}}~0x08
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a1a9a035bd946d1c31c8f715f91e9c8b4}{wld\+\_\+channel\+\_\+init\+\_\+channels}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a96c1dcc2e81d60f99a2d555b085b5077}{wld\+\_\+channel\+\_\+clean\+All}} ()
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a1daca3ccba000e743674c98ce51bd86e}{wld\+\_\+channel\+\_\+clear\+\_\+flags}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+size\+\_\+t \mbox{\hyperlink{wld__channel_8c_a3036ba10341198ab1935d5dc7e547935}{wld\+\_\+channel\+\_\+get\+\_\+cleared\+\_\+channels}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+channel\+\_\+t $\ast$list, size\+\_\+t list\+\_\+size)
+\item 
+size\+\_\+t \mbox{\hyperlink{wld__channel_8c_a944e9f12925fb51261e095adeb71f645}{wld\+\_\+channel\+\_\+get\+\_\+radartriggered\+\_\+channels}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+channel\+\_\+t $\ast$list, size\+\_\+t list\+\_\+size)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a8f4ac82176127ff11de7585347815ecc}{wld\+\_\+channel\+\_\+mark\+\_\+available\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a42d85719bf81b67448828015a5c7209c}{wld\+\_\+channel\+\_\+mark\+\_\+unavailable\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_af280c210df36690e3e3f2feca13c4ad8}{wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+req\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a274243f69f10bbc51cf7631622860889}{wld\+\_\+channel\+\_\+mark\+\_\+passive\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a03aa2fd7136694da03048717e913ba77}{wld\+\_\+channel\+\_\+clear\+\_\+passive\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a2fcd4f372b30ebbdbdab4763c2cddde7}{wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+detected\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a9ae153af93038948f65ab7d882e84bd5}{wld\+\_\+channel\+\_\+clear\+\_\+radar\+\_\+detected\+\_\+channel}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a01d43f3e5649ae71b77f21cf56457039}{wld\+\_\+channel\+\_\+mark\+\_\+available\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a1ae6335b5ed5f4a4463c853202fd00f9}{wld\+\_\+channel\+\_\+mark\+\_\+unavailable\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a45bf7c5b25c6f673cecd888b3282874c}{wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+req\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a52ba40ee60c6aeddcaca6696f903db4c}{wld\+\_\+channel\+\_\+mark\+\_\+passive\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_abbf5b8a94e8a9595f011a635e6a7ced6}{wld\+\_\+channel\+\_\+clear\+\_\+passive\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_aeb2aca17ebaa1055e821652c1b22b978}{wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+detected\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a4d8ae2db3511ad8b0c9fd84efc609d8e}{wld\+\_\+channel\+\_\+clear\+\_\+radar\+\_\+detected\+\_\+band}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_ac12a9a0ce7a2727bf1c0e03cd02bfec6}{wld\+\_\+channel\+\_\+is\+\_\+usable}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_a0b7f74cfed1d43b00cae0e44c230519e}{wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+usable}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_aff20451d404931f72f9bb5eccba83089}{wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+passive}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_a8cf24885210899d4294a50b5b67045b2}{wld\+\_\+channel\+\_\+is\+\_\+radar\+\_\+detected}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_ac7bc7a7085458e48c9ca411929ba2b86}{wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+radar\+\_\+detected}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+int \mbox{\hyperlink{wld__channel_8c_a5b103ffcd1398b194a2ea6a065a495dd}{wld\+\_\+channel\+\_\+is\+Valid\+Clear\+Channel}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, int channel, swl\+\_\+bandwidth\+\_\+e operating\+Channel\+Bandwidth)
+\item 
+int \mbox{\hyperlink{wld__channel_8c_ac4bbb4144e1201cafc36c76e65939b8e}{wld\+\_\+channel\+\_\+get\+\_\+channel\+\_\+to\+\_\+clear}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+bandwidth\+\_\+e operating\+Channel\+Bandwidth)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a21233297a99a47a47bdd513f4bd1bc19}{wld\+\_\+channel\+\_\+set\+\_\+channel\+\_\+clear\+\_\+time}} (int channel, uint32\+\_\+t time)
+\item 
+int \mbox{\hyperlink{wld__channel_8c_a6c2fc682bae58af517f20443b8fb9c28}{wld\+\_\+channel\+\_\+get\+\_\+channel\+\_\+clear\+\_\+time}} (int channel)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_ad3a7eb784f818176165a4c0e86f47210}{wld\+\_\+channel\+\_\+are\+Adjacent}} (swl\+\_\+chanspec\+\_\+t chanspec1, swl\+\_\+chanspec\+\_\+t chanspec2)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_a490a9e4cfc09a514afaefa12f69cb7e1}{wld\+\_\+channel\+\_\+is\+\_\+available}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+bool \mbox{\hyperlink{wld__channel_8c_adc8be7b229e350564cc1007c836e1629}{wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+available}} (swl\+\_\+chanspec\+\_\+t chanspec)
+\item 
+void \mbox{\hyperlink{wld__channel_8c_a9eabc31bc39b1fd1ce1daf0a0965087a}{wld\+\_\+channel\+\_\+do\+\_\+for\+\_\+each\+\_\+channel}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, void $\ast$data, void($\ast$channel\+\_\+function)(\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, void $\ast$data, int channel))
+\item 
+void \mbox{\hyperlink{wld__channel_8c_af1015b978999df3f8835ce46cfbba6c2}{wld\+\_\+channel\+\_\+print}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__channel_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__channel_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_channel.c@{wld\_channel.c}!ME@{ME}}
+\index{ME@{ME}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}chan\char`\"{}}
+
+\mbox{\Hypertarget{wld__channel_8c_ad18e49149427fb37273a6539f1453248}\label{wld__channel_8c_ad18e49149427fb37273a6539f1453248}} 
+\index{wld\_channel.c@{wld\_channel.c}!WLD\_CHAN\_AVAILABLE\_FLAG@{WLD\_CHAN\_AVAILABLE\_FLAG}}
+\index{WLD\_CHAN\_AVAILABLE\_FLAG@{WLD\_CHAN\_AVAILABLE\_FLAG}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHAN\_AVAILABLE\_FLAG}{WLD\_CHAN\_AVAILABLE\_FLAG}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHAN\+\_\+\+AVAILABLE\+\_\+\+FLAG~0x01}
+
+Flag declaring the channel available. However, it might not be usable due to radar requirements \mbox{\Hypertarget{wld__channel_8c_a0806891523917b245cfae00a22df427a}\label{wld__channel_8c_a0806891523917b245cfae00a22df427a}} 
+\index{wld\_channel.c@{wld\_channel.c}!WLD\_CHAN\_INIT@{WLD\_CHAN\_INIT}}
+\index{WLD\_CHAN\_INIT@{WLD\_CHAN\_INIT}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHAN\_INIT}{WLD\_CHAN\_INIT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHAN\+\_\+\+INIT~0x00}
+
+This module is designed to handle channel information with regards to availability.
+
+This module must be initialized by calling \mbox{\hyperlink{wld__channel_8c_a1a9a035bd946d1c31c8f715f91e9c8b4}{wld\+\_\+channel\+\_\+init\+\_\+channels()}} with a radio object that has a valid set of possible channels. The possible channels list will be used to create the internal list of channels.
+
+Once init is done, you can start marking and unmarking channels. Note that this module does not mark DFS channels by itself. It is up to the module user to use wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+req to set the fact that a radar is required, and wld\+\_\+channel\+\_\+mark\+\_\+passive to mark that a channel is currently unavailable for use untill scanned.
+
+wld\+\_\+channel\+\_\+is\+\_\+usable will return whether or not a channel can be used to at the given time.
+
+wld\+\_\+channel\+\_\+get\+\_\+channel\+\_\+to\+\_\+clear can be used to determine which channel still need to be cleared. Flag to init channel \mbox{\Hypertarget{wld__channel_8c_a758b484779cc48388c5743d6cb91dfa5}\label{wld__channel_8c_a758b484779cc48388c5743d6cb91dfa5}} 
+\index{wld\_channel.c@{wld\_channel.c}!WLD\_CHAN\_PASSIVE@{WLD\_CHAN\_PASSIVE}}
+\index{WLD\_CHAN\_PASSIVE@{WLD\_CHAN\_PASSIVE}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHAN\_PASSIVE}{WLD\_CHAN\_PASSIVE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHAN\+\_\+\+PASSIVE~0x04}
+
+Flag indicating this channel is passive, so has not been cleared yet. It is thus unusable. \mbox{\Hypertarget{wld__channel_8c_a66005408a5e0f402a92ded9d0044554d}\label{wld__channel_8c_a66005408a5e0f402a92ded9d0044554d}} 
+\index{wld\_channel.c@{wld\_channel.c}!WLD\_CHAN\_RADAR\_DETECTED@{WLD\_CHAN\_RADAR\_DETECTED}}
+\index{WLD\_CHAN\_RADAR\_DETECTED@{WLD\_CHAN\_RADAR\_DETECTED}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHAN\_RADAR\_DETECTED}{WLD\_CHAN\_RADAR\_DETECTED}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHAN\+\_\+\+RADAR\+\_\+\+DETECTED~0x08}
+
+Flag indicating that a radar is detected on this channel, and thus currently unusable. \mbox{\Hypertarget{wld__channel_8c_ac2b70154d3e5f78c33028c3412dfd6b1}\label{wld__channel_8c_ac2b70154d3e5f78c33028c3412dfd6b1}} 
+\index{wld\_channel.c@{wld\_channel.c}!WLD\_CHAN\_RADAR\_REQUIRED@{WLD\_CHAN\_RADAR\_REQUIRED}}
+\index{WLD\_CHAN\_RADAR\_REQUIRED@{WLD\_CHAN\_RADAR\_REQUIRED}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHAN\_RADAR\_REQUIRED}{WLD\_CHAN\_RADAR\_REQUIRED}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHAN\+\_\+\+RADAR\+\_\+\+REQUIRED~0x02}
+
+Flag declaring the channel requires radar clearing (DFS Channel). It does not say whether or not it has been cleared, just that this a channel that must be cleared before usage. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__channel_8c_ad3a7eb784f818176165a4c0e86f47210}\label{wld__channel_8c_ad3a7eb784f818176165a4c0e86f47210}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_areAdjacent@{wld\_channel\_areAdjacent}}
+\index{wld\_channel\_areAdjacent@{wld\_channel\_areAdjacent}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_areAdjacent()}{wld\_channel\_areAdjacent()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+are\+Adjacent (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec1,  }\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__channel_8c_a96c1dcc2e81d60f99a2d555b085b5077}\label{wld__channel_8c_a96c1dcc2e81d60f99a2d555b085b5077}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_cleanAll@{wld\_channel\_cleanAll}}
+\index{wld\_channel\_cleanAll@{wld\_channel\_cleanAll}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_cleanAll()}{wld\_channel\_cleanAll()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+clean\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{wld__channel_8c_a96c1dcc2e81d60f99a2d555b085b5077_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a1daca3ccba000e743674c98ce51bd86e}\label{wld__channel_8c_a1daca3ccba000e743674c98ce51bd86e}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_clear\_flags@{wld\_channel\_clear\_flags}}
+\index{wld\_channel\_clear\_flags@{wld\_channel\_clear\_flags}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_clear\_flags()}{wld\_channel\_clear\_flags()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+clear\+\_\+flags (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+clear all flags of the radio band of the given radio. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a1daca3ccba000e743674c98ce51bd86e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_abbf5b8a94e8a9595f011a635e6a7ced6}\label{wld__channel_8c_abbf5b8a94e8a9595f011a635e6a7ced6}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_clear\_passive\_band@{wld\_channel\_clear\_passive\_band}}
+\index{wld\_channel\_clear\_passive\_band@{wld\_channel\_clear\_passive\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_clear\_passive\_band()}{wld\_channel\_clear\_passive\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+clear\+\_\+passive\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Clear the passive flag from the given channel and band Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_abbf5b8a94e8a9595f011a635e6a7ced6_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a03aa2fd7136694da03048717e913ba77}\label{wld__channel_8c_a03aa2fd7136694da03048717e913ba77}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_clear\_passive\_channel@{wld\_channel\_clear\_passive\_channel}}
+\index{wld\_channel\_clear\_passive\_channel@{wld\_channel\_clear\_passive\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_clear\_passive\_channel()}{wld\_channel\_clear\_passive\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+clear\+\_\+passive\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Remove the passive requirement from this channel. Should be done when ap can use this channel, so when it is not a dfs channel, or when the channel is cleared. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a03aa2fd7136694da03048717e913ba77_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a4d8ae2db3511ad8b0c9fd84efc609d8e}\label{wld__channel_8c_a4d8ae2db3511ad8b0c9fd84efc609d8e}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_clear\_radar\_detected\_band@{wld\_channel\_clear\_radar\_detected\_band}}
+\index{wld\_channel\_clear\_radar\_detected\_band@{wld\_channel\_clear\_radar\_detected\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_clear\_radar\_detected\_band()}{wld\_channel\_clear\_radar\_detected\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+clear\+\_\+radar\+\_\+detected\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Clear the radar detected flag from the given channel and band \mbox{\Hypertarget{wld__channel_8c_a9ae153af93038948f65ab7d882e84bd5}\label{wld__channel_8c_a9ae153af93038948f65ab7d882e84bd5}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_clear\_radar\_detected\_channel@{wld\_channel\_clear\_radar\_detected\_channel}}
+\index{wld\_channel\_clear\_radar\_detected\_channel@{wld\_channel\_clear\_radar\_detected\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_clear\_radar\_detected\_channel()}{wld\_channel\_clear\_radar\_detected\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+clear\+\_\+radar\+\_\+detected\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Unmark the channel as radar detected \mbox{\Hypertarget{wld__channel_8c_a9eabc31bc39b1fd1ce1daf0a0965087a}\label{wld__channel_8c_a9eabc31bc39b1fd1ce1daf0a0965087a}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_do\_for\_each\_channel@{wld\_channel\_do\_for\_each\_channel}}
+\index{wld\_channel\_do\_for\_each\_channel@{wld\_channel\_do\_for\_each\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_do\_for\_each\_channel()}{wld\_channel\_do\_for\_each\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+do\+\_\+for\+\_\+each\+\_\+channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{void $\ast$}]{data,  }\item[{void($\ast$)(\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, void $\ast$data, int channel)}]{channel\+\_\+function }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a9eabc31bc39b1fd1ce1daf0a0965087a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a6c2fc682bae58af517f20443b8fb9c28}\label{wld__channel_8c_a6c2fc682bae58af517f20443b8fb9c28}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_get\_channel\_clear\_time@{wld\_channel\_get\_channel\_clear\_time}}
+\index{wld\_channel\_get\_channel\_clear\_time@{wld\_channel\_get\_channel\_clear\_time}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_get\_channel\_clear\_time()}{wld\_channel\_get\_channel\_clear\_time()}}
+{\footnotesize\ttfamily int wld\+\_\+channel\+\_\+get\+\_\+channel\+\_\+clear\+\_\+time (\begin{DoxyParamCaption}\item[{int}]{channel }\end{DoxyParamCaption})}
+
+Returns the time in milliseconds that a channel should be cleared. Return the clear time provided previously by the Wi\+Fi driver, if exists. Return the default values otherwise.Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a6c2fc682bae58af517f20443b8fb9c28_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_ac4bbb4144e1201cafc36c76e65939b8e}\label{wld__channel_8c_ac4bbb4144e1201cafc36c76e65939b8e}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_get\_channel\_to\_clear@{wld\_channel\_get\_channel\_to\_clear}}
+\index{wld\_channel\_get\_channel\_to\_clear@{wld\_channel\_get\_channel\_to\_clear}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_get\_channel\_to\_clear()}{wld\_channel\_get\_channel\_to\_clear()}}
+{\footnotesize\ttfamily int wld\+\_\+channel\+\_\+get\+\_\+channel\+\_\+to\+\_\+clear (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{operating\+Channel\+Bandwidth }\end{DoxyParamCaption})}
+
+Returns a DFS channel number that can be cleared in the current bandwidth. If no channel can currently be cleared, it returns zero Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_ac4bbb4144e1201cafc36c76e65939b8e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a3036ba10341198ab1935d5dc7e547935}\label{wld__channel_8c_a3036ba10341198ab1935d5dc7e547935}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_get\_cleared\_channels@{wld\_channel\_get\_cleared\_channels}}
+\index{wld\_channel\_get\_cleared\_channels@{wld\_channel\_get\_cleared\_channels}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_get\_cleared\_channels()}{wld\_channel\_get\_cleared\_channels()}}
+{\footnotesize\ttfamily size\+\_\+t wld\+\_\+channel\+\_\+get\+\_\+cleared\+\_\+channels (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+channel\+\_\+t $\ast$}]{list,  }\item[{size\+\_\+t}]{list\+\_\+size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__channel_8c_a944e9f12925fb51261e095adeb71f645}\label{wld__channel_8c_a944e9f12925fb51261e095adeb71f645}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_get\_radartriggered\_channels@{wld\_channel\_get\_radartriggered\_channels}}
+\index{wld\_channel\_get\_radartriggered\_channels@{wld\_channel\_get\_radartriggered\_channels}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_get\_radartriggered\_channels()}{wld\_channel\_get\_radartriggered\_channels()}}
+{\footnotesize\ttfamily size\+\_\+t wld\+\_\+channel\+\_\+get\+\_\+radartriggered\+\_\+channels (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+channel\+\_\+t $\ast$}]{list,  }\item[{size\+\_\+t}]{list\+\_\+size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__channel_8c_a1a9a035bd946d1c31c8f715f91e9c8b4}\label{wld__channel_8c_a1a9a035bd946d1c31c8f715f91e9c8b4}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_init\_channels@{wld\_channel\_init\_channels}}
+\index{wld\_channel\_init\_channels@{wld\_channel\_init\_channels}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_init\_channels()}{wld\_channel\_init\_channels()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+init\+\_\+channels (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+Initialize all the channels on a given band. This will remove all current flags!! Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a1a9a035bd946d1c31c8f715f91e9c8b4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a490a9e4cfc09a514afaefa12f69cb7e1}\label{wld__channel_8c_a490a9e4cfc09a514afaefa12f69cb7e1}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_available@{wld\_channel\_is\_available}}
+\index{wld\_channel\_is\_available@{wld\_channel\_is\_available}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_available()}{wld\_channel\_is\_available()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+available (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns whether the channel is available \mbox{\Hypertarget{wld__channel_8c_adc8be7b229e350564cc1007c836e1629}\label{wld__channel_8c_adc8be7b229e350564cc1007c836e1629}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_band\_available@{wld\_channel\_is\_band\_available}}
+\index{wld\_channel\_is\_band\_available@{wld\_channel\_is\_band\_available}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_band\_available()}{wld\_channel\_is\_band\_available()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+available (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns whether the current band is usable. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_adc8be7b229e350564cc1007c836e1629_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_aff20451d404931f72f9bb5eccba83089}\label{wld__channel_8c_aff20451d404931f72f9bb5eccba83089}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_band\_passive@{wld\_channel\_is\_band\_passive}}
+\index{wld\_channel\_is\_band\_passive@{wld\_channel\_is\_band\_passive}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_band\_passive()}{wld\_channel\_is\_band\_passive()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+passive (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns true if band is available, but just passive and can be cleared. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_aff20451d404931f72f9bb5eccba83089_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_ac7bc7a7085458e48c9ca411929ba2b86}\label{wld__channel_8c_ac7bc7a7085458e48c9ca411929ba2b86}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_band\_radar\_detected@{wld\_channel\_is\_band\_radar\_detected}}
+\index{wld\_channel\_is\_band\_radar\_detected@{wld\_channel\_is\_band\_radar\_detected}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_band\_radar\_detected()}{wld\_channel\_is\_band\_radar\_detected()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+radar\+\_\+detected (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns true if anywhere in the given band a radar signal is detected. Note that when false is returned, the band could be unusable, or not even existing. Verify with is useble to check if a band can actually be used. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_ac7bc7a7085458e48c9ca411929ba2b86_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a0b7f74cfed1d43b00cae0e44c230519e}\label{wld__channel_8c_a0b7f74cfed1d43b00cae0e44c230519e}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_band\_usable@{wld\_channel\_is\_band\_usable}}
+\index{wld\_channel\_is\_band\_usable@{wld\_channel\_is\_band\_usable}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_band\_usable()}{wld\_channel\_is\_band\_usable()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+band\+\_\+usable (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns whether the current band is usable. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a0b7f74cfed1d43b00cae0e44c230519e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a8cf24885210899d4294a50b5b67045b2}\label{wld__channel_8c_a8cf24885210899d4294a50b5b67045b2}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_radar\_detected@{wld\_channel\_is\_radar\_detected}}
+\index{wld\_channel\_is\_radar\_detected@{wld\_channel\_is\_radar\_detected}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_radar\_detected()}{wld\_channel\_is\_radar\_detected()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+radar\+\_\+detected (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns true if the channel has radar detected, false otherwise \mbox{\Hypertarget{wld__channel_8c_ac12a9a0ce7a2727bf1c0e03cd02bfec6}\label{wld__channel_8c_ac12a9a0ce7a2727bf1c0e03cd02bfec6}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_is\_usable@{wld\_channel\_is\_usable}}
+\index{wld\_channel\_is\_usable@{wld\_channel\_is\_usable}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_is\_usable()}{wld\_channel\_is\_usable()}}
+{\footnotesize\ttfamily bool wld\+\_\+channel\+\_\+is\+\_\+usable (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Returns whether the channel is usable \mbox{\Hypertarget{wld__channel_8c_a5b103ffcd1398b194a2ea6a065a495dd}\label{wld__channel_8c_a5b103ffcd1398b194a2ea6a065a495dd}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_isValidClearChannel@{wld\_channel\_isValidClearChannel}}
+\index{wld\_channel\_isValidClearChannel@{wld\_channel\_isValidClearChannel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_isValidClearChannel()}{wld\_channel\_isValidClearChannel()}}
+{\footnotesize\ttfamily int wld\+\_\+channel\+\_\+is\+Valid\+Clear\+Channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{int}]{channel,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{operating\+Channel\+Bandwidth }\end{DoxyParamCaption})}
+
+Returns true if the given chanspec is not in banned chanspec list and Channel is not in banned channel list and available but just passive can be cleared. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a5b103ffcd1398b194a2ea6a065a495dd_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a5b103ffcd1398b194a2ea6a065a495dd_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a01d43f3e5649ae71b77f21cf56457039}\label{wld__channel_8c_a01d43f3e5649ae71b77f21cf56457039}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_available\_band@{wld\_channel\_mark\_available\_band}}
+\index{wld\_channel\_mark\_available\_band@{wld\_channel\_mark\_available\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_available\_band()}{wld\_channel\_mark\_available\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+available\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark the entire band as available \mbox{\Hypertarget{wld__channel_8c_a8f4ac82176127ff11de7585347815ecc}\label{wld__channel_8c_a8f4ac82176127ff11de7585347815ecc}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_available\_channel@{wld\_channel\_mark\_available\_channel}}
+\index{wld\_channel\_mark\_available\_channel@{wld\_channel\_mark\_available\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_available\_channel()}{wld\_channel\_mark\_available\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+available\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark the given channel as available in current locale Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a8f4ac82176127ff11de7585347815ecc_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a52ba40ee60c6aeddcaca6696f903db4c}\label{wld__channel_8c_a52ba40ee60c6aeddcaca6696f903db4c}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_passive\_band@{wld\_channel\_mark\_passive\_band}}
+\index{wld\_channel\_mark\_passive\_band@{wld\_channel\_mark\_passive\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_passive\_band()}{wld\_channel\_mark\_passive\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+passive\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark that a given channel and band is passive, so that we still have to do a dfs clear before going there. \mbox{\Hypertarget{wld__channel_8c_a274243f69f10bbc51cf7631622860889}\label{wld__channel_8c_a274243f69f10bbc51cf7631622860889}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_passive\_channel@{wld\_channel\_mark\_passive\_channel}}
+\index{wld\_channel\_mark\_passive\_channel@{wld\_channel\_mark\_passive\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_passive\_channel()}{wld\_channel\_mark\_passive\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+passive\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark that this channel is passive, i.\+e. that it still must be dfs cleared before being usable Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a274243f69f10bbc51cf7631622860889_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_aeb2aca17ebaa1055e821652c1b22b978}\label{wld__channel_8c_aeb2aca17ebaa1055e821652c1b22b978}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_radar\_detected\_band@{wld\_channel\_mark\_radar\_detected\_band}}
+\index{wld\_channel\_mark\_radar\_detected\_band@{wld\_channel\_mark\_radar\_detected\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_radar\_detected\_band()}{wld\_channel\_mark\_radar\_detected\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+detected\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark that a radar is detected in the given channel and band \mbox{\Hypertarget{wld__channel_8c_a2fcd4f372b30ebbdbdab4763c2cddde7}\label{wld__channel_8c_a2fcd4f372b30ebbdbdab4763c2cddde7}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_radar\_detected\_channel@{wld\_channel\_mark\_radar\_detected\_channel}}
+\index{wld\_channel\_mark\_radar\_detected\_channel@{wld\_channel\_mark\_radar\_detected\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_radar\_detected\_channel()}{wld\_channel\_mark\_radar\_detected\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+detected\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark the channel as radar detected. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a2fcd4f372b30ebbdbdab4763c2cddde7_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a45bf7c5b25c6f673cecd888b3282874c}\label{wld__channel_8c_a45bf7c5b25c6f673cecd888b3282874c}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_radar\_req\_band@{wld\_channel\_mark\_radar\_req\_band}}
+\index{wld\_channel\_mark\_radar\_req\_band@{wld\_channel\_mark\_radar\_req\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_radar\_req\_band()}{wld\_channel\_mark\_radar\_req\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+req\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark that the given channel and band has radar requirements. Note that this will mark the entire band as radar required. \mbox{\Hypertarget{wld__channel_8c_af280c210df36690e3e3f2feca13c4ad8}\label{wld__channel_8c_af280c210df36690e3e3f2feca13c4ad8}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_radar\_req\_channel@{wld\_channel\_mark\_radar\_req\_channel}}
+\index{wld\_channel\_mark\_radar\_req\_channel@{wld\_channel\_mark\_radar\_req\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_radar\_req\_channel()}{wld\_channel\_mark\_radar\_req\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+radar\+\_\+req\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark channel as requiring radar. Note that it does not automatically mark as needing to be cleared. This must be done separatly. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_af280c210df36690e3e3f2feca13c4ad8_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__channel_8c_a1ae6335b5ed5f4a4463c853202fd00f9}\label{wld__channel_8c_a1ae6335b5ed5f4a4463c853202fd00f9}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_unavailable\_band@{wld\_channel\_mark\_unavailable\_band}}
+\index{wld\_channel\_mark\_unavailable\_band@{wld\_channel\_mark\_unavailable\_band}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_unavailable\_band()}{wld\_channel\_mark\_unavailable\_band()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+unavailable\+\_\+band (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark the entire band as unavailable \mbox{\Hypertarget{wld__channel_8c_a42d85719bf81b67448828015a5c7209c}\label{wld__channel_8c_a42d85719bf81b67448828015a5c7209c}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_mark\_unavailable\_channel@{wld\_channel\_mark\_unavailable\_channel}}
+\index{wld\_channel\_mark\_unavailable\_channel@{wld\_channel\_mark\_unavailable\_channel}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_mark\_unavailable\_channel()}{wld\_channel\_mark\_unavailable\_channel()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+mark\+\_\+unavailable\+\_\+channel (\begin{DoxyParamCaption}\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec }\end{DoxyParamCaption})}
+
+Mark given channel as unavailable in given locale \mbox{\Hypertarget{wld__channel_8c_af1015b978999df3f8835ce46cfbba6c2}\label{wld__channel_8c_af1015b978999df3f8835ce46cfbba6c2}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_print@{wld\_channel\_print}}
+\index{wld\_channel\_print@{wld\_channel\_print}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_print()}{wld\_channel\_print()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+Debug method to print the current channel state \mbox{\Hypertarget{wld__channel_8c_a21233297a99a47a47bdd513f4bd1bc19}\label{wld__channel_8c_a21233297a99a47a47bdd513f4bd1bc19}} 
+\index{wld\_channel.c@{wld\_channel.c}!wld\_channel\_set\_channel\_clear\_time@{wld\_channel\_set\_channel\_clear\_time}}
+\index{wld\_channel\_set\_channel\_clear\_time@{wld\_channel\_set\_channel\_clear\_time}!wld\_channel.c@{wld\_channel.c}}
+\doxysubsubsection{\texorpdfstring{wld\_channel\_set\_channel\_clear\_time()}{wld\_channel\_set\_channel\_clear\_time()}}
+{\footnotesize\ttfamily void wld\+\_\+channel\+\_\+set\+\_\+channel\+\_\+clear\+\_\+time (\begin{DoxyParamCaption}\item[{int}]{channel,  }\item[{uint32\+\_\+t}]{time }\end{DoxyParamCaption})}
+
+Set the time in milliseconds that a channel should be cleared. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__channel_8c_a21233297a99a47a47bdd513f4bd1bc19_icgraph}
+\end{center}
+\end{figure}

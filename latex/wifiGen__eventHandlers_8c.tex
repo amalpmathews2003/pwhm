@@ -1,0 +1,163 @@
+\hypertarget{wifiGen__eventHandlers_8c}{}\doxysection{src/\+Plugin/wifi\+Gen\+\_\+event\+Handlers.c File Reference}
+\label{wifiGen__eventHandlers_8c}\index{src/Plugin/wifiGen\_eventHandlers.c@{src/Plugin/wifiGen\_eventHandlers.c}}
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+hapd.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+rad.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+fsm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+ep.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+mld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Ctrl\+Mngr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Ctrl\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ap\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+hostapd\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+sec\+Dmn.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+chanmgt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+sensing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/\+Utils/wld\+\_\+auto\+Neigh\+Add.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+hex.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+ieee802\+\_\+1x\+\_\+defs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+generic\+Frame\+Parser.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+chanspec.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$amxc/amxc.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+Include dependency graph for wifi\+Gen\+\_\+event\+Handlers.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__eventHandlers_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__eventHandlers_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\+Evt\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__eventHandlers_8c_ac822a8c27de23be05d25fa40fe2cd8f5}{ACLDENY\+\_\+\+EVENT\+\_\+\+STR}}~\char`\"{}$<$3$>$ACL-\/DENY\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__eventHandlers_8c_a74b7ef7c5165356b5276f6da2b893a4e}{SET\+\_\+\+HDLR}}(tgt,  src)~\{tgt = (tgt ? \+: src); \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef swl\+\_\+rc\+\_\+ne($\ast$ \mbox{\hyperlink{wifiGen__eventHandlers_8c_a71690cf7a06bc6a1088cbfe789d86d72}{evt\+Parser\+Pre\+Proc\+\_\+f}}) (char $\ast$Interface, char $\ast$event, char $\ast$params, char $\ast$$\ast$new\+If\+Name, char $\ast$$\ast$new\+Msg\+Data, size\+\_\+t $\ast$new\+Len)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wifiGen__eventHandlers_8c_a8d3a298382cabb2125f84b1448eb5d2b}{SWL\+\_\+\+TABLE}} (s\+Wpa\+Ctrl\+Events\+Pre\+Proc, ARR(char $\ast$evt\+Name;void $\ast$evt\+Parser;), ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+void\+Ptr), ARR(\{\char`\"{}$<$2$>$Ignore Authentication frame from\char`\"{}, \&s\+\_\+acl\+Deny\}, \{\char`\"{}$<$2$>$Ignore Probe Request frame from\char`\"{}, \&s\+\_\+acl\+Deny\},))
+\item 
+void \mbox{\hyperlink{wifiGen__eventHandlers_8c_ada33173b7a6342a0da0a0783aadfdb19}{s\+\_\+radar\+Evt\+Cb}} (void $\ast$p\+Ref, void $\ast$p\+Data \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, \mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t}{wld\+\_\+nl80211\+\_\+radar\+Evt\+Info\+\_\+t}} $\ast$radar\+Evt\+Info)
+\item 
+void \mbox{\hyperlink{wifiGen__eventHandlers_8c_ade845e48fcf4e65c73b94977e34d2170}{wifi\+Gen\+\_\+refresh\+Vaps\+If\+Idx}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__eventHandlers_8c_af55ce47126cf4a6c3699a631a5b38a70}{wifi\+Gen\+\_\+set\+Rad\+Evt\+Handlers}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__eventHandlers_8c_a49711960a5ed1b950bb071a164102aa9}{wifi\+Gen\+\_\+set\+Vap\+Evt\+Handlers}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__eventHandlers_8c_adf712af5236cbb7c1fe7790493932b73}{wifi\+Gen\+\_\+set\+Ep\+Evt\+Handlers}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_ac822a8c27de23be05d25fa40fe2cd8f5}\label{wifiGen__eventHandlers_8c_ac822a8c27de23be05d25fa40fe2cd8f5}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!ACLDENY\_EVENT\_STR@{ACLDENY\_EVENT\_STR}}
+\index{ACLDENY\_EVENT\_STR@{ACLDENY\_EVENT\_STR}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{ACLDENY\_EVENT\_STR}{ACLDENY\_EVENT\_STR}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ACLDENY\+\_\+\+EVENT\+\_\+\+STR~\char`\"{}$<$3$>$ACL-\/DENY\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen__eventHandlers_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\+Evt\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_a74b7ef7c5165356b5276f6da2b893a4e}\label{wifiGen__eventHandlers_8c_a74b7ef7c5165356b5276f6da2b893a4e}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!SET\_HDLR@{SET\_HDLR}}
+\index{SET\_HDLR@{SET\_HDLR}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{SET\_HDLR}{SET\_HDLR}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} SET\+\_\+\+HDLR(\begin{DoxyParamCaption}\item[{}]{tgt,  }\item[{}]{src }\end{DoxyParamCaption})~\{tgt = (tgt ? \+: src); \}}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_a71690cf7a06bc6a1088cbfe789d86d72}\label{wifiGen__eventHandlers_8c_a71690cf7a06bc6a1088cbfe789d86d72}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!evtParserPreProc\_f@{evtParserPreProc\_f}}
+\index{evtParserPreProc\_f@{evtParserPreProc\_f}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{evtParserPreProc\_f}{evtParserPreProc\_f}}
+{\footnotesize\ttfamily typedef swl\+\_\+rc\+\_\+ne($\ast$ evt\+Parser\+Pre\+Proc\+\_\+f) (char $\ast$Interface, char $\ast$event, char $\ast$params, char $\ast$$\ast$new\+If\+Name, char $\ast$$\ast$new\+Msg\+Data, size\+\_\+t $\ast$new\+Len)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_ada33173b7a6342a0da0a0783aadfdb19}\label{wifiGen__eventHandlers_8c_ada33173b7a6342a0da0a0783aadfdb19}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!s\_radarEvtCb@{s\_radarEvtCb}}
+\index{s\_radarEvtCb@{s\_radarEvtCb}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{s\_radarEvtCb()}{s\_radarEvtCb()}}
+{\footnotesize\ttfamily void s\+\_\+radar\+Evt\+Cb (\begin{DoxyParamCaption}\item[{void $\ast$}]{p\+Ref,  }\item[{void $\ast$p\+Data}]{\+\_\+\+UNUSED,  }\item[{\mbox{\hyperlink{structwld__nl80211__radarEvtInfo__t}{wld\+\_\+nl80211\+\_\+radar\+Evt\+Info\+\_\+t}} $\ast$}]{radar\+Evt\+Info }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__eventHandlers_8c_ada33173b7a6342a0da0a0783aadfdb19_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_a8d3a298382cabb2125f84b1448eb5d2b}\label{wifiGen__eventHandlers_8c_a8d3a298382cabb2125f84b1448eb5d2b}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Wpa\+Ctrl\+Events\+Pre\+Proc}]{,  }\item[{ARR(char $\ast$evt\+Name;void $\ast$evt\+Parser;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+void\+Ptr)}]{,  }\item[{ARR(\{\char`\"{}$<$2$>$Ignore Authentication frame from\char`\"{}, \&s\+\_\+acl\+Deny\}, \{\char`\"{}$<$2$>$Ignore Probe Request frame from\char`\"{}, \&s\+\_\+acl\+Deny\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_ade845e48fcf4e65c73b94977e34d2170}\label{wifiGen__eventHandlers_8c_ade845e48fcf4e65c73b94977e34d2170}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!wifiGen\_refreshVapsIfIdx@{wifiGen\_refreshVapsIfIdx}}
+\index{wifiGen\_refreshVapsIfIdx@{wifiGen\_refreshVapsIfIdx}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_refreshVapsIfIdx()}{wifiGen\_refreshVapsIfIdx()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+refresh\+Vaps\+If\+Idx (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__eventHandlers_8c_ade845e48fcf4e65c73b94977e34d2170_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_adf712af5236cbb7c1fe7790493932b73}\label{wifiGen__eventHandlers_8c_adf712af5236cbb7c1fe7790493932b73}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!wifiGen\_setEpEvtHandlers@{wifiGen\_setEpEvtHandlers}}
+\index{wifiGen\_setEpEvtHandlers@{wifiGen\_setEpEvtHandlers}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_setEpEvtHandlers()}{wifiGen\_setEpEvtHandlers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+set\+Ep\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_af55ce47126cf4a6c3699a631a5b38a70}\label{wifiGen__eventHandlers_8c_af55ce47126cf4a6c3699a631a5b38a70}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!wifiGen\_setRadEvtHandlers@{wifiGen\_setRadEvtHandlers}}
+\index{wifiGen\_setRadEvtHandlers@{wifiGen\_setRadEvtHandlers}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_setRadEvtHandlers()}{wifiGen\_setRadEvtHandlers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+set\+Rad\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__eventHandlers_8c_af55ce47126cf4a6c3699a631a5b38a70_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__eventHandlers_8c_a49711960a5ed1b950bb071a164102aa9}\label{wifiGen__eventHandlers_8c_a49711960a5ed1b950bb071a164102aa9}} 
+\index{wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}!wifiGen\_setVapEvtHandlers@{wifiGen\_setVapEvtHandlers}}
+\index{wifiGen\_setVapEvtHandlers@{wifiGen\_setVapEvtHandlers}!wifiGen\_eventHandlers.c@{wifiGen\_eventHandlers.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_setVapEvtHandlers()}{wifiGen\_setVapEvtHandlers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+set\+Vap\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+

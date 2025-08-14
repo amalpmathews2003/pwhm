@@ -1,0 +1,125 @@
+\hypertarget{wld__rad__macCfg_8c}{}\doxysection{src/\+Rad\+Mgt/wld\+\_\+rad\+\_\+mac\+Cfg.c File Reference}
+\label{wld__rad__macCfg_8c}\index{src/RadMgt/wld\_rad\_macCfg.c@{src/RadMgt/wld\_rad\_macCfg.c}}
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+mac.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+rad\+\_\+mac\+Cfg.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__macCfg_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__rad__macCfg_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}rad\+MacC\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__rad__macCfg_8c_a92dcc67386645c402d62df361a5e442b}{wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+has\+Shifted\+Mbss\+Base\+Mac}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wld__rad__macCfg_8c_a9babbc83ab2338ab73de5c5c927fcc83}{wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+shift\+Mbss\+If\+Not\+Enough\+Vaps}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, uint32\+\_\+t req\+Bss)
+\item 
+bool \mbox{\hyperlink{wld__rad__macCfg_8c_a849fc81d40b656b38d9ff3811c068fee}{wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+update\+Rad\+Base\+Mac}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__rad__macCfg_8c_a7e4b7f04e9dd320e6962ca89fedf7f31}{wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+generate\+Ep\+Mac}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$ifname, uint32\+\_\+t index, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__rad__macCfg_8c_a594e2bb70cd4048b0a9528b1909168dc}{wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+generate\+Bssid}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$ifname, uint32\+\_\+t index, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__rad__macCfg_8c_a8b7e480cfa941920287dcf6e20591910}{wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+generate\+Dummy\+Bssid}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$ifname, uint32\+\_\+t index, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Bin)
+\item 
+\mbox{\hyperlink{wld__rad__macCfg_8c_a0fd6d9af9c057200a14eea6668db6007}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+MACConfig\+Dm\+Hdlrs, ARR(),.obj\+Changed\+Cb=s\+\_\+set\+MACConfig\+\_\+ocf)
+\item 
+void \mbox{\hyperlink{wld__rad__macCfg_8c_ac45435d02cb856aab239ae2f7e827dd7}{\+\_\+wld\+\_\+rad\+\_\+set\+MACConfig\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__rad__macCfg_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__rad__macCfg_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!ME@{ME}}
+\index{ME@{ME}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}rad\+MacC\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__rad__macCfg_8c_ac45435d02cb856aab239ae2f7e827dd7}\label{wld__rad__macCfg_8c_ac45435d02cb856aab239ae2f7e827dd7}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!\_wld\_rad\_setMACConfig\_ocf@{\_wld\_rad\_setMACConfig\_ocf}}
+\index{\_wld\_rad\_setMACConfig\_ocf@{\_wld\_rad\_setMACConfig\_ocf}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_rad\_setMACConfig\_ocf()}{\_wld\_rad\_setMACConfig\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+rad\+\_\+set\+MACConfig\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__macCfg_8c_a0fd6d9af9c057200a14eea6668db6007}\label{wld__rad__macCfg_8c_a0fd6d9af9c057200a14eea6668db6007}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+MACConfig\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setMACConfig\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__macCfg_8c_a594e2bb70cd4048b0a9528b1909168dc}\label{wld__rad__macCfg_8c_a594e2bb70cd4048b0a9528b1909168dc}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!wld\_rad\_macCfg\_generateBssid@{wld\_rad\_macCfg\_generateBssid}}
+\index{wld\_rad\_macCfg\_generateBssid@{wld\_rad\_macCfg\_generateBssid}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_macCfg\_generateBssid()}{wld\_rad\_macCfg\_generateBssid()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+generate\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{ifname,  }\item[{uint32\+\_\+t}]{index,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+BSSID is generated based on AP Bssid rank and radio\textquotesingle{}s available BSSIDs \mbox{\Hypertarget{wld__rad__macCfg_8c_a8b7e480cfa941920287dcf6e20591910}\label{wld__rad__macCfg_8c_a8b7e480cfa941920287dcf6e20591910}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!wld\_rad\_macCfg\_generateDummyBssid@{wld\_rad\_macCfg\_generateDummyBssid}}
+\index{wld\_rad\_macCfg\_generateDummyBssid@{wld\_rad\_macCfg\_generateDummyBssid}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_macCfg\_generateDummyBssid()}{wld\_rad\_macCfg\_generateDummyBssid()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+generate\+Dummy\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{ifname,  }\item[{uint32\+\_\+t}]{index,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__macCfg_8c_a7e4b7f04e9dd320e6962ca89fedf7f31}\label{wld__rad__macCfg_8c_a7e4b7f04e9dd320e6962ca89fedf7f31}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!wld\_rad\_macCfg\_generateEpMac@{wld\_rad\_macCfg\_generateEpMac}}
+\index{wld\_rad\_macCfg\_generateEpMac@{wld\_rad\_macCfg\_generateEpMac}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_macCfg\_generateEpMac()}{wld\_rad\_macCfg\_generateEpMac()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+generate\+Ep\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{ifname,  }\item[{uint32\+\_\+t}]{index,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Bin }\end{DoxyParamCaption})}
+
+EP MAC is generated based on EP Mac rank and beyond bitmask used for radio\textquotesingle{}s BSSs Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__macCfg_8c_a7e4b7f04e9dd320e6962ca89fedf7f31_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__macCfg_8c_a92dcc67386645c402d62df361a5e442b}\label{wld__rad__macCfg_8c_a92dcc67386645c402d62df361a5e442b}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!wld\_rad\_macCfg\_hasShiftedMbssBaseMac@{wld\_rad\_macCfg\_hasShiftedMbssBaseMac}}
+\index{wld\_rad\_macCfg\_hasShiftedMbssBaseMac@{wld\_rad\_macCfg\_hasShiftedMbssBaseMac}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_macCfg\_hasShiftedMbssBaseMac()}{wld\_rad\_macCfg\_hasShiftedMbssBaseMac()}}
+{\footnotesize\ttfamily bool wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+has\+Shifted\+Mbss\+Base\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__macCfg_8c_a92dcc67386645c402d62df361a5e442b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__macCfg_8c_a9babbc83ab2338ab73de5c5c927fcc83}\label{wld__rad__macCfg_8c_a9babbc83ab2338ab73de5c5c927fcc83}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!wld\_rad\_macCfg\_shiftMbssIfNotEnoughVaps@{wld\_rad\_macCfg\_shiftMbssIfNotEnoughVaps}}
+\index{wld\_rad\_macCfg\_shiftMbssIfNotEnoughVaps@{wld\_rad\_macCfg\_shiftMbssIfNotEnoughVaps}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_macCfg\_shiftMbssIfNotEnoughVaps()}{wld\_rad\_macCfg\_shiftMbssIfNotEnoughVaps()}}
+{\footnotesize\ttfamily bool wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+shift\+Mbss\+If\+Not\+Enough\+Vaps (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{uint32\+\_\+t}]{req\+Bss }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__macCfg_8c_a849fc81d40b656b38d9ff3811c068fee}\label{wld__rad__macCfg_8c_a849fc81d40b656b38d9ff3811c068fee}} 
+\index{wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}!wld\_rad\_macCfg\_updateRadBaseMac@{wld\_rad\_macCfg\_updateRadBaseMac}}
+\index{wld\_rad\_macCfg\_updateRadBaseMac@{wld\_rad\_macCfg\_updateRadBaseMac}!wld\_rad\_macCfg.c@{wld\_rad\_macCfg.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_macCfg\_updateRadBaseMac()}{wld\_rad\_macCfg\_updateRadBaseMac()}}
+{\footnotesize\ttfamily bool wld\+\_\+rad\+\_\+mac\+Cfg\+\_\+update\+Rad\+Base\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__macCfg_8c_a849fc81d40b656b38d9ff3811c068fee_cgraph}
+\end{center}
+\end{figure}

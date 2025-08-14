@@ -1,0 +1,66 @@
+\hypertarget{test__staStats_8c}{}\doxysection{test/test\+Sta\+Stats/test\+\_\+sta\+Stats.c File Reference}
+\label{test__staStats_8c}\index{test/testStaStats/test\_staStats.c@{test/testStaStats/test\_staStats.c}}
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$setjmp.\+h$>$}\newline
+{\ttfamily \#include $<$cmocka.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}test-\/toolbox/ttb\+\_\+mock\+Timer.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}test-\/toolbox/ttb.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}test-\/toolbox/ttb\+\_\+notif\+Watch.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+mock\+Vendor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+ep.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+vap.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../test\+Helper/wld\+\_\+th\+\_\+dm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/ttb/swl\+\_\+ttb.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/ttb/swla\+\_\+ttb\+Variant.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/file\+Ops/swl\+\_\+file\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+Include dependency graph for test\+\_\+sta\+Stats.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{test__staStats_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{test__staStats_8c_a882c39107ea6a61cf2ba67dbf59937eb}{NR\+\_\+\+TEST\+\_\+\+DEV}}~2
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{test__staStats_8c_af07a447945f7213dd80d08a9d9f98088}{s\+\_\+check\+Dev\+Entries}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t nr\+Assoc, uint32\+\_\+t nr\+Active)
+\item 
+int \mbox{\hyperlink{test__staStats_8c_a9faaf5129925f9c6165b85f04e4916f7}{main}} (int argc \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, char $\ast$argv\mbox{[}$\,$\mbox{]} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{test__staStats_8c_a882c39107ea6a61cf2ba67dbf59937eb}\label{test__staStats_8c_a882c39107ea6a61cf2ba67dbf59937eb}} 
+\index{test\_staStats.c@{test\_staStats.c}!NR\_TEST\_DEV@{NR\_TEST\_DEV}}
+\index{NR\_TEST\_DEV@{NR\_TEST\_DEV}!test\_staStats.c@{test\_staStats.c}}
+\doxysubsubsection{\texorpdfstring{NR\_TEST\_DEV}{NR\_TEST\_DEV}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} NR\+\_\+\+TEST\+\_\+\+DEV~2}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{test__staStats_8c_a9faaf5129925f9c6165b85f04e4916f7}\label{test__staStats_8c_a9faaf5129925f9c6165b85f04e4916f7}} 
+\index{test\_staStats.c@{test\_staStats.c}!main@{main}}
+\index{main@{main}!test\_staStats.c@{test\_staStats.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int argc}]{\+\_\+\+UNUSED,  }\item[{char $\ast$argv\mbox{[}$\,$\mbox{]}}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{test__staStats_8c_af07a447945f7213dd80d08a9d9f98088}\label{test__staStats_8c_af07a447945f7213dd80d08a9d9f98088}} 
+\index{test\_staStats.c@{test\_staStats.c}!s\_checkDevEntries@{s\_checkDevEntries}}
+\index{s\_checkDevEntries@{s\_checkDevEntries}!test\_staStats.c@{test\_staStats.c}}
+\doxysubsubsection{\texorpdfstring{s\_checkDevEntries()}{s\_checkDevEntries()}}
+{\footnotesize\ttfamily void s\+\_\+check\+Dev\+Entries (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{nr\+Assoc,  }\item[{uint32\+\_\+t}]{nr\+Active }\end{DoxyParamCaption})}
+

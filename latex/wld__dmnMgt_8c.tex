@@ -1,0 +1,123 @@
+\hypertarget{wld__dmnMgt_8c}{}\doxysection{src/\+Utils/wld\+\_\+dmn\+Mgt.c File Reference}
+\label{wld__dmnMgt_8c}\index{src/Utils/wld\_dmnMgt.c@{src/Utils/wld\_dmnMgt.c}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+dmn\+Mgt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+sec\+Dmn\+Grp.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+dmn\+Mgt.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__dmnMgt_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+DMgt\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__dmnMgt_8c_aea2981ef935772a66903c5185ccbf651}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Dmn\+Dm\+Hdlrs, ARR(),.inst\+Added\+Cb=s\+\_\+add\+Dmn\+Inst\+\_\+oaf,)
+\item 
+void \mbox{\hyperlink{wld__dmnMgt_8c_acd3d5cc378154a6121962fe88d897e0d}{\+\_\+wld\+\_\+dmn\+Mgt\+\_\+set\+Daemon\+Entry\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__dmnMgt_8c_a3ff2c09d38f6b4a56ae0ed159aec6e40}{\+\_\+wld\+\_\+dmn\+Mgt\+\_\+del\+Daemon\+Entry\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+\mbox{\hyperlink{wld__dmnMgt_8c_a83ec108a30629807dd2c525a1719b486}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Dmn\+Exec\+Settings\+Dm\+Hdlrs, ARR(),.obj\+Changed\+Cb=s\+\_\+set\+Dmn\+Exec\+Settings\+\_\+ocf)
+\item 
+void \mbox{\hyperlink{wld__dmnMgt_8c_a143edb9bfc6f23238c29300c7e23ece7}{\+\_\+wld\+\_\+dmn\+Mgt\+\_\+set\+Daemon\+Exec\+Settings\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+const \mbox{\hyperlink{structwld__dmnMgt__dmnCtx__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Ctx\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__dmnMgt_8c_a115e2c85916561f253910fb66063fa7e}{wld\+\_\+dmn\+Mgt\+\_\+get\+Dmn\+Ctx}} (const char $\ast$dmn\+Name)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__dmnMgt_8c_a42d6513077e9211559b38ddc0741160f}{wld\+\_\+dmn\+Mgt\+\_\+init\+Dmn\+Exec\+Info}} (\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$pp\+Dmn\+Exec\+Info)
+\item 
+void \mbox{\hyperlink{wld__dmnMgt_8c_ac0bd9034c98470602fc7305821765009}{wld\+\_\+dmn\+Mgt\+\_\+cleanup\+Dmn\+Exec\+Info}} (\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$pp\+Dmn\+Exec\+Info)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__dmnMgt_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__dmnMgt_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!ME@{ME}}
+\index{ME@{ME}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+DMgt\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__dmnMgt_8c_a3ff2c09d38f6b4a56ae0ed159aec6e40}\label{wld__dmnMgt_8c_a3ff2c09d38f6b4a56ae0ed159aec6e40}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!\_wld\_dmnMgt\_delDaemonEntry\_odf@{\_wld\_dmnMgt\_delDaemonEntry\_odf}}
+\index{\_wld\_dmnMgt\_delDaemonEntry\_odf@{\_wld\_dmnMgt\_delDaemonEntry\_odf}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_dmnMgt\_delDaemonEntry\_odf()}{\_wld\_dmnMgt\_delDaemonEntry\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+dmn\+Mgt\+\_\+del\+Daemon\+Entry\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__dmnMgt_8c_acd3d5cc378154a6121962fe88d897e0d}\label{wld__dmnMgt_8c_acd3d5cc378154a6121962fe88d897e0d}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!\_wld\_dmnMgt\_setDaemonEntry\_ocf@{\_wld\_dmnMgt\_setDaemonEntry\_ocf}}
+\index{\_wld\_dmnMgt\_setDaemonEntry\_ocf@{\_wld\_dmnMgt\_setDaemonEntry\_ocf}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_dmnMgt\_setDaemonEntry\_ocf()}{\_wld\_dmnMgt\_setDaemonEntry\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+dmn\+Mgt\+\_\+set\+Daemon\+Entry\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__dmnMgt_8c_a143edb9bfc6f23238c29300c7e23ece7}\label{wld__dmnMgt_8c_a143edb9bfc6f23238c29300c7e23ece7}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!\_wld\_dmnMgt\_setDaemonExecSettings\_ocf@{\_wld\_dmnMgt\_setDaemonExecSettings\_ocf}}
+\index{\_wld\_dmnMgt\_setDaemonExecSettings\_ocf@{\_wld\_dmnMgt\_setDaemonExecSettings\_ocf}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_dmnMgt\_setDaemonExecSettings\_ocf()}{\_wld\_dmnMgt\_setDaemonExecSettings\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+dmn\+Mgt\+\_\+set\+Daemon\+Exec\+Settings\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__dmnMgt_8c_aea2981ef935772a66903c5185ccbf651}\label{wld__dmnMgt_8c_aea2981ef935772a66903c5185ccbf651}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Dmn\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{inst\+Added\+Cb = {\ttfamily s\+\_\+addDmnInst\+\_\+oaf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__dmnMgt_8c_a83ec108a30629807dd2c525a1719b486}\label{wld__dmnMgt_8c_a83ec108a30629807dd2c525a1719b486}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Dmn\+Exec\+Settings\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setDmnExecSettings\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__dmnMgt_8c_ac0bd9034c98470602fc7305821765009}\label{wld__dmnMgt_8c_ac0bd9034c98470602fc7305821765009}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!wld\_dmnMgt\_cleanupDmnExecInfo@{wld\_dmnMgt\_cleanupDmnExecInfo}}
+\index{wld\_dmnMgt\_cleanupDmnExecInfo@{wld\_dmnMgt\_cleanupDmnExecInfo}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_dmnMgt\_cleanupDmnExecInfo()}{wld\_dmnMgt\_cleanupDmnExecInfo()}}
+{\footnotesize\ttfamily void wld\+\_\+dmn\+Mgt\+\_\+cleanup\+Dmn\+Exec\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$}]{pp\+Dmn\+Exec\+Info }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8c_ac0bd9034c98470602fc7305821765009_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__dmnMgt_8c_a115e2c85916561f253910fb66063fa7e}\label{wld__dmnMgt_8c_a115e2c85916561f253910fb66063fa7e}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!wld\_dmnMgt\_getDmnCtx@{wld\_dmnMgt\_getDmnCtx}}
+\index{wld\_dmnMgt\_getDmnCtx@{wld\_dmnMgt\_getDmnCtx}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_dmnMgt\_getDmnCtx()}{wld\_dmnMgt\_getDmnCtx()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structwld__dmnMgt__dmnCtx__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Ctx\+\_\+t}} $\ast$ wld\+\_\+dmn\+Mgt\+\_\+get\+Dmn\+Ctx (\begin{DoxyParamCaption}\item[{const char $\ast$}]{dmn\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{wld__dmnMgt_8c_a115e2c85916561f253910fb66063fa7e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__dmnMgt_8c_a42d6513077e9211559b38ddc0741160f}\label{wld__dmnMgt_8c_a42d6513077e9211559b38ddc0741160f}} 
+\index{wld\_dmnMgt.c@{wld\_dmnMgt.c}!wld\_dmnMgt\_initDmnExecInfo@{wld\_dmnMgt\_initDmnExecInfo}}
+\index{wld\_dmnMgt\_initDmnExecInfo@{wld\_dmnMgt\_initDmnExecInfo}!wld\_dmnMgt.c@{wld\_dmnMgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_dmnMgt\_initDmnExecInfo()}{wld\_dmnMgt\_initDmnExecInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+dmn\+Mgt\+\_\+init\+Dmn\+Exec\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__dmnMgt__dmnExecInfo__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Info\+\_\+t}} $\ast$$\ast$}]{pp\+Dmn\+Exec\+Info }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dmnMgt_8c_a42d6513077e9211559b38ddc0741160f_icgraph}
+\end{center}
+\end{figure}

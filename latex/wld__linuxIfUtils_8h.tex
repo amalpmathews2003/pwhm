@@ -1,0 +1,305 @@
+\hypertarget{wld__linuxIfUtils_8h}{}\doxysection{include/wld/wld\+\_\+linux\+If\+Utils.h File Reference}
+\label{wld__linuxIfUtils_8h}\index{include/wld/wld\_linuxIfUtils.h@{include/wld/wld\_linuxIfUtils.h}}
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+mac.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+linux\+If\+Utils.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=240pt]{wld__linuxIfUtils_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a02092ba8d6dda33a584c37818c4af732}{wld\+\_\+linux\+If\+Utils\+\_\+get\+Net\+Sock}} ()
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a1ed70e31f78a4556b3c3b560e29a2c00}{wld\+\_\+linux\+If\+Utils\+\_\+get\+State}} (int sock, char $\ast$intf\+Name)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a51c79a19795d90811bdd9655cdace3c3}{wld\+\_\+linux\+If\+Utils\+\_\+get\+State\+Ext}} (char $\ast$intf\+Name)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a3cfe5875e4903211756333c2be3c3ac7}{wld\+\_\+linux\+If\+Utils\+\_\+set\+State}} (int sock, char $\ast$intf\+Name, int state)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a4bcb10872e8bfc181da6e35628e621de}{wld\+\_\+linux\+If\+Utils\+\_\+set\+State\+Ext}} (char $\ast$intf\+Name, int state)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_aebd566d1abd259c7802087dc76c7d745}{wld\+\_\+linux\+If\+Utils\+\_\+set\+Mac}} (int sock, char $\ast$intf\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Info)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a551d23aff6a09cd72e119ea8b8604c8b}{wld\+\_\+linux\+If\+Utils\+\_\+set\+Mac\+Ext}} (char $\ast$intf\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Info)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_ae42910ec7c1a37e0fee82b594951f976}{wld\+\_\+linux\+If\+Utils\+\_\+get\+Mac}} (int sock, char $\ast$intf\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Info)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a1ed449d6c9fef95e5aad1f25e65996b8}{wld\+\_\+linux\+If\+Utils\+\_\+get\+Mac\+Ext}} (char $\ast$intf\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Info)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a80a4f2a9c916d1b8631a41017ca85a13}{wld\+\_\+linux\+If\+Utils\+\_\+get\+Link\+State}} (int sock, char $\ast$intf\+Name)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a3bb1f18a5ddc724ff6453d335c0fe2d4}{wld\+\_\+linux\+If\+Utils\+\_\+get\+Link\+State\+Ext}} (char $\ast$intf\+Name)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_ac8a1ce9d47dfdc09b23cd7fd4d4b63f3}{wld\+\_\+linux\+If\+Utils\+\_\+get\+If\+Index}} (int sock, char $\ast$intf\+Name, int $\ast$p\+If\+Index)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a2ab34a55a32cf20d507167a9f2493897}{wld\+\_\+linux\+If\+Utils\+\_\+get\+If\+Index\+Ext}} (char $\ast$intf\+Name, int $\ast$p\+If\+Index)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a959a9e146e5060f68af048061372b919}{wld\+\_\+linux\+If\+Utils\+\_\+update\+Mac}} (int sock, char $\ast$intf\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Address)
+\item 
+int \mbox{\hyperlink{wld__linuxIfUtils_8h_a57dc83a1df6fff548df049df496994a6}{wld\+\_\+linux\+If\+Utils\+\_\+update\+Mac\+Ext}} (char $\ast$intf\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Address)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__linuxIfUtils_8h_ae972b2619bf5c72bac594ce745026c57}{wld\+\_\+linux\+If\+Utils\+\_\+get\+Chipset\+Vendor}} (char $\ast$radio\+Name)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_ae972b2619bf5c72bac594ce745026c57}\label{wld__linuxIfUtils_8h_ae972b2619bf5c72bac594ce745026c57}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getChipsetVendor@{wld\_linuxIfUtils\_getChipsetVendor}}
+\index{wld\_linuxIfUtils\_getChipsetVendor@{wld\_linuxIfUtils\_getChipsetVendor}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getChipsetVendor()}{wld\_linuxIfUtils\_getChipsetVendor()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+linux\+If\+Utils\+\_\+get\+Chipset\+Vendor (\begin{DoxyParamCaption}\item[{char $\ast$}]{radio\+Name }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_ae972b2619bf5c72bac594ce745026c57_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_ac8a1ce9d47dfdc09b23cd7fd4d4b63f3}\label{wld__linuxIfUtils_8h_ac8a1ce9d47dfdc09b23cd7fd4d4b63f3}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getIfIndex@{wld\_linuxIfUtils\_getIfIndex}}
+\index{wld\_linuxIfUtils\_getIfIndex@{wld\_linuxIfUtils\_getIfIndex}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getIfIndex()}{wld\_linuxIfUtils\_getIfIndex()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+If\+Index (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name,  }\item[{int $\ast$}]{p\+If\+Index }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_ac8a1ce9d47dfdc09b23cd7fd4d4b63f3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a2ab34a55a32cf20d507167a9f2493897}\label{wld__linuxIfUtils_8h_a2ab34a55a32cf20d507167a9f2493897}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getIfIndexExt@{wld\_linuxIfUtils\_getIfIndexExt}}
+\index{wld\_linuxIfUtils\_getIfIndexExt@{wld\_linuxIfUtils\_getIfIndexExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getIfIndexExt()}{wld\_linuxIfUtils\_getIfIndexExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+If\+Index\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name,  }\item[{int $\ast$}]{p\+If\+Index }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a2ab34a55a32cf20d507167a9f2493897_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a2ab34a55a32cf20d507167a9f2493897_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a80a4f2a9c916d1b8631a41017ca85a13}\label{wld__linuxIfUtils_8h_a80a4f2a9c916d1b8631a41017ca85a13}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getLinkState@{wld\_linuxIfUtils\_getLinkState}}
+\index{wld\_linuxIfUtils\_getLinkState@{wld\_linuxIfUtils\_getLinkState}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getLinkState()}{wld\_linuxIfUtils\_getLinkState()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+Link\+State (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a80a4f2a9c916d1b8631a41017ca85a13_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a3bb1f18a5ddc724ff6453d335c0fe2d4}\label{wld__linuxIfUtils_8h_a3bb1f18a5ddc724ff6453d335c0fe2d4}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getLinkStateExt@{wld\_linuxIfUtils\_getLinkStateExt}}
+\index{wld\_linuxIfUtils\_getLinkStateExt@{wld\_linuxIfUtils\_getLinkStateExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getLinkStateExt()}{wld\_linuxIfUtils\_getLinkStateExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+Link\+State\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a3bb1f18a5ddc724ff6453d335c0fe2d4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a3bb1f18a5ddc724ff6453d335c0fe2d4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_ae42910ec7c1a37e0fee82b594951f976}\label{wld__linuxIfUtils_8h_ae42910ec7c1a37e0fee82b594951f976}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getMac@{wld\_linuxIfUtils\_getMac}}
+\index{wld\_linuxIfUtils\_getMac@{wld\_linuxIfUtils\_getMac}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getMac()}{wld\_linuxIfUtils\_getMac()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+Mac (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Info }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_ae42910ec7c1a37e0fee82b594951f976_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a1ed449d6c9fef95e5aad1f25e65996b8}\label{wld__linuxIfUtils_8h_a1ed449d6c9fef95e5aad1f25e65996b8}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getMacExt@{wld\_linuxIfUtils\_getMacExt}}
+\index{wld\_linuxIfUtils\_getMacExt@{wld\_linuxIfUtils\_getMacExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getMacExt()}{wld\_linuxIfUtils\_getMacExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+Mac\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Info }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a1ed449d6c9fef95e5aad1f25e65996b8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a02092ba8d6dda33a584c37818c4af732}\label{wld__linuxIfUtils_8h_a02092ba8d6dda33a584c37818c4af732}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getNetSock@{wld\_linuxIfUtils\_getNetSock}}
+\index{wld\_linuxIfUtils\_getNetSock@{wld\_linuxIfUtils\_getNetSock}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getNetSock()}{wld\_linuxIfUtils\_getNetSock()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+Net\+Sock (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a02092ba8d6dda33a584c37818c4af732_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a1ed70e31f78a4556b3c3b560e29a2c00}\label{wld__linuxIfUtils_8h_a1ed70e31f78a4556b3c3b560e29a2c00}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getState@{wld\_linuxIfUtils\_getState}}
+\index{wld\_linuxIfUtils\_getState@{wld\_linuxIfUtils\_getState}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getState()}{wld\_linuxIfUtils\_getState()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+State (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a1ed70e31f78a4556b3c3b560e29a2c00_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a51c79a19795d90811bdd9655cdace3c3}\label{wld__linuxIfUtils_8h_a51c79a19795d90811bdd9655cdace3c3}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_getStateExt@{wld\_linuxIfUtils\_getStateExt}}
+\index{wld\_linuxIfUtils\_getStateExt@{wld\_linuxIfUtils\_getStateExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_getStateExt()}{wld\_linuxIfUtils\_getStateExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+get\+State\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a51c79a19795d90811bdd9655cdace3c3_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_aebd566d1abd259c7802087dc76c7d745}\label{wld__linuxIfUtils_8h_aebd566d1abd259c7802087dc76c7d745}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_setMac@{wld\_linuxIfUtils\_setMac}}
+\index{wld\_linuxIfUtils\_setMac@{wld\_linuxIfUtils\_setMac}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_setMac()}{wld\_linuxIfUtils\_setMac()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+set\+Mac (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Info }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_aebd566d1abd259c7802087dc76c7d745_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a551d23aff6a09cd72e119ea8b8604c8b}\label{wld__linuxIfUtils_8h_a551d23aff6a09cd72e119ea8b8604c8b}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_setMacExt@{wld\_linuxIfUtils\_setMacExt}}
+\index{wld\_linuxIfUtils\_setMacExt@{wld\_linuxIfUtils\_setMacExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_setMacExt()}{wld\_linuxIfUtils\_setMacExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+set\+Mac\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Info }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a551d23aff6a09cd72e119ea8b8604c8b_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a3cfe5875e4903211756333c2be3c3ac7}\label{wld__linuxIfUtils_8h_a3cfe5875e4903211756333c2be3c3ac7}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_setState@{wld\_linuxIfUtils\_setState}}
+\index{wld\_linuxIfUtils\_setState@{wld\_linuxIfUtils\_setState}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_setState()}{wld\_linuxIfUtils\_setState()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+set\+State (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name,  }\item[{int}]{state }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a3cfe5875e4903211756333c2be3c3ac7_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a4bcb10872e8bfc181da6e35628e621de}\label{wld__linuxIfUtils_8h_a4bcb10872e8bfc181da6e35628e621de}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_setStateExt@{wld\_linuxIfUtils\_setStateExt}}
+\index{wld\_linuxIfUtils\_setStateExt@{wld\_linuxIfUtils\_setStateExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_setStateExt()}{wld\_linuxIfUtils\_setStateExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+set\+State\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name,  }\item[{int}]{state }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a4bcb10872e8bfc181da6e35628e621de_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a959a9e146e5060f68af048061372b919}\label{wld__linuxIfUtils_8h_a959a9e146e5060f68af048061372b919}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_updateMac@{wld\_linuxIfUtils\_updateMac}}
+\index{wld\_linuxIfUtils\_updateMac@{wld\_linuxIfUtils\_updateMac}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_updateMac()}{wld\_linuxIfUtils\_updateMac()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+update\+Mac (\begin{DoxyParamCaption}\item[{int}]{sock,  }\item[{char $\ast$}]{intf\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a959a9e146e5060f68af048061372b919_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a959a9e146e5060f68af048061372b919_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfUtils_8h_a57dc83a1df6fff548df049df496994a6}\label{wld__linuxIfUtils_8h_a57dc83a1df6fff548df049df496994a6}} 
+\index{wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}!wld\_linuxIfUtils\_updateMacExt@{wld\_linuxIfUtils\_updateMacExt}}
+\index{wld\_linuxIfUtils\_updateMacExt@{wld\_linuxIfUtils\_updateMacExt}!wld\_linuxIfUtils.h@{wld\_linuxIfUtils.h}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfUtils\_updateMacExt()}{wld\_linuxIfUtils\_updateMacExt()}}
+{\footnotesize\ttfamily int wld\+\_\+linux\+If\+Utils\+\_\+update\+Mac\+Ext (\begin{DoxyParamCaption}\item[{char $\ast$}]{intf\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfUtils_8h_a57dc83a1df6fff548df049df496994a6_cgraph}
+\end{center}
+\end{figure}

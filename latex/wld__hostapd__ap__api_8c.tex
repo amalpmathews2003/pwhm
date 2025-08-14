@@ -1,0 +1,862 @@
+\hypertarget{wld__hostapd__ap__api_8c}{}\doxysection{src/nl80211/wld\+\_\+hostapd\+\_\+ap\+\_\+api.c File Reference}
+\label{wld__hostapd__ap__api_8c}\index{src/nl80211/wld\_hostapd\_ap\_api.c@{src/nl80211/wld\_hostapd\_ap\_api.c}}
+{\ttfamily \#include $<$arpa/inet.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+hostapd\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+hostapd\+\_\+cfg\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+hostapd\+\_\+ap\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+hex.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+mac.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+hostapd\+\_\+ap\+\_\+api.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__ap__api_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}hapd\+AP\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a7ef75349d553287cfbdbfe341b520118}{WPS\+\_\+\+START}}~\char`\"{}WPS\+\_\+\+PBC\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a7a3c9cc3f1d625bd188828893557f55f}{WPS\+\_\+\+CANCEL}}~\char`\"{}WPS\+\_\+\+CANCEL\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a250661eb6d67eb533d90d457240de533}{HOSTAPD\+\_\+\+CTRL\+\_\+\+IFACE\+\_\+\+RCV\+\_\+\+BUFSIZE}}~4096
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__hostapd__ap__api_8c_aa6dac09498c3ce21de8e83a651c97076}{wld\+\_\+ap\+\_\+hostapd\+\_\+update\+Beacon}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$reason)
+\begin{DoxyCompactList}\small\item\em update beacon frame \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__ap__api_8c_a6d7f41418cd3ac69b12e74a8f5369071}{wld\+\_\+ap\+\_\+hostapd\+\_\+reload\+Sec\+Key}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$reason)
+\begin{DoxyCompactList}\small\item\em reload AP secret keys conf \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_ab1d6bb5d0d7558986896f105623421c3}{wld\+\_\+ap\+\_\+hostapd\+\_\+dump\+Neighbor\+List}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$list, uint32\+\_\+t max\+Len, uint32\+\_\+t $\ast$p\+Len)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_ad30a63c4cb7bf8a9602c9f8928ef25b8}{wld\+\_\+ap\+\_\+hostapd\+\_\+remove\+Neighbor}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$p\+Ap\+Neighbor)
+\begin{DoxyCompactList}\small\item\em delete neighbor \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a4d60bd0dd1234209740049126bb1253f}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Neighbor}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$p\+Ap\+Neighbor)
+\begin{DoxyCompactList}\small\item\em set neighbor \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__ap__api_8c_a574fb994be68c4c9d50d22c1cd142b11}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Param\+Value}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$field, const char $\ast$value, const char $\ast$reason)
+\begin{DoxyCompactList}\small\item\em set a parameter value in hostapd context \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__ap__api_8c_af16dcab4d7d868a49397279fbb1e95d5}{wld\+\_\+ap\+\_\+hostapd\+\_\+send\+Command}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, char $\ast$cmd, const char $\ast$reason)
+\begin{DoxyCompactList}\small\item\em send hostapd command \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8c_a5ef28f9a00011fa8565dcf01a9d9e910}{SWL\+\_\+\+TABLE}} (s\+Hapd\+Cfg\+Params\+Action\+Map, ARR(char $\ast$param;\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} action;), ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,), ARR(\{\char`\"{}wep\+\_\+default\+\_\+key\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key0\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key1\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key2\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key3\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}interface\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}bss\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}mld\+\_\+ap\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}disable\+\_\+11be\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wpa\+\_\+group\+\_\+rekey\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE\}, \{\char`\"{}wpa\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE\}, \{\char`\"{}wps\+\_\+state\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE\}, \{\char`\"{}wpa\+\_\+pairwise\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}rsn\+\_\+pairwise\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}wpa\+\_\+key\+\_\+mgmt\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ieee80211w\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+addr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+port\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}own\+\_\+ip\+\_\+addr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}nas\+\_\+identifier\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}radius\+\_\+auth\+\_\+req\+\_\+attr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+shared\+\_\+secret\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+default\+\_\+session\+\_\+timeout\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}owe\+\_\+transition\+\_\+ifname\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}transition\+\_\+disable\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}mobility\+\_\+domain\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ft\+\_\+over\+\_\+ds\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}config\+\_\+methods\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}qos\+\_\+map\+\_\+set\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}uuid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ap\+\_\+pin\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}mbo\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\+\_\+backhaul\+\_\+ssid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\+\_\+backhaul\+\_\+wpa\+\_\+psk\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\+\_\+backhaul\+\_\+wpa\+\_\+passphrase\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ap\+\_\+max\+\_\+inactivity\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}rrm\+\_\+neighbor\+\_\+report\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}rrm\+\_\+beacon\+\_\+report\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ssid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}wpa\+\_\+psk\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}wpa\+\_\+passphrase\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}sae\+\_\+password\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}ignore\+\_\+broadcast\+\_\+ssid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}ap\+\_\+isolate\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}wmm\+\_\+enabled\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}uapsd\+\_\+advertisement\+\_\+enabled\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}rnr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}multi\+\_\+ap\+\_\+profile\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}multi\+\_\+ap\+\_\+vlanid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\},))
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a7cbf30f93322b7711fbcd06d0d632ab2}{wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Param\+Action}} (\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} $\ast$p\+Out\+Mapped\+Action, const char $\ast$param\+Name)
+\begin{DoxyCompactList}\small\item\em get the \textquotesingle{}on change\textquotesingle{} action of a specific hostapd parameter \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a7c512040bbded6d41d48bc2668430d59}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Param\+Action}} (const char $\ast$param\+Name, \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} in\+Mapped\+Action)
+\begin{DoxyCompactList}\small\item\em set the \textquotesingle{}on change\textquotesingle{} of a specific hostapd parameter \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a0ddcf7d0716bef1915c8b360f4c26328}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Ssid}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$ssid)
+\begin{DoxyCompactList}\small\item\em set the SSID in the hostapd \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_aa14a50755058b95a6bf57f9498e3d367}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Secret\+Key}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_ab7fff8ea56aeecb266bf7a1ca557d3f6}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Security\+Mode}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a56b602c5f045bf75f051c63b11b25f9c}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Sec\+Params}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em set AP security parameters \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a02d3ffe3385e64dd9a58f94d259edfa2}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+SSIDAdvertisement}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, bool enable)
+\begin{DoxyCompactList}\small\item\em set the SSID Advertisement in the hostapd \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a1d208f1319bdd6a5dcf084d4d573bac7}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Max\+Nbr\+Sta}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t num)
+\begin{DoxyCompactList}\small\item\em set the max sta in the hostapd \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a058d4cae0f651a7fe35a185749284992}{wld\+\_\+ap\+\_\+hostapd\+\_\+update\+Max\+Nbr\+Sta}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em update the max sta in the hostapd \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_abbf36b9fd93927ec35558b522a8e44c4}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Client\+Isolation}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em prevent exchange of frames between associated stations in the same VAP \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a09921453fffc3bae234df44c51f18635}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+No\+Sec\+Params}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em set AP common parameters (non-\/security) \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a9f859f65b8c727941c88044198d4700b}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Mld\+Params}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a54331ce233d5710ffd4081c95b91fb3c}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Enable\+Vap}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, bool enable)
+\begin{DoxyCompactList}\small\item\em save dynamic conf for enabling/disabling hostapd vap (main or secondary bss) \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} \mbox{\hyperlink{wld__hostapd__ap__api_8c_a39a4fe86e591988818e41ab49ea847fd}{wld\+\_\+ap\+\_\+hostapd\+\_\+enable\+Vap}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, bool enable)
+\begin{DoxyCompactList}\small\item\em enable/disable hostapd vap (main or secondary bss) \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a3fc108a23b45c3888db2cff45d8cc9f5}{wld\+\_\+ap\+\_\+hostapd\+\_\+kick\+Station}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac, swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne reason)
+\begin{DoxyCompactList}\small\item\em kick a station from an Access\+Point \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a747f95147d561636be7f8b4265ce5126}{wld\+\_\+ap\+\_\+hostapd\+\_\+deauth\+All\+Stations}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em deauthenticate all AP\textquotesingle{}s stations (default reason AUTH\+\_\+\+NO\+\_\+\+LONGER\+\_\+\+VALID) \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a38896a5b7b235f1ca09906a5fdbbfb62}{wld\+\_\+ap\+\_\+hostapd\+\_\+disassoc\+Station}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac, swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne reason)
+\begin{DoxyCompactList}\small\item\em disassociate a station from an Access\+Point \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_ade3f167d10c9b2b0bdffe157e2991da6}{wld\+\_\+ap\+\_\+hostapd\+\_\+transfer\+Station}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structwld__transferStaArgs__t}{wld\+\_\+transfer\+Sta\+Args\+\_\+t}} $\ast$params)
+\begin{DoxyCompactList}\small\item\em Transfer a station from a Bss to another. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a7ea6b27ab61e9ed7d352ef262140aff7}{wld\+\_\+ap\+\_\+hostapd\+\_\+start\+Wps}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em start WPS session \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_afdb64962b2e15cbeba56a3d91c80a019}{wld\+\_\+ap\+\_\+hostapd\+\_\+start\+Wps\+Pin}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$pin, uint32\+\_\+t timeout)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a122168ddb8988c4680191741a5d5ec26}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Wps\+Ap\+Pin}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$pin, uint32\+\_\+t timeout)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a0693440db251648e1ec7709ea8739f3a}{wld\+\_\+ap\+\_\+hostapd\+\_\+stop\+Wps}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em stop WPS session \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a4ce84896ed2d6a60aa83d856398852c3}{wld\+\_\+ap\+\_\+hostapd\+\_\+del\+All\+Mac\+Filtering\+Entries}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em delete all MAC addresses on accept/deny access list depending \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a1e366a6284b1effa9a17ef3e0ac27ec8}{wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Mac\+Filtering\+List}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\begin{DoxyCompactList}\small\item\em set the MAC Filetring mode and list \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_acb0920423a1def52b2d547c8e8f26088}{wld\+\_\+ap\+\_\+hostapd\+\_\+add\+Mac\+Filtering\+Entry}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, char $\ast$mac\+Str)
+\begin{DoxyCompactList}\small\item\em add the MAC address on accept/deny access list depending on Mac Filetring mode value Mac Filetring mode value\+: APMFM\+\_\+\+OFF, APMFM\+\_\+\+WHITELIST, APMFM\+\_\+\+BLACKLIST \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_ae619407e651907ed1c37934c9f39ad54}{wld\+\_\+ap\+\_\+hostapd\+\_\+del\+Mac\+Filtering\+Entry}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, char $\ast$mac\+Str)
+\begin{DoxyCompactList}\small\item\em delete the MAC address on accept/deny access list depending on Mac Filetring mode value Mac Filetring mode value\+: APMFM\+\_\+\+OFF, APMFM\+\_\+\+WHITELIST, APMFM\+\_\+\+BLACKLIST \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__hostapd__ap__api_8c_a9f51ff571de88dd81936cb683ee1d910}{SWL\+\_\+\+TABLE}} (s\+Akm\+Suite\+Selector\+Map, ARR(char $\ast$akm\+Suite\+Selector\+Str;swl\+\_\+security\+\_\+ap\+Mode\+\_\+e sec\+Mode;), ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,), ARR(\{\char`\"{}00-\/0f-\/ac-\/1\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+E\}, \{\char`\"{}00-\/0f-\/ac-\/2\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/3\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/4\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/5\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+E\}, \{\char`\"{}00-\/0f-\/ac-\/6\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+\+WPA3\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/8\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/9\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/19\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/20\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/24\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+P\},))
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_afad7b0a2f65846dd025f663e9ea576f7}{wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Sta\+Info}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_aa7b2c3cd0057dd3ec3a67c0a762cf07e}{wld\+\_\+ap\+\_\+hostapd\+\_\+get\+All\+Sta\+Info}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__hostapd__ap__api_8c_ae8eecdb192c184e3b53900a10a45b177}{wld\+\_\+ap\+\_\+hostapd\+\_\+is\+Main\+Sta\+Mld\+Link}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$p\+Mac\+Bin)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_abda7cfe153b9b2096430d2a3afdd0d10}{wld\+\_\+ap\+\_\+hostapd\+\_\+request\+RRMReport\+\_\+ext}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const swl\+\_\+mac\+Char\+\_\+t $\ast$sta, \mbox{\hyperlink{structwld__rrmReq__t}{wld\+\_\+rrm\+Req\+\_\+t}} $\ast$req)
+\begin{DoxyCompactList}\small\item\em send RRM beacon Request \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_aa42c1d8c78ec6a525a439d7cea5c665d}{wld\+\_\+ap\+\_\+hostapd\+\_\+request\+RRMReport}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const swl\+\_\+mac\+Char\+\_\+t $\ast$sta, uint8\+\_\+t req\+Mode, uint8\+\_\+t oper\+Class, swl\+\_\+channel\+\_\+t channel, bool add\+Neighbor, uint16\+\_\+t random\+Interval, uint16\+\_\+t measurement\+Duration, uint8\+\_\+t measurement\+Mode, const swl\+\_\+mac\+Char\+\_\+t $\ast$bssid, const char $\ast$ssid)
+\begin{DoxyCompactList}\small\item\em send RRM beacon Request \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_a68567c22ce677346dfd2649bfa6f58e3}{wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Num\+Mld\+Links}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t $\ast$p\+NLinks)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_ac2115a23088e152b6a1fabec54b4705a}{wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Mld\+Link\+Id}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, int32\+\_\+t $\ast$p\+Link\+Id)
+\item 
+swl\+\_\+trl\+\_\+e \mbox{\hyperlink{wld__hostapd__ap__api_8c_ada7871c78ecba1ca1a30a463209052d5}{wld\+\_\+hostapd\+\_\+ap\+\_\+get\+Cfg\+Param\+Supp}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$param)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__hostapd__ap__api_8c_aca5b40edd3915f97f6b2da6a2a604080}{wld\+\_\+hostapd\+\_\+ap\+\_\+send\+Cfg\+Param}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$param, const char $\ast$value)
+\item 
+bool \mbox{\hyperlink{wld__hostapd__ap__api_8c_a17760b1c416b18a7640d5a909c774acf}{wld\+\_\+hostapd\+\_\+ap\+\_\+need\+Wpa\+Ctrl\+Iface}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__hostapd__ap__api_8c_a4af3e18cf6ef407f6ba070f00d765775}{wld\+\_\+hostapd\+\_\+ap\+\_\+select\+Ap\+Link\+Iface}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a250661eb6d67eb533d90d457240de533}\label{wld__hostapd__ap__api_8c_a250661eb6d67eb533d90d457240de533}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!HOSTAPD\_CTRL\_IFACE\_RCV\_BUFSIZE@{HOSTAPD\_CTRL\_IFACE\_RCV\_BUFSIZE}}
+\index{HOSTAPD\_CTRL\_IFACE\_RCV\_BUFSIZE@{HOSTAPD\_CTRL\_IFACE\_RCV\_BUFSIZE}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_CTRL\_IFACE\_RCV\_BUFSIZE}{HOSTAPD\_CTRL\_IFACE\_RCV\_BUFSIZE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+CTRL\+\_\+\+IFACE\+\_\+\+RCV\+\_\+\+BUFSIZE~4096}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__hostapd__ap__api_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!ME@{ME}}
+\index{ME@{ME}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}hapd\+AP\char`\"{}}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a7a3c9cc3f1d625bd188828893557f55f}\label{wld__hostapd__ap__api_8c_a7a3c9cc3f1d625bd188828893557f55f}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!WPS\_CANCEL@{WPS\_CANCEL}}
+\index{WPS\_CANCEL@{WPS\_CANCEL}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{WPS\_CANCEL}{WPS\_CANCEL}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+CANCEL~\char`\"{}WPS\+\_\+\+CANCEL\char`\"{}}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a7ef75349d553287cfbdbfe341b520118}\label{wld__hostapd__ap__api_8c_a7ef75349d553287cfbdbfe341b520118}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!WPS\_START@{WPS\_START}}
+\index{WPS\_START@{WPS\_START}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{WPS\_START}{WPS\_START}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPS\+\_\+\+START~\char`\"{}WPS\+\_\+\+PBC\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a9f51ff571de88dd81936cb683ee1d910}\label{wld__hostapd__ap__api_8c_a9f51ff571de88dd81936cb683ee1d910}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Akm\+Suite\+Selector\+Map}]{,  }\item[{ARR(char $\ast$akm\+Suite\+Selector\+Str;swl\+\_\+security\+\_\+ap\+Mode\+\_\+e sec\+Mode;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{\char`\"{}00-\/0f-\/ac-\/1\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+E\}, \{\char`\"{}00-\/0f-\/ac-\/2\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/3\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/4\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/5\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+E\}, \{\char`\"{}00-\/0f-\/ac-\/6\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+\+WPA3\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/8\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/9\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/19\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/20\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA2\+\_\+P\}, \{\char`\"{}00-\/0f-\/ac-\/24\char`\"{}, SWL\+\_\+\+SECURITY\+\_\+\+APMODE\+\_\+\+WPA3\+\_\+P\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a5ef28f9a00011fa8565dcf01a9d9e910}\label{wld__hostapd__ap__api_8c_a5ef28f9a00011fa8565dcf01a9d9e910}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Hapd\+Cfg\+Params\+Action\+Map}]{,  }\item[{ARR(char $\ast$param;\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} action;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{\char`\"{}wep\+\_\+default\+\_\+key\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key0\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key1\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key2\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wep\+\_\+key3\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}interface\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}bss\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}mld\+\_\+ap\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}disable\+\_\+11be\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART\}, \{\char`\"{}wpa\+\_\+group\+\_\+rekey\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE\}, \{\char`\"{}wpa\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE\}, \{\char`\"{}wps\+\_\+state\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE\}, \{\char`\"{}wpa\+\_\+pairwise\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}rsn\+\_\+pairwise\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}wpa\+\_\+key\+\_\+mgmt\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ieee80211w\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+addr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+port\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}own\+\_\+ip\+\_\+addr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}nas\+\_\+identifier\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}radius\+\_\+auth\+\_\+req\+\_\+attr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+shared\+\_\+secret\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}auth\+\_\+server\+\_\+default\+\_\+session\+\_\+timeout\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}owe\+\_\+transition\+\_\+ifname\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}transition\+\_\+disable\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}mobility\+\_\+domain\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ft\+\_\+over\+\_\+ds\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}config\+\_\+methods\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}qos\+\_\+map\+\_\+set\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}uuid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ap\+\_\+pin\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}mbo\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\+\_\+backhaul\+\_\+ssid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\+\_\+backhaul\+\_\+wpa\+\_\+psk\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}multi\+\_\+ap\+\_\+backhaul\+\_\+wpa\+\_\+passphrase\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ap\+\_\+max\+\_\+inactivity\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}rrm\+\_\+neighbor\+\_\+report\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}rrm\+\_\+beacon\+\_\+report\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+SIGHUP\}, \{\char`\"{}ssid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}wpa\+\_\+psk\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}wpa\+\_\+passphrase\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}sae\+\_\+password\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RELOAD\+\_\+\+SECKEY\}, \{\char`\"{}ignore\+\_\+broadcast\+\_\+ssid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}ap\+\_\+isolate\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}wmm\+\_\+enabled\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}uapsd\+\_\+advertisement\+\_\+enabled\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}rnr\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}multi\+\_\+ap\+\_\+profile\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\}, \{\char`\"{}multi\+\_\+ap\+\_\+vlanid\char`\"{}, SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_acb0920423a1def52b2d547c8e8f26088}\label{wld__hostapd__ap__api_8c_acb0920423a1def52b2d547c8e8f26088}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_addMacFilteringEntry@{wld\_ap\_hostapd\_addMacFilteringEntry}}
+\index{wld\_ap\_hostapd\_addMacFilteringEntry@{wld\_ap\_hostapd\_addMacFilteringEntry}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_addMacFilteringEntry()}{wld\_ap\_hostapd\_addMacFilteringEntry()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+add\+Mac\+Filtering\+Entry (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{char $\ast$}]{mac\+Str }\end{DoxyParamCaption})}
+
+
+
+add the MAC address on accept/deny access list depending on Mac Filetring mode value Mac Filetring mode value\+: APMFM\+\_\+\+OFF, APMFM\+\_\+\+WHITELIST, APMFM\+\_\+\+BLACKLIST 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em mac\+Str} & mac address \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a747f95147d561636be7f8b4265ce5126}\label{wld__hostapd__ap__api_8c_a747f95147d561636be7f8b4265ce5126}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_deauthAllStations@{wld\_ap\_hostapd\_deauthAllStations}}
+\index{wld\_ap\_hostapd\_deauthAllStations@{wld\_ap\_hostapd\_deauthAllStations}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_deauthAllStations()}{wld\_ap\_hostapd\_deauthAllStations()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+deauth\+All\+Stations (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+deauthenticate all AP\textquotesingle{}s stations (default reason AUTH\+\_\+\+NO\+\_\+\+LONGER\+\_\+\+VALID) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a4ce84896ed2d6a60aa83d856398852c3}\label{wld__hostapd__ap__api_8c_a4ce84896ed2d6a60aa83d856398852c3}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_delAllMacFilteringEntries@{wld\_ap\_hostapd\_delAllMacFilteringEntries}}
+\index{wld\_ap\_hostapd\_delAllMacFilteringEntries@{wld\_ap\_hostapd\_delAllMacFilteringEntries}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_delAllMacFilteringEntries()}{wld\_ap\_hostapd\_delAllMacFilteringEntries()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+del\+All\+Mac\+Filtering\+Entries (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+delete all MAC addresses on accept/deny access list depending 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ae619407e651907ed1c37934c9f39ad54}\label{wld__hostapd__ap__api_8c_ae619407e651907ed1c37934c9f39ad54}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_delMacFilteringEntry@{wld\_ap\_hostapd\_delMacFilteringEntry}}
+\index{wld\_ap\_hostapd\_delMacFilteringEntry@{wld\_ap\_hostapd\_delMacFilteringEntry}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_delMacFilteringEntry()}{wld\_ap\_hostapd\_delMacFilteringEntry()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+del\+Mac\+Filtering\+Entry (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{char $\ast$}]{mac\+Str }\end{DoxyParamCaption})}
+
+
+
+delete the MAC address on accept/deny access list depending on Mac Filetring mode value Mac Filetring mode value\+: APMFM\+\_\+\+OFF, APMFM\+\_\+\+WHITELIST, APMFM\+\_\+\+BLACKLIST 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em mac\+Str} & mac address \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a38896a5b7b235f1ca09906a5fdbbfb62}\label{wld__hostapd__ap__api_8c_a38896a5b7b235f1ca09906a5fdbbfb62}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_disassocStation@{wld\_ap\_hostapd\_disassocStation}}
+\index{wld\_ap\_hostapd\_disassocStation@{wld\_ap\_hostapd\_disassocStation}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_disassocStation()}{wld\_ap\_hostapd\_disassocStation()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+disassoc\+Station (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac,  }\item[{swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne}]{reason }\end{DoxyParamCaption})}
+
+
+
+disassociate a station from an Access\+Point 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em mac} & address \\
+\hline
+{\em reason} & the reason to disassociate the station from the Access\+Point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ab1d6bb5d0d7558986896f105623421c3}\label{wld__hostapd__ap__api_8c_ab1d6bb5d0d7558986896f105623421c3}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_dumpNeighborList@{wld\_ap\_hostapd\_dumpNeighborList}}
+\index{wld\_ap\_hostapd\_dumpNeighborList@{wld\_ap\_hostapd\_dumpNeighborList}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_dumpNeighborList()}{wld\_ap\_hostapd\_dumpNeighborList()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+dump\+Neighbor\+List (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{list,  }\item[{uint32\+\_\+t}]{max\+Len,  }\item[{uint32\+\_\+t $\ast$}]{p\+Len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a39a4fe86e591988818e41ab49ea847fd}\label{wld__hostapd__ap__api_8c_a39a4fe86e591988818e41ab49ea847fd}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_enableVap@{wld\_ap\_hostapd\_enableVap}}
+\index{wld\_ap\_hostapd\_enableVap@{wld\_ap\_hostapd\_enableVap}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_enableVap()}{wld\_ap\_hostapd\_enableVap()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+enable\+Vap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{bool}]{enable }\end{DoxyParamCaption})}
+
+
+
+enable/disable hostapd vap (main or secondary bss) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em enable} & the VAP enabling flag \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when VAP is ena/disable successfully
+\begin{DoxyItemize}
+\item SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+TOGGLE when status application requires hostapd main iface toggle
+\item Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_aa7b2c3cd0057dd3ec3a67c0a762cf07e}\label{wld__hostapd__ap__api_8c_aa7b2c3cd0057dd3ec3a67c0a762cf07e}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_getAllStaInfo@{wld\_ap\_hostapd\_getAllStaInfo}}
+\index{wld\_ap\_hostapd\_getAllStaInfo@{wld\_ap\_hostapd\_getAllStaInfo}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_getAllStaInfo()}{wld\_ap\_hostapd\_getAllStaInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+get\+All\+Sta\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ac2115a23088e152b6a1fabec54b4705a}\label{wld__hostapd__ap__api_8c_ac2115a23088e152b6a1fabec54b4705a}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_getMldLinkId@{wld\_ap\_hostapd\_getMldLinkId}}
+\index{wld\_ap\_hostapd\_getMldLinkId@{wld\_ap\_hostapd\_getMldLinkId}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_getMldLinkId()}{wld\_ap\_hostapd\_getMldLinkId()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Mld\+Link\+Id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{int32\+\_\+t $\ast$}]{p\+Link\+Id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a68567c22ce677346dfd2649bfa6f58e3}\label{wld__hostapd__ap__api_8c_a68567c22ce677346dfd2649bfa6f58e3}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_getNumMldLinks@{wld\_ap\_hostapd\_getNumMldLinks}}
+\index{wld\_ap\_hostapd\_getNumMldLinks@{wld\_ap\_hostapd\_getNumMldLinks}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_getNumMldLinks()}{wld\_ap\_hostapd\_getNumMldLinks()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Num\+Mld\+Links (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t $\ast$}]{p\+NLinks }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a7cbf30f93322b7711fbcd06d0d632ab2}\label{wld__hostapd__ap__api_8c_a7cbf30f93322b7711fbcd06d0d632ab2}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_getParamAction@{wld\_ap\_hostapd\_getParamAction}}
+\index{wld\_ap\_hostapd\_getParamAction@{wld\_ap\_hostapd\_getParamAction}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_getParamAction()}{wld\_ap\_hostapd\_getParamAction()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Param\+Action (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} $\ast$}]{p\+Out\+Mapped\+Action,  }\item[{const char $\ast$}]{param\+Name }\end{DoxyParamCaption})}
+
+
+
+get the \textquotesingle{}on change\textquotesingle{} action of a specific hostapd parameter 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Out\+Mapped\+Action} & a out mapped action pointer \\
+\hline
+{\em param\+Name} & the parameter name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK if successful, error code otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_afad7b0a2f65846dd025f663e9ea576f7}\label{wld__hostapd__ap__api_8c_afad7b0a2f65846dd025f663e9ea576f7}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_getStaInfo@{wld\_ap\_hostapd\_getStaInfo}}
+\index{wld\_ap\_hostapd\_getStaInfo@{wld\_ap\_hostapd\_getStaInfo}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_getStaInfo()}{wld\_ap\_hostapd\_getStaInfo()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+get\+Sta\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ae8eecdb192c184e3b53900a10a45b177}\label{wld__hostapd__ap__api_8c_ae8eecdb192c184e3b53900a10a45b177}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_isMainStaMldLink@{wld\_ap\_hostapd\_isMainStaMldLink}}
+\index{wld\_ap\_hostapd\_isMainStaMldLink@{wld\_ap\_hostapd\_isMainStaMldLink}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_isMainStaMldLink()}{wld\_ap\_hostapd\_isMainStaMldLink()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+hostapd\+\_\+is\+Main\+Sta\+Mld\+Link (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{p\+Mac\+Bin }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a3fc108a23b45c3888db2cff45d8cc9f5}\label{wld__hostapd__ap__api_8c_a3fc108a23b45c3888db2cff45d8cc9f5}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_kickStation@{wld\_ap\_hostapd\_kickStation}}
+\index{wld\_ap\_hostapd\_kickStation@{wld\_ap\_hostapd\_kickStation}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_kickStation()}{wld\_ap\_hostapd\_kickStation()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+kick\+Station (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac,  }\item[{swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne}]{reason }\end{DoxyParamCaption})}
+
+
+
+kick a station from an Access\+Point 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em mac} & address \\
+\hline
+{\em reason} & the reason to kick the station from the Access\+Point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a6d7f41418cd3ac69b12e74a8f5369071}\label{wld__hostapd__ap__api_8c_a6d7f41418cd3ac69b12e74a8f5369071}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_reloadSecKey@{wld\_ap\_hostapd\_reloadSecKey}}
+\index{wld\_ap\_hostapd\_reloadSecKey@{wld\_ap\_hostapd\_reloadSecKey}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_reloadSecKey()}{wld\_ap\_hostapd\_reloadSecKey()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+hostapd\+\_\+reload\+Sec\+Key (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{reason }\end{DoxyParamCaption})}
+
+
+
+reload AP secret keys conf 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em reason} & the command caller \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the RELOAD\+\_\+\+WPA\+\_\+\+PSK cmd is executed successfully. Otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ad30a63c4cb7bf8a9602c9f8928ef25b8}\label{wld__hostapd__ap__api_8c_ad30a63c4cb7bf8a9602c9f8928ef25b8}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_removeNeighbor@{wld\_ap\_hostapd\_removeNeighbor}}
+\index{wld\_ap\_hostapd\_removeNeighbor@{wld\_ap\_hostapd\_removeNeighbor}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_removeNeighbor()}{wld\_ap\_hostapd\_removeNeighbor()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+remove\+Neighbor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$}]{p\+Ap\+Neighbor }\end{DoxyParamCaption})}
+
+
+
+delete neighbor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em p\+Ap\+Neighbor} & \+:Neighbor to be removed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the remove\+\_\+neighbor cmd is executed successfully. Otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_aa42c1d8c78ec6a525a439d7cea5c665d}\label{wld__hostapd__ap__api_8c_aa42c1d8c78ec6a525a439d7cea5c665d}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_requestRRMReport@{wld\_ap\_hostapd\_requestRRMReport}}
+\index{wld\_ap\_hostapd\_requestRRMReport@{wld\_ap\_hostapd\_requestRRMReport}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_requestRRMReport()}{wld\_ap\_hostapd\_requestRRMReport()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+request\+RRMReport (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const swl\+\_\+mac\+Char\+\_\+t $\ast$}]{sta,  }\item[{uint8\+\_\+t}]{req\+Mode,  }\item[{uint8\+\_\+t}]{oper\+Class,  }\item[{swl\+\_\+channel\+\_\+t}]{channel,  }\item[{bool}]{add\+Neighbor,  }\item[{uint16\+\_\+t}]{random\+Interval,  }\item[{uint16\+\_\+t}]{measurement\+Duration,  }\item[{uint8\+\_\+t}]{measurement\+Mode,  }\item[{const swl\+\_\+mac\+Char\+\_\+t $\ast$}]{bssid,  }\item[{const char $\ast$}]{ssid }\end{DoxyParamCaption})}
+
+
+
+send RRM beacon Request 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em sta} & mac address \\
+\hline
+{\em oper\+Class} & (optional) class to scan \\
+\hline
+{\em channel} & (optional) channel to scan \\
+\hline
+{\em timeout} & (optional) time to wait in milliseconds \\
+\hline
+{\em bssid} & (optional) bssid argument \\
+\hline
+{\em ssid} & (optional) ssid \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_abda7cfe153b9b2096430d2a3afdd0d10}\label{wld__hostapd__ap__api_8c_abda7cfe153b9b2096430d2a3afdd0d10}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_requestRRMReport\_ext@{wld\_ap\_hostapd\_requestRRMReport\_ext}}
+\index{wld\_ap\_hostapd\_requestRRMReport\_ext@{wld\_ap\_hostapd\_requestRRMReport\_ext}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_requestRRMReport\_ext()}{wld\_ap\_hostapd\_requestRRMReport\_ext()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+request\+RRMReport\+\_\+ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const swl\+\_\+mac\+Char\+\_\+t $\ast$}]{sta,  }\item[{\mbox{\hyperlink{structwld__rrmReq__t}{wld\+\_\+rrm\+Req\+\_\+t}} $\ast$}]{req }\end{DoxyParamCaption})}
+
+
+
+send RRM beacon Request 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em sta} & mac address \\
+\hline
+{\em req} & wld struct with rrm\+Request \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_af16dcab4d7d868a49397279fbb1e95d5}\label{wld__hostapd__ap__api_8c_af16dcab4d7d868a49397279fbb1e95d5}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_sendCommand@{wld\_ap\_hostapd\_sendCommand}}
+\index{wld\_ap\_hostapd\_sendCommand@{wld\_ap\_hostapd\_sendCommand}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_sendCommand()}{wld\_ap\_hostapd\_sendCommand()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+hostapd\+\_\+send\+Command (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{char $\ast$}]{cmd,  }\item[{const char $\ast$}]{reason }\end{DoxyParamCaption})}
+
+
+
+send hostapd command 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em cmd} & the command to send \\
+\hline
+{\em reason} & the command caller \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the SET cmd is executed successfully. Otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_abbf36b9fd93927ec35558b522a8e44c4}\label{wld__hostapd__ap__api_8c_abbf36b9fd93927ec35558b522a8e44c4}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setClientIsolation@{wld\_ap\_hostapd\_setClientIsolation}}
+\index{wld\_ap\_hostapd\_setClientIsolation@{wld\_ap\_hostapd\_setClientIsolation}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setClientIsolation()}{wld\_ap\_hostapd\_setClientIsolation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Client\+Isolation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+prevent exchange of frames between associated stations in the same VAP 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a54331ce233d5710ffd4081c95b91fb3c}\label{wld__hostapd__ap__api_8c_a54331ce233d5710ffd4081c95b91fb3c}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setEnableVap@{wld\_ap\_hostapd\_setEnableVap}}
+\index{wld\_ap\_hostapd\_setEnableVap@{wld\_ap\_hostapd\_setEnableVap}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setEnableVap()}{wld\_ap\_hostapd\_setEnableVap()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Enable\+Vap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{bool}]{enable }\end{DoxyParamCaption})}
+
+
+
+save dynamic conf for enabling/disabling hostapd vap (main or secondary bss) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em enable} & the VAP enabling flag \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when VAP ena/disabling conf is set successfully
+\begin{DoxyItemize}
+\item Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a1e366a6284b1effa9a17ef3e0ac27ec8}\label{wld__hostapd__ap__api_8c_a1e366a6284b1effa9a17ef3e0ac27ec8}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setMacFilteringList@{wld\_ap\_hostapd\_setMacFilteringList}}
+\index{wld\_ap\_hostapd\_setMacFilteringList@{wld\_ap\_hostapd\_setMacFilteringList}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setMacFilteringList()}{wld\_ap\_hostapd\_setMacFilteringList()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Mac\+Filtering\+List (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+set the MAC Filetring mode and list 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__ap__api_8c_a1e366a6284b1effa9a17ef3e0ac27ec8_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a1d208f1319bdd6a5dcf084d4d573bac7}\label{wld__hostapd__ap__api_8c_a1d208f1319bdd6a5dcf084d4d573bac7}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setMaxNbrSta@{wld\_ap\_hostapd\_setMaxNbrSta}}
+\index{wld\_ap\_hostapd\_setMaxNbrSta@{wld\_ap\_hostapd\_setMaxNbrSta}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setMaxNbrSta()}{wld\_ap\_hostapd\_setMaxNbrSta()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Max\+Nbr\+Sta (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption})}
+
+
+
+set the max sta in the hostapd 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em num} & Max number of station \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ \texorpdfstring{$>$}{>} SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when the ssid advertisement is set and can be applied
+\begin{DoxyItemize}
+\item Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a9f859f65b8c727941c88044198d4700b}\label{wld__hostapd__ap__api_8c_a9f859f65b8c727941c88044198d4700b}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setMldParams@{wld\_ap\_hostapd\_setMldParams}}
+\index{wld\_ap\_hostapd\_setMldParams@{wld\_ap\_hostapd\_setMldParams}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setMldParams()}{wld\_ap\_hostapd\_setMldParams()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Mld\+Params (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a4d60bd0dd1234209740049126bb1253f}\label{wld__hostapd__ap__api_8c_a4d60bd0dd1234209740049126bb1253f}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setNeighbor@{wld\_ap\_hostapd\_setNeighbor}}
+\index{wld\_ap\_hostapd\_setNeighbor@{wld\_ap\_hostapd\_setNeighbor}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setNeighbor()}{wld\_ap\_hostapd\_setNeighbor()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Neighbor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$}]{p\+Ap\+Neighbor }\end{DoxyParamCaption})}
+
+
+
+set neighbor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em p\+Ap\+Neighbor} & \+:Neighbor to be added \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the set\+\_\+neighbor cmd is executed successfully. Otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a09921453fffc3bae234df44c51f18635}\label{wld__hostapd__ap__api_8c_a09921453fffc3bae234df44c51f18635}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setNoSecParams@{wld\_ap\_hostapd\_setNoSecParams}}
+\index{wld\_ap\_hostapd\_setNoSecParams@{wld\_ap\_hostapd\_setNoSecParams}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setNoSecParams()}{wld\_ap\_hostapd\_setNoSecParams()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+No\+Sec\+Params (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+set AP common parameters (non-\/security) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\texorpdfstring{$>$}{>}= SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when AP config is set. Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a7c512040bbded6d41d48bc2668430d59}\label{wld__hostapd__ap__api_8c_a7c512040bbded6d41d48bc2668430d59}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setParamAction@{wld\_ap\_hostapd\_setParamAction}}
+\index{wld\_ap\_hostapd\_setParamAction@{wld\_ap\_hostapd\_setParamAction}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setParamAction()}{wld\_ap\_hostapd\_setParamAction()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Param\+Action (\begin{DoxyParamCaption}\item[{const char $\ast$}]{param\+Name,  }\item[{\mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}}}]{in\+Mapped\+Action }\end{DoxyParamCaption})}
+
+
+
+set the \textquotesingle{}on change\textquotesingle{} of a specific hostapd parameter 
+
+
+\begin{DoxyParams}{Parameters}
+{\em param\+Name} & the parameter name \\
+\hline
+{\em in\+Mapped\+Action} & the new mapped action \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK if successful, error code otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a574fb994be68c4c9d50d22c1cd142b11}\label{wld__hostapd__ap__api_8c_a574fb994be68c4c9d50d22c1cd142b11}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setParamValue@{wld\_ap\_hostapd\_setParamValue}}
+\index{wld\_ap\_hostapd\_setParamValue@{wld\_ap\_hostapd\_setParamValue}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setParamValue()}{wld\_ap\_hostapd\_setParamValue()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Param\+Value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{field,  }\item[{const char $\ast$}]{value,  }\item[{const char $\ast$}]{reason }\end{DoxyParamCaption})}
+
+
+
+set a parameter value in hostapd context 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em reason} & the command caller \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the SET cmd is executed successfully. Otherwise false. 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__ap__api_8c_a574fb994be68c4c9d50d22c1cd142b11_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a56b602c5f045bf75f051c63b11b25f9c}\label{wld__hostapd__ap__api_8c_a56b602c5f045bf75f051c63b11b25f9c}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setSecParams@{wld\_ap\_hostapd\_setSecParams}}
+\index{wld\_ap\_hostapd\_setSecParams@{wld\_ap\_hostapd\_setSecParams}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setSecParams()}{wld\_ap\_hostapd\_setSecParams()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Sec\+Params (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+set AP security parameters 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\texorpdfstring{$>$}{>}= SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when AP sec config is set. Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_aa14a50755058b95a6bf57f9498e3d367}\label{wld__hostapd__ap__api_8c_aa14a50755058b95a6bf57f9498e3d367}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setSecretKey@{wld\_ap\_hostapd\_setSecretKey}}
+\index{wld\_ap\_hostapd\_setSecretKey@{wld\_ap\_hostapd\_setSecretKey}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setSecretKey()}{wld\_ap\_hostapd\_setSecretKey()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Secret\+Key (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ab7fff8ea56aeecb266bf7a1ca557d3f6}\label{wld__hostapd__ap__api_8c_ab7fff8ea56aeecb266bf7a1ca557d3f6}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setSecurityMode@{wld\_ap\_hostapd\_setSecurityMode}}
+\index{wld\_ap\_hostapd\_setSecurityMode@{wld\_ap\_hostapd\_setSecurityMode}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setSecurityMode()}{wld\_ap\_hostapd\_setSecurityMode()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Security\+Mode (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a0ddcf7d0716bef1915c8b360f4c26328}\label{wld__hostapd__ap__api_8c_a0ddcf7d0716bef1915c8b360f4c26328}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setSsid@{wld\_ap\_hostapd\_setSsid}}
+\index{wld\_ap\_hostapd\_setSsid@{wld\_ap\_hostapd\_setSsid}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setSsid()}{wld\_ap\_hostapd\_setSsid()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Ssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{ssid }\end{DoxyParamCaption})}
+
+
+
+set the SSID in the hostapd 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em ssid} & the new ssid \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+UPDATE\+\_\+\+BEACON when the SSID is updated for the hostapd config file and the hostapd context
+\begin{DoxyItemize}
+\item SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+NEED\+\_\+\+RESTART when the SSID is updated for the hostapd context but not for the hostapd config file
+\item Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a02d3ffe3385e64dd9a58f94d259edfa2}\label{wld__hostapd__ap__api_8c_a02d3ffe3385e64dd9a58f94d259edfa2}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setSSIDAdvertisement@{wld\_ap\_hostapd\_setSSIDAdvertisement}}
+\index{wld\_ap\_hostapd\_setSSIDAdvertisement@{wld\_ap\_hostapd\_setSSIDAdvertisement}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setSSIDAdvertisement()}{wld\_ap\_hostapd\_setSSIDAdvertisement()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+set\+SSIDAdvertisement (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{bool}]{enable }\end{DoxyParamCaption})}
+
+
+
+set the SSID Advertisement in the hostapd 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em enable} & if true the SSID Advertisement is enabled. Otherwise false \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ \texorpdfstring{$>$}{>} SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when the ssid advertisement is set and can be applied
+\begin{DoxyItemize}
+\item Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a122168ddb8988c4680191741a5d5ec26}\label{wld__hostapd__ap__api_8c_a122168ddb8988c4680191741a5d5ec26}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_setWpsApPin@{wld\_ap\_hostapd\_setWpsApPin}}
+\index{wld\_ap\_hostapd\_setWpsApPin@{wld\_ap\_hostapd\_setWpsApPin}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_setWpsApPin()}{wld\_ap\_hostapd\_setWpsApPin()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+set\+Wps\+Ap\+Pin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{pin,  }\item[{uint32\+\_\+t}]{timeout }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a7ea6b27ab61e9ed7d352ef262140aff7}\label{wld__hostapd__ap__api_8c_a7ea6b27ab61e9ed7d352ef262140aff7}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_startWps@{wld\_ap\_hostapd\_startWps}}
+\index{wld\_ap\_hostapd\_startWps@{wld\_ap\_hostapd\_startWps}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_startWps()}{wld\_ap\_hostapd\_startWps()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+start\+Wps (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+start WPS session 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_afdb64962b2e15cbeba56a3d91c80a019}\label{wld__hostapd__ap__api_8c_afdb64962b2e15cbeba56a3d91c80a019}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_startWpsPin@{wld\_ap\_hostapd\_startWpsPin}}
+\index{wld\_ap\_hostapd\_startWpsPin@{wld\_ap\_hostapd\_startWpsPin}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_startWpsPin()}{wld\_ap\_hostapd\_startWpsPin()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+start\+Wps\+Pin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{pin,  }\item[{uint32\+\_\+t}]{timeout }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a0693440db251648e1ec7709ea8739f3a}\label{wld__hostapd__ap__api_8c_a0693440db251648e1ec7709ea8739f3a}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_stopWps@{wld\_ap\_hostapd\_stopWps}}
+\index{wld\_ap\_hostapd\_stopWps@{wld\_ap\_hostapd\_stopWps}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_stopWps()}{wld\_ap\_hostapd\_stopWps()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+stop\+Wps (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+stop WPS session 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ade3f167d10c9b2b0bdffe157e2991da6}\label{wld__hostapd__ap__api_8c_ade3f167d10c9b2b0bdffe157e2991da6}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_transferStation@{wld\_ap\_hostapd\_transferStation}}
+\index{wld\_ap\_hostapd\_transferStation@{wld\_ap\_hostapd\_transferStation}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_transferStation()}{wld\_ap\_hostapd\_transferStation()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+hostapd\+\_\+transfer\+Station (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structwld__transferStaArgs__t}{wld\+\_\+transfer\+Sta\+Args\+\_\+t}} $\ast$}]{params }\end{DoxyParamCaption})}
+
+
+
+Transfer a station from a Bss to another. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em params} & parameters of BTM command \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_aa6dac09498c3ce21de8e83a651c97076}\label{wld__hostapd__ap__api_8c_aa6dac09498c3ce21de8e83a651c97076}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_updateBeacon@{wld\_ap\_hostapd\_updateBeacon}}
+\index{wld\_ap\_hostapd\_updateBeacon@{wld\_ap\_hostapd\_updateBeacon}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_updateBeacon()}{wld\_ap\_hostapd\_updateBeacon()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+hostapd\+\_\+update\+Beacon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{reason }\end{DoxyParamCaption})}
+
+
+
+update beacon frame 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+{\em reason} & the command caller \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the UPDATE\+\_\+\+BEACON cmd is executed successfully. Otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a058d4cae0f651a7fe35a185749284992}\label{wld__hostapd__ap__api_8c_a058d4cae0f651a7fe35a185749284992}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_ap\_hostapd\_updateMaxNbrSta@{wld\_ap\_hostapd\_updateMaxNbrSta}}
+\index{wld\_ap\_hostapd\_updateMaxNbrSta@{wld\_ap\_hostapd\_updateMaxNbrSta}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_hostapd\_updateMaxNbrSta()}{wld\_ap\_hostapd\_updateMaxNbrSta()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__hostapd__ap__api_8h_a8dd2cfabae1903ce10491656688a880a}{wld\+\_\+sec\+Dmn\+\_\+action\+\_\+rc\+\_\+ne}} wld\+\_\+ap\+\_\+hostapd\+\_\+update\+Max\+Nbr\+Sta (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+update the max sta in the hostapd 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & accesspoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ \texorpdfstring{$>$}{>} SECDMN\+\_\+\+ACTION\+\_\+\+OK\+\_\+\+DONE when the ssid advertisement is set and can be applied
+\begin{DoxyItemize}
+\item Otherwise SECDMN\+\_\+\+ACTION\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_ada7871c78ecba1ca1a30a463209052d5}\label{wld__hostapd__ap__api_8c_ada7871c78ecba1ca1a30a463209052d5}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_hostapd\_ap\_getCfgParamSupp@{wld\_hostapd\_ap\_getCfgParamSupp}}
+\index{wld\_hostapd\_ap\_getCfgParamSupp@{wld\_hostapd\_ap\_getCfgParamSupp}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_ap\_getCfgParamSupp()}{wld\_hostapd\_ap\_getCfgParamSupp()}}
+{\footnotesize\ttfamily swl\+\_\+trl\+\_\+e wld\+\_\+hostapd\+\_\+ap\+\_\+get\+Cfg\+Param\+Supp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{param }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a17760b1c416b18a7640d5a909c774acf}\label{wld__hostapd__ap__api_8c_a17760b1c416b18a7640d5a909c774acf}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_hostapd\_ap\_needWpaCtrlIface@{wld\_hostapd\_ap\_needWpaCtrlIface}}
+\index{wld\_hostapd\_ap\_needWpaCtrlIface@{wld\_hostapd\_ap\_needWpaCtrlIface}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_ap\_needWpaCtrlIface()}{wld\_hostapd\_ap\_needWpaCtrlIface()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+ap\+\_\+need\+Wpa\+Ctrl\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_a4af3e18cf6ef407f6ba070f00d765775}\label{wld__hostapd__ap__api_8c_a4af3e18cf6ef407f6ba070f00d765775}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_hostapd\_ap\_selectApLinkIface@{wld\_hostapd\_ap\_selectApLinkIface}}
+\index{wld\_hostapd\_ap\_selectApLinkIface@{wld\_hostapd\_ap\_selectApLinkIface}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_ap\_selectApLinkIface()}{wld\_hostapd\_ap\_selectApLinkIface()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+hostapd\+\_\+ap\+\_\+select\+Ap\+Link\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__hostapd__ap__api_8c_aca5b40edd3915f97f6b2da6a2a604080}\label{wld__hostapd__ap__api_8c_aca5b40edd3915f97f6b2da6a2a604080}} 
+\index{wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}!wld\_hostapd\_ap\_sendCfgParam@{wld\_hostapd\_ap\_sendCfgParam}}
+\index{wld\_hostapd\_ap\_sendCfgParam@{wld\_hostapd\_ap\_sendCfgParam}!wld\_hostapd\_ap\_api.c@{wld\_hostapd\_ap\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_ap\_sendCfgParam()}{wld\_hostapd\_ap\_sendCfgParam()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+hostapd\+\_\+ap\+\_\+send\+Cfg\+Param (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{param,  }\item[{const char $\ast$}]{value }\end{DoxyParamCaption})}
+

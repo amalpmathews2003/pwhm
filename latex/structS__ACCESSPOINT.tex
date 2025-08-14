@@ -1,0 +1,963 @@
+\hypertarget{structS__ACCESSPOINT}{}\doxysection{S\+\_\+\+ACCESSPOINT Struct Reference}
+\label{structS__ACCESSPOINT}\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+
+
+Collaboration diagram for S\+\_\+\+ACCESSPOINT\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structS__ACCESSPOINT__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a02891e1949ae04928682927503999865}{debug}}
+\item 
+\mbox{\hyperlink{wld_8h_a6f071c90b200e5b86aca49acaf62e1ff}{wld\+\_\+intf\+Status\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_aedf0c51472bdc19800704dd8e6f86bc2}{status}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_aaeeba13602af565fcbdee85f038c7558}{last\+Status\+Change}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_afa274f85f252051a1ffd57a8e6253a82}{name}} \mbox{[}\mbox{\hyperlink{wld_8h_a4997bff8e21b4e9e9d95a6d88110b167}{AP\+\_\+\+NAME\+\_\+\+SIZE}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a4f64662a31f1212aba18fdb1b7debc58}{alias}} \mbox{[}\mbox{\hyperlink{wld_8h_a4997bff8e21b4e9e9d95a6d88110b167}{AP\+\_\+\+NAME\+\_\+\+SIZE}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a5a79898ed23ca7c3ff28a901db5a5160}{bridge\+Name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_acdffe97414f181176a62c9cee213799e}{index}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_ae2782901ddb215e7f31e29c1ddffca9e}{w\+Dev\+Id}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_ae1ad8912e642ba0ac26f2e3c9f632341}{ref\+\_\+index}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_ae61438230f20f92f68545ac459668d3b}{SSIDReference}}
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_ae5319db4749e50373a6fa343e2b60b58}{p\+SSID}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_a3a99a8ead7dcf04924a3b847894ce342}{p\+Radio}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a816cee1277f87588228af2878f71b83b}{SSIDAdvertisement\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_acab7dea15282550f276a53440d7e40cb}{init\+Done}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_af27f1145dfd7f499e7e3d1307c3649a2}{retry\+Limit}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a82b8a582e8eeabc8dfa965ce256ee261}{WMMCapability}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a7fdcdd00fe08403fb61bf0b5d029dbec}{UAPSDCapability}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a97d1dc081e7dcda839482725edc13eb6}{WMMEnable}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_adc28a9fab7ec622b617b9621fe11b838}{UAPSDEnable}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a0a67c00dd6d08220203b46c61ab67d32}{MCEnable}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a3f4197c720058a3583570f5a56611944}{doth}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a815a186aac57f84ce69050a63b70be52}{APBridge\+Disable}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a61335e5b7fd6c762c5cd35fe60ea1041}{Active\+Associated\+Device\+Number\+Of\+Entries}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a479f8257655c54b37d9c541a9e4e7e78}{Associated\+Device\+Number\+Of\+Entries}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a95b2920fcf47c9c14e91d6e7fbf2e292}{Max\+Stations}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_aa38168abc8b5e3afc1cfd8f38edf8020}{Sta\+Inactivity\+Timeout}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_af92b7b8a7a7e12860edf14578fa205b5}{IEEE80211k\+Enable}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a20c0a06cfb0b75d6b1459f2fa089f208}{IEEE80211r\+Enable}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a8629df8c466406ec616e991697f6014d}{IEEE80211r\+FTOver\+DSEnable}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a3cdbd679c3182314925b9837975e038f}{NASIdentifier}} \mbox{[}\mbox{\hyperlink{wld_8h_a9439db570eaf5384cb3c1b94d4bcb617}{NAS\+\_\+\+IDENTIFIER\+\_\+\+MAX\+\_\+\+LEN}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_ae330ac97da10268749ed36688d9c8b86}{R0\+KHKey}} \mbox{[}\mbox{\hyperlink{wld_8h_a9e14f123b9cfd2fcb512931c14ebfd17}{KHKEY\+\_\+\+MAX\+\_\+\+LEN}}\mbox{]}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_a6b730afef5070a1f9efdfe5fce45f881}{mobility\+Domain}}
+\item 
+\mbox{\hyperlink{structwld__cfg11u__t}{wld\+\_\+cfg11u\+\_\+t}} \mbox{\hyperlink{structS__ACCESSPOINT_a502faf2e6ef93367aad59a71012effa5}{cfg11u}}
+\item 
+swl\+\_\+security\+\_\+ap\+Mode\+\_\+m \mbox{\hyperlink{structS__ACCESSPOINT_ab47dea0d51d1a1d684cd04d1d5dafbaa}{sec\+Modes\+Available}}
+\item 
+swl\+\_\+security\+\_\+ap\+Mode\+\_\+m \mbox{\hyperlink{structS__ACCESSPOINT_a65556454eb4a6c218387963c195be3e6}{sec\+Modes\+Supported}}
+\item 
+swl\+\_\+security\+\_\+ap\+Mode\+\_\+e \mbox{\hyperlink{structS__ACCESSPOINT_a7a3b937b4d2fc7220bdcc2f478e4814f}{sec\+Mode\+Enabled}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a7f34825898ebba4b622082dc25e25185}{WEPKey}} \mbox{[}36\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_ab6ec5c74078fcbdb6c440556f63911bd}{pre\+Shared\+Key}} \mbox{[}\mbox{\hyperlink{wld_8h_a7c4a155606b73c4639366ab3275610ee}{PSK\+\_\+\+KEY\+\_\+\+SIZE\+\_\+\+LEN}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_af194a3b649d470a4cb30c3056e3825b3}{key\+Pass\+Phrase}} \mbox{[}\mbox{\hyperlink{wld_8h_a7c4a155606b73c4639366ab3275610ee}{PSK\+\_\+\+KEY\+\_\+\+SIZE\+\_\+\+LEN}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a3b28a280cd2ffeb6d863ff0a64845eb8}{sae\+Passphrase}} \mbox{[}\mbox{\hyperlink{wld_8h_a6f50c9767bbcc81785b98e614af31bd8}{SAE\+\_\+\+KEY\+\_\+\+SIZE\+\_\+\+LEN}}\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_aabca63641480671e27ccb09bfa8a7a23}{wld\+\_\+enc\+\_\+modes\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_a8959ade41c3f4caa1cf50baee0b334fe}{encryption\+Mode\+Enabled}}
+\item 
+swl\+\_\+security\+\_\+mfp\+Mode\+\_\+e \mbox{\hyperlink{structS__ACCESSPOINT_a801e07b5bd078869888ab6426be64aed}{mfp\+Config}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_aa0fe4fe8b0a4329bb66d1d6dc35e61a3}{spp\+Amsdu}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_aab2490c32c491454ba4bdce8a08ae83e}{rekeying\+Interval}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a9a85ae48fa67c3e6201dd290e4b944d3}{SHA256\+Enable}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a06f737a1d9b81f743af3df1aa8e4a6ac}{owe\+Trans\+Mode\+Intf}} \mbox{[}32\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_ac70dea6199aa6684c7e42b9d585a7605}{wld\+\_\+ap\+\_\+td\+\_\+m}} \mbox{\hyperlink{structS__ACCESSPOINT_ac2e3cd57d4bed96e0ea5b55caea5f357}{transition\+Disable}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_ac9905a3d69aab2c959392dcd8c5bfb35}{radius\+Server\+IPAddr}} \mbox{[}16\mbox{]}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_af49ca77b3ba2fb4b9d7b0f6019c43e9d}{radius\+Server\+Port}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_afe77de5f4066081a99808e7443ea4a2c}{radius\+Secret}} \mbox{[}64\mbox{]}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_aad63732fc7ba1eab1a8a1bc4ab2a3f9b}{radius\+Default\+Session\+Timeout}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a999695720203a512aeeaebee79dde7e0}{radius\+Own\+IPAddress}} \mbox{[}40\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_ac633a64cda635b90b903e58dbf8588ce}{radius\+NASIdentifier}} \mbox{[}128\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a6d0672b9ccc5a629bea0875a91b84766}{radius\+Called\+Station\+Id}} \mbox{[}88\mbox{]}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_aaa15b08c11f637079e7821b43f5edfe5}{radius\+Chargeable\+User\+Id}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a23b4f3d236286a2cd2dc0830b35044b5}{WPS\+\_\+\+Cert\+Mode}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_ae77f5ca170d35c9687ecadde45ff7852}{WPS\+\_\+\+Enable}}
+\item 
+\mbox{\hyperlink{wld_8h_ad290e2da9eb2cda2357c0b7c66d38b9f}{wld\+\_\+wps\+\_\+status\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_a8ea639ac6642d0fdec8bc7ba88086506}{WPS\+\_\+\+Status}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a5e90efd5d304d337b3006fa9849dca3c}{WPS\+\_\+\+Ap\+Setup\+Locked}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a41d6288c2490ea6925405a0b61be40ff}{WPS\+\_\+\+Registrar}}
+\item 
+\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} \mbox{\hyperlink{structS__ACCESSPOINT_a9ee4a2ab5a35a96f1aea5ca3abfbbe2d}{WPS\+\_\+\+Config\+Methods\+Supported}}
+\item 
+\mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} \mbox{\hyperlink{structS__ACCESSPOINT_a34dec8e3947f92eb64243c39968045c3}{WPS\+\_\+\+Config\+Methods\+Enabled}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a80a83e026532ac118bfb9db45838eaa7}{WPS\+\_\+\+Configured}}
+\item 
+char \mbox{\hyperlink{structS__ACCESSPOINT_a5e5057e178400da70251cbd3a67a736b}{WPS\+\_\+\+Client\+PIN}} \mbox{[}16\mbox{]}
+\item 
+struct \mbox{\hyperlink{structS__WPS__pushButton__Delay}{S\+\_\+\+WPS\+\_\+push\+Button\+\_\+\+Delay}} \mbox{\hyperlink{structS__ACCESSPOINT_a2fa6d9a58107e6fc1e7987b279961704}{WPS\+\_\+\+PBC\+\_\+\+Delay}}
+\item 
+\mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} \mbox{\hyperlink{structS__ACCESSPOINT_abe2ece22e623af727433327156a1f170}{wps\+Session\+Info}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a93436f25854a77701fb7d93b91c6fb1b}{add\+Relay\+Ap\+Credentials}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_abde72cf35ccccfe83e494b5202fd8c3b}{wps\+Restart\+On\+Request}}
+\item 
+\mbox{\hyperlink{structT__HotSpot2}{T\+\_\+\+Hot\+Spot2}} \mbox{\hyperlink{structS__ACCESSPOINT_a36d13544ef554c3466f31f751ce95062}{Hot\+Spot2}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_abc49b4f44062cc8f8752681848e0aa66}{Current\+Associated\+Device}}
+\item 
+\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$$\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_a6d5b9d5e8196497e14695250b7a599d1}{Associated\+Device}}
+\item 
+\mbox{\hyperlink{wld_8h_a41dcc6e85edfda32d83597184f2296cf}{wld\+\_\+mf\+Mode\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_a4e5a7c901ffaca1012d3e5642bfc200f}{MF\+\_\+\+Mode}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a3361ce40bdee1c8ab0ed136afca9f72d}{MF\+\_\+\+Entry\+Count}}
+\item 
+char $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_aa27983ef8b0d1a5b9ccf55fdbd477911}{MF\+\_\+\+Address\+List}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_aad7c7ab7f8cff34f2c35b41567f43dac}{MF\+\_\+\+Address\+List\+Block\+Sync}}
+\item 
+unsigned char \mbox{\hyperlink{structS__ACCESSPOINT_adc8e42fecea284dafcf072308cff697f}{MF\+\_\+\+Entry}} \mbox{[}\mbox{\hyperlink{wld_8h_ae38246d8e06a9e10ceee277b2859e79c}{MAXNROF\+\_\+\+MFENTRY}}\mbox{]}\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a3abb974be46e3367bdca7fb67cfba219}{MF\+\_\+\+Temp\+Blacklist\+Enable}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a241912f5f32807691cbc4299939b1149}{MF\+\_\+\+Temp\+Entry\+Count}}
+\item 
+unsigned char \mbox{\hyperlink{structS__ACCESSPOINT_a77b9d0f27aa9595ef91da54d08163978}{MF\+\_\+\+Temp\+\_\+\+Entry}} \mbox{[}\mbox{\hyperlink{wld_8h_ae38246d8e06a9e10ceee277b2859e79c}{MAXNROF\+\_\+\+MFENTRY}}\mbox{]}\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_abcc2953433845bed944c37b16b5de160}{PF\+\_\+\+Temp\+Entry\+Count}}
+\item 
+unsigned char \mbox{\hyperlink{structS__ACCESSPOINT_af5accda3984809cb58f41639ff8e74fd}{PF\+\_\+\+Temp\+\_\+\+Entry}} \mbox{[}\mbox{\hyperlink{wld_8h_a76ca15d534a3ce1ee6b1e1f4695b4b27}{MAXNROF\+\_\+\+PFENTRY}}\mbox{]}\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_a7e4e8cb57867048106846873acb489d5}{neighbours}}
+\item 
+\mbox{\hyperlink{wld_8h_a0f62a7362b1ffe0dbb87a26959e94be1}{wld\+\_\+ap\+\_\+dm\+\_\+m}} \mbox{\hyperlink{structS__ACCESSPOINT_aa4e3540a13a461fd02cf5e18d9c7e96a}{discovery\+Method}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_af4202e4d0043ce6e4a260d40933e0a4f}{default\+Device\+Type}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a8ee2b99beb1d98b17d7432d17d8bbced}{enable}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_a58fac7237c96f8afc61da52cc025cc69}{wlvap\+\_\+sk}}
+\item 
+\mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} \mbox{\hyperlink{structS__ACCESSPOINT_a447c4fd2662f5b0200fa5de61dfa63cd}{fsm}}
+\item 
+struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}} $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_aec00e390e01c6daf4de8f6d628676657}{p\+FA}}
+\item 
+amxc\+\_\+llist\+\_\+it\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_ac081b342ebeb93a13345245675d83980}{it}}
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_adb86ec8809004d04e0a5d64cf42e7c11}{p\+Bus}}
+\item 
+void $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_a3433f0da5ccb6e25f8889e384302fe37}{vendor\+Data}}
+\item 
+int \mbox{\hyperlink{structS__ACCESSPOINT_aa8d13049f82b50c62b240562c27709d6}{dbg\+Enable}}
+\item 
+char $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_a45b629b3b16e1f6d379d365fb282843e}{dbg\+Output}}
+\item 
+\mbox{\hyperlink{structT__RssiEventing}{T\+\_\+\+Rssi\+Eventing}} \mbox{\hyperlink{structS__ACCESSPOINT_a634bc0ee283e4ef86c938f7b189c6f90}{rssi\+Eventing}}
+\item 
+\mbox{\hyperlink{structT__ApMgtStats}{T\+\_\+\+Ap\+Mgt\+Stats}} \mbox{\hyperlink{structS__ACCESSPOINT_a9c29a3bba0b8a9b5e4ff38faa5f4a25e}{mgt\+Stats}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a9b439744b967c6e288bbe6ec45f7deb4}{wds\+Enable}}
+\item 
+\mbox{\hyperlink{wld_8h_aebc935100d8731bf4c4af1e4abc0ab1d}{wld\+\_\+multiap\+\_\+type\+\_\+m}} \mbox{\hyperlink{structS__ACCESSPOINT_a2865d430cabda1e2e5a2ecd62d33f683}{multi\+APType}}
+\item 
+\mbox{\hyperlink{wld_8h_a443545a4d116631706acabeb1e3b05a5}{wld\+\_\+multiap\+\_\+profile\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_a6a99a148a7cb59d41cfcdd254a388916}{multi\+APProfile}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_ab37af06e4a95f56ddcab0891aecbb797}{multi\+APVlan\+Id}}
+\item 
+\mbox{\hyperlink{wld_8h_a22eca226aa76381090b18027f92ecd75}{wld\+\_\+ap\+Role\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_a0dbe307ce7b7bf051ee495010a81ca69}{ap\+Role}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_aabb722c2ed62afa6367128ca407deca6}{p\+Reference\+Ap\+Relay}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a5a74497cab4f11c3de40f119942354f0}{mbo\+Enable}}
+\item 
+\mbox{\hyperlink{wld_8h_af650886d4c532eed9380bc281dee4271}{wld\+\_\+mbo\+\_\+deny\+Reason\+\_\+e}} \mbox{\hyperlink{structS__ACCESSPOINT_a5230f0cfe7bd2c64776511a48ab05e8a}{mbo\+Deny\+Reason}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a24eae900af5e65e2e873b6c3676a7ca5}{enable\+Vendor\+IEs}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_afb9f698d160b1a0a902290d3327a66be}{vendor\+IEs}}
+\item 
+\mbox{\hyperlink{structwld__fcallState__t}{wld\+\_\+fcall\+State\+\_\+t}} \mbox{\hyperlink{structS__ACCESSPOINT_ad102f5615833161c33570eb8b9404dc9}{stations\+Stats\+State}}
+\item 
+\mbox{\hyperlink{structwld__vapConfigDriver__t}{wld\+\_\+vap\+Config\+Driver\+\_\+t}} \mbox{\hyperlink{structS__ACCESSPOINT_a1e428c06f23f458a02fd86d8b6d24e25}{driver\+Cfg}}
+\item 
+swl\+\_\+un\+Li\+Table\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_a855ea925eca88995873415377634937b}{sta\+Dc\+List}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_a44996bf5b260f17f5b4dc89ee5ffc060}{history\+Cnt}}
+\item 
+\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_a6e5b8b01271495e5ea9c43b54649d11c}{nl80211\+Listener}}
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__ACCESSPOINT_a86c144b458dffd972c1cabe6db64acaa}{wpa\+Ctrl\+Interface}}
+\item 
+bool \mbox{\hyperlink{structS__ACCESSPOINT_a9788eaafce355a47d1a479dc8280e316}{client\+Isolation\+Enable}}
+\item 
+swl\+\_\+circ\+Table\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_a96598b3a6c344a041d04023f08ce5704}{last\+Assoc\+Req}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_ae40d8d2bdae15877dc67759e803d4619}{last\+Dev\+Index}}
+\item 
+\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} \mbox{\hyperlink{structS__ACCESSPOINT_a55938c736a41129a36270beb5d9a5974}{ext\+Data\+List}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structS__ACCESSPOINT_ae97c366c3978115cc8473b3b594cfc43}{ll\+Intf\+Wds}}
+\item 
+\mbox{\hyperlink{structwld__apMldCfg__t}{wld\+\_\+ap\+Mld\+Cfg\+\_\+t}} \mbox{\hyperlink{structS__ACCESSPOINT_a6ea60870664db7ad53063dc3ff3c0413}{mld\+Cfg}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structS__ACCESSPOINT_a61335e5b7fd6c762c5cd35fe60ea1041}\label{structS__ACCESSPOINT_a61335e5b7fd6c762c5cd35fe60ea1041}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!ActiveAssociatedDeviceNumberOfEntries@{ActiveAssociatedDeviceNumberOfEntries}}
+\index{ActiveAssociatedDeviceNumberOfEntries@{ActiveAssociatedDeviceNumberOfEntries}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{ActiveAssociatedDeviceNumberOfEntries}{ActiveAssociatedDeviceNumberOfEntries}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+Active\+Associated\+Device\+Number\+Of\+Entries}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a93436f25854a77701fb7d93b91c6fb1b}\label{structS__ACCESSPOINT_a93436f25854a77701fb7d93b91c6fb1b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!addRelayApCredentials@{addRelayApCredentials}}
+\index{addRelayApCredentials@{addRelayApCredentials}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{addRelayApCredentials}{addRelayApCredentials}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::add\+Relay\+Ap\+Credentials}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a4f64662a31f1212aba18fdb1b7debc58}\label{structS__ACCESSPOINT_a4f64662a31f1212aba18fdb1b7debc58}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!alias@{alias}}
+\index{alias@{alias}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{alias}{alias}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::alias\mbox{[}\mbox{\hyperlink{wld_8h_a4997bff8e21b4e9e9d95a6d88110b167}{AP\+\_\+\+NAME\+\_\+\+SIZE}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a815a186aac57f84ce69050a63b70be52}\label{structS__ACCESSPOINT_a815a186aac57f84ce69050a63b70be52}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!APBridgeDisable@{APBridgeDisable}}
+\index{APBridgeDisable@{APBridgeDisable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{APBridgeDisable}{APBridgeDisable}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+APBridge\+Disable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a0dbe307ce7b7bf051ee495010a81ca69}\label{structS__ACCESSPOINT_a0dbe307ce7b7bf051ee495010a81ca69}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!apRole@{apRole}}
+\index{apRole@{apRole}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{apRole}{apRole}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a22eca226aa76381090b18027f92ecd75}{wld\+\_\+ap\+Role\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::ap\+Role}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a6d5b9d5e8196497e14695250b7a599d1}\label{structS__ACCESSPOINT_a6d5b9d5e8196497e14695250b7a599d1}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!AssociatedDevice@{AssociatedDevice}}
+\index{AssociatedDevice@{AssociatedDevice}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{AssociatedDevice}{AssociatedDevice}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}}$\ast$$\ast$ S\+\_\+\+ACCESSPOINT\+::\+Associated\+Device}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a479f8257655c54b37d9c541a9e4e7e78}\label{structS__ACCESSPOINT_a479f8257655c54b37d9c541a9e4e7e78}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!AssociatedDeviceNumberOfEntries@{AssociatedDeviceNumberOfEntries}}
+\index{AssociatedDeviceNumberOfEntries@{AssociatedDeviceNumberOfEntries}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{AssociatedDeviceNumberOfEntries}{AssociatedDeviceNumberOfEntries}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+Associated\+Device\+Number\+Of\+Entries}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a5a79898ed23ca7c3ff28a901db5a5160}\label{structS__ACCESSPOINT_a5a79898ed23ca7c3ff28a901db5a5160}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!bridgeName@{bridgeName}}
+\index{bridgeName@{bridgeName}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{bridgeName}{bridgeName}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::bridge\+Name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a502faf2e6ef93367aad59a71012effa5}\label{structS__ACCESSPOINT_a502faf2e6ef93367aad59a71012effa5}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!cfg11u@{cfg11u}}
+\index{cfg11u@{cfg11u}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{cfg11u}{cfg11u}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__cfg11u__t}{wld\+\_\+cfg11u\+\_\+t}} S\+\_\+\+ACCESSPOINT\+::cfg11u}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a9788eaafce355a47d1a479dc8280e316}\label{structS__ACCESSPOINT_a9788eaafce355a47d1a479dc8280e316}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!clientIsolationEnable@{clientIsolationEnable}}
+\index{clientIsolationEnable@{clientIsolationEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{clientIsolationEnable}{clientIsolationEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::client\+Isolation\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_abc49b4f44062cc8f8752681848e0aa66}\label{structS__ACCESSPOINT_abc49b4f44062cc8f8752681848e0aa66}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!CurrentAssociatedDevice@{CurrentAssociatedDevice}}
+\index{CurrentAssociatedDevice@{CurrentAssociatedDevice}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{CurrentAssociatedDevice}{CurrentAssociatedDevice}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+Current\+Associated\+Device}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aa8d13049f82b50c62b240562c27709d6}\label{structS__ACCESSPOINT_aa8d13049f82b50c62b240562c27709d6}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!dbgEnable@{dbgEnable}}
+\index{dbgEnable@{dbgEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{dbgEnable}{dbgEnable}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::dbg\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a45b629b3b16e1f6d379d365fb282843e}\label{structS__ACCESSPOINT_a45b629b3b16e1f6d379d365fb282843e}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!dbgOutput@{dbgOutput}}
+\index{dbgOutput@{dbgOutput}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{dbgOutput}{dbgOutput}}
+{\footnotesize\ttfamily char$\ast$ S\+\_\+\+ACCESSPOINT\+::dbg\+Output}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a02891e1949ae04928682927503999865}\label{structS__ACCESSPOINT_a02891e1949ae04928682927503999865}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!debug@{debug}}
+\index{debug@{debug}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{debug}{debug}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::debug}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_af4202e4d0043ce6e4a260d40933e0a4f}\label{structS__ACCESSPOINT_af4202e4d0043ce6e4a260d40933e0a4f}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!defaultDeviceType@{defaultDeviceType}}
+\index{defaultDeviceType@{defaultDeviceType}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{defaultDeviceType}{defaultDeviceType}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::default\+Device\+Type}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aa4e3540a13a461fd02cf5e18d9c7e96a}\label{structS__ACCESSPOINT_aa4e3540a13a461fd02cf5e18d9c7e96a}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!discoveryMethod@{discoveryMethod}}
+\index{discoveryMethod@{discoveryMethod}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{discoveryMethod}{discoveryMethod}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a0f62a7362b1ffe0dbb87a26959e94be1}{wld\+\_\+ap\+\_\+dm\+\_\+m}} S\+\_\+\+ACCESSPOINT\+::discovery\+Method}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3f4197c720058a3583570f5a56611944}\label{structS__ACCESSPOINT_a3f4197c720058a3583570f5a56611944}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!doth@{doth}}
+\index{doth@{doth}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{doth}{doth}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::doth}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a1e428c06f23f458a02fd86d8b6d24e25}\label{structS__ACCESSPOINT_a1e428c06f23f458a02fd86d8b6d24e25}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!driverCfg@{driverCfg}}
+\index{driverCfg@{driverCfg}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{driverCfg}{driverCfg}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__vapConfigDriver__t}{wld\+\_\+vap\+Config\+Driver\+\_\+t}} S\+\_\+\+ACCESSPOINT\+::driver\+Cfg}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a8ee2b99beb1d98b17d7432d17d8bbced}\label{structS__ACCESSPOINT_a8ee2b99beb1d98b17d7432d17d8bbced}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!enable@{enable}}
+\index{enable@{enable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{enable}{enable}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a24eae900af5e65e2e873b6c3676a7ca5}\label{structS__ACCESSPOINT_a24eae900af5e65e2e873b6c3676a7ca5}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!enableVendorIEs@{enableVendorIEs}}
+\index{enableVendorIEs@{enableVendorIEs}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{enableVendorIEs}{enableVendorIEs}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::enable\+Vendor\+IEs}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a8959ade41c3f4caa1cf50baee0b334fe}\label{structS__ACCESSPOINT_a8959ade41c3f4caa1cf50baee0b334fe}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!encryptionModeEnabled@{encryptionModeEnabled}}
+\index{encryptionModeEnabled@{encryptionModeEnabled}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{encryptionModeEnabled}{encryptionModeEnabled}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_aabca63641480671e27ccb09bfa8a7a23}{wld\+\_\+enc\+\_\+modes\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::encryption\+Mode\+Enabled}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a55938c736a41129a36270beb5d9a5974}\label{structS__ACCESSPOINT_a55938c736a41129a36270beb5d9a5974}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!extDataList@{extDataList}}
+\index{extDataList@{extDataList}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{extDataList}{extDataList}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} S\+\_\+\+ACCESSPOINT\+::ext\+Data\+List}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a447c4fd2662f5b0200fa5de61dfa63cd}\label{structS__ACCESSPOINT_a447c4fd2662f5b0200fa5de61dfa63cd}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!fsm@{fsm}}
+\index{fsm@{fsm}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{fsm}{fsm}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} S\+\_\+\+ACCESSPOINT\+::fsm}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a44996bf5b260f17f5b4dc89ee5ffc060}\label{structS__ACCESSPOINT_a44996bf5b260f17f5b4dc89ee5ffc060}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!historyCnt@{historyCnt}}
+\index{historyCnt@{historyCnt}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{historyCnt}{historyCnt}}
+{\footnotesize\ttfamily int32\+\_\+t S\+\_\+\+ACCESSPOINT\+::history\+Cnt}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a36d13544ef554c3466f31f751ce95062}\label{structS__ACCESSPOINT_a36d13544ef554c3466f31f751ce95062}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!HotSpot2@{HotSpot2}}
+\index{HotSpot2@{HotSpot2}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{HotSpot2}{HotSpot2}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__HotSpot2}{T\+\_\+\+Hot\+Spot2}} S\+\_\+\+ACCESSPOINT\+::\+Hot\+Spot2}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_af92b7b8a7a7e12860edf14578fa205b5}\label{structS__ACCESSPOINT_af92b7b8a7a7e12860edf14578fa205b5}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!IEEE80211kEnable@{IEEE80211kEnable}}
+\index{IEEE80211kEnable@{IEEE80211kEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{IEEE80211kEnable}{IEEE80211kEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+IEEE80211k\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a20c0a06cfb0b75d6b1459f2fa089f208}\label{structS__ACCESSPOINT_a20c0a06cfb0b75d6b1459f2fa089f208}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!IEEE80211rEnable@{IEEE80211rEnable}}
+\index{IEEE80211rEnable@{IEEE80211rEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{IEEE80211rEnable}{IEEE80211rEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+IEEE80211r\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a8629df8c466406ec616e991697f6014d}\label{structS__ACCESSPOINT_a8629df8c466406ec616e991697f6014d}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!IEEE80211rFTOverDSEnable@{IEEE80211rFTOverDSEnable}}
+\index{IEEE80211rFTOverDSEnable@{IEEE80211rFTOverDSEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{IEEE80211rFTOverDSEnable}{IEEE80211rFTOverDSEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+IEEE80211r\+FTOver\+DSEnable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_acdffe97414f181176a62c9cee213799e}\label{structS__ACCESSPOINT_acdffe97414f181176a62c9cee213799e}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!index@{index}}
+\index{index@{index}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{index}{index}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::index}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_acab7dea15282550f276a53440d7e40cb}\label{structS__ACCESSPOINT_acab7dea15282550f276a53440d7e40cb}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!initDone@{initDone}}
+\index{initDone@{initDone}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{initDone}{initDone}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::init\+Done}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ac081b342ebeb93a13345245675d83980}\label{structS__ACCESSPOINT_ac081b342ebeb93a13345245675d83980}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!it@{it}}
+\index{it@{it}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{it}{it}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+it\+\_\+t S\+\_\+\+ACCESSPOINT\+::it}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_af194a3b649d470a4cb30c3056e3825b3}\label{structS__ACCESSPOINT_af194a3b649d470a4cb30c3056e3825b3}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!keyPassPhrase@{keyPassPhrase}}
+\index{keyPassPhrase@{keyPassPhrase}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{keyPassPhrase}{keyPassPhrase}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::key\+Pass\+Phrase\mbox{[}\mbox{\hyperlink{wld_8h_a7c4a155606b73c4639366ab3275610ee}{PSK\+\_\+\+KEY\+\_\+\+SIZE\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a96598b3a6c344a041d04023f08ce5704}\label{structS__ACCESSPOINT_a96598b3a6c344a041d04023f08ce5704}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!lastAssocReq@{lastAssocReq}}
+\index{lastAssocReq@{lastAssocReq}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{lastAssocReq}{lastAssocReq}}
+{\footnotesize\ttfamily swl\+\_\+circ\+Table\+\_\+t S\+\_\+\+ACCESSPOINT\+::last\+Assoc\+Req}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae40d8d2bdae15877dc67759e803d4619}\label{structS__ACCESSPOINT_ae40d8d2bdae15877dc67759e803d4619}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!lastDevIndex@{lastDevIndex}}
+\index{lastDevIndex@{lastDevIndex}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{lastDevIndex}{lastDevIndex}}
+{\footnotesize\ttfamily uint32\+\_\+t S\+\_\+\+ACCESSPOINT\+::last\+Dev\+Index}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aaeeba13602af565fcbdee85f038c7558}\label{structS__ACCESSPOINT_aaeeba13602af565fcbdee85f038c7558}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!lastStatusChange@{lastStatusChange}}
+\index{lastStatusChange@{lastStatusChange}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{lastStatusChange}{lastStatusChange}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t S\+\_\+\+ACCESSPOINT\+::last\+Status\+Change}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae97c366c3978115cc8473b3b594cfc43}\label{structS__ACCESSPOINT_ae97c366c3978115cc8473b3b594cfc43}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!llIntfWds@{llIntfWds}}
+\index{llIntfWds@{llIntfWds}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{llIntfWds}{llIntfWds}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t S\+\_\+\+ACCESSPOINT\+::ll\+Intf\+Wds}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a95b2920fcf47c9c14e91d6e7fbf2e292}\label{structS__ACCESSPOINT_a95b2920fcf47c9c14e91d6e7fbf2e292}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MaxStations@{MaxStations}}
+\index{MaxStations@{MaxStations}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MaxStations}{MaxStations}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+Max\+Stations}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a5230f0cfe7bd2c64776511a48ab05e8a}\label{structS__ACCESSPOINT_a5230f0cfe7bd2c64776511a48ab05e8a}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!mboDenyReason@{mboDenyReason}}
+\index{mboDenyReason@{mboDenyReason}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{mboDenyReason}{mboDenyReason}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_af650886d4c532eed9380bc281dee4271}{wld\+\_\+mbo\+\_\+deny\+Reason\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::mbo\+Deny\+Reason}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a5a74497cab4f11c3de40f119942354f0}\label{structS__ACCESSPOINT_a5a74497cab4f11c3de40f119942354f0}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!mboEnable@{mboEnable}}
+\index{mboEnable@{mboEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{mboEnable}{mboEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::mbo\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a0a67c00dd6d08220203b46c61ab67d32}\label{structS__ACCESSPOINT_a0a67c00dd6d08220203b46c61ab67d32}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MCEnable@{MCEnable}}
+\index{MCEnable@{MCEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MCEnable}{MCEnable}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+MCEnable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aa27983ef8b0d1a5b9ccf55fdbd477911}\label{structS__ACCESSPOINT_aa27983ef8b0d1a5b9ccf55fdbd477911}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_AddressList@{MF\_AddressList}}
+\index{MF\_AddressList@{MF\_AddressList}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_AddressList}{MF\_AddressList}}
+{\footnotesize\ttfamily char$\ast$ S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Address\+List}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aad7c7ab7f8cff34f2c35b41567f43dac}\label{structS__ACCESSPOINT_aad7c7ab7f8cff34f2c35b41567f43dac}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_AddressListBlockSync@{MF\_AddressListBlockSync}}
+\index{MF\_AddressListBlockSync@{MF\_AddressListBlockSync}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_AddressListBlockSync}{MF\_AddressListBlockSync}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Address\+List\+Block\+Sync}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_adc8e42fecea284dafcf072308cff697f}\label{structS__ACCESSPOINT_adc8e42fecea284dafcf072308cff697f}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_Entry@{MF\_Entry}}
+\index{MF\_Entry@{MF\_Entry}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_Entry}{MF\_Entry}}
+{\footnotesize\ttfamily unsigned char S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Entry\mbox{[}\mbox{\hyperlink{wld_8h_ae38246d8e06a9e10ceee277b2859e79c}{MAXNROF\+\_\+\+MFENTRY}}\mbox{]}\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3361ce40bdee1c8ab0ed136afca9f72d}\label{structS__ACCESSPOINT_a3361ce40bdee1c8ab0ed136afca9f72d}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_EntryCount@{MF\_EntryCount}}
+\index{MF\_EntryCount@{MF\_EntryCount}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_EntryCount}{MF\_EntryCount}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Entry\+Count}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a4e5a7c901ffaca1012d3e5642bfc200f}\label{structS__ACCESSPOINT_a4e5a7c901ffaca1012d3e5642bfc200f}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_Mode@{MF\_Mode}}
+\index{MF\_Mode@{MF\_Mode}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_Mode}{MF\_Mode}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a41dcc6e85edfda32d83597184f2296cf}{wld\+\_\+mf\+Mode\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Mode}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a77b9d0f27aa9595ef91da54d08163978}\label{structS__ACCESSPOINT_a77b9d0f27aa9595ef91da54d08163978}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_Temp\_Entry@{MF\_Temp\_Entry}}
+\index{MF\_Temp\_Entry@{MF\_Temp\_Entry}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_Temp\_Entry}{MF\_Temp\_Entry}}
+{\footnotesize\ttfamily unsigned char S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Temp\+\_\+\+Entry\mbox{[}\mbox{\hyperlink{wld_8h_ae38246d8e06a9e10ceee277b2859e79c}{MAXNROF\+\_\+\+MFENTRY}}\mbox{]}\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3abb974be46e3367bdca7fb67cfba219}\label{structS__ACCESSPOINT_a3abb974be46e3367bdca7fb67cfba219}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_TempBlacklistEnable@{MF\_TempBlacklistEnable}}
+\index{MF\_TempBlacklistEnable@{MF\_TempBlacklistEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_TempBlacklistEnable}{MF\_TempBlacklistEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Temp\+Blacklist\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a241912f5f32807691cbc4299939b1149}\label{structS__ACCESSPOINT_a241912f5f32807691cbc4299939b1149}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!MF\_TempEntryCount@{MF\_TempEntryCount}}
+\index{MF\_TempEntryCount@{MF\_TempEntryCount}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{MF\_TempEntryCount}{MF\_TempEntryCount}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+MF\+\_\+\+Temp\+Entry\+Count}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a801e07b5bd078869888ab6426be64aed}\label{structS__ACCESSPOINT_a801e07b5bd078869888ab6426be64aed}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!mfpConfig@{mfpConfig}}
+\index{mfpConfig@{mfpConfig}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{mfpConfig}{mfpConfig}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+mfp\+Mode\+\_\+e S\+\_\+\+ACCESSPOINT\+::mfp\+Config}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a9c29a3bba0b8a9b5e4ff38faa5f4a25e}\label{structS__ACCESSPOINT_a9c29a3bba0b8a9b5e4ff38faa5f4a25e}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!mgtStats@{mgtStats}}
+\index{mgtStats@{mgtStats}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{mgtStats}{mgtStats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__ApMgtStats}{T\+\_\+\+Ap\+Mgt\+Stats}} S\+\_\+\+ACCESSPOINT\+::mgt\+Stats}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a6ea60870664db7ad53063dc3ff3c0413}\label{structS__ACCESSPOINT_a6ea60870664db7ad53063dc3ff3c0413}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!mldCfg@{mldCfg}}
+\index{mldCfg@{mldCfg}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{mldCfg}{mldCfg}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__apMldCfg__t}{wld\+\_\+ap\+Mld\+Cfg\+\_\+t}} S\+\_\+\+ACCESSPOINT\+::mld\+Cfg}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a6b730afef5070a1f9efdfe5fce45f881}\label{structS__ACCESSPOINT_a6b730afef5070a1f9efdfe5fce45f881}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!mobilityDomain@{mobilityDomain}}
+\index{mobilityDomain@{mobilityDomain}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{mobilityDomain}{mobilityDomain}}
+{\footnotesize\ttfamily uint16\+\_\+t S\+\_\+\+ACCESSPOINT\+::mobility\+Domain}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a6a99a148a7cb59d41cfcdd254a388916}\label{structS__ACCESSPOINT_a6a99a148a7cb59d41cfcdd254a388916}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!multiAPProfile@{multiAPProfile}}
+\index{multiAPProfile@{multiAPProfile}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{multiAPProfile}{multiAPProfile}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a443545a4d116631706acabeb1e3b05a5}{wld\+\_\+multiap\+\_\+profile\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::multi\+APProfile}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a2865d430cabda1e2e5a2ecd62d33f683}\label{structS__ACCESSPOINT_a2865d430cabda1e2e5a2ecd62d33f683}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!multiAPType@{multiAPType}}
+\index{multiAPType@{multiAPType}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{multiAPType}{multiAPType}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_aebc935100d8731bf4c4af1e4abc0ab1d}{wld\+\_\+multiap\+\_\+type\+\_\+m}} S\+\_\+\+ACCESSPOINT\+::multi\+APType}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ab37af06e4a95f56ddcab0891aecbb797}\label{structS__ACCESSPOINT_ab37af06e4a95f56ddcab0891aecbb797}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!multiAPVlanId@{multiAPVlanId}}
+\index{multiAPVlanId@{multiAPVlanId}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{multiAPVlanId}{multiAPVlanId}}
+{\footnotesize\ttfamily uint16\+\_\+t S\+\_\+\+ACCESSPOINT\+::multi\+APVlan\+Id}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_afa274f85f252051a1ffd57a8e6253a82}\label{structS__ACCESSPOINT_afa274f85f252051a1ffd57a8e6253a82}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!name@{name}}
+\index{name@{name}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::name\mbox{[}\mbox{\hyperlink{wld_8h_a4997bff8e21b4e9e9d95a6d88110b167}{AP\+\_\+\+NAME\+\_\+\+SIZE}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3cdbd679c3182314925b9837975e038f}\label{structS__ACCESSPOINT_a3cdbd679c3182314925b9837975e038f}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!NASIdentifier@{NASIdentifier}}
+\index{NASIdentifier@{NASIdentifier}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{NASIdentifier}{NASIdentifier}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::\+NASIdentifier\mbox{[}\mbox{\hyperlink{wld_8h_a9439db570eaf5384cb3c1b94d4bcb617}{NAS\+\_\+\+IDENTIFIER\+\_\+\+MAX\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a7e4e8cb57867048106846873acb489d5}\label{structS__ACCESSPOINT_a7e4e8cb57867048106846873acb489d5}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!neighbours@{neighbours}}
+\index{neighbours@{neighbours}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{neighbours}{neighbours}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t S\+\_\+\+ACCESSPOINT\+::neighbours}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a6e5b8b01271495e5ea9c43b54649d11c}\label{structS__ACCESSPOINT_a6e5b8b01271495e5ea9c43b54649d11c}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!nl80211Listener@{nl80211Listener}}
+\index{nl80211Listener@{nl80211Listener}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{nl80211Listener}{nl80211Listener}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}}$\ast$ S\+\_\+\+ACCESSPOINT\+::nl80211\+Listener}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a06f737a1d9b81f743af3df1aa8e4a6ac}\label{structS__ACCESSPOINT_a06f737a1d9b81f743af3df1aa8e4a6ac}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!oweTransModeIntf@{oweTransModeIntf}}
+\index{oweTransModeIntf@{oweTransModeIntf}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{oweTransModeIntf}{oweTransModeIntf}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::owe\+Trans\+Mode\+Intf\mbox{[}32\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_adb86ec8809004d04e0a5d64cf42e7c11}\label{structS__ACCESSPOINT_adb86ec8809004d04e0a5d64cf42e7c11}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!pBus@{pBus}}
+\index{pBus@{pBus}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{pBus}{pBus}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t$\ast$ S\+\_\+\+ACCESSPOINT\+::p\+Bus}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_af5accda3984809cb58f41639ff8e74fd}\label{structS__ACCESSPOINT_af5accda3984809cb58f41639ff8e74fd}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!PF\_Temp\_Entry@{PF\_Temp\_Entry}}
+\index{PF\_Temp\_Entry@{PF\_Temp\_Entry}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{PF\_Temp\_Entry}{PF\_Temp\_Entry}}
+{\footnotesize\ttfamily unsigned char S\+\_\+\+ACCESSPOINT\+::\+PF\+\_\+\+Temp\+\_\+\+Entry\mbox{[}\mbox{\hyperlink{wld_8h_a76ca15d534a3ce1ee6b1e1f4695b4b27}{MAXNROF\+\_\+\+PFENTRY}}\mbox{]}\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_abcc2953433845bed944c37b16b5de160}\label{structS__ACCESSPOINT_abcc2953433845bed944c37b16b5de160}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!PF\_TempEntryCount@{PF\_TempEntryCount}}
+\index{PF\_TempEntryCount@{PF\_TempEntryCount}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{PF\_TempEntryCount}{PF\_TempEntryCount}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+PF\+\_\+\+Temp\+Entry\+Count}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aec00e390e01c6daf4de8f6d628676657}\label{structS__ACCESSPOINT_aec00e390e01c6daf4de8f6d628676657}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!pFA@{pFA}}
+\index{pFA@{pFA}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{pFA}{pFA}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}}$\ast$ S\+\_\+\+ACCESSPOINT\+::p\+FA}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3a99a8ead7dcf04924a3b847894ce342}\label{structS__ACCESSPOINT_a3a99a8ead7dcf04924a3b847894ce342}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!pRadio@{pRadio}}
+\index{pRadio@{pRadio}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{pRadio}{pRadio}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}}$\ast$ S\+\_\+\+ACCESSPOINT\+::p\+Radio}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aabb722c2ed62afa6367128ca407deca6}\label{structS__ACCESSPOINT_aabb722c2ed62afa6367128ca407deca6}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!pReferenceApRelay@{pReferenceApRelay}}
+\index{pReferenceApRelay@{pReferenceApRelay}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{pReferenceApRelay}{pReferenceApRelay}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}}$\ast$ S\+\_\+\+ACCESSPOINT\+::p\+Reference\+Ap\+Relay}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ab6ec5c74078fcbdb6c440556f63911bd}\label{structS__ACCESSPOINT_ab6ec5c74078fcbdb6c440556f63911bd}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!preSharedKey@{preSharedKey}}
+\index{preSharedKey@{preSharedKey}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{preSharedKey}{preSharedKey}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::pre\+Shared\+Key\mbox{[}\mbox{\hyperlink{wld_8h_a7c4a155606b73c4639366ab3275610ee}{PSK\+\_\+\+KEY\+\_\+\+SIZE\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae5319db4749e50373a6fa343e2b60b58}\label{structS__ACCESSPOINT_ae5319db4749e50373a6fa343e2b60b58}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!pSSID@{pSSID}}
+\index{pSSID@{pSSID}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{pSSID}{pSSID}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}}$\ast$ S\+\_\+\+ACCESSPOINT\+::p\+SSID}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae330ac97da10268749ed36688d9c8b86}\label{structS__ACCESSPOINT_ae330ac97da10268749ed36688d9c8b86}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!R0KHKey@{R0KHKey}}
+\index{R0KHKey@{R0KHKey}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{R0KHKey}{R0KHKey}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::\+R0\+KHKey\mbox{[}\mbox{\hyperlink{wld_8h_a9e14f123b9cfd2fcb512931c14ebfd17}{KHKEY\+\_\+\+MAX\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a6d0672b9ccc5a629bea0875a91b84766}\label{structS__ACCESSPOINT_a6d0672b9ccc5a629bea0875a91b84766}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusCalledStationId@{radiusCalledStationId}}
+\index{radiusCalledStationId@{radiusCalledStationId}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusCalledStationId}{radiusCalledStationId}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::radius\+Called\+Station\+Id\mbox{[}88\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aaa15b08c11f637079e7821b43f5edfe5}\label{structS__ACCESSPOINT_aaa15b08c11f637079e7821b43f5edfe5}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusChargeableUserId@{radiusChargeableUserId}}
+\index{radiusChargeableUserId@{radiusChargeableUserId}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusChargeableUserId}{radiusChargeableUserId}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::radius\+Chargeable\+User\+Id}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aad63732fc7ba1eab1a8a1bc4ab2a3f9b}\label{structS__ACCESSPOINT_aad63732fc7ba1eab1a8a1bc4ab2a3f9b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusDefaultSessionTimeout@{radiusDefaultSessionTimeout}}
+\index{radiusDefaultSessionTimeout@{radiusDefaultSessionTimeout}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusDefaultSessionTimeout}{radiusDefaultSessionTimeout}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::radius\+Default\+Session\+Timeout}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ac633a64cda635b90b903e58dbf8588ce}\label{structS__ACCESSPOINT_ac633a64cda635b90b903e58dbf8588ce}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusNASIdentifier@{radiusNASIdentifier}}
+\index{radiusNASIdentifier@{radiusNASIdentifier}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusNASIdentifier}{radiusNASIdentifier}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::radius\+NASIdentifier\mbox{[}128\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a999695720203a512aeeaebee79dde7e0}\label{structS__ACCESSPOINT_a999695720203a512aeeaebee79dde7e0}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusOwnIPAddress@{radiusOwnIPAddress}}
+\index{radiusOwnIPAddress@{radiusOwnIPAddress}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusOwnIPAddress}{radiusOwnIPAddress}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::radius\+Own\+IPAddress\mbox{[}40\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_afe77de5f4066081a99808e7443ea4a2c}\label{structS__ACCESSPOINT_afe77de5f4066081a99808e7443ea4a2c}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusSecret@{radiusSecret}}
+\index{radiusSecret@{radiusSecret}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusSecret}{radiusSecret}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::radius\+Secret\mbox{[}64\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ac9905a3d69aab2c959392dcd8c5bfb35}\label{structS__ACCESSPOINT_ac9905a3d69aab2c959392dcd8c5bfb35}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusServerIPAddr@{radiusServerIPAddr}}
+\index{radiusServerIPAddr@{radiusServerIPAddr}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusServerIPAddr}{radiusServerIPAddr}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::radius\+Server\+IPAddr\mbox{[}16\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_af49ca77b3ba2fb4b9d7b0f6019c43e9d}\label{structS__ACCESSPOINT_af49ca77b3ba2fb4b9d7b0f6019c43e9d}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!radiusServerPort@{radiusServerPort}}
+\index{radiusServerPort@{radiusServerPort}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{radiusServerPort}{radiusServerPort}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::radius\+Server\+Port}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae1ad8912e642ba0ac26f2e3c9f632341}\label{structS__ACCESSPOINT_ae1ad8912e642ba0ac26f2e3c9f632341}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!ref\_index@{ref\_index}}
+\index{ref\_index@{ref\_index}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{ref\_index}{ref\_index}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::ref\+\_\+index}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aab2490c32c491454ba4bdce8a08ae83e}\label{structS__ACCESSPOINT_aab2490c32c491454ba4bdce8a08ae83e}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!rekeyingInterval@{rekeyingInterval}}
+\index{rekeyingInterval@{rekeyingInterval}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{rekeyingInterval}{rekeyingInterval}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::rekeying\+Interval}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_af27f1145dfd7f499e7e3d1307c3649a2}\label{structS__ACCESSPOINT_af27f1145dfd7f499e7e3d1307c3649a2}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!retryLimit@{retryLimit}}
+\index{retryLimit@{retryLimit}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{retryLimit}{retryLimit}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::retry\+Limit}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a634bc0ee283e4ef86c938f7b189c6f90}\label{structS__ACCESSPOINT_a634bc0ee283e4ef86c938f7b189c6f90}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!rssiEventing@{rssiEventing}}
+\index{rssiEventing@{rssiEventing}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{rssiEventing}{rssiEventing}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__RssiEventing}{T\+\_\+\+Rssi\+Eventing}} S\+\_\+\+ACCESSPOINT\+::rssi\+Eventing}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3b28a280cd2ffeb6d863ff0a64845eb8}\label{structS__ACCESSPOINT_a3b28a280cd2ffeb6d863ff0a64845eb8}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!saePassphrase@{saePassphrase}}
+\index{saePassphrase@{saePassphrase}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{saePassphrase}{saePassphrase}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::sae\+Passphrase\mbox{[}\mbox{\hyperlink{wld_8h_a6f50c9767bbcc81785b98e614af31bd8}{SAE\+\_\+\+KEY\+\_\+\+SIZE\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a7a3b937b4d2fc7220bdcc2f478e4814f}\label{structS__ACCESSPOINT_a7a3b937b4d2fc7220bdcc2f478e4814f}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!secModeEnabled@{secModeEnabled}}
+\index{secModeEnabled@{secModeEnabled}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{secModeEnabled}{secModeEnabled}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+e S\+\_\+\+ACCESSPOINT\+::sec\+Mode\+Enabled}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ab47dea0d51d1a1d684cd04d1d5dafbaa}\label{structS__ACCESSPOINT_ab47dea0d51d1a1d684cd04d1d5dafbaa}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!secModesAvailable@{secModesAvailable}}
+\index{secModesAvailable@{secModesAvailable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{secModesAvailable}{secModesAvailable}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+m S\+\_\+\+ACCESSPOINT\+::sec\+Modes\+Available}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a65556454eb4a6c218387963c195be3e6}\label{structS__ACCESSPOINT_a65556454eb4a6c218387963c195be3e6}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!secModesSupported@{secModesSupported}}
+\index{secModesSupported@{secModesSupported}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{secModesSupported}{secModesSupported}}
+{\footnotesize\ttfamily swl\+\_\+security\+\_\+ap\+Mode\+\_\+m S\+\_\+\+ACCESSPOINT\+::sec\+Modes\+Supported}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a9a85ae48fa67c3e6201dd290e4b944d3}\label{structS__ACCESSPOINT_a9a85ae48fa67c3e6201dd290e4b944d3}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!SHA256Enable@{SHA256Enable}}
+\index{SHA256Enable@{SHA256Enable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{SHA256Enable}{SHA256Enable}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+SHA256\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aa0fe4fe8b0a4329bb66d1d6dc35e61a3}\label{structS__ACCESSPOINT_aa0fe4fe8b0a4329bb66d1d6dc35e61a3}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!sppAmsdu@{sppAmsdu}}
+\index{sppAmsdu@{sppAmsdu}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{sppAmsdu}{sppAmsdu}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::spp\+Amsdu}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a816cee1277f87588228af2878f71b83b}\label{structS__ACCESSPOINT_a816cee1277f87588228af2878f71b83b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!SSIDAdvertisementEnabled@{SSIDAdvertisementEnabled}}
+\index{SSIDAdvertisementEnabled@{SSIDAdvertisementEnabled}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{SSIDAdvertisementEnabled}{SSIDAdvertisementEnabled}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+SSIDAdvertisement\+Enabled}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae61438230f20f92f68545ac459668d3b}\label{structS__ACCESSPOINT_ae61438230f20f92f68545ac459668d3b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!SSIDReference@{SSIDReference}}
+\index{SSIDReference@{SSIDReference}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{SSIDReference}{SSIDReference}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+SSIDReference}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a855ea925eca88995873415377634937b}\label{structS__ACCESSPOINT_a855ea925eca88995873415377634937b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!staDcList@{staDcList}}
+\index{staDcList@{staDcList}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{staDcList}{staDcList}}
+{\footnotesize\ttfamily swl\+\_\+un\+Li\+Table\+\_\+t S\+\_\+\+ACCESSPOINT\+::sta\+Dc\+List}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aa38168abc8b5e3afc1cfd8f38edf8020}\label{structS__ACCESSPOINT_aa38168abc8b5e3afc1cfd8f38edf8020}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!StaInactivityTimeout@{StaInactivityTimeout}}
+\index{StaInactivityTimeout@{StaInactivityTimeout}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{StaInactivityTimeout}{StaInactivityTimeout}}
+{\footnotesize\ttfamily uint16\+\_\+t S\+\_\+\+ACCESSPOINT\+::\+Sta\+Inactivity\+Timeout}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ad102f5615833161c33570eb8b9404dc9}\label{structS__ACCESSPOINT_ad102f5615833161c33570eb8b9404dc9}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!stationsStatsState@{stationsStatsState}}
+\index{stationsStatsState@{stationsStatsState}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{stationsStatsState}{stationsStatsState}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__fcallState__t}{wld\+\_\+fcall\+State\+\_\+t}} S\+\_\+\+ACCESSPOINT\+::stations\+Stats\+State}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_aedf0c51472bdc19800704dd8e6f86bc2}\label{structS__ACCESSPOINT_aedf0c51472bdc19800704dd8e6f86bc2}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!status@{status}}
+\index{status@{status}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a6f071c90b200e5b86aca49acaf62e1ff}{wld\+\_\+intf\+Status\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::status}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ac2e3cd57d4bed96e0ea5b55caea5f357}\label{structS__ACCESSPOINT_ac2e3cd57d4bed96e0ea5b55caea5f357}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!transitionDisable@{transitionDisable}}
+\index{transitionDisable@{transitionDisable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{transitionDisable}{transitionDisable}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_ac70dea6199aa6684c7e42b9d585a7605}{wld\+\_\+ap\+\_\+td\+\_\+m}} S\+\_\+\+ACCESSPOINT\+::transition\+Disable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a7fdcdd00fe08403fb61bf0b5d029dbec}\label{structS__ACCESSPOINT_a7fdcdd00fe08403fb61bf0b5d029dbec}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!UAPSDCapability@{UAPSDCapability}}
+\index{UAPSDCapability@{UAPSDCapability}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{UAPSDCapability}{UAPSDCapability}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+UAPSDCapability}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_adc28a9fab7ec622b617b9621fe11b838}\label{structS__ACCESSPOINT_adc28a9fab7ec622b617b9621fe11b838}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!UAPSDEnable@{UAPSDEnable}}
+\index{UAPSDEnable@{UAPSDEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{UAPSDEnable}{UAPSDEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+UAPSDEnable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a3433f0da5ccb6e25f8889e384302fe37}\label{structS__ACCESSPOINT_a3433f0da5ccb6e25f8889e384302fe37}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!vendorData@{vendorData}}
+\index{vendorData@{vendorData}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{vendorData}{vendorData}}
+{\footnotesize\ttfamily void$\ast$ S\+\_\+\+ACCESSPOINT\+::vendor\+Data}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_afb9f698d160b1a0a902290d3327a66be}\label{structS__ACCESSPOINT_afb9f698d160b1a0a902290d3327a66be}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!vendorIEs@{vendorIEs}}
+\index{vendorIEs@{vendorIEs}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{vendorIEs}{vendorIEs}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t S\+\_\+\+ACCESSPOINT\+::vendor\+IEs}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae2782901ddb215e7f31e29c1ddffca9e}\label{structS__ACCESSPOINT_ae2782901ddb215e7f31e29c1ddffca9e}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!wDevId@{wDevId}}
+\index{wDevId@{wDevId}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{wDevId}{wDevId}}
+{\footnotesize\ttfamily uint64\+\_\+t S\+\_\+\+ACCESSPOINT\+::w\+Dev\+Id}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a9b439744b967c6e288bbe6ec45f7deb4}\label{structS__ACCESSPOINT_a9b439744b967c6e288bbe6ec45f7deb4}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!wdsEnable@{wdsEnable}}
+\index{wdsEnable@{wdsEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{wdsEnable}{wdsEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::wds\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a7f34825898ebba4b622082dc25e25185}\label{structS__ACCESSPOINT_a7f34825898ebba4b622082dc25e25185}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WEPKey@{WEPKey}}
+\index{WEPKey@{WEPKey}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WEPKey}{WEPKey}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::\+WEPKey\mbox{[}36\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a58fac7237c96f8afc61da52cc025cc69}\label{structS__ACCESSPOINT_a58fac7237c96f8afc61da52cc025cc69}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!wlvap\_sk@{wlvap\_sk}}
+\index{wlvap\_sk@{wlvap\_sk}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{wlvap\_sk}{wlvap\_sk}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::wlvap\+\_\+sk}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a82b8a582e8eeabc8dfa965ce256ee261}\label{structS__ACCESSPOINT_a82b8a582e8eeabc8dfa965ce256ee261}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WMMCapability@{WMMCapability}}
+\index{WMMCapability@{WMMCapability}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WMMCapability}{WMMCapability}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+WMMCapability}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a97d1dc081e7dcda839482725edc13eb6}\label{structS__ACCESSPOINT_a97d1dc081e7dcda839482725edc13eb6}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WMMEnable@{WMMEnable}}
+\index{WMMEnable@{WMMEnable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WMMEnable}{WMMEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+WMMEnable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a86c144b458dffd972c1cabe6db64acaa}\label{structS__ACCESSPOINT_a86c144b458dffd972c1cabe6db64acaa}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!wpaCtrlInterface@{wpaCtrlInterface}}
+\index{wpaCtrlInterface@{wpaCtrlInterface}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{wpaCtrlInterface}{wpaCtrlInterface}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}}$\ast$ S\+\_\+\+ACCESSPOINT\+::wpa\+Ctrl\+Interface}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a5e90efd5d304d337b3006fa9849dca3c}\label{structS__ACCESSPOINT_a5e90efd5d304d337b3006fa9849dca3c}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_ApSetupLocked@{WPS\_ApSetupLocked}}
+\index{WPS\_ApSetupLocked@{WPS\_ApSetupLocked}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_ApSetupLocked}{WPS\_ApSetupLocked}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Ap\+Setup\+Locked}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a23b4f3d236286a2cd2dc0830b35044b5}\label{structS__ACCESSPOINT_a23b4f3d236286a2cd2dc0830b35044b5}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_CertMode@{WPS\_CertMode}}
+\index{WPS\_CertMode@{WPS\_CertMode}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_CertMode}{WPS\_CertMode}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Cert\+Mode}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a5e5057e178400da70251cbd3a67a736b}\label{structS__ACCESSPOINT_a5e5057e178400da70251cbd3a67a736b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_ClientPIN@{WPS\_ClientPIN}}
+\index{WPS\_ClientPIN@{WPS\_ClientPIN}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_ClientPIN}{WPS\_ClientPIN}}
+{\footnotesize\ttfamily char S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Client\+PIN\mbox{[}16\mbox{]}}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a34dec8e3947f92eb64243c39968045c3}\label{structS__ACCESSPOINT_a34dec8e3947f92eb64243c39968045c3}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_ConfigMethodsEnabled@{WPS\_ConfigMethodsEnabled}}
+\index{WPS\_ConfigMethodsEnabled@{WPS\_ConfigMethodsEnabled}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_ConfigMethodsEnabled}{WPS\_ConfigMethodsEnabled}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Config\+Methods\+Enabled}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a9ee4a2ab5a35a96f1aea5ca3abfbbe2d}\label{structS__ACCESSPOINT_a9ee4a2ab5a35a96f1aea5ca3abfbbe2d}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_ConfigMethodsSupported@{WPS\_ConfigMethodsSupported}}
+\index{WPS\_ConfigMethodsSupported@{WPS\_ConfigMethodsSupported}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_ConfigMethodsSupported}{WPS\_ConfigMethodsSupported}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a3c44ecfd2c847cd662893250ecf89823}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+m}} S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Config\+Methods\+Supported}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a80a83e026532ac118bfb9db45838eaa7}\label{structS__ACCESSPOINT_a80a83e026532ac118bfb9db45838eaa7}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_Configured@{WPS\_Configured}}
+\index{WPS\_Configured@{WPS\_Configured}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_Configured}{WPS\_Configured}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Configured}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_ae77f5ca170d35c9687ecadde45ff7852}\label{structS__ACCESSPOINT_ae77f5ca170d35c9687ecadde45ff7852}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_Enable@{WPS\_Enable}}
+\index{WPS\_Enable@{WPS\_Enable}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_Enable}{WPS\_Enable}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Enable}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a2fa6d9a58107e6fc1e7987b279961704}\label{structS__ACCESSPOINT_a2fa6d9a58107e6fc1e7987b279961704}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_PBC\_Delay@{WPS\_PBC\_Delay}}
+\index{WPS\_PBC\_Delay@{WPS\_PBC\_Delay}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_PBC\_Delay}{WPS\_PBC\_Delay}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structS__WPS__pushButton__Delay}{S\+\_\+\+WPS\+\_\+push\+Button\+\_\+\+Delay}} S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+PBC\+\_\+\+Delay}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a41d6288c2490ea6925405a0b61be40ff}\label{structS__ACCESSPOINT_a41d6288c2490ea6925405a0b61be40ff}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_Registrar@{WPS\_Registrar}}
+\index{WPS\_Registrar@{WPS\_Registrar}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_Registrar}{WPS\_Registrar}}
+{\footnotesize\ttfamily int S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Registrar}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_a8ea639ac6642d0fdec8bc7ba88086506}\label{structS__ACCESSPOINT_a8ea639ac6642d0fdec8bc7ba88086506}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!WPS\_Status@{WPS\_Status}}
+\index{WPS\_Status@{WPS\_Status}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{WPS\_Status}{WPS\_Status}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_ad290e2da9eb2cda2357c0b7c66d38b9f}{wld\+\_\+wps\+\_\+status\+\_\+e}} S\+\_\+\+ACCESSPOINT\+::\+WPS\+\_\+\+Status}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_abde72cf35ccccfe83e494b5202fd8c3b}\label{structS__ACCESSPOINT_abde72cf35ccccfe83e494b5202fd8c3b}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!wpsRestartOnRequest@{wpsRestartOnRequest}}
+\index{wpsRestartOnRequest@{wpsRestartOnRequest}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{wpsRestartOnRequest}{wpsRestartOnRequest}}
+{\footnotesize\ttfamily bool S\+\_\+\+ACCESSPOINT\+::wps\+Restart\+On\+Request}
+
+\mbox{\Hypertarget{structS__ACCESSPOINT_abe2ece22e623af727433327156a1f170}\label{structS__ACCESSPOINT_abe2ece22e623af727433327156a1f170}} 
+\index{S\_ACCESSPOINT@{S\_ACCESSPOINT}!wpsSessionInfo@{wpsSessionInfo}}
+\index{wpsSessionInfo@{wpsSessionInfo}!S\_ACCESSPOINT@{S\_ACCESSPOINT}}
+\doxysubsubsection{\texorpdfstring{wpsSessionInfo}{wpsSessionInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__wpsSessionInfo__t}{wld\+\_\+wps\+Session\+Info\+\_\+t}} S\+\_\+\+ACCESSPOINT\+::wps\+Session\+Info}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

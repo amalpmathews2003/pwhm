@@ -1,0 +1,303 @@
+\hypertarget{wld__wpaSupp__ep__api_8c}{}\doxysection{src/nl80211/wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+api.c File Reference}
+\label{wld__wpaSupp__ep__api_8c}\index{src/nl80211/wld\_wpaSupp\_ep\_api.c@{src/nl80211/wld\_wpaSupp\_ep\_api.c}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+cfg\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+api.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__ep__api_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wpa\+Supp\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a64e5633d8a90131ce67d572d31c74e25}{s\+\_\+send\+Wpa\+Supp\+Command}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, char $\ast$cmd, const char $\ast$reason)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_aafb0146e3b8405f0f874fe772958df41}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+disconnect}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em Disconnect the endpoint from an AP. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a4d550965443a800d6b8f1e6afcb3555f}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+All\+Status\+Details}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, char $\ast$reply, size\+\_\+t reply\+Size)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a5d6e6d48b14e98c169a940f05470912c}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+One\+Status\+Detail}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, const char $\ast$key, char $\ast$val\+Str, size\+\_\+t val\+Str\+Size)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a659bb0d7c3aefae4a42cb25bf55315f5}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+increase\+Security\+Mode\+In\+Creds}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$creds)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a90266c278b6813bcd82b562a7aade8fd}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Scan\+Results}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} $\ast$res)
+\begin{DoxyCompactList}\small\item\em get the scan results from wpa\+\_\+supplicant \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_ab1603fd776e058f978121c6499b2f251}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Bssid}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+mac\+Char\+\_\+t $\ast$bssid)
+\begin{DoxyCompactList}\small\item\em get the AP\textquotesingle{}s bssid to which the endpoint is connected \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_aa6079f01fd5529b44104cb80ea6d493b}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Ssid}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, char $\ast$ssid, size\+\_\+t ssid\+Size)
+\begin{DoxyCompactList}\small\item\em get the AP\textquotesingle{}s SSID to which the endpoint is connected \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a45049b5ceeca8d5a21cf7900a01d1d8b}{SWL\+\_\+\+TABLE}} (s\+Wpa\+State\+Desc\+Maps, ARR(char $\ast$wpa\+State\+Desc;\mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} ep\+Conn\+State;), ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,), ARR(\{\char`\"{}DISCONNECTED\char`\"{}, EPCS\+\_\+\+DISCONNECTED\}, \{\char`\"{}INACTIVE\char`\"{}, EPCS\+\_\+\+IDLE\}, \{\char`\"{}INTERFACE\+\_\+\+DISABLED\char`\"{}, EPCS\+\_\+\+IDLE\}, \{\char`\"{}SCANNING\char`\"{}, EPCS\+\_\+\+DISCOVERING\}, \{\char`\"{}AUTHENTICATING\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}ASSOCIATING\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}ASSOCIATED\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}4WAY\+\_\+\+HANDSHAKE\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}GROUP\+\_\+\+HANDSHAKE\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}COMPLETED\char`\"{}, EPCS\+\_\+\+CONNECTED\},))
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_aa1a4934b036306e625c70c25609eb15e}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Conn\+State}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} $\ast$p\+EPConn\+State)
+\begin{DoxyCompactList}\small\item\em get the EP\textquotesingle{}s current connection status \char`\"{}\+DISCONNECTED\char`\"{}, \char`\"{}\+INACTIVE\char`\"{}, \char`\"{}\+INTERFACE\+\_\+\+DISABLED\char`\"{}, \char`\"{}\+SCANNING\char`\"{}, \char`\"{}\+AUTHENTICATING\char`\"{}, \char`\"{}\+ASSOCIATING\char`\"{}, \char`\"{}\+ASSOCIATED\char`\"{}, \char`\"{}4\+WAY\+\_\+\+HANDSHAKE\char`\"{}, \char`\"{}\+GROUP\+\_\+\+HANDSHAKE\char`\"{}, \char`\"{}\+COMPLETED\char`\"{} \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a36bc902b5b6cad61338b71613e810c27}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+reconfigure}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em Reload wpa\+\_\+supp configuration. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_a66a2481728313e354cb4877472dee0f6}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pbc}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+mac\+Char\+\_\+t $\ast$bssid)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pbc \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_afe1d659067f19fe1474b79f6ada6062b}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pin}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, char $\ast$pin, swl\+\_\+mac\+Char\+\_\+t $\ast$bssid)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pin \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaSupp__ep__api_8c_ab44390c2cf940838f0c7552a0730572f}{wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+cancel\+Wps}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+cancel\+Wps \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__wpaSupp__ep__api_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!ME@{ME}}
+\index{ME@{ME}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wpa\+Supp\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a64e5633d8a90131ce67d572d31c74e25}\label{wld__wpaSupp__ep__api_8c_a64e5633d8a90131ce67d572d31c74e25}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!s\_sendWpaSuppCommand@{s\_sendWpaSuppCommand}}
+\index{s\_sendWpaSuppCommand@{s\_sendWpaSuppCommand}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{s\_sendWpaSuppCommand()}{s\_sendWpaSuppCommand()}}
+{\footnotesize\ttfamily bool s\+\_\+send\+Wpa\+Supp\+Command (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{char $\ast$}]{cmd,  }\item[{const char $\ast$}]{reason }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a45049b5ceeca8d5a21cf7900a01d1d8b}\label{wld__wpaSupp__ep__api_8c_a45049b5ceeca8d5a21cf7900a01d1d8b}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Wpa\+State\+Desc\+Maps}]{,  }\item[{ARR(char $\ast$wpa\+State\+Desc;\mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} ep\+Conn\+State;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{\char`\"{}DISCONNECTED\char`\"{}, EPCS\+\_\+\+DISCONNECTED\}, \{\char`\"{}INACTIVE\char`\"{}, EPCS\+\_\+\+IDLE\}, \{\char`\"{}INTERFACE\+\_\+\+DISABLED\char`\"{}, EPCS\+\_\+\+IDLE\}, \{\char`\"{}SCANNING\char`\"{}, EPCS\+\_\+\+DISCOVERING\}, \{\char`\"{}AUTHENTICATING\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}ASSOCIATING\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}ASSOCIATED\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}4WAY\+\_\+\+HANDSHAKE\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}GROUP\+\_\+\+HANDSHAKE\char`\"{}, EPCS\+\_\+\+CONNECTING\}, \{\char`\"{}COMPLETED\char`\"{}, EPCS\+\_\+\+CONNECTED\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_ab44390c2cf940838f0c7552a0730572f}\label{wld__wpaSupp__ep__api_8c_ab44390c2cf940838f0c7552a0730572f}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_cancelWps@{wld\_wpaSupp\_ep\_cancelWps}}
+\index{wld\_wpaSupp\_ep\_cancelWps@{wld\_wpaSupp\_ep\_cancelWps}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_cancelWps()}{wld\_wpaSupp\_ep\_cancelWps()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+cancel\+Wps (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+cancel\+Wps 
+
+send wps\+\_\+cancel command to wpa\+\_\+supplicant
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & Pointer to the endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_aafb0146e3b8405f0f874fe772958df41}\label{wld__wpaSupp__ep__api_8c_aafb0146e3b8405f0f874fe772958df41}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_disconnect@{wld\_wpaSupp\_ep\_disconnect}}
+\index{wld\_wpaSupp\_ep\_disconnect@{wld\_wpaSupp\_ep\_disconnect}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_disconnect()}{wld\_wpaSupp\_ep\_disconnect()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+disconnect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+Disconnect the endpoint from an AP. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a4d550965443a800d6b8f1e6afcb3555f}\label{wld__wpaSupp__ep__api_8c_a4d550965443a800d6b8f1e6afcb3555f}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_getAllStatusDetails@{wld\_wpaSupp\_ep\_getAllStatusDetails}}
+\index{wld\_wpaSupp\_ep\_getAllStatusDetails@{wld\_wpaSupp\_ep\_getAllStatusDetails}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_getAllStatusDetails()}{wld\_wpaSupp\_ep\_getAllStatusDetails()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+All\+Status\+Details (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{char $\ast$}]{reply,  }\item[{size\+\_\+t}]{reply\+Size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_ab1603fd776e058f978121c6499b2f251}\label{wld__wpaSupp__ep__api_8c_ab1603fd776e058f978121c6499b2f251}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_getBssid@{wld\_wpaSupp\_ep\_getBssid}}
+\index{wld\_wpaSupp\_ep\_getBssid@{wld\_wpaSupp\_ep\_getBssid}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_getBssid()}{wld\_wpaSupp\_ep\_getBssid()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+mac\+Char\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+
+
+get the AP\textquotesingle{}s bssid to which the endpoint is connected 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & endpoint \\
+\hline
+{\em bssid} & the bssid string value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the value is retrieved successfully (valid)
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_aa1a4934b036306e625c70c25609eb15e}\label{wld__wpaSupp__ep__api_8c_aa1a4934b036306e625c70c25609eb15e}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_getConnState@{wld\_wpaSupp\_ep\_getConnState}}
+\index{wld\_wpaSupp\_ep\_getConnState@{wld\_wpaSupp\_ep\_getConnState}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_getConnState()}{wld\_wpaSupp\_ep\_getConnState()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Conn\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} $\ast$}]{p\+EPConn\+State }\end{DoxyParamCaption})}
+
+
+
+get the EP\textquotesingle{}s current connection status \char`\"{}\+DISCONNECTED\char`\"{}, \char`\"{}\+INACTIVE\char`\"{}, \char`\"{}\+INTERFACE\+\_\+\+DISABLED\char`\"{}, \char`\"{}\+SCANNING\char`\"{}, \char`\"{}\+AUTHENTICATING\char`\"{}, \char`\"{}\+ASSOCIATING\char`\"{}, \char`\"{}\+ASSOCIATED\char`\"{}, \char`\"{}4\+WAY\+\_\+\+HANDSHAKE\char`\"{}, \char`\"{}\+GROUP\+\_\+\+HANDSHAKE\char`\"{}, \char`\"{}\+COMPLETED\char`\"{} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & endpoint \\
+\hline
+{\em p\+EPConn\+State} & output endpoint connection state based on retrieved wpa\+\_\+state \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the wpa\+\_\+state is found and parsed successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a5d6e6d48b14e98c169a940f05470912c}\label{wld__wpaSupp__ep__api_8c_a5d6e6d48b14e98c169a940f05470912c}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_getOneStatusDetail@{wld\_wpaSupp\_ep\_getOneStatusDetail}}
+\index{wld\_wpaSupp\_ep\_getOneStatusDetail@{wld\_wpaSupp\_ep\_getOneStatusDetail}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_getOneStatusDetail()}{wld\_wpaSupp\_ep\_getOneStatusDetail()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+One\+Status\+Detail (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{const char $\ast$}]{key,  }\item[{char $\ast$}]{val\+Str,  }\item[{size\+\_\+t}]{val\+Str\+Size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a90266c278b6813bcd82b562a7aade8fd}\label{wld__wpaSupp__ep__api_8c_a90266c278b6813bcd82b562a7aade8fd}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_getScanResults@{wld\_wpaSupp\_ep\_getScanResults}}
+\index{wld\_wpaSupp\_ep\_getScanResults@{wld\_wpaSupp\_ep\_getScanResults}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_getScanResults()}{wld\_wpaSupp\_ep\_getScanResults()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Scan\+Results (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} $\ast$}]{res }\end{DoxyParamCaption})}
+
+
+
+get the scan results from wpa\+\_\+supplicant 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & endpoint \\
+\hline
+{\em wld\+\_\+scan\+Results\+\_\+t} & output scan results\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK on success, error code otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_aa6079f01fd5529b44104cb80ea6d493b}\label{wld__wpaSupp__ep__api_8c_aa6079f01fd5529b44104cb80ea6d493b}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_getSsid@{wld\_wpaSupp\_ep\_getSsid}}
+\index{wld\_wpaSupp\_ep\_getSsid@{wld\_wpaSupp\_ep\_getSsid}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_getSsid()}{wld\_wpaSupp\_ep\_getSsid()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Ssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{char $\ast$}]{ssid,  }\item[{size\+\_\+t}]{ssid\+Size }\end{DoxyParamCaption})}
+
+
+
+get the AP\textquotesingle{}s SSID to which the endpoint is connected 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & endpoint \\
+\hline
+{\em ssid} & the remote AP ssid buffer \\
+\hline
+{\em ssid\+Size} & the remote AP ssid buffer size \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the value is retrieved successfully (valid)
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a659bb0d7c3aefae4a42cb25bf55315f5}\label{wld__wpaSupp__ep__api_8c_a659bb0d7c3aefae4a42cb25bf55315f5}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_increaseSecurityModeInCreds@{wld\_wpaSupp\_ep\_increaseSecurityModeInCreds}}
+\index{wld\_wpaSupp\_ep\_increaseSecurityModeInCreds@{wld\_wpaSupp\_ep\_increaseSecurityModeInCreds}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_increaseSecurityModeInCreds()}{wld\_wpaSupp\_ep\_increaseSecurityModeInCreds()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+increase\+Security\+Mode\+In\+Creds (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$}]{creds }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a36bc902b5b6cad61338b71613e810c27}\label{wld__wpaSupp__ep__api_8c_a36bc902b5b6cad61338b71613e810c27}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_reconfigure@{wld\_wpaSupp\_ep\_reconfigure}}
+\index{wld\_wpaSupp\_ep\_reconfigure@{wld\_wpaSupp\_ep\_reconfigure}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_reconfigure()}{wld\_wpaSupp\_ep\_reconfigure()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+reconfigure (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+Reload wpa\+\_\+supp configuration. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_a66a2481728313e354cb4877472dee0f6}\label{wld__wpaSupp__ep__api_8c_a66a2481728313e354cb4877472dee0f6}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_startWpsPbc@{wld\_wpaSupp\_ep\_startWpsPbc}}
+\index{wld\_wpaSupp\_ep\_startWpsPbc@{wld\_wpaSupp\_ep\_startWpsPbc}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_startWpsPbc()}{wld\_wpaSupp\_ep\_startWpsPbc()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pbc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+mac\+Char\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pbc 
+
+send wps\+\_\+pbc command to wpa\+\_\+supplicant
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & Pointer to the endpoint. \\
+\hline
+{\em bssid} & The BSSID to connect to (optional) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__ep__api_8c_afe1d659067f19fe1474b79f6ada6062b}\label{wld__wpaSupp__ep__api_8c_afe1d659067f19fe1474b79f6ada6062b}} 
+\index{wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}!wld\_wpaSupp\_ep\_startWpsPin@{wld\_wpaSupp\_ep\_startWpsPin}}
+\index{wld\_wpaSupp\_ep\_startWpsPin@{wld\_wpaSupp\_ep\_startWpsPin}!wld\_wpaSupp\_ep\_api.c@{wld\_wpaSupp\_ep\_api.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_ep\_startWpsPin()}{wld\_wpaSupp\_ep\_startWpsPin()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{char $\ast$}]{pin,  }\item[{swl\+\_\+mac\+Char\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps\+Pin 
+
+send wps\+\_\+pin command to wpa\+\_\+supplicant
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & Pointer to the endpoint. \\
+\hline
+{\em pin} & The PIN to use \\
+\hline
+{\em bssid} & The BSSID to connect to (optional) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK when the command is sent successfully
+\begin{DoxyItemize}
+\item Otherwise SWL\+\_\+\+RC\+\_\+\+ERROR 
+\end{DoxyItemize}
+\end{DoxyReturn}

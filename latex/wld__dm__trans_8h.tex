@@ -1,0 +1,71 @@
+\hypertarget{wld__dm__trans_8h}{}\doxysection{include/wld/wld\+\_\+dm\+\_\+trans.h File Reference}
+\label{wld__dm__trans_8h}\index{include/wld/wld\_dm\_trans.h@{include/wld/wld\_dm\_trans.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+object.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+dm\+\_\+trans.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dm__trans_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__dm__trans_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__dm__trans_8h_ab1ccce2ad668e924de06b1d9f62c12d1}{ASSERT\+\_\+\+TRANSACTION\+\_\+\+INIT}}(object,  transaction,  to\+Return,  zone,  err\+Msg, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__dm__trans_8h_a1587aba5ce745d98d8c93870d043b080}{ASSERT\+\_\+\+TRANSACTION\+\_\+\+END}}(transaction,  \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}},  to\+Return,  zone,  err\+Msg, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__dm__trans_8h_a70b2d096ca78dab2e704c0ccf06058bb}{ASSERT\+\_\+\+TRANSACTION\+\_\+\+LOCAL\+\_\+\+DM\+\_\+\+END}}(transaction,  to\+Return,  zone,  err\+Msg, ...)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__dm__trans_8h_a1587aba5ce745d98d8c93870d043b080}\label{wld__dm__trans_8h_a1587aba5ce745d98d8c93870d043b080}} 
+\index{wld\_dm\_trans.h@{wld\_dm\_trans.h}!ASSERT\_TRANSACTION\_END@{ASSERT\_TRANSACTION\_END}}
+\index{ASSERT\_TRANSACTION\_END@{ASSERT\_TRANSACTION\_END}!wld\_dm\_trans.h@{wld\_dm\_trans.h}}
+\doxysubsubsection{\texorpdfstring{ASSERT\_TRANSACTION\_END}{ASSERT\_TRANSACTION\_END}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ASSERT\+\_\+\+TRANSACTION\+\_\+\+END(\begin{DoxyParamCaption}\item[{}]{transaction,  }\item[{}]{\mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}},  }\item[{}]{to\+Return,  }\item[{}]{zone,  }\item[{}]{err\+Msg,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{        \{ \(\backslash\)}
+\DoxyCodeLine{        ASSERT\_EQUALS(swl\_object\_finalizeTransaction(transaction, \mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}}), amxd\_status\_ok, toReturn, zone, errMsg, \#\# \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__dm__trans_8h_ab1ccce2ad668e924de06b1d9f62c12d1}\label{wld__dm__trans_8h_ab1ccce2ad668e924de06b1d9f62c12d1}} 
+\index{wld\_dm\_trans.h@{wld\_dm\_trans.h}!ASSERT\_TRANSACTION\_INIT@{ASSERT\_TRANSACTION\_INIT}}
+\index{ASSERT\_TRANSACTION\_INIT@{ASSERT\_TRANSACTION\_INIT}!wld\_dm\_trans.h@{wld\_dm\_trans.h}}
+\doxysubsubsection{\texorpdfstring{ASSERT\_TRANSACTION\_INIT}{ASSERT\_TRANSACTION\_INIT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ASSERT\+\_\+\+TRANSACTION\+\_\+\+INIT(\begin{DoxyParamCaption}\item[{}]{object,  }\item[{}]{transaction,  }\item[{}]{to\+Return,  }\item[{}]{zone,  }\item[{}]{err\+Msg,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{        \{ \(\backslash\)}
+\DoxyCodeLine{        ASSERT\_EQUALS(swl\_object\_prepareTransaction(transaction, \textcolor{keywordtype}{object}), amxd\_status\_ok, toReturn, zone, errMsg, \#\# \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__dm__trans_8h_a70b2d096ca78dab2e704c0ccf06058bb}\label{wld__dm__trans_8h_a70b2d096ca78dab2e704c0ccf06058bb}} 
+\index{wld\_dm\_trans.h@{wld\_dm\_trans.h}!ASSERT\_TRANSACTION\_LOCAL\_DM\_END@{ASSERT\_TRANSACTION\_LOCAL\_DM\_END}}
+\index{ASSERT\_TRANSACTION\_LOCAL\_DM\_END@{ASSERT\_TRANSACTION\_LOCAL\_DM\_END}!wld\_dm\_trans.h@{wld\_dm\_trans.h}}
+\doxysubsubsection{\texorpdfstring{ASSERT\_TRANSACTION\_LOCAL\_DM\_END}{ASSERT\_TRANSACTION\_LOCAL\_DM\_END}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ASSERT\+\_\+\+TRANSACTION\+\_\+\+LOCAL\+\_\+\+DM\+\_\+\+END(\begin{DoxyParamCaption}\item[{}]{transaction,  }\item[{}]{to\+Return,  }\item[{}]{zone,  }\item[{}]{err\+Msg,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{        \{ \(\backslash\)}
+\DoxyCodeLine{        ASSERT\_EQUALS(swl\_object\_finalizeTransactionOnLocalDm(transaction), amxd\_status\_ok, toReturn, zone, errMsg, \#\# \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

@@ -1,0 +1,270 @@
+\hypertarget{wld__wpaSupp__cfgManager_8h}{}\doxysection{include/wld/wld\+\_\+wpa\+Supp\+\_\+cfg\+Manager.h File Reference}
+\label{wld__wpaSupp__cfgManager_8h}\index{include/wld/wld\_wpaSupp\_cfgManager.h@{include/wld/wld\_wpaSupp\_cfgManager.h}}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgManager_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct wld\+\_\+wpa\+Supp\+Network\+Info \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a9e2147b26c29190e216b5889ed26531d}{wld\+\_\+wpa\+Supp\+Network\+Info\+\_\+t}}
+\item 
+typedef struct \mbox{\hyperlink{structwld__wpaSupp__config}{wld\+\_\+wpa\+Supp\+\_\+config}} \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a92bf6bc854ae4c3386781428d49c2649}{wld\+\_\+wpa\+Supp\+\_\+load\+Config}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$$\ast$conf, char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}})
+\begin{DoxyCompactList}\small\item\em load the wpa\+Supplicant configuration from wpa\+Supplicant config file into wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t structure \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_affb8b000989cecdd93dedd09a6938204}{wld\+\_\+wpa\+Supp\+\_\+create\+Config}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$$\ast$conf)
+\begin{DoxyCompactList}\small\item\em create wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t structure \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_ac65fa7dbd9118ae5d2cd2abb64f93f5f}{wld\+\_\+wpa\+Supp\+\_\+delete\+Config}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$conf)
+\begin{DoxyCompactList}\small\item\em delete a wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t map already loaded from wpa\+\_\+supplicant file \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a031cf2e90d4dc6f274675702c5aca707}{wld\+\_\+wpa\+Supp\+\_\+write\+Config}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$conf, char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}})
+\begin{DoxyCompactList}\small\item\em write the content of wpa\+Supp\+\_\+config\+\_\+t into a file \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_adce13285e3bf78e55f38489bbc5d789b}{wld\+\_\+wpa\+Supp\+\_\+add\+Config\+Param}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$conf, const char $\ast$key, const char $\ast$value, bool is\+Global)
+\begin{DoxyCompactList}\small\item\em add/update a key value in the config map \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_ae53603460ff027809bd7be65b0426001}{wld\+\_\+wpa\+Supp\+\_\+del\+Config\+Param}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$conf, char $\ast$key)
+\begin{DoxyCompactList}\small\item\em delete a key/value from the config map \end{DoxyCompactList}\item 
+swl\+\_\+map\+Char\+\_\+t $\ast$ \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a4545de38239354e4caf71d75e892ed4a}{wld\+\_\+wpa\+Supp\+\_\+get\+Global\+Config}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$conf)
+\begin{DoxyCompactList}\small\item\em get global config \end{DoxyCompactList}\item 
+swl\+\_\+map\+Char\+\_\+t $\ast$ \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a3e22d9cd79988bc38fb6a784634833e1}{wld\+\_\+wpa\+Supp\+\_\+get\+Network\+Config}} (\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$conf)
+\begin{DoxyCompactList}\small\item\em get network config \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}\label{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_config\_t@{wld\_wpaSupp\_config\_t}}
+\index{wld\_wpaSupp\_config\_t@{wld\_wpaSupp\_config\_t}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_config\_t}{wld\_wpaSupp\_config\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__wpaSupp__config}{wld\+\_\+wpa\+Supp\+\_\+config}} \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}}}
+
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_a9e2147b26c29190e216b5889ed26531d}\label{wld__wpaSupp__cfgManager_8h_a9e2147b26c29190e216b5889ed26531d}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSuppNetworkInfo\_t@{wld\_wpaSuppNetworkInfo\_t}}
+\index{wld\_wpaSuppNetworkInfo\_t@{wld\_wpaSuppNetworkInfo\_t}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSuppNetworkInfo\_t}{wld\_wpaSuppNetworkInfo\_t}}
+{\footnotesize\ttfamily typedef struct wld\+\_\+wpa\+Supp\+Network\+Info \mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a9e2147b26c29190e216b5889ed26531d}{wld\+\_\+wpa\+Supp\+Network\+Info\+\_\+t}}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_adce13285e3bf78e55f38489bbc5d789b}\label{wld__wpaSupp__cfgManager_8h_adce13285e3bf78e55f38489bbc5d789b}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_addConfigParam@{wld\_wpaSupp\_addConfigParam}}
+\index{wld\_wpaSupp\_addConfigParam@{wld\_wpaSupp\_addConfigParam}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_addConfigParam()}{wld\_wpaSupp\_addConfigParam()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Supp\+\_\+add\+Config\+Param (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{const char $\ast$}]{key,  }\item[{const char $\ast$}]{value,  }\item[{bool}]{is\+Global }\end{DoxyParamCaption})}
+
+
+
+add/update a key value in the config map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file \\
+\hline
+{\em is\+Global} & if the key to add/update is a global parameter or a network one \\
+\hline
+{\em key} & the key to add/update \\
+\hline
+{\em key} & the new key value\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the parameter is added/updated. Otherwise false\+:
+\begin{DoxyItemize}
+\item conf = NULL or key = NULL or value = NULL 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgManager_8h_adce13285e3bf78e55f38489bbc5d789b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_affb8b000989cecdd93dedd09a6938204}\label{wld__wpaSupp__cfgManager_8h_affb8b000989cecdd93dedd09a6938204}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_createConfig@{wld\_wpaSupp\_createConfig}}
+\index{wld\_wpaSupp\_createConfig@{wld\_wpaSupp\_createConfig}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_createConfig()}{wld\_wpaSupp\_createConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Supp\+\_\+create\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$$\ast$}]{conf }\end{DoxyParamCaption})}
+
+
+
+create wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t structure 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success. Otherwise, false\+:
+\begin{DoxyItemize}
+\item conf is NULL
+\item lack of memory 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_ae53603460ff027809bd7be65b0426001}\label{wld__wpaSupp__cfgManager_8h_ae53603460ff027809bd7be65b0426001}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_delConfigParam@{wld\_wpaSupp\_delConfigParam}}
+\index{wld\_wpaSupp\_delConfigParam@{wld\_wpaSupp\_delConfigParam}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_delConfigParam()}{wld\_wpaSupp\_delConfigParam()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Supp\+\_\+del\+Config\+Param (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{char $\ast$}]{key }\end{DoxyParamCaption})}
+
+
+
+delete a key/value from the config map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file \\
+\hline
+{\em key} & the key to delete\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the parameter is deleted. Otherwise false\+:
+\begin{DoxyItemize}
+\item conf = NULL or key = NULL or value = NULL
+\item key is NULL or doesn\textquotesingle{}t exist 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_ac65fa7dbd9118ae5d2cd2abb64f93f5f}\label{wld__wpaSupp__cfgManager_8h_ac65fa7dbd9118ae5d2cd2abb64f93f5f}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_deleteConfig@{wld\_wpaSupp\_deleteConfig}}
+\index{wld\_wpaSupp\_deleteConfig@{wld\_wpaSupp\_deleteConfig}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_deleteConfig()}{wld\_wpaSupp\_deleteConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Supp\+\_\+delete\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$}]{conf }\end{DoxyParamCaption})}
+
+
+
+delete a wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t map already loaded from wpa\+\_\+supplicant file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success. Otherwise, false
+\begin{DoxyItemize}
+\item conf is NULL 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgManager_8h_ac65fa7dbd9118ae5d2cd2abb64f93f5f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_a4545de38239354e4caf71d75e892ed4a}\label{wld__wpaSupp__cfgManager_8h_a4545de38239354e4caf71d75e892ed4a}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_getGlobalConfig@{wld\_wpaSupp\_getGlobalConfig}}
+\index{wld\_wpaSupp\_getGlobalConfig@{wld\_wpaSupp\_getGlobalConfig}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_getGlobalConfig()}{wld\_wpaSupp\_getGlobalConfig()}}
+{\footnotesize\ttfamily swl\+\_\+map\+Char\+\_\+t $\ast$ wld\+\_\+wpa\+Supp\+\_\+get\+Global\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$}]{conf }\end{DoxyParamCaption})}
+
+
+
+get global config 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a pointer to the global config map Otherwise NULL\+:
+\begin{DoxyItemize}
+\item conf = NULL 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_a3e22d9cd79988bc38fb6a784634833e1}\label{wld__wpaSupp__cfgManager_8h_a3e22d9cd79988bc38fb6a784634833e1}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_getNetworkConfig@{wld\_wpaSupp\_getNetworkConfig}}
+\index{wld\_wpaSupp\_getNetworkConfig@{wld\_wpaSupp\_getNetworkConfig}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_getNetworkConfig()}{wld\_wpaSupp\_getNetworkConfig()}}
+{\footnotesize\ttfamily swl\+\_\+map\+Char\+\_\+t $\ast$ wld\+\_\+wpa\+Supp\+\_\+get\+Network\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$}]{conf }\end{DoxyParamCaption})}
+
+
+
+get network config 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a pointer to the network config map Otherwise NULL\+:
+\begin{DoxyItemize}
+\item conf = NULL 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_a92bf6bc854ae4c3386781428d49c2649}\label{wld__wpaSupp__cfgManager_8h_a92bf6bc854ae4c3386781428d49c2649}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_loadConfig@{wld\_wpaSupp\_loadConfig}}
+\index{wld\_wpaSupp\_loadConfig@{wld\_wpaSupp\_loadConfig}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_loadConfig()}{wld\_wpaSupp\_loadConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Supp\+\_\+load\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$$\ast$}]{conf,  }\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+load the wpa\+Supplicant configuration from wpa\+Supplicant config file into wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t structure 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+Supplicant configuration file \\
+\hline
+{\em path} & the path of wpa\+Supplicant config file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success. Otherwise, false\+:
+\begin{DoxyItemize}
+\item conf is NULL or path is NULL
+\item config file not found 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgManager_8h_a92bf6bc854ae4c3386781428d49c2649_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaSupp__cfgManager_8h_a031cf2e90d4dc6f274675702c5aca707}\label{wld__wpaSupp__cfgManager_8h_a031cf2e90d4dc6f274675702c5aca707}} 
+\index{wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}!wld\_wpaSupp\_writeConfig@{wld\_wpaSupp\_writeConfig}}
+\index{wld\_wpaSupp\_writeConfig@{wld\_wpaSupp\_writeConfig}!wld\_wpaSupp\_cfgManager.h@{wld\_wpaSupp\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaSupp\_writeConfig()}{wld\_wpaSupp\_writeConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Supp\+\_\+write\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaSupp__cfgManager_8h_a1aa3548cbd99c482c1ce2719ec2ba668}{wld\+\_\+wpa\+Supp\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+write the content of wpa\+Supp\+\_\+config\+\_\+t into a file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of wpa\+\_\+supplicant configuration file \\
+\hline
+{\em path} & the filename where the conf is written\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the conf map is successfully written in the file Otherwise, false\+:
+\begin{DoxyItemize}
+\item conf is NULL or path is NULL
+\item if writing of the conf in the file \char`\"{}path\char`\"{} failed 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaSupp__cfgManager_8h_a031cf2e90d4dc6f274675702c5aca707_icgraph}
+\end{center}
+\end{figure}

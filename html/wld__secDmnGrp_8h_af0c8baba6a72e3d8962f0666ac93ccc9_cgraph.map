@@ -1,0 +1,12 @@
+<map id="wld_secDmnGrp_getActiveMembersCount" name="wld_secDmnGrp_getActiveMembersCount">
+<area shape="rect" id="node1" title=" " alt="" coords="5,74,264,115"/>
+<area shape="rect" id="node2" href="$wld__secDmn_8c.html#a1b9d684b37eb9a4922e736e45544a50d" title=" " alt="" coords="312,81,468,108"/>
+<area shape="rect" id="node3" href="$wld__secDmn_8c.html#a1b0cc11a41a11e2033f3188fd05a0d80" title=" " alt="" coords="539,5,739,32"/>
+<area shape="rect" id="node5" href="$wld__secDmn_8c.html#ad8ebf9f869b635102d27d9a476e4d9eb" title=" " alt="" coords="818,77,994,104"/>
+<area shape="rect" id="node7" href="$wld__secDmnGrp_8c.html#ac68764d14b9f77537e29250cae786daf" title=" " alt="" coords="516,107,763,133"/>
+<area shape="rect" id="node8" href="$wld__wpaCtrlMngr_8c.html#ad3e7ad2284a85ee77e110a90f0fd34ae" title="check that wpaCtrl manager is connected: i.e can receive events from its main interface." alt="" coords="528,157,751,184"/>
+<area shape="rect" id="node4" href="$wld__secDmnGrp_8c.html#ae5da21db2381b2d5a1f16df5d388d5df" title=" " alt="" coords="814,5,998,32"/>
+<area shape="rect" id="node6" href="$wld__daemon_8c.html#a6ba98a859d038541e1c2ee48d8566547" title=" " alt="" coords="1053,77,1205,104"/>
+<area shape="rect" id="node9" href="$wld__wpaCtrlMngr_8c.html#a3dc93dfda0d67c0e7254cc1ffeeb3ebe" title=" " alt="" coords="811,150,1001,191"/>
+<area shape="rect" id="node10" href="$wld__wpaCtrlInterface_8c.html#a8b38bc9ca95b60e002d38cdb1374d1d0" title=" " alt="" coords="1049,150,1209,191"/>
+</map>

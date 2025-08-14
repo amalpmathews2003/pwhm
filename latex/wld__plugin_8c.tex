@@ -1,0 +1,82 @@
+\hypertarget{wld__plugin_8c}{}\doxysection{src/\+Plugin/wld\+\_\+plugin.c File Reference}
+\label{wld__plugin_8c}\index{src/Plugin/wld\_plugin.c@{src/Plugin/wld\_plugin.c}}
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+vendor\+Module\+\_\+mgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/file\+Ops/swl\+\_\+file\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/\+Features/wld\+\_\+persist.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+eventing.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+plugin.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__plugin_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__plugin_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__plugin_8c_adfe878a5762498f9a821566b801b6e2a}{\+\_\+app\+\_\+start}} (const char $\ast$const event\+\_\+name \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const event\+\_\+data \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$const priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+int \mbox{\hyperlink{wld__plugin_8c_a992191249d437ac4c2f292b32b9238e9}{\+\_\+wld\+\_\+main}} (int reason, amxd\+\_\+dm\+\_\+t $\ast$\mbox{\hyperlink{wld__definitions_8odl_a7127b44b17b62fd0df9fa06db66bd19a}{dm}}, amxo\+\_\+parser\+\_\+t $\ast$parser)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__plugin_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__plugin_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_plugin.c@{wld\_plugin.c}!ME@{ME}}
+\index{ME@{ME}!wld\_plugin.c@{wld\_plugin.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__plugin_8c_adfe878a5762498f9a821566b801b6e2a}\label{wld__plugin_8c_adfe878a5762498f9a821566b801b6e2a}} 
+\index{wld\_plugin.c@{wld\_plugin.c}!\_app\_start@{\_app\_start}}
+\index{\_app\_start@{\_app\_start}!wld\_plugin.c@{wld\_plugin.c}}
+\doxysubsubsection{\texorpdfstring{\_app\_start()}{\_app\_start()}}
+{\footnotesize\ttfamily void \+\_\+app\+\_\+start (\begin{DoxyParamCaption}\item[{const char $\ast$const event\+\_\+name}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const event\+\_\+data}]{\+\_\+\+UNUSED,  }\item[{void $\ast$const priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__plugin_8c_adfe878a5762498f9a821566b801b6e2a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__plugin_8c_a992191249d437ac4c2f292b32b9238e9}\label{wld__plugin_8c_a992191249d437ac4c2f292b32b9238e9}} 
+\index{wld\_plugin.c@{wld\_plugin.c}!\_wld\_main@{\_wld\_main}}
+\index{\_wld\_main@{\_wld\_main}!wld\_plugin.c@{wld\_plugin.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_main()}{\_wld\_main()}}
+{\footnotesize\ttfamily int \+\_\+wld\+\_\+main (\begin{DoxyParamCaption}\item[{int}]{reason,  }\item[{amxd\+\_\+dm\+\_\+t $\ast$}]{dm,  }\item[{amxo\+\_\+parser\+\_\+t $\ast$}]{parser }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=282pt]{wld__plugin_8c_a992191249d437ac4c2f292b32b9238e9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__plugin_8c_a992191249d437ac4c2f292b32b9238e9_icgraph}
+\end{center}
+\end{figure}

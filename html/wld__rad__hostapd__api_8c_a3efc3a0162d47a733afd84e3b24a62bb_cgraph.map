@@ -1,0 +1,8 @@
+<map id="wld_rad_hostapd_setOperatingStandard" name="wld_rad_hostapd_setOperatingStandard">
+<area shape="rect" id="node1" title="update the the Operating Standard in the hostapd" alt="" coords="5,49,228,90"/>
+<area shape="rect" id="node2" href="$wld__hostapd__cfgFile_8c.html#a0b0eb1c9360a3ff6e88bb54ada391a80" title=" " alt="" coords="276,49,431,90"/>
+<area shape="rect" id="node3" href="$wld__hostapd__cfgFile_8c.html#ac14947168cc3ee47fd9e0ef512ee8f2a" title="create a configuration file for the hostapd" alt="" coords="479,49,633,90"/>
+<area shape="rect" id="node4" href="$wld__hostapd__cfgManager_8c.html#a230de7631aaa80ccf994572e40d95b70" title="create wld_hostapd_config_t structure from Radio and Vaps configuration" alt="" coords="681,5,875,32"/>
+<area shape="rect" id="node5" href="$wld__hostapd__cfgManager_8c.html#abcd4b96a1191c1c593ab53f9d419e740" title="delete a wld_hostapd_config_t map already loaded from hostapd file" alt="" coords="681,56,875,83"/>
+<area shape="rect" id="node6" href="$wld__hostapd__cfgManager_8c.html#aab797f94a64ba5206cdc5e379ba8d3e2" title="write the content of hostapd_config into a file" alt="" coords="685,107,871,133"/>
+</map>

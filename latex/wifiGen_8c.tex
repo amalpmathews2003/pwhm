@@ -1,0 +1,119 @@
+\hypertarget{wifiGen_8c}{}\doxysection{src/\+Plugin/wifi\+Gen.c File Reference}
+\label{wifiGen_8c}\index{src/Plugin/wifiGen.c@{src/Plugin/wifiGen.c}}
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+nl80211\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+rad.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+vap.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+ep.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+fsm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+hapd.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+zwdfs.\+h\char`\"{}}\newline
+Include dependency graph for wifi\+Gen.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct {\bfseries glob\+Wiphy\+Mon\+Ctx\+\_\+s}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen_8c_a713231e081bf9ec05dac8193308efbfd}{NEW\+\_\+\+WIPHY\+\_\+\+HANDLE\+\_\+\+DELAY}}~3000
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen_8c_a147108c8ff2050890f7e04bdb810b522}{wifi\+Gen\+\_\+set\+Dmn\+Exec\+Settings}} (\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$p\+Vdr, const char $\ast$dmn\+Name, \mbox{\hyperlink{structwld__dmnMgt__dmnExecSettings__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Settings\+\_\+t}} $\ast$p\+Cfg)
+\item 
+bool \mbox{\hyperlink{wifiGen_8c_aaa0123674803a97ec847fe0335c92e9f}{wifi\+Gen\+\_\+init}} ()
+\item 
+int \mbox{\hyperlink{wifiGen_8c_ad80a25310b35904f72c68edc5be53210}{wifi\+Gen\+\_\+add\+Radios}} ()
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen_8c_a91a6abee163835c454bb018be90d0a91}{wifi\+Gen\+\_\+wait\+For\+Gen\+Radios}} (void $\ast$user\+Data, \mbox{\hyperlink{wifiGen_8h_a819aec695ec43fc8242b0eaa472634ee}{wifi\+Gen\+\_\+wiphy\+Dev\+Ready\+Cb\+\_\+f}} fcb)
+\item 
+bool \mbox{\hyperlink{wifiGen_8c_aaae0c2be7670a8074dd411bb2f71a9e9}{wifi\+Gen\+\_\+deinit}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen.c@{wifiGen.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen_8c_a713231e081bf9ec05dac8193308efbfd}\label{wifiGen_8c_a713231e081bf9ec05dac8193308efbfd}} 
+\index{wifiGen.c@{wifiGen.c}!NEW\_WIPHY\_HANDLE\_DELAY@{NEW\_WIPHY\_HANDLE\_DELAY}}
+\index{NEW\_WIPHY\_HANDLE\_DELAY@{NEW\_WIPHY\_HANDLE\_DELAY}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{NEW\_WIPHY\_HANDLE\_DELAY}{NEW\_WIPHY\_HANDLE\_DELAY}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} NEW\+\_\+\+WIPHY\+\_\+\+HANDLE\+\_\+\+DELAY~3000}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen_8c_ad80a25310b35904f72c68edc5be53210}\label{wifiGen_8c_ad80a25310b35904f72c68edc5be53210}} 
+\index{wifiGen.c@{wifiGen.c}!wifiGen\_addRadios@{wifiGen\_addRadios}}
+\index{wifiGen\_addRadios@{wifiGen\_addRadios}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_addRadios()}{wifiGen\_addRadios()}}
+{\footnotesize\ttfamily int wifi\+Gen\+\_\+add\+Radios (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen_8c_aaae0c2be7670a8074dd411bb2f71a9e9}\label{wifiGen_8c_aaae0c2be7670a8074dd411bb2f71a9e9}} 
+\index{wifiGen.c@{wifiGen.c}!wifiGen\_deinit@{wifiGen\_deinit}}
+\index{wifiGen\_deinit@{wifiGen\_deinit}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_deinit()}{wifiGen\_deinit()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+deinit (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen_8c_aaa0123674803a97ec847fe0335c92e9f}\label{wifiGen_8c_aaa0123674803a97ec847fe0335c92e9f}} 
+\index{wifiGen.c@{wifiGen.c}!wifiGen\_init@{wifiGen\_init}}
+\index{wifiGen\_init@{wifiGen\_init}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_init()}{wifiGen\_init()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen_8c_a147108c8ff2050890f7e04bdb810b522}\label{wifiGen_8c_a147108c8ff2050890f7e04bdb810b522}} 
+\index{wifiGen.c@{wifiGen.c}!wifiGen\_setDmnExecSettings@{wifiGen\_setDmnExecSettings}}
+\index{wifiGen\_setDmnExecSettings@{wifiGen\_setDmnExecSettings}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_setDmnExecSettings()}{wifiGen\_setDmnExecSettings()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+set\+Dmn\+Exec\+Settings (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$}]{p\+Vdr,  }\item[{const char $\ast$}]{dmn\+Name,  }\item[{\mbox{\hyperlink{structwld__dmnMgt__dmnExecSettings__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Settings\+\_\+t}} $\ast$}]{p\+Cfg }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen_8c_a147108c8ff2050890f7e04bdb810b522_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen_8c_a91a6abee163835c454bb018be90d0a91}\label{wifiGen_8c_a91a6abee163835c454bb018be90d0a91}} 
+\index{wifiGen.c@{wifiGen.c}!wifiGen\_waitForGenRadios@{wifiGen\_waitForGenRadios}}
+\index{wifiGen\_waitForGenRadios@{wifiGen\_waitForGenRadios}!wifiGen.c@{wifiGen.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_waitForGenRadios()}{wifiGen\_waitForGenRadios()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+wait\+For\+Gen\+Radios (\begin{DoxyParamCaption}\item[{void $\ast$}]{user\+Data,  }\item[{\mbox{\hyperlink{wifiGen_8h_a819aec695ec43fc8242b0eaa472634ee}{wifi\+Gen\+\_\+wiphy\+Dev\+Ready\+Cb\+\_\+f}}}]{fcb }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen_8c_a91a6abee163835c454bb018be90d0a91_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{wifiGen_8c_a91a6abee163835c454bb018be90d0a91_icgraph}
+\end{center}
+\end{figure}

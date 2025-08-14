@@ -1,0 +1,109 @@
+\hypertarget{wld__statsmon_8h_source}{}\doxysection{wld\+\_\+statsmon.\+h}
+\label{wld__statsmon_8h_source}\index{include/wld/wld\_statsmon.h@{include/wld/wld\_statsmon.h}}
+\mbox{\hyperlink{wld__statsmon_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_STATSMON\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_STATSMON\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{comment}{// Upate only when we've a time delta of... seconds}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#define TIMEOUT\_LINUX\_INTF\_STATS 2}}
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#define STATS\_FILE\_PATH "{}/proc/net/dev"{}}}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structintf__txrxstats}{intf\_txrxstats}} \{}
+\DoxyCodeLine{76     \textcolor{keywordtype}{char} \mbox{\hyperlink{structintf__txrxstats_a7e8e2cb6e06a0a2bd7d683b071a51934}{intfName}}[\mbox{\hyperlink{wld_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}];}
+\DoxyCodeLine{77     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a0ff7fc626ccb12e8c365a4d9010e3337}{rxBytes}};}
+\DoxyCodeLine{78     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_ac79bf0ec0d934596c2440289f7865a98}{rxPackets}};}
+\DoxyCodeLine{79     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_af167eed9d1688f4c435caf1a9119d0ff}{rxErrs}};}
+\DoxyCodeLine{80     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a7c3d7c8ac39a6de5a7ecdccfd7f7ae79}{rxDrop}};}
+\DoxyCodeLine{81     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_ad0f65b0c362a72d39d3f89612ce42388}{rxFifo}};}
+\DoxyCodeLine{82     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a6569843fbddc527639bc8c262c499faa}{rxFrame}};}
+\DoxyCodeLine{83     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_adffc39d453e204e049011d22eb359381}{rxCompressed}};}
+\DoxyCodeLine{84     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a5f4c1da1f65f9ed2e541d7bc4a4edc29}{rxMulticast}};}
+\DoxyCodeLine{85     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a75ae5af4535a5d15f1509b74170bc999}{txBytes}};}
+\DoxyCodeLine{86     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_acc4a226f65a3b4d289eda362081918ce}{txPackets}};}
+\DoxyCodeLine{87     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_ade6d1e6c1b82d6c0123dc18fcf05b5a2}{txErrs}};}
+\DoxyCodeLine{88     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a8d6d6b406c05441f2cf41c44b3bfea24}{txDrop}};}
+\DoxyCodeLine{89     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a35b955739ea69bf95ac372c776ae66ef}{txFifo}};}
+\DoxyCodeLine{90     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a62bc9f4a917aa357f4a4078c5ef3f4d3}{txCalls}};}
+\DoxyCodeLine{91     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_af3ce582e431d7af3493a565026a97c07}{txCarrier}};}
+\DoxyCodeLine{92     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{structintf__txrxstats_a50577fb755bf60cc37d02fca7b5afa12}{txCompressed}};}
+\DoxyCodeLine{93 \} \mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\_intf\_txrxstats}};}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{95 }
+\DoxyCodeLine{96 \mbox{\hyperlink{structwld__stats}{T\_Stats}}* \mbox{\hyperlink{wld__statsmon_8h_a86846f30e8256da4502a76ff4fab5dbd}{wld\_statsmon\_updateVAPStats}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{97 \mbox{\hyperlink{structwld__stats}{T\_Stats}}* \mbox{\hyperlink{wld__statsmon_8h_a4f5db6dc1319310d4a549404509dd82c}{wld\_statsmon\_updateEPStats}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{98 \mbox{\hyperlink{structwld__stats}{T\_Stats}}* \mbox{\hyperlink{wld__statsmon_8h_a9b475a78327c89915b4a8bfde3a39178}{wld\_statsmon\_updateRADStats}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100 \mbox{\hyperlink{structwld__stats}{T\_Stats}}* \mbox{\hyperlink{wld__statsmon_8h_a60b373162651b8c80778e24545c7d86e}{wld\_updateVAPStats}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structintf__txrxstats}{T\_intf\_txrxstats}}* pST);}
+\DoxyCodeLine{101 \mbox{\hyperlink{structwld__stats}{T\_Stats}}* \mbox{\hyperlink{wld__statsmon_8h_abf6e9539b95aff2f357ac7483f2ddc0a}{wld\_updateEPStats}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, \mbox{\hyperlink{structintf__txrxstats}{T\_intf\_txrxstats}}* pST);}
+\DoxyCodeLine{102 \mbox{\hyperlink{structwld__stats}{T\_Stats}}* \mbox{\hyperlink{wld__statsmon_8h_aaf8e942c1df351920f8ae48ddc6280c4}{wld\_updateRadioStats}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \mbox{\hyperlink{structintf__txrxstats}{T\_intf\_txrxstats}}* pST);}
+\DoxyCodeLine{103 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_STATSMON\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

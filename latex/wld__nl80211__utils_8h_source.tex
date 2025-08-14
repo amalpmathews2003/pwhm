@@ -1,0 +1,184 @@
+\hypertarget{wld__nl80211__utils_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+utils.\+h}
+\label{wld__nl80211__utils_8h_source}\index{include/wld/wld\_nl80211\_utils.h@{include/wld/wld\_nl80211\_utils.h}}
+\mbox{\hyperlink{wld__nl80211__utils_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2023 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{comment}{/*}}
+\DoxyCodeLine{63 \textcolor{comment}{ * This file includes nl80211 utility apis for:}}
+\DoxyCodeLine{64 \textcolor{comment}{ * -\/ type conversion}}
+\DoxyCodeLine{65 \textcolor{comment}{ * -\/ common attributes fetching}}
+\DoxyCodeLine{66 \textcolor{comment}{ * -\/ ...}}
+\DoxyCodeLine{67 \textcolor{comment}{ */}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_NL80211\_UTILS\_H\_}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_NL80211\_UTILS\_H\_}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__compat_8h}{wld\_nl80211\_compat.h}}"{}}}
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#include "{}swl/swl\_common.h"{}}}
+\DoxyCodeLine{74 \textcolor{preprocessor}{\#include "{}swl/swl\_common\_chanspec.h"{}}}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76 \textcolor{comment}{/*}}
+\DoxyCodeLine{77 \textcolor{comment}{ * @brief macro to get nl attribute typed value, when it is found}}
+\DoxyCodeLine{78 \textcolor{comment}{ */}}
+\DoxyCodeLine{79 \textcolor{preprocessor}{\#define NLA\_GET\_VAL(target, api, param) \(\backslash\)}}
+\DoxyCodeLine{80 \textcolor{preprocessor}{    if(param) \{ \(\backslash\)}}
+\DoxyCodeLine{81 \textcolor{preprocessor}{        target = api(param); \(\backslash\)}}
+\DoxyCodeLine{82 \textcolor{preprocessor}{    \}}}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84 \textcolor{comment}{/*}}
+\DoxyCodeLine{85 \textcolor{comment}{ * @brief macro to get nl attribute data buffer, when it is found}}
+\DoxyCodeLine{86 \textcolor{comment}{ */}}
+\DoxyCodeLine{87 \textcolor{preprocessor}{\#define NLA\_GET\_DATA(target, param, maxLen) \(\backslash\)}}
+\DoxyCodeLine{88 \textcolor{preprocessor}{    if(param) \{ \(\backslash\)}}
+\DoxyCodeLine{89 \textcolor{preprocessor}{        int len = SWL\_MIN((int) (maxLen), nla\_len(param)); \(\backslash\)}}
+\DoxyCodeLine{90 \textcolor{preprocessor}{        memcpy(target, nla\_data(param), len); \(\backslash\)}}
+\DoxyCodeLine{91 \textcolor{preprocessor}{    \}}}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{93 \textcolor{comment}{/*}}
+\DoxyCodeLine{94 \textcolor{comment}{ * @brief fetch Wiphy ID from nl80211 attributes}}
+\DoxyCodeLine{95 \textcolor{comment}{ *}}
+\DoxyCodeLine{96 \textcolor{comment}{ * @param tb nl attributes array}}
+\DoxyCodeLine{97 \textcolor{comment}{ *}}
+\DoxyCodeLine{98 \textcolor{comment}{ * @return uint32 valid wiphy ID if found}}
+\DoxyCodeLine{99 \textcolor{comment}{ *         WLD\_NL80211\_ID\_UNDEF (-\/1) in case of error}}
+\DoxyCodeLine{100 \textcolor{comment}{ */}}
+\DoxyCodeLine{101 uint32\_t \mbox{\hyperlink{wld__nl80211__utils_8h_a0cfad32b24aef976907f99d6ef81861f}{wld\_nl80211\_getWiphy}}(\textcolor{keyword}{struct} nlattr* tb[]);}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 \textcolor{comment}{/*}}
+\DoxyCodeLine{104 \textcolor{comment}{ * @brief fetch interface netdev index from nl80211 attributes}}
+\DoxyCodeLine{105 \textcolor{comment}{ *}}
+\DoxyCodeLine{106 \textcolor{comment}{ * @param tb nl attributes array}}
+\DoxyCodeLine{107 \textcolor{comment}{ *}}
+\DoxyCodeLine{108 \textcolor{comment}{ * @return uint32 valid netdev index if found}}
+\DoxyCodeLine{109 \textcolor{comment}{ *         WLD\_NL80211\_ID\_UNDEF (-\/1) in case of error}}
+\DoxyCodeLine{110 \textcolor{comment}{ */}}
+\DoxyCodeLine{111 uint32\_t \mbox{\hyperlink{wld__nl80211__utils_8h_ac36d656f1365144c247c09fea89d7a55}{wld\_nl80211\_getIfIndex}}(\textcolor{keyword}{struct} nlattr* tb[]);}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113 \textcolor{comment}{/*}}
+\DoxyCodeLine{114 \textcolor{comment}{ * @brief fetch interface netdev name from nl80211 attributes}}
+\DoxyCodeLine{115 \textcolor{comment}{ *}}
+\DoxyCodeLine{116 \textcolor{comment}{ * @param tb nl attributes array}}
+\DoxyCodeLine{117 \textcolor{comment}{ * @param tgtBuf target buffer}}
+\DoxyCodeLine{118 \textcolor{comment}{ * @param tgtBufSize target buffer size}}
+\DoxyCodeLine{119 \textcolor{comment}{ *}}
+\DoxyCodeLine{120 \textcolor{comment}{ * @return size\_t length of the retrieved string}}
+\DoxyCodeLine{121 \textcolor{comment}{ */}}
+\DoxyCodeLine{122 \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{wld__nl80211__utils_8h_a61b9aa02c2155d0fe6f15bdebf342dc7}{wld\_nl80211\_getIfName}}(\textcolor{keyword}{struct} nlattr* tb[], \textcolor{keywordtype}{char}* tgtBuf, \textcolor{keywordtype}{size\_t} tgtBufSize);}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{124 \textcolor{comment}{/*}}
+\DoxyCodeLine{125 \textcolor{comment}{ * @brief convert NL80211\_CHAN\_WIDTH\_xxx into swl bandwidth enum ID}}
+\DoxyCodeLine{126 \textcolor{comment}{ *}}
+\DoxyCodeLine{127 \textcolor{comment}{ * @param nl80211Bw nl80211 bandwidth id}}
+\DoxyCodeLine{128 \textcolor{comment}{ *}}
+\DoxyCodeLine{129 \textcolor{comment}{ * @return valid SWL\_BW\_ or SWL\_BW\_MAX if not match is found}}
+\DoxyCodeLine{130 \textcolor{comment}{ */}}
+\DoxyCodeLine{131 swl\_bandwidth\_e \mbox{\hyperlink{wld__nl80211__utils_8h_ab4f01ac1e435b8ef00a9e104580cca79}{wld\_nl80211\_bwNlToSwl}}(uint32\_t nl80211Bw);}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{133 \textcolor{comment}{/*}}
+\DoxyCodeLine{134 \textcolor{comment}{ * @brief convert swl bandwidth enum ID into NL80211\_CHAN\_WIDTH\_xxx}}
+\DoxyCodeLine{135 \textcolor{comment}{ *}}
+\DoxyCodeLine{136 \textcolor{comment}{ * @param swlBw swl bandwidth enum id}}
+\DoxyCodeLine{137 \textcolor{comment}{ *}}
+\DoxyCodeLine{138 \textcolor{comment}{ * @return valid NL80211\_CHAN\_WIDTH\_xxx or -\/1 if not match is found}}
+\DoxyCodeLine{139 \textcolor{comment}{ */}}
+\DoxyCodeLine{140 int32\_t \mbox{\hyperlink{wld__nl80211__utils_8h_a7356918508d628219ed57cad5ef6444c}{wld\_nl80211\_bwSwlToNl}}(swl\_bandwidth\_e swlBw);}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{142 \textcolor{comment}{/*}}
+\DoxyCodeLine{143 \textcolor{comment}{ * @brief convert NL80211\_CHAN\_WIDTH\_xxx into channel bandwidth value in MHz}}
+\DoxyCodeLine{144 \textcolor{comment}{ *}}
+\DoxyCodeLine{145 \textcolor{comment}{ * @param nl80211Bw nl80211 bandwidth id}}
+\DoxyCodeLine{146 \textcolor{comment}{ *}}
+\DoxyCodeLine{147 \textcolor{comment}{ * @return valid channel bandwidth value or 0 if not match is found}}
+\DoxyCodeLine{148 \textcolor{comment}{ */}}
+\DoxyCodeLine{149 uint32\_t \mbox{\hyperlink{wld__nl80211__utils_8h_a5bd12cecc4b08d4a703d8f1ed0ad7197}{wld\_nl80211\_bwNlToVal}}(uint32\_t nl80211Bw);}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{151 \textcolor{comment}{/*}}
+\DoxyCodeLine{152 \textcolor{comment}{ * @brief convert channel bandwidth value in MHz into NL80211\_CHAN\_WIDTH\_xxx}}
+\DoxyCodeLine{153 \textcolor{comment}{ *}}
+\DoxyCodeLine{154 \textcolor{comment}{ * @param bwVal channel bandwidth value in MHz}}
+\DoxyCodeLine{155 \textcolor{comment}{ *}}
+\DoxyCodeLine{156 \textcolor{comment}{ * @return valid NL80211\_CHAN\_WIDTH\_xxx enum or -\/1 if not match is found}}
+\DoxyCodeLine{157 \textcolor{comment}{ */}}
+\DoxyCodeLine{158 int32\_t \mbox{\hyperlink{wld__nl80211__utils_8h_aefea51e5ad8ec9e60844d9c898e7f6bc}{wld\_nl80211\_bwValToNl}}(uint32\_t bwVal);}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160 \textcolor{comment}{/*}}
+\DoxyCodeLine{161 \textcolor{comment}{ * @brief convert swl frequency band enum ID into NL80211\_BAND\_xxx}}
+\DoxyCodeLine{162 \textcolor{comment}{ *}}
+\DoxyCodeLine{163 \textcolor{comment}{ * @param swlFb swl frequency band  enum id}}
+\DoxyCodeLine{164 \textcolor{comment}{ *}}
+\DoxyCodeLine{165 \textcolor{comment}{ * @return valid NL80211\_BAND\_xxx or -\/1 if not match is found}}
+\DoxyCodeLine{166 \textcolor{comment}{ */}}
+\DoxyCodeLine{167 int32\_t \mbox{\hyperlink{wld__nl80211__utils_8h_a62e7e11ba7c2f81becc93b039b2c3299}{wld\_nl80211\_freqBandSwlToNl}}(swl\_freqBand\_e swlFb);}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{169 \textcolor{comment}{/*}}
+\DoxyCodeLine{170 \textcolor{comment}{ * @brief convert nl frequency band enum ID NL80211\_BAND\_xxx into swl freq band enum id}}
+\DoxyCodeLine{171 \textcolor{comment}{ *}}
+\DoxyCodeLine{172 \textcolor{comment}{ * @param swlFb nl frequency band enum id NL80211\_BAND\_xxx}}
+\DoxyCodeLine{173 \textcolor{comment}{ *}}
+\DoxyCodeLine{174 \textcolor{comment}{ * @return valid swl freq band enum id or SWL\_FREQ\_BAND\_MAX if not match is found}}
+\DoxyCodeLine{175 \textcolor{comment}{ */}}
+\DoxyCodeLine{176 swl\_freqBand\_e \mbox{\hyperlink{wld__nl80211__utils_8h_a32c7d18cf0d4d8cacae451978ee55ab3}{wld\_nl80211\_freqBandNlToSwl}}(uint32\_t nl80211Fb);}
+\DoxyCodeLine{177 }
+\DoxyCodeLine{178 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_NL80211\_UTILS\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

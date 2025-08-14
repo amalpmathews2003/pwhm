@@ -1,0 +1,36 @@
+\hypertarget{structT__Radio__Capability}{}\doxysection{T\+\_\+\+Radio\+\_\+\+Capability Struct Reference}
+\label{structT__Radio__Capability}\index{T\_Radio\_Capability@{T\_Radio\_Capability}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{structT__Radio__Capability_a8d11545327d27b6ee9d68a99ae08fa46}{Name}}
+\item 
+void($\ast$ \mbox{\hyperlink{structT__Radio__Capability_a88e95ea04078afda9950d9f5efff9c96}{change\+Handler}} )(struct \mbox{\hyperlink{structWLD__RADIO}{WLD\+\_\+\+RADIO}} $\ast$pR)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Structure representing a radio capability. Each vendor plugin will have a list of these elements, indicating which capabilities can can potentially support. 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structT__Radio__Capability_a88e95ea04078afda9950d9f5efff9c96}\label{structT__Radio__Capability_a88e95ea04078afda9950d9f5efff9c96}} 
+\index{T\_Radio\_Capability@{T\_Radio\_Capability}!changeHandler@{changeHandler}}
+\index{changeHandler@{changeHandler}!T\_Radio\_Capability@{T\_Radio\_Capability}}
+\doxysubsubsection{\texorpdfstring{changeHandler}{changeHandler}}
+{\footnotesize\ttfamily void($\ast$ T\+\_\+\+Radio\+\_\+\+Capability\+::change\+Handler) (struct \mbox{\hyperlink{structWLD__RADIO}{WLD\+\_\+\+RADIO}} $\ast$pR)}
+
+The change handler of the capability. The change handler can be NULL. The change handler will be called AFTER the enable field has been updated to the new value. It will only be called when the enable field is changed. \mbox{\Hypertarget{structT__Radio__Capability_a8d11545327d27b6ee9d68a99ae08fa46}\label{structT__Radio__Capability_a8d11545327d27b6ee9d68a99ae08fa46}} 
+\index{T\_Radio\_Capability@{T\_Radio\_Capability}!Name@{Name}}
+\index{Name@{Name}!T\_Radio\_Capability@{T\_Radio\_Capability}}
+\doxysubsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily const char$\ast$ T\+\_\+\+Radio\+\_\+\+Capability\+::\+Name}
+
+The name of the capability 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,108 @@
+\hypertarget{test__BgDfs_8c}{}\doxysection{test/test\+Bg\+Dfs/test\+\_\+\+Bg\+Dfs.c File Reference}
+\label{test__BgDfs_8c}\index{test/testBgDfs/test\_BgDfs.c@{test/testBgDfs/test\_BgDfs.c}}
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$setjmp.\+h$>$}\newline
+{\ttfamily \#include $<$cmocka.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+bgdfs.\+h\char`\"{}}\newline
+Include dependency graph for test\+\_\+\+Bg\+Dfs.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{test__BgDfs_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{test__BgDfs_8c_a4754e206a9017eaf8dca828af51ff061}{bgdfs\+\_\+start\+Clear}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, uint32\+\_\+t bandwidth, swl\+\_\+channel\+\_\+t channel, \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_ac3cdfc4acb5b0077b8cc50cdf0aec0bc}{dfs\+Args}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{test__BgDfs_8c_a95fa1bb755688a06f666576c687e874b}{bgdfs\+\_\+stop\+Clear}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+int \mbox{\hyperlink{test__BgDfs_8c_a9faaf5129925f9c6165b85f04e4916f7}{main}} (int argc \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, char $\ast$argv\mbox{[}$\,$\mbox{]} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}
+\item 
+\mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}
+\item 
+\mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} \mbox{\hyperlink{test__BgDfs_8c_ac3cdfc4acb5b0077b8cc50cdf0aec0bc}{dfs\+Args}}
+\item 
+struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}} \mbox{\hyperlink{test__BgDfs_8c_ab58480ea54581ab8365bcaa363dd89a1}{function\+Table}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{test__BgDfs_8c_a4754e206a9017eaf8dca828af51ff061}\label{test__BgDfs_8c_a4754e206a9017eaf8dca828af51ff061}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!bgdfs\_startClear@{bgdfs\_startClear}}
+\index{bgdfs\_startClear@{bgdfs\_startClear}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{bgdfs\_startClear()}{bgdfs\_startClear()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t bgdfs\+\_\+start\+Clear (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{uint32\+\_\+t}]{bandwidth,  }\item[{swl\+\_\+channel\+\_\+t}]{channel,  }\item[{\mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} $\ast$}]{dfs\+Args }\end{DoxyParamCaption})}
+
+These two functions are implemented in \mbox{\hyperlink{wld__bgdfs_8c}{wld\+\_\+bgdfs.\+c}} to facilitate testability of \+\_\+start\+Bg\+Dfs\+Clear and \+\_\+stop\+Bg\+Dfs\+Clear. Since it\textquotesingle{}s better not to expose them on the interface, they are simply forward declared here bandwidth is also set to 0 if the argument is not providedHere is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{test__BgDfs_8c_a4754e206a9017eaf8dca828af51ff061_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=312pt]{test__BgDfs_8c_a4754e206a9017eaf8dca828af51ff061_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{test__BgDfs_8c_a95fa1bb755688a06f666576c687e874b}\label{test__BgDfs_8c_a95fa1bb755688a06f666576c687e874b}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!bgdfs\_stopClear@{bgdfs\_stopClear}}
+\index{bgdfs\_stopClear@{bgdfs\_stopClear}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{bgdfs\_stopClear()}{bgdfs\_stopClear()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t bgdfs\+\_\+stop\+Clear (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=309pt]{test__BgDfs_8c_a95fa1bb755688a06f666576c687e874b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{test__BgDfs_8c_a9faaf5129925f9c6165b85f04e4916f7}\label{test__BgDfs_8c_a9faaf5129925f9c6165b85f04e4916f7}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!main@{main}}
+\index{main@{main}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int argc}]{\+\_\+\+UNUSED,  }\item[{char $\ast$argv\mbox{[}$\,$\mbox{]}}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}\label{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!args@{args}}
+\index{args@{args}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{args}{args}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} args}
+
+\mbox{\Hypertarget{test__BgDfs_8c_ac3cdfc4acb5b0077b8cc50cdf0aec0bc}\label{test__BgDfs_8c_ac3cdfc4acb5b0077b8cc50cdf0aec0bc}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!dfsArgs@{dfsArgs}}
+\index{dfsArgs@{dfsArgs}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{dfsArgs}{dfsArgs}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} dfs\+Args}
+
+\mbox{\Hypertarget{test__BgDfs_8c_ab58480ea54581ab8365bcaa363dd89a1}\label{test__BgDfs_8c_ab58480ea54581ab8365bcaa363dd89a1}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!functionTable@{functionTable}}
+\index{functionTable@{functionTable}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{functionTable}{functionTable}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}} function\+Table}
+
+\mbox{\Hypertarget{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}\label{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}} 
+\index{test\_BgDfs.c@{test\_BgDfs.c}!pRad@{pRad}}
+\index{pRad@{pRad}!test\_BgDfs.c@{test\_BgDfs.c}}
+\doxysubsubsection{\texorpdfstring{pRad}{pRad}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} p\+Rad}
+

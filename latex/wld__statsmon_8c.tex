@@ -1,0 +1,109 @@
+\hypertarget{wld__statsmon_8c}{}\doxysection{src/wld\+\_\+statsmon.c File Reference}
+\label{wld__statsmon_8c}\index{src/wld\_statsmon.c@{src/wld\_statsmon.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+statsmon.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+statsmon.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__statsmon_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__statsmon_8c_a99147700b7106df2a6a269c3be45341a}{SKIP\+\_\+\+WSP}}(a)~while((a) \&\& (($\ast$(a) == \textquotesingle{} \textquotesingle{}) $\vert$$\vert$ ($\ast$(a) == \textquotesingle{}\textbackslash{}t\textquotesingle{})))(a) ++
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__statsmon_8c_ab15e464ce0cd66eb1c1977cb9f946891}{SKIP\+\_\+\+WORD}}(a)~while((a) \&\& (isalnum($\ast$(a)) $\vert$$\vert$ $\ast$(a) == \textquotesingle{}\+\_\+\textquotesingle{}))(a) ++
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ \mbox{\hyperlink{wld__statsmon_8c_a86846f30e8256da4502a76ff4fab5dbd}{wld\+\_\+statsmon\+\_\+update\+VAPStats}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ \mbox{\hyperlink{wld__statsmon_8c_a4f5db6dc1319310d4a549404509dd82c}{wld\+\_\+statsmon\+\_\+update\+EPStats}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ \mbox{\hyperlink{wld__statsmon_8c_a9b475a78327c89915b4a8bfde3a39178}{wld\+\_\+statsmon\+\_\+update\+RADStats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ \mbox{\hyperlink{wld__statsmon_8c_a60b373162651b8c80778e24545c7d86e}{wld\+\_\+update\+VAPStats}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\+\_\+intf\+\_\+txrxstats}} $\ast$p\+ST)
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ \mbox{\hyperlink{wld__statsmon_8c_abf6e9539b95aff2f357ac7483f2ddc0a}{wld\+\_\+update\+EPStats}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\+\_\+intf\+\_\+txrxstats}} $\ast$p\+ST)
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ \mbox{\hyperlink{wld__statsmon_8c_aaf8e942c1df351920f8ae48ddc6280c4}{wld\+\_\+update\+Radio\+Stats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, \mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\+\_\+intf\+\_\+txrxstats}} $\ast$p\+ST)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__statsmon_8c_ab15e464ce0cd66eb1c1977cb9f946891}\label{wld__statsmon_8c_ab15e464ce0cd66eb1c1977cb9f946891}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!SKIP\_WORD@{SKIP\_WORD}}
+\index{SKIP\_WORD@{SKIP\_WORD}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{SKIP\_WORD}{SKIP\_WORD}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} SKIP\+\_\+\+WORD(\begin{DoxyParamCaption}\item[{}]{a }\end{DoxyParamCaption})~while((a) \&\& (isalnum($\ast$(a)) $\vert$$\vert$ $\ast$(a) == \textquotesingle{}\+\_\+\textquotesingle{}))(a) ++}
+
+\mbox{\Hypertarget{wld__statsmon_8c_a99147700b7106df2a6a269c3be45341a}\label{wld__statsmon_8c_a99147700b7106df2a6a269c3be45341a}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!SKIP\_WSP@{SKIP\_WSP}}
+\index{SKIP\_WSP@{SKIP\_WSP}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{SKIP\_WSP}{SKIP\_WSP}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} SKIP\+\_\+\+WSP(\begin{DoxyParamCaption}\item[{}]{a }\end{DoxyParamCaption})~while((a) \&\& (($\ast$(a) == \textquotesingle{} \textquotesingle{}) $\vert$$\vert$ ($\ast$(a) == \textquotesingle{}\textbackslash{}t\textquotesingle{})))(a) ++}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__statsmon_8c_a4f5db6dc1319310d4a549404509dd82c}\label{wld__statsmon_8c_a4f5db6dc1319310d4a549404509dd82c}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!wld\_statsmon\_updateEPStats@{wld\_statsmon\_updateEPStats}}
+\index{wld\_statsmon\_updateEPStats@{wld\_statsmon\_updateEPStats}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{wld\_statsmon\_updateEPStats()}{wld\_statsmon\_updateEPStats()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ wld\+\_\+statsmon\+\_\+update\+EPStats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__statsmon_8c_a9b475a78327c89915b4a8bfde3a39178}\label{wld__statsmon_8c_a9b475a78327c89915b4a8bfde3a39178}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!wld\_statsmon\_updateRADStats@{wld\_statsmon\_updateRADStats}}
+\index{wld\_statsmon\_updateRADStats@{wld\_statsmon\_updateRADStats}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{wld\_statsmon\_updateRADStats()}{wld\_statsmon\_updateRADStats()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ wld\+\_\+statsmon\+\_\+update\+RADStats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__statsmon_8c_a9b475a78327c89915b4a8bfde3a39178_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__statsmon_8c_a86846f30e8256da4502a76ff4fab5dbd}\label{wld__statsmon_8c_a86846f30e8256da4502a76ff4fab5dbd}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!wld\_statsmon\_updateVAPStats@{wld\_statsmon\_updateVAPStats}}
+\index{wld\_statsmon\_updateVAPStats@{wld\_statsmon\_updateVAPStats}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{wld\_statsmon\_updateVAPStats()}{wld\_statsmon\_updateVAPStats()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ wld\+\_\+statsmon\+\_\+update\+VAPStats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__statsmon_8c_abf6e9539b95aff2f357ac7483f2ddc0a}\label{wld__statsmon_8c_abf6e9539b95aff2f357ac7483f2ddc0a}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!wld\_updateEPStats@{wld\_updateEPStats}}
+\index{wld\_updateEPStats@{wld\_updateEPStats}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{wld\_updateEPStats()}{wld\_updateEPStats()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ wld\+\_\+update\+EPStats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\+\_\+intf\+\_\+txrxstats}} $\ast$}]{p\+ST }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__statsmon_8c_aaf8e942c1df351920f8ae48ddc6280c4}\label{wld__statsmon_8c_aaf8e942c1df351920f8ae48ddc6280c4}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!wld\_updateRadioStats@{wld\_updateRadioStats}}
+\index{wld\_updateRadioStats@{wld\_updateRadioStats}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{wld\_updateRadioStats()}{wld\_updateRadioStats()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ wld\+\_\+update\+Radio\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{\mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\+\_\+intf\+\_\+txrxstats}} $\ast$}]{p\+ST }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__statsmon_8c_aaf8e942c1df351920f8ae48ddc6280c4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__statsmon_8c_a60b373162651b8c80778e24545c7d86e}\label{wld__statsmon_8c_a60b373162651b8c80778e24545c7d86e}} 
+\index{wld\_statsmon.c@{wld\_statsmon.c}!wld\_updateVAPStats@{wld\_updateVAPStats}}
+\index{wld\_updateVAPStats@{wld\_updateVAPStats}!wld\_statsmon.c@{wld\_statsmon.c}}
+\doxysubsubsection{\texorpdfstring{wld\_updateVAPStats()}{wld\_updateVAPStats()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$ wld\+\_\+update\+VAPStats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{wld__statsmon_8h_ac1a441ff7530bf51e3448c4b675600c4}{T\+\_\+intf\+\_\+txrxstats}} $\ast$}]{p\+ST }\end{DoxyParamCaption})}
+

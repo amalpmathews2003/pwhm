@@ -1,0 +1,74 @@
+\hypertarget{wifiGen__mld_8c}{}\doxysection{src/\+Plugin/wifi\+Gen\+\_\+mld.c File Reference}
+\label{wifiGen__mld_8c}\index{src/Plugin/wifiGen\_mld.c@{src/Plugin/wifiGen\_mld.c}}
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Ctrl\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Ctrl\+Mngr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+nl80211\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+hostapd\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/\+Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+hapd.\+h\char`\"{}}\newline
+Include dependency graph for wifi\+Gen\+\_\+mld.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__mld_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__mld_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\+Mld\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wifiGen__mld_8c_a961b7d70c252e0243b518dbad005a616}{wifi\+Gen\+\_\+mld\+\_\+fetch\+Sock\+Link\+SSID}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, const char $\ast$sock\+Name)
+\item 
+\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ \mbox{\hyperlink{wifiGen__mld_8c_a0a8081b85e1097436206822caf2d7829}{wifi\+Gen\+\_\+mld\+\_\+select\+Prim\+Link\+SSID}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__mld_8c_a471113dce784f1be72c1d54676088bc4}{wifi\+Gen\+\_\+mld\+\_\+reconfigure\+Neigh\+Link\+SSIDs}} (\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen__mld_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen__mld_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen\_mld.c@{wifiGen\_mld.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen\_mld.c@{wifiGen\_mld.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\+Mld\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__mld_8c_a961b7d70c252e0243b518dbad005a616}\label{wifiGen__mld_8c_a961b7d70c252e0243b518dbad005a616}} 
+\index{wifiGen\_mld.c@{wifiGen\_mld.c}!wifiGen\_mld\_fetchSockLinkSSID@{wifiGen\_mld\_fetchSockLinkSSID}}
+\index{wifiGen\_mld\_fetchSockLinkSSID@{wifiGen\_mld\_fetchSockLinkSSID}!wifiGen\_mld.c@{wifiGen\_mld.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_mld\_fetchSockLinkSSID()}{wifiGen\_mld\_fetchSockLinkSSID()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wifi\+Gen\+\_\+mld\+\_\+fetch\+Sock\+Link\+SSID (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{const char $\ast$}]{sock\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__mld_8c_a961b7d70c252e0243b518dbad005a616_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__mld_8c_a471113dce784f1be72c1d54676088bc4}\label{wifiGen__mld_8c_a471113dce784f1be72c1d54676088bc4}} 
+\index{wifiGen\_mld.c@{wifiGen\_mld.c}!wifiGen\_mld\_reconfigureNeighLinkSSIDs@{wifiGen\_mld\_reconfigureNeighLinkSSIDs}}
+\index{wifiGen\_mld\_reconfigureNeighLinkSSIDs@{wifiGen\_mld\_reconfigureNeighLinkSSIDs}!wifiGen\_mld.c@{wifiGen\_mld.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_mld\_reconfigureNeighLinkSSIDs()}{wifiGen\_mld\_reconfigureNeighLinkSSIDs()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+mld\+\_\+reconfigure\+Neigh\+Link\+SSIDs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__mld_8c_a0a8081b85e1097436206822caf2d7829}\label{wifiGen__mld_8c_a0a8081b85e1097436206822caf2d7829}} 
+\index{wifiGen\_mld.c@{wifiGen\_mld.c}!wifiGen\_mld\_selectPrimLinkSSID@{wifiGen\_mld\_selectPrimLinkSSID}}
+\index{wifiGen\_mld\_selectPrimLinkSSID@{wifiGen\_mld\_selectPrimLinkSSID}!wifiGen\_mld.c@{wifiGen\_mld.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_mld\_selectPrimLinkSSID()}{wifiGen\_mld\_selectPrimLinkSSID()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$ wifi\+Gen\+\_\+mld\+\_\+select\+Prim\+Link\+SSID (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+

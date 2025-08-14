@@ -1,0 +1,84 @@
+\hypertarget{wld__apMld_8h}{}\doxysection{include/wld/wld\+\_\+ap\+Mld.h File Reference}
+\label{wld__apMld_8h}\index{include/wld/wld\_apMld.h@{include/wld/wld\_apMld.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+Mld.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__apMld_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=276pt]{wld__apMld_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__apMld__afStaInfo__t}{wld\+\_\+ap\+Mld\+\_\+af\+Sta\+Info\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__apMld_8h_a022cee6849e1ec9bf8dae60aebff5bd6}{wld\+\_\+ap\+Mld\+\_\+fetch\+Affiliated\+Sta\+Info}} (\mbox{\hyperlink{structwld__apMld__afStaInfo__t}{wld\+\_\+ap\+Mld\+\_\+af\+Sta\+Info\+\_\+t}} $\ast$info, int32\+\_\+t mld\+Unit, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac)
+\item 
+bool \mbox{\hyperlink{wld__apMld_8h_a32b026f40a1b4e5bd288a7a009ad2b7b}{wld\+\_\+ap\+Mld\+\_\+get\+Active\+Ap\+Affiliated\+Sta\+Info}} (\mbox{\hyperlink{structwld__apMld__afStaInfo__t}{wld\+\_\+ap\+Mld\+\_\+af\+Sta\+Info\+\_\+t}} $\ast$info, \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac)
+\item 
+bool \mbox{\hyperlink{wld__apMld_8h_aa239f32e43bf3e281a5d433615cc94cd}{wld\+\_\+ap\+Mld\+\_\+has\+Shared\+Connection\+Conf}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__apMld_8h_a022cee6849e1ec9bf8dae60aebff5bd6}\label{wld__apMld_8h_a022cee6849e1ec9bf8dae60aebff5bd6}} 
+\index{wld\_apMld.h@{wld\_apMld.h}!wld\_apMld\_fetchAffiliatedStaInfo@{wld\_apMld\_fetchAffiliatedStaInfo}}
+\index{wld\_apMld\_fetchAffiliatedStaInfo@{wld\_apMld\_fetchAffiliatedStaInfo}!wld\_apMld.h@{wld\_apMld.h}}
+\doxysubsubsection{\texorpdfstring{wld\_apMld\_fetchAffiliatedStaInfo()}{wld\_apMld\_fetchAffiliatedStaInfo()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+Mld\+\_\+fetch\+Affiliated\+Sta\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__apMld__afStaInfo__t}{wld\+\_\+ap\+Mld\+\_\+af\+Sta\+Info\+\_\+t}} $\ast$}]{info,  }\item[{int32\+\_\+t}]{mld\+Unit,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac }\end{DoxyParamCaption})}
+
+Retrieve an affiliated\+Sta\+Info for a given MAC Address associated to a given MLD unit.
+
+Because inactive affiliated sta is remembered, and affiliated\+Sta mac addresses may be reused on other band it is possible there are multiple af\+Sta with the same mac address, although there should never be more than one of them active at the same time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em info} & the struct in which the affiliated sta info will be written \\
+\hline
+{\em mld\+Unit} & the mld unit ID of the ap MLD. \\
+\hline
+{\em mac} & the mac address for which to do a lookup for a matching affiliated sta.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item true if an affiliated sta with the given mac address has been found. The info struct shall be properly filled in with the affiliated sta, the associated device to which the affiliated sta belongs, and the access point to which the associated device is associated.
+\end{DoxyItemize}
+\end{DoxyReturn}
+
+\begin{DoxyItemize}
+\item false if no matching affiliated sta can be found, or some error took place. In this case, the info parameter will not be touched. 
+\end{DoxyItemize}\mbox{\Hypertarget{wld__apMld_8h_a32b026f40a1b4e5bd288a7a009ad2b7b}\label{wld__apMld_8h_a32b026f40a1b4e5bd288a7a009ad2b7b}} 
+\index{wld\_apMld.h@{wld\_apMld.h}!wld\_apMld\_getActiveApAffiliatedStaInfo@{wld\_apMld\_getActiveApAffiliatedStaInfo}}
+\index{wld\_apMld\_getActiveApAffiliatedStaInfo@{wld\_apMld\_getActiveApAffiliatedStaInfo}!wld\_apMld.h@{wld\_apMld.h}}
+\doxysubsubsection{\texorpdfstring{wld\_apMld\_getActiveApAffiliatedStaInfo()}{wld\_apMld\_getActiveApAffiliatedStaInfo()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+Mld\+\_\+get\+Active\+Ap\+Affiliated\+Sta\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__apMld__afStaInfo__t}{wld\+\_\+ap\+Mld\+\_\+af\+Sta\+Info\+\_\+t}} $\ast$}]{info,  }\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac }\end{DoxyParamCaption})}
+
+Fetch the active Affiliated\+Sta\+Info for a given MAC af\+Sta connected to a given AP. \mbox{\Hypertarget{wld__apMld_8h_aa239f32e43bf3e281a5d433615cc94cd}\label{wld__apMld_8h_aa239f32e43bf3e281a5d433615cc94cd}} 
+\index{wld\_apMld.h@{wld\_apMld.h}!wld\_apMld\_hasSharedConnectionConf@{wld\_apMld\_hasSharedConnectionConf}}
+\index{wld\_apMld\_hasSharedConnectionConf@{wld\_apMld\_hasSharedConnectionConf}!wld\_apMld.h@{wld\_apMld.h}}
+\doxysubsubsection{\texorpdfstring{wld\_apMld\_hasSharedConnectionConf()}{wld\_apMld\_hasSharedConnectionConf()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+Mld\+\_\+has\+Shared\+Connection\+Conf (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__apMld_8h_aa239f32e43bf3e281a5d433615cc94cd_icgraph}
+\end{center}
+\end{figure}

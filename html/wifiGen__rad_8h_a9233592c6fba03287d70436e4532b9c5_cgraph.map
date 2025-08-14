@@ -1,0 +1,18 @@
+<map id="wifiGen_rad_bgDfsStartExt" name="wifiGen_rad_bgDfsStartExt">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,201,83"/>
+<area shape="rect" id="node2" href="$wld__bgdfs_8c.html#a609c9c511280d7b756931f0f71451de5" title=" " alt="" coords="274,5,433,32"/>
+<area shape="rect" id="node3" href="$wld__radio_8c.html#aa3def1a3c6a1c1dda049b17be731c6fb" title=" " alt="" coords="288,56,419,83"/>
+<area shape="rect" id="node4" href="$wld__rad__nl80211_8c.html#a612fc4497ec8133b6181e77a74bc7d0e" title=" " alt="" coords="249,107,457,133"/>
+<area shape="rect" id="node5" href="$wld__nl80211__api_8c.html#a6daf0ff702d48036740aea1225b7ccd7" title=" " alt="" coords="521,56,701,83"/>
+<area shape="rect" id="node10" href="$wld__nl80211__core_8c.html#ab89990c364e3256f803e95aee1684407" title=" " alt="" coords="505,107,716,133"/>
+<area shape="rect" id="node12" href="$wld__rad__nl80211_8c.html#a207896b46d08b10868e5b33a3c77aaa2" title=" " alt="" coords="517,217,705,258"/>
+<area shape="rect" id="node6" href="$wld__nl80211__utils_8c.html#a7356918508d628219ed57cad5ef6444c" title=" " alt="" coords="802,5,983,32"/>
+<area shape="rect" id="node7" href="$wld__nl80211__core_8c.html#a2f124c7a531325213fab90ab2a181035" title=" " alt="" coords="764,56,1021,83"/>
+<area shape="rect" id="node8" href="$wld__nl80211__core_8c.html#a51795ba7297b263584b02e6dd2d8ddb6" title=" " alt="" coords="1069,56,1272,83"/>
+<area shape="rect" id="node9" href="$wld__nl80211__core_8c.html#a3c5a525596463f925b95bbc76036d07e" title=" " alt="" coords="1320,56,1492,83"/>
+<area shape="rect" id="node11" href="$wld__nl80211__core_8c.html#ac64e98962155641a465909b3c8fc0779" title=" " alt="" coords="836,107,949,133"/>
+<area shape="rect" id="node13" href="$wld__radio_8c.html#ae211359fd0e7548777cf5bd312ffb8c3" title=" " alt="" coords="786,158,999,199"/>
+<area shape="rect" id="node14" href="$wld__radio_8c.html#a4e8e6a5073523b748c0ccf4d5cd400be" title=" " alt="" coords="790,224,995,251"/>
+<area shape="rect" id="node15" href="$wld__ssid__nl80211_8c.html#a2b7bf017bd3b5539305a585d203add46" title=" " alt="" coords="779,275,1007,301"/>
+<area shape="rect" id="node16" href="$wld__ssid__nl80211_8c.html#a5ed483fe8b7a472d3064f95daf9c1db7" title=" " alt="" coords="785,326,1001,367"/>
+</map>

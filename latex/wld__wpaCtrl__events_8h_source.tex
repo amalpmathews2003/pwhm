@@ -1,0 +1,335 @@
+\hypertarget{wld__wpaCtrl__events_8h_source}{}\doxysection{wld\+\_\+wpa\+Ctrl\+\_\+events.\+h}
+\label{wld__wpaCtrl__events_8h_source}\index{include/wld/wld\_wpaCtrl\_events.h@{include/wld/wld\_wpaCtrl\_events.h}}
+\mbox{\hyperlink{wld__wpaCtrl__events_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_WPA\_CTRL\_EVENTS\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_WPA\_CTRL\_EVENTS\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}swla/swla\_chanspec.h"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}swla/swla\_mac.h"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}swl/swl\_ieee802\_1x\_defs.h"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}swl/swl\_80211.h"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}swl/swl\_returnCode.h"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__wpaCtrl__types_8h}{wld\_wpaCtrl\_types.h}}"{}}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#define WPA\_MSG\_LEVEL\_INFO "{}<3>"{}}}
+\DoxyCodeLine{74 \textcolor{preprocessor}{\#define WPA\_MSG\_LEVEL\_DEBUG\_ID 2}}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{77     uint8\_t \mbox{\hyperlink{struct____attribute_____aa348bbc06cf3fa29b56dc225ffd15e61}{opclass}};}
+\DoxyCodeLine{78     uint8\_t \mbox{\hyperlink{struct____attribute_____a19e7199fa0c2f0b636742c6e9cec818b}{channel}};}
+\DoxyCodeLine{79     uint64\_t \mbox{\hyperlink{struct____attribute_____a546943ca887f1332e29580ec23e66e65}{startTime}};}
+\DoxyCodeLine{80     uint16\_t \mbox{\hyperlink{struct____attribute_____a1a7cf4ac29fd4bb497c953529b75158a}{duration}};}
+\DoxyCodeLine{81     uint8\_t \mbox{\hyperlink{struct____attribute_____a7b1d5334819921d94957c7efe16f914d}{frameInfo}};}
+\DoxyCodeLine{82     uint8\_t \mbox{\hyperlink{struct____attribute_____ab48c1d50154fea402e9de054d2d3fcb1}{rcpi}};}
+\DoxyCodeLine{83     uint8\_t \mbox{\hyperlink{struct____attribute_____abe92ad4fe27b3c2063be86db56844ea8}{rsni}};}
+\DoxyCodeLine{84     uint8\_t bssid[6];}
+\DoxyCodeLine{85     uint8\_t \mbox{\hyperlink{struct____attribute_____a043eb60d24d6051a1f666d8fb6b489eb}{antennaId}};}
+\DoxyCodeLine{86     uint32\_t \mbox{\hyperlink{struct____attribute_____a8e694dfa1a64fac944ad45acff211f50}{parentTsf}};}
+\DoxyCodeLine{87 \} \mbox{\hyperlink{struct____attribute____}{\_\_attribute\_\_}}((packed)) wld\_wpaCtrl\_rrmBeaconRsp\_t;}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89 \textcolor{comment}{/*}}
+\DoxyCodeLine{90 \textcolor{comment}{ * @brief Handler to prepare custom evt msg processing:}}
+\DoxyCodeLine{91 \textcolor{comment}{ * by fetching the real source interface and/or modify the received msg data to allow a generic processing.}}
+\DoxyCodeLine{92 \textcolor{comment}{ * When needed, newInterfaceName and newMsgData are allocated and filled}}
+\DoxyCodeLine{93 \textcolor{comment}{ * inside the handler, and they are freed on pwhm side}}
+\DoxyCodeLine{94 \textcolor{comment}{ * This handler allows to redirect custom wpactrl messages received on a global wpaCtrl socket}}
+\DoxyCodeLine{95 \textcolor{comment}{ * but targeted to a different interface}}
+\DoxyCodeLine{96 \textcolor{comment}{ *}}
+\DoxyCodeLine{97 \textcolor{comment}{ * @param userData private user data context registered with the wpactrl iface socket}}
+\DoxyCodeLine{98 \textcolor{comment}{ * @param ifName name of wpactrl iface receiving the event}}
+\DoxyCodeLine{99 \textcolor{comment}{ * @param msgData original text of the received msg}}
+\DoxyCodeLine{100 \textcolor{comment}{ * @param len original length of received msg}}
+\DoxyCodeLine{101 \textcolor{comment}{ * @param newIfName pointer to string allocated and filled with the interface name fetched in the msg}}
+\DoxyCodeLine{102 \textcolor{comment}{ * @param newMsgData pointer to string allocated and filled with the prepared msg for processing}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @param newLen pointer to length variable set with the length of the prepared msg}}
+\DoxyCodeLine{104 \textcolor{comment}{ *}}
+\DoxyCodeLine{105 \textcolor{comment}{ * @return SWL\_RC\_DONE if the msg or the interface has been modified}}
+\DoxyCodeLine{106 \textcolor{comment}{ *         SWL\_RC\_OK if no custom changes has been done on target interface or received msg}}
+\DoxyCodeLine{107 \textcolor{comment}{ *         error code otherwise}}
+\DoxyCodeLine{108 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{109 \textcolor{comment}{ */}}
+\DoxyCodeLine{110 \textcolor{keyword}{typedef} swl\_rc\_ne (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a9a42d8b881c4fd3e15ce2c7e1ed42f46}{wld\_wpaCtrl\_preProcMsgCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}* msgData, \textcolor{keywordtype}{size\_t} len, \textcolor{keywordtype}{char}** newIfName, \textcolor{keywordtype}{char}** newMsgData, \textcolor{keywordtype}{size\_t}* newLen);}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{112 \textcolor{comment}{/*}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @brief handler for custom processing of received wpa ctrl event}}
+\DoxyCodeLine{114 \textcolor{comment}{ *}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @param userData private user data context registered with the wpactrl iface socket}}
+\DoxyCodeLine{116 \textcolor{comment}{ * @param ifName name of wpactrl iface receiving the event}}
+\DoxyCodeLine{117 \textcolor{comment}{ * @param msgData text of the received event}}
+\DoxyCodeLine{118 \textcolor{comment}{ *}}
+\DoxyCodeLine{119 \textcolor{comment}{ * @return SWL\_RC\_DONE if the msg has been completely processed as custom event (eg: vendor specific format)}}
+\DoxyCodeLine{120 \textcolor{comment}{ *                     and no more need to handle it as generic}}
+\DoxyCodeLine{121 \textcolor{comment}{ *         SWL\_RC\_OK or SWL\_RC\_CONTINUE if the msg has been partially handled}}
+\DoxyCodeLine{122 \textcolor{comment}{ *                     but can still be more processed}}
+\DoxyCodeLine{123 \textcolor{comment}{ *         error code otherwise}}
+\DoxyCodeLine{124 \textcolor{comment}{ */}}
+\DoxyCodeLine{125 \textcolor{keyword}{typedef} swl\_rc\_ne (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3192d7ae618427c7c7991af26ce45a3d}{wld\_wpaCtrl\_custProcMsgCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}* msgData);}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{127 \textcolor{comment}{/*}}
+\DoxyCodeLine{128 \textcolor{comment}{ * @brief Handler for post msg processing}}
+\DoxyCodeLine{129 \textcolor{comment}{ * It is called after a custom or generic msg parsing and handling has been tried}}
+\DoxyCodeLine{130 \textcolor{comment}{ */}}
+\DoxyCodeLine{131 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3a748f4ccdc9c55183ee72356cb27adc}{wld\_wpaCtrl\_processMsgCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}* msgData);}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{133 \textcolor{comment}{/*}}
+\DoxyCodeLine{134 \textcolor{comment}{ * @brief Handler for post standard event processing}}
+\DoxyCodeLine{135 \textcolor{comment}{ * It is called after a generic msg parsing and handling has been tried}}
+\DoxyCodeLine{136 \textcolor{comment}{ */}}
+\DoxyCodeLine{137 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_adc54c6e1098cc2a302f1f3f75937c8df}{wld\_wpaCtrl\_processStdMsgCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}* eventName, \textcolor{keywordtype}{char}* msgData);}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{139 \textcolor{comment}{/*}}
+\DoxyCodeLine{140 \textcolor{comment}{ * wpactrl event handlers called by a generic wpactrl msg parsing}}
+\DoxyCodeLine{141 \textcolor{comment}{ */}}
+\DoxyCodeLine{142 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a39824519b39524e235b2883f7fc80865}{wld\_wpaCtrl\_wpsInProgressMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{143 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a7048da5ea7f4a8515fa7ca2c7a4ccf5c}{wld\_wpaCtrl\_wpsSuccessMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macChar\_t* mac);}
+\DoxyCodeLine{144 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_aeb38a7194c7a6fdd2ee84c472e5b1fe7}{wld\_wpaCtrl\_wpsTimeoutMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{145 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a954ba8dabd1c038970761148edcfc4fb}{wld\_wpaCtrl\_wpsCancelMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{146 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_af3f80dc4b239b53333b281d0b547ef86}{wld\_wpaCtrl\_wpsOverlapMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{147 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_ac91c5c130255faa6613469e3630ba69b}{wld\_wpaCtrl\_wpsFailMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{148 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a18af2c1215f5b78396569c8642333eeb}{wld\_wpaCtrl\_wpsCredReceivedMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{void}* creds, swl\_rc\_ne status);}
+\DoxyCodeLine{149 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a0d010ec732ed9463c513f6ea326e3534}{wld\_wpaCtrl\_wpsSetupLockedMsg\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{bool} setupLocked);}
+\DoxyCodeLine{150 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_ad2cdb04d1fe00f4af7e4e11bf27e3023}{wld\_wpaCtrl\_apStationEapCompletedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macBin\_t* bStationMac);}
+\DoxyCodeLine{151 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6f9d130562985fc8903abf9582f89418}{wld\_wpaCtrl\_apStationConnectivityCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macBin\_t* bStationMac);}
+\DoxyCodeLine{152 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae3f4bdf30d004f5f6465c0c8fbf766ee}{wld\_wpaCtrl\_apStationAssocFailureCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macBin\_t* bStationMac);}
+\DoxyCodeLine{153 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_aecb3d45a542f85bab2c54580da9923cf}{wld\_wpaCtrl\_wdsIfaceAddedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}* wdsName, swl\_macBin\_t* bStationMac);}
+\DoxyCodeLine{154 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3c2c898d58ed76cb561b55c4859dac69}{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}* wdsName, swl\_macBin\_t* bStationMac);}
+\DoxyCodeLine{155 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a9253cc534d75905a50d0daefa645ec9e}{wld\_wpaCtrl\_btmReplyCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macChar\_t* mac, uint8\_t status, swl\_macChar\_t* targetBssid);}
+\DoxyCodeLine{156 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_af4c1673404da1a6d488e417388179586}{wld\_wpaCtrl\_mgtFrameReceivedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_80211\_mgmtFrame\_t* frame, \textcolor{keywordtype}{size\_t} frameLen, \textcolor{keywordtype}{char}* frameStr);}
+\DoxyCodeLine{157 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}{wld\_wpaCtrl\_stationConnectivityCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macBin\_t* bBssidMac, swl\_IEEE80211deauthReason\_ne reason);}
+\DoxyCodeLine{158 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3004eb66bbc8b024d4d88e555bb976c6}{wld\_wpaCtrl\_stationScanFailedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{int} error);}
+\DoxyCodeLine{159 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a2c2bfb2c457939bdeae769d2528a8730}{wld\_wpaCtrl\_beaconResponseCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_macBin\_t* station, wld\_wpaCtrl\_rrmBeaconRsp\_t* rrmBeaconResponse);}
+\DoxyCodeLine{160 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae8e40bb27ed3a8f46c8ba942f0a3937e}{wld\_wpaCtrl\_stationStartConnCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ssid, swl\_macBin\_t* bBssidMac, swl\_chanspec\_t* pChansSpec);}
+\DoxyCodeLine{161 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a422ff12c926ff8a13b7d6ef67f094ad7}{wld\_wpaCtrl\_stationStartConnFailedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{int} error);}
+\DoxyCodeLine{162 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a220228509532afdf074b8df1ee95ceef}{wld\_wpaCtrl\_apIfaceEventCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{163 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a062a1e16a0f230c8432a3538d98add5c}{wld\_wpaCtrl\_stationMultiApInfoCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, uint8\_t profileId, uint16\_t primVlanId);}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{165 \textcolor{comment}{/*}}
+\DoxyCodeLine{166 \textcolor{comment}{ * handler to select MLD iface (primary link) name of a provided SSID (AP/STA link) interface}}
+\DoxyCodeLine{167 \textcolor{comment}{ * pLinkIfName is allocated inside the handler and must be freed by the caller}}
+\DoxyCodeLine{168 \textcolor{comment}{ */}}
+\DoxyCodeLine{169 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5b2f3ec9c4bf082fc45fc266b4d01f4a}{wld\_wpaCtrl\_selectPrimLinkIface\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{char}** pPrimLinkIfName);}
+\DoxyCodeLine{170 }
+\DoxyCodeLine{171 \textcolor{comment}{/*}}
+\DoxyCodeLine{172 \textcolor{comment}{ * @brief structure of AP/EP event handlers}}
+\DoxyCodeLine{173 \textcolor{comment}{ */}}
+\DoxyCodeLine{174 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{175     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a9a42d8b881c4fd3e15ce2c7e1ed42f46}{wld\_wpaCtrl\_preProcMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a925b06a5924037c3c7c9af43a8cbde58}{fPreProcEvtMsg}};    \textcolor{comment}{// Handler to prepare custom msg processing (redirect, alter)}}
+\DoxyCodeLine{176     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3192d7ae618427c7c7991af26ce45a3d}{wld\_wpaCtrl\_custProcMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a9765f92eacdf88e7de080ebeb1175498}{fCustProcEvtMsg}};  \textcolor{comment}{// Handler for custom msg processing (filter)}}
+\DoxyCodeLine{177     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3a748f4ccdc9c55183ee72356cb27adc}{wld\_wpaCtrl\_processMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a68c776456a51c78ad3fd934a8da7e224}{fProcEvtMsg}};       \textcolor{comment}{// Handler to post-\/process evt msg}}
+\DoxyCodeLine{178     \mbox{\hyperlink{wld__wpaCtrl__events_8h_adc54c6e1098cc2a302f1f3f75937c8df}{wld\_wpaCtrl\_processStdMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a867ae62fe00fbc87bb15607219883c4f}{fProcStdEvtMsg}}; \textcolor{comment}{// Basic handler of standard received wpa ctrl event}}
+\DoxyCodeLine{179     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a39824519b39524e235b2883f7fc80865}{wld\_wpaCtrl\_wpsInProgressMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a6d8fb220b403d2f831530bc584465c35}{fWpsInProgressMsg}};}
+\DoxyCodeLine{180     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a7048da5ea7f4a8515fa7ca2c7a4ccf5c}{wld\_wpaCtrl\_wpsSuccessMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_aee43cd6a3b240ac140d991e469cfeed3}{fWpsSuccessMsg}};}
+\DoxyCodeLine{181     \mbox{\hyperlink{wld__wpaCtrl__events_8h_aeb38a7194c7a6fdd2ee84c472e5b1fe7}{wld\_wpaCtrl\_wpsTimeoutMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_afc479ede6a8aca33567df86be4fbd313}{fWpsTimeoutMsg}};}
+\DoxyCodeLine{182     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a954ba8dabd1c038970761148edcfc4fb}{wld\_wpaCtrl\_wpsCancelMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a27e0033c307d02d193076f832db85818}{fWpsCancelMsg}};}
+\DoxyCodeLine{183     \mbox{\hyperlink{wld__wpaCtrl__events_8h_af3f80dc4b239b53333b281d0b547ef86}{wld\_wpaCtrl\_wpsOverlapMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_abd28d0b7f1dd84125ac81ba509dec638}{fWpsOverlapMsg}};          }
+\DoxyCodeLine{184     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ac91c5c130255faa6613469e3630ba69b}{wld\_wpaCtrl\_wpsFailMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_ab39f27d031ddab4d61012688641343a3}{fWpsFailMsg}};                }
+\DoxyCodeLine{185     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a18af2c1215f5b78396569c8642333eeb}{wld\_wpaCtrl\_wpsCredReceivedMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a0a8baf40155de36e92a94b75e39217d6}{fWpsCredReceivedCb}}; }
+\DoxyCodeLine{186     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a0d010ec732ed9463c513f6ea326e3534}{wld\_wpaCtrl\_wpsSetupLockedMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a0ef117480fa4a6e19b071f3a7eec7ca9}{fWpsSetupLockedMsg}};  }
+\DoxyCodeLine{187     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ad2cdb04d1fe00f4af7e4e11bf27e3023}{wld\_wpaCtrl\_apStationEapCompletedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a28fd8349f782bc1d6d29dfd0d8e31a03}{fApStationEapCompletedCb}};}
+\DoxyCodeLine{188     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6f9d130562985fc8903abf9582f89418}{wld\_wpaCtrl\_apStationConnectivityCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a81d3d364cd0d88f7fb598443545bb01c}{fApStationConnectedCb}};}
+\DoxyCodeLine{189     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6f9d130562985fc8903abf9582f89418}{wld\_wpaCtrl\_apStationConnectivityCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_aa0ac03519941f59770b6e74ddf32798a}{fApStationDisconnectedCb}};}
+\DoxyCodeLine{190     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae3f4bdf30d004f5f6465c0c8fbf766ee}{wld\_wpaCtrl\_apStationAssocFailureCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_affc0270f895f9da1f8dd68db374aa3e5}{fApStationAssocFailureCb}};}
+\DoxyCodeLine{191     \mbox{\hyperlink{wld__wpaCtrl__events_8h_aecb3d45a542f85bab2c54580da9923cf}{wld\_wpaCtrl\_wdsIfaceAddedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a91712672830ae4a2129dc546afe75a96}{fWdsIfaceAddedCb}};}
+\DoxyCodeLine{192     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3c2c898d58ed76cb561b55c4859dac69}{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a2db9a22aee38d51af2abd591262b70e3}{fWdsIfaceRemovedCb}};}
+\DoxyCodeLine{193     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a9253cc534d75905a50d0daefa645ec9e}{wld\_wpaCtrl\_btmReplyCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_ad7f02383316586c5843f704e18e4b782}{fBtmReplyCb}};}
+\DoxyCodeLine{194     \mbox{\hyperlink{wld__wpaCtrl__events_8h_af4c1673404da1a6d488e417388179586}{wld\_wpaCtrl\_mgtFrameReceivedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a587943750f93dce4f9fd232809baa10f}{fMgtFrameReceivedCb}};}
+\DoxyCodeLine{195     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}{wld\_wpaCtrl\_stationConnectivityCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a89d1be8c2875367e97b06020ad4bb3f6}{fStationAssociatedCb}};}
+\DoxyCodeLine{196     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}{wld\_wpaCtrl\_stationConnectivityCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a42aefea59013329b6fe9c9a92b8900ac}{fStationDisconnectedCb}};}
+\DoxyCodeLine{197     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}{wld\_wpaCtrl\_stationConnectivityCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_acd15da12746c32534bd9831286bfc6f8}{fStationConnectedCb}};}
+\DoxyCodeLine{198     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3004eb66bbc8b024d4d88e555bb976c6}{wld\_wpaCtrl\_stationScanFailedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a0ec2083af938a405d96167dcbcaf71c2}{fStationScanFailedCb}};}
+\DoxyCodeLine{199     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae8e40bb27ed3a8f46c8ba942f0a3937e}{wld\_wpaCtrl\_stationStartConnCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_ab7ff24ab1fc394637690fcf05c372c16}{fStationStartConnCb}};             \textcolor{comment}{// Endpoint starting connection}}
+\DoxyCodeLine{200     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a422ff12c926ff8a13b7d6ef67f094ad7}{wld\_wpaCtrl\_stationStartConnFailedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_ab4cbdfb233a5b91a52ee8e838f213b8d}{fStationStartConnFailedCb}}; \textcolor{comment}{// Endpoint connection init failure}}
+\DoxyCodeLine{201     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a2c2bfb2c457939bdeae769d2528a8730}{wld\_wpaCtrl\_beaconResponseCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_aad646fc06814c6fe64602952c00ec9fc}{fBeaconResponseCb}};}
+\DoxyCodeLine{202     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a220228509532afdf074b8df1ee95ceef}{wld\_wpaCtrl\_apIfaceEventCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_aa99174df4e652785427c245f40df1b62}{fApEnabledCb}};}
+\DoxyCodeLine{203     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a220228509532afdf074b8df1ee95ceef}{wld\_wpaCtrl\_apIfaceEventCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_ad1fee2930ec1b659a985521e9c956818}{fApDisabledCb}};}
+\DoxyCodeLine{204     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a062a1e16a0f230c8432a3538d98add5c}{wld\_wpaCtrl\_stationMultiApInfoCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_a11158a7ea4a274d8aef90f519b4923eb}{fStationMultiApInfoCb}};}
+\DoxyCodeLine{205 }
+\DoxyCodeLine{206     \textcolor{comment}{/*}}
+\DoxyCodeLine{207 \textcolor{comment}{     * AP/EP sync handlers:}}
+\DoxyCodeLine{208 \textcolor{comment}{     * may be used to prepare/schedule fsm actions, or post events processing}}
+\DoxyCodeLine{209 \textcolor{comment}{     * (from hostapd/wpa\_supplicant)}}
+\DoxyCodeLine{210 \textcolor{comment}{     */}}
+\DoxyCodeLine{211     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5b2f3ec9c4bf082fc45fc266b4d01f4a}{wld\_wpaCtrl\_selectPrimLinkIface\_f}} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb_aa05b06a444dc795021ce90aad6b45512}{fSelectPrimLinkIface}}; \textcolor{comment}{// Handler to select primary link iface name for SSID iface}}
+\DoxyCodeLine{212 }
+\DoxyCodeLine{213 \} \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb}{wld\_wpaCtrl\_evtHandlers\_cb}};}
+\DoxyCodeLine{214 }
+\DoxyCodeLine{215 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a07f91a2a9690dddf21104a860a1f26e6}{wld\_wpaCtrl\_chanSwitchStartedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{216 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab507931873d0a7110863ad2f70a3ea96}{wld\_wpaCtrl\_chanSwitchCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{217 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_acc89c31a01478ec088d1e7f45052f840}{wld\_wpaCtrl\_apCsaFinishedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{218 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab5bfbf083dd5c1470f958287dbe8a94b}{wld\_wpaCtrl\_mngrReadyCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{bool} isReady);}
+\DoxyCodeLine{219 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3f37f61d37ae8f0e7941ad003345f447}{wld\_wpaCtrl\_dfsCacStartedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec, uint32\_t cac\_time);}
+\DoxyCodeLine{220 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6e4df855083ad55b53c621f762d8fe7c}{wld\_wpaCtrl\_dfsCacDoneCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec, \textcolor{keywordtype}{bool} success);}
+\DoxyCodeLine{221 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a316d8170bdbf191ae8ffbdc25664ce00}{wld\_wpaCtrl\_dfsCacExpiredCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{222 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3331aa94cfae97b1b98fb2415ce96c14}{wld\_wpaCtrl\_dfsRadarDetectedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{223 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a20968da0e080ffeba1c24389039ceaef}{wld\_wpaCtrl\_dfsNopFinishedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{224 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a2eaf1ff025edeb9f2706f9cf4b92ad76}{wld\_wpaCtrl\_dfsNewChannelCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, swl\_chanspec\_t* chanSpec);}
+\DoxyCodeLine{225 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a4efc0ab43581bf97f95c4ed118c8bbdc}{wld\_wpaCtrl\_mainApSetupCompletedCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{226 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_afbac1c4d1a61f4369df5ab5548e2d09e}{wld\_wpaCtrl\_mainApDisabledCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{227 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}{wld\_wpaCtrl\_syncOnReadyCb\_f}})(\textcolor{keywordtype}{void}* userData, \textcolor{keywordtype}{char}* ifName, \textcolor{keywordtype}{bool} state);}
+\DoxyCodeLine{228 }
+\DoxyCodeLine{229 \textcolor{comment}{/*}}
+\DoxyCodeLine{230 \textcolor{comment}{ * handler to fetch MLD Link iface name from wpa ctrl socket name}}
+\DoxyCodeLine{231 \textcolor{comment}{ * pLinkIfName is allocated inside the handler and shall be freed by the caller}}
+\DoxyCodeLine{232 \textcolor{comment}{ */}}
+\DoxyCodeLine{233 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__wpaCtrl__events_8h_aa7b9ccdae7a6ac2e42235cbb9ae4ae17}{wld\_wpaCtrl\_fetchSocketLinkIface\_f}})(\textcolor{keywordtype}{void}* userData, \mbox{\hyperlink{structwld__wpaCtrlMngr}{wld\_wpaCtrlMngr\_t}}* pMgr, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* sockName, \textcolor{keywordtype}{char}** pLinkIfName);}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235 \textcolor{comment}{/*}}
+\DoxyCodeLine{236 \textcolor{comment}{ * @brief structure of Radio event handlers}}
+\DoxyCodeLine{237 \textcolor{comment}{ */}}
+\DoxyCodeLine{238 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{239     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3192d7ae618427c7c7991af26ce45a3d}{wld\_wpaCtrl\_custProcMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a23dfe4831f44bc37eb05c744deefe9b1}{fCustProcEvtMsg}};  \textcolor{comment}{// Handler for custom msg processing (filter)}}
+\DoxyCodeLine{240     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3a748f4ccdc9c55183ee72356cb27adc}{wld\_wpaCtrl\_processMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a8868360895d163bb4143da86ab690517}{fProcEvtMsg}};       \textcolor{comment}{// Handler to post process evt msg}}
+\DoxyCodeLine{241     \mbox{\hyperlink{wld__wpaCtrl__events_8h_adc54c6e1098cc2a302f1f3f75937c8df}{wld\_wpaCtrl\_processStdMsgCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a6f59561694ae432f9b74fcce108beb90}{fProcStdEvtMsg}}; \textcolor{comment}{// Basic handler of standard received wpa ctrl event}}
+\DoxyCodeLine{242     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a07f91a2a9690dddf21104a860a1f26e6}{wld\_wpaCtrl\_chanSwitchStartedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a152d63292b28256f63cff0c5d0d4c051}{fChanSwitchStartedCb}};}
+\DoxyCodeLine{243     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab507931873d0a7110863ad2f70a3ea96}{wld\_wpaCtrl\_chanSwitchCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a21f1410e2664874797bd43f395c06159}{fChanSwitchCb}};}
+\DoxyCodeLine{244     \mbox{\hyperlink{wld__wpaCtrl__events_8h_acc89c31a01478ec088d1e7f45052f840}{wld\_wpaCtrl\_apCsaFinishedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_aee1feff3a90e63f3a1405f936d8ef463}{fApCsaFinishedCb}};}
+\DoxyCodeLine{245     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab5bfbf083dd5c1470f958287dbe8a94b}{wld\_wpaCtrl\_mngrReadyCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a78ba8665391ea1ccb928350816581a5f}{fMngrReadyCb}};}
+\DoxyCodeLine{246     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3f37f61d37ae8f0e7941ad003345f447}{wld\_wpaCtrl\_dfsCacStartedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a176dd0dab3bafa594a4647d2531fe8bc}{fDfsCacStartedCb}};}
+\DoxyCodeLine{247     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6e4df855083ad55b53c621f762d8fe7c}{wld\_wpaCtrl\_dfsCacDoneCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a4dcbf990d761a43b3f333ab613024833}{fDfsCacDoneCb}};}
+\DoxyCodeLine{248     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a316d8170bdbf191ae8ffbdc25664ce00}{wld\_wpaCtrl\_dfsCacExpiredCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a09caa09a0cce95220db194829d86cda0}{fDfsCacExpiredCb}};}
+\DoxyCodeLine{249     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3331aa94cfae97b1b98fb2415ce96c14}{wld\_wpaCtrl\_dfsRadarDetectedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a5ff9c13bbaa38b76cb4032476c90389e}{fDfsRadarDetectedCb}};}
+\DoxyCodeLine{250     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a20968da0e080ffeba1c24389039ceaef}{wld\_wpaCtrl\_dfsNopFinishedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a0297c4f3568f962f7455f8d3f1c8822d}{fDfsNopFinishedCb}};}
+\DoxyCodeLine{251     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a2eaf1ff025edeb9f2706f9cf4b92ad76}{wld\_wpaCtrl\_dfsNewChannelCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a0ad05b26d9c5d6e9905ec10ce3bae239}{fDfsNewChannelCb}}; \textcolor{comment}{//fallback after dfs radar detection}}
+\DoxyCodeLine{252     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a4efc0ab43581bf97f95c4ed118c8bbdc}{wld\_wpaCtrl\_mainApSetupCompletedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_ad7845626008620ed14bf56aba891a0b2}{fMainApSetupCompletedCb}};}
+\DoxyCodeLine{253     \mbox{\hyperlink{wld__wpaCtrl__events_8h_afbac1c4d1a61f4369df5ab5548e2d09e}{wld\_wpaCtrl\_mainApDisabledCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_add9915f0df7732bd6cfbfde06b65e1f4}{fMainApDisabledCb}};}
+\DoxyCodeLine{254 }
+\DoxyCodeLine{255     \textcolor{comment}{/*}}
+\DoxyCodeLine{256 \textcolor{comment}{     * radio sync handlers:}}
+\DoxyCodeLine{257 \textcolor{comment}{     * may be used to schedule fsm actions, post events}}
+\DoxyCodeLine{258 \textcolor{comment}{     * (from hostapd/wpa\_supplicant)}}
+\DoxyCodeLine{259 \textcolor{comment}{     */}}
+\DoxyCodeLine{260     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}{wld\_wpaCtrl\_syncOnReadyCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_ab773e020797a445faad39fa6729dcee5}{fSyncOnRadioUp}};                       \textcolor{comment}{// Handler to sync ifaces when radio is going up (ie mgr ready and APMain is(/being) enabled)}}
+\DoxyCodeLine{261     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}{wld\_wpaCtrl\_syncOnReadyCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_aa35fd9e65f9e3a7361c80179de099132}{fSyncOnEpConnected}};                   \textcolor{comment}{// Handler to sync radio conf when endpoint is connected}}
+\DoxyCodeLine{262     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}{wld\_wpaCtrl\_syncOnReadyCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a32f0269114eeeeaaabbc07af6328f63f}{fSyncOnEpDisconnected}};                \textcolor{comment}{// Handler to sync radio conf when endpoint is disconnected}}
+\DoxyCodeLine{263     \mbox{\hyperlink{wld__wpaCtrl__events_8h_aa7b9ccdae7a6ac2e42235cbb9ae4ae17}{wld\_wpaCtrl\_fetchSocketLinkIface\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_ac5774040267f2f49b697dde4378484af}{fFetchSockLinkIface}};           \textcolor{comment}{// Handler to fetch of link iface name from wpa socket file name}}
+\DoxyCodeLine{264     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3004eb66bbc8b024d4d88e555bb976c6}{wld\_wpaCtrl\_stationScanFailedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_ac4a672dc890a15711d32e8aeca5506ba}{fStationScanFailedCb}};           \textcolor{comment}{// EndPoint failing to scan BSS}}
+\DoxyCodeLine{265     \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae8e40bb27ed3a8f46c8ba942f0a3937e}{wld\_wpaCtrl\_stationStartConnCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a583ddeeee5e7a7d743ffd3ac5849c228}{fStationStartConnCb}};             \textcolor{comment}{// Endpoint starting connection}}
+\DoxyCodeLine{266     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a422ff12c926ff8a13b7d6ef67f094ad7}{wld\_wpaCtrl\_stationStartConnFailedCb\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a4196b85ee757ffb02aea894ab2340447}{fStationStartConnFailedCb}}; \textcolor{comment}{// Endpoint connection init failure}}
+\DoxyCodeLine{267     \mbox{\hyperlink{wld__wpaCtrl__events_8h_aeb38a7194c7a6fdd2ee84c472e5b1fe7}{wld\_wpaCtrl\_wpsTimeoutMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a76819e43a98e03b0af86df1d44b0e105}{fWpsTimeoutMsg}};                       \textcolor{comment}{// WPS Timeouting}}
+\DoxyCodeLine{268     \mbox{\hyperlink{wld__wpaCtrl__events_8h_a954ba8dabd1c038970761148edcfc4fb}{wld\_wpaCtrl\_wpsCancelMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_a207babe175f53c69f0fa935c16e0e8c0}{fWpsCancelMsg}};                         \textcolor{comment}{// WPS Canceled}}
+\DoxyCodeLine{269     \mbox{\hyperlink{wld__wpaCtrl__events_8h_af3f80dc4b239b53333b281d0b547ef86}{wld\_wpaCtrl\_wpsOverlapMsg\_f}} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb_addc0f2616763dbb5c97892a80afe4671}{fWpsOverlapMsg}};                       \textcolor{comment}{// WPS Overlap}}
+\DoxyCodeLine{270 \} \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb}{wld\_wpaCtrl\_radioEvtHandlers\_cb}};}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__wpaCtrl__events_8h_a67b83e09a159510b15c2677af1127b60}{wld\_wpaCtrl\_getValueStr}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pData, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pKey, \textcolor{keywordtype}{char}* pValue, \textcolor{keywordtype}{int} length);}
+\DoxyCodeLine{273 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__wpaCtrl__events_8h_a05be0ee99bc026630bcd90ae5295aaa0}{wld\_wpaCtrl\_getValueInt}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pData, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pKey);}
+\DoxyCodeLine{274 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__wpaCtrl__events_8h_a60187519f83cbbd590bd7b2edb52b109}{wld\_wpaCtrl\_getValueIntExt}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pData, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pKey, int32\_t* pVal);}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{276 }
+\DoxyCodeLine{277 \textcolor{comment}{/*}}
+\DoxyCodeLine{278 \textcolor{comment}{ * @brief parse a wpactrl msg and fetch the event name from a provided list}}
+\DoxyCodeLine{279 \textcolor{comment}{ * then copy the event name (delimited with separator), and the argument list (starting with separator)}}
+\DoxyCodeLine{280 \textcolor{comment}{ * The event name is potentially prefixed.}}
+\DoxyCodeLine{281 \textcolor{comment}{ * The expected message format is "{}[PREFIX]<EVENT\_NAME><separator><EVENT\_ARGS...>"{}}}
+\DoxyCodeLine{282 \textcolor{comment}{ *}}
+\DoxyCodeLine{283 \textcolor{comment}{ * @param pData wp ctrl message}}
+\DoxyCodeLine{284 \textcolor{comment}{ * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)}}
+\DoxyCodeLine{285 \textcolor{comment}{ * @param separator optional string (or char) separating event name and next event arguments}}
+\DoxyCodeLine{286 \textcolor{comment}{ * @param evtList optional array of event name strings to fetch in priority, before splitting msg with separator}}
+\DoxyCodeLine{287 \textcolor{comment}{ * @param evtListLen length of optional array of known event name strings}}
+\DoxyCodeLine{288 \textcolor{comment}{ * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)}}
+\DoxyCodeLine{289 \textcolor{comment}{ * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)}}
+\DoxyCodeLine{290 \textcolor{comment}{ *}}
+\DoxyCodeLine{291 \textcolor{comment}{ * @return -\/1,  when event name is unknown or not found}}
+\DoxyCodeLine{292 \textcolor{comment}{ *         index < evtListLen, when event name is found in the provided list}}
+\DoxyCodeLine{293 \textcolor{comment}{ */}}
+\DoxyCodeLine{294 int32\_t \mbox{\hyperlink{wld__wpaCtrl__events_8h_a08df9449681af96d5e7d7b76bae18245}{wld\_wpaCtrl\_fetchEvent}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pData, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* prefix, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* sep, \textcolor{keywordtype}{char}* evtList[], \textcolor{keywordtype}{size\_t} evtListLen, \textcolor{keywordtype}{char}** pEvtName, \textcolor{keywordtype}{char}** pEvtArgs);}
+\DoxyCodeLine{295 }
+\DoxyCodeLine{296 \textcolor{comment}{/*}}
+\DoxyCodeLine{297 \textcolor{comment}{ * @brief parse a wpactrl msg and copy the event name, and the argument list}}
+\DoxyCodeLine{298 \textcolor{comment}{ * The event name is potentially prefixed.}}
+\DoxyCodeLine{299 \textcolor{comment}{ * The expected message format is "{}[PREFIX]<EVENT\_NAME><separator><EVENT\_ARGS...>"{}}}
+\DoxyCodeLine{300 \textcolor{comment}{ *}}
+\DoxyCodeLine{301 \textcolor{comment}{ * @param pData wp ctrl message}}
+\DoxyCodeLine{302 \textcolor{comment}{ * @param prefix optional string prefixing the event name (typically the loglevel id , eg: <3>)}}
+\DoxyCodeLine{303 \textcolor{comment}{ * @param separator optional string (or char) separating event name and next event arguments}}
+\DoxyCodeLine{304 \textcolor{comment}{ * @param pEvtName pointer to output string allocated and filled with the event name (to be freed by the caller)}}
+\DoxyCodeLine{305 \textcolor{comment}{ * @param pEvtArgs pointer to output string allocated and filled with the event arguments (to be freed by the caller)}}
+\DoxyCodeLine{306 \textcolor{comment}{ *}}
+\DoxyCodeLine{307 \textcolor{comment}{ * @return true when event name is found, false otherwise}}
+\DoxyCodeLine{308 \textcolor{comment}{ */}}
+\DoxyCodeLine{309 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__wpaCtrl__events_8h_a861033d750298f4213920f1521c3215d}{wld\_wpaCtrl\_parseMsg}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* pData, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* prefix, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* sep, \textcolor{keywordtype}{char}** pEvtName, \textcolor{keywordtype}{char}** pEvtArgs);}
+\DoxyCodeLine{310 }
+\DoxyCodeLine{311 \textcolor{comment}{/*}}
+\DoxyCodeLine{312 \textcolor{comment}{ * @brief public api to convert channel frequency from wpactrl msg (from hostapd/wpasupp) into swl chanspec struct}}
+\DoxyCodeLine{313 \textcolor{comment}{ * param key string may vary with events}}
+\DoxyCodeLine{314 \textcolor{comment}{ */}}
+\DoxyCodeLine{315 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrl__events_8h_aad724564e6367dc5ddd1bf74a37606f7}{wld\_wpaCtrl\_freqParamToChanSpec}}(\textcolor{keywordtype}{char}* params, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, swl\_chanspec\_t* pChanSpec);}
+\DoxyCodeLine{316 }
+\DoxyCodeLine{317 \textcolor{comment}{/*}}
+\DoxyCodeLine{318 \textcolor{comment}{ * @brief public api to convert channel width description from wpactrl msg (from hostapd/wpasupp) into swl chanspec struct}}
+\DoxyCodeLine{319 \textcolor{comment}{ * param key string may vary with events}}
+\DoxyCodeLine{320 \textcolor{comment}{ */}}
+\DoxyCodeLine{321 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrl__events_8h_ac948eacf1d64ba4daf94e648de6fdd54}{wld\_wpaCtrl\_chWidthDescToChanSpec}}(\textcolor{keywordtype}{char}* params, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, swl\_chanspec\_t* pChanSpec);}
+\DoxyCodeLine{322 }
+\DoxyCodeLine{323 \textcolor{comment}{/*}}
+\DoxyCodeLine{324 \textcolor{comment}{ * @brief public api to convert channel width ID from wpactrl msg (from hostapd/wpasupp) into swl chanspec struct}}
+\DoxyCodeLine{325 \textcolor{comment}{ * param key string may vary with events}}
+\DoxyCodeLine{326 \textcolor{comment}{ */}}
+\DoxyCodeLine{327 swl\_rc\_ne \mbox{\hyperlink{wld__wpaCtrl__events_8h_aab3333b721f7fa18f8b27b9ffa39decb}{wld\_wpaCtrl\_chWidthIdToChanSpec}}(\textcolor{keywordtype}{char}* params, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, swl\_chanspec\_t* pChanSpec);}
+\DoxyCodeLine{328 }
+\DoxyCodeLine{329 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_WPA\_CTRL\_EVENTS\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

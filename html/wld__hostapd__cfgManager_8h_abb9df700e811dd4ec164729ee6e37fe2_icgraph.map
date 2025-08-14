@@ -1,0 +1,8 @@
+<map id="wld_hostapd_createConfig" name="wld_hostapd_createConfig">
+<area shape="rect" id="node1" title="create wld_hostapd_config_t structure from Radio and Vaps configuration" alt="" coords="681,56,875,83"/>
+<area shape="rect" id="node2" href="$wld__hostapd__cfgFile_8c.html#ac14947168cc3ee47fd9e0ef512ee8f2a" title="create a configuration file for the hostapd" alt="" coords="479,49,633,90"/>
+<area shape="rect" id="node3" href="$wld__hostapd__cfgFile_8c.html#a0b0eb1c9360a3ff6e88bb54ada391a80" title=" " alt="" coords="276,49,431,90"/>
+<area shape="rect" id="node4" href="$wifiGen__hapd_8c.html#a560b5744b5e1dd9945d76be42f18882e" title=" " alt="" coords="21,5,212,32"/>
+<area shape="rect" id="node5" href="$wifiGen__vap_8c.html#a108842dac422b45f85640894ad25f0d0" title=" " alt="" coords="35,56,199,83"/>
+<area shape="rect" id="node6" href="$wld__rad__hostapd__api_8c.html#a3efc3a0162d47a733afd84e3b24a62bb" title="update the the Operating Standard in the hostapd" alt="" coords="5,107,228,149"/>
+</map>

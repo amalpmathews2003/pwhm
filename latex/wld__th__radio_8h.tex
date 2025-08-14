@@ -1,0 +1,311 @@
+\hypertarget{wld__th__radio_8h}{}\doxysection{test/test\+Helper/wld\+\_\+th\+\_\+radio.h File Reference}
+\label{wld__th__radio_8h}\index{test/testHelper/wld\_th\_radio.h@{test/testHelper/wld\_th\_radio.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+radio\+Standards.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$amxc/amxc\+\_\+macros.\+h$>$}\newline
+{\ttfamily \#include $<$amxc/amxc.\+h$>$}\newline
+{\ttfamily \#include $<$amxp/amxp.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+dm.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+path.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object\+\_\+event.\+h$>$}\newline
+{\ttfamily \#include $<$amxo/amxo.\+h$>$}\newline
+{\ttfamily \#include $<$amxo/amxo\+\_\+save.\+h$>$}\newline
+{\ttfamily \#include $<$amxb/amxb.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+fsm.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+th\+\_\+radio.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__th__rad__sensing__vendorData__t}{wld\+\_\+th\+\_\+rad\+\_\+sensing\+\_\+vendor\+Data\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__th__rad__vendorData__t}{wld\+\_\+th\+\_\+rad\+\_\+vendor\+Data\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$ \mbox{\hyperlink{wld__th__radio_8h_a1c048e3b647a02fedfd525045353b061}{wld\+\_\+th\+\_\+radio\+\_\+create}} (amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const bus\+\_\+ctx, \mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$mock\+Vendor, const char $\ast$name)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_ae6d43d4e75f8cc852a9b66e945825ff0}{wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+add\+Endpoint\+If}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, char $\ast$endpoint, int bufsize)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_af3be3859ad5942773390563562e99298}{wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+del\+Endpoint\+If}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$radio, char $\ast$endpoint)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a7d34aed787889f1777b787bb72048520}{wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+add\+Vap\+If}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, char $\ast$vap, int bufsize)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a51c92d629588c5df0713c0e5f2826899}{wld\+\_\+th\+\_\+rad\+\_\+create\+\_\+hook}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__th__radio_8h_a0e27dfce8e03572e9a48d9ade0a23146}{wld\+\_\+th\+\_\+rad\+\_\+destroy\+\_\+hook}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__th__radio_8h_afa03b3d20dd8d214fa1d631be2738c61}{wld\+\_\+th\+\_\+radio\+\_\+add\+Custom\+Cap}} (\mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} $\ast$cap)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a8d519c317d941b37dbbe077af3c4cda2}{wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+supports}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, char $\ast$buf, int bufsize)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a8107fc70e0d49cd83f234b29c782bef8}{wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+airtimefairness}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, int val, int set)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a22a3719c1beae2440b40420193789793}{wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+intelligent\+Airtime}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, int val, int set)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a02d6af259453994d57cd480309af3a8f}{wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+supstd}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, swl\+\_\+radio\+Standard\+\_\+m radio\+Standards)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__radio_8h_a72a6cc0f8a70d711d18d9167ef1ffbef}{wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+regdomain}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, char $\ast$val, int bufsize, int set)
+\item 
+\mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192f}{FSM\+\_\+\+STATE}} \mbox{\hyperlink{wld__th__radio_8h_aaceca392db9c2fdde272ca7f097b2f46}{wld\+\_\+th\+\_\+wrad\+\_\+fsm}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a983ec244d86e426c59b1764b1a424f5c}{wld\+\_\+th\+\_\+rad\+\_\+enable}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, int val, int set)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_abcb8f9e3ce162ae4732253de65079448}{wld\+\_\+th\+\_\+rad\+\_\+vendor\+Cb\+\_\+poschans}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, uint8\+\_\+t $\ast$buf, int bufsize)
+\item 
+void \mbox{\hyperlink{wld__th__radio_8h_a6efabc3d99c4abf9c9be5a81ea8b98fd}{wld\+\_\+th\+\_\+rad\+\_\+set\+Rad\+Enable}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, bool enable, bool commit)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a463cabd94ecd1d9fc5e17c901a52302e}{wld\+\_\+th\+\_\+rad\+\_\+start\+Scan}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a682c9273b8ec5ba91cab3b03cb079f19}{wld\+\_\+th\+\_\+rad\+\_\+get\+Scan\+Results}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, \mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} $\ast$results)
+\item 
+int \mbox{\hyperlink{wld__th__radio_8h_a3e4209c6a7b3e00cd1d0300a32f2a6a8}{wld\+\_\+th\+\_\+rad\+\_\+set\+Chanspec}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, bool direct)
+\item 
+\mbox{\hyperlink{structwld__th__rad__vendorData__t}{wld\+\_\+th\+\_\+rad\+\_\+vendor\+Data\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__th__radio_8h_a7d2f840e05e204658b07064a391465b6}{wld\+\_\+th\+\_\+rad\+\_\+get\+Vendor\+Data}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+void \mbox{\hyperlink{wld__th__radio_8h_ac6066dadcf0bbd0883c22040e9762088}{wld\+\_\+th\+\_\+rad\+\_\+clear\+Commits}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+void \mbox{\hyperlink{wld__th__radio_8h_ad1194737925baf395f2c3539cc55167e}{wld\+\_\+th\+\_\+rad\+\_\+check\+Commit\+All}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad)
+\item 
+void \mbox{\hyperlink{wld__th__radio_8h_a50abd17805756926b9d75977dc40d562}{wld\+\_\+th\+\_\+rad\+\_\+check\+Committed}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$rad, swl\+\_\+mask\+\_\+m commit\+Mask)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__th__radio_8h_a8107fc70e0d49cd83f234b29c782bef8}\label{wld__th__radio_8h_a8107fc70e0d49cd83f234b29c782bef8}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_mfn\_wrad\_airtimefairness@{wld\_th\_mfn\_wrad\_airtimefairness}}
+\index{wld\_th\_mfn\_wrad\_airtimefairness@{wld\_th\_mfn\_wrad\_airtimefairness}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_mfn\_wrad\_airtimefairness()}{wld\_th\_mfn\_wrad\_airtimefairness()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+airtimefairness (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{int}]{val,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a22a3719c1beae2440b40420193789793}\label{wld__th__radio_8h_a22a3719c1beae2440b40420193789793}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_mfn\_wrad\_intelligentAirtime@{wld\_th\_mfn\_wrad\_intelligentAirtime}}
+\index{wld\_th\_mfn\_wrad\_intelligentAirtime@{wld\_th\_mfn\_wrad\_intelligentAirtime}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_mfn\_wrad\_intelligentAirtime()}{wld\_th\_mfn\_wrad\_intelligentAirtime()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+intelligent\+Airtime (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{int}]{val,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a72a6cc0f8a70d711d18d9167ef1ffbef}\label{wld__th__radio_8h_a72a6cc0f8a70d711d18d9167ef1ffbef}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_mfn\_wrad\_regdomain@{wld\_th\_mfn\_wrad\_regdomain}}
+\index{wld\_th\_mfn\_wrad\_regdomain@{wld\_th\_mfn\_wrad\_regdomain}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_mfn\_wrad\_regdomain()}{wld\_th\_mfn\_wrad\_regdomain()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+regdomain (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{char $\ast$}]{val,  }\item[{int}]{bufsize,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_a72a6cc0f8a70d711d18d9167ef1ffbef_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_a02d6af259453994d57cd480309af3a8f}\label{wld__th__radio_8h_a02d6af259453994d57cd480309af3a8f}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_mfn\_wrad\_supstd@{wld\_th\_mfn\_wrad\_supstd}}
+\index{wld\_th\_mfn\_wrad\_supstd@{wld\_th\_mfn\_wrad\_supstd}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_mfn\_wrad\_supstd()}{wld\_th\_mfn\_wrad\_supstd()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+mfn\+\_\+wrad\+\_\+supstd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{swl\+\_\+radio\+Standard\+\_\+m}]{radio\+Standards }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_ad1194737925baf395f2c3539cc55167e}\label{wld__th__radio_8h_ad1194737925baf395f2c3539cc55167e}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_checkCommitAll@{wld\_th\_rad\_checkCommitAll}}
+\index{wld\_th\_rad\_checkCommitAll@{wld\_th\_rad\_checkCommitAll}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_checkCommitAll()}{wld\_th\_rad\_checkCommitAll()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+rad\+\_\+check\+Commit\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_ad1194737925baf395f2c3539cc55167e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_a50abd17805756926b9d75977dc40d562}\label{wld__th__radio_8h_a50abd17805756926b9d75977dc40d562}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_checkCommitted@{wld\_th\_rad\_checkCommitted}}
+\index{wld\_th\_rad\_checkCommitted@{wld\_th\_rad\_checkCommitted}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_checkCommitted()}{wld\_th\_rad\_checkCommitted()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+rad\+\_\+check\+Committed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{swl\+\_\+mask\+\_\+m}]{commit\+Mask }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_a50abd17805756926b9d75977dc40d562_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_ac6066dadcf0bbd0883c22040e9762088}\label{wld__th__radio_8h_ac6066dadcf0bbd0883c22040e9762088}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_clearCommits@{wld\_th\_rad\_clearCommits}}
+\index{wld\_th\_rad\_clearCommits@{wld\_th\_rad\_clearCommits}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_clearCommits()}{wld\_th\_rad\_clearCommits()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+rad\+\_\+clear\+Commits (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_ac6066dadcf0bbd0883c22040e9762088_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_ac6066dadcf0bbd0883c22040e9762088_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_a51c92d629588c5df0713c0e5f2826899}\label{wld__th__radio_8h_a51c92d629588c5df0713c0e5f2826899}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_create\_hook@{wld\_th\_rad\_create\_hook}}
+\index{wld\_th\_rad\_create\_hook@{wld\_th\_rad\_create\_hook}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_create\_hook()}{wld\_th\_rad\_create\_hook()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+rad\+\_\+create\+\_\+hook (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a0e27dfce8e03572e9a48d9ade0a23146}\label{wld__th__radio_8h_a0e27dfce8e03572e9a48d9ade0a23146}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_destroy\_hook@{wld\_th\_rad\_destroy\_hook}}
+\index{wld\_th\_rad\_destroy\_hook@{wld\_th\_rad\_destroy\_hook}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_destroy\_hook()}{wld\_th\_rad\_destroy\_hook()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+rad\+\_\+destroy\+\_\+hook (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a983ec244d86e426c59b1764b1a424f5c}\label{wld__th__radio_8h_a983ec244d86e426c59b1764b1a424f5c}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_enable@{wld\_th\_rad\_enable}}
+\index{wld\_th\_rad\_enable@{wld\_th\_rad\_enable}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_enable()}{wld\_th\_rad\_enable()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+rad\+\_\+enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{int}]{val,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=319pt]{wld__th__radio_8h_a983ec244d86e426c59b1764b1a424f5c_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_a682c9273b8ec5ba91cab3b03cb079f19}\label{wld__th__radio_8h_a682c9273b8ec5ba91cab3b03cb079f19}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_getScanResults@{wld\_th\_rad\_getScanResults}}
+\index{wld\_th\_rad\_getScanResults@{wld\_th\_rad\_getScanResults}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_getScanResults()}{wld\_th\_rad\_getScanResults()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+rad\+\_\+get\+Scan\+Results (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{\mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} $\ast$}]{results }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a7d2f840e05e204658b07064a391465b6}\label{wld__th__radio_8h_a7d2f840e05e204658b07064a391465b6}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_getVendorData@{wld\_th\_rad\_getVendorData}}
+\index{wld\_th\_rad\_getVendorData@{wld\_th\_rad\_getVendorData}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_getVendorData()}{wld\_th\_rad\_getVendorData()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__th__rad__vendorData__t}{wld\+\_\+th\+\_\+rad\+\_\+vendor\+Data\+\_\+t}} $\ast$ wld\+\_\+th\+\_\+rad\+\_\+get\+Vendor\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_a7d2f840e05e204658b07064a391465b6_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_a3e4209c6a7b3e00cd1d0300a32f2a6a8}\label{wld__th__radio_8h_a3e4209c6a7b3e00cd1d0300a32f2a6a8}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_setChanspec@{wld\_th\_rad\_setChanspec}}
+\index{wld\_th\_rad\_setChanspec@{wld\_th\_rad\_setChanspec}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_setChanspec()}{wld\_th\_rad\_setChanspec()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+rad\+\_\+set\+Chanspec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{bool}]{direct }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_a3e4209c6a7b3e00cd1d0300a32f2a6a8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_a6efabc3d99c4abf9c9be5a81ea8b98fd}\label{wld__th__radio_8h_a6efabc3d99c4abf9c9be5a81ea8b98fd}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_setRadEnable@{wld\_th\_rad\_setRadEnable}}
+\index{wld\_th\_rad\_setRadEnable@{wld\_th\_rad\_setRadEnable}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_setRadEnable()}{wld\_th\_rad\_setRadEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+rad\+\_\+set\+Rad\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{bool}]{enable,  }\item[{bool}]{commit }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a463cabd94ecd1d9fc5e17c901a52302e}\label{wld__th__radio_8h_a463cabd94ecd1d9fc5e17c901a52302e}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_startScan@{wld\_th\_rad\_startScan}}
+\index{wld\_th\_rad\_startScan@{wld\_th\_rad\_startScan}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_startScan()}{wld\_th\_rad\_startScan()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+rad\+\_\+start\+Scan (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_abcb8f9e3ce162ae4732253de65079448}\label{wld__th__radio_8h_abcb8f9e3ce162ae4732253de65079448}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_rad\_vendorCb\_poschans@{wld\_th\_rad\_vendorCb\_poschans}}
+\index{wld\_th\_rad\_vendorCb\_poschans@{wld\_th\_rad\_vendorCb\_poschans}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_rad\_vendorCb\_poschans()}{wld\_th\_rad\_vendorCb\_poschans()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+rad\+\_\+vendor\+Cb\+\_\+poschans (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{uint8\+\_\+t $\ast$}]{buf,  }\item[{int}]{bufsize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_afa03b3d20dd8d214fa1d631be2738c61}\label{wld__th__radio_8h_afa03b3d20dd8d214fa1d631be2738c61}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_radio\_addCustomCap@{wld\_th\_radio\_addCustomCap}}
+\index{wld\_th\_radio\_addCustomCap@{wld\_th\_radio\_addCustomCap}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_radio\_addCustomCap()}{wld\_th\_radio\_addCustomCap()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+radio\+\_\+add\+Custom\+Cap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__th__radCap__t}{wld\+\_\+th\+\_\+rad\+Cap\+\_\+t}} $\ast$}]{cap }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a1c048e3b647a02fedfd525045353b061}\label{wld__th__radio_8h_a1c048e3b647a02fedfd525045353b061}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_radio\_create@{wld\_th\_radio\_create}}
+\index{wld\_th\_radio\_create@{wld\_th\_radio\_create}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_radio\_create()}{wld\_th\_radio\_create()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$ wld\+\_\+th\+\_\+radio\+\_\+create (\begin{DoxyParamCaption}\item[{amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const}]{bus\+\_\+ctx,  }\item[{\mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$}]{mock\+Vendor,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__radio_8h_a1c048e3b647a02fedfd525045353b061_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__th__radio_8h_ae6d43d4e75f8cc852a9b66e945825ff0}\label{wld__th__radio_8h_ae6d43d4e75f8cc852a9b66e945825ff0}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_radio\_vendorCb\_addEndpointIf@{wld\_th\_radio\_vendorCb\_addEndpointIf}}
+\index{wld\_th\_radio\_vendorCb\_addEndpointIf@{wld\_th\_radio\_vendorCb\_addEndpointIf}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_radio\_vendorCb\_addEndpointIf()}{wld\_th\_radio\_vendorCb\_addEndpointIf()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+add\+Endpoint\+If (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{char $\ast$}]{endpoint,  }\item[{int}]{bufsize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a7d34aed787889f1777b787bb72048520}\label{wld__th__radio_8h_a7d34aed787889f1777b787bb72048520}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_radio\_vendorCb\_addVapIf@{wld\_th\_radio\_vendorCb\_addVapIf}}
+\index{wld\_th\_radio\_vendorCb\_addVapIf@{wld\_th\_radio\_vendorCb\_addVapIf}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_radio\_vendorCb\_addVapIf()}{wld\_th\_radio\_vendorCb\_addVapIf()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+add\+Vap\+If (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{char $\ast$}]{vap,  }\item[{int}]{bufsize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_af3be3859ad5942773390563562e99298}\label{wld__th__radio_8h_af3be3859ad5942773390563562e99298}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_radio\_vendorCb\_delEndpointIf@{wld\_th\_radio\_vendorCb\_delEndpointIf}}
+\index{wld\_th\_radio\_vendorCb\_delEndpointIf@{wld\_th\_radio\_vendorCb\_delEndpointIf}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_radio\_vendorCb\_delEndpointIf()}{wld\_th\_radio\_vendorCb\_delEndpointIf()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+del\+Endpoint\+If (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{radio,  }\item[{char $\ast$}]{endpoint }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_a8d519c317d941b37dbbe077af3c4cda2}\label{wld__th__radio_8h_a8d519c317d941b37dbbe077af3c4cda2}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_radio\_vendorCb\_supports@{wld\_th\_radio\_vendorCb\_supports}}
+\index{wld\_th\_radio\_vendorCb\_supports@{wld\_th\_radio\_vendorCb\_supports}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_radio\_vendorCb\_supports()}{wld\_th\_radio\_vendorCb\_supports()}}
+{\footnotesize\ttfamily int wld\+\_\+th\+\_\+radio\+\_\+vendor\+Cb\+\_\+supports (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad,  }\item[{char $\ast$}]{buf,  }\item[{int}]{bufsize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__radio_8h_aaceca392db9c2fdde272ca7f097b2f46}\label{wld__th__radio_8h_aaceca392db9c2fdde272ca7f097b2f46}} 
+\index{wld\_th\_radio.h@{wld\_th\_radio.h}!wld\_th\_wrad\_fsm@{wld\_th\_wrad\_fsm}}
+\index{wld\_th\_wrad\_fsm@{wld\_th\_wrad\_fsm}!wld\_th\_radio.h@{wld\_th\_radio.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_wrad\_fsm()}{wld\_th\_wrad\_fsm()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192f}{FSM\+\_\+\+STATE}} wld\+\_\+th\+\_\+wrad\+\_\+fsm (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{wld__th__radio_8h_aaceca392db9c2fdde272ca7f097b2f46_cgraph}
+\end{center}
+\end{figure}

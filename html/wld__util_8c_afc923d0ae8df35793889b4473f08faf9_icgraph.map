@@ -1,0 +1,6 @@
+<map id="wld_util_getSpectrumEntryByChannel" name="wld_util_getSpectrumEntryByChannel">
+<area shape="rect" id="node1" title="fetch, by channel, a spectrum result entry in provided list" alt="" coords="816,5,1013,47"/>
+<area shape="rect" id="node2" href="$wld__util_8c.html#a2d2611af137f5b97865337c7c3a2f789" title="add or update a spectrum result entry in provided list, based on the channel of the provided data str..." alt="" coords="541,5,768,47"/>
+<area shape="rect" id="node3" href="$wld__rad__nl80211_8c.html#a27e046bcc6b8d56984848349fe978e99" title=" " alt="" coords="268,5,493,47"/>
+<area shape="rect" id="node4" href="$wifiGen__rad_8c.html#a63ca0312efb1460f235020f8d8fbf442" title=" " alt="" coords="5,13,220,39"/>
+</map>

@@ -1,0 +1,831 @@
+\hypertarget{wld__accesspoint_8c}{}\doxysection{src/wld\+\_\+accesspoint.c File Reference}
+\label{wld__accesspoint_8c}\index{src/wld\_accesspoint.c@{src/wld\_accesspoint.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+string.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+ieee802\+\_\+1x\+\_\+defs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+hex.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+generic\+Frame\+Parser.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+sta\+Cap.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ap\+\_\+rssi\+Monitor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Neigh\+Add.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ap\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+hostapd\+\_\+ap\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+dm\+\_\+trans.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Features/wld\+\_\+persist.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ext\+Mod.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+accesspoint.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__accesspoint_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__accesspoint_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__accesspoint_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a3cb104df8c0384bccdadf42ba4931114}{SWL\+\_\+\+ASSERT\+\_\+\+STATIC}} (SWL\+\_\+\+ARRAY\+\_\+\+SIZE(s\+\_\+assoc\+Table\+Names)==SWL\+\_\+\+ARRAY\+\_\+\+SIZE(assoc\+Table\+Types), \char`\"{}s\+\_\+assoc\+Table\+Names not correctly defined\char`\"{})
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a0578ad030382b796f87c85d28aa4a1f2}{wld\+\_\+vap\+\_\+send\+Action\+Event}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld_8h_a261603f948ddc3cad71b190e5b8c5dcc}{wld\+\_\+vap\+\_\+action\+Event\+\_\+e}} action\+Event, void $\ast$data)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a2ec39b228a84f69591bd1ba237fec4d8}{wld\+\_\+ap\+\_\+from\+Obj}} (amxd\+\_\+object\+\_\+t $\ast$ap\+Obj)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a1b8809cc2f9ed4bd94de34227f2c62fb}{\+\_\+wld\+\_\+ap\+\_\+del\+Instance\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_afae0379e629c3997b9359b4359b67dc8}{\+\_\+wld\+\_\+ap\+\_\+add\+Instance\+\_\+oaf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+int \mbox{\hyperlink{wld__accesspoint_8c_ac2ba6b224130b48d82fae374db31fb44}{wld\+\_\+ap\+\_\+initialize\+Vendor}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$p\+SSID)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a9c0ac5b9abb07b27562626a9bca87a40}{wld\+\_\+ap\+\_\+do\+Sync}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a9db9974b933921d65334dc9359226f79}{wld\+\_\+ap\+\_\+do\+Wps\+Sync}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_abff4f0a65d33986cbe5b49b482aaeb88}{\+\_\+wld\+\_\+ap\+\_\+validate\+IEEE80211r\+Enabled\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_ad6862fea2dd3bb22a0ccf4fe6af62969}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap11r\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}FTOver\+DSEnable\char`\"{}, s\+\_\+set\+FTOver\+DSEnable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Mobility\+Domain\char`\"{}, s\+\_\+set\+Mobility\+Domain\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enabled\char`\"{}, s\+\_\+set80211r\+Enabled\+\_\+pwf),))
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a4b59c101568c7b050108d6b16835c17f}{\+\_\+wld\+\_\+ap\+\_\+11r\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a414461588f4370c1d9e6aaec52ffe5ff}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap11u\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Qo\+SMap\+Set\char`\"{}, s\+\_\+set\+Qos\+Map\+Set\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Interworking\+Enable\char`\"{}, s\+\_\+set\+Interworking\+Enable\+\_\+pwf),))
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a563714d6b7d5b59e49e03dd600f5d6ac}{\+\_\+wld\+\_\+ap\+\_\+11u\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a642b22142154111ec1a7a4e940efde67}{Sync\+Data\+\_\+\+AP2\+OBJ}} (amxd\+\_\+object\+\_\+t $\ast$object, \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, int set)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a518bdc8a44eebc328879b5ce0b273f46}{t\+\_\+destroy\+\_\+handler\+\_\+\+AP}} (amxd\+\_\+object\+\_\+t $\ast$object)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_aa380831b7cf3262dcdb7b02465e72f71}{\+\_\+validate\+WPSenable}} (amxd\+\_\+param\+\_\+t $\ast$parameter)
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a54355a8ab80fdc6a8d7d204ac148381d}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Vendor\+IEs\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+enable\+Vendor\+IEs\+\_\+pwf)),)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a1fec48d8ba91367ec0d5eb0688331a0e}{\+\_\+wld\+\_\+ap\+\_\+set\+Vendor\+IEs\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a41f5b599434e8130f8bd6032b55397c8}{\+\_\+wld\+\_\+ap\+\_\+validate\+Vendor\+IE\+\_\+ovf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a07aba2cdfed7e26b322d8b22c95fcfc5}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Vendor\+Ie\+Dm\+Hdlrs, ARR(),.inst\+Added\+Cb=s\+\_\+add\+Vendor\+IE\+\_\+oaf,.obj\+Changed\+Cb=s\+\_\+set\+Vendor\+IEConf\+\_\+ocf,)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_af791f194b09cb0c90f2febc69acdd0da}{\+\_\+wld\+\_\+ap\+\_\+set\+Vendor\+IE\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a00ba7bee8dac8313f362e5eec61c82b0}{\+\_\+wld\+\_\+ap\+\_\+del\+Vendor\+IE\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a565c40f76417aa81fe391221ba8f6ead}{\+\_\+create\+Vendor\+IE}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a5dbb60169a0a10a18fa33e56c198a4d9}{\+\_\+delete\+Vendor\+IE}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a13a60b700608fb07761a65d7aaf73597}{\+\_\+wld\+\_\+ap\+\_\+validate\+Hot\+Spot2\+Requirements}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a15609d0a6b4c4dce885d59a438c65eea}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Hot\+Spot\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Hot\+Spot\+Enable\+\_\+pwf)),.obj\+Changed\+Cb=s\+\_\+set\+Hot\+Spot\+Conf\+\_\+ocf,)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a4e9f68572edb45245f72f7a078730d0f}{\+\_\+wld\+\_\+ap\+\_\+set\+Hot\+Spot\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a4588bb8175c3c799597cf5857164f4e0}{\+\_\+wld\+\_\+ap\+\_\+validate\+Discovery\+Method\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_ac47248d7ba172a71abc1935dfca11188}{wld\+\_\+ap\+\_\+update\+Discovery\+Method}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld_8h_a0f62a7362b1ffe0dbb87a26959e94be1}{wld\+\_\+ap\+\_\+dm\+\_\+m}} \mbox{\hyperlink{wld__accesspoint_8c_ae4f73e94499fd5c1efc5b44ef3f1cc25}{wld\+\_\+ap\+\_\+get\+Discovery\+Method}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_ad6ac9d09e37a860bfe0c8e04a17ae26f}{wld\+\_\+ap\+\_\+create}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$vap\+Name, uint32\+\_\+t idx)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_af004e111585e6f8914497280fd777148}{wld\+\_\+ap\+\_\+destroy}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a87725ec2a1f9cf0ebaa895b752bf3280}{\+\_\+kick\+Station}} (amxd\+\_\+object\+\_\+t $\ast$obj\+\_\+\+AP, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a7aa39657cfc7908eb91ccccd1e657ad2}{\+\_\+kick\+Station\+Reason}} (amxd\+\_\+object\+\_\+t $\ast$obj\+\_\+\+AP, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a94faf0db100ce8fa343068f98d27bb5a}{\+\_\+clean\+Station}} (amxd\+\_\+object\+\_\+t $\ast$obj\+\_\+\+AP, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a332531e0daec0d02003394cd46efa711}{\+\_\+\+\_\+\+Verify\+Access\+Point}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_afbafff78ac5c4768c2feb4e067a47275}{\+\_\+\+\_\+\+Commit\+Access\+Point}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_afc67f47d34504c599b64beebf7ba8d14}{wld\+\_\+vap\+\_\+save\+Assoc\+Req}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+bit8\+\_\+t $\ast$frame\+Bin, size\+\_\+t frame\+Len)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_a84c5c3148b7366e6db8dc847b538b6a8}{wld\+\_\+vap\+\_\+notify\+Action\+Frame}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$frame)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_adf8884ba65d1765a1f17ac847262eb0e}{wld\+\_\+vap\+\_\+notify\+Deauth\+Disassoc\+Frame}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$event\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$sta\+Mac\+Address, swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne reason, bool is\+Tx\+Frame)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_acb475ba57764e8e2cb09235c10af7199}{wld\+\_\+vap\+\_\+sync\+\_\+device}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a03a789280ba58d3b51afcb25fb74d4e2}{wld\+\_\+vap\+\_\+sync\+Nr\+Dev}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__accesspoint_8c_a7eb994300b262efccd17853636c08588}{wld\+\_\+vap\+\_\+sync\+\_\+assoclist}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a6f8eb704c7c6823f0610f0480815863c}{wld\+\_\+vap\+\_\+get\+\_\+existing\+\_\+station}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Address)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_aa1c2398bfe5e0b58758ecedb52e22a19}{wld\+\_\+destroy\+\_\+associated\+Device}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, int index)
+\item 
+\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a6d083c4182ce038f0c06452c69af5cb2}{wld\+\_\+create\+\_\+associated\+Device}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Address)
+\item 
+bool \mbox{\hyperlink{wld__accesspoint_8c_ad2dc1dcd75acb779c27dee718badad7e}{wld\+\_\+vap\+\_\+cleanup\+\_\+stationlist}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__accesspoint_8c_a128dc3d9498c3fc7977e0bf7296e2a2d}{wld\+\_\+vap\+\_\+assoc\+\_\+update\+\_\+cuid}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac, char $\ast$cuid, int len \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_ab2a0a5ff469aed01506de9a03534e7bc}{wld\+\_\+ap\+\_\+send\+Pairing\+Notification}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$reason, const char $\ast$mac\+Address)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_af3fa63549e102edd5b5c7940647ada19}{wld\+\_\+ap\+\_\+from\+It}} (amxc\+\_\+llist\+\_\+it\+\_\+t $\ast$it)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a60f67f259b09b3eb73a1a27711a4846b}{\+\_\+dbg\+Clear\+Inactive\+Entries}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_adf12f1b4eae79413592bdda76aaa7b00}{wld\+\_\+vap\+\_\+get\+\_\+vap}} (const char $\ast$ifname)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_ab428602f652d0aa68389a62542a7dce5}{wld\+\_\+ap\+\_\+get\+Vap\+By\+Name}} (const char $\ast$name)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a3a298ee15d3045b61de51082e8fd7040}{wld\+\_\+ap\+\_\+get\+Vap\+By\+Bssid}} (swl\+\_\+mac\+Bin\+\_\+t $\ast$bssid)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a3b7b07c1f733b83407a77ce16e8819a0}{wld\+\_\+ap\+\_\+get\+Max\+Nbr\+Sta}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a4fd5cd2c4e0b3c9a96e271f236b1e6bc}{wld\+\_\+vap\+\_\+update\+State}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__accesspoint_8c_afce1e4726856a8b3bec33a125230f48b}{wld\+\_\+ap\+\_\+get\+Desired\+State}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+Ap)
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a7e35f8bb8985a0953304b18571c81b24}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Driver\+Config\+Dm\+Hdlrs, ARR(),.obj\+Changed\+Cb=s\+\_\+set\+Ap\+Driver\+Config\+\_\+ocf)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_ad84107ca2cdb11a705354dc1b205b922}{\+\_\+wld\+\_\+ap\+\_\+set\+Driver\+Config\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_aecb3b0988ff2af3267a7099450eb7eab}{wld\+\_\+ap\+\_\+get\+Last\+Assoc\+Req}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$mac\+Station, \mbox{\hyperlink{wld_8h_a48cc410733cdddc0c0938908b58afef1}{wld\+\_\+vap\+\_\+assoc\+Table\+Struct\+\_\+t}} $\ast$$\ast$data)
+\begin{DoxyCompactList}\small\item\em return the last assoc/reassoc frame sent by a station to a vap \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_a0dfab75f0043d48fa4eeab7b22b1898f}{wld\+\_\+vap\+\_\+register\+Ext\+Mod\+Data}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t ext\+Mod\+Id, void $\ast$ext\+Mod\+Data, \mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\+\_\+ext\+Mod\+\_\+delete\+Data\+\_\+dcf}} delete\+Handler)
+\item 
+void $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a174dab57530ee4e9252eeeb078e8d425}{wld\+\_\+vap\+\_\+get\+Ext\+Mod\+Data}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t ext\+Mod\+Id)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__accesspoint_8c_a08ae4e8d23a93e690e7e8504dc9ff1fb}{wld\+\_\+vap\+\_\+unregister\+Ext\+Mod\+Data}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, uint32\+\_\+t ext\+Mod\+Id)
+\item 
+bool \mbox{\hyperlink{wld__accesspoint_8c_a37a482625cd113a0976c6091d41e6312}{wld\+\_\+vap\+\_\+is\+Dummy\+Vap}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a74e38c3dd12f2a453c05102f5872931b}{wld\+\_\+vap\+\_\+set\+Netdev\+Index}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, int32\+\_\+t net\+Dev\+Index)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a8d43b44376bc1df7a40638f8717ac115}{\+\_\+\+Access\+Point\+\_\+get\+Last\+Assoc\+Req}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\begin{DoxyCompactList}\small\item\em return the last assoc/reassoc frame sent by a station to a vap \end{DoxyCompactList}\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_ac03b8e6f569d47d99c0b7fb922d2c025}{\+\_\+\+Associated\+Device\+\_\+get\+Last\+Assoc\+Req}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a4936c36046b1d6c9530f5a03f5edcd17}{\+\_\+\+Access\+Point\+\_\+disassoc\+Station}} (amxd\+\_\+object\+\_\+t $\ast$object \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\begin{DoxyCompactList}\small\item\em Manually disassociates a station. \end{DoxyCompactList}\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a6a91d11338a7d2cff7d9f5f9b6ceeee3}{\+\_\+\+Access\+Point\+\_\+debug}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret\+Map)
+\item 
+\mbox{\hyperlink{wld__accesspoint_8c_a2bf9b229e593ad6d9a1fd9bd5eb0babe}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SSIDReference\char`\"{}, s\+\_\+set\+SSIDRef\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SSIDAdvertisement\+Enabled\char`\"{}, s\+\_\+set\+Ssid\+Adv\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Retry\+Limit\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}WMMEnable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Retry\+Limit\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}UAPSDEnable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MCEnable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}APBridge\+Disable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Isolation\+Enable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Bridge\+Interface\char`\"{}, s\+\_\+set\+Bridge\+Interface\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Default\+Device\+Type\char`\"{}, s\+\_\+set\+Default\+Device\+Type\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}IEEE80211k\+Enabled\char`\"{}, s\+\_\+set80211k\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}WDSEnable\char`\"{}, s\+\_\+set\+WDSEnable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MBOEnable\char`\"{}, s\+\_\+set\+MBOEnable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MBOAssoc\+Disallow\+Reason\char`\"{}, s\+\_\+set\+MBOAssoc\+Disallow\+Reason\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Multi\+APType\char`\"{}, s\+\_\+set\+Multi\+APType\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Multi\+APProfile\char`\"{}, s\+\_\+set\+Multi\+APProfile\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Multi\+APVlan\+Id\char`\"{}, s\+\_\+set\+Multi\+APVlan\+Id\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Ap\+Role\char`\"{}, s\+\_\+set\+Ap\+Role\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Reference\+Ap\+Relay\char`\"{}, s\+\_\+set\+Reference\+Ap\+Relay\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Max\+Associated\+Devices\char`\"{}, s\+\_\+set\+Max\+Stations\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Discovery\+Method\+Enabled\char`\"{}, s\+\_\+set\+Discovery\+Method\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}dbg\+APEnable\char`\"{}, s\+\_\+set\+Dbg\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}dbg\+APFile\char`\"{}, s\+\_\+set\+Dbg\+File\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MACFilter\+Address\+List\char`\"{}, wld\+\_\+ap\+Mac\+Filter\+\_\+set\+Address\+List\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Ap\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MACAddress\+Control\+Enabled\char`\"{}, s\+\_\+set\+MACAddress\+Control\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Sta\+Inactivity\+Timeout\char`\"{}, s\+\_\+set\+Sta\+Inactivity\+Timeout\+\_\+pwf),),.inst\+Added\+Cb=s\+\_\+add\+Ap\+Inst\+\_\+oaf,)
+\item 
+void \mbox{\hyperlink{wld__accesspoint_8c_a66b3a1ca06e65d59615cc0725d788e4d}{\+\_\+wld\+\_\+ap\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__accesspoint_8c_a362a5151b54f974d0613be0976f93794}{\+\_\+wld\+\_\+ap\+\_\+get\+Mlo\+Stats\+\_\+orf}} (amxd\+\_\+object\+\_\+t $\ast$const object, amxd\+\_\+param\+\_\+t $\ast$const param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const action\+\_\+retval, void $\ast$priv)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a2ee774bdf72d50ff6eb37c60141a16ce}{cstr\+\_\+\+AP\+\_\+status}} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a7b7b99e01d5f1e694653d3c092e8e15c}{cstr\+\_\+\+DEVICE\+\_\+\+TYPES}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Video\char`\"{}, \char`\"{}Data\char`\"{}, \char`\"{}Guest\char`\"{}, 0\}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_ab8697a60aec0321c6af23a000a976f6c}{cstr\+\_\+\+AP\+\_\+\+MFMode}} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_a3572179074e5b2844e86c469e0024f52}{cstr\+\_\+\+Multi\+APType}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Fronthaul\+BSS\char`\"{}, \char`\"{}Backhaul\+BSS\char`\"{}, \char`\"{}Backhaul\+STA\char`\"{}, 0\}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_af68e02fdd3215bf49b9113c5b9f049e2}{wld\+\_\+ap\+Role\+\_\+str}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Off\char`\"{}, \char`\"{}Main\char`\"{}, \char`\"{}Relay\char`\"{}, \char`\"{}Remote\char`\"{}, 0\}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_ab3def366a5846c6f111a59d9aa4b123f}{wld\+\_\+vendor\+Ie\+\_\+frame\+Type\+\_\+str}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Beacon\char`\"{}, \char`\"{}Probe\+Resp\char`\"{}, \char`\"{}Assoc\+Resp\char`\"{}, \char`\"{}Auth\+Resp\char`\"{}, \char`\"{}Probe\+Req\char`\"{}, \char`\"{}Assoc\+Req\char`\"{}, \char`\"{}Auth\+Req\char`\"{}\}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__accesspoint_8c_aac5d601b89691cb7e04535c8a040b452}{g\+\_\+str\+\_\+wld\+\_\+ap\+\_\+dm}} \mbox{[}$\,$\mbox{]} = \{\char`\"{}Default\char`\"{}, \char`\"{}Disabled\char`\"{}, \char`\"{}RNR\char`\"{}, \char`\"{}UPR\char`\"{}, \char`\"{}FILSDiscovery\char`\"{}\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__accesspoint_8c_a369266c24eacffb87046522897a570d5}\label{wld__accesspoint_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__accesspoint_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!ME@{ME}}
+\index{ME@{ME}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__accesspoint_8c_afbafff78ac5c4768c2feb4e067a47275}\label{wld__accesspoint_8c_afbafff78ac5c4768c2feb4e067a47275}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_\_CommitAccessPoint@{\_\_CommitAccessPoint}}
+\index{\_\_CommitAccessPoint@{\_\_CommitAccessPoint}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_\_CommitAccessPoint()}{\_\_CommitAccessPoint()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+\_\+\+Commit\+Access\+Point (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a332531e0daec0d02003394cd46efa711}\label{wld__accesspoint_8c_a332531e0daec0d02003394cd46efa711}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_\_VerifyAccessPoint@{\_\_VerifyAccessPoint}}
+\index{\_\_VerifyAccessPoint@{\_\_VerifyAccessPoint}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_\_VerifyAccessPoint()}{\_\_VerifyAccessPoint()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+\_\+\+Verify\+Access\+Point (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a6a91d11338a7d2cff7d9f5f9b6ceeee3}\label{wld__accesspoint_8c_a6a91d11338a7d2cff7d9f5f9b6ceeee3}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_AccessPoint\_debug@{\_AccessPoint\_debug}}
+\index{\_AccessPoint\_debug@{\_AccessPoint\_debug}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_AccessPoint\_debug()}{\_AccessPoint\_debug()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Access\+Point\+\_\+debug (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret\+Map }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a4936c36046b1d6c9530f5a03f5edcd17}\label{wld__accesspoint_8c_a4936c36046b1d6c9530f5a03f5edcd17}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_AccessPoint\_disassocStation@{\_AccessPoint\_disassocStation}}
+\index{\_AccessPoint\_disassocStation@{\_AccessPoint\_disassocStation}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_AccessPoint\_disassocStation()}{\_AccessPoint\_disassocStation()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Access\+Point\+\_\+disassoc\+Station (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+
+
+Manually disassociates a station. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mac} & The MAC address of the station to disassociate. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+amxd\+\_\+status\+\_\+t
+\begin{DoxyItemize}
+\item amxd\+\_\+status\+\_\+ok if the station was successfully disassociated.
+\item amxd\+\_\+status\+\_\+parameter\+\_\+not\+\_\+found if the MAC address is missing.
+\item A corresponding amxd status error if a hostapd error occurred. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__accesspoint_8c_a8d43b44376bc1df7a40638f8717ac115}\label{wld__accesspoint_8c_a8d43b44376bc1df7a40638f8717ac115}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_AccessPoint\_getLastAssocReq@{\_AccessPoint\_getLastAssocReq}}
+\index{\_AccessPoint\_getLastAssocReq@{\_AccessPoint\_getLastAssocReq}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_AccessPoint\_getLastAssocReq()}{\_AccessPoint\_getLastAssocReq()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Access\+Point\+\_\+get\+Last\+Assoc\+Req (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+
+
+return the last assoc/reassoc frame sent by a station to a vap 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & the accesspoint receiving the assoc/reassoc frame \\
+\hline
+{\em mac} & the station mac address \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ a variant map containing the sent assoc/reassoc frame by a station
+\begin{DoxyItemize}
+\item Otherwise
+\begin{DoxyItemize}
+\item amxd\+\_\+status\+\_\+parameter\+\_\+not\+\_\+found if mac is missing
+\item amxd\+\_\+status\+\_\+unknown\+\_\+error if no assoc/reassoc frame associated to mac is found 
+\end{DoxyItemize}
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__accesspoint_8c_ac03b8e6f569d47d99c0b7fb922d2c025}\label{wld__accesspoint_8c_ac03b8e6f569d47d99c0b7fb922d2c025}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_AssociatedDevice\_getLastAssocReq@{\_AssociatedDevice\_getLastAssocReq}}
+\index{\_AssociatedDevice\_getLastAssocReq@{\_AssociatedDevice\_getLastAssocReq}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_AssociatedDevice\_getLastAssocReq()}{\_AssociatedDevice\_getLastAssocReq()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Associated\+Device\+\_\+get\+Last\+Assoc\+Req (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a94faf0db100ce8fa343068f98d27bb5a}\label{wld__accesspoint_8c_a94faf0db100ce8fa343068f98d27bb5a}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_cleanStation@{\_cleanStation}}
+\index{\_cleanStation@{\_cleanStation}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_cleanStation()}{\_cleanStation()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+clean\+Station (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj\+\_\+\+AP,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a565c40f76417aa81fe391221ba8f6ead}\label{wld__accesspoint_8c_a565c40f76417aa81fe391221ba8f6ead}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_createVendorIE@{\_createVendorIE}}
+\index{\_createVendorIE@{\_createVendorIE}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_createVendorIE()}{\_createVendorIE()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+create\+Vendor\+IE (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a60f67f259b09b3eb73a1a27711a4846b}\label{wld__accesspoint_8c_a60f67f259b09b3eb73a1a27711a4846b}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_dbgClearInactiveEntries@{\_dbgClearInactiveEntries}}
+\index{\_dbgClearInactiveEntries@{\_dbgClearInactiveEntries}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_dbgClearInactiveEntries()}{\_dbgClearInactiveEntries()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+dbg\+Clear\+Inactive\+Entries (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a5dbb60169a0a10a18fa33e56c198a4d9}\label{wld__accesspoint_8c_a5dbb60169a0a10a18fa33e56c198a4d9}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_deleteVendorIE@{\_deleteVendorIE}}
+\index{\_deleteVendorIE@{\_deleteVendorIE}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_deleteVendorIE()}{\_deleteVendorIE()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+delete\+Vendor\+IE (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a87725ec2a1f9cf0ebaa895b752bf3280}\label{wld__accesspoint_8c_a87725ec2a1f9cf0ebaa895b752bf3280}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_kickStation@{\_kickStation}}
+\index{\_kickStation@{\_kickStation}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_kickStation()}{\_kickStation()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+kick\+Station (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj\+\_\+\+AP,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a7aa39657cfc7908eb91ccccd1e657ad2}\label{wld__accesspoint_8c_a7aa39657cfc7908eb91ccccd1e657ad2}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_kickStationReason@{\_kickStationReason}}
+\index{\_kickStationReason@{\_kickStationReason}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_kickStationReason()}{\_kickStationReason()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+kick\+Station\+Reason (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj\+\_\+\+AP,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_aa380831b7cf3262dcdb7b02465e72f71}\label{wld__accesspoint_8c_aa380831b7cf3262dcdb7b02465e72f71}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_validateWPSenable@{\_validateWPSenable}}
+\index{\_validateWPSenable@{\_validateWPSenable}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_validateWPSenable()}{\_validateWPSenable()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+validate\+WPSenable (\begin{DoxyParamCaption}\item[{amxd\+\_\+param\+\_\+t $\ast$}]{parameter }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a4b59c101568c7b050108d6b16835c17f}\label{wld__accesspoint_8c_a4b59c101568c7b050108d6b16835c17f}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_11r\_setConf\_ocf@{\_wld\_ap\_11r\_setConf\_ocf}}
+\index{\_wld\_ap\_11r\_setConf\_ocf@{\_wld\_ap\_11r\_setConf\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_11r\_setConf\_ocf()}{\_wld\_ap\_11r\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+11r\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a563714d6b7d5b59e49e03dd600f5d6ac}\label{wld__accesspoint_8c_a563714d6b7d5b59e49e03dd600f5d6ac}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_11u\_setConf\_ocf@{\_wld\_ap\_11u\_setConf\_ocf}}
+\index{\_wld\_ap\_11u\_setConf\_ocf@{\_wld\_ap\_11u\_setConf\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_11u\_setConf\_ocf()}{\_wld\_ap\_11u\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+11u\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_afae0379e629c3997b9359b4359b67dc8}\label{wld__accesspoint_8c_afae0379e629c3997b9359b4359b67dc8}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_addInstance\_oaf@{\_wld\_ap\_addInstance\_oaf}}
+\index{\_wld\_ap\_addInstance\_oaf@{\_wld\_ap\_addInstance\_oaf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_addInstance\_oaf()}{\_wld\_ap\_addInstance\_oaf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+add\+Instance\+\_\+oaf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{wld__accesspoint_8c_afae0379e629c3997b9359b4359b67dc8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__accesspoint_8c_a1b8809cc2f9ed4bd94de34227f2c62fb}\label{wld__accesspoint_8c_a1b8809cc2f9ed4bd94de34227f2c62fb}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_delInstance\_odf@{\_wld\_ap\_delInstance\_odf}}
+\index{\_wld\_ap\_delInstance\_odf@{\_wld\_ap\_delInstance\_odf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_delInstance\_odf()}{\_wld\_ap\_delInstance\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+del\+Instance\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{wld__accesspoint_8c_a1b8809cc2f9ed4bd94de34227f2c62fb_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__accesspoint_8c_a00ba7bee8dac8313f362e5eec61c82b0}\label{wld__accesspoint_8c_a00ba7bee8dac8313f362e5eec61c82b0}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_delVendorIE\_odf@{\_wld\_ap\_delVendorIE\_odf}}
+\index{\_wld\_ap\_delVendorIE\_odf@{\_wld\_ap\_delVendorIE\_odf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_delVendorIE\_odf()}{\_wld\_ap\_delVendorIE\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+del\+Vendor\+IE\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a362a5151b54f974d0613be0976f93794}\label{wld__accesspoint_8c_a362a5151b54f974d0613be0976f93794}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_getMloStats\_orf@{\_wld\_ap\_getMloStats\_orf}}
+\index{\_wld\_ap\_getMloStats\_orf@{\_wld\_ap\_getMloStats\_orf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_getMloStats\_orf()}{\_wld\_ap\_getMloStats\_orf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+get\+Mlo\+Stats\+\_\+orf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$const}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$const}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{action\+\_\+retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a66b3a1ca06e65d59615cc0725d788e4d}\label{wld__accesspoint_8c_a66b3a1ca06e65d59615cc0725d788e4d}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_setConf\_ocf@{\_wld\_ap\_setConf\_ocf}}
+\index{\_wld\_ap\_setConf\_ocf@{\_wld\_ap\_setConf\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setConf\_ocf()}{\_wld\_ap\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ad84107ca2cdb11a705354dc1b205b922}\label{wld__accesspoint_8c_ad84107ca2cdb11a705354dc1b205b922}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_setDriverConfig\_ocf@{\_wld\_ap\_setDriverConfig\_ocf}}
+\index{\_wld\_ap\_setDriverConfig\_ocf@{\_wld\_ap\_setDriverConfig\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setDriverConfig\_ocf()}{\_wld\_ap\_setDriverConfig\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Driver\+Config\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a4e9f68572edb45245f72f7a078730d0f}\label{wld__accesspoint_8c_a4e9f68572edb45245f72f7a078730d0f}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_setHotSpotConf\_ocf@{\_wld\_ap\_setHotSpotConf\_ocf}}
+\index{\_wld\_ap\_setHotSpotConf\_ocf@{\_wld\_ap\_setHotSpotConf\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setHotSpotConf\_ocf()}{\_wld\_ap\_setHotSpotConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Hot\+Spot\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_af791f194b09cb0c90f2febc69acdd0da}\label{wld__accesspoint_8c_af791f194b09cb0c90f2febc69acdd0da}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_setVendorIE\_ocf@{\_wld\_ap\_setVendorIE\_ocf}}
+\index{\_wld\_ap\_setVendorIE\_ocf@{\_wld\_ap\_setVendorIE\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setVendorIE\_ocf()}{\_wld\_ap\_setVendorIE\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Vendor\+IE\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a1fec48d8ba91367ec0d5eb0688331a0e}\label{wld__accesspoint_8c_a1fec48d8ba91367ec0d5eb0688331a0e}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_setVendorIEsConf\_ocf@{\_wld\_ap\_setVendorIEsConf\_ocf}}
+\index{\_wld\_ap\_setVendorIEsConf\_ocf@{\_wld\_ap\_setVendorIEsConf\_ocf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setVendorIEsConf\_ocf()}{\_wld\_ap\_setVendorIEsConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Vendor\+IEs\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a4588bb8175c3c799597cf5857164f4e0}\label{wld__accesspoint_8c_a4588bb8175c3c799597cf5857164f4e0}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_validateDiscoveryMethod\_pvf@{\_wld\_ap\_validateDiscoveryMethod\_pvf}}
+\index{\_wld\_ap\_validateDiscoveryMethod\_pvf@{\_wld\_ap\_validateDiscoveryMethod\_pvf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateDiscoveryMethod\_pvf()}{\_wld\_ap\_validateDiscoveryMethod\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Discovery\+Method\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a13a60b700608fb07761a65d7aaf73597}\label{wld__accesspoint_8c_a13a60b700608fb07761a65d7aaf73597}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_validateHotSpot2Requirements@{\_wld\_ap\_validateHotSpot2Requirements}}
+\index{\_wld\_ap\_validateHotSpot2Requirements@{\_wld\_ap\_validateHotSpot2Requirements}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateHotSpot2Requirements()}{\_wld\_ap\_validateHotSpot2Requirements()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Hot\+Spot2\+Requirements (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_abff4f0a65d33986cbe5b49b482aaeb88}\label{wld__accesspoint_8c_abff4f0a65d33986cbe5b49b482aaeb88}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_validateIEEE80211rEnabled\_pvf@{\_wld\_ap\_validateIEEE80211rEnabled\_pvf}}
+\index{\_wld\_ap\_validateIEEE80211rEnabled\_pvf@{\_wld\_ap\_validateIEEE80211rEnabled\_pvf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateIEEE80211rEnabled\_pvf()}{\_wld\_ap\_validateIEEE80211rEnabled\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+IEEE80211r\+Enabled\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$object}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a41f5b599434e8130f8bd6032b55397c8}\label{wld__accesspoint_8c_a41f5b599434e8130f8bd6032b55397c8}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!\_wld\_ap\_validateVendorIE\_ovf@{\_wld\_ap\_validateVendorIE\_ovf}}
+\index{\_wld\_ap\_validateVendorIE\_ovf@{\_wld\_ap\_validateVendorIE\_ovf}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateVendorIE\_ovf()}{\_wld\_ap\_validateVendorIE\_ovf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Vendor\+IE\+\_\+ovf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a3cb104df8c0384bccdadf42ba4931114}\label{wld__accesspoint_8c_a3cb104df8c0384bccdadf42ba4931114}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}}
+\index{SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_ASSERT\_STATIC()}{SWL\_ASSERT\_STATIC()}}
+{\footnotesize\ttfamily SWL\+\_\+\+ASSERT\+\_\+\+STATIC (\begin{DoxyParamCaption}\item[{SWL\+\_\+\+ARRAY\+\_\+\+SIZE(s\+\_\+assoc\+Table\+Names)}]{ = {\ttfamily =SWL\+\_\+ARRAY\+\_\+SIZE(assocTableTypes)},  }\item[{\char`\"{}s\+\_\+assoc\+Table\+Names not correctly defined\char`\"{}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ad6862fea2dd3bb22a0ccf4fe6af62969}\label{wld__accesspoint_8c_ad6862fea2dd3bb22a0ccf4fe6af62969}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap11r\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}FTOver\+DSEnable\char`\"{}, s\+\_\+set\+FTOver\+DSEnable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Mobility\+Domain\char`\"{}, s\+\_\+set\+Mobility\+Domain\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enabled\char`\"{}, s\+\_\+set80211r\+Enabled\+\_\+pwf),)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a414461588f4370c1d9e6aaec52ffe5ff}\label{wld__accesspoint_8c_a414461588f4370c1d9e6aaec52ffe5ff}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap11u\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Qo\+SMap\+Set\char`\"{}, s\+\_\+set\+Qos\+Map\+Set\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Interworking\+Enable\char`\"{}, s\+\_\+set\+Interworking\+Enable\+\_\+pwf),)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a2bf9b229e593ad6d9a1fd9bd5eb0babe}\label{wld__accesspoint_8c_a2bf9b229e593ad6d9a1fd9bd5eb0babe}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SSIDReference\char`\"{}, s\+\_\+set\+SSIDRef\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}SSIDAdvertisement\+Enabled\char`\"{}, s\+\_\+set\+Ssid\+Adv\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Retry\+Limit\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}WMMEnable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Retry\+Limit\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}UAPSDEnable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MCEnable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}APBridge\+Disable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Isolation\+Enable\char`\"{}, s\+\_\+set\+Ap\+Common\+Param\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Bridge\+Interface\char`\"{}, s\+\_\+set\+Bridge\+Interface\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Default\+Device\+Type\char`\"{}, s\+\_\+set\+Default\+Device\+Type\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}IEEE80211k\+Enabled\char`\"{}, s\+\_\+set80211k\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}WDSEnable\char`\"{}, s\+\_\+set\+WDSEnable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MBOEnable\char`\"{}, s\+\_\+set\+MBOEnable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MBOAssoc\+Disallow\+Reason\char`\"{}, s\+\_\+set\+MBOAssoc\+Disallow\+Reason\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Multi\+APType\char`\"{}, s\+\_\+set\+Multi\+APType\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Multi\+APProfile\char`\"{}, s\+\_\+set\+Multi\+APProfile\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Multi\+APVlan\+Id\char`\"{}, s\+\_\+set\+Multi\+APVlan\+Id\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Ap\+Role\char`\"{}, s\+\_\+set\+Ap\+Role\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Reference\+Ap\+Relay\char`\"{}, s\+\_\+set\+Reference\+Ap\+Relay\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Max\+Associated\+Devices\char`\"{}, s\+\_\+set\+Max\+Stations\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Discovery\+Method\+Enabled\char`\"{}, s\+\_\+set\+Discovery\+Method\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}dbg\+APEnable\char`\"{}, s\+\_\+set\+Dbg\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}dbg\+APFile\char`\"{}, s\+\_\+set\+Dbg\+File\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MACFilter\+Address\+List\char`\"{}, wld\+\_\+ap\+Mac\+Filter\+\_\+set\+Address\+List\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Ap\+Enable\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}MACAddress\+Control\+Enabled\char`\"{}, s\+\_\+set\+MACAddress\+Control\+Enabled\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Sta\+Inactivity\+Timeout\char`\"{}, s\+\_\+set\+Sta\+Inactivity\+Timeout\+\_\+pwf),)}]{,  }\item[{.}]{inst\+Added\+Cb = {\ttfamily s\+\_\+addApInst\+\_\+oaf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a7e35f8bb8985a0953304b18571c81b24}\label{wld__accesspoint_8c_a7e35f8bb8985a0953304b18571c81b24}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Driver\+Config\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setApDriverConfig\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a15609d0a6b4c4dce885d59a438c65eea}\label{wld__accesspoint_8c_a15609d0a6b4c4dce885d59a438c65eea}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Hot\+Spot\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Hot\+Spot\+Enable\+\_\+pwf))}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setHotSpotConf\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a07aba2cdfed7e26b322d8b22c95fcfc5}\label{wld__accesspoint_8c_a07aba2cdfed7e26b322d8b22c95fcfc5}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Vendor\+Ie\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{inst\+Added\+Cb = {\ttfamily s\+\_\+addVendorIE\+\_\+oaf},  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setVendorIEConf\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a54355a8ab80fdc6a8d7d204ac148381d}\label{wld__accesspoint_8c_a54355a8ab80fdc6a8d7d204ac148381d}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Vendor\+IEs\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+enable\+Vendor\+IEs\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a642b22142154111ec1a7a4e940efde67}\label{wld__accesspoint_8c_a642b22142154111ec1a7a4e940efde67}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!SyncData\_AP2OBJ@{SyncData\_AP2OBJ}}
+\index{SyncData\_AP2OBJ@{SyncData\_AP2OBJ}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{SyncData\_AP2OBJ()}{SyncData\_AP2OBJ()}}
+{\footnotesize\ttfamily void Sync\+Data\+\_\+\+AP2\+OBJ (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+IEEE80211r part
+
+Security part
+
+WPS Part\mbox{\Hypertarget{wld__accesspoint_8c_a518bdc8a44eebc328879b5ce0b273f46}\label{wld__accesspoint_8c_a518bdc8a44eebc328879b5ce0b273f46}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!t\_destroy\_handler\_AP@{t\_destroy\_handler\_AP}}
+\index{t\_destroy\_handler\_AP@{t\_destroy\_handler\_AP}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{t\_destroy\_handler\_AP()}{t\_destroy\_handler\_AP()}}
+{\footnotesize\ttfamily void t\+\_\+destroy\+\_\+handler\+\_\+\+AP (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ad6ac9d09e37a860bfe0c8e04a17ae26f}\label{wld__accesspoint_8c_ad6ac9d09e37a860bfe0c8e04a17ae26f}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_create@{wld\_ap\_create}}
+\index{wld\_ap\_create@{wld\_ap\_create}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_create()}{wld\_ap\_create()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+ap\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{vap\+Name,  }\item[{uint32\+\_\+t}]{idx }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_af004e111585e6f8914497280fd777148}\label{wld__accesspoint_8c_af004e111585e6f8914497280fd777148}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_destroy@{wld\_ap\_destroy}}
+\index{wld\_ap\_destroy@{wld\_ap\_destroy}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_destroy()}{wld\_ap\_destroy()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+This function Destroys the access point first deauthentify all associated stations, destroy vap then deletes the accesspoint. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{wld__accesspoint_8c_af004e111585e6f8914497280fd777148_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__accesspoint_8c_a9c0ac5b9abb07b27562626a9bca87a40}\label{wld__accesspoint_8c_a9c0ac5b9abb07b27562626a9bca87a40}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_doSync@{wld\_ap\_doSync}}
+\index{wld\_ap\_doSync@{wld\_ap\_doSync}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_doSync()}{wld\_ap\_doSync()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+do\+Sync (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a9db9974b933921d65334dc9359226f79}\label{wld__accesspoint_8c_a9db9974b933921d65334dc9359226f79}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_doWpsSync@{wld\_ap\_doWpsSync}}
+\index{wld\_ap\_doWpsSync@{wld\_ap\_doWpsSync}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_doWpsSync()}{wld\_ap\_doWpsSync()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+do\+Wps\+Sync (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_af3fa63549e102edd5b5c7940647ada19}\label{wld__accesspoint_8c_af3fa63549e102edd5b5c7940647ada19}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_fromIt@{wld\_ap\_fromIt}}
+\index{wld\_ap\_fromIt@{wld\_ap\_fromIt}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_fromIt()}{wld\_ap\_fromIt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+ap\+\_\+from\+It (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+it\+\_\+t $\ast$}]{it }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a2ec39b228a84f69591bd1ba237fec4d8}\label{wld__accesspoint_8c_a2ec39b228a84f69591bd1ba237fec4d8}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_fromObj@{wld\_ap\_fromObj}}
+\index{wld\_ap\_fromObj@{wld\_ap\_fromObj}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_fromObj()}{wld\_ap\_fromObj()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+ap\+\_\+from\+Obj (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{ap\+Obj }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=302pt]{wld__accesspoint_8c_a2ec39b228a84f69591bd1ba237fec4d8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__accesspoint_8c_afce1e4726856a8b3bec33a125230f48b}\label{wld__accesspoint_8c_afce1e4726856a8b3bec33a125230f48b}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_getDesiredState@{wld\_ap\_getDesiredState}}
+\index{wld\_ap\_getDesiredState@{wld\_ap\_getDesiredState}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_getDesiredState()}{wld\_ap\_getDesiredState()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+\_\+get\+Desired\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+Ap }\end{DoxyParamCaption})}
+
+Return whether the AP must be up (true) or down (false) regarding radio state\+:
+\begin{DoxyItemize}
+\item Check whether AP is enabled
+\item Check whether radio is up 
+\end{DoxyItemize}Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=349pt]{wld__accesspoint_8c_afce1e4726856a8b3bec33a125230f48b_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__accesspoint_8c_ae4f73e94499fd5c1efc5b44ef3f1cc25}\label{wld__accesspoint_8c_ae4f73e94499fd5c1efc5b44ef3f1cc25}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_getDiscoveryMethod@{wld\_ap\_getDiscoveryMethod}}
+\index{wld\_ap\_getDiscoveryMethod@{wld\_ap\_getDiscoveryMethod}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_getDiscoveryMethod()}{wld\_ap\_getDiscoveryMethod()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a0f62a7362b1ffe0dbb87a26959e94be1}{wld\+\_\+ap\+\_\+dm\+\_\+m}} wld\+\_\+ap\+\_\+get\+Discovery\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_aecb3b0988ff2af3267a7099450eb7eab}\label{wld__accesspoint_8c_aecb3b0988ff2af3267a7099450eb7eab}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_getLastAssocReq@{wld\_ap\_getLastAssocReq}}
+\index{wld\_ap\_getLastAssocReq@{wld\_ap\_getLastAssocReq}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_getLastAssocReq()}{wld\_ap\_getLastAssocReq()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ap\+\_\+get\+Last\+Assoc\+Req (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{mac\+Station,  }\item[{\mbox{\hyperlink{wld_8h_a48cc410733cdddc0c0938908b58afef1}{wld\+\_\+vap\+\_\+assoc\+Table\+Struct\+\_\+t}} $\ast$$\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+return the last assoc/reassoc frame sent by a station to a vap 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & the accesspoint receiving the assoc/reassoc frame \\
+\hline
+{\em mac\+Station} & the station mac address \\
+\hline
+{\em data} & contains the last assoc/reassoc tuple associated to mac\+Station if found \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK\+: if the last assoc/reassoc frame is found for the given station
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if p\+AP = NULL or mac\+Station = NULL or data = NULL
+\item SWL\+\_\+\+RC\+\_\+\+ERROR if no assoc/reassoc tuple associated to mac\+Station is found 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__accesspoint_8c_a3b7b07c1f733b83407a77ce16e8819a0}\label{wld__accesspoint_8c_a3b7b07c1f733b83407a77ce16e8819a0}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_getMaxNbrSta@{wld\_ap\_getMaxNbrSta}}
+\index{wld\_ap\_getMaxNbrSta@{wld\_ap\_getMaxNbrSta}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_getMaxNbrSta()}{wld\_ap\_getMaxNbrSta()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+ap\+\_\+get\+Max\+Nbr\+Sta (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a3a298ee15d3045b61de51082e8fd7040}\label{wld__accesspoint_8c_a3a298ee15d3045b61de51082e8fd7040}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_getVapByBssid@{wld\_ap\_getVapByBssid}}
+\index{wld\_ap\_getVapByBssid@{wld\_ap\_getVapByBssid}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_getVapByBssid()}{wld\_ap\_getVapByBssid()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+ap\+\_\+get\+Vap\+By\+Bssid (\begin{DoxyParamCaption}\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ab428602f652d0aa68389a62542a7dce5}\label{wld__accesspoint_8c_ab428602f652d0aa68389a62542a7dce5}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_getVapByName@{wld\_ap\_getVapByName}}
+\index{wld\_ap\_getVapByName@{wld\_ap\_getVapByName}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_getVapByName()}{wld\_ap\_getVapByName()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+ap\+\_\+get\+Vap\+By\+Name (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ac2ba6b224130b48d82fae374db31fb44}\label{wld__accesspoint_8c_ac2ba6b224130b48d82fae374db31fb44}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_initializeVendor@{wld\_ap\_initializeVendor}}
+\index{wld\_ap\_initializeVendor@{wld\_ap\_initializeVendor}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_initializeVendor()}{wld\_ap\_initializeVendor()}}
+{\footnotesize\ttfamily int wld\+\_\+ap\+\_\+initialize\+Vendor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{wld__types_8h_ab8730e67deabf11783e7117ae1925a6d}{T\+\_\+\+SSID}} $\ast$}]{p\+SSID }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ab2a0a5ff469aed01506de9a03534e7bc}\label{wld__accesspoint_8c_ab2a0a5ff469aed01506de9a03534e7bc}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_sendPairingNotification@{wld\_ap\_sendPairingNotification}}
+\index{wld\_ap\_sendPairingNotification@{wld\_ap\_sendPairingNotification}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_sendPairingNotification()}{wld\_ap\_sendPairingNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+send\+Pairing\+Notification (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{type,  }\item[{const char $\ast$}]{reason,  }\item[{const char $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ac47248d7ba172a71abc1935dfca11188}\label{wld__accesspoint_8c_ac47248d7ba172a71abc1935dfca11188}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_ap\_updateDiscoveryMethod@{wld\_ap\_updateDiscoveryMethod}}
+\index{wld\_ap\_updateDiscoveryMethod@{wld\_ap\_updateDiscoveryMethod}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_updateDiscoveryMethod()}{wld\_ap\_updateDiscoveryMethod()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+update\+Discovery\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a6d083c4182ce038f0c06452c69af5cb2}\label{wld__accesspoint_8c_a6d083c4182ce038f0c06452c69af5cb2}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_create\_associatedDevice@{wld\_create\_associatedDevice}}
+\index{wld\_create\_associatedDevice@{wld\_create\_associatedDevice}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_create\_associatedDevice()}{wld\_create\_associatedDevice()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$ wld\+\_\+create\+\_\+associated\+Device (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+create \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} and populate MACAddress and Name fields @\+Deprecated please use wld\+\_\+ad\+\_\+destroy\+\_\+associated\+Device instead \mbox{\Hypertarget{wld__accesspoint_8c_aa1c2398bfe5e0b58758ecedb52e22a19}\label{wld__accesspoint_8c_aa1c2398bfe5e0b58758ecedb52e22a19}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_destroy\_associatedDevice@{wld\_destroy\_associatedDevice}}
+\index{wld\_destroy\_associatedDevice@{wld\_destroy\_associatedDevice}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_destroy\_associatedDevice()}{wld\_destroy\_associatedDevice()}}
+{\footnotesize\ttfamily void wld\+\_\+destroy\+\_\+associated\+Device (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{int}]{index }\end{DoxyParamCaption})}
+
+free the \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} and remove it from the list @\+Deprecated please use wld\+\_\+ad\+\_\+destroy\+\_\+associated\+Device instead \mbox{\Hypertarget{wld__accesspoint_8c_a128dc3d9498c3fc7977e0bf7296e2a2d}\label{wld__accesspoint_8c_a128dc3d9498c3fc7977e0bf7296e2a2d}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_assoc\_update\_cuid@{wld\_vap\_assoc\_update\_cuid}}
+\index{wld\_vap\_assoc\_update\_cuid@{wld\_vap\_assoc\_update\_cuid}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_assoc\_update\_cuid()}{wld\_vap\_assoc\_update\_cuid()}}
+{\footnotesize\ttfamily bool wld\+\_\+vap\+\_\+assoc\+\_\+update\+\_\+cuid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac,  }\item[{char $\ast$}]{cuid,  }\item[{int len}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ad2dc1dcd75acb779c27dee718badad7e}\label{wld__accesspoint_8c_ad2dc1dcd75acb779c27dee718badad7e}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_cleanup\_stationlist@{wld\_vap\_cleanup\_stationlist}}
+\index{wld\_vap\_cleanup\_stationlist@{wld\_vap\_cleanup\_stationlist}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_cleanup\_stationlist()}{wld\_vap\_cleanup\_stationlist()}}
+{\footnotesize\ttfamily bool wld\+\_\+vap\+\_\+cleanup\+\_\+stationlist (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a6f8eb704c7c6823f0610f0480815863c}\label{wld__accesspoint_8c_a6f8eb704c7c6823f0610f0480815863c}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_get\_existing\_station@{wld\_vap\_get\_existing\_station}}
+\index{wld\_vap\_get\_existing\_station@{wld\_vap\_get\_existing\_station}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_get\_existing\_station()}{wld\_vap\_get\_existing\_station()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$ wld\+\_\+vap\+\_\+get\+\_\+existing\+\_\+station (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Address }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=338pt]{wld__accesspoint_8c_a6f8eb704c7c6823f0610f0480815863c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__accesspoint_8c_adf12f1b4eae79413592bdda76aaa7b00}\label{wld__accesspoint_8c_adf12f1b4eae79413592bdda76aaa7b00}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_get\_vap@{wld\_vap\_get\_vap}}
+\index{wld\_vap\_get\_vap@{wld\_vap\_get\_vap}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_get\_vap()}{wld\_vap\_get\_vap()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wld\+\_\+vap\+\_\+get\+\_\+vap (\begin{DoxyParamCaption}\item[{const char $\ast$}]{ifname }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a174dab57530ee4e9252eeeb078e8d425}\label{wld__accesspoint_8c_a174dab57530ee4e9252eeeb078e8d425}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_getExtModData@{wld\_vap\_getExtModData}}
+\index{wld\_vap\_getExtModData@{wld\_vap\_getExtModData}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_getExtModData()}{wld\_vap\_getExtModData()}}
+{\footnotesize\ttfamily void $\ast$ wld\+\_\+vap\+\_\+get\+Ext\+Mod\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a37a482625cd113a0976c6091d41e6312}\label{wld__accesspoint_8c_a37a482625cd113a0976c6091d41e6312}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_isDummyVap@{wld\_vap\_isDummyVap}}
+\index{wld\_vap\_isDummyVap@{wld\_vap\_isDummyVap}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_isDummyVap()}{wld\_vap\_isDummyVap()}}
+{\footnotesize\ttfamily bool wld\+\_\+vap\+\_\+is\+Dummy\+Vap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+Certain vendors need dummy vaps, which are not relevant for configuration. This is to allow inspection whether a vap is a dummy. \mbox{\Hypertarget{wld__accesspoint_8c_a84c5c3148b7366e6db8dc847b538b6a8}\label{wld__accesspoint_8c_a84c5c3148b7366e6db8dc847b538b6a8}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_notifyActionFrame@{wld\_vap\_notifyActionFrame}}
+\index{wld\_vap\_notifyActionFrame@{wld\_vap\_notifyActionFrame}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_notifyActionFrame()}{wld\_vap\_notifyActionFrame()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vap\+\_\+notify\+Action\+Frame (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{frame }\end{DoxyParamCaption})}
+
+Called to notify the receive of 80211 action frame \mbox{\Hypertarget{wld__accesspoint_8c_adf8884ba65d1765a1f17ac847262eb0e}\label{wld__accesspoint_8c_adf8884ba65d1765a1f17ac847262eb0e}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_notifyDeauthDisassocFrame@{wld\_vap\_notifyDeauthDisassocFrame}}
+\index{wld\_vap\_notifyDeauthDisassocFrame@{wld\_vap\_notifyDeauthDisassocFrame}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_notifyDeauthDisassocFrame()}{wld\_vap\_notifyDeauthDisassocFrame()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vap\+\_\+notify\+Deauth\+Disassoc\+Frame (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{event\+Name,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{sta\+Mac\+Address,  }\item[{swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne}]{reason,  }\item[{bool}]{is\+Tx\+Frame }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a0dfab75f0043d48fa4eeab7b22b1898f}\label{wld__accesspoint_8c_a0dfab75f0043d48fa4eeab7b22b1898f}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_registerExtModData@{wld\_vap\_registerExtModData}}
+\index{wld\_vap\_registerExtModData@{wld\_vap\_registerExtModData}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_registerExtModData()}{wld\_vap\_registerExtModData()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vap\+\_\+register\+Ext\+Mod\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id,  }\item[{void $\ast$}]{ext\+Mod\+Data,  }\item[{\mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\+\_\+ext\+Mod\+\_\+delete\+Data\+\_\+dcf}}}]{delete\+Handler }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_afc67f47d34504c599b64beebf7ba8d14}\label{wld__accesspoint_8c_afc67f47d34504c599b64beebf7ba8d14}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_saveAssocReq@{wld\_vap\_saveAssocReq}}
+\index{wld\_vap\_saveAssocReq@{wld\_vap\_saveAssocReq}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_saveAssocReq()}{wld\_vap\_saveAssocReq()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vap\+\_\+save\+Assoc\+Req (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{swl\+\_\+bit8\+\_\+t $\ast$}]{frame\+Bin,  }\item[{size\+\_\+t}]{frame\+Len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a0578ad030382b796f87c85d28aa4a1f2}\label{wld__accesspoint_8c_a0578ad030382b796f87c85d28aa4a1f2}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_sendActionEvent@{wld\_vap\_sendActionEvent}}
+\index{wld\_vap\_sendActionEvent@{wld\_vap\_sendActionEvent}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_sendActionEvent()}{wld\_vap\_sendActionEvent()}}
+{\footnotesize\ttfamily void wld\+\_\+vap\+\_\+send\+Action\+Event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{wld_8h_a261603f948ddc3cad71b190e5b8c5dcc}{wld\+\_\+vap\+\_\+action\+Event\+\_\+e}}}]{action\+Event,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a74e38c3dd12f2a453c05102f5872931b}\label{wld__accesspoint_8c_a74e38c3dd12f2a453c05102f5872931b}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_setNetdevIndex@{wld\_vap\_setNetdevIndex}}
+\index{wld\_vap\_setNetdevIndex@{wld\_vap\_setNetdevIndex}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_setNetdevIndex()}{wld\_vap\_setNetdevIndex()}}
+{\footnotesize\ttfamily void wld\+\_\+vap\+\_\+set\+Netdev\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{int32\+\_\+t}]{net\+Dev\+Index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a7eb994300b262efccd17853636c08588}\label{wld__accesspoint_8c_a7eb994300b262efccd17853636c08588}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_sync\_assoclist@{wld\_vap\_sync\_assoclist}}
+\index{wld\_vap\_sync\_assoclist@{wld\_vap\_sync\_assoclist}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_sync\_assoclist()}{wld\_vap\_sync\_assoclist()}}
+{\footnotesize\ttfamily bool wld\+\_\+vap\+\_\+sync\+\_\+assoclist (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_acb475ba57764e8e2cb09235c10af7199}\label{wld__accesspoint_8c_acb475ba57764e8e2cb09235c10af7199}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_sync\_device@{wld\_vap\_sync\_device}}
+\index{wld\_vap\_sync\_device@{wld\_vap\_sync\_device}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_sync\_device()}{wld\_vap\_sync\_device()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vap\+\_\+sync\+\_\+device (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a03a789280ba58d3b51afcb25fb74d4e2}\label{wld__accesspoint_8c_a03a789280ba58d3b51afcb25fb74d4e2}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_syncNrDev@{wld\_vap\_syncNrDev}}
+\index{wld\_vap\_syncNrDev@{wld\_vap\_syncNrDev}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_syncNrDev()}{wld\_vap\_syncNrDev()}}
+{\footnotesize\ttfamily void wld\+\_\+vap\+\_\+sync\+Nr\+Dev (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a08ae4e8d23a93e690e7e8504dc9ff1fb}\label{wld__accesspoint_8c_a08ae4e8d23a93e690e7e8504dc9ff1fb}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_unregisterExtModData@{wld\_vap\_unregisterExtModData}}
+\index{wld\_vap\_unregisterExtModData@{wld\_vap\_unregisterExtModData}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_unregisterExtModData()}{wld\_vap\_unregisterExtModData()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vap\+\_\+unregister\+Ext\+Mod\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a4fd5cd2c4e0b3c9a96e271f236b1e6bc}\label{wld__accesspoint_8c_a4fd5cd2c4e0b3c9a96e271f236b1e6bc}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vap\_updateState@{wld\_vap\_updateState}}
+\index{wld\_vap\_updateState@{wld\_vap\_updateState}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vap\_updateState()}{wld\_vap\_updateState()}}
+{\footnotesize\ttfamily void wld\+\_\+vap\+\_\+update\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__accesspoint_8c_ab8697a60aec0321c6af23a000a976f6c}\label{wld__accesspoint_8c_ab8697a60aec0321c6af23a000a976f6c}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!cstr\_AP\_MFMode@{cstr\_AP\_MFMode}}
+\index{cstr\_AP\_MFMode@{cstr\_AP\_MFMode}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_AP\_MFMode}{cstr\_AP\_MFMode}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+AP\+\_\+\+MFMode\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{\textcolor{stringliteral}{"{}Off"{}}, \textcolor{stringliteral}{"{}WhiteList"{}}, \textcolor{stringliteral}{"{}BlackList"{}},}
+\DoxyCodeLine{    0\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__accesspoint_8c_a2ee774bdf72d50ff6eb37c60141a16ce}\label{wld__accesspoint_8c_a2ee774bdf72d50ff6eb37c60141a16ce}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!cstr\_AP\_status@{cstr\_AP\_status}}
+\index{cstr\_AP\_status@{cstr\_AP\_status}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_AP\_status}{cstr\_AP\_status}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+AP\+\_\+status\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{\textcolor{stringliteral}{"{}Disabled"{}}, \textcolor{stringliteral}{"{}Enabled"{}}, \textcolor{stringliteral}{"{}Error\_Misconfigured"{}}, \textcolor{stringliteral}{"{}Error"{}},}
+\DoxyCodeLine{    0\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__accesspoint_8c_a7b7b99e01d5f1e694653d3c092e8e15c}\label{wld__accesspoint_8c_a7b7b99e01d5f1e694653d3c092e8e15c}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!cstr\_DEVICE\_TYPES@{cstr\_DEVICE\_TYPES}}
+\index{cstr\_DEVICE\_TYPES@{cstr\_DEVICE\_TYPES}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_DEVICE\_TYPES}{cstr\_DEVICE\_TYPES}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+DEVICE\+\_\+\+TYPES\mbox{[}$\,$\mbox{]} = \{\char`\"{}Video\char`\"{}, \char`\"{}Data\char`\"{}, \char`\"{}Guest\char`\"{}, 0\}}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_a3572179074e5b2844e86c469e0024f52}\label{wld__accesspoint_8c_a3572179074e5b2844e86c469e0024f52}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!cstr\_MultiAPType@{cstr\_MultiAPType}}
+\index{cstr\_MultiAPType@{cstr\_MultiAPType}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{cstr\_MultiAPType}{cstr\_MultiAPType}}
+{\footnotesize\ttfamily const char$\ast$ cstr\+\_\+\+Multi\+APType\mbox{[}$\,$\mbox{]} = \{\char`\"{}Fronthaul\+BSS\char`\"{}, \char`\"{}Backhaul\+BSS\char`\"{}, \char`\"{}Backhaul\+STA\char`\"{}, 0\}}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_aac5d601b89691cb7e04535c8a040b452}\label{wld__accesspoint_8c_aac5d601b89691cb7e04535c8a040b452}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!g\_str\_wld\_ap\_dm@{g\_str\_wld\_ap\_dm}}
+\index{g\_str\_wld\_ap\_dm@{g\_str\_wld\_ap\_dm}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{g\_str\_wld\_ap\_dm}{g\_str\_wld\_ap\_dm}}
+{\footnotesize\ttfamily const char$\ast$ g\+\_\+str\+\_\+wld\+\_\+ap\+\_\+dm\mbox{[}$\,$\mbox{]} = \{\char`\"{}Default\char`\"{}, \char`\"{}Disabled\char`\"{}, \char`\"{}RNR\char`\"{}, \char`\"{}UPR\char`\"{}, \char`\"{}FILSDiscovery\char`\"{}\}}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_af68e02fdd3215bf49b9113c5b9f049e2}\label{wld__accesspoint_8c_af68e02fdd3215bf49b9113c5b9f049e2}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_apRole\_str@{wld\_apRole\_str}}
+\index{wld\_apRole\_str@{wld\_apRole\_str}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRole\_str}{wld\_apRole\_str}}
+{\footnotesize\ttfamily const char$\ast$ wld\+\_\+ap\+Role\+\_\+str\mbox{[}$\,$\mbox{]} = \{\char`\"{}Off\char`\"{}, \char`\"{}Main\char`\"{}, \char`\"{}Relay\char`\"{}, \char`\"{}Remote\char`\"{}, 0\}}
+
+\mbox{\Hypertarget{wld__accesspoint_8c_ab3def366a5846c6f111a59d9aa4b123f}\label{wld__accesspoint_8c_ab3def366a5846c6f111a59d9aa4b123f}} 
+\index{wld\_accesspoint.c@{wld\_accesspoint.c}!wld\_vendorIe\_frameType\_str@{wld\_vendorIe\_frameType\_str}}
+\index{wld\_vendorIe\_frameType\_str@{wld\_vendorIe\_frameType\_str}!wld\_accesspoint.c@{wld\_accesspoint.c}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorIe\_frameType\_str}{wld\_vendorIe\_frameType\_str}}
+{\footnotesize\ttfamily const char$\ast$ wld\+\_\+vendor\+Ie\+\_\+frame\+Type\+\_\+str\mbox{[}$\,$\mbox{]} = \{\char`\"{}Beacon\char`\"{}, \char`\"{}Probe\+Resp\char`\"{}, \char`\"{}Assoc\+Resp\char`\"{}, \char`\"{}Auth\+Resp\char`\"{}, \char`\"{}Probe\+Req\char`\"{}, \char`\"{}Assoc\+Req\char`\"{}, \char`\"{}Auth\+Req\char`\"{}\}}
+

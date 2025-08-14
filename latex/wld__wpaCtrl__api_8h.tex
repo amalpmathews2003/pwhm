@@ -1,0 +1,394 @@
+\hypertarget{wld__wpaCtrl__api_8h}{}\doxysection{include/wld/wld\+\_\+wpa\+Ctrl\+\_\+api.h File Reference}
+\label{wld__wpaCtrl__api_8h}\index{include/wld/wld\_wpaCtrl\_api.h@{include/wld/wld\_wpaCtrl\_api.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Ctrl\+\_\+api.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=326pt]{wld__wpaCtrl__api_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__api_8h_aa5af1af6865b067763d5df7f2b2f6dc8}{wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, const char $\ast$cmd)
+\begin{DoxyCompactList}\small\item\em send command to wap\+\_\+ctrl server \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__api_8h_af72e06b0fb8f6c241542ea502a4bb50e}{wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Synced}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, const char $\ast$cmd, char $\ast$reply, size\+\_\+t reply\+Len)
+\begin{DoxyCompactList}\small\item\em send command to wpa\+\_\+ctrl server and wait for the reply \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__api_8h_a8ea828db9ee5b8b2b53edad1f332c249}{wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Check\+Response}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, char $\ast$cmd, char $\ast$expected\+Response)
+\begin{DoxyCompactList}\small\item\em send synchronous command to wpa\+\_\+ctrl server and check the received reply within default delay (1s) \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__api_8h_a49de62b20f7f9804ee70a5fc50f6724d}{wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Check\+Response\+Ext}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, char $\ast$cmd, char $\ast$expected\+Response, uint32\+\_\+t tm\+Out\+MSec)
+\begin{DoxyCompactList}\small\item\em send synchronous command to wpa\+\_\+ctrl server and check the received reply within a defined delay \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__api_8h_ae0a540ffcdf6308c6a9d4b25218f1129}{wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Fmt\+Check\+Response}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, char $\ast$expected\+Response, const char $\ast$cmd\+Format,...)
+\begin{DoxyCompactList}\small\item\em send formatted command to wpa\+\_\+ctrl server over established or temporary connection and check the received reply \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__api_8h_af5a74650770b378805df194c8cc4f52b}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Sync\+Cmd\+Param\+Val}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, const char $\ast$cmd, const char $\ast$key, char $\ast$val\+Str, size\+\_\+t val\+Str\+Size)
+\begin{DoxyCompactList}\small\item\em send synchronous command to wpa\+\_\+ctrl server and check a parameter value in the reply \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__api_8h_aaca025bf637748df9afed9402b457a70}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Sync\+Cmd\+Param\+Val\+Int32\+Def}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface, const char $\ast$cmd, const char $\ast$key, int32\+\_\+t $\ast$p\+Ret\+Val, int32\+\_\+t def\+Val)
+\begin{DoxyCompactList}\small\item\em send synchronous command to wpa\+\_\+ctrl server and convert a parameter value in the reply (string in base 10) to int32 or return default value \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__wpaCtrl__api_8h_a5239c4a77e69eb53d45d64e9c4d8965e}{wld\+\_\+wpa\+Ctrl\+\_\+process\+Msg}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Interface, char $\ast$msg\+Data, size\+\_\+t len)
+\begin{DoxyCompactList}\small\item\em process msg\+Data received from wpa\+\_\+ctrl server \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__api_8h_a379089510626b43f9386a6db71f4a3ef}{wld\+\_\+wpa\+Ctrl\+\_\+check\+Sock\+Path}} (const char $\ast$sock\+Path)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__api_8h_a71bdfd4428fb221814547fbeb4ba9152}{wld\+\_\+wpa\+Ctrl\+\_\+query\+To\+Sock}} (const char $\ast$server\+Path, const char $\ast$sock\+Name, const char $\ast$cmd, char $\ast$reply, size\+\_\+t reply\+Len)
+\item 
+size\+\_\+t \mbox{\hyperlink{wld__wpaCtrl__api_8h_ab5b29b7ce5f29ef5dfbe951e5b700428}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Max\+Msg\+Len}} ()
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__api_8h_afc3249172fc93eeedd88b07133b69b55}{wld\+\_\+wpa\+Ctrl\+\_\+set\+Max\+Msg\+Len}} (size\+\_\+t msg\+Len)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_a379089510626b43f9386a6db71f4a3ef}\label{wld__wpaCtrl__api_8h_a379089510626b43f9386a6db71f4a3ef}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_checkSockPath@{wld\_wpaCtrl\_checkSockPath}}
+\index{wld\_wpaCtrl\_checkSockPath@{wld\_wpaCtrl\_checkSockPath}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_checkSockPath()}{wld\_wpaCtrl\_checkSockPath()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+check\+Sock\+Path (\begin{DoxyParamCaption}\item[{const char $\ast$}]{sock\+Path }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a379089510626b43f9386a6db71f4a3ef_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_ab5b29b7ce5f29ef5dfbe951e5b700428}\label{wld__wpaCtrl__api_8h_ab5b29b7ce5f29ef5dfbe951e5b700428}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_getMaxMsgLen@{wld\_wpaCtrl\_getMaxMsgLen}}
+\index{wld\_wpaCtrl\_getMaxMsgLen@{wld\_wpaCtrl\_getMaxMsgLen}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getMaxMsgLen()}{wld\_wpaCtrl\_getMaxMsgLen()}}
+{\footnotesize\ttfamily size\+\_\+t wld\+\_\+wpa\+Ctrl\+\_\+get\+Max\+Msg\+Len (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_ab5b29b7ce5f29ef5dfbe951e5b700428_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_af5a74650770b378805df194c8cc4f52b}\label{wld__wpaCtrl__api_8h_af5a74650770b378805df194c8cc4f52b}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_getSyncCmdParamVal@{wld\_wpaCtrl\_getSyncCmdParamVal}}
+\index{wld\_wpaCtrl\_getSyncCmdParamVal@{wld\_wpaCtrl\_getSyncCmdParamVal}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getSyncCmdParamVal()}{wld\_wpaCtrl\_getSyncCmdParamVal()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+get\+Sync\+Cmd\+Param\+Val (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{const char $\ast$}]{cmd,  }\item[{const char $\ast$}]{key,  }\item[{char $\ast$}]{val\+Str,  }\item[{size\+\_\+t}]{val\+Str\+Size }\end{DoxyParamCaption})}
+
+
+
+send synchronous command to wpa\+\_\+ctrl server and check a parameter value in the reply 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em cmd} & \+: string command to be sent \\
+\hline
+{\em key} & \+: parameter name to be fetched in the reply (key=value) \\
+\hline
+{\em val\+Str} & \+: buffer where to store the parameter value \\
+\hline
+{\em val\+Str\+Size} & \+: max length of parameter value\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the command is answered, false otherwise 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_af5a74650770b378805df194c8cc4f52b_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_af5a74650770b378805df194c8cc4f52b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_aaca025bf637748df9afed9402b457a70}\label{wld__wpaCtrl__api_8h_aaca025bf637748df9afed9402b457a70}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_getSyncCmdParamValInt32Def@{wld\_wpaCtrl\_getSyncCmdParamValInt32Def}}
+\index{wld\_wpaCtrl\_getSyncCmdParamValInt32Def@{wld\_wpaCtrl\_getSyncCmdParamValInt32Def}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getSyncCmdParamValInt32Def()}{wld\_wpaCtrl\_getSyncCmdParamValInt32Def()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+get\+Sync\+Cmd\+Param\+Val\+Int32\+Def (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{const char $\ast$}]{cmd,  }\item[{const char $\ast$}]{key,  }\item[{int32\+\_\+t $\ast$}]{p\+Ret\+Val,  }\item[{int32\+\_\+t}]{def\+Val }\end{DoxyParamCaption})}
+
+
+
+send synchronous command to wpa\+\_\+ctrl server and convert a parameter value in the reply (string in base 10) to int32 or return default value 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em cmd} & \+: string command to be sent \\
+\hline
+{\em key} & \+: parameter name to be fetched in the reply (key=value) \\
+\hline
+{\em p\+Ret\+Val} & pointer to resulting int value \\
+\hline
+{\em def\+Val} & \+: default value returned on failure\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+converted int32 value or def\+Val on failure 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_aaca025bf637748df9afed9402b457a70_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_a5239c4a77e69eb53d45d64e9c4d8965e}\label{wld__wpaCtrl__api_8h_a5239c4a77e69eb53d45d64e9c4d8965e}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_processMsg@{wld\_wpaCtrl\_processMsg}}
+\index{wld\_wpaCtrl\_processMsg@{wld\_wpaCtrl\_processMsg}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_processMsg()}{wld\_wpaCtrl\_processMsg()}}
+{\footnotesize\ttfamily void wld\+\_\+wpa\+Ctrl\+\_\+process\+Msg (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Interface,  }\item[{char $\ast$}]{msg\+Data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+
+
+process msg\+Data received from wpa\+\_\+ctrl server 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Interface} & Pointer to source interface \\
+\hline
+{\em msg\+Data} & the event received\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a5239c4a77e69eb53d45d64e9c4d8965e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a5239c4a77e69eb53d45d64e9c4d8965e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_a71bdfd4428fb221814547fbeb4ba9152}\label{wld__wpaCtrl__api_8h_a71bdfd4428fb221814547fbeb4ba9152}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_queryToSock@{wld\_wpaCtrl\_queryToSock}}
+\index{wld\_wpaCtrl\_queryToSock@{wld\_wpaCtrl\_queryToSock}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_queryToSock()}{wld\_wpaCtrl\_queryToSock()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+query\+To\+Sock (\begin{DoxyParamCaption}\item[{const char $\ast$}]{server\+Path,  }\item[{const char $\ast$}]{sock\+Name,  }\item[{const char $\ast$}]{cmd,  }\item[{char $\ast$}]{reply,  }\item[{size\+\_\+t}]{reply\+Len }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a71bdfd4428fb221814547fbeb4ba9152_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a71bdfd4428fb221814547fbeb4ba9152_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_aa5af1af6865b067763d5df7f2b2f6dc8}\label{wld__wpaCtrl__api_8h_aa5af1af6865b067763d5df7f2b2f6dc8}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_sendCmd@{wld\_wpaCtrl\_sendCmd}}
+\index{wld\_wpaCtrl\_sendCmd@{wld\_wpaCtrl\_sendCmd}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_sendCmd()}{wld\_wpaCtrl\_sendCmd()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{const char $\ast$}]{cmd }\end{DoxyParamCaption})}
+
+
+
+send command to wap\+\_\+ctrl server 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em cmd} & \+:string command to be sent\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the command is successfully sent. false Otherwise (invalid param/state, or partial sending) 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_aa5af1af6865b067763d5df7f2b2f6dc8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_a8ea828db9ee5b8b2b53edad1f332c249}\label{wld__wpaCtrl__api_8h_a8ea828db9ee5b8b2b53edad1f332c249}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_sendCmdCheckResponse@{wld\_wpaCtrl\_sendCmdCheckResponse}}
+\index{wld\_wpaCtrl\_sendCmdCheckResponse@{wld\_wpaCtrl\_sendCmdCheckResponse}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_sendCmdCheckResponse()}{wld\_wpaCtrl\_sendCmdCheckResponse()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Check\+Response (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{char $\ast$}]{cmd,  }\item[{char $\ast$}]{expected\+Response }\end{DoxyParamCaption})}
+
+
+
+send synchronous command to wpa\+\_\+ctrl server and check the received reply within default delay (1s) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em cmd} & \+: string command to be sent \\
+\hline
+{\em expected\+Response} & \+: string expected reply\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the command is answered as expected, false otherwise 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a8ea828db9ee5b8b2b53edad1f332c249_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_a49de62b20f7f9804ee70a5fc50f6724d}\label{wld__wpaCtrl__api_8h_a49de62b20f7f9804ee70a5fc50f6724d}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_sendCmdCheckResponseExt@{wld\_wpaCtrl\_sendCmdCheckResponseExt}}
+\index{wld\_wpaCtrl\_sendCmdCheckResponseExt@{wld\_wpaCtrl\_sendCmdCheckResponseExt}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_sendCmdCheckResponseExt()}{wld\_wpaCtrl\_sendCmdCheckResponseExt()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Check\+Response\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{char $\ast$}]{cmd,  }\item[{char $\ast$}]{expected\+Response,  }\item[{uint32\+\_\+t}]{tm\+Out\+MSec }\end{DoxyParamCaption})}
+
+
+
+send synchronous command to wpa\+\_\+ctrl server and check the received reply within a defined delay 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em cmd} & \+: string command to be sent \\
+\hline
+{\em expected\+Response} & \+: string expected reply \\
+\hline
+{\em tm\+Out\+MSec} & sync cmd timeout duration in milliseconds\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the command is answered as expected, false otherwise 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a49de62b20f7f9804ee70a5fc50f6724d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_a49de62b20f7f9804ee70a5fc50f6724d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_ae0a540ffcdf6308c6a9d4b25218f1129}\label{wld__wpaCtrl__api_8h_ae0a540ffcdf6308c6a9d4b25218f1129}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_sendCmdFmtCheckResponse@{wld\_wpaCtrl\_sendCmdFmtCheckResponse}}
+\index{wld\_wpaCtrl\_sendCmdFmtCheckResponse@{wld\_wpaCtrl\_sendCmdFmtCheckResponse}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_sendCmdFmtCheckResponse()}{wld\_wpaCtrl\_sendCmdFmtCheckResponse()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Fmt\+Check\+Response (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{char $\ast$}]{expected\+Response,  }\item[{const char $\ast$}]{cmd\+Format,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+send formatted command to wpa\+\_\+ctrl server over established or temporary connection and check the received reply 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em expected\+Response} & \+: string expected reply \\
+\hline
+{\em cmd\+Format} & \+: string command format to be sent\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK when the command is answered as expected SWL\+\_\+\+RC\+\_\+\+ERROR when the command is rejected SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+STATE when the wpactrl iface link is not ready SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM when the command format is not applicable 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_ae0a540ffcdf6308c6a9d4b25218f1129_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_ae0a540ffcdf6308c6a9d4b25218f1129_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_af72e06b0fb8f6c241542ea502a4bb50e}\label{wld__wpaCtrl__api_8h_af72e06b0fb8f6c241542ea502a4bb50e}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_sendCmdSynced@{wld\_wpaCtrl\_sendCmdSynced}}
+\index{wld\_wpaCtrl\_sendCmdSynced@{wld\_wpaCtrl\_sendCmdSynced}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_sendCmdSynced()}{wld\_wpaCtrl\_sendCmdSynced()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+send\+Cmd\+Synced (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface,  }\item[{const char $\ast$}]{cmd,  }\item[{char $\ast$}]{reply,  }\item[{size\+\_\+t}]{reply\+\_\+len }\end{DoxyParamCaption})}
+
+
+
+send command to wpa\+\_\+ctrl server and wait for the reply 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Iface} & \+:the wpa\+\_\+ctrl interface to which the command is sent \\
+\hline
+{\em cmd} & \+: string command to be sent \\
+\hline
+{\em reply} & \+: buffer where to store the received answer \\
+\hline
+{\em reply\+\_\+len} & \+: max length of reply\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the command is answered, false otherwise 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_af72e06b0fb8f6c241542ea502a4bb50e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__api_8h_af72e06b0fb8f6c241542ea502a4bb50e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__api_8h_afc3249172fc93eeedd88b07133b69b55}\label{wld__wpaCtrl__api_8h_afc3249172fc93eeedd88b07133b69b55}} 
+\index{wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}!wld\_wpaCtrl\_setMaxMsgLen@{wld\_wpaCtrl\_setMaxMsgLen}}
+\index{wld\_wpaCtrl\_setMaxMsgLen@{wld\_wpaCtrl\_setMaxMsgLen}!wld\_wpaCtrl\_api.h@{wld\_wpaCtrl\_api.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_setMaxMsgLen()}{wld\_wpaCtrl\_setMaxMsgLen()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+set\+Max\+Msg\+Len (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{msg\+Len }\end{DoxyParamCaption})}
+

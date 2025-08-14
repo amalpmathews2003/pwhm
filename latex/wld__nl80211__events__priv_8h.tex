@@ -1,0 +1,70 @@
+\hypertarget{wld__nl80211__events__priv_8h}{}\doxysection{include\+\_\+priv/nl80211/wld\+\_\+nl80211\+\_\+events\+\_\+priv.h File Reference}
+\label{wld__nl80211__events__priv_8h}\index{include\_priv/nl80211/wld\_nl80211\_events\_priv.h@{include\_priv/nl80211/wld\_nl80211\_events\_priv.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+core\+\_\+priv.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+un\+Li\+List.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+events\+\_\+priv.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__events__priv_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__events__priv_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__nl80211__listener}{wld\+\_\+nl80211\+\_\+listener}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef swl\+\_\+rc\+\_\+ne($\ast$ \mbox{\hyperlink{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}{wld\+\_\+nl80211\+\_\+evt\+Parser\+\_\+f}}) (swl\+\_\+un\+Li\+List\+\_\+t $\ast$p\+Listener\+List, struct nlmsghdr $\ast$nlh, struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}{wld\+\_\+nl80211\+\_\+evt\+Parser\+\_\+f}} \mbox{\hyperlink{wld__nl80211__events__priv_8h_ab9d9105d4272b97f3c722c42db1381ed}{wld\+\_\+nl80211\+\_\+get\+Event\+Parser}} (uint32\+\_\+t event\+Id)
+\item 
+bool \mbox{\hyperlink{wld__nl80211__events__priv_8h_a630520dab077d9f19311d449ea1f2f96}{wld\+\_\+nl80211\+\_\+has\+Event\+Handler}} (\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$p\+Listener, uint32\+\_\+t event\+Id)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__events__priv_8h_ab6c517e9fdadd92396162d38f5710d9d}{wld\+\_\+nl80211\+\_\+update\+Event\+Handlers}} (\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$p\+Listener, const \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\+\_\+nl80211\+\_\+evt\+Handlers\+\_\+cb}} $\ast$const handlers)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}\label{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}} 
+\index{wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}!wld\_nl80211\_evtParser\_f@{wld\_nl80211\_evtParser\_f}}
+\index{wld\_nl80211\_evtParser\_f@{wld\_nl80211\_evtParser\_f}!wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_evtParser\_f}{wld\_nl80211\_evtParser\_f}}
+{\footnotesize\ttfamily typedef swl\+\_\+rc\+\_\+ne($\ast$ wld\+\_\+nl80211\+\_\+evt\+Parser\+\_\+f) (swl\+\_\+un\+Li\+List\+\_\+t $\ast$p\+Listener\+List, struct nlmsghdr $\ast$nlh, struct nlattr $\ast$tb\mbox{[}$\,$\mbox{]})}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__events__priv_8h_ab9d9105d4272b97f3c722c42db1381ed}\label{wld__nl80211__events__priv_8h_ab9d9105d4272b97f3c722c42db1381ed}} 
+\index{wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}!wld\_nl80211\_getEventParser@{wld\_nl80211\_getEventParser}}
+\index{wld\_nl80211\_getEventParser@{wld\_nl80211\_getEventParser}!wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getEventParser()}{wld\_nl80211\_getEventParser()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}{wld\+\_\+nl80211\+\_\+evt\+Parser\+\_\+f}} wld\+\_\+nl80211\+\_\+get\+Event\+Parser (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{event\+Id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__events__priv_8h_a630520dab077d9f19311d449ea1f2f96}\label{wld__nl80211__events__priv_8h_a630520dab077d9f19311d449ea1f2f96}} 
+\index{wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}!wld\_nl80211\_hasEventHandler@{wld\_nl80211\_hasEventHandler}}
+\index{wld\_nl80211\_hasEventHandler@{wld\_nl80211\_hasEventHandler}!wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_hasEventHandler()}{wld\_nl80211\_hasEventHandler()}}
+{\footnotesize\ttfamily bool wld\+\_\+nl80211\+\_\+has\+Event\+Handler (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$}]{p\+Listener,  }\item[{uint32\+\_\+t}]{event\+Id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__events__priv_8h_ab6c517e9fdadd92396162d38f5710d9d}\label{wld__nl80211__events__priv_8h_ab6c517e9fdadd92396162d38f5710d9d}} 
+\index{wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}!wld\_nl80211\_updateEventHandlers@{wld\_nl80211\_updateEventHandlers}}
+\index{wld\_nl80211\_updateEventHandlers@{wld\_nl80211\_updateEventHandlers}!wld\_nl80211\_events\_priv.h@{wld\_nl80211\_events\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_updateEventHandlers()}{wld\_nl80211\_updateEventHandlers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+update\+Event\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$}]{p\+Listener,  }\item[{const \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\+\_\+nl80211\+\_\+evt\+Handlers\+\_\+cb}} $\ast$const}]{handlers }\end{DoxyParamCaption})}
+

@@ -1,0 +1,334 @@
+\hypertarget{wld__hostapd__cfgManager_8h}{}\doxysection{include/wld/wld\+\_\+hostapd\+\_\+cfg\+Manager.h File Reference}
+\label{wld__hostapd__cfgManager_8h}\index{include/wld/wld\_hostapd\_cfgManager.h@{include/wld/wld\_hostapd\_cfgManager.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+types.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+hostapd\+\_\+cfg\+Manager.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structwld__hostapdVapInfo}{wld\+\_\+hostapd\+Vap\+Info}} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a337b6e54e2ada31e9731dc124203a754}{wld\+\_\+hostapd\+Vap\+Info\+\_\+t}}
+\item 
+typedef struct \mbox{\hyperlink{structwld__hostapd__config}{wld\+\_\+hostapd\+\_\+config}} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgManager_8h_ad15aa07c202c5ff5f3a78dc1297429f5}{wld\+\_\+hostapd\+\_\+load\+Config}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$$\ast$conf, char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}})
+\begin{DoxyCompactList}\small\item\em load the hostapd configuration from hostpad config file into wld\+\_\+hostapd\+\_\+config\+\_\+t structure \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgManager_8h_abb9df700e811dd4ec164729ee6e37fe2}{wld\+\_\+hostapd\+\_\+create\+Config}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$$\ast$conf, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\begin{DoxyCompactList}\small\item\em create wld\+\_\+hostapd\+\_\+config\+\_\+t structure from Radio and Vaps configuration \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgManager_8h_abcd4b96a1191c1c593ab53f9d419e740}{wld\+\_\+hostapd\+\_\+delete\+Config}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf)
+\begin{DoxyCompactList}\small\item\em delete a wld\+\_\+hostapd\+\_\+config\+\_\+t map already loaded from hostapd file \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgManager_8h_aab797f94a64ba5206cdc5e379ba8d3e2}{wld\+\_\+hostapd\+\_\+write\+Config}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, char $\ast$\mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}})
+\begin{DoxyCompactList}\small\item\em write the content of hostapd\+\_\+config into a file \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a8aa75ca20524113f5b889e4e7287b3f1}{wld\+\_\+hostapd\+\_\+add\+Config\+Param}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, const char $\ast$bss\+Name, const char $\ast$key, const char $\ast$value)
+\begin{DoxyCompactList}\small\item\em add/update a key value in the config map \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__hostapd__cfgManager_8h_afbecaa9defc2fcc6bef8ff94d0be689c}{wld\+\_\+hostapd\+\_\+del\+Config\+Param}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, char $\ast$bss\+Name, char $\ast$key)
+\begin{DoxyCompactList}\small\item\em delete a key/value from the config map \end{DoxyCompactList}\item 
+swl\+\_\+map\+Char\+\_\+t $\ast$ \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a0a1bb10a455c35606f794a85a9e5964a}{wld\+\_\+hostapd\+\_\+get\+Config\+Map}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, char $\ast$bss\+Name)
+\begin{DoxyCompactList}\small\item\em get the general/vap config map \end{DoxyCompactList}\item 
+const char $\ast$ \mbox{\hyperlink{wld__hostapd__cfgManager_8h_af7827e8223cd8d13fc11d3a520f71660}{wld\+\_\+hostapd\+\_\+get\+Config\+Param\+Val\+Str}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, char $\ast$bss\+Name, const char $\ast$key)
+\item 
+swl\+\_\+map\+Char\+\_\+t $\ast$ \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a09f47e41eec42863a2f699ebd59bcb95}{wld\+\_\+hostapd\+\_\+get\+Config\+Map\+By\+Bssid}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, swl\+\_\+mac\+Bin\+\_\+t $\ast$bssid)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a0d0bd181f8e0b6d15b3ffd425d739795}{wld\+\_\+hostapd\+\_\+get\+Config\+Param\+By\+Bssid\+Val\+Str}} (\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$conf, swl\+\_\+mac\+Bin\+\_\+t $\ast$bssid, const char $\ast$key)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}\label{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_config\_t@{wld\_hostapd\_config\_t}}
+\index{wld\_hostapd\_config\_t@{wld\_hostapd\_config\_t}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_config\_t}{wld\_hostapd\_config\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__hostapd__config}{wld\+\_\+hostapd\+\_\+config}} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}}}
+
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_a337b6e54e2ada31e9731dc124203a754}\label{wld__hostapd__cfgManager_8h_a337b6e54e2ada31e9731dc124203a754}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapdVapInfo\_t@{wld\_hostapdVapInfo\_t}}
+\index{wld\_hostapdVapInfo\_t@{wld\_hostapdVapInfo\_t}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapdVapInfo\_t}{wld\_hostapdVapInfo\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__hostapdVapInfo}{wld\+\_\+hostapd\+Vap\+Info}} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a337b6e54e2ada31e9731dc124203a754}{wld\+\_\+hostapd\+Vap\+Info\+\_\+t}}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_a8aa75ca20524113f5b889e4e7287b3f1}\label{wld__hostapd__cfgManager_8h_a8aa75ca20524113f5b889e4e7287b3f1}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_addConfigParam@{wld\_hostapd\_addConfigParam}}
+\index{wld\_hostapd\_addConfigParam@{wld\_hostapd\_addConfigParam}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_addConfigParam()}{wld\_hostapd\_addConfigParam()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+add\+Config\+Param (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{const char $\ast$}]{bss\+Name,  }\item[{const char $\ast$}]{key,  }\item[{const char $\ast$}]{value }\end{DoxyParamCaption})}
+
+
+
+add/update a key value in the config map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file \\
+\hline
+{\em bss\+Name} & if NULL then the key to set is in the header part (general config). Otherwise, the key is in the vaps part \\
+\hline
+{\em key} & the key to add/update \\
+\hline
+{\em key} & the new key value\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the parameter is added/updated. Otherwise false\+:
+\begin{DoxyItemize}
+\item conf = NULL or key = NULL or value = NULL
+\item the bss\+Name doesn\textquotesingle{}t exist in the config file 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_a8aa75ca20524113f5b889e4e7287b3f1_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_abb9df700e811dd4ec164729ee6e37fe2}\label{wld__hostapd__cfgManager_8h_abb9df700e811dd4ec164729ee6e37fe2}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_createConfig@{wld\_hostapd\_createConfig}}
+\index{wld\_hostapd\_createConfig@{wld\_hostapd\_createConfig}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_createConfig()}{wld\_hostapd\_createConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+create\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$$\ast$}]{p\+Conf,  }\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+
+
+create wld\+\_\+hostapd\+\_\+config\+\_\+t structure from Radio and Vaps configuration 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file \\
+\hline
+{\em p\+Rad} & radio ctx\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success. Otherwise, false\+:
+\begin{DoxyItemize}
+\item conf is NULL
+\item Radio is NULL or has not vaps 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_abb9df700e811dd4ec164729ee6e37fe2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_afbecaa9defc2fcc6bef8ff94d0be689c}\label{wld__hostapd__cfgManager_8h_afbecaa9defc2fcc6bef8ff94d0be689c}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_delConfigParam@{wld\_hostapd\_delConfigParam}}
+\index{wld\_hostapd\_delConfigParam@{wld\_hostapd\_delConfigParam}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_delConfigParam()}{wld\_hostapd\_delConfigParam()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+del\+Config\+Param (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{char $\ast$}]{bss\+Name,  }\item[{char $\ast$}]{key }\end{DoxyParamCaption})}
+
+
+
+delete a key/value from the config map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file \\
+\hline
+{\em bss\+Name} & if NULL then the key to set is in the header part (general config). Otherwise, the key is in the vaps part \\
+\hline
+{\em key} & the key to delete\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the parameter is deleted. Otherwise false\+:
+\begin{DoxyItemize}
+\item conf = NULL or key = NULL or value = NULL
+\item the bss\+Name doesn\textquotesingle{}t exist in the config file
+\item key is NULL or doesn\textquotesingle{}t exist 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_abcd4b96a1191c1c593ab53f9d419e740}\label{wld__hostapd__cfgManager_8h_abcd4b96a1191c1c593ab53f9d419e740}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_deleteConfig@{wld\_hostapd\_deleteConfig}}
+\index{wld\_hostapd\_deleteConfig@{wld\_hostapd\_deleteConfig}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_deleteConfig()}{wld\_hostapd\_deleteConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+delete\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf }\end{DoxyParamCaption})}
+
+
+
+delete a wld\+\_\+hostapd\+\_\+config\+\_\+t map already loaded from hostapd file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success. Otherwise, false
+\begin{DoxyItemize}
+\item conf is NULL 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_abcd4b96a1191c1c593ab53f9d419e740_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_a0a1bb10a455c35606f794a85a9e5964a}\label{wld__hostapd__cfgManager_8h_a0a1bb10a455c35606f794a85a9e5964a}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_getConfigMap@{wld\_hostapd\_getConfigMap}}
+\index{wld\_hostapd\_getConfigMap@{wld\_hostapd\_getConfigMap}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_getConfigMap()}{wld\_hostapd\_getConfigMap()}}
+{\footnotesize\ttfamily swl\+\_\+map\+Char\+\_\+t $\ast$ wld\+\_\+hostapd\+\_\+get\+Config\+Map (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{char $\ast$}]{bss\+Name }\end{DoxyParamCaption})}
+
+
+
+get the general/vap config map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file \\
+\hline
+{\em bss\+Name} & if NULL then the key to set is in the header part (general config). Otherwise, the key is in the vaps part\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a pointer to the appropriate config map 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_a0a1bb10a455c35606f794a85a9e5964a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_a09f47e41eec42863a2f699ebd59bcb95}\label{wld__hostapd__cfgManager_8h_a09f47e41eec42863a2f699ebd59bcb95}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_getConfigMapByBssid@{wld\_hostapd\_getConfigMapByBssid}}
+\index{wld\_hostapd\_getConfigMapByBssid@{wld\_hostapd\_getConfigMapByBssid}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_getConfigMapByBssid()}{wld\_hostapd\_getConfigMapByBssid()}}
+{\footnotesize\ttfamily swl\+\_\+map\+Char\+\_\+t $\ast$ wld\+\_\+hostapd\+\_\+get\+Config\+Map\+By\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_a09f47e41eec42863a2f699ebd59bcb95_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_a0d0bd181f8e0b6d15b3ffd425d739795}\label{wld__hostapd__cfgManager_8h_a0d0bd181f8e0b6d15b3ffd425d739795}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_getConfigParamByBssidValStr@{wld\_hostapd\_getConfigParamByBssidValStr}}
+\index{wld\_hostapd\_getConfigParamByBssidValStr@{wld\_hostapd\_getConfigParamByBssidValStr}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_getConfigParamByBssidValStr()}{wld\_hostapd\_getConfigParamByBssidValStr()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+hostapd\+\_\+get\+Config\+Param\+By\+Bssid\+Val\+Str (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{bssid,  }\item[{const char $\ast$}]{key }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_a0d0bd181f8e0b6d15b3ffd425d739795_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_af7827e8223cd8d13fc11d3a520f71660}\label{wld__hostapd__cfgManager_8h_af7827e8223cd8d13fc11d3a520f71660}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_getConfigParamValStr@{wld\_hostapd\_getConfigParamValStr}}
+\index{wld\_hostapd\_getConfigParamValStr@{wld\_hostapd\_getConfigParamValStr}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_getConfigParamValStr()}{wld\_hostapd\_getConfigParamValStr()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+hostapd\+\_\+get\+Config\+Param\+Val\+Str (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{char $\ast$}]{bss\+Name,  }\item[{const char $\ast$}]{key }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_af7827e8223cd8d13fc11d3a520f71660_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_af7827e8223cd8d13fc11d3a520f71660_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_ad15aa07c202c5ff5f3a78dc1297429f5}\label{wld__hostapd__cfgManager_8h_ad15aa07c202c5ff5f3a78dc1297429f5}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_loadConfig@{wld\_hostapd\_loadConfig}}
+\index{wld\_hostapd\_loadConfig@{wld\_hostapd\_loadConfig}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_loadConfig()}{wld\_hostapd\_loadConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+load\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$$\ast$}]{conf,  }\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+load the hostapd configuration from hostpad config file into wld\+\_\+hostapd\+\_\+config\+\_\+t structure 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file \\
+\hline
+{\em path} & the path of hostapd config file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success. Otherwise, false\+:
+\begin{DoxyItemize}
+\item conf is NULL or path is NULL
+\item config file not found
+\item interface section is missing in the config file 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_ad15aa07c202c5ff5f3a78dc1297429f5_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__hostapd__cfgManager_8h_aab797f94a64ba5206cdc5e379ba8d3e2}\label{wld__hostapd__cfgManager_8h_aab797f94a64ba5206cdc5e379ba8d3e2}} 
+\index{wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}!wld\_hostapd\_writeConfig@{wld\_hostapd\_writeConfig}}
+\index{wld\_hostapd\_writeConfig@{wld\_hostapd\_writeConfig}!wld\_hostapd\_cfgManager.h@{wld\_hostapd\_cfgManager.h}}
+\doxysubsubsection{\texorpdfstring{wld\_hostapd\_writeConfig()}{wld\_hostapd\_writeConfig()}}
+{\footnotesize\ttfamily bool wld\+\_\+hostapd\+\_\+write\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__hostapd__cfgManager_8h_a22cb98a88515e5a98f9a0afcc732c728}{wld\+\_\+hostapd\+\_\+config\+\_\+t}} $\ast$}]{conf,  }\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+write the content of hostapd\+\_\+config into a file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & the structure mapping the content of hostapd configuration file \\
+\hline
+{\em path} & the filename where the conf is written\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the conf map is successfully written in the file Otherwise, false\+:
+\begin{DoxyItemize}
+\item conf is NULL or Path is NULL
+\item if writing of the conf in the file \char`\"{}path\char`\"{} failed 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__hostapd__cfgManager_8h_aab797f94a64ba5206cdc5e379ba8d3e2_icgraph}
+\end{center}
+\end{figure}

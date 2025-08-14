@@ -1,0 +1,230 @@
+\hypertarget{wld__eventing_8c}{}\doxysection{src/\+Utils/wld\+\_\+eventing.c File Reference}
+\label{wld__eventing_8c}\index{src/Utils/wld\_eventing.c@{src/Utils/wld\_eventing.c}}
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+eventing.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__eventing_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__eventing_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}util\+Evt\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__eventing_8c_a543230c1e711661438a763386d842b02}{wld\+\_\+event\+\_\+init}} ()
+\item 
+void \mbox{\hyperlink{wld__eventing_8c_aa323419be519d0d3c8eca067088d32af}{wld\+\_\+event\+\_\+destroy}} ()
+\item 
+void \mbox{\hyperlink{wld__eventing_8c_ae1d360897e6f003fa37c96c3d4684edb}{wld\+\_\+event\+\_\+add\+\_\+callback}} (\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$queue, \mbox{\hyperlink{structwld__event__callback__t}{wld\+\_\+event\+\_\+callback\+\_\+t}} $\ast$callback)
+\item 
+void \mbox{\hyperlink{wld__eventing_8c_adbcc728bd244fe5b0b0ddefa6107ddc3}{wld\+\_\+event\+\_\+remove\+\_\+callback}} (\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$queue, \mbox{\hyperlink{structwld__event__callback__t}{wld\+\_\+event\+\_\+callback\+\_\+t}} $\ast$callback)
+\item 
+void \mbox{\hyperlink{wld__eventing_8c_aa79c0a7f8698dee12cd21e53ad8a3bf5}{wld\+\_\+event\+\_\+trigger\+\_\+callback}} (\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$queue, const void $\ast$data)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a2730f36311b8a03ccef722584441a310}{g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Status\+Change}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_afc71d718d09c50bc680538b0ce152bb1}{g\+Wld\+\_\+queue\+\_\+ep\+\_\+on\+Status\+Change}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a8cae237e03c3fb79251fa89b6b9f1983}{g\+Wld\+\_\+queue\+\_\+vap\+\_\+on\+Status\+Change}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_ab37ea592250aac1f5b8a43814d157601}{g\+Wld\+\_\+queue\+\_\+vap\+\_\+on\+Change\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a75e054fa7dad1f8225dc3957114d0566}{g\+Wld\+\_\+queue\+\_\+vap\+\_\+on\+Action}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a7efc0e52af4d3f794ca7b745abf78f1d}{g\+Wld\+\_\+queue\+\_\+ep\+\_\+on\+Change\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_afe1be977aa1b354228a49188a9d87fb9}{g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Scan\+\_\+change}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_ace879c8d3b2b961237fd33deb26d4bac}{g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Change\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a9c304d38f5d1cdbd38b32aedce7ad67e}{g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Frame\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a804c425e4987a3c949a7fd322bab6a5c}{g\+Wld\+\_\+queue\+\_\+wps\+\_\+on\+State\+Change}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a327ffe05fc22877ba98892eccbec4d1a}{g\+Wld\+\_\+queue\+\_\+sta\+\_\+on\+Change\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a3387cbb10390c9e335560de039a422df}{g\+Wld\+\_\+queue\+\_\+mld\+\_\+on\+Change\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a4553fb0f84079291296c313b902ef688}{g\+Wld\+\_\+queue\+\_\+lifecycle\+Event}} = NULL
+\item 
+\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__eventing_8c_a3bb14572b313cd2434bfb3e094237186}{g\+Wld\+\_\+queue\+\_\+wds\+Interface}} = NULL
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__eventing_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__eventing_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!ME@{ME}}
+\index{ME@{ME}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}util\+Evt\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__eventing_8c_ae1d360897e6f003fa37c96c3d4684edb}\label{wld__eventing_8c_ae1d360897e6f003fa37c96c3d4684edb}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!wld\_event\_add\_callback@{wld\_event\_add\_callback}}
+\index{wld\_event\_add\_callback@{wld\_event\_add\_callback}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_event\_add\_callback()}{wld\_event\_add\_callback()}}
+{\footnotesize\ttfamily void wld\+\_\+event\+\_\+add\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$}]{queue,  }\item[{\mbox{\hyperlink{structwld__event__callback__t}{wld\+\_\+event\+\_\+callback\+\_\+t}} $\ast$}]{callback }\end{DoxyParamCaption})}
+
+Add a callback to the given queue Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__eventing_8c_ae1d360897e6f003fa37c96c3d4684edb_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__eventing_8c_aa323419be519d0d3c8eca067088d32af}\label{wld__eventing_8c_aa323419be519d0d3c8eca067088d32af}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!wld\_event\_destroy@{wld\_event\_destroy}}
+\index{wld\_event\_destroy@{wld\_event\_destroy}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_event\_destroy()}{wld\_event\_destroy()}}
+{\footnotesize\ttfamily void wld\+\_\+event\+\_\+destroy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Destroy the different event queues Note that we DO NOT RELEASE the iterators, we just unlink them Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=302pt]{wld__eventing_8c_aa323419be519d0d3c8eca067088d32af_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__eventing_8c_a543230c1e711661438a763386d842b02}\label{wld__eventing_8c_a543230c1e711661438a763386d842b02}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!wld\_event\_init@{wld\_event\_init}}
+\index{wld\_event\_init@{wld\_event\_init}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_event\_init()}{wld\_event\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+event\+\_\+init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Initialize the eventing module Create all queues, and set the pointers correctly \mbox{\Hypertarget{wld__eventing_8c_adbcc728bd244fe5b0b0ddefa6107ddc3}\label{wld__eventing_8c_adbcc728bd244fe5b0b0ddefa6107ddc3}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!wld\_event\_remove\_callback@{wld\_event\_remove\_callback}}
+\index{wld\_event\_remove\_callback@{wld\_event\_remove\_callback}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_event\_remove\_callback()}{wld\_event\_remove\_callback()}}
+{\footnotesize\ttfamily void wld\+\_\+event\+\_\+remove\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$}]{queue,  }\item[{\mbox{\hyperlink{structwld__event__callback__t}{wld\+\_\+event\+\_\+callback\+\_\+t}} $\ast$}]{callback }\end{DoxyParamCaption})}
+
+Remove the callback from the given queue Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__eventing_8c_adbcc728bd244fe5b0b0ddefa6107ddc3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__eventing_8c_aa79c0a7f8698dee12cd21e53ad8a3bf5}\label{wld__eventing_8c_aa79c0a7f8698dee12cd21e53ad8a3bf5}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!wld\_event\_trigger\_callback@{wld\_event\_trigger\_callback}}
+\index{wld\_event\_trigger\_callback@{wld\_event\_trigger\_callback}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_event\_trigger\_callback()}{wld\_event\_trigger\_callback()}}
+{\footnotesize\ttfamily void wld\+\_\+event\+\_\+trigger\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}} $\ast$}]{queue,  }\item[{const void $\ast$}]{data }\end{DoxyParamCaption})}
+
+Notify all callbacks with the given data structure 
+\begin{DoxyParams}{Parameters}
+{\em queue} & The queue to which the trigger has to be sent \\
+\hline
+{\em data} & The data that has to be delivered to each queue\\
+\hline
+\end{DoxyParams}
+Note that we do not isolate the data, so in theory each callback can manipulate the data field Please refrain from doing so. Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__eventing_8c_aa79c0a7f8698dee12cd21e53ad8a3bf5_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__eventing_8c_a7efc0e52af4d3f794ca7b745abf78f1d}\label{wld__eventing_8c_a7efc0e52af4d3f794ca7b745abf78f1d}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_ep\_onChangeEvent@{gWld\_queue\_ep\_onChangeEvent}}
+\index{gWld\_queue\_ep\_onChangeEvent@{gWld\_queue\_ep\_onChangeEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_ep\_onChangeEvent}{gWld\_queue\_ep\_onChangeEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+ep\+\_\+on\+Change\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_afc71d718d09c50bc680538b0ce152bb1}\label{wld__eventing_8c_afc71d718d09c50bc680538b0ce152bb1}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_ep\_onStatusChange@{gWld\_queue\_ep\_onStatusChange}}
+\index{gWld\_queue\_ep\_onStatusChange@{gWld\_queue\_ep\_onStatusChange}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_ep\_onStatusChange}{gWld\_queue\_ep\_onStatusChange}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+ep\+\_\+on\+Status\+Change = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a4553fb0f84079291296c313b902ef688}\label{wld__eventing_8c_a4553fb0f84079291296c313b902ef688}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_lifecycleEvent@{gWld\_queue\_lifecycleEvent}}
+\index{gWld\_queue\_lifecycleEvent@{gWld\_queue\_lifecycleEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_lifecycleEvent}{gWld\_queue\_lifecycleEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+lifecycle\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a3387cbb10390c9e335560de039a422df}\label{wld__eventing_8c_a3387cbb10390c9e335560de039a422df}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_mld\_onChangeEvent@{gWld\_queue\_mld\_onChangeEvent}}
+\index{gWld\_queue\_mld\_onChangeEvent@{gWld\_queue\_mld\_onChangeEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_mld\_onChangeEvent}{gWld\_queue\_mld\_onChangeEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+mld\+\_\+on\+Change\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_ace879c8d3b2b961237fd33deb26d4bac}\label{wld__eventing_8c_ace879c8d3b2b961237fd33deb26d4bac}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_rad\_onChangeEvent@{gWld\_queue\_rad\_onChangeEvent}}
+\index{gWld\_queue\_rad\_onChangeEvent@{gWld\_queue\_rad\_onChangeEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_rad\_onChangeEvent}{gWld\_queue\_rad\_onChangeEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Change\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a9c304d38f5d1cdbd38b32aedce7ad67e}\label{wld__eventing_8c_a9c304d38f5d1cdbd38b32aedce7ad67e}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_rad\_onFrameEvent@{gWld\_queue\_rad\_onFrameEvent}}
+\index{gWld\_queue\_rad\_onFrameEvent@{gWld\_queue\_rad\_onFrameEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_rad\_onFrameEvent}{gWld\_queue\_rad\_onFrameEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Frame\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_afe1be977aa1b354228a49188a9d87fb9}\label{wld__eventing_8c_afe1be977aa1b354228a49188a9d87fb9}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_rad\_onScan\_change@{gWld\_queue\_rad\_onScan\_change}}
+\index{gWld\_queue\_rad\_onScan\_change@{gWld\_queue\_rad\_onScan\_change}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_rad\_onScan\_change}{gWld\_queue\_rad\_onScan\_change}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Scan\+\_\+change = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a2730f36311b8a03ccef722584441a310}\label{wld__eventing_8c_a2730f36311b8a03ccef722584441a310}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_rad\_onStatusChange@{gWld\_queue\_rad\_onStatusChange}}
+\index{gWld\_queue\_rad\_onStatusChange@{gWld\_queue\_rad\_onStatusChange}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_rad\_onStatusChange}{gWld\_queue\_rad\_onStatusChange}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+rad\+\_\+on\+Status\+Change = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a327ffe05fc22877ba98892eccbec4d1a}\label{wld__eventing_8c_a327ffe05fc22877ba98892eccbec4d1a}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_sta\_onChangeEvent@{gWld\_queue\_sta\_onChangeEvent}}
+\index{gWld\_queue\_sta\_onChangeEvent@{gWld\_queue\_sta\_onChangeEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_sta\_onChangeEvent}{gWld\_queue\_sta\_onChangeEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+sta\+\_\+on\+Change\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a75e054fa7dad1f8225dc3957114d0566}\label{wld__eventing_8c_a75e054fa7dad1f8225dc3957114d0566}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_vap\_onAction@{gWld\_queue\_vap\_onAction}}
+\index{gWld\_queue\_vap\_onAction@{gWld\_queue\_vap\_onAction}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_vap\_onAction}{gWld\_queue\_vap\_onAction}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+vap\+\_\+on\+Action = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_ab37ea592250aac1f5b8a43814d157601}\label{wld__eventing_8c_ab37ea592250aac1f5b8a43814d157601}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_vap\_onChangeEvent@{gWld\_queue\_vap\_onChangeEvent}}
+\index{gWld\_queue\_vap\_onChangeEvent@{gWld\_queue\_vap\_onChangeEvent}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_vap\_onChangeEvent}{gWld\_queue\_vap\_onChangeEvent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+vap\+\_\+on\+Change\+Event = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a8cae237e03c3fb79251fa89b6b9f1983}\label{wld__eventing_8c_a8cae237e03c3fb79251fa89b6b9f1983}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_vap\_onStatusChange@{gWld\_queue\_vap\_onStatusChange}}
+\index{gWld\_queue\_vap\_onStatusChange@{gWld\_queue\_vap\_onStatusChange}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_vap\_onStatusChange}{gWld\_queue\_vap\_onStatusChange}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+vap\+\_\+on\+Status\+Change = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a3bb14572b313cd2434bfb3e094237186}\label{wld__eventing_8c_a3bb14572b313cd2434bfb3e094237186}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_wdsInterface@{gWld\_queue\_wdsInterface}}
+\index{gWld\_queue\_wdsInterface@{gWld\_queue\_wdsInterface}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_wdsInterface}{gWld\_queue\_wdsInterface}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+wds\+Interface = NULL}
+
+\mbox{\Hypertarget{wld__eventing_8c_a804c425e4987a3c949a7fd322bab6a5c}\label{wld__eventing_8c_a804c425e4987a3c949a7fd322bab6a5c}} 
+\index{wld\_eventing.c@{wld\_eventing.c}!gWld\_queue\_wps\_onStateChange@{gWld\_queue\_wps\_onStateChange}}
+\index{gWld\_queue\_wps\_onStateChange@{gWld\_queue\_wps\_onStateChange}!wld\_eventing.c@{wld\_eventing.c}}
+\doxysubsubsection{\texorpdfstring{gWld\_queue\_wps\_onStateChange}{gWld\_queue\_wps\_onStateChange}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__event__queue__t}{wld\+\_\+event\+\_\+queue\+\_\+t}}$\ast$ g\+Wld\+\_\+queue\+\_\+wps\+\_\+on\+State\+Change = NULL}
+

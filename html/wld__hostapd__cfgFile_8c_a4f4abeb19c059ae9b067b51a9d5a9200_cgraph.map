@@ -1,0 +1,7 @@
+<map id="wld_hostapd_cfgFile_update" name="wld_hostapd_cfgFile_update">
+<area shape="rect" id="node1" title="update a configuration file for the hostapd" alt="" coords="5,74,160,115"/>
+<area shape="rect" id="node2" href="$wld__hostapd__cfgManager_8c.html#a8aa75ca20524113f5b889e4e7287b3f1" title="add/update a key value in the config map" alt="" coords="208,5,425,32"/>
+<area shape="rect" id="node3" href="$wld__hostapd__cfgManager_8c.html#abcd4b96a1191c1c593ab53f9d419e740" title="delete a wld_hostapd_config_t map already loaded from hostapd file" alt="" coords="220,56,413,83"/>
+<area shape="rect" id="node4" href="$wld__hostapd__cfgManager_8c.html#ad15aa07c202c5ff5f3a78dc1297429f5" title="load the hostapd configuration from hostpad config file into wld_hostapd_config_t structure" alt="" coords="227,107,407,133"/>
+<area shape="rect" id="node5" href="$wld__hostapd__cfgManager_8c.html#aab797f94a64ba5206cdc5e379ba8d3e2" title="write the content of hostapd_config into a file" alt="" coords="224,157,409,184"/>
+</map>

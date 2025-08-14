@@ -1,0 +1,144 @@
+\hypertarget{wld__channel_8h_source}{}\doxysection{wld\+\_\+channel.\+h}
+\label{wld__channel_8h_source}\index{include/wld/wld\_channel.h@{include/wld/wld\_channel.h}}
+\mbox{\hyperlink{wld__channel_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef WLD\_CHANNEL\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define WLD\_CHANNEL\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__channel__types_8h}{wld\_channel\_types.h}}"{}}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#define WLD\_CHAN\_MAX\_NR\_CHANS\_IN\_USE 16}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#define WLD\_CHAN\_MAX\_NR\_INTERF\_CHAN 11}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#define NR\_INTERFERENCE\_ELEMENT\_24\_20 7}}
+\DoxyCodeLine{73 \textcolor{keyword}{extern} \textcolor{keyword}{const} \mbox{\hyperlink{structwld__chan__interference}{wld\_chan\_interference\_t}} \mbox{\hyperlink{wld__channel_8h_ac58905438fbd8d6d7505dfaf84523e7e}{interferenceMatrix\_24\_20Mhz}}[\mbox{\hyperlink{wld__channel_8h_ac6e668217606aba279905d3e29713db5}{NR\_INTERFERENCE\_ELEMENT\_24\_20}}];}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75 \textcolor{preprocessor}{\#define NR\_INTERFERENCE\_ELEMENT\_24\_40 11}}
+\DoxyCodeLine{76 \textcolor{keyword}{extern} \textcolor{keyword}{const} \mbox{\hyperlink{structwld__chan__interference}{wld\_chan\_interference\_t}} \mbox{\hyperlink{wld__channel_8h_af563d8aa50dfcb335d0619116ac36071}{interferenceMatrix\_24\_40Mhz}}[\mbox{\hyperlink{wld__channel_8h_a106324d69e7b3fa3f85d95ef21aa3d55}{NR\_INTERFERENCE\_ELEMENT\_24\_40}}];}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78 \textcolor{comment}{//Getters}}
+\DoxyCodeLine{79 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_aeee934e1c006f64dcd852ee43fe71b53}{wld\_channel\_is\_dfs\_band}}(\textcolor{keywordtype}{int} channel, swl\_bandwidth\_e bandwidth);}
+\DoxyCodeLine{80 uint32\_t \mbox{\hyperlink{wld__channel_8h_a2444255ee2a1863b9a58ff66c4d73017}{wld\_channel\_getDfsPercentage}}(\textcolor{keywordtype}{int} channel, swl\_bandwidth\_e bandwidth);}
+\DoxyCodeLine{81 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_ac12a9a0ce7a2727bf1c0e03cd02bfec6}{wld\_channel\_is\_usable}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{82 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_a0b7f74cfed1d43b00cae0e44c230519e}{wld\_channel\_is\_band\_usable}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{83 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_aff20451d404931f72f9bb5eccba83089}{wld\_channel\_is\_band\_passive}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_adcdae052ec03f723adb10c05b144b90c}{wld\_channel\_is\_chan\_in\_band}}(swl\_chanspec\_t chanspec, \textcolor{keywordtype}{int} testChannel);}
+\DoxyCodeLine{86 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_a490a9e4cfc09a514afaefa12f69cb7e1}{wld\_channel\_is\_available}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{87 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_adc8be7b229e350564cc1007c836e1629}{wld\_channel\_is\_band\_available}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{88 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_a8cf24885210899d4294a50b5b67045b2}{wld\_channel\_is\_radar\_detected}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{89 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_ac7bc7a7085458e48c9ca411929ba2b86}{wld\_channel\_is\_band\_radar\_detected}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{90 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__channel_8h_a5b103ffcd1398b194a2ea6a065a495dd}{wld\_channel\_isValidClearChannel}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} channel, swl\_bandwidth\_e operatingChannelBandwidth);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92 uint32\_t \mbox{\hyperlink{wld__channel_8h_ac86c8feefb03b2d2622b706281516cc9}{wld\_channel\_getFrequencyOfChannel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{93 uint32\_t \mbox{\hyperlink{wld__channel_8h_ab19df69b57c36227a57d403e296b87c1}{wld\_channel\_getBandwidthValFromEnum}}(swl\_bandwidth\_e radioBw);}
+\DoxyCodeLine{94 swl\_bandwidth\_e \mbox{\hyperlink{wld__channel_8h_afa51a52b236b0fd2d37f041ce31b5d19}{wld\_channel\_getBandwidthEnumFromVal}}(uint32\_t val);}
+\DoxyCodeLine{95 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__channel_8h_acbef2868fb577a4d97ee5df84c150190}{wld\_channel\_get\_center\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{96 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__channel_8h_ac4bbb4144e1201cafc36c76e65939b8e}{wld\_channel\_get\_channel\_to\_clear}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_bandwidth\_e operatingChannelBandwidth);}
+\DoxyCodeLine{97 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a21233297a99a47a47bdd513f4bd1bc19}{wld\_channel\_set\_channel\_clear\_time}}(\textcolor{keywordtype}{int} channel, uint32\_t time);}
+\DoxyCodeLine{98 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__channel_8h_a6c2fc682bae58af517f20443b8fb9c28}{wld\_channel\_get\_channel\_clear\_time}}(\textcolor{keywordtype}{int} channel);}
+\DoxyCodeLine{99 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__channel_8h_a80ce41ebc78d227445a1c09d322ce1a3}{wld\_channel\_get\_band\_clear\_time}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_a772b88f7eb8d2446640335ad86ef22a9}{wld\_channel\_is\_long\_wait}}(swl\_chanspec\_t chanspec); \textcolor{comment}{//Deprecated}}
+\DoxyCodeLine{102 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_a8de0e83d0d1da8531913a6c7df27989f}{wld\_channel\_is\_long\_wait\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{103 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_ad83e1f3f6c120a13e79bb9e7ae19399c}{wld\_channel\_is\_long\_wait\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_ad3a7eb784f818176165a4c0e86f47210}{wld\_channel\_areAdjacent}}(swl\_chanspec\_t chanspec1, swl\_chanspec\_t chanspec2);}
+\DoxyCodeLine{106 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__channel_8h_abc6b1c0df2f1f618afdabd1195f6a98a}{wld\_channel\_hasChannelWidthCovered}}(swl\_chanspec\_t chspec, swl\_bandwidth\_e chW);}
+\DoxyCodeLine{107 \mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\_channel\_extensionPos\_e}} \mbox{\hyperlink{wld__channel_8h_a30dbfefee66f7473e59a233b5b95b1ad}{wld\_channel\_getExtensionChannel}}(swl\_chanspec\_t chspec, \mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\_channel\_extensionPos\_e}} currExtChanPos);}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{109 \textcolor{comment}{//Setters}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a6e31879dc054bfc7629d1066d898e978}{wld\_channel\_init\_channels}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{112 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a96c1dcc2e81d60f99a2d555b085b5077}{wld\_channel\_cleanAll}}();}
+\DoxyCodeLine{113 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a1daca3ccba000e743674c98ce51bd86e}{wld\_channel\_clear\_flags}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{114 \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{wld__channel_8h_a1ebcaadc021f237b77d2abeb8766f2c4}{wld\_channel\_get\_cleared\_channels}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, swl\_channel\_t* list, \textcolor{keywordtype}{size\_t} list\_size);}
+\DoxyCodeLine{115 \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{wld__channel_8h_a944e9f12925fb51261e095adeb71f645}{wld\_channel\_get\_radartriggered\_channels}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_channel\_t* list, \textcolor{keywordtype}{size\_t} list\_size);}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{117 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a8f4ac82176127ff11de7585347815ecc}{wld\_channel\_mark\_available\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{118 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a42d85719bf81b67448828015a5c7209c}{wld\_channel\_mark\_unavailable\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{119 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_af280c210df36690e3e3f2feca13c4ad8}{wld\_channel\_mark\_radar\_req\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{120 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a274243f69f10bbc51cf7631622860889}{wld\_channel\_mark\_passive\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{121 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a03aa2fd7136694da03048717e913ba77}{wld\_channel\_clear\_passive\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{122 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a2fcd4f372b30ebbdbdab4763c2cddde7}{wld\_channel\_mark\_radar\_detected\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{123 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a9ae153af93038948f65ab7d882e84bd5}{wld\_channel\_clear\_radar\_detected\_channel}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a01d43f3e5649ae71b77f21cf56457039}{wld\_channel\_mark\_available\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{126 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a1ae6335b5ed5f4a4463c853202fd00f9}{wld\_channel\_mark\_unavailable\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{127 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a45bf7c5b25c6f673cecd888b3282874c}{wld\_channel\_mark\_radar\_req\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{128 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a52ba40ee60c6aeddcaca6696f903db4c}{wld\_channel\_mark\_passive\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{129 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_abbf5b8a94e8a9595f011a635e6a7ced6}{wld\_channel\_clear\_passive\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{130 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_aeb2aca17ebaa1055e821652c1b22b978}{wld\_channel\_mark\_radar\_detected\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{131 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a4d8ae2db3511ad8b0c9fd84efc609d8e}{wld\_channel\_clear\_radar\_detected\_band}}(swl\_chanspec\_t chanspec);}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{133 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_a9eabc31bc39b1fd1ce1daf0a0965087a}{wld\_channel\_do\_for\_each\_channel}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \textcolor{keywordtype}{void}* data, \textcolor{keywordtype}{void} (* channel\_function)(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \textcolor{keywordtype}{void}* data, \textcolor{keywordtype}{int} channel));}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135 \textcolor{comment}{//Debug}}
+\DoxyCodeLine{136 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__channel_8h_af1015b978999df3f8835ce46cfbba6c2}{wld\_channel\_print}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{137 }
+\DoxyCodeLine{138 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* WLD\_CHANNEL\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

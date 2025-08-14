@@ -1,0 +1,8 @@
+<map id="wifiGen_rad_stats" name="wifiGen_rad_stats">
+<area shape="rect" id="node1" title=" " alt="" coords="5,78,144,105"/>
+<area shape="rect" id="node2" href="$wld__linuxIfStats_8c.html#ae12ced660aea54a5d67db283048e138d" title=" " alt="" coords="192,71,383,112"/>
+<area shape="rect" id="node3" href="$wld__linuxIfStats_8c.html#a1e6ee2fbdd322b42a53f270dbb558459" title=" " alt="" coords="435,5,621,47"/>
+<area shape="rect" id="node4" href="$wld__linuxIfStats_8c.html#a3c381ae85c8fdb89b5173c40d906f5d2" title=" " alt="" coords="431,71,625,112"/>
+<area shape="rect" id="node5" href="$wld__radio_8c.html#a06bc57deec1afc23c21f9b757973c62c" title=" " alt="" coords="435,137,621,163"/>
+<area shape="rect" id="node6" href="$wld__radio_8c.html#a7ad6ddd63a7962f4787107799804c134" title=" " alt="" coords="673,137,805,163"/>
+</map>

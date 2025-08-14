@@ -1,0 +1,157 @@
+\hypertarget{wld__nl80211__api__priv_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+api\+\_\+priv.\+h}
+\label{wld__nl80211__api__priv_8h_source}\index{include\_priv/nl80211/wld\_nl80211\_api\_priv.h@{include\_priv/nl80211/wld\_nl80211\_api\_priv.h}}
+\mbox{\hyperlink{wld__nl80211__api__priv_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_NL80211\_WLD\_NL80211\_API\_PRIV\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_NL80211\_WLD\_NL80211\_API\_PRIV\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__attr_8h}{wld\_nl80211\_attr.h}}"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__core__priv_8h}{wld\_nl80211\_core\_priv.h}}"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}swl/swl\_common.h"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}swl/swl\_unLiList.h"{}}}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{comment}{// maximum request processing time , in seconds.}}
+\DoxyCodeLine{72 \textcolor{comment}{// At this limit, all reply msg's fragments shall be received and processed}}
+\DoxyCodeLine{73 \textcolor{comment}{// 10 sec for async requests}}
+\DoxyCodeLine{74 \textcolor{comment}{// 5 sec for sync requests}}
+\DoxyCodeLine{75 \textcolor{preprocessor}{\#define REQUEST\_SYNC\_TIMEOUT  5  }\textcolor{comment}{//shorter timeout as sync requests are blocking}}
+\DoxyCodeLine{76 \textcolor{preprocessor}{\#define REQUEST\_ASYNC\_TIMEOUT 10 }\textcolor{comment}{//longer timeout: shall be enough}}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78 \textcolor{comment}{/*}}
+\DoxyCodeLine{79 \textcolor{comment}{ * @brief recursive function to add simple and nested nl attributes}}
+\DoxyCodeLine{80 \textcolor{comment}{ * to nl message}}
+\DoxyCodeLine{81 \textcolor{comment}{ *}}
+\DoxyCodeLine{82 \textcolor{comment}{ * @param msg pointer to netlink message}}
+\DoxyCodeLine{83 \textcolor{comment}{ * @param pAttrList pointer to netlink attribute list}}
+\DoxyCodeLine{84 \textcolor{comment}{ *}}
+\DoxyCodeLine{85 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{86 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{87 \textcolor{comment}{ */}}
+\DoxyCodeLine{88 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a5acbd182e6b52eae4ef8f18ba2c3d34b}{wld\_nl80211\_addNlAttrs}}(\textcolor{keyword}{struct} nl\_msg* msg, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\_nl80211\_nlAttrList\_t}}* \textcolor{keyword}{const} pAttrList);}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90 \textcolor{comment}{/*}}
+\DoxyCodeLine{91 \textcolor{comment}{ * @brief common function to send request}}
+\DoxyCodeLine{92 \textcolor{comment}{ *}}
+\DoxyCodeLine{93 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{94 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{95 \textcolor{comment}{ * @param cmd nl80211 command to send}}
+\DoxyCodeLine{96 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{97 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{98 \textcolor{comment}{ * @param pAttrList netlink attribute list to add to message}}
+\DoxyCodeLine{99 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{100 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{101 \textcolor{comment}{ * @param pResult (optional) variable where to save current request status}}
+\DoxyCodeLine{102 \textcolor{comment}{ *}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{104 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{105 \textcolor{comment}{ */}}
+\DoxyCodeLine{106 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a3c5a525596463f925b95bbc76036d07e}{wld\_nl80211\_sendCmd}}(\textcolor{keywordtype}{bool} isSync, \mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t cmd, uint32\_t flags,}
+\DoxyCodeLine{107                               uint32\_t ifIndex, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\_nl80211\_nlAttrList\_t}}* \textcolor{keyword}{const} pAttrList,}
+\DoxyCodeLine{108                               \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv, swl\_rc\_ne* pResult);}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110 \textcolor{comment}{/*}}
+\DoxyCodeLine{111 \textcolor{comment}{ * @brief common function to send synchronous request}}
+\DoxyCodeLine{112 \textcolor{comment}{ *}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{114 \textcolor{comment}{ * @param cmd nl80211 command to send}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{116 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{117 \textcolor{comment}{ * @param pAttrList netlink attribute list to add to message}}
+\DoxyCodeLine{118 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{119 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{120 \textcolor{comment}{ *}}
+\DoxyCodeLine{121 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{122 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{123 \textcolor{comment}{ */}}
+\DoxyCodeLine{124 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a51795ba7297b263584b02e6dd2d8ddb6}{wld\_nl80211\_sendCmdSync}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t cmd, uint32\_t flags,}
+\DoxyCodeLine{125                                   uint32\_t ifIndex, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\_nl80211\_nlAttrList\_t}}* \textcolor{keyword}{const} pAttrList,}
+\DoxyCodeLine{126                                   \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128 \textcolor{comment}{/*}}
+\DoxyCodeLine{129 \textcolor{comment}{ * @brief common function to send synchronous request}}
+\DoxyCodeLine{130 \textcolor{comment}{ * and wait for acknowledgment}}
+\DoxyCodeLine{131 \textcolor{comment}{ *}}
+\DoxyCodeLine{132 \textcolor{comment}{ * @param state nl80211 socket manager context}}
+\DoxyCodeLine{133 \textcolor{comment}{ * @param cmd nl80211 command to send}}
+\DoxyCodeLine{134 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{135 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{136 \textcolor{comment}{ * @param pAttrList netlink attribute list to add to message}}
+\DoxyCodeLine{137 \textcolor{comment}{ *}}
+\DoxyCodeLine{138 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{139 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{140 \textcolor{comment}{ */}}
+\DoxyCodeLine{141 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a2f124c7a531325213fab90ab2a181035}{wld\_nl80211\_sendCmdSyncWithAck}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, uint32\_t cmd, uint32\_t flags,}
+\DoxyCodeLine{142                                          uint32\_t ifIndex, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\_nl80211\_nlAttrList\_t}}* \textcolor{keyword}{const} pAttrList);}
+\DoxyCodeLine{143 }
+\DoxyCodeLine{144 \textcolor{comment}{/*}}
+\DoxyCodeLine{145 \textcolor{comment}{ * @brief cleans up expired requests of all socket managers}}
+\DoxyCodeLine{146 \textcolor{comment}{ *}}
+\DoxyCodeLine{147 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{148 \textcolor{comment}{ */}}
+\DoxyCodeLine{149 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__nl80211__api__priv_8h_a46a99e5f2da4cb5c033069a474d6717c}{wld\_nl80211\_clearAllExpiredRequests}}();}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{151 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_NL80211\_WLD\_NL80211\_API\_PRIV\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

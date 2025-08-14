@@ -1,0 +1,62 @@
+\hypertarget{wld__wpaCtrlInterface__priv_8h}{}\doxysection{include\+\_\+priv/nl80211/wld\+\_\+wpa\+Ctrl\+Interface\+\_\+priv.h File Reference}
+\label{wld__wpaCtrlInterface__priv_8h}\index{include\_priv/nl80211/wld\_wpaCtrlInterface\_priv.h@{include\_priv/nl80211/wld\_wpaCtrlInterface\_priv.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+Interface.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+Mngr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+Connection\+\_\+priv.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Ctrl\+Interface\+\_\+priv.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlInterface__priv_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlInterface__priv_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__wpaCtrlInterface}{wld\+\_\+wpa\+Ctrl\+Interface}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlInterface__priv_8h_a0fd0a5ccb8ada427d988ddbae744536e}{CALL\+\_\+\+INTF}}(p\+Intf,  f\+Name, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlInterface__priv_8h_acac06393fa4539b3a087ba16e8b43a8c}{CALL\+\_\+\+INTF\+\_\+\+NA}}(p\+Intf,  f\+Name)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaCtrlInterface__priv_8h_a0fd0a5ccb8ada427d988ddbae744536e}\label{wld__wpaCtrlInterface__priv_8h_a0fd0a5ccb8ada427d988ddbae744536e}} 
+\index{wld\_wpaCtrlInterface\_priv.h@{wld\_wpaCtrlInterface\_priv.h}!CALL\_INTF@{CALL\_INTF}}
+\index{CALL\_INTF@{CALL\_INTF}!wld\_wpaCtrlInterface\_priv.h@{wld\_wpaCtrlInterface\_priv.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_INTF}{CALL\_INTF}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+INTF(\begin{DoxyParamCaption}\item[{}]{p\+Intf,  }\item[{}]{f\+Name,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}(pIntf != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{        SWL\_CALL(pIntf-\/>handlers.fName, pIntf-\/>userData, pIntf-\/>name, \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlInterface__priv_8h_acac06393fa4539b3a087ba16e8b43a8c}\label{wld__wpaCtrlInterface__priv_8h_acac06393fa4539b3a087ba16e8b43a8c}} 
+\index{wld\_wpaCtrlInterface\_priv.h@{wld\_wpaCtrlInterface\_priv.h}!CALL\_INTF\_NA@{CALL\_INTF\_NA}}
+\index{CALL\_INTF\_NA@{CALL\_INTF\_NA}!wld\_wpaCtrlInterface\_priv.h@{wld\_wpaCtrlInterface\_priv.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_INTF\_NA}{CALL\_INTF\_NA}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+INTF\+\_\+\+NA(\begin{DoxyParamCaption}\item[{}]{p\+Intf,  }\item[{}]{f\+Name }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}(pIntf != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{        SWL\_CALL(pIntf-\/>handlers.fName, pIntf-\/>userData, pIntf-\/>name); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}

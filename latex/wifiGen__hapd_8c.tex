@@ -1,0 +1,470 @@
+\hypertarget{wifiGen__hapd_8c}{}\doxysection{src/\+Plugin/wifi\+Gen\+\_\+hapd.c File Reference}
+\label{wifiGen__hapd_8c}\index{src/Plugin/wifiGen\_hapd.c@{src/Plugin/wifiGen\_hapd.c}}
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+hostapd\+\_\+cfg\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+hostapd\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Ctrl\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Ctrl\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+hostapd\+\_\+ap\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+hapd.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+fsm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+rad.\+h\char`\"{}}\newline
+Include dependency graph for wifi\+Gen\+\_\+hapd.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__hapd_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\+Hapd\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__hapd_8c_a0b8a22b60d4ac4408b6f7dc118391a50}{HOSTAPD\+\_\+\+CONF\+\_\+\+FILE\+\_\+\+PATH\+\_\+\+FORMAT}}~\char`\"{}/tmp/\%s\+\_\+hapd.\+conf\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__hapd_8c_a8bc9ab2180832261f5999928203273f8}{HOSTAPD\+\_\+\+ARGS\+\_\+\+FORMAT}}~\char`\"{}-\/ddt\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__hapd_8c_aae5a355c4d00471bdea3eb381c6910cc}{HOSTAPD\+\_\+\+EXIT\+\_\+\+REASON\+\_\+\+SUCCESS}}~0
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__hapd_8c_a62673bec60924f284a61da3690c452b7}{HOSTAPD\+\_\+\+EXIT\+\_\+\+REASON\+\_\+\+INIT\+\_\+\+FAIL}}~-\/1
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__hapd_8c_a9d650e3cbcacc2fd963833c077532756}{HOSTAPD\+\_\+\+EXIT\+\_\+\+REASON\+\_\+\+LOAD\+\_\+\+FAIL}}~1
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wifiGen__hapd_8c_aea341ad5c8697b145aeb5a64938453b9}{wifi\+Gen\+\_\+hapd\+\_\+parse\+Sock\+Name}} (const char $\ast$sock\+Name, char $\ast$link\+Name, size\+\_\+t link\+Name\+Size, int32\+\_\+t $\ast$p\+Link\+Id)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{wifiGen__hapd_8c_a7d3e7497d8ba632b42864b29eeb4cd70}{wifi\+Gen\+\_\+hapd\+\_\+fetch\+Sock\+Ap\+Link}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+APMld, const char $\ast$sock\+Name)
+\item 
+bool \mbox{\hyperlink{wifiGen__hapd_8c_a7b3bf86662816661b91d39f1eedabac7}{wifi\+Gen\+\_\+hapd\+\_\+is\+Startable}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wifiGen__hapd_8c_aeb15293eb2e3cfacdeaaa5021490afc8}{wifi\+Gen\+\_\+hapd\+\_\+is\+Started}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wifiGen__hapd_8c_a0df57d80f00090a653caeb277ffcff47}{wifi\+Gen\+\_\+hapd\+\_\+restore\+Main\+Iface}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wifiGen__hapd_8c_af087ba544ea7dcfc11f751cf757afc7e}{wifi\+Gen\+\_\+hapd\+\_\+init\+Dyn\+Cfg\+Param\+Supp}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_a3e280a7de79155551d8dcf12b517bdc3}{wifi\+Gen\+\_\+hapd\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_ac2f60b71be7105e795413612f43f026b}{wifi\+Gen\+\_\+hapd\+\_\+init\+VAP}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wifiGen__hapd_8c_af643558a6f2cae8f916cc925a5654667}{wifi\+Gen\+\_\+hapd\+\_\+cleanup}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wifiGen__hapd_8c_a1753195bb30100c7a0a7e1c973daad76}{wifi\+Gen\+\_\+hapd\+\_\+enable\+Vap\+Wpa\+Ctrl\+Iface}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_adb1b0b8dcc7ba8dd972757483436e85c}{wifi\+Gen\+\_\+hapd\+\_\+start\+Daemon}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_a75688dec0e4ad675142a71010b2b536a}{wifi\+Gen\+\_\+hapd\+\_\+stop\+Daemon}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_a3316988b243476f9ae97626a068d4d04}{wifi\+Gen\+\_\+hapd\+\_\+reload\+Daemon}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wifiGen__hapd_8c_a560b5744b5e1dd9945d76be42f18882e}{wifi\+Gen\+\_\+hapd\+\_\+write\+Config}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wifiGen__hapd_8c_a3ba402dd55c4b0f7cd42f0f781504cbd}{wifi\+Gen\+\_\+hapd\+\_\+is\+Running}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wifiGen__hapd_8c_a34f0f7ab3fbb907b8468f24eab479a29}{wifi\+Gen\+\_\+hapd\+\_\+is\+Alive}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+\mbox{\hyperlink{wifiGen__hapd_8c_a2557be6a74b362f838bbed7702507499}{SWL\+\_\+\+TABLE}} (s\+Hapd\+State\+Desc\+Maps, ARR(char $\ast$hapd\+State\+Desc;\mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} rad\+Det\+State;), ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,), ARR(\{\char`\"{}UNKNOWN\char`\"{}, CM\+\_\+\+RAD\+\_\+\+UNKNOWN\}, \{\char`\"{}UNINITIALIZED\char`\"{}, CM\+\_\+\+RAD\+\_\+\+ERROR\}, \{\char`\"{}COUNTRY\+\_\+\+UPDATE\char`\"{}, CM\+\_\+\+RAD\+\_\+\+CONFIGURING\}, \{\char`\"{}ACS\char`\"{}, CM\+\_\+\+RAD\+\_\+\+CONFIGURING\}, \{\char`\"{}HT\+\_\+\+SCAN\char`\"{}, CM\+\_\+\+RAD\+\_\+\+CONFIGURING\}, \{\char`\"{}DFS\char`\"{}, CM\+\_\+\+RAD\+\_\+\+FG\+\_\+\+CAC\}, \{\char`\"{}DISABLED\char`\"{}, CM\+\_\+\+RAD\+\_\+\+DOWN\}, \{\char`\"{}ENABLED\char`\"{}, CM\+\_\+\+RAD\+\_\+\+UP\},))
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_ac643c2614f8d47384fd1793f2f25bb3c}{wifi\+Gen\+\_\+hapd\+\_\+get\+Rad\+State}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} $\ast$p\+Detailed\+State)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_a390fcf6faed4a6312a55bab71c11440f}{wifi\+Gen\+\_\+hapd\+\_\+sync\+Vap\+States}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wifiGen__hapd_8c_a2671410f51adadb1692d7eccb1edc89c}{wifi\+Gen\+\_\+hapd\+\_\+count\+Grp\+Members}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_a97669a9f034b853f3ba448e29bae5a14}{wifi\+Gen\+\_\+hapd\+\_\+set\+Glob\+Dmn\+Settings}} (\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$p\+Vdr, \mbox{\hyperlink{structwld__dmnMgt__dmnExecSettings__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Settings\+\_\+t}} $\ast$p\+Cfg)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_ae671e4e79404fef8370784e22ada1e6f}{wifi\+Gen\+\_\+hapd\+\_\+init\+Glob\+Dmn\+Cap}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__hapd_8c_a4d80996081b27edb93e16942da18919a}{wifi\+Gen\+\_\+hapd\+\_\+get\+Configured\+Country\+Code}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, char $\ast$country, size\+\_\+t country\+Size)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a8bc9ab2180832261f5999928203273f8}\label{wifiGen__hapd_8c_a8bc9ab2180832261f5999928203273f8}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!HOSTAPD\_ARGS\_FORMAT@{HOSTAPD\_ARGS\_FORMAT}}
+\index{HOSTAPD\_ARGS\_FORMAT@{HOSTAPD\_ARGS\_FORMAT}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_ARGS\_FORMAT}{HOSTAPD\_ARGS\_FORMAT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+ARGS\+\_\+\+FORMAT~\char`\"{}-\/ddt\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_a0b8a22b60d4ac4408b6f7dc118391a50}\label{wifiGen__hapd_8c_a0b8a22b60d4ac4408b6f7dc118391a50}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!HOSTAPD\_CONF\_FILE\_PATH\_FORMAT@{HOSTAPD\_CONF\_FILE\_PATH\_FORMAT}}
+\index{HOSTAPD\_CONF\_FILE\_PATH\_FORMAT@{HOSTAPD\_CONF\_FILE\_PATH\_FORMAT}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_CONF\_FILE\_PATH\_FORMAT}{HOSTAPD\_CONF\_FILE\_PATH\_FORMAT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+CONF\+\_\+\+FILE\+\_\+\+PATH\+\_\+\+FORMAT~\char`\"{}/tmp/\%s\+\_\+hapd.\+conf\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_a62673bec60924f284a61da3690c452b7}\label{wifiGen__hapd_8c_a62673bec60924f284a61da3690c452b7}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!HOSTAPD\_EXIT\_REASON\_INIT\_FAIL@{HOSTAPD\_EXIT\_REASON\_INIT\_FAIL}}
+\index{HOSTAPD\_EXIT\_REASON\_INIT\_FAIL@{HOSTAPD\_EXIT\_REASON\_INIT\_FAIL}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_EXIT\_REASON\_INIT\_FAIL}{HOSTAPD\_EXIT\_REASON\_INIT\_FAIL}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+EXIT\+\_\+\+REASON\+\_\+\+INIT\+\_\+\+FAIL~-\/1}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_a9d650e3cbcacc2fd963833c077532756}\label{wifiGen__hapd_8c_a9d650e3cbcacc2fd963833c077532756}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!HOSTAPD\_EXIT\_REASON\_LOAD\_FAIL@{HOSTAPD\_EXIT\_REASON\_LOAD\_FAIL}}
+\index{HOSTAPD\_EXIT\_REASON\_LOAD\_FAIL@{HOSTAPD\_EXIT\_REASON\_LOAD\_FAIL}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_EXIT\_REASON\_LOAD\_FAIL}{HOSTAPD\_EXIT\_REASON\_LOAD\_FAIL}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+EXIT\+\_\+\+REASON\+\_\+\+LOAD\+\_\+\+FAIL~1}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_aae5a355c4d00471bdea3eb381c6910cc}\label{wifiGen__hapd_8c_aae5a355c4d00471bdea3eb381c6910cc}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!HOSTAPD\_EXIT\_REASON\_SUCCESS@{HOSTAPD\_EXIT\_REASON\_SUCCESS}}
+\index{HOSTAPD\_EXIT\_REASON\_SUCCESS@{HOSTAPD\_EXIT\_REASON\_SUCCESS}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{HOSTAPD\_EXIT\_REASON\_SUCCESS}{HOSTAPD\_EXIT\_REASON\_SUCCESS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} HOSTAPD\+\_\+\+EXIT\+\_\+\+REASON\+\_\+\+SUCCESS~0}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen__hapd_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\+Hapd\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a2557be6a74b362f838bbed7702507499}\label{wifiGen__hapd_8c_a2557be6a74b362f838bbed7702507499}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Hapd\+State\+Desc\+Maps}]{,  }\item[{ARR(char $\ast$hapd\+State\+Desc;\mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} rad\+Det\+State;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+char\+Ptr, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{\char`\"{}UNKNOWN\char`\"{}, CM\+\_\+\+RAD\+\_\+\+UNKNOWN\}, \{\char`\"{}UNINITIALIZED\char`\"{}, CM\+\_\+\+RAD\+\_\+\+ERROR\}, \{\char`\"{}COUNTRY\+\_\+\+UPDATE\char`\"{}, CM\+\_\+\+RAD\+\_\+\+CONFIGURING\}, \{\char`\"{}ACS\char`\"{}, CM\+\_\+\+RAD\+\_\+\+CONFIGURING\}, \{\char`\"{}HT\+\_\+\+SCAN\char`\"{}, CM\+\_\+\+RAD\+\_\+\+CONFIGURING\}, \{\char`\"{}DFS\char`\"{}, CM\+\_\+\+RAD\+\_\+\+FG\+\_\+\+CAC\}, \{\char`\"{}DISABLED\char`\"{}, CM\+\_\+\+RAD\+\_\+\+DOWN\}, \{\char`\"{}ENABLED\char`\"{}, CM\+\_\+\+RAD\+\_\+\+UP\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_af643558a6f2cae8f916cc925a5654667}\label{wifiGen__hapd_8c_af643558a6f2cae8f916cc925a5654667}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_cleanup@{wifiGen\_hapd\_cleanup}}
+\index{wifiGen\_hapd\_cleanup@{wifiGen\_hapd\_cleanup}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_cleanup()}{wifiGen\_hapd\_cleanup()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+hapd\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_af643558a6f2cae8f916cc925a5654667_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a2671410f51adadb1692d7eccb1edc89c}\label{wifiGen__hapd_8c_a2671410f51adadb1692d7eccb1edc89c}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_countGrpMembers@{wifiGen\_hapd\_countGrpMembers}}
+\index{wifiGen\_hapd\_countGrpMembers@{wifiGen\_hapd\_countGrpMembers}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_countGrpMembers()}{wifiGen\_hapd\_countGrpMembers()}}
+{\footnotesize\ttfamily uint32\+\_\+t wifi\+Gen\+\_\+hapd\+\_\+count\+Grp\+Members (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a2671410f51adadb1692d7eccb1edc89c_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a2671410f51adadb1692d7eccb1edc89c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a1753195bb30100c7a0a7e1c973daad76}\label{wifiGen__hapd_8c_a1753195bb30100c7a0a7e1c973daad76}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_enableVapWpaCtrlIface@{wifiGen\_hapd\_enableVapWpaCtrlIface}}
+\index{wifiGen\_hapd\_enableVapWpaCtrlIface@{wifiGen\_hapd\_enableVapWpaCtrlIface}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_enableVapWpaCtrlIface()}{wifiGen\_hapd\_enableVapWpaCtrlIface()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+hapd\+\_\+enable\+Vap\+Wpa\+Ctrl\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_a7d3e7497d8ba632b42864b29eeb4cd70}\label{wifiGen__hapd_8c_a7d3e7497d8ba632b42864b29eeb4cd70}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_fetchSockApLink@{wifiGen\_hapd\_fetchSockApLink}}
+\index{wifiGen\_hapd\_fetchSockApLink@{wifiGen\_hapd\_fetchSockApLink}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_fetchSockApLink()}{wifiGen\_hapd\_fetchSockApLink()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ wifi\+Gen\+\_\+hapd\+\_\+fetch\+Sock\+Ap\+Link (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+APMld,  }\item[{const char $\ast$}]{sock\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a7d3e7497d8ba632b42864b29eeb4cd70_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a4d80996081b27edb93e16942da18919a}\label{wifiGen__hapd_8c_a4d80996081b27edb93e16942da18919a}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_getConfiguredCountryCode@{wifiGen\_hapd\_getConfiguredCountryCode}}
+\index{wifiGen\_hapd\_getConfiguredCountryCode@{wifiGen\_hapd\_getConfiguredCountryCode}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_getConfiguredCountryCode()}{wifiGen\_hapd\_getConfiguredCountryCode()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+get\+Configured\+Country\+Code (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{char $\ast$}]{country,  }\item[{size\+\_\+t}]{country\+Size }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a4d80996081b27edb93e16942da18919a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a4d80996081b27edb93e16942da18919a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_ac643c2614f8d47384fd1793f2f25bb3c}\label{wifiGen__hapd_8c_ac643c2614f8d47384fd1793f2f25bb3c}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_getRadState@{wifiGen\_hapd\_getRadState}}
+\index{wifiGen\_hapd\_getRadState@{wifiGen\_hapd\_getRadState}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_getRadState()}{wifiGen\_hapd\_getRadState()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+get\+Rad\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} $\ast$}]{p\+Detailed\+State }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_ac643c2614f8d47384fd1793f2f25bb3c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a3e280a7de79155551d8dcf12b517bdc3}\label{wifiGen__hapd_8c_a3e280a7de79155551d8dcf12b517bdc3}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_init@{wifiGen\_hapd\_init}}
+\index{wifiGen\_hapd\_init@{wifiGen\_hapd\_init}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_init()}{wifiGen\_hapd\_init()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a3e280a7de79155551d8dcf12b517bdc3_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a3e280a7de79155551d8dcf12b517bdc3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_af087ba544ea7dcfc11f751cf757afc7e}\label{wifiGen__hapd_8c_af087ba544ea7dcfc11f751cf757afc7e}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_initDynCfgParamSupp@{wifiGen\_hapd\_initDynCfgParamSupp}}
+\index{wifiGen\_hapd\_initDynCfgParamSupp@{wifiGen\_hapd\_initDynCfgParamSupp}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_initDynCfgParamSupp()}{wifiGen\_hapd\_initDynCfgParamSupp()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+hapd\+\_\+init\+Dyn\+Cfg\+Param\+Supp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_af087ba544ea7dcfc11f751cf757afc7e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_ae671e4e79404fef8370784e22ada1e6f}\label{wifiGen__hapd_8c_ae671e4e79404fef8370784e22ada1e6f}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_initGlobDmnCap@{wifiGen\_hapd\_initGlobDmnCap}}
+\index{wifiGen\_hapd\_initGlobDmnCap@{wifiGen\_hapd\_initGlobDmnCap}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_initGlobDmnCap()}{wifiGen\_hapd\_initGlobDmnCap()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+init\+Glob\+Dmn\+Cap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_ae671e4e79404fef8370784e22ada1e6f_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_ac2f60b71be7105e795413612f43f026b}\label{wifiGen__hapd_8c_ac2f60b71be7105e795413612f43f026b}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_initVAP@{wifiGen\_hapd\_initVAP}}
+\index{wifiGen\_hapd\_initVAP@{wifiGen\_hapd\_initVAP}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_initVAP()}{wifiGen\_hapd\_initVAP()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+init\+VAP (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__hapd_8c_a34f0f7ab3fbb907b8468f24eab479a29}\label{wifiGen__hapd_8c_a34f0f7ab3fbb907b8468f24eab479a29}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_isAlive@{wifiGen\_hapd\_isAlive}}
+\index{wifiGen\_hapd\_isAlive@{wifiGen\_hapd\_isAlive}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_isAlive()}{wifiGen\_hapd\_isAlive()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+hapd\+\_\+is\+Alive (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a34f0f7ab3fbb907b8468f24eab479a29_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a34f0f7ab3fbb907b8468f24eab479a29_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a3ba402dd55c4b0f7cd42f0f781504cbd}\label{wifiGen__hapd_8c_a3ba402dd55c4b0f7cd42f0f781504cbd}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_isRunning@{wifiGen\_hapd\_isRunning}}
+\index{wifiGen\_hapd\_isRunning@{wifiGen\_hapd\_isRunning}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_isRunning()}{wifiGen\_hapd\_isRunning()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+hapd\+\_\+is\+Running (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a3ba402dd55c4b0f7cd42f0f781504cbd_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a7b3bf86662816661b91d39f1eedabac7}\label{wifiGen__hapd_8c_a7b3bf86662816661b91d39f1eedabac7}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_isStartable@{wifiGen\_hapd\_isStartable}}
+\index{wifiGen\_hapd\_isStartable@{wifiGen\_hapd\_isStartable}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_isStartable()}{wifiGen\_hapd\_isStartable()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+hapd\+\_\+is\+Startable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a7b3bf86662816661b91d39f1eedabac7_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_aeb15293eb2e3cfacdeaaa5021490afc8}\label{wifiGen__hapd_8c_aeb15293eb2e3cfacdeaaa5021490afc8}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_isStarted@{wifiGen\_hapd\_isStarted}}
+\index{wifiGen\_hapd\_isStarted@{wifiGen\_hapd\_isStarted}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_isStarted()}{wifiGen\_hapd\_isStarted()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+hapd\+\_\+is\+Started (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_aeb15293eb2e3cfacdeaaa5021490afc8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_aea341ad5c8697b145aeb5a64938453b9}\label{wifiGen__hapd_8c_aea341ad5c8697b145aeb5a64938453b9}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_parseSockName@{wifiGen\_hapd\_parseSockName}}
+\index{wifiGen\_hapd\_parseSockName@{wifiGen\_hapd\_parseSockName}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_parseSockName()}{wifiGen\_hapd\_parseSockName()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+hapd\+\_\+parse\+Sock\+Name (\begin{DoxyParamCaption}\item[{const char $\ast$}]{sock\+Name,  }\item[{char $\ast$}]{link\+Name,  }\item[{size\+\_\+t}]{link\+Name\+Size,  }\item[{int32\+\_\+t $\ast$}]{p\+Link\+Id }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_aea341ad5c8697b145aeb5a64938453b9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a3316988b243476f9ae97626a068d4d04}\label{wifiGen__hapd_8c_a3316988b243476f9ae97626a068d4d04}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_reloadDaemon@{wifiGen\_hapd\_reloadDaemon}}
+\index{wifiGen\_hapd\_reloadDaemon@{wifiGen\_hapd\_reloadDaemon}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_reloadDaemon()}{wifiGen\_hapd\_reloadDaemon()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+reload\+Daemon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a3316988b243476f9ae97626a068d4d04_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a0df57d80f00090a653caeb277ffcff47}\label{wifiGen__hapd_8c_a0df57d80f00090a653caeb277ffcff47}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_restoreMainIface@{wifiGen\_hapd\_restoreMainIface}}
+\index{wifiGen\_hapd\_restoreMainIface@{wifiGen\_hapd\_restoreMainIface}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_restoreMainIface()}{wifiGen\_hapd\_restoreMainIface()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+hapd\+\_\+restore\+Main\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a0df57d80f00090a653caeb277ffcff47_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a97669a9f034b853f3ba448e29bae5a14}\label{wifiGen__hapd_8c_a97669a9f034b853f3ba448e29bae5a14}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_setGlobDmnSettings@{wifiGen\_hapd\_setGlobDmnSettings}}
+\index{wifiGen\_hapd\_setGlobDmnSettings@{wifiGen\_hapd\_setGlobDmnSettings}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_setGlobDmnSettings()}{wifiGen\_hapd\_setGlobDmnSettings()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+set\+Glob\+Dmn\+Settings (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$}]{p\+Vdr,  }\item[{\mbox{\hyperlink{structwld__dmnMgt__dmnExecSettings__t}{wld\+\_\+dmn\+Mgt\+\_\+dmn\+Exec\+Settings\+\_\+t}} $\ast$}]{p\+Cfg }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a97669a9f034b853f3ba448e29bae5a14_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_adb1b0b8dcc7ba8dd972757483436e85c}\label{wifiGen__hapd_8c_adb1b0b8dcc7ba8dd972757483436e85c}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_startDaemon@{wifiGen\_hapd\_startDaemon}}
+\index{wifiGen\_hapd\_startDaemon@{wifiGen\_hapd\_startDaemon}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_startDaemon()}{wifiGen\_hapd\_startDaemon()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+start\+Daemon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_adb1b0b8dcc7ba8dd972757483436e85c_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a75688dec0e4ad675142a71010b2b536a}\label{wifiGen__hapd_8c_a75688dec0e4ad675142a71010b2b536a}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_stopDaemon@{wifiGen\_hapd\_stopDaemon}}
+\index{wifiGen\_hapd\_stopDaemon@{wifiGen\_hapd\_stopDaemon}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_stopDaemon()}{wifiGen\_hapd\_stopDaemon()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+stop\+Daemon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a75688dec0e4ad675142a71010b2b536a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a390fcf6faed4a6312a55bab71c11440f}\label{wifiGen__hapd_8c_a390fcf6faed4a6312a55bab71c11440f}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_syncVapStates@{wifiGen\_hapd\_syncVapStates}}
+\index{wifiGen\_hapd\_syncVapStates@{wifiGen\_hapd\_syncVapStates}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_syncVapStates()}{wifiGen\_hapd\_syncVapStates()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+hapd\+\_\+sync\+Vap\+States (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a390fcf6faed4a6312a55bab71c11440f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a390fcf6faed4a6312a55bab71c11440f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wifiGen__hapd_8c_a560b5744b5e1dd9945d76be42f18882e}\label{wifiGen__hapd_8c_a560b5744b5e1dd9945d76be42f18882e}} 
+\index{wifiGen\_hapd.c@{wifiGen\_hapd.c}!wifiGen\_hapd\_writeConfig@{wifiGen\_hapd\_writeConfig}}
+\index{wifiGen\_hapd\_writeConfig@{wifiGen\_hapd\_writeConfig}!wifiGen\_hapd.c@{wifiGen\_hapd.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_hapd\_writeConfig()}{wifiGen\_hapd\_writeConfig()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+hapd\+\_\+write\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__hapd_8c_a560b5744b5e1dd9945d76be42f18882e_cgraph}
+\end{center}
+\end{figure}

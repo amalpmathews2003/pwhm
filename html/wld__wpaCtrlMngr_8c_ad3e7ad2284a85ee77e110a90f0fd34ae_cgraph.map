@@ -1,0 +1,7 @@
+<map id="wld_wpaCtrlMngr_isConnected" name="wld_wpaCtrlMngr_isConnected">
+<area shape="rect" id="node1" title="check that wpaCtrl manager is connected: i.e can receive events from its main interface." alt="" coords="5,35,228,61"/>
+<area shape="rect" id="node2" href="$wld__secDmn_8c.html#ad8ebf9f869b635102d27d9a476e4d9eb" title=" " alt="" coords="283,5,459,32"/>
+<area shape="rect" id="node4" href="$wld__wpaCtrlMngr_8c.html#a3dc93dfda0d67c0e7254cc1ffeeb3ebe" title=" " alt="" coords="276,57,467,98"/>
+<area shape="rect" id="node3" href="$wld__daemon_8c.html#a6ba98a859d038541e1c2ee48d8566547" title=" " alt="" coords="519,5,671,32"/>
+<area shape="rect" id="node5" href="$wld__wpaCtrlInterface_8c.html#a8b38bc9ca95b60e002d38cdb1374d1d0" title=" " alt="" coords="515,57,675,98"/>
+</map>

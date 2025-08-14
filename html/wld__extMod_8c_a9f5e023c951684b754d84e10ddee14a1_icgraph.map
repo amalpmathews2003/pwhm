@@ -1,0 +1,12 @@
+<map id="s_getData" name="s_getData">
+<area shape="rect" id="node1" title=" " alt="" coords="533,132,621,159"/>
+<area shape="rect" id="node2" href="$wld__extMod_8c.html#a9caf156ba8ea03343a93eb64e15041e7" title="retrieve the extModData that was registered for a given extModId" alt="" coords="303,56,463,83"/>
+<area shape="rect" id="node5" href="$wld__extMod_8c.html#a9d0c44c8f7cdda03ca7417eda68925ea" title="register extModData for a given extenion module" alt="" coords="288,132,477,159"/>
+<area shape="rect" id="node8" href="$wld__extMod_8c.html#a85fbbfd3f3b407eed10d43fe03f04789" title="unregister the extModData that was registered for a given extModId" alt="" coords="280,208,485,235"/>
+<area shape="rect" id="node3" href="$wld__assocdev_8c.html#a96f701a5811fdc59697b00e22a2843bc" title=" " alt="" coords="31,5,207,32"/>
+<area shape="rect" id="node4" href="$wld__radio_8c.html#aa0da21f7cf7f45c41551bd479adc4d88" title=" " alt="" coords="28,56,209,83"/>
+<area shape="rect" id="node6" href="$wld__assocdev_8c.html#a5b2aa91e618fed058812b319ef79df42" title=" " alt="" coords="16,107,221,133"/>
+<area shape="rect" id="node7" href="$wld__radio_8c.html#a161ac2883897bd3d4f19364e1e07327f" title=" " alt="" coords="13,157,224,184"/>
+<area shape="rect" id="node9" href="$wld__assocdev_8c.html#a262b5c18633f138511d5d05b72135984" title=" " alt="" coords="8,208,229,235"/>
+<area shape="rect" id="node10" href="$wld__radio_8c.html#aed8e22fe3caf7fa575bed77054d8514a" title=" " alt="" coords="5,259,232,285"/>
+</map>

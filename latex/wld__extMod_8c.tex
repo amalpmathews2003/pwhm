@@ -1,0 +1,292 @@
+\hypertarget{wld__extMod_8c}{}\doxysection{src/\+Utils/wld\+\_\+ext\+Mod.c File Reference}
+\label{wld__extMod_8c}\index{src/Utils/wld\_extMod.c@{src/Utils/wld\_extMod.c}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$swl/swl\+\_\+string.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ext\+Mod.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ext\+Mod.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__extModuleInfo__t}{wld\+\_\+ext\+Module\+Info\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__extMod__dataEntry__t}{wld\+\_\+ext\+Mod\+\_\+data\+Entry\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__extMod_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+ExtM\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__extMod_8c_ad28e118e7405a0c76a043368d6164be2}{wld\+\_\+ext\+Mod\+\_\+register}} (const char $\ast$vendor\+Name, const char $\ast$ext\+Mod\+Name)
+\begin{DoxyCompactList}\small\item\em Register an extension module. Provide pointers to vendor\+Name and ext\+Mod\+Name. These pointers shall be stored internally, so please ensure they are persistent. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__extMod_8c_ae8603cad9affc4a2a7b299d03493bc0a}{wld\+\_\+ext\+Mod\+\_\+unregister}} (uint32\+\_\+t ext\+Mod\+Id)
+\begin{DoxyCompactList}\small\item\em Unregister extension module with ext\+Mod\+Id. This should only be done after cleaning up all extention module data from relevant objects. unregistered an extension module shall NOT call the delete handlers linked with this extension module. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__extMod_8c_a004bceccd8e67090271f23e454a5c0e2}{wld\+\_\+ext\+Mod\+\_\+is\+Valid\+Id}} (uint32\+\_\+t ext\+Mod\+Id)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__extMod_8c_a3a2e13bb898d5c41979ce07ebb171dfe}{wld\+\_\+ext\+Mod\+\_\+init\+Data\+List}} (\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$list)
+\begin{DoxyCompactList}\small\item\em initialize the ext mod data list \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structwld__extMod__dataEntry__t}{wld\+\_\+ext\+Mod\+\_\+data\+Entry\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__extMod_8c_a9f5e023c951684b754d84e10ddee14a1}{s\+\_\+get\+Data}} (\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$list, uint32\+\_\+t ext\+Mod\+Id)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__extMod_8c_a9d0c44c8f7cdda03ca7417eda68925ea}{wld\+\_\+ext\+Mod\+\_\+register\+Data}} (\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$list, uint32\+\_\+t ext\+Mod\+Id, void $\ast$ext\+Mod\+Data, \mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\+\_\+ext\+Mod\+\_\+delete\+Data\+\_\+dcf}} delete\+Handler)
+\begin{DoxyCompactList}\small\item\em register ext\+Mod\+Data for a given extenion module \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{wld__extMod_8c_a9caf156ba8ea03343a93eb64e15041e7}{wld\+\_\+ext\+Mod\+\_\+get\+Data}} (\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$ext\+Data\+List, uint32\+\_\+t ext\+Mod\+Id)
+\begin{DoxyCompactList}\small\item\em retrieve the ext\+Mod\+Data that was registered for a given ext\+Mod\+Id \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__extMod_8c_a85fbbfd3f3b407eed10d43fe03f04789}{wld\+\_\+ext\+Mod\+\_\+unregister\+Data}} (\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$ext\+Data\+List, uint32\+\_\+t ext\+Mod\+Id)
+\begin{DoxyCompactList}\small\item\em unregister the ext\+Mod\+Data that was registered for a given ext\+Mod\+Id \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__extMod_8c_aa2ca70b5b598c205d60ab831640bbc33}{wld\+\_\+ext\+Mod\+\_\+cleanup\+Data\+List}} (\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$list, void $\ast$core\+Object)
+\begin{DoxyCompactList}\small\item\em clean up the ext\+Mod\+Data\+List for a given core object. This will call the delete handlers for all actively registered ext\+Mod\+Data entries. It is not expected that these entries then unregister themselves \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__extMod_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__extMod_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!ME@{ME}}
+\index{ME@{ME}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+ExtM\char`\"{}}
+
+Extention module handling.
+
+This module is used to register extention modules that are not doing the \char`\"{}chipset integration\char`\"{}
+
+This allows multiple modules to directly interact locally with the data model, without going over the bus. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__extMod_8c_a9f5e023c951684b754d84e10ddee14a1}\label{wld__extMod_8c_a9f5e023c951684b754d84e10ddee14a1}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!s\_getData@{s\_getData}}
+\index{s\_getData@{s\_getData}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{s\_getData()}{s\_getData()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__extMod__dataEntry__t}{wld\+\_\+ext\+Mod\+\_\+data\+Entry\+\_\+t}} $\ast$ s\+\_\+get\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$}]{list,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_a9f5e023c951684b754d84e10ddee14a1_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__extMod_8c_aa2ca70b5b598c205d60ab831640bbc33}\label{wld__extMod_8c_aa2ca70b5b598c205d60ab831640bbc33}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_cleanupDataList@{wld\_extMod\_cleanupDataList}}
+\index{wld\_extMod\_cleanupDataList@{wld\_extMod\_cleanupDataList}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_cleanupDataList()}{wld\_extMod\_cleanupDataList()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ext\+Mod\+\_\+cleanup\+Data\+List (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$}]{list,  }\item[{void $\ast$}]{core\+Object }\end{DoxyParamCaption})}
+
+
+
+clean up the ext\+Mod\+Data\+List for a given core object. This will call the delete handlers for all actively registered ext\+Mod\+Data entries. It is not expected that these entries then unregister themselves 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & the data list to clean up \\
+\hline
+{\em core\+Object} & the object that will be provided to the delete handlers \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK if cleanup was successful, SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM otherwise. 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_aa2ca70b5b598c205d60ab831640bbc33_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__extMod_8c_a9caf156ba8ea03343a93eb64e15041e7}\label{wld__extMod_8c_a9caf156ba8ea03343a93eb64e15041e7}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_getData@{wld\_extMod\_getData}}
+\index{wld\_extMod\_getData@{wld\_extMod\_getData}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_getData()}{wld\_extMod\_getData()}}
+{\footnotesize\ttfamily void $\ast$ wld\+\_\+ext\+Mod\+\_\+get\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$}]{list,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+
+
+retrieve the ext\+Mod\+Data that was registered for a given ext\+Mod\+Id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & the data list to retrieve the ext\+Mod\+Data from \\
+\hline
+{\em ext\+Mod\+Id} & the registered extension module index \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the ext\+Mod\+Data that was previously registered with the given ext\+Mod\+Id 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=302pt]{wld__extMod_8c_a9caf156ba8ea03343a93eb64e15041e7_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_a9caf156ba8ea03343a93eb64e15041e7_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__extMod_8c_a3a2e13bb898d5c41979ce07ebb171dfe}\label{wld__extMod_8c_a3a2e13bb898d5c41979ce07ebb171dfe}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_initDataList@{wld\_extMod\_initDataList}}
+\index{wld\_extMod\_initDataList@{wld\_extMod\_initDataList}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_initDataList()}{wld\_extMod\_initDataList()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ext\+Mod\+\_\+init\+Data\+List (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$}]{list }\end{DoxyParamCaption})}
+
+
+
+initialize the ext mod data list 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & the list to initialize \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK if initialisation was successful, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__extMod_8c_a004bceccd8e67090271f23e454a5c0e2}\label{wld__extMod_8c_a004bceccd8e67090271f23e454a5c0e2}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_isValidId@{wld\_extMod\_isValidId}}
+\index{wld\_extMod\_isValidId@{wld\_extMod\_isValidId}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_isValidId()}{wld\_extMod\_isValidId()}}
+{\footnotesize\ttfamily bool wld\+\_\+ext\+Mod\+\_\+is\+Valid\+Id (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_a004bceccd8e67090271f23e454a5c0e2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__extMod_8c_ad28e118e7405a0c76a043368d6164be2}\label{wld__extMod_8c_ad28e118e7405a0c76a043368d6164be2}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_register@{wld\_extMod\_register}}
+\index{wld\_extMod\_register@{wld\_extMod\_register}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_register()}{wld\_extMod\_register()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+ext\+Mod\+\_\+register (\begin{DoxyParamCaption}\item[{const char $\ast$}]{vendor\+Name,  }\item[{const char $\ast$}]{ext\+Mod\+Name }\end{DoxyParamCaption})}
+
+
+
+Register an extension module. Provide pointers to vendor\+Name and ext\+Mod\+Name. These pointers shall be stored internally, so please ensure they are persistent. 
+
+Library to manage data for \char`\"{}extension modules\char`\"{}, meaning modules that are not actively providing chipset integration services, but would like to be able to directly interact with the wifi layer without having to go around the data model.
+
+
+\begin{DoxyParams}{Parameters}
+{\em vendor\+Name} & name of the extension module vendor company \\
+\hline
+{\em ext\+Mod\+Name} & the name of the extension module, should be unique per company\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a non-\/zero extended module index if successful, zero if failed. This registered extension module index shall be used for ext\+Mod\+Data registration, and shall be referred there as ext\+Mod\+Id. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__extMod_8c_a9d0c44c8f7cdda03ca7417eda68925ea}\label{wld__extMod_8c_a9d0c44c8f7cdda03ca7417eda68925ea}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_registerData@{wld\_extMod\_registerData}}
+\index{wld\_extMod\_registerData@{wld\_extMod\_registerData}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_registerData()}{wld\_extMod\_registerData()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ext\+Mod\+\_\+register\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$}]{list,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id,  }\item[{void $\ast$}]{ext\+Mod\+Data,  }\item[{\mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\+\_\+ext\+Mod\+\_\+delete\+Data\+\_\+dcf}}}]{delete\+Handler }\end{DoxyParamCaption})}
+
+
+
+register ext\+Mod\+Data for a given extenion module 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & the data list to register the ext\+Mod\+Data with \\
+\hline
+{\em ext\+Mod\+Id} & the registered extension module index \\
+\hline
+{\em ext\+Mod\+Data} & the data being registered \\
+\hline
+{\em delete\+Handler} & the handler which shall be called if the list is cleaned up. Handler will not be called in case of unregister \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+OK if registration was successfull,
+\item SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+STATE if a previous registration was found with the given ext\+Mod\+Id
+\item SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if for some other reason registration failed. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_a9d0c44c8f7cdda03ca7417eda68925ea_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_a9d0c44c8f7cdda03ca7417eda68925ea_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__extMod_8c_ae8603cad9affc4a2a7b299d03493bc0a}\label{wld__extMod_8c_ae8603cad9affc4a2a7b299d03493bc0a}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_unregister@{wld\_extMod\_unregister}}
+\index{wld\_extMod\_unregister@{wld\_extMod\_unregister}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_unregister()}{wld\_extMod\_unregister()}}
+{\footnotesize\ttfamily void wld\+\_\+ext\+Mod\+\_\+unregister (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+
+
+Unregister extension module with ext\+Mod\+Id. This should only be done after cleaning up all extention module data from relevant objects. unregistered an extension module shall NOT call the delete handlers linked with this extension module. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ext\+Mod\+Id} & the registered extension module index \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__extMod_8c_a85fbbfd3f3b407eed10d43fe03f04789}\label{wld__extMod_8c_a85fbbfd3f3b407eed10d43fe03f04789}} 
+\index{wld\_extMod.c@{wld\_extMod.c}!wld\_extMod\_unregisterData@{wld\_extMod\_unregisterData}}
+\index{wld\_extMod\_unregisterData@{wld\_extMod\_unregisterData}!wld\_extMod.c@{wld\_extMod.c}}
+\doxysubsubsection{\texorpdfstring{wld\_extMod\_unregisterData()}{wld\_extMod\_unregisterData()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ext\+Mod\+\_\+unregister\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} $\ast$}]{list,  }\item[{uint32\+\_\+t}]{ext\+Mod\+Id }\end{DoxyParamCaption})}
+
+
+
+unregister the ext\+Mod\+Data that was registered for a given ext\+Mod\+Id 
+
+The ext\+Mod\+Data shall NOT be freed. This is still up to the extension module to do themselves. This shall also NOT call the delete handler for the relevant object. This shall purely unlink the extension module data for the given ext\+Mod\+Id.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & the data list to unregister the ext\+Mod\+Data from \\
+\hline
+{\em ext\+Mod\+Id} & the registered extension module index \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK if unregistration was successfull, i.\+e. the data existed. SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM otherwise. 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{wld__extMod_8c_a85fbbfd3f3b407eed10d43fe03f04789_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__extMod_8c_a85fbbfd3f3b407eed10d43fe03f04789_icgraph}
+\end{center}
+\end{figure}

@@ -1,0 +1,12 @@
+<map id="wld_wpaCtrl_getSyncCmdParamValInt32Def" name="wld_wpaCtrl_getSyncCmdParamValInt32Def">
+<area shape="rect" id="node1" title="send synchronous command to wpa_ctrl server and convert a parameter value in the reply (string in bas..." alt="" coords="5,74,237,115"/>
+<area shape="rect" id="node2" href="$wld__wpaCtrlInterface_8c.html#af5a74650770b378805df194c8cc4f52b" title="send synchronous command to wpa_ctrl server and check a parameter value in the reply" alt="" coords="285,56,537,83"/>
+<area shape="rect" id="node10" href="$wld__util_8c.html#a1885348d15676dcae318538076904ed3" title=" " alt="" coords="334,107,489,133"/>
+<area shape="rect" id="node3" href="$wld__wpaCtrlConnection_8c.html#ab5b29b7ce5f29ef5dfbe951e5b700428" title=" " alt="" coords="590,5,798,32"/>
+<area shape="rect" id="node4" href="$wld__wpaCtrl__events_8c.html#a67b83e09a159510b15c2677af1127b60" title=" " alt="" coords="602,56,786,83"/>
+<area shape="rect" id="node5" href="$wld__wpaCtrlInterface_8c.html#a4e9aeb5d1118a418053afcb9a3b8375c" title="send command to wpa_ctrl server and wait for the reply" alt="" coords="585,107,803,133"/>
+<area shape="rect" id="node6" href="$wld__wpaCtrlConnection_8c.html#a4ffecc829a17c67728b8ced8b0cccc92" title=" " alt="" coords="851,99,1025,141"/>
+<area shape="rect" id="node7" href="$wld__wpaCtrlConnection_8c.html#ae8867992d243efdfa13e360b50730f88" title=" " alt="" coords="1073,99,1248,141"/>
+<area shape="rect" id="node8" href="$wld__wpaCtrlConnection_8c.html#abfe3f8b17cf527b1e6fe85a564c8604b" title=" " alt="" coords="1296,66,1471,107"/>
+<area shape="rect" id="node9" href="$wld__wpaCtrlConnection_8c.html#aa82226c76dbbf306e509b7c6d3088277" title=" " alt="" coords="1296,131,1471,173"/>
+</map>

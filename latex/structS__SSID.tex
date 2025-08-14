@@ -1,0 +1,227 @@
+\hypertarget{structS__SSID}{}\doxysection{S\+\_\+\+SSID Struct Reference}
+\label{structS__SSID}\index{S\_SSID@{S\_SSID}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+
+
+Collaboration diagram for S\+\_\+\+SSID\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structS__SSID__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+amxc\+\_\+llist\+\_\+it\+\_\+t \mbox{\hyperlink{structS__SSID_ad7cd16d56d1c40b0e7fd40ae074b47c9}{it}}
+\item 
+int \mbox{\hyperlink{structS__SSID_ab43e700c56e9886189bd2adbae1ceeae}{debug}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}} \mbox{\hyperlink{structS__SSID_a67ad0906892e1799bfb58a9327b57699}{status}}
+\item 
+wld\+\_\+status\+\_\+change\+Info\+\_\+t \mbox{\hyperlink{structS__SSID_a462ecf8c9356306e243de0f2d03daefc}{change\+Info}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$ \mbox{\hyperlink{structS__SSID_ac4dbf0a7389960b5dec4bb3c5d858f97}{RADIO\+\_\+\+PARENT}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ \mbox{\hyperlink{structS__SSID_ae45b48d016200bf0519c067230bae146}{AP\+\_\+\+HOOK}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ \mbox{\hyperlink{structS__SSID_a38251fb26de5394a9ee2d08c92fcfa50}{ENDP\+\_\+\+HOOK}}
+\item 
+unsigned char \mbox{\hyperlink{structS__SSID_adb5831b9748ac01e775eb904815048d5}{BSSID}} \mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+unsigned char \mbox{\hyperlink{structS__SSID_a703cefcd2b103100ecf34146b73df273}{MACAddress}} \mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__SSID_aaf6a55484dee1a6d82dc48942e3bd5ea}{SSID}} \mbox{[}36\mbox{]}
+\item 
+char \mbox{\hyperlink{structS__SSID_af3fa0269bda38ad5fc5df7139129d6da}{Name}} \mbox{[}32\mbox{]}
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} \mbox{\hyperlink{structS__SSID_ac2199a0b9f37a925285b68eda4e0feec}{stats}}
+\item 
+bool \mbox{\hyperlink{structS__SSID_a20fdb311c52bdd639e9dd992a6eed176}{enable}}
+\item 
+bool \mbox{\hyperlink{structS__SSID_a9c4cf722d96485d76b098aa6f12f11f3}{target\+Enable}}
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{structS__SSID_a1c5cf7a9e060cb681393a15169c01c5d}{p\+Bus}}
+\item 
+void $\ast$ \mbox{\hyperlink{structS__SSID_aba997bbc36b2592e0e17309329b402d8}{vendor\+Data}}
+\item 
+amxp\+\_\+timer\+\_\+t $\ast$ \mbox{\hyperlink{structS__SSID_a7d70e0a042795ad89ae914bb87f03fb1}{enable\+Sync\+Timer}}
+\item 
+bool \mbox{\hyperlink{structS__SSID_aa602efa6f0423aa10f5116126d631a40}{sync\+Enable\+To\+Intf}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structS__SSID_a21c5db1b313f88acdf73ddf691900bab}{bss\+Index}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structS__SSID_a13d7690c6aab0ec7ad6f65fa892ff677}{mld\+Unit}}
+\item 
+\mbox{\hyperlink{wld_8h_a34c4ca870bfbd085ea9c21a35c747fae}{wld\+\_\+auto\+Mac\+Src\+\_\+e}} \mbox{\hyperlink{structS__SSID_aa37d036767f5f2c998c21aa2dd399609}{auto\+Mac\+Src}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structS__SSID_a944293c04d40f42b72b91a1085b409b4}{auto\+Mac\+Ref\+Index}}
+\item 
+char \mbox{\hyperlink{structS__SSID_aa00c3cb287ca9d8ae933d1e57e5cdd51}{custom\+Net\+Dev\+Name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+bool \mbox{\hyperlink{structS__SSID_a50535a1248ac907512c2124113a61246}{init\+Done}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a9b1fea90d6d83018b26396d5ed707eb6}{wld\+\_\+mld\+Link\+\_\+t}} $\ast$ \mbox{\hyperlink{structS__SSID_a3824645fd0d63762f23d57ba574be046}{p\+Mld\+Link}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structS__SSID_ae45b48d016200bf0519c067230bae146}\label{structS__SSID_ae45b48d016200bf0519c067230bae146}} 
+\index{S\_SSID@{S\_SSID}!AP\_HOOK@{AP\_HOOK}}
+\index{AP\_HOOK@{AP\_HOOK}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{AP\_HOOK}{AP\_HOOK}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}}$\ast$ S\+\_\+\+SSID\+::\+AP\+\_\+\+HOOK}
+
+\mbox{\Hypertarget{structS__SSID_a944293c04d40f42b72b91a1085b409b4}\label{structS__SSID_a944293c04d40f42b72b91a1085b409b4}} 
+\index{S\_SSID@{S\_SSID}!autoMacRefIndex@{autoMacRefIndex}}
+\index{autoMacRefIndex@{autoMacRefIndex}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{autoMacRefIndex}{autoMacRefIndex}}
+{\footnotesize\ttfamily uint32\+\_\+t S\+\_\+\+SSID\+::auto\+Mac\+Ref\+Index}
+
+\mbox{\Hypertarget{structS__SSID_aa37d036767f5f2c998c21aa2dd399609}\label{structS__SSID_aa37d036767f5f2c998c21aa2dd399609}} 
+\index{S\_SSID@{S\_SSID}!autoMacSrc@{autoMacSrc}}
+\index{autoMacSrc@{autoMacSrc}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{autoMacSrc}{autoMacSrc}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a34c4ca870bfbd085ea9c21a35c747fae}{wld\+\_\+auto\+Mac\+Src\+\_\+e}} S\+\_\+\+SSID\+::auto\+Mac\+Src}
+
+\mbox{\Hypertarget{structS__SSID_adb5831b9748ac01e775eb904815048d5}\label{structS__SSID_adb5831b9748ac01e775eb904815048d5}} 
+\index{S\_SSID@{S\_SSID}!BSSID@{BSSID}}
+\index{BSSID@{BSSID}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{BSSID}{BSSID}}
+{\footnotesize\ttfamily unsigned char S\+\_\+\+SSID\+::\+BSSID\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__SSID_a21c5db1b313f88acdf73ddf691900bab}\label{structS__SSID_a21c5db1b313f88acdf73ddf691900bab}} 
+\index{S\_SSID@{S\_SSID}!bssIndex@{bssIndex}}
+\index{bssIndex@{bssIndex}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{bssIndex}{bssIndex}}
+{\footnotesize\ttfamily int32\+\_\+t S\+\_\+\+SSID\+::bss\+Index}
+
+\mbox{\Hypertarget{structS__SSID_a462ecf8c9356306e243de0f2d03daefc}\label{structS__SSID_a462ecf8c9356306e243de0f2d03daefc}} 
+\index{S\_SSID@{S\_SSID}!changeInfo@{changeInfo}}
+\index{changeInfo@{changeInfo}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{changeInfo}{changeInfo}}
+{\footnotesize\ttfamily wld\+\_\+status\+\_\+change\+Info\+\_\+t S\+\_\+\+SSID\+::change\+Info}
+
+\mbox{\Hypertarget{structS__SSID_aa00c3cb287ca9d8ae933d1e57e5cdd51}\label{structS__SSID_aa00c3cb287ca9d8ae933d1e57e5cdd51}} 
+\index{S\_SSID@{S\_SSID}!customNetDevName@{customNetDevName}}
+\index{customNetDevName@{customNetDevName}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{customNetDevName}{customNetDevName}}
+{\footnotesize\ttfamily char S\+\_\+\+SSID\+::custom\+Net\+Dev\+Name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__SSID_ab43e700c56e9886189bd2adbae1ceeae}\label{structS__SSID_ab43e700c56e9886189bd2adbae1ceeae}} 
+\index{S\_SSID@{S\_SSID}!debug@{debug}}
+\index{debug@{debug}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{debug}{debug}}
+{\footnotesize\ttfamily int S\+\_\+\+SSID\+::debug}
+
+\mbox{\Hypertarget{structS__SSID_a20fdb311c52bdd639e9dd992a6eed176}\label{structS__SSID_a20fdb311c52bdd639e9dd992a6eed176}} 
+\index{S\_SSID@{S\_SSID}!enable@{enable}}
+\index{enable@{enable}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{enable}{enable}}
+{\footnotesize\ttfamily bool S\+\_\+\+SSID\+::enable}
+
+\mbox{\Hypertarget{structS__SSID_a7d70e0a042795ad89ae914bb87f03fb1}\label{structS__SSID_a7d70e0a042795ad89ae914bb87f03fb1}} 
+\index{S\_SSID@{S\_SSID}!enableSyncTimer@{enableSyncTimer}}
+\index{enableSyncTimer@{enableSyncTimer}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{enableSyncTimer}{enableSyncTimer}}
+{\footnotesize\ttfamily amxp\+\_\+timer\+\_\+t$\ast$ S\+\_\+\+SSID\+::enable\+Sync\+Timer}
+
+\mbox{\Hypertarget{structS__SSID_a38251fb26de5394a9ee2d08c92fcfa50}\label{structS__SSID_a38251fb26de5394a9ee2d08c92fcfa50}} 
+\index{S\_SSID@{S\_SSID}!ENDP\_HOOK@{ENDP\_HOOK}}
+\index{ENDP\_HOOK@{ENDP\_HOOK}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{ENDP\_HOOK}{ENDP\_HOOK}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}}$\ast$ S\+\_\+\+SSID\+::\+ENDP\+\_\+\+HOOK}
+
+\mbox{\Hypertarget{structS__SSID_a50535a1248ac907512c2124113a61246}\label{structS__SSID_a50535a1248ac907512c2124113a61246}} 
+\index{S\_SSID@{S\_SSID}!initDone@{initDone}}
+\index{initDone@{initDone}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{initDone}{initDone}}
+{\footnotesize\ttfamily bool S\+\_\+\+SSID\+::init\+Done}
+
+\mbox{\Hypertarget{structS__SSID_ad7cd16d56d1c40b0e7fd40ae074b47c9}\label{structS__SSID_ad7cd16d56d1c40b0e7fd40ae074b47c9}} 
+\index{S\_SSID@{S\_SSID}!it@{it}}
+\index{it@{it}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{it}{it}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+it\+\_\+t S\+\_\+\+SSID\+::it}
+
+\mbox{\Hypertarget{structS__SSID_a703cefcd2b103100ecf34146b73df273}\label{structS__SSID_a703cefcd2b103100ecf34146b73df273}} 
+\index{S\_SSID@{S\_SSID}!MACAddress@{MACAddress}}
+\index{MACAddress@{MACAddress}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{MACAddress}{MACAddress}}
+{\footnotesize\ttfamily unsigned char S\+\_\+\+SSID\+::\+MACAddress\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structS__SSID_a13d7690c6aab0ec7ad6f65fa892ff677}\label{structS__SSID_a13d7690c6aab0ec7ad6f65fa892ff677}} 
+\index{S\_SSID@{S\_SSID}!mldUnit@{mldUnit}}
+\index{mldUnit@{mldUnit}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{mldUnit}{mldUnit}}
+{\footnotesize\ttfamily int32\+\_\+t S\+\_\+\+SSID\+::mld\+Unit}
+
+\mbox{\Hypertarget{structS__SSID_af3fa0269bda38ad5fc5df7139129d6da}\label{structS__SSID_af3fa0269bda38ad5fc5df7139129d6da}} 
+\index{S\_SSID@{S\_SSID}!Name@{Name}}
+\index{Name@{Name}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily char S\+\_\+\+SSID\+::\+Name\mbox{[}32\mbox{]}}
+
+\mbox{\Hypertarget{structS__SSID_a1c5cf7a9e060cb681393a15169c01c5d}\label{structS__SSID_a1c5cf7a9e060cb681393a15169c01c5d}} 
+\index{S\_SSID@{S\_SSID}!pBus@{pBus}}
+\index{pBus@{pBus}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{pBus}{pBus}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t$\ast$ S\+\_\+\+SSID\+::p\+Bus}
+
+\mbox{\Hypertarget{structS__SSID_a3824645fd0d63762f23d57ba574be046}\label{structS__SSID_a3824645fd0d63762f23d57ba574be046}} 
+\index{S\_SSID@{S\_SSID}!pMldLink@{pMldLink}}
+\index{pMldLink@{pMldLink}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{pMldLink}{pMldLink}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a9b1fea90d6d83018b26396d5ed707eb6}{wld\+\_\+mld\+Link\+\_\+t}}$\ast$ S\+\_\+\+SSID\+::p\+Mld\+Link}
+
+\mbox{\Hypertarget{structS__SSID_ac4dbf0a7389960b5dec4bb3c5d858f97}\label{structS__SSID_ac4dbf0a7389960b5dec4bb3c5d858f97}} 
+\index{S\_SSID@{S\_SSID}!RADIO\_PARENT@{RADIO\_PARENT}}
+\index{RADIO\_PARENT@{RADIO\_PARENT}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{RADIO\_PARENT}{RADIO\_PARENT}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}}$\ast$ S\+\_\+\+SSID\+::\+RADIO\+\_\+\+PARENT}
+
+\mbox{\Hypertarget{structS__SSID_aaf6a55484dee1a6d82dc48942e3bd5ea}\label{structS__SSID_aaf6a55484dee1a6d82dc48942e3bd5ea}} 
+\index{S\_SSID@{S\_SSID}!SSID@{SSID}}
+\index{SSID@{SSID}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{SSID}{SSID}}
+{\footnotesize\ttfamily char S\+\_\+\+SSID\+::\+SSID\mbox{[}36\mbox{]}}
+
+\mbox{\Hypertarget{structS__SSID_ac2199a0b9f37a925285b68eda4e0feec}\label{structS__SSID_ac2199a0b9f37a925285b68eda4e0feec}} 
+\index{S\_SSID@{S\_SSID}!stats@{stats}}
+\index{stats@{stats}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{stats}{stats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} S\+\_\+\+SSID\+::stats}
+
+\mbox{\Hypertarget{structS__SSID_a67ad0906892e1799bfb58a9327b57699}\label{structS__SSID_a67ad0906892e1799bfb58a9327b57699}} 
+\index{S\_SSID@{S\_SSID}!status@{status}}
+\index{status@{status}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}} S\+\_\+\+SSID\+::status}
+
+\mbox{\Hypertarget{structS__SSID_aa602efa6f0423aa10f5116126d631a40}\label{structS__SSID_aa602efa6f0423aa10f5116126d631a40}} 
+\index{S\_SSID@{S\_SSID}!syncEnableToIntf@{syncEnableToIntf}}
+\index{syncEnableToIntf@{syncEnableToIntf}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{syncEnableToIntf}{syncEnableToIntf}}
+{\footnotesize\ttfamily bool S\+\_\+\+SSID\+::sync\+Enable\+To\+Intf}
+
+\mbox{\Hypertarget{structS__SSID_a9c4cf722d96485d76b098aa6f12f11f3}\label{structS__SSID_a9c4cf722d96485d76b098aa6f12f11f3}} 
+\index{S\_SSID@{S\_SSID}!targetEnable@{targetEnable}}
+\index{targetEnable@{targetEnable}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{targetEnable}{targetEnable}}
+{\footnotesize\ttfamily bool S\+\_\+\+SSID\+::target\+Enable}
+
+\mbox{\Hypertarget{structS__SSID_aba997bbc36b2592e0e17309329b402d8}\label{structS__SSID_aba997bbc36b2592e0e17309329b402d8}} 
+\index{S\_SSID@{S\_SSID}!vendorData@{vendorData}}
+\index{vendorData@{vendorData}!S\_SSID@{S\_SSID}}
+\doxysubsubsection{\texorpdfstring{vendorData}{vendorData}}
+{\footnotesize\ttfamily void$\ast$ S\+\_\+\+SSID\+::vendor\+Data}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

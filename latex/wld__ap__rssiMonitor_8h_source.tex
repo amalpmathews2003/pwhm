@@ -1,0 +1,104 @@
+\hypertarget{wld__ap__rssiMonitor_8h_source}{}\doxysection{wld\+\_\+ap\+\_\+rssi\+Monitor.\+h}
+\label{wld__ap__rssiMonitor_8h_source}\index{include/wld/wld\_ap\_rssiMonitor.h@{include/wld/wld\_ap\_rssiMonitor.h}}
+\mbox{\hyperlink{wld__ap__rssiMonitor_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef SRC\_INCLUDE\_WLD\_WLD\_AP\_RSSIMONITOR\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define SRC\_INCLUDE\_WLD\_WLD\_AP\_RSSIMONITOR\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{69     int32\_t \mbox{\hyperlink{structwld__apRssiMon__signalRange__t_a4a1eaddd99aa5b0611b14b5e5974196c}{minRssi}};}
+\DoxyCodeLine{70     int32\_t \mbox{\hyperlink{structwld__apRssiMon__signalRange__t_a05aad97e33958ac4b30f94e27487ff24}{maxRssi}};}
+\DoxyCodeLine{71     int32\_t \mbox{\hyperlink{structwld__apRssiMon__signalRange__t_af2f749bf285d8c30f0896bb21d4f7e91}{minNoise}};}
+\DoxyCodeLine{72     int32\_t \mbox{\hyperlink{structwld__apRssiMon__signalRange__t_a168eb74584f77c43a58a4ea83145e44d}{maxNoise}};}
+\DoxyCodeLine{73     int32\_t \mbox{\hyperlink{structwld__apRssiMon__signalRange__t_aa8a1c22a74b8773126952f36226c9d66}{minSNR}};}
+\DoxyCodeLine{74     int32\_t \mbox{\hyperlink{structwld__apRssiMon__signalRange__t_a8000b93add00f59b3ace9bca99a30536}{maxSNR}};}
+\DoxyCodeLine{75 \} \mbox{\hyperlink{structwld__apRssiMon__signalRange__t}{wld\_apRssiMon\_signalRange\_t}};}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_ab3ce6b5f17d2caca545f5492c8da250a}{wld\_apRssiMon\_updateEnable}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{78 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_aa0ba2da18d461e2da172c417b75d17e5}{wld\_ap\_rssiEv\_debug}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, amxc\_var\_t* retMap);}
+\DoxyCodeLine{79 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_ab8f0386a9bb2df284606fd9f4a0a5f58}{wld\_ap\_rssiMonInit}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{80 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a5a1a92916345d192c678b0646627dae2}{wld\_ap\_rssiMonDestroy}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{81 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a339ec81ea6062cf5686bf972f6004807}{wld\_apRssiMon\_createStaHistory}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, uint32\_t historyLen);}
+\DoxyCodeLine{82 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a832c94554f0798e46d37638962819387}{wld\_apRssiMon\_destroyStaHistory}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{83 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a66576193d9a575241199ae7503febe1d}{wld\_apRssiMon\_updateHistoryLen}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{84 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_aefb4abf43e8b08fe3d6d44a25bf3e074}{wld\_apRssiMon\_cleanStaHistory}}(\mbox{\hyperlink{structwld__assocDev__history__t}{wld\_assocDev\_history\_t}}* staHistory, uint32\_t historyLen);}
+\DoxyCodeLine{85 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a6f1151dfbc03b5cba9ec342d5d83aecf}{wld\_apRssiMon\_cleanStaHistorySamples}}(\mbox{\hyperlink{structwld__assocDev__history__t}{wld\_assocDev\_history\_t}}* staHistory, uint32\_t historyLen);}
+\DoxyCodeLine{86 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a7a1f9c5c2170bd30daaa8f9648111bde}{wld\_apRssiMon\_cleanStaHistoryAll}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{87 wld\_staHistory\_t* \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a8f8630eb62e0a3f667c1d7ebca9fb81e}{wld\_apRssiMon\_getOldestStaSample}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{88 wld\_staHistory\_t* \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a8bd63783d4cf260eb5e80bb6035946c3}{wld\_apRssiMon\_getStaSampleIndexed}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, int32\_t index);}
+\DoxyCodeLine{89 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a137211e2476a5a0a615c5613531761d2}{wld\_apRssiMon\_getStaHistory}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} macAddress[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}], amxc\_var\_t* myMap);}
+\DoxyCodeLine{90 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_ae710f0e97566c31d81de4c607e7d1b96}{wld\_apRssiMon\_updateStaHistory}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{91 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a768d6e7cf1a85c6ff5692a2d20b59339}{wld\_apRssiMon\_sendHistoryOnAssocEvent}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, amxc\_var\_t* myVar);}
+\DoxyCodeLine{92 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a18b2549f7c0ffdf19a9710997438597e}{wld\_apRssiMon\_sendHistoryOnDisassocEvent}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{93 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_aa0b7f7f18c1aca042fba496116a70481}{wld\_apRssiMon\_sendStaHistoryAll}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{94 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a28efe6c8738d5e5d7973a3d96a635450}{wld\_apRssiMon\_clearSendEventOnAssoc}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{95 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a037c6b7b846ba130ceba49b661c15a12}{wld\_apRssiMon\_isReadyStaHistory}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{96 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_afc48643e33b486d1bf77c11510a4acc6}{wld\_apRssiMon\_updateStaHistoryAll}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{97 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__ap__rssiMonitor_8h_a9853c8188e1e8735209bfbd89ee2bace}{wld\_apRssiMon\_getMinMaxSignal}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structwld__apRssiMon__signalRange__t}{wld\_apRssiMon\_signalRange\_t}}* range);}
+\DoxyCodeLine{98 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* SRC\_INCLUDE\_WLD\_WLD\_AP\_RSSIMONITOR\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

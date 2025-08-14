@@ -1,0 +1,149 @@
+\hypertarget{wld__secDmn_8h_source}{}\doxysection{wld\+\_\+sec\+Dmn.\+h}
+\label{wld__secDmn_8h_source}\index{include/wld/wld\_secDmn.h@{include/wld/wld\_secDmn.h}}
+\mbox{\hyperlink{wld__secDmn_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_SECDMN\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_SECDMN\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__wpaCtrlMngr_8h}{wld\_wpaCtrlMngr.h}}"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__daemon_8h}{wld\_daemon.h}}"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__secDmn__types_8h}{wld\_secDmn\_types.h}}"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}swl/swl\_common\_trilean.h"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}swl/swl\_maps.h"{}}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__secDmn_8h_a002175564a652bfee572fd370769e8b8}{wld\_secDmn\_restartHandler}})(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{73 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__secDmn_8h_af49538c5e294b288788e7ee96a4510e4}{wld\_secDmn\_onStopHandler}})(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{74 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__secDmn_8h_aad49dcc4cba18d461d527473467fd40c}{wld\_secDmn\_onStartHandler}})(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{75 \textcolor{keyword}{typedef} \textcolor{keywordtype}{char}* (* wld\_secDmn\_getArgsHandler)(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{76 \textcolor{keyword}{typedef} bool (* \mbox{\hyperlink{wld__secDmn_8h_aa8330a20a558134ea7ace54cf02070b9}{wld\_secDmn\_stopHandler}})(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{77 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__secDmn_8h_a17d1e4981e8953f10350c57dad2c1e5e}{wld\_secDmn\_writeCfgHandler}})(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{void}* userdata);}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{80     \mbox{\hyperlink{wld__secDmn_8h_a002175564a652bfee572fd370769e8b8}{wld\_secDmn\_restartHandler}} \mbox{\hyperlink{structwld__secDmnEvtHandlers_a52c6fa4892575ac316fc6bef01a2cf03}{restartCb}};   \textcolor{comment}{// optional handler to manage security daemon restarting}}
+\DoxyCodeLine{81     \mbox{\hyperlink{wld__secDmn_8h_af49538c5e294b288788e7ee96a4510e4}{wld\_secDmn\_onStopHandler}} \mbox{\hyperlink{structwld__secDmnEvtHandlers_aa5858d37dd57d192912ffdf71222f7c6}{stopCb}};       \textcolor{comment}{// optional handler to get notification for security daemon process end}}
+\DoxyCodeLine{82     \mbox{\hyperlink{wld__secDmn_8h_aad49dcc4cba18d461d527473467fd40c}{wld\_secDmn\_onStartHandler}} \mbox{\hyperlink{structwld__secDmnEvtHandlers_acba6c3314a99ee91de1b6f88e9b0c3f9}{startCb}};     \textcolor{comment}{// optional handler post-\/startup}}
+\DoxyCodeLine{83     \mbox{\hyperlink{wld__secDmn_8h_a082cddae977225a0d0b162a05447a4ba}{wld\_secDmn\_getArgsHandler}} \mbox{\hyperlink{structwld__secDmnEvtHandlers_a017c2dba43e5238320361070ed2cadee}{getArgs}};     \textcolor{comment}{// optional handler to provide security daemon arguments on startup}}
+\DoxyCodeLine{84     \mbox{\hyperlink{wld__secDmn_8h_aa8330a20a558134ea7ace54cf02070b9}{wld\_secDmn\_stopHandler}} \mbox{\hyperlink{structwld__secDmnEvtHandlers_a435c9e9ce35856c187f0f9682522d6ed}{stop}};           \textcolor{comment}{// optional handler to terminate security daemon}}
+\DoxyCodeLine{85     \mbox{\hyperlink{wld__secDmn_8h_a17d1e4981e8953f10350c57dad2c1e5e}{wld\_secDmn\_writeCfgHandler}} \mbox{\hyperlink{structwld__secDmnEvtHandlers_ad8f72d68c0ca05afbb408872f717a5d2}{writeCfgCb}}; \textcolor{comment}{// optional handler to write the config file of the security daemon}}
+\DoxyCodeLine{86 \} \mbox{\hyperlink{structwld__secDmnEvtHandlers}{wld\_secDmnEvtHandlers}};}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn}} \{}
+\DoxyCodeLine{89     \mbox{\hyperlink{structwld__wpaCtrlMngr}{wld\_wpaCtrlMngr\_t}}* \mbox{\hyperlink{structwld__secDmn_aea1a4b2972023a487cc0fdd48e7d48a3}{wpaCtrlMngr}}; \textcolor{comment}{/* wpaCtrlMngr */}}
+\DoxyCodeLine{90     \mbox{\hyperlink{structwld__process}{wld\_process\_t}}* \mbox{\hyperlink{structwld__secDmn_a36155158685ab9aec86eefc3e58b2d04}{dmnProcess}};      \textcolor{comment}{/* daemon process context: pointing to either self proc or group proc */}}
+\DoxyCodeLine{91     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__secDmn_ae40bc7ecdb0cfd848a06bf9da0b36cbd}{cfgFile}};                  \textcolor{comment}{/* config file path*/}}
+\DoxyCodeLine{92     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__secDmn_a9342d8675735a09b6004b877e78c57b0}{ctrlIfaceDir}};             \textcolor{comment}{/* ctrl\_interface directory: /var/run/xxx/*/}}
+\DoxyCodeLine{93     \mbox{\hyperlink{structwld__secDmnEvtHandlers}{wld\_secDmnEvtHandlers}} \mbox{\hyperlink{structwld__secDmn_a5186b61b4ed9b2066a490c487c8faaef}{handlers}}; \textcolor{comment}{/* optional handlers of secDmn events*/}}
+\DoxyCodeLine{94     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwld__secDmn_a661c1e55b876c3d8efa7a0821d1a4767}{userData}};                 \textcolor{comment}{/* optional user data available in restart handler. */}}
+\DoxyCodeLine{95     swl\_mapCharInt32\_t \mbox{\hyperlink{structwld__secDmn_adfe57a3ee7f8e8f4ed165532bcd31a68}{cfgParamSup}}; \textcolor{comment}{/* list of dynamically checked config parameters support */}}
+\DoxyCodeLine{96     swl\_mapCharInt32\_t \mbox{\hyperlink{structwld__secDmn_acc6ba4076cb66953dc3e059723956374}{cmdSup}};      \textcolor{comment}{/* list of dynamically checked command support */}}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98     \textcolor{comment}{/* private: self//group process management */}}
+\DoxyCodeLine{99     \mbox{\hyperlink{structwld__process}{wld\_process\_t}}* \mbox{\hyperlink{structwld__secDmn_a95fffeade4d1580d45d7a82b4ddf0b96}{selfDmnProcess}};  \textcolor{comment}{/* self daemon process context. */}}
+\DoxyCodeLine{100     \mbox{\hyperlink{structwld__secDmnGrp}{wld\_secDmnGrp\_t}}* \mbox{\hyperlink{structwld__secDmn_a5fb69c573a34683cc387efb9c230b2da}{secDmnGroup}};   \textcolor{comment}{/* grouped (/global) secDmn using one daemon process for multiple wpaCtrl mngrs */}}
+\DoxyCodeLine{101     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__secDmn_a4f44aaac34b3593d16ac812982a76867}{needRestart}};               \textcolor{comment}{/* flag indicating whether dmn process need a forced restart */}}
+\DoxyCodeLine{102 \};}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{104 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_af0544dc7e9cc28cc7590bcbb6f6ad4ce}{wld\_secDmn\_init}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}** ppSecDmn, \textcolor{keywordtype}{char}* cmd, \textcolor{keywordtype}{char}* startArgs, \textcolor{keywordtype}{char}* cfgFile, \textcolor{keywordtype}{char}* ctrlIfaceDir);}
+\DoxyCodeLine{105 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_affbe090e48e110dfd31b91927384c4b8}{wld\_secDmn\_setEvtHandlers}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \mbox{\hyperlink{structwld__secDmnEvtHandlers}{wld\_secDmnEvtHandlers}}* pHandlers, \textcolor{keywordtype}{void}* userData);}
+\DoxyCodeLine{106 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a6bf723465724da6f8b5fa5b8ddddf66f}{wld\_secDmn\_cleanup}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}** ppSecDmn);}
+\DoxyCodeLine{107 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a0d79b605af802b3f679654eccc068eec}{wld\_secDmn\_start}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{108 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a161897b21440ea0885b570829da259fc}{wld\_secDmn\_stop}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{109 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a7aa6269feda162dc6545262394acef48}{wld\_secDmn\_reload}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{110 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a3d131e581b56a235a203c4f070df62f1}{wld\_secDmn\_setArgs}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{char}* startArgs);}
+\DoxyCodeLine{111 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__secDmn_8h_a04e473c6a2f624f5ee15a91d36ca56db}{wld\_secDmn\_restartCb}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{112 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a5f5de066595c0a6db92f6201cd13ab8c}{wld\_secDmn\_restart}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{113 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_ad694ff05adbf2a8f84da2e8a876562ac}{wld\_secDmn\_setRestartNeeded}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keywordtype}{bool} flag);}
+\DoxyCodeLine{114 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a003a1a296e7c66d1a382d7f87ab9c09d}{wld\_secDmn\_checkRestartNeeded}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{115 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a79704cd0de6f3e6bec90876814bfd94a}{wld\_secDmn\_isRestarting}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{116 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_ad8ebf9f869b635102d27d9a476e4d9eb}{wld\_secDmn\_isRunning}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{117 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_afce65457fb4309d8bc12d3e3155b59c7}{wld\_secDmn\_isEnabled}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{118 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a1b9d684b37eb9a4922e736e45544a50d}{wld\_secDmn\_isAlive}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{119 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a714ecb5a7295d3c0c2ffe03c0683bf2c}{wld\_secDmn\_hasAvailableCtrlIface}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{120 \mbox{\hyperlink{structwld__wpaCtrlMngr}{wld\_wpaCtrlMngr\_t}}* \mbox{\hyperlink{wld__secDmn_8h_af6f5c940cdf44ae30f012827a423a0c9}{wld\_secDmn\_getWpaCtrlMgr}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{121 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a17c026a0747706c446ab936c2a22c3cb}{wld\_secDmn\_setCfgParamSupp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* param, swl\_trl\_e supp);}
+\DoxyCodeLine{122 swl\_trl\_e \mbox{\hyperlink{wld__secDmn_8h_af259fc7fdc2eb62b9d2b531ef92b6536}{wld\_secDmn\_getCfgParamSupp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* param);}
+\DoxyCodeLine{123 uint32\_t \mbox{\hyperlink{wld__secDmn_8h_a81e75c3a0f7e3ef13445fae5c4a233fd}{wld\_secDmn\_countCfgParamSuppAll}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{124 uint32\_t \mbox{\hyperlink{wld__secDmn_8h_acb1cb73c65c026b6561544c69ae9ff9d}{wld\_secDmn\_countCfgParamSuppChecked}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{125 uint32\_t \mbox{\hyperlink{wld__secDmn_8h_ae6e676fbde7bfce1d3e037a8d5c0a476}{wld\_secDmn\_countCfgParamSuppByVal}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, swl\_trl\_e supp);}
+\DoxyCodeLine{126 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__secDmn_8h_ad5c0cb907dd8b7b4d2789d7177eb0cd6}{wld\_secDmn\_getCtrlIfaceDirPath}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{127 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a38f66952919f63bccf38e48d7663925b}{wld\_secDmn\_setCmdSupp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* cmd, swl\_trl\_e supp);}
+\DoxyCodeLine{128 swl\_trl\_e \mbox{\hyperlink{wld__secDmn_8h_a195c507517bc352d7a1b33c39ec94594}{wld\_secDmn\_getCmdSupp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* cmd);}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{preprocessor}{\#define CALL\_SECDMN\_MGR\_EXT(pSecDmn, fName, ifName, ...) \(\backslash\)}}
+\DoxyCodeLine{131 \textcolor{preprocessor}{    if(pSecDmn != NULL) \{ \(\backslash\)}}
+\DoxyCodeLine{132 \textcolor{preprocessor}{        CALL\_MGR\_EXT(pSecDmn-\/>wpaCtrlMngr, fName, ifName, \_\_VA\_ARGS\_\_) \(\backslash\)}}
+\DoxyCodeLine{133 \textcolor{preprocessor}{    \}}}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_ab6c9faca7cdfa7f0aa8bdc5fc7dc88e4}{wld\_secDmn\_addToGrp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn, \mbox{\hyperlink{structwld__secDmnGrp}{wld\_secDmnGrp\_t}}* pSecDmnGrp, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* memberName);}
+\DoxyCodeLine{136 swl\_rc\_ne \mbox{\hyperlink{wld__secDmn_8h_a1c8a336c00336a8fbd1e9b4a0a6ef71e}{wld\_secDmn\_delFromGrp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{137 \mbox{\hyperlink{structwld__secDmnGrp}{wld\_secDmnGrp\_t}}* \mbox{\hyperlink{wld__secDmn_8h_a734eba007ba94a51c1cdf408c979c5ab}{wld\_secDmn\_getGrp}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{138 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a1b0cc11a41a11e2033f3188fd05a0d80}{wld\_secDmn\_isGrpMember}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{139 uint32\_t \mbox{\hyperlink{wld__secDmn_8h_a88e1c5b6b4052d577d7839ba2cc53ad2}{wld\_secDmn\_countGrpMembers}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{140 uint32\_t \mbox{\hyperlink{wld__secDmn_8h_a02e589b0c9a457e6d5f9d0b2081f1ff5}{wld\_secDmn\_countActiveGrpMembers}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{141 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__secDmn_8h_a2ef4347d15906169439607244d607cc8}{wld\_secDmn\_isActiveAlone}}(\mbox{\hyperlink{structwld__secDmn}{wld\_secDmn\_t}}* pSecDmn);}
+\DoxyCodeLine{142 }
+\DoxyCodeLine{143 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_SECDMN\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

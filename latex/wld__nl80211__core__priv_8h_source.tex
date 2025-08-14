@@ -1,0 +1,133 @@
+\hypertarget{wld__nl80211__core__priv_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+core\+\_\+priv.\+h}
+\label{wld__nl80211__core__priv_8h_source}\index{include\_priv/nl80211/wld\_nl80211\_core\_priv.h@{include\_priv/nl80211/wld\_nl80211\_core\_priv.h}}
+\mbox{\hyperlink{wld__nl80211__core__priv_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_NL80211\_CORE\_PRIV\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_NL80211\_CORE\_PRIV\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include <errno.h>}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include <net/if.h>}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include <sys/socket.h>}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__compat_8h}{wld\_nl80211\_compat.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__core_8h}{wld\_nl80211\_core.h}}"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__utils_8h}{wld\_nl80211\_utils.h}}"{}}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#include <amxc/amxc.h>}}
+\DoxyCodeLine{74 \textcolor{preprocessor}{\#include <amxp/amxp.h>}}
+\DoxyCodeLine{75 \textcolor{preprocessor}{\#include <amxd/amxd\_parameter.h>}}
+\DoxyCodeLine{76 \textcolor{preprocessor}{\#include <amxd/amxd\_action.h>}}
+\DoxyCodeLine{77 \textcolor{preprocessor}{\#include <amxd/amxd\_object\_parameter.h>}}
+\DoxyCodeLine{78 \textcolor{preprocessor}{\#include <amxd/amxd\_object\_event.h>}}
+\DoxyCodeLine{79 \textcolor{preprocessor}{\#include <amxd/amxd\_function.h>}}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81 \textcolor{keyword}{typedef} int (* \mbox{\hyperlink{wld__nl80211__core__priv_8h_ada0869a4107fe09e98894df9d4efd3b2}{wld\_nl80211\_nlSend\_f}})(\textcolor{keyword}{struct }nl\_sock* sk, \textcolor{keyword}{struct }nl\_msg* msg);}
+\DoxyCodeLine{82 \textcolor{keyword}{typedef} ssize\_t (* \mbox{\hyperlink{wld__nl80211__core__priv_8h_a455eefc1cbeb214d5337daaa6b3d6f5d}{wld\_nl80211\_recv\_f}})(\textcolor{keywordtype}{int} socket, \textcolor{keywordtype}{void}* buffer, \textcolor{keywordtype}{size\_t} length, \textcolor{keywordtype}{int} flags);}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84 \textcolor{comment}{/*}}
+\DoxyCodeLine{85 \textcolor{comment}{ * @brief struct including nl80211 driver IDs}}
+\DoxyCodeLine{86 \textcolor{comment}{ * (learned at runtime from kernel)}}
+\DoxyCodeLine{87 \textcolor{comment}{ */}}
+\DoxyCodeLine{88 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{89     int32\_t \mbox{\hyperlink{structwld__nl80211__driverIds__t_aa9c5355aef55e0f7d5d6ded9d77726b1}{family\_id}};       \textcolor{comment}{//nl80211 family id}}
+\DoxyCodeLine{90     int32\_t \mbox{\hyperlink{structwld__nl80211__driverIds__t_a5628b85a8dde9d2f7f70643471bf4a4b}{scan\_mcgrp\_id}};   \textcolor{comment}{//nl80211 SCAN multicast group id}}
+\DoxyCodeLine{91     int32\_t \mbox{\hyperlink{structwld__nl80211__driverIds__t_ab84bdec891f2da7507d975a3dfcd1c79}{config\_mcgrp\_id}}; \textcolor{comment}{//nl80211 CONFIG multicast group id}}
+\DoxyCodeLine{92     int32\_t \mbox{\hyperlink{structwld__nl80211__driverIds__t_aaf1655313b9716fee57c545ed6f5db04}{mlme\_mcgrp\_id}};   \textcolor{comment}{//nl80211 MLME multicast group id}}
+\DoxyCodeLine{93     int32\_t \mbox{\hyperlink{structwld__nl80211__driverIds__t_a4ad4f56bb4b1d6fbf5eb7d3068f18f6b}{vendor\_grp\_id}};   \textcolor{comment}{//nl80211 vendor evt group id}}
+\DoxyCodeLine{94 \} \mbox{\hyperlink{structwld__nl80211__driverIds__t}{wld\_nl80211\_driverIds\_t}};}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{96 \textcolor{comment}{/*}}
+\DoxyCodeLine{97 \textcolor{comment}{ * @brief common nl80211 driver IDs}}
+\DoxyCodeLine{98 \textcolor{comment}{ *        Ids must be >=0 (-\/1 means not available)}}
+\DoxyCodeLine{99 \textcolor{comment}{ */}}
+\DoxyCodeLine{100 \textcolor{keyword}{extern} \mbox{\hyperlink{structwld__nl80211__driverIds__t}{wld\_nl80211\_driverIds\_t}} \mbox{\hyperlink{wld__nl80211__core__priv_8h_a9ae9b018165d9934e42841730998d45a}{g\_nl80211DriverIDs}};}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{102 \textcolor{comment}{/*}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @brief nl80211 socket manager context}}
+\DoxyCodeLine{104 \textcolor{comment}{ */}}
+\DoxyCodeLine{105 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state}} \{}
+\DoxyCodeLine{106     amxc\_llist\_it\_t \mbox{\hyperlink{structwld__nl80211__state_a934df0c5e108b87a371ef7d8352e255e}{it}};                   \textcolor{comment}{//iterator for list}}
+\DoxyCodeLine{107     \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__state_ab155785bd1d9f0d42d40622411d4827a}{nl\_sock}}* \mbox{\hyperlink{structwld__nl80211__state_ab155785bd1d9f0d42d40622411d4827a}{nl\_sock}};              \textcolor{comment}{//netlink socket}}
+\DoxyCodeLine{108     \textcolor{keywordtype}{int} \mbox{\hyperlink{structwld__nl80211__state_ae5d43137e93df08401856a391e86d031}{nl\_event}};                         \textcolor{comment}{//socket fd}}
+\DoxyCodeLine{109     amxc\_llist\_t \mbox{\hyperlink{structwld__nl80211__state_a17e51f728693a585b37c37684d612356}{requests}};                \textcolor{comment}{//list of current requests, sent over nl sock and waiting for reply}}
+\DoxyCodeLine{110     amxc\_llist\_t \mbox{\hyperlink{structwld__nl80211__state_a8477a6ad5db55c6b2615294a4db9aad1}{listeners}};               \textcolor{comment}{//list of registered listener for nl80211 events}}
+\DoxyCodeLine{111     \mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\_nl80211\_stateCounters\_t}} \mbox{\hyperlink{structwld__nl80211__state_a1ea3c6e58b98862eb920e83982bd2917}{counters}}; \textcolor{comment}{//nl msg statistics}}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113     \textcolor{comment}{/* only for testing purpose */}}
+\DoxyCodeLine{114     \mbox{\hyperlink{wld__nl80211__core__priv_8h_ada0869a4107fe09e98894df9d4efd3b2}{wld\_nl80211\_nlSend\_f}} \mbox{\hyperlink{structwld__nl80211__state_a389d8cc9192158b20b6d991d125adcfb}{fNlSendPriv}};     \textcolor{comment}{//private implem of nl\_send api (used with nl mocker)}}
+\DoxyCodeLine{115     \mbox{\hyperlink{wld__nl80211__core__priv_8h_a455eefc1cbeb214d5337daaa6b3d6f5d}{wld\_nl80211\_recv\_f}} \mbox{\hyperlink{structwld__nl80211__state_a0cd46e4ec5a5a630487539eab76f66e4}{fRecvPriv}};         \textcolor{comment}{//private implem of recv api (used with nl mocker)}}
+\DoxyCodeLine{116 \};}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{118 \textcolor{comment}{/*}}
+\DoxyCodeLine{119 \textcolor{comment}{ * @brief return the name of the nl80211 cmd/event id}}
+\DoxyCodeLine{120 \textcolor{comment}{ *}}
+\DoxyCodeLine{121 \textcolor{comment}{ * @param cmd id of nl80211 event (NL80211\_CMD\_xxx)}}
+\DoxyCodeLine{122 \textcolor{comment}{ *}}
+\DoxyCodeLine{123 \textcolor{comment}{ * @return string name of known nl80211 msg, "{}unknown"{} otherwise}}
+\DoxyCodeLine{124 \textcolor{comment}{ */}}
+\DoxyCodeLine{125 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__nl80211__core__priv_8h_ab8f4e9d6c22c24775f147e0be366aeef}{wld\_nl80211\_msgName}}(uint32\_t cmd);}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{127 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_NL80211\_CORE\_PRIV\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

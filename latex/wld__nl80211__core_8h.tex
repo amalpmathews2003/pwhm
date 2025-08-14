@@ -1,0 +1,196 @@
+\hypertarget{wld__nl80211__core_8h}{}\doxysection{include/wld/wld\+\_\+nl80211\+\_\+core.h File Reference}
+\label{wld__nl80211__core_8h}\index{include/wld/wld\_nl80211\_core.h@{include/wld/wld\_nl80211\_core.h}}
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+return\+Code.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+core.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=217pt]{wld__nl80211__core_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\+\_\+nl80211\+\_\+state\+Counters\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structwld__nl80211__state}{wld\+\_\+nl80211\+\_\+state}} \mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}}
+\item 
+typedef struct \mbox{\hyperlink{structwld__nl80211__listener}{wld\+\_\+nl80211\+\_\+listener}} \mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}}
+\item 
+typedef struct \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info}} \mbox{\hyperlink{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info\+\_\+t}}
+\item 
+typedef struct \mbox{\hyperlink{structwld__nl80211__channelSurveyParam}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Param}} \mbox{\hyperlink{wld__nl80211__core_8h_ab9c7d8bc2b54759fdd5dfaa58ffa6409}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Param\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__nl80211__core_8h_aecc87228f019c1a3034e43cb8a3916d5}{wld\+\_\+nl80211\+\_\+new\+State}} ()
+\item 
+\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__nl80211__core_8h_ab89990c364e3256f803e95aee1684407}{wld\+\_\+nl80211\+\_\+get\+Shared\+State}} ()
+\item 
+void \mbox{\hyperlink{wld__nl80211__core_8h_aa5811385f0145482b9e40cecb8f52762}{wld\+\_\+nl80211\+\_\+cleanup}} (\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$state)
+\item 
+void \mbox{\hyperlink{wld__nl80211__core_8h_a280ef877e0e6e63700748c4d71689849}{wld\+\_\+nl80211\+\_\+cleanup\+All}} ()
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__core_8h_a216617cfc57740605abd47771db2d839}{wld\+\_\+nl80211\+\_\+get\+State\+Counters}} (\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$state, \mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\+\_\+nl80211\+\_\+state\+Counters\+\_\+t}} $\ast$p\+Counters)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__core_8h_a1b56546ddf0b5e676ef6656352dd4ea9}{wld\+\_\+nl80211\+\_\+get\+All\+Counters}} (\mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\+\_\+nl80211\+\_\+state\+Counters\+\_\+t}} $\ast$p\+Counters)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}\label{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_channelSurveyInfo\_t@{wld\_nl80211\_channelSurveyInfo\_t}}
+\index{wld\_nl80211\_channelSurveyInfo\_t@{wld\_nl80211\_channelSurveyInfo\_t}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_channelSurveyInfo\_t}{wld\_nl80211\_channelSurveyInfo\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info}} \mbox{\hyperlink{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info\+\_\+t}}}
+
+\mbox{\Hypertarget{wld__nl80211__core_8h_ab9c7d8bc2b54759fdd5dfaa58ffa6409}\label{wld__nl80211__core_8h_ab9c7d8bc2b54759fdd5dfaa58ffa6409}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_channelSurveyParam\_t@{wld\_nl80211\_channelSurveyParam\_t}}
+\index{wld\_nl80211\_channelSurveyParam\_t@{wld\_nl80211\_channelSurveyParam\_t}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_channelSurveyParam\_t}{wld\_nl80211\_channelSurveyParam\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__nl80211__channelSurveyParam}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Param}} \mbox{\hyperlink{wld__nl80211__core_8h_ab9c7d8bc2b54759fdd5dfaa58ffa6409}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Param\+\_\+t}}}
+
+\mbox{\Hypertarget{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}\label{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_listener\_t@{wld\_nl80211\_listener\_t}}
+\index{wld\_nl80211\_listener\_t@{wld\_nl80211\_listener\_t}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_listener\_t}{wld\_nl80211\_listener\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__nl80211__listener}{wld\+\_\+nl80211\+\_\+listener}} \mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}}}
+
+\mbox{\Hypertarget{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}\label{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_state\_t@{wld\_nl80211\_state\_t}}
+\index{wld\_nl80211\_state\_t@{wld\_nl80211\_state\_t}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_state\_t}{wld\_nl80211\_state\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__nl80211__state}{wld\+\_\+nl80211\+\_\+state}} \mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__core_8h_aa5811385f0145482b9e40cecb8f52762}\label{wld__nl80211__core_8h_aa5811385f0145482b9e40cecb8f52762}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_cleanup@{wld\_nl80211\_cleanup}}
+\index{wld\_nl80211\_cleanup@{wld\_nl80211\_cleanup}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_cleanup()}{wld\_nl80211\_cleanup()}}
+{\footnotesize\ttfamily void wld\+\_\+nl80211\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$}]{state }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_aa5811385f0145482b9e40cecb8f52762_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_aa5811385f0145482b9e40cecb8f52762_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__core_8h_a280ef877e0e6e63700748c4d71689849}\label{wld__nl80211__core_8h_a280ef877e0e6e63700748c4d71689849}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_cleanupAll@{wld\_nl80211\_cleanupAll}}
+\index{wld\_nl80211\_cleanupAll@{wld\_nl80211\_cleanupAll}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_cleanupAll()}{wld\_nl80211\_cleanupAll()}}
+{\footnotesize\ttfamily void wld\+\_\+nl80211\+\_\+cleanup\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_a280ef877e0e6e63700748c4d71689849_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=327pt]{wld__nl80211__core_8h_a280ef877e0e6e63700748c4d71689849_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__core_8h_a1b56546ddf0b5e676ef6656352dd4ea9}\label{wld__nl80211__core_8h_a1b56546ddf0b5e676ef6656352dd4ea9}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_getAllCounters@{wld\_nl80211\_getAllCounters}}
+\index{wld\_nl80211\_getAllCounters@{wld\_nl80211\_getAllCounters}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getAllCounters()}{wld\_nl80211\_getAllCounters()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+get\+All\+Counters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\+\_\+nl80211\+\_\+state\+Counters\+\_\+t}} $\ast$}]{p\+Counters }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_a1b56546ddf0b5e676ef6656352dd4ea9_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__core_8h_ab89990c364e3256f803e95aee1684407}\label{wld__nl80211__core_8h_ab89990c364e3256f803e95aee1684407}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_getSharedState@{wld\_nl80211\_getSharedState}}
+\index{wld\_nl80211\_getSharedState@{wld\_nl80211\_getSharedState}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getSharedState()}{wld\_nl80211\_getSharedState()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$ wld\+\_\+nl80211\+\_\+get\+Shared\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_ab89990c364e3256f803e95aee1684407_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_ab89990c364e3256f803e95aee1684407_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__core_8h_a216617cfc57740605abd47771db2d839}\label{wld__nl80211__core_8h_a216617cfc57740605abd47771db2d839}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_getStateCounters@{wld\_nl80211\_getStateCounters}}
+\index{wld\_nl80211\_getStateCounters@{wld\_nl80211\_getStateCounters}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_getStateCounters()}{wld\_nl80211\_getStateCounters()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+get\+State\+Counters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$}]{state,  }\item[{\mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\+\_\+nl80211\+\_\+state\+Counters\+\_\+t}} $\ast$}]{p\+Counters }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_a216617cfc57740605abd47771db2d839_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_a216617cfc57740605abd47771db2d839_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__core_8h_aecc87228f019c1a3034e43cb8a3916d5}\label{wld__nl80211__core_8h_aecc87228f019c1a3034e43cb8a3916d5}} 
+\index{wld\_nl80211\_core.h@{wld\_nl80211\_core.h}!wld\_nl80211\_newState@{wld\_nl80211\_newState}}
+\index{wld\_nl80211\_newState@{wld\_nl80211\_newState}!wld\_nl80211\_core.h@{wld\_nl80211\_core.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_newState()}{wld\_nl80211\_newState()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$ wld\+\_\+nl80211\+\_\+new\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core_8h_aecc87228f019c1a3034e43cb8a3916d5_cgraph}
+\end{center}
+\end{figure}

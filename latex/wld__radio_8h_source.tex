@@ -1,0 +1,302 @@
+\hypertarget{wld__radio_8h_source}{}\doxysection{wld\+\_\+radio.\+h}
+\label{wld__radio_8h_source}\index{include/wld/wld\_radio.h@{include/wld/wld\_radio.h}}
+\mbox{\hyperlink{wld__radio_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_RADIO\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_RADIO\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}swla/swla\_trilean.h"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__channel_8h}{wld\_channel.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__radioOperatingStandards_8h}{wld\_radioOperatingStandards.h}}"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__extMod_8h}{wld\_extMod.h}}"{}}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__rad__macCfg_8h}{wld\_rad\_macCfg.h}}"{}}}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{75     \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007eca66cc94bb16b303e5246cc933ccb27715}{WLD\_RAD\_CHANGE\_INIT}},}
+\DoxyCodeLine{76     \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007eca34f426b10368117f25c32cf8aa7c8d41}{WLD\_RAD\_CHANGE\_DESTROY}},}
+\DoxyCodeLine{77     \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007eca307ac1655b3c3a60789f3222b7fd7aa1}{WLD\_RAD\_CHANGE\_POSCHAN}},}
+\DoxyCodeLine{78     \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007eca471c1c06ab4c7ed1c55c1a9cdb99cd7d}{WLD\_RAD\_CHANGE\_CHANSPEC}},}
+\DoxyCodeLine{79     \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007eca20f91cf042310c51457f0f59ea8b4438}{WLD\_RAD\_CHANGE\_MAX}}}
+\DoxyCodeLine{80 \} \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007ec}{wld\_rad\_changeEvent\_e}};}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{83     \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007ec}{wld\_rad\_changeEvent\_e}} \mbox{\hyperlink{structwld__rad__changeEvent__t_af47dc023c7ab013f77743ada858e501e}{changeType}};}
+\DoxyCodeLine{84     \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{structwld__rad__changeEvent__t_acf51f3dd74ca5013d6c7a734559cd542}{pRad}};}
+\DoxyCodeLine{85     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwld__rad__changeEvent__t_afbe5ea74445ba24283bc1ec9a417107e}{changeData}};}
+\DoxyCodeLine{86 \} \mbox{\hyperlink{structwld__rad__changeEvent__t}{wld\_rad\_changeEvent\_t}};}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{89     \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{structwld__rad__frameEvent__t_aff2e48cb60f921f02e931dc3be162663}{pRad}};}
+\DoxyCodeLine{90     swl\_bit8\_t* \mbox{\hyperlink{structwld__rad__frameEvent__t_a00e78263f21dcfd21b18f332eeec5f8b}{frameData}};}
+\DoxyCodeLine{91     \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{structwld__rad__frameEvent__t_a84e1a79a71e07a53270d0a6227b4da26}{frameLen}};}
+\DoxyCodeLine{92     int32\_t \mbox{\hyperlink{structwld__rad__frameEvent__t_acc22cc320ed18067b5bb8168fd15347a}{frameRssi}};}
+\DoxyCodeLine{93 \} \mbox{\hyperlink{structwld__rad__frameEvent__t}{wld\_rad\_frameEvent\_t}};}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{95 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_ac9dc32221b26911d19953223d04acef6}{wld\_getRadioDataHandler}}(amxd\_object\_t* pobj, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* rn);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_addda9e215afbfbf689dc31c8fb7ca564}{wld\_radio\_updateAntenna}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{98 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_ab27323d72176b4829d04aa5409b57b04}{wld\_radio\_updateAntennaExt}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, amxd\_trans\_t* trans);}
+\DoxyCodeLine{99 \mbox{\hyperlink{wld_8h_a0f62a7362b1ffe0dbb87a26959e94be1}{wld\_ap\_dm\_m}} \mbox{\hyperlink{wld__radio_8h_a05f89402bf1795d5c006ec3d7f197f49}{wld\_rad\_getDiscoveryMethod}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{100 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_adfed810086c6f1b7f8c9adc7059e405b}{wld\_rad\_updateDiscoveryMethod6GHz}}();}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{102 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a61dfca2571ec575bdf13ea5c48f7e15e}{syncData\_Radio2OBJ}}(amxd\_object\_t* \textcolor{keywordtype}{object}, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{103 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a18991f31a39ed77d3deb2121c7c075be}{syncData\_VendorWPS2OBJ}}(amxd\_object\_t* \textcolor{keywordtype}{object}, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105 amxd\_status\_t \mbox{\hyperlink{wld__radio_8h_a0b24c9701089556597864f16b6a49c45}{\_addVAPIntf}}(amxd\_object\_t* obj,}
+\DoxyCodeLine{106                           amxd\_function\_t* func,}
+\DoxyCodeLine{107                           amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{108                           amxc\_var\_t* ret);}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110 amxd\_status\_t \mbox{\hyperlink{wld__radio_8h_af55323127b143b7f5114854584f36cb3}{\_delVAPIntf}}(amxd\_object\_t* obj,}
+\DoxyCodeLine{111                           amxd\_function\_t* func,}
+\DoxyCodeLine{112                           amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{113                           amxc\_var\_t* ret);}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115 amxd\_status\_t \mbox{\hyperlink{wld__radio_8h_ae7a4eb4076fb43a544f98ae3a9ee9ebd}{\_wps\_DefParam\_wps\_GenSelfPIN}}(amxd\_object\_t* obj,}
+\DoxyCodeLine{116                                            amxd\_function\_t* func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}},}
+\DoxyCodeLine{117                                            amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{118                                            amxc\_var\_t* ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}});}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120 amxd\_status\_t \mbox{\hyperlink{wld__radio_8h_aebb0e8ce68c4992a984744b8f03b0478}{\_checkWPSPIN}}(amxd\_object\_t* obj,}
+\DoxyCodeLine{121                            amxd\_function\_t* func,}
+\DoxyCodeLine{122                            amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{123                            amxc\_var\_t* ret);}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125 \textcolor{keyword}{extern} amxc\_llist\_t \mbox{\hyperlink{wld__radio_8h_a0c6a7d41d91e470adf3b25008abf88c9}{g\_radios}};}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{127 \textcolor{comment}{/* DEBUG !!! FIX ME */}}
+\DoxyCodeLine{128 amxd\_status\_t \mbox{\hyperlink{wld__radio_8h_acbbb228e52de31063ea60cc1dec745c3}{\_FSM\_Start}}(amxd\_object\_t* \mbox{\hyperlink{wld_8h_a02ad6ddc9029bcb22572a461d97e4341}{wifi}},}
+\DoxyCodeLine{129                          amxd\_function\_t* func,}
+\DoxyCodeLine{130                          amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{131                          amxc\_var\_t* ret);}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{133 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_aa24e429aba6c36e70dbc9d9757103f0e}{wld\_rad\_getFirstVap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{134 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_a81fc265fc4388aabcb564c69daf19eb8}{wld\_rad\_getFirstEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{135 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a944b7a7397e06c58457508cd6836bc24}{wld\_rad\_vap\_from\_name}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{136 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a7732756dd529870ad60d4423a9b2b61a}{wld\_rad\_vap\_from\_wds\_name}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{137 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_a9138cb25cd4e88dc57a9ac3b200bc5d0}{wld\_rad\_ep\_from\_name}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{138 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a31db5f6a0f6274c388208bdd73cd7c90}{wld\_vap\_from\_name}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{139 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_a05636b6504f998620c62eb68203f43ea}{wld\_vep\_from\_name}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{140 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_aa7960d24c6b72d16c9d8ff9a94fd840d}{wld\_rad\_from\_name}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{141 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_a5bc526661be71f2eb0810b099efe607d}{wld\_rad\_fromObj}}(amxd\_object\_t* radObj);}
+\DoxyCodeLine{142 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a7cad1ba5d4b5338e778c1ae67b58874f}{wld\_rad\_isRadObj}}(amxd\_object\_t* radObj);}
+\DoxyCodeLine{143 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_a7c296231f9f10b5d324940b8847f876b}{wld\_rad\_prevRadFromObj}}(amxd\_object\_t* radObj);}
+\DoxyCodeLine{144 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_a6ab7a33d0e5ca44bce07ed25cc18e98c}{wld\_rad\_prevRadFromList}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{145 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_a7be63ab1a4146a7aaaca171fdf9081cd}{wld\_rad\_nextRadFromObj}}(amxd\_object\_t* radObj);}
+\DoxyCodeLine{146 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_adcbdd9effb1ce97d46b2b3ba00c063a8}{wld\_rad\_nextRadFromList}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{147 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a4e8e6a5073523b748c0ccf4d5cd400be}{wld\_rad\_getFirstEnabledVap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{148 uint32\_t \mbox{\hyperlink{wld__radio_8h_acd69e76d1ef7361a8a6c203b439d176f}{wld\_rad\_countEnabledVaps}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{149 \mbox{\hyperlink{wld_8h_ad8272a16ef547c27a843b5009801aa1e}{wld\_mbssidAdvertisement\_mode\_e}} \mbox{\hyperlink{wld__radio_8h_ad273936553870cb349f3ad7615d76ef3}{wld\_rad\_getMbssidAdsMode}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{150 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_addcc55f0b12b07fd29e65cb4925bce15}{wld\_rad\_hasMbssidAds}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{151 }
+\DoxyCodeLine{152 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a9c17f4e066fa592bac9d5b5ecd4898d7}{wld\_rad\_getVapByIndex}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{153 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_a75ed71bf51a8ae0d72f1772a3ed09630}{wld\_rad\_getEpByIndex}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155 amxd\_object\_t* \mbox{\hyperlink{wld__radio_8h_ae4b4cf8f2659e9361325e529b71f1488}{ssid\_create}}(amxd\_object\_t* pBus, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* name);}
+\DoxyCodeLine{156 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a400c9dae40bd275c884216353748d5b6}{radio\_scanresults\_to\_variant}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* radio, amxc\_var\_t* variant\_out);}
+\DoxyCodeLine{157 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ac6366eb7b1498be9b38ad103a7c3d0f1}{wld\_radio\_notify\_scanresults}}(amxd\_object\_t* obj);}
+\DoxyCodeLine{158 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_af9f2865c7543381a964bb322e26f73b4}{wld\_radio\_stats\_to\_variant}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* a, \mbox{\hyperlink{structwld__stats}{T\_Stats}}* stats, amxc\_var\_t* map);}
+\DoxyCodeLine{159 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a13503b892329f1e7d7c5a4ba65d60cef}{wld\_radio\_scanresults\_find}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ssid, \mbox{\hyperlink{structwld__scanResultSSID}{wld\_scanResultSSID\_t}}* output);}
+\DoxyCodeLine{160 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a86577a674db2a607586fc2f19635d58a}{wld\_radio\_scanresults\_cleanup}}(\mbox{\hyperlink{structwld__scanResults}{wld\_scanResults\_t}}* results);}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{162 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a39b9e5240ab2aa60a790edeee40d13cf}{wld\_scan\_init}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{163 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_aad96942514444774702d14cc1d635255}{wld\_scan\_destroy}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{164 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a78682009d3c7281aa400af42d7c97ac4}{wld\_scan\_done}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keywordtype}{bool} success);}
+\DoxyCodeLine{165 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ae8ebf96ddd41708734ca65371c20757c}{wld\_scan\_isRunning}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{166 swl\_rc\_ne \mbox{\hyperlink{wld__radio_8h_a6c18fadf737b542101ed020d82782a9b}{wld\_scan\_start}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{wld_8h_ac9532ee05f7f8bb316a7da1a4ec6eeef}{wld\_scan\_type\_e}} \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* reason);}
+\DoxyCodeLine{167 swl\_rc\_ne \mbox{\hyperlink{wld__radio_8h_aa748a0e3154976d65a5b0841e1ab6a97}{wld\_scan\_stop}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{168 swl\_rc\_ne \mbox{\hyperlink{wld__radio_8h_a7732c0fbfc3df4891a72d6ebc50277eb}{wld\_scan\_updateChanimInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{169 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a4d88dcf7b64e163cecafdc8d6f5341d6}{wld\_scan\_cleanupScanResultSSID}}(\mbox{\hyperlink{structwld__scanResultSSID}{wld\_scanResultSSID\_t}}* ssid);}
+\DoxyCodeLine{170 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a194f47a8606d3bd82e8cc4f08ccf25bb}{wld\_scan\_cleanupScanResults}}(\mbox{\hyperlink{structwld__scanResults}{wld\_scanResults\_t}}* res);}
+\DoxyCodeLine{171 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a6dc702409e9903f7530a9b4e6be50614}{wld\_spectrum\_cleanupResults}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{172 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_a8bf4a7d66908761de2f7ea3727b03ac2}{wld\_getRadioByFrequency}}(swl\_freqBand\_e freqBand);}
+\DoxyCodeLine{173 uint32\_t \mbox{\hyperlink{wld__radio_8h_a19b5d499e974075f8da2059080fc09c3}{wld\_getNrApMldLinksById}}(int32\_t \textcolor{keywordtype}{id});}
+\DoxyCodeLine{174 }
+\DoxyCodeLine{175 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__radio_8h_a91588fa52d53b69a6daedffc53115934}{wld\_rad\_init\_cap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{176 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a906fb510cf9a456dec23f0232b1aa870}{wld\_rad\_updateCapabilities}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, amxd\_trans\_t* trans);}
+\DoxyCodeLine{177 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a4918a64d2783fcb6654137f39c2a2e6b}{wld\_rad\_writeCapStatus}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, amxd\_trans\_t* trans);}
+\DoxyCodeLine{178 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ac170844e0ac9b7f881e7e7c5831e4641}{wld\_rad\_is\_cap\_enabled}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keywordtype}{int} capability);}
+\DoxyCodeLine{179 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a6eaa139f4f3a52ecf31d3bdac5578086}{wld\_rad\_is\_cap\_active}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \textcolor{keywordtype}{int} capability);}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{181 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a62b1f6610c95cf6dae8f0775cb9a0b82}{wld\_rad\_addSuppDrvCap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_freqBand\_e suppBand, \textcolor{keywordtype}{char}* suppCap);}
+\DoxyCodeLine{182 swl\_trl\_e \mbox{\hyperlink{wld__radio_8h_a47b622c748907dedb9773ec3ceab4a1c}{wld\_rad\_findSuppDrvCap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_freqBand\_e suppBand, \textcolor{keywordtype}{char}* suppCap);}
+\DoxyCodeLine{183 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__radio_8h_a60f8f7bfc045a590627b2dc7e8db5354}{wld\_rad\_getSuppDrvCaps}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_freqBand\_e suppBand);}
+\DoxyCodeLine{184 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a3746d48346230aedaa939a3851411183}{wld\_rad\_clearSuppDrvCaps}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{185 }
+\DoxyCodeLine{186 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_af77d5583ce2055e27cd64b2c3324a365}{wld\_rad\_hasWeatherChannels}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{187 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_aa588f181ad2d2eafc06fc568c540ab13}{wld\_rad\_hasChannel}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{int} chan);}
+\DoxyCodeLine{188 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a75c98496567ee8802688d924a7b99d33}{do\_updateOperatingChannelBandwidth5GHz}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{189 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_acd86d9a12d28a61773c1622160c75de4}{wld\_rad\_updateChannelsInUse}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{190 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a3d90ab129fae3ae4a0bb7bdfec25a723}{wld\_rad\_hasChannelWidthCovered}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_bandwidth\_e chW);}
+\DoxyCodeLine{191 \mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\_channel\_extensionPos\_e}} \mbox{\hyperlink{wld__radio_8h_a6fa49867bafd918952a9143ac258dd3b}{wld\_rad\_getExtensionChannel}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{192 }
+\DoxyCodeLine{193 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a56fb5f7e19497d7762b48ebf6cd83afb}{wld\_rad\_hasEnabledEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{194 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ad6fbe4197a097161e9b5144d42589959}{wld\_rad\_hasConnectedEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{195 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a244ab2f6387552ee62427cd45d128ca9}{wld\_rad\_hasOnlyActiveEP}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{196 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a0bb9da6db2671c9c834291560536229c}{wld\_rad\_hasMainEP}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{198 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a7e425903188561aa7340aad82da6baae}{wld\_rad\_areAllVapsDone}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{199 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a32de94b3e49e34e91ecedf32e7324d5e}{wld\_rad\_hasActiveVap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{200 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a586b502bdfaca2b3d45feeae0426fb14}{wld\_rad\_hasEnabledVap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{201 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a34a2d5b1b1fc92eaaf5bb5b699a5b6fc}{wld\_rad\_hasActiveEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{202 }
+\DoxyCodeLine{203 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ab7a948145edfcf5b588a54039d900ede}{wld\_rad\_hasEnabledIface}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{204 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a80a1e3e21164a9c72e84d8870c5715e0}{wld\_rad\_hasActiveIface}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{205 uint32\_t \mbox{\hyperlink{wld__radio_8h_a3c6a4a3914a668c43cb9abbd36c384f6}{wld\_rad\_countIfaces}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{206 uint32\_t \mbox{\hyperlink{wld__radio_8h_a2ff9abb173ddd8349c0659c90c06e6fd}{wld\_rad\_countVapIfaces}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{207 uint32\_t \mbox{\hyperlink{wld__radio_8h_a40352176f4c51d619775aabaaf9737e8}{wld\_rad\_countEpIfaces}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{208 uint32\_t \mbox{\hyperlink{wld__radio_8h_a9ffe52a7430f4e03a50bb0091a116dd5}{wld\_rad\_countMappedAPs}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{209 uint32\_t \mbox{\hyperlink{wld__radio_8h_ac15df69baae05b32260de5f709cb5d1c}{wld\_rad\_countAPsByAutoMacSrc}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{wld_8h_a34c4ca870bfbd085ea9c21a35c747fae}{wld\_autoMacSrc\_e}} autoMacSrc);}
+\DoxyCodeLine{210 uint32\_t \mbox{\hyperlink{wld__radio_8h_a5ac02e7e928b0659e31d679bf624e3a8}{wld\_rad\_countWiphyRads}}(uint32\_t wiphy);}
+\DoxyCodeLine{211 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_aee4b4cbaa24b5d5c12732fac684c85b7}{wld\_rad\_hasLinkIfIndex}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, int32\_t ifIndex);}
+\DoxyCodeLine{212 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ada93118392d3d4590d2855120a9b6092}{wld\_rad\_hasLinkIfName}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifName);}
+\DoxyCodeLine{213 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a2960da4f28d621447f61041c8463ca9e}{wld\_rad\_isMloCapable}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{214 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a61fbf4242e15ad3243b8c60f5d09e510}{wld\_rad\_hasMloSupport}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{215 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ad847277b56bac814dee7733fce53593c}{wld\_rad\_hasActiveApMldMultiLink}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{216 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a3b58cb8d75941e9ec930c95b3649decd}{wld\_rad\_hasActiveApMld}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t minNLinks);}
+\DoxyCodeLine{217 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_abeba85adf7f5ae7674ef7e2c573db7a1}{wld\_rad\_setAllMldLinksUnconfigured}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{218 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a1143f1257139c1d3d6b428a8475b5fac}{wld\_rad\_hasUsableApMld}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t minNLinks);}
+\DoxyCodeLine{219 }
+\DoxyCodeLine{220 uint32\_t \mbox{\hyperlink{wld__radio_8h_ae211359fd0e7548777cf5bd312ffb8c3}{wld\_rad\_getFirstEnabledIfaceIndex}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{221 uint32\_t \mbox{\hyperlink{wld__radio_8h_af32e11ee7bb69e7f0d5db319e5aa1834}{wld\_rad\_getFirstActiveIfaceIndex}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{222 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_ae681b6d968bb281d134e716272cdd8c9}{wld\_rad\_getFirstActiveAp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{223 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a03f2a83ca7dee645a0827746e706bb5e}{wld\_rad\_getFirstBroadcastingAp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{224 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_a38559de25945587fe7c3b6a342a06a9a}{wld\_rad\_getFirstActiveEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{225 }
+\DoxyCodeLine{226 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a3d0ce458f2b84a4299092d3ba99c03c0}{wld\_rad\_isChannelSubset}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint8\_t* chanlist, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{227 }
+\DoxyCodeLine{228 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a3ec62b254df9865080da00f1fe979d10}{wld\_rad\_is\_6ghz}}(\textcolor{keyword}{const} \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{229 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a10cfddf81826177405d91a32996f6973}{wld\_rad\_is\_5ghz}}(\textcolor{keyword}{const} \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{230 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_aa278bea67c721dfdc303926254cb343a}{wld\_rad\_is\_24ghz}}(\textcolor{keyword}{const} \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{231 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ab7ff87d1604aa046f6402d345724826e}{wld\_rad\_is\_on\_dfs}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{232 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a352de2fd02a26a209bd8abfb28757273}{wld\_rad\_isDoingDfsScan}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{233 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a3438e11eef730284adccf3165a258906}{wld\_rad\_isUpAndReady}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{234 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_aa3def1a3c6a1c1dda049b17be731c6fb}{wld\_rad\_isUpExt}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a8310acda9a24c2c280cb255e209b7e66}{wld\_rad\_write\_possible\_channels}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{237 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a93badaade025c0b1a34e25c9c4e336cb}{wld\_rad\_addDFSEvent}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \mbox{\hyperlink{structT__DFSEvent}{T\_DFSEvent}}* evt);}
+\DoxyCodeLine{238 swl\_chanspec\_t \mbox{\hyperlink{wld__radio_8h_ae6aa07e4f2a9f4675b22fdd1412a60cc}{wld\_rad\_getSwlChanspec}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{239 uint32\_t \mbox{\hyperlink{wld__radio_8h_aab77197530d0320cf18b5a049e87928c}{wld\_rad\_getCurrentFreq}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{240 swl\_rc\_ne \mbox{\hyperlink{wld__radio_8h_a06bc57deec1afc23c21f9b757973c62c}{wld\_rad\_getCurrentNoise}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, int32\_t* pNoise);}
+\DoxyCodeLine{241 }
+\DoxyCodeLine{242 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_af27c87b788a93e8fe4da5086e38f816f}{wld\_rad\_triggerDelayCommit}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t delay, \textcolor{keywordtype}{bool} restartIfActive);}
+\DoxyCodeLine{243 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__radio_8h_a17e3d7be0d2f145c48a023f113916850}{wld\_rad\_doRadioCommit}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{244 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a807685db44775863c85c73c632336685}{wld\_rad\_doSync}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{245 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__radio_8h_a05408cc932206780f8b38461a94f9125}{wld\_rad\_doCommitIfUnblocked}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR);}
+\DoxyCodeLine{246 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a0ad6aabead3d640c6e166b65a8374e7f}{wld\_rad\_has\_endpoint\_enabled}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{247 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_a4e9e1c96eb575ea8f8d6285ea1b86e9b}{wld\_rad\_getEnabledEndpoint}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{248 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_aac4e496852f12a12e1bf14de2738d954}{wld\_rad\_hasRunningEndpoint}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{249 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_afbb26ee6ce80aafd094c20567a37bfba}{wld\_rad\_getRunningEndpoint}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{250 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_af644fc5918376a7a884bebaec80f5dcb}{wld\_rad\_hasWpsActiveEndpoint}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{251 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_ae4b9202e5d8e36bc7563e274d2b35211}{wld\_rad\_getWpsActiveEndpoint}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{252 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_af5fc8a1730d49c6fec2ecc5df16a8ba1}{wld\_rad\_updateActiveDevices}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, amxd\_trans\_t* trans);}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{254 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_aceaa147ea6dcfc0cbbf7542cbf14104f}{wld\_rad\_get\_radio}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{255 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a4f651f88baf986d3ab1603b0a38bc1c8}{wld\_rad\_chan\_update\_model}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, amxd\_trans\_t* trans);}
+\DoxyCodeLine{256 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a81add1a28b82f1f77ffa673997bf4a1a}{wld\_rad\_updateOperatingClass}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{257 }
+\DoxyCodeLine{258 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a9a25c6c82de0a7d2f0313aa9545497cf}{wld\_rad\_init\_counters}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structT__EventCounterList}{T\_EventCounterList}}* counters, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** defaults);}
+\DoxyCodeLine{259 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a9e3175dd7b90fdf3866c9ed49c9def5f}{wld\_rad\_increment\_counter}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structT__EventCounterList}{T\_EventCounterList}}* counters, uint32\_t counterIndex, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* info);}
+\DoxyCodeLine{260 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a8b636ae03e0409fbba85fa8ab29e54d8}{wld\_rad\_incrementCounterStr}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structT__EventCounterList}{T\_EventCounterList}}* counters, uint32\_t index, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \textcolor{keyword}{template}, ...);}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{262 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_afd23a0b3cc5423de99a824b96c348aff}{wld\_radio\_copySsidsToResult}}(\mbox{\hyperlink{structwld__scanResults}{wld\_scanResults\_t}}* results, amxc\_llist\_t* ssid\_list);}
+\DoxyCodeLine{263 }
+\DoxyCodeLine{264 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__radio_8h_a0a5d00b4c439685e916dc8e33716b80d}{wld\_rad\_getAssociatedDevice}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_macBin\_t* macBin);}
+\DoxyCodeLine{265 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_ad735c6b9e4c5028fd39f022774a31799}{wld\_rad\_isAvailable}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{266 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a7ad6ddd63a7962f4787107799804c134}{wld\_rad\_isActive}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{267 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_a7bed140786048c79b6552676ad901b2c}{wld\_rad\_isUp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{268 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__radio_8h_a359ffc4448fda51f53a64c3067467fdb}{wld\_rad\_getSocket}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad);}
+\DoxyCodeLine{269 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_ab458d010c04fdbe61843151c1e650568}{wld\_rad\_resetStatusHistogram}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{270 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a71ab662c1a90f0d9ba49b3a11b43e829}{wld\_rad\_updateState}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keywordtype}{bool} forceVapUpdate);}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_ae1a845de01154df5bc4b6c37bb6cb199}{wld\_radio\_getVapFromRole}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{wld_8h_a22eca226aa76381090b18027f92ecd75}{wld\_apRole\_e}} role);}
+\DoxyCodeLine{273 swl\_freqBand\_e \mbox{\hyperlink{wld__radio_8h_a0119bea4b46c7f0a642117de7184bd37}{wld\_rad\_getFreqBand}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{274 }
+\DoxyCodeLine{275 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_a638d2a9ef19fdffbb416d1622186f1a6}{wld\_rad\_firstAp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{276 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__radio_8h_aee2b758ac45b7954b61f48547e32983b}{wld\_rad\_nextAp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{277 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_add2401bcf592c74ec1352001797ef50e}{wld\_rad\_firstEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{278 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__radio_8h_aca24f105788f6aa298341b7270f7c607}{wld\_rad\_nextEp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{279 \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{wld__radio_8h_af061ce7c4a6066ba3118ea9986590e3d}{wld\_rad\_fromIt}}(amxc\_llist\_it\_t* it);}
+\DoxyCodeLine{280 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a03089b86ce2b3573ee098c9434b60bce}{wld\_rad\_triggerChangeEvent}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{wld__radio_8h_a77e176f1c1e3ca5bfa600141b8b007ec}{wld\_rad\_changeEvent\_e}} event, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{281 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__radio_8h_a58f48fe73015fc8ea80f9605a935440c}{wld\_rad\_triggerFrameEvent}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, swl\_bit8\_t* frame, \textcolor{keywordtype}{size\_t} frameLen, int32\_t rssi);}
+\DoxyCodeLine{282 }
+\DoxyCodeLine{286 swl\_rc\_ne \mbox{\hyperlink{wld__radio_8h_a161ac2883897bd3d4f19364e1e07327f}{wld\_rad\_registerExtModData}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t extModId, \textcolor{keywordtype}{void}* extModData, \mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\_extMod\_deleteData\_dcf}} deleteHandler);}
+\DoxyCodeLine{287 }
+\DoxyCodeLine{291 \textcolor{keywordtype}{void}* \mbox{\hyperlink{wld__radio_8h_aa0da21f7cf7f45c41551bd479adc4d88}{wld\_rad\_getExtModData}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t extModId);}
+\DoxyCodeLine{292 }
+\DoxyCodeLine{297 swl\_rc\_ne \mbox{\hyperlink{wld__radio_8h_aed8e22fe3caf7fa575bed77054d8514a}{wld\_rad\_unregisterExtModData}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, uint32\_t extModId);}
+\DoxyCodeLine{298 }
+\DoxyCodeLine{299 \textcolor{preprocessor}{\#define wld\_rad\_forEachAp(apPtr, radPtr) \(\backslash\)}}
+\DoxyCodeLine{300 \textcolor{preprocessor}{    for(apPtr = wld\_rad\_firstAp(radPtr); apPtr; apPtr = wld\_rad\_nextAp(radPtr, apPtr))}}
+\DoxyCodeLine{301 \textcolor{preprocessor}{\#define wld\_rad\_forEachEp(epPtr, radPtr) \(\backslash\)}}
+\DoxyCodeLine{302 \textcolor{preprocessor}{    for(epPtr = wld\_rad\_firstEp(radPtr); epPtr; epPtr = wld\_rad\_nextEp(radPtr, epPtr))}}
+\DoxyCodeLine{303 }
+\DoxyCodeLine{304 amxd\_object\_t* \mbox{\hyperlink{wld__radio_8h_a05bbfb68205e132ae380e2dbc3d84f50}{wld\_rad\_getObject}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{305 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__radio_8h_acdb1329e14acc64c640ed88a5de00d28}{wld\_rad\_firstCommitFinished}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{306 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_RADIO\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

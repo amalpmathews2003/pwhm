@@ -1,0 +1,460 @@
+\hypertarget{wld__chanmgt_8c}{}\doxysection{src/\+Channel\+Management/wld\+\_\+chanmgt.c File Reference}
+\label{wld__chanmgt_8c}\index{src/ChannelManagement/wld\_chanmgt.c@{src/ChannelManagement/wld\_chanmgt.c}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel\+\_\+lib.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+chanmgt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ap\+\_\+rssi\+Monitor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+stamon.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+delay\+Exec.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+trans.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+dm\+\_\+trans.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+chanmgt.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__chanmgt_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}chan\+Mgt\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__chanmgt_8c_a3bc8999d6d2e3ee89d79fdf3307e8852}{WLD\+\_\+\+CHANMGT\+\_\+\+REQ\+\_\+\+CHANGE\+\_\+\+CS\+\_\+\+TIMEOUT}}~10000
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__chanmgt_8c_ac82e79374a92ccb14114533646383016}{WLD\+\_\+\+CHANMGT\+\_\+\+DEF\+\_\+6\+G\+\_\+\+FCC\+\_\+\+CHAN}}~37
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__chanmgt_8c_a0c7314c11d52fa514321c6db833ad997}{wld\+\_\+chanmgt\+\_\+write\+Dfs\+Channels}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__chanmgt_8c_abf3de1213a4ed93e5ef55a5e80e4e707}{wld\+\_\+chanmgt\+\_\+report\+Current\+Chanspec}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, swl\+\_\+chanspec\+\_\+t chanspec, \mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}} reason)
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__chanmgt_8c_ad3412209c76724afc7b1e7e9fa29ed09}{wld\+\_\+chanmgt\+\_\+get\+Auto\+Bw\+Ext}} (\mbox{\hyperlink{wld_8h_ab54ec320bf19b0439ad03048b148deb5}{wld\+\_\+rad\+\_\+bw\+Select\+Mode\+\_\+e}} auto\+Bw\+Mode, swl\+\_\+bandwidth\+\_\+e max\+Bw, swl\+\_\+chanspec\+\_\+t tgt\+Chspec)
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__chanmgt_8c_a666985e1c0d44eb135e66b10316ab7d6}{wld\+\_\+chanmgt\+\_\+get\+Auto\+Bw}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, swl\+\_\+chanspec\+\_\+t tgt\+Chspec)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__chanmgt_8c_a3d145e44b994a5d0a67494bcfc64bc65}{wld\+\_\+chanmgt\+\_\+set\+Target\+Chanspec}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, swl\+\_\+chanspec\+\_\+t chanspec, bool direct, \mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}} reason, const char $\ast$reason\+Ext)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_a047a6fcd8260f90e5c4f625288d8883e}{\+\_\+\+Radio\+\_\+set\+Chanspec}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret)
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_a3576b5065b461e13cde7c2be2070d8fb}{wld\+\_\+chanmgt\+\_\+get\+Better\+Default\+Channel}} (swl\+\_\+freq\+Band\+Ext\+\_\+e freq\+Band, swl\+\_\+channel\+\_\+t cur\+Chan, swl\+\_\+channel\+\_\+t new\+Chan)
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_af61cf8737487dc43e0bac4591359c422}{wld\+\_\+chanmgt\+\_\+get\+Default\+Supported\+Channel}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__chanmgt_8c_a622c18ca1144096bd2b01152ce69f764}{wld\+\_\+chanmgt\+\_\+get\+Default\+Supported\+Bandwidth}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__chanmgt_8c_a36e91ff4612c995d1d1846e132151018}{wld\+\_\+chanmgt\+\_\+check\+Init\+Channel}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__chanmgt_8c_a820b344822b91f23daa22e8dd2923092}{wld\+\_\+chanmgt\+\_\+save\+Changes}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, amxd\+\_\+trans\+\_\+t $\ast$trans)
+\item 
+swl\+\_\+chanspec\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_ae9c5a11e7761fbb2d29f97cce771cf4a}{wld\+\_\+chanmgt\+\_\+get\+Cur\+Chspec}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+chanspec\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_aa9b1826d904bbdd0da7517d21cb4d5a4}{wld\+\_\+chanmgt\+\_\+get\+Tgt\+Chspec}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_a25f1ec63a245b6396ac2906d3238e705}{wld\+\_\+chanmgt\+\_\+get\+Cur\+Channel}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__chanmgt_8c_ab42232d9984e26533bbf9edfed18463a}{wld\+\_\+chanmgt\+\_\+get\+Cur\+Bw}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_a44f888fa44ed7293c7048d5ebe83cbad}{wld\+\_\+chanmgt\+\_\+get\+Tgt\+Channel}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__chanmgt_8c_a5cf35f4e70b1228e01dff23f937e0d32}{wld\+\_\+chanmgt\+\_\+get\+Tgt\+Bw}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__chanmgt_8c_a8d7c7f9f54526cdebe54bf59c56362f9}{wld\+\_\+chanmgt\+\_\+cleanup}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+\mbox{\hyperlink{wld__chanmgt_8c_aeae538b05599d7bfe1e60b1980eec3ab}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Chan\+Mgt\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Change\+Log\+Size\char`\"{}, s\+\_\+set\+Channel\+Change\+Log\+Size\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Acs\+Boot\+Channel\char`\"{}, s\+\_\+set\+Acs\+Boot\+Channel\+\_\+pwf)))
+\item 
+void \mbox{\hyperlink{wld__chanmgt_8c_acb94d8d7b12d3fbe83ad12efbab93b0d}{\+\_\+wld\+\_\+chanmgt\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__chanmgt_8c_aa3d3dfd8ca181e056552758d57fc4fa5}{\+\_\+wld\+\_\+chanmgt\+\_\+validate\+Acs\+Boot\+Channel\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+void \mbox{\hyperlink{wld__chanmgt_8c_a9af32e3adc4f29d67dff1381722ba893}{wld\+\_\+chanmgt\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__chanmgt_8c_a21d495b77cbf1a17c5e40a7f5c33ba15}{chanspec\+Showing\+\_\+str}} \mbox{[}\mbox{\hyperlink{wld_8h_a0a179a5d94cdc5631b0ecdb67a401819a097daaf917063bcbe53e27637738f151}{CHANNEL\+\_\+\+INTERNAL\+\_\+\+STATUS\+\_\+\+MAX}}\mbox{]} = \{\char`\"{}Current\char`\"{}, \char`\"{}Target\char`\"{}, \char`\"{}Sync\char`\"{}\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__chanmgt_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__chanmgt_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!ME@{ME}}
+\index{ME@{ME}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}chan\+Mgt\char`\"{}}
+
+\mbox{\Hypertarget{wld__chanmgt_8c_ac82e79374a92ccb14114533646383016}\label{wld__chanmgt_8c_ac82e79374a92ccb14114533646383016}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!WLD\_CHANMGT\_DEF\_6G\_FCC\_CHAN@{WLD\_CHANMGT\_DEF\_6G\_FCC\_CHAN}}
+\index{WLD\_CHANMGT\_DEF\_6G\_FCC\_CHAN@{WLD\_CHANMGT\_DEF\_6G\_FCC\_CHAN}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHANMGT\_DEF\_6G\_FCC\_CHAN}{WLD\_CHANMGT\_DEF\_6G\_FCC\_CHAN}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHANMGT\+\_\+\+DEF\+\_\+6\+G\+\_\+\+FCC\+\_\+\+CHAN~37}
+
+\mbox{\Hypertarget{wld__chanmgt_8c_a3bc8999d6d2e3ee89d79fdf3307e8852}\label{wld__chanmgt_8c_a3bc8999d6d2e3ee89d79fdf3307e8852}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!WLD\_CHANMGT\_REQ\_CHANGE\_CS\_TIMEOUT@{WLD\_CHANMGT\_REQ\_CHANGE\_CS\_TIMEOUT}}
+\index{WLD\_CHANMGT\_REQ\_CHANGE\_CS\_TIMEOUT@{WLD\_CHANMGT\_REQ\_CHANGE\_CS\_TIMEOUT}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{WLD\_CHANMGT\_REQ\_CHANGE\_CS\_TIMEOUT}{WLD\_CHANMGT\_REQ\_CHANGE\_CS\_TIMEOUT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WLD\+\_\+\+CHANMGT\+\_\+\+REQ\+\_\+\+CHANGE\+\_\+\+CS\+\_\+\+TIMEOUT~10000}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__chanmgt_8c_a047a6fcd8260f90e5c4f625288d8883e}\label{wld__chanmgt_8c_a047a6fcd8260f90e5c4f625288d8883e}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!\_Radio\_setChanspec@{\_Radio\_setChanspec}}
+\index{\_Radio\_setChanspec@{\_Radio\_setChanspec}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{\_Radio\_setChanspec()}{\_Radio\_setChanspec()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Radio\+\_\+set\+Chanspec (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$}]{func,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a047a6fcd8260f90e5c4f625288d8883e_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_acb94d8d7b12d3fbe83ad12efbab93b0d}\label{wld__chanmgt_8c_acb94d8d7b12d3fbe83ad12efbab93b0d}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!\_wld\_chanmgt\_setConf\_ocf@{\_wld\_chanmgt\_setConf\_ocf}}
+\index{\_wld\_chanmgt\_setConf\_ocf@{\_wld\_chanmgt\_setConf\_ocf}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_chanmgt\_setConf\_ocf()}{\_wld\_chanmgt\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+chanmgt\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__chanmgt_8c_aa3d3dfd8ca181e056552758d57fc4fa5}\label{wld__chanmgt_8c_aa3d3dfd8ca181e056552758d57fc4fa5}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!\_wld\_chanmgt\_validateAcsBootChannel\_pvf@{\_wld\_chanmgt\_validateAcsBootChannel\_pvf}}
+\index{\_wld\_chanmgt\_validateAcsBootChannel\_pvf@{\_wld\_chanmgt\_validateAcsBootChannel\_pvf}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_chanmgt\_validateAcsBootChannel\_pvf()}{\_wld\_chanmgt\_validateAcsBootChannel\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+chanmgt\+\_\+validate\+Acs\+Boot\+Channel\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_aa3d3dfd8ca181e056552758d57fc4fa5_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_aeae538b05599d7bfe1e60b1980eec3ab}\label{wld__chanmgt_8c_aeae538b05599d7bfe1e60b1980eec3ab}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Chan\+Mgt\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Change\+Log\+Size\char`\"{}, s\+\_\+set\+Channel\+Change\+Log\+Size\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Acs\+Boot\+Channel\char`\"{}, s\+\_\+set\+Acs\+Boot\+Channel\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__chanmgt_8c_a36e91ff4612c995d1d1846e132151018}\label{wld__chanmgt_8c_a36e91ff4612c995d1d1846e132151018}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_checkInitChannel@{wld\_chanmgt\_checkInitChannel}}
+\index{wld\_chanmgt\_checkInitChannel@{wld\_chanmgt\_checkInitChannel}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_checkInitChannel()}{wld\_chanmgt\_checkInitChannel()}}
+{\footnotesize\ttfamily void wld\+\_\+chanmgt\+\_\+check\+Init\+Channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Ensure current channels is properly filled in with default. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a36e91ff4612c995d1d1846e132151018_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a8d7c7f9f54526cdebe54bf59c56362f9}\label{wld__chanmgt_8c_a8d7c7f9f54526cdebe54bf59c56362f9}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_cleanup@{wld\_chanmgt\_cleanup}}
+\index{wld\_chanmgt\_cleanup@{wld\_chanmgt\_cleanup}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_cleanup()}{wld\_chanmgt\_cleanup()}}
+{\footnotesize\ttfamily void wld\+\_\+chanmgt\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a8d7c7f9f54526cdebe54bf59c56362f9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a666985e1c0d44eb135e66b10316ab7d6}\label{wld__chanmgt_8c_a666985e1c0d44eb135e66b10316ab7d6}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getAutoBw@{wld\_chanmgt\_getAutoBw}}
+\index{wld\_chanmgt\_getAutoBw@{wld\_chanmgt\_getAutoBw}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getAutoBw()}{wld\_chanmgt\_getAutoBw()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+chanmgt\+\_\+get\+Auto\+Bw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{swl\+\_\+chanspec\+\_\+t}]{tgt\+Chspec }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a666985e1c0d44eb135e66b10316ab7d6_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a666985e1c0d44eb135e66b10316ab7d6_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_ad3412209c76724afc7b1e7e9fa29ed09}\label{wld__chanmgt_8c_ad3412209c76724afc7b1e7e9fa29ed09}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getAutoBwExt@{wld\_chanmgt\_getAutoBwExt}}
+\index{wld\_chanmgt\_getAutoBwExt@{wld\_chanmgt\_getAutoBwExt}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getAutoBwExt()}{wld\_chanmgt\_getAutoBwExt()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+chanmgt\+\_\+get\+Auto\+Bw\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_ab54ec320bf19b0439ad03048b148deb5}{wld\+\_\+rad\+\_\+bw\+Select\+Mode\+\_\+e}}}]{auto\+Bw\+Mode,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{max\+Bw,  }\item[{swl\+\_\+chanspec\+\_\+t}]{tgt\+Chspec }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_ad3412209c76724afc7b1e7e9fa29ed09_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_ad3412209c76724afc7b1e7e9fa29ed09_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a3576b5065b461e13cde7c2be2070d8fb}\label{wld__chanmgt_8c_a3576b5065b461e13cde7c2be2070d8fb}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getBetterDefaultChannel@{wld\_chanmgt\_getBetterDefaultChannel}}
+\index{wld\_chanmgt\_getBetterDefaultChannel@{wld\_chanmgt\_getBetterDefaultChannel}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getBetterDefaultChannel()}{wld\_chanmgt\_getBetterDefaultChannel()}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t wld\+\_\+chanmgt\+\_\+get\+Better\+Default\+Channel (\begin{DoxyParamCaption}\item[{swl\+\_\+freq\+Band\+Ext\+\_\+e}]{freq\+Band,  }\item[{swl\+\_\+channel\+\_\+t}]{cur\+Chan,  }\item[{swl\+\_\+channel\+\_\+t}]{new\+Chan }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a3576b5065b461e13cde7c2be2070d8fb_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_ab42232d9984e26533bbf9edfed18463a}\label{wld__chanmgt_8c_ab42232d9984e26533bbf9edfed18463a}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getCurBw@{wld\_chanmgt\_getCurBw}}
+\index{wld\_chanmgt\_getCurBw@{wld\_chanmgt\_getCurBw}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getCurBw()}{wld\_chanmgt\_getCurBw()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+chanmgt\+\_\+get\+Cur\+Bw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return the current bandwidth Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_ab42232d9984e26533bbf9edfed18463a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a25f1ec63a245b6396ac2906d3238e705}\label{wld__chanmgt_8c_a25f1ec63a245b6396ac2906d3238e705}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getCurChannel@{wld\_chanmgt\_getCurChannel}}
+\index{wld\_chanmgt\_getCurChannel@{wld\_chanmgt\_getCurChannel}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getCurChannel()}{wld\_chanmgt\_getCurChannel()}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t wld\+\_\+chanmgt\+\_\+get\+Cur\+Channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return the current channel Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a25f1ec63a245b6396ac2906d3238e705_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_ae9c5a11e7761fbb2d29f97cce771cf4a}\label{wld__chanmgt_8c_ae9c5a11e7761fbb2d29f97cce771cf4a}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getCurChspec@{wld\_chanmgt\_getCurChspec}}
+\index{wld\_chanmgt\_getCurChspec@{wld\_chanmgt\_getCurChspec}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getCurChspec()}{wld\_chanmgt\_getCurChspec()}}
+{\footnotesize\ttfamily swl\+\_\+chanspec\+\_\+t wld\+\_\+chanmgt\+\_\+get\+Cur\+Chspec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return the current chanspec Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_ae9c5a11e7761fbb2d29f97cce771cf4a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a622c18ca1144096bd2b01152ce69f764}\label{wld__chanmgt_8c_a622c18ca1144096bd2b01152ce69f764}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getDefaultSupportedBandwidth@{wld\_chanmgt\_getDefaultSupportedBandwidth}}
+\index{wld\_chanmgt\_getDefaultSupportedBandwidth@{wld\_chanmgt\_getDefaultSupportedBandwidth}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getDefaultSupportedBandwidth()}{wld\_chanmgt\_getDefaultSupportedBandwidth()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+chanmgt\+\_\+get\+Default\+Supported\+Bandwidth (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a622c18ca1144096bd2b01152ce69f764_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a622c18ca1144096bd2b01152ce69f764_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_af61cf8737487dc43e0bac4591359c422}\label{wld__chanmgt_8c_af61cf8737487dc43e0bac4591359c422}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getDefaultSupportedChannel@{wld\_chanmgt\_getDefaultSupportedChannel}}
+\index{wld\_chanmgt\_getDefaultSupportedChannel@{wld\_chanmgt\_getDefaultSupportedChannel}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getDefaultSupportedChannel()}{wld\_chanmgt\_getDefaultSupportedChannel()}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t wld\+\_\+chanmgt\+\_\+get\+Default\+Supported\+Channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_af61cf8737487dc43e0bac4591359c422_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_af61cf8737487dc43e0bac4591359c422_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a5cf35f4e70b1228e01dff23f937e0d32}\label{wld__chanmgt_8c_a5cf35f4e70b1228e01dff23f937e0d32}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getTgtBw@{wld\_chanmgt\_getTgtBw}}
+\index{wld\_chanmgt\_getTgtBw@{wld\_chanmgt\_getTgtBw}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getTgtBw()}{wld\_chanmgt\_getTgtBw()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+chanmgt\+\_\+get\+Tgt\+Bw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return the target bandwidth Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a5cf35f4e70b1228e01dff23f937e0d32_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a44f888fa44ed7293c7048d5ebe83cbad}\label{wld__chanmgt_8c_a44f888fa44ed7293c7048d5ebe83cbad}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getTgtChannel@{wld\_chanmgt\_getTgtChannel}}
+\index{wld\_chanmgt\_getTgtChannel@{wld\_chanmgt\_getTgtChannel}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getTgtChannel()}{wld\_chanmgt\_getTgtChannel()}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t wld\+\_\+chanmgt\+\_\+get\+Tgt\+Channel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return the target channel Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a44f888fa44ed7293c7048d5ebe83cbad_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_aa9b1826d904bbdd0da7517d21cb4d5a4}\label{wld__chanmgt_8c_aa9b1826d904bbdd0da7517d21cb4d5a4}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_getTgtChspec@{wld\_chanmgt\_getTgtChspec}}
+\index{wld\_chanmgt\_getTgtChspec@{wld\_chanmgt\_getTgtChspec}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_getTgtChspec()}{wld\_chanmgt\_getTgtChspec()}}
+{\footnotesize\ttfamily swl\+\_\+chanspec\+\_\+t wld\+\_\+chanmgt\+\_\+get\+Tgt\+Chspec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return the target chanspec Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_aa9b1826d904bbdd0da7517d21cb4d5a4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a9af32e3adc4f29d67dff1381722ba893}\label{wld__chanmgt_8c_a9af32e3adc4f29d67dff1381722ba893}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_init@{wld\_chanmgt\_init}}
+\index{wld\_chanmgt\_init@{wld\_chanmgt\_init}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_init()}{wld\_chanmgt\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+chanmgt\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a9af32e3adc4f29d67dff1381722ba893_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_abf3de1213a4ed93e5ef55a5e80e4e707}\label{wld__chanmgt_8c_abf3de1213a4ed93e5ef55a5e80e4e707}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_reportCurrentChanspec@{wld\_chanmgt\_reportCurrentChanspec}}
+\index{wld\_chanmgt\_reportCurrentChanspec@{wld\_chanmgt\_reportCurrentChanspec}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_reportCurrentChanspec()}{wld\_chanmgt\_reportCurrentChanspec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+chanmgt\+\_\+report\+Current\+Chanspec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec,  }\item[{\mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}}}]{reason }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_abf3de1213a4ed93e5ef55a5e80e4e707_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a820b344822b91f23daa22e8dd2923092}\label{wld__chanmgt_8c_a820b344822b91f23daa22e8dd2923092}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_saveChanges@{wld\_chanmgt\_saveChanges}}
+\index{wld\_chanmgt\_saveChanges@{wld\_chanmgt\_saveChanges}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_saveChanges()}{wld\_chanmgt\_saveChanges()}}
+{\footnotesize\ttfamily void wld\+\_\+chanmgt\+\_\+save\+Changes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{amxd\+\_\+trans\+\_\+t $\ast$}]{trans }\end{DoxyParamCaption})}
+
+update of the radio data model after create Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a820b344822b91f23daa22e8dd2923092_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a3d145e44b994a5d0a67494bcfc64bc65}\label{wld__chanmgt_8c_a3d145e44b994a5d0a67494bcfc64bc65}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_setTargetChanspec@{wld\_chanmgt\_setTargetChanspec}}
+\index{wld\_chanmgt\_setTargetChanspec@{wld\_chanmgt\_setTargetChanspec}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_setTargetChanspec()}{wld\_chanmgt\_setTargetChanspec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+chanmgt\+\_\+set\+Target\+Chanspec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{swl\+\_\+chanspec\+\_\+t}]{chanspec,  }\item[{bool}]{direct,  }\item[{\mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}}}]{reason,  }\item[{const char $\ast$}]{reason\+Ext }\end{DoxyParamCaption})}
+
+Set target chanspec for a specific radio
+
+Notes\+:
+\begin{DoxyItemize}
+\item frequency band switching is not supported
+\item reason\+Ext is not used for the moment 
+\end{DoxyItemize}Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a3d145e44b994a5d0a67494bcfc64bc65_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a3d145e44b994a5d0a67494bcfc64bc65_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__chanmgt_8c_a0c7314c11d52fa514321c6db833ad997}\label{wld__chanmgt_8c_a0c7314c11d52fa514321c6db833ad997}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!wld\_chanmgt\_writeDfsChannels@{wld\_chanmgt\_writeDfsChannels}}
+\index{wld\_chanmgt\_writeDfsChannels@{wld\_chanmgt\_writeDfsChannels}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{wld\_chanmgt\_writeDfsChannels()}{wld\_chanmgt\_writeDfsChannels()}}
+{\footnotesize\ttfamily void wld\+\_\+chanmgt\+\_\+write\+Dfs\+Channels (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Write the currently cleared dfs channels to pcb Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__chanmgt_8c_a0c7314c11d52fa514321c6db833ad997_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__chanmgt_8c_a21d495b77cbf1a17c5e40a7f5c33ba15}\label{wld__chanmgt_8c_a21d495b77cbf1a17c5e40a7f5c33ba15}} 
+\index{wld\_chanmgt.c@{wld\_chanmgt.c}!chanspecShowing\_str@{chanspecShowing\_str}}
+\index{chanspecShowing\_str@{chanspecShowing\_str}!wld\_chanmgt.c@{wld\_chanmgt.c}}
+\doxysubsubsection{\texorpdfstring{chanspecShowing\_str}{chanspecShowing\_str}}
+{\footnotesize\ttfamily const char$\ast$ chanspec\+Showing\+\_\+str\mbox{[}\mbox{\hyperlink{wld_8h_a0a179a5d94cdc5631b0ecdb67a401819a097daaf917063bcbe53e27637738f151}{CHANNEL\+\_\+\+INTERNAL\+\_\+\+STATUS\+\_\+\+MAX}}\mbox{]} = \{\char`\"{}Current\char`\"{}, \char`\"{}Target\char`\"{}, \char`\"{}Sync\char`\"{}\}}
+

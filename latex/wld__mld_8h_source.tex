@@ -1,0 +1,136 @@
+\hypertarget{wld__mld_8h_source}{}\doxysection{wld\+\_\+mld.\+h}
+\label{wld__mld_8h_source}\index{include/wld/wld\_mld.h@{include/wld/wld\_mld.h}}
+\mbox{\hyperlink{wld__mld_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2024 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef SRC\_INCLUDE\_WLD\_WLD\_MLD\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define SRC\_INCLUDE\_WLD\_WLD\_MLD\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__types_8h}{wld\_types.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#define NO\_LINK\_ID (-\/1)}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70 \textcolor{comment}{/*}}
+\DoxyCodeLine{71 \textcolor{comment}{ * event needed to make mld members react when one link / mld change}}
+\DoxyCodeLine{72 \textcolor{comment}{ */}}
+\DoxyCodeLine{73 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{74     \mbox{\hyperlink{wld__mld_8h_a5ba65b797ff24ac99069e74f7f941277a1b0d86be56b7f3366500cad691402fa4}{WLD\_MLD\_EVT\_ADD}},           \textcolor{comment}{// when mld is added: first link added (registered to mldUnit)}}
+\DoxyCodeLine{75     \mbox{\hyperlink{wld__mld_8h_a5ba65b797ff24ac99069e74f7f941277a20d4278711702f81f8d98d0ce8622ae4}{WLD\_MLD\_EVT\_UPDATE}},        \textcolor{comment}{// when mld is updated: one of the member links is added/removed/disabled/enabled}}
+\DoxyCodeLine{76     \mbox{\hyperlink{wld__mld_8h_a5ba65b797ff24ac99069e74f7f941277a80cf0103ef4d9ce61abdf16a55a25d0d}{WLD\_MLD\_EVT\_DEL}},           \textcolor{comment}{// when mld is removed: last link removed (unregistered from mldUnit)}}
+\DoxyCodeLine{77 \} \mbox{\hyperlink{wld__mld_8h_a5ba65b797ff24ac99069e74f7f941277}{wld\_mldChangeEvent\_e}};}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{82 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{83     \mbox{\hyperlink{wld__mld_8h_a5ba65b797ff24ac99069e74f7f941277}{wld\_mldChangeEvent\_e}} \mbox{\hyperlink{structwld__mldChange__t_a01899c4c99f8a857d69d9a0aa2aecc5b}{event}};}
+\DoxyCodeLine{84     \mbox{\hyperlink{wld__types_8h_a85cbe9ff26b5faa4967e0cbdbe13406f}{wld\_ssidType\_e}} \mbox{\hyperlink{structwld__mldChange__t_a10a742f65b0fbe19151d0e7c53c4a159}{mldType}};}
+\DoxyCodeLine{85     int32\_t \mbox{\hyperlink{structwld__mldChange__t_a31348886a4f6cde9c94ae7cbb96ae13e}{mldUnit}};}
+\DoxyCodeLine{86     \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{structwld__mldChange__t_a79156716a1701917e3d6f2caab8f2f66}{pEvtLinkSsid}};}
+\DoxyCodeLine{87 \} \mbox{\hyperlink{structwld__mldChange__t}{wld\_mldChange\_t}};}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89 swl\_rc\_ne \mbox{\hyperlink{wld__mld_8h_a310edbcb5110fae08c7c68134d235cf1}{wld\_mld\_initMgr}}(\mbox{\hyperlink{structwld__mldMgr}{wld\_mldMgr\_t}}** ppMgr);}
+\DoxyCodeLine{90 swl\_rc\_ne \mbox{\hyperlink{wld__mld_8h_a4e51f4fb38f6897ba429b8a432f15dde}{wld\_mld\_deinitMgr}}(\mbox{\hyperlink{structwld__mldMgr}{wld\_mldMgr\_t}}** ppMgr);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92 \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* \mbox{\hyperlink{wld__mld_8h_a87f48ea4ba7b17f5f9d48e528fb50e6c}{wld\_mld\_registerLink}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID, int32\_t unit);}
+\DoxyCodeLine{93 swl\_rc\_ne \mbox{\hyperlink{wld__mld_8h_a674cddbe5a8c640592f764cf8841036e}{wld\_mld\_unregisterLink}}(\mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{94 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__mld_8h_a76c7faf25698a1ac7b59d8199724dbf6}{wld\_mld\_getLinkSsid}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{95 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__mld_8h_a9888d4854d1b604805a3ed4f2b6add06}{wld\_mld\_getLinkSsidByLinkId}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink, int8\_t linkId);}
+\DoxyCodeLine{96 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__mld_8h_a20cb970881d45f9002582e5034dba5b2}{wld\_mld\_getLinkName}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{97 swl\_rc\_ne \mbox{\hyperlink{wld__mld_8h_ab3c276e4453e34f8336cd6f179e13a92}{wld\_mld\_setPrimaryLink}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{98 \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* \mbox{\hyperlink{wld__mld_8h_a5a22c785e66b2fa3cefd805bec557e3f}{wld\_mld\_getPrimaryLink}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{99 \mbox{\hyperlink{structS__SSID}{T\_SSID}}* \mbox{\hyperlink{wld__mld_8h_a93acd0516243fb70c024795d9ed86469}{wld\_mld\_getPrimaryLinkSsid}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{100 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__mld_8h_a8efa8aa800c7eb5ac443f934b30a9281}{wld\_mld\_getPrimaryLinkIfName}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{101 int32\_t \mbox{\hyperlink{wld__mld_8h_abcbc9ad791bec5cb23e598f9ae331240}{wld\_mld\_getPrimaryLinkIfIndex}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{102 swl\_rc\_ne \mbox{\hyperlink{wld__mld_8h_a9eb6bbcaa8789411261ea4582cfbaf05}{wld\_mld\_setLinkId}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink, int32\_t linkId);}
+\DoxyCodeLine{103 swl\_rc\_ne \mbox{\hyperlink{wld__mld_8h_a55e32f73a488450056012a30cc37117e}{wld\_mld\_resetLinkId}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{104 int16\_t \mbox{\hyperlink{wld__mld_8h_a9c4a384096d9195dc6d73e084eabf975}{wld\_mld\_getLinkId}}(\textcolor{keyword}{const} \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{105 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__mld_8h_a3a1c699a8afec7f7b534bbc67a1404d9}{wld\_mld\_getLinkIfName}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{106 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_ad253400624313df4f676e8c3f8467093}{wld\_mld\_isLinkActive}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{107 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_aac4ea52675e8bef215ab111032e1a5b3}{wld\_mld\_isLinkEnabled}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{108 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_a27c5ab0585d4132ca7ce424f2330249d}{wld\_mld\_isLinkUsable}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{109 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_a3e411b7122cc7dedecdd658537d87520}{wld\_mld\_checkUsableLinkBasicConditions}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{110 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_ad4a045e2125e6b01860bf5db788252ca}{wld\_mld\_saveLinkConfigured}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink, \textcolor{keywordtype}{bool} flag);}
+\DoxyCodeLine{111 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_af94354884b54cbf921c04c84c756b10b}{wld\_mld\_setLinkConfigured}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink, \textcolor{keywordtype}{bool} flag);}
+\DoxyCodeLine{112 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_a3f779329787e8be8db2819ea181d31d8}{wld\_mld\_isLinkConfigured}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{113 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__mld_8h_a46e398e8ddf537d7d099ac6cf085bdfa}{wld\_mld\_isLinkActiveInMultiLink}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{114 uint32\_t \mbox{\hyperlink{wld__mld_8h_aa85c1a76ff81bbda0fc742fa553fa47d}{wld\_mld\_countNeighLinks}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{115 uint32\_t \mbox{\hyperlink{wld__mld_8h_ad9b0152d4dd41209b2acba5bf7851048}{wld\_mld\_countNeighActiveLinks}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{116 uint32\_t \mbox{\hyperlink{wld__mld_8h_a49ce1e8efb2b279b9f9914de31a9ad8e}{wld\_mld\_countNeighEnabledLinks}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{117 uint32\_t \mbox{\hyperlink{wld__mld_8h_a3ecf5dbb3f68d7f3c19b3d87d92420e2}{wld\_mld\_countNeighUsableLinks}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{118 \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* \mbox{\hyperlink{wld__mld_8h_a88990d860385704c7b218b1383a97ea2}{wld\_mld\_getNeighLinkByRad}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120 \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* \mbox{\hyperlink{wld__mld_8h_a44d25d949af62602a7bd53cfb061449d}{wld\_mld\_firstNeighLink}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{121 \mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* \mbox{\hyperlink{wld__mld_8h_a962d0ccbed34d9289ebd4051d254cb40}{wld\_mld\_nextNeighLink}}(\mbox{\hyperlink{structwld__mldLink}{wld\_mldLink\_t}}* pLink);}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123 \textcolor{preprocessor}{\#define wld\_for\_eachNeighMldLink(pNeighLink, pRefLink) \(\backslash\)}}
+\DoxyCodeLine{124 \textcolor{preprocessor}{    for(pNeighLink = wld\_mld\_firstNeighLink(pRefLink); pNeighLink; pNeighLink = wld\_mld\_nextNeighLink(pNeighLink))}}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{126 \textcolor{preprocessor}{\#define wld\_for\_eachNeighMldLink\_safe(pNgLink, pRefLink) \(\backslash\)}}
+\DoxyCodeLine{127 \textcolor{preprocessor}{    for(wld\_mldLink\_t* pNgLink = wld\_mld\_firstNeighLink(pRefLink), \(\backslash\)}}
+\DoxyCodeLine{128 \textcolor{preprocessor}{        * pNgLink \#\# \_next = wld\_mld\_nextNeighLink(pNgLink); \(\backslash\)}}
+\DoxyCodeLine{129 \textcolor{preprocessor}{        pNgLink; \(\backslash\)}}
+\DoxyCodeLine{130 \textcolor{preprocessor}{        pNgLink = pNgLink \#\# \_next, \(\backslash\)}}
+\DoxyCodeLine{131 \textcolor{preprocessor}{        pNgLink \#\# \_next = wld\_mld\_nextNeighLink(pNgLink))}}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{133 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* SRC\_INCLUDE\_WLD\_WLD\_MLD\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

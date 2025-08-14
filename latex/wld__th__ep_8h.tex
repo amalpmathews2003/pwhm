@@ -1,0 +1,93 @@
+\hypertarget{wld__th__ep_8h}{}\doxysection{test/test\+Helper/wld\+\_\+th\+\_\+ep.h File Reference}
+\label{wld__th__ep_8h}\index{test/testHelper/wld\_th\_ep.h@{test/testHelper/wld\_th\_ep.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+th\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$amxc/amxc\+\_\+macros.\+h$>$}\newline
+{\ttfamily \#include $<$amxc/amxc.\+h$>$}\newline
+{\ttfamily \#include $<$amxp/amxp.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+dm.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+path.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object\+\_\+event.\+h$>$}\newline
+{\ttfamily \#include $<$amxo/amxo.\+h$>$}\newline
+{\ttfamily \#include $<$amxo/amxo\+\_\+save.\+h$>$}\newline
+{\ttfamily \#include $<$amxb/amxb.\+h$>$}\newline
+Include dependency graph for wld\+\_\+th\+\_\+ep.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__ep_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__th__ep_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ \mbox{\hyperlink{wld__th__ep_8h_a7ad8165d0c1aff3342effed766562f13}{wld\+\_\+th\+\_\+ep\+\_\+create\+Ep}} (amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const bus\+\_\+ctx, \mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$mock\+Vendor, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$radio, const char $\ast$name)
+\item 
+void \mbox{\hyperlink{wld__th__ep_8h_a3bacfef92ef25cdb74874cdc43d81546}{wld\+\_\+th\+\_\+ep\+\_\+delete\+Ep}} (amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const bus\+\_\+ctx, \mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$mock\+Vendor \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const char $\ast$name)
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{wld__th__ep_8h_af4d9dfe742626b655c4416c93e35a6c0}{wld\+\_\+th\+\_\+ep\+\_\+create\+Profile}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ep, const char $\ast$name)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__th__ep_8h_ae1a7a1887b4ca29cfab55519ddc47df4}{wld\+\_\+th\+\_\+ep\+\_\+get\+Stats}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$stats)
+\item 
+void \mbox{\hyperlink{wld__th__ep_8h_a3d79d8af543528bb9ab4113a51585e8b}{wld\+\_\+th\+\_\+ep\+\_\+do\+Fsm\+Clean}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+void \mbox{\hyperlink{wld__th__ep_8h_af003c90e37a59934c874f809f89741a4}{wld\+\_\+th\+\_\+ep\+\_\+set\+Enable}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, bool enable, bool commit)
+\item 
+void \mbox{\hyperlink{wld__th__ep_8h_a99b709fe8469188a098aba2cb009596f}{wld\+\_\+th\+\_\+ep\+\_\+set\+SSIDEnable}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, bool enable, bool commit)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__th__ep_8h_a7ad8165d0c1aff3342effed766562f13}\label{wld__th__ep_8h_a7ad8165d0c1aff3342effed766562f13}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_createEp@{wld\_th\_ep\_createEp}}
+\index{wld\_th\_ep\_createEp@{wld\_th\_ep\_createEp}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_createEp()}{wld\_th\_ep\_createEp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ wld\+\_\+th\+\_\+ep\+\_\+create\+Ep (\begin{DoxyParamCaption}\item[{amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const}]{bus\+\_\+ctx,  }\item[{\mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$}]{mock\+Vendor,  }\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{radio,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__ep_8h_af4d9dfe742626b655c4416c93e35a6c0}\label{wld__th__ep_8h_af4d9dfe742626b655c4416c93e35a6c0}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_createProfile@{wld\_th\_ep\_createProfile}}
+\index{wld\_th\_ep\_createProfile@{wld\_th\_ep\_createProfile}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_createProfile()}{wld\_th\_ep\_createProfile()}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t $\ast$ wld\+\_\+th\+\_\+ep\+\_\+create\+Profile (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{ep,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__ep_8h_a3bacfef92ef25cdb74874cdc43d81546}\label{wld__th__ep_8h_a3bacfef92ef25cdb74874cdc43d81546}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_deleteEp@{wld\_th\_ep\_deleteEp}}
+\index{wld\_th\_ep\_deleteEp@{wld\_th\_ep\_deleteEp}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_deleteEp()}{wld\_th\_ep\_deleteEp()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+ep\+\_\+delete\+Ep (\begin{DoxyParamCaption}\item[{amxb\+\_\+bus\+\_\+ctx\+\_\+t $\ast$const}]{bus\+\_\+ctx,  }\item[{\mbox{\hyperlink{wld__th__types_8h_ae72285ed7d4bd948f84987299019f197}{wld\+\_\+th\+\_\+mock\+Vendor\+\_\+t}} $\ast$mock\+Vendor}]{\+\_\+\+UNUSED,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__ep_8h_a3d79d8af543528bb9ab4113a51585e8b}\label{wld__th__ep_8h_a3d79d8af543528bb9ab4113a51585e8b}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_doFsmClean@{wld\_th\_ep\_doFsmClean}}
+\index{wld\_th\_ep\_doFsmClean@{wld\_th\_ep\_doFsmClean}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_doFsmClean()}{wld\_th\_ep\_doFsmClean()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+ep\+\_\+do\+Fsm\+Clean (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__ep_8h_ae1a7a1887b4ca29cfab55519ddc47df4}\label{wld__th__ep_8h_ae1a7a1887b4ca29cfab55519ddc47df4}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_getStats@{wld\_th\_ep\_getStats}}
+\index{wld\_th\_ep\_getStats@{wld\_th\_ep\_getStats}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_getStats()}{wld\_th\_ep\_getStats()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+th\+\_\+ep\+\_\+get\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$}]{stats }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__ep_8h_af003c90e37a59934c874f809f89741a4}\label{wld__th__ep_8h_af003c90e37a59934c874f809f89741a4}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_setEnable@{wld\_th\_ep\_setEnable}}
+\index{wld\_th\_ep\_setEnable@{wld\_th\_ep\_setEnable}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_setEnable()}{wld\_th\_ep\_setEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+ep\+\_\+set\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{bool}]{enable,  }\item[{bool}]{commit }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__th__ep_8h_a99b709fe8469188a098aba2cb009596f}\label{wld__th__ep_8h_a99b709fe8469188a098aba2cb009596f}} 
+\index{wld\_th\_ep.h@{wld\_th\_ep.h}!wld\_th\_ep\_setSSIDEnable@{wld\_th\_ep\_setSSIDEnable}}
+\index{wld\_th\_ep\_setSSIDEnable@{wld\_th\_ep\_setSSIDEnable}!wld\_th\_ep.h@{wld\_th\_ep.h}}
+\doxysubsubsection{\texorpdfstring{wld\_th\_ep\_setSSIDEnable()}{wld\_th\_ep\_setSSIDEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+th\+\_\+ep\+\_\+set\+SSIDEnable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{bool}]{enable,  }\item[{bool}]{commit }\end{DoxyParamCaption})}
+

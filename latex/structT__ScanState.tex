@@ -1,0 +1,99 @@
+\hypertarget{structT__ScanState}{}\doxysection{T\+\_\+\+Scan\+State Struct Reference}
+\label{structT__ScanState}\index{T\_ScanState@{T\_ScanState}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+
+
+Collaboration diagram for T\+\_\+\+Scan\+State\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structT__ScanState__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+function\+\_\+deferred\+Info\+\_\+t \mbox{\hyperlink{structT__ScanState_aa6548462efeca86df204867263914845}{scan\+Fun\+Info}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__ScanState_a2350b58d9f8f12f82d46022edc6fa80e}{min\+Rssi}}
+\item 
+char \mbox{\hyperlink{structT__ScanState_ae93f20932d93bd744e5cbfefcd78b593}{scan\+Reason}} \mbox{[}16\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_ac9532ee05f7f8bb316a7da1a4ec6eeef}{wld\+\_\+scan\+\_\+type\+\_\+e}} \mbox{\hyperlink{structT__ScanState_a9d9c884182c09ef2ac1bc3b0a6e2a12d}{scan\+Type}}
+\item 
+\mbox{\hyperlink{structwld__scan__stats__t}{wld\+\_\+scan\+\_\+stats\+\_\+t}} \mbox{\hyperlink{structT__ScanState_ae58cd1aaf4073a4d81f2584af92bc382}{stats}}
+\item 
+\mbox{\hyperlink{structwld__scan__config__t}{wld\+\_\+scan\+\_\+config\+\_\+t}} \mbox{\hyperlink{structT__ScanState_a2088136eb02b6a1f9963300d1d8ca644}{cfg}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__ScanState_a01e55819bfe905bb97f5295afc3245bc}{last\+Scan\+Time}}
+\item 
+\mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} \mbox{\hyperlink{structT__ScanState_a917083a70804fa2202cff169b5fd4cf2}{last\+Scan\+Results}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structT__ScanState_a0670f41f903be58245fe2bb3f4a60f98}{spectrum\+Results}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structT__ScanState_a2088136eb02b6a1f9963300d1d8ca644}\label{structT__ScanState_a2088136eb02b6a1f9963300d1d8ca644}} 
+\index{T\_ScanState@{T\_ScanState}!cfg@{cfg}}
+\index{cfg@{cfg}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{cfg}{cfg}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__scan__config__t}{wld\+\_\+scan\+\_\+config\+\_\+t}} T\+\_\+\+Scan\+State\+::cfg}
+
+\mbox{\Hypertarget{structT__ScanState_a917083a70804fa2202cff169b5fd4cf2}\label{structT__ScanState_a917083a70804fa2202cff169b5fd4cf2}} 
+\index{T\_ScanState@{T\_ScanState}!lastScanResults@{lastScanResults}}
+\index{lastScanResults@{lastScanResults}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{lastScanResults}{lastScanResults}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_ab518b3e0294681d99f44fb2bd2a30e9e}{wld\+\_\+scan\+Results\+\_\+t}} T\+\_\+\+Scan\+State\+::last\+Scan\+Results}
+
+\mbox{\Hypertarget{structT__ScanState_a01e55819bfe905bb97f5295afc3245bc}\label{structT__ScanState_a01e55819bfe905bb97f5295afc3245bc}} 
+\index{T\_ScanState@{T\_ScanState}!lastScanTime@{lastScanTime}}
+\index{lastScanTime@{lastScanTime}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{lastScanTime}{lastScanTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Scan\+State\+::last\+Scan\+Time}
+
+\mbox{\Hypertarget{structT__ScanState_a2350b58d9f8f12f82d46022edc6fa80e}\label{structT__ScanState_a2350b58d9f8f12f82d46022edc6fa80e}} 
+\index{T\_ScanState@{T\_ScanState}!minRssi@{minRssi}}
+\index{minRssi@{minRssi}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{minRssi}{minRssi}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Scan\+State\+::min\+Rssi}
+
+\mbox{\Hypertarget{structT__ScanState_aa6548462efeca86df204867263914845}\label{structT__ScanState_aa6548462efeca86df204867263914845}} 
+\index{T\_ScanState@{T\_ScanState}!scanFunInfo@{scanFunInfo}}
+\index{scanFunInfo@{scanFunInfo}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{scanFunInfo}{scanFunInfo}}
+{\footnotesize\ttfamily swl\+\_\+function\+\_\+deferred\+Info\+\_\+t T\+\_\+\+Scan\+State\+::scan\+Fun\+Info}
+
+\mbox{\Hypertarget{structT__ScanState_ae93f20932d93bd744e5cbfefcd78b593}\label{structT__ScanState_ae93f20932d93bd744e5cbfefcd78b593}} 
+\index{T\_ScanState@{T\_ScanState}!scanReason@{scanReason}}
+\index{scanReason@{scanReason}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{scanReason}{scanReason}}
+{\footnotesize\ttfamily char T\+\_\+\+Scan\+State\+::scan\+Reason\mbox{[}16\mbox{]}}
+
+\mbox{\Hypertarget{structT__ScanState_a9d9c884182c09ef2ac1bc3b0a6e2a12d}\label{structT__ScanState_a9d9c884182c09ef2ac1bc3b0a6e2a12d}} 
+\index{T\_ScanState@{T\_ScanState}!scanType@{scanType}}
+\index{scanType@{scanType}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{scanType}{scanType}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_ac9532ee05f7f8bb316a7da1a4ec6eeef}{wld\+\_\+scan\+\_\+type\+\_\+e}} T\+\_\+\+Scan\+State\+::scan\+Type}
+
+\mbox{\Hypertarget{structT__ScanState_a0670f41f903be58245fe2bb3f4a60f98}\label{structT__ScanState_a0670f41f903be58245fe2bb3f4a60f98}} 
+\index{T\_ScanState@{T\_ScanState}!spectrumResults@{spectrumResults}}
+\index{spectrumResults@{spectrumResults}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{spectrumResults}{spectrumResults}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t T\+\_\+\+Scan\+State\+::spectrum\+Results}
+
+results of the get\+Spectrum \mbox{\Hypertarget{structT__ScanState_ae58cd1aaf4073a4d81f2584af92bc382}\label{structT__ScanState_ae58cd1aaf4073a4d81f2584af92bc382}} 
+\index{T\_ScanState@{T\_ScanState}!stats@{stats}}
+\index{stats@{stats}!T\_ScanState@{T\_ScanState}}
+\doxysubsubsection{\texorpdfstring{stats}{stats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__scan__stats__t}{wld\+\_\+scan\+\_\+stats\+\_\+t}} T\+\_\+\+Scan\+State\+::stats}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

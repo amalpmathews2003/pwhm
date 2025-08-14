@@ -1,0 +1,7 @@
+<map id="wld_chanmgt_getDefaultSupportedBandwidth" name="wld_chanmgt_getDefaultSupportedBandwidth">
+<area shape="rect" id="node1" title=" " alt="" coords="567,27,817,69"/>
+<area shape="rect" id="node2" href="$wld__chanmgt_8c.html#a36e91ff4612c995d1d1846e132151018" title=" " alt="" coords="291,5,519,32"/>
+<area shape="rect" id="node3" href="$wld__hostapd__cfgFile_8c.html#aa4ef0964a05f5b4f72d9c4b2f9046aa4" title="set the radio parameters" alt="" coords="327,57,482,98"/>
+<area shape="rect" id="node4" href="$wld__rad__hostapd__api_8c.html#aea42b1d7acee5d51484de01cac65c983" title="set main interface channel parameters" alt="" coords="18,39,230,65"/>
+<area shape="rect" id="node5" href="$wld__rad__hostapd__api_8c.html#a5411827e8b4ab433c4f62efe4dee6b5e" title=" " alt="" coords="5,89,243,116"/>
+</map>

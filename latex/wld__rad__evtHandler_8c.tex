@@ -1,0 +1,48 @@
+\hypertarget{wld__rad__evtHandler_8c}{}\doxysection{src/\+Rad\+Mgt/wld\+\_\+rad\+\_\+evt\+Handler.c File Reference}
+\label{wld__rad__evtHandler_8c}\index{src/RadMgt/wld\_rad\_evtHandler.c@{src/RadMgt/wld\_rad\_evtHandler.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+evt\+Handler.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+rad\+\_\+evt\+Handler.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__evtHandler_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__rad__evtHandler_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}rad\+EvtH\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__rad__evtHandler_8c_a885a3311e91921e5c2a72c5b9a5958eb}{wld\+\_\+rad\+Evt\+Handler\+\_\+handle\+Event\+By\+Name}} (\mbox{\hyperlink{structwld__radEvtHandler__t}{wld\+\_\+rad\+Evt\+Handler\+\_\+t}} $\ast$handlers, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, uint32\+\_\+t event, const char $\ast$ifname, void $\ast$data)
+\item 
+void \mbox{\hyperlink{wld__rad__evtHandler_8c_a27b46e217c32b26188f614554e7c94b7}{wld\+\_\+rad\+Evt\+Handler\+\_\+handle\+Event\+By\+Index}} (\mbox{\hyperlink{structwld__radEvtHandler__t}{wld\+\_\+rad\+Evt\+Handler\+\_\+t}} $\ast$handlers, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, uint32\+\_\+t event, uint32\+\_\+t ifindex, void $\ast$data)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__rad__evtHandler_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__rad__evtHandler_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_rad\_evtHandler.c@{wld\_rad\_evtHandler.c}!ME@{ME}}
+\index{ME@{ME}!wld\_rad\_evtHandler.c@{wld\_rad\_evtHandler.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}rad\+EvtH\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__rad__evtHandler_8c_a27b46e217c32b26188f614554e7c94b7}\label{wld__rad__evtHandler_8c_a27b46e217c32b26188f614554e7c94b7}} 
+\index{wld\_rad\_evtHandler.c@{wld\_rad\_evtHandler.c}!wld\_radEvtHandler\_handleEventByIndex@{wld\_radEvtHandler\_handleEventByIndex}}
+\index{wld\_radEvtHandler\_handleEventByIndex@{wld\_radEvtHandler\_handleEventByIndex}!wld\_rad\_evtHandler.c@{wld\_rad\_evtHandler.c}}
+\doxysubsubsection{\texorpdfstring{wld\_radEvtHandler\_handleEventByIndex()}{wld\_radEvtHandler\_handleEventByIndex()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+Evt\+Handler\+\_\+handle\+Event\+By\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__radEvtHandler__t}{wld\+\_\+rad\+Evt\+Handler\+\_\+t}} $\ast$}]{handlers,  }\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{uint32\+\_\+t}]{event,  }\item[{uint32\+\_\+t}]{ifindex,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__evtHandler_8c_a885a3311e91921e5c2a72c5b9a5958eb}\label{wld__rad__evtHandler_8c_a885a3311e91921e5c2a72c5b9a5958eb}} 
+\index{wld\_rad\_evtHandler.c@{wld\_rad\_evtHandler.c}!wld\_radEvtHandler\_handleEventByName@{wld\_radEvtHandler\_handleEventByName}}
+\index{wld\_radEvtHandler\_handleEventByName@{wld\_radEvtHandler\_handleEventByName}!wld\_rad\_evtHandler.c@{wld\_rad\_evtHandler.c}}
+\doxysubsubsection{\texorpdfstring{wld\_radEvtHandler\_handleEventByName()}{wld\_radEvtHandler\_handleEventByName()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+Evt\+Handler\+\_\+handle\+Event\+By\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__radEvtHandler__t}{wld\+\_\+rad\+Evt\+Handler\+\_\+t}} $\ast$}]{handlers,  }\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{uint32\+\_\+t}]{event,  }\item[{const char $\ast$}]{ifname,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+

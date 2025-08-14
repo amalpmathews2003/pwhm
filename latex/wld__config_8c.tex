@@ -1,0 +1,137 @@
+\hypertarget{wld__config_8c}{}\doxysection{src/\+Utils/wld\+\_\+config.c File Reference}
+\label{wld__config_8c}\index{src/Utils/wld\_config.c@{src/Utils/wld\_config.c}}
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+conversion.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+dm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+config.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+config.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__config_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__config_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+Cfg\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374d}{wld\+\_\+config\+\_\+enable\+Sync\+Mode\+\_\+e}} \{ \newline
+\mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da7d1a5267213696fa5b85ae40d8f85cfa}{WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+OFF}}
+, \mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374dacb8c3c1d120af0cd86bd8065e7886db7}{WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+TO\+\_\+\+INTF}}
+, \mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da1550dd343b931055ebe5a9f2a90411f8}{WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+FROM\+\_\+\+INTF}}
+, \mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da52b9f25a31cd0f736be543432955dba8}{WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+MIRRORED}}
+, \newline
+\mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374daa1e2abf7db439d32462884fa94114047}{WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+MAX}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374d}{wld\+\_\+config\+\_\+enable\+Sync\+Mode\+\_\+e}} \mbox{\hyperlink{wld__config_8c_a12cc14c1a15e8bb94e62711179a27924}{wld\+\_\+config\+\_\+get\+Enable\+Sync\+Mode}} ()
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__config_8c_a999ac5c917689a92ca98cd047d0d9e4f}{wld\+\_\+config\+\_\+get\+Enable\+Sync\+Mode\+Str}} ()
+\item 
+bool \mbox{\hyperlink{wld__config_8c_a3955385700b053482ddd5de48471ecba}{wld\+\_\+config\+\_\+is\+Enable\+Sync\+Needed}} (bool to\+Intf)
+\item 
+\mbox{\hyperlink{wld__config_8c_a5bf1c449e491fcd99aade49b11dc05d4}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Wld\+Config\+Param\+Change\+Handlers, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\+Sync\+Mode\char`\"{}, s\+\_\+set\+Enable\+Sync\+Mode\+\_\+pwf)))
+\item 
+void \mbox{\hyperlink{wld__config_8c_a9613388bcb76fe4a3e9294574a90d76b}{\+\_\+wld\+\_\+config\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__config_8c_a2d16e4656f278b5a3c924c07efa4ac79}{wld\+\_\+config\+\_\+enable\+Sync\+Mode\+\_\+str}} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__config_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__config_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_config.c@{wld\_config.c}!ME@{ME}}
+\index{ME@{ME}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+Cfg\char`\"{}}
+
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374d}\label{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374d}} 
+\index{wld\_config.c@{wld\_config.c}!wld\_config\_enableSyncMode\_e@{wld\_config\_enableSyncMode\_e}}
+\index{wld\_config\_enableSyncMode\_e@{wld\_config\_enableSyncMode\_e}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{wld\_config\_enableSyncMode\_e}{wld\_config\_enableSyncMode\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374d}{wld\+\_\+config\+\_\+enable\+Sync\+Mode\+\_\+e}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_OFF@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_OFF}!wld\_config.c@{wld\_config.c}}\index{wld\_config.c@{wld\_config.c}!WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_OFF@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_OFF}}}\mbox{\Hypertarget{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da7d1a5267213696fa5b85ae40d8f85cfa}\label{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da7d1a5267213696fa5b85ae40d8f85cfa}} 
+WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+OFF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_TO\_INTF@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_TO\_INTF}!wld\_config.c@{wld\_config.c}}\index{wld\_config.c@{wld\_config.c}!WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_TO\_INTF@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_TO\_INTF}}}\mbox{\Hypertarget{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374dacb8c3c1d120af0cd86bd8065e7886db7}\label{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374dacb8c3c1d120af0cd86bd8065e7886db7}} 
+WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+TO\+\_\+\+INTF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_FROM\_INTF@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_FROM\_INTF}!wld\_config.c@{wld\_config.c}}\index{wld\_config.c@{wld\_config.c}!WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_FROM\_INTF@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_FROM\_INTF}}}\mbox{\Hypertarget{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da1550dd343b931055ebe5a9f2a90411f8}\label{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da1550dd343b931055ebe5a9f2a90411f8}} 
+WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+FROM\+\_\+\+INTF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MIRRORED@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MIRRORED}!wld\_config.c@{wld\_config.c}}\index{wld\_config.c@{wld\_config.c}!WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MIRRORED@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MIRRORED}}}\mbox{\Hypertarget{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da52b9f25a31cd0f736be543432955dba8}\label{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374da52b9f25a31cd0f736be543432955dba8}} 
+WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+MIRRORED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MAX@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MAX}!wld\_config.c@{wld\_config.c}}\index{wld\_config.c@{wld\_config.c}!WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MAX@{WLD\_CONFIG\_ENABLE\_SYNC\_MODE\_MAX}}}\mbox{\Hypertarget{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374daa1e2abf7db439d32462884fa94114047}\label{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374daa1e2abf7db439d32462884fa94114047}} 
+WLD\+\_\+\+CONFIG\+\_\+\+ENABLE\+\_\+\+SYNC\+\_\+\+MODE\+\_\+\+MAX&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__config_8c_a9613388bcb76fe4a3e9294574a90d76b}\label{wld__config_8c_a9613388bcb76fe4a3e9294574a90d76b}} 
+\index{wld\_config.c@{wld\_config.c}!\_wld\_config\_setConf\_ocf@{\_wld\_config\_setConf\_ocf}}
+\index{\_wld\_config\_setConf\_ocf@{\_wld\_config\_setConf\_ocf}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_config\_setConf\_ocf()}{\_wld\_config\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+config\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__config_8c_a5bf1c449e491fcd99aade49b11dc05d4}\label{wld__config_8c_a5bf1c449e491fcd99aade49b11dc05d4}} 
+\index{wld\_config.c@{wld\_config.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Wld\+Config\+Param\+Change\+Handlers}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\+Sync\+Mode\char`\"{}, s\+\_\+set\+Enable\+Sync\+Mode\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__config_8c_a12cc14c1a15e8bb94e62711179a27924}\label{wld__config_8c_a12cc14c1a15e8bb94e62711179a27924}} 
+\index{wld\_config.c@{wld\_config.c}!wld\_config\_getEnableSyncMode@{wld\_config\_getEnableSyncMode}}
+\index{wld\_config\_getEnableSyncMode@{wld\_config\_getEnableSyncMode}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{wld\_config\_getEnableSyncMode()}{wld\_config\_getEnableSyncMode()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__config_8c_a42017c4c2e20f2061e7f69561fe2374d}{wld\+\_\+config\+\_\+enable\+Sync\+Mode\+\_\+e}} wld\+\_\+config\+\_\+get\+Enable\+Sync\+Mode (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__config_8c_a999ac5c917689a92ca98cd047d0d9e4f}\label{wld__config_8c_a999ac5c917689a92ca98cd047d0d9e4f}} 
+\index{wld\_config.c@{wld\_config.c}!wld\_config\_getEnableSyncModeStr@{wld\_config\_getEnableSyncModeStr}}
+\index{wld\_config\_getEnableSyncModeStr@{wld\_config\_getEnableSyncModeStr}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{wld\_config\_getEnableSyncModeStr()}{wld\_config\_getEnableSyncModeStr()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+config\+\_\+get\+Enable\+Sync\+Mode\+Str (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__config_8c_a3955385700b053482ddd5de48471ecba}\label{wld__config_8c_a3955385700b053482ddd5de48471ecba}} 
+\index{wld\_config.c@{wld\_config.c}!wld\_config\_isEnableSyncNeeded@{wld\_config\_isEnableSyncNeeded}}
+\index{wld\_config\_isEnableSyncNeeded@{wld\_config\_isEnableSyncNeeded}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{wld\_config\_isEnableSyncNeeded()}{wld\_config\_isEnableSyncNeeded()}}
+{\footnotesize\ttfamily bool wld\+\_\+config\+\_\+is\+Enable\+Sync\+Needed (\begin{DoxyParamCaption}\item[{bool}]{to\+Intf }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__config_8c_a2d16e4656f278b5a3c924c07efa4ac79}\label{wld__config_8c_a2d16e4656f278b5a3c924c07efa4ac79}} 
+\index{wld\_config.c@{wld\_config.c}!wld\_config\_enableSyncMode\_str@{wld\_config\_enableSyncMode\_str}}
+\index{wld\_config\_enableSyncMode\_str@{wld\_config\_enableSyncMode\_str}!wld\_config.c@{wld\_config.c}}
+\doxysubsubsection{\texorpdfstring{wld\_config\_enableSyncMode\_str}{wld\_config\_enableSyncMode\_str}}
+{\footnotesize\ttfamily const char$\ast$ wld\+\_\+config\+\_\+enable\+Sync\+Mode\+\_\+str\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=}
+\DoxyCodeLine{\{\textcolor{stringliteral}{"{}Off"{}}, \textcolor{stringliteral}{"{}ToIntf"{}}, \textcolor{stringliteral}{"{}FromIntf"{}}, \textcolor{stringliteral}{"{}Mirrored"{}}, NULL\}}
+
+\end{DoxyCode}

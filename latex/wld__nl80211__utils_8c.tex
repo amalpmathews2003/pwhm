@@ -1,0 +1,129 @@
+\hypertarget{wld__nl80211__utils_8c}{}\doxysection{src/nl80211/wld\+\_\+nl80211\+\_\+utils.c File Reference}
+\label{wld__nl80211__utils_8c}\index{src/nl80211/wld\_nl80211\_utils.c@{src/nl80211/wld\_nl80211\_utils.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+parser.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+table.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+utils.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__utils_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__utils_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}nl\+Utils\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__nl80211__utils_8c_ac01f05b3edc0a8e13312013fca892786}{SWL\+\_\+\+TABLE}} (s\+Channel\+Width\+Map, ARR(uint32\+\_\+t nl80211\+Bw;uint32\+\_\+t bw;swl\+\_\+bandwidth\+\_\+e swl\+Bw;), ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32,), ARR(\{\mbox{\hyperlink{wld__nl80211__compat_8h_ad735c8d7127ae0877bad0aaa191be95b}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+20}}, 20, SWL\+\_\+\+BW\+\_\+20\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a5e2a2c7afaebb977c4a936f14813bc13}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+40}}, 40, SWL\+\_\+\+BW\+\_\+40\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_ab3bc15262a8e2e89443ede12b2664202}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+80}}, 80, SWL\+\_\+\+BW\+\_\+80\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a914a6750baa965f3213db04deb926642}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+160}}, 160, SWL\+\_\+\+BW\+\_\+160\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a834ae1160951c71821130d92d8ad41c1}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+320}}, 320, SWL\+\_\+\+BW\+\_\+320\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a5537bff8e9fdc02abd3ca83db4305c88}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+10}}, 10, SWL\+\_\+\+BW\+\_\+10\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a025f46b2fac61d5aa18017a44b21178c}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+5}}, 5, SWL\+\_\+\+BW\+\_\+5\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a71f48519959e7ced6607fda333898e9b}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+2}}, 2, SWL\+\_\+\+BW\+\_\+2\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_ad420a5af9b3739b32c50c3bfdef609ff}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+20\+\_\+\+NOHT}}, 20, SWL\+\_\+\+BW\+\_\+20\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_aaa4fb5fef4051924af9b541593fc71d5}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+80\+P80}}, 160, SWL\+\_\+\+BW\+\_\+\+AUTO\},))
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{wld__nl80211__utils_8c_ab4f01ac1e435b8ef00a9e104580cca79}{wld\+\_\+nl80211\+\_\+bw\+Nl\+To\+Swl}} (uint32\+\_\+t nl80211\+Bw)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__nl80211__utils_8c_a7356918508d628219ed57cad5ef6444c}{wld\+\_\+nl80211\+\_\+bw\+Swl\+To\+Nl}} (swl\+\_\+bandwidth\+\_\+e swl\+Bw)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__nl80211__utils_8c_a5bd12cecc4b08d4a703d8f1ed0ad7197}{wld\+\_\+nl80211\+\_\+bw\+Nl\+To\+Val}} (uint32\+\_\+t nl80211\+Bw)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__nl80211__utils_8c_aefea51e5ad8ec9e60844d9c898e7f6bc}{wld\+\_\+nl80211\+\_\+bw\+Val\+To\+Nl}} (uint32\+\_\+t bw\+Val)
+\item 
+\mbox{\hyperlink{wld__nl80211__utils_8c_a109a32ffce25601380fa50ef7ab41b5a}{SWL\+\_\+\+TABLE}} (s\+Bands\+Map, ARR(uint32\+\_\+t nl80211\+Band;swl\+\_\+freq\+Band\+\_\+e swl\+Band;), ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32,), ARR(\{NL80211\+\_\+\+BAND\+\_\+2\+GHZ, SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+2\+\_\+4\+GHZ\}, \{NL80211\+\_\+\+BAND\+\_\+5\+GHZ, SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+5\+GHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a5aeec64576d61d9d3b132eb797769474}{NL80211\+\_\+\+BAND\+\_\+6\+GHZ}}, SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+6\+GHZ\},))
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__nl80211__utils_8c_a62e7e11ba7c2f81becc93b039b2c3299}{wld\+\_\+nl80211\+\_\+freq\+Band\+Swl\+To\+Nl}} (swl\+\_\+freq\+Band\+\_\+e swl\+Fb)
+\item 
+swl\+\_\+freq\+Band\+\_\+e \mbox{\hyperlink{wld__nl80211__utils_8c_a32c7d18cf0d4d8cacae451978ee55ab3}{wld\+\_\+nl80211\+\_\+freq\+Band\+Nl\+To\+Swl}} (uint32\+\_\+t nl80211\+Fb)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__nl80211__utils_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__nl80211__utils_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!ME@{ME}}
+\index{ME@{ME}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}nl\+Utils\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__utils_8c_a109a32ffce25601380fa50ef7ab41b5a}\label{wld__nl80211__utils_8c_a109a32ffce25601380fa50ef7ab41b5a}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Bands\+Map}]{,  }\item[{ARR(uint32\+\_\+t nl80211\+Band;swl\+\_\+freq\+Band\+\_\+e swl\+Band;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{NL80211\+\_\+\+BAND\+\_\+2\+GHZ, SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+2\+\_\+4\+GHZ\}, \{NL80211\+\_\+\+BAND\+\_\+5\+GHZ, SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+5\+GHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a5aeec64576d61d9d3b132eb797769474}{NL80211\+\_\+\+BAND\+\_\+6\+GHZ}}, SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+6\+GHZ\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__utils_8c_ac01f05b3edc0a8e13312013fca892786}\label{wld__nl80211__utils_8c_ac01f05b3edc0a8e13312013fca892786}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Channel\+Width\+Map}]{,  }\item[{ARR(uint32\+\_\+t nl80211\+Bw;uint32\+\_\+t bw;swl\+\_\+bandwidth\+\_\+e swl\+Bw;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32,)}]{,  }\item[{ARR(\{\mbox{\hyperlink{wld__nl80211__compat_8h_ad735c8d7127ae0877bad0aaa191be95b}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+20}}, 20, SWL\+\_\+\+BW\+\_\+20\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a5e2a2c7afaebb977c4a936f14813bc13}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+40}}, 40, SWL\+\_\+\+BW\+\_\+40\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_ab3bc15262a8e2e89443ede12b2664202}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+80}}, 80, SWL\+\_\+\+BW\+\_\+80\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a914a6750baa965f3213db04deb926642}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+160}}, 160, SWL\+\_\+\+BW\+\_\+160\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a834ae1160951c71821130d92d8ad41c1}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+320}}, 320, SWL\+\_\+\+BW\+\_\+320\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a5537bff8e9fdc02abd3ca83db4305c88}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+10}}, 10, SWL\+\_\+\+BW\+\_\+10\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a025f46b2fac61d5aa18017a44b21178c}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+5}}, 5, SWL\+\_\+\+BW\+\_\+5\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_a71f48519959e7ced6607fda333898e9b}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+2}}, 2, SWL\+\_\+\+BW\+\_\+2\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_ad420a5af9b3739b32c50c3bfdef609ff}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+20\+\_\+\+NOHT}}, 20, SWL\+\_\+\+BW\+\_\+20\+MHZ\}, \{\mbox{\hyperlink{wld__nl80211__compat_8h_aaa4fb5fef4051924af9b541593fc71d5}{NL80211\+\_\+\+CHAN\+\_\+\+WIDTH\+\_\+80\+P80}}, 160, SWL\+\_\+\+BW\+\_\+\+AUTO\},)}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__utils_8c_ab4f01ac1e435b8ef00a9e104580cca79}\label{wld__nl80211__utils_8c_ab4f01ac1e435b8ef00a9e104580cca79}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!wld\_nl80211\_bwNlToSwl@{wld\_nl80211\_bwNlToSwl}}
+\index{wld\_nl80211\_bwNlToSwl@{wld\_nl80211\_bwNlToSwl}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_bwNlToSwl()}{wld\_nl80211\_bwNlToSwl()}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e wld\+\_\+nl80211\+\_\+bw\+Nl\+To\+Swl (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{nl80211\+Bw }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__utils_8c_a5bd12cecc4b08d4a703d8f1ed0ad7197}\label{wld__nl80211__utils_8c_a5bd12cecc4b08d4a703d8f1ed0ad7197}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!wld\_nl80211\_bwNlToVal@{wld\_nl80211\_bwNlToVal}}
+\index{wld\_nl80211\_bwNlToVal@{wld\_nl80211\_bwNlToVal}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_bwNlToVal()}{wld\_nl80211\_bwNlToVal()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+nl80211\+\_\+bw\+Nl\+To\+Val (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{nl80211\+Bw }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__utils_8c_a5bd12cecc4b08d4a703d8f1ed0ad7197_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__utils_8c_a7356918508d628219ed57cad5ef6444c}\label{wld__nl80211__utils_8c_a7356918508d628219ed57cad5ef6444c}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!wld\_nl80211\_bwSwlToNl@{wld\_nl80211\_bwSwlToNl}}
+\index{wld\_nl80211\_bwSwlToNl@{wld\_nl80211\_bwSwlToNl}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_bwSwlToNl()}{wld\_nl80211\_bwSwlToNl()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+nl80211\+\_\+bw\+Swl\+To\+Nl (\begin{DoxyParamCaption}\item[{swl\+\_\+bandwidth\+\_\+e}]{swl\+Bw }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__utils_8c_a7356918508d628219ed57cad5ef6444c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__utils_8c_aefea51e5ad8ec9e60844d9c898e7f6bc}\label{wld__nl80211__utils_8c_aefea51e5ad8ec9e60844d9c898e7f6bc}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!wld\_nl80211\_bwValToNl@{wld\_nl80211\_bwValToNl}}
+\index{wld\_nl80211\_bwValToNl@{wld\_nl80211\_bwValToNl}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_bwValToNl()}{wld\_nl80211\_bwValToNl()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+nl80211\+\_\+bw\+Val\+To\+Nl (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{bw\+Val }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__utils_8c_aefea51e5ad8ec9e60844d9c898e7f6bc_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__utils_8c_a32c7d18cf0d4d8cacae451978ee55ab3}\label{wld__nl80211__utils_8c_a32c7d18cf0d4d8cacae451978ee55ab3}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!wld\_nl80211\_freqBandNlToSwl@{wld\_nl80211\_freqBandNlToSwl}}
+\index{wld\_nl80211\_freqBandNlToSwl@{wld\_nl80211\_freqBandNlToSwl}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_freqBandNlToSwl()}{wld\_nl80211\_freqBandNlToSwl()}}
+{\footnotesize\ttfamily swl\+\_\+freq\+Band\+\_\+e wld\+\_\+nl80211\+\_\+freq\+Band\+Nl\+To\+Swl (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{nl80211\+Fb }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__utils_8c_a32c7d18cf0d4d8cacae451978ee55ab3_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__utils_8c_a62e7e11ba7c2f81becc93b039b2c3299}\label{wld__nl80211__utils_8c_a62e7e11ba7c2f81becc93b039b2c3299}} 
+\index{wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}!wld\_nl80211\_freqBandSwlToNl@{wld\_nl80211\_freqBandSwlToNl}}
+\index{wld\_nl80211\_freqBandSwlToNl@{wld\_nl80211\_freqBandSwlToNl}!wld\_nl80211\_utils.c@{wld\_nl80211\_utils.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_freqBandSwlToNl()}{wld\_nl80211\_freqBandSwlToNl()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+nl80211\+\_\+freq\+Band\+Swl\+To\+Nl (\begin{DoxyParamCaption}\item[{swl\+\_\+freq\+Band\+\_\+e}]{swl\+Fb }\end{DoxyParamCaption})}
+

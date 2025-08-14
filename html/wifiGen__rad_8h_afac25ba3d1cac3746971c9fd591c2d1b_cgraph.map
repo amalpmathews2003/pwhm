@@ -1,0 +1,14 @@
+<map id="wifiGen_rad_status" name="wifiGen_rad_status">
+<area shape="rect" id="node1" title=" " alt="" coords="5,188,152,215"/>
+<area shape="rect" id="node2" href="$wld__bgdfs_8c.html#a609c9c511280d7b756931f0f71451de5" title=" " alt="" coords="214,5,373,32"/>
+<area shape="rect" id="node3" href="$wld__channel_8c.html#a0b7f74cfed1d43b00cae0e44c230519e" title=" " alt="" coords="213,57,373,98"/>
+<area shape="rect" id="node4" href="$wld__linuxIfUtils_8c.html#a3bb1f18a5ddc724ff6453d335c0fe2d4" title=" " alt="" coords="204,122,383,163"/>
+<area shape="rect" id="node7" href="$wld__radio_8c.html#a38559de25945587fe7c3b6a342a06a9a" title=" " alt="" coords="200,188,387,215"/>
+<area shape="rect" id="node8" href="$wld__radio_8c.html#a80a1e3e21164a9c72e84d8870c5715e0" title=" " alt="" coords="205,239,381,265"/>
+<area shape="rect" id="node10" href="$wld__radio_8c.html#ab7a948145edfcf5b588a54039d900ede" title=" " alt="" coords="200,289,387,316"/>
+<area shape="rect" id="node12" href="$wld__radio_8c.html#a586b502bdfaca2b3d45feeae0426fb14" title=" " alt="" coords="204,340,383,367"/>
+<area shape="rect" id="node5" href="$wld__linuxIfUtils_8c.html#a80a4f2a9c916d1b8631a41017ca85a13" title=" " alt="" coords="452,89,631,130"/>
+<area shape="rect" id="node6" href="$wld__linuxIfUtils_8c.html#a02092ba8d6dda33a584c37818c4af732" title=" " alt="" coords="439,155,644,181"/>
+<area shape="rect" id="node9" href="$wld__radio_8c.html#af32e11ee7bb69e7f0d5db319e5aa1834" title=" " alt="" coords="440,223,643,265"/>
+<area shape="rect" id="node11" href="$wld__radio_8c.html#ae211359fd0e7548777cf5bd312ffb8c3" title=" " alt="" coords="435,289,648,330"/>
+</map>

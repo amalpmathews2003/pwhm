@@ -1,0 +1,167 @@
+\hypertarget{wld__assocdev_8h_source}{}\doxysection{wld\+\_\+assocdev.\+h}
+\label{wld__assocdev_8h_source}\index{include/wld/wld\_assocdev.h@{include/wld/wld\_assocdev.h}}
+\mbox{\hyperlink{wld__assocdev_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef SRC\_INCLUDE\_WLD\_WLD\_ASSOCDEV\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define SRC\_INCLUDE\_WLD\_WLD\_ASSOCDEV\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__extMod_8h}{wld\_extMod.h}}"{}}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}swl/swl\_hex.h"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}swl/swl\_ieee802\_1x\_defs.h"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}swl/swl\_genericFrameParser.h"{}}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{74     \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{structwld__assocDevInfo__t_ac37795ad37e6181432d86a727b774570}{pRad}};}
+\DoxyCodeLine{75     \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{structwld__assocDevInfo__t_a266e7901ecb3f60dd018ea0f5769844b}{pAP}};}
+\DoxyCodeLine{76     \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{structwld__assocDevInfo__t_a3270392dbceea25af5af6e9f95c051ef}{pAD}};}
+\DoxyCodeLine{77 \} \mbox{\hyperlink{structwld__assocDevInfo__t}{wld\_assocDevInfo\_t}};}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{80     \mbox{\hyperlink{wld__assocdev_8h_af7d5cbd1c511cd74be47834ec2f3d435af69fad7d0ad06847a3cb820ac228b663}{WLD\_FAST\_RECONNECT\_DEFAULT}},}
+\DoxyCodeLine{81     \mbox{\hyperlink{wld__assocdev_8h_af7d5cbd1c511cd74be47834ec2f3d435a9c5e0dc466b19d230dfba761ee61fcc7}{WLD\_FAST\_RECONNECT\_STATE\_CHANGE}},}
+\DoxyCodeLine{82     \mbox{\hyperlink{wld__assocdev_8h_af7d5cbd1c511cd74be47834ec2f3d435aa6a5e9b36235bec82f864c4896af214a}{WLD\_FAST\_RECONNECT\_SCAN}},}
+\DoxyCodeLine{83     \mbox{\hyperlink{wld__assocdev_8h_af7d5cbd1c511cd74be47834ec2f3d435ab4a7e178f4edb9fcccebc62982128bb9}{WLD\_FAST\_RECONNECT\_USER}},}
+\DoxyCodeLine{84     \mbox{\hyperlink{wld__assocdev_8h_af7d5cbd1c511cd74be47834ec2f3d435a81ce7fcd67c5d89ba9dcd06ebbdf8638}{WLD\_FAST\_RECONNECT\_MAX}}}
+\DoxyCodeLine{85 \} \mbox{\hyperlink{wld__assocdev_8h_af7d5cbd1c511cd74be47834ec2f3d435}{wld\_fastReconnectType\_e}};}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{87 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__assocdev_8h_a24a196450154a3e8655b7933a69c1076}{wld\_ad\_remove\_assocdev\_from\_bridge}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__assocdev_8h_a64450461b3bd399c0ca1a1acfe607aad}{wld\_ad\_create\_associatedDevice}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{90 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__assocdev_8h_a1d7f461c77907d5dc6d0b94ffc820e72}{wld\_vap\_find\_asociatedDevice}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{91 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__assocdev_8h_ab08c37b8a494ae0569289c7acf528b34}{wld\_vap\_findOrCreateAssociatedDevice}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{93 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__assocdev_8h_aeb0fbc001080edbf7998242b87416f45}{wld\_ad\_getIndex}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{94 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a41f8af8e57989b6c8689695c53bd10b7}{wld\_ad\_destroy}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{95 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a15977b4b5a247ba15f1042c7500500e4}{wld\_ad\_destroy\_associatedDevice}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{96 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_aec95f63c639d47555df05f7821e8c471}{wld\_ad\_has\_far\_station}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} threshold);}
+\DoxyCodeLine{97 uint16\_t \mbox{\hyperlink{wld__assocdev_8h_ac9c7f1a9a4241641c2bd15ad2f0f053b}{wld\_ad\_getFarStaCount}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} threshold);}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a232372f6bd0cdbad4cfd4e1c92e5c61a}{wld\_ad\_add\_connection\_try}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{100 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_ad01e15e0873a04edeba9994ace0b45ec}{wld\_ad\_add\_connection\_success}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{101 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a0e301fd80c52275a4967dbba4b563da9}{wld\_ad\_add\_disconnection}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{102 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a5bed2f1e63ce540ad4110187ca6b41b5}{wld\_ad\_startDelayDisassocNotifTimer}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{103 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a2219876fcc16d83f7b8f58f769b0e3c4}{wld\_ad\_hasDelayedDisassocNotif}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{104 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_ac7dda4613b1d4477ed150442ba0d2258}{wld\_ad\_finalizeDelayedDisassocNotif}}(swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{105 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a08e9858fed0756f97125dd0a9debb7c8}{wld\_ad\_clearDelayedDisassocNotifTimer}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \mbox{\hyperlink{structwld__affiliatedSta__t}{wld\_affiliatedSta\_t}}* \mbox{\hyperlink{wld__assocdev_8h_aa9a4e92a18a669db10801625bceb1c7c}{wld\_ad\_getAffiliatedSta}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* affiliatedAp);}
+\DoxyCodeLine{108 \mbox{\hyperlink{structwld__affiliatedSta__t}{wld\_affiliatedSta\_t}}* \mbox{\hyperlink{wld__assocdev_8h_a1f702eea31c521fbc14ef4b708f2eedf}{wld\_ad\_getOrAddAffiliatedSta}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* affiliatedAp);}
+\DoxyCodeLine{109 \mbox{\hyperlink{structwld__affiliatedSta__t}{wld\_affiliatedSta\_t}}* \mbox{\hyperlink{wld__assocdev_8h_adf601b1e3cac805268673e5fb170a7b0}{wld\_ad\_provideAffiliatedStaWithMac}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* affiliatedAp, swl\_macBin\_t* mac);}
+\DoxyCodeLine{110 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a2288027c9357659a6023bb436927d7c7}{wld\_ad\_activateAfSta}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structwld__affiliatedSta__t}{wld\_affiliatedSta\_t}}* afSta);}
+\DoxyCodeLine{111 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a3733cb3393af33a266382d432b18e95d}{wld\_ad\_deactivateAfSta}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structwld__affiliatedSta__t}{wld\_affiliatedSta\_t}}* afSta);}
+\DoxyCodeLine{112 uint32\_t \mbox{\hyperlink{wld__assocdev_8h_a37207ff73b7fab23ba5b33119af46917}{wld\_ad\_getNrActiveAffiliatedSta}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{113 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a7d551dcc50b74536c7df406ad1eca85d}{wld\_ad\_deactivateAllAfSta}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a3bc4495b9cdfe8a6165238aa6276aab7}{wld\_ad\_deauthWithReason}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, swl\_IEEE80211deauthReason\_ne deauthReason);}
+\DoxyCodeLine{116 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_ad4c2bc7ba3613366764f48bce42a85f6}{wld\_ad\_add\_sec\_failure}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{117 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a4d3ae8026c74c2b2caf9a1b2682ce25f}{wld\_ad\_add\_sec\_failNoDc}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{118 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__assocdev_8h_a9c778e58a5185d552be4e08dac6d1094}{wld\_ad\_get\_nb\_active\_stations}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{119 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__assocdev_8h_ab924673f9d7204b6d91e0e68f0a15525}{wld\_ad\_get\_nb\_active\_video\_stations}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{120 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__assocdev_8h_a3210e3de2ac09ded908d00b3b2f92bad}{wld\_rad\_get\_nb\_active\_stations}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{121 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__assocdev_8h_aa87e1b9d9649f0a3a3ddeb626734d541}{wld\_rad\_get\_nb\_active\_video\_stations}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{122 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a6431c1c9af228efad763e3378c2076bb}{wld\_ad\_has\_active\_stations}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{123 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a01c2ff8b29a3333c6df296854f5d7017}{wld\_ad\_hasAuthenticatedStations}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{124 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a33cce33170c4860ab00840f1664c65b7}{wld\_ad\_syncCapabilities}}(amxd\_trans\_t* trans, \mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\_assocDev\_capabilities\_t}}* caps);}
+\DoxyCodeLine{125 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_ad95c8c7ea88e467fdc5881f1686d12d1}{wld\_ad\_syncRrmCapabilities}}(amxd\_trans\_t* trans, \mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\_assocDev\_capabilities\_t}}* caps);}
+\DoxyCodeLine{126 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_ad9c063040f84712fcaa538e6ac2a90ed}{wld\_ad\_syncdetailedMcsCapabilities}}(amxd\_trans\_t* trans, \mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\_assocDev\_capabilities\_t}}* caps);}
+\DoxyCodeLine{127 amxd\_object\_t* \mbox{\hyperlink{wld__assocdev_8h_a0121edd490ea8506ff9c0dd099d7d904}{wld\_ad\_getOrCreateObject}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{128 swl\_rc\_ne \mbox{\hyperlink{wld__assocdev_8h_a29fb3ec2c3c3ec38427bde04380db427}{wld\_ad\_syncInfo}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{129 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a14304973d8a75b302d0113c3f0542b5f}{wld\_ad\_syncStats}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{130 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_aa2d3be4da951a7f7d49da8f3765e3f4c}{wld\_ad\_has\_active\_video\_stations}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{131 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a3558bcdda1ba933007231c9a74d275f7}{wld\_rad\_has\_active\_stations}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{132 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a8c1bad12487ee8dc3da51886505a4039}{wld\_rad\_has\_active\_video\_stations}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{133 int32\_t \mbox{\hyperlink{wld__assocdev_8h_a452a451fb034f2d79b1950ba82ef7533}{wld\_ad\_getAvgSignalStrengthByChain}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{134 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_aa248f4184c0b4fcb846fbf70453ce32c}{wld\_ad\_printSignalStrengthHistory}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \textcolor{keywordtype}{char}* buf, uint32\_t bufSize);}
+\DoxyCodeLine{135 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a691e9c900cb188cb84b3d056300fe2cf}{wld\_ad\_printSignalStrengthByChain}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \textcolor{keywordtype}{char}* buf, uint32\_t bufSize);}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{137 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_a3c1e5a2e91435ec0d7fb40928efd887a}{wld\_ad\_has\_assocdev}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} macAddress[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}]);}
+\DoxyCodeLine{138 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__assocdev_8h_a44622a40117d6d99603639ca69650821}{wld\_rad\_get\_associated\_ap}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} macAddress[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}]);}
+\DoxyCodeLine{139 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__assocdev_8h_aab267b93d46c46b39934311fa5db8a03}{wld\_rad\_has\_assocdev}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} macAddress[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}]);}
+\DoxyCodeLine{140 \mbox{\hyperlink{structwld__assocDevInfo__t}{wld\_assocDevInfo\_t}} \mbox{\hyperlink{wld__assocdev_8h_a1cee375682b1d8c8ee26a1024b3c3203}{wld\_rad\_get\_associatedDeviceInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} macAddress[\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\_ADDR\_LEN}}]);}
+\DoxyCodeLine{141 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__assocdev_8h_a32e82847ac7ee18f5b2376d313c0954a}{wld\_ad\_getAssociatedApByMac}}(swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{142 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__assocdev_8h_a2b0684d4c23ed15f8ce9fa06396b144e}{wld\_ad\_getAssociatedAp}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{143 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__assocdev_8h_add31bf82c648971b6cdf88a62bd6baca}{wld\_ad\_fromMac}}(swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{144 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__assocdev_8h_ad32729240179b6ab0a7378a378182892}{wld\_ad\_fromObj}}(amxd\_object\_t* \textcolor{keywordtype}{object});}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{146 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a0e96c805c1bd59edb918e1dc364bc9fe}{wld\_vap\_mark\_all\_stations\_unseen}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{147 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a6742ab5a11bc9b14ab41db14778988ea}{wld\_vap\_update\_seen}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{148 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a51ee5909c8494641f07eeed95082949c}{wld\_vap\_remove\_all}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_af622f4525e83106153721125c7d2567d}{wld\_ad\_initAp}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{151 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a2f6f35183a64bbea34be37cf2f1ee390}{wld\_ad\_initFastReconnectCounters}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{152 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a6d7ce80d24161c872437dae9b80a8794}{wld\_ad\_cleanAp}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{153 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a4ccbf5269082b7c262434a1f6b213ed1}{wld\_ad\_listRecentDisconnects}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, amxc\_var\_t* variant);}
+\DoxyCodeLine{154 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_a34b65f189f2470282a0a791bccf5d616}{wld\_ad\_handleAssocMsg}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, swl\_bit8\_t* iesData, \textcolor{keywordtype}{size\_t} iesLen);}
+\DoxyCodeLine{155 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__assocdev_8h_ab163d58b1b893cfda532f95bd8b94d0a}{wld\_assocDev\_copyAssocDevInfoFromIEs}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pDev, \mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\_assocDev\_capabilities\_t}}* cap, swl\_wirelessDevice\_infoElements\_t* pWirelessDevIE);}
+\DoxyCodeLine{156 }
+\DoxyCodeLine{157 swl\_rc\_ne \mbox{\hyperlink{wld__assocdev_8h_a5b2aa91e618fed058812b319ef79df42}{wld\_ad\_registerExtModData}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, uint32\_t extModId, \textcolor{keywordtype}{void}* extModData, \mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\_extMod\_deleteData\_dcf}} deleteHandler);}
+\DoxyCodeLine{158 \textcolor{keywordtype}{void}* \mbox{\hyperlink{wld__assocdev_8h_a96f701a5811fdc59697b00e22a2843bc}{wld\_ad\_getExtModData}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, uint32\_t extModId);}
+\DoxyCodeLine{159 swl\_rc\_ne \mbox{\hyperlink{wld__assocdev_8h_a262b5c18633f138511d5d05b72135984}{wld\_ad\_unregisterExtModData}}(\mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, uint32\_t extModId);}
+\DoxyCodeLine{160 }
+\DoxyCodeLine{161 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* SRC\_INCLUDE\_WLD\_WLD\_ASSOCDEV\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

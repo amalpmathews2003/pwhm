@@ -1,0 +1,10 @@
+<map id="wifiGen_rad_miscHasSupport" name="wifiGen_rad_miscHasSupport">
+<area shape="rect" id="node1" title=" " alt="" coords="5,107,217,133"/>
+<area shape="rect" id="node2" href="$wifiGen__hapd_8c.html#a2671410f51adadb1692d7eccb1edc89c" title=" " alt="" coords="265,56,503,83"/>
+<area shape="rect" id="node7" href="$wld__rad__caps_8c.html#a47b622c748907dedb9773ec3ceab4a1c" title=" " alt="" coords="292,107,476,133"/>
+<area shape="rect" id="node8" href="$wld__rad__caps_8c.html#a60f8f7bfc045a590627b2dc7e8db5354" title=" " alt="" coords="290,157,478,184"/>
+<area shape="rect" id="node3" href="$wld__secDmn_8c.html#a734eba007ba94a51c1cdf408c979c5ab" title=" " alt="" coords="581,5,737,32"/>
+<area shape="rect" id="node4" href="$wld__secDmn_8c.html#a1b0cc11a41a11e2033f3188fd05a0d80" title=" " alt="" coords="559,56,759,83"/>
+<area shape="rect" id="node6" href="$wld__secDmnGrp_8c.html#a7a55988e27b9c7365f21e1b68bc58b85" title=" " alt="" coords="551,107,768,149"/>
+<area shape="rect" id="node5" href="$wld__secDmnGrp_8c.html#ae5da21db2381b2d5a1f16df5d388d5df" title=" " alt="" coords="816,56,1000,83"/>
+</map>

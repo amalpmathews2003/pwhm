@@ -1,0 +1,165 @@
+\hypertarget{wld__nl80211__core_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+core.\+h}
+\label{wld__nl80211__core_8h_source}\index{include/wld/wld\_nl80211\_core.h@{include/wld/wld\_nl80211\_core.h}}
+\mbox{\hyperlink{wld__nl80211__core_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_NL80211\_CORE\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_NL80211\_CORE\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}swl/swl\_returnCode.h"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{comment}{/*}}
+\DoxyCodeLine{69 \textcolor{comment}{ * @brief private structure defining nl80211 socket manager}}
+\DoxyCodeLine{70 \textcolor{comment}{ */}}
+\DoxyCodeLine{71 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state}};}
+\DoxyCodeLine{72 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state}} \mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}};}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{comment}{/*}}
+\DoxyCodeLine{75 \textcolor{comment}{ * @brief private structure defining nl80211 event listener}}
+\DoxyCodeLine{76 \textcolor{comment}{ */}}
+\DoxyCodeLine{77 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener}};}
+\DoxyCodeLine{78 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener}} \mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}};}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{80 \textcolor{comment}{/*}}
+\DoxyCodeLine{81 \textcolor{comment}{ * @brief abstract types of common nl80211 structures used in public APIs}}
+\DoxyCodeLine{82 \textcolor{comment}{ * (detailed definitions in wld\_nl80211\_types.h)}}
+\DoxyCodeLine{83 \textcolor{comment}{ */}}
+\DoxyCodeLine{84 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo}} \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo\_t}};}
+\DoxyCodeLine{85 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__channelSurveyParam}{wld\_nl80211\_channelSurveyParam}} \mbox{\hyperlink{structwld__nl80211__channelSurveyParam}{wld\_nl80211\_channelSurveyParam\_t}};}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{87 \textcolor{comment}{/*}}
+\DoxyCodeLine{88 \textcolor{comment}{ * @brief statistic counters of nl80211 socket manager}}
+\DoxyCodeLine{89 \textcolor{comment}{ */}}
+\DoxyCodeLine{90 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{91     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_ac52e09f06d874c680623a00cb7ed6735}{reqTotal}};     \textcolor{comment}{//count of all sent requests}}
+\DoxyCodeLine{92     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_aef8f0342a442e8d7ac9ac0ce28de7575}{reqSuccess}};   \textcolor{comment}{//count of requests that have been applied successfully}}
+\DoxyCodeLine{93     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_ae413d1fcec768e446a9636b71aa2b8f9}{reqFailed}};    \textcolor{comment}{//count of requests that failed (not sent, erroneous, expired)}}
+\DoxyCodeLine{94     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_a499029c4cfe1bcb8d3b139df759d25f8}{reqExpired}};   \textcolor{comment}{//count of requests that expired (timeouted with being totally answered)}}
+\DoxyCodeLine{95     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_a53a6bffc17dc6214aa24e9bcc63e46e2}{reqPending}};   \textcolor{comment}{//count of requests still waiting for answer}}
+\DoxyCodeLine{96     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_abea73b88f88ff6a42012f6fecd3db615}{evtTotal}};     \textcolor{comment}{//count of received events}}
+\DoxyCodeLine{97     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_a8c4e92e322077ff59e77fe99d3f0640f}{evtHandled}};   \textcolor{comment}{//count of events parsed and handled by a listener}}
+\DoxyCodeLine{98     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_a59f8e1f3f7b183e5c195c83136ec20cb}{evtUnhandled}}; \textcolor{comment}{//count of events unknown (i.e not parsed) or with no listener}}
+\DoxyCodeLine{99     uint32\_t \mbox{\hyperlink{structwld__nl80211__stateCounters__t_a562d5b8db01e5e45a5621a81872f2670}{nStates}};      \textcolor{comment}{//count of running managers}}
+\DoxyCodeLine{100 \} \mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\_nl80211\_stateCounters\_t}};}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{102 \textcolor{comment}{/*}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @brief create nl80211 socket context}}
+\DoxyCodeLine{104 \textcolor{comment}{ * and add the socket fd to the event loop}}
+\DoxyCodeLine{105 \textcolor{comment}{ *}}
+\DoxyCodeLine{106 \textcolor{comment}{ * It is recommended to create one context per application}}
+\DoxyCodeLine{107 \textcolor{comment}{ * as it manages requests and events over it}}
+\DoxyCodeLine{108 \textcolor{comment}{ * but can also be created per radio and per VAP}}
+\DoxyCodeLine{109 \textcolor{comment}{ *}}
+\DoxyCodeLine{110 \textcolor{comment}{ * @return pointer to allocated nl80211 socket manager}}
+\DoxyCodeLine{111 \textcolor{comment}{ *         null in case of failure}}
+\DoxyCodeLine{112 \textcolor{comment}{ */}}
+\DoxyCodeLine{113 \mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* \mbox{\hyperlink{wld__nl80211__core_8h_aecc87228f019c1a3034e43cb8a3916d5}{wld\_nl80211\_newState}}();}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115 \textcolor{comment}{/*}}
+\DoxyCodeLine{116 \textcolor{comment}{ * @brief return shared nl80211 socket manager}}
+\DoxyCodeLine{117 \textcolor{comment}{ * If not available, it is created by the way.}}
+\DoxyCodeLine{118 \textcolor{comment}{ */}}
+\DoxyCodeLine{119 \mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* \mbox{\hyperlink{wld__nl80211__core_8h_ab89990c364e3256f803e95aee1684407}{wld\_nl80211\_getSharedState}}();}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{121 \textcolor{comment}{/*}}
+\DoxyCodeLine{122 \textcolor{comment}{ * @brief clear and free nl80211 socket manager context}}
+\DoxyCodeLine{123 \textcolor{comment}{ * It also clears all requests and listeners registered on it.}}
+\DoxyCodeLine{124 \textcolor{comment}{ *}}
+\DoxyCodeLine{125 \textcolor{comment}{ * @param state pointer to nl80211 manager context}}
+\DoxyCodeLine{126 \textcolor{comment}{ *}}
+\DoxyCodeLine{127 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{128 \textcolor{comment}{ */}}
+\DoxyCodeLine{129 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__nl80211__core_8h_aa5811385f0145482b9e40cecb8f52762}{wld\_nl80211\_cleanup}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state);}
+\DoxyCodeLine{130 }
+\DoxyCodeLine{131 \textcolor{comment}{/*}}
+\DoxyCodeLine{132 \textcolor{comment}{ * @brief clear and free all created nl80211 socket managers}}
+\DoxyCodeLine{133 \textcolor{comment}{ *}}
+\DoxyCodeLine{134 \textcolor{comment}{ * @return void}}
+\DoxyCodeLine{135 \textcolor{comment}{ */}}
+\DoxyCodeLine{136 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__nl80211__core_8h_a280ef877e0e6e63700748c4d71689849}{wld\_nl80211\_cleanupAll}}();}
+\DoxyCodeLine{137 }
+\DoxyCodeLine{138 \textcolor{comment}{/*}}
+\DoxyCodeLine{139 \textcolor{comment}{ * @brief get socket manager statistics}}
+\DoxyCodeLine{140 \textcolor{comment}{ *}}
+\DoxyCodeLine{141 \textcolor{comment}{ * @param state pointer to nl80211 manager context}}
+\DoxyCodeLine{142 \textcolor{comment}{ * @param pCounters pointer to statistic counters}}
+\DoxyCodeLine{143 \textcolor{comment}{ *}}
+\DoxyCodeLine{144 \textcolor{comment}{ * @return SWL\_RC\_OK if successful}}
+\DoxyCodeLine{145 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{146 \textcolor{comment}{ */}}
+\DoxyCodeLine{147 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__core_8h_a216617cfc57740605abd47771db2d839}{wld\_nl80211\_getStateCounters}}(\mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* state, \mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\_nl80211\_stateCounters\_t}}* pCounters);}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{149 \textcolor{comment}{/*}}
+\DoxyCodeLine{150 \textcolor{comment}{ * @brief get global statistics (sum of all managers counters)}}
+\DoxyCodeLine{151 \textcolor{comment}{ *}}
+\DoxyCodeLine{152 \textcolor{comment}{ * @param pCounters pointer to statistic counters}}
+\DoxyCodeLine{153 \textcolor{comment}{ *}}
+\DoxyCodeLine{154 \textcolor{comment}{ * @return SWL\_RC\_OK if successful}}
+\DoxyCodeLine{155 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{156 \textcolor{comment}{ */}}
+\DoxyCodeLine{157 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__core_8h_a1b56546ddf0b5e676ef6656352dd4ea9}{wld\_nl80211\_getAllCounters}}(\mbox{\hyperlink{structwld__nl80211__stateCounters__t}{wld\_nl80211\_stateCounters\_t}}* pCounters);}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{159 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_NL80211\_CORE\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

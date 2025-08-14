@@ -1,0 +1,123 @@
+\hypertarget{wld__ap__neighbours_8c}{}\doxysection{src/\+Ap\+Mgt/wld\+\_\+ap\+\_\+neighbours.c File Reference}
+\label{wld__ap__neighbours_8c}\index{src/ApMgt/wld\_ap\_neighbours.c@{src/ApMgt/wld\_ap\_neighbours.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/wld\+\_\+auto\+Commit\+Mgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+\_\+neighbours.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__neighbours_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__neighbours_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__neighbours_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap\+Neigh\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__ap__neighbours_8c_a1be6770133b070f7ee820a3e7eaf32ba}{debug\+Print\+Neighbour}} (\mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$neigh)
+\item 
+\mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$ \mbox{\hyperlink{wld__ap__neighbours_8c_ae49aea9504f3018f5132f9711d5a2036}{wld\+\_\+ap\+\_\+find\+Neigh}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$bssid\+Str)
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{wld__ap__neighbours_8c_a63d696829e2dae3629378709d319b0a4}{wld\+\_\+ap\+\_\+find\+Neigh\+Obj}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const char $\ast$bssid\+Str)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__neighbours_8c_a777e71cc543df0971b4e76294966f47d}{\+\_\+wld\+\_\+ap\+\_\+delete\+\_\+neigh\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__neighbours_8c_ad7cee783d9ec3af5ab31a66e51d757a2}{\+\_\+set\+Neighbour\+AP}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__neighbours_8c_a372964ff44ba197a6fdf1d0884469975}{\+\_\+del\+Neighbour\+AP}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__neighbours_8c_ac7ddd7a1cd834d5fd114ff74b8acc3aa}{\+\_\+wld\+\_\+ap\+\_\+validate\+Neigh\+Bssid\+\_\+pvf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+action\+\_\+t reason \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+\mbox{\hyperlink{wld__ap__neighbours_8c_af923bbe30f6fe417eb021edf35774d77}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Neigh\+Dm\+Hdlrs, ARR(),.inst\+Added\+Cb=s\+\_\+add\+Neigh\+Inst\+\_\+oaf,.obj\+Changed\+Cb=s\+\_\+set\+Neigh\+Conf\+\_\+ocf,)
+\item 
+void \mbox{\hyperlink{wld__ap__neighbours_8c_abe71e4eea6ad0f93e9272611dbadd1ff}{\+\_\+wld\+\_\+ap\+\_\+set\+\_\+neigh\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ap__neighbours_8c_a369266c24eacffb87046522897a570d5}\label{wld__ap__neighbours_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ap__neighbours_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap\+Neigh\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ap__neighbours_8c_a372964ff44ba197a6fdf1d0884469975}\label{wld__ap__neighbours_8c_a372964ff44ba197a6fdf1d0884469975}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!\_delNeighbourAP@{\_delNeighbourAP}}
+\index{\_delNeighbourAP@{\_delNeighbourAP}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{\_delNeighbourAP()}{\_delNeighbourAP()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+del\+Neighbour\+AP (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_ad7cee783d9ec3af5ab31a66e51d757a2}\label{wld__ap__neighbours_8c_ad7cee783d9ec3af5ab31a66e51d757a2}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!\_setNeighbourAP@{\_setNeighbourAP}}
+\index{\_setNeighbourAP@{\_setNeighbourAP}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{\_setNeighbourAP()}{\_setNeighbourAP()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+set\+Neighbour\+AP (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Function call to create an exception. \mbox{\Hypertarget{wld__ap__neighbours_8c_a777e71cc543df0971b4e76294966f47d}\label{wld__ap__neighbours_8c_a777e71cc543df0971b4e76294966f47d}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!\_wld\_ap\_delete\_neigh\_odf@{\_wld\_ap\_delete\_neigh\_odf}}
+\index{\_wld\_ap\_delete\_neigh\_odf@{\_wld\_ap\_delete\_neigh\_odf}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_delete\_neigh\_odf()}{\_wld\_ap\_delete\_neigh\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+delete\+\_\+neigh\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Called when an neighbor instance is destroyed \mbox{\Hypertarget{wld__ap__neighbours_8c_abe71e4eea6ad0f93e9272611dbadd1ff}\label{wld__ap__neighbours_8c_abe71e4eea6ad0f93e9272611dbadd1ff}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!\_wld\_ap\_set\_neigh\_ocf@{\_wld\_ap\_set\_neigh\_ocf}}
+\index{\_wld\_ap\_set\_neigh\_ocf@{\_wld\_ap\_set\_neigh\_ocf}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_set\_neigh\_ocf()}{\_wld\_ap\_set\_neigh\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+\_\+neigh\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_ac7ddd7a1cd834d5fd114ff74b8acc3aa}\label{wld__ap__neighbours_8c_ac7ddd7a1cd834d5fd114ff74b8acc3aa}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!\_wld\_ap\_validateNeighBssid\_pvf@{\_wld\_ap\_validateNeighBssid\_pvf}}
+\index{\_wld\_ap\_validateNeighBssid\_pvf@{\_wld\_ap\_validateNeighBssid\_pvf}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_validateNeighBssid\_pvf()}{\_wld\_ap\_validateNeighBssid\_pvf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+ap\+\_\+validate\+Neigh\+Bssid\+\_\+pvf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+action\+\_\+t reason}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const retval}]{\+\_\+\+UNUSED,  }\item[{void $\ast$priv}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_a1be6770133b070f7ee820a3e7eaf32ba}\label{wld__ap__neighbours_8c_a1be6770133b070f7ee820a3e7eaf32ba}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!debugPrintNeighbour@{debugPrintNeighbour}}
+\index{debugPrintNeighbour@{debugPrintNeighbour}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{debugPrintNeighbour()}{debugPrintNeighbour()}}
+{\footnotesize\ttfamily void debug\+Print\+Neighbour (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$}]{neigh }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_af923bbe30f6fe417eb021edf35774d77}\label{wld__ap__neighbours_8c_af923bbe30f6fe417eb021edf35774d77}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Neigh\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{inst\+Added\+Cb = {\ttfamily s\+\_\+addNeighInst\+\_\+oaf},  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setNeighConf\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_ae49aea9504f3018f5132f9711d5a2036}\label{wld__ap__neighbours_8c_ae49aea9504f3018f5132f9711d5a2036}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!wld\_ap\_findNeigh@{wld\_ap\_findNeigh}}
+\index{wld\_ap\_findNeigh@{wld\_ap\_findNeigh}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_findNeigh()}{wld\_ap\_findNeigh()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a6c26014d9597f4f19c42da6df47e7cb1}{T\+\_\+\+Ap\+Neighbour}} $\ast$ wld\+\_\+ap\+\_\+find\+Neigh (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{bssid\+Str }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__neighbours_8c_a63d696829e2dae3629378709d319b0a4}\label{wld__ap__neighbours_8c_a63d696829e2dae3629378709d319b0a4}} 
+\index{wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}!wld\_ap\_findNeighObj@{wld\_ap\_findNeighObj}}
+\index{wld\_ap\_findNeighObj@{wld\_ap\_findNeighObj}!wld\_ap\_neighbours.c@{wld\_ap\_neighbours.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_findNeighObj()}{wld\_ap\_findNeighObj()}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t $\ast$ wld\+\_\+ap\+\_\+find\+Neigh\+Obj (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const char $\ast$}]{bssid\+Str }\end{DoxyParamCaption})}
+

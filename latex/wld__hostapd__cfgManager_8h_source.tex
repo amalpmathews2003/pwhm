@@ -1,0 +1,91 @@
+\hypertarget{wld__hostapd__cfgManager_8h_source}{}\doxysection{wld\+\_\+hostapd\+\_\+cfg\+Manager.\+h}
+\label{wld__hostapd__cfgManager_8h_source}\index{include/wld/wld\_hostapd\_cfgManager.h@{include/wld/wld\_hostapd\_cfgManager.h}}
+\mbox{\hyperlink{wld__hostapd__cfgManager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_HOSTAPD\_CFG\_MANAGER\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_HOSTAPD\_CFG\_MANAGER\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__types_8h}{wld\_types.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__hostapdVapInfo}{wld\_hostapdVapInfo}};}
+\DoxyCodeLine{69 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__hostapdVapInfo}{wld\_hostapdVapInfo}} \mbox{\hyperlink{structwld__hostapdVapInfo}{wld\_hostapdVapInfo\_t}};}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config}};}
+\DoxyCodeLine{72 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config}} \mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}};}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_ad15aa07c202c5ff5f3a78dc1297429f5}{wld\_hostapd\_loadConfig}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}** conf, \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}});}
+\DoxyCodeLine{75 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_abb9df700e811dd4ec164729ee6e37fe2}{wld\_hostapd\_createConfig}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}** conf, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}});}
+\DoxyCodeLine{76 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_abcd4b96a1191c1c593ab53f9d419e740}{wld\_hostapd\_deleteConfig}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf);}
+\DoxyCodeLine{77 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_aab797f94a64ba5206cdc5e379ba8d3e2}{wld\_hostapd\_writeConfig}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld_8odl_a992cd4aefc3c005288b2269d29dbcceb}{path}});}
+\DoxyCodeLine{78 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a8aa75ca20524113f5b889e4e7287b3f1}{wld\_hostapd\_addConfigParam}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* bssName, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* value);}
+\DoxyCodeLine{79 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__hostapd__cfgManager_8h_afbecaa9defc2fcc6bef8ff94d0be689c}{wld\_hostapd\_delConfigParam}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, \textcolor{keywordtype}{char}* bssName, \textcolor{keywordtype}{char}* key);}
+\DoxyCodeLine{80 swl\_mapChar\_t* \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a0a1bb10a455c35606f794a85a9e5964a}{wld\_hostapd\_getConfigMap}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, \textcolor{keywordtype}{char}* bssName);}
+\DoxyCodeLine{81 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__hostapd__cfgManager_8h_af7827e8223cd8d13fc11d3a520f71660}{wld\_hostapd\_getConfigParamValStr}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, \textcolor{keywordtype}{char}* bssName, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key);}
+\DoxyCodeLine{82 swl\_mapChar\_t* \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a09f47e41eec42863a2f699ebd59bcb95}{wld\_hostapd\_getConfigMapByBssid}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, swl\_macBin\_t* bssid);}
+\DoxyCodeLine{83 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__hostapd__cfgManager_8h_a0d0bd181f8e0b6d15b3ffd425d739795}{wld\_hostapd\_getConfigParamByBssidValStr}}(\mbox{\hyperlink{structwld__hostapd__config}{wld\_hostapd\_config\_t}}* conf, swl\_macBin\_t* bssid, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* key);}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_HOSTAPD\_CFG\_MANAGER\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

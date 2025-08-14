@@ -1,0 +1,407 @@
+\hypertarget{wld__wpaCtrlConnection_8c}{}\doxysection{src/nl80211/wld\+\_\+wpa\+Ctrl\+Connection.c File Reference}
+\label{wld__wpaCtrlConnection_8c}\index{src/nl80211/wld\_wpaCtrlConnection.c@{src/nl80211/wld\_wpaCtrlConnection.c}}
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include $<$sys/un.\+h$>$}\newline
+{\ttfamily \#include $<$fcntl.\+h$>$}\newline
+{\ttfamily \#include $<$libgen.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+Connection\+\_\+priv.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$swl/file\+Ops/swl\+\_\+file\+Utils.\+h$>$}\newline
+Include dependency graph for wld\+\_\+wpa\+Ctrl\+Connection.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlConnection_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wpa\+Ctrl\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlConnection_8c_af6fd7af4101c6a89fc2a1c715b227121}{MIN\+\_\+\+MSG\+\_\+\+LENGTH}}~(4 $\ast$ 1024)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a902a2a5514db56fd54743bc7f2211905}{DEFAULT\+\_\+\+MSG\+\_\+\+LENGTH}}~(12 $\ast$ 1024)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlConnection_8c_aae15a57359405fa67f39ff805c6eddd4}{MAX\+\_\+\+MSG\+\_\+\+LENGTH}}~(64 $\ast$ 1024)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{wld__wpaCtrlConnection_8c_ab5b29b7ce5f29ef5dfbe951e5b700428}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Max\+Msg\+Len}} ()
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_afc3249172fc93eeedd88b07133b69b55}{wld\+\_\+wpa\+Ctrl\+\_\+set\+Max\+Msg\+Len}} (size\+\_\+t msg\+Len)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a423ea65753f7756c0c819747edf6437b}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Cli\+Path}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a47a34d899bc01dfe767b26ee4f7b87db}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Srv\+Path}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wpaCtrlConnection_8c_acb4bff582d17d2dd81aa5dc8fae9ff44}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Cli\+Dir\+Path}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wpaCtrlConnection_8c_adb889abb93a76c73955378ad147941aa}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Srv\+Dir\+Path}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__wpaCtrlConnection_8c_abfe3f8b17cf527b1e6fe85a564c8604b}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Sock\+Name}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_ac77a8013582067279ce3a0ccda177ed8}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+close}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a4f4cfde4f1cd7c2913047631191bb625}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+cleanup}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$$\ast$pp\+Conn)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a6b8f3eb022f9117e30b5ae1ce5cd3310}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+init}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$$\ast$pp\+Conn, uint32\+\_\+t conn\+Id, const char $\ast$server\+Path, const char $\ast$sock\+Name)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_af6ed20a15db7c130a39b05c6db570aab}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+set\+Evt\+Handlers}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn, void $\ast$user\+Data, \mbox{\hyperlink{structwld__wpaCtrlConnection__evtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+evt\+Handlers\+\_\+cb}} $\ast$p\+Evt\+Hdlrs)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a3821c825cc2a8803e75e6e0776b8ee96}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+open}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_aa82226c76dbbf306e509b7c6d3088277}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn, const char $\ast$cmd)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_ae8867992d243efdfa13e360b50730f88}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Synced\+Ext}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn, const char $\ast$cmd, char $\ast$reply, size\+\_\+t reply\+Len, uint32\+\_\+t tm\+Out\+MSec)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a4ffecc829a17c67728b8ced8b0cccc92}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Synced}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn, const char $\ast$cmd, char $\ast$reply, size\+\_\+t reply\+Len)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a5ddba0537d0917bc518e9ef71b539f75}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Check\+Response\+Ext}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn, char $\ast$cmd, char $\ast$expected\+Response, uint32\+\_\+t tm\+Out\+MSec)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_af7414d719a14459bfbf836e77f643aff}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Check\+Response}} (\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn, char $\ast$cmd, char $\ast$expected\+Response)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a379089510626b43f9386a6db71f4a3ef}{wld\+\_\+wpa\+Ctrl\+\_\+check\+Sock\+Path}} (const char $\ast$sock\+Path)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlConnection_8c_a71bdfd4428fb221814547fbeb4ba9152}{wld\+\_\+wpa\+Ctrl\+\_\+query\+To\+Sock}} (const char $\ast$server\+Path, const char $\ast$sock\+Name, const char $\ast$cmd, char $\ast$reply, size\+\_\+t reply\+Len)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a902a2a5514db56fd54743bc7f2211905}\label{wld__wpaCtrlConnection_8c_a902a2a5514db56fd54743bc7f2211905}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!DEFAULT\_MSG\_LENGTH@{DEFAULT\_MSG\_LENGTH}}
+\index{DEFAULT\_MSG\_LENGTH@{DEFAULT\_MSG\_LENGTH}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{DEFAULT\_MSG\_LENGTH}{DEFAULT\_MSG\_LENGTH}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} DEFAULT\+\_\+\+MSG\+\_\+\+LENGTH~(12 $\ast$ 1024)}
+
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_aae15a57359405fa67f39ff805c6eddd4}\label{wld__wpaCtrlConnection_8c_aae15a57359405fa67f39ff805c6eddd4}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!MAX\_MSG\_LENGTH@{MAX\_MSG\_LENGTH}}
+\index{MAX\_MSG\_LENGTH@{MAX\_MSG\_LENGTH}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{MAX\_MSG\_LENGTH}{MAX\_MSG\_LENGTH}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} MAX\+\_\+\+MSG\+\_\+\+LENGTH~(64 $\ast$ 1024)}
+
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__wpaCtrlConnection_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!ME@{ME}}
+\index{ME@{ME}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wpa\+Ctrl\char`\"{}}
+
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_af6fd7af4101c6a89fc2a1c715b227121}\label{wld__wpaCtrlConnection_8c_af6fd7af4101c6a89fc2a1c715b227121}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!MIN\_MSG\_LENGTH@{MIN\_MSG\_LENGTH}}
+\index{MIN\_MSG\_LENGTH@{MIN\_MSG\_LENGTH}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{MIN\_MSG\_LENGTH}{MIN\_MSG\_LENGTH}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} MIN\+\_\+\+MSG\+\_\+\+LENGTH~(4 $\ast$ 1024)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a379089510626b43f9386a6db71f4a3ef}\label{wld__wpaCtrlConnection_8c_a379089510626b43f9386a6db71f4a3ef}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrl\_checkSockPath@{wld\_wpaCtrl\_checkSockPath}}
+\index{wld\_wpaCtrl\_checkSockPath@{wld\_wpaCtrl\_checkSockPath}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_checkSockPath()}{wld\_wpaCtrl\_checkSockPath()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+check\+Sock\+Path (\begin{DoxyParamCaption}\item[{const char $\ast$}]{sock\+Path }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a379089510626b43f9386a6db71f4a3ef_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_ab5b29b7ce5f29ef5dfbe951e5b700428}\label{wld__wpaCtrlConnection_8c_ab5b29b7ce5f29ef5dfbe951e5b700428}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrl\_getMaxMsgLen@{wld\_wpaCtrl\_getMaxMsgLen}}
+\index{wld\_wpaCtrl\_getMaxMsgLen@{wld\_wpaCtrl\_getMaxMsgLen}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getMaxMsgLen()}{wld\_wpaCtrl\_getMaxMsgLen()}}
+{\footnotesize\ttfamily size\+\_\+t wld\+\_\+wpa\+Ctrl\+\_\+get\+Max\+Msg\+Len (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_ab5b29b7ce5f29ef5dfbe951e5b700428_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a71bdfd4428fb221814547fbeb4ba9152}\label{wld__wpaCtrlConnection_8c_a71bdfd4428fb221814547fbeb4ba9152}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrl\_queryToSock@{wld\_wpaCtrl\_queryToSock}}
+\index{wld\_wpaCtrl\_queryToSock@{wld\_wpaCtrl\_queryToSock}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_queryToSock()}{wld\_wpaCtrl\_queryToSock()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+query\+To\+Sock (\begin{DoxyParamCaption}\item[{const char $\ast$}]{server\+Path,  }\item[{const char $\ast$}]{sock\+Name,  }\item[{const char $\ast$}]{cmd,  }\item[{char $\ast$}]{reply,  }\item[{size\+\_\+t}]{reply\+Len }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a71bdfd4428fb221814547fbeb4ba9152_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a71bdfd4428fb221814547fbeb4ba9152_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_afc3249172fc93eeedd88b07133b69b55}\label{wld__wpaCtrlConnection_8c_afc3249172fc93eeedd88b07133b69b55}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrl\_setMaxMsgLen@{wld\_wpaCtrl\_setMaxMsgLen}}
+\index{wld\_wpaCtrl\_setMaxMsgLen@{wld\_wpaCtrl\_setMaxMsgLen}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_setMaxMsgLen()}{wld\_wpaCtrl\_setMaxMsgLen()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+set\+Max\+Msg\+Len (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{msg\+Len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a4f4cfde4f1cd7c2913047631191bb625}\label{wld__wpaCtrlConnection_8c_a4f4cfde4f1cd7c2913047631191bb625}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_cleanup@{wld\_wpaCtrlConnection\_cleanup}}
+\index{wld\_wpaCtrlConnection\_cleanup@{wld\_wpaCtrlConnection\_cleanup}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_cleanup()}{wld\_wpaCtrlConnection\_cleanup()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$$\ast$}]{pp\+Conn }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a4f4cfde4f1cd7c2913047631191bb625_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a4f4cfde4f1cd7c2913047631191bb625_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_ac77a8013582067279ce3a0ccda177ed8}\label{wld__wpaCtrlConnection_8c_ac77a8013582067279ce3a0ccda177ed8}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_close@{wld\_wpaCtrlConnection\_close}}
+\index{wld\_wpaCtrlConnection\_close@{wld\_wpaCtrlConnection\_close}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_close()}{wld\_wpaCtrlConnection\_close()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+close (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_ac77a8013582067279ce3a0ccda177ed8_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_acb4bff582d17d2dd81aa5dc8fae9ff44}\label{wld__wpaCtrlConnection_8c_acb4bff582d17d2dd81aa5dc8fae9ff44}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_getConnCliDirPath@{wld\_wpaCtrlConnection\_getConnCliDirPath}}
+\index{wld\_wpaCtrlConnection\_getConnCliDirPath@{wld\_wpaCtrlConnection\_getConnCliDirPath}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_getConnCliDirPath()}{wld\_wpaCtrlConnection\_getConnCliDirPath()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Cli\+Dir\+Path (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$p\+Conn}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a423ea65753f7756c0c819747edf6437b}\label{wld__wpaCtrlConnection_8c_a423ea65753f7756c0c819747edf6437b}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_getConnCliPath@{wld\_wpaCtrlConnection\_getConnCliPath}}
+\index{wld\_wpaCtrlConnection\_getConnCliPath@{wld\_wpaCtrlConnection\_getConnCliPath}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_getConnCliPath()}{wld\_wpaCtrlConnection\_getConnCliPath()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Cli\+Path (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_abfe3f8b17cf527b1e6fe85a564c8604b}\label{wld__wpaCtrlConnection_8c_abfe3f8b17cf527b1e6fe85a564c8604b}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_getConnSockName@{wld\_wpaCtrlConnection\_getConnSockName}}
+\index{wld\_wpaCtrlConnection\_getConnSockName@{wld\_wpaCtrlConnection\_getConnSockName}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_getConnSockName()}{wld\_wpaCtrlConnection\_getConnSockName()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Sock\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_abfe3f8b17cf527b1e6fe85a564c8604b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_adb889abb93a76c73955378ad147941aa}\label{wld__wpaCtrlConnection_8c_adb889abb93a76c73955378ad147941aa}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_getConnSrvDirPath@{wld\_wpaCtrlConnection\_getConnSrvDirPath}}
+\index{wld\_wpaCtrlConnection\_getConnSrvDirPath@{wld\_wpaCtrlConnection\_getConnSrvDirPath}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_getConnSrvDirPath()}{wld\_wpaCtrlConnection\_getConnSrvDirPath()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Srv\+Dir\+Path (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_adb889abb93a76c73955378ad147941aa_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a47a34d899bc01dfe767b26ee4f7b87db}\label{wld__wpaCtrlConnection_8c_a47a34d899bc01dfe767b26ee4f7b87db}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_getConnSrvPath@{wld\_wpaCtrlConnection\_getConnSrvPath}}
+\index{wld\_wpaCtrlConnection\_getConnSrvPath@{wld\_wpaCtrlConnection\_getConnSrvPath}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_getConnSrvPath()}{wld\_wpaCtrlConnection\_getConnSrvPath()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+wpa\+Ctrl\+Connection\+\_\+get\+Conn\+Srv\+Path (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a47a34d899bc01dfe767b26ee4f7b87db_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a6b8f3eb022f9117e30b5ae1ce5cd3310}\label{wld__wpaCtrlConnection_8c_a6b8f3eb022f9117e30b5ae1ce5cd3310}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_init@{wld\_wpaCtrlConnection\_init}}
+\index{wld\_wpaCtrlConnection\_init@{wld\_wpaCtrlConnection\_init}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_init()}{wld\_wpaCtrlConnection\_init()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$$\ast$}]{pp\+Conn,  }\item[{uint32\+\_\+t}]{conn\+Id,  }\item[{const char $\ast$}]{server\+Path,  }\item[{const char $\ast$}]{sock\+Name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a6b8f3eb022f9117e30b5ae1ce5cd3310_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a6b8f3eb022f9117e30b5ae1ce5cd3310_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a3821c825cc2a8803e75e6e0776b8ee96}\label{wld__wpaCtrlConnection_8c_a3821c825cc2a8803e75e6e0776b8ee96}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_open@{wld\_wpaCtrlConnection\_open}}
+\index{wld\_wpaCtrlConnection\_open@{wld\_wpaCtrlConnection\_open}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_open()}{wld\_wpaCtrlConnection\_open()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+open (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a3821c825cc2a8803e75e6e0776b8ee96_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a3821c825cc2a8803e75e6e0776b8ee96_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_aa82226c76dbbf306e509b7c6d3088277}\label{wld__wpaCtrlConnection_8c_aa82226c76dbbf306e509b7c6d3088277}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_sendCmd@{wld\_wpaCtrlConnection\_sendCmd}}
+\index{wld\_wpaCtrlConnection\_sendCmd@{wld\_wpaCtrlConnection\_sendCmd}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_sendCmd()}{wld\_wpaCtrlConnection\_sendCmd()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn,  }\item[{const char $\ast$}]{cmd }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_aa82226c76dbbf306e509b7c6d3088277_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_af7414d719a14459bfbf836e77f643aff}\label{wld__wpaCtrlConnection_8c_af7414d719a14459bfbf836e77f643aff}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_sendCmdCheckResponse@{wld\_wpaCtrlConnection\_sendCmdCheckResponse}}
+\index{wld\_wpaCtrlConnection\_sendCmdCheckResponse@{wld\_wpaCtrlConnection\_sendCmdCheckResponse}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_sendCmdCheckResponse()}{wld\_wpaCtrlConnection\_sendCmdCheckResponse()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Check\+Response (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn,  }\item[{char $\ast$}]{cmd,  }\item[{char $\ast$}]{expected\+Response }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_af7414d719a14459bfbf836e77f643aff_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_af7414d719a14459bfbf836e77f643aff_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a5ddba0537d0917bc518e9ef71b539f75}\label{wld__wpaCtrlConnection_8c_a5ddba0537d0917bc518e9ef71b539f75}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_sendCmdCheckResponseExt@{wld\_wpaCtrlConnection\_sendCmdCheckResponseExt}}
+\index{wld\_wpaCtrlConnection\_sendCmdCheckResponseExt@{wld\_wpaCtrlConnection\_sendCmdCheckResponseExt}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_sendCmdCheckResponseExt()}{wld\_wpaCtrlConnection\_sendCmdCheckResponseExt()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Check\+Response\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn,  }\item[{char $\ast$}]{cmd,  }\item[{char $\ast$}]{expected\+Response,  }\item[{uint32\+\_\+t}]{tm\+Out\+MSec }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a5ddba0537d0917bc518e9ef71b539f75_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a5ddba0537d0917bc518e9ef71b539f75_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_a4ffecc829a17c67728b8ced8b0cccc92}\label{wld__wpaCtrlConnection_8c_a4ffecc829a17c67728b8ced8b0cccc92}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_sendCmdSynced@{wld\_wpaCtrlConnection\_sendCmdSynced}}
+\index{wld\_wpaCtrlConnection\_sendCmdSynced@{wld\_wpaCtrlConnection\_sendCmdSynced}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_sendCmdSynced()}{wld\_wpaCtrlConnection\_sendCmdSynced()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Synced (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn,  }\item[{const char $\ast$}]{cmd,  }\item[{char $\ast$}]{reply,  }\item[{size\+\_\+t}]{reply\+Len }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a4ffecc829a17c67728b8ced8b0cccc92_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_a4ffecc829a17c67728b8ced8b0cccc92_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_ae8867992d243efdfa13e360b50730f88}\label{wld__wpaCtrlConnection_8c_ae8867992d243efdfa13e360b50730f88}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_sendCmdSyncedExt@{wld\_wpaCtrlConnection\_sendCmdSyncedExt}}
+\index{wld\_wpaCtrlConnection\_sendCmdSyncedExt@{wld\_wpaCtrlConnection\_sendCmdSyncedExt}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_sendCmdSyncedExt()}{wld\_wpaCtrlConnection\_sendCmdSyncedExt()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+send\+Cmd\+Synced\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn,  }\item[{const char $\ast$}]{cmd,  }\item[{char $\ast$}]{reply,  }\item[{size\+\_\+t}]{reply\+Len,  }\item[{uint32\+\_\+t}]{tm\+Out\+MSec }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_ae8867992d243efdfa13e360b50730f88_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_ae8867992d243efdfa13e360b50730f88_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlConnection_8c_af6ed20a15db7c130a39b05c6db570aab}\label{wld__wpaCtrlConnection_8c_af6ed20a15db7c130a39b05c6db570aab}} 
+\index{wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}!wld\_wpaCtrlConnection\_setEvtHandlers@{wld\_wpaCtrlConnection\_setEvtHandlers}}
+\index{wld\_wpaCtrlConnection\_setEvtHandlers@{wld\_wpaCtrlConnection\_setEvtHandlers}!wld\_wpaCtrlConnection.c@{wld\_wpaCtrlConnection.c}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlConnection\_setEvtHandlers()}{wld\_wpaCtrlConnection\_setEvtHandlers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Connection\+\_\+set\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrlConnection__priv_8h_acdc0d084490d685275c03fa246ce4d49}{wpa\+Ctrl\+Connection\+\_\+t}} $\ast$}]{p\+Conn,  }\item[{void $\ast$}]{user\+Data,  }\item[{\mbox{\hyperlink{structwld__wpaCtrlConnection__evtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+Connection\+\_\+evt\+Handlers\+\_\+cb}} $\ast$}]{p\+Evt\+Hdlrs }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlConnection_8c_af6ed20a15db7c130a39b05c6db570aab_icgraph}
+\end{center}
+\end{figure}

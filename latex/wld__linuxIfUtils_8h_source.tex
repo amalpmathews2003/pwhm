@@ -1,0 +1,263 @@
+\hypertarget{wld__linuxIfUtils_8h_source}{}\doxysection{wld\+\_\+linux\+If\+Utils.\+h}
+\label{wld__linuxIfUtils_8h_source}\index{include/wld/wld\_linuxIfUtils.h@{include/wld/wld\_linuxIfUtils.h}}
+\mbox{\hyperlink{wld__linuxIfUtils_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_LINUXIFUTILS\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_LINUXIFUTILS\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}swla/swla\_mac.h"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{comment}{/*}}
+\DoxyCodeLine{69 \textcolor{comment}{ * @brief return inet socket to kernel}}
+\DoxyCodeLine{70 \textcolor{comment}{ *}}
+\DoxyCodeLine{71 \textcolor{comment}{ * @return sock fd}}
+\DoxyCodeLine{72 \textcolor{comment}{ */}}
+\DoxyCodeLine{73 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a02092ba8d6dda33a584c37818c4af732}{wld\_linuxIfUtils\_getNetSock}}();}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75 \textcolor{comment}{/*}}
+\DoxyCodeLine{76 \textcolor{comment}{ * @brief check whether interface is up}}
+\DoxyCodeLine{77 \textcolor{comment}{ *}}
+\DoxyCodeLine{78 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{79 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{80 \textcolor{comment}{ *}}
+\DoxyCodeLine{81 \textcolor{comment}{ * @param 0 if interface is down}}
+\DoxyCodeLine{82 \textcolor{comment}{ *        1 if interface is up}}
+\DoxyCodeLine{83 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{84 \textcolor{comment}{ */}}
+\DoxyCodeLine{85 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a1ed70e31f78a4556b3c3b560e29a2c00}{wld\_linuxIfUtils\_getState}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName);}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{87 \textcolor{comment}{/*}}
+\DoxyCodeLine{88 \textcolor{comment}{ * @brief check whether interface is up}}
+\DoxyCodeLine{89 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{90 \textcolor{comment}{ *}}
+\DoxyCodeLine{91 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{92 \textcolor{comment}{ *}}
+\DoxyCodeLine{93 \textcolor{comment}{ * @param 0 if interface is down}}
+\DoxyCodeLine{94 \textcolor{comment}{ *        1 if interface is up}}
+\DoxyCodeLine{95 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{96 \textcolor{comment}{ */}}
+\DoxyCodeLine{97 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a51c79a19795d90811bdd9655cdace3c3}{wld\_linuxIfUtils\_getStateExt}}(\textcolor{keywordtype}{char}* intfName);}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99 \textcolor{comment}{/*}}
+\DoxyCodeLine{100 \textcolor{comment}{ * @brief sets interface state (up or down)}}
+\DoxyCodeLine{101 \textcolor{comment}{ *}}
+\DoxyCodeLine{102 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{104 \textcolor{comment}{ * @param state 0 for down, 1 for up}}
+\DoxyCodeLine{105 \textcolor{comment}{ *}}
+\DoxyCodeLine{106 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{107 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{108 \textcolor{comment}{ */}}
+\DoxyCodeLine{109 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a3cfe5875e4903211756333c2be3c3ac7}{wld\_linuxIfUtils\_setState}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName, \textcolor{keywordtype}{int} state);}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{comment}{/*}}
+\DoxyCodeLine{112 \textcolor{comment}{ * @brief sets interface state (up or down)}}
+\DoxyCodeLine{113 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{114 \textcolor{comment}{ *}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{116 \textcolor{comment}{ * @param state 0 for down, 1 for up}}
+\DoxyCodeLine{117 \textcolor{comment}{ *}}
+\DoxyCodeLine{118 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{119 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{120 \textcolor{comment}{ */}}
+\DoxyCodeLine{121 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a4bcb10872e8bfc181da6e35628e621de}{wld\_linuxIfUtils\_setStateExt}}(\textcolor{keywordtype}{char}* intfName, \textcolor{keywordtype}{int} state);}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123 \textcolor{comment}{/*}}
+\DoxyCodeLine{124 \textcolor{comment}{ * @brief sets interface's hw mac address}}
+\DoxyCodeLine{125 \textcolor{comment}{ *}}
+\DoxyCodeLine{126 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{127 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{128 \textcolor{comment}{ * @param macInfo mac address in binary format}}
+\DoxyCodeLine{129 \textcolor{comment}{ *}}
+\DoxyCodeLine{130 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{131 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{132 \textcolor{comment}{ */}}
+\DoxyCodeLine{133 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_aebd566d1abd259c7802087dc76c7d745}{wld\_linuxIfUtils\_setMac}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName, swl\_macBin\_t* macInfo);}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135 \textcolor{comment}{/*}}
+\DoxyCodeLine{136 \textcolor{comment}{ * @brief sets interface's hw mac address}}
+\DoxyCodeLine{137 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{138 \textcolor{comment}{ *}}
+\DoxyCodeLine{139 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{140 \textcolor{comment}{ * @param macInfo mac address in binary format}}
+\DoxyCodeLine{141 \textcolor{comment}{ *}}
+\DoxyCodeLine{142 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{143 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{144 \textcolor{comment}{ */}}
+\DoxyCodeLine{145 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a551d23aff6a09cd72e119ea8b8604c8b}{wld\_linuxIfUtils\_setMacExt}}(\textcolor{keywordtype}{char}* intfName, swl\_macBin\_t* macInfo);}
+\DoxyCodeLine{146 }
+\DoxyCodeLine{147 \textcolor{comment}{/*}}
+\DoxyCodeLine{148 \textcolor{comment}{ * @brief gets interface's hw mac address}}
+\DoxyCodeLine{149 \textcolor{comment}{ *}}
+\DoxyCodeLine{150 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{151 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{152 \textcolor{comment}{ * @param (output) macInfo mac address in binary format}}
+\DoxyCodeLine{153 \textcolor{comment}{ *}}
+\DoxyCodeLine{154 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{155 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{156 \textcolor{comment}{ */}}
+\DoxyCodeLine{157 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_ae42910ec7c1a37e0fee82b594951f976}{wld\_linuxIfUtils\_getMac}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName, swl\_macBin\_t* macInfo);}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{159 \textcolor{comment}{/*}}
+\DoxyCodeLine{160 \textcolor{comment}{ * @brief gets interface's hw mac address}}
+\DoxyCodeLine{161 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{162 \textcolor{comment}{ *}}
+\DoxyCodeLine{163 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{164 \textcolor{comment}{ * @param (output) macInfo mac address in binary format}}
+\DoxyCodeLine{165 \textcolor{comment}{ *}}
+\DoxyCodeLine{166 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{167 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{168 \textcolor{comment}{ */}}
+\DoxyCodeLine{169 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a1ed449d6c9fef95e5aad1f25e65996b8}{wld\_linuxIfUtils\_getMacExt}}(\textcolor{keywordtype}{char}* intfName, swl\_macBin\_t* macInfo);}
+\DoxyCodeLine{170 }
+\DoxyCodeLine{171 \textcolor{comment}{/*}}
+\DoxyCodeLine{172 \textcolor{comment}{ * @brief check whether interface link (lower layer) is up.}}
+\DoxyCodeLine{173 \textcolor{comment}{ * It reflects a physical requirement (vs. administrative)}}
+\DoxyCodeLine{174 \textcolor{comment}{ * to make the interface up and operational.}}
+\DoxyCodeLine{175 \textcolor{comment}{ *}}
+\DoxyCodeLine{176 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{177 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{178 \textcolor{comment}{ *}}
+\DoxyCodeLine{179 \textcolor{comment}{ * @param 0 if interface link is down}}
+\DoxyCodeLine{180 \textcolor{comment}{ *        1 if interface link is up}}
+\DoxyCodeLine{181 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{182 \textcolor{comment}{ */}}
+\DoxyCodeLine{183 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a80a4f2a9c916d1b8631a41017ca85a13}{wld\_linuxIfUtils\_getLinkState}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName);}
+\DoxyCodeLine{184 }
+\DoxyCodeLine{185 \textcolor{comment}{/*}}
+\DoxyCodeLine{186 \textcolor{comment}{ * @brief check whether interface link (lower layer) is up.}}
+\DoxyCodeLine{187 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{188 \textcolor{comment}{ *}}
+\DoxyCodeLine{189 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{190 \textcolor{comment}{ *}}
+\DoxyCodeLine{191 \textcolor{comment}{ * @param 0 if interface link is down}}
+\DoxyCodeLine{192 \textcolor{comment}{ *        1 if interface link is up}}
+\DoxyCodeLine{193 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{194 \textcolor{comment}{ */}}
+\DoxyCodeLine{195 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a3bb1f18a5ddc724ff6453d335c0fe2d4}{wld\_linuxIfUtils\_getLinkStateExt}}(\textcolor{keywordtype}{char}* intfName);}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197 \textcolor{comment}{/*}}
+\DoxyCodeLine{198 \textcolor{comment}{ * @brief gets interface's netdev index}}
+\DoxyCodeLine{199 \textcolor{comment}{ *}}
+\DoxyCodeLine{200 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{201 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{202 \textcolor{comment}{ * @param (output) pointer netdev index}}
+\DoxyCodeLine{203 \textcolor{comment}{ *}}
+\DoxyCodeLine{204 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{205 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{206 \textcolor{comment}{ */}}
+\DoxyCodeLine{207 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_ac8a1ce9d47dfdc09b23cd7fd4d4b63f3}{wld\_linuxIfUtils\_getIfIndex}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName, \textcolor{keywordtype}{int}* pIfIndex);}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209 \textcolor{comment}{/*}}
+\DoxyCodeLine{210 \textcolor{comment}{ * @brief gets interface's netdev index}}
+\DoxyCodeLine{211 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{212 \textcolor{comment}{ *}}
+\DoxyCodeLine{213 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{214 \textcolor{comment}{ * @param (output) pointer netdev index}}
+\DoxyCodeLine{215 \textcolor{comment}{ *}}
+\DoxyCodeLine{216 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{217 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{218 \textcolor{comment}{ */}}
+\DoxyCodeLine{219 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a2ab34a55a32cf20d507167a9f2493897}{wld\_linuxIfUtils\_getIfIndexExt}}(\textcolor{keywordtype}{char}* intfName, \textcolor{keywordtype}{int}* pIfIndex);}
+\DoxyCodeLine{220 }
+\DoxyCodeLine{221 \textcolor{comment}{/*}}
+\DoxyCodeLine{222 \textcolor{comment}{ * @brief update interface's hw mac address}}
+\DoxyCodeLine{223 \textcolor{comment}{ * and toggle the interface if needed}}
+\DoxyCodeLine{224 \textcolor{comment}{ *}}
+\DoxyCodeLine{225 \textcolor{comment}{ * @param sock socket to kernel}}
+\DoxyCodeLine{226 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{227 \textcolor{comment}{ * @param macAddress mac address in binary format}}
+\DoxyCodeLine{228 \textcolor{comment}{ *}}
+\DoxyCodeLine{229 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{230 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{231 \textcolor{comment}{ */}}
+\DoxyCodeLine{232 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a959a9e146e5060f68af048061372b919}{wld\_linuxIfUtils\_updateMac}}(\textcolor{keywordtype}{int} sock, \textcolor{keywordtype}{char}* intfName, swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{233 }
+\DoxyCodeLine{234 \textcolor{comment}{/*}}
+\DoxyCodeLine{235 \textcolor{comment}{ * @brief update interface's hw mac address}}
+\DoxyCodeLine{236 \textcolor{comment}{ * and toggle the interface if needed}}
+\DoxyCodeLine{237 \textcolor{comment}{ * (socket is created internally)}}
+\DoxyCodeLine{238 \textcolor{comment}{ *}}
+\DoxyCodeLine{239 \textcolor{comment}{ * @param intfName interface name}}
+\DoxyCodeLine{240 \textcolor{comment}{ * @param macAddress mac address in binary format}}
+\DoxyCodeLine{241 \textcolor{comment}{ *}}
+\DoxyCodeLine{242 \textcolor{comment}{ * @param 0 in case of success}}
+\DoxyCodeLine{243 \textcolor{comment}{ *        <0 (errno) in case of error}}
+\DoxyCodeLine{244 \textcolor{comment}{ */}}
+\DoxyCodeLine{245 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__linuxIfUtils_8h_a57dc83a1df6fff548df049df496994a6}{wld\_linuxIfUtils\_updateMacExt}}(\textcolor{keywordtype}{char}* intfName, swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{246 }
+\DoxyCodeLine{247 \textcolor{comment}{/*}}
+\DoxyCodeLine{248 \textcolor{comment}{ * @brief get Vendor name}}
+\DoxyCodeLine{249 \textcolor{comment}{ *}}
+\DoxyCodeLine{250 \textcolor{comment}{ * @param radioName Radio name}}
+\DoxyCodeLine{251 \textcolor{comment}{ *}}
+\DoxyCodeLine{252 \textcolor{comment}{ * @return Vendor name in case of success}}
+\DoxyCodeLine{253 \textcolor{comment}{ *        <empty string in case of error}}
+\DoxyCodeLine{254 \textcolor{comment}{ */}}
+\DoxyCodeLine{255 \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{wld__linuxIfUtils_8h_ae972b2619bf5c72bac594ce745026c57}{wld\_linuxIfUtils\_getChipsetVendor}}(\textcolor{keywordtype}{char}* radioName);}
+\DoxyCodeLine{256 }
+\DoxyCodeLine{257 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_LINUXIFUTILS\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

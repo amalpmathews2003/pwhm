@@ -1,0 +1,7 @@
+<map id="wld_channel_getExtensionChannel" name="wld_channel_getExtensionChannel">
+<area shape="rect" id="node1" title=" " alt="" coords="557,53,752,94"/>
+<area shape="rect" id="node2" href="$wld__hostapd__cfgFile_8c.html#aa4ef0964a05f5b4f72d9c4b2f9046aa4" title="set the radio parameters" alt="" coords="323,23,477,65"/>
+<area shape="rect" id="node5" href="$wld__radio_8c.html#a6fa49867bafd918952a9143ac258dd3b" title=" " alt="" coords="291,89,509,116"/>
+<area shape="rect" id="node3" href="$wld__rad__hostapd__api_8c.html#aea42b1d7acee5d51484de01cac65c983" title="set main interface channel parameters" alt="" coords="18,5,230,32"/>
+<area shape="rect" id="node4" href="$wld__rad__hostapd__api_8c.html#a5411827e8b4ab433c4f62efe4dee6b5e" title=" " alt="" coords="5,56,243,83"/>
+</map>

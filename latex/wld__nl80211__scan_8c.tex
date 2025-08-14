@@ -1,0 +1,124 @@
+\hypertarget{wld__nl80211__scan_8c}{}\doxysection{src/nl80211/wld\+\_\+nl80211\+\_\+scan.c File Reference}
+\label{wld__nl80211__scan_8c}\index{src/nl80211/wld\_nl80211\_scan.c@{src/nl80211/wld\_nl80211\_scan.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common\+\_\+time.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+scan.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__scan_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structscanInfo__t}{scan\+Info\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structgetScanResultsData__s}{get\+Scan\+Results\+Data\+\_\+s}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__scan_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}nl\+Scan\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__nl80211__scan_8c_a0a019d710f41e8aaade6a7eac76e78c0}{wld\+\_\+nl80211\+\_\+has\+Started\+Scan}} (void $\ast$p\+Ref, uint32\+\_\+t wiphy\+Id, int32\+\_\+t if\+Index)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__scan_8c_a2dbdb0b01badbf46d3dc8fc18fefa0ac}{wld\+\_\+rad\+\_\+nl80211\+\_\+start\+Scan\+Ext}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio, \mbox{\hyperlink{wld__nl80211__types_8h_ad73dea2a4c069cad6bfb3d093b30add7}{wld\+\_\+nl80211\+\_\+scan\+Flags\+\_\+t}} $\ast$p\+Flags)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__scan_8c_ae565c1ef858205e4bf46023494976e72}{wld\+\_\+rad\+\_\+nl80211\+\_\+start\+Scan}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__scan_8c_ae14e3f81292e950d99fa22112e30b7b5}{wld\+\_\+rad\+\_\+nl80211\+\_\+abort\+Scan}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__scan_8c_a8967a19d50717941a75e62b92784c69d}{wld\+\_\+rad\+\_\+nl80211\+\_\+get\+Scan\+Results}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio, void $\ast$priv, \mbox{\hyperlink{wld__nl80211__api_8h_a9efa20505e38003c4854203456d90377}{scan\+Results\+Cb\+\_\+f}} f\+Scan\+Results\+Cb)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__nl80211__scan_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__nl80211__scan_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}!ME@{ME}}
+\index{ME@{ME}!wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}nl\+Scan\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__scan_8c_a0a019d710f41e8aaade6a7eac76e78c0}\label{wld__nl80211__scan_8c_a0a019d710f41e8aaade6a7eac76e78c0}} 
+\index{wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}!wld\_nl80211\_hasStartedScan@{wld\_nl80211\_hasStartedScan}}
+\index{wld\_nl80211\_hasStartedScan@{wld\_nl80211\_hasStartedScan}!wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_hasStartedScan()}{wld\_nl80211\_hasStartedScan()}}
+{\footnotesize\ttfamily bool wld\+\_\+nl80211\+\_\+has\+Started\+Scan (\begin{DoxyParamCaption}\item[{void $\ast$}]{p\+Ref,  }\item[{uint32\+\_\+t}]{wiphy\+Id,  }\item[{int32\+\_\+t}]{if\+Index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__scan_8c_ae14e3f81292e950d99fa22112e30b7b5}\label{wld__nl80211__scan_8c_ae14e3f81292e950d99fa22112e30b7b5}} 
+\index{wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}!wld\_rad\_nl80211\_abortScan@{wld\_rad\_nl80211\_abortScan}}
+\index{wld\_rad\_nl80211\_abortScan@{wld\_rad\_nl80211\_abortScan}!wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_nl80211\_abortScan()}{wld\_rad\_nl80211\_abortScan()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+nl80211\+\_\+abort\+Scan (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__scan_8c_ae14e3f81292e950d99fa22112e30b7b5_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__scan_8c_a8967a19d50717941a75e62b92784c69d}\label{wld__nl80211__scan_8c_a8967a19d50717941a75e62b92784c69d}} 
+\index{wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}!wld\_rad\_nl80211\_getScanResults@{wld\_rad\_nl80211\_getScanResults}}
+\index{wld\_rad\_nl80211\_getScanResults@{wld\_rad\_nl80211\_getScanResults}!wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_nl80211\_getScanResults()}{wld\_rad\_nl80211\_getScanResults()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+nl80211\+\_\+get\+Scan\+Results (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio,  }\item[{void $\ast$}]{priv,  }\item[{\mbox{\hyperlink{wld__nl80211__api_8h_a9efa20505e38003c4854203456d90377}{scan\+Results\+Cb\+\_\+f}}}]{f\+Scan\+Results\+Cb }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__scan_8c_a8967a19d50717941a75e62b92784c69d_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__scan_8c_ae565c1ef858205e4bf46023494976e72}\label{wld__nl80211__scan_8c_ae565c1ef858205e4bf46023494976e72}} 
+\index{wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}!wld\_rad\_nl80211\_startScan@{wld\_rad\_nl80211\_startScan}}
+\index{wld\_rad\_nl80211\_startScan@{wld\_rad\_nl80211\_startScan}!wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_nl80211\_startScan()}{wld\_rad\_nl80211\_startScan()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+nl80211\+\_\+start\+Scan (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__scan_8c_ae565c1ef858205e4bf46023494976e72_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__scan_8c_a2dbdb0b01badbf46d3dc8fc18fefa0ac}\label{wld__nl80211__scan_8c_a2dbdb0b01badbf46d3dc8fc18fefa0ac}} 
+\index{wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}!wld\_rad\_nl80211\_startScanExt@{wld\_rad\_nl80211\_startScanExt}}
+\index{wld\_rad\_nl80211\_startScanExt@{wld\_rad\_nl80211\_startScanExt}!wld\_nl80211\_scan.c@{wld\_nl80211\_scan.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_nl80211\_startScanExt()}{wld\_rad\_nl80211\_startScanExt()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+rad\+\_\+nl80211\+\_\+start\+Scan\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio,  }\item[{\mbox{\hyperlink{wld__nl80211__types_8h_ad73dea2a4c069cad6bfb3d093b30add7}{wld\+\_\+nl80211\+\_\+scan\+Flags\+\_\+t}} $\ast$}]{p\+Flags }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__scan_8c_a2dbdb0b01badbf46d3dc8fc18fefa0ac_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__scan_8c_a2dbdb0b01badbf46d3dc8fc18fefa0ac_icgraph}
+\end{center}
+\end{figure}

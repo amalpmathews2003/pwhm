@@ -1,0 +1,109 @@
+\hypertarget{wld__ap__rrm_8c}{}\doxysection{src/\+Ap\+Mgt/wld\+\_\+ap\+\_\+rrm.c File Reference}
+\label{wld__ap__rrm_8c}\index{src/ApMgt/wld\_ap\_rrm.c@{src/ApMgt/wld\_ap\_rrm.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+\_\+rrm.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__rrm_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structrrm__wait__t}{rrm\+\_\+wait\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__rrm_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__rrm_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap11k\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__rrm_8c_ae8e86b51ea4747f51e6eb1b72cd122d6}{BEACON\+\_\+\+MEASURE\+\_\+\+DEFAULT\+\_\+\+MEAS\+\_\+\+MODE}}~SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+PASSIVE
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__rrm_8c_a5d19bdef5ba067650394f8f4b928b2a2}{BEACON\+\_\+\+MEASURE\+\_\+\+DEFAULT\+\_\+\+TIMEOUT}}~1000
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__ap__rrm_8c_a6d56ba526a685de661d360ee515a1540}{wld\+\_\+ap\+\_\+rrm\+\_\+item}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ap, const swl\+\_\+mac\+Char\+\_\+t $\ast$mac, amxc\+\_\+var\+\_\+t $\ast$result)
+\item 
+\mbox{\hyperlink{wld__ap__rrm_8c_a2e1e4cb282df48efe011418587f82fcf}{SWL\+\_\+\+TABLE}} (s\+Rrm\+Beacon\+Cap\+Mode\+Map, ARR(uint32\+\_\+t swl\+Rrm\+Beacon\+Cap;uint32\+\_\+t swl\+Rrm\+Beacon\+Mode;), ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32), ARR(\{SWL\+\_\+\+STACAP\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+ACTIVE\+\_\+\+ME, SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+ACTIVE\}, \{SWL\+\_\+\+STACAP\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+PASSIVE\+\_\+\+ME, SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+PASSIVE\}, \{SWL\+\_\+\+STACAP\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+TABLE\+\_\+\+ME, SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+TABLE\}))
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__rrm_8c_a7ac5ec36425a2afd53bb8c255c24046b}{\+\_\+send\+Remote\+Measument\+Request}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{wld__ap__rrm_8c_ad83df8f24012cc370f5177745d63d27d}{rrm\+\_\+wait\+\_\+list}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ap__rrm_8c_a369266c24eacffb87046522897a570d5}\label{wld__ap__rrm_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__ap__rrm_8c_ae8e86b51ea4747f51e6eb1b72cd122d6}\label{wld__ap__rrm_8c_ae8e86b51ea4747f51e6eb1b72cd122d6}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!BEACON\_MEASURE\_DEFAULT\_MEAS\_MODE@{BEACON\_MEASURE\_DEFAULT\_MEAS\_MODE}}
+\index{BEACON\_MEASURE\_DEFAULT\_MEAS\_MODE@{BEACON\_MEASURE\_DEFAULT\_MEAS\_MODE}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{BEACON\_MEASURE\_DEFAULT\_MEAS\_MODE}{BEACON\_MEASURE\_DEFAULT\_MEAS\_MODE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} BEACON\+\_\+\+MEASURE\+\_\+\+DEFAULT\+\_\+\+MEAS\+\_\+\+MODE~SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+PASSIVE}
+
+\mbox{\Hypertarget{wld__ap__rrm_8c_a5d19bdef5ba067650394f8f4b928b2a2}\label{wld__ap__rrm_8c_a5d19bdef5ba067650394f8f4b928b2a2}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!BEACON\_MEASURE\_DEFAULT\_TIMEOUT@{BEACON\_MEASURE\_DEFAULT\_TIMEOUT}}
+\index{BEACON\_MEASURE\_DEFAULT\_TIMEOUT@{BEACON\_MEASURE\_DEFAULT\_TIMEOUT}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{BEACON\_MEASURE\_DEFAULT\_TIMEOUT}{BEACON\_MEASURE\_DEFAULT\_TIMEOUT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} BEACON\+\_\+\+MEASURE\+\_\+\+DEFAULT\+\_\+\+TIMEOUT~1000}
+
+\mbox{\Hypertarget{wld__ap__rrm_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ap__rrm_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap11k\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ap__rrm_8c_a7ac5ec36425a2afd53bb8c255c24046b}\label{wld__ap__rrm_8c_a7ac5ec36425a2afd53bb8c255c24046b}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!\_sendRemoteMeasumentRequest@{\_sendRemoteMeasumentRequest}}
+\index{\_sendRemoteMeasumentRequest@{\_sendRemoteMeasumentRequest}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{\_sendRemoteMeasumentRequest()}{\_sendRemoteMeasumentRequest()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+send\+Remote\+Measument\+Request (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rrm_8c_a2e1e4cb282df48efe011418587f82fcf}\label{wld__ap__rrm_8c_a2e1e4cb282df48efe011418587f82fcf}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!SWL\_TABLE@{SWL\_TABLE}}
+\index{SWL\_TABLE@{SWL\_TABLE}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_TABLE()}{SWL\_TABLE()}}
+{\footnotesize\ttfamily SWL\+\_\+\+TABLE (\begin{DoxyParamCaption}\item[{s\+Rrm\+Beacon\+Cap\+Mode\+Map}]{,  }\item[{ARR(uint32\+\_\+t swl\+Rrm\+Beacon\+Cap;uint32\+\_\+t swl\+Rrm\+Beacon\+Mode;)}]{,  }\item[{ARR(swl\+\_\+type\+\_\+uint32, swl\+\_\+type\+\_\+uint32)}]{,  }\item[{ARR(\{SWL\+\_\+\+STACAP\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+ACTIVE\+\_\+\+ME, SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+ACTIVE\}, \{SWL\+\_\+\+STACAP\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+PASSIVE\+\_\+\+ME, SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+PASSIVE\}, \{SWL\+\_\+\+STACAP\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+TABLE\+\_\+\+ME, SWL\+\_\+\+IEEE802\+\_\+\+RRM\+\_\+\+BEACON\+\_\+\+REQ\+\_\+\+MODE\+\_\+\+TABLE\})}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rrm_8c_a6d56ba526a685de661d360ee515a1540}\label{wld__ap__rrm_8c_a6d56ba526a685de661d360ee515a1540}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!wld\_ap\_rrm\_item@{wld\_ap\_rrm\_item}}
+\index{wld\_ap\_rrm\_item@{wld\_ap\_rrm\_item}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_rrm\_item()}{wld\_ap\_rrm\_item()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+rrm\+\_\+item (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{ap,  }\item[{const swl\+\_\+mac\+Char\+\_\+t $\ast$}]{mac,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{result }\end{DoxyParamCaption})}
+
+Callback function for vendor plug-\/ins to indicate a given mac provided a reply. Reply code should come from 802.\+11v request 
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__ap__rrm_8c_ad83df8f24012cc370f5177745d63d27d}\label{wld__ap__rrm_8c_ad83df8f24012cc370f5177745d63d27d}} 
+\index{wld\_ap\_rrm.c@{wld\_ap\_rrm.c}!rrm\_wait\_list@{rrm\_wait\_list}}
+\index{rrm\_wait\_list@{rrm\_wait\_list}!wld\_ap\_rrm.c@{wld\_ap\_rrm.c}}
+\doxysubsubsection{\texorpdfstring{rrm\_wait\_list}{rrm\_wait\_list}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t rrm\+\_\+wait\+\_\+list}
+

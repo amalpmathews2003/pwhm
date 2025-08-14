@@ -1,0 +1,667 @@
+\hypertarget{wld__wpaCtrlMngr_8h}{}\doxysection{include/wld/wld\+\_\+wpa\+Ctrl\+Mngr.h File Reference}
+\label{wld__wpaCtrlMngr_8h}\index{include/wld/wld\_wpaCtrlMngr.h@{include/wld/wld\_wpaCtrlMngr.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+Interface.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Ctrl\+Mngr.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a95664ced326db8054ce4b1cc2927117f}{CALL\+\_\+\+MGR\+\_\+\+EXT}}(p\+Mgr,  f\+Name,  if\+Name, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a63a2b4731cd4d71dac4ac123f5e433d6}{CALL\+\_\+\+MGR\+\_\+\+I\+\_\+\+EXT}}(p\+Intf,  f\+Name, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ab296b0ae5f4fe2d6a4ea6b26cc1837d8}{CALL\+\_\+\+MGR\+\_\+\+NA\+\_\+\+EXT}}(p\+Mgr,  f\+Name,  if\+Name)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr_8h_aff37e7bf5dbc16822dacec51a5134305}{CALL\+\_\+\+MGR\+\_\+\+I\+\_\+\+NA\+\_\+\+EXT}}(p\+Intf,  f\+Name)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr_8h_acc9117024a55d94c862fe1e1275900e9}{NOTIFY\+\_\+\+EXT}}(PIFACE,  FNAME, ...)
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a8bf0ab5b0a638b7f1342d448cbb357f0}{NOTIFY\+\_\+\+NA\+\_\+\+EXT}}(PIFACE,  FNAME, ...)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a9c71f902730868c3cd694fc8b820ba58}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+init}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$$\ast$pp\+Mgr, struct \mbox{\hyperlink{structwld__secDmn}{wld\+\_\+sec\+Dmn}} $\ast$p\+Sec\+Dmn)
+\begin{DoxyCompactList}\small\item\em initialize wpa\+\_\+ctrl manager If already allocated, then it will be reset \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a8e616c0c8227c491da9e9f09f5a4fc00}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+set\+Evt\+Handlers}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, void $\ast$userdata, \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+radio\+Evt\+Handlers\+\_\+cb}} $\ast$p\+Handlers)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a612091e10133c9d6fc3b899a34df024c}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Evt\+Handlers}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, void $\ast$$\ast$userdata, \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+radio\+Evt\+Handlers\+\_\+cb}} $\ast$p\+Handlers)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ab9e3aeaefd21ef085fcd3443ef111291}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+connect}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\begin{DoxyCompactList}\small\item\em start connecting to wpa\+\_\+ctrl server \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a65f1d3c48476ca6584852b18fc80b2d9}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+disconnect}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\begin{DoxyCompactList}\small\item\em disconnect from wpa\+\_\+ctrl server \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a62c301a5c8d2137661d7588ddb453af7}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+stop\+Connecting}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a9277efdeb3247530fa14be0bc419902e}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+is\+Connecting}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ad3e7ad2284a85ee77e110a90f0fd34ae}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+is\+Connected}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\begin{DoxyCompactList}\small\item\em check that wpa\+Ctrl manager is connected\+: i.\+e can receive events from its main interface. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a977d0064530fa2690fa414c068b0c773}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+is\+Ready}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\begin{DoxyCompactList}\small\item\em check that all registed wpa\+\_\+ctrl interfaces are ready \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a703dcb69cf5fbbf2473edf3505b12ca1}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+cleanup}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$$\ast$pp\+Mgr)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ab04368673c079beb9b25234e1f829559}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+register\+Interface}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface)
+\begin{DoxyCompactList}\small\item\em register wpa\+\_\+ctrl interface to wpa\+\_\+ctrl manager \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a9ee0bf30b2c4bc035b9bcc5d5639e699}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+unregister\+Interface}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$p\+Iface)
+\begin{DoxyCompactList}\small\item\em unregister wpa\+\_\+ctrl interface from wpa\+\_\+ctrl manager \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a978da00b44d166b3300aef0d992db056}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Interface}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, int32\+\_\+t pos)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ad691bfe39273eed2ddd349265e4314bb}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Interface\+By\+Name}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, const char $\ast$name)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a528b8dd11a5c723241db36d4d52d7966}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Interface}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a3dc93dfda0d67c0e7254cc1ffeeb3ebe}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Ready\+Interface}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ade9e80211a30152df41ae2d563d97937}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Not\+Ready\+Interface}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_aa181961367a7ddec982aee21b5d0d25e}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Available\+Interface}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a4d2e687208327e2581cdbb8a1cd100ef}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Default\+Interface}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a97eec51d70f1f8708d478becfb983ce5}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+check\+All\+Ifaces}} (\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__wpaCtrlMngr_8h_ab93a91e19c44a1dacb4774f36856b48a}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+count\+Interfaces}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+struct \mbox{\hyperlink{structwld__secDmn}{wld\+\_\+sec\+Dmn}} $\ast$ \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a4b7a4a245e1b181c732f421e07130aab}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Sec\+Dmn}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a3f5ee8d93b578b86a7a909edb425294c}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+ping}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__wpaCtrlMngr_8h_aff4525270029f61ec1fa53cd8ebb828a}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+count\+Enabled\+Interfaces}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__wpaCtrlMngr_8h_a3ff9376646275b47016dd95cd5812e6b}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+count\+Ready\+Interfaces}} (const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a95664ced326db8054ce4b1cc2927117f}\label{wld__wpaCtrlMngr_8h_a95664ced326db8054ce4b1cc2927117f}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!CALL\_MGR\_EXT@{CALL\_MGR\_EXT}}
+\index{CALL\_MGR\_EXT@{CALL\_MGR\_EXT}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_EXT}{CALL\_MGR\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+EXT(\begin{DoxyParamCaption}\item[{}]{p\+Mgr,  }\item[{}]{f\+Name,  }\item[{}]{if\+Name,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \{ \(\backslash\)}
+\DoxyCodeLine{        void* userdata = NULL; \(\backslash\)}
+\DoxyCodeLine{        wld\_wpaCtrl\_radioEvtHandlers\_cb handlers = \{0\}; \(\backslash\)}
+\DoxyCodeLine{        if(\mbox{\hyperlink{wld__wpaCtrlMngr_8h_a612091e10133c9d6fc3b899a34df024c}{wld\_wpaCtrlMngr\_getEvtHandlers}}(pMgr, \&userdata, \&handlers)) \{ \(\backslash\)}
+\DoxyCodeLine{            SWL\_CALL(handlers.fName, userdata, ifName, \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{        \} \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a63a2b4731cd4d71dac4ac123f5e433d6}\label{wld__wpaCtrlMngr_8h_a63a2b4731cd4d71dac4ac123f5e433d6}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!CALL\_MGR\_I\_EXT@{CALL\_MGR\_I\_EXT}}
+\index{CALL\_MGR\_I\_EXT@{CALL\_MGR\_I\_EXT}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_I\_EXT}{CALL\_MGR\_I\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+I\+\_\+\+EXT(\begin{DoxyParamCaption}\item[{}]{p\+Intf,  }\item[{}]{f\+Name,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}(pIntf != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{        CALL\_MGR\_EXT(\mbox{\hyperlink{wld__wpaCtrlInterface_8h_a98993fd06b6a3f3e55a9d1878cb0ad99}{wld\_wpaCtrlInterface\_getMgr}}(pIntf), fName, \mbox{\hyperlink{wld__wpaCtrlInterface_8h_a5394fec853913f82bd5c52accf2687b8}{wld\_wpaCtrlInterface\_getName}}(pIntf), \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_aff37e7bf5dbc16822dacec51a5134305}\label{wld__wpaCtrlMngr_8h_aff37e7bf5dbc16822dacec51a5134305}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!CALL\_MGR\_I\_NA\_EXT@{CALL\_MGR\_I\_NA\_EXT}}
+\index{CALL\_MGR\_I\_NA\_EXT@{CALL\_MGR\_I\_NA\_EXT}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_I\_NA\_EXT}{CALL\_MGR\_I\_NA\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+I\+\_\+\+NA\+\_\+\+EXT(\begin{DoxyParamCaption}\item[{}]{p\+Intf,  }\item[{}]{f\+Name }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}(pIntf != NULL) \{ \(\backslash\)}
+\DoxyCodeLine{        char* ifName = (\textcolor{keywordtype}{char}*) \mbox{\hyperlink{wld__wpaCtrlInterface_8h_a5394fec853913f82bd5c52accf2687b8}{wld\_wpaCtrlInterface\_getName}}(pIntf); \(\backslash\)}
+\DoxyCodeLine{        CALL\_MGR\_NA\_EXT(\mbox{\hyperlink{wld__wpaCtrlInterface_8h_a98993fd06b6a3f3e55a9d1878cb0ad99}{wld\_wpaCtrlInterface\_getMgr}}(pIntf), fName, ifName); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ab296b0ae5f4fe2d6a4ea6b26cc1837d8}\label{wld__wpaCtrlMngr_8h_ab296b0ae5f4fe2d6a4ea6b26cc1837d8}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!CALL\_MGR\_NA\_EXT@{CALL\_MGR\_NA\_EXT}}
+\index{CALL\_MGR\_NA\_EXT@{CALL\_MGR\_NA\_EXT}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{CALL\_MGR\_NA\_EXT}{CALL\_MGR\_NA\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} CALL\+\_\+\+MGR\+\_\+\+NA\+\_\+\+EXT(\begin{DoxyParamCaption}\item[{}]{p\+Mgr,  }\item[{}]{f\+Name,  }\item[{}]{if\+Name }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \{ \(\backslash\)}
+\DoxyCodeLine{        void* userdata = NULL; \(\backslash\)}
+\DoxyCodeLine{        wld\_wpaCtrl\_radioEvtHandlers\_cb handlers = \{0\}; \(\backslash\)}
+\DoxyCodeLine{        if(\mbox{\hyperlink{wld__wpaCtrlMngr_8h_a612091e10133c9d6fc3b899a34df024c}{wld\_wpaCtrlMngr\_getEvtHandlers}}(pMgr, \&userdata, \&handlers)) \{ \(\backslash\)}
+\DoxyCodeLine{            SWL\_CALL(handlers.fName, userdata, ifName); \(\backslash\)}
+\DoxyCodeLine{        \} \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_acc9117024a55d94c862fe1e1275900e9}\label{wld__wpaCtrlMngr_8h_acc9117024a55d94c862fe1e1275900e9}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!NOTIFY\_EXT@{NOTIFY\_EXT}}
+\index{NOTIFY\_EXT@{NOTIFY\_EXT}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{NOTIFY\_EXT}{NOTIFY\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} NOTIFY\+\_\+\+EXT(\begin{DoxyParamCaption}\item[{}]{PIFACE,  }\item[{}]{FNAME,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}((PIFACE != NULL)) \{ \(\backslash\)}
+\DoxyCodeLine{        \textcolor{comment}{/* for VAP/EP events */} \(\backslash\)}
+\DoxyCodeLine{        CALL\_INTF\_EXT(PIFACE, FNAME, \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{        \textcolor{comment}{/* for RAD/Glob events */} \(\backslash\)}
+\DoxyCodeLine{        CALL\_MGR\_I\_EXT(PIFACE, FNAME, \_\_VA\_ARGS\_\_); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a8bf0ab5b0a638b7f1342d448cbb357f0}\label{wld__wpaCtrlMngr_8h_a8bf0ab5b0a638b7f1342d448cbb357f0}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!NOTIFY\_NA\_EXT@{NOTIFY\_NA\_EXT}}
+\index{NOTIFY\_NA\_EXT@{NOTIFY\_NA\_EXT}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{NOTIFY\_NA\_EXT}{NOTIFY\_NA\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} NOTIFY\+\_\+\+NA\+\_\+\+EXT(\begin{DoxyParamCaption}\item[{}]{PIFACE,  }\item[{}]{FNAME,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keywordflow}{if}((PIFACE != NULL)) \{ \(\backslash\)}
+\DoxyCodeLine{        \textcolor{comment}{/* for VAP/EP events */} \(\backslash\)}
+\DoxyCodeLine{        CALL\_INTF\_NA\_EXT(PIFACE, FNAME); \(\backslash\)}
+\DoxyCodeLine{        \textcolor{comment}{/* for RAD/Glob events */} \(\backslash\)}
+\DoxyCodeLine{        CALL\_MGR\_I\_NA\_EXT(PIFACE, FNAME); \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a97eec51d70f1f8708d478becfb983ce5}\label{wld__wpaCtrlMngr_8h_a97eec51d70f1f8708d478becfb983ce5}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_checkAllIfaces@{wld\_wpaCtrlMngr\_checkAllIfaces}}
+\index{wld\_wpaCtrlMngr\_checkAllIfaces@{wld\_wpaCtrlMngr\_checkAllIfaces}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_checkAllIfaces()}{wld\_wpaCtrlMngr\_checkAllIfaces()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+check\+All\+Ifaces (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a97eec51d70f1f8708d478becfb983ce5_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a703dcb69cf5fbbf2473edf3505b12ca1}\label{wld__wpaCtrlMngr_8h_a703dcb69cf5fbbf2473edf3505b12ca1}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_cleanup@{wld\_wpaCtrlMngr\_cleanup}}
+\index{wld\_wpaCtrlMngr\_cleanup@{wld\_wpaCtrlMngr\_cleanup}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_cleanup()}{wld\_wpaCtrlMngr\_cleanup()}}
+{\footnotesize\ttfamily void wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$$\ast$}]{pp\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a703dcb69cf5fbbf2473edf3505b12ca1_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a703dcb69cf5fbbf2473edf3505b12ca1_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ab9e3aeaefd21ef085fcd3443ef111291}\label{wld__wpaCtrlMngr_8h_ab9e3aeaefd21ef085fcd3443ef111291}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_connect@{wld\_wpaCtrlMngr\_connect}}
+\index{wld\_wpaCtrlMngr\_connect@{wld\_wpaCtrlMngr\_connect}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_connect()}{wld\_wpaCtrlMngr\_connect()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+connect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+
+
+start connecting to wpa\+\_\+ctrl server 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Mgr} & pointer to wpa ctrl manager\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if connection is started or already established, false otherwise. 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_ab9e3aeaefd21ef085fcd3443ef111291_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_aff4525270029f61ec1fa53cd8ebb828a}\label{wld__wpaCtrlMngr_8h_aff4525270029f61ec1fa53cd8ebb828a}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_countEnabledInterfaces@{wld\_wpaCtrlMngr\_countEnabledInterfaces}}
+\index{wld\_wpaCtrlMngr\_countEnabledInterfaces@{wld\_wpaCtrlMngr\_countEnabledInterfaces}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_countEnabledInterfaces()}{wld\_wpaCtrlMngr\_countEnabledInterfaces()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+count\+Enabled\+Interfaces (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_aff4525270029f61ec1fa53cd8ebb828a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_aff4525270029f61ec1fa53cd8ebb828a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ab93a91e19c44a1dacb4774f36856b48a}\label{wld__wpaCtrlMngr_8h_ab93a91e19c44a1dacb4774f36856b48a}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_countInterfaces@{wld\_wpaCtrlMngr\_countInterfaces}}
+\index{wld\_wpaCtrlMngr\_countInterfaces@{wld\_wpaCtrlMngr\_countInterfaces}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_countInterfaces()}{wld\_wpaCtrlMngr\_countInterfaces()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+count\+Interfaces (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a3ff9376646275b47016dd95cd5812e6b}\label{wld__wpaCtrlMngr_8h_a3ff9376646275b47016dd95cd5812e6b}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_countReadyInterfaces@{wld\_wpaCtrlMngr\_countReadyInterfaces}}
+\index{wld\_wpaCtrlMngr\_countReadyInterfaces@{wld\_wpaCtrlMngr\_countReadyInterfaces}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_countReadyInterfaces()}{wld\_wpaCtrlMngr\_countReadyInterfaces()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+count\+Ready\+Interfaces (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a3ff9376646275b47016dd95cd5812e6b_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a3ff9376646275b47016dd95cd5812e6b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a65f1d3c48476ca6584852b18fc80b2d9}\label{wld__wpaCtrlMngr_8h_a65f1d3c48476ca6584852b18fc80b2d9}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_disconnect@{wld\_wpaCtrlMngr\_disconnect}}
+\index{wld\_wpaCtrlMngr\_disconnect@{wld\_wpaCtrlMngr\_disconnect}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_disconnect()}{wld\_wpaCtrlMngr\_disconnect()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+disconnect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+
+
+disconnect from wpa\+\_\+ctrl server 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Mgr} & pointer to wpa ctrl manager\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when all relative wpa\+\_\+ctrl interfaces are closed, false otherwise. 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a65f1d3c48476ca6584852b18fc80b2d9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a65f1d3c48476ca6584852b18fc80b2d9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a4d2e687208327e2581cdbb8a1cd100ef}\label{wld__wpaCtrlMngr_8h_a4d2e687208327e2581cdbb8a1cd100ef}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getDefaultInterface@{wld\_wpaCtrlMngr\_getDefaultInterface}}
+\index{wld\_wpaCtrlMngr\_getDefaultInterface@{wld\_wpaCtrlMngr\_getDefaultInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getDefaultInterface()}{wld\_wpaCtrlMngr\_getDefaultInterface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Default\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a4d2e687208327e2581cdbb8a1cd100ef_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a4d2e687208327e2581cdbb8a1cd100ef_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a612091e10133c9d6fc3b899a34df024c}\label{wld__wpaCtrlMngr_8h_a612091e10133c9d6fc3b899a34df024c}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getEvtHandlers@{wld\_wpaCtrlMngr\_getEvtHandlers}}
+\index{wld\_wpaCtrlMngr\_getEvtHandlers@{wld\_wpaCtrlMngr\_getEvtHandlers}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getEvtHandlers()}{wld\_wpaCtrlMngr\_getEvtHandlers()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{void $\ast$$\ast$}]{userdata,  }\item[{\mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+radio\+Evt\+Handlers\+\_\+cb}} $\ast$}]{p\+Handlers }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_aa181961367a7ddec982aee21b5d0d25e}\label{wld__wpaCtrlMngr_8h_aa181961367a7ddec982aee21b5d0d25e}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getFirstAvailableInterface@{wld\_wpaCtrlMngr\_getFirstAvailableInterface}}
+\index{wld\_wpaCtrlMngr\_getFirstAvailableInterface@{wld\_wpaCtrlMngr\_getFirstAvailableInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getFirstAvailableInterface()}{wld\_wpaCtrlMngr\_getFirstAvailableInterface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Available\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_aa181961367a7ddec982aee21b5d0d25e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_aa181961367a7ddec982aee21b5d0d25e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a528b8dd11a5c723241db36d4d52d7966}\label{wld__wpaCtrlMngr_8h_a528b8dd11a5c723241db36d4d52d7966}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getFirstInterface@{wld\_wpaCtrlMngr\_getFirstInterface}}
+\index{wld\_wpaCtrlMngr\_getFirstInterface@{wld\_wpaCtrlMngr\_getFirstInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getFirstInterface()}{wld\_wpaCtrlMngr\_getFirstInterface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a528b8dd11a5c723241db36d4d52d7966_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a528b8dd11a5c723241db36d4d52d7966_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ade9e80211a30152df41ae2d563d97937}\label{wld__wpaCtrlMngr_8h_ade9e80211a30152df41ae2d563d97937}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getFirstNotReadyInterface@{wld\_wpaCtrlMngr\_getFirstNotReadyInterface}}
+\index{wld\_wpaCtrlMngr\_getFirstNotReadyInterface@{wld\_wpaCtrlMngr\_getFirstNotReadyInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getFirstNotReadyInterface()}{wld\_wpaCtrlMngr\_getFirstNotReadyInterface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Not\+Ready\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_ade9e80211a30152df41ae2d563d97937_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a3dc93dfda0d67c0e7254cc1ffeeb3ebe}\label{wld__wpaCtrlMngr_8h_a3dc93dfda0d67c0e7254cc1ffeeb3ebe}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getFirstReadyInterface@{wld\_wpaCtrlMngr\_getFirstReadyInterface}}
+\index{wld\_wpaCtrlMngr\_getFirstReadyInterface@{wld\_wpaCtrlMngr\_getFirstReadyInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getFirstReadyInterface()}{wld\_wpaCtrlMngr\_getFirstReadyInterface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+First\+Ready\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a3dc93dfda0d67c0e7254cc1ffeeb3ebe_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a3dc93dfda0d67c0e7254cc1ffeeb3ebe_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a978da00b44d166b3300aef0d992db056}\label{wld__wpaCtrlMngr_8h_a978da00b44d166b3300aef0d992db056}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getInterface@{wld\_wpaCtrlMngr\_getInterface}}
+\index{wld\_wpaCtrlMngr\_getInterface@{wld\_wpaCtrlMngr\_getInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getInterface()}{wld\_wpaCtrlMngr\_getInterface()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{int32\+\_\+t}]{pos }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a978da00b44d166b3300aef0d992db056_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ad691bfe39273eed2ddd349265e4314bb}\label{wld__wpaCtrlMngr_8h_ad691bfe39273eed2ddd349265e4314bb}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getInterfaceByName@{wld\_wpaCtrlMngr\_getInterfaceByName}}
+\index{wld\_wpaCtrlMngr\_getInterfaceByName@{wld\_wpaCtrlMngr\_getInterfaceByName}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getInterfaceByName()}{wld\_wpaCtrlMngr\_getInterfaceByName()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Interface\+By\+Name (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_ad691bfe39273eed2ddd349265e4314bb_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_ad691bfe39273eed2ddd349265e4314bb_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a4b7a4a245e1b181c732f421e07130aab}\label{wld__wpaCtrlMngr_8h_a4b7a4a245e1b181c732f421e07130aab}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_getSecDmn@{wld\_wpaCtrlMngr\_getSecDmn}}
+\index{wld\_wpaCtrlMngr\_getSecDmn@{wld\_wpaCtrlMngr\_getSecDmn}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_getSecDmn()}{wld\_wpaCtrlMngr\_getSecDmn()}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structwld__secDmn}{wld\+\_\+sec\+Dmn}} $\ast$ wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+get\+Sec\+Dmn (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a4b7a4a245e1b181c732f421e07130aab_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a9c71f902730868c3cd694fc8b820ba58}\label{wld__wpaCtrlMngr_8h_a9c71f902730868c3cd694fc8b820ba58}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_init@{wld\_wpaCtrlMngr\_init}}
+\index{wld\_wpaCtrlMngr\_init@{wld\_wpaCtrlMngr\_init}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_init()}{wld\_wpaCtrlMngr\_init()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$$\ast$}]{pp\+Mgr,  }\item[{struct \mbox{\hyperlink{structwld__secDmn}{wld\+\_\+sec\+Dmn}} $\ast$}]{p\+Sec\+Dmn }\end{DoxyParamCaption})}
+
+
+
+initialize wpa\+\_\+ctrl manager If already allocated, then it will be reset 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pp\+Mgr} & pointer wpa\+\_\+ctrl manager to be allocated/initialized \\
+\hline
+{\em p\+Sec\+Dmn} & pointer to target security deamon (server)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when wpa\+\_\+ctrl manager is successfully initialized. Otherwise, false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ad3e7ad2284a85ee77e110a90f0fd34ae}\label{wld__wpaCtrlMngr_8h_ad3e7ad2284a85ee77e110a90f0fd34ae}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_isConnected@{wld\_wpaCtrlMngr\_isConnected}}
+\index{wld\_wpaCtrlMngr\_isConnected@{wld\_wpaCtrlMngr\_isConnected}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_isConnected()}{wld\_wpaCtrlMngr\_isConnected()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+is\+Connected (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+
+
+check that wpa\+Ctrl manager is connected\+: i.\+e can receive events from its main interface. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Mgr} & pointer to wpa ctrl manager\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when relative sec\+Dmn is running and main interface is connected, false, otherwise. 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_ad3e7ad2284a85ee77e110a90f0fd34ae_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_ad3e7ad2284a85ee77e110a90f0fd34ae_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a9277efdeb3247530fa14be0bc419902e}\label{wld__wpaCtrlMngr_8h_a9277efdeb3247530fa14be0bc419902e}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_isConnecting@{wld\_wpaCtrlMngr\_isConnecting}}
+\index{wld\_wpaCtrlMngr\_isConnecting@{wld\_wpaCtrlMngr\_isConnecting}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_isConnecting()}{wld\_wpaCtrlMngr\_isConnecting()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+is\+Connecting (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a9277efdeb3247530fa14be0bc419902e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a977d0064530fa2690fa414c068b0c773}\label{wld__wpaCtrlMngr_8h_a977d0064530fa2690fa414c068b0c773}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_isReady@{wld\_wpaCtrlMngr\_isReady}}
+\index{wld\_wpaCtrlMngr\_isReady@{wld\_wpaCtrlMngr\_isReady}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_isReady()}{wld\_wpaCtrlMngr\_isReady()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+is\+Ready (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+
+
+check that all registed wpa\+\_\+ctrl interfaces are ready 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Mgr} & pointer to wpa ctrl manager\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when all registed wpa\+\_\+ctrl interfaces are ready, false, otherwise. 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a977d0064530fa2690fa414c068b0c773_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a3f5ee8d93b578b86a7a909edb425294c}\label{wld__wpaCtrlMngr_8h_a3f5ee8d93b578b86a7a909edb425294c}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_ping@{wld\_wpaCtrlMngr\_ping}}
+\index{wld\_wpaCtrlMngr\_ping@{wld\_wpaCtrlMngr\_ping}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_ping()}{wld\_wpaCtrlMngr\_ping()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+ping (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a3f5ee8d93b578b86a7a909edb425294c_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_ab04368673c079beb9b25234e1f829559}\label{wld__wpaCtrlMngr_8h_ab04368673c079beb9b25234e1f829559}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_registerInterface@{wld\_wpaCtrlMngr\_registerInterface}}
+\index{wld\_wpaCtrlMngr\_registerInterface@{wld\_wpaCtrlMngr\_registerInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_registerInterface()}{wld\_wpaCtrlMngr\_registerInterface()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+register\+Interface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface }\end{DoxyParamCaption})}
+
+
+
+register wpa\+\_\+ctrl interface to wpa\+\_\+ctrl manager 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Mgr} & pointer to wpa ctrl manager \\
+\hline
+{\em p\+Iface} & pointer to wpa ctrl interface\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when adding is successful false, otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a8e616c0c8227c491da9e9f09f5a4fc00}\label{wld__wpaCtrlMngr_8h_a8e616c0c8227c491da9e9f09f5a4fc00}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_setEvtHandlers@{wld\_wpaCtrlMngr\_setEvtHandlers}}
+\index{wld\_wpaCtrlMngr\_setEvtHandlers@{wld\_wpaCtrlMngr\_setEvtHandlers}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_setEvtHandlers()}{wld\_wpaCtrlMngr\_setEvtHandlers()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+set\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{void $\ast$}]{userdata,  }\item[{\mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+radio\+Evt\+Handlers\+\_\+cb}} $\ast$}]{p\+Handlers }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a62c301a5c8d2137661d7588ddb453af7}\label{wld__wpaCtrlMngr_8h_a62c301a5c8d2137661d7588ddb453af7}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_stopConnecting@{wld\_wpaCtrlMngr\_stopConnecting}}
+\index{wld\_wpaCtrlMngr\_stopConnecting@{wld\_wpaCtrlMngr\_stopConnecting}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_stopConnecting()}{wld\_wpaCtrlMngr\_stopConnecting()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+stop\+Connecting (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a62c301a5c8d2137661d7588ddb453af7_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrlMngr_8h_a9ee0bf30b2c4bc035b9bcc5d5639e699}\label{wld__wpaCtrlMngr_8h_a9ee0bf30b2c4bc035b9bcc5d5639e699}} 
+\index{wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}!wld\_wpaCtrlMngr\_unregisterInterface@{wld\_wpaCtrlMngr\_unregisterInterface}}
+\index{wld\_wpaCtrlMngr\_unregisterInterface@{wld\_wpaCtrlMngr\_unregisterInterface}!wld\_wpaCtrlMngr.h@{wld\_wpaCtrlMngr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrlMngr\_unregisterInterface()}{wld\_wpaCtrlMngr\_unregisterInterface()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+unregister\+Interface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$}]{p\+Mgr,  }\item[{\mbox{\hyperlink{wld__wpaCtrl__types_8h_a41dd88dc153ea0cb2072bb56482f7f18}{wld\+\_\+wpa\+Ctrl\+Interface\+\_\+t}} $\ast$}]{p\+Iface }\end{DoxyParamCaption})}
+
+
+
+unregister wpa\+\_\+ctrl interface from wpa\+\_\+ctrl manager 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Mgr} & pointer to wpa ctrl manager \\
+\hline
+{\em p\+Iface} & pointer to wpa ctrl interface\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when removal is successful false, otherwise. 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrlMngr_8h_a9ee0bf30b2c4bc035b9bcc5d5639e699_icgraph}
+\end{center}
+\end{figure}

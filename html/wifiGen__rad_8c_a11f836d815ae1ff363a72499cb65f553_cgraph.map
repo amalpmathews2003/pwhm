@@ -1,0 +1,13 @@
+<map id="wifiGen_rad_antennactrl" name="wifiGen_rad_antennactrl">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,185,83"/>
+<area shape="rect" id="node2" href="$wifiGen__rad_8c.html#ace87423ac29ca547922cb1ed036df741" title=" " alt="" coords="270,5,417,32"/>
+<area shape="rect" id="node3" href="$wld__rad__nl80211_8c.html#acaed2ca166a98656dc0786e5fc8480b0" title=" " alt="" coords="233,56,453,83"/>
+<area shape="rect" id="node10" href="$wld__radio_8c.html#addda9e215afbfbf689dc31c8fb7ca564" title=" " alt="" coords="248,107,439,133"/>
+<area shape="rect" id="node4" href="$wld__nl80211__core_8c.html#ab89990c364e3256f803e95aee1684407" title=" " alt="" coords="513,5,723,32"/>
+<area shape="rect" id="node6" href="$wld__nl80211__api_8c.html#ac08879bb26f97a242a0c631fc55d1cfd" title=" " alt="" coords="501,56,735,83"/>
+<area shape="rect" id="node5" href="$wld__nl80211__core_8c.html#ac64e98962155641a465909b3c8fc0779" title=" " alt="" coords="855,5,968,32"/>
+<area shape="rect" id="node7" href="$wld__nl80211__core_8c.html#a2f124c7a531325213fab90ab2a181035" title=" " alt="" coords="783,56,1040,83"/>
+<area shape="rect" id="node8" href="$wld__nl80211__core_8c.html#a51795ba7297b263584b02e6dd2d8ddb6" title=" " alt="" coords="1088,56,1291,83"/>
+<area shape="rect" id="node9" href="$wld__nl80211__core_8c.html#a3c5a525596463f925b95bbc76036d07e" title=" " alt="" coords="1339,56,1511,83"/>
+<area shape="rect" id="node11" href="$wld__radio_8c.html#ab27323d72176b4829d04aa5409b57b04" title=" " alt="" coords="512,107,724,133"/>
+</map>

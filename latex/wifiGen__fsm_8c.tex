@@ -1,0 +1,169 @@
+\hypertarget{wifiGen__fsm_8c}{}\doxysection{src/\+Plugin/wifi\+Gen\+\_\+fsm.c File Reference}
+\label{wifiGen__fsm_8c}\index{src/Plugin/wifiGen\_fsm.c@{src/Plugin/wifiGen\_fsm.c}}
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+hostapd\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+hostapd\+\_\+ap\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+hostapd\+\_\+cfg\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ap\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+chanmgt.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+fsm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+rad.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+vap.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+hapd.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+wpa\+Supp.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+zwdfs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+mld.\+h\char`\"{}}\newline
+Include dependency graph for wifi\+Gen\+\_\+fsm.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__fsm_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structchanspecInfo__t}{chanspec\+Info\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__fsm_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\+Fsm\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__fsm_8c_acde86bfa472a76ace46d2d79b3510d88}{FIRST\+\_\+\+DELAY\+\_\+\+MS}}~3000
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__fsm_8c_ab5aa8e705170d968a0b82a8e498b0afa}{RETRY\+\_\+\+DELAY\+\_\+\+MS}}~1000
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__fsm_8c_a7a6b8ba50d2309d1f8dc85f4f3034910}{WPA\+\_\+\+SUPP\+\_\+\+MAX\+\_\+\+ATTEMPTS}}~3
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wifiGen__fsm_8c_a06b31505a00d607e30b7fd35e42e3d30}{s\+\_\+check\+Ep\+Dependency}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+void \mbox{\hyperlink{wifiGen__fsm_8c_af98faa0f6c59ee558aa18dbef60875f3}{wifi\+Gen\+\_\+fsm\+\_\+do\+Init}} (\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$\mbox{\hyperlink{structvendor}{vendor}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structwld__fsmMngr__action__t}{wld\+\_\+fsm\+Mngr\+\_\+action\+\_\+t}} \mbox{\hyperlink{wifiGen__fsm_8c_a9ab28410c501df402faf0c28a155018d}{actions}} \mbox{[}\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}{GEN\+\_\+\+FSM\+\_\+\+MAX}}\mbox{]}
+\item 
+\mbox{\hyperlink{structwld__fsmMngr__t}{wld\+\_\+fsm\+Mngr\+\_\+t}} \mbox{\hyperlink{wifiGen__fsm_8c_a1421345cdb10996ee871325110661f31}{mngr}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen__fsm_8c_acde86bfa472a76ace46d2d79b3510d88}\label{wifiGen__fsm_8c_acde86bfa472a76ace46d2d79b3510d88}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!FIRST\_DELAY\_MS@{FIRST\_DELAY\_MS}}
+\index{FIRST\_DELAY\_MS@{FIRST\_DELAY\_MS}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{FIRST\_DELAY\_MS}{FIRST\_DELAY\_MS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} FIRST\+\_\+\+DELAY\+\_\+\+MS~3000}
+
+\mbox{\Hypertarget{wifiGen__fsm_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen__fsm_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\+Fsm\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__fsm_8c_ab5aa8e705170d968a0b82a8e498b0afa}\label{wifiGen__fsm_8c_ab5aa8e705170d968a0b82a8e498b0afa}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!RETRY\_DELAY\_MS@{RETRY\_DELAY\_MS}}
+\index{RETRY\_DELAY\_MS@{RETRY\_DELAY\_MS}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{RETRY\_DELAY\_MS}{RETRY\_DELAY\_MS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} RETRY\+\_\+\+DELAY\+\_\+\+MS~1000}
+
+\mbox{\Hypertarget{wifiGen__fsm_8c_a7a6b8ba50d2309d1f8dc85f4f3034910}\label{wifiGen__fsm_8c_a7a6b8ba50d2309d1f8dc85f4f3034910}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!WPA\_SUPP\_MAX\_ATTEMPTS@{WPA\_SUPP\_MAX\_ATTEMPTS}}
+\index{WPA\_SUPP\_MAX\_ATTEMPTS@{WPA\_SUPP\_MAX\_ATTEMPTS}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{WPA\_SUPP\_MAX\_ATTEMPTS}{WPA\_SUPP\_MAX\_ATTEMPTS}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPA\+\_\+\+SUPP\+\_\+\+MAX\+\_\+\+ATTEMPTS~3}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__fsm_8c_a06b31505a00d607e30b7fd35e42e3d30}\label{wifiGen__fsm_8c_a06b31505a00d607e30b7fd35e42e3d30}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!s\_checkEpDependency@{s\_checkEpDependency}}
+\index{s\_checkEpDependency@{s\_checkEpDependency}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{s\_checkEpDependency()}{s\_checkEpDependency()}}
+{\footnotesize\ttfamily void s\+\_\+check\+Ep\+Dependency (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__fsm_8c_af98faa0f6c59ee558aa18dbef60875f3}\label{wifiGen__fsm_8c_af98faa0f6c59ee558aa18dbef60875f3}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!wifiGen\_fsm\_doInit@{wifiGen\_fsm\_doInit}}
+\index{wifiGen\_fsm\_doInit@{wifiGen\_fsm\_doInit}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_fsm\_doInit()}{wifiGen\_fsm\_doInit()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+fsm\+\_\+do\+Init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$}]{vendor }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__fsm_8c_af98faa0f6c59ee558aa18dbef60875f3_cgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wifiGen__fsm_8c_a9ab28410c501df402faf0c28a155018d}\label{wifiGen__fsm_8c_a9ab28410c501df402faf0c28a155018d}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!actions@{actions}}
+\index{actions@{actions}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{actions}{actions}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__fsmMngr__action__t}{wld\+\_\+fsm\+Mngr\+\_\+action\+\_\+t}} actions\mbox{[}\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}{GEN\+\_\+\+FSM\+\_\+\+MAX}}\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaac55262ed6716beb0d6aaf076ef2cbeb}{GEN\_FSM\_STOP\_HOSTAPD}}), .doRadFsmAction = s\_doStopHostapd\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda21a91d04d46d8bc064fff1d958e1f78b}{GEN\_FSM\_STOP\_WPASUPP}}), .doEpFsmAction = s\_doStopWpaSupp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdadbb5538abc67e955391b63c096886e7a}{GEN\_FSM\_DISABLE\_HOSTAPD}}), .doRadFsmAction = s\_doDisableHostapd\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda2c28b7ba9c7aab595587e84e24697c2d}{GEN\_FSM\_DISABLE\_RAD}}), .doRadFsmAction = s\_doRadDisable\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda22aa776560be3dad9f87cf150902b6e0}{GEN\_FSM\_SYNC\_RAD}}), .doRadFsmAction = s\_doRadSync\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf01685cd0bd0626cf276e5e9875ac302}{GEN\_FSM\_MOD\_COUNTRYCODE}}), .doRadFsmAction = s\_doSetCountryCode\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf2d8857c14a469da1ff251ec22cfeab7}{GEN\_FSM\_MOD\_BSSID}}), .doVapFsmAction = s\_doSetBssid\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3c06fd84fc824d6f9225de5820fdf1cc}{GEN\_FSM\_MOD\_MLD}}), .doVapFsmAction = s\_doSetApMld\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda891e0951cdbfba41c4c1653ea45dd904}{GEN\_FSM\_MOD\_SEC}}), .doVapFsmAction = s\_doSetApSec\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda9113440b6b910c3927dd56146f7137a8}{GEN\_FSM\_MOD\_AP}}), .doVapFsmAction = s\_doSyncAp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda913cc3c726b118170c76498bd2e311f4}{GEN\_FSM\_MOD\_SSID}}), .doVapFsmAction = s\_doSetSsid\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdac2e9146a66b45b7d398d9fc9f98d0cde}{GEN\_FSM\_MOD\_MF\_LIST}}), .doVapFsmAction = s\_doSetMfList\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf6b27acc505d65c02a96920807ce0c34}{GEN\_FSM\_MOD\_CHANNEL}}), .doRadFsmAction = s\_doSetChannel\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf3c5f9f2e2412f41cdc5f04285957154}{GEN\_FSM\_MOD\_HOSTAPD}}), .doRadFsmAction = s\_doConfHostapd\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdab97a01a47b6a328ccb6b6222c9d06bc4}{GEN\_FSM\_MOD\_WPASUPP}}), .doEpFsmAction = s\_doConfWpaSupp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda7baf6a1c7e9bae1ae4b1583db65d1129}{GEN\_FSM\_RELOAD\_AP\_SECKEY}}), .doVapFsmAction = s\_doReloadApSecKey\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda06ad7c248a1e81edb0f13a608c8ec49f}{GEN\_FSM\_MOD\_EP\_MACADDR}}), .doEpFsmAction = s\_doSetEpMAC\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda0fff6ecf47d4d25660810517573060be}{GEN\_FSM\_UPDATE\_BEACON}}), .doVapFsmAction = s\_doUpdateBeacon\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdabe0beba4172fbeab2c923eb30090d3c9}{GEN\_FSM\_UPDATE\_WPASUPP}}), .doEpFsmAction = s\_doReloadWpaSupp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1be871b0c4ecfa8913bc5ad114da7c7a}{GEN\_FSM\_ENABLE\_HOSTAPD}}), .doRadFsmAction = s\_doEnableHostapd\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3d6a8bc90e39ad9f2ad4dad5c2e1864a}{GEN\_FSM\_ENABLE\_RAD}}), .doRadFsmAction = s\_doRadEnable\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda5fa453d64429a6b2fcf95a6408e55f21}{GEN\_FSM\_ENABLE\_AP}}), .doVapFsmAction = s\_doEnableAp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6e8c50f2eee1f1a69268a799b5253af}{GEN\_FSM\_ENABLE\_EP}}), .doEpFsmAction = s\_doEnableEp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda667dc3edc1585f8487e5f36f178098fd}{GEN\_FSM\_CONNECTED\_EP}}), .doEpFsmAction = s\_doConnectedEp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda154002d8f11542e132c171007fa153a6}{GEN\_FSM\_UPDATE\_HOSTAPD}}), .doRadFsmAction = s\_doUpdateHostapd\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda4b9936f95d89372492e9ed25089c0cb2}{GEN\_FSM\_START\_HOSTAPD}}), .doRadFsmAction = s\_doStartHostapd\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6b9fe894e6d3c15da92ea99f0f85544}{GEN\_FSM\_START\_WPASUPP}}), .doEpFsmAction = s\_doStartWpaSupp\},}
+\DoxyCodeLine{    \{\mbox{\hyperlink{wld__fsm_8h_aeed9e4a5b08814b696e9db4cf60fd5b7}{FSM\_ACTION}}(\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1a0c8e8ea704dc4171607315c6959746}{GEN\_FSM\_SYNC\_STATE}}), .doRadFsmAction = s\_doSyncState\},}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{wifiGen__fsm_8c_a1421345cdb10996ee871325110661f31}\label{wifiGen__fsm_8c_a1421345cdb10996ee871325110661f31}} 
+\index{wifiGen\_fsm.c@{wifiGen\_fsm.c}!mngr@{mngr}}
+\index{mngr@{mngr}!wifiGen\_fsm.c@{wifiGen\_fsm.c}}
+\doxysubsubsection{\texorpdfstring{mngr}{mngr}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__fsmMngr__t}{wld\+\_\+fsm\+Mngr\+\_\+t}} mngr}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    .checkPreDependency = s\_checkPreRadDependency,}
+\DoxyCodeLine{    .checkEpDependency = \mbox{\hyperlink{wifiGen__fsm_8c_a06b31505a00d607e30b7fd35e42e3d30}{s\_checkEpDependency}},}
+\DoxyCodeLine{    .checkVapDependency = s\_checkApDependency,}
+\DoxyCodeLine{    .checkRadDependency = s\_checkRadDependency,}
+\DoxyCodeLine{    .actionList = \mbox{\hyperlink{wifiGen__fsm_8c_a9ab28410c501df402faf0c28a155018d}{actions}},}
+\DoxyCodeLine{    .nrFsmBits = \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}{GEN\_FSM\_MAX}},}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

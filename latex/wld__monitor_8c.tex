@@ -1,0 +1,149 @@
+\hypertarget{wld__monitor_8c}{}\doxysection{src/\+Utils/wld\+\_\+monitor.c File Reference}
+\label{wld__monitor_8c}\index{src/Utils/wld\_monitor.c@{src/Utils/wld\_monitor.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$net/if.\+h$>$}\newline
+{\ttfamily \#include $<$sys/ioctl.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+monitor.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+monitor.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__monitor_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__monitor_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__monitor_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}util\+Mon\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_a7644e6e14da8ee074f0393cc9abce6dc}{wld\+\_\+mon\+\_\+send\+Update\+Notification}} (amxd\+\_\+object\+\_\+t $\ast$event\+Object, const char $\ast$name, amxc\+\_\+var\+\_\+t $\ast$variant)
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_aad63199bbf72fefdaa7d2c7fc80b779c}{wld\+\_\+mon\+\_\+set\+Enable\+\_\+pwf}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon, const amxc\+\_\+var\+\_\+t $\ast$const new\+Value)
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_a34d4619497fee2ac7c32e37c98cde1ab}{wld\+\_\+mon\+\_\+set\+Interval\+\_\+pwf}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon, const amxc\+\_\+var\+\_\+t $\ast$const new\+Value)
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_a51ee134af6b1ce7dc24aec6fdc6c4e29}{wld\+\_\+mon\+\_\+init\+Mon}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon, amxd\+\_\+object\+\_\+t $\ast$object, char $\ast$name, void $\ast$user\+Data, void($\ast$callback\+\_\+fn)(void $\ast$user\+Data))
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_abedac9e495fba36decd9de9e4da5b4bc}{wld\+\_\+mon\+\_\+destroy\+Mon}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon)
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_a11510b1b1cdaf78ad5edf1aa594afdcb}{wld\+\_\+mon\+\_\+write\+Active}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon, bool active)
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_ab6e76a94955538a11e8867281629cbb4}{wld\+\_\+mon\+\_\+debug}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon, amxc\+\_\+var\+\_\+t $\ast$ret\+Map)
+\item 
+void \mbox{\hyperlink{wld__monitor_8c_ab6cc0c03409277853f100c988ea9bec5}{wld\+\_\+mon\+\_\+stop}} (\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$p\+Mon)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__monitor_8c_a369266c24eacffb87046522897a570d5}\label{wld__monitor_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__monitor_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__monitor_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!ME@{ME}}
+\index{ME@{ME}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}util\+Mon\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__monitor_8c_ab6e76a94955538a11e8867281629cbb4}\label{wld__monitor_8c_ab6e76a94955538a11e8867281629cbb4}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_debug@{wld\_mon\_debug}}
+\index{wld\_mon\_debug@{wld\_mon\_debug}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_debug()}{wld\_mon\_debug()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+debug (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret\+Map }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__monitor_8c_ab6e76a94955538a11e8867281629cbb4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__monitor_8c_abedac9e495fba36decd9de9e4da5b4bc}\label{wld__monitor_8c_abedac9e495fba36decd9de9e4da5b4bc}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_destroyMon@{wld\_mon\_destroyMon}}
+\index{wld\_mon\_destroyMon@{wld\_mon\_destroyMon}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_destroyMon()}{wld\_mon\_destroyMon()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+destroy\+Mon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__monitor_8c_abedac9e495fba36decd9de9e4da5b4bc_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__monitor_8c_a51ee134af6b1ce7dc24aec6fdc6c4e29}\label{wld__monitor_8c_a51ee134af6b1ce7dc24aec6fdc6c4e29}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_initMon@{wld\_mon\_initMon}}
+\index{wld\_mon\_initMon@{wld\_mon\_initMon}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_initMon()}{wld\_mon\_initMon()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+init\+Mon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{char $\ast$}]{name,  }\item[{void $\ast$}]{user\+Data,  }\item[{void($\ast$)(void $\ast$user\+Data)}]{callback\+\_\+fn }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=332pt]{wld__monitor_8c_a51ee134af6b1ce7dc24aec6fdc6c4e29_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__monitor_8c_a7644e6e14da8ee074f0393cc9abce6dc}\label{wld__monitor_8c_a7644e6e14da8ee074f0393cc9abce6dc}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_sendUpdateNotification@{wld\_mon\_sendUpdateNotification}}
+\index{wld\_mon\_sendUpdateNotification@{wld\_mon\_sendUpdateNotification}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_sendUpdateNotification()}{wld\_mon\_sendUpdateNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+send\+Update\+Notification (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{event\+Object,  }\item[{const char $\ast$}]{name,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{variant }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__monitor_8c_aad63199bbf72fefdaa7d2c7fc80b779c}\label{wld__monitor_8c_aad63199bbf72fefdaa7d2c7fc80b779c}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_setEnable\_pwf@{wld\_mon\_setEnable\_pwf}}
+\index{wld\_mon\_setEnable\_pwf@{wld\_mon\_setEnable\_pwf}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_setEnable\_pwf()}{wld\_mon\_setEnable\_pwf()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+set\+Enable\+\_\+pwf (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{new\+Value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__monitor_8c_a34d4619497fee2ac7c32e37c98cde1ab}\label{wld__monitor_8c_a34d4619497fee2ac7c32e37c98cde1ab}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_setInterval\_pwf@{wld\_mon\_setInterval\_pwf}}
+\index{wld\_mon\_setInterval\_pwf@{wld\_mon\_setInterval\_pwf}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_setInterval\_pwf()}{wld\_mon\_setInterval\_pwf()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+set\+Interval\+\_\+pwf (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{new\+Value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__monitor_8c_ab6cc0c03409277853f100c988ea9bec5}\label{wld__monitor_8c_ab6cc0c03409277853f100c988ea9bec5}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_stop@{wld\_mon\_stop}}
+\index{wld\_mon\_stop@{wld\_mon\_stop}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_stop()}{wld\_mon\_stop()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+stop (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__monitor_8c_a11510b1b1cdaf78ad5edf1aa594afdcb}\label{wld__monitor_8c_a11510b1b1cdaf78ad5edf1aa594afdcb}} 
+\index{wld\_monitor.c@{wld\_monitor.c}!wld\_mon\_writeActive@{wld\_mon\_writeActive}}
+\index{wld\_mon\_writeActive@{wld\_mon\_writeActive}!wld\_monitor.c@{wld\_monitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_mon\_writeActive()}{wld\_mon\_writeActive()}}
+{\footnotesize\ttfamily void wld\+\_\+mon\+\_\+write\+Active (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__Monitor}{T\+\_\+\+Monitor}} $\ast$}]{p\+Mon,  }\item[{bool}]{active }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__monitor_8c_a11510b1b1cdaf78ad5edf1aa594afdcb_icgraph}
+\end{center}
+\end{figure}

@@ -1,0 +1,355 @@
+\hypertarget{wifiGen__ep_8c}{}\doxysection{src/\+Plugin/wifi\+Gen\+\_\+ep.c File Reference}
+\label{wifiGen__ep_8c}\index{src/Plugin/wifiGen\_ep.c@{src/Plugin/wifiGen\_ep.c}}
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+rad\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+ep\+\_\+nl80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+linux\+If\+Utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+linux\+If\+Stats.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+wpa\+Supp.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+fsm.\+h\char`\"{}}\newline
+Include dependency graph for wifi\+Gen\+\_\+ep.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__ep_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__ep_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\+Ep\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_af2bc2d16f330013890a63ba725855ba3}{wifi\+Gen\+\_\+ep\+\_\+create\+Hook}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a4597b7d93d867d63004809c681223a37}{wifi\+Gen\+\_\+ep\+\_\+destroy\+Hook}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a24c24a6e8edc1b2dc6985f30e5262be9}{wifi\+Gen\+\_\+ep\+\_\+enable}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, bool enable)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+enable \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a29df583a3d84fece3f285db40e4a8057}{wifi\+Gen\+\_\+ep\+\_\+disconnect}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em mfn\+\_\+wendpoint\+\_\+disconnect \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_aa79f6a5ca995a85c17cc85f63b45239e}{wifi\+Gen\+\_\+ep\+\_\+bssid}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+mac\+Char\+\_\+t $\ast$bssid)
+\begin{DoxyCompactList}\small\item\em mfn\+\_\+wendpoint\+\_\+bssid \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a75c4c343b1a5302266120d2720798f05}{wifi\+Gen\+\_\+ep\+\_\+set\+Mac\+Address}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a834e3bbce84431bd68b1d3347c7c4249}{wifi\+Gen\+\_\+ep\+\_\+connect\+Ap}} (\mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$ep\+Profile)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+connect\+Ap \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a1592647e7aa6df75ecb2a3dd5c064073}{wifi\+Gen\+\_\+ep\+\_\+status}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+status \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wifiGen__ep_8c_ae1af926de78e7a8983d42cd857ab5174}{wifi\+Gen\+\_\+ep\+\_\+update}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, int set)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+update \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_aad77618eeff50e0a6b15cf3b94196f97}{wifi\+Gen\+\_\+ep\+\_\+conn\+Status}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} $\ast$p\+Conn\+State)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+conn\+Status \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a826c925d83ea71bd6df091cefd85253a}{wifi\+Gen\+\_\+ep\+\_\+wps\+Start}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+e}} method, char $\ast$pin, char $\ast$ssid \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, swl\+\_\+mac\+Char\+\_\+t $\ast$bssid)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+wps\+Start \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a0d4b9407b830e40c140592a670433389}{wifi\+Gen\+\_\+ep\+\_\+wps\+Cancel}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+wps\+Cancel \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_ae66aab9b7ea90868b3c4c6aee6d7b5a5}{wifi\+Gen\+\_\+ep\+\_\+stats}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$stats)
+\begin{DoxyCompactList}\small\item\em wifi\+Gen\+\_\+ep\+\_\+stats \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_a14325536d32e5155a39e66d28711719a}{wifi\+Gen\+\_\+ep\+\_\+multi\+Ap\+Enable}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__ep_8c_ae01411d25d71a0ee363a4ad6d9e8b345}{wifi\+Gen\+\_\+ep\+\_\+send\+Management\+Frame}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+80211\+\_\+mgmt\+Frame\+Control\+\_\+t $\ast$fc, swl\+\_\+mac\+Bin\+\_\+t $\ast$tgt\+Mac, swl\+\_\+bit8\+\_\+t $\ast$data, size\+\_\+t data\+Len, swl\+\_\+chanspec\+\_\+t $\ast$chanspec)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen__ep_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen__ep_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\+Ep\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__ep_8c_aa79f6a5ca995a85c17cc85f63b45239e}\label{wifiGen__ep_8c_aa79f6a5ca995a85c17cc85f63b45239e}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_bssid@{wifiGen\_ep\_bssid}}
+\index{wifiGen\_ep\_bssid@{wifiGen\_ep\_bssid}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_bssid()}{wifiGen\_ep\_bssid()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+mac\+Char\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+
+
+mfn\+\_\+wendpoint\+\_\+bssid 
+
+request current endpoint bssid (mac of remote AP) if ep has connected state
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The current endpoint \\
+\hline
+{\em bssid} & The buffer containing the bssid \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if either p\+EP or buf is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+STATE if p\+EP is not connected to an AP
+\item Otherwise, the result of wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+get\+Bssid function 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_a834e3bbce84431bd68b1d3347c7c4249}\label{wifiGen__ep_8c_a834e3bbce84431bd68b1d3347c7c4249}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_connectAp@{wifiGen\_ep\_connectAp}}
+\index{wifiGen\_ep\_connectAp@{wifiGen\_ep\_connectAp}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_connectAp()}{wifiGen\_ep\_connectAp()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+connect\+Ap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$}]{ep\+Profile }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+connect\+Ap 
+
+Connect to an AP
+
+
+\begin{DoxyParams}{Parameters}
+{\em ep\+Profile} & a profile containing informations to which the endpoint should connect \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if ep\+Profile is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+ERROR if p\+EP associated to the profile is NULL
+\item Otherwise, SWL\+\_\+\+RC\+\_\+\+OK 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_aad77618eeff50e0a6b15cf3b94196f97}\label{wifiGen__ep_8c_aad77618eeff50e0a6b15cf3b94196f97}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_connStatus@{wifiGen\_ep\_connStatus}}
+\index{wifiGen\_ep\_connStatus@{wifiGen\_ep\_connStatus}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_connStatus()}{wifiGen\_ep\_connStatus()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+conn\+Status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} $\ast$}]{p\+Conn\+State }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+conn\+Status 
+
+get the endpoint connection status
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The current endpoint \\
+\hline
+{\em p\+Conn\+State} & The current endpoint connection status \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK if successful
+\begin{DoxyItemize}
+\item error code otherwise 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_af2bc2d16f330013890a63ba725855ba3}\label{wifiGen__ep_8c_af2bc2d16f330013890a63ba725855ba3}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_createHook@{wifiGen\_ep\_createHook}}
+\index{wifiGen\_ep\_createHook@{wifiGen\_ep\_createHook}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_createHook()}{wifiGen\_ep\_createHook()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+create\+Hook (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__ep_8c_a4597b7d93d867d63004809c681223a37}\label{wifiGen__ep_8c_a4597b7d93d867d63004809c681223a37}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_destroyHook@{wifiGen\_ep\_destroyHook}}
+\index{wifiGen\_ep\_destroyHook@{wifiGen\_ep\_destroyHook}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_destroyHook()}{wifiGen\_ep\_destroyHook()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+destroy\+Hook (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__ep_8c_a29df583a3d84fece3f285db40e4a8057}\label{wifiGen__ep_8c_a29df583a3d84fece3f285db40e4a8057}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_disconnect@{wifiGen\_ep\_disconnect}}
+\index{wifiGen\_ep\_disconnect@{wifiGen\_ep\_disconnect}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_disconnect()}{wifiGen\_ep\_disconnect()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+disconnect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+mfn\+\_\+wendpoint\+\_\+disconnect 
+
+Disassociate from an AP
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The current endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if p\+EP is NULL
+\begin{DoxyItemize}
+\item Otherwise, the result of wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+disconnect function 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_a24c24a6e8edc1b2dc6985f30e5262be9}\label{wifiGen__ep_8c_a24c24a6e8edc1b2dc6985f30e5262be9}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_enable@{wifiGen\_ep\_enable}}
+\index{wifiGen\_ep\_enable@{wifiGen\_ep\_enable}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_enable()}{wifiGen\_ep\_enable()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{bool}]{enable }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+enable 
+
+Enable/\+Disable the Endpoint
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & T\+\_\+\+End\+Point struct endpoint instance \\
+\hline
+{\em enable} & false(disable)/true(enable) value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if p\+EP is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+ERROR if radio instance associated to p\+EP is NULL
+\item Otherwise, SWL\+\_\+\+RC\+\_\+\+OK 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_a14325536d32e5155a39e66d28711719a}\label{wifiGen__ep_8c_a14325536d32e5155a39e66d28711719a}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_multiApEnable@{wifiGen\_ep\_multiApEnable}}
+\index{wifiGen\_ep\_multiApEnable@{wifiGen\_ep\_multiApEnable}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_multiApEnable()}{wifiGen\_ep\_multiApEnable()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+multi\+Ap\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__ep_8c_ae01411d25d71a0ee363a4ad6d9e8b345}\label{wifiGen__ep_8c_ae01411d25d71a0ee363a4ad6d9e8b345}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_sendManagementFrame@{wifiGen\_ep\_sendManagementFrame}}
+\index{wifiGen\_ep\_sendManagementFrame@{wifiGen\_ep\_sendManagementFrame}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_sendManagementFrame()}{wifiGen\_ep\_sendManagementFrame()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+send\+Management\+Frame (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+80211\+\_\+mgmt\+Frame\+Control\+\_\+t $\ast$}]{fc,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{tgt\+Mac,  }\item[{swl\+\_\+bit8\+\_\+t $\ast$}]{data,  }\item[{size\+\_\+t}]{data\+Len,  }\item[{swl\+\_\+chanspec\+\_\+t $\ast$}]{chanspec }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__ep_8c_a75c4c343b1a5302266120d2720798f05}\label{wifiGen__ep_8c_a75c4c343b1a5302266120d2720798f05}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_setMacAddress@{wifiGen\_ep\_setMacAddress}}
+\index{wifiGen\_ep\_setMacAddress@{wifiGen\_ep\_setMacAddress}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_setMacAddress()}{wifiGen\_ep\_setMacAddress()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+set\+Mac\+Address (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__ep_8c_ae66aab9b7ea90868b3c4c6aee6d7b5a5}\label{wifiGen__ep_8c_ae66aab9b7ea90868b3c4c6aee6d7b5a5}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_stats@{wifiGen\_ep\_stats}}
+\index{wifiGen\_ep\_stats@{wifiGen\_ep\_stats}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_stats()}{wifiGen\_ep\_stats()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$}]{stats }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+stats 
+
+get endpoint stats
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & Pointer to the T\+\_\+\+End\+Point \\
+\hline
+{\em stats} & Pointer to the \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+ERROR if p\+EP is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+ERROR if stats is NULL
+\item SWL\+\_\+\+RC\+\_\+\+OK, if success to get stats, SWL\+\_\+\+RC\+\_\+\+ERROR if not 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_a1592647e7aa6df75ecb2a3dd5c064073}\label{wifiGen__ep_8c_a1592647e7aa6df75ecb2a3dd5c064073}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_status@{wifiGen\_ep\_status}}
+\index{wifiGen\_ep\_status@{wifiGen\_ep\_status}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_status()}{wifiGen\_ep\_status()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+status 
+
+get the interface status
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The current endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if p\+EP is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+ERROR when wpactrl interface isn\textquotesingle{}t ready or interface hasn\textquotesingle{}t netdev index or the netdev ionterface state is down
+\item Otherwise, SWL\+\_\+\+RC\+\_\+\+OK 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_ae1af926de78e7a8983d42cd857ab5174}\label{wifiGen__ep_8c_ae1af926de78e7a8983d42cd857ab5174}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_update@{wifiGen\_ep\_update}}
+\index{wifiGen\_ep\_update@{wifiGen\_ep\_update}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_update()}{wifiGen\_ep\_update()}}
+{\footnotesize\ttfamily int wifi\+Gen\+\_\+ep\+\_\+update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{int}]{set }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+update 
+
+update wpa supplicant with new configuration
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The current endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+OK 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_a0d4b9407b830e40c140592a670433389}\label{wifiGen__ep_8c_a0d4b9407b830e40c140592a670433389}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_wpsCancel@{wifiGen\_ep\_wpsCancel}}
+\index{wifiGen\_ep\_wpsCancel@{wifiGen\_ep\_wpsCancel}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_wpsCancel()}{wifiGen\_ep\_wpsCancel()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+wps\+Cancel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+wps\+Cancel 
+
+cancel a WPS attempt for an endpoint
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & Pointer to the endpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if p\+EP is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+ERROR if endpoint radio is NULL
+\item SWL\+\_\+\+RC\+\_\+\+NOT\+\_\+\+AVAILABLE if there is on going WPS session on another endpoint of the same radio
+\item Otherwise, result of wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+cancel\+Wps call 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wifiGen__ep_8c_a826c925d83ea71bd6df091cefd85253a}\label{wifiGen__ep_8c_a826c925d83ea71bd6df091cefd85253a}} 
+\index{wifiGen\_ep.c@{wifiGen\_ep.c}!wifiGen\_ep\_wpsStart@{wifiGen\_ep\_wpsStart}}
+\index{wifiGen\_ep\_wpsStart@{wifiGen\_ep\_wpsStart}!wifiGen\_ep.c@{wifiGen\_ep.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_ep\_wpsStart()}{wifiGen\_ep\_wpsStart()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+ep\+\_\+wps\+Start (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld_8h_ac2ee77c71d49328cd0edd76cb0b29963}{wld\+\_\+wps\+\_\+cfg\+Method\+\_\+e}}}]{method,  }\item[{char $\ast$}]{pin,  }\item[{char $\ast$ssid}]{\+\_\+\+UNUSED,  }\item[{swl\+\_\+mac\+Char\+\_\+t $\ast$}]{bssid }\end{DoxyParamCaption})}
+
+
+
+wifi\+Gen\+\_\+ep\+\_\+wps\+Start 
+
+start a WPS attempt for an endpoint.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & Pointer to the endpoint. \\
+\hline
+{\em configmethod} & The WPS method to use. \\
+\hline
+{\em pin} & The PIN to use (only for PIN based methods) \\
+\hline
+{\em ssid} & The SSID to connect to (mandatory for PIN methods, optional otherwise) \\
+\hline
+{\em bssid} & The BSSID to connect to (optional) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ SWL\+\_\+\+RC\+\_\+\+INVALID\+\_\+\+PARAM if p\+EP is NULL
+\begin{DoxyItemize}
+\item SWL\+\_\+\+RC\+\_\+\+ERROR if endpoint radio is NULL
+\item SWL\+\_\+\+RC\+\_\+\+NOT\+\_\+\+AVAILABLE if there is on going WPS session on another endpoint of the same radio
+\item Otherwise, result of wld\+\_\+wpa\+Supp\+\_\+ep\+\_\+start\+Wps call 
+\end{DoxyItemize}
+\end{DoxyReturn}

@@ -1,0 +1,259 @@
+\hypertarget{wld__rad__caps_8c}{}\doxysection{src/\+Rad\+Mgt/wld\+\_\+rad\+\_\+caps.c File Reference}
+\label{wld__rad__caps_8c}\index{src/RadMgt/wld\_rad\_caps.c@{src/RadMgt/wld\_rad\_caps.c}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+trans.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+channel.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+rad\+\_\+caps.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__rad__caps_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}rad\+Caps\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__rad__caps_8c_a91588fa52d53b69a6daedffc53115934}{wld\+\_\+rad\+\_\+init\+\_\+cap}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+bool \mbox{\hyperlink{wld__rad__caps_8c_ac170844e0ac9b7f881e7e7c5831e4641}{wld\+\_\+rad\+\_\+is\+\_\+cap\+\_\+enabled}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, int capability)
+\item 
+bool \mbox{\hyperlink{wld__rad__caps_8c_a6eaa139f4f3a52ecf31d3bdac5578086}{wld\+\_\+rad\+\_\+is\+\_\+cap\+\_\+active}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, int capability)
+\item 
+void \mbox{\hyperlink{wld__rad__caps_8c_a4918a64d2783fcb6654137f39c2a2e6b}{wld\+\_\+rad\+\_\+write\+Cap\+Status}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, amxd\+\_\+trans\+\_\+t $\ast$trans)
+\item 
+void \mbox{\hyperlink{wld__rad__caps_8c_a906fb510cf9a456dec23f0232b1aa870}{wld\+\_\+rad\+\_\+update\+Capabilities}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, amxd\+\_\+trans\+\_\+t $\ast$trans)
+\item 
+int \mbox{\hyperlink{wld__rad__caps_8c_ad7ad60bde12737d3e3cc65c050728c97}{wld\+\_\+rad\+\_\+get\+\_\+capability\+\_\+index}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR, const char $\ast$item)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__caps_8c_a38ae4c34c4df12abc515a1f0827ce745}{\+\_\+\+Rad\+Caps\+\_\+\+Enable}} (amxd\+\_\+object\+\_\+t $\ast$wifi\+\_\+cap, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__caps_8c_a16224d6af7bb1f1278aa40b02dca8ca9}{\+\_\+\+Rad\+Caps\+\_\+\+Disable}} (amxd\+\_\+object\+\_\+t $\ast$wifi\+\_\+cap, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__caps_8c_aea22194d4e86a6adad4029ae70411134}{\+\_\+\+Rad\+Caps\+\_\+\+Debug\+Print}} (amxd\+\_\+object\+\_\+t $\ast$wifi\+\_\+cap, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+swl\+\_\+trl\+\_\+e \mbox{\hyperlink{wld__rad__caps_8c_a47b622c748907dedb9773ec3ceab4a1c}{wld\+\_\+rad\+\_\+find\+Supp\+Drv\+Cap}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+freq\+Band\+\_\+e supp\+Band, char $\ast$supp\+Cap)
+\item 
+void \mbox{\hyperlink{wld__rad__caps_8c_a62b1f6610c95cf6dae8f0775cb9a0b82}{wld\+\_\+rad\+\_\+add\+Supp\+Drv\+Cap}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+freq\+Band\+\_\+e supp\+Band, char $\ast$supp\+Cap)
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__rad__caps_8c_a60f8f7bfc045a590627b2dc7e8db5354}{wld\+\_\+rad\+\_\+get\+Supp\+Drv\+Caps}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+freq\+Band\+\_\+e supp\+Band)
+\item 
+void \mbox{\hyperlink{wld__rad__caps_8c_a3746d48346230aedaa939a3851411183}{wld\+\_\+rad\+\_\+clear\+Supp\+Drv\+Caps}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+\mbox{\hyperlink{wld__rad__caps_8c_a057624f209c4e1c77ba0ca710704747f}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Rad\+Caps\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enabled\char`\"{}, s\+\_\+set\+Enabled\+\_\+pwf)))
+\item 
+void \mbox{\hyperlink{wld__rad__caps_8c_a58a0fefd45a38ebad8e577cdd516d2cc}{\+\_\+wld\+\_\+rad\+Caps\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__rad__caps_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__rad__caps_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!ME@{ME}}
+\index{ME@{ME}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}rad\+Caps\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__rad__caps_8c_aea22194d4e86a6adad4029ae70411134}\label{wld__rad__caps_8c_aea22194d4e86a6adad4029ae70411134}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!\_RadCaps\_DebugPrint@{\_RadCaps\_DebugPrint}}
+\index{\_RadCaps\_DebugPrint@{\_RadCaps\_DebugPrint}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{\_RadCaps\_DebugPrint()}{\_RadCaps\_DebugPrint()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Rad\+Caps\+\_\+\+Debug\+Print (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{wifi\+\_\+cap,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Function to print the full list of capabilities, and whether or not they are enabled. \mbox{\Hypertarget{wld__rad__caps_8c_a16224d6af7bb1f1278aa40b02dca8ca9}\label{wld__rad__caps_8c_a16224d6af7bb1f1278aa40b02dca8ca9}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!\_RadCaps\_Disable@{\_RadCaps\_Disable}}
+\index{\_RadCaps\_Disable@{\_RadCaps\_Disable}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{\_RadCaps\_Disable()}{\_RadCaps\_Disable()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Rad\+Caps\+\_\+\+Disable (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{wifi\+\_\+cap,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Callback function to disable a feature It will disable the feature internally, call the feature callback handler, and write the new capabilities enabled field. If a feature is not known, an error is returned. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a16224d6af7bb1f1278aa40b02dca8ca9_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a38ae4c34c4df12abc515a1f0827ce745}\label{wld__rad__caps_8c_a38ae4c34c4df12abc515a1f0827ce745}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!\_RadCaps\_Enable@{\_RadCaps\_Enable}}
+\index{\_RadCaps\_Enable@{\_RadCaps\_Enable}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{\_RadCaps\_Enable()}{\_RadCaps\_Enable()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Rad\+Caps\+\_\+\+Enable (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{wifi\+\_\+cap,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Callback function to enable a feature It will enable the feature internally, call the feature callback handler, and write the new capabilities enabled field. If a feature is not known, an error is returned. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{wld__rad__caps_8c_a38ae4c34c4df12abc515a1f0827ce745_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a58a0fefd45a38ebad8e577cdd516d2cc}\label{wld__rad__caps_8c_a58a0fefd45a38ebad8e577cdd516d2cc}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!\_wld\_radCaps\_setConf\_ocf@{\_wld\_radCaps\_setConf\_ocf}}
+\index{\_wld\_radCaps\_setConf\_ocf@{\_wld\_radCaps\_setConf\_ocf}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_radCaps\_setConf\_ocf()}{\_wld\_radCaps\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+rad\+Caps\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__caps_8c_a057624f209c4e1c77ba0ca710704747f}\label{wld__rad__caps_8c_a057624f209c4e1c77ba0ca710704747f}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Rad\+Caps\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enabled\char`\"{}, s\+\_\+set\+Enabled\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__caps_8c_a62b1f6610c95cf6dae8f0775cb9a0b82}\label{wld__rad__caps_8c_a62b1f6610c95cf6dae8f0775cb9a0b82}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_addSuppDrvCap@{wld\_rad\_addSuppDrvCap}}
+\index{wld\_rad\_addSuppDrvCap@{wld\_rad\_addSuppDrvCap}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_addSuppDrvCap()}{wld\_rad\_addSuppDrvCap()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+add\+Supp\+Drv\+Cap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+freq\+Band\+\_\+e}]{supp\+Band,  }\item[{char $\ast$}]{supp\+Cap }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a62b1f6610c95cf6dae8f0775cb9a0b82_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a3746d48346230aedaa939a3851411183}\label{wld__rad__caps_8c_a3746d48346230aedaa939a3851411183}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_clearSuppDrvCaps@{wld\_rad\_clearSuppDrvCaps}}
+\index{wld\_rad\_clearSuppDrvCaps@{wld\_rad\_clearSuppDrvCaps}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_clearSuppDrvCaps()}{wld\_rad\_clearSuppDrvCaps()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+clear\+Supp\+Drv\+Caps (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a3746d48346230aedaa939a3851411183_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a47b622c748907dedb9773ec3ceab4a1c}\label{wld__rad__caps_8c_a47b622c748907dedb9773ec3ceab4a1c}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_findSuppDrvCap@{wld\_rad\_findSuppDrvCap}}
+\index{wld\_rad\_findSuppDrvCap@{wld\_rad\_findSuppDrvCap}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_findSuppDrvCap()}{wld\_rad\_findSuppDrvCap()}}
+{\footnotesize\ttfamily swl\+\_\+trl\+\_\+e wld\+\_\+rad\+\_\+find\+Supp\+Drv\+Cap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+freq\+Band\+\_\+e}]{supp\+Band,  }\item[{char $\ast$}]{supp\+Cap }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a47b622c748907dedb9773ec3ceab4a1c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_ad7ad60bde12737d3e3cc65c050728c97}\label{wld__rad__caps_8c_ad7ad60bde12737d3e3cc65c050728c97}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_get\_capability\_index@{wld\_rad\_get\_capability\_index}}
+\index{wld\_rad\_get\_capability\_index@{wld\_rad\_get\_capability\_index}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_get\_capability\_index()}{wld\_rad\_get\_capability\_index()}}
+{\footnotesize\ttfamily int wld\+\_\+rad\+\_\+get\+\_\+capability\+\_\+index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{const char $\ast$}]{item }\end{DoxyParamCaption})}
+
+Get the index of a given capability. 
+\begin{DoxyParams}{Parameters}
+{\em pR} & the radio to request the capability.\\
+\hline
+{\em item} & the item of which we want the capability \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+$\ast$if item exists return the index of the capability in the capability list $\ast$if item does not exist return -\/1 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_ad7ad60bde12737d3e3cc65c050728c97_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a60f8f7bfc045a590627b2dc7e8db5354}\label{wld__rad__caps_8c_a60f8f7bfc045a590627b2dc7e8db5354}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_getSuppDrvCaps@{wld\_rad\_getSuppDrvCaps}}
+\index{wld\_rad\_getSuppDrvCaps@{wld\_rad\_getSuppDrvCaps}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_getSuppDrvCaps()}{wld\_rad\_getSuppDrvCaps()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+rad\+\_\+get\+Supp\+Drv\+Caps (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+freq\+Band\+\_\+e}]{supp\+Band }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a60f8f7bfc045a590627b2dc7e8db5354_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a91588fa52d53b69a6daedffc53115934}\label{wld__rad__caps_8c_a91588fa52d53b69a6daedffc53115934}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_init\_cap@{wld\_rad\_init\_cap}}
+\index{wld\_rad\_init\_cap@{wld\_rad\_init\_cap}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_init\_cap()}{wld\_rad\_init\_cap()}}
+{\footnotesize\ttfamily int wld\+\_\+rad\+\_\+init\+\_\+cap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__caps_8c_a6eaa139f4f3a52ecf31d3bdac5578086}\label{wld__rad__caps_8c_a6eaa139f4f3a52ecf31d3bdac5578086}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_is\_cap\_active@{wld\_rad\_is\_cap\_active}}
+\index{wld\_rad\_is\_cap\_active@{wld\_rad\_is\_cap\_active}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_is\_cap\_active()}{wld\_rad\_is\_cap\_active()}}
+{\footnotesize\ttfamily bool wld\+\_\+rad\+\_\+is\+\_\+cap\+\_\+active (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{int}]{capability }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__caps_8c_ac170844e0ac9b7f881e7e7c5831e4641}\label{wld__rad__caps_8c_ac170844e0ac9b7f881e7e7c5831e4641}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_is\_cap\_enabled@{wld\_rad\_is\_cap\_enabled}}
+\index{wld\_rad\_is\_cap\_enabled@{wld\_rad\_is\_cap\_enabled}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_is\_cap\_enabled()}{wld\_rad\_is\_cap\_enabled()}}
+{\footnotesize\ttfamily bool wld\+\_\+rad\+\_\+is\+\_\+cap\+\_\+enabled (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{int}]{capability }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__rad__caps_8c_a906fb510cf9a456dec23f0232b1aa870}\label{wld__rad__caps_8c_a906fb510cf9a456dec23f0232b1aa870}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_updateCapabilities@{wld\_rad\_updateCapabilities}}
+\index{wld\_rad\_updateCapabilities@{wld\_rad\_updateCapabilities}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_updateCapabilities()}{wld\_rad\_updateCapabilities()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+update\+Capabilities (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{amxd\+\_\+trans\+\_\+t $\ast$}]{trans }\end{DoxyParamCaption})}
+
+Update the capabilities available string of the radio It will also update the current status.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pR} & The radio of which to update the capabilities. \\
+\hline
+{\em trans} & The transaction with which to update the capabilities, must not be NULL \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a906fb510cf9a456dec23f0232b1aa870_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__caps_8c_a4918a64d2783fcb6654137f39c2a2e6b}\label{wld__rad__caps_8c_a4918a64d2783fcb6654137f39c2a2e6b}} 
+\index{wld\_rad\_caps.c@{wld\_rad\_caps.c}!wld\_rad\_writeCapStatus@{wld\_rad\_writeCapStatus}}
+\index{wld\_rad\_writeCapStatus@{wld\_rad\_writeCapStatus}!wld\_rad\_caps.c@{wld\_rad\_caps.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_writeCapStatus()}{wld\_rad\_writeCapStatus()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+write\+Cap\+Status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR,  }\item[{amxd\+\_\+trans\+\_\+t $\ast$}]{trans }\end{DoxyParamCaption})}
+
+Update the capabilities status string of the radio. 
+\begin{DoxyParams}{Parameters}
+{\em pR} & The radio to update. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__caps_8c_a4918a64d2783fcb6654137f39c2a2e6b_icgraph}
+\end{center}
+\end{figure}

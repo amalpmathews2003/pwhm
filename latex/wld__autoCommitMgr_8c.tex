@@ -1,0 +1,160 @@
+\hypertarget{wld__autoCommitMgr_8c}{}\doxysection{src/\+Utils/wld\+\_\+auto\+Commit\+Mgr.c File Reference}
+\label{wld__autoCommitMgr_8c}\index{src/Utils/wld\_autoCommitMgr.c@{src/Utils/wld\_autoCommitMgr.c}}
+{\ttfamily \#include $<$swl/swl\+\_\+common.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+auto\+Commit\+Mgr.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__autoCommitMgr__t}{wld\+\_\+auto\+Commit\+Mgr\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__autoCommitMgr_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+\_\+acm\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_acab57ef23b64ab88021260d7c900c4d2}{s\+\_\+start\+Radio\+Auto\+Commit}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_aee76501d88846dd4f7277d2f4c2e118e}{wld\+\_\+auto\+Commit\+Mgr\+\_\+notify\+Rad\+Edit}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_a140637147ca71beb54111a54ce607dfe}{wld\+\_\+auto\+Commit\+Mgr\+\_\+notify\+Vap\+Edit}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_ab1188f8502f6aa4f98ba4cdeabd06038}{wld\+\_\+auto\+Commit\+Mgr\+\_\+notify\+Ep\+Edit}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+Ep)
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_a13cbf0860a1b2b885d091665c3e8d990}{wld\+\_\+auto\+Commit\+Mgr\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_a99a39f4add934b5c9bd259517a88ffad}{wld\+\_\+auto\+Commit\+Mgr\+\_\+destroy}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+\mbox{\hyperlink{wld__autoCommitMgr_8c_a0b8586db17fcac3308d1f10e10eb9b47}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Auto\+Commit\+Mgr\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Delay\+Time\char`\"{}, s\+\_\+set\+Delay\+Time\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Boot\+Delay\+Time\char`\"{}, s\+\_\+set\+Boot\+Delay\+Time\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Enable\+\_\+pwf)))
+\item 
+void \mbox{\hyperlink{wld__autoCommitMgr_8c_acc4ef56281b357136e3115259d5940bf}{\+\_\+wld\+\_\+auto\+Commit\+Mgr\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__autoCommitMgr_8c_a25f299514e69c61f390cf9251c44a0de}{\+\_\+\+Auto\+Commit\+Mgr\+\_\+debug}} (amxd\+\_\+object\+\_\+t $\ast$obj \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret\+Map)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__autoCommitMgr_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!ME@{ME}}
+\index{ME@{ME}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+\_\+acm\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_a25f299514e69c61f390cf9251c44a0de}\label{wld__autoCommitMgr_8c_a25f299514e69c61f390cf9251c44a0de}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!\_AutoCommitMgr\_debug@{\_AutoCommitMgr\_debug}}
+\index{\_AutoCommitMgr\_debug@{\_AutoCommitMgr\_debug}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{\_AutoCommitMgr\_debug()}{\_AutoCommitMgr\_debug()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Auto\+Commit\+Mgr\+\_\+debug (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$obj}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret\+Map }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_acc4ef56281b357136e3115259d5940bf}\label{wld__autoCommitMgr_8c_acc4ef56281b357136e3115259d5940bf}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!\_wld\_autoCommitMgr\_setConf\_ocf@{\_wld\_autoCommitMgr\_setConf\_ocf}}
+\index{\_wld\_autoCommitMgr\_setConf\_ocf@{\_wld\_autoCommitMgr\_setConf\_ocf}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_autoCommitMgr\_setConf\_ocf()}{\_wld\_autoCommitMgr\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+auto\+Commit\+Mgr\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_acab57ef23b64ab88021260d7c900c4d2}\label{wld__autoCommitMgr_8c_acab57ef23b64ab88021260d7c900c4d2}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!s\_startRadioAutoCommit@{s\_startRadioAutoCommit}}
+\index{s\_startRadioAutoCommit@{s\_startRadioAutoCommit}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{s\_startRadioAutoCommit()}{s\_startRadioAutoCommit()}}
+{\footnotesize\ttfamily void s\+\_\+start\+Radio\+Auto\+Commit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c_acab57ef23b64ab88021260d7c900c4d2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_a0b8586db17fcac3308d1f10e10eb9b47}\label{wld__autoCommitMgr_8c_a0b8586db17fcac3308d1f10e10eb9b47}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Auto\+Commit\+Mgr\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Delay\+Time\char`\"{}, s\+\_\+set\+Delay\+Time\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Boot\+Delay\+Time\char`\"{}, s\+\_\+set\+Boot\+Delay\+Time\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Enable\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_a99a39f4add934b5c9bd259517a88ffad}\label{wld__autoCommitMgr_8c_a99a39f4add934b5c9bd259517a88ffad}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!wld\_autoCommitMgr\_destroy@{wld\_autoCommitMgr\_destroy}}
+\index{wld\_autoCommitMgr\_destroy@{wld\_autoCommitMgr\_destroy}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoCommitMgr\_destroy()}{wld\_autoCommitMgr\_destroy()}}
+{\footnotesize\ttfamily void wld\+\_\+auto\+Commit\+Mgr\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Destroy auto\+Commit on radio destroy Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c_a99a39f4add934b5c9bd259517a88ffad_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_a13cbf0860a1b2b885d091665c3e8d990}\label{wld__autoCommitMgr_8c_a13cbf0860a1b2b885d091665c3e8d990}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!wld\_autoCommitMgr\_init@{wld\_autoCommitMgr\_init}}
+\index{wld\_autoCommitMgr\_init@{wld\_autoCommitMgr\_init}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoCommitMgr\_init()}{wld\_autoCommitMgr\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+auto\+Commit\+Mgr\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Initialize auto\+Commit on radio create Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c_a13cbf0860a1b2b885d091665c3e8d990_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_ab1188f8502f6aa4f98ba4cdeabd06038}\label{wld__autoCommitMgr_8c_ab1188f8502f6aa4f98ba4cdeabd06038}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!wld\_autoCommitMgr\_notifyEpEdit@{wld\_autoCommitMgr\_notifyEpEdit}}
+\index{wld\_autoCommitMgr\_notifyEpEdit@{wld\_autoCommitMgr\_notifyEpEdit}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoCommitMgr\_notifyEpEdit()}{wld\_autoCommitMgr\_notifyEpEdit()}}
+{\footnotesize\ttfamily void wld\+\_\+auto\+Commit\+Mgr\+\_\+notify\+Ep\+Edit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+Ep }\end{DoxyParamCaption})}
+
+Notify ep FSM action was taken. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c_ab1188f8502f6aa4f98ba4cdeabd06038_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_aee76501d88846dd4f7277d2f4c2e118e}\label{wld__autoCommitMgr_8c_aee76501d88846dd4f7277d2f4c2e118e}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!wld\_autoCommitMgr\_notifyRadEdit@{wld\_autoCommitMgr\_notifyRadEdit}}
+\index{wld\_autoCommitMgr\_notifyRadEdit@{wld\_autoCommitMgr\_notifyRadEdit}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoCommitMgr\_notifyRadEdit()}{wld\_autoCommitMgr\_notifyRadEdit()}}
+{\footnotesize\ttfamily void wld\+\_\+auto\+Commit\+Mgr\+\_\+notify\+Rad\+Edit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Notify rad FSM action was taken. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c_aee76501d88846dd4f7277d2f4c2e118e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoCommitMgr_8c_aee76501d88846dd4f7277d2f4c2e118e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__autoCommitMgr_8c_a140637147ca71beb54111a54ce607dfe}\label{wld__autoCommitMgr_8c_a140637147ca71beb54111a54ce607dfe}} 
+\index{wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}!wld\_autoCommitMgr\_notifyVapEdit@{wld\_autoCommitMgr\_notifyVapEdit}}
+\index{wld\_autoCommitMgr\_notifyVapEdit@{wld\_autoCommitMgr\_notifyVapEdit}!wld\_autoCommitMgr.c@{wld\_autoCommitMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoCommitMgr\_notifyVapEdit()}{wld\_autoCommitMgr\_notifyVapEdit()}}
+{\footnotesize\ttfamily void wld\+\_\+auto\+Commit\+Mgr\+\_\+notify\+Vap\+Edit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+Notify vap FSM action was taken. 

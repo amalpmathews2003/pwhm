@@ -1,0 +1,6 @@
+<map id="wld_rad_nl80211_updateUsageStatsFromSurveyInfo" name="wld_rad_nl80211_updateUsageStatsFromSurveyInfo">
+<area shape="rect" id="node1" title=" " alt="" coords="5,39,231,80"/>
+<area shape="rect" id="node2" href="$wld__rad__nl80211_8c.html#abe0caea840f01d16672102574ebdceca" title=" " alt="" coords="287,5,497,47"/>
+<area shape="rect" id="node3" href="$wld__util_8c.html#a2d2611af137f5b97865337c7c3a2f789" title="add or update a spectrum result entry in provided list, based on the channel of the provided data str..." alt="" coords="279,71,505,112"/>
+<area shape="rect" id="node4" href="$wld__util_8c.html#afc923d0ae8df35793889b4473f08faf9" title="fetch, by channel, a spectrum result entry in provided list" alt="" coords="553,71,751,112"/>
+</map>

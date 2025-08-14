@@ -1,0 +1,138 @@
+\hypertarget{wifiGen__wpaSupp_8c}{}\doxysection{src/\+Plugin/wifi\+Gen\+\_\+wpa\+Supp.c File Reference}
+\label{wifiGen__wpaSupp_8c}\index{src/Plugin/wifiGen\_wpaSupp.c@{src/Plugin/wifiGen\_wpaSupp.c}}
+{\ttfamily \#include \char`\"{}wld/wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/wld\+\_\+wpa\+Supp\+\_\+cfg\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wifi\+Gen\+\_\+hapd.\+h\char`\"{}}\newline
+Include dependency graph for wifi\+Gen\+\_\+wpa\+Supp.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__wpaSupp_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__wpaSupp_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}gen\+Wsup\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__wpaSupp_8c_ab31db94ac7305baac3aaa94955f23ae3}{WPASUPP\+\_\+\+CONF\+\_\+\+FILE\+\_\+\+PATH\+\_\+\+FORMAT}}~\char`\"{}/tmp/\%s\+\_\+wpa\+\_\+supplicant.\+conf\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__wpaSupp_8c_a266fdd81833ad1cf8672ffbd898d6537}{WPASUPP\+\_\+\+CMD}}~\char`\"{}wpa\+\_\+supplicant\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__wpaSupp_8c_a1dee31c439d587ee3083296667a4a959}{WPASUPP\+\_\+\+ARGS\+\_\+\+FORMAT\+\_\+\+EXT}}~\char`\"{}-\/ddK -\/b\%s -\/i\%s -\/Dnl80211 -\/c\%s\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__wpaSupp_8c_a01fd2dddc3f7a6235f6a390c12050bf4}{WPASUPP\+\_\+\+ARGS\+\_\+\+FORMAT}}~\char`\"{}-\/ddK -\/i\%s -\/Dnl80211 -\/c\%s\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wifiGen__wpaSupp_8c_ac23423fda4da7258d81a86eea35d241d}{WPASUPP\+\_\+\+CTRL\+\_\+\+IFACE\+\_\+\+DIR}}~\char`\"{}/var/run/wpa\+\_\+supplicant\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__wpaSupp_8c_ac39632c6de4204ae20a9703d0ac4a3fc}{s\+\_\+write\+Wpa\+Sup\+Args\+To\+Buf}} (char $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, size\+\_\+t args\+Size, char $\ast$conf\+File\+Path, size\+\_\+t conf\+File\+Path\+Size, \mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__wpaSupp_8c_a6cc3e4485c44755d6b18590bd1d655ed}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+void \mbox{\hyperlink{wifiGen__wpaSupp_8c_a2fff9c0a72639f30afdbec12ab266169}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+cleanup}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__wpaSupp_8c_a21cde8a3632de64e62bf1809c3cdb9a3}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+start\+Daemon}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__wpaSupp_8c_ae71382d302f1e2861832b1f2c6eb2c75}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+stop\+Daemon}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wifiGen__wpaSupp_8c_a735359ad02a1150645ef8cd3cb7f575f}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+reload\+Daemon}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+void \mbox{\hyperlink{wifiGen__wpaSupp_8c_a91b9cf568e7be3c41876815a09780464}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+write\+Config}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+bool \mbox{\hyperlink{wifiGen__wpaSupp_8c_a8cb103dcfd0a1d9713f0bf21ad0e89ec}{wifi\+Gen\+\_\+wpa\+Supp\+\_\+is\+Running}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wifiGen__wpaSupp_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!ME@{ME}}
+\index{ME@{ME}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}gen\+Wsup\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a01fd2dddc3f7a6235f6a390c12050bf4}\label{wifiGen__wpaSupp_8c_a01fd2dddc3f7a6235f6a390c12050bf4}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!WPASUPP\_ARGS\_FORMAT@{WPASUPP\_ARGS\_FORMAT}}
+\index{WPASUPP\_ARGS\_FORMAT@{WPASUPP\_ARGS\_FORMAT}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{WPASUPP\_ARGS\_FORMAT}{WPASUPP\_ARGS\_FORMAT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPASUPP\+\_\+\+ARGS\+\_\+\+FORMAT~\char`\"{}-\/ddK -\/i\%s -\/Dnl80211 -\/c\%s\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a1dee31c439d587ee3083296667a4a959}\label{wifiGen__wpaSupp_8c_a1dee31c439d587ee3083296667a4a959}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!WPASUPP\_ARGS\_FORMAT\_EXT@{WPASUPP\_ARGS\_FORMAT\_EXT}}
+\index{WPASUPP\_ARGS\_FORMAT\_EXT@{WPASUPP\_ARGS\_FORMAT\_EXT}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{WPASUPP\_ARGS\_FORMAT\_EXT}{WPASUPP\_ARGS\_FORMAT\_EXT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPASUPP\+\_\+\+ARGS\+\_\+\+FORMAT\+\_\+\+EXT~\char`\"{}-\/ddK -\/b\%s -\/i\%s -\/Dnl80211 -\/c\%s\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a266fdd81833ad1cf8672ffbd898d6537}\label{wifiGen__wpaSupp_8c_a266fdd81833ad1cf8672ffbd898d6537}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!WPASUPP\_CMD@{WPASUPP\_CMD}}
+\index{WPASUPP\_CMD@{WPASUPP\_CMD}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{WPASUPP\_CMD}{WPASUPP\_CMD}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPASUPP\+\_\+\+CMD~\char`\"{}wpa\+\_\+supplicant\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_ab31db94ac7305baac3aaa94955f23ae3}\label{wifiGen__wpaSupp_8c_ab31db94ac7305baac3aaa94955f23ae3}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!WPASUPP\_CONF\_FILE\_PATH\_FORMAT@{WPASUPP\_CONF\_FILE\_PATH\_FORMAT}}
+\index{WPASUPP\_CONF\_FILE\_PATH\_FORMAT@{WPASUPP\_CONF\_FILE\_PATH\_FORMAT}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{WPASUPP\_CONF\_FILE\_PATH\_FORMAT}{WPASUPP\_CONF\_FILE\_PATH\_FORMAT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPASUPP\+\_\+\+CONF\+\_\+\+FILE\+\_\+\+PATH\+\_\+\+FORMAT~\char`\"{}/tmp/\%s\+\_\+wpa\+\_\+supplicant.\+conf\char`\"{}}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_ac23423fda4da7258d81a86eea35d241d}\label{wifiGen__wpaSupp_8c_ac23423fda4da7258d81a86eea35d241d}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!WPASUPP\_CTRL\_IFACE\_DIR@{WPASUPP\_CTRL\_IFACE\_DIR}}
+\index{WPASUPP\_CTRL\_IFACE\_DIR@{WPASUPP\_CTRL\_IFACE\_DIR}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{WPASUPP\_CTRL\_IFACE\_DIR}{WPASUPP\_CTRL\_IFACE\_DIR}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPASUPP\+\_\+\+CTRL\+\_\+\+IFACE\+\_\+\+DIR~\char`\"{}/var/run/wpa\+\_\+supplicant\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_ac39632c6de4204ae20a9703d0ac4a3fc}\label{wifiGen__wpaSupp_8c_ac39632c6de4204ae20a9703d0ac4a3fc}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!s\_writeWpaSupArgsToBuf@{s\_writeWpaSupArgsToBuf}}
+\index{s\_writeWpaSupArgsToBuf@{s\_writeWpaSupArgsToBuf}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{s\_writeWpaSupArgsToBuf()}{s\_writeWpaSupArgsToBuf()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne s\+\_\+write\+Wpa\+Sup\+Args\+To\+Buf (\begin{DoxyParamCaption}\item[{char $\ast$}]{args,  }\item[{size\+\_\+t}]{args\+Size,  }\item[{char $\ast$}]{conf\+File\+Path,  }\item[{size\+\_\+t}]{conf\+File\+Path\+Size,  }\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a2fff9c0a72639f30afdbec12ab266169}\label{wifiGen__wpaSupp_8c_a2fff9c0a72639f30afdbec12ab266169}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_cleanup@{wifiGen\_wpaSupp\_cleanup}}
+\index{wifiGen\_wpaSupp\_cleanup@{wifiGen\_wpaSupp\_cleanup}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_cleanup()}{wifiGen\_wpaSupp\_cleanup()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+wpa\+Supp\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a6cc3e4485c44755d6b18590bd1d655ed}\label{wifiGen__wpaSupp_8c_a6cc3e4485c44755d6b18590bd1d655ed}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_init@{wifiGen\_wpaSupp\_init}}
+\index{wifiGen\_wpaSupp\_init@{wifiGen\_wpaSupp\_init}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_init()}{wifiGen\_wpaSupp\_init()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+wpa\+Supp\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a8cb103dcfd0a1d9713f0bf21ad0e89ec}\label{wifiGen__wpaSupp_8c_a8cb103dcfd0a1d9713f0bf21ad0e89ec}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_isRunning@{wifiGen\_wpaSupp\_isRunning}}
+\index{wifiGen\_wpaSupp\_isRunning@{wifiGen\_wpaSupp\_isRunning}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_isRunning()}{wifiGen\_wpaSupp\_isRunning()}}
+{\footnotesize\ttfamily bool wifi\+Gen\+\_\+wpa\+Supp\+\_\+is\+Running (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a735359ad02a1150645ef8cd3cb7f575f}\label{wifiGen__wpaSupp_8c_a735359ad02a1150645ef8cd3cb7f575f}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_reloadDaemon@{wifiGen\_wpaSupp\_reloadDaemon}}
+\index{wifiGen\_wpaSupp\_reloadDaemon@{wifiGen\_wpaSupp\_reloadDaemon}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_reloadDaemon()}{wifiGen\_wpaSupp\_reloadDaemon()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+wpa\+Supp\+\_\+reload\+Daemon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a21cde8a3632de64e62bf1809c3cdb9a3}\label{wifiGen__wpaSupp_8c_a21cde8a3632de64e62bf1809c3cdb9a3}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_startDaemon@{wifiGen\_wpaSupp\_startDaemon}}
+\index{wifiGen\_wpaSupp\_startDaemon@{wifiGen\_wpaSupp\_startDaemon}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_startDaemon()}{wifiGen\_wpaSupp\_startDaemon()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+wpa\+Supp\+\_\+start\+Daemon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_ae71382d302f1e2861832b1f2c6eb2c75}\label{wifiGen__wpaSupp_8c_ae71382d302f1e2861832b1f2c6eb2c75}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_stopDaemon@{wifiGen\_wpaSupp\_stopDaemon}}
+\index{wifiGen\_wpaSupp\_stopDaemon@{wifiGen\_wpaSupp\_stopDaemon}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_stopDaemon()}{wifiGen\_wpaSupp\_stopDaemon()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wifi\+Gen\+\_\+wpa\+Supp\+\_\+stop\+Daemon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wifiGen__wpaSupp_8c_a91b9cf568e7be3c41876815a09780464}\label{wifiGen__wpaSupp_8c_a91b9cf568e7be3c41876815a09780464}} 
+\index{wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}!wifiGen\_wpaSupp\_writeConfig@{wifiGen\_wpaSupp\_writeConfig}}
+\index{wifiGen\_wpaSupp\_writeConfig@{wifiGen\_wpaSupp\_writeConfig}!wifiGen\_wpaSupp.c@{wifiGen\_wpaSupp.c}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_wpaSupp\_writeConfig()}{wifiGen\_wpaSupp\_writeConfig()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+wpa\+Supp\+\_\+write\+Config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+

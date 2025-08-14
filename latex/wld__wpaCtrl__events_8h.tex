@@ -1,0 +1,507 @@
+\hypertarget{wld__wpaCtrl__events_8h}{}\doxysection{include/wld/wld\+\_\+wpa\+Ctrl\+\_\+events.h File Reference}
+\label{wld__wpaCtrl__events_8h}\index{include/wld/wld\_wpaCtrl\_events.h@{include/wld/wld\_wpaCtrl\_events.h}}
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+chanspec.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+mac.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+ieee802\+\_\+1x\+\_\+defs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+return\+Code.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Ctrl\+\_\+types.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+wpa\+Ctrl\+\_\+events.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct____attribute____}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\item 
+struct \mbox{\hyperlink{structwld__wpaCtrl__evtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+evt\+Handlers\+\_\+cb}}
+\item 
+struct \mbox{\hyperlink{structwld__wpaCtrl__radioEvtHandlers__cb}{wld\+\_\+wpa\+Ctrl\+\_\+radio\+Evt\+Handlers\+\_\+cb}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab90ec9972772d7ebff7432deac2695e1}{WPA\+\_\+\+MSG\+\_\+\+LEVEL\+\_\+\+INFO}}~\char`\"{}$<$3$>$\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__wpaCtrl__events_8h_afee44932c90c4dd0139fb11f489870c2}{WPA\+\_\+\+MSG\+\_\+\+LEVEL\+\_\+\+DEBUG\+\_\+\+ID}}~2
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef swl\+\_\+rc\+\_\+ne($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a9a42d8b881c4fd3e15ce2c7e1ed42f46}{wld\+\_\+wpa\+Ctrl\+\_\+pre\+Proc\+Msg\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$msg\+Data, size\+\_\+t len, char $\ast$$\ast$new\+If\+Name, char $\ast$$\ast$new\+Msg\+Data, size\+\_\+t $\ast$new\+Len)
+\item 
+typedef swl\+\_\+rc\+\_\+ne($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3192d7ae618427c7c7991af26ce45a3d}{wld\+\_\+wpa\+Ctrl\+\_\+cust\+Proc\+Msg\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$msg\+Data)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3a748f4ccdc9c55183ee72356cb27adc}{wld\+\_\+wpa\+Ctrl\+\_\+process\+Msg\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$msg\+Data)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_adc54c6e1098cc2a302f1f3f75937c8df}{wld\+\_\+wpa\+Ctrl\+\_\+process\+Std\+Msg\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$event\+Name, char $\ast$msg\+Data)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a39824519b39524e235b2883f7fc80865}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+In\+Progress\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a7048da5ea7f4a8515fa7ca2c7a4ccf5c}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Success\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Char\+\_\+t $\ast$mac)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_aeb38a7194c7a6fdd2ee84c472e5b1fe7}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Timeout\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a954ba8dabd1c038970761148edcfc4fb}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Cancel\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_af3f80dc4b239b53333b281d0b547ef86}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Overlap\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_ac91c5c130255faa6613469e3630ba69b}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Fail\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a18af2c1215f5b78396569c8642333eeb}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Cred\+Received\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, void $\ast$creds, swl\+\_\+rc\+\_\+ne status)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a0d010ec732ed9463c513f6ea326e3534}{wld\+\_\+wpa\+Ctrl\+\_\+wps\+Setup\+Locked\+Msg\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, bool setup\+Locked)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_ad2cdb04d1fe00f4af7e4e11bf27e3023}{wld\+\_\+wpa\+Ctrl\+\_\+ap\+Station\+Eap\+Completed\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6f9d130562985fc8903abf9582f89418}{wld\+\_\+wpa\+Ctrl\+\_\+ap\+Station\+Connectivity\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae3f4bdf30d004f5f6465c0c8fbf766ee}{wld\+\_\+wpa\+Ctrl\+\_\+ap\+Station\+Assoc\+Failure\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_aecb3d45a542f85bab2c54580da9923cf}{wld\+\_\+wpa\+Ctrl\+\_\+wds\+Iface\+Added\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$wds\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3c2c898d58ed76cb561b55c4859dac69}{wld\+\_\+wpa\+Ctrl\+\_\+wds\+Iface\+Removed\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$wds\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a9253cc534d75905a50d0daefa645ec9e}{wld\+\_\+wpa\+Ctrl\+\_\+btm\+Reply\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Char\+\_\+t $\ast$mac, uint8\+\_\+t status, swl\+\_\+mac\+Char\+\_\+t $\ast$target\+Bssid)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_af4c1673404da1a6d488e417388179586}{wld\+\_\+wpa\+Ctrl\+\_\+mgt\+Frame\+Received\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+80211\+\_\+mgmt\+Frame\+\_\+t $\ast$frame, size\+\_\+t frame\+Len, char $\ast$frame\+Str)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}{wld\+\_\+wpa\+Ctrl\+\_\+station\+Connectivity\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Bssid\+Mac, swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne reason)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3004eb66bbc8b024d4d88e555bb976c6}{wld\+\_\+wpa\+Ctrl\+\_\+station\+Scan\+Failed\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, int error)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a2c2bfb2c457939bdeae769d2528a8730}{wld\+\_\+wpa\+Ctrl\+\_\+beacon\+Response\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$station, wld\+\_\+wpa\+Ctrl\+\_\+rrm\+Beacon\+Rsp\+\_\+t $\ast$rrm\+Beacon\+Response)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_ae8e40bb27ed3a8f46c8ba942f0a3937e}{wld\+\_\+wpa\+Ctrl\+\_\+station\+Start\+Conn\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, const char $\ast$ssid, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Bssid\+Mac, swl\+\_\+chanspec\+\_\+t $\ast$p\+Chans\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a422ff12c926ff8a13b7d6ef67f094ad7}{wld\+\_\+wpa\+Ctrl\+\_\+station\+Start\+Conn\+Failed\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, int error)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a220228509532afdf074b8df1ee95ceef}{wld\+\_\+wpa\+Ctrl\+\_\+ap\+Iface\+Event\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a062a1e16a0f230c8432a3538d98add5c}{wld\+\_\+wpa\+Ctrl\+\_\+station\+Multi\+Ap\+Info\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, uint8\+\_\+t profile\+Id, uint16\+\_\+t prim\+Vlan\+Id)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5b2f3ec9c4bf082fc45fc266b4d01f4a}{wld\+\_\+wpa\+Ctrl\+\_\+select\+Prim\+Link\+Iface\+\_\+f}}) (void $\ast$user\+Data, const char $\ast$if\+Name, char $\ast$$\ast$p\+Prim\+Link\+If\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a07f91a2a9690dddf21104a860a1f26e6}{wld\+\_\+wpa\+Ctrl\+\_\+chan\+Switch\+Started\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab507931873d0a7110863ad2f70a3ea96}{wld\+\_\+wpa\+Ctrl\+\_\+chan\+Switch\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_acc89c31a01478ec088d1e7f45052f840}{wld\+\_\+wpa\+Ctrl\+\_\+ap\+Csa\+Finished\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_ab5bfbf083dd5c1470f958287dbe8a94b}{wld\+\_\+wpa\+Ctrl\+\_\+mngr\+Ready\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, bool is\+Ready)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3f37f61d37ae8f0e7941ad003345f447}{wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Cac\+Started\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec, uint32\+\_\+t cac\+\_\+time)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a6e4df855083ad55b53c621f762d8fe7c}{wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Cac\+Done\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec, bool success)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a316d8170bdbf191ae8ffbdc25664ce00}{wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Cac\+Expired\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a3331aa94cfae97b1b98fb2415ce96c14}{wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Radar\+Detected\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a20968da0e080ffeba1c24389039ceaef}{wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Nop\+Finished\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a2eaf1ff025edeb9f2706f9cf4b92ad76}{wld\+\_\+wpa\+Ctrl\+\_\+dfs\+New\+Channel\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a4efc0ab43581bf97f95c4ed118c8bbdc}{wld\+\_\+wpa\+Ctrl\+\_\+main\+Ap\+Setup\+Completed\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_afbac1c4d1a61f4369df5ab5548e2d09e}{wld\+\_\+wpa\+Ctrl\+\_\+main\+Ap\+Disabled\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}{wld\+\_\+wpa\+Ctrl\+\_\+sync\+On\+Ready\+Cb\+\_\+f}}) (void $\ast$user\+Data, char $\ast$if\+Name, bool state)
+\item 
+typedef void($\ast$ \mbox{\hyperlink{wld__wpaCtrl__events_8h_aa7b9ccdae7a6ac2e42235cbb9ae4ae17}{wld\+\_\+wpa\+Ctrl\+\_\+fetch\+Socket\+Link\+Iface\+\_\+f}}) (void $\ast$user\+Data, \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, const char $\ast$sock\+Name, char $\ast$$\ast$p\+Link\+If\+Name)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__wpaCtrl__events_8h_a67b83e09a159510b15c2677af1127b60}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Value\+Str}} (const char $\ast$p\+Data, const char $\ast$p\+Key, char $\ast$p\+Value, int length)
+\item 
+int \mbox{\hyperlink{wld__wpaCtrl__events_8h_a05be0ee99bc026630bcd90ae5295aaa0}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Value\+Int}} (const char $\ast$p\+Data, const char $\ast$p\+Key)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__events_8h_a60187519f83cbbd590bd7b2edb52b109}{wld\+\_\+wpa\+Ctrl\+\_\+get\+Value\+Int\+Ext}} (const char $\ast$p\+Data, const char $\ast$p\+Key, int32\+\_\+t $\ast$p\+Val)
+\item 
+int32\+\_\+t \mbox{\hyperlink{wld__wpaCtrl__events_8h_a08df9449681af96d5e7d7b76bae18245}{wld\+\_\+wpa\+Ctrl\+\_\+fetch\+Event}} (const char $\ast$p\+Data, const char $\ast$prefix, const char $\ast$sep, char $\ast$evt\+List\mbox{[}$\,$\mbox{]}, size\+\_\+t evt\+List\+Len, char $\ast$$\ast$p\+Evt\+Name, char $\ast$$\ast$p\+Evt\+Args)
+\item 
+bool \mbox{\hyperlink{wld__wpaCtrl__events_8h_a861033d750298f4213920f1521c3215d}{wld\+\_\+wpa\+Ctrl\+\_\+parse\+Msg}} (const char $\ast$p\+Data, const char $\ast$prefix, const char $\ast$sep, char $\ast$$\ast$p\+Evt\+Name, char $\ast$$\ast$p\+Evt\+Args)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__events_8h_aad724564e6367dc5ddd1bf74a37606f7}{wld\+\_\+wpa\+Ctrl\+\_\+freq\+Param\+To\+Chan\+Spec}} (char $\ast$params, const char $\ast$key, swl\+\_\+chanspec\+\_\+t $\ast$p\+Chan\+Spec)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__events_8h_ac948eacf1d64ba4daf94e648de6fdd54}{wld\+\_\+wpa\+Ctrl\+\_\+ch\+Width\+Desc\+To\+Chan\+Spec}} (char $\ast$params, const char $\ast$key, swl\+\_\+chanspec\+\_\+t $\ast$p\+Chan\+Spec)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__wpaCtrl__events_8h_aab3333b721f7fa18f8b27b9ffa39decb}{wld\+\_\+wpa\+Ctrl\+\_\+ch\+Width\+Id\+To\+Chan\+Spec}} (char $\ast$params, const char $\ast$key, swl\+\_\+chanspec\+\_\+t $\ast$p\+Chan\+Spec)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_afee44932c90c4dd0139fb11f489870c2}\label{wld__wpaCtrl__events_8h_afee44932c90c4dd0139fb11f489870c2}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!WPA\_MSG\_LEVEL\_DEBUG\_ID@{WPA\_MSG\_LEVEL\_DEBUG\_ID}}
+\index{WPA\_MSG\_LEVEL\_DEBUG\_ID@{WPA\_MSG\_LEVEL\_DEBUG\_ID}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{WPA\_MSG\_LEVEL\_DEBUG\_ID}{WPA\_MSG\_LEVEL\_DEBUG\_ID}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPA\+\_\+\+MSG\+\_\+\+LEVEL\+\_\+\+DEBUG\+\_\+\+ID~2}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ab90ec9972772d7ebff7432deac2695e1}\label{wld__wpaCtrl__events_8h_ab90ec9972772d7ebff7432deac2695e1}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!WPA\_MSG\_LEVEL\_INFO@{WPA\_MSG\_LEVEL\_INFO}}
+\index{WPA\_MSG\_LEVEL\_INFO@{WPA\_MSG\_LEVEL\_INFO}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{WPA\_MSG\_LEVEL\_INFO}{WPA\_MSG\_LEVEL\_INFO}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} WPA\+\_\+\+MSG\+\_\+\+LEVEL\+\_\+\+INFO~\char`\"{}$<$3$>$\char`\"{}}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_acc89c31a01478ec088d1e7f45052f840}\label{wld__wpaCtrl__events_8h_acc89c31a01478ec088d1e7f45052f840}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_apCsaFinishedCb\_f@{wld\_wpaCtrl\_apCsaFinishedCb\_f}}
+\index{wld\_wpaCtrl\_apCsaFinishedCb\_f@{wld\_wpaCtrl\_apCsaFinishedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_apCsaFinishedCb\_f}{wld\_wpaCtrl\_apCsaFinishedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+ap\+Csa\+Finished\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a220228509532afdf074b8df1ee95ceef}\label{wld__wpaCtrl__events_8h_a220228509532afdf074b8df1ee95ceef}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_apIfaceEventCb\_f@{wld\_wpaCtrl\_apIfaceEventCb\_f}}
+\index{wld\_wpaCtrl\_apIfaceEventCb\_f@{wld\_wpaCtrl\_apIfaceEventCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_apIfaceEventCb\_f}{wld\_wpaCtrl\_apIfaceEventCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+ap\+Iface\+Event\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ae3f4bdf30d004f5f6465c0c8fbf766ee}\label{wld__wpaCtrl__events_8h_ae3f4bdf30d004f5f6465c0c8fbf766ee}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_apStationAssocFailureCb\_f@{wld\_wpaCtrl\_apStationAssocFailureCb\_f}}
+\index{wld\_wpaCtrl\_apStationAssocFailureCb\_f@{wld\_wpaCtrl\_apStationAssocFailureCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_apStationAssocFailureCb\_f}{wld\_wpaCtrl\_apStationAssocFailureCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+ap\+Station\+Assoc\+Failure\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a6f9d130562985fc8903abf9582f89418}\label{wld__wpaCtrl__events_8h_a6f9d130562985fc8903abf9582f89418}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_apStationConnectivityCb\_f@{wld\_wpaCtrl\_apStationConnectivityCb\_f}}
+\index{wld\_wpaCtrl\_apStationConnectivityCb\_f@{wld\_wpaCtrl\_apStationConnectivityCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_apStationConnectivityCb\_f}{wld\_wpaCtrl\_apStationConnectivityCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+ap\+Station\+Connectivity\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ad2cdb04d1fe00f4af7e4e11bf27e3023}\label{wld__wpaCtrl__events_8h_ad2cdb04d1fe00f4af7e4e11bf27e3023}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_apStationEapCompletedCb\_f@{wld\_wpaCtrl\_apStationEapCompletedCb\_f}}
+\index{wld\_wpaCtrl\_apStationEapCompletedCb\_f@{wld\_wpaCtrl\_apStationEapCompletedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_apStationEapCompletedCb\_f}{wld\_wpaCtrl\_apStationEapCompletedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+ap\+Station\+Eap\+Completed\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a2c2bfb2c457939bdeae769d2528a8730}\label{wld__wpaCtrl__events_8h_a2c2bfb2c457939bdeae769d2528a8730}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_beaconResponseCb\_f@{wld\_wpaCtrl\_beaconResponseCb\_f}}
+\index{wld\_wpaCtrl\_beaconResponseCb\_f@{wld\_wpaCtrl\_beaconResponseCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_beaconResponseCb\_f}{wld\_wpaCtrl\_beaconResponseCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+beacon\+Response\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$station, wld\+\_\+wpa\+Ctrl\+\_\+rrm\+Beacon\+Rsp\+\_\+t $\ast$rrm\+Beacon\+Response)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a9253cc534d75905a50d0daefa645ec9e}\label{wld__wpaCtrl__events_8h_a9253cc534d75905a50d0daefa645ec9e}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_btmReplyCb\_f@{wld\_wpaCtrl\_btmReplyCb\_f}}
+\index{wld\_wpaCtrl\_btmReplyCb\_f@{wld\_wpaCtrl\_btmReplyCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_btmReplyCb\_f}{wld\_wpaCtrl\_btmReplyCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+btm\+Reply\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Char\+\_\+t $\ast$mac, uint8\+\_\+t status, swl\+\_\+mac\+Char\+\_\+t $\ast$target\+Bssid)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ab507931873d0a7110863ad2f70a3ea96}\label{wld__wpaCtrl__events_8h_ab507931873d0a7110863ad2f70a3ea96}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_chanSwitchCb\_f@{wld\_wpaCtrl\_chanSwitchCb\_f}}
+\index{wld\_wpaCtrl\_chanSwitchCb\_f@{wld\_wpaCtrl\_chanSwitchCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_chanSwitchCb\_f}{wld\_wpaCtrl\_chanSwitchCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+chan\+Switch\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a07f91a2a9690dddf21104a860a1f26e6}\label{wld__wpaCtrl__events_8h_a07f91a2a9690dddf21104a860a1f26e6}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_chanSwitchStartedCb\_f@{wld\_wpaCtrl\_chanSwitchStartedCb\_f}}
+\index{wld\_wpaCtrl\_chanSwitchStartedCb\_f@{wld\_wpaCtrl\_chanSwitchStartedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_chanSwitchStartedCb\_f}{wld\_wpaCtrl\_chanSwitchStartedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+chan\+Switch\+Started\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a3192d7ae618427c7c7991af26ce45a3d}\label{wld__wpaCtrl__events_8h_a3192d7ae618427c7c7991af26ce45a3d}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_custProcMsgCb\_f@{wld\_wpaCtrl\_custProcMsgCb\_f}}
+\index{wld\_wpaCtrl\_custProcMsgCb\_f@{wld\_wpaCtrl\_custProcMsgCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_custProcMsgCb\_f}{wld\_wpaCtrl\_custProcMsgCb\_f}}
+{\footnotesize\ttfamily typedef swl\+\_\+rc\+\_\+ne($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+cust\+Proc\+Msg\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$msg\+Data)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a6e4df855083ad55b53c621f762d8fe7c}\label{wld__wpaCtrl__events_8h_a6e4df855083ad55b53c621f762d8fe7c}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_dfsCacDoneCb\_f@{wld\_wpaCtrl\_dfsCacDoneCb\_f}}
+\index{wld\_wpaCtrl\_dfsCacDoneCb\_f@{wld\_wpaCtrl\_dfsCacDoneCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_dfsCacDoneCb\_f}{wld\_wpaCtrl\_dfsCacDoneCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Cac\+Done\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec, bool success)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a316d8170bdbf191ae8ffbdc25664ce00}\label{wld__wpaCtrl__events_8h_a316d8170bdbf191ae8ffbdc25664ce00}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_dfsCacExpiredCb\_f@{wld\_wpaCtrl\_dfsCacExpiredCb\_f}}
+\index{wld\_wpaCtrl\_dfsCacExpiredCb\_f@{wld\_wpaCtrl\_dfsCacExpiredCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_dfsCacExpiredCb\_f}{wld\_wpaCtrl\_dfsCacExpiredCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Cac\+Expired\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a3f37f61d37ae8f0e7941ad003345f447}\label{wld__wpaCtrl__events_8h_a3f37f61d37ae8f0e7941ad003345f447}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_dfsCacStartedCb\_f@{wld\_wpaCtrl\_dfsCacStartedCb\_f}}
+\index{wld\_wpaCtrl\_dfsCacStartedCb\_f@{wld\_wpaCtrl\_dfsCacStartedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_dfsCacStartedCb\_f}{wld\_wpaCtrl\_dfsCacStartedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Cac\+Started\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec, uint32\+\_\+t cac\+\_\+time)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a2eaf1ff025edeb9f2706f9cf4b92ad76}\label{wld__wpaCtrl__events_8h_a2eaf1ff025edeb9f2706f9cf4b92ad76}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_dfsNewChannelCb\_f@{wld\_wpaCtrl\_dfsNewChannelCb\_f}}
+\index{wld\_wpaCtrl\_dfsNewChannelCb\_f@{wld\_wpaCtrl\_dfsNewChannelCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_dfsNewChannelCb\_f}{wld\_wpaCtrl\_dfsNewChannelCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+dfs\+New\+Channel\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a20968da0e080ffeba1c24389039ceaef}\label{wld__wpaCtrl__events_8h_a20968da0e080ffeba1c24389039ceaef}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_dfsNopFinishedCb\_f@{wld\_wpaCtrl\_dfsNopFinishedCb\_f}}
+\index{wld\_wpaCtrl\_dfsNopFinishedCb\_f@{wld\_wpaCtrl\_dfsNopFinishedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_dfsNopFinishedCb\_f}{wld\_wpaCtrl\_dfsNopFinishedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Nop\+Finished\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a3331aa94cfae97b1b98fb2415ce96c14}\label{wld__wpaCtrl__events_8h_a3331aa94cfae97b1b98fb2415ce96c14}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_dfsRadarDetectedCb\_f@{wld\_wpaCtrl\_dfsRadarDetectedCb\_f}}
+\index{wld\_wpaCtrl\_dfsRadarDetectedCb\_f@{wld\_wpaCtrl\_dfsRadarDetectedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_dfsRadarDetectedCb\_f}{wld\_wpaCtrl\_dfsRadarDetectedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+dfs\+Radar\+Detected\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+chanspec\+\_\+t $\ast$chan\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_aa7b9ccdae7a6ac2e42235cbb9ae4ae17}\label{wld__wpaCtrl__events_8h_aa7b9ccdae7a6ac2e42235cbb9ae4ae17}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_fetchSocketLinkIface\_f@{wld\_wpaCtrl\_fetchSocketLinkIface\_f}}
+\index{wld\_wpaCtrl\_fetchSocketLinkIface\_f@{wld\_wpaCtrl\_fetchSocketLinkIface\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_fetchSocketLinkIface\_f}{wld\_wpaCtrl\_fetchSocketLinkIface\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+fetch\+Socket\+Link\+Iface\+\_\+f) (void $\ast$user\+Data, \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$p\+Mgr, const char $\ast$sock\+Name, char $\ast$$\ast$p\+Link\+If\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_afbac1c4d1a61f4369df5ab5548e2d09e}\label{wld__wpaCtrl__events_8h_afbac1c4d1a61f4369df5ab5548e2d09e}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_mainApDisabledCb\_f@{wld\_wpaCtrl\_mainApDisabledCb\_f}}
+\index{wld\_wpaCtrl\_mainApDisabledCb\_f@{wld\_wpaCtrl\_mainApDisabledCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_mainApDisabledCb\_f}{wld\_wpaCtrl\_mainApDisabledCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+main\+Ap\+Disabled\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a4efc0ab43581bf97f95c4ed118c8bbdc}\label{wld__wpaCtrl__events_8h_a4efc0ab43581bf97f95c4ed118c8bbdc}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_mainApSetupCompletedCb\_f@{wld\_wpaCtrl\_mainApSetupCompletedCb\_f}}
+\index{wld\_wpaCtrl\_mainApSetupCompletedCb\_f@{wld\_wpaCtrl\_mainApSetupCompletedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_mainApSetupCompletedCb\_f}{wld\_wpaCtrl\_mainApSetupCompletedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+main\+Ap\+Setup\+Completed\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_af4c1673404da1a6d488e417388179586}\label{wld__wpaCtrl__events_8h_af4c1673404da1a6d488e417388179586}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_mgtFrameReceivedCb\_f@{wld\_wpaCtrl\_mgtFrameReceivedCb\_f}}
+\index{wld\_wpaCtrl\_mgtFrameReceivedCb\_f@{wld\_wpaCtrl\_mgtFrameReceivedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_mgtFrameReceivedCb\_f}{wld\_wpaCtrl\_mgtFrameReceivedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+mgt\+Frame\+Received\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+80211\+\_\+mgmt\+Frame\+\_\+t $\ast$frame, size\+\_\+t frame\+Len, char $\ast$frame\+Str)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ab5bfbf083dd5c1470f958287dbe8a94b}\label{wld__wpaCtrl__events_8h_ab5bfbf083dd5c1470f958287dbe8a94b}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_mngrReadyCb\_f@{wld\_wpaCtrl\_mngrReadyCb\_f}}
+\index{wld\_wpaCtrl\_mngrReadyCb\_f@{wld\_wpaCtrl\_mngrReadyCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_mngrReadyCb\_f}{wld\_wpaCtrl\_mngrReadyCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+mngr\+Ready\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, bool is\+Ready)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a9a42d8b881c4fd3e15ce2c7e1ed42f46}\label{wld__wpaCtrl__events_8h_a9a42d8b881c4fd3e15ce2c7e1ed42f46}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_preProcMsgCb\_f@{wld\_wpaCtrl\_preProcMsgCb\_f}}
+\index{wld\_wpaCtrl\_preProcMsgCb\_f@{wld\_wpaCtrl\_preProcMsgCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_preProcMsgCb\_f}{wld\_wpaCtrl\_preProcMsgCb\_f}}
+{\footnotesize\ttfamily typedef swl\+\_\+rc\+\_\+ne($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+pre\+Proc\+Msg\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$msg\+Data, size\+\_\+t len, char $\ast$$\ast$new\+If\+Name, char $\ast$$\ast$new\+Msg\+Data, size\+\_\+t $\ast$new\+Len)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a3a748f4ccdc9c55183ee72356cb27adc}\label{wld__wpaCtrl__events_8h_a3a748f4ccdc9c55183ee72356cb27adc}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_processMsgCb\_f@{wld\_wpaCtrl\_processMsgCb\_f}}
+\index{wld\_wpaCtrl\_processMsgCb\_f@{wld\_wpaCtrl\_processMsgCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_processMsgCb\_f}{wld\_wpaCtrl\_processMsgCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+process\+Msg\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$msg\+Data)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_adc54c6e1098cc2a302f1f3f75937c8df}\label{wld__wpaCtrl__events_8h_adc54c6e1098cc2a302f1f3f75937c8df}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_processStdMsgCb\_f@{wld\_wpaCtrl\_processStdMsgCb\_f}}
+\index{wld\_wpaCtrl\_processStdMsgCb\_f@{wld\_wpaCtrl\_processStdMsgCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_processStdMsgCb\_f}{wld\_wpaCtrl\_processStdMsgCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+process\+Std\+Msg\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$event\+Name, char $\ast$msg\+Data)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a5b2f3ec9c4bf082fc45fc266b4d01f4a}\label{wld__wpaCtrl__events_8h_a5b2f3ec9c4bf082fc45fc266b4d01f4a}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_selectPrimLinkIface\_f@{wld\_wpaCtrl\_selectPrimLinkIface\_f}}
+\index{wld\_wpaCtrl\_selectPrimLinkIface\_f@{wld\_wpaCtrl\_selectPrimLinkIface\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_selectPrimLinkIface\_f}{wld\_wpaCtrl\_selectPrimLinkIface\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+select\+Prim\+Link\+Iface\+\_\+f) (void $\ast$user\+Data, const char $\ast$if\+Name, char $\ast$$\ast$p\+Prim\+Link\+If\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}\label{wld__wpaCtrl__events_8h_a42eb93309551550f39492c804d7eb724}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_stationConnectivityCb\_f@{wld\_wpaCtrl\_stationConnectivityCb\_f}}
+\index{wld\_wpaCtrl\_stationConnectivityCb\_f@{wld\_wpaCtrl\_stationConnectivityCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_stationConnectivityCb\_f}{wld\_wpaCtrl\_stationConnectivityCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+station\+Connectivity\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Bssid\+Mac, swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne reason)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a062a1e16a0f230c8432a3538d98add5c}\label{wld__wpaCtrl__events_8h_a062a1e16a0f230c8432a3538d98add5c}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_stationMultiApInfoCb\_f@{wld\_wpaCtrl\_stationMultiApInfoCb\_f}}
+\index{wld\_wpaCtrl\_stationMultiApInfoCb\_f@{wld\_wpaCtrl\_stationMultiApInfoCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_stationMultiApInfoCb\_f}{wld\_wpaCtrl\_stationMultiApInfoCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+station\+Multi\+Ap\+Info\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, uint8\+\_\+t profile\+Id, uint16\+\_\+t prim\+Vlan\+Id)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a3004eb66bbc8b024d4d88e555bb976c6}\label{wld__wpaCtrl__events_8h_a3004eb66bbc8b024d4d88e555bb976c6}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_stationScanFailedCb\_f@{wld\_wpaCtrl\_stationScanFailedCb\_f}}
+\index{wld\_wpaCtrl\_stationScanFailedCb\_f@{wld\_wpaCtrl\_stationScanFailedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_stationScanFailedCb\_f}{wld\_wpaCtrl\_stationScanFailedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+station\+Scan\+Failed\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, int error)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ae8e40bb27ed3a8f46c8ba942f0a3937e}\label{wld__wpaCtrl__events_8h_ae8e40bb27ed3a8f46c8ba942f0a3937e}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_stationStartConnCb\_f@{wld\_wpaCtrl\_stationStartConnCb\_f}}
+\index{wld\_wpaCtrl\_stationStartConnCb\_f@{wld\_wpaCtrl\_stationStartConnCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_stationStartConnCb\_f}{wld\_wpaCtrl\_stationStartConnCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+station\+Start\+Conn\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, const char $\ast$ssid, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Bssid\+Mac, swl\+\_\+chanspec\+\_\+t $\ast$p\+Chans\+Spec)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a422ff12c926ff8a13b7d6ef67f094ad7}\label{wld__wpaCtrl__events_8h_a422ff12c926ff8a13b7d6ef67f094ad7}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_stationStartConnFailedCb\_f@{wld\_wpaCtrl\_stationStartConnFailedCb\_f}}
+\index{wld\_wpaCtrl\_stationStartConnFailedCb\_f@{wld\_wpaCtrl\_stationStartConnFailedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_stationStartConnFailedCb\_f}{wld\_wpaCtrl\_stationStartConnFailedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+station\+Start\+Conn\+Failed\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, int error)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}\label{wld__wpaCtrl__events_8h_a5c2a430c8fc82ba418e545df5c67871a}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_syncOnReadyCb\_f@{wld\_wpaCtrl\_syncOnReadyCb\_f}}
+\index{wld\_wpaCtrl\_syncOnReadyCb\_f@{wld\_wpaCtrl\_syncOnReadyCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_syncOnReadyCb\_f}{wld\_wpaCtrl\_syncOnReadyCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+sync\+On\+Ready\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, bool state)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_aecb3d45a542f85bab2c54580da9923cf}\label{wld__wpaCtrl__events_8h_aecb3d45a542f85bab2c54580da9923cf}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wdsIfaceAddedCb\_f@{wld\_wpaCtrl\_wdsIfaceAddedCb\_f}}
+\index{wld\_wpaCtrl\_wdsIfaceAddedCb\_f@{wld\_wpaCtrl\_wdsIfaceAddedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wdsIfaceAddedCb\_f}{wld\_wpaCtrl\_wdsIfaceAddedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wds\+Iface\+Added\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$wds\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a3c2c898d58ed76cb561b55c4859dac69}\label{wld__wpaCtrl__events_8h_a3c2c898d58ed76cb561b55c4859dac69}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wdsIfaceRemovedCb\_f@{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f}}
+\index{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f@{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f}{wld\_wpaCtrl\_wdsIfaceRemovedCb\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wds\+Iface\+Removed\+Cb\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, char $\ast$wds\+Name, swl\+\_\+mac\+Bin\+\_\+t $\ast$b\+Station\+Mac)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a954ba8dabd1c038970761148edcfc4fb}\label{wld__wpaCtrl__events_8h_a954ba8dabd1c038970761148edcfc4fb}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsCancelMsg\_f@{wld\_wpaCtrl\_wpsCancelMsg\_f}}
+\index{wld\_wpaCtrl\_wpsCancelMsg\_f@{wld\_wpaCtrl\_wpsCancelMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsCancelMsg\_f}{wld\_wpaCtrl\_wpsCancelMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Cancel\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a18af2c1215f5b78396569c8642333eeb}\label{wld__wpaCtrl__events_8h_a18af2c1215f5b78396569c8642333eeb}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsCredReceivedMsg\_f@{wld\_wpaCtrl\_wpsCredReceivedMsg\_f}}
+\index{wld\_wpaCtrl\_wpsCredReceivedMsg\_f@{wld\_wpaCtrl\_wpsCredReceivedMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsCredReceivedMsg\_f}{wld\_wpaCtrl\_wpsCredReceivedMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Cred\+Received\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, void $\ast$creds, swl\+\_\+rc\+\_\+ne status)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ac91c5c130255faa6613469e3630ba69b}\label{wld__wpaCtrl__events_8h_ac91c5c130255faa6613469e3630ba69b}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsFailMsg\_f@{wld\_wpaCtrl\_wpsFailMsg\_f}}
+\index{wld\_wpaCtrl\_wpsFailMsg\_f@{wld\_wpaCtrl\_wpsFailMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsFailMsg\_f}{wld\_wpaCtrl\_wpsFailMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Fail\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a39824519b39524e235b2883f7fc80865}\label{wld__wpaCtrl__events_8h_a39824519b39524e235b2883f7fc80865}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsInProgressMsg\_f@{wld\_wpaCtrl\_wpsInProgressMsg\_f}}
+\index{wld\_wpaCtrl\_wpsInProgressMsg\_f@{wld\_wpaCtrl\_wpsInProgressMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsInProgressMsg\_f}{wld\_wpaCtrl\_wpsInProgressMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+In\+Progress\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_af3f80dc4b239b53333b281d0b547ef86}\label{wld__wpaCtrl__events_8h_af3f80dc4b239b53333b281d0b547ef86}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsOverlapMsg\_f@{wld\_wpaCtrl\_wpsOverlapMsg\_f}}
+\index{wld\_wpaCtrl\_wpsOverlapMsg\_f@{wld\_wpaCtrl\_wpsOverlapMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsOverlapMsg\_f}{wld\_wpaCtrl\_wpsOverlapMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Overlap\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a0d010ec732ed9463c513f6ea326e3534}\label{wld__wpaCtrl__events_8h_a0d010ec732ed9463c513f6ea326e3534}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsSetupLockedMsg\_f@{wld\_wpaCtrl\_wpsSetupLockedMsg\_f}}
+\index{wld\_wpaCtrl\_wpsSetupLockedMsg\_f@{wld\_wpaCtrl\_wpsSetupLockedMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsSetupLockedMsg\_f}{wld\_wpaCtrl\_wpsSetupLockedMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Setup\+Locked\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, bool setup\+Locked)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a7048da5ea7f4a8515fa7ca2c7a4ccf5c}\label{wld__wpaCtrl__events_8h_a7048da5ea7f4a8515fa7ca2c7a4ccf5c}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsSuccessMsg\_f@{wld\_wpaCtrl\_wpsSuccessMsg\_f}}
+\index{wld\_wpaCtrl\_wpsSuccessMsg\_f@{wld\_wpaCtrl\_wpsSuccessMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsSuccessMsg\_f}{wld\_wpaCtrl\_wpsSuccessMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Success\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name, swl\+\_\+mac\+Char\+\_\+t $\ast$mac)}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_aeb38a7194c7a6fdd2ee84c472e5b1fe7}\label{wld__wpaCtrl__events_8h_aeb38a7194c7a6fdd2ee84c472e5b1fe7}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_wpsTimeoutMsg\_f@{wld\_wpaCtrl\_wpsTimeoutMsg\_f}}
+\index{wld\_wpaCtrl\_wpsTimeoutMsg\_f@{wld\_wpaCtrl\_wpsTimeoutMsg\_f}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_wpsTimeoutMsg\_f}{wld\_wpaCtrl\_wpsTimeoutMsg\_f}}
+{\footnotesize\ttfamily typedef void($\ast$ wld\+\_\+wpa\+Ctrl\+\_\+wps\+Timeout\+Msg\+\_\+f) (void $\ast$user\+Data, char $\ast$if\+Name)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_ac948eacf1d64ba4daf94e648de6fdd54}\label{wld__wpaCtrl__events_8h_ac948eacf1d64ba4daf94e648de6fdd54}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_chWidthDescToChanSpec@{wld\_wpaCtrl\_chWidthDescToChanSpec}}
+\index{wld\_wpaCtrl\_chWidthDescToChanSpec@{wld\_wpaCtrl\_chWidthDescToChanSpec}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_chWidthDescToChanSpec()}{wld\_wpaCtrl\_chWidthDescToChanSpec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+ch\+Width\+Desc\+To\+Chan\+Spec (\begin{DoxyParamCaption}\item[{char $\ast$}]{params,  }\item[{const char $\ast$}]{key,  }\item[{swl\+\_\+chanspec\+\_\+t $\ast$}]{p\+Chan\+Spec }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_aab3333b721f7fa18f8b27b9ffa39decb}\label{wld__wpaCtrl__events_8h_aab3333b721f7fa18f8b27b9ffa39decb}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_chWidthIdToChanSpec@{wld\_wpaCtrl\_chWidthIdToChanSpec}}
+\index{wld\_wpaCtrl\_chWidthIdToChanSpec@{wld\_wpaCtrl\_chWidthIdToChanSpec}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_chWidthIdToChanSpec()}{wld\_wpaCtrl\_chWidthIdToChanSpec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+ch\+Width\+Id\+To\+Chan\+Spec (\begin{DoxyParamCaption}\item[{char $\ast$}]{params,  }\item[{const char $\ast$}]{key,  }\item[{swl\+\_\+chanspec\+\_\+t $\ast$}]{p\+Chan\+Spec }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a08df9449681af96d5e7d7b76bae18245}\label{wld__wpaCtrl__events_8h_a08df9449681af96d5e7d7b76bae18245}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_fetchEvent@{wld\_wpaCtrl\_fetchEvent}}
+\index{wld\_wpaCtrl\_fetchEvent@{wld\_wpaCtrl\_fetchEvent}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_fetchEvent()}{wld\_wpaCtrl\_fetchEvent()}}
+{\footnotesize\ttfamily int32\+\_\+t wld\+\_\+wpa\+Ctrl\+\_\+fetch\+Event (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Data,  }\item[{const char $\ast$}]{prefix,  }\item[{const char $\ast$}]{sep,  }\item[{char $\ast$}]{evt\+List\mbox{[}$\,$\mbox{]},  }\item[{size\+\_\+t}]{evt\+List\+Len,  }\item[{char $\ast$$\ast$}]{p\+Evt\+Name,  }\item[{char $\ast$$\ast$}]{p\+Evt\+Args }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h_a08df9449681af96d5e7d7b76bae18245_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_aad724564e6367dc5ddd1bf74a37606f7}\label{wld__wpaCtrl__events_8h_aad724564e6367dc5ddd1bf74a37606f7}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_freqParamToChanSpec@{wld\_wpaCtrl\_freqParamToChanSpec}}
+\index{wld\_wpaCtrl\_freqParamToChanSpec@{wld\_wpaCtrl\_freqParamToChanSpec}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_freqParamToChanSpec()}{wld\_wpaCtrl\_freqParamToChanSpec()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+wpa\+Ctrl\+\_\+freq\+Param\+To\+Chan\+Spec (\begin{DoxyParamCaption}\item[{char $\ast$}]{params,  }\item[{const char $\ast$}]{key,  }\item[{swl\+\_\+chanspec\+\_\+t $\ast$}]{p\+Chan\+Spec }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a05be0ee99bc026630bcd90ae5295aaa0}\label{wld__wpaCtrl__events_8h_a05be0ee99bc026630bcd90ae5295aaa0}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_getValueInt@{wld\_wpaCtrl\_getValueInt}}
+\index{wld\_wpaCtrl\_getValueInt@{wld\_wpaCtrl\_getValueInt}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getValueInt()}{wld\_wpaCtrl\_getValueInt()}}
+{\footnotesize\ttfamily int wld\+\_\+wpa\+Ctrl\+\_\+get\+Value\+Int (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Data,  }\item[{const char $\ast$}]{p\+Key }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h_a05be0ee99bc026630bcd90ae5295aaa0_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a60187519f83cbbd590bd7b2edb52b109}\label{wld__wpaCtrl__events_8h_a60187519f83cbbd590bd7b2edb52b109}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_getValueIntExt@{wld\_wpaCtrl\_getValueIntExt}}
+\index{wld\_wpaCtrl\_getValueIntExt@{wld\_wpaCtrl\_getValueIntExt}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getValueIntExt()}{wld\_wpaCtrl\_getValueIntExt()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+get\+Value\+Int\+Ext (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Data,  }\item[{const char $\ast$}]{p\+Key,  }\item[{int32\+\_\+t $\ast$}]{p\+Val }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h_a60187519f83cbbd590bd7b2edb52b109_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h_a60187519f83cbbd590bd7b2edb52b109_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a67b83e09a159510b15c2677af1127b60}\label{wld__wpaCtrl__events_8h_a67b83e09a159510b15c2677af1127b60}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_getValueStr@{wld\_wpaCtrl\_getValueStr}}
+\index{wld\_wpaCtrl\_getValueStr@{wld\_wpaCtrl\_getValueStr}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_getValueStr()}{wld\_wpaCtrl\_getValueStr()}}
+{\footnotesize\ttfamily int wld\+\_\+wpa\+Ctrl\+\_\+get\+Value\+Str (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Data,  }\item[{const char $\ast$}]{p\+Key,  }\item[{char $\ast$}]{p\+Value,  }\item[{int}]{length }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h_a67b83e09a159510b15c2677af1127b60_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__wpaCtrl__events_8h_a861033d750298f4213920f1521c3215d}\label{wld__wpaCtrl__events_8h_a861033d750298f4213920f1521c3215d}} 
+\index{wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}!wld\_wpaCtrl\_parseMsg@{wld\_wpaCtrl\_parseMsg}}
+\index{wld\_wpaCtrl\_parseMsg@{wld\_wpaCtrl\_parseMsg}!wld\_wpaCtrl\_events.h@{wld\_wpaCtrl\_events.h}}
+\doxysubsubsection{\texorpdfstring{wld\_wpaCtrl\_parseMsg()}{wld\_wpaCtrl\_parseMsg()}}
+{\footnotesize\ttfamily bool wld\+\_\+wpa\+Ctrl\+\_\+parse\+Msg (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Data,  }\item[{const char $\ast$}]{prefix,  }\item[{const char $\ast$}]{sep,  }\item[{char $\ast$$\ast$}]{p\+Evt\+Name,  }\item[{char $\ast$$\ast$}]{p\+Evt\+Args }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__wpaCtrl__events_8h_a861033d750298f4213920f1521c3215d_cgraph}
+\end{center}
+\end{figure}

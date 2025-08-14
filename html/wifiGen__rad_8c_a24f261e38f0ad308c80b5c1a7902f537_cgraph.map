@@ -1,0 +1,13 @@
+<map id="wifiGen_rad_supports" name="wifiGen_rad_supports">
+<area shape="rect" id="node1" title=" " alt="" coords="5,123,168,149"/>
+<area shape="rect" id="node2" href="$wld__util_8h.html#a519d08ae48404e6142031973c45f07b9" title=" " alt="" coords="258,5,382,32"/>
+<area shape="rect" id="node3" href="$wifiGen__hapd_8c.html#a4d80996081b27edb93e16942da18919a" title=" " alt="" coords="216,57,424,98"/>
+<area shape="rect" id="node9" href="$wld__linuxIfUtils_8c.html#a1ed70e31f78a4556b3c3b560e29a2c00" title=" " alt="" coords="227,123,413,149"/>
+<area shape="rect" id="node10" href="$wld__linuxIfUtils_8c.html#a3cfe5875e4903211756333c2be3c3ac7" title=" " alt="" coords="228,173,412,200"/>
+<area shape="rect" id="node11" href="$wld__radio_8c.html#a359ffc4448fda51f53a64c3067467fdb" title=" " alt="" coords="248,224,392,251"/>
+<area shape="rect" id="node4" href="$wld__rad__hostapd__api_8c.html#afde544a6926aebb05ea1f9c934778480" title=" " alt="" coords="472,64,713,91"/>
+<area shape="rect" id="node5" href="$wld__hostapd__cfgManager_8c.html#abcd4b96a1191c1c593ab53f9d419e740" title="delete a wld_hostapd_config_t map already loaded from hostapd file" alt="" coords="772,5,965,32"/>
+<area shape="rect" id="node6" href="$wld__hostapd__cfgManager_8c.html#af7827e8223cd8d13fc11d3a520f71660" title=" " alt="" coords="761,57,976,98"/>
+<area shape="rect" id="node8" href="$wld__hostapd__cfgManager_8c.html#ad15aa07c202c5ff5f3a78dc1297429f5" title="load the hostapd configuration from hostpad config file into wld_hostapd_config_t structure" alt="" coords="779,123,959,149"/>
+<area shape="rect" id="node7" href="$wld__hostapd__cfgManager_8c.html#a0a1bb10a455c35606f794a85a9e5964a" title="get the general/vap config map" alt="" coords="1024,64,1225,91"/>
+</map>

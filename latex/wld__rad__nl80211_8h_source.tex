@@ -1,0 +1,506 @@
+\hypertarget{wld__rad__nl80211_8h_source}{}\doxysection{wld\+\_\+rad\+\_\+nl80211.\+h}
+\label{wld__rad__nl80211_8h_source}\index{include/wld/wld\_rad\_nl80211.h@{include/wld/wld\_rad\_nl80211.h}}
+\mbox{\hyperlink{wld__rad__nl80211_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{comment}{/*}}
+\DoxyCodeLine{63 \textcolor{comment}{ * This file defines wrapper functions to use nl80211 generic apis with T\_Radio context}}
+\DoxyCodeLine{64 \textcolor{comment}{ */}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_RAD\_NL80211\_H\_}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_RAD\_NL80211\_H\_}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__api_8h}{wld\_nl80211\_api.h}}"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__events_8h}{wld\_nl80211\_events.h}}"{}}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__debug_8h}{wld\_nl80211\_debug.h}}"{}}}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{comment}{/*}}
+\DoxyCodeLine{75 \textcolor{comment}{ * @brief set a listener for all received nl80211 events related to a radio device.}}
+\DoxyCodeLine{76 \textcolor{comment}{ *}}
+\DoxyCodeLine{77 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{78 \textcolor{comment}{ * @param pData user private data to provide when invoking handlers}}
+\DoxyCodeLine{79 \textcolor{comment}{ * @param handlers Pointer to structure of callback functions, handling the received events}}
+\DoxyCodeLine{80 \textcolor{comment}{ *                 Callbacks of unmanaged events shall remain null.}}
+\DoxyCodeLine{81 \textcolor{comment}{ *                 Handlers will be called with pRef equal to pRadio.}}
+\DoxyCodeLine{82 \textcolor{comment}{ *}}
+\DoxyCodeLine{83 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{84 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{85 \textcolor{comment}{ */}}
+\DoxyCodeLine{86 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_aec035a3f1695c584f09ac50c41c542f0}{wld\_rad\_nl80211\_setEvtListener}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \textcolor{keywordtype}{void}* pData, \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}}* \textcolor{keyword}{const} handlers);}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88 \textcolor{comment}{/*}}
+\DoxyCodeLine{89 \textcolor{comment}{ * @brief delete listener of radio device's nl80211 events}}
+\DoxyCodeLine{90 \textcolor{comment}{ *}}
+\DoxyCodeLine{91 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{92 \textcolor{comment}{ *}}
+\DoxyCodeLine{93 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{94 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{95 \textcolor{comment}{ */}}
+\DoxyCodeLine{96 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a404bcbdee45a3333a4c892c926eb2493}{wld\_rad\_nl80211\_delEvtListener}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98 \textcolor{comment}{/*}}
+\DoxyCodeLine{99 \textcolor{comment}{ * @brief get info of main radio interface (AP/EP)}}
+\DoxyCodeLine{100 \textcolor{comment}{ * This includes some :}}
+\DoxyCodeLine{101 \textcolor{comment}{ * -\/ physical info like current channel and tx power}}
+\DoxyCodeLine{102 \textcolor{comment}{ * -\/ logical info: interface name, mac, type, ssid}}
+\DoxyCodeLine{103 \textcolor{comment}{ *}}
+\DoxyCodeLine{104 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{105 \textcolor{comment}{ * @param pIfaceInfo pointer to interface info struct to be filled}}
+\DoxyCodeLine{106 \textcolor{comment}{ *}}
+\DoxyCodeLine{107 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{108 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{109 \textcolor{comment}{ */}}
+\DoxyCodeLine{110 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a703576f96b4b3644a47daa0363e2cdd7}{wld\_rad\_nl80211\_getInterfaceInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{112 \textcolor{comment}{/*}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @brief configure radio's main interface type as AP}}
+\DoxyCodeLine{114 \textcolor{comment}{ *}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{116 \textcolor{comment}{ *}}
+\DoxyCodeLine{117 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{118 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{119 \textcolor{comment}{ */}}
+\DoxyCodeLine{120 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a85af5037c0598b793245852c20e92baf}{wld\_rad\_nl80211\_setAp}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122 \textcolor{comment}{/*}}
+\DoxyCodeLine{123 \textcolor{comment}{ * @brief configure radio's main interface type as Station (endpoint)}}
+\DoxyCodeLine{124 \textcolor{comment}{ *}}
+\DoxyCodeLine{125 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{126 \textcolor{comment}{ *}}
+\DoxyCodeLine{127 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{128 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{129 \textcolor{comment}{ */}}
+\DoxyCodeLine{130 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a251899dfab35f326fb3a4083339f78b8}{wld\_rad\_nl80211\_setSta}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{132 \textcolor{comment}{/*}}
+\DoxyCodeLine{133 \textcolor{comment}{ * @brief configure radio's main interface 4Mac option}}
+\DoxyCodeLine{134 \textcolor{comment}{ * (With NL80211, it is only available in STATION and AP\_VLAN types)}}
+\DoxyCodeLine{135 \textcolor{comment}{ *}}
+\DoxyCodeLine{136 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{137 \textcolor{comment}{ *}}
+\DoxyCodeLine{138 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{139 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{140 \textcolor{comment}{ */}}
+\DoxyCodeLine{141 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a94120451de6e22ee823defd982434aec}{wld\_rad\_nl80211\_set4Mac}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \textcolor{keywordtype}{bool} use4Mac);}
+\DoxyCodeLine{142 }
+\DoxyCodeLine{143 \textcolor{comment}{/*}}
+\DoxyCodeLine{144 \textcolor{comment}{ * @brief create interface on the radio device}}
+\DoxyCodeLine{145 \textcolor{comment}{ *}}
+\DoxyCodeLine{146 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{147 \textcolor{comment}{ * @param ifname interface name}}
+\DoxyCodeLine{148 \textcolor{comment}{ * @param mac mac address of the new interface}}
+\DoxyCodeLine{149 \textcolor{comment}{ * @param isSta flag for managed/AP interface type}}
+\DoxyCodeLine{150 \textcolor{comment}{ * @param pOutIfInfo output interface info}}
+\DoxyCodeLine{151 \textcolor{comment}{ *}}
+\DoxyCodeLine{152 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{153 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{154 \textcolor{comment}{ */}}
+\DoxyCodeLine{155 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a54aba377d5b5b483240666a01fb781c2}{wld\_rad\_nl80211\_addInterface}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname, swl\_macBin\_t* mac, \textcolor{keywordtype}{bool} isSta, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pOutIfInfo);}
+\DoxyCodeLine{156 }
+\DoxyCodeLine{157 \textcolor{comment}{/*}}
+\DoxyCodeLine{158 \textcolor{comment}{ * @brief create/set AP interface on top of radio device}}
+\DoxyCodeLine{159 \textcolor{comment}{ * AP.alias (expected net dev name) must be provided as input.}}
+\DoxyCodeLine{160 \textcolor{comment}{ *}}
+\DoxyCodeLine{161 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{162 \textcolor{comment}{ *}}
+\DoxyCodeLine{163 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{164 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{165 \textcolor{comment}{ */}}
+\DoxyCodeLine{166 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_adbb4175418f4e849332426bd3a061119}{wld\_rad\_nl80211\_addVapInterface}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{167 }
+\DoxyCodeLine{168 \textcolor{comment}{/*}}
+\DoxyCodeLine{169 \textcolor{comment}{ * @brief create/set EP interface on top of radio device}}
+\DoxyCodeLine{170 \textcolor{comment}{ * EP.alias (expected net dev name) must be provided as input.}}
+\DoxyCodeLine{171 \textcolor{comment}{ *}}
+\DoxyCodeLine{172 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{173 \textcolor{comment}{ * @param pEP pointer to endpoint context}}
+\DoxyCodeLine{174 \textcolor{comment}{ *}}
+\DoxyCodeLine{175 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{176 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{177 \textcolor{comment}{ */}}
+\DoxyCodeLine{178 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ab7c08dd4798d5abb8e8307b137a168e1}{wld\_rad\_nl80211\_addEpInterface}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{179 }
+\DoxyCodeLine{180 \textcolor{comment}{/*}}
+\DoxyCodeLine{181 \textcolor{comment}{ * @brief register all unassigned radio devices (via main nl2011 wl ifaces) to provided vendor context}}
+\DoxyCodeLine{182 \textcolor{comment}{ * (Synchronous api)}}
+\DoxyCodeLine{183 \textcolor{comment}{ *}}
+\DoxyCodeLine{184 \textcolor{comment}{ * @param vendor vendor context}}
+\DoxyCodeLine{185 \textcolor{comment}{ * @param maxWiphys max wiphy value to fetch (i.e max wiphy devices)}}
+\DoxyCodeLine{186 \textcolor{comment}{ * @param maxWlIfaces max number of interfaces per wiphy (i.e max AP/EP per radio)}}
+\DoxyCodeLine{187 \textcolor{comment}{ * @param wlIfacesInfo (input) 2D array of wl interfaces, including all existing wiphy/wlIfIndex}}
+\DoxyCodeLine{188 \textcolor{comment}{ *}}
+\DoxyCodeLine{189 \textcolor{comment}{ * @return count of detected and registered radio devices}}
+\DoxyCodeLine{190 \textcolor{comment}{ */}}
+\DoxyCodeLine{191 uint8\_t \mbox{\hyperlink{wld__rad__nl80211_8h_ac4eed247eba7d9e6f87d8dff1374b804}{wld\_rad\_nl80211\_addRadios}}(\mbox{\hyperlink{structvendor}{vendor\_t}}* \mbox{\hyperlink{structvendor}{vendor}},}
+\DoxyCodeLine{192                                   \textcolor{keyword}{const} uint32\_t maxWiphys, \textcolor{keyword}{const} uint32\_t maxWlIfaces,}
+\DoxyCodeLine{193                                   \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}} wlIfacesInfo[maxWiphys][maxWlIfaces]);}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{195 \textcolor{comment}{/*}}
+\DoxyCodeLine{196 \textcolor{comment}{ * @brief get info of radio device}}
+\DoxyCodeLine{197 \textcolor{comment}{ * This includes:}}
+\DoxyCodeLine{198 \textcolor{comment}{ * -\/ supported radio standards, freq Bands (+chanList), channel widths}}
+\DoxyCodeLine{199 \textcolor{comment}{ *}}
+\DoxyCodeLine{200 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{201 \textcolor{comment}{ * @param pWiphyInfo pointer to radio info struct to be filled}}
+\DoxyCodeLine{202 \textcolor{comment}{ *}}
+\DoxyCodeLine{203 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{204 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{205 \textcolor{comment}{ */}}
+\DoxyCodeLine{206 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_aa95d2bdc9f9087faf376b9cc24ada5a8}{wld\_rad\_nl80211\_getWiphyInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structwld__nl80211__wiphyInfo__t}{wld\_nl80211\_wiphyInfo\_t}}* pWiphyInfo);}
+\DoxyCodeLine{207 }
+\DoxyCodeLine{208 \textcolor{comment}{/*}}
+\DoxyCodeLine{209 \textcolor{comment}{ * @brief get survey info of all radio channels}}
+\DoxyCodeLine{210 \textcolor{comment}{ *}}
+\DoxyCodeLine{211 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{212 \textcolor{comment}{ * @param ppChanSurveyInfo (output) array of channel survey info, dynamically allocated}}
+\DoxyCodeLine{213 \textcolor{comment}{ * (need to be freed by user)}}
+\DoxyCodeLine{214 \textcolor{comment}{ * @param pnChanSurveyInfo (output) number of available survey info}}
+\DoxyCodeLine{215 \textcolor{comment}{ *}}
+\DoxyCodeLine{216 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{217 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{218 \textcolor{comment}{ */}}
+\DoxyCodeLine{219 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a7d0b85b6f05fd1c5379f8f5b07e648ef}{wld\_rad\_nl80211\_getSurveyInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo\_t}}** ppChanSurveyInfo, uint32\_t* pnrChanSurveyInfo);}
+\DoxyCodeLine{220 }
+\DoxyCodeLine{221 \textcolor{comment}{/*}}
+\DoxyCodeLine{222 \textcolor{comment}{ * @brief convert channel survey info of the central channel being used into radio air statistics}}
+\DoxyCodeLine{223 \textcolor{comment}{ *}}
+\DoxyCodeLine{224 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{225 \textcolor{comment}{ * @param pStats pointer to result}}
+\DoxyCodeLine{226 \textcolor{comment}{ * @param pChanSurveyInfo  pointer to channel survey info to be processed}}
+\DoxyCodeLine{227 \textcolor{comment}{ *}}
+\DoxyCodeLine{228 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{229 \textcolor{comment}{ *         SWL\_RC\_CONTINUE if survey info is not of the central channel being used}}
+\DoxyCodeLine{230 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{231 \textcolor{comment}{ */}}
+\DoxyCodeLine{232 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_abe0caea840f01d16672102574ebdceca}{wld\_rad\_nl80211\_getAirStatsFromSurveyInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structwld__airStats}{wld\_airStats\_t}}* pStats, \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo\_t}}* pChanSurveyInfo);}
+\DoxyCodeLine{233 }
+\DoxyCodeLine{234 \textcolor{comment}{/*}}
+\DoxyCodeLine{235 \textcolor{comment}{ * @brief update radio usage statistics (spectrum info list)}}
+\DoxyCodeLine{236 \textcolor{comment}{ * based on retrieved channel survey results}}
+\DoxyCodeLine{237 \textcolor{comment}{ *}}
+\DoxyCodeLine{238 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{239 \textcolor{comment}{ * @param pOutSpectrumResults spectrum results filled with process survey info}}
+\DoxyCodeLine{240 \textcolor{comment}{ * @param pChanSurveyInfoList array of channel survey info}}
+\DoxyCodeLine{241 \textcolor{comment}{ * @param nChanSurveyInfo count of channel survey array entries}}
+\DoxyCodeLine{242 \textcolor{comment}{ *}}
+\DoxyCodeLine{243 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{244 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{245 \textcolor{comment}{ */}}
+\DoxyCodeLine{246 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a27e046bcc6b8d56984848349fe978e99}{wld\_rad\_nl80211\_updateUsageStatsFromSurveyInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, amxc\_llist\_t* pOutSpectrumResults,}
+\DoxyCodeLine{247                                                          \mbox{\hyperlink{structwld__nl80211__channelSurveyInfo}{wld\_nl80211\_channelSurveyInfo\_t}}* pChanSurveyInfoList, uint32\_t nChanSurveyInfo);}
+\DoxyCodeLine{248 }
+\DoxyCodeLine{249 \textcolor{comment}{/*}}
+\DoxyCodeLine{250 \textcolor{comment}{ * @brief get radio air statistics of the central channel being used}}
+\DoxyCodeLine{251 \textcolor{comment}{ * The channel load is defined as the percentage of time that the AP sensed the medium was busy.}}
+\DoxyCodeLine{252 \textcolor{comment}{ *}}
+\DoxyCodeLine{253 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{254 \textcolor{comment}{ * @param stats pointer to result}}
+\DoxyCodeLine{255 \textcolor{comment}{ *}}
+\DoxyCodeLine{256 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{257 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{258 \textcolor{comment}{ */}}
+\DoxyCodeLine{259 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_aaab3685574a9a7862ee1e577544a0570}{wld\_rad\_nl80211\_getAirstats}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{structwld__airStats}{wld\_airStats\_t}}* stats);}
+\DoxyCodeLine{260 }
+\DoxyCodeLine{261 \textcolor{comment}{/*}}
+\DoxyCodeLine{262 \textcolor{comment}{ * @brief configure radio's tx/rx antennas}}
+\DoxyCodeLine{263 \textcolor{comment}{ *}}
+\DoxyCodeLine{264 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{265 \textcolor{comment}{ * @param txMapAnt Bitmap of allowed antennas for transmitting}}
+\DoxyCodeLine{266 \textcolor{comment}{ * @param rxMapAnt Bitmap of allowed antennas for receiving}}
+\DoxyCodeLine{267 \textcolor{comment}{ *}}
+\DoxyCodeLine{268 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{269 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{270 \textcolor{comment}{ */}}
+\DoxyCodeLine{271 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_acaed2ca166a98656dc0786e5fc8480b0}{wld\_rad\_nl80211\_setAntennas}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, uint32\_t txMapAnt, uint32\_t rxMapAnt);}
+\DoxyCodeLine{272 }
+\DoxyCodeLine{273 \textcolor{comment}{/*}}
+\DoxyCodeLine{274 \textcolor{comment}{ * @brief configure auto transmit power level}}
+\DoxyCodeLine{275 \textcolor{comment}{ *}}
+\DoxyCodeLine{276 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{277 \textcolor{comment}{ * @param type TX power adjustment}}
+\DoxyCodeLine{278 \textcolor{comment}{ *}}
+\DoxyCodeLine{279 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{280 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{281 \textcolor{comment}{ */}}
+\DoxyCodeLine{282 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a35aca467b2d826f87a3a20eab2e15050}{wld\_rad\_nl80211\_setTxPowerAuto}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{284 \textcolor{comment}{/*}}
+\DoxyCodeLine{285 \textcolor{comment}{ * @brief configure fixed transmit power level}}
+\DoxyCodeLine{286 \textcolor{comment}{ *}}
+\DoxyCodeLine{287 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{288 \textcolor{comment}{ * @param mbm transmit power level in dbm}}
+\DoxyCodeLine{289 \textcolor{comment}{ *}}
+\DoxyCodeLine{290 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{291 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{292 \textcolor{comment}{ */}}
+\DoxyCodeLine{293 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ae6511bd974c0ba31cd78f92097a03689}{wld\_rad\_nl80211\_setTxPowerFixed}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, int32\_t dbm);}
+\DoxyCodeLine{294 }
+\DoxyCodeLine{295 \textcolor{comment}{/*}}
+\DoxyCodeLine{296 \textcolor{comment}{ * @brief configure limited transmit power level}}
+\DoxyCodeLine{297 \textcolor{comment}{ *}}
+\DoxyCodeLine{298 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{299 \textcolor{comment}{ * @param mbm transmit power level in dbm}}
+\DoxyCodeLine{300 \textcolor{comment}{ *}}
+\DoxyCodeLine{301 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{302 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{303 \textcolor{comment}{ */}}
+\DoxyCodeLine{304 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ab214b688d55c842770c94e511a856872}{wld\_rad\_nl80211\_setTxPowerLimited}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, int32\_t dbm);}
+\DoxyCodeLine{305 }
+\DoxyCodeLine{306 \textcolor{comment}{/*}}
+\DoxyCodeLine{307 \textcolor{comment}{ * @brief get transmit power level}}
+\DoxyCodeLine{308 \textcolor{comment}{ *}}
+\DoxyCodeLine{309 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{310 \textcolor{comment}{ * @param dbm current tx power in dbm}}
+\DoxyCodeLine{311 \textcolor{comment}{ *}}
+\DoxyCodeLine{312 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{313 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{314 \textcolor{comment}{ */}}
+\DoxyCodeLine{315 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a141342d3997dbceaae28134e2d27a480}{wld\_rad\_nl80211\_getTxPower}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, int32\_t* dbm);}
+\DoxyCodeLine{316 }
+\DoxyCodeLine{317 \textcolor{comment}{/*}}
+\DoxyCodeLine{318 \textcolor{comment}{ * @brief get maximum transmit power level for a spesific channel}}
+\DoxyCodeLine{319 \textcolor{comment}{ *}}
+\DoxyCodeLine{320 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{321 \textcolor{comment}{ * @param channel for which the max transmit power is being retrieved}}
+\DoxyCodeLine{322 \textcolor{comment}{ * @param dbm max tx power in dbm}}
+\DoxyCodeLine{323 \textcolor{comment}{ *}}
+\DoxyCodeLine{324 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{325 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{326 \textcolor{comment}{ */}}
+\DoxyCodeLine{327 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a9225c06a4f8c33e54fd1ec05b5a5faaa}{wld\_rad\_nl80211\_getMaxTxPowerdBm}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, uint16\_t channel, int32\_t* dbm);}
+\DoxyCodeLine{328 }
+\DoxyCodeLine{329 \textcolor{comment}{/*}}
+\DoxyCodeLine{330 \textcolor{comment}{ * @brief get channel specification from nl80211 interface info}}
+\DoxyCodeLine{331 \textcolor{comment}{ *}}
+\DoxyCodeLine{332 \textcolor{comment}{ * @param pChanSpec pointer to chanspec info struct to be filled}}
+\DoxyCodeLine{333 \textcolor{comment}{ * @param pIfaceInfo source pointer to interface info}}
+\DoxyCodeLine{334 \textcolor{comment}{ *}}
+\DoxyCodeLine{335 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{336 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{337 \textcolor{comment}{ */}}
+\DoxyCodeLine{338 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a0b025a7f9630e9833a9af3881f27df3f}{wld\_rad\_nl80211\_getChanSpecFromIfaceInfo}}(swl\_chanspec\_t* pChanSpec, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{339 }
+\DoxyCodeLine{340 \textcolor{comment}{/*}}
+\DoxyCodeLine{341 \textcolor{comment}{ * @brief get current radio channel info}}
+\DoxyCodeLine{342 \textcolor{comment}{ *}}
+\DoxyCodeLine{343 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{344 \textcolor{comment}{ * @param pChanSpec pointer to chanspec info struct to be filled}}
+\DoxyCodeLine{345 \textcolor{comment}{ *}}
+\DoxyCodeLine{346 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{347 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{348 \textcolor{comment}{ */}}
+\DoxyCodeLine{349 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a25c207c554b08972baa4238fb3b0534d}{wld\_rad\_nl80211\_getChannel}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, swl\_chanspec\_t* pChanSpec);}
+\DoxyCodeLine{350 }
+\DoxyCodeLine{351 \textcolor{comment}{/*}}
+\DoxyCodeLine{352 \textcolor{comment}{ * @brief initiate a neighbor scan}}
+\DoxyCodeLine{353 \textcolor{comment}{ * It is possible to indicate scan options:}}
+\DoxyCodeLine{354 \textcolor{comment}{ * -\/ ssids to fetch}}
+\DoxyCodeLine{355 \textcolor{comment}{ * -\/ frequencies to use}}
+\DoxyCodeLine{356 \textcolor{comment}{ * Every call flushes the previous scan cache}}
+\DoxyCodeLine{357 \textcolor{comment}{ *}}
+\DoxyCodeLine{358 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{359 \textcolor{comment}{ *}}
+\DoxyCodeLine{360 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success (scan trigger acknowledged)}}
+\DoxyCodeLine{361 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{362 \textcolor{comment}{ */}}
+\DoxyCodeLine{363 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ae565c1ef858205e4bf46023494976e72}{wld\_rad\_nl80211\_startScan}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{364 }
+\DoxyCodeLine{365 \textcolor{comment}{/*}}
+\DoxyCodeLine{366 \textcolor{comment}{ * @brief initiate a neighbor scan with selected scan flags}}
+\DoxyCodeLine{367 \textcolor{comment}{ * It is possible to indicate scan options:}}
+\DoxyCodeLine{368 \textcolor{comment}{ * -\/ ssids to fetch}}
+\DoxyCodeLine{369 \textcolor{comment}{ * -\/ frequencies to use}}
+\DoxyCodeLine{370 \textcolor{comment}{ *}}
+\DoxyCodeLine{371 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{372 \textcolor{comment}{ * @param pFlags pointer to scan flags struct}}
+\DoxyCodeLine{373 \textcolor{comment}{ *}}
+\DoxyCodeLine{374 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success (scan trigger acknowledged)}}
+\DoxyCodeLine{375 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{376 \textcolor{comment}{ */}}
+\DoxyCodeLine{377 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a2dbdb0b01badbf46d3dc8fc18fefa0ac}{wld\_rad\_nl80211\_startScanExt}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structSWL__PACKED}{wld\_nl80211\_scanFlags\_t}}* pFlags);}
+\DoxyCodeLine{378 }
+\DoxyCodeLine{379 \textcolor{comment}{/*}}
+\DoxyCodeLine{380 \textcolor{comment}{ * @brief abort a running neighbor scan}}
+\DoxyCodeLine{381 \textcolor{comment}{ *}}
+\DoxyCodeLine{382 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{383 \textcolor{comment}{ *}}
+\DoxyCodeLine{384 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success (scan abort acknowledged)}}
+\DoxyCodeLine{385 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{386 \textcolor{comment}{ */}}
+\DoxyCodeLine{387 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ae14e3f81292e950d99fa22112e30b7b5}{wld\_rad\_nl80211\_abortScan}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{388 }
+\DoxyCodeLine{389 \textcolor{comment}{/*}}
+\DoxyCodeLine{390 \textcolor{comment}{ * @brief subscribe to get asynchronous scan results}}
+\DoxyCodeLine{391 \textcolor{comment}{ *}}
+\DoxyCodeLine{392 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{393 \textcolor{comment}{ * @param priv user data that will returned in the result handler}}
+\DoxyCodeLine{394 \textcolor{comment}{ * @param fScanResultsCb handler that will be called when results are ready}}
+\DoxyCodeLine{395 \textcolor{comment}{ *}}
+\DoxyCodeLine{396 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{397 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{398 \textcolor{comment}{ */}}
+\DoxyCodeLine{399 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a8967a19d50717941a75e62b92784c69d}{wld\_rad\_nl80211\_getScanResults}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \textcolor{keywordtype}{void}* priv, \mbox{\hyperlink{wld__nl80211__api_8h_a9efa20505e38003c4854203456d90377}{scanResultsCb\_f}} fScanResultsCb);}
+\DoxyCodeLine{400 }
+\DoxyCodeLine{401 \textcolor{comment}{/*}}
+\DoxyCodeLine{402 \textcolor{comment}{ * @brief set regulatory ISO/IEC 3166-\/1 alpha2 country code}}
+\DoxyCodeLine{403 \textcolor{comment}{ * (applicable as global or on radio device)}}
+\DoxyCodeLine{404 \textcolor{comment}{ *}}
+\DoxyCodeLine{405 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{406 \textcolor{comment}{ * @param alpha2 ISO/IEC 3166-\/1 alpha2 country code}}
+\DoxyCodeLine{407 \textcolor{comment}{ *}}
+\DoxyCodeLine{408 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{409 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{410 \textcolor{comment}{ */}}
+\DoxyCodeLine{411 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ab58e5e6655022844345ceb72940e65a7}{wld\_rad\_nl80211\_setRegDomain}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* alpha2);}
+\DoxyCodeLine{412 }
+\DoxyCodeLine{413 \textcolor{comment}{/*}}
+\DoxyCodeLine{414 \textcolor{comment}{ * @brief start background DFS}}
+\DoxyCodeLine{415 \textcolor{comment}{ *}}
+\DoxyCodeLine{416 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{417 \textcolor{comment}{ * @param args pointer to background DFS args context}}
+\DoxyCodeLine{418 \textcolor{comment}{ *}}
+\DoxyCodeLine{419 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{420 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{421 \textcolor{comment}{ */}}
+\DoxyCodeLine{422 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a612fc4497ec8133b6181e77a74bc7d0e}{wld\_rad\_nl80211\_bgDfsStart}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\_startBgdfsArgs\_t}}* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}});}
+\DoxyCodeLine{423 }
+\DoxyCodeLine{424 \textcolor{comment}{/*}}
+\DoxyCodeLine{425 \textcolor{comment}{ * @brief stop background DFS}}
+\DoxyCodeLine{426 \textcolor{comment}{ *}}
+\DoxyCodeLine{427 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{428 \textcolor{comment}{ *}}
+\DoxyCodeLine{429 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{430 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{431 \textcolor{comment}{ */}}
+\DoxyCodeLine{432 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a91f62b90e3141285f0b5c14bc3f1f05a}{wld\_rad\_nl80211\_bgDfsStop}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio);}
+\DoxyCodeLine{433 }
+\DoxyCodeLine{434 \textcolor{comment}{/*}}
+\DoxyCodeLine{435 \textcolor{comment}{ * @brief common function to send vendor sub command}}
+\DoxyCodeLine{436 \textcolor{comment}{ *}}
+\DoxyCodeLine{437 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{438 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{439 \textcolor{comment}{ * @param oui vendor driver identifier}}
+\DoxyCodeLine{440 \textcolor{comment}{ * @param subcmd vendor sub command to be sent}}
+\DoxyCodeLine{441 \textcolor{comment}{ * @param data optional depending on sent sub command}}
+\DoxyCodeLine{442 \textcolor{comment}{ * @param dataLen length of sent data}}
+\DoxyCodeLine{443 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{444 \textcolor{comment}{ * @param withAck flag to wait for acknowledgment request}}
+\DoxyCodeLine{445 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{446 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{447 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{448 \textcolor{comment}{ *}}
+\DoxyCodeLine{449 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{450 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{451 \textcolor{comment}{ */}}
+\DoxyCodeLine{452 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_ac3ba46bf8f7ca8bd12a69af18cabbaf3}{wld\_rad\_nl80211\_sendVendorSubCmd}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, uint32\_t oui, \textcolor{keywordtype}{int} subcmd, \textcolor{keywordtype}{void}* data, \textcolor{keywordtype}{int} dataLen, \textcolor{keywordtype}{bool} isSync,}
+\DoxyCodeLine{453                                            \textcolor{keywordtype}{bool} withAck, uint32\_t flags, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{454 }
+\DoxyCodeLine{455 \textcolor{comment}{/*}}
+\DoxyCodeLine{456 \textcolor{comment}{ * @brief common function to send vendor sub command with attributes inside vendor data}}
+\DoxyCodeLine{457 \textcolor{comment}{ *}}
+\DoxyCodeLine{458 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{459 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{460 \textcolor{comment}{ * @param oui vendor driver identifier}}
+\DoxyCodeLine{461 \textcolor{comment}{ * @param subcmd vendor sub command to be sent}}
+\DoxyCodeLine{462 \textcolor{comment}{ * @param vendorAttr list of attributes to be added inside the vendor data attributes.}}
+\DoxyCodeLine{463 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{464 \textcolor{comment}{ * @param withAck flag to wait for acknowledgment request}}
+\DoxyCodeLine{465 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{466 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{467 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{468 \textcolor{comment}{ *}}
+\DoxyCodeLine{469 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{470 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{471 \textcolor{comment}{ */}}
+\DoxyCodeLine{472 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a2fd70a691d1e20370c34ae77fca90f9b}{wld\_rad\_nl80211\_sendVendorSubCmdAttr}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, uint32\_t oui, \textcolor{keywordtype}{int} subcmd, \mbox{\hyperlink{structwld__nl80211__nlAttr__t}{wld\_nl80211\_nlAttr\_t}}* vendorAttr,}
+\DoxyCodeLine{473                                                \textcolor{keywordtype}{bool} isSync, \textcolor{keywordtype}{bool} withAck, uint32\_t flags, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{474 }
+\DoxyCodeLine{475 \textcolor{comment}{/*}}
+\DoxyCodeLine{476 \textcolor{comment}{ * @brief common function to register to frame}}
+\DoxyCodeLine{477 \textcolor{comment}{ *}}
+\DoxyCodeLine{478 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{479 \textcolor{comment}{ * @param type packet type to be received}}
+\DoxyCodeLine{480 \textcolor{comment}{ * @param pattern first bytes of the packet (optional)}}
+\DoxyCodeLine{481 \textcolor{comment}{ * @param patternLen pattern's length (optional)}}
+\DoxyCodeLine{482 \textcolor{comment}{ *}}
+\DoxyCodeLine{483 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{484 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{485 \textcolor{comment}{ */}}
+\DoxyCodeLine{486 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a814c188e5fdcbf723cf1a2a85a429814}{wld\_rad\_nl80211\_registerFrame}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, uint16\_t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pattern, \textcolor{keywordtype}{size\_t} patternLen);}
+\DoxyCodeLine{487 }
+\DoxyCodeLine{488 \textcolor{comment}{/*}}
+\DoxyCodeLine{489 \textcolor{comment}{ * @brief get first enabled radio's vap mld link info (mld iface index, and mld link id)}}
+\DoxyCodeLine{490 \textcolor{comment}{ *}}
+\DoxyCodeLine{491 \textcolor{comment}{ * @param pRadio pointer to radio context}}
+\DoxyCodeLine{492 \textcolor{comment}{ * @param pIfIndex pointer to mld iface index to be filled}}
+\DoxyCodeLine{493 \textcolor{comment}{ * @param pLinkId pointer to mld link id to be filled}}
+\DoxyCodeLine{494 \textcolor{comment}{ *}}
+\DoxyCodeLine{495 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{496 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{497 \textcolor{comment}{ */}}
+\DoxyCodeLine{498 swl\_rc\_ne \mbox{\hyperlink{wld__rad__nl80211_8h_a207896b46d08b10868e5b33a3c77aaa2}{wld\_rad\_nl80211\_getFirstEnabledVapLinkInfo}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pRadio, int32\_t* pIfIndex, int8\_t* pLinkId);}
+\DoxyCodeLine{499 }
+\DoxyCodeLine{500 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_RAD\_NL80211\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

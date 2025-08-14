@@ -1,0 +1,398 @@
+\hypertarget{wld__endpoint_8h}{}\doxysection{include/wld/wld\+\_\+endpoint.h File Reference}
+\label{wld__endpoint_8h}\index{include/wld/wld\_endpoint.h@{include/wld/wld\_endpoint.h}}
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+endpoint.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__endpoint_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__endpoint_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_ad73344026edce36027bbbbe5ac858474}{sync\+Data\+\_\+\+End\+Point2\+OBJ}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$endpoint)
+\begin{DoxyCompactList}\small\item\em sync\+Data\+\_\+\+End\+Point2\+OBJ \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_acfe827459c8eca4b2ac99e3a9bbab91b}{sync\+Data\+\_\+\+OBJ2\+End\+Point}} (amxd\+\_\+object\+\_\+t $\ast$object)
+\begin{DoxyCompactList}\small\item\em sync\+Data\+\_\+\+OBJ2\+End\+Point \end{DoxyCompactList}\item 
+\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ \mbox{\hyperlink{wld__endpoint_8h_a1fb14cac84fe686df9b56474d04deaee}{wld\+\_\+ep\+\_\+from\+Obj}} (amxd\+\_\+object\+\_\+t $\ast$ep\+Obj)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_af0173f1ae000a5501baca4c951c8608f}{wld\+\_\+endpoint\+\_\+set\+Profile\+\_\+ocf}} (void $\ast$priv, amxd\+\_\+object\+\_\+t $\ast$object, const amxc\+\_\+var\+\_\+t $\ast$const new\+Param\+Values)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_aa47bbb4e03cdee3a22317506814a8b9d}{wld\+\_\+endpoint\+\_\+set\+Current\+Profile}} (amxd\+\_\+object\+\_\+t $\ast$endpoint\+Object, \mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$Profile)
+\begin{DoxyCompactList}\small\item\em set\+Endpoint\+Current\+Profile \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__endpoint_8h_ad3eb2b3b58b4348477b680b189d7bcfb}{wld\+\_\+endpoint\+\_\+set\+Profile\+Security\+\_\+ocf}} (void $\ast$priv, amxd\+\_\+object\+\_\+t $\ast$object, const amxc\+\_\+var\+\_\+t $\ast$const new\+Param\+Values)
+\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_a83409624dceabc5184e16ec036fd6844}{wld\+\_\+endpoint\+\_\+is\+Ready}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_a0d17c7146ce74033d5a6fb025c86fb09}{wld\+\_\+endpoint\+\_\+update\+Stats}} (amxd\+\_\+object\+\_\+t $\ast$obj, \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$stats)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+update\+\_\+endpoint\+\_\+stats \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__endpoint_8h_afbda4db356f34b6f20f8d2589cd620cd}{wld\+\_\+endpoint\+\_\+reset\+Stats}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_a4f5c46004887379a5ce62b0ce6cd320f}{wld\+\_\+endpoint\+\_\+validate\+\_\+profile}} (const \mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$Profile)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+endpoint\+\_\+validate\+\_\+profile \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__endpoint_8h_a250b5d66d93b3ea047a8a49f82e022b7}{wld\+\_\+endpoint\+\_\+set\+Connection\+Status}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}} connection\+Status, \mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\+\_\+ep\+Error\+\_\+e}} error)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_ae209ab1dc237eb85b8660d854962e680}{wld\+\_\+endpoint\+\_\+sync\+\_\+connection}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, bool connected, \mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\+\_\+ep\+Error\+\_\+e}} error)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+endpoint\+\_\+sync\+\_\+connection \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__endpoint_8h_a9e762699588791b650983b398accb0af}{wld\+\_\+endpoint\+\_\+send\+Pairing\+Notification}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, uint32\+\_\+t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, const char $\ast$reason, \mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$credentials)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__endpoint_8h_a6c5b36308b65b2ad681a8fbda5e0eb44}{\+\_\+\+End\+Point\+\_\+\+WPS\+\_\+push\+Button}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__endpoint_8h_a4debb2360ab901c34d08a526e10c7383}{\+\_\+\+End\+Point\+\_\+\+WPS\+\_\+cancel\+Pairing}} (amxd\+\_\+object\+\_\+t $\ast$obj, amxd\+\_\+function\+\_\+t $\ast$func, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__endpoint_8h_a88e11e1e538d72e83547ee176eb513fb}{\+\_\+wld\+\_\+endpoint\+\_\+get\+Stats\+\_\+orf}} (amxd\+\_\+object\+\_\+t $\ast$const object, amxd\+\_\+param\+\_\+t $\ast$const param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const action\+\_\+retval, void $\ast$priv)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_af1294a2709465eec365355d222071ebb}{wld\+\_\+endpoint\+\_\+create\+\_\+reconnect\+\_\+timer}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_a6e32c0397cd7fff7107882ebed0d33a4}{wld\+\_\+endpoint\+\_\+reconfigure}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\begin{DoxyCompactList}\small\item\em endpoint\+Reconfigure \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{wld__endpoint_8h_a1e3a7dcae1a79e7740fe10243d7a9849}{wld\+\_\+endpoint\+\_\+perform\+Connect\+Commit}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, bool always\+Commit)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__endpoint_8h_a1b9875659c853fcbefb140963abf183e}{wld\+\_\+endpoint\+\_\+get\+Bssid\+Bin}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+mac\+Bin\+\_\+t $\ast$tgt\+Mac)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__endpoint_8h_a773e4151fbc5e8c0f798d9cc1135ea9c}{wld\+\_\+endpoint\+\_\+check\+Connection}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_a75fcf41472c686df233015abf3c0136b}{wld\+\_\+endpoint\+\_\+write\+Stats}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$stats, bool success)
+\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_a448b10cb8d6ef3f5e4bd40d2d0840bff}{wld\+\_\+endpoint\+\_\+get\+Target\+Bssid}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Buffer)
+\item 
+\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ \mbox{\hyperlink{wld__endpoint_8h_abc9ce35b5095286fa1fc434116d36919}{wld\+\_\+endpoint\+\_\+from\+It}} (amxc\+\_\+llist\+\_\+it\+\_\+t $\ast$it)
+\item 
+\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ \mbox{\hyperlink{wld__endpoint_8h_a757ac820fc7b7691dcbef693b883eadc}{wld\+\_\+endpoint\+\_\+create}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, const char $\ast$ep\+Name, amxd\+\_\+object\+\_\+t $\ast$object)
+\item 
+void \mbox{\hyperlink{wld__endpoint_8h_a88f4dc00125a7b064ac3272deaa50ecc}{wld\+\_\+endpoint\+\_\+destroy}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__endpoint_8h_afc817c2a1115f5437c56ff2d74add4fd}{wld\+\_\+endpoint\+\_\+finalize}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_aa46ea4fee8d40f412181d5509abc1e8c}{wld\+\_\+endpoint\+\_\+need\+Create\+Iface}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\item 
+bool \mbox{\hyperlink{wld__endpoint_8h_aed74a9c3e6149c823572be70a26f0039}{wld\+\_\+endpoint\+\_\+need\+Destroy\+Iface}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__endpoint_8h_a4debb2360ab901c34d08a526e10c7383}\label{wld__endpoint_8h_a4debb2360ab901c34d08a526e10c7383}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!\_EndPoint\_WPS\_cancelPairing@{\_EndPoint\_WPS\_cancelPairing}}
+\index{\_EndPoint\_WPS\_cancelPairing@{\_EndPoint\_WPS\_cancelPairing}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{\_EndPoint\_WPS\_cancelPairing()}{\_EndPoint\_WPS\_cancelPairing()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+End\+Point\+\_\+\+WPS\+\_\+cancel\+Pairing (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$}]{func,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a6c5b36308b65b2ad681a8fbda5e0eb44}\label{wld__endpoint_8h_a6c5b36308b65b2ad681a8fbda5e0eb44}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!\_EndPoint\_WPS\_pushButton@{\_EndPoint\_WPS\_pushButton}}
+\index{\_EndPoint\_WPS\_pushButton@{\_EndPoint\_WPS\_pushButton}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{\_EndPoint\_WPS\_pushButton()}{\_EndPoint\_WPS\_pushButton()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+End\+Point\+\_\+\+WPS\+\_\+push\+Button (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{amxd\+\_\+function\+\_\+t $\ast$}]{func,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a88e11e1e538d72e83547ee176eb513fb}\label{wld__endpoint_8h_a88e11e1e538d72e83547ee176eb513fb}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!\_wld\_endpoint\_getStats\_orf@{\_wld\_endpoint\_getStats\_orf}}
+\index{\_wld\_endpoint\_getStats\_orf@{\_wld\_endpoint\_getStats\_orf}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{\_wld\_endpoint\_getStats\_orf()}{\_wld\_endpoint\_getStats\_orf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+endpoint\+\_\+get\+Stats\+\_\+orf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$const}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$const}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{action\+\_\+retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_ad73344026edce36027bbbbe5ac858474}\label{wld__endpoint_8h_ad73344026edce36027bbbbe5ac858474}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!syncData\_EndPoint2OBJ@{syncData\_EndPoint2OBJ}}
+\index{syncData\_EndPoint2OBJ@{syncData\_EndPoint2OBJ}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{syncData\_EndPoint2OBJ()}{syncData\_EndPoint2OBJ()}}
+{\footnotesize\ttfamily void sync\+Data\+\_\+\+End\+Point2\+OBJ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+sync\+Data\+\_\+\+End\+Point2\+OBJ 
+
+Read out the internal T\+\_\+\+End\+Point struct and set it to the datamodel
+
+Note \+: NO COMMIT
+
+
+\begin{DoxyParams}{Parameters}
+{\em End\+Point} & T\+\_\+\+End\+Point struct \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__endpoint_8h_acfe827459c8eca4b2ac99e3a9bbab91b}\label{wld__endpoint_8h_acfe827459c8eca4b2ac99e3a9bbab91b}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!syncData\_OBJ2EndPoint@{syncData\_OBJ2EndPoint}}
+\index{syncData\_OBJ2EndPoint@{syncData\_OBJ2EndPoint}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{syncData\_OBJ2EndPoint()}{syncData\_OBJ2EndPoint()}}
+{\footnotesize\ttfamily bool sync\+Data\+\_\+\+OBJ2\+End\+Point (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object }\end{DoxyParamCaption})}
+
+
+
+sync\+Data\+\_\+\+OBJ2\+End\+Point 
+
+Read the Endpoint settings from the datamodel and set them to the T\+\_\+\+End\+Point struct
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & Endpoint object instance \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item true \+: on success
+\item false \+: when a system error occured or an invalid configuration is set 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__endpoint_8h_a773e4151fbc5e8c0f798d9cc1135ea9c}\label{wld__endpoint_8h_a773e4151fbc5e8c0f798d9cc1135ea9c}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_checkConnection@{wld\_endpoint\_checkConnection}}
+\index{wld\_endpoint\_checkConnection@{wld\_endpoint\_checkConnection}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_checkConnection()}{wld\_endpoint\_checkConnection()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+endpoint\+\_\+check\+Connection (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a757ac820fc7b7691dcbef693b883eadc}\label{wld__endpoint_8h_a757ac820fc7b7691dcbef693b883eadc}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_create@{wld\_endpoint\_create}}
+\index{wld\_endpoint\_create@{wld\_endpoint\_create}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_create()}{wld\_endpoint\_create()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ wld\+\_\+endpoint\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{const char $\ast$}]{ep\+Name,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_af1294a2709465eec365355d222071ebb}\label{wld__endpoint_8h_af1294a2709465eec365355d222071ebb}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_create\_reconnect\_timer@{wld\_endpoint\_create\_reconnect\_timer}}
+\index{wld\_endpoint\_create\_reconnect\_timer@{wld\_endpoint\_create\_reconnect\_timer}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_create\_reconnect\_timer()}{wld\_endpoint\_create\_reconnect\_timer()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+create\+\_\+reconnect\+\_\+timer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a88f4dc00125a7b064ac3272deaa50ecc}\label{wld__endpoint_8h_a88f4dc00125a7b064ac3272deaa50ecc}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_destroy@{wld\_endpoint\_destroy}}
+\index{wld\_endpoint\_destroy@{wld\_endpoint\_destroy}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_destroy()}{wld\_endpoint\_destroy()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__endpoint_8h_a88f4dc00125a7b064ac3272deaa50ecc_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__endpoint_8h_afc817c2a1115f5437c56ff2d74add4fd}\label{wld__endpoint_8h_afc817c2a1115f5437c56ff2d74add4fd}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_finalize@{wld\_endpoint\_finalize}}
+\index{wld\_endpoint\_finalize@{wld\_endpoint\_finalize}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_finalize()}{wld\_endpoint\_finalize()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+endpoint\+\_\+finalize (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_abc9ce35b5095286fa1fc434116d36919}\label{wld__endpoint_8h_abc9ce35b5095286fa1fc434116d36919}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_fromIt@{wld\_endpoint\_fromIt}}
+\index{wld\_endpoint\_fromIt@{wld\_endpoint\_fromIt}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_fromIt()}{wld\_endpoint\_fromIt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ wld\+\_\+endpoint\+\_\+from\+It (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+it\+\_\+t $\ast$}]{it }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a1b9875659c853fcbefb140963abf183e}\label{wld__endpoint_8h_a1b9875659c853fcbefb140963abf183e}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_getBssidBin@{wld\_endpoint\_getBssidBin}}
+\index{wld\_endpoint\_getBssidBin@{wld\_endpoint\_getBssidBin}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_getBssidBin()}{wld\_endpoint\_getBssidBin()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+endpoint\+\_\+get\+Bssid\+Bin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{tgt\+Mac }\end{DoxyParamCaption})}
+
+Get BSSID of the accesspoint that the given endpoint is connected to.
+
+In case of error or if not connected, the null-\/mac is written to {\ttfamily tgt\+Mac}. \mbox{\Hypertarget{wld__endpoint_8h_a448b10cb8d6ef3f5e4bd40d2d0840bff}\label{wld__endpoint_8h_a448b10cb8d6ef3f5e4bd40d2d0840bff}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_getTargetBssid@{wld\_endpoint\_getTargetBssid}}
+\index{wld\_endpoint\_getTargetBssid@{wld\_endpoint\_getTargetBssid}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_getTargetBssid()}{wld\_endpoint\_getTargetBssid()}}
+{\footnotesize\ttfamily bool wld\+\_\+endpoint\+\_\+get\+Target\+Bssid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Buffer }\end{DoxyParamCaption})}
+
+Provide the target mac address. If false, no target is currently configured. \mbox{\Hypertarget{wld__endpoint_8h_a83409624dceabc5184e16ec036fd6844}\label{wld__endpoint_8h_a83409624dceabc5184e16ec036fd6844}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_isReady@{wld\_endpoint\_isReady}}
+\index{wld\_endpoint\_isReady@{wld\_endpoint\_isReady}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_isReady()}{wld\_endpoint\_isReady()}}
+{\footnotesize\ttfamily bool wld\+\_\+endpoint\+\_\+is\+Ready (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+Check whether endpoint is ready for enable. This means\+:
+\begin{DoxyItemize}
+\item Endpoint enabled
+\item Radio enabled
+\item Profile present
+\item Profile Enabled 
+\end{DoxyItemize}\mbox{\Hypertarget{wld__endpoint_8h_aa46ea4fee8d40f412181d5509abc1e8c}\label{wld__endpoint_8h_aa46ea4fee8d40f412181d5509abc1e8c}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_needCreateIface@{wld\_endpoint\_needCreateIface}}
+\index{wld\_endpoint\_needCreateIface@{wld\_endpoint\_needCreateIface}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_needCreateIface()}{wld\_endpoint\_needCreateIface()}}
+{\footnotesize\ttfamily bool wld\+\_\+endpoint\+\_\+need\+Create\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_aed74a9c3e6149c823572be70a26f0039}\label{wld__endpoint_8h_aed74a9c3e6149c823572be70a26f0039}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_needDestroyIface@{wld\_endpoint\_needDestroyIface}}
+\index{wld\_endpoint\_needDestroyIface@{wld\_endpoint\_needDestroyIface}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_needDestroyIface()}{wld\_endpoint\_needDestroyIface()}}
+{\footnotesize\ttfamily bool wld\+\_\+endpoint\+\_\+need\+Destroy\+Iface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a1e3a7dcae1a79e7740fe10243d7a9849}\label{wld__endpoint_8h_a1e3a7dcae1a79e7740fe10243d7a9849}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_performConnectCommit@{wld\_endpoint\_performConnectCommit}}
+\index{wld\_endpoint\_performConnectCommit@{wld\_endpoint\_performConnectCommit}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_performConnectCommit()}{wld\_endpoint\_performConnectCommit()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+perform\+Connect\+Commit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{bool}]{always\+Commit }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a6e32c0397cd7fff7107882ebed0d33a4}\label{wld__endpoint_8h_a6e32c0397cd7fff7107882ebed0d33a4}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_reconfigure@{wld\_endpoint\_reconfigure}}
+\index{wld\_endpoint\_reconfigure@{wld\_endpoint\_reconfigure}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_reconfigure()}{wld\_endpoint\_reconfigure()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+reconfigure (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+
+
+endpoint\+Reconfigure 
+
+Reconfigures the endpoint based on the enable flags and the selected profile.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The endpoint to reconfigure \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__endpoint_8h_afbda4db356f34b6f20f8d2589cd620cd}\label{wld__endpoint_8h_afbda4db356f34b6f20f8d2589cd620cd}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_resetStats@{wld\_endpoint\_resetStats}}
+\index{wld\_endpoint\_resetStats@{wld\_endpoint\_resetStats}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_resetStats()}{wld\_endpoint\_resetStats()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+reset\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a9e762699588791b650983b398accb0af}\label{wld__endpoint_8h_a9e762699588791b650983b398accb0af}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_sendPairingNotification@{wld\_endpoint\_sendPairingNotification}}
+\index{wld\_endpoint\_sendPairingNotification@{wld\_endpoint\_sendPairingNotification}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_sendPairingNotification()}{wld\_endpoint\_sendPairingNotification()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+send\+Pairing\+Notification (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{uint32\+\_\+t}]{type,  }\item[{const char $\ast$}]{reason,  }\item[{\mbox{\hyperlink{structT__WPSCredentials}{T\+\_\+\+WPSCredentials}} $\ast$}]{credentials }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a250b5d66d93b3ea047a8a49f82e022b7}\label{wld__endpoint_8h_a250b5d66d93b3ea047a8a49f82e022b7}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_setConnectionStatus@{wld\_endpoint\_setConnectionStatus}}
+\index{wld\_endpoint\_setConnectionStatus@{wld\_endpoint\_setConnectionStatus}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_setConnectionStatus()}{wld\_endpoint\_setConnectionStatus()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+set\+Connection\+Status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\+\_\+ep\+Connection\+Status\+\_\+e}}}]{connection\+Status,  }\item[{\mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\+\_\+ep\+Error\+\_\+e}}}]{error }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_aa47bbb4e03cdee3a22317506814a8b9d}\label{wld__endpoint_8h_aa47bbb4e03cdee3a22317506814a8b9d}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_setCurrentProfile@{wld\_endpoint\_setCurrentProfile}}
+\index{wld\_endpoint\_setCurrentProfile@{wld\_endpoint\_setCurrentProfile}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_setCurrentProfile()}{wld\_endpoint\_setCurrentProfile()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+set\+Current\+Profile (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{endpoint\+Object,  }\item[{\mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$}]{Profile }\end{DoxyParamCaption})}
+
+
+
+set\+Endpoint\+Current\+Profile 
+
+Set the current profile when a matching profile reference is set Used when the profile is just created
+
+
+\begin{DoxyParams}{Parameters}
+{\em endpoint\+Object} & Endpoint object \\
+\hline
+{\em Profile} & new endpoint profile \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__endpoint_8h_af0173f1ae000a5501baca4c951c8608f}\label{wld__endpoint_8h_af0173f1ae000a5501baca4c951c8608f}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_setProfile\_ocf@{wld\_endpoint\_setProfile\_ocf}}
+\index{wld\_endpoint\_setProfile\_ocf@{wld\_endpoint\_setProfile\_ocf}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_setProfile\_ocf()}{wld\_endpoint\_setProfile\_ocf()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+set\+Profile\+\_\+ocf (\begin{DoxyParamCaption}\item[{void $\ast$}]{priv,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{new\+Param\+Values }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_ad3eb2b3b58b4348477b680b189d7bcfb}\label{wld__endpoint_8h_ad3eb2b3b58b4348477b680b189d7bcfb}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_setProfileSecurity\_ocf@{wld\_endpoint\_setProfileSecurity\_ocf}}
+\index{wld\_endpoint\_setProfileSecurity\_ocf@{wld\_endpoint\_setProfileSecurity\_ocf}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_setProfileSecurity\_ocf()}{wld\_endpoint\_setProfileSecurity\_ocf()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+set\+Profile\+Security\+\_\+ocf (\begin{DoxyParamCaption}\item[{void $\ast$}]{priv,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{new\+Param\+Values }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_ae209ab1dc237eb85b8660d854962e680}\label{wld__endpoint_8h_ae209ab1dc237eb85b8660d854962e680}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_sync\_connection@{wld\_endpoint\_sync\_connection}}
+\index{wld\_endpoint\_sync\_connection@{wld\_endpoint\_sync\_connection}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_sync\_connection()}{wld\_endpoint\_sync\_connection()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+sync\+\_\+connection (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{bool}]{connected,  }\item[{\mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\+\_\+ep\+Error\+\_\+e}}}]{error }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+endpoint\+\_\+sync\+\_\+connection 
+
+Will fill in the datamodel of the endpoint and the profile based on the connection status. Will also start the reconnect timer if the profile and the endpoint are enabled, but we are not connected.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+EP} & The endpoint \\
+\hline
+{\em connected} & The connected status of the endpoint. \\
+\hline
+{\em error} & The current error of the endpoint (0 if no error present) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{wld__endpoint_8h_a0d17c7146ce74033d5a6fb025c86fb09}\label{wld__endpoint_8h_a0d17c7146ce74033d5a6fb025c86fb09}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_updateStats@{wld\_endpoint\_updateStats}}
+\index{wld\_endpoint\_updateStats@{wld\_endpoint\_updateStats}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_updateStats()}{wld\_endpoint\_updateStats()}}
+{\footnotesize\ttfamily bool wld\+\_\+endpoint\+\_\+update\+Stats (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj,  }\item[{\mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$}]{stats }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+update\+\_\+endpoint\+\_\+stats 
+
+Set Endpoint stats to the datamodel
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & Endpoint Stats object \\
+\hline
+{\em stats} & \mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} of the endpoint instance \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__endpoint_8h_a0d17c7146ce74033d5a6fb025c86fb09_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__endpoint_8h_a4f5c46004887379a5ce62b0ce6cd320f}\label{wld__endpoint_8h_a4f5c46004887379a5ce62b0ce6cd320f}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_validate\_profile@{wld\_endpoint\_validate\_profile}}
+\index{wld\_endpoint\_validate\_profile@{wld\_endpoint\_validate\_profile}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_validate\_profile()}{wld\_endpoint\_validate\_profile()}}
+{\footnotesize\ttfamily bool wld\+\_\+endpoint\+\_\+validate\+\_\+profile (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$}]{ep\+Profile }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+endpoint\+\_\+validate\+\_\+profile 
+
+Validate the Endpoint Profile
+
+
+\begin{DoxyParams}{Parameters}
+{\em Profile} & T\+\_\+\+End\+Point\+Profile struct \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when validated OK, false when validation failed 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__endpoint_8h_a4f5c46004887379a5ce62b0ce6cd320f_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__endpoint_8h_a75fcf41472c686df233015abf3c0136b}\label{wld__endpoint_8h_a75fcf41472c686df233015abf3c0136b}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_endpoint\_writeStats@{wld\_endpoint\_writeStats}}
+\index{wld\_endpoint\_writeStats@{wld\_endpoint\_writeStats}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_endpoint\_writeStats()}{wld\_endpoint\_writeStats()}}
+{\footnotesize\ttfamily void wld\+\_\+endpoint\+\_\+write\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{structT__EndPointStats}{T\+\_\+\+End\+Point\+Stats}} $\ast$}]{stats,  }\item[{bool}]{success }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__endpoint_8h_a1fb14cac84fe686df9b56474d04deaee}\label{wld__endpoint_8h_a1fb14cac84fe686df9b56474d04deaee}} 
+\index{wld\_endpoint.h@{wld\_endpoint.h}!wld\_ep\_fromObj@{wld\_ep\_fromObj}}
+\index{wld\_ep\_fromObj@{wld\_ep\_fromObj}!wld\_endpoint.h@{wld\_endpoint.h}}
+\doxysubsubsection{\texorpdfstring{wld\_ep\_fromObj()}{wld\_ep\_fromObj()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$ wld\+\_\+ep\+\_\+from\+Obj (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{ep\+Obj }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=302pt]{wld__endpoint_8h_a1fb14cac84fe686df9b56474d04deaee_cgraph}
+\end{center}
+\end{figure}

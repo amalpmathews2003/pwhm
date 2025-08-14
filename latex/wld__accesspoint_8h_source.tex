@@ -1,0 +1,175 @@
+\hypertarget{wld__accesspoint_8h_source}{}\doxysection{wld\+\_\+accesspoint.\+h}
+\label{wld__accesspoint_8h_source}\index{include/wld/wld\_accesspoint.h@{include/wld/wld\_accesspoint.h}}
+\mbox{\hyperlink{wld__accesspoint_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_ACCESSPOINT\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_ACCESSPOINT\_H\_\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__wps_8h}{wld\_wps.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__extMod_8h}{wld\_extMod.h}}"{}}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a518bdc8a44eebc328879b5ce0b273f46}{t\_destroy\_handler\_AP}} (amxd\_object\_t* \textcolor{keywordtype}{object});}
+\DoxyCodeLine{73 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__accesspoint_8h_ad6ac9d09e37a860bfe0c8e04a17ae26f}{wld\_ap\_create}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* vapName, uint32\_t idx);}
+\DoxyCodeLine{74 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__accesspoint_8h_a2ec39b228a84f69591bd1ba237fec4d8}{wld\_ap\_fromObj}}(amxd\_object\_t* apObj);}
+\DoxyCodeLine{75 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__accesspoint_8h_ac2ba6b224130b48d82fae374db31fb44}{wld\_ap\_initializeVendor}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* pR, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structS__SSID}{T\_SSID}}* pSSID);}
+\DoxyCodeLine{76 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__accesspoint_8h_abcf8c58c319bfa24145685053b0d8f40}{wld\_ap\_init}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{77 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_af004e111585e6f8914497280fd777148}{wld\_ap\_destroy}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{80     \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__ap__kickAction__t_a6afab2e26cf196b28aa8e7a46e1c06bd}{mac}};}
+\DoxyCodeLine{81     int32\_t \mbox{\hyperlink{structwld__ap__kickAction__t_a73acd3e0209db7fb3d5e0d8371677c95}{reason}};}
+\DoxyCodeLine{82     int32\_t \mbox{\hyperlink{structwld__ap__kickAction__t_a32b123220e0f787451f6d3931b9a9fa6}{result}};}
+\DoxyCodeLine{83 \} \mbox{\hyperlink{structwld__ap__kickAction__t}{wld\_ap\_kickAction\_t}};}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{86     \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__ap__steerAction__t_a9ca1b899ca1e15c5043ad0d81aa6b734}{mac}};}
+\DoxyCodeLine{87     \textcolor{keyword}{const} \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__ap__steerAction__t_a8a09cb65c5087449788162b66fd08a09}{bssid}};}
+\DoxyCodeLine{88     \mbox{\hyperlink{structwld__transferStaArgs__t}{wld\_transferStaArgs\_t}}* \mbox{\hyperlink{structwld__ap__steerAction__t_a3f990de2a768308200f0d53156faf0ee}{args}};}
+\DoxyCodeLine{89     swl\_rc\_ne \mbox{\hyperlink{structwld__ap__steerAction__t_aef580fb55ccb33903da1f4b2049c955d}{result}};}
+\DoxyCodeLine{90 \} \mbox{\hyperlink{structwld__ap__steerAction__t}{wld\_ap\_steerAction\_t}};}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{93     amxc\_var\_t* \mbox{\hyperlink{structwld__ap__rssiSampleAction__t_a607724024b2c78aa847fe2e4ca02625f}{updates}};}
+\DoxyCodeLine{94     uint32\_t \mbox{\hyperlink{structwld__ap__rssiSampleAction__t_ac7960feeeff075b16aa0a15cc7e177cd}{nrUpdates}};}
+\DoxyCodeLine{95 \} \mbox{\hyperlink{structwld__ap__rssiSampleAction__t}{wld\_ap\_rssiSampleAction\_t}};}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a0578ad030382b796f87c85d28aa4a1f2}{wld\_vap\_sendActionEvent}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{wld_8h_a261603f948ddc3cad71b190e5b8c5dcc}{wld\_vap\_actionEvent\_e}} actionEvent, \textcolor{keywordtype}{void}* data);}
+\DoxyCodeLine{98 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a642b22142154111ec1a7a4e940efde67}{SyncData\_AP2OBJ}}(amxd\_object\_t* \textcolor{keywordtype}{object}, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{99 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_afa9edec1b6c0496c5e1c53dd9e20e17e}{SetAPDefaults}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} idx);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_a8671fbd161b2f87d331e0b8bb63e2c00}{wld\_vap\_saveAssocReq}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_bit8\_t* frame, \textcolor{keywordtype}{size\_t} frameLen);}
+\DoxyCodeLine{102 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_a84c5c3148b7366e6db8dc847b538b6a8}{wld\_vap\_notifyActionFrame}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* frame);}
+\DoxyCodeLine{103 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_adf8884ba65d1765a1f17ac847262eb0e}{wld\_vap\_notifyDeauthDisassocFrame}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* eventName, swl\_macBin\_t* staMacAddress, swl\_IEEE80211deauthReason\_ne reason, \textcolor{keywordtype}{bool} isTxFrame);}
+\DoxyCodeLine{104 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_acb475ba57764e8e2cb09235c10af7199}{wld\_vap\_sync\_device}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD);}
+\DoxyCodeLine{105 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a03a789280ba58d3b51afcb25fb74d4e2}{wld\_vap\_syncNrDev}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{106 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__accesspoint_8h_a7eb994300b262efccd17853636c08588}{wld\_vap\_sync\_assoclist}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{107 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_aabc0318d3d3e751d75740b622de1120a}{wld\_ap\_sec\_doSync}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{108 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__accesspoint_8h_a849b6e298979e8ae94a15513bff132f3}{wld\_ap\_sec\_checkSharedSecConfigs}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP1, \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP2);}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110 amxd\_status\_t \mbox{\hyperlink{wld__accesspoint_8h_a748106f9e4734eb3c4c60799d030a22b}{kickStation}}(amxd\_object\_t* obj\_AP,}
+\DoxyCodeLine{111                           amxd\_function\_t* func,}
+\DoxyCodeLine{112                           amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{113                           amxc\_var\_t* ret);}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115 amxd\_status\_t \mbox{\hyperlink{wld__accesspoint_8h_a173d886013bf338981d4c3b380432662}{\_AccessPoint\_VerifyAccessPoint}}(amxd\_object\_t* \textcolor{keywordtype}{object}, amxd\_function\_t* func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_var\_t* ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}});}
+\DoxyCodeLine{116 amxd\_status\_t \mbox{\hyperlink{wld__accesspoint_8h_ab37b7b6884ddd613d67ed947cab337a2}{\_AccessPoint\_CommitAccessPoint}}(amxd\_object\_t* \textcolor{keywordtype}{object}, amxd\_function\_t* func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}}, amxc\_var\_t* ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\_UNUSED}});}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{118 }
+\DoxyCodeLine{119 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_aa1c2398bfe5e0b58758ecedb52e22a19}{wld\_destroy\_associatedDevice}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{120 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__accesspoint_8h_a72598d859a37d66058b96321ce92a610}{wld\_create\_associatedDevice}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_macBin\_t* MacAddress);}
+\DoxyCodeLine{121 \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* \mbox{\hyperlink{wld__accesspoint_8h_a6f8eb704c7c6823f0610f0480815863c}{wld\_vap\_get\_existing\_station}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_macBin\_t* macAddress);}
+\DoxyCodeLine{122 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__accesspoint_8h_ad2dc1dcd75acb779c27dee718badad7e}{wld\_vap\_cleanup\_stationlist}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{123 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__accesspoint_8h_a71667e8766501f93394f1d5dfd353761}{wld\_vap\_assoc\_update\_cuid}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_macBin\_t* mac, \textcolor{keywordtype}{char}* cuid, \textcolor{keywordtype}{int} len);}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a9d20eab01db4d76d13ee5627e462d383}{wld\_ap\_bss\_done}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* ap, \textcolor{keyword}{const} swl\_macChar\_t* mac, \textcolor{keywordtype}{int} reply\_code, \textcolor{keyword}{const} swl\_macChar\_t* targetBssid);}
+\DoxyCodeLine{126 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a6d56ba526a685de661d360ee515a1540}{wld\_ap\_rrm\_item}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* ap, \textcolor{keyword}{const} swl\_macChar\_t* mac, amxc\_var\_t* result);}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a381359377ddd0bfcc277d314fc4113f1}{wld\_ap\_notifyToggle}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_aa0bbdb13522fc1f8b1655102717f52c8}{wld\_ap\_performErrorToggle}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* reason);}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{132 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_ab2a0a5ff469aed01506de9a03534e7bc}{wld\_ap\_sendPairingNotification}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* reason, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* macAddress);}
+\DoxyCodeLine{133 }
+\DoxyCodeLine{134 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a4fd5cd2c4e0b3c9a96e271f236b1e6bc}{wld\_vap\_updateState}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{135 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__accesspoint_8h_adf12f1b4eae79413592bdda76aaa7b00}{wld\_vap\_get\_vap}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* ifname);}
+\DoxyCodeLine{136 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__accesspoint_8h_ab428602f652d0aa68389a62542a7dce5}{wld\_ap\_getVapByName}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* name);}
+\DoxyCodeLine{137 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__accesspoint_8h_af3fa63549e102edd5b5c7940647ada19}{wld\_ap\_fromIt}}(amxc\_llist\_it\_t* it);}
+\DoxyCodeLine{138 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__accesspoint_8h_a3a298ee15d3045b61de51082e8fd7040}{wld\_ap\_getVapByBssid}}(swl\_macBin\_t* bssid);}
+\DoxyCodeLine{139 uint32\_t \mbox{\hyperlink{wld__accesspoint_8h_a3b7b07c1f733b83407a77ce16e8819a0}{wld\_ap\_getMaxNbrSta}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{140 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a029285505639e0ab9526dd2dfe61690d}{wld\_station\_stats\_done}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{bool} success);}
+\DoxyCodeLine{141 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__accesspoint_8h_afce1e4726856a8b3bec33a125230f48b}{wld\_ap\_getDesiredState}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAp);}
+\DoxyCodeLine{142 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_ac47248d7ba172a71abc1935dfca11188}{wld\_ap\_updateDiscoveryMethod}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{143 \mbox{\hyperlink{wld_8h_a0f62a7362b1ffe0dbb87a26959e94be1}{wld\_ap\_dm\_m}} \mbox{\hyperlink{wld__accesspoint_8h_ae4f73e94499fd5c1efc5b44ef3f1cc25}{wld\_ap\_getDiscoveryMethod}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{144 \mbox{\hyperlink{structwld__apNeighbour}{T\_ApNeighbour}}* \mbox{\hyperlink{wld__accesspoint_8h_a3d634a4f384cebfaf7d5f9f988e9d223}{wld\_ap\_findNeigh}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* vap, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* bssid\_str);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{146 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a9c0ac5b9abb07b27562626a9bca87a40}{wld\_ap\_doSync}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{147 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a9db9974b933921d65334dc9359226f79}{wld\_ap\_doWpsSync}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{149 \textcolor{preprocessor}{\#ifndef WLD\_MAC\_MAXBAN}}
+\DoxyCodeLine{150 \textcolor{preprocessor}{\#define WLD\_MAC\_MAXBAN 64}}
+\DoxyCodeLine{151 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{154     swl\_macBin\_t banList[\mbox{\hyperlink{wld__accesspoint_8h_a26160c91d2a2844e8541f95b6017ef49}{WLD\_MAC\_MAXBAN}}];}
+\DoxyCodeLine{155     uint32\_t \mbox{\hyperlink{structwld__banlist__t_a7059aa2670494674f22625c6f8199f20}{staToBan}};}
+\DoxyCodeLine{156     swl\_macBin\_t kickList[\mbox{\hyperlink{wld__accesspoint_8h_a26160c91d2a2844e8541f95b6017ef49}{WLD\_MAC\_MAXBAN}}];}
+\DoxyCodeLine{157     uint32\_t \mbox{\hyperlink{structwld__banlist__t_ace53442f9e1c6ede5716a960cefea4ba}{staToKick}};}
+\DoxyCodeLine{158 \} \mbox{\hyperlink{structwld__banlist__t}{wld\_banlist\_t}};}
+\DoxyCodeLine{159 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a715be55450e90f28ca94d25dd29d6a4a}{wld\_apMacFilter\_getBanList}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structwld__banlist__t}{wld\_banlist\_t}}* banlist, \textcolor{keywordtype}{bool} includePf);}
+\DoxyCodeLine{160 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_ace8b6dff923302b650c93892f58bcc2d}{wld\_apMacFilter\_setAddressList\_pwf}}(\textcolor{keywordtype}{void}* priv, amxd\_object\_t* \textcolor{keywordtype}{object}, amxd\_param\_t* param, \textcolor{keyword}{const} amxc\_var\_t* \textcolor{keyword}{const} newValue);}
+\DoxyCodeLine{161 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_aecb3b0988ff2af3267a7099450eb7eab}{wld\_ap\_getLastAssocReq}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* macStation, \mbox{\hyperlink{structSWL__PACKED}{wld\_vap\_assocTableStruct\_t}}** data);}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_a0dfab75f0043d48fa4eeab7b22b1898f}{wld\_vap\_registerExtModData}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t extModId, \textcolor{keywordtype}{void}* extModData, \mbox{\hyperlink{wld__extMod_8h_a2e2475a6236a5038d514ac83a2ee1297}{wld\_extMod\_deleteData\_dcf}} deleteHandler);}
+\DoxyCodeLine{164 \textcolor{keywordtype}{void}* \mbox{\hyperlink{wld__accesspoint_8h_a174dab57530ee4e9252eeeb078e8d425}{wld\_vap\_getExtModData}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t extModId);}
+\DoxyCodeLine{165 swl\_rc\_ne \mbox{\hyperlink{wld__accesspoint_8h_a08ae4e8d23a93e690e7e8504dc9ff1fb}{wld\_vap\_unregisterExtModData}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t extModId);}
+\DoxyCodeLine{166 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__accesspoint_8h_a37a482625cd113a0976c6091d41e6312}{wld\_vap\_isDummyVap}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{167 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__accesspoint_8h_a74e38c3dd12f2a453c05102f5872931b}{wld\_vap\_setNetdevIndex}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, int32\_t netDevIndex);}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{169 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_ACCESSPOINT\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

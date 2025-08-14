@@ -1,0 +1,22 @@
+<map id="wld_wpaCtrlMngr_isConnected" name="wld_wpaCtrlMngr_isConnected">
+<area shape="rect" id="node1" title="check that wpaCtrl manager is connected: i.e can receive events from its main interface." alt="" coords="1063,245,1285,272"/>
+<area shape="rect" id="node2" href="$wld__secDmn_8c.html#a1b9d684b37eb9a4922e736e45544a50d" title=" " alt="" coords="840,85,996,112"/>
+<area shape="rect" id="node8" href="$wld__wpaCtrlInterface_8c.html#a303019c3b064bd2babeb3582ecd91d7f" title="close the wpaCtrl interface to wpa_ctrl server This function closes all relative connections (cmd and..." alt="" coords="838,238,998,279"/>
+<area shape="rect" id="node20" href="$wld__wpaCtrlMngr_8c.html#ab9e3aeaefd21ef085fcd3443ef111291" title="start connecting to wpa_ctrl server" alt="" coords="821,304,1015,331"/>
+<area shape="rect" id="node3" href="$wifiGen__hapd_8c.html#a34f0f7ab3fbb907b8468f24eab479a29" title=" " alt="" coords="563,5,725,32"/>
+<area shape="rect" id="node5" href="$wld__secDmn_8c.html#a2ef4347d15906169439607244d607cc8" title=" " alt="" coords="5,85,207,112"/>
+<area shape="rect" id="node6" href="$wld__secDmnGrp_8c.html#af0c8baba6a72e3d8962f0666ac93ccc9" title=" " alt="" coords="515,107,773,149"/>
+<area shape="rect" id="node4" href="$wifiGen__rad_8c.html#aa2e0292b4ea755002c53ad76b381543e" title=" " alt="" coords="271,5,450,32"/>
+<area shape="rect" id="node7" href="$wld__secDmn_8c.html#a02e589b0c9a457e6d5f9d0b2081f1ff5" title=" " alt="" coords="255,107,467,149"/>
+<area shape="rect" id="node9" href="$wld__wpaCtrlInterface_8c.html#a78b74c321f958dec1e833a1c6b275eae" title=" " alt="" coords="564,173,724,214"/>
+<area shape="rect" id="node10" href="$wld__wpaCtrlInterface_8c.html#a459412143928ed22bca8796394d85ada" title=" " alt="" coords="564,238,724,279"/>
+<area shape="rect" id="node13" href="$wld__wpaCtrlMngr_8c.html#a703dcb69cf5fbbf2473edf3505b12ca1" title=" " alt="" coords="547,304,741,331"/>
+<area shape="rect" id="node16" href="$wld__wpaCtrlMngr_8c.html#a65f1d3c48476ca6584852b18fc80b2d9" title="disconnect from wpa_ctrl server" alt="" coords="538,355,750,381"/>
+<area shape="rect" id="node11" href="$wld__wpaCtrlInterface_8c.html#a6024f927e9325cb624243ab3ada19169" title=" " alt="" coords="281,238,441,279"/>
+<area shape="rect" id="node12" href="$wld__wpaCtrlInterface_8c.html#ab633f391100bfb48cab0bb515fd4e908" title=" " alt="" coords="12,245,200,272"/>
+<area shape="rect" id="node14" href="$wld__secDmn_8c.html#a6bf723465724da6f8b5fa5b8ddddf66f" title=" " alt="" coords="279,304,442,331"/>
+<area shape="rect" id="node15" href="$wifiGen__hapd_8c.html#af643558a6f2cae8f916cc925a5654667" title=" " alt="" coords="22,304,190,331"/>
+<area shape="rect" id="node17" href="$wld__secDmn_8c.html#a04e473c6a2f624f5ee15a91d36ca56db" title=" " alt="" coords="275,355,447,381"/>
+<area shape="rect" id="node18" href="$wld__secDmn_8c.html#a161897b21440ea0885b570829da259fc" title=" " alt="" coords="291,405,431,432"/>
+<area shape="rect" id="node19" href="$wifiGen__hapd_8c.html#a75688dec0e4ad675142a71010b2b536a" title=" " alt="" coords="6,405,206,432"/>
+</map>

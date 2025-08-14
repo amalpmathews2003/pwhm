@@ -1,0 +1,85 @@
+\hypertarget{wld__ap__bss__transfer_8c}{}\doxysection{src/\+Ap\+Mgt/wld\+\_\+ap\+\_\+bss\+\_\+transfer.c File Reference}
+\label{wld__ap__bss__transfer_8c}\index{src/ApMgt/wld\_ap\_bss\_transfer.c@{src/ApMgt/wld\_ap\_bss\_transfer.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+\_\+bss\+\_\+transfer.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__bss__transfer_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structbss__wait__t}{bss\+\_\+wait\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__bss__transfer_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__bss__transfer_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap11v\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__ap__bss__transfer_8c_a9d20eab01db4d76d13ee5627e462d383}{wld\+\_\+ap\+\_\+bss\+\_\+done}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$ap, const swl\+\_\+mac\+Char\+\_\+t $\ast$mac, int reply\+\_\+code, const swl\+\_\+mac\+Char\+\_\+t $\ast$target\+Bssid)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__bss__transfer_8c_a13acd84f394ec14c534faaddf74d15cb}{\+\_\+send\+Bss\+Transfer\+Request}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$ret)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{wld__ap__bss__transfer_8c_a25812a3c2954c7095306eba72ceab712}{bss\+\_\+wait\+\_\+list}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ap__bss__transfer_8c_a369266c24eacffb87046522897a570d5}\label{wld__ap__bss__transfer_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__ap__bss__transfer_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ap__bss__transfer_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap11v\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ap__bss__transfer_8c_a13acd84f394ec14c534faaddf74d15cb}\label{wld__ap__bss__transfer_8c_a13acd84f394ec14c534faaddf74d15cb}} 
+\index{wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}!\_sendBssTransferRequest@{\_sendBssTransferRequest}}
+\index{\_sendBssTransferRequest@{\_sendBssTransferRequest}!wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}}
+\doxysubsubsection{\texorpdfstring{\_sendBssTransferRequest()}{\_sendBssTransferRequest()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+send\+Bss\+Transfer\+Request (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$}]{func,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret }\end{DoxyParamCaption})}
+
+Call to initiate a 802.\+11v bss transfer request. \mbox{\Hypertarget{wld__ap__bss__transfer_8c_a9d20eab01db4d76d13ee5627e462d383}\label{wld__ap__bss__transfer_8c_a9d20eab01db4d76d13ee5627e462d383}} 
+\index{wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}!wld\_ap\_bss\_done@{wld\_ap\_bss\_done}}
+\index{wld\_ap\_bss\_done@{wld\_ap\_bss\_done}!wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_bss\_done()}{wld\_ap\_bss\_done()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+bss\+\_\+done (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{ap,  }\item[{const swl\+\_\+mac\+Char\+\_\+t $\ast$}]{mac,  }\item[{int}]{reply\+\_\+code,  }\item[{const swl\+\_\+mac\+Char\+\_\+t $\ast$}]{target\+Bssid }\end{DoxyParamCaption})}
+
+Callback function for vendor plug-\/ins to indicate a given mac provided a reply. Reply code should come from 802.\+11v request 
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__ap__bss__transfer_8c_a25812a3c2954c7095306eba72ceab712}\label{wld__ap__bss__transfer_8c_a25812a3c2954c7095306eba72ceab712}} 
+\index{wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}!bss\_wait\_list@{bss\_wait\_list}}
+\index{bss\_wait\_list@{bss\_wait\_list}!wld\_ap\_bss\_transfer.c@{wld\_ap\_bss\_transfer.c}}
+\doxysubsubsection{\texorpdfstring{bss\_wait\_list}{bss\_wait\_list}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t bss\+\_\+wait\+\_\+list}
+

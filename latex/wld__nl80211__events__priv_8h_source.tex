@@ -1,0 +1,137 @@
+\hypertarget{wld__nl80211__events__priv_8h_source}{}\doxysection{wld\+\_\+nl80211\+\_\+events\+\_\+priv.\+h}
+\label{wld__nl80211__events__priv_8h_source}\index{include\_priv/nl80211/wld\_nl80211\_events\_priv.h@{include\_priv/nl80211/wld\_nl80211\_events\_priv.h}}
+\mbox{\hyperlink{wld__nl80211__events__priv_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_NL80211\_WLD\_NL80211\_EVENTS\_PRIV\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_NL80211\_WLD\_NL80211\_EVENTS\_PRIV\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__core__priv_8h}{wld\_nl80211\_core\_priv.h}}"{}}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__events_8h}{wld\_nl80211\_events.h}}"{}}}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include "{}swl/swl\_unLiList.h"{}}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70 \textcolor{comment}{/*}}
+\DoxyCodeLine{71 \textcolor{comment}{ * @brief nl80211 event listener context}}
+\DoxyCodeLine{72 \textcolor{comment}{ */}}
+\DoxyCodeLine{73 \textcolor{keyword}{struct }\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener}} \{}
+\DoxyCodeLine{74     amxc\_llist\_it\_t \mbox{\hyperlink{structwld__nl80211__listener_a38f31a036a04f11b8b756fb661e66b5b}{it}};                  \textcolor{comment}{//iterator for list}}
+\DoxyCodeLine{75     \mbox{\hyperlink{structwld__nl80211__state}{wld\_nl80211\_state\_t}}* \mbox{\hyperlink{structwld__nl80211__listener_ac93966665d211ea3cddfaa24ffe171f1}{state}};          \textcolor{comment}{//manager ctx, receiving nl events}}
+\DoxyCodeLine{76     uint32\_t \mbox{\hyperlink{structwld__nl80211__listener_a647c7c631fa7acef12625591b1badcec}{wiphy}};                      \textcolor{comment}{//watched wiphy: >=0 or WLD\_NL80211\_ID\_ANY or WLD\_NL80211\_ID\_UNDEF}}
+\DoxyCodeLine{77     uint32\_t \mbox{\hyperlink{structwld__nl80211__listener_a3bf6e6739b8ffcfd8e05bff6a8455d77}{ifIndex}};                    \textcolor{comment}{//watched iface netdev index: >0 or WLD\_NL80211\_ID\_ANY}}
+\DoxyCodeLine{78     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwld__nl80211__listener_aa68a6bff1eff92e23c585330f8ec5abc}{pRef}};                          \textcolor{comment}{//user private reference to provide when invoking handlers}}
+\DoxyCodeLine{79     \textcolor{keywordtype}{void}* \mbox{\hyperlink{structwld__nl80211__listener_a0870351dce115bd5dde72e557f3d1931}{pData}};                         \textcolor{comment}{//user private data to provide when invoking handlers}}
+\DoxyCodeLine{80     \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}} \mbox{\hyperlink{structwld__nl80211__listener_a1e7b16bd1931343baf615d978f639dec}{handlers}}; \textcolor{comment}{//event handler struct: evts with null clbks are ignored}}
+\DoxyCodeLine{81 \};}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83 \textcolor{comment}{/*}}
+\DoxyCodeLine{84 \textcolor{comment}{ * @brief prototype of nl event parser: gets attributes from nl msg then forward event}}
+\DoxyCodeLine{85 \textcolor{comment}{ * to the listener side}}
+\DoxyCodeLine{86 \textcolor{comment}{ *}}
+\DoxyCodeLine{87 \textcolor{comment}{ * @param pListener pointer to event listener}}
+\DoxyCodeLine{88 \textcolor{comment}{ * @param nlh pointer to netlink msg header}}
+\DoxyCodeLine{89 \textcolor{comment}{ * @param tb array of netlink message attributes}}
+\DoxyCodeLine{90 \textcolor{comment}{ *}}
+\DoxyCodeLine{91 \textcolor{comment}{ * @return SWL\_RC\_OK in case of parsing success}}
+\DoxyCodeLine{92 \textcolor{comment}{ *         SWL\_RC\_CONTINUE when msg is valid but ignored by the parser}}
+\DoxyCodeLine{93 \textcolor{comment}{ *         SWL\_RC\_DONE msg parsed and processed by listener event handler}}
+\DoxyCodeLine{94 \textcolor{comment}{ *         SWL\_RC\_ERROR in case of error}}
+\DoxyCodeLine{95 \textcolor{comment}{ */}}
+\DoxyCodeLine{96 \textcolor{keyword}{typedef} swl\_rc\_ne (* \mbox{\hyperlink{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}{wld\_nl80211\_evtParser\_f}}) (swl\_unLiList\_t* pListenerList, \textcolor{keyword}{struct }nlmsghdr* nlh, \textcolor{keyword}{struct }nlattr* tb[]);}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98 \textcolor{comment}{/*}}
+\DoxyCodeLine{99 \textcolor{comment}{ * @brief get parser (callback) for nl80211 event}}
+\DoxyCodeLine{100 \textcolor{comment}{ *}}
+\DoxyCodeLine{101 \textcolor{comment}{ * @param eventId id of nl80211 event (NL80211\_CMD\_xxx)}}
+\DoxyCodeLine{102 \textcolor{comment}{ *}}
+\DoxyCodeLine{103 \textcolor{comment}{ * @return pointer to parser when event is supported, null otherwise}}
+\DoxyCodeLine{104 \textcolor{comment}{ */}}
+\DoxyCodeLine{105 \mbox{\hyperlink{wld__nl80211__events__priv_8h_a707f9ba7a2f000cbc1c925658d06fcbe}{wld\_nl80211\_evtParser\_f}} \mbox{\hyperlink{wld__nl80211__events__priv_8h_ab9d9105d4272b97f3c722c42db1381ed}{wld\_nl80211\_getEventParser}}(uint32\_t eventId);}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \textcolor{comment}{/*}}
+\DoxyCodeLine{108 \textcolor{comment}{ * @brief check if listener has handler callback for received event}}
+\DoxyCodeLine{109 \textcolor{comment}{ *}}
+\DoxyCodeLine{110 \textcolor{comment}{ * @param pListener pointer to listener context}}
+\DoxyCodeLine{111 \textcolor{comment}{ * @param eventId id of received nl80211 event (NL80211\_CMD\_xxx)}}
+\DoxyCodeLine{112 \textcolor{comment}{ *}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @return true if listener has handler for received event}}
+\DoxyCodeLine{114 \textcolor{comment}{ *         false otherwise (or in case of error)}}
+\DoxyCodeLine{115 \textcolor{comment}{ */}}
+\DoxyCodeLine{116 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__nl80211__events__priv_8h_a630520dab077d9f19311d449ea1f2f96}{wld\_nl80211\_hasEventHandler}}(\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* pListener, uint32\_t eventId);}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{118 \textcolor{comment}{/*}}
+\DoxyCodeLine{119 \textcolor{comment}{ * @brief update event handlers of listener, when it defines}}
+\DoxyCodeLine{120 \textcolor{comment}{ * monitored wiphy Id and/or iface netId.}}
+\DoxyCodeLine{121 \textcolor{comment}{ *}}
+\DoxyCodeLine{122 \textcolor{comment}{ * @param pListener pointer to listener context}}
+\DoxyCodeLine{123 \textcolor{comment}{ * @param handlers pointer to structure of handler callbacks}}
+\DoxyCodeLine{124 \textcolor{comment}{ * unwanted events shall remain null.}}
+\DoxyCodeLine{125 \textcolor{comment}{ *}}
+\DoxyCodeLine{126 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{127 \textcolor{comment}{ *         SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{128 \textcolor{comment}{ */}}
+\DoxyCodeLine{129 swl\_rc\_ne \mbox{\hyperlink{wld__nl80211__events__priv_8h_ab6c517e9fdadd92396162d38f5710d9d}{wld\_nl80211\_updateEventHandlers}}(\mbox{\hyperlink{structwld__nl80211__listener}{wld\_nl80211\_listener\_t}}* pListener, \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}}* \textcolor{keyword}{const} handlers);}
+\DoxyCodeLine{130 }
+\DoxyCodeLine{131 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_NL80211\_WLD\_NL80211\_EVENTS\_PRIV\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

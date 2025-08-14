@@ -1,0 +1,201 @@
+\hypertarget{wifiGen__fsm_8h}{}\doxysection{include\+\_\+priv/\+Plugin/wifi\+Gen\+\_\+fsm.h File Reference}
+\label{wifiGen__fsm_8h}\index{include\_priv/Plugin/wifiGen\_fsm.h@{include\_priv/Plugin/wifiGen\_fsm.h}}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__fsm_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abd}{wifi\+Gen\+\_\+fsm\+States\+\_\+e}} \{ \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaac55262ed6716beb0d6aaf076ef2cbeb}{GEN\+\_\+\+FSM\+\_\+\+STOP\+\_\+\+HOSTAPD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda21a91d04d46d8bc064fff1d958e1f78b}{GEN\+\_\+\+FSM\+\_\+\+STOP\+\_\+\+WPASUPP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdadbb5538abc67e955391b63c096886e7a}{GEN\+\_\+\+FSM\+\_\+\+DISABLE\+\_\+\+HOSTAPD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda2c28b7ba9c7aab595587e84e24697c2d}{GEN\+\_\+\+FSM\+\_\+\+DISABLE\+\_\+\+RAD}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda22aa776560be3dad9f87cf150902b6e0}{GEN\+\_\+\+FSM\+\_\+\+SYNC\+\_\+\+RAD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf01685cd0bd0626cf276e5e9875ac302}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+COUNTRYCODE}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf2d8857c14a469da1ff251ec22cfeab7}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+BSSID}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3c06fd84fc824d6f9225de5820fdf1cc}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+MLD}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda891e0951cdbfba41c4c1653ea45dd904}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+SEC}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda9113440b6b910c3927dd56146f7137a8}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+AP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda913cc3c726b118170c76498bd2e311f4}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+SSID}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdac2e9146a66b45b7d398d9fc9f98d0cde}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+MF\+\_\+\+LIST}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf6b27acc505d65c02a96920807ce0c34}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+CHANNEL}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf3c5f9f2e2412f41cdc5f04285957154}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+HOSTAPD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdab97a01a47b6a328ccb6b6222c9d06bc4}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+WPASUPP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda7baf6a1c7e9bae1ae4b1583db65d1129}{GEN\+\_\+\+FSM\+\_\+\+RELOAD\+\_\+\+AP\+\_\+\+SECKEY}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda06ad7c248a1e81edb0f13a608c8ec49f}{GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+EP\+\_\+\+MACADDR}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda0fff6ecf47d4d25660810517573060be}{GEN\+\_\+\+FSM\+\_\+\+UPDATE\+\_\+\+BEACON}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdabe0beba4172fbeab2c923eb30090d3c9}{GEN\+\_\+\+FSM\+\_\+\+UPDATE\+\_\+\+WPASUPP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1be871b0c4ecfa8913bc5ad114da7c7a}{GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+HOSTAPD}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3d6a8bc90e39ad9f2ad4dad5c2e1864a}{GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+RAD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda5fa453d64429a6b2fcf95a6408e55f21}{GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+AP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6e8c50f2eee1f1a69268a799b5253af}{GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+EP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda667dc3edc1585f8487e5f36f178098fd}{GEN\+\_\+\+FSM\+\_\+\+CONNECTED\+\_\+\+EP}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda154002d8f11542e132c171007fa153a6}{GEN\+\_\+\+FSM\+\_\+\+UPDATE\+\_\+\+HOSTAPD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda4b9936f95d89372492e9ed25089c0cb2}{GEN\+\_\+\+FSM\+\_\+\+START\+\_\+\+HOSTAPD}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6b9fe894e6d3c15da92ea99f0f85544}{GEN\+\_\+\+FSM\+\_\+\+START\+\_\+\+WPASUPP}}
+, \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1a0c8e8ea704dc4171607315c6959746}{GEN\+\_\+\+FSM\+\_\+\+SYNC\+\_\+\+STATE}}
+, \newline
+\mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}{GEN\+\_\+\+FSM\+\_\+\+MAX}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wifiGen__fsm_8h_af98faa0f6c59ee558aa18dbef60875f3}{wifi\+Gen\+\_\+fsm\+\_\+do\+Init}} (\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$\mbox{\hyperlink{structvendor}{vendor}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abd}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abd}} 
+\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!wifiGen\_fsmStates\_e@{wifiGen\_fsmStates\_e}}
+\index{wifiGen\_fsmStates\_e@{wifiGen\_fsmStates\_e}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_fsmStates\_e}{wifiGen\_fsmStates\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abd}{wifi\+Gen\+\_\+fsm\+States\+\_\+e}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_STOP\_HOSTAPD@{GEN\_FSM\_STOP\_HOSTAPD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_STOP\_HOSTAPD@{GEN\_FSM\_STOP\_HOSTAPD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaac55262ed6716beb0d6aaf076ef2cbeb}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaac55262ed6716beb0d6aaf076ef2cbeb}} 
+GEN\+\_\+\+FSM\+\_\+\+STOP\+\_\+\+HOSTAPD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_STOP\_WPASUPP@{GEN\_FSM\_STOP\_WPASUPP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_STOP\_WPASUPP@{GEN\_FSM\_STOP\_WPASUPP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda21a91d04d46d8bc064fff1d958e1f78b}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda21a91d04d46d8bc064fff1d958e1f78b}} 
+GEN\+\_\+\+FSM\+\_\+\+STOP\+\_\+\+WPASUPP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_DISABLE\_HOSTAPD@{GEN\_FSM\_DISABLE\_HOSTAPD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_DISABLE\_HOSTAPD@{GEN\_FSM\_DISABLE\_HOSTAPD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdadbb5538abc67e955391b63c096886e7a}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdadbb5538abc67e955391b63c096886e7a}} 
+GEN\+\_\+\+FSM\+\_\+\+DISABLE\+\_\+\+HOSTAPD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_DISABLE\_RAD@{GEN\_FSM\_DISABLE\_RAD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_DISABLE\_RAD@{GEN\_FSM\_DISABLE\_RAD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda2c28b7ba9c7aab595587e84e24697c2d}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda2c28b7ba9c7aab595587e84e24697c2d}} 
+GEN\+\_\+\+FSM\+\_\+\+DISABLE\+\_\+\+RAD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_SYNC\_RAD@{GEN\_FSM\_SYNC\_RAD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_SYNC\_RAD@{GEN\_FSM\_SYNC\_RAD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda22aa776560be3dad9f87cf150902b6e0}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda22aa776560be3dad9f87cf150902b6e0}} 
+GEN\+\_\+\+FSM\+\_\+\+SYNC\+\_\+\+RAD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_COUNTRYCODE@{GEN\_FSM\_MOD\_COUNTRYCODE}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_COUNTRYCODE@{GEN\_FSM\_MOD\_COUNTRYCODE}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf01685cd0bd0626cf276e5e9875ac302}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf01685cd0bd0626cf276e5e9875ac302}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+COUNTRYCODE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_BSSID@{GEN\_FSM\_MOD\_BSSID}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_BSSID@{GEN\_FSM\_MOD\_BSSID}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf2d8857c14a469da1ff251ec22cfeab7}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf2d8857c14a469da1ff251ec22cfeab7}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+BSSID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_MLD@{GEN\_FSM\_MOD\_MLD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_MLD@{GEN\_FSM\_MOD\_MLD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3c06fd84fc824d6f9225de5820fdf1cc}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3c06fd84fc824d6f9225de5820fdf1cc}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+MLD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_SEC@{GEN\_FSM\_MOD\_SEC}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_SEC@{GEN\_FSM\_MOD\_SEC}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda891e0951cdbfba41c4c1653ea45dd904}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda891e0951cdbfba41c4c1653ea45dd904}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+SEC&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_AP@{GEN\_FSM\_MOD\_AP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_AP@{GEN\_FSM\_MOD\_AP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda9113440b6b910c3927dd56146f7137a8}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda9113440b6b910c3927dd56146f7137a8}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+AP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_SSID@{GEN\_FSM\_MOD\_SSID}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_SSID@{GEN\_FSM\_MOD\_SSID}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda913cc3c726b118170c76498bd2e311f4}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda913cc3c726b118170c76498bd2e311f4}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+SSID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_MF\_LIST@{GEN\_FSM\_MOD\_MF\_LIST}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_MF\_LIST@{GEN\_FSM\_MOD\_MF\_LIST}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdac2e9146a66b45b7d398d9fc9f98d0cde}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdac2e9146a66b45b7d398d9fc9f98d0cde}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+MF\+\_\+\+LIST&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_CHANNEL@{GEN\_FSM\_MOD\_CHANNEL}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_CHANNEL@{GEN\_FSM\_MOD\_CHANNEL}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf6b27acc505d65c02a96920807ce0c34}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf6b27acc505d65c02a96920807ce0c34}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+CHANNEL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_HOSTAPD@{GEN\_FSM\_MOD\_HOSTAPD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_HOSTAPD@{GEN\_FSM\_MOD\_HOSTAPD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf3c5f9f2e2412f41cdc5f04285957154}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf3c5f9f2e2412f41cdc5f04285957154}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+HOSTAPD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_WPASUPP@{GEN\_FSM\_MOD\_WPASUPP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_WPASUPP@{GEN\_FSM\_MOD\_WPASUPP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdab97a01a47b6a328ccb6b6222c9d06bc4}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdab97a01a47b6a328ccb6b6222c9d06bc4}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+WPASUPP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_RELOAD\_AP\_SECKEY@{GEN\_FSM\_RELOAD\_AP\_SECKEY}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_RELOAD\_AP\_SECKEY@{GEN\_FSM\_RELOAD\_AP\_SECKEY}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda7baf6a1c7e9bae1ae4b1583db65d1129}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda7baf6a1c7e9bae1ae4b1583db65d1129}} 
+GEN\+\_\+\+FSM\+\_\+\+RELOAD\+\_\+\+AP\+\_\+\+SECKEY&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MOD\_EP\_MACADDR@{GEN\_FSM\_MOD\_EP\_MACADDR}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MOD\_EP\_MACADDR@{GEN\_FSM\_MOD\_EP\_MACADDR}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda06ad7c248a1e81edb0f13a608c8ec49f}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda06ad7c248a1e81edb0f13a608c8ec49f}} 
+GEN\+\_\+\+FSM\+\_\+\+MOD\+\_\+\+EP\+\_\+\+MACADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_UPDATE\_BEACON@{GEN\_FSM\_UPDATE\_BEACON}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_UPDATE\_BEACON@{GEN\_FSM\_UPDATE\_BEACON}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda0fff6ecf47d4d25660810517573060be}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda0fff6ecf47d4d25660810517573060be}} 
+GEN\+\_\+\+FSM\+\_\+\+UPDATE\+\_\+\+BEACON&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_UPDATE\_WPASUPP@{GEN\_FSM\_UPDATE\_WPASUPP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_UPDATE\_WPASUPP@{GEN\_FSM\_UPDATE\_WPASUPP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdabe0beba4172fbeab2c923eb30090d3c9}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdabe0beba4172fbeab2c923eb30090d3c9}} 
+GEN\+\_\+\+FSM\+\_\+\+UPDATE\+\_\+\+WPASUPP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_ENABLE\_HOSTAPD@{GEN\_FSM\_ENABLE\_HOSTAPD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_ENABLE\_HOSTAPD@{GEN\_FSM\_ENABLE\_HOSTAPD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1be871b0c4ecfa8913bc5ad114da7c7a}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1be871b0c4ecfa8913bc5ad114da7c7a}} 
+GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+HOSTAPD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_ENABLE\_RAD@{GEN\_FSM\_ENABLE\_RAD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_ENABLE\_RAD@{GEN\_FSM\_ENABLE\_RAD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3d6a8bc90e39ad9f2ad4dad5c2e1864a}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3d6a8bc90e39ad9f2ad4dad5c2e1864a}} 
+GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+RAD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_ENABLE\_AP@{GEN\_FSM\_ENABLE\_AP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_ENABLE\_AP@{GEN\_FSM\_ENABLE\_AP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda5fa453d64429a6b2fcf95a6408e55f21}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda5fa453d64429a6b2fcf95a6408e55f21}} 
+GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+AP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_ENABLE\_EP@{GEN\_FSM\_ENABLE\_EP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_ENABLE\_EP@{GEN\_FSM\_ENABLE\_EP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6e8c50f2eee1f1a69268a799b5253af}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6e8c50f2eee1f1a69268a799b5253af}} 
+GEN\+\_\+\+FSM\+\_\+\+ENABLE\+\_\+\+EP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_CONNECTED\_EP@{GEN\_FSM\_CONNECTED\_EP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_CONNECTED\_EP@{GEN\_FSM\_CONNECTED\_EP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda667dc3edc1585f8487e5f36f178098fd}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda667dc3edc1585f8487e5f36f178098fd}} 
+GEN\+\_\+\+FSM\+\_\+\+CONNECTED\+\_\+\+EP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_UPDATE\_HOSTAPD@{GEN\_FSM\_UPDATE\_HOSTAPD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_UPDATE\_HOSTAPD@{GEN\_FSM\_UPDATE\_HOSTAPD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda154002d8f11542e132c171007fa153a6}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda154002d8f11542e132c171007fa153a6}} 
+GEN\+\_\+\+FSM\+\_\+\+UPDATE\+\_\+\+HOSTAPD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_START\_HOSTAPD@{GEN\_FSM\_START\_HOSTAPD}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_START\_HOSTAPD@{GEN\_FSM\_START\_HOSTAPD}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda4b9936f95d89372492e9ed25089c0cb2}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda4b9936f95d89372492e9ed25089c0cb2}} 
+GEN\+\_\+\+FSM\+\_\+\+START\+\_\+\+HOSTAPD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_START\_WPASUPP@{GEN\_FSM\_START\_WPASUPP}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_START\_WPASUPP@{GEN\_FSM\_START\_WPASUPP}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6b9fe894e6d3c15da92ea99f0f85544}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6b9fe894e6d3c15da92ea99f0f85544}} 
+GEN\+\_\+\+FSM\+\_\+\+START\+\_\+\+WPASUPP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_SYNC\_STATE@{GEN\_FSM\_SYNC\_STATE}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_SYNC\_STATE@{GEN\_FSM\_SYNC\_STATE}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1a0c8e8ea704dc4171607315c6959746}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1a0c8e8ea704dc4171607315c6959746}} 
+GEN\+\_\+\+FSM\+\_\+\+SYNC\+\_\+\+STATE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GEN\_FSM\_MAX@{GEN\_FSM\_MAX}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!GEN\_FSM\_MAX@{GEN\_FSM\_MAX}}}\mbox{\Hypertarget{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}\label{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}} 
+GEN\+\_\+\+FSM\+\_\+\+MAX&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wifiGen__fsm_8h_af98faa0f6c59ee558aa18dbef60875f3}\label{wifiGen__fsm_8h_af98faa0f6c59ee558aa18dbef60875f3}} 
+\index{wifiGen\_fsm.h@{wifiGen\_fsm.h}!wifiGen\_fsm\_doInit@{wifiGen\_fsm\_doInit}}
+\index{wifiGen\_fsm\_doInit@{wifiGen\_fsm\_doInit}!wifiGen\_fsm.h@{wifiGen\_fsm.h}}
+\doxysubsubsection{\texorpdfstring{wifiGen\_fsm\_doInit()}{wifiGen\_fsm\_doInit()}}
+{\footnotesize\ttfamily void wifi\+Gen\+\_\+fsm\+\_\+do\+Init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$}]{vendor }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wifiGen__fsm_8h_af98faa0f6c59ee558aa18dbef60875f3_cgraph}
+\end{center}
+\end{figure}

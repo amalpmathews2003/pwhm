@@ -1,0 +1,122 @@
+\hypertarget{wld__th__vap_8h_source}{}\doxysection{wld\+\_\+th\+\_\+vap.\+h}
+\label{wld__th__vap_8h_source}\index{test/testHelper/wld\_th\_vap.h@{test/testHelper/wld\_th\_vap.h}}
+\mbox{\hyperlink{wld__th__vap_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_TESTHELPER\_VAP\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_TESTHELPER\_VAP\_H\_\_}}
+\DoxyCodeLine{65 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__types_8h}{wld\_types.h}}"{}}}
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__types_8h}{wld\_th\_types.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#include <amxc/amxc\_macros.h>}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include <amxc/amxc.h>}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include <amxp/amxp.h>}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include <amxd/amxd\_dm.h>}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include <amxd/amxd\_object.h>}}
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#include <amxd/amxd\_path.h>}}
+\DoxyCodeLine{74 \textcolor{preprocessor}{\#include <amxd/amxd\_object\_event.h>}}
+\DoxyCodeLine{75 \textcolor{preprocessor}{\#include <amxo/amxo.h>}}
+\DoxyCodeLine{76 \textcolor{preprocessor}{\#include <amxo/amxo\_save.h>}}
+\DoxyCodeLine{77 \textcolor{preprocessor}{\#include <amxb/amxb.h>}}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld/wld.h}}"{}}}
+\DoxyCodeLine{80 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__accesspoint_8h}{wld/wld\_accesspoint.h}}"{}}}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__th__fsm_8h}{wld\_th\_fsm.h}}"{}}}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84 \textcolor{keyword}{typedef} void (* \mbox{\hyperlink{wld__th__vap_8h_acdf76b5eb4ab35fb1be6da6ccb6b204a}{wld\_th\_vap\_doVapFsmAction}})(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \mbox{\hyperlink{wld__th__fsm_8h_a229a161ea59ac20b5e9de019bfa6d30c}{wld\_th\_fsmStates\_e}} state);}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{86 \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\{}
+\DoxyCodeLine{87     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structwld__th__vap__vendorData__t_aed68661ad7c0953c61a0d9d77e4e0157}{errorOnStaStats}};}
+\DoxyCodeLine{88     uint32\_t \mbox{\hyperlink{structwld__th__vap__vendorData__t_a93d3ccf21345e43804e3d1f25a23b8f1}{nrStaInFile}};}
+\DoxyCodeLine{89     \textcolor{keywordtype}{char}* \mbox{\hyperlink{structwld__th__vap__vendorData__t_ab61c7426e5485f7ccac88cd8a8ea494a}{staStatsFileName}};}
+\DoxyCodeLine{90     uint32\_t fsmCommits[\mbox{\hyperlink{wld__th__fsm_8h_a229a161ea59ac20b5e9de019bfa6d30ca87ab153d11e85856cbeca6fd8663c5b7}{WLD\_TH\_FSM\_MAX}}];}
+\DoxyCodeLine{91     \mbox{\hyperlink{wld__th__vap_8h_acdf76b5eb4ab35fb1be6da6ccb6b204a}{wld\_th\_vap\_doVapFsmAction}} fsmCallback[\mbox{\hyperlink{wld__th__fsm_8h_a229a161ea59ac20b5e9de019bfa6d30ca87ab153d11e85856cbeca6fd8663c5b7}{WLD\_TH\_FSM\_MAX}}];}
+\DoxyCodeLine{92 \} \mbox{\hyperlink{structwld__th__vap__vendorData__t}{wld\_th\_vap\_vendorData\_t}};}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94 \mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* \mbox{\hyperlink{wld__th__vap_8h_a3c2a38e593417f2faba4f0cf0496b144}{wld\_th\_vap\_createVap}}(amxb\_bus\_ctx\_t* \textcolor{keyword}{const} bus\_ctx, \mbox{\hyperlink{structwld__th__mockVendor}{wld\_th\_mockVendor\_t}}* mockVendor, \mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* radio, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* name);}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{96 swl\_rc\_ne \mbox{\hyperlink{wld__th__vap_8h_a63e1e22c7f6bc30b88a4517c75633bf8}{wld\_th\_vap\_createHook}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{97 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a059626675caffa8d5c5c02289d995474}{wld\_th\_vap\_destroyHook}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__th__vap_8h_a1c5f0feaf7185007baebeff85a3c00f7}{wld\_th\_vap\_vendorCb\_addVapIf}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* rad, \textcolor{keywordtype}{char}* vap, \textcolor{keywordtype}{int} bufsize);}
+\DoxyCodeLine{102 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__th__vap_8h_aebc1f04619e9a680605783fe2f4dc472}{wld\_th\_vap\_status}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{103 swl\_rc\_ne \mbox{\hyperlink{wld__th__vap_8h_a92490a3f3090f883563b195dcedf4a20}{wld\_th\_vap\_getStationStats}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{104 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__th__vap_8h_a3a94d721ae362c439d3b2d01adf51071}{wld\_th\_vap\_enable}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{int} enable, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{105 \textcolor{keywordtype}{int} \mbox{\hyperlink{wld__th__vap_8h_a84d964a65e88d3c9a8b91b9d05ecbfd1}{wld\_th\_vap\_ssid}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{char}* buf, \textcolor{keywordtype}{int} bufsize, \textcolor{keywordtype}{int} set);}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \textcolor{comment}{//Helper functions}}
+\DoxyCodeLine{108 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a3af7ec350a0bfe116f1ac5f00656a8fd}{wld\_th\_vap\_doFsmClean}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{109 \mbox{\hyperlink{structwld__th__vap__vendorData__t}{wld\_th\_vap\_vendorData\_t}}* \mbox{\hyperlink{wld__th__vap_8h_a2daad05ee8254ce645060e6449541019}{wld\_th\_vap\_getVendorData}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{110 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a1f84e903315fa9255ad47dd3aa1bc1f1}{wld\_th\_vap\_setSSIDEnable}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{bool} enable, \textcolor{keywordtype}{bool} commit);}
+\DoxyCodeLine{111 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a146360bbbf095c43e5b75da266ed9bc5}{wld\_th\_vap\_setApEnable}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{bool} enable, \textcolor{keywordtype}{bool} commit);}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a9fdee997ca2a5cd85b3c77434f97af60}{wld\_th\_vap\_clearCommits}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{114 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a14833a314ff637a8e0955aefc2839b06}{wld\_th\_vap\_checkCommitAll}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{115 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__th__vap_8h_a4554805b63688b1f84c8f38b09ec64e1}{wld\_th\_vap\_checkCommitted}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_mask\_m commitMask);}
+\DoxyCodeLine{116 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

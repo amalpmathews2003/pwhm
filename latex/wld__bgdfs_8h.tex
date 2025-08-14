@@ -1,0 +1,268 @@
+\hypertarget{wld__bgdfs_8h}{}\doxysection{include/wld/wld\+\_\+bgdfs.h File Reference}
+\label{wld__bgdfs_8h}\index{include/wld/wld\_bgdfs.h@{include/wld/wld\_bgdfs.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+types.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+bgdfs.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__rad__bgdfs__config}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config}}
+\item 
+struct \mbox{\hyperlink{structwld__rad__bgdfs__stats__t}{wld\+\_\+rad\+\_\+bgdfs\+\_\+stats\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structwld__rad__bgdfs__config}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config}} \mbox{\hyperlink{wld__bgdfs_8h_ad3fbfbd3712216387c508b2995f40f8d}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9e}{wld\+\_\+bgdfs\+Status\+\_\+e}} \{ \newline
+\mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea7da84eacdd328b9cdc81da16915630e5}{BGDFS\+\_\+\+STATUS\+\_\+\+OFF}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea521fb5186ac5ed2c3d9ea4df59d18e67}{BGDFS\+\_\+\+STATUS\+\_\+\+IDLE}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9eab244b9340cb9bf35de44302af8e541c2}{BGDFS\+\_\+\+STATUS\+\_\+\+CLEAR}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea61e49897b522592d20e70a930cb64136}{BGDFS\+\_\+\+STATUS\+\_\+\+CLEAR\+\_\+\+EXT}}
+, \newline
+\mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea7106fa0361b8a28773608de376a4c2fc}{BGDFS\+\_\+\+STATUS\+\_\+\+CLEAR\+\_\+\+CONTINUOUS}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9eaedb3b8b654a70b25423cb20cc97b7dd0}{BGDFS\+\_\+\+STATUS\+\_\+\+MAX}}
+ \}
+\item 
+enum \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670}{wld\+\_\+bgdfs\+Type\+\_\+e}} \{ \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670ab62e7c454d6b90756aadd072696716e1}{BGDFS\+\_\+\+TYPE\+\_\+\+CLEAR}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a27c48207cc333a5ab3f91b19f62c514c}{BGDFS\+\_\+\+TYPE\+\_\+\+CLEAR\+\_\+\+EXT}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a8c9daccc36086c3d452bfe0bff321191}{BGDFS\+\_\+\+TYPE\+\_\+\+CLEAR\+\_\+\+CONTINUOUS}}
+, \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a22eec7ae2f07af5186a6978ec6a1d3ee}{BGDFS\+\_\+\+TYPE\+\_\+\+MAX}}
+ \}
+\item 
+enum \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644c}{wld\+\_\+dfs\+Result\+\_\+e}} \{ \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca87623051fc6dbdf76570f441df23f692}{DFS\+\_\+\+RESULT\+\_\+\+OK}}
+, \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca95fd51b642005585c47df7217562f7ae}{DFS\+\_\+\+RESULT\+\_\+\+RADAR}}
+, \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca36783f3df2a37a1e82b877ec75095cb9}{DFS\+\_\+\+RESULT\+\_\+\+OTHER}}
+, \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca6035ea7b7679adf2fcba3ff5cf03bef5}{DFS\+\_\+\+RESULT\+\_\+\+MAX}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__bgdfs_8h_aea898c0a2074de517ec55939629343d1}{wld\+\_\+bgdfs\+\_\+set\+Available}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, bool available)
+\item 
+void \mbox{\hyperlink{wld__bgdfs_8h_ab13d60bc6b7bf3ca585af03336fbc26a}{wld\+\_\+bgdfs\+\_\+notify\+Clear\+Started}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+channel\+\_\+t channel, swl\+\_\+bandwidth\+\_\+e bandwidth, \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670}{wld\+\_\+bgdfs\+Type\+\_\+e}} \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}})
+\item 
+void \mbox{\hyperlink{wld__bgdfs_8h_a0b5d68a7bcbacb3eab1215d65d03d75e}{wld\+\_\+bgdfs\+\_\+notify\+Clear\+Ended}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644c}{wld\+\_\+dfs\+Result\+\_\+e}} result)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__bgdfs_8h_aae1aad062ee5ff30deb64938b4c5be6d}{wld\+\_\+bgdfs\+\_\+start\+Ext}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, \mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}})
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__bgdfs_8h_af91e15a3dd0c40898e755ea3b5a581b0}{wld\+\_\+bgdfs\+\_\+clear\+Time\+Ellapsed}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+bool \mbox{\hyperlink{wld__bgdfs_8h_a609c9c511280d7b756931f0f71451de5}{wld\+\_\+bgdfs\+\_\+is\+Running}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__bgdfs_8h_a7efd3bd8095fd45db51802be8ab2f7b1}{wld\+\_\+bgdfs\+\_\+update}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, amxd\+\_\+trans\+\_\+t $\ast$trans)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__bgdfs_8h_ad3fbfbd3712216387c508b2995f40f8d}\label{wld__bgdfs_8h_ad3fbfbd3712216387c508b2995f40f8d}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_rad\_bgdfs\_config\_t@{wld\_rad\_bgdfs\_config\_t}}
+\index{wld\_rad\_bgdfs\_config\_t@{wld\_rad\_bgdfs\_config\_t}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_bgdfs\_config\_t}{wld\_rad\_bgdfs\_config\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structwld__rad__bgdfs__config}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config}} \mbox{\hyperlink{wld__bgdfs_8h_ad3fbfbd3712216387c508b2995f40f8d}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config\+\_\+t}}}
+
+Background DFS configuration 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9e}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9e}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfsStatus\_e@{wld\_bgdfsStatus\_e}}
+\index{wld\_bgdfsStatus\_e@{wld\_bgdfsStatus\_e}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfsStatus\_e}{wld\_bgdfsStatus\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9e}{wld\+\_\+bgdfs\+Status\+\_\+e}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_STATUS\_OFF@{BGDFS\_STATUS\_OFF}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_STATUS\_OFF@{BGDFS\_STATUS\_OFF}}}\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea7da84eacdd328b9cdc81da16915630e5}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea7da84eacdd328b9cdc81da16915630e5}} 
+BGDFS\+\_\+\+STATUS\+\_\+\+OFF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_STATUS\_IDLE@{BGDFS\_STATUS\_IDLE}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_STATUS\_IDLE@{BGDFS\_STATUS\_IDLE}}}\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea521fb5186ac5ed2c3d9ea4df59d18e67}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea521fb5186ac5ed2c3d9ea4df59d18e67}} 
+BGDFS\+\_\+\+STATUS\+\_\+\+IDLE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_STATUS\_CLEAR@{BGDFS\_STATUS\_CLEAR}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_STATUS\_CLEAR@{BGDFS\_STATUS\_CLEAR}}}\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9eab244b9340cb9bf35de44302af8e541c2}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9eab244b9340cb9bf35de44302af8e541c2}} 
+BGDFS\+\_\+\+STATUS\+\_\+\+CLEAR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_STATUS\_CLEAR\_EXT@{BGDFS\_STATUS\_CLEAR\_EXT}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_STATUS\_CLEAR\_EXT@{BGDFS\_STATUS\_CLEAR\_EXT}}}\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea61e49897b522592d20e70a930cb64136}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea61e49897b522592d20e70a930cb64136}} 
+BGDFS\+\_\+\+STATUS\+\_\+\+CLEAR\+\_\+\+EXT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_STATUS\_CLEAR\_CONTINUOUS@{BGDFS\_STATUS\_CLEAR\_CONTINUOUS}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_STATUS\_CLEAR\_CONTINUOUS@{BGDFS\_STATUS\_CLEAR\_CONTINUOUS}}}\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea7106fa0361b8a28773608de376a4c2fc}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9ea7106fa0361b8a28773608de376a4c2fc}} 
+BGDFS\+\_\+\+STATUS\+\_\+\+CLEAR\+\_\+\+CONTINUOUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_STATUS\_MAX@{BGDFS\_STATUS\_MAX}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_STATUS\_MAX@{BGDFS\_STATUS\_MAX}}}\mbox{\Hypertarget{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9eaedb3b8b654a70b25423cb20cc97b7dd0}\label{wld__bgdfs_8h_a7b05fe54a977071c520aaf84b2d21d9eaedb3b8b654a70b25423cb20cc97b7dd0}} 
+BGDFS\+\_\+\+STATUS\+\_\+\+MAX&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670}\label{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfsType\_e@{wld\_bgdfsType\_e}}
+\index{wld\_bgdfsType\_e@{wld\_bgdfsType\_e}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfsType\_e}{wld\_bgdfsType\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670}{wld\+\_\+bgdfs\+Type\+\_\+e}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_TYPE\_CLEAR@{BGDFS\_TYPE\_CLEAR}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_TYPE\_CLEAR@{BGDFS\_TYPE\_CLEAR}}}\mbox{\Hypertarget{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670ab62e7c454d6b90756aadd072696716e1}\label{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670ab62e7c454d6b90756aadd072696716e1}} 
+BGDFS\+\_\+\+TYPE\+\_\+\+CLEAR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_TYPE\_CLEAR\_EXT@{BGDFS\_TYPE\_CLEAR\_EXT}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_TYPE\_CLEAR\_EXT@{BGDFS\_TYPE\_CLEAR\_EXT}}}\mbox{\Hypertarget{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a27c48207cc333a5ab3f91b19f62c514c}\label{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a27c48207cc333a5ab3f91b19f62c514c}} 
+BGDFS\+\_\+\+TYPE\+\_\+\+CLEAR\+\_\+\+EXT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_TYPE\_CLEAR\_CONTINUOUS@{BGDFS\_TYPE\_CLEAR\_CONTINUOUS}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_TYPE\_CLEAR\_CONTINUOUS@{BGDFS\_TYPE\_CLEAR\_CONTINUOUS}}}\mbox{\Hypertarget{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a8c9daccc36086c3d452bfe0bff321191}\label{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a8c9daccc36086c3d452bfe0bff321191}} 
+BGDFS\+\_\+\+TYPE\+\_\+\+CLEAR\+\_\+\+CONTINUOUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BGDFS\_TYPE\_MAX@{BGDFS\_TYPE\_MAX}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!BGDFS\_TYPE\_MAX@{BGDFS\_TYPE\_MAX}}}\mbox{\Hypertarget{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a22eec7ae2f07af5186a6978ec6a1d3ee}\label{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670a22eec7ae2f07af5186a6978ec6a1d3ee}} 
+BGDFS\+\_\+\+TYPE\+\_\+\+MAX&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644c}\label{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644c}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_dfsResult\_e@{wld\_dfsResult\_e}}
+\index{wld\_dfsResult\_e@{wld\_dfsResult\_e}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_dfsResult\_e}{wld\_dfsResult\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644c}{wld\+\_\+dfs\+Result\+\_\+e}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DFS\_RESULT\_OK@{DFS\_RESULT\_OK}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!DFS\_RESULT\_OK@{DFS\_RESULT\_OK}}}\mbox{\Hypertarget{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca87623051fc6dbdf76570f441df23f692}\label{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca87623051fc6dbdf76570f441df23f692}} 
+DFS\+\_\+\+RESULT\+\_\+\+OK&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DFS\_RESULT\_RADAR@{DFS\_RESULT\_RADAR}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!DFS\_RESULT\_RADAR@{DFS\_RESULT\_RADAR}}}\mbox{\Hypertarget{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca95fd51b642005585c47df7217562f7ae}\label{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca95fd51b642005585c47df7217562f7ae}} 
+DFS\+\_\+\+RESULT\+\_\+\+RADAR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DFS\_RESULT\_OTHER@{DFS\_RESULT\_OTHER}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!DFS\_RESULT\_OTHER@{DFS\_RESULT\_OTHER}}}\mbox{\Hypertarget{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca36783f3df2a37a1e82b877ec75095cb9}\label{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca36783f3df2a37a1e82b877ec75095cb9}} 
+DFS\+\_\+\+RESULT\+\_\+\+OTHER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DFS\_RESULT\_MAX@{DFS\_RESULT\_MAX}!wld\_bgdfs.h@{wld\_bgdfs.h}}\index{wld\_bgdfs.h@{wld\_bgdfs.h}!DFS\_RESULT\_MAX@{DFS\_RESULT\_MAX}}}\mbox{\Hypertarget{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca6035ea7b7679adf2fcba3ff5cf03bef5}\label{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644ca6035ea7b7679adf2fcba3ff5cf03bef5}} 
+DFS\+\_\+\+RESULT\+\_\+\+MAX&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__bgdfs_8h_af91e15a3dd0c40898e755ea3b5a581b0}\label{wld__bgdfs_8h_af91e15a3dd0c40898e755ea3b5a581b0}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_clearTimeEllapsed@{wld\_bgdfs\_clearTimeEllapsed}}
+\index{wld\_bgdfs\_clearTimeEllapsed@{wld\_bgdfs\_clearTimeEllapsed}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_clearTimeEllapsed()}{wld\_bgdfs\_clearTimeEllapsed()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+bgdfs\+\_\+clear\+Time\+Ellapsed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Return elapsed clear time Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_af91e15a3dd0c40898e755ea3b5a581b0_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__bgdfs_8h_a609c9c511280d7b756931f0f71451de5}\label{wld__bgdfs_8h_a609c9c511280d7b756931f0f71451de5}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_isRunning@{wld\_bgdfs\_isRunning}}
+\index{wld\_bgdfs\_isRunning@{wld\_bgdfs\_isRunning}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_isRunning()}{wld\_bgdfs\_isRunning()}}
+{\footnotesize\ttfamily bool wld\+\_\+bgdfs\+\_\+is\+Running (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Returns whether a background dfs clear is currently happening on this radio Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_a609c9c511280d7b756931f0f71451de5_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__bgdfs_8h_a0b5d68a7bcbacb3eab1215d65d03d75e}\label{wld__bgdfs_8h_a0b5d68a7bcbacb3eab1215d65d03d75e}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_notifyClearEnded@{wld\_bgdfs\_notifyClearEnded}}
+\index{wld\_bgdfs\_notifyClearEnded@{wld\_bgdfs\_notifyClearEnded}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_notifyClearEnded()}{wld\_bgdfs\_notifyClearEnded()}}
+{\footnotesize\ttfamily void wld\+\_\+bgdfs\+\_\+notify\+Clear\+Ended (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{wld__bgdfs_8h_aa1fd62833b65f391a024636ea22f644c}{wld\+\_\+dfs\+Result\+\_\+e}}}]{result }\end{DoxyParamCaption})}
+
+Stop a bgdfs clear Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_a0b5d68a7bcbacb3eab1215d65d03d75e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_a0b5d68a7bcbacb3eab1215d65d03d75e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__bgdfs_8h_ab13d60bc6b7bf3ca585af03336fbc26a}\label{wld__bgdfs_8h_ab13d60bc6b7bf3ca585af03336fbc26a}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_notifyClearStarted@{wld\_bgdfs\_notifyClearStarted}}
+\index{wld\_bgdfs\_notifyClearStarted@{wld\_bgdfs\_notifyClearStarted}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_notifyClearStarted()}{wld\_bgdfs\_notifyClearStarted()}}
+{\footnotesize\ttfamily void wld\+\_\+bgdfs\+\_\+notify\+Clear\+Started (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+channel\+\_\+t}]{channel,  }\item[{swl\+\_\+bandwidth\+\_\+e}]{bandwidth,  }\item[{\mbox{\hyperlink{wld__bgdfs_8h_a95747e40fd7919b9beba58adfdedc670}{wld\+\_\+bgdfs\+Type\+\_\+e}}}]{type }\end{DoxyParamCaption})}
+
+Start a bgdfs clear with given channel and bw, and whether it\textquotesingle{}s external Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_ab13d60bc6b7bf3ca585af03336fbc26a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__bgdfs_8h_aea898c0a2074de517ec55939629343d1}\label{wld__bgdfs_8h_aea898c0a2074de517ec55939629343d1}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_setAvailable@{wld\_bgdfs\_setAvailable}}
+\index{wld\_bgdfs\_setAvailable@{wld\_bgdfs\_setAvailable}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_setAvailable()}{wld\_bgdfs\_setAvailable()}}
+{\footnotesize\ttfamily void wld\+\_\+bgdfs\+\_\+set\+Available (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{bool}]{available }\end{DoxyParamCaption})}
+
+Update the background dfs feature availability Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_aea898c0a2074de517ec55939629343d1_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__bgdfs_8h_aae1aad062ee5ff30deb64938b4c5be6d}\label{wld__bgdfs_8h_aae1aad062ee5ff30deb64938b4c5be6d}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_startExt@{wld\_bgdfs\_startExt}}
+\index{wld\_bgdfs\_startExt@{wld\_bgdfs\_startExt}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_startExt()}{wld\_bgdfs\_startExt()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+bgdfs\+\_\+start\+Ext (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{\mbox{\hyperlink{structwld__startBgdfsArgs__t}{wld\+\_\+start\+Bgdfs\+Args\+\_\+t}} $\ast$}]{args }\end{DoxyParamCaption})}
+
+Function for other modules to call, to start a bg\+Dfs Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__bgdfs_8h_aae1aad062ee5ff30deb64938b4c5be6d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__bgdfs_8h_a7efd3bd8095fd45db51802be8ab2f7b1}\label{wld__bgdfs_8h_a7efd3bd8095fd45db51802be8ab2f7b1}} 
+\index{wld\_bgdfs.h@{wld\_bgdfs.h}!wld\_bgdfs\_update@{wld\_bgdfs\_update}}
+\index{wld\_bgdfs\_update@{wld\_bgdfs\_update}!wld\_bgdfs.h@{wld\_bgdfs.h}}
+\doxysubsubsection{\texorpdfstring{wld\_bgdfs\_update()}{wld\_bgdfs\_update()}}
+{\footnotesize\ttfamily void wld\+\_\+bgdfs\+\_\+update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{amxd\+\_\+trans\+\_\+t $\ast$}]{trans }\end{DoxyParamCaption})}
+

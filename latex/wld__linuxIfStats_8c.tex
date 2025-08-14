@@ -1,0 +1,143 @@
+\hypertarget{wld__linuxIfStats_8c}{}\doxysection{src/\+Utils/wld\+\_\+linux\+If\+Stats.c File Reference}
+\label{wld__linuxIfStats_8c}\index{src/Utils/wld\_linuxIfStats.c@{src/Utils/wld\_linuxIfStats.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+linux\+If\+Stats.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include $<$linux/socket.\+h$>$}\newline
+{\ttfamily \#include $<$linux/types.\+h$>$}\newline
+{\ttfamily \#include $<$linux/netlink.\+h$>$}\newline
+{\ttfamily \#include $<$linux/rtnetlink.\+h$>$}\newline
+Include dependency graph for wld\+\_\+linux\+If\+Stats.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfStats_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structnl__req__t}{nl\+\_\+req\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__linuxIfStats_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}linux\+If\+Stats\char`\"{}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__linuxIfStats_8c_a889b6597d2303e88582399e516ee4f3d}{IFLIST\+\_\+\+REPLY\+\_\+\+BUFFER}}~8192
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{wld__linuxIfStats_8c_a6f485953cc5cc3237aa219c8ab0e65e3}{wld\+\_\+linux\+If\+Stats\+\_\+get\+Interface\+Stats}} (const char $\ast$p\+Iface\+Name, \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$p\+Interface\+Stats)
+\begin{DoxyCompactList}\small\item\em Gets interface statistics for the given network interface. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{wld__linuxIfStats_8c_a47c6e642b365ab010b70562ee2612044}{wld\+\_\+linux\+If\+Stats\+\_\+get\+Vap\+Stats}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$p\+Vap\+Stats)
+\item 
+bool \mbox{\hyperlink{wld__linuxIfStats_8c_a3c381ae85c8fdb89b5173c40d906f5d2}{wld\+\_\+linux\+If\+Stats\+\_\+get\+All\+Vap\+Stats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio, \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$p\+All\+Vap\+Stats)
+\item 
+bool \mbox{\hyperlink{wld__linuxIfStats_8c_a1e6ee2fbdd322b42a53f270dbb558459}{wld\+\_\+linux\+If\+Stats\+\_\+get\+All\+Ep\+Stats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio, \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$p\+All\+Ep\+Stats)
+\item 
+bool \mbox{\hyperlink{wld__linuxIfStats_8c_ae12ced660aea54a5d67db283048e138d}{wld\+\_\+linux\+If\+Stats\+\_\+get\+Radio\+Stats}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$p\+Radio, \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$p\+Radio\+Stats)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__linuxIfStats_8c_a889b6597d2303e88582399e516ee4f3d}\label{wld__linuxIfStats_8c_a889b6597d2303e88582399e516ee4f3d}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!IFLIST\_REPLY\_BUFFER@{IFLIST\_REPLY\_BUFFER}}
+\index{IFLIST\_REPLY\_BUFFER@{IFLIST\_REPLY\_BUFFER}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{IFLIST\_REPLY\_BUFFER}{IFLIST\_REPLY\_BUFFER}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} IFLIST\+\_\+\+REPLY\+\_\+\+BUFFER~8192}
+
+PRIVATE MACROS \mbox{\Hypertarget{wld__linuxIfStats_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__linuxIfStats_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!ME@{ME}}
+\index{ME@{ME}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}linux\+If\+Stats\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__linuxIfStats_8c_a1e6ee2fbdd322b42a53f270dbb558459}\label{wld__linuxIfStats_8c_a1e6ee2fbdd322b42a53f270dbb558459}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!wld\_linuxIfStats\_getAllEpStats@{wld\_linuxIfStats\_getAllEpStats}}
+\index{wld\_linuxIfStats\_getAllEpStats@{wld\_linuxIfStats\_getAllEpStats}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfStats\_getAllEpStats()}{wld\_linuxIfStats\_getAllEpStats()}}
+{\footnotesize\ttfamily bool wld\+\_\+linux\+If\+Stats\+\_\+get\+All\+Ep\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio,  }\item[{\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$}]{p\+All\+Ep\+Stats }\end{DoxyParamCaption})}
+
+Get All End\+Points statistics Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfStats_8c_a1e6ee2fbdd322b42a53f270dbb558459_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfStats_8c_a3c381ae85c8fdb89b5173c40d906f5d2}\label{wld__linuxIfStats_8c_a3c381ae85c8fdb89b5173c40d906f5d2}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!wld\_linuxIfStats\_getAllVapStats@{wld\_linuxIfStats\_getAllVapStats}}
+\index{wld\_linuxIfStats\_getAllVapStats@{wld\_linuxIfStats\_getAllVapStats}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfStats\_getAllVapStats()}{wld\_linuxIfStats\_getAllVapStats()}}
+{\footnotesize\ttfamily bool wld\+\_\+linux\+If\+Stats\+\_\+get\+All\+Vap\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio,  }\item[{\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$}]{p\+All\+Vap\+Stats }\end{DoxyParamCaption})}
+
+Get All virtual accespoints statistics Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfStats_8c_a3c381ae85c8fdb89b5173c40d906f5d2_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfStats_8c_a6f485953cc5cc3237aa219c8ab0e65e3}\label{wld__linuxIfStats_8c_a6f485953cc5cc3237aa219c8ab0e65e3}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!wld\_linuxIfStats\_getInterfaceStats@{wld\_linuxIfStats\_getInterfaceStats}}
+\index{wld\_linuxIfStats\_getInterfaceStats@{wld\_linuxIfStats\_getInterfaceStats}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfStats\_getInterfaceStats()}{wld\_linuxIfStats\_getInterfaceStats()}}
+{\footnotesize\ttfamily bool wld\+\_\+linux\+If\+Stats\+\_\+get\+Interface\+Stats (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Iface\+Name,  }\item[{\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$}]{p\+Interface\+Stats }\end{DoxyParamCaption})}
+
+
+
+Gets interface statistics for the given network interface. 
+
+Gets interface stats for given network interface by sending a RTM\+\_\+\+GETLINK Netlink request through the specified Netlink socket and parsing received response.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em p\+Iface\+Name} & Name of the network interface. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em p\+Interface\+Stats} & Interface statistics structure with values read.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success and false otherwise. 
+\end{DoxyReturn}
+Create Netlink socket for kernel/user-\/space communication. No need to call bind() as packets are sent only between the kernel and the originating process (no multicasting).\mbox{\Hypertarget{wld__linuxIfStats_8c_ae12ced660aea54a5d67db283048e138d}\label{wld__linuxIfStats_8c_ae12ced660aea54a5d67db283048e138d}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!wld\_linuxIfStats\_getRadioStats@{wld\_linuxIfStats\_getRadioStats}}
+\index{wld\_linuxIfStats\_getRadioStats@{wld\_linuxIfStats\_getRadioStats}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfStats\_getRadioStats()}{wld\_linuxIfStats\_getRadioStats()}}
+{\footnotesize\ttfamily bool wld\+\_\+linux\+If\+Stats\+\_\+get\+Radio\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Radio,  }\item[{\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$}]{p\+Radio\+Stats }\end{DoxyParamCaption})}
+
+Get ratio statistics Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfStats_8c_ae12ced660aea54a5d67db283048e138d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__linuxIfStats_8c_ae12ced660aea54a5d67db283048e138d_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__linuxIfStats_8c_a47c6e642b365ab010b70562ee2612044}\label{wld__linuxIfStats_8c_a47c6e642b365ab010b70562ee2612044}} 
+\index{wld\_linuxIfStats.c@{wld\_linuxIfStats.c}!wld\_linuxIfStats\_getVapStats@{wld\_linuxIfStats\_getVapStats}}
+\index{wld\_linuxIfStats\_getVapStats@{wld\_linuxIfStats\_getVapStats}!wld\_linuxIfStats.c@{wld\_linuxIfStats.c}}
+\doxysubsubsection{\texorpdfstring{wld\_linuxIfStats\_getVapStats()}{wld\_linuxIfStats\_getVapStats()}}
+{\footnotesize\ttfamily bool wld\+\_\+linux\+If\+Stats\+\_\+get\+Vap\+Stats (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} $\ast$}]{p\+Vap\+Stats }\end{DoxyParamCaption})}
+
+Get virtual accespoints statistics 

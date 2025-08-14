@@ -1,0 +1,251 @@
+\hypertarget{wld__ap__nl80211_8h_source}{}\doxysection{wld\+\_\+ap\+\_\+nl80211.\+h}
+\label{wld__ap__nl80211_8h_source}\index{include/wld/wld\_ap\_nl80211.h@{include/wld/wld\_ap\_nl80211.h}}
+\mbox{\hyperlink{wld__ap__nl80211_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 \textcolor{comment}{/*}}
+\DoxyCodeLine{63 \textcolor{comment}{ * This file defines wrapper functions to use nl80211 generic apis with T\_AccessPoint context}}
+\DoxyCodeLine{64 \textcolor{comment}{ */}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#ifndef INCLUDE\_WLD\_WLD\_AP\_NL80211\_H\_}}
+\DoxyCodeLine{67 \textcolor{preprocessor}{\#define INCLUDE\_WLD\_WLD\_AP\_NL80211\_H\_}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__api_8h}{wld\_nl80211\_api.h}}"{}}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__events_8h}{wld\_nl80211\_events.h}}"{}}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__nl80211__debug_8h}{wld\_nl80211\_debug.h}}"{}}}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74 \textcolor{comment}{/*}}
+\DoxyCodeLine{75 \textcolor{comment}{ * @brief set a listener for all received nl80211 events from an AP interface.}}
+\DoxyCodeLine{76 \textcolor{comment}{ *}}
+\DoxyCodeLine{77 \textcolor{comment}{ * @param state pointer to nl80211 socket manager, on which socket the event would be received}}
+\DoxyCodeLine{78 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{79 \textcolor{comment}{ * @param pData user private data to provide when invoking handlers}}
+\DoxyCodeLine{80 \textcolor{comment}{ * @param handlers Pointer to structure of callback functions, handling the received events}}
+\DoxyCodeLine{81 \textcolor{comment}{ *                 Callbacks of unmanaged events shall remain null.}}
+\DoxyCodeLine{82 \textcolor{comment}{ *                 Handlers will be called with pRef equal to pAP.}}
+\DoxyCodeLine{83 \textcolor{comment}{ *}}
+\DoxyCodeLine{84 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{85 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{86 \textcolor{comment}{ */}}
+\DoxyCodeLine{87 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_ad44af6108724bf9466042468f0d916a8}{wld\_ap\_nl80211\_setEvtListener}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keywordtype}{void}* pData, \textcolor{keyword}{const} \mbox{\hyperlink{structwld__nl80211__evtHandlers__cb}{wld\_nl80211\_evtHandlers\_cb}}* \textcolor{keyword}{const} handlers);}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89 \textcolor{comment}{/*}}
+\DoxyCodeLine{90 \textcolor{comment}{ * @brief delete listener for AP interface's nl80211 events}}
+\DoxyCodeLine{91 \textcolor{comment}{ *}}
+\DoxyCodeLine{92 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{93 \textcolor{comment}{ *}}
+\DoxyCodeLine{94 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{95 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{96 \textcolor{comment}{ */}}
+\DoxyCodeLine{97 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a605483ac5f8b0cb3d4c3099ce04ca2ee}{wld\_ap\_nl80211\_delEvtListener}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99 \textcolor{comment}{/*}}
+\DoxyCodeLine{100 \textcolor{comment}{ * @brief get info of single AP or AP MLD interface info}}
+\DoxyCodeLine{101 \textcolor{comment}{ * This includes :}}
+\DoxyCodeLine{102 \textcolor{comment}{ * -\/ physical info like relative radio current channel and tx power}}
+\DoxyCodeLine{103 \textcolor{comment}{ * -\/ logical info: interface name, mac, type, ssid}}
+\DoxyCodeLine{104 \textcolor{comment}{ * -\/ MLO link matching AP mac address}}
+\DoxyCodeLine{105 \textcolor{comment}{ *}}
+\DoxyCodeLine{106 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{107 \textcolor{comment}{ * @param pIfaceInfo pointer to interface info struct to be filled}}
+\DoxyCodeLine{108 \textcolor{comment}{ *}}
+\DoxyCodeLine{109 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{110 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{111 \textcolor{comment}{ */}}
+\DoxyCodeLine{112 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_ac9a359b039f9489d4dd9086082492056}{wld\_ap\_nl80211\_getInterfaceInfo}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pIfaceInfo);}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114 \textcolor{comment}{/*}}
+\DoxyCodeLine{115 \textcolor{comment}{ * @brief delete AP interface}}
+\DoxyCodeLine{116 \textcolor{comment}{ * If the interface matches the radio's main interface, then it will set as Station interface.}}
+\DoxyCodeLine{117 \textcolor{comment}{ *}}
+\DoxyCodeLine{118 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{119 \textcolor{comment}{ *}}
+\DoxyCodeLine{120 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{121 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{122 \textcolor{comment}{ */}}
+\DoxyCodeLine{123 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_ad4f26cc38e14bc4a4420f769966297f1}{wld\_ap\_nl80211\_delVapInterface}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP);}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125 \textcolor{comment}{/*}}
+\DoxyCodeLine{126 \textcolor{comment}{ * @brief get info and statistics of station device}}
+\DoxyCodeLine{127 \textcolor{comment}{ *}}
+\DoxyCodeLine{128 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{129 \textcolor{comment}{ * @param pMac pointer to station adress mac}}
+\DoxyCodeLine{130 \textcolor{comment}{ * @param pStationInfo pointer to station info struct to be filled}}
+\DoxyCodeLine{131 \textcolor{comment}{ *}}
+\DoxyCodeLine{132 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{133 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{134 \textcolor{comment}{ */}}
+\DoxyCodeLine{135 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a3adf22ce5facd017ee0b09ee9629b9bb}{wld\_ap\_nl80211\_getStationInfo}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \textcolor{keyword}{const} swl\_macBin\_t* pMac, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\_nl80211\_stationInfo\_t}}* pStationInfo);}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{137 \textcolor{comment}{/*}}
+\DoxyCodeLine{138 \textcolor{comment}{ * @brief get info and statistics of all paired station devices}}
+\DoxyCodeLine{139 \textcolor{comment}{ *}}
+\DoxyCodeLine{140 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{141 \textcolor{comment}{ * @param ppStationInfo (output) array of station info, dynamically allocated}}
+\DoxyCodeLine{142 \textcolor{comment}{ * (need to be freed by user)}}
+\DoxyCodeLine{143 \textcolor{comment}{ * @param pnrStation (output) number of available stations}}
+\DoxyCodeLine{144 \textcolor{comment}{ *}}
+\DoxyCodeLine{145 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{146 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{147 \textcolor{comment}{ */}}
+\DoxyCodeLine{148 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a5b33c2904a536291ac32ef2abf57f22a}{wld\_ap\_nl80211\_getAllStationsInfo}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\_nl80211\_stationInfo\_t}}** ppStationInfo, uint32\_t* pnrStation);}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150 \textcolor{comment}{/*}}
+\DoxyCodeLine{151 \textcolor{comment}{ * @brief copy retrieved station info to associated device struct}}
+\DoxyCodeLine{152 \textcolor{comment}{ * with checks against learned station capabilities and host radio info (freq, chanWidth)}}
+\DoxyCodeLine{153 \textcolor{comment}{ *}}
+\DoxyCodeLine{154 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{155 \textcolor{comment}{ * @param pAD pointer to associated device context}}
+\DoxyCodeLine{156 \textcolor{comment}{ * @param ppStationInfo pointer to station info struct}}
+\DoxyCodeLine{157 \textcolor{comment}{ *}}
+\DoxyCodeLine{158 \textcolor{comment}{ * @return SWL\_RC\_OK in case of success}}
+\DoxyCodeLine{159 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{160 \textcolor{comment}{ */}}
+\DoxyCodeLine{161 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a810d3dc564b94d82366a0b7684c5634a}{wld\_ap\_nl80211\_copyStationInfoToAssocDev}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structT__AssociatedDevice}{T\_AssociatedDevice}}* pAD, \mbox{\hyperlink{structwld__nl80211__stationInfo__t}{wld\_nl80211\_stationInfo\_t}}* pStationInfo);}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163 \textcolor{comment}{/*}}
+\DoxyCodeLine{164 \textcolor{comment}{ * @brief common function to send vendor sub command}}
+\DoxyCodeLine{165 \textcolor{comment}{ *}}
+\DoxyCodeLine{166 \textcolor{comment}{ * @param pAP pointer to radio context}}
+\DoxyCodeLine{167 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{168 \textcolor{comment}{ * @param oui vendor driver identifier}}
+\DoxyCodeLine{169 \textcolor{comment}{ * @param subcmd vendor sub command to be sent}}
+\DoxyCodeLine{170 \textcolor{comment}{ * @param data optional depending on sent sub command}}
+\DoxyCodeLine{171 \textcolor{comment}{ * @param dataLen length of sent data}}
+\DoxyCodeLine{172 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{173 \textcolor{comment}{ * @param withAck flag to wait for acknowledgment request}}
+\DoxyCodeLine{174 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{175 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{176 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{177 \textcolor{comment}{ *}}
+\DoxyCodeLine{178 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{179 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{180 \textcolor{comment}{ */}}
+\DoxyCodeLine{181 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a468414db5b2e1a399b2dcab737746525}{wld\_ap\_nl80211\_sendVendorSubCmd}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t oui, \textcolor{keywordtype}{int} subcmd, \textcolor{keywordtype}{void}* data, \textcolor{keywordtype}{int} dataLen, \textcolor{keywordtype}{bool} isSync, \textcolor{keywordtype}{bool} withAck,}
+\DoxyCodeLine{182                                           uint32\_t flags, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{183 }
+\DoxyCodeLine{184 \textcolor{comment}{/*}}
+\DoxyCodeLine{185 \textcolor{comment}{ * @brief common function to send vendor sub command with attributes inside vendor data}}
+\DoxyCodeLine{186 \textcolor{comment}{ *}}
+\DoxyCodeLine{187 \textcolor{comment}{ * @param pAP pointer to radio context}}
+\DoxyCodeLine{188 \textcolor{comment}{ * @param ifIndex interface net dev index (ignored if ifIndex is null)}}
+\DoxyCodeLine{189 \textcolor{comment}{ * @param oui vendor driver identifier}}
+\DoxyCodeLine{190 \textcolor{comment}{ * @param subcmd vendor sub command to be sent}}
+\DoxyCodeLine{191 \textcolor{comment}{ * @param vendorAttr list of attributes to be added inside the vendor data attributes.}}
+\DoxyCodeLine{192 \textcolor{comment}{ * @param isSync flag to send sync/async request}}
+\DoxyCodeLine{193 \textcolor{comment}{ * @param withAck flag to wait for acknowledgment request}}
+\DoxyCodeLine{194 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{195 \textcolor{comment}{ * @param handler callback invoked when a reply is available}}
+\DoxyCodeLine{196 \textcolor{comment}{ * @param priv private data to pass in to the handler}}
+\DoxyCodeLine{197 \textcolor{comment}{ *}}
+\DoxyCodeLine{198 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{199 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{200 \textcolor{comment}{ */}}
+\DoxyCodeLine{201 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_abc5ed67f98ca3364435b89b54c60c16a}{wld\_ap\_nl80211\_sendVendorSubCmdAttr}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint32\_t oui, \textcolor{keywordtype}{int} subcmd, \mbox{\hyperlink{structwld__nl80211__nlAttr__t}{wld\_nl80211\_nlAttr\_t}}* vendorAttr,}
+\DoxyCodeLine{202                                               \textcolor{keywordtype}{bool} isSync, \textcolor{keywordtype}{bool} withAck, uint32\_t flags, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\_nl80211\_handler\_f}} handler, \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{203 }
+\DoxyCodeLine{204 \textcolor{comment}{/*}}
+\DoxyCodeLine{205 \textcolor{comment}{ * @brief common function to send a management frame cmd}}
+\DoxyCodeLine{206 \textcolor{comment}{ *}}
+\DoxyCodeLine{207 \textcolor{comment}{ * @param pAP pointer to radio context}}
+\DoxyCodeLine{208 \textcolor{comment}{ * @param fc frame control content}}
+\DoxyCodeLine{209 \textcolor{comment}{ * @param tgtMac destination MACAddress}}
+\DoxyCodeLine{210 \textcolor{comment}{ * @param dataBytes data to be sent}}
+\DoxyCodeLine{211 \textcolor{comment}{ * @param dataBytesLen length of sent data}}
+\DoxyCodeLine{212 \textcolor{comment}{ * @param chanspec destination channel to send the frame}}
+\DoxyCodeLine{213 \textcolor{comment}{ * @param flags optional nl80211 msg flags}}
+\DoxyCodeLine{214 \textcolor{comment}{ *}}
+\DoxyCodeLine{215 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{216 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{217 \textcolor{comment}{ */}}
+\DoxyCodeLine{218 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a8aadfec2c8ffa372c025b5de3772793e}{wld\_ap\_nl80211\_sendManagementFrameCmd}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, swl\_80211\_mgmtFrameControl\_t* fc, swl\_macBin\_t* tgtMac, swl\_bit8\_t* dataBytes, \textcolor{keywordtype}{size\_t} dataBytesLen,}
+\DoxyCodeLine{219                                                 swl\_chanspec\_t* chanspec, uint32\_t flags);}
+\DoxyCodeLine{220 }
+\DoxyCodeLine{221 \textcolor{comment}{/*}}
+\DoxyCodeLine{222 \textcolor{comment}{ * @brief common function to register to frame}}
+\DoxyCodeLine{223 \textcolor{comment}{ *}}
+\DoxyCodeLine{224 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{225 \textcolor{comment}{ * @param type packet type to be received}}
+\DoxyCodeLine{226 \textcolor{comment}{ * @param pattern first bytes of the packet (optional)}}
+\DoxyCodeLine{227 \textcolor{comment}{ * @param patternLen pattern's length (optional)}}
+\DoxyCodeLine{228 \textcolor{comment}{ *}}
+\DoxyCodeLine{229 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{230 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{231 \textcolor{comment}{ */}}
+\DoxyCodeLine{232 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a67263e2774d50936e270749733b6d934}{wld\_ap\_nl80211\_registerFrame}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, uint16\_t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* pattern, \textcolor{keywordtype}{size\_t} patternLen);}
+\DoxyCodeLine{233 }
+\DoxyCodeLine{234 \textcolor{comment}{/*}}
+\DoxyCodeLine{235 \textcolor{comment}{ * @brief looks for relative AP MLD interface including MLO link matching AP mac address}}
+\DoxyCodeLine{236 \textcolor{comment}{ *}}
+\DoxyCodeLine{237 \textcolor{comment}{ * @param pAP pointer to accesspoint context}}
+\DoxyCodeLine{238 \textcolor{comment}{ * @param pMldIfaceInfo pointer to mld interface context}}
+\DoxyCodeLine{239 \textcolor{comment}{ *}}
+\DoxyCodeLine{240 \textcolor{comment}{ * @return SWL\_RC\_OK on success}}
+\DoxyCodeLine{241 \textcolor{comment}{ *         <= SWL\_RC\_ERROR otherwise}}
+\DoxyCodeLine{242 \textcolor{comment}{ */}}
+\DoxyCodeLine{243 swl\_rc\_ne \mbox{\hyperlink{wld__ap__nl80211_8h_a31a1dc8a9c7ae906aca4f54b3fbf7d34}{wld\_ap\_nl80211\_findMldIfaceInfo}}(\mbox{\hyperlink{structS__ACCESSPOINT}{T\_AccessPoint}}* pAP, \mbox{\hyperlink{structwld__nl80211__ifaceInfo__t}{wld\_nl80211\_ifaceInfo\_t}}* pMldIfaceInfo);}
+\DoxyCodeLine{244 }
+\DoxyCodeLine{245 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_WLD\_WLD\_AP\_NL80211\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

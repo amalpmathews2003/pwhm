@@ -1,0 +1,117 @@
+\hypertarget{wld__epProfile_8c}{}\doxysection{src/\+Ep\+Mgt/wld\+\_\+ep\+Profile.c File Reference}
+\label{wld__epProfile_8c}\index{src/EpMgt/wld\_epProfile.c@{src/EpMgt/wld\_epProfile.c}}
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$swla/swla\+\_\+mac.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+endpoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ep\+Profile.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+tiny\+Roam.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+eventing.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+cfg\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+wpa\+Supp\+\_\+cfg\+Manager.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ep\+Profile.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__epProfile_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__epProfile_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+EPrf\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__epProfile_8c_aabed00e54122016f8c40d28ab987401a}{\+\_\+wld\+\_\+endpoint\+\_\+delete\+Profile\+Instance\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\begin{DoxyCompactList}\small\item\em wld\+\_\+endpoint\+\_\+delete\+Profile\+Instance\+\_\+odf \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__epProfile_8c_a17678a9e2fe8b69405d397f65f12f8a2}{wld\+\_\+ep\+Profile\+\_\+delete}} (\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$p\+EP, \mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$p\+Profile)
+\item 
+\mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$ \mbox{\hyperlink{wld__epProfile_8c_a87242c736fa74ae8e9f78864933da991}{wld\+\_\+ep\+Profile\+\_\+from\+It}} (amxc\+\_\+llist\+\_\+it\+\_\+t $\ast$it)
+\item 
+\mbox{\hyperlink{wld__epProfile_8c_ad717e3d0ddaea2e7598076eb81bfbf24}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ep\+Profile\+Dm\+Hdlrs, ARR(),.inst\+Added\+Cb=s\+\_\+add\+Ep\+Profile\+Inst\+\_\+oaf,.obj\+Changed\+Cb=\mbox{\hyperlink{wld__endpoint_8c_a356ddf9af8b4af9043c3c0547ab42d6b}{wld\+\_\+endpoint\+\_\+set\+Profile\+\_\+ocf}},)
+\item 
+void \mbox{\hyperlink{wld__epProfile_8c_a77a89f8b48fa574c820aacdfb49ae6f1}{\+\_\+wld\+\_\+ep\+\_\+set\+Profile\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+\mbox{\hyperlink{wld__epProfile_8c_aa4776b7156e8973483bdab9b38898906}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ep\+Profile\+Sec\+Dm\+Hdlrs, ARR(),.obj\+Changed\+Cb=\mbox{\hyperlink{wld__endpoint_8c_abce310fa0a70c25caad4e73cf0092c57}{wld\+\_\+endpoint\+\_\+set\+Profile\+Security\+\_\+ocf}},)
+\item 
+void \mbox{\hyperlink{wld__epProfile_8c_ae52970eb55a28b570b96d2550512bffd}{\+\_\+wld\+\_\+ep\+\_\+set\+Profile\+Security\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__epProfile_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__epProfile_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!ME@{ME}}
+\index{ME@{ME}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+EPrf\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__epProfile_8c_aabed00e54122016f8c40d28ab987401a}\label{wld__epProfile_8c_aabed00e54122016f8c40d28ab987401a}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!\_wld\_endpoint\_deleteProfileInstance\_odf@{\_wld\_endpoint\_deleteProfileInstance\_odf}}
+\index{\_wld\_endpoint\_deleteProfileInstance\_odf@{\_wld\_endpoint\_deleteProfileInstance\_odf}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_endpoint\_deleteProfileInstance\_odf()}{\_wld\_endpoint\_deleteProfileInstance\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+endpoint\+\_\+delete\+Profile\+Instance\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+
+
+wld\+\_\+endpoint\+\_\+delete\+Profile\+Instance\+\_\+odf 
+
+Delete handler on the Profile template object Remove the linked profile data
+
+
+\begin{DoxyParams}{Parameters}
+{\em template\+\_\+object} & \\
+\hline
+{\em instance\+\_\+object} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__epProfile_8c_a77a89f8b48fa574c820aacdfb49ae6f1}\label{wld__epProfile_8c_a77a89f8b48fa574c820aacdfb49ae6f1}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!\_wld\_ep\_setProfileConf\_ocf@{\_wld\_ep\_setProfileConf\_ocf}}
+\index{\_wld\_ep\_setProfileConf\_ocf@{\_wld\_ep\_setProfileConf\_ocf}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ep\_setProfileConf\_ocf()}{\_wld\_ep\_setProfileConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ep\+\_\+set\+Profile\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__epProfile_8c_ae52970eb55a28b570b96d2550512bffd}\label{wld__epProfile_8c_ae52970eb55a28b570b96d2550512bffd}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!\_wld\_ep\_setProfileSecurityConf\_ocf@{\_wld\_ep\_setProfileSecurityConf\_ocf}}
+\index{\_wld\_ep\_setProfileSecurityConf\_ocf@{\_wld\_ep\_setProfileSecurityConf\_ocf}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ep\_setProfileSecurityConf\_ocf()}{\_wld\_ep\_setProfileSecurityConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ep\+\_\+set\+Profile\+Security\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__epProfile_8c_ad717e3d0ddaea2e7598076eb81bfbf24}\label{wld__epProfile_8c_ad717e3d0ddaea2e7598076eb81bfbf24}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ep\+Profile\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{inst\+Added\+Cb = {\ttfamily s\+\_\+addEpProfileInst\+\_\+oaf},  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily \mbox{\hyperlink{wld__endpoint_8c_a356ddf9af8b4af9043c3c0547ab42d6b}{wld\+\_\+endpoint\+\_\+set\+Profile\+\_\+ocf}}} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__epProfile_8c_aa4776b7156e8973483bdab9b38898906}\label{wld__epProfile_8c_aa4776b7156e8973483bdab9b38898906}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ep\+Profile\+Sec\+Dm\+Hdlrs}]{,  }\item[{ARR()}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily \mbox{\hyperlink{wld__endpoint_8c_abce310fa0a70c25caad4e73cf0092c57}{wld\+\_\+endpoint\+\_\+set\+Profile\+Security\+\_\+ocf}}} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__epProfile_8c_a17678a9e2fe8b69405d397f65f12f8a2}\label{wld__epProfile_8c_a17678a9e2fe8b69405d397f65f12f8a2}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!wld\_epProfile\_delete@{wld\_epProfile\_delete}}
+\index{wld\_epProfile\_delete@{wld\_epProfile\_delete}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{wld\_epProfile\_delete()}{wld\_epProfile\_delete()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+ep\+Profile\+\_\+delete (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a43684699fb70eb75cf2c147f03135841}{T\+\_\+\+End\+Point}} $\ast$}]{p\+EP,  }\item[{\mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$}]{p\+Profile }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__epProfile_8c_a87242c736fa74ae8e9f78864933da991}\label{wld__epProfile_8c_a87242c736fa74ae8e9f78864933da991}} 
+\index{wld\_epProfile.c@{wld\_epProfile.c}!wld\_epProfile\_fromIt@{wld\_epProfile\_fromIt}}
+\index{wld\_epProfile\_fromIt@{wld\_epProfile\_fromIt}!wld\_epProfile.c@{wld\_epProfile.c}}
+\doxysubsubsection{\texorpdfstring{wld\_epProfile\_fromIt()}{wld\_epProfile\_fromIt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a781456bfdccb5a055ad0f156861657c9}{T\+\_\+\+End\+Point\+Profile}} $\ast$ wld\+\_\+ep\+Profile\+\_\+from\+It (\begin{DoxyParamCaption}\item[{amxc\+\_\+llist\+\_\+it\+\_\+t $\ast$}]{it }\end{DoxyParamCaption})}
+

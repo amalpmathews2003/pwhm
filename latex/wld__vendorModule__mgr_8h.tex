@@ -1,0 +1,143 @@
+\hypertarget{wld__vendorModule__mgr_8h}{}\doxysection{include/wld/wld\+\_\+vendor\+Module\+\_\+mgr.h File Reference}
+\label{wld__vendorModule__mgr_8h}\index{include/wld/wld\_vendorModule\_mgr.h@{include/wld/wld\_vendorModule\_mgr.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+vendor\+Module.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+vendor\+Module\+\_\+mgr.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule__mgr_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule__mgr_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{wld__vendorModule__mgr_8h_aa4fa85377850ece636208ee2c6fd5527}{wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+Internal}} ()
+\begin{DoxyCompactList}\small\item\em Load vendor modules already registered in local \char`\"{}\+Self\char`\"{} namespace. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wld__vendorModule__mgr_8h_afe5571b1c4c9ebae96db6e4fb0a9344c}{wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+External}} (const char $\ast$so\+File\+Path)
+\begin{DoxyCompactList}\small\item\em Open shared object file and load included vendor modules that would be registered in local \char`\"{}\+Self\char`\"{} namespace. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{wld__vendorModule__mgr_8h_adc4b72cf0d55ef107b8df3bd4f77dcbc}{wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+External\+Dir}} (const char $\ast$so\+Dir\+Path)
+\begin{DoxyCompactList}\small\item\em Find and Open vendor modules shared object files located in directory These will be registered in local \char`\"{}\+Self\char`\"{} namespace. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule__mgr_8h_a88123ac2d24b81e529740f5ccbaf636d}{wld\+\_\+vendor\+Module\+Mgr\+\_\+init\+All}} (\mbox{\hyperlink{structwld__vendorModule__initInfo__t}{wld\+\_\+vendor\+Module\+\_\+init\+Info\+\_\+t}} $\ast$p\+Info)
+\begin{DoxyCompactList}\small\item\em initialize all loaded vendor modules in local namespace \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule__mgr_8h_aece704aadb5b3c8b4ae48984ad7620db}{wld\+\_\+vendor\+Module\+Mgr\+\_\+deinit\+All}} ()
+\begin{DoxyCompactList}\small\item\em de-\/initialize all loaded vendor modules in local namespace \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule__mgr_8h_a040fb1db9c657deea4384c5fcbcff872}{wld\+\_\+vendor\+Module\+Mgr\+\_\+unload\+All}} ()
+\begin{DoxyCompactList}\small\item\em Unload all vendor module from local namespace and close the relative source shared object file if external. \end{DoxyCompactList}\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__vendorModule__mgr_8h_aeccad2c21e7abcc134b448eea8dcd72c}{wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+Defaults\+All}} ()
+\begin{DoxyCompactList}\small\item\em Load default datamodel configuration of all loaded vendor modules in local namespace. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_aece704aadb5b3c8b4ae48984ad7620db}\label{wld__vendorModule__mgr_8h_aece704aadb5b3c8b4ae48984ad7620db}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_deinitAll@{wld\_vendorModuleMgr\_deinitAll}}
+\index{wld\_vendorModuleMgr\_deinitAll@{wld\_vendorModuleMgr\_deinitAll}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_deinitAll()}{wld\_vendorModuleMgr\_deinitAll()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+Mgr\+\_\+deinit\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+de-\/initialize all loaded vendor modules in local namespace 
+
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK in case of success , or SWL\+\_\+\+RC\+\_\+\+ERROR otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_a88123ac2d24b81e529740f5ccbaf636d}\label{wld__vendorModule__mgr_8h_a88123ac2d24b81e529740f5ccbaf636d}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_initAll@{wld\_vendorModuleMgr\_initAll}}
+\index{wld\_vendorModuleMgr\_initAll@{wld\_vendorModuleMgr\_initAll}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_initAll()}{wld\_vendorModuleMgr\_initAll()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+Mgr\+\_\+init\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__vendorModule__initInfo__t}{wld\+\_\+vendor\+Module\+\_\+init\+Info\+\_\+t}} $\ast$}]{p\+Info }\end{DoxyParamCaption})}
+
+
+
+initialize all loaded vendor modules in local namespace 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Info} & Pointer of initialization info struct\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+WLD\+\_\+\+OK in case of success , or WLD\+\_\+\+ERROR otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_aeccad2c21e7abcc134b448eea8dcd72c}\label{wld__vendorModule__mgr_8h_aeccad2c21e7abcc134b448eea8dcd72c}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_loadDefaultsAll@{wld\_vendorModuleMgr\_loadDefaultsAll}}
+\index{wld\_vendorModuleMgr\_loadDefaultsAll@{wld\_vendorModuleMgr\_loadDefaultsAll}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_loadDefaultsAll()}{wld\_vendorModuleMgr\_loadDefaultsAll()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+Defaults\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Load default datamodel configuration of all loaded vendor modules in local namespace. 
+
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK in case of success , or SWL\+\_\+\+RC\+\_\+\+ERROR otherwise 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__vendorModule__mgr_8h_aeccad2c21e7abcc134b448eea8dcd72c_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_afe5571b1c4c9ebae96db6e4fb0a9344c}\label{wld__vendorModule__mgr_8h_afe5571b1c4c9ebae96db6e4fb0a9344c}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_loadExternal@{wld\_vendorModuleMgr\_loadExternal}}
+\index{wld\_vendorModuleMgr\_loadExternal@{wld\_vendorModuleMgr\_loadExternal}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_loadExternal()}{wld\_vendorModuleMgr\_loadExternal()}}
+{\footnotesize\ttfamily int wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+External (\begin{DoxyParamCaption}\item[{const char $\ast$}]{so\+File\+Path }\end{DoxyParamCaption})}
+
+
+
+Open shared object file and load included vendor modules that would be registered in local \char`\"{}\+Self\char`\"{} namespace. 
+
+\begin{DoxyReturn}{Returns}
+positive number of vendor modules loaded from specific shared object file or SWL\+\_\+\+RC\+\_\+\+ERROR in case of failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_adc4b72cf0d55ef107b8df3bd4f77dcbc}\label{wld__vendorModule__mgr_8h_adc4b72cf0d55ef107b8df3bd4f77dcbc}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_loadExternalDir@{wld\_vendorModuleMgr\_loadExternalDir}}
+\index{wld\_vendorModuleMgr\_loadExternalDir@{wld\_vendorModuleMgr\_loadExternalDir}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_loadExternalDir()}{wld\_vendorModuleMgr\_loadExternalDir()}}
+{\footnotesize\ttfamily int wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+External\+Dir (\begin{DoxyParamCaption}\item[{const char $\ast$}]{so\+Dir\+Path }\end{DoxyParamCaption})}
+
+
+
+Find and Open vendor modules shared object files located in directory These will be registered in local \char`\"{}\+Self\char`\"{} namespace. 
+
+\begin{DoxyReturn}{Returns}
+positive number of vendor modules loaded from all shared object files or SWL\+\_\+\+RC\+\_\+\+ERROR in case of failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_aa4fa85377850ece636208ee2c6fd5527}\label{wld__vendorModule__mgr_8h_aa4fa85377850ece636208ee2c6fd5527}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_loadInternal@{wld\_vendorModuleMgr\_loadInternal}}
+\index{wld\_vendorModuleMgr\_loadInternal@{wld\_vendorModuleMgr\_loadInternal}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_loadInternal()}{wld\_vendorModuleMgr\_loadInternal()}}
+{\footnotesize\ttfamily int wld\+\_\+vendor\+Module\+Mgr\+\_\+load\+Internal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Load vendor modules already registered in local \char`\"{}\+Self\char`\"{} namespace. 
+
+\begin{DoxyReturn}{Returns}
+positive number of vendor modules loaded from local namespace or WLD\+\_\+\+ERROR in case of failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__vendorModule__mgr_8h_a040fb1db9c657deea4384c5fcbcff872}\label{wld__vendorModule__mgr_8h_a040fb1db9c657deea4384c5fcbcff872}} 
+\index{wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}!wld\_vendorModuleMgr\_unloadAll@{wld\_vendorModuleMgr\_unloadAll}}
+\index{wld\_vendorModuleMgr\_unloadAll@{wld\_vendorModuleMgr\_unloadAll}!wld\_vendorModule\_mgr.h@{wld\_vendorModule\_mgr.h}}
+\doxysubsubsection{\texorpdfstring{wld\_vendorModuleMgr\_unloadAll()}{wld\_vendorModuleMgr\_unloadAll()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+vendor\+Module\+Mgr\+\_\+unload\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Unload all vendor module from local namespace and close the relative source shared object file if external. 
+
+\begin{DoxyReturn}{Returns}
+SWL\+\_\+\+RC\+\_\+\+OK in case of success , or SWL\+\_\+\+RC\+\_\+\+ERROR otherwise 
+\end{DoxyReturn}

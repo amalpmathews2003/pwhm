@@ -1,0 +1,120 @@
+\hypertarget{wld__rad__delayMgr_8c}{}\doxysection{src/\+Rad\+Mgt/wld\+\_\+rad\+\_\+delay\+Mgr.c File Reference}
+\label{wld__rad__delayMgr_8c}\index{src/RadMgt/wld\_rad\_delayMgr.c@{src/RadMgt/wld\_rad\_delayMgr.c}}
+{\ttfamily \#include \char`\"{}wld\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+rad\+\_\+delay\+Mgr.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+rad\+\_\+delay\+Mgr.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__delayMgr_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__rad__delayMgr_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+Dly\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{wld__rad__delayMgr_8c_a2617947b90f933be8fcc4538270ce7f8}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+void \mbox{\hyperlink{wld__rad__delayMgr_8c_ae8e459ffea6afeda5a4d6d24f03c3179}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+destroy}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+void \mbox{\hyperlink{wld__rad__delayMgr_8c_aa30e2dc0bd2d16ed5aad62e5c2312f4c}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+start\+Ap\+Delay\+Up}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+void \mbox{\hyperlink{wld__rad__delayMgr_8c_acf3f8c74c512962ad26b191346be6499}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+ap\+Delay\+Up\+Done}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$pR)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__rad__delayMgr_8c_ac3df283351f0f36430ca6e193575a0ce}{\+\_\+\+Radio\+\_\+ap\+Delay\+Up\+Done}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$ret \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+void \mbox{\hyperlink{wld__rad__delayMgr_8c_a0de31824ea6cf5f39cd967e41ce1e021}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+set\+Delay\+Ap\+Up\+Period\+\_\+pwf}} (void $\ast$priv \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, const amxc\+\_\+var\+\_\+t $\ast$const new\+Value)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__rad__delayMgr_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!ME@{ME}}
+\index{ME@{ME}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+Dly\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_ac3df283351f0f36430ca6e193575a0ce}\label{wld__rad__delayMgr_8c_ac3df283351f0f36430ca6e193575a0ce}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!\_Radio\_apDelayUpDone@{\_Radio\_apDelayUpDone}}
+\index{\_Radio\_apDelayUpDone@{\_Radio\_apDelayUpDone}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{\_Radio\_apDelayUpDone()}{\_Radio\_apDelayUpDone()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Radio\+\_\+ap\+Delay\+Up\+Done (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$ret}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__delayMgr_8c_ac3df283351f0f36430ca6e193575a0ce_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_acf3f8c74c512962ad26b191346be6499}\label{wld__rad__delayMgr_8c_acf3f8c74c512962ad26b191346be6499}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!wld\_rad\_delayMgr\_apDelayUpDone@{wld\_rad\_delayMgr\_apDelayUpDone}}
+\index{wld\_rad\_delayMgr\_apDelayUpDone@{wld\_rad\_delayMgr\_apDelayUpDone}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_delayMgr\_apDelayUpDone()}{wld\_rad\_delayMgr\_apDelayUpDone()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+ap\+Delay\+Up\+Done (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__delayMgr_8c_acf3f8c74c512962ad26b191346be6499_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_ae8e459ffea6afeda5a4d6d24f03c3179}\label{wld__rad__delayMgr_8c_ae8e459ffea6afeda5a4d6d24f03c3179}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!wld\_rad\_delayMgr\_destroy@{wld\_rad\_delayMgr\_destroy}}
+\index{wld\_rad\_delayMgr\_destroy@{wld\_rad\_delayMgr\_destroy}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_delayMgr\_destroy()}{wld\_rad\_delayMgr\_destroy()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__delayMgr_8c_ae8e459ffea6afeda5a4d6d24f03c3179_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_a2617947b90f933be8fcc4538270ce7f8}\label{wld__rad__delayMgr_8c_a2617947b90f933be8fcc4538270ce7f8}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!wld\_rad\_delayMgr\_init@{wld\_rad\_delayMgr\_init}}
+\index{wld\_rad\_delayMgr\_init@{wld\_rad\_delayMgr\_init}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_delayMgr\_init()}{wld\_rad\_delayMgr\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__delayMgr_8c_a2617947b90f933be8fcc4538270ce7f8_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_a0de31824ea6cf5f39cd967e41ce1e021}\label{wld__rad__delayMgr_8c_a0de31824ea6cf5f39cd967e41ce1e021}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf@{wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf}}
+\index{wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf@{wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf()}{wld\_rad\_delayMgr\_setDelayApUpPeriod\_pwf()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+set\+Delay\+Ap\+Up\+Period\+\_\+pwf (\begin{DoxyParamCaption}\item[{void $\ast$priv}]{\+\_\+\+UNUSED,  }\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$param}]{\+\_\+\+UNUSED,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{new\+Value }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__rad__delayMgr_8c_a0de31824ea6cf5f39cd967e41ce1e021_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__rad__delayMgr_8c_aa30e2dc0bd2d16ed5aad62e5c2312f4c}\label{wld__rad__delayMgr_8c_aa30e2dc0bd2d16ed5aad62e5c2312f4c}} 
+\index{wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}!wld\_rad\_delayMgr\_startApDelayUp@{wld\_rad\_delayMgr\_startApDelayUp}}
+\index{wld\_rad\_delayMgr\_startApDelayUp@{wld\_rad\_delayMgr\_startApDelayUp}!wld\_rad\_delayMgr.c@{wld\_rad\_delayMgr.c}}
+\doxysubsubsection{\texorpdfstring{wld\_rad\_delayMgr\_startApDelayUp()}{wld\_rad\_delayMgr\_startApDelayUp()}}
+{\footnotesize\ttfamily void wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+start\+Ap\+Delay\+Up (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{pR }\end{DoxyParamCaption})}
+

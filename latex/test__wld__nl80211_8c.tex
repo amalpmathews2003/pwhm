@@ -1,0 +1,147 @@
+\hypertarget{test__wld__nl80211_8c}{}\doxysection{test/wld\+\_\+nl80211/test\+\_\+wld\+\_\+nl80211.c File Reference}
+\label{test__wld__nl80211_8c}\index{test/wld\_nl80211/test\_wld\_nl80211.c@{test/wld\_nl80211/test\_wld\_nl80211.c}}
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include $<$setjmp.\+h$>$}\newline
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$sys/stat.\+h$>$}\newline
+{\ttfamily \#include $<$cmocka.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$net/if.\+h$>$}\newline
+{\ttfamily \#include $<$fcntl.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+core.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+events.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+80211.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}test-\/toolbox/ttb\+\_\+amx.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+api\+\_\+priv.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+debug.\+h\char`\"{}}\newline
+Include dependency graph for test\+\_\+wld\+\_\+nl80211.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{test__wld__nl80211_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structtestData__t}{test\+Data\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structtestDesc__t}{test\+Desc\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structstateMock__t}{state\+Mock\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structlistenerData__t}{listener\+Data\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structlistenerDesc__t}{listener\+Desc\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structlistenerTest__t}{listener\+Test\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structcmdMockTest__t}{cmd\+Mock\+Test\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structcmdMockTestMultiElt__t}{cmd\+Mock\+Test\+Multi\+Elt\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structcmdMockAsyncTest__t}{cmd\+Mock\+Async\+Test\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{test__wld__nl80211_8c_a1d52a9ab4e10c513c9578a349fd1ff45}{s\+\_\+unspec\+Evt\+Cb}} (void $\ast$p\+Ref, void $\ast$p\+Data, uint32\+\_\+t wiphy \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, uint32\+\_\+t if\+Index \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+ssize\+\_\+t \mbox{\hyperlink{test__wld__nl80211_8c_a4d57755df58968e30af911bc3cb797fe}{s\+\_\+recv}} (int socket, void $\ast$buffer, size\+\_\+t length, int flags \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+uint32\+\_\+t \mbox{\hyperlink{test__wld__nl80211_8c_a5913792dcbde16f978aff2beeef927f3}{s\+\_\+get\+Mask}} (uint32\+\_\+t val)
+\item 
+int \mbox{\hyperlink{test__wld__nl80211_8c_a9faaf5129925f9c6165b85f04e4916f7}{main}} (int argc \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, char $\ast$argv\mbox{[}$\,$\mbox{]} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structcmdMockTest__t}{cmd\+Mock\+Test\+\_\+t}} \mbox{\hyperlink{test__wld__nl80211_8c_a38acf782cf20ece34f3e427f1bd79602}{mock\+Get\+Iface\+Info}}
+\item 
+\mbox{\hyperlink{structcmdMockTestMultiElt__t}{cmd\+Mock\+Test\+Multi\+Elt\+\_\+t}} \mbox{\hyperlink{test__wld__nl80211_8c_a695a0d00f2d342b03e3b3df850fd7750}{mock\+Get\+Wiphy\+Info}}
+\item 
+swl\+\_\+table\+\_\+t \mbox{\hyperlink{test__wld__nl80211_8c_a482841d64d70c6069ed86c8266fc9dd2}{s\+Chan\+Dfs\+Status\+Map}}
+\item 
+\mbox{\hyperlink{structcmdMockAsyncTest__t}{cmd\+Mock\+Async\+Test\+\_\+t}} \mbox{\hyperlink{test__wld__nl80211_8c_a297d6c8014fd18e01a1c432af48a2c54}{mock\+Get\+Scan\+Results}}
+\item 
+\mbox{\hyperlink{structcmdMockTestMultiElt__t}{cmd\+Mock\+Test\+Multi\+Elt\+\_\+t}} \mbox{\hyperlink{test__wld__nl80211_8c_ad99389b9cd06757a3c17dc4aaa54ea73}{mock\+Get\+Chan\+Survey}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{test__wld__nl80211_8c_a9faaf5129925f9c6165b85f04e4916f7}\label{test__wld__nl80211_8c_a9faaf5129925f9c6165b85f04e4916f7}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!main@{main}}
+\index{main@{main}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int argc}]{\+\_\+\+UNUSED,  }\item[{char $\ast$argv\mbox{[}$\,$\mbox{]}}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a5913792dcbde16f978aff2beeef927f3}\label{test__wld__nl80211_8c_a5913792dcbde16f978aff2beeef927f3}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!s\_getMask@{s\_getMask}}
+\index{s\_getMask@{s\_getMask}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{s\_getMask()}{s\_getMask()}}
+{\footnotesize\ttfamily uint32\+\_\+t s\+\_\+get\+Mask (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{val }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a4d57755df58968e30af911bc3cb797fe}\label{test__wld__nl80211_8c_a4d57755df58968e30af911bc3cb797fe}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!s\_recv@{s\_recv}}
+\index{s\_recv@{s\_recv}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{s\_recv()}{s\_recv()}}
+{\footnotesize\ttfamily ssize\+\_\+t s\+\_\+recv (\begin{DoxyParamCaption}\item[{int}]{socket,  }\item[{void $\ast$}]{buffer,  }\item[{size\+\_\+t}]{length,  }\item[{int flags}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a1d52a9ab4e10c513c9578a349fd1ff45}\label{test__wld__nl80211_8c_a1d52a9ab4e10c513c9578a349fd1ff45}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!s\_unspecEvtCb@{s\_unspecEvtCb}}
+\index{s\_unspecEvtCb@{s\_unspecEvtCb}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{s\_unspecEvtCb()}{s\_unspecEvtCb()}}
+{\footnotesize\ttfamily void s\+\_\+unspec\+Evt\+Cb (\begin{DoxyParamCaption}\item[{void $\ast$}]{p\+Ref,  }\item[{void $\ast$}]{p\+Data,  }\item[{uint32\+\_\+t wiphy}]{\+\_\+\+UNUSED,  }\item[{uint32\+\_\+t if\+Index}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=279pt]{test__wld__nl80211_8c_a1d52a9ab4e10c513c9578a349fd1ff45_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{test__wld__nl80211_8c_ad99389b9cd06757a3c17dc4aaa54ea73}\label{test__wld__nl80211_8c_ad99389b9cd06757a3c17dc4aaa54ea73}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!mockGetChanSurvey@{mockGetChanSurvey}}
+\index{mockGetChanSurvey@{mockGetChanSurvey}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{mockGetChanSurvey}{mockGetChanSurvey}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structcmdMockTestMultiElt__t}{cmd\+Mock\+Test\+Multi\+Elt\+\_\+t}} mock\+Get\+Chan\+Survey}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a38acf782cf20ece34f3e427f1bd79602}\label{test__wld__nl80211_8c_a38acf782cf20ece34f3e427f1bd79602}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!mockGetIfaceInfo@{mockGetIfaceInfo}}
+\index{mockGetIfaceInfo@{mockGetIfaceInfo}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{mockGetIfaceInfo}{mockGetIfaceInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structcmdMockTest__t}{cmd\+Mock\+Test\+\_\+t}} mock\+Get\+Iface\+Info}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a297d6c8014fd18e01a1c432af48a2c54}\label{test__wld__nl80211_8c_a297d6c8014fd18e01a1c432af48a2c54}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!mockGetScanResults@{mockGetScanResults}}
+\index{mockGetScanResults@{mockGetScanResults}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{mockGetScanResults}{mockGetScanResults}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structcmdMockAsyncTest__t}{cmd\+Mock\+Async\+Test\+\_\+t}} mock\+Get\+Scan\+Results}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a695a0d00f2d342b03e3b3df850fd7750}\label{test__wld__nl80211_8c_a695a0d00f2d342b03e3b3df850fd7750}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!mockGetWiphyInfo@{mockGetWiphyInfo}}
+\index{mockGetWiphyInfo@{mockGetWiphyInfo}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{mockGetWiphyInfo}{mockGetWiphyInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structcmdMockTestMultiElt__t}{cmd\+Mock\+Test\+Multi\+Elt\+\_\+t}} mock\+Get\+Wiphy\+Info}
+
+\mbox{\Hypertarget{test__wld__nl80211_8c_a482841d64d70c6069ed86c8266fc9dd2}\label{test__wld__nl80211_8c_a482841d64d70c6069ed86c8266fc9dd2}} 
+\index{test\_wld\_nl80211.c@{test\_wld\_nl80211.c}!sChanDfsStatusMap@{sChanDfsStatusMap}}
+\index{sChanDfsStatusMap@{sChanDfsStatusMap}!test\_wld\_nl80211.c@{test\_wld\_nl80211.c}}
+\doxysubsubsection{\texorpdfstring{sChanDfsStatusMap}{sChanDfsStatusMap}}
+{\footnotesize\ttfamily swl\+\_\+table\+\_\+t s\+Chan\+Dfs\+Status\+Map\hspace{0.3cm}{\ttfamily [extern]}}
+

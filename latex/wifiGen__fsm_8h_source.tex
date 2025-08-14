@@ -1,0 +1,106 @@
+\hypertarget{wifiGen__fsm_8h_source}{}\doxysection{wifi\+Gen\+\_\+fsm.\+h}
+\label{wifiGen__fsm_8h_source}\index{include\_priv/Plugin/wifiGen\_fsm.h@{include\_priv/Plugin/wifiGen\_fsm.h}}
+\mbox{\hyperlink{wifiGen__fsm_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_FSM\_H\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_FSM\_H\_}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{67     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaac55262ed6716beb0d6aaf076ef2cbeb}{GEN\_FSM\_STOP\_HOSTAPD}},         \textcolor{comment}{/* Stop hostapd */}}
+\DoxyCodeLine{68     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda21a91d04d46d8bc064fff1d958e1f78b}{GEN\_FSM\_STOP\_WPASUPP}},         \textcolor{comment}{/* Stop wpa\_supplicant */}}
+\DoxyCodeLine{69     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdadbb5538abc67e955391b63c096886e7a}{GEN\_FSM\_DISABLE\_HOSTAPD}},      \textcolor{comment}{/* disable hostapd main interface*/}}
+\DoxyCodeLine{70     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda2c28b7ba9c7aab595587e84e24697c2d}{GEN\_FSM\_DISABLE\_RAD}},          \textcolor{comment}{/* Disable Radio device */}}
+\DoxyCodeLine{71     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda22aa776560be3dad9f87cf150902b6e0}{GEN\_FSM\_SYNC\_RAD}},             \textcolor{comment}{/* Sync Radio conf (cold.down(wt nl80211) / hot.up(wt secDmn))*/}}
+\DoxyCodeLine{72     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf01685cd0bd0626cf276e5e9875ac302}{GEN\_FSM\_MOD\_COUNTRYCODE}},      \textcolor{comment}{/* Modify the country code */}}
+\DoxyCodeLine{73     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf2d8857c14a469da1ff251ec22cfeab7}{GEN\_FSM\_MOD\_BSSID}},            \textcolor{comment}{/* Modify the BSSID */}}
+\DoxyCodeLine{74     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3c06fd84fc824d6f9225de5820fdf1cc}{GEN\_FSM\_MOD\_MLD}},              \textcolor{comment}{/* Sync MLD params */}}
+\DoxyCodeLine{75     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda891e0951cdbfba41c4c1653ea45dd904}{GEN\_FSM\_MOD\_SEC}},              \textcolor{comment}{/* Set AP Security */}}
+\DoxyCodeLine{76     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda9113440b6b910c3927dd56146f7137a8}{GEN\_FSM\_MOD\_AP}},               \textcolor{comment}{/* Sync AP non-\/security params */}}
+\DoxyCodeLine{77     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda913cc3c726b118170c76498bd2e311f4}{GEN\_FSM\_MOD\_SSID}},             \textcolor{comment}{/* Set SSID */}}
+\DoxyCodeLine{78     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdac2e9146a66b45b7d398d9fc9f98d0cde}{GEN\_FSM\_MOD\_MF\_LIST}},          \textcolor{comment}{/* Set Mac filtering list */}}
+\DoxyCodeLine{79     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf6b27acc505d65c02a96920807ce0c34}{GEN\_FSM\_MOD\_CHANNEL}},          \textcolor{comment}{/* Set Channel */}}
+\DoxyCodeLine{80     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaf3c5f9f2e2412f41cdc5f04285957154}{GEN\_FSM\_MOD\_HOSTAPD}},          \textcolor{comment}{/* Write config of hostapd */}}
+\DoxyCodeLine{81     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdab97a01a47b6a328ccb6b6222c9d06bc4}{GEN\_FSM\_MOD\_WPASUPP}},          \textcolor{comment}{/* Write config of wpa\_supplicant */}}
+\DoxyCodeLine{82     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda7baf6a1c7e9bae1ae4b1583db65d1129}{GEN\_FSM\_RELOAD\_AP\_SECKEY}},     \textcolor{comment}{/* reload AP security secret key */}}
+\DoxyCodeLine{83     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda06ad7c248a1e81edb0f13a608c8ec49f}{GEN\_FSM\_MOD\_EP\_MACADDR}},       \textcolor{comment}{/* apply ep mac address */}}
+\DoxyCodeLine{84     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda0fff6ecf47d4d25660810517573060be}{GEN\_FSM\_UPDATE\_BEACON}},        \textcolor{comment}{/* Start/Refresh AP Beacon */}}
+\DoxyCodeLine{85     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdabe0beba4172fbeab2c923eb30090d3c9}{GEN\_FSM\_UPDATE\_WPASUPP}},       \textcolor{comment}{/* Update wpa\_supplicant */}}
+\DoxyCodeLine{86     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1be871b0c4ecfa8913bc5ad114da7c7a}{GEN\_FSM\_ENABLE\_HOSTAPD}},       \textcolor{comment}{/* enable hostapd main interface*/}}
+\DoxyCodeLine{87     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda3d6a8bc90e39ad9f2ad4dad5c2e1864a}{GEN\_FSM\_ENABLE\_RAD}},           \textcolor{comment}{/* Enable Radio device */}}
+\DoxyCodeLine{88     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda5fa453d64429a6b2fcf95a6408e55f21}{GEN\_FSM\_ENABLE\_AP}},            \textcolor{comment}{/* Enable/Disable AP interface */}}
+\DoxyCodeLine{89     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6e8c50f2eee1f1a69268a799b5253af}{GEN\_FSM\_ENABLE\_EP}},            \textcolor{comment}{/* Enable Endpoint interface */}}
+\DoxyCodeLine{90     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda667dc3edc1585f8487e5f36f178098fd}{GEN\_FSM\_CONNECTED\_EP}},         \textcolor{comment}{/* Update when Endpoint is connected */}}
+\DoxyCodeLine{91     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda154002d8f11542e132c171007fa153a6}{GEN\_FSM\_UPDATE\_HOSTAPD}},       \textcolor{comment}{/* Update hostapd (by sighup): conf in file */}}
+\DoxyCodeLine{92     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda4b9936f95d89372492e9ed25089c0cb2}{GEN\_FSM\_START\_HOSTAPD}},        \textcolor{comment}{/* start and connect with hostapd */}}
+\DoxyCodeLine{93     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdad6b9fe894e6d3c15da92ea99f0f85544}{GEN\_FSM\_START\_WPASUPP}},        \textcolor{comment}{/* Start wpa\_supplicant */}}
+\DoxyCodeLine{94     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abda1a0c8e8ea704dc4171607315c6959746}{GEN\_FSM\_SYNC\_STATE}},           \textcolor{comment}{/* Sync all interfaces state */}}
+\DoxyCodeLine{95     \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abdaa5cff396ffa3817ca708bd1b823884f1}{GEN\_FSM\_MAX}}}
+\DoxyCodeLine{96 \} \mbox{\hyperlink{wifiGen__fsm_8h_af008ca90983c7d2cad18b38332d69abd}{wifiGen\_fsmStates\_e}};}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98 \textcolor{keywordtype}{void} \mbox{\hyperlink{wifiGen__fsm_8h_af98faa0f6c59ee558aa18dbef60875f3}{wifiGen\_fsm\_doInit}}(\mbox{\hyperlink{structvendor}{vendor\_t}}* \mbox{\hyperlink{structvendor}{vendor}});}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* INCLUDE\_PRIV\_PLUGIN\_WIFIGEN\_FSM\_H\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,779 @@
+\hypertarget{structT__AssociatedDevice}{}\doxysection{T\+\_\+\+Associated\+Device Struct Reference}
+\label{structT__AssociatedDevice}\index{T\_AssociatedDevice@{T\_AssociatedDevice}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+
+
+Collaboration diagram for T\+\_\+\+Associated\+Device\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structT__AssociatedDevice__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+char \mbox{\hyperlink{structT__AssociatedDevice_a44f49344390d2b5210776eec5b6960e0}{Name}} \mbox{[}32\mbox{]}
+\item 
+unsigned char \mbox{\hyperlink{structT__AssociatedDevice_ae3d837dbc1cd016afac9ab7706dbf819}{MACAddress}} \mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{structT__AssociatedDevice_af3e135344f15b5d43f4e68db1800ee54}{object}}
+\item 
+char \mbox{\hyperlink{structT__AssociatedDevice_a373710673b85ea5493ad0804bedec04c}{Radius\+\_\+\+CUID}} \mbox{[}256\mbox{]}
+\item 
+bool \mbox{\hyperlink{structT__AssociatedDevice_ad3a5ad5dc692fae440f2112037690f0d}{Authentication\+State}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aa48d41b70e3bf42ddd37885fdd440794}{Last\+Data\+Downlink\+Rate}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a525095bb0c699581f1bddb4d59a7e6c9}{Last\+Data\+Uplink\+Rate}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a5ad4e79b115acf42a0db73a9734a9c67}{Signal\+Strength}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a5fe5b72e408d1b30ffe0c397ec310b35}{min\+Signal\+Strength}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a3efbd47cba87a2e701a3708daa08dc8e}{min\+Signal\+Strength\+Time}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a925ca4d3aa4a1d298414fadf9a9cf792}{max\+Signal\+Strength}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_affb7260570722169d167b7979da76fea}{max\+Signal\+Strength\+Time}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a78ccff64d7eb631c989b77d81e92a192}{mean\+Signal\+Strength}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a98e1b4fffeb3f8d685aaddb49eafcafa}{mean\+Signal\+Strength\+Exp\+Accumulator}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_adc002c8feb033855e3e605712aaca5a9}{mean\+Signal\+Strength\+Linear\+Accumulator}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ae73e5ad3d028e634619edb04e7716c6f}{nr\+Mean\+Signal\+Strength}}
+\item 
+double \mbox{\hyperlink{structT__AssociatedDevice_a4702432e121815514ce46a3ba5cf5bed}{Signal\+Strength\+By\+Chain}} \mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}
+\item 
+double \mbox{\hyperlink{structT__AssociatedDevice_aba01cbe4d4153f87c870d7121bfa86c0}{noise\+By\+Chain}} \mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aee11dbaaa58c3478ac13e4976f58b584}{Avg\+Signal\+Strength\+By\+Chain}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_adc8620d390006ca497d6b912b247505b}{noise}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a83f8e2d3f02efe12bb4b794ac90458cb}{Signal\+Noise\+Ratio}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a16107816fe668eb75107ddbfed51bce7}{Retransmissions}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a93f5bce9018042ca0d556130241eb6eb}{Rx\+\_\+\+Retransmissions}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aaee909580a4e4c730a31a4547c1a3c9e}{Tx\+\_\+\+Retransmissions}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a035b493ab3a701e25064aa5d5226df49}{Tx\+\_\+\+Retransmissions\+Failed}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a185a1fc85285c667d55d62c7c3ec443a}{Rx\+\_\+\+Retransmissions\+Failed}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a0031b7fff5115f8a3dc2a978944189ba}{retry\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a48fc9a777b6ab99208451c6bebec0ca7}{multiple\+Retry\+Count}}
+\item 
+bool \mbox{\hyperlink{structT__AssociatedDevice_a85ee4262144e4dc6f829f89bb98b3a28}{Active}}
+\item 
+bool \mbox{\hyperlink{structT__AssociatedDevice_af295c0c59ec2a058403af37254d70676}{seen}}
+\item 
+bool \mbox{\hyperlink{structT__AssociatedDevice_adae2dbc4b849bda2a3a9dfffb76489d8}{operating\+Standard\+Set\+By\+Driver}}
+\item 
+swl\+\_\+rad\+Std\+\_\+e \mbox{\hyperlink{structT__AssociatedDevice_a8e596b6aa9c276023d913f30974b95f3}{operating\+Standard}}
+\item 
+\mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\+\_\+assoc\+Dev\+\_\+capabilities\+\_\+t}} \mbox{\hyperlink{structT__AssociatedDevice_a2217563137ed6d0b17f481b7eac46586}{assoc\+Caps}}
+\item 
+\mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\+\_\+assoc\+Dev\+\_\+capabilities\+\_\+t}} \mbox{\hyperlink{structT__AssociatedDevice_a04187e0230b2cedb2c4c9f7f54af9b4a}{probe\+Req\+Caps}}
+\item 
+swl\+\_\+unii\+Band\+\_\+m \mbox{\hyperlink{structT__AssociatedDevice_a90648af27c0aa682eef9907624d214b9}{unii\+Bands\+Capabilities}}
+\item 
+swl\+\_\+time\+Spec\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aa43a45e3a52860bd00a314ff8da2281b}{last\+Sample\+Time}}
+\item 
+swl\+\_\+time\+Spec\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a373e94761275f358b985e216fb9323df}{last\+Sample\+Sync\+Time}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a2949d6e09f97f2ba786eb57f17fa7dad}{last\+Probe\+Cap\+Update\+Time}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a7748961e74886423bf5bc8830badeaa4}{Inactive}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a3e365467efea2daaa4b9d1f949a62287}{Rx\+Packet\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a56ff44245620300208df4afdc3002202}{Tx\+Packet\+Count}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ac18c352cba979e59098b196f8982abb4}{Rx\+Bytes}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a7fdc464e7ac41eadaea585e0506c1831}{Tx\+Bytes}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_af43f2a4a6aa5db8d3fc146d24de84666}{Rx\+Unicast\+Packet\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aa70d8eb91081da2ac35b5ea2884ef438}{Tx\+Unicast\+Packet\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ae2b2559b70097c375c9f99ff0d1f707b}{Rx\+Multicast\+Packet\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a6d80ebdfc891c5a3bb977dd6bcdb67d6}{Tx\+Multicast\+Packet\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a21761ffa7566b11c77cd9ec0142bfd0e}{Tx\+Failures}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_abafd90bdd6b90e8207b0d34bac335f9c}{Rx\+Failures}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_addc3484531db3b3ce8d91386cd73e08e}{Tx\+Frame\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ac3e4692181bdf62e74b396d1ad270efc}{Rx\+Frame\+Count}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_afc5156fd3539bd990f7a0ad636659a2d}{Uplink\+MCS}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a368cbc4b69ca7bd346196acb5c2b02cd}{Uplink\+Bandwidth}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ae45d673ccf573a6ace8541dbae50bb56}{Uplink\+Short\+Guard}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a2eed5f78ee49120cc3c51f6f0cb511c1}{Downlink\+MCS}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a74d1de44662e26f129c6eb571cb9f1d7}{Downlink\+Bandwidth}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_acd4dac0b246d5ce7c61c9fd3b1132af3}{Downlink\+Short\+Guard}}
+\item 
+swl\+\_\+mcs\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_acb54494eda78a14806798163b87c66ee}{up\+Link\+Rate\+Spec}}
+\item 
+swl\+\_\+mcs\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ae253c7c964dc2e45f8a1ed4108170cae}{last\+Non\+Legacy\+Uplink\+MCS}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a5599b85f290ccc6510015739b1587fef}{last\+Non\+Legacy\+Uplink\+Time}}
+\item 
+swl\+\_\+mcs\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ad403da892065eaa74a7ed09b43c86c79}{down\+Link\+Rate\+Spec}}
+\item 
+swl\+\_\+mcs\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ae08c8b8c600caa4bfdb28245b16232d8}{last\+Non\+Legacy\+Downlink\+MCS}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a9f3aa48f2d05fc5ac7046ac55592ff72}{last\+Non\+Legacy\+Downlink\+Time}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ae10e5456e5aff63de63453b9adb32b2e}{Max\+Rx\+Spatial\+Streams\+Supported}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ac292817a9723f3499baa0784061e0559}{Max\+Tx\+Spatial\+Streams\+Supported}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a0859f7950c8f489448c1a95cc756029f}{Max\+Downlink\+Rate\+Supported}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ad96b5f4f1783a755bfebefa7ce271f26}{Max\+Downlink\+Rate\+Reached}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a10341a9e613c7af6ba7d10e24ec91c5a}{Max\+Uplink\+Rate\+Supported}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_ada061bebc749b2345ddb98181eacb65d}{Max\+Uplink\+Rate\+Reached}}
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{structT__AssociatedDevice_adeb61420ec812b9a51dd95d5cba3a4b3}{Max\+Bandwidth\+Supported}}
+\item 
+bool \mbox{\hyperlink{structT__AssociatedDevice_ae983b59b19179618f12eb9df6a5527f8}{power\+Save}}
+\item 
+int \mbox{\hyperlink{structT__AssociatedDevice_a6b14b41f86313fb164a50c9213f7fb1a}{device\+Type}}
+\item 
+int \mbox{\hyperlink{structT__AssociatedDevice_a03ec4a826dcfdddd62d7ee8e967d225c}{device\+Priority}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_af61a56d5cc77581477d31213f51dc323}{latest\+State\+Change\+Time}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aa7ae57a7b9050f61259c7a34d993f8fa}{rssi\+Accumulator}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a71f7c290e39d32a67428cb498f9e7fb8}{rssi\+Level}}
+\item 
+swl\+\_\+sta\+Cap\+\_\+m \mbox{\hyperlink{structT__AssociatedDevice_a4f710e3a3f5640ca3fa81ab1624d122b}{capabilities}}
+\item 
+swl\+\_\+sta\+Cap\+Vendor\+\_\+m \mbox{\hyperlink{structT__AssociatedDevice_a2b4260ca7787b82fcdaa3788863e5c0f}{vendor\+Capabilities}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a1b6273c94122cb5771ff2a267748308b}{connection\+Duration}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a4862e30d582ec99684a5d62e86f47773}{association\+Time}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a16dc1bd357b09b66006716c454ad0341}{disassociation\+Time}}
+\item 
+bool \mbox{\hyperlink{structT__AssociatedDevice_a570f0ea27f63216b82a0c3bece1ce2de}{had\+Sec\+Failure}}
+\item 
+\mbox{\hyperlink{structwld__sta__muMimoInfo__t}{wld\+\_\+sta\+\_\+mu\+Mimo\+Info\+\_\+t}} \mbox{\hyperlink{structT__AssociatedDevice_af8fd16f8bc73e40767123d6fd7f9214a}{sta\+Mu\+Mimo\+Info}}
+\item 
+\mbox{\hyperlink{structwld__assocDev__history__t}{wld\+\_\+assoc\+Dev\+\_\+history\+\_\+t}} $\ast$ \mbox{\hyperlink{structT__AssociatedDevice_a2b9240fbf5880e7caf6e4d7c77b25870}{sta\+History}}
+\item 
+swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne \mbox{\hyperlink{structT__AssociatedDevice_a6f77dab7f56808d0e60bd7293327e67e}{last\+Deauth\+Reason}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a68129edc2f0ee66e4d636e1a8ce857b9}{last\+Deauth\+Assoc\+Time}}
+\item 
+void $\ast$ \mbox{\hyperlink{structT__AssociatedDevice_a01de04f669675f036d478b4bdd0b2fbe}{vendor}}
+\item 
+\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} \mbox{\hyperlink{structT__AssociatedDevice_af66fadc9384c38e74feba4bd5b3c4cb5}{ext\+Data\+List}}
+\item 
+swla\+\_\+dm\+\_\+obj\+Action\+Read\+Ctx\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_af857e77bcd059aa043f10eebbf2db65a}{on\+Action\+Read\+Ctx}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_aa05051cccf4d082d9db0f7b87fa987c5}{nr\+Created\+Affiliated\+Sta\+Links}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structT__AssociatedDevice_a760ffd780d537f34a561b3245519de2c}{affiliated\+Sta\+List}}
+\item 
+\mbox{\hyperlink{structwld__wds__intf__t}{wld\+\_\+wds\+\_\+intf\+\_\+t}} $\ast$ \mbox{\hyperlink{structT__AssociatedDevice_a97fb9ab99193fce8012154d9c646bff2}{wds\+Intf}}
+\item 
+amxp\+\_\+timer\+\_\+t $\ast$ \mbox{\hyperlink{structT__AssociatedDevice_a44805309d31c6047d1d005ba33fbbafd}{delay\+Disassoc\+Notif}}
+\item 
+swl\+\_\+mlo\+\_\+mode\+\_\+e \mbox{\hyperlink{structT__AssociatedDevice_a89b72b6ab89e8302695b8b4094a2c9b0}{mlo\+Mode}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structT__AssociatedDevice_a85ee4262144e4dc6f829f89bb98b3a28}\label{structT__AssociatedDevice_a85ee4262144e4dc6f829f89bb98b3a28}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Active@{Active}}
+\index{Active@{Active}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Active}{Active}}
+{\footnotesize\ttfamily bool T\+\_\+\+Associated\+Device\+::\+Active}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a760ffd780d537f34a561b3245519de2c}\label{structT__AssociatedDevice_a760ffd780d537f34a561b3245519de2c}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!affiliatedStaList@{affiliatedStaList}}
+\index{affiliatedStaList@{affiliatedStaList}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{affiliatedStaList}{affiliatedStaList}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t T\+\_\+\+Associated\+Device\+::affiliated\+Sta\+List}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a2217563137ed6d0b17f481b7eac46586}\label{structT__AssociatedDevice_a2217563137ed6d0b17f481b7eac46586}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!assocCaps@{assocCaps}}
+\index{assocCaps@{assocCaps}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{assocCaps}{assocCaps}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\+\_\+assoc\+Dev\+\_\+capabilities\+\_\+t}} T\+\_\+\+Associated\+Device\+::assoc\+Caps}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a4862e30d582ec99684a5d62e86f47773}\label{structT__AssociatedDevice_a4862e30d582ec99684a5d62e86f47773}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!associationTime@{associationTime}}
+\index{associationTime@{associationTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{associationTime}{associationTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::association\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ad3a5ad5dc692fae440f2112037690f0d}\label{structT__AssociatedDevice_ad3a5ad5dc692fae440f2112037690f0d}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!AuthenticationState@{AuthenticationState}}
+\index{AuthenticationState@{AuthenticationState}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{AuthenticationState}{AuthenticationState}}
+{\footnotesize\ttfamily bool T\+\_\+\+Associated\+Device\+::\+Authentication\+State}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aee11dbaaa58c3478ac13e4976f58b584}\label{structT__AssociatedDevice_aee11dbaaa58c3478ac13e4976f58b584}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!AvgSignalStrengthByChain@{AvgSignalStrengthByChain}}
+\index{AvgSignalStrengthByChain@{AvgSignalStrengthByChain}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{AvgSignalStrengthByChain}{AvgSignalStrengthByChain}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Avg\+Signal\+Strength\+By\+Chain}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a4f710e3a3f5640ca3fa81ab1624d122b}\label{structT__AssociatedDevice_a4f710e3a3f5640ca3fa81ab1624d122b}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!capabilities@{capabilities}}
+\index{capabilities@{capabilities}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{capabilities}{capabilities}}
+{\footnotesize\ttfamily swl\+\_\+sta\+Cap\+\_\+m T\+\_\+\+Associated\+Device\+::capabilities}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a1b6273c94122cb5771ff2a267748308b}\label{structT__AssociatedDevice_a1b6273c94122cb5771ff2a267748308b}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!connectionDuration@{connectionDuration}}
+\index{connectionDuration@{connectionDuration}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{connectionDuration}{connectionDuration}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::connection\+Duration}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a44805309d31c6047d1d005ba33fbbafd}\label{structT__AssociatedDevice_a44805309d31c6047d1d005ba33fbbafd}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!delayDisassocNotif@{delayDisassocNotif}}
+\index{delayDisassocNotif@{delayDisassocNotif}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{delayDisassocNotif}{delayDisassocNotif}}
+{\footnotesize\ttfamily amxp\+\_\+timer\+\_\+t$\ast$ T\+\_\+\+Associated\+Device\+::delay\+Disassoc\+Notif}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a03ec4a826dcfdddd62d7ee8e967d225c}\label{structT__AssociatedDevice_a03ec4a826dcfdddd62d7ee8e967d225c}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!devicePriority@{devicePriority}}
+\index{devicePriority@{devicePriority}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{devicePriority}{devicePriority}}
+{\footnotesize\ttfamily int T\+\_\+\+Associated\+Device\+::device\+Priority}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a6b14b41f86313fb164a50c9213f7fb1a}\label{structT__AssociatedDevice_a6b14b41f86313fb164a50c9213f7fb1a}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!deviceType@{deviceType}}
+\index{deviceType@{deviceType}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{deviceType}{deviceType}}
+{\footnotesize\ttfamily int T\+\_\+\+Associated\+Device\+::device\+Type}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a16dc1bd357b09b66006716c454ad0341}\label{structT__AssociatedDevice_a16dc1bd357b09b66006716c454ad0341}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!disassociationTime@{disassociationTime}}
+\index{disassociationTime@{disassociationTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{disassociationTime}{disassociationTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::disassociation\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a74d1de44662e26f129c6eb571cb9f1d7}\label{structT__AssociatedDevice_a74d1de44662e26f129c6eb571cb9f1d7}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!DownlinkBandwidth@{DownlinkBandwidth}}
+\index{DownlinkBandwidth@{DownlinkBandwidth}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{DownlinkBandwidth}{DownlinkBandwidth}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Downlink\+Bandwidth}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a2eed5f78ee49120cc3c51f6f0cb511c1}\label{structT__AssociatedDevice_a2eed5f78ee49120cc3c51f6f0cb511c1}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!DownlinkMCS@{DownlinkMCS}}
+\index{DownlinkMCS@{DownlinkMCS}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{DownlinkMCS}{DownlinkMCS}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Downlink\+MCS}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ad403da892065eaa74a7ed09b43c86c79}\label{structT__AssociatedDevice_ad403da892065eaa74a7ed09b43c86c79}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!downLinkRateSpec@{downLinkRateSpec}}
+\index{downLinkRateSpec@{downLinkRateSpec}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{downLinkRateSpec}{downLinkRateSpec}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+t T\+\_\+\+Associated\+Device\+::down\+Link\+Rate\+Spec}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_acd4dac0b246d5ce7c61c9fd3b1132af3}\label{structT__AssociatedDevice_acd4dac0b246d5ce7c61c9fd3b1132af3}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!DownlinkShortGuard@{DownlinkShortGuard}}
+\index{DownlinkShortGuard@{DownlinkShortGuard}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{DownlinkShortGuard}{DownlinkShortGuard}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Downlink\+Short\+Guard}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af66fadc9384c38e74feba4bd5b3c4cb5}\label{structT__AssociatedDevice_af66fadc9384c38e74feba4bd5b3c4cb5}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!extDataList@{extDataList}}
+\index{extDataList@{extDataList}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{extDataList}{extDataList}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} T\+\_\+\+Associated\+Device\+::ext\+Data\+List}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a570f0ea27f63216b82a0c3bece1ce2de}\label{structT__AssociatedDevice_a570f0ea27f63216b82a0c3bece1ce2de}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!hadSecFailure@{hadSecFailure}}
+\index{hadSecFailure@{hadSecFailure}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{hadSecFailure}{hadSecFailure}}
+{\footnotesize\ttfamily bool T\+\_\+\+Associated\+Device\+::had\+Sec\+Failure}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a7748961e74886423bf5bc8830badeaa4}\label{structT__AssociatedDevice_a7748961e74886423bf5bc8830badeaa4}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Inactive@{Inactive}}
+\index{Inactive@{Inactive}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Inactive}{Inactive}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Inactive}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aa48d41b70e3bf42ddd37885fdd440794}\label{structT__AssociatedDevice_aa48d41b70e3bf42ddd37885fdd440794}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!LastDataDownlinkRate@{LastDataDownlinkRate}}
+\index{LastDataDownlinkRate@{LastDataDownlinkRate}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{LastDataDownlinkRate}{LastDataDownlinkRate}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Last\+Data\+Downlink\+Rate}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a525095bb0c699581f1bddb4d59a7e6c9}\label{structT__AssociatedDevice_a525095bb0c699581f1bddb4d59a7e6c9}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!LastDataUplinkRate@{LastDataUplinkRate}}
+\index{LastDataUplinkRate@{LastDataUplinkRate}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{LastDataUplinkRate}{LastDataUplinkRate}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Last\+Data\+Uplink\+Rate}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a68129edc2f0ee66e4d636e1a8ce857b9}\label{structT__AssociatedDevice_a68129edc2f0ee66e4d636e1a8ce857b9}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastDeauthAssocTime@{lastDeauthAssocTime}}
+\index{lastDeauthAssocTime@{lastDeauthAssocTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastDeauthAssocTime}{lastDeauthAssocTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Deauth\+Assoc\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a6f77dab7f56808d0e60bd7293327e67e}\label{structT__AssociatedDevice_a6f77dab7f56808d0e60bd7293327e67e}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastDeauthReason@{lastDeauthReason}}
+\index{lastDeauthReason@{lastDeauthReason}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastDeauthReason}{lastDeauthReason}}
+{\footnotesize\ttfamily swl\+\_\+\+IEEE80211deauth\+Reason\+\_\+ne T\+\_\+\+Associated\+Device\+::last\+Deauth\+Reason}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae08c8b8c600caa4bfdb28245b16232d8}\label{structT__AssociatedDevice_ae08c8b8c600caa4bfdb28245b16232d8}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastNonLegacyDownlinkMCS@{lastNonLegacyDownlinkMCS}}
+\index{lastNonLegacyDownlinkMCS@{lastNonLegacyDownlinkMCS}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastNonLegacyDownlinkMCS}{lastNonLegacyDownlinkMCS}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Non\+Legacy\+Downlink\+MCS}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a9f3aa48f2d05fc5ac7046ac55592ff72}\label{structT__AssociatedDevice_a9f3aa48f2d05fc5ac7046ac55592ff72}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastNonLegacyDownlinkTime@{lastNonLegacyDownlinkTime}}
+\index{lastNonLegacyDownlinkTime@{lastNonLegacyDownlinkTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastNonLegacyDownlinkTime}{lastNonLegacyDownlinkTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Non\+Legacy\+Downlink\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae253c7c964dc2e45f8a1ed4108170cae}\label{structT__AssociatedDevice_ae253c7c964dc2e45f8a1ed4108170cae}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastNonLegacyUplinkMCS@{lastNonLegacyUplinkMCS}}
+\index{lastNonLegacyUplinkMCS@{lastNonLegacyUplinkMCS}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastNonLegacyUplinkMCS}{lastNonLegacyUplinkMCS}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Non\+Legacy\+Uplink\+MCS}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a5599b85f290ccc6510015739b1587fef}\label{structT__AssociatedDevice_a5599b85f290ccc6510015739b1587fef}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastNonLegacyUplinkTime@{lastNonLegacyUplinkTime}}
+\index{lastNonLegacyUplinkTime@{lastNonLegacyUplinkTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastNonLegacyUplinkTime}{lastNonLegacyUplinkTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Non\+Legacy\+Uplink\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a2949d6e09f97f2ba786eb57f17fa7dad}\label{structT__AssociatedDevice_a2949d6e09f97f2ba786eb57f17fa7dad}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastProbeCapUpdateTime@{lastProbeCapUpdateTime}}
+\index{lastProbeCapUpdateTime@{lastProbeCapUpdateTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastProbeCapUpdateTime}{lastProbeCapUpdateTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Probe\+Cap\+Update\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a373e94761275f358b985e216fb9323df}\label{structT__AssociatedDevice_a373e94761275f358b985e216fb9323df}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastSampleSyncTime@{lastSampleSyncTime}}
+\index{lastSampleSyncTime@{lastSampleSyncTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastSampleSyncTime}{lastSampleSyncTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Spec\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Sample\+Sync\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aa43a45e3a52860bd00a314ff8da2281b}\label{structT__AssociatedDevice_aa43a45e3a52860bd00a314ff8da2281b}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!lastSampleTime@{lastSampleTime}}
+\index{lastSampleTime@{lastSampleTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{lastSampleTime}{lastSampleTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Spec\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::last\+Sample\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af61a56d5cc77581477d31213f51dc323}\label{structT__AssociatedDevice_af61a56d5cc77581477d31213f51dc323}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!latestStateChangeTime@{latestStateChangeTime}}
+\index{latestStateChangeTime@{latestStateChangeTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{latestStateChangeTime}{latestStateChangeTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::latest\+State\+Change\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae3d837dbc1cd016afac9ab7706dbf819}\label{structT__AssociatedDevice_ae3d837dbc1cd016afac9ab7706dbf819}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MACAddress@{MACAddress}}
+\index{MACAddress@{MACAddress}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MACAddress}{MACAddress}}
+{\footnotesize\ttfamily unsigned char T\+\_\+\+Associated\+Device\+::\+MACAddress\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_adeb61420ec812b9a51dd95d5cba3a4b3}\label{structT__AssociatedDevice_adeb61420ec812b9a51dd95d5cba3a4b3}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxBandwidthSupported@{MaxBandwidthSupported}}
+\index{MaxBandwidthSupported@{MaxBandwidthSupported}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxBandwidthSupported}{MaxBandwidthSupported}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e T\+\_\+\+Associated\+Device\+::\+Max\+Bandwidth\+Supported}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ad96b5f4f1783a755bfebefa7ce271f26}\label{structT__AssociatedDevice_ad96b5f4f1783a755bfebefa7ce271f26}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxDownlinkRateReached@{MaxDownlinkRateReached}}
+\index{MaxDownlinkRateReached@{MaxDownlinkRateReached}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxDownlinkRateReached}{MaxDownlinkRateReached}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Max\+Downlink\+Rate\+Reached}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a0859f7950c8f489448c1a95cc756029f}\label{structT__AssociatedDevice_a0859f7950c8f489448c1a95cc756029f}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxDownlinkRateSupported@{MaxDownlinkRateSupported}}
+\index{MaxDownlinkRateSupported@{MaxDownlinkRateSupported}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxDownlinkRateSupported}{MaxDownlinkRateSupported}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Max\+Downlink\+Rate\+Supported}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae10e5456e5aff63de63453b9adb32b2e}\label{structT__AssociatedDevice_ae10e5456e5aff63de63453b9adb32b2e}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxRxSpatialStreamsSupported@{MaxRxSpatialStreamsSupported}}
+\index{MaxRxSpatialStreamsSupported@{MaxRxSpatialStreamsSupported}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxRxSpatialStreamsSupported}{MaxRxSpatialStreamsSupported}}
+{\footnotesize\ttfamily uint16\+\_\+t T\+\_\+\+Associated\+Device\+::\+Max\+Rx\+Spatial\+Streams\+Supported}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a925ca4d3aa4a1d298414fadf9a9cf792}\label{structT__AssociatedDevice_a925ca4d3aa4a1d298414fadf9a9cf792}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!maxSignalStrength@{maxSignalStrength}}
+\index{maxSignalStrength@{maxSignalStrength}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{maxSignalStrength}{maxSignalStrength}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::max\+Signal\+Strength}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_affb7260570722169d167b7979da76fea}\label{structT__AssociatedDevice_affb7260570722169d167b7979da76fea}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!maxSignalStrengthTime@{maxSignalStrengthTime}}
+\index{maxSignalStrengthTime@{maxSignalStrengthTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{maxSignalStrengthTime}{maxSignalStrengthTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::max\+Signal\+Strength\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ac292817a9723f3499baa0784061e0559}\label{structT__AssociatedDevice_ac292817a9723f3499baa0784061e0559}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxTxSpatialStreamsSupported@{MaxTxSpatialStreamsSupported}}
+\index{MaxTxSpatialStreamsSupported@{MaxTxSpatialStreamsSupported}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxTxSpatialStreamsSupported}{MaxTxSpatialStreamsSupported}}
+{\footnotesize\ttfamily uint16\+\_\+t T\+\_\+\+Associated\+Device\+::\+Max\+Tx\+Spatial\+Streams\+Supported}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ada061bebc749b2345ddb98181eacb65d}\label{structT__AssociatedDevice_ada061bebc749b2345ddb98181eacb65d}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxUplinkRateReached@{MaxUplinkRateReached}}
+\index{MaxUplinkRateReached@{MaxUplinkRateReached}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxUplinkRateReached}{MaxUplinkRateReached}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Max\+Uplink\+Rate\+Reached}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a10341a9e613c7af6ba7d10e24ec91c5a}\label{structT__AssociatedDevice_a10341a9e613c7af6ba7d10e24ec91c5a}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!MaxUplinkRateSupported@{MaxUplinkRateSupported}}
+\index{MaxUplinkRateSupported@{MaxUplinkRateSupported}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{MaxUplinkRateSupported}{MaxUplinkRateSupported}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Max\+Uplink\+Rate\+Supported}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a78ccff64d7eb631c989b77d81e92a192}\label{structT__AssociatedDevice_a78ccff64d7eb631c989b77d81e92a192}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!meanSignalStrength@{meanSignalStrength}}
+\index{meanSignalStrength@{meanSignalStrength}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{meanSignalStrength}{meanSignalStrength}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::mean\+Signal\+Strength}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a98e1b4fffeb3f8d685aaddb49eafcafa}\label{structT__AssociatedDevice_a98e1b4fffeb3f8d685aaddb49eafcafa}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!meanSignalStrengthExpAccumulator@{meanSignalStrengthExpAccumulator}}
+\index{meanSignalStrengthExpAccumulator@{meanSignalStrengthExpAccumulator}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{meanSignalStrengthExpAccumulator}{meanSignalStrengthExpAccumulator}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::mean\+Signal\+Strength\+Exp\+Accumulator}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_adc002c8feb033855e3e605712aaca5a9}\label{structT__AssociatedDevice_adc002c8feb033855e3e605712aaca5a9}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!meanSignalStrengthLinearAccumulator@{meanSignalStrengthLinearAccumulator}}
+\index{meanSignalStrengthLinearAccumulator@{meanSignalStrengthLinearAccumulator}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{meanSignalStrengthLinearAccumulator}{meanSignalStrengthLinearAccumulator}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::mean\+Signal\+Strength\+Linear\+Accumulator}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a5fe5b72e408d1b30ffe0c397ec310b35}\label{structT__AssociatedDevice_a5fe5b72e408d1b30ffe0c397ec310b35}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!minSignalStrength@{minSignalStrength}}
+\index{minSignalStrength@{minSignalStrength}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{minSignalStrength}{minSignalStrength}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::min\+Signal\+Strength}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a3efbd47cba87a2e701a3708daa08dc8e}\label{structT__AssociatedDevice_a3efbd47cba87a2e701a3708daa08dc8e}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!minSignalStrengthTime@{minSignalStrengthTime}}
+\index{minSignalStrengthTime@{minSignalStrengthTime}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{minSignalStrengthTime}{minSignalStrengthTime}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t T\+\_\+\+Associated\+Device\+::min\+Signal\+Strength\+Time}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a89b72b6ab89e8302695b8b4094a2c9b0}\label{structT__AssociatedDevice_a89b72b6ab89e8302695b8b4094a2c9b0}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!mloMode@{mloMode}}
+\index{mloMode@{mloMode}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{mloMode}{mloMode}}
+{\footnotesize\ttfamily swl\+\_\+mlo\+\_\+mode\+\_\+e T\+\_\+\+Associated\+Device\+::mlo\+Mode}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a48fc9a777b6ab99208451c6bebec0ca7}\label{structT__AssociatedDevice_a48fc9a777b6ab99208451c6bebec0ca7}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!multipleRetryCount@{multipleRetryCount}}
+\index{multipleRetryCount@{multipleRetryCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{multipleRetryCount}{multipleRetryCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::multiple\+Retry\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a44f49344390d2b5210776eec5b6960e0}\label{structT__AssociatedDevice_a44f49344390d2b5210776eec5b6960e0}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Name@{Name}}
+\index{Name@{Name}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily char T\+\_\+\+Associated\+Device\+::\+Name\mbox{[}32\mbox{]}}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_adc8620d390006ca497d6b912b247505b}\label{structT__AssociatedDevice_adc8620d390006ca497d6b912b247505b}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!noise@{noise}}
+\index{noise@{noise}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{noise}{noise}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::noise}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aba01cbe4d4153f87c870d7121bfa86c0}\label{structT__AssociatedDevice_aba01cbe4d4153f87c870d7121bfa86c0}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!noiseByChain@{noiseByChain}}
+\index{noiseByChain@{noiseByChain}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{noiseByChain}{noiseByChain}}
+{\footnotesize\ttfamily double T\+\_\+\+Associated\+Device\+::noise\+By\+Chain\mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aa05051cccf4d082d9db0f7b87fa987c5}\label{structT__AssociatedDevice_aa05051cccf4d082d9db0f7b87fa987c5}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!nrCreatedAffiliatedStaLinks@{nrCreatedAffiliatedStaLinks}}
+\index{nrCreatedAffiliatedStaLinks@{nrCreatedAffiliatedStaLinks}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{nrCreatedAffiliatedStaLinks}{nrCreatedAffiliatedStaLinks}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::nr\+Created\+Affiliated\+Sta\+Links}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae73e5ad3d028e634619edb04e7716c6f}\label{structT__AssociatedDevice_ae73e5ad3d028e634619edb04e7716c6f}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!nrMeanSignalStrength@{nrMeanSignalStrength}}
+\index{nrMeanSignalStrength@{nrMeanSignalStrength}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{nrMeanSignalStrength}{nrMeanSignalStrength}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::nr\+Mean\+Signal\+Strength}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af3e135344f15b5d43f4e68db1800ee54}\label{structT__AssociatedDevice_af3e135344f15b5d43f4e68db1800ee54}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!object@{object}}
+\index{object@{object}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{object}{object}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t$\ast$ T\+\_\+\+Associated\+Device\+::object}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af857e77bcd059aa043f10eebbf2db65a}\label{structT__AssociatedDevice_af857e77bcd059aa043f10eebbf2db65a}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!onActionReadCtx@{onActionReadCtx}}
+\index{onActionReadCtx@{onActionReadCtx}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{onActionReadCtx}{onActionReadCtx}}
+{\footnotesize\ttfamily swla\+\_\+dm\+\_\+obj\+Action\+Read\+Ctx\+\_\+t T\+\_\+\+Associated\+Device\+::on\+Action\+Read\+Ctx}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a8e596b6aa9c276023d913f30974b95f3}\label{structT__AssociatedDevice_a8e596b6aa9c276023d913f30974b95f3}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!operatingStandard@{operatingStandard}}
+\index{operatingStandard@{operatingStandard}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{operatingStandard}{operatingStandard}}
+{\footnotesize\ttfamily swl\+\_\+rad\+Std\+\_\+e T\+\_\+\+Associated\+Device\+::operating\+Standard}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_adae2dbc4b849bda2a3a9dfffb76489d8}\label{structT__AssociatedDevice_adae2dbc4b849bda2a3a9dfffb76489d8}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!operatingStandardSetByDriver@{operatingStandardSetByDriver}}
+\index{operatingStandardSetByDriver@{operatingStandardSetByDriver}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{operatingStandardSetByDriver}{operatingStandardSetByDriver}}
+{\footnotesize\ttfamily bool T\+\_\+\+Associated\+Device\+::operating\+Standard\+Set\+By\+Driver}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae983b59b19179618f12eb9df6a5527f8}\label{structT__AssociatedDevice_ae983b59b19179618f12eb9df6a5527f8}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!powerSave@{powerSave}}
+\index{powerSave@{powerSave}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{powerSave}{powerSave}}
+{\footnotesize\ttfamily bool T\+\_\+\+Associated\+Device\+::power\+Save}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a04187e0230b2cedb2c4c9f7f54af9b4a}\label{structT__AssociatedDevice_a04187e0230b2cedb2c4c9f7f54af9b4a}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!probeReqCaps@{probeReqCaps}}
+\index{probeReqCaps@{probeReqCaps}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{probeReqCaps}{probeReqCaps}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__assocDev__capabilities__t}{wld\+\_\+assoc\+Dev\+\_\+capabilities\+\_\+t}} T\+\_\+\+Associated\+Device\+::probe\+Req\+Caps}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a373710673b85ea5493ad0804bedec04c}\label{structT__AssociatedDevice_a373710673b85ea5493ad0804bedec04c}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Radius\_CUID@{Radius\_CUID}}
+\index{Radius\_CUID@{Radius\_CUID}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Radius\_CUID}{Radius\_CUID}}
+{\footnotesize\ttfamily char T\+\_\+\+Associated\+Device\+::\+Radius\+\_\+\+CUID\mbox{[}256\mbox{]}}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a16107816fe668eb75107ddbfed51bce7}\label{structT__AssociatedDevice_a16107816fe668eb75107ddbfed51bce7}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Retransmissions@{Retransmissions}}
+\index{Retransmissions@{Retransmissions}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Retransmissions}{Retransmissions}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Retransmissions}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a0031b7fff5115f8a3dc2a978944189ba}\label{structT__AssociatedDevice_a0031b7fff5115f8a3dc2a978944189ba}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!retryCount@{retryCount}}
+\index{retryCount@{retryCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{retryCount}{retryCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::retry\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aa7ae57a7b9050f61259c7a34d993f8fa}\label{structT__AssociatedDevice_aa7ae57a7b9050f61259c7a34d993f8fa}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!rssiAccumulator@{rssiAccumulator}}
+\index{rssiAccumulator@{rssiAccumulator}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{rssiAccumulator}{rssiAccumulator}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::rssi\+Accumulator}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a71f7c290e39d32a67428cb498f9e7fb8}\label{structT__AssociatedDevice_a71f7c290e39d32a67428cb498f9e7fb8}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!rssiLevel@{rssiLevel}}
+\index{rssiLevel@{rssiLevel}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{rssiLevel}{rssiLevel}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::rssi\+Level}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a93f5bce9018042ca0d556130241eb6eb}\label{structT__AssociatedDevice_a93f5bce9018042ca0d556130241eb6eb}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Rx\_Retransmissions@{Rx\_Retransmissions}}
+\index{Rx\_Retransmissions@{Rx\_Retransmissions}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Rx\_Retransmissions}{Rx\_Retransmissions}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+\_\+\+Retransmissions}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a185a1fc85285c667d55d62c7c3ec443a}\label{structT__AssociatedDevice_a185a1fc85285c667d55d62c7c3ec443a}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Rx\_RetransmissionsFailed@{Rx\_RetransmissionsFailed}}
+\index{Rx\_RetransmissionsFailed@{Rx\_RetransmissionsFailed}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Rx\_RetransmissionsFailed}{Rx\_RetransmissionsFailed}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+\_\+\+Retransmissions\+Failed}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ac18c352cba979e59098b196f8982abb4}\label{structT__AssociatedDevice_ac18c352cba979e59098b196f8982abb4}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!RxBytes@{RxBytes}}
+\index{RxBytes@{RxBytes}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{RxBytes}{RxBytes}}
+{\footnotesize\ttfamily uint64\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+Bytes}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_abafd90bdd6b90e8207b0d34bac335f9c}\label{structT__AssociatedDevice_abafd90bdd6b90e8207b0d34bac335f9c}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!RxFailures@{RxFailures}}
+\index{RxFailures@{RxFailures}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{RxFailures}{RxFailures}}
+{\footnotesize\ttfamily uint64\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+Failures}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ac3e4692181bdf62e74b396d1ad270efc}\label{structT__AssociatedDevice_ac3e4692181bdf62e74b396d1ad270efc}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!RxFrameCount@{RxFrameCount}}
+\index{RxFrameCount@{RxFrameCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{RxFrameCount}{RxFrameCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+Frame\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae2b2559b70097c375c9f99ff0d1f707b}\label{structT__AssociatedDevice_ae2b2559b70097c375c9f99ff0d1f707b}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!RxMulticastPacketCount@{RxMulticastPacketCount}}
+\index{RxMulticastPacketCount@{RxMulticastPacketCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{RxMulticastPacketCount}{RxMulticastPacketCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+Multicast\+Packet\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a3e365467efea2daaa4b9d1f949a62287}\label{structT__AssociatedDevice_a3e365467efea2daaa4b9d1f949a62287}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!RxPacketCount@{RxPacketCount}}
+\index{RxPacketCount@{RxPacketCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{RxPacketCount}{RxPacketCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+Packet\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af43f2a4a6aa5db8d3fc146d24de84666}\label{structT__AssociatedDevice_af43f2a4a6aa5db8d3fc146d24de84666}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!RxUnicastPacketCount@{RxUnicastPacketCount}}
+\index{RxUnicastPacketCount@{RxUnicastPacketCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{RxUnicastPacketCount}{RxUnicastPacketCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Rx\+Unicast\+Packet\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af295c0c59ec2a058403af37254d70676}\label{structT__AssociatedDevice_af295c0c59ec2a058403af37254d70676}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!seen@{seen}}
+\index{seen@{seen}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{seen}{seen}}
+{\footnotesize\ttfamily bool T\+\_\+\+Associated\+Device\+::seen}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a83f8e2d3f02efe12bb4b794ac90458cb}\label{structT__AssociatedDevice_a83f8e2d3f02efe12bb4b794ac90458cb}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!SignalNoiseRatio@{SignalNoiseRatio}}
+\index{SignalNoiseRatio@{SignalNoiseRatio}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{SignalNoiseRatio}{SignalNoiseRatio}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Signal\+Noise\+Ratio}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a5ad4e79b115acf42a0db73a9734a9c67}\label{structT__AssociatedDevice_a5ad4e79b115acf42a0db73a9734a9c67}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!SignalStrength@{SignalStrength}}
+\index{SignalStrength@{SignalStrength}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{SignalStrength}{SignalStrength}}
+{\footnotesize\ttfamily int32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Signal\+Strength}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a4702432e121815514ce46a3ba5cf5bed}\label{structT__AssociatedDevice_a4702432e121815514ce46a3ba5cf5bed}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!SignalStrengthByChain@{SignalStrengthByChain}}
+\index{SignalStrengthByChain@{SignalStrengthByChain}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{SignalStrengthByChain}{SignalStrengthByChain}}
+{\footnotesize\ttfamily double T\+\_\+\+Associated\+Device\+::\+Signal\+Strength\+By\+Chain\mbox{[}\mbox{\hyperlink{wld_8h_acd2bfec8638d82fbec69ca8e37440986}{MAX\+\_\+\+NR\+\_\+\+ANTENNA}}\mbox{]}}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a2b9240fbf5880e7caf6e4d7c77b25870}\label{structT__AssociatedDevice_a2b9240fbf5880e7caf6e4d7c77b25870}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!staHistory@{staHistory}}
+\index{staHistory@{staHistory}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{staHistory}{staHistory}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__assocDev__history__t}{wld\+\_\+assoc\+Dev\+\_\+history\+\_\+t}}$\ast$ T\+\_\+\+Associated\+Device\+::sta\+History}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_af8fd16f8bc73e40767123d6fd7f9214a}\label{structT__AssociatedDevice_af8fd16f8bc73e40767123d6fd7f9214a}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!staMuMimoInfo@{staMuMimoInfo}}
+\index{staMuMimoInfo@{staMuMimoInfo}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{staMuMimoInfo}{staMuMimoInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__sta__muMimoInfo__t}{wld\+\_\+sta\+\_\+mu\+Mimo\+Info\+\_\+t}} T\+\_\+\+Associated\+Device\+::sta\+Mu\+Mimo\+Info}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aaee909580a4e4c730a31a4547c1a3c9e}\label{structT__AssociatedDevice_aaee909580a4e4c730a31a4547c1a3c9e}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Tx\_Retransmissions@{Tx\_Retransmissions}}
+\index{Tx\_Retransmissions@{Tx\_Retransmissions}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Tx\_Retransmissions}{Tx\_Retransmissions}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+\_\+\+Retransmissions}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a035b493ab3a701e25064aa5d5226df49}\label{structT__AssociatedDevice_a035b493ab3a701e25064aa5d5226df49}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!Tx\_RetransmissionsFailed@{Tx\_RetransmissionsFailed}}
+\index{Tx\_RetransmissionsFailed@{Tx\_RetransmissionsFailed}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{Tx\_RetransmissionsFailed}{Tx\_RetransmissionsFailed}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+\_\+\+Retransmissions\+Failed}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a7fdc464e7ac41eadaea585e0506c1831}\label{structT__AssociatedDevice_a7fdc464e7ac41eadaea585e0506c1831}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!TxBytes@{TxBytes}}
+\index{TxBytes@{TxBytes}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{TxBytes}{TxBytes}}
+{\footnotesize\ttfamily uint64\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+Bytes}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a21761ffa7566b11c77cd9ec0142bfd0e}\label{structT__AssociatedDevice_a21761ffa7566b11c77cd9ec0142bfd0e}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!TxFailures@{TxFailures}}
+\index{TxFailures@{TxFailures}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{TxFailures}{TxFailures}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+Failures}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_addc3484531db3b3ce8d91386cd73e08e}\label{structT__AssociatedDevice_addc3484531db3b3ce8d91386cd73e08e}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!TxFrameCount@{TxFrameCount}}
+\index{TxFrameCount@{TxFrameCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{TxFrameCount}{TxFrameCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+Frame\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a6d80ebdfc891c5a3bb977dd6bcdb67d6}\label{structT__AssociatedDevice_a6d80ebdfc891c5a3bb977dd6bcdb67d6}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!TxMulticastPacketCount@{TxMulticastPacketCount}}
+\index{TxMulticastPacketCount@{TxMulticastPacketCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{TxMulticastPacketCount}{TxMulticastPacketCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+Multicast\+Packet\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a56ff44245620300208df4afdc3002202}\label{structT__AssociatedDevice_a56ff44245620300208df4afdc3002202}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!TxPacketCount@{TxPacketCount}}
+\index{TxPacketCount@{TxPacketCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{TxPacketCount}{TxPacketCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+Packet\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_aa70d8eb91081da2ac35b5ea2884ef438}\label{structT__AssociatedDevice_aa70d8eb91081da2ac35b5ea2884ef438}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!TxUnicastPacketCount@{TxUnicastPacketCount}}
+\index{TxUnicastPacketCount@{TxUnicastPacketCount}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{TxUnicastPacketCount}{TxUnicastPacketCount}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Tx\+Unicast\+Packet\+Count}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a90648af27c0aa682eef9907624d214b9}\label{structT__AssociatedDevice_a90648af27c0aa682eef9907624d214b9}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!uniiBandsCapabilities@{uniiBandsCapabilities}}
+\index{uniiBandsCapabilities@{uniiBandsCapabilities}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{uniiBandsCapabilities}{uniiBandsCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+unii\+Band\+\_\+m T\+\_\+\+Associated\+Device\+::unii\+Bands\+Capabilities}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a368cbc4b69ca7bd346196acb5c2b02cd}\label{structT__AssociatedDevice_a368cbc4b69ca7bd346196acb5c2b02cd}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!UplinkBandwidth@{UplinkBandwidth}}
+\index{UplinkBandwidth@{UplinkBandwidth}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{UplinkBandwidth}{UplinkBandwidth}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Uplink\+Bandwidth}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_afc5156fd3539bd990f7a0ad636659a2d}\label{structT__AssociatedDevice_afc5156fd3539bd990f7a0ad636659a2d}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!UplinkMCS@{UplinkMCS}}
+\index{UplinkMCS@{UplinkMCS}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{UplinkMCS}{UplinkMCS}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Uplink\+MCS}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_acb54494eda78a14806798163b87c66ee}\label{structT__AssociatedDevice_acb54494eda78a14806798163b87c66ee}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!upLinkRateSpec@{upLinkRateSpec}}
+\index{upLinkRateSpec@{upLinkRateSpec}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{upLinkRateSpec}{upLinkRateSpec}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+t T\+\_\+\+Associated\+Device\+::up\+Link\+Rate\+Spec}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_ae45d673ccf573a6ace8541dbae50bb56}\label{structT__AssociatedDevice_ae45d673ccf573a6ace8541dbae50bb56}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!UplinkShortGuard@{UplinkShortGuard}}
+\index{UplinkShortGuard@{UplinkShortGuard}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{UplinkShortGuard}{UplinkShortGuard}}
+{\footnotesize\ttfamily uint32\+\_\+t T\+\_\+\+Associated\+Device\+::\+Uplink\+Short\+Guard}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a01de04f669675f036d478b4bdd0b2fbe}\label{structT__AssociatedDevice_a01de04f669675f036d478b4bdd0b2fbe}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!vendor@{vendor}}
+\index{vendor@{vendor}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{vendor}{vendor}}
+{\footnotesize\ttfamily void$\ast$ T\+\_\+\+Associated\+Device\+::vendor}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a2b4260ca7787b82fcdaa3788863e5c0f}\label{structT__AssociatedDevice_a2b4260ca7787b82fcdaa3788863e5c0f}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!vendorCapabilities@{vendorCapabilities}}
+\index{vendorCapabilities@{vendorCapabilities}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{vendorCapabilities}{vendorCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+sta\+Cap\+Vendor\+\_\+m T\+\_\+\+Associated\+Device\+::vendor\+Capabilities}
+
+\mbox{\Hypertarget{structT__AssociatedDevice_a97fb9ab99193fce8012154d9c646bff2}\label{structT__AssociatedDevice_a97fb9ab99193fce8012154d9c646bff2}} 
+\index{T\_AssociatedDevice@{T\_AssociatedDevice}!wdsIntf@{wdsIntf}}
+\index{wdsIntf@{wdsIntf}!T\_AssociatedDevice@{T\_AssociatedDevice}}
+\doxysubsubsection{\texorpdfstring{wdsIntf}{wdsIntf}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__wds__intf__t}{wld\+\_\+wds\+\_\+intf\+\_\+t}}$\ast$ T\+\_\+\+Associated\+Device\+::wds\+Intf}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

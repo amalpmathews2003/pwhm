@@ -1,0 +1,245 @@
+\hypertarget{wld__secDmnGrp_8h}{}\doxysection{include/wld/wld\+\_\+sec\+Dmn\+Grp.h File Reference}
+\label{wld__secDmnGrp_8h}\index{include/wld/wld\_secDmnGrp.h@{include/wld/wld\_secDmnGrp.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+sec\+Dmn\+\_\+types.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+sec\+Dmn.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+sec\+Dmn\+Grp.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__secDmnGrp__EvtHandlers__t}{wld\+\_\+sec\+Dmn\+Grp\+\_\+\+Evt\+Handlers\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef char $\ast$($\ast$ \mbox{\hyperlink{wld__secDmnGrp_8h_ab5c16ffdce651c56acca44fdda0057fc}{wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Args\+Handler}}) (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, void $\ast$user\+Data, const \mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}} $\ast$p\+Proc)
+\item 
+typedef bool($\ast$ \mbox{\hyperlink{wld__secDmnGrp_8h_a4fdcf11b046a8fa4bc8d89eaa378b27b}{wld\+\_\+sec\+Dmn\+Grp\+\_\+is\+Member\+Startable}}) (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, void $\ast$user\+Data, \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$p\+Member)
+\item 
+typedef bool($\ast$ \mbox{\hyperlink{wld__secDmnGrp_8h_ab7eab2ebc60a6f1be856b74ef9f7eac2}{wld\+\_\+sec\+Dmn\+Grp\+\_\+has\+Member\+Rtm\+Action}}) (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, void $\ast$user\+Data, \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$p\+Member)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__secDmnGrp_8h_a4a8e52f60ff7f16402f2f5f46d875513}{wld\+\_\+sec\+Dmn\+Grp\+\_\+init}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$$\ast$pp\+Sec\+Dmn\+Grp, char $\ast$cmd, char $\ast$start\+Args, const char $\ast$group\+Name)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__secDmnGrp_8h_ae7fd2f75fe9cdff713eac1c475a09cb6}{wld\+\_\+sec\+Dmn\+Grp\+\_\+cleanup}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$$\ast$pp\+Sec\+Dmn)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__secDmnGrp_8h_ac3b937dde89561cfe81a36094d6ae0c1}{wld\+\_\+sec\+Dmn\+Grp\+\_\+set\+Evt\+Handlers}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, \mbox{\hyperlink{structwld__secDmnGrp__EvtHandlers__t}{wld\+\_\+sec\+Dmn\+Grp\+\_\+\+Evt\+Handlers\+\_\+t}} $\ast$p\+Handlers, void $\ast$user\+Data)
+\item 
+bool \mbox{\hyperlink{wld__secDmnGrp_8h_a2394b18e2e57d7538ee39dab1d986c98}{wld\+\_\+sec\+Dmn\+Grp\+\_\+is\+Enabled}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp)
+\item 
+bool \mbox{\hyperlink{wld__secDmnGrp_8h_a9a11d903284a413832486ec1cb0fc850}{wld\+\_\+sec\+Dmn\+Grp\+\_\+is\+Running}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp)
+\item 
+\mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__secDmnGrp_8h_ae5da21db2381b2d5a1f16df5d388d5df}{wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Proc}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__secDmnGrp_8h_a7a55988e27b9c7365f21e1b68bc58b85}{wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Members\+Count}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{wld__secDmnGrp_8h_af0c8baba6a72e3d8962f0666ac93ccc9}{wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Active\+Members\+Count}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp)
+\item 
+const \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__secDmnGrp_8h_af0b4f287e6977f3f12c69dfffbfb213e}{wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Member\+By\+Pos}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, int32\+\_\+t pos)
+\item 
+const \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__secDmnGrp_8h_a3673e138fb0aea1c299a5ed476853d37}{wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Member\+By\+Name}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, const char $\ast$name)
+\item 
+bool \mbox{\hyperlink{wld__secDmnGrp_8h_a5cd2c4c7f93631811fe592d31f708195}{wld\+\_\+sec\+Dmn\+Grp\+\_\+has\+Member}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$p\+Sec\+Dmn)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__secDmnGrp_8h_abe237de1fcc165241ea056532b0dad4c}{wld\+\_\+sec\+Dmn\+Grp\+\_\+set\+Member\+Startable}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$p\+Sec\+Dmn, bool is\+Startable)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__secDmnGrp_8h_a6bc879b359421f8493438c154cc06bcb}{wld\+\_\+sec\+Dmn\+Grp\+\_\+drop\+Members}} (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_ab5c16ffdce651c56acca44fdda0057fc}\label{wld__secDmnGrp_8h_ab5c16ffdce651c56acca44fdda0057fc}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_getArgsHandler@{wld\_secDmnGrp\_getArgsHandler}}
+\index{wld\_secDmnGrp\_getArgsHandler@{wld\_secDmnGrp\_getArgsHandler}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_getArgsHandler}{wld\_secDmnGrp\_getArgsHandler}}
+{\footnotesize\ttfamily typedef char $\ast$($\ast$ wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Args\+Handler) (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, void $\ast$user\+Data, const \mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}} $\ast$p\+Proc)}
+
+\mbox{\Hypertarget{wld__secDmnGrp_8h_ab7eab2ebc60a6f1be856b74ef9f7eac2}\label{wld__secDmnGrp_8h_ab7eab2ebc60a6f1be856b74ef9f7eac2}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_hasMemberRtmAction@{wld\_secDmnGrp\_hasMemberRtmAction}}
+\index{wld\_secDmnGrp\_hasMemberRtmAction@{wld\_secDmnGrp\_hasMemberRtmAction}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_hasMemberRtmAction}{wld\_secDmnGrp\_hasMemberRtmAction}}
+{\footnotesize\ttfamily typedef bool($\ast$ wld\+\_\+sec\+Dmn\+Grp\+\_\+has\+Member\+Rtm\+Action) (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, void $\ast$user\+Data, \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$p\+Member)}
+
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a4fdcf11b046a8fa4bc8d89eaa378b27b}\label{wld__secDmnGrp_8h_a4fdcf11b046a8fa4bc8d89eaa378b27b}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_isMemberStartable@{wld\_secDmnGrp\_isMemberStartable}}
+\index{wld\_secDmnGrp\_isMemberStartable@{wld\_secDmnGrp\_isMemberStartable}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_isMemberStartable}{wld\_secDmnGrp\_isMemberStartable}}
+{\footnotesize\ttfamily typedef bool($\ast$ wld\+\_\+sec\+Dmn\+Grp\+\_\+is\+Member\+Startable) (\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$p\+Sec\+Dmn\+Grp, void $\ast$user\+Data, \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$p\+Member)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_ae7fd2f75fe9cdff713eac1c475a09cb6}\label{wld__secDmnGrp_8h_ae7fd2f75fe9cdff713eac1c475a09cb6}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_cleanup@{wld\_secDmnGrp\_cleanup}}
+\index{wld\_secDmnGrp\_cleanup@{wld\_secDmnGrp\_cleanup}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_cleanup()}{wld\_secDmnGrp\_cleanup()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sec\+Dmn\+Grp\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$$\ast$}]{pp\+Sec\+Dmn }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_ae7fd2f75fe9cdff713eac1c475a09cb6_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_ae7fd2f75fe9cdff713eac1c475a09cb6_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a6bc879b359421f8493438c154cc06bcb}\label{wld__secDmnGrp_8h_a6bc879b359421f8493438c154cc06bcb}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_dropMembers@{wld\_secDmnGrp\_dropMembers}}
+\index{wld\_secDmnGrp\_dropMembers@{wld\_secDmnGrp\_dropMembers}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_dropMembers()}{wld\_secDmnGrp\_dropMembers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sec\+Dmn\+Grp\+\_\+drop\+Members (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_a6bc879b359421f8493438c154cc06bcb_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_af0c8baba6a72e3d8962f0666ac93ccc9}\label{wld__secDmnGrp_8h_af0c8baba6a72e3d8962f0666ac93ccc9}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_getActiveMembersCount@{wld\_secDmnGrp\_getActiveMembersCount}}
+\index{wld\_secDmnGrp\_getActiveMembersCount@{wld\_secDmnGrp\_getActiveMembersCount}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_getActiveMembersCount()}{wld\_secDmnGrp\_getActiveMembersCount()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Active\+Members\+Count (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_af0c8baba6a72e3d8962f0666ac93ccc9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_af0c8baba6a72e3d8962f0666ac93ccc9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a3673e138fb0aea1c299a5ed476853d37}\label{wld__secDmnGrp_8h_a3673e138fb0aea1c299a5ed476853d37}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_getMemberByName@{wld\_secDmnGrp\_getMemberByName}}
+\index{wld\_secDmnGrp\_getMemberByName@{wld\_secDmnGrp\_getMemberByName}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_getMemberByName()}{wld\_secDmnGrp\_getMemberByName()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$ wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Member\+By\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__secDmnGrp_8h_af0b4f287e6977f3f12c69dfffbfb213e}\label{wld__secDmnGrp_8h_af0b4f287e6977f3f12c69dfffbfb213e}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_getMemberByPos@{wld\_secDmnGrp\_getMemberByPos}}
+\index{wld\_secDmnGrp\_getMemberByPos@{wld\_secDmnGrp\_getMemberByPos}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_getMemberByPos()}{wld\_secDmnGrp\_getMemberByPos()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$ wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Member\+By\+Pos (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp,  }\item[{int32\+\_\+t}]{pos }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_af0b4f287e6977f3f12c69dfffbfb213e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a7a55988e27b9c7365f21e1b68bc58b85}\label{wld__secDmnGrp_8h_a7a55988e27b9c7365f21e1b68bc58b85}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_getMembersCount@{wld\_secDmnGrp\_getMembersCount}}
+\index{wld\_secDmnGrp\_getMembersCount@{wld\_secDmnGrp\_getMembersCount}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_getMembersCount()}{wld\_secDmnGrp\_getMembersCount()}}
+{\footnotesize\ttfamily uint32\+\_\+t wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Members\+Count (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_a7a55988e27b9c7365f21e1b68bc58b85_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_ae5da21db2381b2d5a1f16df5d388d5df}\label{wld__secDmnGrp_8h_ae5da21db2381b2d5a1f16df5d388d5df}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_getProc@{wld\_secDmnGrp\_getProc}}
+\index{wld\_secDmnGrp\_getProc@{wld\_secDmnGrp\_getProc}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_getProc()}{wld\_secDmnGrp\_getProc()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}} $\ast$ wld\+\_\+sec\+Dmn\+Grp\+\_\+get\+Proc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_ae5da21db2381b2d5a1f16df5d388d5df_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a5cd2c4c7f93631811fe592d31f708195}\label{wld__secDmnGrp_8h_a5cd2c4c7f93631811fe592d31f708195}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_hasMember@{wld\_secDmnGrp\_hasMember}}
+\index{wld\_secDmnGrp\_hasMember@{wld\_secDmnGrp\_hasMember}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_hasMember()}{wld\_secDmnGrp\_hasMember()}}
+{\footnotesize\ttfamily bool wld\+\_\+sec\+Dmn\+Grp\+\_\+has\+Member (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp,  }\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$}]{p\+Sec\+Dmn }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a4a8e52f60ff7f16402f2f5f46d875513}\label{wld__secDmnGrp_8h_a4a8e52f60ff7f16402f2f5f46d875513}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_init@{wld\_secDmnGrp\_init}}
+\index{wld\_secDmnGrp\_init@{wld\_secDmnGrp\_init}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_init()}{wld\_secDmnGrp\_init()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sec\+Dmn\+Grp\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$$\ast$}]{pp\+Sec\+Dmn\+Grp,  }\item[{char $\ast$}]{cmd,  }\item[{char $\ast$}]{start\+Args,  }\item[{const char $\ast$}]{group\+Name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a2394b18e2e57d7538ee39dab1d986c98}\label{wld__secDmnGrp_8h_a2394b18e2e57d7538ee39dab1d986c98}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_isEnabled@{wld\_secDmnGrp\_isEnabled}}
+\index{wld\_secDmnGrp\_isEnabled@{wld\_secDmnGrp\_isEnabled}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_isEnabled()}{wld\_secDmnGrp\_isEnabled()}}
+{\footnotesize\ttfamily bool wld\+\_\+sec\+Dmn\+Grp\+\_\+is\+Enabled (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_a2394b18e2e57d7538ee39dab1d986c98_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_a9a11d903284a413832486ec1cb0fc850}\label{wld__secDmnGrp_8h_a9a11d903284a413832486ec1cb0fc850}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_isRunning@{wld\_secDmnGrp\_isRunning}}
+\index{wld\_secDmnGrp\_isRunning@{wld\_secDmnGrp\_isRunning}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_isRunning()}{wld\_secDmnGrp\_isRunning()}}
+{\footnotesize\ttfamily bool wld\+\_\+sec\+Dmn\+Grp\+\_\+is\+Running (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__secDmnGrp_8h_a9a11d903284a413832486ec1cb0fc850_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__secDmnGrp_8h_ac3b937dde89561cfe81a36094d6ae0c1}\label{wld__secDmnGrp_8h_ac3b937dde89561cfe81a36094d6ae0c1}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_setEvtHandlers@{wld\_secDmnGrp\_setEvtHandlers}}
+\index{wld\_secDmnGrp\_setEvtHandlers@{wld\_secDmnGrp\_setEvtHandlers}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_setEvtHandlers()}{wld\_secDmnGrp\_setEvtHandlers()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sec\+Dmn\+Grp\+\_\+set\+Evt\+Handlers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp,  }\item[{\mbox{\hyperlink{structwld__secDmnGrp__EvtHandlers__t}{wld\+\_\+sec\+Dmn\+Grp\+\_\+\+Evt\+Handlers\+\_\+t}} $\ast$}]{p\+Handlers,  }\item[{void $\ast$}]{user\+Data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__secDmnGrp_8h_abe237de1fcc165241ea056532b0dad4c}\label{wld__secDmnGrp_8h_abe237de1fcc165241ea056532b0dad4c}} 
+\index{wld\_secDmnGrp.h@{wld\_secDmnGrp.h}!wld\_secDmnGrp\_setMemberStartable@{wld\_secDmnGrp\_setMemberStartable}}
+\index{wld\_secDmnGrp\_setMemberStartable@{wld\_secDmnGrp\_setMemberStartable}!wld\_secDmnGrp.h@{wld\_secDmnGrp.h}}
+\doxysubsubsection{\texorpdfstring{wld\_secDmnGrp\_setMemberStartable()}{wld\_secDmnGrp\_setMemberStartable()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sec\+Dmn\+Grp\+\_\+set\+Member\+Startable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$}]{p\+Sec\+Dmn\+Grp,  }\item[{\mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$}]{p\+Sec\+Dmn,  }\item[{bool}]{is\+Startable }\end{DoxyParamCaption})}
+

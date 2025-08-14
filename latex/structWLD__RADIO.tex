@@ -1,0 +1,1515 @@
+\hypertarget{structWLD__RADIO}{}\doxysection{WLD\+\_\+\+RADIO Struct Reference}
+\label{structWLD__RADIO}\index{WLD\_RADIO@{WLD\_RADIO}}
+
+
+{\ttfamily \#include $<$wld.\+h$>$}
+
+
+
+Collaboration diagram for WLD\+\_\+\+RADIO\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structWLD__RADIO__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a8687d8a8cc96713541c163962543b3c3}{debug}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_a06f3adb0e8dc407855d086541dd9a77b}{vendor}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_a48d84afbf9963bfcbec2f68e7fa98d51}{status}}
+\item 
+wld\+\_\+status\+\_\+change\+Info\+\_\+t \mbox{\hyperlink{structWLD__RADIO_aa8584ee67898300f99bab1fffe37f7fb}{change\+Info}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a29993667acbcc2ebd4e83325f3d8b165}{max\+Bit\+Rate}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a39374401bae58c77832652010ddc9ee4}{index}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a14d3a6ac2f45b3ac19aa44941bd3bfa6}{w\+Dev\+Id}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a1efadfd65aba4a959865e88b6decb912}{ref\+\_\+index}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ab4ba61d2c5a39f2e0247ae630eb23a7e}{is\+Ready}}
+\item 
+swl\+\_\+freq\+Band\+Ext\+\_\+m \mbox{\hyperlink{structWLD__RADIO_a8929cc76f52e94d7dfecee99ce2e8401}{supported\+Frequency\+Bands}}
+\item 
+swl\+\_\+freq\+Band\+Ext\+\_\+e \mbox{\hyperlink{structWLD__RADIO_a01c0ac2c27c97fc02b0beb1e2a5a456d}{operating\+Frequency\+Band}}
+\item 
+swl\+\_\+radio\+Standard\+\_\+m \mbox{\hyperlink{structWLD__RADIO_ac6c676337138c969d85b87de0eb613c3}{supported\+Standards}}
+\item 
+swl\+\_\+radio\+Standard\+\_\+m \mbox{\hyperlink{structWLD__RADIO_aeb834ac6f9babafc9cbf2d0d66cbe5b6}{operating\+Standards}}
+\item 
+swl\+\_\+rad\+Std\+\_\+format\+\_\+e \mbox{\hyperlink{structWLD__RADIO_a71eaaa39e62353666721d71ce38891fc}{operating\+Standards\+Format}}
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{structWLD__RADIO_ab9b534a807c689eb9d8c6e2ecd265c2b}{possible\+Channels}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\+\_\+\+MAX\+\_\+\+POSSIBLE\+\_\+\+CHANNELS}}\mbox{]}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a5122dab37b8a54f050a49ff2d0d0d04b}{nr\+Possible\+Channels}}
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a4b22b715599a7f3277d9b144c461f50d}{radar\+Detected\+Channels}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\+\_\+\+MAX\+\_\+\+POSSIBLE\+\_\+\+CHANNELS}}\mbox{]}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_afc88ddd8544657116d534aa200662587}{nr\+Radar\+Detected\+Channels}}
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a41e60d0382472629b76d2ed8d690c640}{last\+Radar\+Channels\+Added}} \mbox{[}SWL\+\_\+\+BW\+\_\+\+CHANNELS\+\_\+\+MAX\mbox{]}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_aa73b238d00b9bf29a39e77edea43004f}{nr\+Last\+Radar\+Channels\+Added}}
+\item 
+unsigned char \mbox{\hyperlink{structWLD__RADIO_acd489e1cddcc5811da305853798c3d8e}{MACAddr}} \mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}
+\item 
+swl\+\_\+mac\+Bin\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a4938275c2f026e5f646874e927202530}{mbss\+Base\+MACAddr}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_acf49ade84fba0d6bef2f605f0b7d6a21}{is\+AP}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_af5e8165e31a9026a7cf84c9ee9a959bc}{is\+STA}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a3f94d184417c2daaa16dc721d45d60ad}{is\+WDS}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a841e07f6033751b1738c9ae8ec7d048b}{is\+WET}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_aa14b69829b96d5b506dcfa8d49c16160}{is\+STASup}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a31c8e42c1e3b93539cc7222a61767657}{is\+WPSEnrol}}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_a8ceb47dea4d820707b8d59080d347d94}{channels\+In\+Use}} \mbox{[}64\mbox{]}
+\item 
+swl\+\_\+channel\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a7a691a3180e459dba20f90118669d7d3}{channel}}
+\item 
+\mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_ab19ccdb0d27b0a0602727a1e7fdd70d6}{channel\+Change\+Reason}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a5bc3c85726d60352affc7acb9c1e0790}{auto\+Channel\+Supported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a54c91ccf5b1f17a465a60fbf7716989b}{external\+Acs\+Mgmt}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a20edd0fd17085a51a36229f737b19ce0}{auto\+Channel\+Enable}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_afff1147722680eaa001adf49378c3711}{auto\+Channel\+Set\+By\+User}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a998eb4aac26a8a6508e2bf37ba3ada9a}{auto\+Channel\+Refresh\+Period}}
+\item 
+swl\+\_\+rad\+Bw\+\_\+e \mbox{\hyperlink{structWLD__RADIO_a828c1b93086522b2215906c737c36ade}{operating\+Channel\+Bandwidth}}
+\item 
+swl\+\_\+rad\+Bw\+\_\+e \mbox{\hyperlink{structWLD__RADIO_a95a91289df401878bb99c61d39d0017e}{running\+Channel\+Bandwidth}}
+\item 
+swl\+\_\+rad\+Bw\+\_\+m \mbox{\hyperlink{structWLD__RADIO_a75a9d7f5a3881396eacd0b46c10e3154}{supported\+Channel\+Bandwidth}}
+\item 
+\mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_acc91e59ec186297e6cb1be680cbdc074}{channel\+Bandwidth\+Change\+Reason}}
+\item 
+swl\+\_\+bandwidth\+\_\+e \mbox{\hyperlink{structWLD__RADIO_a6f8273f7342a1b0632de6efbd6566304}{max\+Channel\+Bandwidth}}
+\item 
+\mbox{\hyperlink{wld_8h_a0a179a5d94cdc5631b0ecdb67a401819}{wld\+\_\+rad\+\_\+channel\+Internal\+Status\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_aa741a4d5d8aff4d3a9ea7334b9039216}{channel\+Showing}}
+\item 
+\mbox{\hyperlink{structwld__rad__detailedChanState__t}{wld\+\_\+rad\+\_\+detailed\+Chan\+State\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a678b64c5da4028068a55e89dfd881877}{target\+Chanspec}}
+\item 
+swl\+\_\+function\+\_\+deferred\+Info\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a18671a74451e5a9b3b1aba0cc7ca2d79}{call\+Id\+Req\+Chanspec}}
+\item 
+amxp\+\_\+timer\+\_\+t $\ast$ \mbox{\hyperlink{structWLD__RADIO_affee986ffeb76f1fb06ee747510b6849}{timer\+Req\+Chanspec}}
+\item 
+\mbox{\hyperlink{structwld__rad__detailedChanState__t}{wld\+\_\+rad\+\_\+detailed\+Chan\+State\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a22d3a3a8b9c849b4c4ef7161b7d51374}{current\+Chanspec}}
+\item 
+swl\+\_\+chanspec\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a1c2134b86511784bd509c59d9a2f2ed7}{user\+Chanspec}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a06289883f52654e6f28f677956195f6e}{total\+Nr\+Target\+Chanspec\+Changes}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structWLD__RADIO_ad9c5135dd131e12f20a1cb92bd702bd3}{total\+Nr\+Current\+Chanspec\+Changes}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a73bdbc46bc916a3a8f89aa9a73ce1e42}{channel\+Change\+Counters}} \mbox{[}\mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dcaa1c4696179dd540ce47c168d124517cf}{CHAN\+\_\+\+REASON\+\_\+\+MAX}}\mbox{]}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a2539e648c80009cca7f2d5c90a422245}{channel\+Change\+List\+Size}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a4d1355f2f8b80e2dedd9f634626d8c57}{acs\+Boot\+Channel}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a78ad8d7bdb601a32652e3eab9cb60246}{channel\+Change\+List}}
+\item 
+\mbox{\hyperlink{wld_8h_ab54ec320bf19b0439ad03048b148deb5}{wld\+\_\+rad\+\_\+bw\+Select\+Mode\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_ae9e66b4e6cec1a7e80ed29f81a913713}{auto\+Bw\+Select\+Mode}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a8805bf4ac6fd21e67e421881e49010bc}{obss\+Coexistence\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_aab3ec957b56e18d5a0f6cae5ffd86d72}{obss\+Coexistence\+Active}}
+\item 
+swl\+\_\+operating\+Class\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a0c18be72c4d41283c2aa9cbd5b1d78aa}{operating\+Class}}
+\item 
+\mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\+\_\+channel\+\_\+extension\+Pos\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_a43e4831cc8fa7d35ab649d0ce342dd64}{extension\+Channel}}
+\item 
+swl\+\_\+guardinterval\+\_\+e \mbox{\hyperlink{structWLD__RADIO_a1325e7b814a72710f36293b94ffb7944}{guard\+Interval}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_ab9187b99335dee14d887fe2a9da303f7}{MCS}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_af10db5c4d629e37eced27a95015c7d8a}{transmit\+Power\+Supported}} \mbox{[}64\mbox{]}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a54bc113e06956a5dfc341d7fdb67faa6}{transmit\+Power}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_aa896f6c856aa232fcaed4e266c6e9bad}{drv\+Power\+Val}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_af95b002affa1abf76da1ca5aa73ef8aa}{act\+Antenna\+Ctrl}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a73002bf179d8cba246c86b0467b369ad}{rx\+Chain\+Ctrl}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a320540579d405af964e0e570f3a5ba6e}{tx\+Chain\+Ctrl}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a4abdf89bdbbc2dcb55d79e3f489b5df3}{retry\+Limit}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a50c19fc5b7ec24f39ed87f01bff16431}{long\+Retry\+Limit}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ae41dcb4c98cee35c697251ecdea21f6e}{twt\+Enable}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_aa553fa4b88c5a0075930fa7fd1f7daa4}{IEEE80211h\+Supported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a48b0a069a427c128cf96922786dce1e4}{IEEE80211k\+Supported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ab872e0b18a5054fadc7f424122c4745b}{IEEE80211r\+Supported}}
+\item 
+\mbox{\hyperlink{wld_8h_aebc935100d8731bf4c4af1e4abc0ab1d}{wld\+\_\+multiap\+\_\+type\+\_\+m}} \mbox{\hyperlink{structWLD__RADIO_a7d15c981c8ccb1ae36c88384d11e8d57}{m\+\_\+multi\+APTypes\+Supported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a3c832a800071f859a22d3bfb5b9ab3d3}{set\+Radio80211h\+Enable}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a8d9912c0cdb9d12f5374861b71523a96}{regulatory\+Domain\+Idx}}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_a90ea4401949482085ab25eec96bf857f}{regulatory\+Domain}} \mbox{[}8\mbox{]}
+\item 
+\mbox{\hyperlink{structwld__cfg11ax__t}{wld\+\_\+cfg11ax\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_aa84fe6059701c582b198bc8db44cdac2}{cfg11ax}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a53e12658222abd2b075e9e2bac38bbd8}{implicit\+Beam\+Forming\+Supported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a994402c01f9d56a3cd78187a9a9bef9a}{implicit\+Beam\+Forming\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a903a9f1d239512f5dc5ac959c681265c}{explicit\+Beam\+Forming\+Supported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ae13c1c4c2b4c296b125fe352fe19839f}{explicit\+Beam\+Forming\+Enabled}}
+\item 
+swl\+\_\+80211\+\_\+ht\+Cap\+Info\+\_\+m \mbox{\hyperlink{structWLD__RADIO_aca85c9e61f76673c5b49e1dd7d16f2e7}{ht\+Capabilities}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_ab13cbed6d3a44daa5d2cfe8cad77347c}{ht\+Mcs\+Set}} \mbox{[}SWL\+\_\+80211\+\_\+\+MCS\+\_\+\+SET\+\_\+\+LEN\mbox{]}
+\item 
+swl\+\_\+80211\+\_\+vht\+Cap\+Info\+\_\+m \mbox{\hyperlink{structWLD__RADIO_a3d2985cff1d8d1cf4e2650f1b9d62442}{vht\+Capabilities}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_ac3d3a19fae731b93c211a8d0666e6c61}{vht\+Mcs\+Nss\+Set}} \mbox{[}SWL\+\_\+80211\+\_\+\+VHT\+\_\+\+MCS\+\_\+\+NSS\+\_\+\+SIZE\mbox{]}
+\item 
+swl\+\_\+80211\+\_\+hecap\+\_\+mac\+Cap\+Info\+\_\+t \mbox{\hyperlink{structWLD__RADIO_aebad541bf5b61a00a39f4d4f00af117e}{he\+Mac\+Capabilities}}
+\item 
+swl\+\_\+80211\+\_\+hecap\+\_\+phy\+Cap\+Info\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a2a0c6e5a583fdc37a24b5498766ebb35}{he\+Phy\+Capabilities}}
+\item 
+swl\+\_\+80211\+\_\+hecap\+\_\+\+MCSCap\+\_\+t \mbox{\hyperlink{structWLD__RADIO_adc8a3a278f0be9d83e31bbc493b80d6f}{he\+Mcs\+Caps}} \mbox{[}SWL\+\_\+80211\+\_\+\+HECAP\+\_\+\+MCS\+\_\+\+CAP\+\_\+\+ARRAY\+\_\+\+SIZE\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_a0c3023b2e91b1cff9f0d8cb8aed8b99a}{wld\+\_\+rifs\+\_\+mode\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_a98726144a82f03b7f5dfe6233a3a5839}{RIFSEnabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_aec490f03d16a51eaea37d37f4c22709d}{airtime\+Fairness\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a1d81173baac086190da3658474680839}{int\+Airtime\+Sched\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a6e5d7378da0dc7ee061756d80290d436}{rx\+Power\+Save\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a1a97ab7bad9b63a2f810d35cd1a7ad7f}{rx\+Power\+Save\+Enabled\+When\+Repeater}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a41c73804d9d3782c935b14a756b336f8}{multi\+User\+MIMOSupported}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a73097cc2cd6c3ce4d3c7ca4d24247cba}{multi\+User\+MIMOEnabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a78b40fb77f19dbc27ecc5a47dfbcd6e4}{kick\+Roam\+Sta\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_abe0de4398853fbb8894de1c19b659c55}{ofdma\+Enable}}
+\item 
+\mbox{\hyperlink{wld_8h_a49eb8f26a23eeec8cf267fa935f0c0b2}{wld\+\_\+he\+\_\+cap\+\_\+m}} \mbox{\hyperlink{structWLD__RADIO_a4bbb54572a1db404dae62fe636f57f47}{he\+Caps\+Supported}}
+\item 
+\mbox{\hyperlink{wld_8h_a49eb8f26a23eeec8cf267fa935f0c0b2}{wld\+\_\+he\+\_\+cap\+\_\+m}} \mbox{\hyperlink{structWLD__RADIO_a2ebc3ec2849c09eef66f54ebe9eed41f}{he\+Caps\+Enabled}}
+\item 
+\mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\+\_\+rad\+\_\+bf\+\_\+cap\+\_\+m}} \mbox{\hyperlink{structWLD__RADIO_ae5231d3cb632b3fd170c700d8fc4d194}{bf\+Caps\+Supported}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+\mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\+\_\+rad\+\_\+bf\+\_\+cap\+\_\+m}} \mbox{\hyperlink{structWLD__RADIO_ae219a2781deb5f15942ad42c1b679704}{bf\+Caps\+Enabled}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a8a776a479cf61efdfe12f7d44b887e7e}{nr\+Antenna}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+int32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a8f2bbcad27dd982ab6b0c43ce8477e3b}{nr\+Active\+Antenna}} \mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structWLD__RADIO_aed4315e8845d1d1da4b5fa8a6b3ff81b}{rts\+Threshold}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_ad6f7358ce3e160dae2040adb5b166187}{beacon\+Period}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_abe4a3b203a67bc13ad223317188df3a5}{dtim\+Period}}
+\item 
+\mbox{\hyperlink{wld_8h_aa2b1533d737983639064a3a0dcd99ca0}{wld\+\_\+preamble\+\_\+type\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_ab8a3f220394218854880ca5714a803e7}{preamble\+Type}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ae86c7807bedbd61fa354b52a0c4d9355}{packet\+Aggregation\+Enable}}
+\item 
+unsigned int \mbox{\hyperlink{structWLD__RADIO_aa6789a36620879b92dd7fe8bf4cdca2c}{DFSChannel\+Change\+Event\+Counter}}
+\item 
+swl\+\_\+time\+Real\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a99bb4c0444d200b6e3d6e2445591afea}{DFSChannel\+Change\+Event\+Timestamp}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a3e671392f14d8ff0e0f58a62afd9cec1}{dfs\+File\+Log\+Limit}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a679ae53dfb07f046337ff7a2d7924406}{dfs\+Event\+Log\+Limit}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a4c5306d4509037ba3f78da36174f0edd}{dfs\+Event\+Nbr}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{structWLD__RADIO_afa8801f7bf1086f6964a4371ef53039d}{dfs\+File\+Event\+Nbr}}
+\item 
+unsigned long \mbox{\hyperlink{structWLD__RADIO_aa103b5de21c16f41d2af0864ff5123a2}{drv\+\_\+caps}}
+\item 
+\mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} \mbox{\hyperlink{structWLD__RADIO_ae78130b2ea4cce1e4ac8857baf20fd7f}{stats}}
+\item 
+swla\+\_\+dm\+\_\+obj\+Action\+Read\+Ctx\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a1291fffdacc59f16d4c588d4cde4f24b}{on\+Read\+Stats\+Ctx}}
+\item 
+\mbox{\hyperlink{structT__CONST__WPS}{T\+\_\+\+CONST\+\_\+\+WPS}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_ad74cff79a1660892be4928be7fc28abb}{wps\+Const}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_af27efb861725d6d826c82e0084a7c300}{current\+Stations}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_aeec31e1e8024b2c1bbffe2cd37362e6f}{current\+Video\+Stations}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_ad238789830b9903230fc658a37b4cfb7}{max\+Stations}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a003b665c6262393d8fab825e38fc199a}{max\+Nr\+Hw\+Bss}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a38d2b92ea81ac1b563354ad9b48aa455}{max\+Nr\+Hw\+Sta}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structWLD__RADIO_aedba9c0901259800c79e8d34e5f0271a}{ll\+AP}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a605f477c1b992c525d87bc9bb636e248}{ll\+End\+Points}}
+\item 
+\mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192f}{FSM\+\_\+\+STATE}} \mbox{\hyperlink{structWLD__RADIO_aebf99868dd7db6472311cf37fecd2fc8}{fsm\+\_\+radio\+\_\+st}}
+\item 
+\mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} \mbox{\hyperlink{structWLD__RADIO_a0e65d83decd7731754b65b199d1f8356}{fsm\+Rad}}
+\item 
+\mbox{\hyperlink{structwld__fsmStats__t}{wld\+\_\+fsm\+Stats\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a5ab12638e62089b116b82ab048818034}{fsm\+Stats}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_adb46ca580c5a67dc69ea723f33299acc}{fsm\+TO}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_aedb0f828b120106f774aa5f36d982ed4}{station\+Monitor\+Enabled}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ad2395c89da2e4acac87f3d4409f27bee}{station\+Monitor\+Off\+Channel\+Supported}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a1b23cfb87640994462eb0bd954c60e8d}{na\+Stations}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structWLD__RADIO_adbadf832e10bb00521f7282dc0703a18}{monitor\+Dev}}
+\item 
+\mbox{\hyperlink{structT__ScanState}{T\+\_\+\+Scan\+State}} \mbox{\hyperlink{structWLD__RADIO_afd761adfb232fc6d0bf62225fd371581}{scan\+State}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a0a680a013133f19fe8515d5cf42bdffb}{enable}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a5f30b5585d49d7a8f92c592110682e01}{wl\+Radio\+\_\+\+SK}}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_ab25a16fb9a530380a45ea1eb0ee0b86d}{Name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_a808ad901ca8a18f5387c35f4338563a3}{instance\+Name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_a9d8aefa808764860d8d4e4d8aa7a77b8}{p\+FA}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a4031a97fa6e48f8cbda011cc6bc32e2a}{call\+\_\+id}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a2cd144c3166f5d5441e8ec63119c21d3}{block\+Commit}}
+\item 
+swl\+\_\+time\+Mono\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a960410f774a92b3b2230fc26f62b805a}{block\+Start}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a0c1f9337feaddfcd649e6906efa02234}{ignore\+WPSEvents}}
+\item 
+amxc\+\_\+llist\+\_\+it\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a21fad598176d825b125f43b79ddf41ae}{it}}
+\item 
+amxd\+\_\+object\+\_\+t $\ast$ \mbox{\hyperlink{structWLD__RADIO_a77c978c0b5f9dd8c1150a240e2f45f24}{p\+Bus}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_ae67d0b519feecce2fcf52c4b55118dc6}{has\+Dm\+Ready}}
+\item 
+void $\ast$ \mbox{\hyperlink{structWLD__RADIO_a659dcab99c5e486673bc10ad61363416}{vendor\+Data}}
+\item 
+const \mbox{\hyperlink{structT__Radio__Capability}{T\+\_\+\+Radio\+\_\+\+Capability}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_ad1c1a05c8013576990446cf6b8c5b0c0}{capabilities}}
+\item 
+\mbox{\hyperlink{structT__Radio__Cap__Item}{T\+\_\+\+Radio\+\_\+\+Cap\+\_\+\+Item}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_ae13e7ae061720353c0a43237d394f4e6}{cap\+\_\+status}}
+\item 
+char $\ast$ \mbox{\hyperlink{structWLD__RADIO_a7ccd4067d55a389ee390864f53587a33}{supp\+Drv\+Caps}} \mbox{[}SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+\+MAX\mbox{]}
+\item 
+\mbox{\hyperlink{wld__bgdfs_8h_ad3fbfbd3712216387c508b2995f40f8d}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_aa846d211998db3d480ec97e14adfc80b}{bgdfs\+\_\+config}}
+\item 
+\mbox{\hyperlink{structwld__rad__bgdfs__stats__t}{wld\+\_\+rad\+\_\+bgdfs\+\_\+stats\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a6a601c32c4e39f4d79da6793d213520f}{bgdfs\+\_\+stats}}
+\item 
+\mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} \mbox{\hyperlink{structWLD__RADIO_a7f876bae04b8511638ec9644f59cf855}{detailed\+State}}
+\item 
+\mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} \mbox{\hyperlink{structWLD__RADIO_ab3fc196aaf32c3719db9b48f4801849a}{detailed\+State\+Prev}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a6dc2f3ea7de4a398a458a5017adacd49}{nr\+Capabilities}}
+\item 
+\mbox{\hyperlink{wld_8h_a14665fd4c9dcfc773176110cf91642be}{wld\+\_\+feature\+\_\+status}} \mbox{\hyperlink{structWLD__RADIO_aee7a8d5df0ac822187efc2dfedb5d59c}{features}} \mbox{[}\mbox{\hyperlink{wld_8h_acfdb3b525a1805b7073155f92834231aa646c1c33c755600eb5e5016b5e866072}{WLD\+\_\+\+FEATURE\+\_\+\+MAX}}\mbox{]}
+\item 
+\mbox{\hyperlink{structT__EventCounterList}{T\+\_\+\+Event\+Counter\+List}} \mbox{\hyperlink{structWLD__RADIO_a76f9dfd055e782279de0b7d699a2d630}{vendor\+Counters}}
+\item 
+\mbox{\hyperlink{structT__EventCounter}{T\+\_\+\+Event\+Counter}} \mbox{\hyperlink{structWLD__RADIO_a74f39ed9198cb2f20c0ef2d265ca3df5}{counter\+List}} \mbox{[}\mbox{\hyperlink{wld_8h_ac3be4c4ab512ebebd75426057d171f4fa9b779614562912e78309600ce976b95e}{WLD\+\_\+\+RAD\+\_\+\+EV\+\_\+\+MAX}}\mbox{]}
+\item 
+\mbox{\hyperlink{structT__EventCounterList}{T\+\_\+\+Event\+Counter\+List}} \mbox{\hyperlink{structWLD__RADIO_a810148a252e6ef0c3ebcab6c70ed4c18}{generic\+Counters}}
+\item 
+int \mbox{\hyperlink{structWLD__RADIO_a4fe2b2acf8404eb40d7f44b44c3435ee}{dbg\+Enable}}
+\item 
+char $\ast$ \mbox{\hyperlink{structWLD__RADIO_aeae9274d7cf97209cebb3af236b20d4b}{dbg\+Output}}
+\item 
+\mbox{\hyperlink{structT__RssiEventing}{T\+\_\+\+Rssi\+Eventing}} \mbox{\hyperlink{structWLD__RADIO_a1f7235b8ecda16b93331d8ece77ee4c6}{na\+Sta\+Rssi\+Monitor}}
+\item 
+\mbox{\hyperlink{structwld__rad__muMimoInfo__t}{wld\+\_\+rad\+\_\+mu\+Mimo\+Info\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a3215599e4724fe1c2232259af9bb1641}{rad\+Mu\+Mimo\+Info}}
+\item 
+\mbox{\hyperlink{structwld__driverCfg__t}{wld\+\_\+driver\+Cfg\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a73fe9a29ab2c463164f6b4b70a34515a}{driver\+Cfg}}
+\item 
+\mbox{\hyperlink{structwld__macCfg__t}{wld\+\_\+mac\+Cfg\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_ae06f60df2ce59bbc1ff409545e9b5280}{mac\+Cfg}}
+\item 
+\mbox{\hyperlink{structwld__rad__delayMgr__t}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a96d6eb67f59b862280a6058a78d3a953}{delay\+Mgr}}
+\item 
+\mbox{\hyperlink{structwld__autoCommitRadData__t}{wld\+\_\+auto\+Commit\+Rad\+Data\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a377a0dc6bd083c164493bbe4e547f16e}{auto\+Commit\+Data}}
+\item 
+\mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_a94c51704203a900b1ea40c6863c30e8d}{nl80211\+Listener}}
+\item 
+\mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_a275699f1f6fddd418a8388558d317f11}{hostapd}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structWLD__RADIO_ad5a51dc4955fdbd6e9781071b2cafaf8}{wiphy}}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_af8126c9a9e9df6677587f3c2681540c8}{wiphy\+Name}} \mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}
+\item 
+\mbox{\hyperlink{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info\+\_\+t}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_a443a7d2f4d80713aee5aac1e3151ec25}{p\+Last\+Survey}}
+\item 
+\mbox{\hyperlink{wld_8h_a2b75942a9bba4feebedc71866c2cc09f}{wld\+\_\+air\+Stats\+\_\+t}} $\ast$ \mbox{\hyperlink{structWLD__RADIO_a777c983dc521dfd30c5b663aab8adbfe}{p\+Last\+Air\+Stats}}
+\item 
+bool \mbox{\hyperlink{structWLD__RADIO_a00068ecd4ca82ed5967e6b7c5b6faa85}{csi\+Enable}}
+\item 
+amxc\+\_\+llist\+\_\+t \mbox{\hyperlink{structWLD__RADIO_a29340591c5f83381de10a7601c368227}{csi\+Client\+List}}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_ae9458534bf979c7054ee891e854faab1}{firmware\+Version}} \mbox{[}64\mbox{]}
+\item 
+char \mbox{\hyperlink{structWLD__RADIO_a9ce693c0e057d26aeb34ad8304a37adb}{chip\+Vendor\+Name}} \mbox{[}64\mbox{]}
+\item 
+\mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_aad83ae658ae1c29277b75c467e402815}{ext\+Data\+List}}
+\item 
+\mbox{\hyperlink{wld_8h_a65404b275fe69e944938418f774d719c}{wld\+\_\+radio\+Cap\+\_\+t}} \mbox{\hyperlink{structWLD__RADIO_a52c8f62d2934521b46099b9c5818eedf}{cap}}
+\item 
+swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m \mbox{\hyperlink{structWLD__RADIO_aeb37323bfb86ca386e58fe454de5a887}{supported\+Data\+Transmit\+Rates}}
+\item 
+swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m \mbox{\hyperlink{structWLD__RADIO_a35d9b40203eadbb81f06494018c25dc3}{operational\+Data\+Transmit\+Rates}}
+\item 
+swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m \mbox{\hyperlink{structWLD__RADIO_a83863962562f8c51ce7b22e42b9afb5e}{basic\+Data\+Transmit\+Rates}}
+\item 
+void $\ast$ \mbox{\hyperlink{structWLD__RADIO_a30b6c442a84f88ddefe277861393c896}{zwdfs\+Data}}
+\item 
+\mbox{\hyperlink{wld_8h_adaeef87c5920a47421c74814e7835b59}{wld\+\_\+mbssid\+Advertisement\+\_\+mode\+\_\+m}} \mbox{\hyperlink{structWLD__RADIO_a33e270a17dfc46be123c80d635f2eb96}{supp\+Mbssid\+Ads\+Modes}}
+\item 
+\mbox{\hyperlink{wld_8h_ad8272a16ef547c27a843b5009801aa1e}{wld\+\_\+mbssid\+Advertisement\+\_\+mode\+\_\+e}} \mbox{\hyperlink{structWLD__RADIO_ae8bec5babcd5d1bc2112b6a99bd1728e}{mbssid\+Ads\+Mode}}
+\item 
+amxp\+\_\+timer\+\_\+t $\ast$ \mbox{\hyperlink{structWLD__RADIO_a3b9191c00e2c460f46c05d20ddc95bf9}{set\+Max\+Num\+Sta\+Timer}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structWLD__RADIO_a4d1355f2f8b80e2dedd9f634626d8c57}\label{structWLD__RADIO_a4d1355f2f8b80e2dedd9f634626d8c57}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!acsBootChannel@{acsBootChannel}}
+\index{acsBootChannel@{acsBootChannel}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{acsBootChannel}{acsBootChannel}}
+{\footnotesize\ttfamily int32\+\_\+t WLD\+\_\+\+RADIO\+::acs\+Boot\+Channel}
+
+\mbox{\Hypertarget{structWLD__RADIO_af95b002affa1abf76da1ca5aa73ef8aa}\label{structWLD__RADIO_af95b002affa1abf76da1ca5aa73ef8aa}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!actAntennaCtrl@{actAntennaCtrl}}
+\index{actAntennaCtrl@{actAntennaCtrl}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{actAntennaCtrl}{actAntennaCtrl}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::act\+Antenna\+Ctrl}
+
+\mbox{\Hypertarget{structWLD__RADIO_aec490f03d16a51eaea37d37f4c22709d}\label{structWLD__RADIO_aec490f03d16a51eaea37d37f4c22709d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!airtimeFairnessEnabled@{airtimeFairnessEnabled}}
+\index{airtimeFairnessEnabled@{airtimeFairnessEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{airtimeFairnessEnabled}{airtimeFairnessEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::airtime\+Fairness\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae9e66b4e6cec1a7e80ed29f81a913713}\label{structWLD__RADIO_ae9e66b4e6cec1a7e80ed29f81a913713}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!autoBwSelectMode@{autoBwSelectMode}}
+\index{autoBwSelectMode@{autoBwSelectMode}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{autoBwSelectMode}{autoBwSelectMode}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_ab54ec320bf19b0439ad03048b148deb5}{wld\+\_\+rad\+\_\+bw\+Select\+Mode\+\_\+e}} WLD\+\_\+\+RADIO\+::auto\+Bw\+Select\+Mode}
+
+\mbox{\Hypertarget{structWLD__RADIO_a20edd0fd17085a51a36229f737b19ce0}\label{structWLD__RADIO_a20edd0fd17085a51a36229f737b19ce0}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!autoChannelEnable@{autoChannelEnable}}
+\index{autoChannelEnable@{autoChannelEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{autoChannelEnable}{autoChannelEnable}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::auto\+Channel\+Enable}
+
+Indicates whether autochannel is enabled internally for When set, we set channel on 0. \mbox{\Hypertarget{structWLD__RADIO_a998eb4aac26a8a6508e2bf37ba3ada9a}\label{structWLD__RADIO_a998eb4aac26a8a6508e2bf37ba3ada9a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!autoChannelRefreshPeriod@{autoChannelRefreshPeriod}}
+\index{autoChannelRefreshPeriod@{autoChannelRefreshPeriod}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{autoChannelRefreshPeriod}{autoChannelRefreshPeriod}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::auto\+Channel\+Refresh\+Period}
+
+\mbox{\Hypertarget{structWLD__RADIO_afff1147722680eaa001adf49378c3711}\label{structWLD__RADIO_afff1147722680eaa001adf49378c3711}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!autoChannelSetByUser@{autoChannelSetByUser}}
+\index{autoChannelSetByUser@{autoChannelSetByUser}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{autoChannelSetByUser}{autoChannelSetByUser}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::auto\+Channel\+Set\+By\+User}
+
+\mbox{\Hypertarget{structWLD__RADIO_a5bc3c85726d60352affc7acb9c1e0790}\label{structWLD__RADIO_a5bc3c85726d60352affc7acb9c1e0790}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!autoChannelSupported@{autoChannelSupported}}
+\index{autoChannelSupported@{autoChannelSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{autoChannelSupported}{autoChannelSupported}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::auto\+Channel\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_a377a0dc6bd083c164493bbe4e547f16e}\label{structWLD__RADIO_a377a0dc6bd083c164493bbe4e547f16e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!autoCommitData@{autoCommitData}}
+\index{autoCommitData@{autoCommitData}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{autoCommitData}{autoCommitData}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__autoCommitRadData__t}{wld\+\_\+auto\+Commit\+Rad\+Data\+\_\+t}} WLD\+\_\+\+RADIO\+::auto\+Commit\+Data}
+
+\mbox{\Hypertarget{structWLD__RADIO_a83863962562f8c51ce7b22e42b9afb5e}\label{structWLD__RADIO_a83863962562f8c51ce7b22e42b9afb5e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!basicDataTransmitRates@{basicDataTransmitRates}}
+\index{basicDataTransmitRates@{basicDataTransmitRates}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{basicDataTransmitRates}{basicDataTransmitRates}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m WLD\+\_\+\+RADIO\+::basic\+Data\+Transmit\+Rates}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad6f7358ce3e160dae2040adb5b166187}\label{structWLD__RADIO_ad6f7358ce3e160dae2040adb5b166187}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!beaconPeriod@{beaconPeriod}}
+\index{beaconPeriod@{beaconPeriod}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{beaconPeriod}{beaconPeriod}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::beacon\+Period}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae219a2781deb5f15942ad42c1b679704}\label{structWLD__RADIO_ae219a2781deb5f15942ad42c1b679704}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!bfCapsEnabled@{bfCapsEnabled}}
+\index{bfCapsEnabled@{bfCapsEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{bfCapsEnabled}{bfCapsEnabled}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\+\_\+rad\+\_\+bf\+\_\+cap\+\_\+m}} WLD\+\_\+\+RADIO\+::bf\+Caps\+Enabled\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae5231d3cb632b3fd170c700d8fc4d194}\label{structWLD__RADIO_ae5231d3cb632b3fd170c700d8fc4d194}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!bfCapsSupported@{bfCapsSupported}}
+\index{bfCapsSupported@{bfCapsSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{bfCapsSupported}{bfCapsSupported}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a1beee5d2bafd3bac5238081778c172a4}{wld\+\_\+rad\+\_\+bf\+\_\+cap\+\_\+m}} WLD\+\_\+\+RADIO\+::bf\+Caps\+Supported\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa846d211998db3d480ec97e14adfc80b}\label{structWLD__RADIO_aa846d211998db3d480ec97e14adfc80b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!bgdfs\_config@{bgdfs\_config}}
+\index{bgdfs\_config@{bgdfs\_config}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{bgdfs\_config}{bgdfs\_config}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__bgdfs_8h_ad3fbfbd3712216387c508b2995f40f8d}{wld\+\_\+rad\+\_\+bgdfs\+\_\+config\+\_\+t}} WLD\+\_\+\+RADIO\+::bgdfs\+\_\+config}
+
+\mbox{\Hypertarget{structWLD__RADIO_a6a601c32c4e39f4d79da6793d213520f}\label{structWLD__RADIO_a6a601c32c4e39f4d79da6793d213520f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!bgdfs\_stats@{bgdfs\_stats}}
+\index{bgdfs\_stats@{bgdfs\_stats}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{bgdfs\_stats}{bgdfs\_stats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__rad__bgdfs__stats__t}{wld\+\_\+rad\+\_\+bgdfs\+\_\+stats\+\_\+t}} WLD\+\_\+\+RADIO\+::bgdfs\+\_\+stats}
+
+\mbox{\Hypertarget{structWLD__RADIO_a2cd144c3166f5d5441e8ec63119c21d3}\label{structWLD__RADIO_a2cd144c3166f5d5441e8ec63119c21d3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!blockCommit@{blockCommit}}
+\index{blockCommit@{blockCommit}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{blockCommit}{blockCommit}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::block\+Commit}
+
+\mbox{\Hypertarget{structWLD__RADIO_a960410f774a92b3b2230fc26f62b805a}\label{structWLD__RADIO_a960410f774a92b3b2230fc26f62b805a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!blockStart@{blockStart}}
+\index{blockStart@{blockStart}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{blockStart}{blockStart}}
+{\footnotesize\ttfamily swl\+\_\+time\+Mono\+\_\+t WLD\+\_\+\+RADIO\+::block\+Start}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4031a97fa6e48f8cbda011cc6bc32e2a}\label{structWLD__RADIO_a4031a97fa6e48f8cbda011cc6bc32e2a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!call\_id@{call\_id}}
+\index{call\_id@{call\_id}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{call\_id}{call\_id}}
+{\footnotesize\ttfamily uint64\+\_\+t WLD\+\_\+\+RADIO\+::call\+\_\+id}
+
+\mbox{\Hypertarget{structWLD__RADIO_a18671a74451e5a9b3b1aba0cc7ca2d79}\label{structWLD__RADIO_a18671a74451e5a9b3b1aba0cc7ca2d79}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!callIdReqChanspec@{callIdReqChanspec}}
+\index{callIdReqChanspec@{callIdReqChanspec}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{callIdReqChanspec}{callIdReqChanspec}}
+{\footnotesize\ttfamily swl\+\_\+function\+\_\+deferred\+Info\+\_\+t WLD\+\_\+\+RADIO\+::call\+Id\+Req\+Chanspec}
+
+\mbox{\Hypertarget{structWLD__RADIO_a52c8f62d2934521b46099b9c5818eedf}\label{structWLD__RADIO_a52c8f62d2934521b46099b9c5818eedf}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!cap@{cap}}
+\index{cap@{cap}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{cap}{cap}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a65404b275fe69e944938418f774d719c}{wld\+\_\+radio\+Cap\+\_\+t}} WLD\+\_\+\+RADIO\+::cap}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae13e7ae061720353c0a43237d394f4e6}\label{structWLD__RADIO_ae13e7ae061720353c0a43237d394f4e6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!cap\_status@{cap\_status}}
+\index{cap\_status@{cap\_status}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{cap\_status}{cap\_status}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__Radio__Cap__Item}{T\+\_\+\+Radio\+\_\+\+Cap\+\_\+\+Item}}$\ast$ WLD\+\_\+\+RADIO\+::cap\+\_\+status}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad1c1a05c8013576990446cf6b8c5b0c0}\label{structWLD__RADIO_ad1c1a05c8013576990446cf6b8c5b0c0}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!capabilities@{capabilities}}
+\index{capabilities@{capabilities}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{capabilities}{capabilities}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structT__Radio__Capability}{T\+\_\+\+Radio\+\_\+\+Capability}}$\ast$ WLD\+\_\+\+RADIO\+::capabilities}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa84fe6059701c582b198bc8db44cdac2}\label{structWLD__RADIO_aa84fe6059701c582b198bc8db44cdac2}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!cfg11ax@{cfg11ax}}
+\index{cfg11ax@{cfg11ax}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{cfg11ax}{cfg11ax}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__cfg11ax__t}{wld\+\_\+cfg11ax\+\_\+t}} WLD\+\_\+\+RADIO\+::cfg11ax}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa8584ee67898300f99bab1fffe37f7fb}\label{structWLD__RADIO_aa8584ee67898300f99bab1fffe37f7fb}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!changeInfo@{changeInfo}}
+\index{changeInfo@{changeInfo}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{changeInfo}{changeInfo}}
+{\footnotesize\ttfamily wld\+\_\+status\+\_\+change\+Info\+\_\+t WLD\+\_\+\+RADIO\+::change\+Info}
+
+\mbox{\Hypertarget{structWLD__RADIO_a7a691a3180e459dba20f90118669d7d3}\label{structWLD__RADIO_a7a691a3180e459dba20f90118669d7d3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channel@{channel}}
+\index{channel@{channel}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channel}{channel}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t WLD\+\_\+\+RADIO\+::channel}
+
+\mbox{\Hypertarget{structWLD__RADIO_acc91e59ec186297e6cb1be680cbdc074}\label{structWLD__RADIO_acc91e59ec186297e6cb1be680cbdc074}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelBandwidthChangeReason@{channelBandwidthChangeReason}}
+\index{channelBandwidthChangeReason@{channelBandwidthChangeReason}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelBandwidthChangeReason}{channelBandwidthChangeReason}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}} WLD\+\_\+\+RADIO\+::channel\+Bandwidth\+Change\+Reason}
+
+\mbox{\Hypertarget{structWLD__RADIO_a73bdbc46bc916a3a8f89aa9a73ce1e42}\label{structWLD__RADIO_a73bdbc46bc916a3a8f89aa9a73ce1e42}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelChangeCounters@{channelChangeCounters}}
+\index{channelChangeCounters@{channelChangeCounters}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelChangeCounters}{channelChangeCounters}}
+{\footnotesize\ttfamily uint16\+\_\+t WLD\+\_\+\+RADIO\+::channel\+Change\+Counters\mbox{[}\mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dcaa1c4696179dd540ce47c168d124517cf}{CHAN\+\_\+\+REASON\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a78ad8d7bdb601a32652e3eab9cb60246}\label{structWLD__RADIO_a78ad8d7bdb601a32652e3eab9cb60246}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelChangeList@{channelChangeList}}
+\index{channelChangeList@{channelChangeList}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelChangeList}{channelChangeList}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t WLD\+\_\+\+RADIO\+::channel\+Change\+List}
+
+\mbox{\Hypertarget{structWLD__RADIO_a2539e648c80009cca7f2d5c90a422245}\label{structWLD__RADIO_a2539e648c80009cca7f2d5c90a422245}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelChangeListSize@{channelChangeListSize}}
+\index{channelChangeListSize@{channelChangeListSize}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelChangeListSize}{channelChangeListSize}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::channel\+Change\+List\+Size}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab19ccdb0d27b0a0602727a1e7fdd70d6}\label{structWLD__RADIO_ab19ccdb0d27b0a0602727a1e7fdd70d6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelChangeReason@{channelChangeReason}}
+\index{channelChangeReason@{channelChangeReason}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelChangeReason}{channelChangeReason}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a1d214854c365f1358e624dafeec285dc}{wld\+\_\+channel\+Change\+Reason\+\_\+e}} WLD\+\_\+\+RADIO\+::channel\+Change\+Reason}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa741a4d5d8aff4d3a9ea7334b9039216}\label{structWLD__RADIO_aa741a4d5d8aff4d3a9ea7334b9039216}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelShowing@{channelShowing}}
+\index{channelShowing@{channelShowing}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelShowing}{channelShowing}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a0a179a5d94cdc5631b0ecdb67a401819}{wld\+\_\+rad\+\_\+channel\+Internal\+Status\+\_\+e}} WLD\+\_\+\+RADIO\+::channel\+Showing}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8ceb47dea4d820707b8d59080d347d94}\label{structWLD__RADIO_a8ceb47dea4d820707b8d59080d347d94}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!channelsInUse@{channelsInUse}}
+\index{channelsInUse@{channelsInUse}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{channelsInUse}{channelsInUse}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::channels\+In\+Use\mbox{[}64\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a9ce693c0e057d26aeb34ad8304a37adb}\label{structWLD__RADIO_a9ce693c0e057d26aeb34ad8304a37adb}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!chipVendorName@{chipVendorName}}
+\index{chipVendorName@{chipVendorName}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{chipVendorName}{chipVendorName}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::chip\+Vendor\+Name\mbox{[}64\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a74f39ed9198cb2f20c0ef2d265ca3df5}\label{structWLD__RADIO_a74f39ed9198cb2f20c0ef2d265ca3df5}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!counterList@{counterList}}
+\index{counterList@{counterList}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{counterList}{counterList}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__EventCounter}{T\+\_\+\+Event\+Counter}} WLD\+\_\+\+RADIO\+::counter\+List\mbox{[}\mbox{\hyperlink{wld_8h_ac3be4c4ab512ebebd75426057d171f4fa9b779614562912e78309600ce976b95e}{WLD\+\_\+\+RAD\+\_\+\+EV\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a29340591c5f83381de10a7601c368227}\label{structWLD__RADIO_a29340591c5f83381de10a7601c368227}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!csiClientList@{csiClientList}}
+\index{csiClientList@{csiClientList}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{csiClientList}{csiClientList}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t WLD\+\_\+\+RADIO\+::csi\+Client\+List}
+
+\mbox{\Hypertarget{structWLD__RADIO_a00068ecd4ca82ed5967e6b7c5b6faa85}\label{structWLD__RADIO_a00068ecd4ca82ed5967e6b7c5b6faa85}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!csiEnable@{csiEnable}}
+\index{csiEnable@{csiEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{csiEnable}{csiEnable}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::csi\+Enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_a22d3a3a8b9c849b4c4ef7161b7d51374}\label{structWLD__RADIO_a22d3a3a8b9c849b4c4ef7161b7d51374}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!currentChanspec@{currentChanspec}}
+\index{currentChanspec@{currentChanspec}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{currentChanspec}{currentChanspec}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__rad__detailedChanState__t}{wld\+\_\+rad\+\_\+detailed\+Chan\+State\+\_\+t}} WLD\+\_\+\+RADIO\+::current\+Chanspec}
+
+\mbox{\Hypertarget{structWLD__RADIO_af27efb861725d6d826c82e0084a7c300}\label{structWLD__RADIO_af27efb861725d6d826c82e0084a7c300}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!currentStations@{currentStations}}
+\index{currentStations@{currentStations}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{currentStations}{currentStations}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::current\+Stations}
+
+\mbox{\Hypertarget{structWLD__RADIO_aeec31e1e8024b2c1bbffe2cd37362e6f}\label{structWLD__RADIO_aeec31e1e8024b2c1bbffe2cd37362e6f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!currentVideoStations@{currentVideoStations}}
+\index{currentVideoStations@{currentVideoStations}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{currentVideoStations}{currentVideoStations}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::current\+Video\+Stations}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4fe2b2acf8404eb40d7f44b44c3435ee}\label{structWLD__RADIO_a4fe2b2acf8404eb40d7f44b44c3435ee}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dbgEnable@{dbgEnable}}
+\index{dbgEnable@{dbgEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dbgEnable}{dbgEnable}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::dbg\+Enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_aeae9274d7cf97209cebb3af236b20d4b}\label{structWLD__RADIO_aeae9274d7cf97209cebb3af236b20d4b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dbgOutput@{dbgOutput}}
+\index{dbgOutput@{dbgOutput}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dbgOutput}{dbgOutput}}
+{\footnotesize\ttfamily char$\ast$ WLD\+\_\+\+RADIO\+::dbg\+Output}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8687d8a8cc96713541c163962543b3c3}\label{structWLD__RADIO_a8687d8a8cc96713541c163962543b3c3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!debug@{debug}}
+\index{debug@{debug}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{debug}{debug}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::debug}
+
+\mbox{\Hypertarget{structWLD__RADIO_a96d6eb67f59b862280a6058a78d3a953}\label{structWLD__RADIO_a96d6eb67f59b862280a6058a78d3a953}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!delayMgr@{delayMgr}}
+\index{delayMgr@{delayMgr}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{delayMgr}{delayMgr}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__rad__delayMgr__t}{wld\+\_\+rad\+\_\+delay\+Mgr\+\_\+t}} WLD\+\_\+\+RADIO\+::delay\+Mgr}
+
+\mbox{\Hypertarget{structWLD__RADIO_a7f876bae04b8511638ec9644f59cf855}\label{structWLD__RADIO_a7f876bae04b8511638ec9644f59cf855}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!detailedState@{detailedState}}
+\index{detailedState@{detailedState}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{detailedState}{detailedState}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} WLD\+\_\+\+RADIO\+::detailed\+State}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab3fc196aaf32c3719db9b48f4801849a}\label{structWLD__RADIO_ab3fc196aaf32c3719db9b48f4801849a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!detailedStatePrev@{detailedStatePrev}}
+\index{detailedStatePrev@{detailedStatePrev}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{detailedStatePrev}{detailedStatePrev}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a3c7d213d17f8a1242f6b97796244c5aa}{chanmgt\+\_\+rad\+\_\+state}} WLD\+\_\+\+RADIO\+::detailed\+State\+Prev}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa6789a36620879b92dd7fe8bf4cdca2c}\label{structWLD__RADIO_aa6789a36620879b92dd7fe8bf4cdca2c}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!DFSChannelChangeEventCounter@{DFSChannelChangeEventCounter}}
+\index{DFSChannelChangeEventCounter@{DFSChannelChangeEventCounter}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{DFSChannelChangeEventCounter}{DFSChannelChangeEventCounter}}
+{\footnotesize\ttfamily unsigned int WLD\+\_\+\+RADIO\+::\+DFSChannel\+Change\+Event\+Counter}
+
+\mbox{\Hypertarget{structWLD__RADIO_a99bb4c0444d200b6e3d6e2445591afea}\label{structWLD__RADIO_a99bb4c0444d200b6e3d6e2445591afea}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!DFSChannelChangeEventTimestamp@{DFSChannelChangeEventTimestamp}}
+\index{DFSChannelChangeEventTimestamp@{DFSChannelChangeEventTimestamp}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{DFSChannelChangeEventTimestamp}{DFSChannelChangeEventTimestamp}}
+{\footnotesize\ttfamily swl\+\_\+time\+Real\+\_\+t WLD\+\_\+\+RADIO\+::\+DFSChannel\+Change\+Event\+Timestamp}
+
+\mbox{\Hypertarget{structWLD__RADIO_a679ae53dfb07f046337ff7a2d7924406}\label{structWLD__RADIO_a679ae53dfb07f046337ff7a2d7924406}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dfsEventLogLimit@{dfsEventLogLimit}}
+\index{dfsEventLogLimit@{dfsEventLogLimit}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dfsEventLogLimit}{dfsEventLogLimit}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::dfs\+Event\+Log\+Limit}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4c5306d4509037ba3f78da36174f0edd}\label{structWLD__RADIO_a4c5306d4509037ba3f78da36174f0edd}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dfsEventNbr@{dfsEventNbr}}
+\index{dfsEventNbr@{dfsEventNbr}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dfsEventNbr}{dfsEventNbr}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::dfs\+Event\+Nbr}
+
+\mbox{\Hypertarget{structWLD__RADIO_afa8801f7bf1086f6964a4371ef53039d}\label{structWLD__RADIO_afa8801f7bf1086f6964a4371ef53039d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dfsFileEventNbr@{dfsFileEventNbr}}
+\index{dfsFileEventNbr@{dfsFileEventNbr}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dfsFileEventNbr}{dfsFileEventNbr}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::dfs\+File\+Event\+Nbr}
+
+\mbox{\Hypertarget{structWLD__RADIO_a3e671392f14d8ff0e0f58a62afd9cec1}\label{structWLD__RADIO_a3e671392f14d8ff0e0f58a62afd9cec1}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dfsFileLogLimit@{dfsFileLogLimit}}
+\index{dfsFileLogLimit@{dfsFileLogLimit}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dfsFileLogLimit}{dfsFileLogLimit}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::dfs\+File\+Log\+Limit}
+
+\mbox{\Hypertarget{structWLD__RADIO_a73fe9a29ab2c463164f6b4b70a34515a}\label{structWLD__RADIO_a73fe9a29ab2c463164f6b4b70a34515a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!driverCfg@{driverCfg}}
+\index{driverCfg@{driverCfg}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{driverCfg}{driverCfg}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__driverCfg__t}{wld\+\_\+driver\+Cfg\+\_\+t}} WLD\+\_\+\+RADIO\+::driver\+Cfg}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa103b5de21c16f41d2af0864ff5123a2}\label{structWLD__RADIO_aa103b5de21c16f41d2af0864ff5123a2}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!drv\_caps@{drv\_caps}}
+\index{drv\_caps@{drv\_caps}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{drv\_caps}{drv\_caps}}
+{\footnotesize\ttfamily unsigned long WLD\+\_\+\+RADIO\+::drv\+\_\+caps}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa896f6c856aa232fcaed4e266c6e9bad}\label{structWLD__RADIO_aa896f6c856aa232fcaed4e266c6e9bad}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!drvPowerVal@{drvPowerVal}}
+\index{drvPowerVal@{drvPowerVal}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{drvPowerVal}{drvPowerVal}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::drv\+Power\+Val}
+
+\mbox{\Hypertarget{structWLD__RADIO_abe4a3b203a67bc13ad223317188df3a5}\label{structWLD__RADIO_abe4a3b203a67bc13ad223317188df3a5}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!dtimPeriod@{dtimPeriod}}
+\index{dtimPeriod@{dtimPeriod}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{dtimPeriod}{dtimPeriod}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::dtim\+Period}
+
+\mbox{\Hypertarget{structWLD__RADIO_a0a680a013133f19fe8515d5cf42bdffb}\label{structWLD__RADIO_a0a680a013133f19fe8515d5cf42bdffb}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!enable@{enable}}
+\index{enable@{enable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{enable}{enable}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae13c1c4c2b4c296b125fe352fe19839f}\label{structWLD__RADIO_ae13c1c4c2b4c296b125fe352fe19839f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!explicitBeamFormingEnabled@{explicitBeamFormingEnabled}}
+\index{explicitBeamFormingEnabled@{explicitBeamFormingEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{explicitBeamFormingEnabled}{explicitBeamFormingEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::explicit\+Beam\+Forming\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_a903a9f1d239512f5dc5ac959c681265c}\label{structWLD__RADIO_a903a9f1d239512f5dc5ac959c681265c}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!explicitBeamFormingSupported@{explicitBeamFormingSupported}}
+\index{explicitBeamFormingSupported@{explicitBeamFormingSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{explicitBeamFormingSupported}{explicitBeamFormingSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::explicit\+Beam\+Forming\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_aad83ae658ae1c29277b75c467e402815}\label{structWLD__RADIO_aad83ae658ae1c29277b75c467e402815}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!extDataList@{extDataList}}
+\index{extDataList@{extDataList}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{extDataList}{extDataList}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__extMod__dataList__t}{wld\+\_\+ext\+Mod\+\_\+data\+List\+\_\+t}} WLD\+\_\+\+RADIO\+::ext\+Data\+List}
+
+\mbox{\Hypertarget{structWLD__RADIO_a43e4831cc8fa7d35ab649d0ce342dd64}\label{structWLD__RADIO_a43e4831cc8fa7d35ab649d0ce342dd64}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!extensionChannel@{extensionChannel}}
+\index{extensionChannel@{extensionChannel}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{extensionChannel}{extensionChannel}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__channel__types_8h_a74a3618375d13fa2c0c0b863c3342444}{wld\+\_\+channel\+\_\+extension\+Pos\+\_\+e}} WLD\+\_\+\+RADIO\+::extension\+Channel}
+
+\mbox{\Hypertarget{structWLD__RADIO_a54c91ccf5b1f17a465a60fbf7716989b}\label{structWLD__RADIO_a54c91ccf5b1f17a465a60fbf7716989b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!externalAcsMgmt@{externalAcsMgmt}}
+\index{externalAcsMgmt@{externalAcsMgmt}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{externalAcsMgmt}{externalAcsMgmt}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::external\+Acs\+Mgmt}
+
+Indicates whether automatic channel selection is managed by an external process When set, auto\+Channel\+Set\+By\+User will reflect the automatic channel selection state (enabled/disabled) and the auto\+Channel\+Enable is not set to avoid calling the LL APIs implementation for automatic channel selection. \mbox{\Hypertarget{structWLD__RADIO_aee7a8d5df0ac822187efc2dfedb5d59c}\label{structWLD__RADIO_aee7a8d5df0ac822187efc2dfedb5d59c}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!features@{features}}
+\index{features@{features}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{features}{features}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a14665fd4c9dcfc773176110cf91642be}{wld\+\_\+feature\+\_\+status}} WLD\+\_\+\+RADIO\+::features\mbox{[}\mbox{\hyperlink{wld_8h_acfdb3b525a1805b7073155f92834231aa646c1c33c755600eb5e5016b5e866072}{WLD\+\_\+\+FEATURE\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae9458534bf979c7054ee891e854faab1}\label{structWLD__RADIO_ae9458534bf979c7054ee891e854faab1}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!firmwareVersion@{firmwareVersion}}
+\index{firmwareVersion@{firmwareVersion}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{firmwareVersion}{firmwareVersion}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::firmware\+Version\mbox{[}64\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_aebf99868dd7db6472311cf37fecd2fc8}\label{structWLD__RADIO_aebf99868dd7db6472311cf37fecd2fc8}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!fsm\_radio\_st@{fsm\_radio\_st}}
+\index{fsm\_radio\_st@{fsm\_radio\_st}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{fsm\_radio\_st}{fsm\_radio\_st}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_afb8cbb8eccb0fea58231b672c43c192f}{FSM\+\_\+\+STATE}} WLD\+\_\+\+RADIO\+::fsm\+\_\+radio\+\_\+st}
+
+\mbox{\Hypertarget{structWLD__RADIO_a0e65d83decd7731754b65b199d1f8356}\label{structWLD__RADIO_a0e65d83decd7731754b65b199d1f8356}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!fsmRad@{fsmRad}}
+\index{fsmRad@{fsmRad}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{fsmRad}{fsmRad}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__FSM}{T\+\_\+\+FSM}} WLD\+\_\+\+RADIO\+::fsm\+Rad}
+
+\mbox{\Hypertarget{structWLD__RADIO_a5ab12638e62089b116b82ab048818034}\label{structWLD__RADIO_a5ab12638e62089b116b82ab048818034}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!fsmStats@{fsmStats}}
+\index{fsmStats@{fsmStats}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{fsmStats}{fsmStats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__fsmStats__t}{wld\+\_\+fsm\+Stats\+\_\+t}} WLD\+\_\+\+RADIO\+::fsm\+Stats}
+
+\mbox{\Hypertarget{structWLD__RADIO_adb46ca580c5a67dc69ea723f33299acc}\label{structWLD__RADIO_adb46ca580c5a67dc69ea723f33299acc}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!fsmTO@{fsmTO}}
+\index{fsmTO@{fsmTO}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{fsmTO}{fsmTO}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::fsm\+TO}
+
+\mbox{\Hypertarget{structWLD__RADIO_a810148a252e6ef0c3ebcab6c70ed4c18}\label{structWLD__RADIO_a810148a252e6ef0c3ebcab6c70ed4c18}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!genericCounters@{genericCounters}}
+\index{genericCounters@{genericCounters}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{genericCounters}{genericCounters}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__EventCounterList}{T\+\_\+\+Event\+Counter\+List}} WLD\+\_\+\+RADIO\+::generic\+Counters}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1325e7b814a72710f36293b94ffb7944}\label{structWLD__RADIO_a1325e7b814a72710f36293b94ffb7944}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!guardInterval@{guardInterval}}
+\index{guardInterval@{guardInterval}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{guardInterval}{guardInterval}}
+{\footnotesize\ttfamily swl\+\_\+guardinterval\+\_\+e WLD\+\_\+\+RADIO\+::guard\+Interval}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae67d0b519feecce2fcf52c4b55118dc6}\label{structWLD__RADIO_ae67d0b519feecce2fcf52c4b55118dc6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!hasDmReady@{hasDmReady}}
+\index{hasDmReady@{hasDmReady}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{hasDmReady}{hasDmReady}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::has\+Dm\+Ready}
+
+\mbox{\Hypertarget{structWLD__RADIO_a2ebc3ec2849c09eef66f54ebe9eed41f}\label{structWLD__RADIO_a2ebc3ec2849c09eef66f54ebe9eed41f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!heCapsEnabled@{heCapsEnabled}}
+\index{heCapsEnabled@{heCapsEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{heCapsEnabled}{heCapsEnabled}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a49eb8f26a23eeec8cf267fa935f0c0b2}{wld\+\_\+he\+\_\+cap\+\_\+m}} WLD\+\_\+\+RADIO\+::he\+Caps\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4bbb54572a1db404dae62fe636f57f47}\label{structWLD__RADIO_a4bbb54572a1db404dae62fe636f57f47}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!heCapsSupported@{heCapsSupported}}
+\index{heCapsSupported@{heCapsSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{heCapsSupported}{heCapsSupported}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a49eb8f26a23eeec8cf267fa935f0c0b2}{wld\+\_\+he\+\_\+cap\+\_\+m}} WLD\+\_\+\+RADIO\+::he\+Caps\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_aebad541bf5b61a00a39f4d4f00af117e}\label{structWLD__RADIO_aebad541bf5b61a00a39f4d4f00af117e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!heMacCapabilities@{heMacCapabilities}}
+\index{heMacCapabilities@{heMacCapabilities}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{heMacCapabilities}{heMacCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+hecap\+\_\+mac\+Cap\+Info\+\_\+t WLD\+\_\+\+RADIO\+::he\+Mac\+Capabilities}
+
+\mbox{\Hypertarget{structWLD__RADIO_adc8a3a278f0be9d83e31bbc493b80d6f}\label{structWLD__RADIO_adc8a3a278f0be9d83e31bbc493b80d6f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!heMcsCaps@{heMcsCaps}}
+\index{heMcsCaps@{heMcsCaps}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{heMcsCaps}{heMcsCaps}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+hecap\+\_\+\+MCSCap\+\_\+t WLD\+\_\+\+RADIO\+::he\+Mcs\+Caps\mbox{[}SWL\+\_\+80211\+\_\+\+HECAP\+\_\+\+MCS\+\_\+\+CAP\+\_\+\+ARRAY\+\_\+\+SIZE\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a2a0c6e5a583fdc37a24b5498766ebb35}\label{structWLD__RADIO_a2a0c6e5a583fdc37a24b5498766ebb35}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!hePhyCapabilities@{hePhyCapabilities}}
+\index{hePhyCapabilities@{hePhyCapabilities}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{hePhyCapabilities}{hePhyCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+hecap\+\_\+phy\+Cap\+Info\+\_\+t WLD\+\_\+\+RADIO\+::he\+Phy\+Capabilities}
+
+\mbox{\Hypertarget{structWLD__RADIO_a275699f1f6fddd418a8388558d317f11}\label{structWLD__RADIO_a275699f1f6fddd418a8388558d317f11}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!hostapd@{hostapd}}
+\index{hostapd@{hostapd}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{hostapd}{hostapd}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__secDmn__types_8h_a78f2f3d6922560d6ad27ebea0941fbd8}{wld\+\_\+sec\+Dmn\+\_\+t}}$\ast$ WLD\+\_\+\+RADIO\+::hostapd}
+
+\mbox{\Hypertarget{structWLD__RADIO_aca85c9e61f76673c5b49e1dd7d16f2e7}\label{structWLD__RADIO_aca85c9e61f76673c5b49e1dd7d16f2e7}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!htCapabilities@{htCapabilities}}
+\index{htCapabilities@{htCapabilities}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{htCapabilities}{htCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+ht\+Cap\+Info\+\_\+m WLD\+\_\+\+RADIO\+::ht\+Capabilities}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab13cbed6d3a44daa5d2cfe8cad77347c}\label{structWLD__RADIO_ab13cbed6d3a44daa5d2cfe8cad77347c}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!htMcsSet@{htMcsSet}}
+\index{htMcsSet@{htMcsSet}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{htMcsSet}{htMcsSet}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::ht\+Mcs\+Set\mbox{[}SWL\+\_\+80211\+\_\+\+MCS\+\_\+\+SET\+\_\+\+LEN\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa553fa4b88c5a0075930fa7fd1f7daa4}\label{structWLD__RADIO_aa553fa4b88c5a0075930fa7fd1f7daa4}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!IEEE80211hSupported@{IEEE80211hSupported}}
+\index{IEEE80211hSupported@{IEEE80211hSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{IEEE80211hSupported}{IEEE80211hSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::\+IEEE80211h\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_a48b0a069a427c128cf96922786dce1e4}\label{structWLD__RADIO_a48b0a069a427c128cf96922786dce1e4}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!IEEE80211kSupported@{IEEE80211kSupported}}
+\index{IEEE80211kSupported@{IEEE80211kSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{IEEE80211kSupported}{IEEE80211kSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::\+IEEE80211k\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab872e0b18a5054fadc7f424122c4745b}\label{structWLD__RADIO_ab872e0b18a5054fadc7f424122c4745b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!IEEE80211rSupported@{IEEE80211rSupported}}
+\index{IEEE80211rSupported@{IEEE80211rSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{IEEE80211rSupported}{IEEE80211rSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::\+IEEE80211r\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_a0c1f9337feaddfcd649e6906efa02234}\label{structWLD__RADIO_a0c1f9337feaddfcd649e6906efa02234}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!ignoreWPSEvents@{ignoreWPSEvents}}
+\index{ignoreWPSEvents@{ignoreWPSEvents}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{ignoreWPSEvents}{ignoreWPSEvents}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::ignore\+WPSEvents}
+
+\mbox{\Hypertarget{structWLD__RADIO_a994402c01f9d56a3cd78187a9a9bef9a}\label{structWLD__RADIO_a994402c01f9d56a3cd78187a9a9bef9a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!implicitBeamFormingEnabled@{implicitBeamFormingEnabled}}
+\index{implicitBeamFormingEnabled@{implicitBeamFormingEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{implicitBeamFormingEnabled}{implicitBeamFormingEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::implicit\+Beam\+Forming\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_a53e12658222abd2b075e9e2bac38bbd8}\label{structWLD__RADIO_a53e12658222abd2b075e9e2bac38bbd8}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!implicitBeamFormingSupported@{implicitBeamFormingSupported}}
+\index{implicitBeamFormingSupported@{implicitBeamFormingSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{implicitBeamFormingSupported}{implicitBeamFormingSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::implicit\+Beam\+Forming\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_a39374401bae58c77832652010ddc9ee4}\label{structWLD__RADIO_a39374401bae58c77832652010ddc9ee4}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!index@{index}}
+\index{index@{index}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{index}{index}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::index}
+
+\mbox{\Hypertarget{structWLD__RADIO_a808ad901ca8a18f5387c35f4338563a3}\label{structWLD__RADIO_a808ad901ca8a18f5387c35f4338563a3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!instanceName@{instanceName}}
+\index{instanceName@{instanceName}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{instanceName}{instanceName}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::instance\+Name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1d81173baac086190da3658474680839}\label{structWLD__RADIO_a1d81173baac086190da3658474680839}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!intAirtimeSchedEnabled@{intAirtimeSchedEnabled}}
+\index{intAirtimeSchedEnabled@{intAirtimeSchedEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{intAirtimeSchedEnabled}{intAirtimeSchedEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::int\+Airtime\+Sched\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_acf49ade84fba0d6bef2f605f0b7d6a21}\label{structWLD__RADIO_acf49ade84fba0d6bef2f605f0b7d6a21}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isAP@{isAP}}
+\index{isAP@{isAP}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isAP}{isAP}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+AP}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab4ba61d2c5a39f2e0247ae630eb23a7e}\label{structWLD__RADIO_ab4ba61d2c5a39f2e0247ae630eb23a7e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isReady@{isReady}}
+\index{isReady@{isReady}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isReady}{isReady}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+Ready}
+
+\mbox{\Hypertarget{structWLD__RADIO_af5e8165e31a9026a7cf84c9ee9a959bc}\label{structWLD__RADIO_af5e8165e31a9026a7cf84c9ee9a959bc}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isSTA@{isSTA}}
+\index{isSTA@{isSTA}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isSTA}{isSTA}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+STA}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa14b69829b96d5b506dcfa8d49c16160}\label{structWLD__RADIO_aa14b69829b96d5b506dcfa8d49c16160}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isSTASup@{isSTASup}}
+\index{isSTASup@{isSTASup}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isSTASup}{isSTASup}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+STASup}
+
+\mbox{\Hypertarget{structWLD__RADIO_a3f94d184417c2daaa16dc721d45d60ad}\label{structWLD__RADIO_a3f94d184417c2daaa16dc721d45d60ad}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isWDS@{isWDS}}
+\index{isWDS@{isWDS}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isWDS}{isWDS}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+WDS}
+
+\mbox{\Hypertarget{structWLD__RADIO_a841e07f6033751b1738c9ae8ec7d048b}\label{structWLD__RADIO_a841e07f6033751b1738c9ae8ec7d048b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isWET@{isWET}}
+\index{isWET@{isWET}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isWET}{isWET}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+WET}
+
+\mbox{\Hypertarget{structWLD__RADIO_a31c8e42c1e3b93539cc7222a61767657}\label{structWLD__RADIO_a31c8e42c1e3b93539cc7222a61767657}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!isWPSEnrol@{isWPSEnrol}}
+\index{isWPSEnrol@{isWPSEnrol}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{isWPSEnrol}{isWPSEnrol}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::is\+WPSEnrol}
+
+\mbox{\Hypertarget{structWLD__RADIO_a21fad598176d825b125f43b79ddf41ae}\label{structWLD__RADIO_a21fad598176d825b125f43b79ddf41ae}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!it@{it}}
+\index{it@{it}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{it}{it}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+it\+\_\+t WLD\+\_\+\+RADIO\+::it}
+
+\mbox{\Hypertarget{structWLD__RADIO_a78b40fb77f19dbc27ecc5a47dfbcd6e4}\label{structWLD__RADIO_a78b40fb77f19dbc27ecc5a47dfbcd6e4}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!kickRoamStaEnabled@{kickRoamStaEnabled}}
+\index{kickRoamStaEnabled@{kickRoamStaEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{kickRoamStaEnabled}{kickRoamStaEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::kick\+Roam\+Sta\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_a41e60d0382472629b76d2ed8d690c640}\label{structWLD__RADIO_a41e60d0382472629b76d2ed8d690c640}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!lastRadarChannelsAdded@{lastRadarChannelsAdded}}
+\index{lastRadarChannelsAdded@{lastRadarChannelsAdded}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{lastRadarChannelsAdded}{lastRadarChannelsAdded}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t WLD\+\_\+\+RADIO\+::last\+Radar\+Channels\+Added\mbox{[}SWL\+\_\+\+BW\+\_\+\+CHANNELS\+\_\+\+MAX\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_aedba9c0901259800c79e8d34e5f0271a}\label{structWLD__RADIO_aedba9c0901259800c79e8d34e5f0271a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!llAP@{llAP}}
+\index{llAP@{llAP}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{llAP}{llAP}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t WLD\+\_\+\+RADIO\+::ll\+AP}
+
+\mbox{\Hypertarget{structWLD__RADIO_a605f477c1b992c525d87bc9bb636e248}\label{structWLD__RADIO_a605f477c1b992c525d87bc9bb636e248}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!llEndPoints@{llEndPoints}}
+\index{llEndPoints@{llEndPoints}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{llEndPoints}{llEndPoints}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t WLD\+\_\+\+RADIO\+::ll\+End\+Points}
+
+\mbox{\Hypertarget{structWLD__RADIO_a50c19fc5b7ec24f39ed87f01bff16431}\label{structWLD__RADIO_a50c19fc5b7ec24f39ed87f01bff16431}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!longRetryLimit@{longRetryLimit}}
+\index{longRetryLimit@{longRetryLimit}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{longRetryLimit}{longRetryLimit}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::long\+Retry\+Limit}
+
+\mbox{\Hypertarget{structWLD__RADIO_a7d15c981c8ccb1ae36c88384d11e8d57}\label{structWLD__RADIO_a7d15c981c8ccb1ae36c88384d11e8d57}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!m\_multiAPTypesSupported@{m\_multiAPTypesSupported}}
+\index{m\_multiAPTypesSupported@{m\_multiAPTypesSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{m\_multiAPTypesSupported}{m\_multiAPTypesSupported}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_aebc935100d8731bf4c4af1e4abc0ab1d}{wld\+\_\+multiap\+\_\+type\+\_\+m}} WLD\+\_\+\+RADIO\+::m\+\_\+multi\+APTypes\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_acd489e1cddcc5811da305853798c3d8e}\label{structWLD__RADIO_acd489e1cddcc5811da305853798c3d8e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!MACAddr@{MACAddr}}
+\index{MACAddr@{MACAddr}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{MACAddr}{MACAddr}}
+{\footnotesize\ttfamily unsigned char WLD\+\_\+\+RADIO\+::\+MACAddr\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae06f60df2ce59bbc1ff409545e9b5280}\label{structWLD__RADIO_ae06f60df2ce59bbc1ff409545e9b5280}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!macCfg@{macCfg}}
+\index{macCfg@{macCfg}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{macCfg}{macCfg}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__macCfg__t}{wld\+\_\+mac\+Cfg\+\_\+t}} WLD\+\_\+\+RADIO\+::mac\+Cfg}
+
+\mbox{\Hypertarget{structWLD__RADIO_a29993667acbcc2ebd4e83325f3d8b165}\label{structWLD__RADIO_a29993667acbcc2ebd4e83325f3d8b165}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!maxBitRate@{maxBitRate}}
+\index{maxBitRate@{maxBitRate}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{maxBitRate}{maxBitRate}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::max\+Bit\+Rate}
+
+\mbox{\Hypertarget{structWLD__RADIO_a6f8273f7342a1b0632de6efbd6566304}\label{structWLD__RADIO_a6f8273f7342a1b0632de6efbd6566304}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!maxChannelBandwidth@{maxChannelBandwidth}}
+\index{maxChannelBandwidth@{maxChannelBandwidth}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{maxChannelBandwidth}{maxChannelBandwidth}}
+{\footnotesize\ttfamily swl\+\_\+bandwidth\+\_\+e WLD\+\_\+\+RADIO\+::max\+Channel\+Bandwidth}
+
+\mbox{\Hypertarget{structWLD__RADIO_a003b665c6262393d8fab825e38fc199a}\label{structWLD__RADIO_a003b665c6262393d8fab825e38fc199a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!maxNrHwBss@{maxNrHwBss}}
+\index{maxNrHwBss@{maxNrHwBss}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{maxNrHwBss}{maxNrHwBss}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::max\+Nr\+Hw\+Bss}
+
+\mbox{\Hypertarget{structWLD__RADIO_a38d2b92ea81ac1b563354ad9b48aa455}\label{structWLD__RADIO_a38d2b92ea81ac1b563354ad9b48aa455}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!maxNrHwSta@{maxNrHwSta}}
+\index{maxNrHwSta@{maxNrHwSta}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{maxNrHwSta}{maxNrHwSta}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::max\+Nr\+Hw\+Sta}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad238789830b9903230fc658a37b4cfb7}\label{structWLD__RADIO_ad238789830b9903230fc658a37b4cfb7}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!maxStations@{maxStations}}
+\index{maxStations@{maxStations}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{maxStations}{maxStations}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::max\+Stations}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4938275c2f026e5f646874e927202530}\label{structWLD__RADIO_a4938275c2f026e5f646874e927202530}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!mbssBaseMACAddr@{mbssBaseMACAddr}}
+\index{mbssBaseMACAddr@{mbssBaseMACAddr}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{mbssBaseMACAddr}{mbssBaseMACAddr}}
+{\footnotesize\ttfamily swl\+\_\+mac\+Bin\+\_\+t WLD\+\_\+\+RADIO\+::mbss\+Base\+MACAddr}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae8bec5babcd5d1bc2112b6a99bd1728e}\label{structWLD__RADIO_ae8bec5babcd5d1bc2112b6a99bd1728e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!mbssidAdsMode@{mbssidAdsMode}}
+\index{mbssidAdsMode@{mbssidAdsMode}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{mbssidAdsMode}{mbssidAdsMode}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_ad8272a16ef547c27a843b5009801aa1e}{wld\+\_\+mbssid\+Advertisement\+\_\+mode\+\_\+e}} WLD\+\_\+\+RADIO\+::mbssid\+Ads\+Mode}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab9187b99335dee14d887fe2a9da303f7}\label{structWLD__RADIO_ab9187b99335dee14d887fe2a9da303f7}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!MCS@{MCS}}
+\index{MCS@{MCS}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{MCS}{MCS}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::\+MCS}
+
+\mbox{\Hypertarget{structWLD__RADIO_adbadf832e10bb00521f7282dc0703a18}\label{structWLD__RADIO_adbadf832e10bb00521f7282dc0703a18}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!monitorDev@{monitorDev}}
+\index{monitorDev@{monitorDev}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{monitorDev}{monitorDev}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t WLD\+\_\+\+RADIO\+::monitor\+Dev}
+
+@listof T\+\_\+\+Non\+Associated\+Device Used to maintain monitored devices with high priority. High priority devices are added by the user manually and/or devices added with Rssi and/or prioritization mechanism. \mbox{\Hypertarget{structWLD__RADIO_a73097cc2cd6c3ce4d3c7ca4d24247cba}\label{structWLD__RADIO_a73097cc2cd6c3ce4d3c7ca4d24247cba}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!multiUserMIMOEnabled@{multiUserMIMOEnabled}}
+\index{multiUserMIMOEnabled@{multiUserMIMOEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{multiUserMIMOEnabled}{multiUserMIMOEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::multi\+User\+MIMOEnabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_a41c73804d9d3782c935b14a756b336f8}\label{structWLD__RADIO_a41c73804d9d3782c935b14a756b336f8}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!multiUserMIMOSupported@{multiUserMIMOSupported}}
+\index{multiUserMIMOSupported@{multiUserMIMOSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{multiUserMIMOSupported}{multiUserMIMOSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::multi\+User\+MIMOSupported}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab25a16fb9a530380a45ea1eb0ee0b86d}\label{structWLD__RADIO_ab25a16fb9a530380a45ea1eb0ee0b86d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!Name@{Name}}
+\index{Name@{Name}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::\+Name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1f7235b8ecda16b93331d8ece77ee4c6}\label{structWLD__RADIO_a1f7235b8ecda16b93331d8ece77ee4c6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!naStaRssiMonitor@{naStaRssiMonitor}}
+\index{naStaRssiMonitor@{naStaRssiMonitor}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{naStaRssiMonitor}{naStaRssiMonitor}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__RssiEventing}{T\+\_\+\+Rssi\+Eventing}} WLD\+\_\+\+RADIO\+::na\+Sta\+Rssi\+Monitor}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1b23cfb87640994462eb0bd954c60e8d}\label{structWLD__RADIO_a1b23cfb87640994462eb0bd954c60e8d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!naStations@{naStations}}
+\index{naStations@{naStations}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{naStations}{naStations}}
+{\footnotesize\ttfamily amxc\+\_\+llist\+\_\+t WLD\+\_\+\+RADIO\+::na\+Stations}
+
+@listof T\+\_\+\+Non\+Associated\+Device Used to maintain monitored devices with normal priority. \mbox{\Hypertarget{structWLD__RADIO_a94c51704203a900b1ea40c6863c30e8d}\label{structWLD__RADIO_a94c51704203a900b1ea40c6863c30e8d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nl80211Listener@{nl80211Listener}}
+\index{nl80211Listener@{nl80211Listener}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nl80211Listener}{nl80211Listener}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__core_8h_ae1e3d350fcac78a541f028d69f629d97}{wld\+\_\+nl80211\+\_\+listener\+\_\+t}}$\ast$ WLD\+\_\+\+RADIO\+::nl80211\+Listener}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8f2bbcad27dd982ab6b0c43ce8477e3b}\label{structWLD__RADIO_a8f2bbcad27dd982ab6b0c43ce8477e3b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nrActiveAntenna@{nrActiveAntenna}}
+\index{nrActiveAntenna@{nrActiveAntenna}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nrActiveAntenna}{nrActiveAntenna}}
+{\footnotesize\ttfamily int32\+\_\+t WLD\+\_\+\+RADIO\+::nr\+Active\+Antenna\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8a776a479cf61efdfe12f7d44b887e7e}\label{structWLD__RADIO_a8a776a479cf61efdfe12f7d44b887e7e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nrAntenna@{nrAntenna}}
+\index{nrAntenna@{nrAntenna}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nrAntenna}{nrAntenna}}
+{\footnotesize\ttfamily int32\+\_\+t WLD\+\_\+\+RADIO\+::nr\+Antenna\mbox{[}\mbox{\hyperlink{wld__types_8h_a39790e80a31175849958f39d8923dd3bae6bf49f54c9a40f3df681ea922525e6d}{COM\+\_\+\+DIR\+\_\+\+MAX}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a6dc2f3ea7de4a398a458a5017adacd49}\label{structWLD__RADIO_a6dc2f3ea7de4a398a458a5017adacd49}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nrCapabilities@{nrCapabilities}}
+\index{nrCapabilities@{nrCapabilities}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nrCapabilities}{nrCapabilities}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::nr\+Capabilities}
+
+\mbox{\Hypertarget{structWLD__RADIO_aa73b238d00b9bf29a39e77edea43004f}\label{structWLD__RADIO_aa73b238d00b9bf29a39e77edea43004f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nrLastRadarChannelsAdded@{nrLastRadarChannelsAdded}}
+\index{nrLastRadarChannelsAdded@{nrLastRadarChannelsAdded}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nrLastRadarChannelsAdded}{nrLastRadarChannelsAdded}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::nr\+Last\+Radar\+Channels\+Added}
+
+\mbox{\Hypertarget{structWLD__RADIO_a5122dab37b8a54f050a49ff2d0d0d04b}\label{structWLD__RADIO_a5122dab37b8a54f050a49ff2d0d0d04b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nrPossibleChannels@{nrPossibleChannels}}
+\index{nrPossibleChannels@{nrPossibleChannels}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nrPossibleChannels}{nrPossibleChannels}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::nr\+Possible\+Channels}
+
+\mbox{\Hypertarget{structWLD__RADIO_afc88ddd8544657116d534aa200662587}\label{structWLD__RADIO_afc88ddd8544657116d534aa200662587}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!nrRadarDetectedChannels@{nrRadarDetectedChannels}}
+\index{nrRadarDetectedChannels@{nrRadarDetectedChannels}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{nrRadarDetectedChannels}{nrRadarDetectedChannels}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::nr\+Radar\+Detected\+Channels}
+
+\mbox{\Hypertarget{structWLD__RADIO_aab3ec957b56e18d5a0f6cae5ffd86d72}\label{structWLD__RADIO_aab3ec957b56e18d5a0f6cae5ffd86d72}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!obssCoexistenceActive@{obssCoexistenceActive}}
+\index{obssCoexistenceActive@{obssCoexistenceActive}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{obssCoexistenceActive}{obssCoexistenceActive}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::obss\+Coexistence\+Active}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8805bf4ac6fd21e67e421881e49010bc}\label{structWLD__RADIO_a8805bf4ac6fd21e67e421881e49010bc}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!obssCoexistenceEnabled@{obssCoexistenceEnabled}}
+\index{obssCoexistenceEnabled@{obssCoexistenceEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{obssCoexistenceEnabled}{obssCoexistenceEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::obss\+Coexistence\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_abe0de4398853fbb8894de1c19b659c55}\label{structWLD__RADIO_abe0de4398853fbb8894de1c19b659c55}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!ofdmaEnable@{ofdmaEnable}}
+\index{ofdmaEnable@{ofdmaEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{ofdmaEnable}{ofdmaEnable}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::ofdma\+Enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1291fffdacc59f16d4c588d4cde4f24b}\label{structWLD__RADIO_a1291fffdacc59f16d4c588d4cde4f24b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!onReadStatsCtx@{onReadStatsCtx}}
+\index{onReadStatsCtx@{onReadStatsCtx}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{onReadStatsCtx}{onReadStatsCtx}}
+{\footnotesize\ttfamily swla\+\_\+dm\+\_\+obj\+Action\+Read\+Ctx\+\_\+t WLD\+\_\+\+RADIO\+::on\+Read\+Stats\+Ctx}
+
+\mbox{\Hypertarget{structWLD__RADIO_a828c1b93086522b2215906c737c36ade}\label{structWLD__RADIO_a828c1b93086522b2215906c737c36ade}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!operatingChannelBandwidth@{operatingChannelBandwidth}}
+\index{operatingChannelBandwidth@{operatingChannelBandwidth}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{operatingChannelBandwidth}{operatingChannelBandwidth}}
+{\footnotesize\ttfamily swl\+\_\+rad\+Bw\+\_\+e WLD\+\_\+\+RADIO\+::operating\+Channel\+Bandwidth}
+
+\mbox{\Hypertarget{structWLD__RADIO_a0c18be72c4d41283c2aa9cbd5b1d78aa}\label{structWLD__RADIO_a0c18be72c4d41283c2aa9cbd5b1d78aa}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!operatingClass@{operatingClass}}
+\index{operatingClass@{operatingClass}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{operatingClass}{operatingClass}}
+{\footnotesize\ttfamily swl\+\_\+operating\+Class\+\_\+t WLD\+\_\+\+RADIO\+::operating\+Class}
+
+\mbox{\Hypertarget{structWLD__RADIO_a01c0ac2c27c97fc02b0beb1e2a5a456d}\label{structWLD__RADIO_a01c0ac2c27c97fc02b0beb1e2a5a456d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!operatingFrequencyBand@{operatingFrequencyBand}}
+\index{operatingFrequencyBand@{operatingFrequencyBand}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{operatingFrequencyBand}{operatingFrequencyBand}}
+{\footnotesize\ttfamily swl\+\_\+freq\+Band\+Ext\+\_\+e WLD\+\_\+\+RADIO\+::operating\+Frequency\+Band}
+
+\mbox{\Hypertarget{structWLD__RADIO_aeb834ac6f9babafc9cbf2d0d66cbe5b6}\label{structWLD__RADIO_aeb834ac6f9babafc9cbf2d0d66cbe5b6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!operatingStandards@{operatingStandards}}
+\index{operatingStandards@{operatingStandards}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{operatingStandards}{operatingStandards}}
+{\footnotesize\ttfamily swl\+\_\+radio\+Standard\+\_\+m WLD\+\_\+\+RADIO\+::operating\+Standards}
+
+\mbox{\Hypertarget{structWLD__RADIO_a71eaaa39e62353666721d71ce38891fc}\label{structWLD__RADIO_a71eaaa39e62353666721d71ce38891fc}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!operatingStandardsFormat@{operatingStandardsFormat}}
+\index{operatingStandardsFormat@{operatingStandardsFormat}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{operatingStandardsFormat}{operatingStandardsFormat}}
+{\footnotesize\ttfamily swl\+\_\+rad\+Std\+\_\+format\+\_\+e WLD\+\_\+\+RADIO\+::operating\+Standards\+Format}
+
+\mbox{\Hypertarget{structWLD__RADIO_a35d9b40203eadbb81f06494018c25dc3}\label{structWLD__RADIO_a35d9b40203eadbb81f06494018c25dc3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!operationalDataTransmitRates@{operationalDataTransmitRates}}
+\index{operationalDataTransmitRates@{operationalDataTransmitRates}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{operationalDataTransmitRates}{operationalDataTransmitRates}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m WLD\+\_\+\+RADIO\+::operational\+Data\+Transmit\+Rates}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae86c7807bedbd61fa354b52a0c4d9355}\label{structWLD__RADIO_ae86c7807bedbd61fa354b52a0c4d9355}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!packetAggregationEnable@{packetAggregationEnable}}
+\index{packetAggregationEnable@{packetAggregationEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{packetAggregationEnable}{packetAggregationEnable}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::packet\+Aggregation\+Enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_a77c978c0b5f9dd8c1150a240e2f45f24}\label{structWLD__RADIO_a77c978c0b5f9dd8c1150a240e2f45f24}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!pBus@{pBus}}
+\index{pBus@{pBus}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{pBus}{pBus}}
+{\footnotesize\ttfamily amxd\+\_\+object\+\_\+t$\ast$ WLD\+\_\+\+RADIO\+::p\+Bus}
+
+\mbox{\Hypertarget{structWLD__RADIO_a9d8aefa808764860d8d4e4d8aa7a77b8}\label{structWLD__RADIO_a9d8aefa808764860d8d4e4d8aa7a77b8}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!pFA@{pFA}}
+\index{pFA@{pFA}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{pFA}{pFA}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structS__CWLD__FUNC__TABLE}{S\+\_\+\+CWLD\+\_\+\+FUNC\+\_\+\+TABLE}}$\ast$ WLD\+\_\+\+RADIO\+::p\+FA}
+
+\mbox{\Hypertarget{structWLD__RADIO_a777c983dc521dfd30c5b663aab8adbfe}\label{structWLD__RADIO_a777c983dc521dfd30c5b663aab8adbfe}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!pLastAirStats@{pLastAirStats}}
+\index{pLastAirStats@{pLastAirStats}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{pLastAirStats}{pLastAirStats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a2b75942a9bba4feebedc71866c2cc09f}{wld\+\_\+air\+Stats\+\_\+t}}$\ast$ WLD\+\_\+\+RADIO\+::p\+Last\+Air\+Stats}
+
+\mbox{\Hypertarget{structWLD__RADIO_a443a7d2f4d80713aee5aac1e3151ec25}\label{structWLD__RADIO_a443a7d2f4d80713aee5aac1e3151ec25}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!pLastSurvey@{pLastSurvey}}
+\index{pLastSurvey@{pLastSurvey}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{pLastSurvey}{pLastSurvey}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__nl80211__core_8h_a51a3df6fa4d884872fa5c6a296e08b48}{wld\+\_\+nl80211\+\_\+channel\+Survey\+Info\+\_\+t}}$\ast$ WLD\+\_\+\+RADIO\+::p\+Last\+Survey}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab9b534a807c689eb9d8c6e2ecd265c2b}\label{structWLD__RADIO_ab9b534a807c689eb9d8c6e2ecd265c2b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!possibleChannels@{possibleChannels}}
+\index{possibleChannels@{possibleChannels}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{possibleChannels}{possibleChannels}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t WLD\+\_\+\+RADIO\+::possible\+Channels\mbox{[}\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\+\_\+\+MAX\+\_\+\+POSSIBLE\+\_\+\+CHANNELS}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_ab8a3f220394218854880ca5714a803e7}\label{structWLD__RADIO_ab8a3f220394218854880ca5714a803e7}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!preambleType@{preambleType}}
+\index{preambleType@{preambleType}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{preambleType}{preambleType}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_aa2b1533d737983639064a3a0dcd99ca0}{wld\+\_\+preamble\+\_\+type\+\_\+e}} WLD\+\_\+\+RADIO\+::preamble\+Type}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4b22b715599a7f3277d9b144c461f50d}\label{structWLD__RADIO_a4b22b715599a7f3277d9b144c461f50d}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!radarDetectedChannels@{radarDetectedChannels}}
+\index{radarDetectedChannels@{radarDetectedChannels}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{radarDetectedChannels}{radarDetectedChannels}}
+{\footnotesize\ttfamily swl\+\_\+channel\+\_\+t WLD\+\_\+\+RADIO\+::radar\+Detected\+Channels\mbox{[}\mbox{\hyperlink{wld__types_8h_a76360f5fed5774b00f6354bcee136e33}{WLD\+\_\+\+MAX\+\_\+\+POSSIBLE\+\_\+\+CHANNELS}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a3215599e4724fe1c2232259af9bb1641}\label{structWLD__RADIO_a3215599e4724fe1c2232259af9bb1641}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!radMuMimoInfo@{radMuMimoInfo}}
+\index{radMuMimoInfo@{radMuMimoInfo}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{radMuMimoInfo}{radMuMimoInfo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__rad__muMimoInfo__t}{wld\+\_\+rad\+\_\+mu\+Mimo\+Info\+\_\+t}} WLD\+\_\+\+RADIO\+::rad\+Mu\+Mimo\+Info}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1efadfd65aba4a959865e88b6decb912}\label{structWLD__RADIO_a1efadfd65aba4a959865e88b6decb912}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!ref\_index@{ref\_index}}
+\index{ref\_index@{ref\_index}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{ref\_index}{ref\_index}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::ref\+\_\+index}
+
+\mbox{\Hypertarget{structWLD__RADIO_a90ea4401949482085ab25eec96bf857f}\label{structWLD__RADIO_a90ea4401949482085ab25eec96bf857f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!regulatoryDomain@{regulatoryDomain}}
+\index{regulatoryDomain@{regulatoryDomain}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{regulatoryDomain}{regulatoryDomain}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::regulatory\+Domain\mbox{[}8\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8d9912c0cdb9d12f5374861b71523a96}\label{structWLD__RADIO_a8d9912c0cdb9d12f5374861b71523a96}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!regulatoryDomainIdx@{regulatoryDomainIdx}}
+\index{regulatoryDomainIdx@{regulatoryDomainIdx}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{regulatoryDomainIdx}{regulatoryDomainIdx}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::regulatory\+Domain\+Idx}
+
+\mbox{\Hypertarget{structWLD__RADIO_a4abdf89bdbbc2dcb55d79e3f489b5df3}\label{structWLD__RADIO_a4abdf89bdbbc2dcb55d79e3f489b5df3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!retryLimit@{retryLimit}}
+\index{retryLimit@{retryLimit}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{retryLimit}{retryLimit}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::retry\+Limit}
+
+\mbox{\Hypertarget{structWLD__RADIO_a98726144a82f03b7f5dfe6233a3a5839}\label{structWLD__RADIO_a98726144a82f03b7f5dfe6233a3a5839}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!RIFSEnabled@{RIFSEnabled}}
+\index{RIFSEnabled@{RIFSEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{RIFSEnabled}{RIFSEnabled}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_a0c3023b2e91b1cff9f0d8cb8aed8b99a}{wld\+\_\+rifs\+\_\+mode\+\_\+e}} WLD\+\_\+\+RADIO\+::\+RIFSEnabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_aed4315e8845d1d1da4b5fa8a6b3ff81b}\label{structWLD__RADIO_aed4315e8845d1d1da4b5fa8a6b3ff81b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!rtsThreshold@{rtsThreshold}}
+\index{rtsThreshold@{rtsThreshold}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{rtsThreshold}{rtsThreshold}}
+{\footnotesize\ttfamily uint16\+\_\+t WLD\+\_\+\+RADIO\+::rts\+Threshold}
+
+\mbox{\Hypertarget{structWLD__RADIO_a95a91289df401878bb99c61d39d0017e}\label{structWLD__RADIO_a95a91289df401878bb99c61d39d0017e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!runningChannelBandwidth@{runningChannelBandwidth}}
+\index{runningChannelBandwidth@{runningChannelBandwidth}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{runningChannelBandwidth}{runningChannelBandwidth}}
+{\footnotesize\ttfamily swl\+\_\+rad\+Bw\+\_\+e WLD\+\_\+\+RADIO\+::running\+Channel\+Bandwidth}
+
+\mbox{\Hypertarget{structWLD__RADIO_a73002bf179d8cba246c86b0467b369ad}\label{structWLD__RADIO_a73002bf179d8cba246c86b0467b369ad}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!rxChainCtrl@{rxChainCtrl}}
+\index{rxChainCtrl@{rxChainCtrl}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{rxChainCtrl}{rxChainCtrl}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::rx\+Chain\+Ctrl}
+
+\mbox{\Hypertarget{structWLD__RADIO_a6e5d7378da0dc7ee061756d80290d436}\label{structWLD__RADIO_a6e5d7378da0dc7ee061756d80290d436}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!rxPowerSaveEnabled@{rxPowerSaveEnabled}}
+\index{rxPowerSaveEnabled@{rxPowerSaveEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{rxPowerSaveEnabled}{rxPowerSaveEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::rx\+Power\+Save\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1a97ab7bad9b63a2f810d35cd1a7ad7f}\label{structWLD__RADIO_a1a97ab7bad9b63a2f810d35cd1a7ad7f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!rxPowerSaveEnabledWhenRepeater@{rxPowerSaveEnabledWhenRepeater}}
+\index{rxPowerSaveEnabledWhenRepeater@{rxPowerSaveEnabledWhenRepeater}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{rxPowerSaveEnabledWhenRepeater}{rxPowerSaveEnabledWhenRepeater}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::rx\+Power\+Save\+Enabled\+When\+Repeater}
+
+\mbox{\Hypertarget{structWLD__RADIO_afd761adfb232fc6d0bf62225fd371581}\label{structWLD__RADIO_afd761adfb232fc6d0bf62225fd371581}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!scanState@{scanState}}
+\index{scanState@{scanState}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{scanState}{scanState}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__ScanState}{T\+\_\+\+Scan\+State}} WLD\+\_\+\+RADIO\+::scan\+State}
+
+\mbox{\Hypertarget{structWLD__RADIO_a3b9191c00e2c460f46c05d20ddc95bf9}\label{structWLD__RADIO_a3b9191c00e2c460f46c05d20ddc95bf9}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!setMaxNumStaTimer@{setMaxNumStaTimer}}
+\index{setMaxNumStaTimer@{setMaxNumStaTimer}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{setMaxNumStaTimer}{setMaxNumStaTimer}}
+{\footnotesize\ttfamily amxp\+\_\+timer\+\_\+t$\ast$ WLD\+\_\+\+RADIO\+::set\+Max\+Num\+Sta\+Timer}
+
+\mbox{\Hypertarget{structWLD__RADIO_a3c832a800071f859a22d3bfb5b9ab3d3}\label{structWLD__RADIO_a3c832a800071f859a22d3bfb5b9ab3d3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!setRadio80211hEnable@{setRadio80211hEnable}}
+\index{setRadio80211hEnable@{setRadio80211hEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{setRadio80211hEnable}{setRadio80211hEnable}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::set\+Radio80211h\+Enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_aedb0f828b120106f774aa5f36d982ed4}\label{structWLD__RADIO_aedb0f828b120106f774aa5f36d982ed4}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!stationMonitorEnabled@{stationMonitorEnabled}}
+\index{stationMonitorEnabled@{stationMonitorEnabled}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{stationMonitorEnabled}{stationMonitorEnabled}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::station\+Monitor\+Enabled}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad2395c89da2e4acac87f3d4409f27bee}\label{structWLD__RADIO_ad2395c89da2e4acac87f3d4409f27bee}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!stationMonitorOffChannelSupported@{stationMonitorOffChannelSupported}}
+\index{stationMonitorOffChannelSupported@{stationMonitorOffChannelSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{stationMonitorOffChannelSupported}{stationMonitorOffChannelSupported}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::station\+Monitor\+Off\+Channel\+Supported}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae78130b2ea4cce1e4ac8857baf20fd7f}\label{structWLD__RADIO_ae78130b2ea4cce1e4ac8857baf20fd7f}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!stats@{stats}}
+\index{stats@{stats}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{stats}{stats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a5cf62b54e6acad850fe816cb66179f0a}{T\+\_\+\+Stats}} WLD\+\_\+\+RADIO\+::stats}
+
+\mbox{\Hypertarget{structWLD__RADIO_a48d84afbf9963bfcbec2f68e7fa98d51}\label{structWLD__RADIO_a48d84afbf9963bfcbec2f68e7fa98d51}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!status@{status}}
+\index{status@{status}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a58cd2c1f73c0ceb34b35204d700075ed}{wld\+\_\+status\+\_\+e}} WLD\+\_\+\+RADIO\+::status}
+
+\mbox{\Hypertarget{structWLD__RADIO_a7ccd4067d55a389ee390864f53587a33}\label{structWLD__RADIO_a7ccd4067d55a389ee390864f53587a33}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!suppDrvCaps@{suppDrvCaps}}
+\index{suppDrvCaps@{suppDrvCaps}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{suppDrvCaps}{suppDrvCaps}}
+{\footnotesize\ttfamily char$\ast$ WLD\+\_\+\+RADIO\+::supp\+Drv\+Caps\mbox{[}SWL\+\_\+\+FREQ\+\_\+\+BAND\+\_\+\+MAX\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a33e270a17dfc46be123c80d635f2eb96}\label{structWLD__RADIO_a33e270a17dfc46be123c80d635f2eb96}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!suppMbssidAdsModes@{suppMbssidAdsModes}}
+\index{suppMbssidAdsModes@{suppMbssidAdsModes}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{suppMbssidAdsModes}{suppMbssidAdsModes}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld_8h_adaeef87c5920a47421c74814e7835b59}{wld\+\_\+mbssid\+Advertisement\+\_\+mode\+\_\+m}} WLD\+\_\+\+RADIO\+::supp\+Mbssid\+Ads\+Modes}
+
+\mbox{\Hypertarget{structWLD__RADIO_a75a9d7f5a3881396eacd0b46c10e3154}\label{structWLD__RADIO_a75a9d7f5a3881396eacd0b46c10e3154}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!supportedChannelBandwidth@{supportedChannelBandwidth}}
+\index{supportedChannelBandwidth@{supportedChannelBandwidth}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{supportedChannelBandwidth}{supportedChannelBandwidth}}
+{\footnotesize\ttfamily swl\+\_\+rad\+Bw\+\_\+m WLD\+\_\+\+RADIO\+::supported\+Channel\+Bandwidth}
+
+\mbox{\Hypertarget{structWLD__RADIO_aeb37323bfb86ca386e58fe454de5a887}\label{structWLD__RADIO_aeb37323bfb86ca386e58fe454de5a887}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!supportedDataTransmitRates@{supportedDataTransmitRates}}
+\index{supportedDataTransmitRates@{supportedDataTransmitRates}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{supportedDataTransmitRates}{supportedDataTransmitRates}}
+{\footnotesize\ttfamily swl\+\_\+mcs\+\_\+legacy\+Index\+\_\+m WLD\+\_\+\+RADIO\+::supported\+Data\+Transmit\+Rates}
+
+\mbox{\Hypertarget{structWLD__RADIO_a8929cc76f52e94d7dfecee99ce2e8401}\label{structWLD__RADIO_a8929cc76f52e94d7dfecee99ce2e8401}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!supportedFrequencyBands@{supportedFrequencyBands}}
+\index{supportedFrequencyBands@{supportedFrequencyBands}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{supportedFrequencyBands}{supportedFrequencyBands}}
+{\footnotesize\ttfamily swl\+\_\+freq\+Band\+Ext\+\_\+m WLD\+\_\+\+RADIO\+::supported\+Frequency\+Bands}
+
+\mbox{\Hypertarget{structWLD__RADIO_ac6c676337138c969d85b87de0eb613c3}\label{structWLD__RADIO_ac6c676337138c969d85b87de0eb613c3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!supportedStandards@{supportedStandards}}
+\index{supportedStandards@{supportedStandards}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{supportedStandards}{supportedStandards}}
+{\footnotesize\ttfamily swl\+\_\+radio\+Standard\+\_\+m WLD\+\_\+\+RADIO\+::supported\+Standards}
+
+\mbox{\Hypertarget{structWLD__RADIO_a678b64c5da4028068a55e89dfd881877}\label{structWLD__RADIO_a678b64c5da4028068a55e89dfd881877}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!targetChanspec@{targetChanspec}}
+\index{targetChanspec@{targetChanspec}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{targetChanspec}{targetChanspec}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__rad__detailedChanState__t}{wld\+\_\+rad\+\_\+detailed\+Chan\+State\+\_\+t}} WLD\+\_\+\+RADIO\+::target\+Chanspec}
+
+\mbox{\Hypertarget{structWLD__RADIO_affee986ffeb76f1fb06ee747510b6849}\label{structWLD__RADIO_affee986ffeb76f1fb06ee747510b6849}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!timerReqChanspec@{timerReqChanspec}}
+\index{timerReqChanspec@{timerReqChanspec}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{timerReqChanspec}{timerReqChanspec}}
+{\footnotesize\ttfamily amxp\+\_\+timer\+\_\+t$\ast$ WLD\+\_\+\+RADIO\+::timer\+Req\+Chanspec}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad9c5135dd131e12f20a1cb92bd702bd3}\label{structWLD__RADIO_ad9c5135dd131e12f20a1cb92bd702bd3}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!totalNrCurrentChanspecChanges@{totalNrCurrentChanspecChanges}}
+\index{totalNrCurrentChanspecChanges@{totalNrCurrentChanspecChanges}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{totalNrCurrentChanspecChanges}{totalNrCurrentChanspecChanges}}
+{\footnotesize\ttfamily uint16\+\_\+t WLD\+\_\+\+RADIO\+::total\+Nr\+Current\+Chanspec\+Changes}
+
+\mbox{\Hypertarget{structWLD__RADIO_a06289883f52654e6f28f677956195f6e}\label{structWLD__RADIO_a06289883f52654e6f28f677956195f6e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!totalNrTargetChanspecChanges@{totalNrTargetChanspecChanges}}
+\index{totalNrTargetChanspecChanges@{totalNrTargetChanspecChanges}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{totalNrTargetChanspecChanges}{totalNrTargetChanspecChanges}}
+{\footnotesize\ttfamily uint16\+\_\+t WLD\+\_\+\+RADIO\+::total\+Nr\+Target\+Chanspec\+Changes}
+
+\mbox{\Hypertarget{structWLD__RADIO_a54bc113e06956a5dfc341d7fdb67faa6}\label{structWLD__RADIO_a54bc113e06956a5dfc341d7fdb67faa6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!transmitPower@{transmitPower}}
+\index{transmitPower@{transmitPower}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{transmitPower}{transmitPower}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::transmit\+Power}
+
+\mbox{\Hypertarget{structWLD__RADIO_af10db5c4d629e37eced27a95015c7d8a}\label{structWLD__RADIO_af10db5c4d629e37eced27a95015c7d8a}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!transmitPowerSupported@{transmitPowerSupported}}
+\index{transmitPowerSupported@{transmitPowerSupported}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{transmitPowerSupported}{transmitPowerSupported}}
+{\footnotesize\ttfamily int8\+\_\+t WLD\+\_\+\+RADIO\+::transmit\+Power\+Supported\mbox{[}64\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_ae41dcb4c98cee35c697251ecdea21f6e}\label{structWLD__RADIO_ae41dcb4c98cee35c697251ecdea21f6e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!twtEnable@{twtEnable}}
+\index{twtEnable@{twtEnable}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{twtEnable}{twtEnable}}
+{\footnotesize\ttfamily bool WLD\+\_\+\+RADIO\+::twt\+Enable}
+
+\mbox{\Hypertarget{structWLD__RADIO_a320540579d405af964e0e570f3a5ba6e}\label{structWLD__RADIO_a320540579d405af964e0e570f3a5ba6e}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!txChainCtrl@{txChainCtrl}}
+\index{txChainCtrl@{txChainCtrl}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{txChainCtrl}{txChainCtrl}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::tx\+Chain\+Ctrl}
+
+\mbox{\Hypertarget{structWLD__RADIO_a1c2134b86511784bd509c59d9a2f2ed7}\label{structWLD__RADIO_a1c2134b86511784bd509c59d9a2f2ed7}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!userChanspec@{userChanspec}}
+\index{userChanspec@{userChanspec}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{userChanspec}{userChanspec}}
+{\footnotesize\ttfamily swl\+\_\+chanspec\+\_\+t WLD\+\_\+\+RADIO\+::user\+Chanspec}
+
+\mbox{\Hypertarget{structWLD__RADIO_a06f3adb0e8dc407855d086541dd9a77b}\label{structWLD__RADIO_a06f3adb0e8dc407855d086541dd9a77b}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!vendor@{vendor}}
+\index{vendor@{vendor}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{vendor}{vendor}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__types_8h_a84e378fee9def2000e1295d1bb85f6ae}{vendor\+\_\+t}}$\ast$ WLD\+\_\+\+RADIO\+::vendor}
+
+\mbox{\Hypertarget{structWLD__RADIO_a76f9dfd055e782279de0b7d699a2d630}\label{structWLD__RADIO_a76f9dfd055e782279de0b7d699a2d630}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!vendorCounters@{vendorCounters}}
+\index{vendorCounters@{vendorCounters}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{vendorCounters}{vendorCounters}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__EventCounterList}{T\+\_\+\+Event\+Counter\+List}} WLD\+\_\+\+RADIO\+::vendor\+Counters}
+
+\mbox{\Hypertarget{structWLD__RADIO_a659dcab99c5e486673bc10ad61363416}\label{structWLD__RADIO_a659dcab99c5e486673bc10ad61363416}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!vendorData@{vendorData}}
+\index{vendorData@{vendorData}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{vendorData}{vendorData}}
+{\footnotesize\ttfamily void$\ast$ WLD\+\_\+\+RADIO\+::vendor\+Data}
+
+\mbox{\Hypertarget{structWLD__RADIO_a3d2985cff1d8d1cf4e2650f1b9d62442}\label{structWLD__RADIO_a3d2985cff1d8d1cf4e2650f1b9d62442}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!vhtCapabilities@{vhtCapabilities}}
+\index{vhtCapabilities@{vhtCapabilities}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{vhtCapabilities}{vhtCapabilities}}
+{\footnotesize\ttfamily swl\+\_\+80211\+\_\+vht\+Cap\+Info\+\_\+m WLD\+\_\+\+RADIO\+::vht\+Capabilities}
+
+\mbox{\Hypertarget{structWLD__RADIO_ac3d3a19fae731b93c211a8d0666e6c61}\label{structWLD__RADIO_ac3d3a19fae731b93c211a8d0666e6c61}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!vhtMcsNssSet@{vhtMcsNssSet}}
+\index{vhtMcsNssSet@{vhtMcsNssSet}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{vhtMcsNssSet}{vhtMcsNssSet}}
+{\footnotesize\ttfamily uint8\+\_\+t WLD\+\_\+\+RADIO\+::vht\+Mcs\+Nss\+Set\mbox{[}SWL\+\_\+80211\+\_\+\+VHT\+\_\+\+MCS\+\_\+\+NSS\+\_\+\+SIZE\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a14d3a6ac2f45b3ac19aa44941bd3bfa6}\label{structWLD__RADIO_a14d3a6ac2f45b3ac19aa44941bd3bfa6}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!wDevId@{wDevId}}
+\index{wDevId@{wDevId}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{wDevId}{wDevId}}
+{\footnotesize\ttfamily uint64\+\_\+t WLD\+\_\+\+RADIO\+::w\+Dev\+Id}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad5a51dc4955fdbd6e9781071b2cafaf8}\label{structWLD__RADIO_ad5a51dc4955fdbd6e9781071b2cafaf8}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!wiphy@{wiphy}}
+\index{wiphy@{wiphy}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{wiphy}{wiphy}}
+{\footnotesize\ttfamily uint32\+\_\+t WLD\+\_\+\+RADIO\+::wiphy}
+
+\mbox{\Hypertarget{structWLD__RADIO_af8126c9a9e9df6677587f3c2681540c8}\label{structWLD__RADIO_af8126c9a9e9df6677587f3c2681540c8}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!wiphyName@{wiphyName}}
+\index{wiphyName@{wiphyName}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{wiphyName}{wiphyName}}
+{\footnotesize\ttfamily char WLD\+\_\+\+RADIO\+::wiphy\+Name\mbox{[}\mbox{\hyperlink{wld__linuxWExtUtils_8h_acd06da230a96d3b7e6f193c5b3142002}{IFNAMSIZ}}\mbox{]}}
+
+\mbox{\Hypertarget{structWLD__RADIO_a5f30b5585d49d7a8f92c592110682e01}\label{structWLD__RADIO_a5f30b5585d49d7a8f92c592110682e01}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!wlRadio\_SK@{wlRadio\_SK}}
+\index{wlRadio\_SK@{wlRadio\_SK}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{wlRadio\_SK}{wlRadio\_SK}}
+{\footnotesize\ttfamily int WLD\+\_\+\+RADIO\+::wl\+Radio\+\_\+\+SK}
+
+\mbox{\Hypertarget{structWLD__RADIO_ad74cff79a1660892be4928be7fc28abb}\label{structWLD__RADIO_ad74cff79a1660892be4928be7fc28abb}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!wpsConst@{wpsConst}}
+\index{wpsConst@{wpsConst}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{wpsConst}{wpsConst}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structT__CONST__WPS}{T\+\_\+\+CONST\+\_\+\+WPS}}$\ast$ WLD\+\_\+\+RADIO\+::wps\+Const}
+
+\mbox{\Hypertarget{structWLD__RADIO_a30b6c442a84f88ddefe277861393c896}\label{structWLD__RADIO_a30b6c442a84f88ddefe277861393c896}} 
+\index{WLD\_RADIO@{WLD\_RADIO}!zwdfsData@{zwdfsData}}
+\index{zwdfsData@{zwdfsData}!WLD\_RADIO@{WLD\_RADIO}}
+\doxysubsubsection{\texorpdfstring{zwdfsData}{zwdfsData}}
+{\footnotesize\ttfamily void$\ast$ WLD\+\_\+\+RADIO\+::zwdfs\+Data}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld_8h}{wld.\+h}}\end{DoxyCompactItemize}

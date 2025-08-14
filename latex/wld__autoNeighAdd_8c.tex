@@ -1,0 +1,122 @@
+\hypertarget{wld__autoNeighAdd_8c}{}\doxysection{src/\+Utils/wld\+\_\+auto\+Neigh\+Add.c File Reference}
+\label{wld__autoNeighAdd_8c}\index{src/Utils/wld\_autoNeighAdd.c@{src/Utils/wld\_autoNeighAdd.c}}
+{\ttfamily \#include $<$swl/swl\+\_\+common.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld/\+Utils/wld\+\_\+auto\+Neigh\+Add.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+auto\+Neigh\+Add.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__autoNeighAdd_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__autoNeighAdd_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}wld\+\_\+auto\+Neigh\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__autoNeighAdd_8c_a42310cc8906414899be13cc89571f07d}{wld\+\_\+auto\+Neigh\+Add\+\_\+vap\+Set\+Del\+Neighbour\+AP}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, bool set)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__autoNeighAdd_8c_a5ff4d72f0bcc5bf490fa0ba980d28477}{wld\+\_\+auto\+Neigh\+Add\+\_\+radio\+Set\+Del\+Neighbour\+AP}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, bool set)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__autoNeighAdd_8c_ac4b2f1ed5bf9ef7503cab0e290126635}{wld\+\_\+auto\+Neigh\+Add\+\_\+vap\+Reload\+Neighbour\+AP}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__autoNeighAdd_8c_aa481aace6909e8b176d8f2c8d70faef0}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Auto\+Neigh\+Add\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Neighbour\+Bands\char`\"{}, s\+\_\+set\+Neighbour\+Bands\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Enable\+\_\+pwf)))
+\item 
+void \mbox{\hyperlink{wld__autoNeighAdd_8c_acaf8548aae0bcfd9789ff3c230095428}{\+\_\+wld\+\_\+auto\+Neigh\+Addition\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__autoNeighAdd_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__autoNeighAdd_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}!ME@{ME}}
+\index{ME@{ME}!wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}wld\+\_\+auto\+Neigh\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__autoNeighAdd_8c_acaf8548aae0bcfd9789ff3c230095428}\label{wld__autoNeighAdd_8c_acaf8548aae0bcfd9789ff3c230095428}} 
+\index{wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}!\_wld\_autoNeighAddition\_setConf\_ocf@{\_wld\_autoNeighAddition\_setConf\_ocf}}
+\index{\_wld\_autoNeighAddition\_setConf\_ocf@{\_wld\_autoNeighAddition\_setConf\_ocf}!wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_autoNeighAddition\_setConf\_ocf()}{\_wld\_autoNeighAddition\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+auto\+Neigh\+Addition\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__autoNeighAdd_8c_aa481aace6909e8b176d8f2c8d70faef0}\label{wld__autoNeighAdd_8c_aa481aace6909e8b176d8f2c8d70faef0}} 
+\index{wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Auto\+Neigh\+Add\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Neighbour\+Bands\char`\"{}, s\+\_\+set\+Neighbour\+Bands\+\_\+pwf), SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Enable\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__autoNeighAdd_8c_a5ff4d72f0bcc5bf490fa0ba980d28477}\label{wld__autoNeighAdd_8c_a5ff4d72f0bcc5bf490fa0ba980d28477}} 
+\index{wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}!wld\_autoNeighAdd\_radioSetDelNeighbourAP@{wld\_autoNeighAdd\_radioSetDelNeighbourAP}}
+\index{wld\_autoNeighAdd\_radioSetDelNeighbourAP@{wld\_autoNeighAdd\_radioSetDelNeighbourAP}!wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoNeighAdd\_radioSetDelNeighbourAP()}{wld\_autoNeighAdd\_radioSetDelNeighbourAP()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+auto\+Neigh\+Add\+\_\+radio\+Set\+Del\+Neighbour\+AP (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{bool}]{set }\end{DoxyParamCaption})}
+
+Set/delete accesspoints of specific radio to the neighbour list of other accesspoints in other radios
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Rad} & pointer to radio context \\
+\hline
+{\em set} & true to add AP to other accesspoints, false to delete it\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: SWL\+\_\+\+RC\+\_\+\+OK
+\item Failure\+: SWL\+\_\+\+RC\+\_\+\+ERROR if auto neighbour addition feature disabled or the radio operating\+Frequency\+Band not in Neighbour\+Bands 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__autoNeighAdd_8c_ac4b2f1ed5bf9ef7503cab0e290126635}\label{wld__autoNeighAdd_8c_ac4b2f1ed5bf9ef7503cab0e290126635}} 
+\index{wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}!wld\_autoNeighAdd\_vapReloadNeighbourAP@{wld\_autoNeighAdd\_vapReloadNeighbourAP}}
+\index{wld\_autoNeighAdd\_vapReloadNeighbourAP@{wld\_autoNeighAdd\_vapReloadNeighbourAP}!wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoNeighAdd\_vapReloadNeighbourAP()}{wld\_autoNeighAdd\_vapReloadNeighbourAP()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+auto\+Neigh\+Add\+\_\+vap\+Reload\+Neighbour\+AP (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+Reload a specific accesspoint to the neighbour list of other accesspoints by delete then set
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & pointer to accesspoint context\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: SWL\+\_\+\+RC\+\_\+\+OK
+\item Failure\+: SWL\+\_\+\+RC\+\_\+\+ERROR if auto neighbour addition feature disabled or the radio operating\+Frequency\+Band not in Neighbour\+Bands or either failed to delete/set neighbor list 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\mbox{\Hypertarget{wld__autoNeighAdd_8c_a42310cc8906414899be13cc89571f07d}\label{wld__autoNeighAdd_8c_a42310cc8906414899be13cc89571f07d}} 
+\index{wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}!wld\_autoNeighAdd\_vapSetDelNeighbourAP@{wld\_autoNeighAdd\_vapSetDelNeighbourAP}}
+\index{wld\_autoNeighAdd\_vapSetDelNeighbourAP@{wld\_autoNeighAdd\_vapSetDelNeighbourAP}!wld\_autoNeighAdd.c@{wld\_autoNeighAdd.c}}
+\doxysubsubsection{\texorpdfstring{wld\_autoNeighAdd\_vapSetDelNeighbourAP()}{wld\_autoNeighAdd\_vapSetDelNeighbourAP()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+auto\+Neigh\+Add\+\_\+vap\+Set\+Del\+Neighbour\+AP (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{bool}]{set }\end{DoxyParamCaption})}
+
+Set/delete a specific accesspoint to the neighbour list of other accesspoints
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+AP} & pointer to accesspoint context \\
+\hline
+{\em set} & true to add AP to other accesspoints, false to delete it\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: SWL\+\_\+\+RC\+\_\+\+OK
+\item Failure\+: SWL\+\_\+\+RC\+\_\+\+ERROR if auto neighbour addition feature disabled or the AP radio\textquotesingle{}s operating\+Frequency\+Band not in Neighbour\+Bands 
+\end{DoxyItemize}
+\end{DoxyReturn}

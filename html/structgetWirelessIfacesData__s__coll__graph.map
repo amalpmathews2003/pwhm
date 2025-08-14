@@ -1,0 +1,8 @@
+<map id="getWirelessIfacesData_s" name="getWirelessIfacesData_s">
+<area shape="rect" id="node1" title=" " alt="" coords="28,377,211,404"/>
+<area shape="rect" id="node2" href="$structwld__nl80211__ifaceInfo__t.html" title=" " alt="" coords="29,288,209,315"/>
+<area shape="rect" id="node3" href="$structwld__nl80211__chanSpec__t.html" title=" " alt="" coords="5,95,191,121"/>
+<area shape="rect" id="node4" href="$structwld__nl80211__ifaceMloLinkInfo__t.html" title=" " alt="" coords="189,184,383,225"/>
+<area shape="rect" id="node5" href="$structwld__nl80211__mloLinkInfo__t.html" title=" " alt="" coords="215,95,415,121"/>
+<area shape="rect" id="node6" href="$structwld__nl80211__mloLinkInfoStats__t.html" title=" " alt="" coords="199,5,432,32"/>
+</map>

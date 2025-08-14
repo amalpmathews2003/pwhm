@@ -1,0 +1,268 @@
+\hypertarget{wld__sensing_8c}{}\doxysection{src/wld\+\_\+sensing.c File Reference}
+\label{wld__sensing_8c}\index{src/wld\_sensing.c@{src/wld\_sensing.c}}
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+sensing.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__sensing_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}csi\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}} $\ast$ \mbox{\hyperlink{wld__sensing_8c_a92f7b8702dd75a0468a9f1265159ef47}{wld\+\_\+sensing\+\_\+find\+Client\+By\+Mac}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+mac\+Char\+\_\+t mac\+Addr)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_aacd06f73593f5a06a1d67c3647d9ba52}{\+\_\+\+Sensing\+\_\+add\+Client}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_a5e1058c854a66f61f5cd7ed0ca345be0}{\+\_\+wld\+\_\+wifi\+Sensing\+\_\+add\+Client\+Inst\+\_\+oaf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_a33742110a0f08d0515d7e79f6a8217a7}{\+\_\+wld\+\_\+wifi\+Sensing\+\_\+set\+Monitor\+Interval\+\_\+pwf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$parameter, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_a221d9e15e458cacf3f1d3ce77fc1db64}{\+\_\+\+Sensing\+\_\+del\+Client}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__sensing_8c_aeb33cfc0b4ad5fe24ad503b8d79ec387}{wld\+\_\+sensing\+\_\+del\+Csi\+Client\+Entry}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}}, swl\+\_\+mac\+Bin\+\_\+t $\ast$mac\+Addr)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_afeedcc2f90be4c3f632a5ac7e8fc71c1}{\+\_\+wld\+\_\+wifi\+Sensing\+\_\+del\+Client\+\_\+odf}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+param\+\_\+t $\ast$param, amxd\+\_\+action\+\_\+t reason, const amxc\+\_\+var\+\_\+t $\ast$const \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$const retval, void $\ast$priv)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_af3b32ce9003ca6f9889c0eada4be7ce4}{\+\_\+\+Sensing\+\_\+csi\+Stats}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_a8d74a551d838d8bee8d62fc82ce13cdd}{\+\_\+\+Sensing\+\_\+reset\+Stats}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}})
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__sensing_8c_a598b1f2929de4e6cff4d0e5dcd20595f}{\+\_\+\+Sensing\+\_\+debug}} (amxd\+\_\+object\+\_\+t $\ast$object, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}} \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\item 
+\mbox{\hyperlink{wld__sensing_8c_ad0d13b5b326d6d036dcc0923a0b77d7b}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Sensing\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Sensing\+Enable\+\_\+pwf)))
+\item 
+void \mbox{\hyperlink{wld__sensing_8c_aae2915d7633cacec6bc44e1fd9995988}{\+\_\+wld\+\_\+wifi\+Sensing\+\_\+set\+Conf\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+void \mbox{\hyperlink{wld__sensing_8c_a0a8eb1374c20be8bb235ae857577491c}{wld\+\_\+sensing\+\_\+init}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\item 
+void \mbox{\hyperlink{wld__sensing_8c_a21f4d2b4c0975b6cd4389ac842326231}{wld\+\_\+sensing\+\_\+cleanup}} (\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$\mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{p\+Rad}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__sensing_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__sensing_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!ME@{ME}}
+\index{ME@{ME}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}csi\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__sensing_8c_aacd06f73593f5a06a1d67c3647d9ba52}\label{wld__sensing_8c_aacd06f73593f5a06a1d67c3647d9ba52}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_Sensing\_addClient@{\_Sensing\_addClient}}
+\index{\_Sensing\_addClient@{\_Sensing\_addClient}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_Sensing\_addClient()}{\_Sensing\_addClient()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Sensing\+\_\+add\+Client (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Add one client with specified MAC address \begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: amxd\+\_\+status\+\_\+ok
+\item Failure\+: amxd\+\_\+status\+\_\+unknown\+\_\+error 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_aacd06f73593f5a06a1d67c3647d9ba52_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_af3b32ce9003ca6f9889c0eada4be7ce4}\label{wld__sensing_8c_af3b32ce9003ca6f9889c0eada4be7ce4}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_Sensing\_csiStats@{\_Sensing\_csiStats}}
+\index{\_Sensing\_csiStats@{\_Sensing\_csiStats}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_Sensing\_csiStats()}{\_Sensing\_csiStats()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Sensing\+\_\+csi\+Stats (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+State of the overal CSIMON module \begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: amxd\+\_\+status\+\_\+ok
+\item Failure\+: amxd\+\_\+status\+\_\+unknown\+\_\+error 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_af3b32ce9003ca6f9889c0eada4be7ce4_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_a598b1f2929de4e6cff4d0e5dcd20595f}\label{wld__sensing_8c_a598b1f2929de4e6cff4d0e5dcd20595f}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_Sensing\_debug@{\_Sensing\_debug}}
+\index{\_Sensing\_debug@{\_Sensing\_debug}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_Sensing\_debug()}{\_Sensing\_debug()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Sensing\+\_\+debug (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+For Debug \+: show every sensing clients Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a598b1f2929de4e6cff4d0e5dcd20595f_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_a221d9e15e458cacf3f1d3ce77fc1db64}\label{wld__sensing_8c_a221d9e15e458cacf3f1d3ce77fc1db64}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_Sensing\_delClient@{\_Sensing\_delClient}}
+\index{\_Sensing\_delClient@{\_Sensing\_delClient}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_Sensing\_delClient()}{\_Sensing\_delClient()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Sensing\+\_\+del\+Client (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Delete one client with specified MAC address \begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: amxd\+\_\+status\+\_\+ok
+\item Failure\+: amxd\+\_\+status\+\_\+unknown\+\_\+error 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a221d9e15e458cacf3f1d3ce77fc1db64_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_a8d74a551d838d8bee8d62fc82ce13cdd}\label{wld__sensing_8c_a8d74a551d838d8bee8d62fc82ce13cdd}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_Sensing\_resetStats@{\_Sensing\_resetStats}}
+\index{\_Sensing\_resetStats@{\_Sensing\_resetStats}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_Sensing\_resetStats()}{\_Sensing\_resetStats()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+\+Sensing\+\_\+reset\+Stats (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$retval}]{\+\_\+\+UNUSED }\end{DoxyParamCaption})}
+
+Reset CSIMON counters \begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item Success\+: amxd\+\_\+status\+\_\+ok
+\item Failure\+: amxd\+\_\+status\+\_\+unknown\+\_\+error 
+\end{DoxyItemize}
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a8d74a551d838d8bee8d62fc82ce13cdd_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_a5e1058c854a66f61f5cd7ed0ca345be0}\label{wld__sensing_8c_a5e1058c854a66f61f5cd7ed0ca345be0}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_wld\_wifiSensing\_addClientInst\_oaf@{\_wld\_wifiSensing\_addClientInst\_oaf}}
+\index{\_wld\_wifiSensing\_addClientInst\_oaf@{\_wld\_wifiSensing\_addClientInst\_oaf}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_wifiSensing\_addClientInst\_oaf()}{\_wld\_wifiSensing\_addClientInst\_oaf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+wifi\+Sensing\+\_\+add\+Client\+Inst\+\_\+oaf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Called to add CSI client datamodel entry Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a5e1058c854a66f61f5cd7ed0ca345be0_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_afeedcc2f90be4c3f632a5ac7e8fc71c1}\label{wld__sensing_8c_afeedcc2f90be4c3f632a5ac7e8fc71c1}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_wld\_wifiSensing\_delClient\_odf@{\_wld\_wifiSensing\_delClient\_odf}}
+\index{\_wld\_wifiSensing\_delClient\_odf@{\_wld\_wifiSensing\_delClient\_odf}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_wifiSensing\_delClient\_odf()}{\_wld\_wifiSensing\_delClient\_odf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+wifi\+Sensing\+\_\+del\+Client\+\_\+odf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{param,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Called when a client instance is destroyed Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_afeedcc2f90be4c3f632a5ac7e8fc71c1_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_aae2915d7633cacec6bc44e1fd9995988}\label{wld__sensing_8c_aae2915d7633cacec6bc44e1fd9995988}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_wld\_wifiSensing\_setConf\_ocf@{\_wld\_wifiSensing\_setConf\_ocf}}
+\index{\_wld\_wifiSensing\_setConf\_ocf@{\_wld\_wifiSensing\_setConf\_ocf}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_wifiSensing\_setConf\_ocf()}{\_wld\_wifiSensing\_setConf\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+wifi\+Sensing\+\_\+set\+Conf\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__sensing_8c_a33742110a0f08d0515d7e79f6a8217a7}\label{wld__sensing_8c_a33742110a0f08d0515d7e79f6a8217a7}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!\_wld\_wifiSensing\_setMonitorInterval\_pwf@{\_wld\_wifiSensing\_setMonitorInterval\_pwf}}
+\index{\_wld\_wifiSensing\_setMonitorInterval\_pwf@{\_wld\_wifiSensing\_setMonitorInterval\_pwf}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_wifiSensing\_setMonitorInterval\_pwf()}{\_wld\_wifiSensing\_setMonitorInterval\_pwf()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+wld\+\_\+wifi\+Sensing\+\_\+set\+Monitor\+Interval\+\_\+pwf (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{object,  }\item[{amxd\+\_\+param\+\_\+t $\ast$}]{parameter,  }\item[{amxd\+\_\+action\+\_\+t}]{reason,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$const}]{retval,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Update one client monitoring interval \begin{DoxyReturn}{Returns}
+amxd\+\_\+status\+\_\+ok if success, error code otherwise 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a33742110a0f08d0515d7e79f6a8217a7_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_ad0d13b5b326d6d036dcc0923a0b77d7b}\label{wld__sensing_8c_ad0d13b5b326d6d036dcc0923a0b77d7b}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Sensing\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Sensing\+Enable\+\_\+pwf))}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__sensing_8c_a21f4d2b4c0975b6cd4389ac842326231}\label{wld__sensing_8c_a21f4d2b4c0975b6cd4389ac842326231}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!wld\_sensing\_cleanup@{wld\_sensing\_cleanup}}
+\index{wld\_sensing\_cleanup@{wld\_sensing\_cleanup}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_cleanup()}{wld\_sensing\_cleanup()}}
+{\footnotesize\ttfamily void wld\+\_\+sensing\+\_\+cleanup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a21f4d2b4c0975b6cd4389ac842326231_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_aeb33cfc0b4ad5fe24ad503b8d79ec387}\label{wld__sensing_8c_aeb33cfc0b4ad5fe24ad503b8d79ec387}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!wld\_sensing\_delCsiClientEntry@{wld\_sensing\_delCsiClientEntry}}
+\index{wld\_sensing\_delCsiClientEntry@{wld\_sensing\_delCsiClientEntry}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_delCsiClientEntry()}{wld\_sensing\_delCsiClientEntry()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+sensing\+\_\+del\+Csi\+Client\+Entry (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+mac\+Bin\+\_\+t $\ast$}]{mac\+Addr }\end{DoxyParamCaption})}
+
+Called to delete CSI client datamodel entry Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_aeb33cfc0b4ad5fe24ad503b8d79ec387_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__sensing_8c_a92f7b8702dd75a0468a9f1265159ef47}\label{wld__sensing_8c_a92f7b8702dd75a0468a9f1265159ef47}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!wld\_sensing\_findClientByMac@{wld\_sensing\_findClientByMac}}
+\index{wld\_sensing\_findClientByMac@{wld\_sensing\_findClientByMac}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_findClientByMac()}{wld\_sensing\_findClientByMac()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__csiClient__t}{wld\+\_\+csi\+Client\+\_\+t}} $\ast$ wld\+\_\+sensing\+\_\+find\+Client\+By\+Mac (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad,  }\item[{swl\+\_\+mac\+Char\+\_\+t}]{mac\+Addr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__sensing_8c_a0a8eb1374c20be8bb235ae857577491c}\label{wld__sensing_8c_a0a8eb1374c20be8bb235ae857577491c}} 
+\index{wld\_sensing.c@{wld\_sensing.c}!wld\_sensing\_init@{wld\_sensing\_init}}
+\index{wld\_sensing\_init@{wld\_sensing\_init}!wld\_sensing.c@{wld\_sensing.c}}
+\doxysubsubsection{\texorpdfstring{wld\_sensing\_init()}{wld\_sensing\_init()}}
+{\footnotesize\ttfamily void wld\+\_\+sensing\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a495772ea52d0019034cc400feeffa0c3}{T\+\_\+\+Radio}} $\ast$}]{p\+Rad }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__sensing_8c_a0a8eb1374c20be8bb235ae857577491c_icgraph}
+\end{center}
+\end{figure}

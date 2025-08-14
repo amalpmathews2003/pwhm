@@ -1,0 +1,28 @@
+<map id="wld_secDmn_cleanup" name="wld_secDmn_cleanup">
+<area shape="rect" id="node1" title=" " alt="" coords="5,135,168,161"/>
+<area shape="rect" id="node2" href="$wld__daemon_8c.html#a17603235fe716db48dd549fbb8ddf8c0" title=" " alt="" coords="225,57,417,84"/>
+<area shape="rect" id="node6" href="$wld__secDmn_8c.html#a1b0cc11a41a11e2033f3188fd05a0d80" title=" " alt="" coords="221,109,421,136"/>
+<area shape="rect" id="node8" href="$wld__secDmnGrp_8c.html#a74873a8be9bba3c30e3f4c009b793922" title=" " alt="" coords="216,160,425,187"/>
+<area shape="rect" id="node9" href="$wld__wpaCtrlMngr_8c.html#a703dcb69cf5fbbf2473edf3505b12ca1" title=" " alt="" coords="224,223,417,249"/>
+<area shape="rect" id="node3" href="$wld__daemon_8c.html#a4075ee8de9e9daa8039d0f758d20d655" title=" " alt="" coords="473,56,668,83"/>
+<area shape="rect" id="node4" href="$wld_8c.html#a41e1e95e9813260c184aad989f33bb05" title=" " alt="" coords="743,56,911,83"/>
+<area shape="rect" id="node5" href="$wld__daemon_8c.html#adc439fdc85e1c992a5ba6e79b4ebd3a3" title=" " alt="" coords="742,5,913,32"/>
+<area shape="rect" id="node7" href="$wld__secDmnGrp_8c.html#ae5da21db2381b2d5a1f16df5d388d5df" title=" " alt="" coords="479,109,663,136"/>
+<area shape="rect" id="node10" href="$wld__wpaCtrlInterface_8c.html#a303019c3b064bd2babeb3582ecd91d7f" title="close the wpaCtrl interface to wpa_ctrl server This function closes all relative connections (cmd and..." alt="" coords="491,219,651,261"/>
+<area shape="rect" id="node11" href="$wld__wpaCtrlConnection_8c.html#ac77a8013582067279ce3a0ccda177ed8" title=" " alt="" coords="740,225,915,266"/>
+<area shape="rect" id="node12" href="$wld__wpaCtrlConnection_8c.html#a47a34d899bc01dfe767b26ee4f7b87db" title=" " alt="" coords="1266,137,1441,178"/>
+<area shape="rect" id="node13" href="$wld__wpaCtrlConnection_8c.html#af7414d719a14459bfbf836e77f643aff" title=" " alt="" coords="731,345,924,386"/>
+<area shape="rect" id="node19" href="$wld__wpaCtrlInterface_8c.html#a6bc5243e885837a4bdb99fec68952a95" title=" " alt="" coords="743,107,911,149"/>
+<area shape="rect" id="node22" href="$wld__wpaCtrlMngr_8c.html#ad3e7ad2284a85ee77e110a90f0fd34ae" title="check that wpaCtrl manager is connected: i.e can receive events from its main interface." alt="" coords="716,291,939,317"/>
+<area shape="rect" id="node14" href="$wld__wpaCtrlConnection_8c.html#a5ddba0537d0917bc518e9ef71b539f75" title=" " alt="" coords="987,349,1201,390"/>
+<area shape="rect" id="node15" href="$wld__wpaCtrlConnection_8c.html#ab5b29b7ce5f29ef5dfbe951e5b700428" title=" " alt="" coords="1249,415,1457,441"/>
+<area shape="rect" id="node16" href="$wld__wpaCtrlConnection_8c.html#ae8867992d243efdfa13e360b50730f88" title=" " alt="" coords="1266,349,1441,390"/>
+<area shape="rect" id="node17" href="$wld__wpaCtrlConnection_8c.html#abfe3f8b17cf527b1e6fe85a564c8604b" title=" " alt="" coords="1505,315,1680,357"/>
+<area shape="rect" id="node18" href="$wld__wpaCtrlConnection_8c.html#aa82226c76dbbf306e509b7c6d3088277" title=" " alt="" coords="1505,381,1680,422"/>
+<area shape="rect" id="node20" href="$wld__wpaCtrlConnection_8c.html#a379089510626b43f9386a6db71f4a3ef" title=" " alt="" coords="991,56,1197,83"/>
+<area shape="rect" id="node21" href="$wld__wpaCtrlInterface_8c.html#a9acfa80398f0e1389219c511e1b3b073" title=" " alt="" coords="1014,107,1174,149"/>
+<area shape="rect" id="node23" href="$wld__secDmn_8c.html#ad8ebf9f869b635102d27d9a476e4d9eb" title=" " alt="" coords="1006,232,1182,259"/>
+<area shape="rect" id="node25" href="$wld__wpaCtrlMngr_8c.html#a3dc93dfda0d67c0e7254cc1ffeeb3ebe" title=" " alt="" coords="999,283,1189,325"/>
+<area shape="rect" id="node24" href="$wld__daemon_8c.html#a6ba98a859d038541e1c2ee48d8566547" title=" " alt="" coords="1277,232,1429,259"/>
+<area shape="rect" id="node26" href="$wld__wpaCtrlInterface_8c.html#a8b38bc9ca95b60e002d38cdb1374d1d0" title=" " alt="" coords="1273,283,1433,325"/>
+</map>

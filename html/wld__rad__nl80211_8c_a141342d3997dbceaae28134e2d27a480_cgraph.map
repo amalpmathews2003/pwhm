@@ -1,0 +1,10 @@
+<map id="wld_rad_nl80211_getTxPower" name="wld_rad_nl80211_getTxPower">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,221,83"/>
+<area shape="rect" id="node2" href="$wld__nl80211__core_8c.html#ab89990c364e3256f803e95aee1684407" title=" " alt="" coords="271,5,481,32"/>
+<area shape="rect" id="node4" href="$wld__nl80211__api_8c.html#a631f7f8ec3a7cf2a85ad4ac15ffe4b2f" title=" " alt="" coords="282,56,470,83"/>
+<area shape="rect" id="node8" href="$wld__radio_8c.html#ae211359fd0e7548777cf5bd312ffb8c3" title=" " alt="" coords="269,107,483,149"/>
+<area shape="rect" id="node3" href="$wld__nl80211__core_8c.html#ac64e98962155641a465909b3c8fc0779" title=" " alt="" coords="581,5,695,32"/>
+<area shape="rect" id="node5" href="$wld__nl80211__api_8c.html#a590a1e83f26c3461f2d36c7f238d83ce" title=" " alt="" coords="531,56,745,83"/>
+<area shape="rect" id="node6" href="$wld__nl80211__core_8c.html#a51795ba7297b263584b02e6dd2d8ddb6" title=" " alt="" coords="793,56,996,83"/>
+<area shape="rect" id="node7" href="$wld__nl80211__core_8c.html#a3c5a525596463f925b95bbc76036d07e" title=" " alt="" coords="1044,56,1216,83"/>
+</map>

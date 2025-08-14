@@ -1,0 +1,136 @@
+\hypertarget{wld__endpoint_8h_source}{}\doxysection{wld\+\_\+endpoint.\+h}
+\label{wld__endpoint_8h_source}\index{include/wld/wld\_endpoint.h@{include/wld/wld\_endpoint.h}}
+\mbox{\hyperlink{wld__endpoint_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{**}}
+\DoxyCodeLine{3 \textcolor{comment}{** SPDX-\/License-\/Identifier: BSD-\/2-\/Clause-\/Patent}}
+\DoxyCodeLine{4 \textcolor{comment}{**}}
+\DoxyCodeLine{5 \textcolor{comment}{** SPDX-\/FileCopyrightText: Copyright (c) 2022 SoftAtHome}}
+\DoxyCodeLine{6 \textcolor{comment}{**}}
+\DoxyCodeLine{7 \textcolor{comment}{** Redistribution and use in source and binary forms, with or}}
+\DoxyCodeLine{8 \textcolor{comment}{** without modification, are permitted provided that the following}}
+\DoxyCodeLine{9 \textcolor{comment}{** conditions are met:}}
+\DoxyCodeLine{10 \textcolor{comment}{**}}
+\DoxyCodeLine{11 \textcolor{comment}{** 1. Redistributions of source code must retain the above copyright}}
+\DoxyCodeLine{12 \textcolor{comment}{** notice, this list of conditions and the following disclaimer.}}
+\DoxyCodeLine{13 \textcolor{comment}{**}}
+\DoxyCodeLine{14 \textcolor{comment}{** 2. Redistributions in binary form must reproduce the above}}
+\DoxyCodeLine{15 \textcolor{comment}{** copyright notice, this list of conditions and the following}}
+\DoxyCodeLine{16 \textcolor{comment}{** disclaimer in the documentation and/or other materials provided}}
+\DoxyCodeLine{17 \textcolor{comment}{** with the distribution.}}
+\DoxyCodeLine{18 \textcolor{comment}{**}}
+\DoxyCodeLine{19 \textcolor{comment}{** Subject to the terms and conditions of this license, each}}
+\DoxyCodeLine{20 \textcolor{comment}{** copyright holder and contributor hereby grants to those receiving}}
+\DoxyCodeLine{21 \textcolor{comment}{** rights under this license a perpetual, worldwide, non-\/exclusive,}}
+\DoxyCodeLine{22 \textcolor{comment}{** no-\/charge, royalty-\/free, irrevocable (except for failure to}}
+\DoxyCodeLine{23 \textcolor{comment}{** satisfy the conditions of this license) patent license to make,}}
+\DoxyCodeLine{24 \textcolor{comment}{** have made, use, offer to sell, sell, import, and otherwise}}
+\DoxyCodeLine{25 \textcolor{comment}{** transfer this software, where such license applies only to those}}
+\DoxyCodeLine{26 \textcolor{comment}{** patent claims, already acquired or hereafter acquired, licensable}}
+\DoxyCodeLine{27 \textcolor{comment}{** by such copyright holder or contributor that are necessarily}}
+\DoxyCodeLine{28 \textcolor{comment}{** infringed by:}}
+\DoxyCodeLine{29 \textcolor{comment}{**}}
+\DoxyCodeLine{30 \textcolor{comment}{** (a) their Contribution(s) (the licensed copyrights of copyright}}
+\DoxyCodeLine{31 \textcolor{comment}{** holders and non-\/copyrightable additions of contributors, in}}
+\DoxyCodeLine{32 \textcolor{comment}{** source or binary form) alone; or}}
+\DoxyCodeLine{33 \textcolor{comment}{**}}
+\DoxyCodeLine{34 \textcolor{comment}{** (b) combination of their Contribution(s) with the work of}}
+\DoxyCodeLine{35 \textcolor{comment}{** authorship to which such Contribution(s) was added by such}}
+\DoxyCodeLine{36 \textcolor{comment}{** copyright holder or contributor, if, at the time the Contribution}}
+\DoxyCodeLine{37 \textcolor{comment}{** is added, such addition causes such combination to be necessarily}}
+\DoxyCodeLine{38 \textcolor{comment}{** infringed. The patent license shall not apply to any other}}
+\DoxyCodeLine{39 \textcolor{comment}{** combinations which include the Contribution.}}
+\DoxyCodeLine{40 \textcolor{comment}{**}}
+\DoxyCodeLine{41 \textcolor{comment}{** Except as expressly stated above, no rights or licenses from any}}
+\DoxyCodeLine{42 \textcolor{comment}{** copyright holder or contributor is granted under this license,}}
+\DoxyCodeLine{43 \textcolor{comment}{** whether expressly, by implication, estoppel or otherwise.}}
+\DoxyCodeLine{44 \textcolor{comment}{**}}
+\DoxyCodeLine{45 \textcolor{comment}{** DISCLAIMER}}
+\DoxyCodeLine{46 \textcolor{comment}{**}}
+\DoxyCodeLine{47 \textcolor{comment}{** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND}}
+\DoxyCodeLine{48 \textcolor{comment}{** CONTRIBUTORS "{}AS IS"{} AND ANY EXPRESS OR IMPLIED WARRANTIES,}}
+\DoxyCodeLine{49 \textcolor{comment}{** INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF}}
+\DoxyCodeLine{50 \textcolor{comment}{** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE}}
+\DoxyCodeLine{51 \textcolor{comment}{** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR}}
+\DoxyCodeLine{52 \textcolor{comment}{** CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,}}
+\DoxyCodeLine{53 \textcolor{comment}{** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT}}
+\DoxyCodeLine{54 \textcolor{comment}{** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF}}
+\DoxyCodeLine{55 \textcolor{comment}{** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED}}
+\DoxyCodeLine{56 \textcolor{comment}{** AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT}}
+\DoxyCodeLine{57 \textcolor{comment}{** LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN}}
+\DoxyCodeLine{58 \textcolor{comment}{** ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE}}
+\DoxyCodeLine{59 \textcolor{comment}{** POSSIBILITY OF SUCH DAMAGE.}}
+\DoxyCodeLine{60 \textcolor{comment}{**}}
+\DoxyCodeLine{61 \textcolor{comment}{****************************************************************************/}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#ifndef \_\_WLD\_ENDPOINT\_H\_\_}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#define \_\_WLD\_ENDPOINT\_H\_\_}}
+\DoxyCodeLine{65 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld_8h}{wld.h}}"{}}}
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{wld__wps_8h}{wld\_wps.h}}"{}}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_ad73344026edce36027bbbbe5ac858474}{syncData\_EndPoint2OBJ}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* endpoint);}
+\DoxyCodeLine{69 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_acfe827459c8eca4b2ac99e3a9bbab91b}{syncData\_OBJ2EndPoint}}(amxd\_object\_t* \textcolor{keywordtype}{object});}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__endpoint_8h_a1fb14cac84fe686df9b56474d04deaee}{wld\_ep\_fromObj}}(amxd\_object\_t* epObj);}
+\DoxyCodeLine{72 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_af0173f1ae000a5501baca4c951c8608f}{wld\_endpoint\_setProfile\_ocf}}(\textcolor{keywordtype}{void}* priv, amxd\_object\_t* \textcolor{keywordtype}{object}, \textcolor{keyword}{const} amxc\_var\_t* \textcolor{keyword}{const} newParamValues);}
+\DoxyCodeLine{73 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_aa47bbb4e03cdee3a22317506814a8b9d}{wld\_endpoint\_setCurrentProfile}}(amxd\_object\_t* endpointObject, \mbox{\hyperlink{struct__EndPointProfile}{T\_EndPointProfile}}* Profile);}
+\DoxyCodeLine{74 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_ad3eb2b3b58b4348477b680b189d7bcfb}{wld\_endpoint\_setProfileSecurity\_ocf}}(\textcolor{keywordtype}{void}* priv, amxd\_object\_t* \textcolor{keywordtype}{object}, \textcolor{keyword}{const} amxc\_var\_t* \textcolor{keyword}{const} newParamValues);}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_a83409624dceabc5184e16ec036fd6844}{wld\_endpoint\_isReady}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{77 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_a0d17c7146ce74033d5a6fb025c86fb09}{wld\_endpoint\_updateStats}}(amxd\_object\_t* obj, \mbox{\hyperlink{structT__EndPointStats}{T\_EndPointStats}}* stats);}
+\DoxyCodeLine{78 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_afbda4db356f34b6f20f8d2589cd620cd}{wld\_endpoint\_resetStats}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{79 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_a4f5c46004887379a5ce62b0ce6cd320f}{wld\_endpoint\_validate\_profile}}(\textcolor{keyword}{const} \mbox{\hyperlink{struct__EndPointProfile}{T\_EndPointProfile}}* Profile);}
+\DoxyCodeLine{80 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_a250b5d66d93b3ea047a8a49f82e022b7}{wld\_endpoint\_setConnectionStatus}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, \mbox{\hyperlink{wld_8h_a631c9a0ebe419d38489e318178090f33}{wld\_epConnectionStatus\_e}} connectionStatus, \mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\_epError\_e}} error);}
+\DoxyCodeLine{81 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_ae209ab1dc237eb85b8660d854962e680}{wld\_endpoint\_sync\_connection}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, \textcolor{keywordtype}{bool} connected, \mbox{\hyperlink{wld_8h_a12901c24a652346aa22aabdc118cdf1d}{wld\_epError\_e}} error);}
+\DoxyCodeLine{82 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_a9e762699588791b650983b398accb0af}{wld\_endpoint\_sendPairingNotification}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, uint32\_t \mbox{\hyperlink{wld_8odl_a6a643b777c5be009b269b8f8e977f14d}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* reason, \mbox{\hyperlink{structT__WPSCredentials}{T\_WPSCredentials}}* credentials);}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84 amxd\_status\_t \mbox{\hyperlink{wld__endpoint_8h_a6c5b36308b65b2ad681a8fbda5e0eb44}{\_EndPoint\_WPS\_pushButton}}(amxd\_object\_t* obj,}
+\DoxyCodeLine{85                                        amxd\_function\_t* func,}
+\DoxyCodeLine{86                                        amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{87                                        amxc\_var\_t* ret);}
+\DoxyCodeLine{88 amxd\_status\_t \mbox{\hyperlink{wld__endpoint_8h_a4debb2360ab901c34d08a526e10c7383}{\_EndPoint\_WPS\_cancelPairing}}(amxd\_object\_t* obj,}
+\DoxyCodeLine{89                                           amxd\_function\_t* func,}
+\DoxyCodeLine{90                                           amxc\_var\_t* \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{91                                           amxc\_var\_t* ret);}
+\DoxyCodeLine{92 amxd\_status\_t \mbox{\hyperlink{wld__endpoint_8h_a88e11e1e538d72e83547ee176eb513fb}{\_wld\_endpoint\_getStats\_orf}}(amxd\_object\_t* \textcolor{keyword}{const} \textcolor{keywordtype}{object},}
+\DoxyCodeLine{93                                          amxd\_param\_t* \textcolor{keyword}{const} param,}
+\DoxyCodeLine{94                                          amxd\_action\_t reason,}
+\DoxyCodeLine{95                                          \textcolor{keyword}{const} amxc\_var\_t* \textcolor{keyword}{const} \mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}},}
+\DoxyCodeLine{96                                          amxc\_var\_t* \textcolor{keyword}{const} action\_retval,}
+\DoxyCodeLine{97                                          \textcolor{keywordtype}{void}* priv);}
+\DoxyCodeLine{98 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_af1294a2709465eec365355d222071ebb}{wld\_endpoint\_create\_reconnect\_timer}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{99 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_a6e32c0397cd7fff7107882ebed0d33a4}{wld\_endpoint\_reconfigure}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{100 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_a1e3a7dcae1a79e7740fe10243d7a9849}{wld\_endpoint\_performConnectCommit}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, \textcolor{keywordtype}{bool} alwaysCommit);}
+\DoxyCodeLine{101 swl\_rc\_ne \mbox{\hyperlink{wld__endpoint_8h_a1b9875659c853fcbefb140963abf183e}{wld\_endpoint\_getBssidBin}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, swl\_macBin\_t* tgtMac);}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 swl\_rc\_ne \mbox{\hyperlink{wld__endpoint_8h_a773e4151fbc5e8c0f798d9cc1135ea9c}{wld\_endpoint\_checkConnection}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{104 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_a75fcf41472c686df233015abf3c0136b}{wld\_endpoint\_writeStats}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, \mbox{\hyperlink{structT__EndPointStats}{T\_EndPointStats}}* stats, \textcolor{keywordtype}{bool} success);}
+\DoxyCodeLine{105 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_a448b10cb8d6ef3f5e4bd40d2d0840bff}{wld\_endpoint\_getTargetBssid}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP, swl\_macBin\_t* macBuffer);}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__endpoint_8h_abc9ce35b5095286fa1fc434116d36919}{wld\_endpoint\_fromIt}}(amxc\_llist\_it\_t* it);}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{109 \mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* \mbox{\hyperlink{wld__endpoint_8h_a757ac820fc7b7691dcbef693b883eadc}{wld\_endpoint\_create}}(\mbox{\hyperlink{structWLD__RADIO}{T\_Radio}}* \mbox{\hyperlink{test__BgDfs_8c_a97ac26798b1e37023be7f01d64b0c91d}{pRad}}, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* epName, amxd\_object\_t* \textcolor{keywordtype}{object});}
+\DoxyCodeLine{110 \textcolor{keywordtype}{void} \mbox{\hyperlink{wld__endpoint_8h_a88f4dc00125a7b064ac3272deaa50ecc}{wld\_endpoint\_destroy}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{112 \textcolor{comment}{/*}}
+\DoxyCodeLine{113 \textcolor{comment}{ * @brief finalize endpoint, by :}}
+\DoxyCodeLine{114 \textcolor{comment}{ * -\/ mapping/unmapping endpoint instance with relative ssid instance}}
+\DoxyCodeLine{115 \textcolor{comment}{ * -\/ creating/deleting the endpoint interface, when needed.}}
+\DoxyCodeLine{116 \textcolor{comment}{ * If interface and already set, and required for creation, then it will be re-\/created}}
+\DoxyCodeLine{117 \textcolor{comment}{ */}}
+\DoxyCodeLine{118 swl\_rc\_ne \mbox{\hyperlink{wld__endpoint_8h_afc817c2a1115f5437c56ff2d74add4fd}{wld\_endpoint\_finalize}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120 \textcolor{comment}{/*}}
+\DoxyCodeLine{121 \textcolor{comment}{ * check conditions to create endpoint interface}}
+\DoxyCodeLine{122 \textcolor{comment}{ */}}
+\DoxyCodeLine{123 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_aa46ea4fee8d40f412181d5509abc1e8c}{wld\_endpoint\_needCreateIface}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125 \textcolor{comment}{/*}}
+\DoxyCodeLine{126 \textcolor{comment}{ * check conditions to delete endpoint interface}}
+\DoxyCodeLine{127 \textcolor{comment}{ */}}
+\DoxyCodeLine{128 \textcolor{keywordtype}{bool} \mbox{\hyperlink{wld__endpoint_8h_aed74a9c3e6149c823572be70a26f0039}{wld\_endpoint\_needDestroyIface}}(\mbox{\hyperlink{structS__EndPoint}{T\_EndPoint}}* pEP);}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{preprocessor}{\#endif }\textcolor{comment}{/* \_\_WLD\_ENDPOINT\_H\_\_ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

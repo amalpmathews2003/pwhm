@@ -1,0 +1,88 @@
+\hypertarget{wld__nl80211__core__priv_8h}{}\doxysection{include\+\_\+priv/nl80211/wld\+\_\+nl80211\+\_\+core\+\_\+priv.h File Reference}
+\label{wld__nl80211__core__priv_8h}\index{include\_priv/nl80211/wld\_nl80211\_core\_priv.h@{include\_priv/nl80211/wld\_nl80211\_core\_priv.h}}
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$net/if.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+compat.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+core.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$amxc/amxc.\+h$>$}\newline
+{\ttfamily \#include $<$amxp/amxp.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+parameter.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+action.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object\+\_\+parameter.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+object\+\_\+event.\+h$>$}\newline
+{\ttfamily \#include $<$amxd/amxd\+\_\+function.\+h$>$}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+core\+\_\+priv.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core__priv_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__core__priv_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structwld__nl80211__driverIds__t}{wld\+\_\+nl80211\+\_\+driver\+Ids\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structwld__nl80211__state}{wld\+\_\+nl80211\+\_\+state}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef int($\ast$ \mbox{\hyperlink{wld__nl80211__core__priv_8h_ada0869a4107fe09e98894df9d4efd3b2}{wld\+\_\+nl80211\+\_\+nl\+Send\+\_\+f}}) (struct nl\+\_\+sock $\ast$sk, struct nl\+\_\+msg $\ast$msg)
+\item 
+typedef ssize\+\_\+t($\ast$ \mbox{\hyperlink{wld__nl80211__core__priv_8h_a455eefc1cbeb214d5337daaa6b3d6f5d}{wld\+\_\+nl80211\+\_\+recv\+\_\+f}}) (int socket, void $\ast$buffer, size\+\_\+t length, int flags)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \mbox{\hyperlink{wld__nl80211__core__priv_8h_ab8f4e9d6c22c24775f147e0be366aeef}{wld\+\_\+nl80211\+\_\+msg\+Name}} (uint32\+\_\+t cmd)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structwld__nl80211__driverIds__t}{wld\+\_\+nl80211\+\_\+driver\+Ids\+\_\+t}} \mbox{\hyperlink{wld__nl80211__core__priv_8h_a9ae9b018165d9934e42841730998d45a}{g\+\_\+nl80211\+Driver\+IDs}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{wld__nl80211__core__priv_8h_ada0869a4107fe09e98894df9d4efd3b2}\label{wld__nl80211__core__priv_8h_ada0869a4107fe09e98894df9d4efd3b2}} 
+\index{wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}!wld\_nl80211\_nlSend\_f@{wld\_nl80211\_nlSend\_f}}
+\index{wld\_nl80211\_nlSend\_f@{wld\_nl80211\_nlSend\_f}!wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_nlSend\_f}{wld\_nl80211\_nlSend\_f}}
+{\footnotesize\ttfamily typedef int($\ast$ wld\+\_\+nl80211\+\_\+nl\+Send\+\_\+f) (struct nl\+\_\+sock $\ast$sk, struct nl\+\_\+msg $\ast$msg)}
+
+\mbox{\Hypertarget{wld__nl80211__core__priv_8h_a455eefc1cbeb214d5337daaa6b3d6f5d}\label{wld__nl80211__core__priv_8h_a455eefc1cbeb214d5337daaa6b3d6f5d}} 
+\index{wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}!wld\_nl80211\_recv\_f@{wld\_nl80211\_recv\_f}}
+\index{wld\_nl80211\_recv\_f@{wld\_nl80211\_recv\_f}!wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_recv\_f}{wld\_nl80211\_recv\_f}}
+{\footnotesize\ttfamily typedef ssize\+\_\+t($\ast$ wld\+\_\+nl80211\+\_\+recv\+\_\+f) (int socket, void $\ast$buffer, size\+\_\+t length, int flags)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__core__priv_8h_ab8f4e9d6c22c24775f147e0be366aeef}\label{wld__nl80211__core__priv_8h_ab8f4e9d6c22c24775f147e0be366aeef}} 
+\index{wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}!wld\_nl80211\_msgName@{wld\_nl80211\_msgName}}
+\index{wld\_nl80211\_msgName@{wld\_nl80211\_msgName}!wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_msgName()}{wld\_nl80211\_msgName()}}
+{\footnotesize\ttfamily const char $\ast$ wld\+\_\+nl80211\+\_\+msg\+Name (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{cmd }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__nl80211__core__priv_8h_a9ae9b018165d9934e42841730998d45a}\label{wld__nl80211__core__priv_8h_a9ae9b018165d9934e42841730998d45a}} 
+\index{wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}!g\_nl80211DriverIDs@{g\_nl80211DriverIDs}}
+\index{g\_nl80211DriverIDs@{g\_nl80211DriverIDs}!wld\_nl80211\_core\_priv.h@{wld\_nl80211\_core\_priv.h}}
+\doxysubsubsection{\texorpdfstring{g\_nl80211DriverIDs}{g\_nl80211DriverIDs}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__nl80211__driverIds__t}{wld\+\_\+nl80211\+\_\+driver\+Ids\+\_\+t}} g\+\_\+nl80211\+Driver\+IDs\hspace{0.3cm}{\ttfamily [extern]}}
+

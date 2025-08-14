@@ -1,0 +1,290 @@
+\hypertarget{wld__ap__rssiMonitor_8c}{}\doxysection{src/\+Ap\+Mgt/wld\+\_\+ap\+\_\+rssi\+Monitor.c File Reference}
+\label{wld__ap__rssiMonitor_8c}\index{src/ApMgt/wld\_ap\_rssiMonitor.c@{src/ApMgt/wld\_ap\_rssiMonitor.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$debug/sahtrace.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$net/if.\+h$>$}\newline
+{\ttfamily \#include $<$sys/ioctl.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}wld.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+util.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+accesspoint.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ssid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+radio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+assocdev.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+assert.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+tuple\+Type.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+table.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+mac.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+time\+\_\+spec.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+monitor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+ap\+\_\+rssi\+Monitor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/types/swla\+\_\+tuple\+Type\+Array.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swla/swla\+\_\+mcs.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+ap\+\_\+rssi\+Monitor.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__rssiMonitor_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a369266c24eacffb87046522897a570d5}{\+\_\+\+GNU\+\_\+\+SOURCE}}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__ap__rssiMonitor_8c_adf8d34f3be20164c292bccfeb72898e5}{ME}}~\char`\"{}ap\+Rssi\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__ap__rssiMonitor_8c_aa740e675caebda0defefe21ec69165fb}{SWL\+\_\+\+ASSERT\+\_\+\+STATIC}} (SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__ap__rssiMonitor_8c_af818f483ae16e5e31487a54ff11c933b}{history\+Names}})==(gt\+Wld\+\_\+sta\+History\+\_\+\+\_\+max), \char`\"{}history\+Names not correctly defined\char`\"{})
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_ab3ce6b5f17d2caca545f5492c8da250a}{wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+Enable}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_ab8f0386a9bb2df284606fd9f4a0a5f58}{wld\+\_\+ap\+\_\+rssi\+Mon\+Init}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a5a1a92916345d192c678b0646627dae2}{wld\+\_\+ap\+\_\+rssi\+Mon\+Destroy}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+\mbox{\hyperlink{wld__ap__rssiMonitor_8c_a1e3d821ab4083b2b04d767a003c1f70b}{SWLA\+\_\+\+DM\+\_\+\+HDLRS}} (s\+Ap\+Rssi\+Eventing\+Config\+Dm\+Hdlrs, ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Ap\+Rssi\+Eventing\+Enable\+\_\+pwf),),.obj\+Changed\+Cb=s\+\_\+set\+Ap\+Rssi\+Eventing\+\_\+ocf)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_abc6bc20e30a72783ebeaf395f8003f04}{\+\_\+wld\+\_\+ap\+\_\+set\+Rssi\+Eventing\+\_\+ocf}} (const char $\ast$const sig\+\_\+name, const amxc\+\_\+var\+\_\+t $\ast$const data, void $\ast$const priv)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_aa0ba2da18d461e2da172c417b75d17e5}{wld\+\_\+ap\+\_\+rssi\+Ev\+\_\+debug}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, amxc\+\_\+var\+\_\+t $\ast$ret\+Map)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a339ec81ea6062cf5686bf972f6004807}{wld\+\_\+ap\+Rssi\+Mon\+\_\+create\+Sta\+History}} (\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD, uint32\+\_\+t history\+Len)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a832c94554f0798e46d37638962819387}{wld\+\_\+ap\+Rssi\+Mon\+\_\+destroy\+Sta\+History}} (\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a28efe6c8738d5e5d7973a3d96a635450}{wld\+\_\+ap\+Rssi\+Mon\+\_\+clear\+Send\+Event\+On\+Assoc}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a037c6b7b846ba130ceba49b661c15a12}{wld\+\_\+ap\+Rssi\+Mon\+\_\+is\+Ready\+Sta\+History}} (\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a66576193d9a575241199ae7503febe1d}{wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+History\+Len}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_aefb4abf43e8b08fe3d6d44a25bf3e074}{wld\+\_\+ap\+Rssi\+Mon\+\_\+clean\+Sta\+History}} (\mbox{\hyperlink{structwld__assocDev__history__t}{wld\+\_\+assoc\+Dev\+\_\+history\+\_\+t}} $\ast$sta\+History, uint32\+\_\+t history\+Len)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a6f1151dfbc03b5cba9ec342d5d83aecf}{wld\+\_\+ap\+Rssi\+Mon\+\_\+clean\+Sta\+History\+Samples}} (\mbox{\hyperlink{structwld__assocDev__history__t}{wld\+\_\+assoc\+Dev\+\_\+history\+\_\+t}} $\ast$sta\+History, uint32\+\_\+t history\+Len)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a7a1f9c5c2170bd30daaa8f9648111bde}{wld\+\_\+ap\+Rssi\+Mon\+\_\+clean\+Sta\+History\+All}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+wld\+\_\+sta\+History\+\_\+t $\ast$ \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a8f8630eb62e0a3f667c1d7ebca9fb81e}{wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Oldest\+Sta\+Sample}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_afc48643e33b486d1bf77c11510a4acc6}{wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+Sta\+History\+All}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+bool \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a9853c8188e1e8735209bfbd89ee2bace}{wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Min\+Max\+Signal}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD, \mbox{\hyperlink{structwld__apRssiMon__signalRange__t}{wld\+\_\+ap\+Rssi\+Mon\+\_\+signal\+Range\+\_\+t}} $\ast$range)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_ae710f0e97566c31d81de4c607e7d1b96}{wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+Sta\+History}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+wld\+\_\+sta\+History\+\_\+t $\ast$ \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a8bd63783d4cf260eb5e80bb6035946c3}{wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Sta\+Sample\+Indexed}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD, int32\+\_\+t index)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a137211e2476a5a0a615c5613531761d2}{wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Sta\+History}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, const unsigned char mac\+Address\mbox{[}\mbox{\hyperlink{wld_8h_abf4fcaacb1ad2010711b7c880ec2ed20}{ETHER\+\_\+\+ADDR\+\_\+\+LEN}}\mbox{]}, amxc\+\_\+var\+\_\+t $\ast$my\+Map)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a768d6e7cf1a85c6ff5692a2d20b59339}{wld\+\_\+ap\+Rssi\+Mon\+\_\+send\+History\+On\+Assoc\+Event}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD, amxc\+\_\+var\+\_\+t $\ast$my\+Var)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a18b2549f7c0ffdf19a9710997438597e}{wld\+\_\+ap\+Rssi\+Mon\+\_\+send\+History\+On\+Disassoc\+Event}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP, \mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$p\+AD)
+\item 
+void \mbox{\hyperlink{wld__ap__rssiMonitor_8c_aa0b7f7f18c1aca042fba496116a70481}{wld\+\_\+ap\+Rssi\+Mon\+\_\+send\+Sta\+History\+All}} (\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$p\+AP)
+\item 
+amxd\+\_\+status\+\_\+t \mbox{\hyperlink{wld__ap__rssiMonitor_8c_a1b0542cc7e848577058a5ee57963942a}{\+\_\+get\+Short\+History\+Stats}} (amxd\+\_\+object\+\_\+t $\ast$obj\+\_\+rssi\+Eventing, amxd\+\_\+function\+\_\+t $\ast$func \mbox{\hyperlink{wld__util_8h_a44145f6f9805df57da735ea6ac0f1dbb}{\+\_\+\+UNUSED}}, amxc\+\_\+var\+\_\+t $\ast$\mbox{\hyperlink{test__BgDfs_8c_a3aed1848042e2d1e39ef5ef23736eb26}{args}}, amxc\+\_\+var\+\_\+t $\ast$retval)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+char $\ast$ \mbox{\hyperlink{wld__ap__rssiMonitor_8c_af818f483ae16e5e31487a54ff11c933b}{history\+Names}} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a369266c24eacffb87046522897a570d5}\label{wld__ap__rssiMonitor_8c_a369266c24eacffb87046522897a570d5}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!\_GNU\_SOURCE@{\_GNU\_SOURCE}}
+\index{\_GNU\_SOURCE@{\_GNU\_SOURCE}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{\_GNU\_SOURCE}{\_GNU\_SOURCE}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \+\_\+\+GNU\+\_\+\+SOURCE}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_adf8d34f3be20164c292bccfeb72898e5}\label{wld__ap__rssiMonitor_8c_adf8d34f3be20164c292bccfeb72898e5}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!ME@{ME}}
+\index{ME@{ME}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{ME}{ME}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} ME~\char`\"{}ap\+Rssi\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a1b0542cc7e848577058a5ee57963942a}\label{wld__ap__rssiMonitor_8c_a1b0542cc7e848577058a5ee57963942a}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!\_getShortHistoryStats@{\_getShortHistoryStats}}
+\index{\_getShortHistoryStats@{\_getShortHistoryStats}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{\_getShortHistoryStats()}{\_getShortHistoryStats()}}
+{\footnotesize\ttfamily amxd\+\_\+status\+\_\+t \+\_\+get\+Short\+History\+Stats (\begin{DoxyParamCaption}\item[{amxd\+\_\+object\+\_\+t $\ast$}]{obj\+\_\+rssi\+Eventing,  }\item[{amxd\+\_\+function\+\_\+t $\ast$func}]{\+\_\+\+UNUSED,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{args,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{retval }\end{DoxyParamCaption})}
+
+Gather the history information available for a station in the current system. \mbox{\Hypertarget{wld__ap__rssiMonitor_8c_abc6bc20e30a72783ebeaf395f8003f04}\label{wld__ap__rssiMonitor_8c_abc6bc20e30a72783ebeaf395f8003f04}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!\_wld\_ap\_setRssiEventing\_ocf@{\_wld\_ap\_setRssiEventing\_ocf}}
+\index{\_wld\_ap\_setRssiEventing\_ocf@{\_wld\_ap\_setRssiEventing\_ocf}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{\_wld\_ap\_setRssiEventing\_ocf()}{\_wld\_ap\_setRssiEventing\_ocf()}}
+{\footnotesize\ttfamily void \+\_\+wld\+\_\+ap\+\_\+set\+Rssi\+Eventing\+\_\+ocf (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{sig\+\_\+name,  }\item[{const amxc\+\_\+var\+\_\+t $\ast$const}]{data,  }\item[{void $\ast$const}]{priv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_aa740e675caebda0defefe21ec69165fb}\label{wld__ap__rssiMonitor_8c_aa740e675caebda0defefe21ec69165fb}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}}
+\index{SWL\_ASSERT\_STATIC@{SWL\_ASSERT\_STATIC}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{SWL\_ASSERT\_STATIC()}{SWL\_ASSERT\_STATIC()}}
+{\footnotesize\ttfamily SWL\+\_\+\+ASSERT\+\_\+\+STATIC (\begin{DoxyParamCaption}\item[{SWL\+\_\+\+ARRAY\+\_\+\+SIZE(\mbox{\hyperlink{wld__ap__rssiMonitor_8c_af818f483ae16e5e31487a54ff11c933b}{history\+Names}})}]{ = {\ttfamily =(gtWld\+\_\+staHistory\+\_\+\+\_\+max)},  }\item[{\char`\"{}history\+Names not correctly defined\char`\"{}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a1e3d821ab4083b2b04d767a003c1f70b}\label{wld__ap__rssiMonitor_8c_a1e3d821ab4083b2b04d767a003c1f70b}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}}
+\index{SWLA\_DM\_HDLRS@{SWLA\_DM\_HDLRS}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{SWLA\_DM\_HDLRS()}{SWLA\_DM\_HDLRS()}}
+{\footnotesize\ttfamily SWLA\+\_\+\+DM\+\_\+\+HDLRS (\begin{DoxyParamCaption}\item[{s\+Ap\+Rssi\+Eventing\+Config\+Dm\+Hdlrs}]{,  }\item[{ARR(SWLA\+\_\+\+DM\+\_\+\+PARAM\+\_\+\+HDLR(\char`\"{}Enable\char`\"{}, s\+\_\+set\+Ap\+Rssi\+Eventing\+Enable\+\_\+pwf),)}]{,  }\item[{.}]{obj\+Changed\+Cb = {\ttfamily s\+\_\+setApRssiEventing\+\_\+ocf} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_aa0ba2da18d461e2da172c417b75d17e5}\label{wld__ap__rssiMonitor_8c_aa0ba2da18d461e2da172c417b75d17e5}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_ap\_rssiEv\_debug@{wld\_ap\_rssiEv\_debug}}
+\index{wld\_ap\_rssiEv\_debug@{wld\_ap\_rssiEv\_debug}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_rssiEv\_debug()}{wld\_ap\_rssiEv\_debug()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+rssi\+Ev\+\_\+debug (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{ret\+Map }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a5a1a92916345d192c678b0646627dae2}\label{wld__ap__rssiMonitor_8c_a5a1a92916345d192c678b0646627dae2}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_ap\_rssiMonDestroy@{wld\_ap\_rssiMonDestroy}}
+\index{wld\_ap\_rssiMonDestroy@{wld\_ap\_rssiMonDestroy}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_rssiMonDestroy()}{wld\_ap\_rssiMonDestroy()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+rssi\+Mon\+Destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_ab8f0386a9bb2df284606fd9f4a0a5f58}\label{wld__ap__rssiMonitor_8c_ab8f0386a9bb2df284606fd9f4a0a5f58}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_ap\_rssiMonInit@{wld\_ap\_rssiMonInit}}
+\index{wld\_ap\_rssiMonInit@{wld\_ap\_rssiMonInit}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_ap\_rssiMonInit()}{wld\_ap\_rssiMonInit()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+\_\+rssi\+Mon\+Init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_aefb4abf43e8b08fe3d6d44a25bf3e074}\label{wld__ap__rssiMonitor_8c_aefb4abf43e8b08fe3d6d44a25bf3e074}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_cleanStaHistory@{wld\_apRssiMon\_cleanStaHistory}}
+\index{wld\_apRssiMon\_cleanStaHistory@{wld\_apRssiMon\_cleanStaHistory}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_cleanStaHistory()}{wld\_apRssiMon\_cleanStaHistory()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+clean\+Sta\+History (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__assocDev__history__t}{wld\+\_\+assoc\+Dev\+\_\+history\+\_\+t}} $\ast$}]{sta\+History,  }\item[{uint32\+\_\+t}]{history\+Len }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__rssiMonitor_8c_aefb4abf43e8b08fe3d6d44a25bf3e074_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a7a1f9c5c2170bd30daaa8f9648111bde}\label{wld__ap__rssiMonitor_8c_a7a1f9c5c2170bd30daaa8f9648111bde}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_cleanStaHistoryAll@{wld\_apRssiMon\_cleanStaHistoryAll}}
+\index{wld\_apRssiMon\_cleanStaHistoryAll@{wld\_apRssiMon\_cleanStaHistoryAll}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_cleanStaHistoryAll()}{wld\_apRssiMon\_cleanStaHistoryAll()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+clean\+Sta\+History\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a6f1151dfbc03b5cba9ec342d5d83aecf}\label{wld__ap__rssiMonitor_8c_a6f1151dfbc03b5cba9ec342d5d83aecf}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_cleanStaHistorySamples@{wld\_apRssiMon\_cleanStaHistorySamples}}
+\index{wld\_apRssiMon\_cleanStaHistorySamples@{wld\_apRssiMon\_cleanStaHistorySamples}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_cleanStaHistorySamples()}{wld\_apRssiMon\_cleanStaHistorySamples()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+clean\+Sta\+History\+Samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structwld__assocDev__history__t}{wld\+\_\+assoc\+Dev\+\_\+history\+\_\+t}} $\ast$}]{sta\+History,  }\item[{uint32\+\_\+t}]{history\+Len }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__ap__rssiMonitor_8c_a6f1151dfbc03b5cba9ec342d5d83aecf_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a28efe6c8738d5e5d7973a3d96a635450}\label{wld__ap__rssiMonitor_8c_a28efe6c8738d5e5d7973a3d96a635450}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_clearSendEventOnAssoc@{wld\_apRssiMon\_clearSendEventOnAssoc}}
+\index{wld\_apRssiMon\_clearSendEventOnAssoc@{wld\_apRssiMon\_clearSendEventOnAssoc}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_clearSendEventOnAssoc()}{wld\_apRssiMon\_clearSendEventOnAssoc()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+clear\+Send\+Event\+On\+Assoc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a339ec81ea6062cf5686bf972f6004807}\label{wld__ap__rssiMonitor_8c_a339ec81ea6062cf5686bf972f6004807}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_createStaHistory@{wld\_apRssiMon\_createStaHistory}}
+\index{wld\_apRssiMon\_createStaHistory@{wld\_apRssiMon\_createStaHistory}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_createStaHistory()}{wld\_apRssiMon\_createStaHistory()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+create\+Sta\+History (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD,  }\item[{uint32\+\_\+t}]{history\+Len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a832c94554f0798e46d37638962819387}\label{wld__ap__rssiMonitor_8c_a832c94554f0798e46d37638962819387}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_destroyStaHistory@{wld\_apRssiMon\_destroyStaHistory}}
+\index{wld\_apRssiMon\_destroyStaHistory@{wld\_apRssiMon\_destroyStaHistory}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_destroyStaHistory()}{wld\_apRssiMon\_destroyStaHistory()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+destroy\+Sta\+History (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a9853c8188e1e8735209bfbd89ee2bace}\label{wld__ap__rssiMonitor_8c_a9853c8188e1e8735209bfbd89ee2bace}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_getMinMaxSignal@{wld\_apRssiMon\_getMinMaxSignal}}
+\index{wld\_apRssiMon\_getMinMaxSignal@{wld\_apRssiMon\_getMinMaxSignal}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_getMinMaxSignal()}{wld\_apRssiMon\_getMinMaxSignal()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Min\+Max\+Signal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD,  }\item[{\mbox{\hyperlink{structwld__apRssiMon__signalRange__t}{wld\+\_\+ap\+Rssi\+Mon\+\_\+signal\+Range\+\_\+t}} $\ast$}]{range }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a8f8630eb62e0a3f667c1d7ebca9fb81e}\label{wld__ap__rssiMonitor_8c_a8f8630eb62e0a3f667c1d7ebca9fb81e}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_getOldestStaSample@{wld\_apRssiMon\_getOldestStaSample}}
+\index{wld\_apRssiMon\_getOldestStaSample@{wld\_apRssiMon\_getOldestStaSample}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_getOldestStaSample()}{wld\_apRssiMon\_getOldestStaSample()}}
+{\footnotesize\ttfamily wld\+\_\+sta\+History\+\_\+t $\ast$ wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Oldest\+Sta\+Sample (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a137211e2476a5a0a615c5613531761d2}\label{wld__ap__rssiMonitor_8c_a137211e2476a5a0a615c5613531761d2}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_getStaHistory@{wld\_apRssiMon\_getStaHistory}}
+\index{wld\_apRssiMon\_getStaHistory@{wld\_apRssiMon\_getStaHistory}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_getStaHistory()}{wld\_apRssiMon\_getStaHistory()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Sta\+History (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{const unsigned char}]{mac\+Address\mbox{[}\+ETHER\+\_\+\+ADDR\+\_\+\+LEN\mbox{]},  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{my\+Map }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a8bd63783d4cf260eb5e80bb6035946c3}\label{wld__ap__rssiMonitor_8c_a8bd63783d4cf260eb5e80bb6035946c3}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_getStaSampleIndexed@{wld\_apRssiMon\_getStaSampleIndexed}}
+\index{wld\_apRssiMon\_getStaSampleIndexed@{wld\_apRssiMon\_getStaSampleIndexed}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_getStaSampleIndexed()}{wld\_apRssiMon\_getStaSampleIndexed()}}
+{\footnotesize\ttfamily wld\+\_\+sta\+History\+\_\+t $\ast$ wld\+\_\+ap\+Rssi\+Mon\+\_\+get\+Sta\+Sample\+Indexed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD,  }\item[{int32\+\_\+t}]{index }\end{DoxyParamCaption})}
+
+Return the sta sample that is the \char`\"{}x oldest sample\char`\"{}. So giving 0 will provide the oldest sample, providing -\/1 will give the newest sample. Allowed range is -\/nr\+\_\+valid\+\_\+samples, nr\+\_\+valid\+\_\+samples -\/1. If not valid, NULL will be returned. \mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a037c6b7b846ba130ceba49b661c15a12}\label{wld__ap__rssiMonitor_8c_a037c6b7b846ba130ceba49b661c15a12}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_isReadyStaHistory@{wld\_apRssiMon\_isReadyStaHistory}}
+\index{wld\_apRssiMon\_isReadyStaHistory@{wld\_apRssiMon\_isReadyStaHistory}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_isReadyStaHistory()}{wld\_apRssiMon\_isReadyStaHistory()}}
+{\footnotesize\ttfamily bool wld\+\_\+ap\+Rssi\+Mon\+\_\+is\+Ready\+Sta\+History (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a768d6e7cf1a85c6ff5692a2d20b59339}\label{wld__ap__rssiMonitor_8c_a768d6e7cf1a85c6ff5692a2d20b59339}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_sendHistoryOnAssocEvent@{wld\_apRssiMon\_sendHistoryOnAssocEvent}}
+\index{wld\_apRssiMon\_sendHistoryOnAssocEvent@{wld\_apRssiMon\_sendHistoryOnAssocEvent}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_sendHistoryOnAssocEvent()}{wld\_apRssiMon\_sendHistoryOnAssocEvent()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+send\+History\+On\+Assoc\+Event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD,  }\item[{amxc\+\_\+var\+\_\+t $\ast$}]{my\+Var }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a18b2549f7c0ffdf19a9710997438597e}\label{wld__ap__rssiMonitor_8c_a18b2549f7c0ffdf19a9710997438597e}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_sendHistoryOnDisassocEvent@{wld\_apRssiMon\_sendHistoryOnDisassocEvent}}
+\index{wld\_apRssiMon\_sendHistoryOnDisassocEvent@{wld\_apRssiMon\_sendHistoryOnDisassocEvent}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_sendHistoryOnDisassocEvent()}{wld\_apRssiMon\_sendHistoryOnDisassocEvent()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+send\+History\+On\+Disassoc\+Event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_aa0b7f7f18c1aca042fba496116a70481}\label{wld__ap__rssiMonitor_8c_aa0b7f7f18c1aca042fba496116a70481}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_sendStaHistoryAll@{wld\_apRssiMon\_sendStaHistoryAll}}
+\index{wld\_apRssiMon\_sendStaHistoryAll@{wld\_apRssiMon\_sendStaHistoryAll}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_sendStaHistoryAll()}{wld\_apRssiMon\_sendStaHistoryAll()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+send\+Sta\+History\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_ab3ce6b5f17d2caca545f5492c8da250a}\label{wld__ap__rssiMonitor_8c_ab3ce6b5f17d2caca545f5492c8da250a}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_updateEnable@{wld\_apRssiMon\_updateEnable}}
+\index{wld\_apRssiMon\_updateEnable@{wld\_apRssiMon\_updateEnable}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_updateEnable()}{wld\_apRssiMon\_updateEnable()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+Enable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_a66576193d9a575241199ae7503febe1d}\label{wld__ap__rssiMonitor_8c_a66576193d9a575241199ae7503febe1d}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_updateHistoryLen@{wld\_apRssiMon\_updateHistoryLen}}
+\index{wld\_apRssiMon\_updateHistoryLen@{wld\_apRssiMon\_updateHistoryLen}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_updateHistoryLen()}{wld\_apRssiMon\_updateHistoryLen()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+History\+Len (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_ae710f0e97566c31d81de4c607e7d1b96}\label{wld__ap__rssiMonitor_8c_ae710f0e97566c31d81de4c607e7d1b96}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_updateStaHistory@{wld\_apRssiMon\_updateStaHistory}}
+\index{wld\_apRssiMon\_updateStaHistory@{wld\_apRssiMon\_updateStaHistory}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_updateStaHistory()}{wld\_apRssiMon\_updateStaHistory()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+Sta\+History (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP,  }\item[{\mbox{\hyperlink{structT__AssociatedDevice}{T\+\_\+\+Associated\+Device}} $\ast$}]{p\+AD }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_afc48643e33b486d1bf77c11510a4acc6}\label{wld__ap__rssiMonitor_8c_afc48643e33b486d1bf77c11510a4acc6}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!wld\_apRssiMon\_updateStaHistoryAll@{wld\_apRssiMon\_updateStaHistoryAll}}
+\index{wld\_apRssiMon\_updateStaHistoryAll@{wld\_apRssiMon\_updateStaHistoryAll}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{wld\_apRssiMon\_updateStaHistoryAll()}{wld\_apRssiMon\_updateStaHistoryAll()}}
+{\footnotesize\ttfamily void wld\+\_\+ap\+Rssi\+Mon\+\_\+update\+Sta\+History\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__types_8h_a6e142493e929cfc6724a5c33ffa532d1}{T\+\_\+\+Access\+Point}} $\ast$}]{p\+AP }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{wld__ap__rssiMonitor_8c_af818f483ae16e5e31487a54ff11c933b}\label{wld__ap__rssiMonitor_8c_af818f483ae16e5e31487a54ff11c933b}} 
+\index{wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}!historyNames@{historyNames}}
+\index{historyNames@{historyNames}!wld\_ap\_rssiMonitor.c@{wld\_ap\_rssiMonitor.c}}
+\doxysubsubsection{\texorpdfstring{historyNames}{historyNames}}
+{\footnotesize\ttfamily char$\ast$ history\+Names\mbox{[}$\,$\mbox{]}}
+

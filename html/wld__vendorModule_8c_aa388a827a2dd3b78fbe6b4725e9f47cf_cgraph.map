@@ -1,0 +1,5 @@
+<map id="wld_vendorModule_register" name="wld_vendorModule_register">
+<area shape="rect" id="node1" title="Register vendor module to the wld plugin side. Once done, the module handlers may be called when the ..." alt="" coords="5,5,208,32"/>
+<area shape="rect" id="node2" href="$wld__vendorModule_8c.html#a07989b69317011d6540d7d3c737a32d8" title=" " alt="" coords="523,5,751,32"/>
+<area shape="rect" id="node3" href="$wld__vendorModule_8c.html#a225984f0354e7615d436b03583045558" title="Unregister vendor module from the wld plugin side. Once done, the module handlers are no more called." alt="" coords="256,31,475,57"/>
+</map>

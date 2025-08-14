@@ -1,0 +1,146 @@
+\hypertarget{wld__nl80211__api__priv_8h}{}\doxysection{include\+\_\+priv/nl80211/wld\+\_\+nl80211\+\_\+api\+\_\+priv.h File Reference}
+\label{wld__nl80211__api__priv_8h}\index{include\_priv/nl80211/wld\_nl80211\_api\_priv.h@{include\_priv/nl80211/wld\_nl80211\_api\_priv.h}}
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+attr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wld\+\_\+nl80211\+\_\+core\+\_\+priv.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}swl/swl\+\_\+un\+Li\+List.\+h\char`\"{}}\newline
+Include dependency graph for wld\+\_\+nl80211\+\_\+api\+\_\+priv.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__api__priv_8h_ad9cc8d1e567725846d294c5024b61069}{REQUEST\+\_\+\+SYNC\+\_\+\+TIMEOUT}}~5
+\item 
+\#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} \mbox{\hyperlink{wld__nl80211__api__priv_8h_a59b12c12e33a5d319ab4f2eb311d46f7}{REQUEST\+\_\+\+ASYNC\+\_\+\+TIMEOUT}}~10
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a5acbd182e6b52eae4ef8f18ba2c3d34b}{wld\+\_\+nl80211\+\_\+add\+Nl\+Attrs}} (struct nl\+\_\+msg $\ast$msg, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const p\+Attr\+List)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a3c5a525596463f925b95bbc76036d07e}{wld\+\_\+nl80211\+\_\+send\+Cmd}} (bool is\+Sync, \mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$state, uint32\+\_\+t cmd, uint32\+\_\+t flags, uint32\+\_\+t if\+Index, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const p\+Attr\+List, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}} handler, void $\ast$priv, swl\+\_\+rc\+\_\+ne $\ast$p\+Result)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a51795ba7297b263584b02e6dd2d8ddb6}{wld\+\_\+nl80211\+\_\+send\+Cmd\+Sync}} (\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$state, uint32\+\_\+t cmd, uint32\+\_\+t flags, uint32\+\_\+t if\+Index, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const p\+Attr\+List, \mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}} handler, void $\ast$priv)
+\item 
+swl\+\_\+rc\+\_\+ne \mbox{\hyperlink{wld__nl80211__api__priv_8h_a2f124c7a531325213fab90ab2a181035}{wld\+\_\+nl80211\+\_\+send\+Cmd\+Sync\+With\+Ack}} (\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$state, uint32\+\_\+t cmd, uint32\+\_\+t flags, uint32\+\_\+t if\+Index, \mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const p\+Attr\+List)
+\item 
+void \mbox{\hyperlink{wld__nl80211__api__priv_8h_a46a99e5f2da4cb5c033069a474d6717c}{wld\+\_\+nl80211\+\_\+clear\+All\+Expired\+Requests}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_a59b12c12e33a5d319ab4f2eb311d46f7}\label{wld__nl80211__api__priv_8h_a59b12c12e33a5d319ab4f2eb311d46f7}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!REQUEST\_ASYNC\_TIMEOUT@{REQUEST\_ASYNC\_TIMEOUT}}
+\index{REQUEST\_ASYNC\_TIMEOUT@{REQUEST\_ASYNC\_TIMEOUT}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{REQUEST\_ASYNC\_TIMEOUT}{REQUEST\_ASYNC\_TIMEOUT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} REQUEST\+\_\+\+ASYNC\+\_\+\+TIMEOUT~10}
+
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_ad9cc8d1e567725846d294c5024b61069}\label{wld__nl80211__api__priv_8h_ad9cc8d1e567725846d294c5024b61069}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!REQUEST\_SYNC\_TIMEOUT@{REQUEST\_SYNC\_TIMEOUT}}
+\index{REQUEST\_SYNC\_TIMEOUT@{REQUEST\_SYNC\_TIMEOUT}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{REQUEST\_SYNC\_TIMEOUT}{REQUEST\_SYNC\_TIMEOUT}}
+{\footnotesize\ttfamily \#\mbox{\hyperlink{wld__definitions_8odl_a8a3a5595e65e7e2a2cf64c08ba74833f}{define}} REQUEST\+\_\+\+SYNC\+\_\+\+TIMEOUT~5}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_a5acbd182e6b52eae4ef8f18ba2c3d34b}\label{wld__nl80211__api__priv_8h_a5acbd182e6b52eae4ef8f18ba2c3d34b}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!wld\_nl80211\_addNlAttrs@{wld\_nl80211\_addNlAttrs}}
+\index{wld\_nl80211\_addNlAttrs@{wld\_nl80211\_addNlAttrs}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_addNlAttrs()}{wld\_nl80211\_addNlAttrs()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+add\+Nl\+Attrs (\begin{DoxyParamCaption}\item[{struct nl\+\_\+msg $\ast$}]{msg,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const}]{p\+Attr\+List }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=215pt]{wld__nl80211__api__priv_8h_a5acbd182e6b52eae4ef8f18ba2c3d34b_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=215pt]{wld__nl80211__api__priv_8h_a5acbd182e6b52eae4ef8f18ba2c3d34b_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_a46a99e5f2da4cb5c033069a474d6717c}\label{wld__nl80211__api__priv_8h_a46a99e5f2da4cb5c033069a474d6717c}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!wld\_nl80211\_clearAllExpiredRequests@{wld\_nl80211\_clearAllExpiredRequests}}
+\index{wld\_nl80211\_clearAllExpiredRequests@{wld\_nl80211\_clearAllExpiredRequests}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_clearAllExpiredRequests()}{wld\_nl80211\_clearAllExpiredRequests()}}
+{\footnotesize\ttfamily void wld\+\_\+nl80211\+\_\+clear\+All\+Expired\+Requests (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_a3c5a525596463f925b95bbc76036d07e}\label{wld__nl80211__api__priv_8h_a3c5a525596463f925b95bbc76036d07e}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!wld\_nl80211\_sendCmd@{wld\_nl80211\_sendCmd}}
+\index{wld\_nl80211\_sendCmd@{wld\_nl80211\_sendCmd}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_sendCmd()}{wld\_nl80211\_sendCmd()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+send\+Cmd (\begin{DoxyParamCaption}\item[{bool}]{is\+Sync,  }\item[{\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$}]{state,  }\item[{uint32\+\_\+t}]{cmd,  }\item[{uint32\+\_\+t}]{flags,  }\item[{uint32\+\_\+t}]{if\+Index,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const}]{p\+Attr\+List,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}}}]{handler,  }\item[{void $\ast$}]{priv,  }\item[{swl\+\_\+rc\+\_\+ne $\ast$}]{p\+Result }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h_a3c5a525596463f925b95bbc76036d07e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_a51795ba7297b263584b02e6dd2d8ddb6}\label{wld__nl80211__api__priv_8h_a51795ba7297b263584b02e6dd2d8ddb6}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!wld\_nl80211\_sendCmdSync@{wld\_nl80211\_sendCmdSync}}
+\index{wld\_nl80211\_sendCmdSync@{wld\_nl80211\_sendCmdSync}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_sendCmdSync()}{wld\_nl80211\_sendCmdSync()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+send\+Cmd\+Sync (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$}]{state,  }\item[{uint32\+\_\+t}]{cmd,  }\item[{uint32\+\_\+t}]{flags,  }\item[{uint32\+\_\+t}]{if\+Index,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const}]{p\+Attr\+List,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_aea1f8d3a2218275a499ca4e67f832dc8}{wld\+\_\+nl80211\+\_\+handler\+\_\+f}}}]{handler,  }\item[{void $\ast$}]{priv }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h_a51795ba7297b263584b02e6dd2d8ddb6_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h_a51795ba7297b263584b02e6dd2d8ddb6_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{wld__nl80211__api__priv_8h_a2f124c7a531325213fab90ab2a181035}\label{wld__nl80211__api__priv_8h_a2f124c7a531325213fab90ab2a181035}} 
+\index{wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}!wld\_nl80211\_sendCmdSyncWithAck@{wld\_nl80211\_sendCmdSyncWithAck}}
+\index{wld\_nl80211\_sendCmdSyncWithAck@{wld\_nl80211\_sendCmdSyncWithAck}!wld\_nl80211\_api\_priv.h@{wld\_nl80211\_api\_priv.h}}
+\doxysubsubsection{\texorpdfstring{wld\_nl80211\_sendCmdSyncWithAck()}{wld\_nl80211\_sendCmdSyncWithAck()}}
+{\footnotesize\ttfamily swl\+\_\+rc\+\_\+ne wld\+\_\+nl80211\+\_\+send\+Cmd\+Sync\+With\+Ack (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{wld__nl80211__core_8h_abb475be61cb1e58e5aa4a47aa81cacf5}{wld\+\_\+nl80211\+\_\+state\+\_\+t}} $\ast$}]{state,  }\item[{uint32\+\_\+t}]{cmd,  }\item[{uint32\+\_\+t}]{flags,  }\item[{uint32\+\_\+t}]{if\+Index,  }\item[{\mbox{\hyperlink{wld__nl80211__attr_8h_a66c41863b2d816b246b39fa5982c617c}{wld\+\_\+nl80211\+\_\+nl\+Attr\+List\+\_\+t}} $\ast$const}]{p\+Attr\+List }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h_a2f124c7a531325213fab90ab2a181035_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{wld__nl80211__api__priv_8h_a2f124c7a531325213fab90ab2a181035_icgraph}
+\end{center}
+\end{figure}

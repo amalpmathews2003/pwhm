@@ -1,0 +1,115 @@
+\hypertarget{structwld__secDmn}{}\doxysection{wld\+\_\+sec\+Dmn Struct Reference}
+\label{structwld__secDmn}\index{wld\_secDmn@{wld\_secDmn}}
+
+
+{\ttfamily \#include $<$wld\+\_\+sec\+Dmn.\+h$>$}
+
+
+
+Collaboration diagram for wld\+\_\+sec\+Dmn\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structwld__secDmn__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__secDmn_aea1a4b2972023a487cc0fdd48e7d48a3}{wpa\+Ctrl\+Mngr}}
+\item 
+\mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__secDmn_a36155158685ab9aec86eefc3e58b2d04}{dmn\+Process}}
+\item 
+char $\ast$ \mbox{\hyperlink{structwld__secDmn_ae40bc7ecdb0cfd848a06bf9da0b36cbd}{cfg\+File}}
+\item 
+char $\ast$ \mbox{\hyperlink{structwld__secDmn_a9342d8675735a09b6004b877e78c57b0}{ctrl\+Iface\+Dir}}
+\item 
+\mbox{\hyperlink{structwld__secDmnEvtHandlers}{wld\+\_\+sec\+Dmn\+Evt\+Handlers}} \mbox{\hyperlink{structwld__secDmn_a5186b61b4ed9b2066a490c487c8faaef}{handlers}}
+\item 
+void $\ast$ \mbox{\hyperlink{structwld__secDmn_a661c1e55b876c3d8efa7a0821d1a4767}{user\+Data}}
+\item 
+swl\+\_\+map\+Char\+Int32\+\_\+t \mbox{\hyperlink{structwld__secDmn_adfe57a3ee7f8e8f4ed165532bcd31a68}{cfg\+Param\+Sup}}
+\item 
+swl\+\_\+map\+Char\+Int32\+\_\+t \mbox{\hyperlink{structwld__secDmn_acc6ba4076cb66953dc3e059723956374}{cmd\+Sup}}
+\item 
+\mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__secDmn_a95fffeade4d1580d45d7a82b4ddf0b96}{self\+Dmn\+Process}}
+\item 
+\mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}} $\ast$ \mbox{\hyperlink{structwld__secDmn_a5fb69c573a34683cc387efb9c230b2da}{sec\+Dmn\+Group}}
+\item 
+bool \mbox{\hyperlink{structwld__secDmn_a4f44aaac34b3593d16ac812982a76867}{need\+Restart}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structwld__secDmn_ae40bc7ecdb0cfd848a06bf9da0b36cbd}\label{structwld__secDmn_ae40bc7ecdb0cfd848a06bf9da0b36cbd}} 
+\index{wld\_secDmn@{wld\_secDmn}!cfgFile@{cfgFile}}
+\index{cfgFile@{cfgFile}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{cfgFile}{cfgFile}}
+{\footnotesize\ttfamily char$\ast$ wld\+\_\+sec\+Dmn\+::cfg\+File}
+
+\mbox{\Hypertarget{structwld__secDmn_adfe57a3ee7f8e8f4ed165532bcd31a68}\label{structwld__secDmn_adfe57a3ee7f8e8f4ed165532bcd31a68}} 
+\index{wld\_secDmn@{wld\_secDmn}!cfgParamSup@{cfgParamSup}}
+\index{cfgParamSup@{cfgParamSup}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{cfgParamSup}{cfgParamSup}}
+{\footnotesize\ttfamily swl\+\_\+map\+Char\+Int32\+\_\+t wld\+\_\+sec\+Dmn\+::cfg\+Param\+Sup}
+
+\mbox{\Hypertarget{structwld__secDmn_acc6ba4076cb66953dc3e059723956374}\label{structwld__secDmn_acc6ba4076cb66953dc3e059723956374}} 
+\index{wld\_secDmn@{wld\_secDmn}!cmdSup@{cmdSup}}
+\index{cmdSup@{cmdSup}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{cmdSup}{cmdSup}}
+{\footnotesize\ttfamily swl\+\_\+map\+Char\+Int32\+\_\+t wld\+\_\+sec\+Dmn\+::cmd\+Sup}
+
+\mbox{\Hypertarget{structwld__secDmn_a9342d8675735a09b6004b877e78c57b0}\label{structwld__secDmn_a9342d8675735a09b6004b877e78c57b0}} 
+\index{wld\_secDmn@{wld\_secDmn}!ctrlIfaceDir@{ctrlIfaceDir}}
+\index{ctrlIfaceDir@{ctrlIfaceDir}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{ctrlIfaceDir}{ctrlIfaceDir}}
+{\footnotesize\ttfamily char$\ast$ wld\+\_\+sec\+Dmn\+::ctrl\+Iface\+Dir}
+
+\mbox{\Hypertarget{structwld__secDmn_a36155158685ab9aec86eefc3e58b2d04}\label{structwld__secDmn_a36155158685ab9aec86eefc3e58b2d04}} 
+\index{wld\_secDmn@{wld\_secDmn}!dmnProcess@{dmnProcess}}
+\index{dmnProcess@{dmnProcess}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{dmnProcess}{dmnProcess}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}}$\ast$ wld\+\_\+sec\+Dmn\+::dmn\+Process}
+
+\mbox{\Hypertarget{structwld__secDmn_a5186b61b4ed9b2066a490c487c8faaef}\label{structwld__secDmn_a5186b61b4ed9b2066a490c487c8faaef}} 
+\index{wld\_secDmn@{wld\_secDmn}!handlers@{handlers}}
+\index{handlers@{handlers}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{handlers}{handlers}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structwld__secDmnEvtHandlers}{wld\+\_\+sec\+Dmn\+Evt\+Handlers}} wld\+\_\+sec\+Dmn\+::handlers}
+
+\mbox{\Hypertarget{structwld__secDmn_a4f44aaac34b3593d16ac812982a76867}\label{structwld__secDmn_a4f44aaac34b3593d16ac812982a76867}} 
+\index{wld\_secDmn@{wld\_secDmn}!needRestart@{needRestart}}
+\index{needRestart@{needRestart}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{needRestart}{needRestart}}
+{\footnotesize\ttfamily bool wld\+\_\+sec\+Dmn\+::need\+Restart}
+
+\mbox{\Hypertarget{structwld__secDmn_a5fb69c573a34683cc387efb9c230b2da}\label{structwld__secDmn_a5fb69c573a34683cc387efb9c230b2da}} 
+\index{wld\_secDmn@{wld\_secDmn}!secDmnGroup@{secDmnGroup}}
+\index{secDmnGroup@{secDmnGroup}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{secDmnGroup}{secDmnGroup}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__secDmn__types_8h_a7b53b46bad76346841b88f1b1c72c605}{wld\+\_\+sec\+Dmn\+Grp\+\_\+t}}$\ast$ wld\+\_\+sec\+Dmn\+::sec\+Dmn\+Group}
+
+\mbox{\Hypertarget{structwld__secDmn_a95fffeade4d1580d45d7a82b4ddf0b96}\label{structwld__secDmn_a95fffeade4d1580d45d7a82b4ddf0b96}} 
+\index{wld\_secDmn@{wld\_secDmn}!selfDmnProcess@{selfDmnProcess}}
+\index{selfDmnProcess@{selfDmnProcess}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{selfDmnProcess}{selfDmnProcess}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__daemon_8h_ae587c517c60e23d70bba6628fc5d3af4}{wld\+\_\+process\+\_\+t}}$\ast$ wld\+\_\+sec\+Dmn\+::self\+Dmn\+Process}
+
+\mbox{\Hypertarget{structwld__secDmn_a661c1e55b876c3d8efa7a0821d1a4767}\label{structwld__secDmn_a661c1e55b876c3d8efa7a0821d1a4767}} 
+\index{wld\_secDmn@{wld\_secDmn}!userData@{userData}}
+\index{userData@{userData}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{userData}{userData}}
+{\footnotesize\ttfamily void$\ast$ wld\+\_\+sec\+Dmn\+::user\+Data}
+
+\mbox{\Hypertarget{structwld__secDmn_aea1a4b2972023a487cc0fdd48e7d48a3}\label{structwld__secDmn_aea1a4b2972023a487cc0fdd48e7d48a3}} 
+\index{wld\_secDmn@{wld\_secDmn}!wpaCtrlMngr@{wpaCtrlMngr}}
+\index{wpaCtrlMngr@{wpaCtrlMngr}!wld\_secDmn@{wld\_secDmn}}
+\doxysubsubsection{\texorpdfstring{wpaCtrlMngr}{wpaCtrlMngr}}
+{\footnotesize\ttfamily \mbox{\hyperlink{wld__wpaCtrl__types_8h_a9b63951c9b36995d07d0ac2f305df225}{wld\+\_\+wpa\+Ctrl\+Mngr\+\_\+t}}$\ast$ wld\+\_\+sec\+Dmn\+::wpa\+Ctrl\+Mngr}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/wld/\mbox{\hyperlink{wld__secDmn_8h}{wld\+\_\+sec\+Dmn.\+h}}\end{DoxyCompactItemize}
