@@ -303,4 +303,11 @@ swl_rc_ne wld_rad_unregisterExtModData(T_Radio* pRad, uint32_t extModId);
 
 amxd_object_t* wld_rad_getObject(T_Radio* pRad);
 bool wld_rad_firstCommitFinished(T_Radio* pRad);
+
+/**
+ * @brief Update the "PowerStatus" DataModel
+ * @param pR - internal radio context
+ * @param mode - configured power mode
+ */
+swl_rc_ne wld_rad_updatePowerStatusDm(T_Radio* pR, wld_rad_powerMode_e mode);
 #endif /* __WLD_RADIO_H__ */
