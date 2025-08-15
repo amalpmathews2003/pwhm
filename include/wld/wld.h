@@ -1725,6 +1725,33 @@ struct S_SSID {
 };
 
 typedef struct {
+    wld_ssidType_e type;
+    amxc_llist_t mlds;
+} wld_mldGroup_t;
+
+struct wld_mldMgr {
+    bool init;
+    wld_mldGroup_t groups[WLD_SSID_TYPE_MAX];
+};
+
+typedef struct {
+    amxc_llist_it_t it;
+    amxd_object_t* object;
+    uint8_t unit;
+    amxc_llist_t links;
+    wld_mldGroup_t* pGroup;
+    wld_mldLink_t* pPrimLink;
+} wld_mld_t;
+
+struct wld_mldLink {
+    amxc_llist_it_t it;
+    T_SSID* pSSID;
+    int16_t linkId;
+    wld_mld_t* pMld;
+    bool configured;
+};
+
+typedef struct {
     int enable;                         /* Enable/Disable HotSpot2.0 */
     bool dgaf_disable;
     bool l2_traffic_inspect;
