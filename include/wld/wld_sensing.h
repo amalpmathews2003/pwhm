@@ -64,6 +64,9 @@
 
 #include "wld.h"
 
+#define NUM_DATA_TYPES 4
+#define EXCHANGETYPES_MAX 12
+
 typedef struct {
     amxc_llist_it_t it;
     swl_macChar_t macAddr;
@@ -81,6 +84,23 @@ typedef struct {
     uint32_t userTransmitFailCounter;   /* CSIMON drops with nl send */
     amxc_var_t* vendorCounters;         /* Vendor specific counters */
 } wld_csiState_t;
+
+typedef enum {
+    QOSNULL,          // 0
+    OPPORTUNISTIC,    // 1
+    PROBE,            // 2
+    TB_SR2SI,         // 3
+    TB_SR2SR,         // 4
+    TB_SI2SR,         // 5
+    CTS2SELF,         // 6
+    NONTB_SI2SR,      // 7
+    NONTB_SR2SI,      // 8
+    SBP_SI2SI,        // 9
+    SBP_SR2SI,        // 10
+    SBP_SR2SR,        // 11
+} wld_supportedExchangeTypes_e;
+
+typedef uint32_t wld_supportedExchangeTypes_m;
 
 void wld_sensing_init(T_Radio* pRad);
 void wld_sensing_cleanup(T_Radio* pRad);

@@ -190,6 +190,29 @@ const char* g_str_wld_tpcMode[TPCMODE_MAX] = {
     "Auto",
 };
 
+const char* g_str_wld_supportedExchangeTypes[EXCHANGETYPES_MAX] = {
+    "qosnull",
+    "opportunistic",
+    "probe",
+    "tb-sr2si",
+    "tb-sr2sr",
+    "tb-si2sr",
+    "cts2self",
+    "nontb-si2sr",
+    "nontb-sr2si",
+    "sbp-si2si",
+    "sbp-sr2si",
+    "sbp-sr2sr"
+};
+
+int32_t wld_supportedSensingDataTypes[NUM_DATA_TYPES] = {
+    0x00000000,
+    0x00137400,
+    0x0012F001,
+    0xAC9A9680
+};
+
+
 static const char* Rad_RIFS_MODE[RIFS_MODE_MAX] = {"Default", "Auto", "Off", "On"};
 
 static const char* g_wld_radFeatures_str[WLD_FEATURE_MAX] = {"Seamless DFS", "Background DFS"};
@@ -2073,6 +2096,22 @@ void syncData_Radio2OBJ(amxd_object_t* object, T_Radio* pR, int set) {
         TBuf[0] = '\0';
         swl_conv_maskToCharSep(TBuf, sizeof(TBuf), pR->supportedDataTransmitRates, swl_mcs_legacyStrList, SWL_MCS_LEGACY_LIST_SIZE, ',');
         amxd_trans_set_cstring_t(&trans, "SupportedDataTransmitRates", TBuf);
+
+        char* staticSupportedDataTypes = amxd_object_get_cstring_t(object, "StaticSupportedSensingDataTypes", NULL);
+        SAH_TRACEZ_INFO(ME, "StaticSupportedSensingDataTypes is %s", staticSupportedDataTypes);
+        if(staticSupportedDataTypes != NULL) {
+            swl_str_copy(pR->supportedSensingDataTypes, sizeof(pR->supportedSensingDataTypes), staticSupportedDataTypes);
+            amxd_trans_set_csv_string_t(&trans, "SupportedSensingDataTypes", staticSupportedDataTypes);
+        }
+        free(staticSupportedDataTypes);
+
+        char* staticSupportedExchangeTypes = amxd_object_get_cstring_t(object, "StaticSupportedSensingExchangeTypes", NULL);
+        if(staticSupportedExchangeTypes != NULL) {
+            wld_supportedExchangeTypes_m exchangeTypes = swl_conv_charToMask(staticSupportedExchangeTypes, g_str_wld_supportedExchangeTypes, EXCHANGETYPES_MAX);
+            pR->supportedSensingExchangeTypes = exchangeTypes;
+            amxd_trans_set_csv_string_t(&trans, "SupportedSensingExchangeTypes", staticSupportedExchangeTypes);
+        }
+        free(staticSupportedExchangeTypes);
 
         wld_rad_update_operating_standard(pR, &trans);
 
